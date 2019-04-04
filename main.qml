@@ -42,6 +42,9 @@ ApplicationWindow {
         currentIndex: tabBar.currentIndex
 
         Page1Form {
+            navigationFeatureButton.onClicked: {
+                aaCore.testAAOffline();
+            }
         }
 
         Page2Form {

@@ -21,7 +21,16 @@ SOURCES += \
     visionmodule.cpp \
     commonutils.cpp \
     logger.cpp \
-    motorspositionmodel.cpp
+    motorspositionmodel.cpp \
+    propertybase.cpp \
+    basemodule.cpp \
+    xtadcmodule.cpp \
+    XtGeneralOutput.cpp \
+    XtGeneralInput.cpp \
+    sfrworker.cpp \
+    aacore.cpp \
+    aaheadparameters.cpp \
+    wordoplight.cpp
 
 RESOURCES += qml.qrc \
     icons.qrc
@@ -48,6 +57,23 @@ LIBS += -L$$PWD/../libs/AdaptiveVision/lib/x64/ -lAVL
 INCLUDEPATH += $$PWD/../libs/AdaptiveVision/include
 DEPENDPATH += $$PWD/../libs/AdaptiveVision/include
 
+LIBS += -L$$PWD/../libs/opencv/x64/vc14/lib/ -lopencv_world310
+LIBS += -L$$PWD/../libs/opencv/x64/vc14/bin
+INCLUDEPATH += $$PWD/../libs/opencv/include
+DEPENDPATH += $$PWD/../libs/opencv/x64/vc14/bin
+
+LIBS += -L$$PWD/../libs/sparrow_core/sparrow_core/lib/ -lSparrowCore
+INCLUDEPATH += $$PWD/../libs/sparrow_core/sparrow_core/include
+DEPENDPATH += $$PWD/../libs/sparrow_core/sparrow_core/include
+
+
+LIBS += -L$$PWD/../libs/motion_x64/ -lMotionControlDll
+LIBS += -L$$PWD/../libs/motion_x64/ -lMotionControlExtendDll
+LIBS += -L$$PWD/../libs/motion_x64/ -lvoice_motor_dll
+
+INCLUDEPATH += $$PWD/../libs/motion_x64
+DEPENDPATH += $$PWD/../libs/motion_x64
+
 HEADERS += \
     baslerpyloncamera.h \
     config.h \
@@ -57,7 +83,16 @@ HEADERS += \
     visionmodule.h \
     commonutils.h \
     logger.h \
-    motorspositionmodel.h
+    motorspositionmodel.h \
+    propertybase.h \
+    basemodule.h \
+    xtadcmodule.h \
+    XtGeneralOutput.h \
+    XtGeneralInput.h \
+    sfrworker.h \
+    aacore.h \
+    aaheadparameters.h \
+    wordoplight.h
 
 DISTFILES += \
     icons/index.theme

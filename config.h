@@ -118,5 +118,8 @@ const static QString CALIBRATION_RESULT_PATH = "./config/calibrationConfig.json"
 #define ICON_READ            ":/images/icon/read.png"
 #define ICON_MOVE            ":/images/icon/move.png"
 #define ICON_NO_IMAGE        ":/images/icon/no_image_placeholder.png"
+
+#define POS_ERROR           0.001
+
 #endif
 // CONFIG_H

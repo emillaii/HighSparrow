@@ -9,8 +9,10 @@ import QtQuick.Controls.Material 2.12
 
 Page {
     id: page1
+    x: -1
     width: 1280
     height: 720
+    property alias navigationFeatureButton: navigationFeatureButton
 
     header: Label {
         id: label1
@@ -90,19 +92,6 @@ Page {
         }
     }
 
-    ListView {
-        id: machineConfigListView
-        anchors.rightMargin: 668
-        anchors.bottomMargin: 49
-        anchors.leftMargin: 112
-        anchors.topMargin: 35
-        anchors.fill: parent
-        model: MachineConfigModel {
-        }
-        delegate: MachineConfigDelegate {
-        }
-    }
-
     CameraView {
         id: cameraView
         x: 659
@@ -123,5 +112,21 @@ Page {
         anchors.topMargin: 589
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 8
+    }
+
+    ListView {
+        id: machineConfigListView
+        anchors.right: parent.right
+        anchors.rightMargin: 627
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottomMargin: 49
+        anchors.leftMargin: 112
+        anchors.topMargin: 35
+        model: MachineSettingModel {
+        }
+        delegate: MachineSettingDelegate {
+        }
     }
 }

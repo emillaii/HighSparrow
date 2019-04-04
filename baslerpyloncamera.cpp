@@ -24,6 +24,7 @@ void BaslerPylonCamera::OnImageGrabbed( CInstantCamera&, const CGrabResultPtr& p
 BaslerPylonCamera::~BaslerPylonCamera()
 {
     if (camera.IsOpen()) camera.Close();
+    PylonTerminate();
     this->wait();
 }
 
@@ -53,6 +54,7 @@ void BaslerPylonCamera::Init(){
 
 void BaslerPylonCamera::Close()
 {
+    PylonTerminate();
     isReady = false;
     while(isGrabbing)
     {
@@ -69,7 +71,7 @@ void BaslerPylonCamera::Open()
     if((!camera.IsOpen())&&(!isGrabbing))
     {
        camera.Open();
-        this->start();
+       this->start();
     }
 }
 

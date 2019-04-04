@@ -8,7 +8,8 @@
         <file>CameraView.qml</file>
         <file>FeatureButton.qml</file>
         <file>AAConfig.qml</file>
-        <file>MachineConfigModel.qml</file>
-        <file>MachineConfigDelegate.qml</file>
+        <file>AAHeadModuleView.qml</file>
+        <file>MachineSettingModel.qml</file>
+        <file>MachineSettingDelegate.qml</file>
     </qresource>
 </RCC>

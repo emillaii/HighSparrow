@@ -5,8 +5,8 @@ MotorsPositionModel::MotorsPositionModel(QObject *parent)
 {
 }
 
-MotorsPositionModel::MotorsPositionModel(const QString &name, const double &value, QObject *parent)
-    : QObject(parent), m_name(name), m_value(value)
+MotorsPositionModel::MotorsPositionModel(const QString &name, const double &value, const int &type, QObject *parent)
+    : QObject(parent), m_name(name), m_value(value), m_type(type)
 {
 
 }
@@ -35,4 +35,14 @@ void MotorsPositionModel::setValue(double value)
         m_value = value;
         emit valueChanged();
     }
+}
+
+int MotorsPositionModel::type() const
+{
+    return m_type;
+}
+
+void MotorsPositionModel::setType(int type)
+{
+    m_type = type;
 }

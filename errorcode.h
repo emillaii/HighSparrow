@@ -6,6 +6,7 @@ typedef enum {
     OK = 300,
     INIT_COMPONENT_ERROR,
     AA_ZSCAN_DFOV,
+    AA_MTF_TIMEOUT
 } ErrorCode;
 
 

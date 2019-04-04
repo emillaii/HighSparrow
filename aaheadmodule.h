@@ -2,15 +2,22 @@
 #define AAHEADMODULE_H
 
 #include <QObject>
+#include <propertybase.h>
 #include <visionmodule.h>
+#include <aaheadparameters.h>
 
-class AAHeadModule
+class AAHeadModule : public QObject
 {
+    Q_OBJECT
+
 public:
     AAHeadModule();
-private:
-    VisionModule visionModule;
+    AAHeadParameters aaModuleParams;
+public slots:
 
+
+private:
+    VisionModule * visionModule;
 };
 
 #endif // AAHEADMODULE_H

@@ -3,5 +3,4 @@
 
 AAHeadModule::AAHeadModule()
 {
-    qInfo("%f", this->aaModuleParams.pickLensPositionX());
 }

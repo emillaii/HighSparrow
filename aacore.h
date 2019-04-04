@@ -9,7 +9,8 @@
 #include <unordered_map>
 #include <sfrworker.h>
 #include <QObject>
-
+#include <QJsonDocument>
+#include <errorcode.h>
 class AACore : public QThread
 {
     Q_OBJECT
@@ -23,11 +24,13 @@ protected:
 public:
     void performAAOffline();
     double calculateDFOV(cv::Mat img);
-    Q_INVOKABLE void testAAOffline();
     void setSfrWorkerController(SfrWorkerController*);
+    bool runFlowchartTest();
+
 private:
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
+    QJsonDocument flowchartDocument;
     bool isZScanNeedToStop = false;
 signals:
     void sfrResultsReady(unsigned int, vector<Sfr_entry>, int);
@@ -35,6 +38,9 @@ signals:
 public slots:
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);
     void stopZScan();
+    void setFlowchartDocument(QString json){
+        flowchartDocument = QJsonDocument::fromJson(json.toUtf8());
+    }
 };
 
 #endif // AACORE_H

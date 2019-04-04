@@ -4,8 +4,8 @@
 #include <highsprrow.h>
 #include <QIcon>
 #include <logger.h>
-#include <motorspositionmodel.h>
-#include <aaheadparameters.h>
+#include "filecontent.h"
+#include <QtWebEngine/QtWebEngine>
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<std::vector<Sfr_entry>>("std::vector<Sfr_entry>");
     qRegisterMetaType<std::vector<std::vector<Sfr_entry>>>("vector<vector<Sfr_entry>>");
     qRegisterMetaType<sfr::EdgeFilter>("sfr::EdgeFilter");
+    qmlRegisterType<FileContent>("FileContentItem", 1, 0, "FileContentItem");
     QGuiApplication app(argc, argv);
     QGuiApplication::setApplicationName("High Sparrow");
     //qInstallMessageHandler(sparrowLogOutput);
@@ -24,20 +25,23 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon(ICON_SPARROW));
 
     HighSprrow highSprrow;
+
+    QtWebEngine::initialize();
     QQmlApplicationEngine engine;
 
     //Object Property Definition
     engine.rootContext()->setContextProperty("highSprrow", &highSprrow);
-    engine.rootContext()->setContextProperty("visionModule", highSprrow.visionModule);
-    engine.rootContext()->setContextProperty("uplookCamera", highSprrow.pylonUplookCamera);
-    engine.rootContext()->setContextProperty("downlookCamera", highSprrow.pylonDownlookCamera);
-    engine.rootContext()->setContextProperty("aaCore", highSprrow.aaCore);
+    engine.rootContext()->setContextProperty("visionModule", highSprrow.baseModuleManager->visionModule);
+    engine.rootContext()->setContextProperty("uplookCamera", highSprrow.baseModuleManager->pylonUplookCamera);
+    engine.rootContext()->setContextProperty("downlookCamera", highSprrow.baseModuleManager->pylonDownlookCamera);
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.aaHeadModule->aaModuleParams);
+    engine.rootContext()->setContextProperty("baseModuleManager", highSprrow.baseModuleManager);
+    engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);
 
     //QImage Provider
-    engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.pylonUplookCamera);
-    engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.pylonDownlookCamera);
-    engine.addImageProvider(QLatin1String("preview1"), highSprrow.visionModule);
+    engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);
+    engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);
+    engine.addImageProvider(QLatin1String("preview1"), highSprrow.baseModuleManager->visionModule);
 
     engine.rootContext()->setContextProperty("motorModels", QVariant::fromValue(highSprrow.aaHeadModule));
 

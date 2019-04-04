@@ -83,12 +83,13 @@ void VisionModule::displayPRResult(const QString camera_name, const PRResultStru
 QImage VisionModule::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
     if (id.contains(DOWNLOOK_VISION_CAMERA)) {
+        qInfo(QString("Fetch " + last_downlook_pr_result.imageName).toStdString().c_str());
         return QImage(last_downlook_pr_result.imageName);
     }
-    else if (id.contains(UPLOOK_VISION_CAMERA)) {
+    else if (id.contains(PREVIEW_2)) {
         return QImage(last_uplook_pr_result.imageName);
     }
-    else if (id.contains(PICKARM_VISION_CAMERA)) {
+    else if (id.contains(PREVIEW_3)) {
         return QImage(last_pickarm_pr_result.imageName);
     }
     return QImage();

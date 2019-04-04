@@ -19,7 +19,6 @@ signals:
     void imageReady(QImage img);
     void sfrResultsReady(unsigned int index, std::vector<Sfr_entry> res, int timeElapsed);
     void sfrResultsDetectFinished();
-    void test();
 };
 
 class SfrWorkerController: public QObject

@@ -1,4 +1,7 @@
 QT += quick
+QT += serialport
+QT += webengine
+QT += widgets
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -30,7 +33,11 @@ SOURCES += \
     sfrworker.cpp \
     aacore.cpp \
     aaheadparameters.cpp \
-    wordoplight.cpp
+    wordoplight.cpp \
+    logicmanager.cpp \
+    filecontent.cpp \
+    basemodulemanager.cpp \
+    LontryLight.cpp
 
 RESOURCES += qml.qrc \
     icons.qrc
@@ -92,7 +99,11 @@ HEADERS += \
     sfrworker.h \
     aacore.h \
     aaheadparameters.h \
-    wordoplight.h
+    wordoplight.h \
+    logicmanager.h \
+    filecontent.h \
+    basemodulemanager.h \
+    LontryLight.h
 
 DISTFILES += \
     icons/index.theme

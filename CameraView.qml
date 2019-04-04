@@ -44,27 +44,30 @@ Grid {
 
             Slider {
                 id: slider
-                y: 235
+                y: 249
                 stepSize: 1
                 to: 255
                 from: 0
+
                 anchors.left: parent.left
                 anchors.leftMargin: 0
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: -7
-                value: 1
-
+                anchors.bottomMargin: -21
+                value: baseModuleManager.uplookLighting
+                onValueChanged: {
+                    baseModuleManager.setUplookLighting(value)
+                }
                 Label {
                     id: label
-                    y: 14
+                    y: 6
                     color: "#46eb46"
-                    text: qsTr("123")
+                    text: baseModuleManager.uplookLighting
                     font.pointSize: 20
                     font.family: "Times New Roman"
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 1
+                    anchors.bottomMargin: 12
                     anchors.left: parent.left
-                    anchors.leftMargin: 196
+                    anchors.leftMargin: 202
                 }
             }
 
@@ -93,6 +96,32 @@ Grid {
             source: "icons/home.png"
             fillMode: Image.PreserveAspectFit
             cache: false
+
+            Slider {
+                y: 249
+                stepSize: 1
+                to: 255
+                from: 0
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: -21
+                value: baseModuleManager.downlookLighting
+                onValueChanged: {
+                    baseModuleManager.setDownlookLighting(value)
+                }
+                Label {
+                    y: 6
+                    color: "#46eb46"
+                    text: baseModuleManager.downlookLighting
+                    font.pointSize: 20
+                    font.family: "Times New Roman"
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 12
+                    anchors.left: parent.left
+                    anchors.leftMargin: 202
+                }
+            }
 
             Connections {
                 target: downlookCamera
@@ -146,7 +175,4 @@ Grid {
 
 
 
-/*##^## Designer {
-    D{i:16;anchors_x:8}D{i:15;anchors_x:-24}
-}
- ##^##*/
+

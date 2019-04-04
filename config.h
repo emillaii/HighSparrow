@@ -27,6 +27,14 @@
 #define POSITION_LEARNING_TITLE     u8"位置紀錄"
 #define FLOWCHART_TITLE             u8"流程图"
 
+#define PREVIEW_1                   "preview1"
+#define PREVIEW_2                   "preview2"
+#define PREVIEW_3                   "preview3"
+#define PREVIEW_4                   "preview4"
+#define PREVIEW_5                   "preview5"
+#define PREVIEW_6                   "preview6"
+#define PREVIEW_7                   "preview7"
+
 //ToDo: Move to config file for the camera
 #define DOWNLOOK_VISION_CAMERA_SN       "22574542"
 #define UPLOOK_VISION_CAMERA_SN         "22574541"
@@ -44,7 +52,7 @@
 //PR Execuatable for HMI
 #define SAVE_IMAGE_FROM_BASLER_EXEC     "SaveImage.avexe"
 #define LEARN_PR_DOWNLOOK_SENSOR_EXEC   "LearnPR_Downlook_Sensor.avexe"
-#define LEARN_PR_UPLOOK_MUSHROOM_EXEC    "LearnPR_Uplook_Mushroom.avexe"
+#define LEARN_PR_UPLOOK_MUSHROOM_EXEC   "LearnPR_Uplook_Mushroom.avexe"
 
 //PR Learn
 #define PR_DOWNLOOK_SENSOR_FILENAME     ".//config//vision_config_1//downlook_sensor.avdata"
@@ -82,7 +90,7 @@ const static QString CALIBRATION_RESULT_PATH = "./config/calibrationConfig.json"
 #define PR_PICKARM_CMOS_PR              "pickarm_cmos_pr"
 #define PR_PICKARM_LENS_HOLDER_PR       "pickarm_lens_holder_pr"
 #define PR_UPDOWNLOOK_CALIB_GLASS_PR    "updownlook_calib_glass_pr"
-#define PR_PICKARM_LENS_TREAY_PR           "pickarm_lens_tray_pr"
+#define PR_PICKARM_LENS_TREAY_PR        "pickarm_lens_tray_pr"
 
 //Lighting Config
 #define LIGHTING_UPLOOK_LENS_HOLDER_PR         "uplookLensHolderPRLighting"

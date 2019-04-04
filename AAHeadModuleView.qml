@@ -24,6 +24,9 @@ ColumnLayout {
                         decimals: 3
                         notation: DoubleValidator.StandardNotation
                     }
+                    onTextChanged: {
+                        aaHeadParams.setPickLensPositionX(text)
+                    }
                 }
                 Label {
                     text: qsTr("AA_Y")

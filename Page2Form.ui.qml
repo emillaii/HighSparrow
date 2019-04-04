@@ -36,9 +36,9 @@ Page {
                 Connections {
                     target: visionModule
                     onCallQmlRefeshImg: {
-                        element.text =   Qt.formatTime(new Date(), "hh:mm:ss")
+                        element.text = Qt.formatTime(new Date(), "hh:mm:ss")
                         prResultPreview1.source = ""
-                        prResultPreview1.source = "image://preview1/" + uplookCameraName
+                        prResultPreview1.source = "image://preview1/" + downlookCameraName
                     }
                 }
 
@@ -73,21 +73,7 @@ Page {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*##^## Designer {
-    D{i:14;anchors_x:126}D{i:11;anchors_height:100;anchors_width:100}D{i:5;anchors_height:200;anchors_width:200}
+    D{i:5;anchors_height:200;anchors_width:200}
 }
  ##^##*/

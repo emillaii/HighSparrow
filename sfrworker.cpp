@@ -11,13 +11,6 @@ bool is_cc_falling = false, is_ul_falling = false, is_ur_falling = false, is_ll_
 
 void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_display_image, sfr::EdgeFilter edgeFilter)
 {
-    qInfo("Doing...");
-    std::vector<Sfr_entry> tmp;
-    emit sfrResultsReady(1, tmp, 0);
-    qInfo("Emit successs");
-    /*
-    qInfo("Sfr worker is working index : %d", index);
-    emit this->test();
     if (index == 0) {  //Reset all the curve analysis
         prev_cc_score = 0; prev_ul_score = 0; prev_ur_score = 0; prev_ll_score = 0; prev_lr_score = 0;
         is_cc_falling = false; is_ul_falling = false; is_ur_falling = false; is_ll_falling = false; is_lr_falling = false;
@@ -206,7 +199,6 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
         qInfo("All peak is just passed");
         emit sfrResultsDetectFinished();
     }
-    qInfo("Emit SFR Result");
     if (is_display_image)
     {
          int radius = 2;
@@ -227,15 +219,13 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
         // QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(image);
         // emit imageReady(std::move(qImage));
     }
-    qInfo("Emit SFR Result 2 %p", this);
-    //emit sfrResultsReady(index, std::move(sfr_v),timerTest.elapsed());
-    std::vector<Sfr_entry> tmp;
-    emit sfrResultsReady(1, tmp, 0);
+    emit sfrResultsReady(index, std::move(sfr_v),timerTest.elapsed());
+
     image.release();
     ulMat.release();
     urMat.release();
     llMat.release();
-    lrMat.release();*/
+    lrMat.release();
 }
 
 SfrWorkerController::SfrWorkerController(AACore *a)
@@ -250,7 +240,6 @@ SfrWorkerController::SfrWorkerController(AACore *a)
    //connect(worker, &SfrWorker::sfrResultsReady, this, &SfrWorkerController::forwardSfrResults);
    connect(worker, &SfrWorker::sfrResultsReady, aaCore_, &AACore::sfrResultsReady);
    connect(worker, &SfrWorker::sfrResultsDetectFinished, aaCore_, &AACore::sfrResultsDetectFinished);
-   emit worker->sfrResultsReady(1, sfr_v, 0);
    workerThread.start();
 }
 

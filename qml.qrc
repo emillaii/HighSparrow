@@ -3,13 +3,12 @@
         <file>main.qml</file>
         <file>Page1Form.ui.qml</file>
         <file>Page2Form.ui.qml</file>
-        <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>CameraView.qml</file>
         <file>FeatureButton.qml</file>
-        <file>AAConfig.qml</file>
         <file>AAHeadModuleView.qml</file>
         <file>MachineSettingModel.qml</file>
         <file>MachineSettingDelegate.qml</file>
+        <file>Page3Form.ui.qml</file>
     </qresource>
 </RCC>

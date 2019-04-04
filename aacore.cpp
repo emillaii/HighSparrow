@@ -7,6 +7,9 @@
 #include <QThread>
 #include <windows.h>
 #include <stdlib.h>
+#include <QFile>
+#include <QFileDialog>
+#include <QJsonObject>
 
 AACore::AACore(QObject *parent) : QThread(parent)
 {
@@ -24,13 +27,144 @@ void AACore::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
 }
 
 void AACore::run(){
-
+    runFlowchartTest();
+    qInfo("End");
 }
 
-void AACore::testAAOffline()
+bool AACore::runFlowchartTest()
 {
-    qInfo("Testing AA Offline");
-    performAAOffline();
+    qInfo("aaAutoTest Started");
+    QVariantMap jsonMap = flowchartDocument.object().toVariantMap();
+    QJsonObject links = jsonMap["links"].toJsonObject();
+    QJsonObject operators = jsonMap["operators"].toJsonObject();
+    bool end = false;
+    QString currentPointer = "start";
+    while (!end)
+    {
+       end = true;
+       foreach(const QString &key, links.keys()){
+           QJsonValue value = links.value(key);
+           if (value["fromOperator"].toString() == currentPointer
+            && value["fromConnector"].toString() == "success") {
+               if (currentPointer == "start") {
+                   qInfo(QString("Move from " + currentPointer + " to " + value["toOperator"].toString()).toStdString().c_str());
+                   currentPointer = value["toOperator"].toString();
+                   if (links.size() == 1) {
+                       QJsonValue op = operators[currentPointer.toStdString().c_str()];
+                       //performTest(currentPointer.toStdString().c_str(), op["properties"]);
+                   }
+                   end = false;
+                   break;
+               }
+               else {
+                   qInfo(QString("Do Test:" + currentPointer).toStdString().c_str());
+                   QJsonValue op = operators[currentPointer.toStdString().c_str()];\
+                   //Choose Path base on the result
+                   //bool ret = performTest(currentPointer.toStdString().c_str(), op["properties"]);
+                   bool ret = true;
+                   if (ret) {
+                       currentPointer = value["toOperator"].toString();
+                   } else {
+                       //Find fail path
+                       bool hasFailPath = false;
+                       foreach(const QString &key, links.keys()){
+                            QJsonValue value = links.value(key);
+                            if (value["fromOperator"].toString() == currentPointer
+                             && value["fromConnector"].toString() == "fail") {
+                                currentPointer = value["toOperator"].toString();
+                                hasFailPath = true;
+                                break;
+                            }
+                       }
+                       if (!hasFailPath) {
+                           //qInfo() << "Missing fail path, will put to reject test item";
+                          // qInfo() << "Reject! -> To Reject Tray";
+                           //qInfo() << "End of graph";
+                           end = true;
+                           break;
+                       }
+                   }
+                   if (currentPointer.contains("Accept")) {
+                      // qInfo() << "Accept! -> To Good Tray";
+                      // qInfo() << "End of graph";
+                       end = true;
+                       break;
+                   } else if (currentPointer.contains("Reject")) {
+                       //material_state.SetLensNg(true);
+                       //material_state.SetCmosNg(true);
+                       //qInfo() << "Reject! -> To Reject Tray";
+                       //qInfo() << "End of graph";
+                       end = true;
+                       break;
+                   }
+                   end = false;
+                   break;
+               }
+           } else if ( value["fromOperator"].toString() == currentPointer
+                       && value["fromConnector"].toString() == "thread_1" ) {
+               qInfo("Found Parallel Test Item");
+               vector<QString> thread_1_test_list, thread_2_test_list;
+               QString current_thread_1 = currentPointer, current_thread_2 = currentPointer;
+               //Find the head first
+               bool isFoundThread_1 = false, isFoundThread_2 = false;
+               foreach(const QString &key, links.keys()){
+                    QJsonValue value = links.value(key);
+                    if (value["fromOperator"].toString() == current_thread_1 && value["fromConnector"] == "thread_1") {
+                        current_thread_1 = value["toOperator"].toString();
+                        isFoundThread_1 = true;
+                    } else if (value["fromOperator"].toString() == current_thread_2 && value["fromConnector"] == "thread_2") {
+                        current_thread_2 = value["toOperator"].toString();
+                        isFoundThread_2 = true;
+                    }
+                    if (isFoundThread_1 && isFoundThread_2) {
+                        thread_1_test_list.push_back(current_thread_1);
+                        thread_2_test_list.push_back(current_thread_2);
+                        break;
+                    }
+               }
+               //Traverse the thread
+               bool thread1End = false;
+               while (!thread1End)
+               {
+                   thread1End = true;
+                   foreach(const QString &key, links.keys()){
+                       QJsonValue value = links.value(key);
+                       if (value["fromOperator"].toString() == current_thread_1) {
+                           thread_1_test_list.push_back(value["toOperator"].toString());
+                           current_thread_1 = value["toOperator"].toString();
+                           thread1End = false;
+                           break;
+                       }
+                   }
+                   if (current_thread_1.contains("Join")) {
+                       thread1End = true;
+                   }
+               }
+               bool thread2End = false;
+               while (!thread2End)
+               {
+                   thread2End = true;
+                   foreach(const QString &key, links.keys()){
+                       QJsonValue value = links.value(key);
+                       if (value["fromOperator"].toString() == current_thread_2) {
+                           thread_2_test_list.push_back(value["toOperator"].toString());
+                           current_thread_2 = value["toOperator"].toString();
+                           thread2End = false;
+                           if (current_thread_2.contains("Join")) {
+                               currentPointer = current_thread_2;
+                               thread2End = true;
+                           }
+                           break;
+                       }
+                   }
+               }
+               qInfo("End of traversal");
+               //performParallelTest(thread_1_test_list, thread_2_test_list);
+               //Perform Parallel Test
+           }
+       }
+    }
+    return true;
 }
 
 void AACore::performAAOffline()
@@ -82,9 +216,7 @@ void AACore::performAAOffline()
     }
     int timeout=10000;
     while(this->clustered_sfr_map.size() != sfrCount && timeout >0) {
-        qInfo("....  %u", this->clustered_sfr_map.size());
-        Sleep(1);
-        //QThread::msleep(1);
+        QThread::msleep(10);
         timeout--;
     }
     qInfo("finished");

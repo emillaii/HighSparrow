@@ -9,7 +9,6 @@
 class AAHeadModule : public QObject
 {
     Q_OBJECT
-
 public:
     AAHeadModule();
     AAHeadParameters aaModuleParams;

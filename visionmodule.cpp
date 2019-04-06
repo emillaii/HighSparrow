@@ -1,5 +1,7 @@
 #include "visionmodule.h"
-#include <AVL.h>
+
+#include "AVL.h"
+#include "STD.h"
 #include "ATL/Error.h"
 #include "ATL/Dummy.h"
 #include "ATL/Optional.h"
@@ -22,42 +24,95 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
 {
     ErrorCodeStruct error_code = { OK, ""};
     try {
-        static atl::String g_constData1;
-        static avl::GrayModel g_constData2;
-        g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\lut_lens\\1470924728.jpg";
-        avs::ReadDataFromFile( L"GenericNCCavproj.b19eee0c.avdata", L"GrayModel", g_constData2 );
-        avl::EnumerateFilesState enumerateImagesState1;
-        avl::Image image1;
-        atl::String file1;
-        atl::String string1;
-        avl::Image image2;
-        atl::Conditional< avl::Object2D > object2D1;
-        atl::Conditional< avl::Point2D > point2D1;
+        atl::String g_constData1;
+        atl::String g_constData2;
+        atl::String g_constData3;
+        atl::String g_constData4;
+        atl::String g_constData5;
+        atl::String g_constData6;
+        atl::String g_emptyString;
+        atl::Array< atl::Conditional< avl::Location > > g_constData7;
         QString imageName;
         imageName.append(getVisionLogDir())
-                 .append(getCurrentTimeString())
-                 .append(".jpg");
-        avl::LoadImage( g_constData1, false, image1 ); // Offline testing
-//        if (!grabImageFromCamera(camera_name, image1)) {
-//            return error_code;
-//        }
-        avl::LocateSingleObject_NCC( image1, atl::NIL, g_constData2, 0, 3, false, 0.7f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+                        .append(getCurrentTimeString())
+                        .append(".jpg");
+        g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\04blens_lighting100-220 (1)\\04blens_lighting100-220\\04blighting150.jpg";
+        g_constData2 = L"C:\\Users\\emil\\Desktop\\Test\\Genric_NCC\\default_offset.avdata";
+        g_constData3 = L"Vector2D";
+        g_constData4 = L"C:\\Users\\emil\\Desktop\\Test\\Genric_NCC\\default.avdata";
+        g_constData5 = L"GrayModel";
+        g_constData6 = L"Angle:";
+        g_emptyString = L"";
+
+        g_constData7.Reset(1);
+        g_constData7[0] = avl::Location(152, 50);
+        avl::Image image1;
+        avl::Image image2;
+        avl::Vector2D vector2D1;
+        avl::GrayModel grayModel1;
+        atl::Conditional< avl::Object2D > object2D1;
+        atl::Conditional< avl::Point2D > point2D1;
+        atl::Conditional< avl::Point2D > point2D2;
+        atl::Conditional< atl::String > string1;
+        atl::Conditional< avl::Rectangle2D > rectangle2D1;
+        atl::String string2;
+        atl::Array< atl::Conditional< atl::String > > stringArray1;
+        avl::Image image3;
+        avl::Image image4;
+        avl::Image image5;
+        avl::Image image6;
+        avl::LoadImage( g_constData1, false, image1 );
+        //Testing use
+        //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
+        avs::LoadObject< avl::Vector2D >( g_constData2, avl::StreamMode::Binary, g_constData3, vector2D1 );
+        avs::LoadObject< avl::GrayModel >( g_constData4, avl::StreamMode::Binary, g_constData5, grayModel1 );
+        avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.7f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+
         if (object2D1 != atl::NIL)
         {
+            float real1;
+            avl::Point2D point2D3;
+            float real2;
+            float real3;
+
             point2D1.AssignNonNil();
+            point2D2.AssignNonNil();
+            string1.AssignNonNil();
+            rectangle2D1.AssignNonNil();
+
             point2D1.Get() = object2D1.Get().Point();
+            avl::TranslatePoint( point2D1.Get(), vector2D1, false, point2D2.Get() );
+            real1 = object2D1.Get().Angle();
+            avl::RealToString( real1, string2 );
+
+            // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
+            avs::AvsFilter_ConcatenateStrings( g_constData6, string2, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string1.Get() );
+            point2D3 = object2D1.Get().Match().Origin();
+            real2 = object2D1.Get().Match().Width();
+            real3 = object2D1.Get().Match().Height();
+
+            // Function AvsFilter_MakeRectangle is intended for generated code only. Consider use of proper Rectangle2D constructor instead.
+            avs::AvsFilter_MakeRectangle( point2D3, real1, real2, real3, rectangle2D1.Get() );
+            prResult.x = point2D2.Get().x;
+            prResult.y = point2D2.Get().y;
+            prResult.theta = real1;
+            prResult.imageName = imageName;
         }
         else
         {
             point2D1 = atl::NIL;
-            return error_code;
+            point2D2 = atl::NIL;
+            string1 = atl::NIL;
+            rectangle2D1 = atl::NIL;
         }
-        avs::DrawPoints_SingleColor( image1, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image2 );
-        prResult.x = point2D1.Get().X();
-        prResult.y = point2D1.Get().Y();
-        prResult.imageName = imageName;
-        prResult.ret = true;
-        avl::SaveImageToJpeg( image2 , imageName.toStdString().c_str(), atl::NIL, false );
+
+        stringArray1.Resize(1);
+        stringArray1[0] = string1;
+        avs::DrawStrings_SingleColor( image1, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 40.0f), 38.0f, 0.0f, true, atl::NIL, image3 );
+        avs::DrawPoints_SingleColor( image3, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D2), atl::NIL, avl::Pixel(255.0f, 115.0f, 251.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image4 );
+        avs::DrawPoints_SingleColor( image4, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image5 );
+        avs::DrawRectangles_SingleColor( image5, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 2.0f, false, atl::NIL, 1.0f), true, image6 );
+        avl::SaveImageToJpeg( image6 , imageName.toStdString().c_str(), atl::NIL, false );
         displayPRResult(camera_name, prResult);
     } catch(const atl::Error& error) {
         qWarning(error.Message());

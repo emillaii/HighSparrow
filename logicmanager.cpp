@@ -10,7 +10,6 @@ LogicManager::LogicManager(QObject *parent)
 
 void LogicManager::run() {
     qInfo("Logic manager is running");
-    //aaCore->performAAOffline();
     aaCore->start();
     aaCore->wait();
     qInfo("End");

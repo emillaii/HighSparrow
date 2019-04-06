@@ -8,5 +8,6 @@
         <file>icons/sparrow.png</file>
         <file>icons/flowchart.png</file>
         <file>icons/save.png</file>
+        <file>icons/select.png</file>
     </qresource>
 </RCC>

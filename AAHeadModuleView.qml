@@ -1,6 +1,8 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import FileContentItem 1.0
+import QtQuick.Dialogs 1.2
 
 ColumnLayout {
     RowLayout {
@@ -99,7 +101,7 @@ ColumnLayout {
 
             RowLayout {
                 Button {
-                    text: qsTr("Move To")
+                    text: title_move_to
                     width: 40
                     height: 40
                     visible: root.checked
@@ -108,7 +110,7 @@ ColumnLayout {
                     }
                 }
                 Button {
-                    text: qsTr("Read Encoder")
+                    text: title_read_encoder
                     width: 20
                     height: 40
                     visible: root.checked
@@ -207,7 +209,7 @@ ColumnLayout {
 
             RowLayout {
                 Button {
-                    text: qsTr("Move To")
+                    text: title_move_to
                     width: 40
                     height: 40
                     visible: root.checked
@@ -216,12 +218,53 @@ ColumnLayout {
                     }
                 }
                 Button {
-                    text: qsTr("Read Encoder")
+                    text: title_read_encoder
                     width: 20
                     height: 40
                     visible: root.checked
                     onClicked: {
                         console.log("Read Encdoer");
+                    }
+                }
+            }
+        }
+    }
+
+    GroupBox{
+        title: qsTr("Uplook PR Config")
+        ColumnLayout {
+            RowLayout {
+                Label {
+                    text: qsTr("Load PR Name")
+                }
+                TextField {
+                    id: uplookCameraPR
+                    text: aaHeadParams.visionUplookPR
+                    horizontalAlignment: TextInput.AlignHCenter
+                    onTextChanged: {
+                        aaHeadParams.setVisionUplookPR(text)
+                    }
+                }
+                FileDialog {
+                    id: loadfileDialog
+                    title: "选择加载PR文件"
+                    selectExisting: true
+                    selectFolder: false
+                    selectMultiple: false
+
+                    nameFilters: ["avdata文件 (*.avdata)"]
+                    onAccepted: {
+                        uplookCameraPR.text = loadfileDialog.fileUrl
+                        aaHeadParams.setVisionUplookPR(uplookCameraPR.text)
+                    }
+                }
+
+                Button {
+                    text: qsTr("Load PR Result")
+                    width: 20
+                    height: 40
+                    onClicked: {
+                        loadfileDialog.open()
                     }
                 }
             }

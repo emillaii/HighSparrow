@@ -10,7 +10,8 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QJsonObject>
-
+#include "aa_util.h"
+#include "visionavadaptor.h"
 AACore::AACore(QObject *parent) : QThread(parent)
 {
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
@@ -27,7 +28,8 @@ void AACore::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
 }
 
 void AACore::run(){
-    runFlowchartTest();
+    //runFlowchartTest();
+    performAAOffline();
     qInfo("End");
 }
 
@@ -214,12 +216,11 @@ void AACore::performAAOffline()
         img.release();
         sfrCount++;
     }
-    int timeout=10000;
+    int timeout=1000;
     while(this->clustered_sfr_map.size() != sfrCount && timeout >0) {
-        QThread::msleep(10);
+        Sleep(10);
         timeout--;
     }
-    qInfo("finished");
     if (timeout <= 0) {
         qInfo("Error in performing AA Offline: %d", timeout);
         return;
@@ -234,14 +235,16 @@ void AACore::performAAOffline()
     stepTimer.restart();
 
     double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
-//    sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak);
-//    if (isnan(xTilt) || isnan(yTilt)) {
-//        qInfo("if (isnan(xTilt) || isnan(yTilt)) failed");
-//        return;
-//    }
-//    double corner_deviation = AA_Helper::calculateAACornerDeviation(ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak);
+    sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak);
+    if (isnan(xTilt) || isnan(yTilt)) {
+        qInfo("if (isnan(xTilt) || isnan(yTilt)) failed");
+        return;
+    }
+    double corner_deviation = AA_Helper::calculateAACornerDeviation(ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak);
     clustered_sfr_map.clear();
     qInfo("[performAAOffline] Finished xTilt: %f yTilt: %f zPeak: %f ulPeak: %f", xTilt, yTilt, zPeak, ul_zPeak);
+//    runningTestItemName = "AA Offline";
+//    map.insert("test_name", runningTestItemName);
     map.insert("fov_slope", fov_slope);
     map.insert("fov_intercept", fov_intercept);
     map.insert("imageWidth", imageWidth);
@@ -255,13 +258,13 @@ void AACore::performAAOffline()
     map.insert("ul_zPeak", ul_zPeak);
     map.insert("lr_zPeak", lr_zPeak);
     map.insert("ll_zPeak", ll_zPeak);
- //   map.insert("corner_deviation", corner_deviation);
+    map.insert("corner_deviation", corner_deviation);
     map.insert("result", "PASS");
     map.insert("time_breakdown", stepTimerMap);
     map.insert("sfr_breakdown", sfrTimeElapsedMap);
     map.insert("timeElapsed", timer.elapsed());
     qInfo("time elapsed: %d", timer.elapsed());
-    return;
+    //unitlog->addVariantMap("AA", map);
 }
 
 double AACore::calculateDFOV(cv::Mat img)
@@ -279,4 +282,77 @@ void AACore::stopZScan()
 {
     qInfo("stop z scan");
     isZScanNeedToStop = true;
+}
+
+void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
+                                  double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak)
+{
+    std::vector<aa_util::aaCurve> aaCurves;
+    std::vector<std::vector<Sfr_entry>> clustered_sfr;
+
+    for (unsigned int i = 0; i < clustered_sfr_map.size(); ++i) {
+        if (clustered_sfr_map.find(i) != clustered_sfr_map.end()) {
+            clustered_sfr.push_back(std::move(clustered_sfr_map[i]));
+        }
+    }
+    clustered_sfr = sfr_curve_analysis(clustered_sfr);
+    vector<threeDPoint> points;
+    int principle_center_x = imageWidth/2, principle_center_y = imageHeight/2;
+    double cc_peak_z = 0, ul_peak_z = 0, ur_peak_z = 0, ll_peak_z = 0, lr_peak_z = 0;
+    int cc_curve_index = 0;
+    double g_x_min = 99999;
+    double g_x_max = -99999;
+
+    //sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, cmosPixelToMM, cmosPixelToMM);
+    sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, 800, 800);
+    //ToDo: Check whether the points result is determinitics
+    if (points.size() == 5) {
+       ul_peak_z = points[0].z;
+       ur_peak_z = points[1].z;
+       ll_peak_z = points[3].z;
+       lr_peak_z = points[4].z;
+    }
+    threeDPoint weighted_vector = planeFitting(points);
+
+    unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, llIndex = 0, lrIndex = 0;
+    AA_Helper::AA_Find_Charactertistics_Pattern(clustered_sfr, imageWidth, imageHeight,
+                                                ccIndex, ulIndex, urIndex, llIndex, lrIndex);
+    for(unsigned i = 0; i < clustered_sfr.size(); i++) {
+        if (i == ccIndex || i == ulIndex || i == urIndex || i == llIndex || i == lrIndex)
+        {
+            QString indexString;
+            QVariantMap sfrMap;
+            if (i == ccIndex) indexString = "CC";
+            else if (i == ulIndex) indexString = "UL";
+            else if (i == urIndex) indexString = "UR";
+            else if (i == llIndex) indexString = "LL";
+            else if (i == lrIndex) indexString = "LR";
+            for (unsigned int j = 0; j < clustered_sfr[i].size(); j++) {
+                QVariantMap s;
+                s.insert("index", j);
+                s.insert("position", indexString);
+                s.insert("px", clustered_sfr[i][j].px);
+                s.insert("py", clustered_sfr[i][j].py);
+                s.insert("area", clustered_sfr[i][j].area);
+                s.insert("sfr", clustered_sfr[i][j].sfr);
+                sfrMap.insert(indexString, s);
+                sfrMap.insert("pz", clustered_sfr[i][j].pz);
+                //unitlog->postSfrDataToELK(sfrMap);
+            }
+        }
+    }
+    xTilt = weighted_vector.z * weighted_vector.x;
+    yTilt = weighted_vector.z * weighted_vector.y;
+    qInfo("xTilt: %f yTilt: %f", xTilt, yTilt);
+//    if (!isnan(xTilt) && !isnan(yTilt))
+//    {
+//        emit chartChanged(clustered_sfr, runningTestItemName, weighted_vector.z * weighted_vector.x, weighted_vector.z * weighted_vector.y,
+//                          ccIndex, ulIndex, urIndex, llIndex, lrIndex,
+//                          ur_peak_z, ul_peak_z, lr_peak_z, ll_peak_z, cc_peak_z);
+//    }
+    zPeak = cc_peak_z;
+    ul_zPeak = ul_peak_z;
+    ur_zPeak = ur_peak_z;
+    ll_zPeak = ll_peak_z;
+    lr_zPeak = lr_peak_z;
 }

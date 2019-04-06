@@ -48,10 +48,6 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
-//    QObject::connect(engine.rootObjects().first(), SIGNAL(qmlSignal(QString)), &highSprrow, SLOT(cppSlot(QString)));
-//    QObject* tabHomeButton = engine.rootObjects().first()->findChild<QObject*>("HomeButtonObject");
-//    QObject::connect(tabHomeButton, SIGNAL(clicked()), &highSprrow, SLOT(homeAllMotors()));
-
 
     return app.exec();
 }

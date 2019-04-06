@@ -10,6 +10,9 @@ ApplicationWindow {
     height: 720
     title: qsTr("High Sparrow")
 
+    readonly property string title_move_to: "移動"
+    readonly property string title_read_encoder: "讀取"
+
     FileDialog {
         id: loadfileDialog
         title: "选择加载文件"
@@ -29,9 +32,6 @@ ApplicationWindow {
                 logicManager.loadFlowchart(result)
             })
         }
-        onRejected: {
-            console.log("Canceled")
-        }
     }
 
     FileDialog {
@@ -44,9 +44,6 @@ ApplicationWindow {
         onAccepted: {
             file.setSource(saveFileDialog.fileUrl)
             file.write()
-        }
-        onRejected: {
-            console.log("Canceled")
         }
     }
 
@@ -86,7 +83,7 @@ ApplicationWindow {
             id: loadFlowChartButton
             text: qsTr("加载流程图")
             anchors.left: parent.left
-            anchors.leftMargin: 76
+            anchors.leftMargin: 90
             transformOrigin: Item.Center
             display: Button.TextUnderIcon
             anchors.top: parent.top
@@ -103,7 +100,7 @@ ApplicationWindow {
             id: saveFlowChart
             text: qsTr("保存流程图")
             anchors.left: parent.left
-            anchors.leftMargin: 173
+            anchors.leftMargin: 180
             transformOrigin: Item.Center
             display: Button.TextUnderIcon
             anchors.top: parent.top
@@ -133,8 +130,11 @@ ApplicationWindow {
         interactive: false
 
         Page1Form {
+            featureButton.onClicked: {
+                highSprrow.callQProcess("GenericNCCavproj.avexe")
+            }
             navigationFeatureButton.onClicked: {
-                baseModuleManager.testVision()
+                logicManager.start()
             }
         }
 
@@ -145,7 +145,6 @@ ApplicationWindow {
             id: flowChartPage
         }
     }
-
 
     footer: TabBar {
         id: tabBar
@@ -158,7 +157,7 @@ ApplicationWindow {
             text: qsTr("Page 2")
         }
         TabButton {
-            text: qsTr("Page 3")
+            text: qsTr("流程图")
         }
     }
 }

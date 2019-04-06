@@ -51,6 +51,10 @@ void PropertyBase::write(QJsonObject &json) const
             const char *name = metaproperty.name();
             json[name] = this->property(name).toBool();
         }
+        else if (temp_type == QVariant::Type::String) {
+            const char *name = metaproperty.name();
+            json[name] = this->property(name).toString();
+        }
         else {
             qInfo("write parameter error,unrecognized type : %d : %s",temp_type,metaproperty.name());
         }

@@ -81,6 +81,8 @@ LIBS += -L$$PWD/../libs/motion_x64/ -lvoice_motor_dll
 INCLUDEPATH += $$PWD/../libs/motion_x64
 DEPENDPATH += $$PWD/../libs/motion_x64
 
+INCLUDEPATH += $$PWD/../libs/eigen/eigen-eigen-5a0156e40feb
+
 HEADERS += \
     baslerpyloncamera.h \
     config.h \

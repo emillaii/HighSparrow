@@ -12,22 +12,8 @@ Page {
     x: -1
     width: 1280
     height: 720
+    property alias featureButton: featureButton
     property alias navigationFeatureButton: navigationFeatureButton
-
-    header: Label {
-        id: label1
-        text: qsTr("Page 1")
-        font.pixelSize: Qt.application.font.pixelSize * 2
-        padding: 10
-    }
-
-    Label {
-        id: labels
-        text: qsTr("You are on Page 1.")
-        anchors.verticalCenterOffset: 296
-        anchors.horizontalCenterOffset: 450
-        anchors.centerIn: parent
-    }
 
     RowLayout {
         id: mainRowLayout
@@ -66,8 +52,9 @@ Page {
             }
 
             FeatureButton {
-                text: qsTr("Navigation")
-                icon.name: "music"
+                id: featureButton
+                text: qsTr("机械视觉")
+                icon.source: "icons/select.png"
                 checked: true
                 Layout.fillHeight: true
             }
@@ -101,19 +88,6 @@ Page {
         anchors.rightMargin: -3
     }
 
-    Rectangle {
-        id: rectangle
-        x: 659
-        width: 611
-        color: "#ffffff"
-        anchors.right: parent.right
-        anchors.rightMargin: 10
-        anchors.top: parent.top
-        anchors.topMargin: 589
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 8
-    }
-
     ListView {
         id: machineConfigListView
         anchors.right: parent.right
@@ -128,5 +102,18 @@ Page {
         }
         delegate: MachineSettingDelegate {
         }
+    }
+
+    TextArea {
+        id: textArea
+        x: 659
+        width: 608
+        text: qsTr("Text Area")
+        anchors.right: parent.right
+        anchors.rightMargin: 13
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 8
+        anchors.top: parent.top
+        anchors.topMargin: 582
     }
 }

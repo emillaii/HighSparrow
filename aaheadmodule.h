@@ -12,6 +12,7 @@ class AAHeadModule : public QObject
 public:
     AAHeadModule();
     AAHeadParameters aaModuleParams;
+
 public slots:
 
 

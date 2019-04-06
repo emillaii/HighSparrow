@@ -32,6 +32,9 @@ private:
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QJsonDocument flowchartDocument;
     bool isZScanNeedToStop = false;
+    void sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
+                             double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak);
+
 signals:
     void sfrResultsReady(unsigned int, vector<Sfr_entry>, int);
     void sfrResultsDetectFinished();

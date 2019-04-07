@@ -26,11 +26,12 @@ void BaseModuleManager::testVision()
 
 bool BaseModuleManager::ReadParameters()
 {
+    return true;
 }
 
 bool BaseModuleManager::SaveParameters()
 {
-
+return true;
 }
 
 bool BaseModuleManager::LoadProfile()
@@ -79,7 +80,7 @@ bool BaseModuleManager::LoadProfile()
         XtVcMotor motor_lut_vcm,motor_sut_vcm;
         motor_lut_vcm.Init("LUT_VCM",lut_vcm_parameters);
         motors.insert("LUT_VCM",&motor_lut_vcm);
-        motor_sut_vcm.Init("SUT1_VCM",sut1_vcm_parameters);
+        motor_sut_vcm.Init("SUT1_VCM",sut_vcm_parameters);
         motors.insert("SUT1_VCM",&motor_sut_vcm);
         profile_loaded = true;
         return true;
@@ -144,7 +145,7 @@ bool BaseModuleManager::InitialDevice()
     return true;
 }
 
-bool BaseModuleManager::EnableMotors()
+void BaseModuleManager::EnableMotors()
 {
     if(is_init)
         foreach (XtMotor *m, motors.values()) {

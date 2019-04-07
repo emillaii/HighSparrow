@@ -32,7 +32,6 @@ SOURCES += \
     XtGeneralInput.cpp \
     sfrworker.cpp \
     aacore.cpp \
-    aaheadparameters.cpp \
     wordoplight.cpp \
     logicmanager.cpp \
     filecontent.cpp \
@@ -43,7 +42,9 @@ SOURCES += \
     XtVcMotor.cpp \
     material_carrier.cpp \
     XtVacuum.cpp \
-    structure_composition.cpp
+    structure_composition.cpp \
+    lut_module.cpp \
+    sut_module.cpp
 
 RESOURCES += qml.qrc \
     icons.qrc
@@ -117,7 +118,12 @@ HEADERS += \
     XtVcMotor.h \
     material_carrier.h \
     XtVacuum.h \
-    structure_composition.h
+    structure_composition.h \
+    sut_parameter.h \
+    material_carrier_parameter.h \
+    lut_module.h \
+    lut_parameter.h \
+    sut_module.h
 
 DISTFILES += \
     icons/index.theme

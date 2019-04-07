@@ -1,5 +1,6 @@
+#include <qthread.h>
 #include <utility>
-#include "xtmotion.h"
+//#include "xtmotion.h"
 #include "XtVacuum.h"
 
 XtVacuum::XtVacuum(XtGeneralOutput *output_io, XtGeneralInput *input_io,XtGeneralOutput *oupout_break_io, QString name)
@@ -12,8 +13,8 @@ XtVacuum::XtVacuum(XtGeneralOutput *output_io, XtGeneralInput *input_io,XtGenera
 
 bool XtVacuum::Set(bool new_state, bool wait_done,int finish_delay, int timeout,int input_null_delay)
 {
-    if(!XtMotion::IsInit())
-        return false;
+//    if(!XtMotion::IsInit())
+//        return false;
     out_io->Set(new_state);
     if((0 != finish_delay)&&(nullptr != break_io)&&(!new_state))
         break_io->Set(true);
@@ -73,37 +74,4 @@ bool XtVacuum::IsVacuum()
         out_io->Set(false);
         return result;
     }
-}
-
-void XtVacuum::Jet(int wait_time,int close_time)
-{
-    double delay = close_time;
-    if(break_io == nullptr)
-        return;
-    QThread::msleep(wait_time);
-    break_io->Set(true);
-    static int using_xt_thread = -1;
-    if(using_xt_thread<0)
-        using_xt_thread = XtMotion::GetThreadResource();
-//    break_io->Set(1,using_xt_thread);
-    XT_Controler::TILLTIME(using_xt_thread,close_time);
-    break_io->Set(0,using_xt_thread);
-}
-
-void XtVacuum::UnJet()
-{
-    break_io->Set(0);
-}
-
-void XtVacuum::WaitUnJet()
-{
-    if(break_io == nullptr)
-        return;
-    int time = 0;
-    while(break_io->Value())
-    {
-            time++;
-         QThread::msleep(10);
-    }
-    qInfo("wait time:%d",10*time);
 }

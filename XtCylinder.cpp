@@ -1,5 +1,5 @@
 #include "XtCylinder.h"
-#include "xtmotion.h"
+//#include "xtmotion.h"
 
 #include <QThread>
 
@@ -13,8 +13,8 @@ XtCylinder::XtCylinder(XtGeneralOutput *output_io, XtGeneralInput *input_fold_io
 
 bool XtCylinder::Set(bool new_state, bool wait_done, int timeout,int input_null_delay)
 {
-    if(!XtMotion::IsInit())
-        return false;
+//    if(!XtMotion::IsInit())
+//        return false;
     out->Set(new_state);
     if(!wait_done)
         return true;

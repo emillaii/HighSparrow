@@ -31,6 +31,7 @@ private:
     VisionModule * visionModule;
 public:
     AAHeadParameters aaModuleParams;
+
 };
 
 #endif // AAHEADMODULE_H

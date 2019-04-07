@@ -65,6 +65,7 @@ public:
     void setPickarmLensHolderPRLighting(int val);
     void setPickarmCmosSensorPRLighting(int val);
     void setPickarmProductPRLighting(int value);
+
 signals:
     void ChangeBrightnessSignal(int ch, uint8_t brightness);
     void ChangeDoneSignal(bool result);

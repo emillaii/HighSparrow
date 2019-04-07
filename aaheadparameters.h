@@ -8,62 +8,89 @@
 class AAHeadParameters : public PropertyBase
 {
     Q_OBJECT
-    double m_pickLensPositionX;
-    double m_pickLensPositionY;
-
-    QString m_visionUplookPR;
-
 public:
-    explicit AAHeadParameters(QObject *parent = nullptr);
-    Q_PROPERTY(double pickLensPositionX READ pickLensPositionX WRITE setPickLensPositionX NOTIFY valueChanged);
-    Q_PROPERTY(double pickLensPositionY READ pickLensPositionY WRITE setPickLensPositionY NOTIFY valueChanged);
-    Q_PROPERTY(QString visionUplookPR READ visionUplookPR WRITE setVisionUplookPR NOTIFY prValueChanged);
+    explicit AAHeadParameters(){}
+    Q_PROPERTY(double PickLensPositionX READ PickLensPositionX WRITE setPickLensPositionX NOTIFY PickLensPositionXChanged)
+    Q_PROPERTY(double PickLensPositionY READ PickLensPositionY WRITE setPickLensPositionY NOTIFY PickLensPositionYChanged)
+    Q_PROPERTY(double PickLensPositionZ READ PickLensPositionZ WRITE setPickLensPositionZ NOTIFY PickLensPositionZChanged)
+    Q_PROPERTY(double OCPositionX READ OCPositionX WRITE setOCPositionX NOTIFY OCPositionXChanged)
+    Q_PROPERTY(double OCPositionY READ OCPositionX WRITE setOCPositionX NOTIFY OCPositionXChanged)
+    Q_PROPERTY(double OCPositionZ READ OCPositionX WRITE setOCPositionX NOTIFY OCPositionXChanged)
 
-private:
-    void saveJsonConfig();
-    void loadJsonConfig();
-double pickLensPositionX() const
-{
-    return m_pickLensPositionX;
-}
+    double PickLensPositionX() const
+    {
+        return m_PickLensPositionX;
+    }
+    double PickLensPositionY() const
+    {
+        return m_PickLensPositionY;
+    }
 
-double pickLensPositionY() const
-{
-    return m_pickLensPositionY;
-}
+    double PickLensPositionZ() const
+    {
+        return m_PickLensPositionZ;
+    }
 
-QString visionUplookPR() const
-{
-    return m_visionUplookPR;
-}
-
-signals:
-void valueChanged(double);
-void prValueChanged(QString visionUplookPR);
+    double OCPositionX() const
+    {
+        return m_OCPositionX;
+    }
 
 public slots:
+    void setPickLensPositionX(double PickLensPositionX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_PickLensPositionX, PickLensPositionX))
+            return;
 
-    void setPickLensPositionX(double pickLensPositionX)
-    {
-        qInfo("%f ", pickLensPositionX);
-        m_pickLensPositionX = pickLensPositionX;
-        emit valueChanged(m_pickLensPositionX);
-        this->saveJsonConfig();
+        m_PickLensPositionX = PickLensPositionX;
+        emit PickLensPositionXChanged(m_PickLensPositionX);
     }
-    void setPickLensPositionY(double pickLensPositionY)
+    void setPickLensPositionY(double PickLensPositionY)
     {
-        qInfo("%f ", pickLensPositionY);
-        m_pickLensPositionY = pickLensPositionY;
-        emit valueChanged(m_pickLensPositionY);
-        this->saveJsonConfig();
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_PickLensPositionY, PickLensPositionY))
+            return;
+
+        m_PickLensPositionY = PickLensPositionY;
+        emit PickLensPositionYChanged(m_PickLensPositionY);
     }
-    void setVisionUplookPR(QString visionUplookPR)
+
+    void setPickLensPositionZ(double PickLensPositionZ)
     {
-        qInfo("%f ", visionUplookPR.toStdString().c_str());
-        m_visionUplookPR = visionUplookPR;
-        emit prValueChanged(m_visionUplookPR);
-        this->saveJsonConfig();
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_PickLensPositionZ, PickLensPositionZ))
+            return;
+
+        m_PickLensPositionZ = PickLensPositionZ;
+        emit PickLensPositionZChanged(m_PickLensPositionZ);
     }
+
+    void setOCPositionX(double OCPositionX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_OCPositionX, OCPositionX))
+            return;
+
+        m_OCPositionX = OCPositionX;
+        emit OCPositionXChanged(m_OCPositionX);
+    }
+
+signals:
+    void PickLensPositionXChanged(double PickLensPositionX);
+    void PickLensPositionYChanged(double PickLensPositionY);
+
+    void PickLensPositionZChanged(double PickLensPositionZ);
+
+    void OCPositionXChanged(double OCPositionX);
+
+private:
+    double m_PickLensPositionX;
+    double m_PickLensPositionY;
+    double m_PickLensPositionZ;
+    double m_OCPositionX;
+    double m_OCPositionY;
+    double m_OCPositionZ;
 };
 
 #endif // AAHEADPARAMETERS_H

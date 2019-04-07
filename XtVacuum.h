@@ -15,11 +15,6 @@ public:
     bool Wait(bool target_state,int timeout = VACUUM_TIMEOUT,int finish_delay = VACUUM_FINISH_DELAY,int input_null_delay = VACUUM_INPUT_NULL_DELAY);
     bool IsVacuum();
 
-
-    void Jet(int wait_time,int close_time);
-    void UnJet();
-    void WaitUnJet();
-
 private:
     QString name;
     XtGeneralInput *in_io;

@@ -1,4 +1,3 @@
-//#include "xtmotion.h"
 #include "XtGeneralInput.h"
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"

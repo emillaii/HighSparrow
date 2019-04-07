@@ -15,17 +15,17 @@
 #include "XtVcMotor.h"
 
 
-struct VCM_Parameter_struct
-{
-    double MaxVel;
-    double MaxAcc;
-    double MaxJerk;
-    double MaxPos;
-    double MinPos;
-    int CanID;
-    int direction;
-    double scale;
-};
+//struct VCM_Parameter_struct
+//{
+//    double MaxVel;
+//    double MaxAcc;
+//    double MaxJerk;
+//    double MaxPos;
+//    double MinPos;
+//    int CanID;
+//    int direction;
+//    double scale;
+//};
 
 class BaseModuleManager : public PropertyBase
 {
@@ -112,7 +112,7 @@ private:
 
     VCM_Parameter_struct lut_vcm_parameters = {
         5000/*MaxVel*/,20000/*MaxAcc*/,200000/*MaxJerk*/,19/*MaxRange*/,0/*MinRange*/,10/*CanID*/,0/*dir*/,1024/*scale*/};
-    VCM_Parameter_struct sut1_vcm_parameters = {
+    VCM_Parameter_struct sut_vcm_parameters = {
         500/*MaxVel*/,10000/*MaxAcc*/,200000/*MaxJerk*/,33/*MaxRange*/,0/*MinRange*/,9/*CanID*/,0/*dir*/,5000/*scale*/};
 private:
     bool LoadProfile();
@@ -120,7 +120,7 @@ public:
     bool ReadParameters();
     bool SaveParameters();
     bool InitialDevice();
-    bool EnableMotors();
+    void EnableMotors();
     bool AllMotorsSeekOrigin();
     void StopSeeking();
 

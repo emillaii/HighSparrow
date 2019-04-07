@@ -1,11 +1,10 @@
-﻿#include "xtmotion.h"
-#include "XtVcMotor.h"
+﻿#include "XtVcMotor.h"
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
 #include "C_SoftLanding_dll.h"
 
 int XtVcMotor::vcm_count = 0;
-QVector<VCM_Resource_struct> XtVcMotor::all_parameter;
+//QVector<VCM_Resource_struct> XtVcMotor::all_parameter;
 
 XtVcMotor::XtVcMotor()
 {
@@ -28,7 +27,7 @@ void XtVcMotor::ConfigVCM()
     SetPosModeAcc(vcm_id,max_acc);
     SetPosModejerk(vcm_id,max_jerk);
     SetPosLimit(vcm_id,max_range,min_range);
-    SetSoftlandingSlot(vcm_id,XtMotion::GetCurveResource());
+    SetSoftlandingSlot(vcm_id,vcm_id);
     //XT_Controler::SET_AXIS_SCALE(default_using_thread,axis_id,parameters.scale*65536);
     is_init = true;
 }
@@ -40,7 +39,7 @@ void XtVcMotor::Init(const QString& motor_name,VCM_Parameter_struct parameters)
     max_vel = 100;
 
     this->parameters = parameters;
-    axis_id = XtMotion::GetAxisIdResource();
+//    axis_id = XtMotion::GetAxisIdResource();
     default_using_thread = axis_id + 20;
     max_vel = parameters.MaxVel;
     max_acc = parameters.MaxAcc;
@@ -52,16 +51,16 @@ void XtVcMotor::Init(const QString& motor_name,VCM_Parameter_struct parameters)
     vcm_resource.iAxis = axis_id;
     vcm_resource.IO_ID = origin.ID();
     vcm_resource.iThread = default_using_thread;
-    vcm_resource.iThread_Curve = XtMotion::GetThreadResource();
+//    vcm_resource.iThread_Curve = XtMotion::GetThreadResource();
     vcm_resource.Connet_Rebuild = 0;
-    all_parameter.append(vcm_resource);
+//    all_parameter.append(vcm_resource);
 
-    XtMotion::AllMotors.append(this);
+//    XtMotion::AllMotors.append(this);
 }
 
 void XtVcMotor::InitAllVCM()
 {
-    VCMT_resource_alloc(all_parameter.data(),all_parameter.length());
+//    VCMT_resource_alloc(all_parameter.data(),all_parameter.length());
     Soft_landing_dll_init(1);
 
     int timeout = 30000;
@@ -109,7 +108,7 @@ void XtVcMotor::Enable()
 {
     if(!is_init)
         return;
-    if(!XtMotion::IsInit())
+
         return;
     is_enable = true;
 }
@@ -126,7 +125,7 @@ double XtVcMotor::GetOutpuPos() const
 {
     if(!is_init)
         return 0;
-    if(XtMotion::IsInit())
+
     {
         double val;
         int res = XT_Controler_Extend::Get_Cur_Axis_Pos(axis_id,val);
@@ -143,7 +142,7 @@ double XtVcMotor::GetFeedbackPos() const
 {
     if(!is_init)
         return 0;
-    if(XtMotion::IsInit())
+
     {
         //return GetOutpuPos();
         double val;
@@ -216,7 +215,7 @@ void XtVcMotor::SetVel(double vel, int thread)
 {
     if(!is_init)
         return;
-    if(!XtMotion::IsInit())
+
         return;
     SetPosModeSpeed(vcm_id, vel);
 }
@@ -225,7 +224,7 @@ void XtVcMotor::SetAcc(double vel, int thread)
 {
     if(!is_init)
         return;
-    if(!XtMotion::IsInit())
+
         return;
     SetPosModeAcc(vcm_id, vel);
 }
@@ -234,7 +233,7 @@ void XtVcMotor::SetJerk(double jerk, int thread)
 {
     if(!is_init)
         return;
-    if(!XtMotion::IsInit())
+
         return;
     if(thread==-1)
         thread = default_using_thread;
@@ -261,7 +260,7 @@ void XtVcMotor::Home(int thread)
 //{
 //    if(!is_init)
 //        return;
-//    if(!XtMotion::IsInit())
+//
 //        return;
 //    if(!is_enable)
 //        return;
@@ -273,7 +272,7 @@ void XtVcMotor::Home(int thread)
 //{
 //    if(!is_init)
 //        return;
-//    if(!XtMotion::IsInit())
+//
 //        return;
 //    if(!is_enable)
 //        return;
@@ -286,7 +285,7 @@ void XtVcMotor::Home(int thread)
 //{
 //    if(!is_init)
 //        return;
-//    if(!XtMotion::IsInit())
+//
 //        return;
 //    if(thread==-1)
 //        thread = default_using_thread;
@@ -297,7 +296,7 @@ void XtVcMotor::Home(int thread)
 //{
 //    if(!is_init)
 //        return false;
-//    if(!XtMotion::IsInit())
+//
 //        return false;
 //    if(!is_enable)
 //        return false;
@@ -318,7 +317,7 @@ void XtVcMotor::Home(int thread)
 //{
 //    if(!is_init)
 //        return false;
-//    if(!XtMotion::IsInit())
+//
 //        return false;
 //    if(!is_enable)
 //        return false;
@@ -343,7 +342,7 @@ void XtVcMotor::SeekOrigin(int thread)
 {
     if(!is_init)
         return;
-    if(!XtMotion::IsInit())
+
         return;
     if(!is_enable)
         return;
@@ -365,7 +364,7 @@ bool XtVcMotor::WaitSeekDone(int thread,int timeout)
     //return true;
     if(!is_init)
         return false;
-    if(!XtMotion::IsInit())
+
         return false;
     if(!is_enable)
         return false;
@@ -388,7 +387,7 @@ bool XtVcMotor::SearchPosByForce(double slow_speed, double search_limit, double 
 {
     if(!is_init)
         return false;
-    if(!XtMotion::IsInit())
+
         return false;
     double start_pos = GetOutpuPos();
     qInfo("start_pos: %f,force:%f,search_limit:%f",start_pos,force,search_limit);
@@ -411,7 +410,7 @@ bool XtVcMotor::SearchPosByForce(double &result, double force, double  search_li
 {
     if(!is_init)
         return false;
-    if(!XtMotion::IsInit())
+
         return false;
     if(search_limit<0)search_limit = max_range;
     double start_pos = GetOutpuPos();
@@ -438,7 +437,7 @@ void XtVcMotor::ShowSetting()
 {
     if(!is_init)
         return;
-    if(!XtMotion::IsInit())
+
         return;
     ShowSettingDlg();
 }
@@ -447,7 +446,7 @@ void XtVcMotor::SetSoftLanding(double slow_speed, double slow_acc, double force,
 {
     if(!is_init)
         return;
-    if(!XtMotion::IsInit())
+
         return;
     SetFastSpeed(vcm_id,max_vel);
     SetFastAcc(vcm_id, max_acc);

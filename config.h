@@ -42,6 +42,20 @@
 #define DOWNLOOK_VISION_CAMERA          "DownlookCamera"
 #define UPLOOK_VISION_CAMERA            "UplookCamera"
 #define PICKARM_VISION_CAMERA           "PickarmCamera"
+
+#define CAMERA_AA1_DL                    "AA_DLCamera1"
+#define CAMERA_AA2_DL                    "AA_DLCamera2"
+#define CAMERA_LPA_DL                    "LPA_DLCamera"
+#define CAMERA_LUT_DL                    "LUT_ULCamera"
+#define CAMERA_SPA_DL                    "SPA_DLCamera"
+
+#define LIGHTING_LUT_UL                 0
+#define LIGHTING_AA1_DL                 2
+#define LIGHTING_LPA_DL                 3
+
+#define LIGHTING_SPA_DL                 0
+#define LIGHTING_AA2_DL                 1
+
 #define CURRENT_PR_RESULT               "CurrentPRResult"
 
 #define DOWNLOOK_VISION_CAMERA_WIDTH    659

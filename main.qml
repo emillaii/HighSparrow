@@ -15,7 +15,7 @@ ApplicationWindow {
 
     FileDialog {
         id: loadfileDialog
-        title: "选择加载文件"
+        title: qsTr("选择加载文件")
         selectExisting: true
         selectFolder: false
         selectMultiple: false

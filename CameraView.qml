@@ -33,7 +33,7 @@ Grid {
                 x: -12
                 y: -12
                 color: "#9ef678"
-                text: qsTr("Uplook Camera")
+                text: qsTr("LUT Uplook Camera")
                 wrapMode: Text.WordWrap
                 elide: Text.ElideLeft
                 fontSizeMode: Text.Fit
@@ -44,15 +44,15 @@ Grid {
 
             Slider {
                 id: slider
-                y: 249
+                y: 256
                 stepSize: 1
                 to: 255
                 from: 0
 
                 anchors.left: parent.left
-                anchors.leftMargin: 0
+                anchors.leftMargin: -3
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: -21
+                anchors.bottomMargin: -28
                 value: baseModuleManager.uplookLighting
                 onValueChanged: {
                     baseModuleManager.setUplookLighting(value)
@@ -98,14 +98,14 @@ Grid {
             cache: false
 
             Slider {
-                y: 249
+                y: 255
                 stepSize: 1
                 to: 255
                 from: 0
                 anchors.left: parent.left
                 anchors.leftMargin: 0
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: -21
+                anchors.bottomMargin: -27
                 value: baseModuleManager.downlookLighting
                 onValueChanged: {
                     baseModuleManager.setDownlookLighting(value)
@@ -135,7 +135,7 @@ Grid {
         Text {
             id: element1
             color: "#9ef678"
-            text: qsTr("Downlook Camera")
+            text: qsTr("AA Downlook Camera")
             fontSizeMode: Text.Fit
             lineHeight: 3.1
             anchors.fill: parent
@@ -153,6 +153,28 @@ Grid {
             anchors.fill: parent
             source: "icons/home.png"
             fillMode: Image.PreserveAspectFit
+
+            Slider {
+                id: slider1
+                y: 250
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: -22
+                anchors.left: parent.left
+                anchors.leftMargin: -5
+                value: 0.5
+
+                Label {
+                    y: 6
+                    color: "#46eb46"
+                    text: baseModuleManager.downlookLighting
+                    font.pointSize: 20
+                    font.family: "Times New Roman"
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 12
+                    anchors.left: parent.left
+                    anchors.leftMargin: 202
+                }
+            }
         }
     }
 
@@ -176,3 +198,8 @@ Grid {
 
 
 
+
+/*##^## Designer {
+    D{i:17;anchors_x:0}
+}
+ ##^##*/

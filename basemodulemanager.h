@@ -27,15 +27,13 @@ public:
     explicit BaseModuleManager(QObject *parent = nullptr);
     ~BaseModuleManager();
 
-    Q_PROPERTY(int downlookLighting READ downlookLighting WRITE setDownlookLighting NOTIFY lightingValueChanged);
-    Q_PROPERTY(int uplookLighting READ uplookLighting WRITE setUplookLighting NOTIFY lightingValueChanged);
-    Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged);
+    Q_PROPERTY(int downlookLighting READ downlookLighting WRITE setDownlookLighting NOTIFY lightingValueChanged)
+    Q_PROPERTY(int uplookLighting READ uplookLighting WRITE setUplookLighting NOTIFY lightingValueChanged)
+    Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged)
 //    QMap<QString,BaslerPylonCamera> cameras;
     QMap<QString,XtMotor*> motors;
     QMap<QString,XtGeneralInput*> input_ios;
     QMap<QString,XtGeneralOutput*> output_ios;
-
-
 
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
@@ -72,6 +70,7 @@ public slots:
             return;
 
         m_downlookLighting = downlookLighting;
+        lightingModule->SetBrightness(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
         emit lightingValueChanged(m_downlookLighting);
     }
     void setUplookLighting(int uplookLighting)
@@ -80,6 +79,7 @@ public slots:
             return;
 
         m_uplookLighting = uplookLighting;
+        lightingModule->SetBrightness(LIGHTING_LUT_UL, (uint8_t)uplookLighting);
         emit lightingValueChanged(m_uplookLighting);
     }
     void setLightPanelLighting(int lightPanelLighting)
@@ -88,6 +88,7 @@ public slots:
             return;
 
         m_lightPanelLighting = lightPanelLighting;
+
         emit lightPanelValueChanged(m_lightPanelLighting);
     }
 private:

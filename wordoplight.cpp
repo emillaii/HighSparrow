@@ -144,65 +144,64 @@ void WordopLight::readyReadSlot()
 
 void WordopLight::ChangeBrightness(int ch, uint8_t brightness)
 {
-    qInfo("%d ChangeBrightness",QThread::currentThreadId());
-        if(is_init!=true)
-            return;
-        uint8_t buf[8];
-        Pack *pack;
-        LongCommand *cmd;
-        pack = (Pack *)buf;
-        pack->head = 0x40;
-        pack->len = 5;
-        pack->dev_code = DEV_CODE;
-        pack->dev_id = device_id;
-        cmd = (LongCommand *)pack->data;
-        cmd->cmd = CMD_SET_BRT;
-        cmd->chn = ch;
-        cmd->data = brightness;
-        buf[7] = CalcChecksum(buf,7);
-        int time = 2;
-        do{
-            int res = port.write((const char*)buf,8);
-            if(-1 != res)
-            {
-                bool bres = port.waitForBytesWritten(300);
-                if(bres)
-                   {
-                    now_brightness[ch] = brightness;
+    if(is_init!=true)
+        return;
+    uint8_t buf[8];
+    Pack *pack;
+    LongCommand *cmd;
+    pack = (Pack *)buf;
+    pack->head = 0x40;
+    pack->len = 5;
+    pack->dev_code = DEV_CODE;
+    pack->dev_id = device_id;
+    cmd = (LongCommand *)pack->data;
+    cmd->cmd = CMD_SET_BRT;
+    cmd->chn = ch;
+    cmd->data = brightness;
+    buf[7] = CalcChecksum(buf,7);
+    int time = 2;
+    do{
+        int res = port.write((const char*)buf,8);
+        if(-1 != res)
+        {
+            bool bres = port.waitForBytesWritten(300);
+            if(bres)
+               {
+                now_brightness[ch] = brightness;
+                change_result = true;
+                return;
+                if(QThread::currentThreadId()==creator_tid)
+                {
                     change_result = true;
                     return;
-                    if(QThread::currentThreadId()==creator_tid)
-                    {
-                        change_result = true;
-                        return;
-                    }
-                    qInfo("ChangeDoneSignal");
-                    emit ChangeDoneSignal(true);
-                    return;
                 }
-                else {
-                    qInfo("waitForBytesWritten(); failed");
-                }
+                qInfo("ChangeDoneSignal");
+                emit ChangeDoneSignal(true);
+                return;
             }
             else {
-                qInfo("port.write(); failed");
+                qInfo("waitForBytesWritten(); failed");
             }
-            time--;
-            port.clearError();
-            port.clear();
         }
-        while(time>0);
-    //    port.flush();
+        else {
+            qInfo("port.write(); failed");
+        }
+        time--;
+        port.clearError();
+        port.clear();
+    }
+    while(time>0);
+//    port.flush();
+    change_result = false;
+    return;
+    if(QThread::currentThreadId()==creator_tid)
+    {
         change_result = false;
         return;
-        if(QThread::currentThreadId()==creator_tid)
-        {
-            change_result = false;
-            return;
-        }
-        qInfo("ChangeDoneSignal");
-        emit ChangeDoneSignal(false);
-        return;
+    }
+    qInfo("ChangeDoneSignal");
+    emit ChangeDoneSignal(false);
+    return;
 }
 
 void WordopLight::ChangeDone(bool result)

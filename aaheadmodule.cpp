@@ -10,6 +10,22 @@ AAHeadModule::AAHeadModule(XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,Xt
     this->motor_b = motor_b;
     this->motor_c = motor_c;
     this->v = v;
+    this->loadParams();
+    connect(&this->parameters, &AAHeadParameters::paramsChanged, this, &AAHeadModule::updateParams);
+}
+
+void AAHeadModule::loadParams()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("AA_HEAD_PARAMS", &parameters);
+    PropertyBase::loadJsonConfig(AA_HEAD_MODULE_JSON, temp_map);
+}
+
+void AAHeadModule::updateParams()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("AA_HEAD_PARAMS", &this->parameters);
+    PropertyBase::saveJsonConfig(AA_HEAD_MODULE_JSON,temp_map);
 }
 
 bool AAHeadModule::moveToPickLensPsotion()
@@ -56,3 +72,4 @@ bool AAHeadModule::moveToSync(double x, double y, double z, double a, double b, 
     result &= motor_c->WaitArrivedTargetPos(c);
     return result;
 }
+

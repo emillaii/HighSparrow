@@ -46,8 +46,6 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);
     engine.addImageProvider(QLatin1String("preview1"), highSprrow.baseModuleManager->visionModule);
 
-    engine.rootContext()->setContextProperty("motorModels", QVariant::fromValue(highSprrow.aaHeadModule));
-
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

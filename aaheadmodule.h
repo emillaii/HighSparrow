@@ -16,7 +16,7 @@ public:
     AAHeadModule(XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtVacuum * v);
 
 public slots:
-
+    void updateParams();
 
 private:
     XtMotor* motor_x = Q_NULLPTR;
@@ -27,6 +27,7 @@ private:
     XtMotor* motor_c = Q_NULLPTR;
     XtVacuum * v = Q_NULLPTR;
     VisionModule * visionModule;
+    void loadParams();
 public:
     AAHeadParameters parameters;
 public:

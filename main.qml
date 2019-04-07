@@ -47,6 +47,10 @@ ApplicationWindow {
         }
     }
 
+    MotionDialog {
+        id: motionDialog
+    }
+
     FileContentItem {
         id: file
         onError: console.log(msg)
@@ -136,6 +140,22 @@ ApplicationWindow {
                         saveFileDialog.open()
                     })
                 })
+            }
+        }
+
+        ToolButton {
+            text: qsTr("Motion Dialog")
+            anchors.left: parent.left
+            anchors.leftMargin: 90*4
+            transformOrigin: Item.Center
+            display: Button.TextUnderIcon
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            icon.width: 50
+            icon.height: 50
+            icon.source: "icons/machine.png"
+            onClicked: {
+                motionDialog.open()
             }
         }
 

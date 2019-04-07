@@ -231,3 +231,8 @@ XtGeneralInput *BaseModuleManager::GetInputIoByName(QString name)
         return input_ios[name];
     return nullptr;
 }
+
+XtVacuum *BaseModuleManager::GetVacuumByName(QString name)
+{
+    return nullptr;
+}

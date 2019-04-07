@@ -7,5 +7,6 @@
         <file>icons/flowchart.png</file>
         <file>icons/save.png</file>
         <file>icons/select.png</file>
+        <file>icons/machine.png</file>
     </qresource>
 </RCC>

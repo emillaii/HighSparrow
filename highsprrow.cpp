@@ -5,9 +5,9 @@
 HighSprrow::HighSprrow()
 {
     if (!QDir(CONFIG_DIR).exists()) {QDir().mkdir(CONFIG_DIR);}
-//    aaHeadModule = new AAHeadModule();
     baseModuleManager = new BaseModuleManager();
     logicManager = new LogicManager();
+    aaHeadModule = new AAHeadModule(Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,Q_NULLPTR);
 }
 
 HighSprrow::~HighSprrow()

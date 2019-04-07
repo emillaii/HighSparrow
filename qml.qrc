@@ -10,5 +10,8 @@
         <file>MachineSettingModel.qml</file>
         <file>MachineSettingDelegate.qml</file>
         <file>Page3Form.ui.qml</file>
+        <file>OCPositionView.qml</file>
+        <file>PickLensPositionView.qml</file>
+        <file>MotionDialog.qml</file>
     </qresource>
 </RCC>

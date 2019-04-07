@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTime>
 #include <QString>
+#include <qvector.h>
 #include "xtmotor.h"
 #include "VCM_init_Struct.h"
 

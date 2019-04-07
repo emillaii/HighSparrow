@@ -121,4 +121,4 @@ public:
 
 };
 
-#endif // BASEMODULEMANAGER_H
+#endif // dBASEMODULEMANAGER_H

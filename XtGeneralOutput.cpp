@@ -52,8 +52,6 @@ void XtGeneralOutput::Set(bool value, int thread)
 {
     if(output_id<0)
         return;
-//    if(!XtMotion::IsInit())
-//        return;
     if(thread<0)
     {
         XT_Controler_Extend::DigitOut_PreciousTrig_SetCurIoOutput(output_id,value?1:0);
@@ -68,8 +66,6 @@ void XtGeneralOutput::SetOnTllTimeSpan(int time_span, int thread)
 {
     if(output_id<0)
         return;
-//    if(!XtMotion::IsInit())
-//        return;
     XT_Controler_Extend::DIGITOUT_PRECIOUTTRIG_SET_OUTPUT_IO(thread,output_id,0,1);
     XT_Controler::TILLTIME(thread,time_span);
     XT_Controler_Extend::DIGITOUT_PRECIOUTTRIG_SET_OUTPUT_IO(thread,output_id,0,1);
@@ -79,8 +75,6 @@ bool XtGeneralOutput::Value()
 {
     if(output_id<0)
         return false;
-//    if(!XtMotion::IsInit())
-//        return false;
     int state;
     int res = XT_Controler_Extend::Get_IoOut_State(output_id, state);
     if(res!=1)

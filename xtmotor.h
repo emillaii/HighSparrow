@@ -98,6 +98,10 @@ public:
 protected:
     bool is_init;
 
+    static int curve_resource;
+    static int thread_resource;
+    static int axis_id_resource;
+
     QString name;
     int axis_id;
     int axis_sub_id;

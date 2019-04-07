@@ -13,8 +13,6 @@ XtVacuum::XtVacuum(XtGeneralOutput *output_io, XtGeneralInput *input_io,XtGenera
 
 bool XtVacuum::Set(bool new_state, bool wait_done,int finish_delay, int timeout,int input_null_delay)
 {
-//    if(!XtMotion::IsInit())
-//        return false;
     out_io->Set(new_state);
     if((0 != finish_delay)&&(nullptr != break_io)&&(!new_state))
         break_io->Set(true);

@@ -7,29 +7,15 @@
 #include "config.h"
 
 using namespace XT_Controler_Extend;
-
+int XtMotor::curve_resource = 0;
+int XtMotor::thread_resource = 0;
+int XtMotor::axis_id_resource = 0;
 XtMotor::XtMotor()
 {
     axis_id = -1;
     name = "";
     is_init = false;
 }
-
-//void XtMotor::Move2AxisToPos(XtMotor *axis1, double pos1, XtMotor *axis2, double pos2, int thread)
-//{
-//
-//        return;
-//    if(!axis1->is_enable || !axis2->is_enable)
-//        return;
-//    axis1->CheckLimit(pos1);
-//    axis2->CheckLimit(pos2);
-//    if(thread<0)
-//        thread = axis1->default_using_thread;
-//    XT_Controler::SGO(thread, axis1->AxisId(), pos1);
-//    XT_Controler::SGO(thread, axis2->AxisId(), pos2);
-//    XT_Controler::TILLSTOP(thread,axis1->AxisId());
-//    XT_Controler::TILLSTOP(thread,axis2->AxisId());
-//}
 
 void XtMotor::WaitSync(int thread)
 {
@@ -117,7 +103,6 @@ void XtMotor::Init(const QString& moter_name)
     min_range = Profile_Get_Axis_MinPos(axis_id);
     is_enable = false;
     is_init = true;
-//    XtMotion::AllMotors.append(this);
 
 }
 
@@ -156,8 +141,6 @@ void XtMotor::Enable()
 {
     if(!is_init)
         return;
-//
-        return;
     XT_Controler::SetCurIoOutput(out_en_id,1);
     if(GetFeedbackPos()!=GetOutpuPos())
         ChangeCurPos(GetFeedbackPos());
@@ -181,13 +164,10 @@ double XtMotor::GetOutpuPos() const
 {
     if(!is_init)
         return 0;
-//    if(XtMotion::IsInit())
-    {
-        double val;
-        int res = XT_Controler_Extend::Get_Cur_Axis_Pos(axis_id,val);
-        if(res!=0)
-            return val;
-    }
+    double val;
+    int res = XT_Controler_Extend::Get_Cur_Axis_Pos(axis_id,val);
+    if(res!=0)
+        return val;
     return 0;
 }
 
@@ -207,13 +187,10 @@ double XtMotor::GetCurVel() const
 {
     if(!is_init)
         return 0;
-//    if(XtMotion::IsInit())
-    {
-        double val;
-        int res = XT_Controler_Extend::Get_Cur_Axis_Vel(axis_id,val);
-        if(res!=0)
-            return val;
-    }
+    double val;
+    int res = XT_Controler_Extend::Get_Cur_Axis_Vel(axis_id,val);
+    if(res!=0)
+        return val;
     return 0;
 }
 
@@ -221,13 +198,10 @@ double XtMotor::GetCurAcc() const
 {
     if(!is_init)
         return 0;
-//    if(XtMotion::IsInit())
-    {
-        double val;
-        int res = XT_Controler_Extend::Get_Cur_Axis_Acc(axis_id,val);
-        if(res!=0)
-            return val;
-    }
+    double val;
+    int res = XT_Controler_Extend::Get_Cur_Axis_Acc(axis_id,val);
+    if(res!=0)
+        return val;
     return 0;
 }
 
@@ -281,8 +255,6 @@ void XtMotor::SetVel(double vel, int thread)
 {
     if(!is_init)
         return;
-//
-        return;
     if(thread==-1)
         thread = default_using_thread;
     XT_Controler::SET_MAX_VEL(thread,axis_id,vel);
@@ -292,8 +264,6 @@ void XtMotor::SetAcc(double vel, int thread)
 {
     if(!is_init)
         return;
-//
-        return;
     if(thread==-1)
         thread = default_using_thread;
     XT_Controler::SET_MAX_ACC(thread,axis_id,vel);
@@ -302,8 +272,6 @@ void XtMotor::SetAcc(double vel, int thread)
 void XtMotor::SetJerk(double jerk, int thread)
 {
     if(!is_init)
-        return;
-//
         return;
     if(thread==-1)
         thread = default_using_thread;
@@ -343,8 +311,6 @@ void XtMotor::MoveToPos(double pos,int thread)
 {
     if(!is_init)
         return;
-//
-        return;
     if(!is_enable)
         return;
     CheckLimit(pos);
@@ -357,8 +323,6 @@ void XtMotor::MoveToPos(double pos,int thread)
 void XtMotor::SlowMoveToPos(double pos, double vel_ratio, int thread)
 {
     if(!is_init)
-        return;
-
         return;
     if(!is_enable)
         return;
@@ -377,8 +341,6 @@ void XtMotor::SGO(double pos,int thread)
 {
     if(!is_init)
         return;
-
-        return;
     if(!is_enable)
         return;
     CheckLimit(pos);
@@ -390,8 +352,6 @@ void XtMotor::TILLSTOP(int thread)
 {
     if(!is_init)
         return;
-
-        return;
     if(thread==-1)
         thread = default_using_thread;
     XT_Controler::TILLSTOP(thread, axis_id);
@@ -401,8 +361,6 @@ void XtMotor::TILLTIME(int ms, int thread)
 {
     if(!is_init)
         return;
-
-        return;
     if(thread==-1)
         thread = default_using_thread;
     XT_Controler::TILLTIME(thread, ms);
@@ -411,8 +369,6 @@ void XtMotor::TILLTIME(int ms, int thread)
 bool XtMotor::WaitMoveStop(int timeout)
 {
     if(!is_init)
-        return false;
-
         return false;
     if(!is_enable)
         return false;
@@ -439,8 +395,6 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
 
     if(!is_init)
         return false;
-
-        return false;
     if(!is_enable)
         return false;
     if(fabs(GetFeedbackPos() - target_position) < POS_ERROR)return true;
@@ -462,8 +416,6 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
 bool XtMotor::MoveToPosSync(double pos, int thread)
 {
     if(!is_init)
-        return false;
-
         return false;
     if(!is_enable)
         return false;
@@ -488,8 +440,6 @@ bool XtMotor::SlowMoveToPosSync(double pos, double vel_ratio, int thread)
 {
     if(!is_init)
         return false;
-
-        return false;
     if(!is_enable)
         return false;
     double currPos = GetFeedbackPos();
@@ -513,8 +463,6 @@ void XtMotor::StepMove(double step, int thread)
 {
     if(!is_init)
         return;
-
-        return;
     if(!is_enable)
         return;
     if(thread==-1)
@@ -528,8 +476,6 @@ void XtMotor::StepMove(double step, int thread)
 bool XtMotor::StepMoveSync(double step, int thread)
 {
     if(!is_init)
-        return false;
-
         return false;
     if(!is_enable)
         return false;
@@ -562,8 +508,6 @@ void XtMotor::SeekOrigin(int thread)
 {
     if(!is_init)
         return;
-
-        return;
     if(!is_enable)
         return;
     if(thread==-1)
@@ -575,8 +519,6 @@ void XtMotor::SeekOrigin(int thread)
 void XtMotor::StopSeeking(int thread)
 {
     if(!is_init)
-        return;
-
         return;
     if(!is_enable)
         return;
@@ -591,8 +533,6 @@ void XtMotor::StopSeeking(int thread)
 bool XtMotor::WaitSeekDone(int thread,int timeout)
 {
     if(!is_init)
-        return false;
-
         return false;
     if(!is_enable)
         return false;
@@ -620,8 +560,6 @@ bool XtMotor::WaitStop(int timeout)
 {
     if(!is_init)
         return true;
-
-        return true;
     if(!is_enable)
         return true;
     int be_run = 1;
@@ -642,8 +580,6 @@ bool XtMotor::WaitStop(int timeout)
 bool XtMotor::SearchPosByADC(double vel, double search_limit, double threshold, bool search_above, double &result)
 {
     if(!is_init)
-        return false;
-
         return false;
     if(!is_enable)
         return false;
@@ -705,8 +641,6 @@ bool XtMotor::SearchPosByADC(double vel, double search_limit, double threshold, 
 bool XtMotor::SearchPosByIO(double vel, double search_limit, bool search_rise, int io_id, double &result)
 {
     if(!is_init)
-        return false;
-
         return false;
     if(!is_enable)
         return false;

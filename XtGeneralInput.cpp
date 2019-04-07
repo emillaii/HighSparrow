@@ -55,8 +55,6 @@ bool XtGeneralInput::Value()
 {
     if(input_id<0)
         return false;
-//    if(!XtMotion::IsInit())
-//        return false;
     int state;
     int res = XT_Controler_Extend::Get_IoIn_State(input_id, state);
     if(res!=1)
@@ -68,9 +66,7 @@ bool XtGeneralInput::Wait(bool value, int timeout)
 {
     if(input_id<0)
         return false;
-//    if(!XtMotion::IsInit())
-//        return false;
-//    if(input_id == -1)
+    if(input_id == -1)
         return false;
     while( timeout > 0 )
     {

@@ -7,10 +7,10 @@
 
 class MaterialCarrierParameter:public PropertyBase
 {
+    Q_OBJECT
 public:
     MaterialCarrierParameter():PropertyBase (){}
-
-//    Q_PROPERTY(QString DisplayName READ DisplayName WRITE setDisplayName NOTIFY DisplayNameChanged)
+    Q_PROPERTY(QString Name READ Name WRITE setName NOTIFY NameChanged)
     Q_PROPERTY(double SafetyZ READ SafetyZ WRITE setSafetyZ NOTIFY SafetyZChanged)
     Q_PROPERTY(double SafetyX READ SafetyX WRITE setSafetyX NOTIFY SafetyXChanged)
     Q_PROPERTY(double VisionX READ VisionX WRITE setVisionX NOTIFY VisionXChanged)
@@ -52,6 +52,11 @@ public:
     double CameraOffsetY() const
     {
         return m_CameraOffsetY;
+    }
+
+    QString Name() const
+    {
+        return m_Name;
     }
 
 public slots:
@@ -126,6 +131,15 @@ public slots:
         emit CameraOffsetYChanged(m_CameraOffsetY);
     }
 
+    void setName(QString Name)
+    {
+        if (m_Name == Name)
+            return;
+
+        m_Name = Name;
+        emit NameChanged(m_Name);
+    }
+
 signals:
     void SafetyZChanged(double SafetyZ);
 
@@ -141,6 +155,8 @@ signals:
 
     void CameraOffsetYChanged(double CameraOffsetY);
 
+    void NameChanged(QString Name);
+
 private:
     double m_SafetyZ = 0;
     double m_SafetyX = 0;
@@ -149,6 +165,7 @@ private:
     double m_VisionZ = 0;
     double m_CameraOffsetX = 0;
     double m_CameraOffsetY = 0;
+    QString m_Name = "";
 };
 
 #endif // MATERIAL_CARRIER_PARAMETER_H

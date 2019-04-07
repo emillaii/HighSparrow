@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("visionModule", highSprrow.baseModuleManager->visionModule);
     engine.rootContext()->setContextProperty("uplookCamera", highSprrow.baseModuleManager->pylonUplookCamera);
     engine.rootContext()->setContextProperty("downlookCamera", highSprrow.baseModuleManager->pylonDownlookCamera);
-    engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.aaHeadModule->aaModuleParams);
+    engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.aaHeadModule->parameters);
     engine.rootContext()->setContextProperty("baseModuleManager", highSprrow.baseModuleManager);
     engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);
     engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.logicManager->aaCore->aaData_1);

@@ -142,6 +142,7 @@ bool BaseModuleManager::initialDevice()
     foreach (XtMotor *m, motors.values()) {
         m->GetMasterAxisID();
     }
+    EnableMotors();
     return true;
 }
 

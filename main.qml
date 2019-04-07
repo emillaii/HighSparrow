@@ -144,7 +144,7 @@ ApplicationWindow {
         }
 
         ToolButton {
-            text: qsTr("Motion Dialog")
+            text: qsTr("Dialog")
             anchors.left: parent.left
             anchors.leftMargin: 90*4
             transformOrigin: Item.Center

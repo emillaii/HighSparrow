@@ -27,7 +27,7 @@ public slots:
 class XtMotor
 {
 public:
-static void Move2AxisToPos(XtMotor* axis1,  double pos1, XtMotor *axis2, double pos2, int thread = -1);
+//static void Move2AxisToPos(XtMotor* axis1,  double pos1, XtMotor *axis2, double pos2, int thread = -1);
 static void WaitSync(int thread);
 
 public:
@@ -70,6 +70,7 @@ public:
     virtual void MoveToPos(double pos,int thread = -1);
     virtual void SlowMoveToPos(double pos,double vel_ratio = 0.2, int thread = -1);
     virtual bool WaitMoveStop(int timeout=30000);
+    bool WaitArrivedTargetPos(double target_position,int timeout=30000);
     virtual bool MoveToPosSync(double pos,int thread = -1);
     virtual bool SlowMoveToPosSync(double pos,double vel_ratio =0.2,int thread = -1);
     virtual void StepMove(double step,int thread = -1);
@@ -78,7 +79,7 @@ public:
 
     //void SeekOrigin(int originDirection, double originRange, double originOffset);
     virtual void SeekOrigin(int thread = -1);
-
+    void StopSeeking(int thread = -1);
     virtual bool WaitSeekDone(int thread = -1, int timeout = 20000);
     virtual bool WaitStop(int timeout = 10000);
 

@@ -9,6 +9,7 @@ class XtGeneralOutput
 {
 public:
     XtGeneralOutput();
+    XtGeneralOutput(QString name,int id);
     void Init(const QString& output_name);
     void Init(int id_in_profile);
 

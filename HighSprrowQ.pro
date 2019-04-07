@@ -37,7 +37,13 @@ SOURCES += \
     logicmanager.cpp \
     filecontent.cpp \
     basemodulemanager.cpp \
-    LontryLight.cpp
+    LontryLight.cpp \
+    XtCylinder.cpp \
+    xtmotor.cpp \
+    XtVcMotor.cpp \
+    material_carrier.cpp \
+    XtVacuum.cpp \
+    structure_composition.cpp
 
 RESOURCES += qml.qrc \
     icons.qrc
@@ -105,7 +111,13 @@ HEADERS += \
     logicmanager.h \
     filecontent.h \
     basemodulemanager.h \
-    LontryLight.h
+    LontryLight.h \
+    XtCylinder.h \
+    xtmotor.h \
+    XtVcMotor.h \
+    material_carrier.h \
+    XtVacuum.h \
+    structure_composition.h
 
 DISTFILES += \
     icons/index.theme

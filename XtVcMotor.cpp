@@ -352,7 +352,10 @@ void XtVcMotor::SeekOrigin(int thread)
     if(result == 1)
         origin_result = true;
     else
+    {
         origin_result = false;
+        qInfo("axis %s seek origin fail！",name.toStdString().c_str());
+    }
 }
 
 
@@ -402,6 +405,28 @@ bool XtVcMotor::SearchPosByForce(double slow_speed, double search_limit, double 
     result = GetFeedbackPos();
 
     return true;
+}
+
+bool XtVcMotor::SearchPosByForce(double &result, double force, double  search_limit)
+{
+    if(!is_init)
+        return false;
+    if(!XtMotion::IsInit())
+        return false;
+    if(search_limit<0)search_limit = max_range;
+    double start_pos = GetOutpuPos();
+    qInfo("start_pos: %f,force:%f,search_limit:%f",start_pos,force,search_limit);
+    SetSoftLanding(max_vel,max_acc, force, start_pos, search_limit, 1);
+    bool res;
+    res = DoSoftLanding();
+    res &= WaitSoftLandingDone();
+    if(!res)
+    {
+        result = start_pos;
+        return false;
+    }
+    result = GetFeedbackPos();
+    return  true;
 }
 
 void XtVcMotor::RestoreForce()

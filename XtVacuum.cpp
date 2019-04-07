@@ -15,8 +15,8 @@ bool XtVacuum::Set(bool new_state, bool wait_done,int finish_delay, int timeout,
     if(!XtMotion::IsInit())
         return false;
     out_io->Set(new_state);
-//    if(nullptr != break_io&&(!new_state))
-//        break_io->Set(true);
+    if((0 != finish_delay)&&(nullptr != break_io)&&(!new_state))
+        break_io->Set(true);
     if(!wait_done)
         return true;
     return Wait(new_state,timeout,finish_delay,input_null_delay);
@@ -36,14 +36,18 @@ bool XtVacuum::Wait(bool target_state, int timeout,int finish_delay,int input_nu
         {
             if(nullptr == in_io)
                 QThread::msleep(input_null_delay);
-//            if(finish_delay>0)
-//                QThread::msleep(finish_delay);
+            else if(finish_delay>0)
+                QThread::msleep(finish_delay);
+            if((0 != finish_delay)&&(nullptr != break_io)&&(!target_state))
+                break_io->Set(false);
             return true;
         }
         count-=10;
         QThread::msleep(10);
     }
     return false;
+    if((0 != finish_delay)&&(nullptr != break_io)&&(!target_state))
+        break_io->Set(false);
 }
 
 bool XtVacuum::IsVacuum()
@@ -55,7 +59,7 @@ bool XtVacuum::IsVacuum()
     else
     {
         out_io->Set(true);
-        int time = 1000;
+        int time = 200;
         bool result = in_io->Value();
         while(time > 0)
         {

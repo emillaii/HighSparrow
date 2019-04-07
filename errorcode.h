@@ -16,4 +16,27 @@ struct ErrorCodeStruct
     QString errorMessage;
 };
 
+#include <qstring.h>
+
+#define DEVICES_MANAGER_NAME "DevicesMannager"
+
+typedef enum {
+    Warning,
+    Error
+} ErrorLevel;
+
+
+class ErrorBase
+{
+public:
+    ErrorBase(QString name = "Unnaming");
+private:
+    ErrorLevel error_level;
+    QString error_source;
+    QString error_content;
+public:
+    void AppendError(QString error);
+    void AppendLineError(QString error = "");
+    QString GetCurrentError();
+};
 #endif // ERRORCODE_H

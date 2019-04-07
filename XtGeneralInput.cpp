@@ -9,6 +9,12 @@ XtGeneralInput::XtGeneralInput(void)
     input_id = -1;
 }
 
+XtGeneralInput::XtGeneralInput(QString name, int id)
+{
+    this->name = name;
+    this->input_id = id;
+}
+
 XtGeneralInput::operator bool()
 {
     return Value();

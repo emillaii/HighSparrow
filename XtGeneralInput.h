@@ -9,6 +9,7 @@ class XtGeneralInput
 {
 public:
     XtGeneralInput();
+    XtGeneralInput(QString name, int id);
     operator bool();
 
     void Init(const QString& input_name);

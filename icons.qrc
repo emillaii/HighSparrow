@@ -2,8 +2,6 @@
     <qresource prefix="/">
         <file>icons/initial.png</file>
         <file>icons/index.theme</file>
-        <file>icons/automotive/44x44/settings.png</file>
-        <file>icons/automotive/44x44@2/settings.png</file>
         <file>icons/home.png</file>
         <file>icons/sparrow.png</file>
         <file>icons/flowchart.png</file>

@@ -16,21 +16,21 @@ XtMotor::XtMotor()
     is_init = false;
 }
 
-void XtMotor::Move2AxisToPos(XtMotor *axis1, double pos1, XtMotor *axis2, double pos2, int thread)
-{
-    if(!XtMotion::IsInit())
-        return;
-    if(!axis1->is_enable || !axis2->is_enable)
-        return;
-    axis1->CheckLimit(pos1);
-    axis2->CheckLimit(pos2);
-    if(thread<0)
-        thread = axis1->default_using_thread;
-    XT_Controler::SGO(thread, axis1->AxisId(), pos1);
-    XT_Controler::SGO(thread, axis2->AxisId(), pos2);
-    XT_Controler::TILLSTOP(thread,axis1->AxisId());
-    XT_Controler::TILLSTOP(thread,axis2->AxisId());
-}
+//void XtMotor::Move2AxisToPos(XtMotor *axis1, double pos1, XtMotor *axis2, double pos2, int thread)
+//{
+//    if(!XtMotion::IsInit())
+//        return;
+//    if(!axis1->is_enable || !axis2->is_enable)
+//        return;
+//    axis1->CheckLimit(pos1);
+//    axis2->CheckLimit(pos2);
+//    if(thread<0)
+//        thread = axis1->default_using_thread;
+//    XT_Controler::SGO(thread, axis1->AxisId(), pos1);
+//    XT_Controler::SGO(thread, axis2->AxisId(), pos2);
+//    XT_Controler::TILLSTOP(thread,axis1->AxisId());
+//    XT_Controler::TILLSTOP(thread,axis2->AxisId());
+//}
 
 void XtMotor::WaitSync(int thread)
 {
@@ -49,7 +49,7 @@ void XtMotor::SetAxisDelay()
             p.read(json);
             double delay_in_sec = p.Delay()/1000;
 
-            //Set_Axis_Delay(axis_sub_id,delay_in_sec);
+            Set_Axis_Delay(axis_sub_id,delay_in_sec);
             qInfo("%s set delay to %f second",name.toStdString().c_str(), delay_in_sec);
         }
     }
@@ -121,6 +121,7 @@ void XtMotor::Init(const QString& moter_name)
     XtMotion::AllMotors.append(this);
 
 }
+
 
 void XtMotor::SetADC(int can_id, int data_ch)
 {
@@ -434,6 +435,24 @@ bool XtMotor::WaitMoveStop(int timeout)
     return false;
 }
 
+bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
+{
+
+    if(!is_init)
+        return false;
+    if(!XtMotion::IsInit())
+        return false;
+    if(!is_enable)
+        return false;
+    while (timeout>0) {
+
+        if(fabs(GetFeedbackPos() - target_position) < POS_ERROR)return true;
+        Sleep(10);
+        timeout--;
+    }
+    return false;
+}
+
 
 bool XtMotor::MoveToPosSync(double pos, int thread)
 {
@@ -548,6 +567,20 @@ void XtMotor::SeekOrigin(int thread)
     XT_Controler_Extend::PROFILE_AXIS_SEEK_ORIGIN(thread,axis_sub_id);
 }
 
+void XtMotor::StopSeeking(int thread)
+{
+    if(!is_init)
+        return;
+    if(!XtMotion::IsInit())
+        return;
+    if(!is_enable)
+        return;
+    if(thread==-1)
+        thread = default_using_thread;
+    XT_Controler::ClearInsBuffer(thread);
+    XT_Controler::STOP_S(thread, axis_id);
+}
+
 
 
 bool XtMotor::WaitSeekDone(int thread,int timeout)
@@ -574,6 +607,7 @@ bool XtMotor::WaitSeekDone(int thread,int timeout)
     }
     XT_Controler::ClearInsBuffer(thread);
     XT_Controler::STOP_S(thread, axis_id);
+    qInfo("axis %s seek origin fail！",name.toStdString().c_str());
     return false;
 }
 

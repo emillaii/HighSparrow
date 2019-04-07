@@ -10,6 +10,12 @@ XtGeneralOutput::XtGeneralOutput()
     name = "";
 }
 
+XtGeneralOutput::XtGeneralOutput(QString name, int id)
+{
+    this->name = name;
+    this->output_id = id;
+}
+
 void XtGeneralOutput::Init(const QString &output_name)
 {
     if(output_id>-1)

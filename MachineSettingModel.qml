@@ -5,9 +5,11 @@ ListModel {
     id: machineSettingModel
     ListElement {
         label: "AA 头机器配置"
+        index: 1
     }
     ListElement {
         label: "SUT 配置"
+        index: 2
     }
 }
 

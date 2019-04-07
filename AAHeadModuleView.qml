@@ -229,7 +229,6 @@ ColumnLayout {
             }
         }
     }
-
     GroupBox{
         title: qsTr("Uplook PR Config")
         ColumnLayout {

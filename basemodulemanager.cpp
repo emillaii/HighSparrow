@@ -89,7 +89,7 @@ bool BaseModuleManager::LoadProfile()
     return false;
 }
 
-bool BaseModuleManager::InitialDevice()
+bool BaseModuleManager::initialDevice()
 {
     if(is_init)
         return true;
@@ -147,10 +147,11 @@ bool BaseModuleManager::InitialDevice()
 
 void BaseModuleManager::EnableMotors()
 {
-    if(is_init)
+    if(is_init) {
         foreach (XtMotor *m, motors.values()) {
             m->Enable();
         }
+    }
 }
 
 bool BaseModuleManager::AllMotorsSeekOrigin()

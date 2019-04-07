@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QApplication>
 #include <QQmlContext>
 #include <highsprrow.h>
 #include <QIcon>
@@ -7,8 +8,10 @@
 #include "filecontent.h"
 #include <QtWebEngine/QtWebEngine>
 
+#include "aadata.h"
 int main(int argc, char *argv[])
 {
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
@@ -17,17 +20,17 @@ int main(int argc, char *argv[])
     qRegisterMetaType<std::vector<std::vector<Sfr_entry>>>("vector<vector<Sfr_entry>>");
     qRegisterMetaType<sfr::EdgeFilter>("sfr::EdgeFilter");
     qmlRegisterType<FileContent>("FileContentItem", 1, 0, "FileContentItem");
-    QGuiApplication app(argc, argv);
-    QGuiApplication::setApplicationName("High Sparrow");
+    QApplication app(argc, argv);
+    QApplication::setApplicationName("High Sparrow");
     //qInstallMessageHandler(sparrowLogOutput);
     qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{type}] %{file}:%{line}(%{function}):%{message}");
-    QIcon::setThemeName("automotive");
     app.setWindowIcon(QIcon(ICON_SPARROW));
 
     HighSprrow highSprrow;
 
     QtWebEngine::initialize();
     QQmlApplicationEngine engine;
+
 
     //Object Property Definition
     engine.rootContext()->setContextProperty("highSprrow", &highSprrow);
@@ -37,7 +40,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.aaHeadModule->aaModuleParams);
     engine.rootContext()->setContextProperty("baseModuleManager", highSprrow.baseModuleManager);
     engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);
-
+    engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.logicManager->aaCore->aaData_1);
     //QImage Provider
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);
     engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);

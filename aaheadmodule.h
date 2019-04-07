@@ -13,9 +13,7 @@ class AAHeadModule : public QObject
 {
     Q_OBJECT
 public:
-    AAHeadModule(XtMotor* x,XtMotor* y,XtMotor* z,XtMotor* a,XtMotor* b,XtMotor* c,XtVacuum * v);
-
-
+    AAHeadModule();
 
 public slots:
 

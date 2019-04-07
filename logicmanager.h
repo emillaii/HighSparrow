@@ -10,9 +10,9 @@ class LogicManager : public QThread
 public:
     explicit LogicManager(QObject *parent = nullptr);
     Q_INVOKABLE void loadFlowchart(QString);
+    AACore * aaCore = Q_NULLPTR;
 private:
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
-    AACore * aaCore = Q_NULLPTR;
 
 protected:
     void run();

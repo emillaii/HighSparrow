@@ -11,6 +11,8 @@
 #include <QObject>
 #include <QJsonDocument>
 #include <errorcode.h>
+#include <QMap>
+#include "aadata.h"
 class AACore : public QThread
 {
     Q_OBJECT
@@ -26,6 +28,7 @@ public:
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
     bool runFlowchartTest();
+    AAData aaData_1;
 
 private:
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;

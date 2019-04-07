@@ -12,6 +12,7 @@
 #include <QJsonObject>
 #include "aa_util.h"
 #include "visionavadaptor.h"
+
 AACore::AACore(QObject *parent) : QThread(parent)
 {
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
@@ -350,6 +351,18 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
 //                          ccIndex, ulIndex, urIndex, llIndex, lrIndex,
 //                          ur_peak_z, ul_peak_z, lr_peak_z, ll_peak_z, cc_peak_z);
 //    }
+    aaData_1.clear();
+    for (unsigned int i = 0; i < clustered_sfr.size(); i++)
+    {
+        for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
+            if (i == ccIndex) this->aaData_1.addData(0, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+            else if (i == ulIndex) this->aaData_1.addData(1, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+            else if (i == urIndex) this->aaData_1.addData(2, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+            else if (i == llIndex) this->aaData_1.addData(3, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+            else if (i == lrIndex) this->aaData_1.addData(4, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+        }
+    }
+    aaData_1.plot();
     zPeak = cc_peak_z;
     ul_zPeak = ul_peak_z;
     ur_zPeak = ur_peak_z;

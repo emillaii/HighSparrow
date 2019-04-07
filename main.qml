@@ -63,9 +63,8 @@ ApplicationWindow {
         anchors.topMargin: 8
 
         ToolButton {
-            id: homeButton
-            objectName: "HomeButtonObject"
-            text: qsTr("Home")
+            id: initButton
+            text: qsTr("Init")
             transformOrigin: Item.Center
             display: Button.TextUnderIcon
             anchors.top: parent.top
@@ -74,16 +73,35 @@ ApplicationWindow {
             anchors.leftMargin: 8
             icon.width: 50
             icon.height: 50
-            icon.source: "icons/home.png"
+            icon.source: "icons/initial.png"
             onClicked: {
-                logicManager.start()
+                console.log("Initial Device")
+                baseModuleManager.initialDevice();
             }
         }
+
+        ToolButton {
+            id: homeButton
+            objectName: "HomeButtonObject"
+            text: qsTr("Home")
+            transformOrigin: Item.Center
+            display: Button.TextUnderIcon
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 90
+            icon.width: 50
+            icon.height: 50
+            icon.source: "icons/home.png"
+            onClicked: {
+            }
+        }
+
         ToolButton {
             id: loadFlowChartButton
             text: qsTr("加载流程图")
             anchors.left: parent.left
-            anchors.leftMargin: 90
+            anchors.leftMargin: 90*2
             transformOrigin: Item.Center
             display: Button.TextUnderIcon
             anchors.top: parent.top
@@ -100,7 +118,7 @@ ApplicationWindow {
             id: saveFlowChart
             text: qsTr("保存流程图")
             anchors.left: parent.left
-            anchors.leftMargin: 180
+            anchors.leftMargin: 90*3
             transformOrigin: Item.Center
             display: Button.TextUnderIcon
             anchors.top: parent.top

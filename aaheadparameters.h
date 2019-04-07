@@ -4,6 +4,9 @@
 #include <QObject>
 #include <propertybase.h>
 #include "config.h"
+#include <QChart>
+#include <QSplineSeries>
+using namespace QtCharts;
 
 class AAHeadParameters : public PropertyBase
 {

@@ -14,19 +14,6 @@
 #include "XtCylinder.h"
 #include "XtVcMotor.h"
 
-
-//struct VCM_Parameter_struct
-//{
-//    double MaxVel;
-//    double MaxAcc;
-//    double MaxJerk;
-//    double MaxPos;
-//    double MinPos;
-//    int CanID;
-//    int direction;
-//    double scale;
-//};
-
 class BaseModuleManager : public PropertyBase
 {
     Q_OBJECT
@@ -119,7 +106,7 @@ private:
 public:
     bool ReadParameters();
     bool SaveParameters();
-    bool InitialDevice();
+    Q_INVOKABLE bool initialDevice();
     void EnableMotors();
     bool AllMotorsSeekOrigin();
     void StopSeeking();

@@ -2,6 +2,7 @@ QT += quick
 QT += serialport
 QT += webengine
 QT += widgets
+QT += charts qml quick
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -40,11 +41,12 @@ SOURCES += \
     XtCylinder.cpp \
     xtmotor.cpp \
     XtVcMotor.cpp \
-    material_carrier.cpp \
     XtVacuum.cpp \
     structure_composition.cpp \
     lut_module.cpp \
-    sut_module.cpp
+    sut_module.cpp \
+    aadata.cpp \
+    material_carrier.cpp
 
 RESOURCES += qml.qrc \
     icons.qrc
@@ -123,7 +125,10 @@ HEADERS += \
     material_carrier_parameter.h \
     lut_module.h \
     lut_parameter.h \
-    sut_module.h
+    sut_module.h \
+    aadata.h
+
+    XtVacuum.h
 
 DISTFILES += \
     icons/index.theme

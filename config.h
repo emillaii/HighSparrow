@@ -3,6 +3,7 @@
 #include <QString>
 
 #define CONFIG_DIR                   "config//"
+#define PR_CONFIG_DIR                "config//prConfig"
 #define VISION_CONFIG_DIR            "config//vision_config_1"
 #define AA_HELPER_DIR                "aa_helper_log//"
 #define BASE_LOG_DIR                 "log//"

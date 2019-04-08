@@ -223,10 +223,10 @@ bool BaseModuleManager::allMotorsSeekOrigin()
 void BaseModuleManager::stopSeeking()
 {
     if(is_init)
-            foreach (XtMotor *m, motors.values()) {
-                m->StopSeeking();
-                m->Disable();
-            }
+    foreach (XtMotor *m, motors.values()) {
+        m->StopSeeking();
+        m->Disable();
+    }
 }
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)
@@ -264,7 +264,6 @@ XtVacuum *BaseModuleManager::GetVacuumByName(QString name)
 
 bool BaseModuleManager::stepMove(QString name, double step, bool isPositive)
 {
-
     if (motors.contains(name)) {
         qInfo("Step move: %s %f %d %f", name.toStdString().c_str(), step, isPositive, motors[name]->GetFeedbackPos());
         if (isPositive)

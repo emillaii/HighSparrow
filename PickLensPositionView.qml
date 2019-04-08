@@ -16,8 +16,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setPickLensPositionX(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setPickLensPositionX(text)
             }
         }
         Label {
@@ -32,8 +32,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setPickLensPositionY(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setPickLensPositionY(text)
             }
         }
         Label {
@@ -48,8 +48,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setPickLensPositionZ(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setPickLensPositionZ(text)
             }
         }
     }
@@ -67,8 +67,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setPickLensPositionA(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setPickLensPositionA(text)
             }
         }
         Label {
@@ -83,8 +83,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setPickLensPositionB(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setPickLensPositionB(text)
             }
         }
         Label {
@@ -99,8 +99,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setPickLensPositionC(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setPickLensPositionC(text)
             }
         }
     }

@@ -16,8 +16,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                sutParams.setOCX(text)
+            onFocusChanged: {
+                if(!focus) sutParams.setOCX(text)
             }
         }
         Label {
@@ -32,8 +32,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                sutParams.setOCY(text)
+            onFocusChanged: {
+                if (!focus) sutParams.setOCY(text)
             }
         }
         Label {
@@ -48,8 +48,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                sutParams.setOCZ(text)
+            onFocusChanged: {
+                if(!focus) sutParams.setOCZ(text)
             }
         }
     }

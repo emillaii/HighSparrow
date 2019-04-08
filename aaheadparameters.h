@@ -215,7 +215,7 @@ double m_OCPositionB = 0;
 double m_OCPositionC = 0;
 QString m_UplookPRName = "";
 double m_UplookPRLighting = 0;
-QString m_Name;
+QString m_Name = "";
 };
 
 #endif // AAHEADPARAMETERS_H

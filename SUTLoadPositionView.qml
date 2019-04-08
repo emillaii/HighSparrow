@@ -11,13 +11,11 @@ ColumnLayout {
             text: sutParams.LoadX
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                sutParams.setLoadX(text)
+            onFocusChanged: {
+                if (!focus) sutParams.setLoadX(text)
             }
         }
         Label {
@@ -27,13 +25,11 @@ ColumnLayout {
             text: sutParams.LoadY
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                sutParams.setLoadY(text)
+            onFocusChanged: {
+                if (!focus) sutParams.setLoadY(text)
             }
         }
         Label {
@@ -43,13 +39,11 @@ ColumnLayout {
             text: sutParams.LoadZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                sutParams.setLoadZ(text)
+            onFocusChanged: {
+                if (!focus) sutParams.setLoadZ(text)
             }
         }
     }

@@ -5,6 +5,7 @@
 #include <errorcode.h>
 #include <QQuickImageProvider>
 #include <AVL.h>
+
 struct PRResultStruct {
     PRResultStruct() : x(0), y(0), theta(0), ret(false)
     {}
@@ -29,7 +30,6 @@ public:
      */
     ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
-
 private:
     QString last_uplook_pr_result;
     QString last_downlook_pr_result;
@@ -37,7 +37,9 @@ private:
     void displayPRResult(const QString, const PRResultStruct);
 
     bool grabImageFromCamera(QString cameraName, avl::Image &image);
-
+//    BaslerPylonCamera * downlookCamera;
+//    BaslerPylonCamera * uplookCamera;
+//    BaslerPylonCamera * pickarmCamera;
 signals :
     void callQmlRefeshImg();  // Preview 1
 };

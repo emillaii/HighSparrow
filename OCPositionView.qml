@@ -16,8 +16,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setOCPositionX(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setOCPositionX(text)
             }
         }
         Label {
@@ -32,8 +32,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setOCPositionY(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setOCPositionY(text)
             }
         }
         Label {
@@ -48,8 +48,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setOCPositionZ(text)
+            onFocusChanged: {
+                if (!focus) aaHeadParams.setOCPositionZ(text)
             }
         }
     }
@@ -67,8 +67,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setOCPositionA(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setOCPositionA(text)
             }
         }
         Label {
@@ -83,8 +83,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setOCPositionB(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setOCPositionB(text)
             }
         }
         Label {
@@ -99,8 +99,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-                aaHeadParams.setOCPositionC(text)
+            onFocusChanged: {
+                if(!focus) aaHeadParams.setOCPositionC(text)
             }
         }
     }

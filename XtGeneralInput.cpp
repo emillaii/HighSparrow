@@ -2,6 +2,7 @@
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
 #include <QThread>
+int XtGeneralInput::count = 0;
 XtGeneralInput::XtGeneralInput(void)
 {
     name = "";
@@ -27,12 +28,12 @@ void XtGeneralInput::Init(const QString &input_name)
 
      //XtMotion::LoadProfile();
      input_id = XT_Controler_Extend::Profile_Find_IoIn_Name((LPWSTR)name.utf16());
-//     if(input_id<0)
-//     {
-//         XtMotion::in_num_in_profile++;
-//         input_id = XtMotion::in_num_in_profile;
-//     }
-    // XtMotion::AllInputs.append(this);
+     if(input_id<0)
+     {
+         count++;
+         input_id = count;
+     }
+
 }
 
 void XtGeneralInput::Init(int id_in_profile)

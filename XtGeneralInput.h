@@ -21,6 +21,8 @@ public:
 private:
     QString name;
     int input_id;
+public:
+    static int count;
 };
 
 #endif // XTGENERALINPUT_H

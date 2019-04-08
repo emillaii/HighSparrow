@@ -85,12 +85,13 @@ public:
     static void InitAllVCM();
 
 private:
-    VCM_Resource_struct vcm_resource;
     VCM_Parameter_struct parameters;
     bool direction_is_opposite;
     bool origin_result = true;
 
     int vcm_id;
+public:
+    VCM_Resource_struct vcm_resource;
     static int vcm_count;
 };
 

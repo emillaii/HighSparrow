@@ -254,7 +254,7 @@ void XtVcMotor::SeekOrigin(int thread)
     else
     {
         origin_result = false;
-        qInfo("axis %s seek origin fail！",name.toStdString().c_str());
+        qInfo("axis %s seek origin fail!",name.toStdString().c_str());
     }
 }
 

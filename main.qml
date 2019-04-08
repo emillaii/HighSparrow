@@ -98,14 +98,32 @@ ApplicationWindow {
             icon.height: 50
             icon.source: "icons/home.png"
             onClicked: {
+                baseModuleManager.allMotorsSeekOrigin();
             }
         }
 
         ToolButton {
+            id: stopHomeButton
+            objectName: "StopHomeButtonObject"
+            text: qsTr("StopHome")
+            transformOrigin: Item.Center
+            display: Button.TextUnderIcon
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 90*2
+            icon.width: 50
+            icon.height: 50
+            icon.source: "icons/home.png"
+            onClicked: {
+                baseModuleManager.stopSeeking();
+            }
+        }
+        ToolButton {
             id: loadFlowChartButton
             text: qsTr("加载流程图")
             anchors.left: parent.left
-            anchors.leftMargin: 90*2
+            anchors.leftMargin: 90*3
             transformOrigin: Item.Center
             display: Button.TextUnderIcon
             anchors.top: parent.top
@@ -122,7 +140,7 @@ ApplicationWindow {
             id: saveFlowChart
             text: qsTr("保存流程图")
             anchors.left: parent.left
-            anchors.leftMargin: 90*3
+            anchors.leftMargin: 90*4
             transformOrigin: Item.Center
             display: Button.TextUnderIcon
             anchors.top: parent.top

@@ -7,11 +7,17 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent),
       m_downlookLighting(0), m_uplookLighting(0)
 {
-    //pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
-    //pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
+    is_init = false;
+    profile_loaded = false;
+    pylonUplookCamera = new BaslerPylonCamera(CAMERA_LUT_DL);
+    pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA1_DL);
     lightingModule = new WordopLight();
+    lightingModule->Init("com1");
+    lightingModule->OnOff(2, true);
+    lightingModule->OnOff(0, true);
     visionModule = new VisionModule();
-
+    pylonUplookCamera->start();
+    pylonDownlookCamera->start();
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -43,45 +49,48 @@ bool BaseModuleManager::LoadProfile()
     if(res!=0)
     {
         QString temp_name;
-        int in_num_in_profile = XT_Controler_Extend::Profile_Get_IoIn_Count();
-        for (int i = 0; i < in_num_in_profile; ++i) {
+        XtGeneralInput::count = XT_Controler_Extend::Profile_Get_IoIn_Count();
+        for (int i = 0; i < XtGeneralInput::count; ++i) {
            temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoIn_Name(i));
            if(temp_name == ""||input_ios.contains(temp_name))
            {
                qInfo("this already has an input io : %s",temp_name.toStdString().c_str());
                continue;
            }
-           XtGeneralInput input_io = XtGeneralInput(temp_name,i);
-           input_ios.insert(temp_name,&input_io);
+           XtGeneralInput* input_io = new XtGeneralInput(temp_name,i);
+           input_ios.insert(temp_name,input_io);
         }
-        int out_num_in_profile = XT_Controler_Extend::Profile_Get_IoIn_Count();
-        for (int i = 0; i < out_num_in_profile; ++i) {
+        XtGeneralOutput::count = XT_Controler_Extend::Profile_Get_IoOut_Count();
+        for (int i = 0; i < XtGeneralOutput::count; ++i) {
            temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoOut_Name(i));
            if(temp_name == ""||output_ios.contains(temp_name))
            {
-               qInfo("this already has an input io : %s",temp_name.toStdString().c_str());
+               qInfo("this already has an output io : %s",temp_name.toStdString().c_str());
                continue;
            }
-           XtGeneralOutput output_io = XtGeneralOutput(temp_name,i);
-           output_ios.insert(temp_name,&output_io);
+           XtGeneralOutput* output_io = new XtGeneralOutput(temp_name,i);
+           output_ios.insert(temp_name,output_io);
         }
-        axis_id_resource = XT_Controler_Extend::Profile_Get_Axis_Count();
-        for (int i = 0; i < axis_id_resource; ++i) {
-           temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoIn_Name(i));
-           if(temp_name == ""||input_ios.contains(temp_name))
+        XtMotor::axis_id_resource = XT_Controler_Extend::Profile_Get_Axis_Count();
+        for (int i = 0; i <  XtMotor::axis_id_resource; ++i) {
+           temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_Axis_Name(i));
+           if(temp_name == ""||motors.contains(temp_name))
            {
-               qInfo("this already has an input io : %s",temp_name.toStdString().c_str());
+               qInfo("this already has an motor io : %s",temp_name.toStdString().c_str());
                continue;
            }
-           XtMotor motor;
-           motor.Init(temp_name);
-           motors.insert(temp_name,&motor);
+           XtMotor* motor = new XtMotor();
+           motor->Init(temp_name);
+           motors.insert(temp_name,motor);
         }
-        XtVcMotor motor_lut_vcm,motor_sut_vcm;
-        motor_lut_vcm.Init("LUT_VCM",lut_vcm_parameters);
-        motors.insert("LUT_VCM",&motor_lut_vcm);
-        motor_sut_vcm.Init("SUT1_VCM",sut_vcm_parameters);
-        motors.insert("SUT1_VCM",&motor_sut_vcm);
+        XtVcMotor* motor_lut_vcm = new XtVcMotor();
+        motor_lut_vcm->Init("LUT_Z",lut_vcm_parameters);
+        motors.insert("LUT_Z",motor_lut_vcm);
+
+        XtVcMotor* motor_sut_vcm = new XtVcMotor();
+        motor_sut_vcm->Init("SUT_Z",sut_vcm_parameters);
+        motors.insert("SUT_Z",motor_sut_vcm);
+
         profile_loaded = true;
         return true;
     }
@@ -96,6 +105,7 @@ bool BaseModuleManager::initialDevice()
     if(!LoadProfile())
         return false;
 
+    qInfo("Init module manager");
     LPWSTR pTarget = ip;
     XT_Controler::InitDevice_PC_Local_Controler(0);
     int res = XT_Controler::beCurConnectServerAndInterfaceBoard();
@@ -132,8 +142,17 @@ bool BaseModuleManager::initialDevice()
     XT_Controler_Extend::Stop_Buffer_Sync();
 
     XtVcMotor::InitAllVCM();
-    dynamic_cast<XtVcMotor*>(motors["LUT_VCM"])->ConfigVCM();
-    dynamic_cast<XtVcMotor*>(motors["SUT1_VCM"])->ConfigVCM();
+    XtVcMotor* temp_motor = dynamic_cast<XtVcMotor*>(motors["LUT_Z"]);
+    if(temp_motor==nullptr)
+        qInfo("motor LUT_Z is null");
+    else
+        temp_motor->ConfigVCM();
+
+    temp_motor = dynamic_cast<XtVcMotor*>(motors["SUT_Z"]);
+    if(temp_motor==nullptr)
+        qInfo("motor SUT_Z is null");
+    else
+        temp_motor->ConfigVCM();
 
     XT_Controler_Extend::Start_Buffer_Sync(-1);
 
@@ -155,14 +174,22 @@ void BaseModuleManager::EnableMotors()
     }
 }
 
-bool BaseModuleManager::AllMotorsSeekOrigin()
+void BaseModuleManager::DisableAllMotors()
+{
+    if(is_init) {
+        foreach (XtMotor *m, motors.values()) {
+            m->Disable();
+        }
+    }
+}
+
+bool BaseModuleManager::allMotorsSeekOrigin()
 {
     bool result;
-    motors["SUT1_Z"]->SeekOrigin();
-    result = motors["SUT1_Z"]->WaitSeekDone();
-    if(!result)return false;
+    motors["SUT_Z"]->SeekOrigin();
     motors["LUT_Z"]->SeekOrigin();
-    result = motors["LUT_Z"]->WaitSeekDone();
+    result = motors["SUT_Z"]->WaitSeekDone();
+    result &= motors["LUT_Z"]->WaitSeekDone();
     if(!result)return false;
     motors["AA1_Y"]->SeekOrigin();
     result = motors["AA1_Y"]->WaitSeekDone();
@@ -188,19 +215,17 @@ bool BaseModuleManager::AllMotorsSeekOrigin()
     result &= motors["AA1_C"]->WaitSeekDone();
     result &= motors["SUT1_X"]->WaitSeekDone();
     result &= motors["SUT1_Y"]->WaitSeekDone();
-    if(!result)
-    {
-        qInfo("all motor seeked origin successed!");
-        return false;
-    }
+    if(!result)return false;
+    qInfo("all motor seeked origin successed!");
     return  true;
 }
 
-void BaseModuleManager::StopSeeking()
+void BaseModuleManager::stopSeeking()
 {
     if(is_init)
             foreach (XtMotor *m, motors.values()) {
                 m->StopSeeking();
+                m->Disable();
             }
 }
 

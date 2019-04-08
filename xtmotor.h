@@ -100,7 +100,6 @@ protected:
 
     static int curve_resource;
     static int thread_resource;
-    static int axis_id_resource;
 
     QString name;
     int axis_id;
@@ -138,6 +137,8 @@ protected:
 
     void ChangeCurPos(double pos);
     void CheckLimit(double &pos);
+public:
+    static int axis_id_resource;
 };
 
 #endif // XTMOTER_H

@@ -96,12 +96,11 @@ private:
     bool profile_loaded;
     static wchar_t ip[];
     static wchar_t profile_path[];
-    int axis_id_resource;
 
     VCM_Parameter_struct lut_vcm_parameters = {
-        5000/*MaxVel*/,20000/*MaxAcc*/,200000/*MaxJerk*/,19/*MaxRange*/,0/*MinRange*/,10/*CanID*/,0/*dir*/,1024/*scale*/};
+        5000/*MaxVel*/,20000/*MaxAcc*/,200000/*MaxJerk*/,19/*MaxRange*/,0/*MinRange*/,9/*CanID*/,1/*dir*/,1024/*scale*/};
     VCM_Parameter_struct sut_vcm_parameters = {
-        500/*MaxVel*/,10000/*MaxAcc*/,200000/*MaxJerk*/,33/*MaxRange*/,0/*MinRange*/,9/*CanID*/,0/*dir*/,5000/*scale*/};
+        500/*MaxVel*/,10000/*MaxAcc*/,200000/*MaxJerk*/,33/*MaxRange*/,0/*MinRange*/,10/*CanID*/,1/*dir*/,5000/*scale*/};
 private:
     bool LoadProfile();
 public:
@@ -109,8 +108,9 @@ public:
     bool SaveParameters();
     Q_INVOKABLE bool initialDevice();
     void EnableMotors();
-    bool AllMotorsSeekOrigin();
-    void StopSeeking();
+    void DisableAllMotors();
+    Q_INVOKABLE bool allMotorsSeekOrigin();
+    Q_INVOKABLE void stopSeeking();
 
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);

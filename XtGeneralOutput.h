@@ -25,6 +25,8 @@ private:
     QString name;
     int output_id;
     bool is_hp;
+public:
+    static int count;
 };
 
 #endif // XTGENERALOUTPUT_H

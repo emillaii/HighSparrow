@@ -80,7 +80,7 @@ public:
     //void SeekOrigin(int originDirection, double originRange, double originOffset);
     virtual void SeekOrigin(int thread = -1);
     void StopSeeking(int thread = -1);
-    virtual bool WaitSeekDone(int thread = -1, int timeout = 20000);
+    virtual bool WaitSeekDone(int thread = -1, int timeout = 100000);
     virtual bool WaitStop(int timeout = 10000);
 
     virtual bool SearchPosByADC(double vel, double search_limit, double threshold, bool search_above, double &result);

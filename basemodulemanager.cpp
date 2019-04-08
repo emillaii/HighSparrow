@@ -9,15 +9,15 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 {
     is_init = false;
     profile_loaded = false;
-    pylonUplookCamera = new BaslerPylonCamera(CAMERA_LUT_DL);
-    pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA1_DL);
+//    pylonUplookCamera = new BaslerPylonCamera(CAMERA_LUT_DL);
+//    pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA1_DL);
     lightingModule = new WordopLight();
     lightingModule->Init("com1");
     lightingModule->OnOff(2, true);
     lightingModule->OnOff(0, true);
     visionModule = new VisionModule();
-    pylonUplookCamera->start();
-    pylonDownlookCamera->start();
+//    pylonUplookCamera->start();
+//    pylonDownlookCamera->start();
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -264,5 +264,6 @@ XtVacuum *BaseModuleManager::GetVacuumByName(QString name)
 
 bool BaseModuleManager::stepMove(QString name, double step, bool isPositive)
 {
+    qInfo("%s %f %d", name.toStdString().c_str(), step, isPositive);
     return true;
 }

@@ -6,6 +6,19 @@ import QtQuick 2.11
 Popup {
     property double selectedStepSize: 0.1
 
+    readonly property string m_AA1_X: "AA1_X"
+    readonly property string m_AA1_Y: "AA1_X"
+    readonly property string m_AA1_Z: "AA1_X"
+    readonly property string m_AA1_A: "AA1_X"
+    readonly property string m_AA1_B: "AA1_X"
+    readonly property string m_AA1_C: "AA1_X"
+    readonly property string m_SUT1_X: "SUT1_X"
+    readonly property string m_SUT1_Y: "SUT1_Y"
+    readonly property string m_SUT1_Z: "SUT_Z"
+    readonly property string m_LUT1_X: "LUT_X"
+    readonly property string m_LUT1_Y: "LUT_Y"
+    readonly property string m_LUT1_Z: "LUT_Z"
+
     id: dialog
     visible: false
     contentItem: Rectangle {
@@ -22,9 +35,9 @@ Popup {
                     onCheckedChanged: {
                         if (step10Button.checked)
                         {
-                            console.log(selectedStepSize)
                             selectedStepSize = 10
                         }
+                        console.log(selectedStepSize)
                     }
                 }
                 RadioButton {
@@ -34,15 +47,35 @@ Popup {
                     onCheckedChanged: {
                         if (step1Button.checked)
                         {
-                            console.log(selectedStepSize)
-                            selectedStepSize = 10
+                            selectedStepSize = 1
                         }
+                        console.log(selectedStepSize)
                     }
                 }
                 RadioButton {
+                    id: step01Button
                     text: qsTr("0.1")
                     font.pixelSize: 10
                     checked: true
+                    onCheckedChanged: {
+                        if (step01Button.checked)
+                        {
+                            selectedStepSize = 0.1
+                        }
+                        console.log(selectedStepSize)
+                    }
+                }
+                RadioButton {
+                    id: step001Button
+                    text: qsTr("0.01")
+                    font.pixelSize: 10
+                    checked: true
+                    onCheckedChanged: {
+                        if (step001Button.checked)
+                        {
+                            selectedStepSize = 0.01
+                        }
+                    }
                 }
             }
             ScrollView {
@@ -57,14 +90,14 @@ Popup {
                         RoundButton {
                             text: "+"
                             onClicked: {
-                                console.log("AA X move +");
-                                var res = baseModuleManager.stepMove("AA_X", 0.1, true)
+                                var res = baseModuleManager.stepMove(m_AA1_X, selectedStepSize, true)
                                 console.log("result: " + res)
                             }
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_X, selectedStepSize, false)
                                 console.log("AA X move -");
                             }
                         }
@@ -80,9 +113,15 @@ Popup {
                         }
                         RoundButton {
                             text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_Y, selectedStepSize, true)
+                            }
                         }
                         RoundButton {
                             text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_Y, selectedStepSize, false)
+                            }
                         }
                         Label {
                             text: qsTr("100")
@@ -96,9 +135,15 @@ Popup {
                         }
                         RoundButton {
                             text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_Z, selectedStepSize, true)
+                            }
                         }
                         RoundButton {
                             text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_Z, selectedStepSize, false)
+                            }
                         }
                         Label {
                             text: qsTr("100")
@@ -112,9 +157,15 @@ Popup {
                         }
                         RoundButton {
                             text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_A, selectedStepSize, true)
+                            }
                         }
                         RoundButton {
                             text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_A, selectedStepSize, false)
+                            }
                         }
                         Label {
                             text: qsTr("100")
@@ -128,9 +179,15 @@ Popup {
                         }
                         RoundButton {
                             text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_B, selectedStepSize, true)
+                            }
                         }
                         RoundButton {
                             text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_B, selectedStepSize, false)
+                            }
                         }
                         Label {
                             text: qsTr("100")
@@ -144,9 +201,15 @@ Popup {
                         }
                         RoundButton {
                             text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_C, selectedStepSize, true)
+                            }
                         }
                         RoundButton {
                             text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_C, selectedStepSize, false)
+                            }
                         }
                         Label {
                             text: qsTr("100")
@@ -160,9 +223,15 @@ Popup {
                         }
                         RoundButton {
                             text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_SUT1_X, selectedStepSize, true)
+                            }
                         }
                         RoundButton {
                             text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_SUT1_X, selectedStepSize, false)
+                            }
                         }
                         Label {
                             text: qsTr("100")
@@ -176,9 +245,15 @@ Popup {
                         }
                         RoundButton {
                             text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_SUT1_Y, selectedStepSize, true)
+                            }
                         }
                         RoundButton {
                             text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_SUT1_Y, selectedStepSize, false)
+                            }
                         }
                         Label {
                             text: qsTr("100")
@@ -192,9 +267,15 @@ Popup {
                         }
                         RoundButton {
                             text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_SUT1_Z, selectedStepSize, true)
+                            }
                         }
                         RoundButton {
                             text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_SUT1_Z, selectedStepSize, false)
+                            }
                         }
                         Label {
                             text: qsTr("100")

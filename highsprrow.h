@@ -17,8 +17,6 @@ public:
 private:
     ErrorCodeStruct InitComponent();
 public:
-    AAHeadModule * aaHeadModule = Q_NULLPTR;
-    SutModule * sutModule = Q_NULLPTR;
     BaseModuleManager * baseModuleManager = Q_NULLPTR;
     LogicManager * logicManager = Q_NULLPTR;
 public:

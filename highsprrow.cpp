@@ -9,12 +9,6 @@ HighSprrow::HighSprrow()
     baseModuleManager = new BaseModuleManager();
     baseModuleManager->LoadProfile();
     logicManager = new LogicManager(baseModuleManager);
-//    aaHeadModule = new AAHeadModule(Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,
-//                                    Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,
-//                                    Q_NULLPTR);
-//    sutModule = new SutModule(Q_NULLPTR, Q_NULLPTR, Q_NULLPTR,
-//                              Q_NULLPTR, Q_NULLPTR, Q_NULLPTR,
-//                              Q_NULLPTR, Q_NULLPTR);
 }
 
 HighSprrow::~HighSprrow()

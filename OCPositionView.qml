@@ -112,8 +112,7 @@ ColumnLayout {
             height: 40
             visible: root.checked
             onClicked: {
-//                aaHeadModule
-                console.log("Move To");
+                aaHeadModule.moveToOCPosition()
             }
         }
         Button {

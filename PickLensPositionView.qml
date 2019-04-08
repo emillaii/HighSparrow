@@ -112,7 +112,7 @@ ColumnLayout {
             height: 40
             visible: root.checked
             onClicked: {
-                console.log("Move To");
+                aaHeadModule.moveToPickLensPosition()
             }
         }
         Button {

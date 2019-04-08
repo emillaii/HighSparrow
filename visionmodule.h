@@ -4,7 +4,7 @@
 #include <QObject>
 #include <errorcode.h>
 #include <QQuickImageProvider>
-
+#include <AVL.h>
 struct PRResultStruct {
     PRResultStruct() : x(0), y(0), theta(0), ret(false)
     {}
@@ -31,10 +31,13 @@ public:
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 
 private:
-    PRResultStruct last_uplook_pr_result;
-    PRResultStruct last_downlook_pr_result;
-    PRResultStruct last_pickarm_pr_result;
+    QString last_uplook_pr_result;
+    QString last_downlook_pr_result;
+    QString last_pickarm_pr_result;
     void displayPRResult(const QString, const PRResultStruct);
+
+    bool grabImageFromCamera(QString cameraName, avl::Image &image);
+
 signals :
     void callQmlRefeshImg();  // Preview 1
 };

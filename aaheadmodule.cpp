@@ -29,12 +29,12 @@ void AAHeadModule::updateParams()
     PropertyBase::saveJsonConfig(AA_HEAD_MODULE_JSON,temp_map);
 }
 
-bool AAHeadModule::moveToPickLensPsotion()
+bool AAHeadModule::moveToPickLensPosition()
 {
     return  moveToSync(parameters.PickLensPositionX(),parameters.PickLensPositionY(),parameters.PickLensPositionZ(),parameters.PickLensPositionA(),parameters.PickLensPositionB(),parameters.PickLensPositionC());
 }
 
-bool AAHeadModule::moveToOCPsotion()
+bool AAHeadModule::moveToOCPosition()
 {
     return  moveToSync(parameters.OCPositionX(),parameters.OCPositionY(),parameters.OCPositionZ(),parameters.OCPositionA(),parameters.OCPositionB(),parameters.OCPositionC());
 }

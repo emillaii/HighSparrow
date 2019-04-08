@@ -45,13 +45,11 @@ public:
     WordopLight * lightingModule = Q_NULLPTR;
     LontryLight * lightPanel = Q_NULLPTR;
 
-    AAHeadModule* aa_head_module;
-    MaterialCarrier* lut_carrier;
-    MaterialCarrier* sut_carrier;
-    LutModule *lut_module;
-    SutModule *sut_module;
-
-    Q_INVOKABLE void testVision();
+    AAHeadModule* aa_head_module = Q_NULLPTR;
+    MaterialCarrier* lut_carrier = Q_NULLPTR;
+    MaterialCarrier* sut_carrier = Q_NULLPTR;
+    LutModule *lut_module = Q_NULLPTR;
+    SutModule *sut_module = Q_NULLPTR;
 
     int downlookLighting() const
     {
@@ -117,6 +115,7 @@ public:
     bool LoadProfile();
     bool ReadParameters();
     bool SaveParameters();
+
     Q_INVOKABLE bool initialDevice();
     Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);
     Q_INVOKABLE double getMotorFeedbackPos(QString name);

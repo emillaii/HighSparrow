@@ -13,11 +13,26 @@
 #include <QDir>
 #include <config.h>
 #include <commonutils.h>
+#include "baslerpyloncamera.h"
 
 VisionModule::VisionModule()
              :QQuickImageProvider(QQuickImageProvider::Image)
 {
 
+}
+
+bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
+{
+    BaslerPylonCamera *camera = Q_NULLPTR;
+    if (cameraName.contains(CAMERA_AA1_DL)) {  }
+    else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { }
+    else if (cameraName.contains(PICKARM_VISION_CAMERA)) {  }
+    QPixmap p = QPixmap::fromImage(camera->getImage());
+    QImage q2 = p.toImage();
+    q2 = q2.convertToFormat(QImage::Format_RGB888);
+    avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+    image = image2;
+    return true;
 }
 
 ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult)
@@ -64,7 +79,9 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::Image image4;
         avl::Image image5;
         avl::Image image6;
-        avl::LoadImage( g_constData1, false, image1 );
+        //avl::LoadImage( g_constData1, false, image1 );
+
+        this->grabImageFromCamera(camera_name, image1);
         //Testing use
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
         avs::LoadObject< avl::Vector2D >( g_constData2, avl::StreamMode::Binary, g_constData3, vector2D1 );
@@ -124,16 +141,30 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
     return error_code;
 }
 
+bool grabImageFromCamera(QString cameraName, avl::Image &image)
+{
+    BaslerPylonCamera *camera = Q_NULLPTR;
+    if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) {  }
+    else if (cameraName.contains(UPLOOK_VISION_CAMERA)) {  }
+    else if (cameraName.contains(PICKARM_VISION_CAMERA)) {  }
+    QPixmap p = QPixmap::fromImage(camera->getImage());
+    QImage q2 = p.toImage();
+    q2 = q2.convertToFormat(QImage::Format_RGB888);
+    avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+    image = image2;
+    return true;
+}
+
 void VisionModule::displayPRResult(const QString camera_name, const PRResultStruct prResult)
 {
     if (camera_name.contains(DOWNLOOK_VISION_CAMERA)) {
-        last_downlook_pr_result = prResult;
+        last_downlook_pr_result = prResult.imageName;
     }
     else if (camera_name.contains(UPLOOK_VISION_CAMERA)) {
-        last_uplook_pr_result = prResult;
+        last_uplook_pr_result = prResult.imageName;
     }
     else if (camera_name.contains(PICKARM_VISION_CAMERA)) {
-        last_pickarm_pr_result = prResult;
+        last_pickarm_pr_result = prResult.imageName;
     }
     //emit callQmlRefeshImg();
 }
@@ -141,14 +172,14 @@ void VisionModule::displayPRResult(const QString camera_name, const PRResultStru
 QImage VisionModule::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
     if (id.contains(DOWNLOOK_VISION_CAMERA)) {
-        qInfo(QString("Fetch " + last_downlook_pr_result.imageName).toStdString().c_str());
-        return QImage(last_downlook_pr_result.imageName);
+        qInfo(QString("Fetch " + last_downlook_pr_result).toStdString().c_str());
+        return QImage(last_downlook_pr_result);
     }
     else if (id.contains(PREVIEW_2)) {
-        return QImage(last_uplook_pr_result.imageName);
+        return QImage(last_uplook_pr_result);
     }
     else if (id.contains(PREVIEW_3)) {
-        return QImage(last_pickarm_pr_result.imageName);
+        return QImage(last_pickarm_pr_result);
     }
     return QImage();
 }

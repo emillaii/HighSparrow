@@ -31,8 +31,8 @@ private:
 public:
     AAHeadParameters parameters;
 public:
-    Q_INVOKABLE bool moveToPickLensPsotion();
-    Q_INVOKABLE bool moveToOCPsotion();
+    Q_INVOKABLE bool moveToPickLensPosition();
+    Q_INVOKABLE bool moveToOCPosition();
     Q_INVOKABLE bool stepMove_XY_Sync(double step_x,double step_y);
     Q_INVOKABLE bool stepMove_AB_Sync(double step_a,double step_b);
     Q_INVOKABLE bool stepMove_Z_Sync(double step_z);

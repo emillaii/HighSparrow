@@ -34,7 +34,7 @@ public:
     Q_PROPERTY(int downlookLighting READ downlookLighting WRITE setDownlookLighting NOTIFY lightingValueChanged)
     Q_PROPERTY(int uplookLighting READ uplookLighting WRITE setUplookLighting NOTIFY lightingValueChanged)
     Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged)
-//    QMap<QString,BaslerPylonCamera> cameras;
+
     QMap<QString,XtMotor*> motors;
     QMap<QString,XtGeneralInput*> input_ios;
     QMap<QString,XtGeneralOutput*> output_ios;
@@ -72,6 +72,12 @@ signals:
     void lightPanelValueChanged(int lightPanelLighting);
 
 public slots:
+    Q_INVOKABLE void updateParams()
+    {
+        if (aa_head_module) aa_head_module->updateParams();
+        if (sut_module) sut_module->updateParams();
+        if (lut_module) lut_module->updateParams();
+    }
     void setDownlookLighting(int downlookLighting)
     {
         if (m_downlookLighting == downlookLighting)

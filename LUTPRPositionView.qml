@@ -16,8 +16,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) lutCarrierParams.setVisionX(text)
+            onEditingFinished: {
+                lutCarrierParams.setVisionX(text)
             }
         }
         Label {
@@ -32,8 +32,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if (!focus) lutCarrierParams.setVisionY(text)
+            onEditingFinished: {
+                lutCarrierParams.setVisionY(text)
             }
         }
         Label {
@@ -48,8 +48,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) lutCarrierParams.setVisionZ(text)
+            onEditingFinished: {
+                lutCarrierParams.setVisionZ(text)
             }
         }
     }

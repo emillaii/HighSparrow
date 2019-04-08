@@ -7,8 +7,8 @@ SutModule::SutModule(MaterialCarrier* carrier , BaslerPylonCamera *camera, Wordo
     this->lighting = lighting;
     this->vision = vision;
     this->loadParams();
-    connect(&this->parameters, &SutParameter::paramsChanged, this, &SutModule::updateParams);
-    connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &SutModule::updateParams);
+    //connect(&this->parameters, &SutParameter::paramsChanged, this, &SutModule::updateParams);
+    //connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &SutModule::updateParams);
 }
 
 void SutModule::updateParams()

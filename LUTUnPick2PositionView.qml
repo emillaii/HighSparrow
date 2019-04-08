@@ -16,8 +16,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) lutParams.setUnPick2X(text)
+            onEditingFinished: {
+                lutParams.setUnPick2X(text)
             }
         }
         Label {
@@ -32,8 +32,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if (!focus) lutParams.setUnPick2Y(text)
+            onEditingFinished: {
+                lutParams.setUnPick2Y(text)
             }
         }
         Label {
@@ -43,13 +43,12 @@ ColumnLayout {
             text: lutParams.UnPick2Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) lutParams.setUnPick2Z(text)
+            onEditingFinished: {
+                console.log("Set UnPick 2")
+                lutParams.setUnPick2Z(text)
             }
         }
     }

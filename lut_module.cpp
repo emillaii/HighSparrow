@@ -9,8 +9,8 @@ LutModule::LutModule(MaterialCarrier* carrier, BaslerPylonCamera* camera,WordopL
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuun;
     this->loadParams();
-    connect(&this->parameters, &LutParameter::paramsChanged, this, &LutModule::updateParams);
-    connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &LutModule::updateParams);
+    //connect(&this->parameters, &LutParameter::paramsChanged, this, &LutModule::updateParams);
+    //connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &LutModule::updateParams);
 }
 
 

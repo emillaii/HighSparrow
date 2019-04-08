@@ -12,7 +12,7 @@ AAHeadModule::AAHeadModule(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMoto
     this->motor_c = motor_c;
     this->v = v;
     this->loadParams();
-    connect(&this->parameters, &AAHeadParameters::paramsChanged, this, &AAHeadModule::updateParams);
+    //connect(&this->parameters, &AAHeadParameters::paramsChanged, this, &AAHeadModule::updateParams);
 }
 
 void AAHeadModule::loadParams()

@@ -163,9 +163,26 @@ ApplicationWindow {
         }
 
         ToolButton {
-            text: qsTr("Dialog")
+            id: saveParams
+            text: qsTr("保存")
             anchors.left: parent.left
             anchors.leftMargin: 90*5
+            transformOrigin: Item.Center
+            display: Button.TextUnderIcon
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            icon.width: 50
+            icon.height: 50
+            icon.source: "icons/save.png"
+            onClicked: {
+                baseModuleManager.updateParams()
+            }
+        }
+
+        ToolButton {
+            text: qsTr("Dialog")
+            anchors.left: parent.left
+            anchors.leftMargin: 90*6
             transformOrigin: Item.Center
             display: Button.TextUnderIcon
             anchors.top: parent.top

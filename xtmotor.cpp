@@ -413,7 +413,7 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
 }
 
 
-bool XtMotor::MoveToPosSync(double pos, int thread)
+bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
 {
     if(!is_init)
         return false;
@@ -422,7 +422,7 @@ bool XtMotor::MoveToPosSync(double pos, int thread)
     double currPos = GetFeedbackPos();
     double targetPos = pos;
     MoveToPos(pos,thread);
-    int count = 3000;
+    int count = time_out;
     while ( fabs(currPos - targetPos) >= POS_ERROR)
     {
         currPos = GetFeedbackPos();
@@ -545,6 +545,7 @@ bool XtMotor::WaitSeekDone(int thread,int timeout)
         if (buffer_len == 0 && finish == 1)
         {
             SetFeedbackZero(GetOutpuPos());
+            SetVel(max_vel);
             qInfo("axis %s seek origin success",name.toStdString().c_str());
             return true;
         }

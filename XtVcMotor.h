@@ -52,7 +52,7 @@ public:
 
 
     void SetVel(double vel,int thread = -1) override;
-    void SetAcc(double vel,int thread = -1);
+    void SetAcc(double vel,int thread = -1) override;
     void SetJerk(double jerk,int thread = -1) override;
     void SetPostiveRange(double range) override;
     void SetNegativeRange(double range) override;

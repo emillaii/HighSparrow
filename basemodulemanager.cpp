@@ -9,12 +9,12 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 {
     is_init = false;
     profile_loaded = false;
-//    pylonUplookCamera = new BaslerPylonCamera(CAMERA_LUT_DL);
-//    pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA1_DL);
+    pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
+    pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
     lightingModule = new WordopLight();
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, Q_NULLPTR);
-//    pylonUplookCamera->start();
-//    pylonDownlookCamera->start();
+    pylonUplookCamera->start();
+    pylonDownlookCamera->start();
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -106,8 +106,8 @@ bool BaseModuleManager::InitStruct()
     v_u = GetVacuumByName("LUT_V_U");
 //    if(lut_carrier == nullptr||pylonUplookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr || v_u == nullptr)return false;
     lut_module = new LutModule(lut_carrier,pylonUplookCamera,lightingModule,visionModule,v,v_u);
-    x = GetMotorByName("SUT_X");
-    y = GetMotorByName("SUT_Y");
+    x = GetMotorByName("SUT1_X");
+    y = GetMotorByName("SUT1_Y");
     z_v = GetVcMotorByName("SUT_Z");
     v = GetVacuumByName("SUT_V");
 //    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
@@ -115,12 +115,12 @@ bool BaseModuleManager::InitStruct()
 //    if(sut_carrier == nullptr||pylonDownlookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr)return false;
 
     sut_module = new SutModule(sut_carrier,pylonDownlookCamera,lightingModule,visionModule);
-    x = GetMotorByName("AA_X");
-    y = GetMotorByName("AA_Y");
-    z = GetMotorByName("AA_Z");
-    a = GetMotorByName("AA_A");
-    b = GetMotorByName("AA_B");
-    c = GetMotorByName("AA_C");
+    x = GetMotorByName("AA1_X");
+    y = GetMotorByName("AA1_Y");
+    z = GetMotorByName("AA1_Z");
+    a = GetMotorByName("AA1_A");
+    b = GetMotorByName("AA1_B");
+    c = GetMotorByName("AA1_C");
     v = GetVacuumByName("AA_V");
 //    if(x == nullptr||y == nullptr||z == nullptr||a == nullptr||b == nullptr||c == nullptr||v == nullptr)return false;
     aa_head_module = new AAHeadModule("AAHead",x,y,z,a,b,c,v);
@@ -226,7 +226,7 @@ bool BaseModuleManager::allMotorsSeekOrigin()
     if(!result)return false;
     motors["LUT_Y"]->SeekOrigin();
     motors["AA1_X"]->SeekOrigin();
-    motors["AA1_Y"]->SeekOrigin();
+    motors["AA1_Z"]->SeekOrigin();
     motors["AA1_A"]->SeekOrigin();
     motors["AA1_B"]->SeekOrigin();
     motors["AA1_C"]->SeekOrigin();
@@ -239,7 +239,7 @@ bool BaseModuleManager::allMotorsSeekOrigin()
         result &= motors["LUT_X"]->WaitSeekDone();
     }
     result &= motors["AA1_X"]->WaitSeekDone();
-    result &= motors["AA1_Y"]->WaitSeekDone();
+    result &= motors["AA1_Z"]->WaitSeekDone();
     result &= motors["AA1_A"]->WaitSeekDone();
     result &= motors["AA1_B"]->WaitSeekDone();
     result &= motors["AA1_C"]->WaitSeekDone();

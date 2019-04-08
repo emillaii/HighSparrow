@@ -40,12 +40,12 @@ bool SutModule::moveToPR()
 
 bool SutModule::moveToLoadPos()
 {
-    return carrier->Move_SZ_SX_XY_Z_Sync(parameters.LoadX(),parameters.LoadY(),parameters.LoadZ());
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(parameters.LoadX(),parameters.LoadY(),parameters.LoadZ());
 }
 
 bool SutModule::moveToOCPos()
 {
-    return carrier->Move_SZ_SX_XY_Z_Sync(parameters.OCX(),parameters.OCY(),parameters.OCZ());
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(parameters.OCX(),parameters.OCY(),parameters.OCZ());
 }
 
 bool SutModule::stepMove_XY_Sync(double x, double y)

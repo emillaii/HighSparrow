@@ -23,40 +23,38 @@ bool MaterialCarrier::Move_SZ_XY_Z_Sync(double x, double y, double z, int timeou
     return result;
 }
 
-bool MaterialCarrier::Move_SZ_SX_XY_Z_Sync(double x, double y, double z, int timeout)
+bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z, int timeout)
 {
     bool result;
     result = motor_z->MoveToPosSync(parameters.SafetyZ());
     if(!result) return false;
     result = motor_x->MoveToPosSync(parameters.SafetyX());
     if(!result) return false;
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
-    result = motor_x->WaitArrivedTargetPos(x,timeout);
-    result &= motor_y->WaitArrivedTargetPos(y,timeout);
+    result = motor_y->MoveToPosSync(y);
+    if(!result) return false;
+    result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
     return result;
 }
 
-bool MaterialCarrier::Move_SZ_SY_XY_Z_Sync(double x, double y, double z, int timeout)
+bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z, int timeout)
 {
 
     bool result;
     result = motor_z->MoveToPosSync(parameters.SafetyZ());
     if(!result) return false;
-    result = motor_x->MoveToPosSync(parameters.SafetyY());
+    result = motor_y->MoveToPosSync(parameters.SafetyY());
     if(!result) return false;
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
-    result = motor_x->WaitArrivedTargetPos(x,timeout);
-    result &= motor_y->WaitArrivedTargetPos(y,timeout);
+    result = motor_x->MoveToPosSync(x);
+    if(!result) return false;
+    result = motor_y->MoveToPosSync(y);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
     return result;
 }
 
-bool MaterialCarrier::Move_SZ_SX_XY_ToPos(double x, double y,bool use_offset, int timeout)
+bool MaterialCarrier::Move_SZ_XY_ToPos(double x, double y,bool use_offset, int timeout)
 {
     bool result;
     result = motor_z->MoveToPosSync(parameters.SafetyZ());

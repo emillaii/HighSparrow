@@ -41,14 +41,14 @@ bool LutModule::moveToPR()
 
 bool LutModule::moveToLoadPos()
 {
-    return  carrier->Move_SZ_SY_XY_Z_Sync(parameters.LoadX(),parameters.LoadY(),parameters.LoadZ());
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(parameters.LoadX(),parameters.LoadY(),parameters.LoadZ());
 }
 
 bool LutModule::moveToPick1Lens()
 {
     bool result = grabber->Set(false);
     if(result)
-        result = carrier->Move_SZ_SY_XY_Z_Sync(parameters.Pick1X(),parameters.Pick1Y(),parameters.Pick1Z());
+        result = carrier->Move_SZ_SY_X_Y_Z_Sync(parameters.Pick1X(),parameters.Pick1Y(),parameters.Pick1Z());
     if(result)
     {
         //todo one fuction
@@ -63,7 +63,7 @@ bool LutModule::moveToPick1Lens()
 
 bool LutModule::moveToUnPick1Lens()
 {
-    bool result = carrier->Move_SZ_SY_XY_Z_Sync(parameters.UnPick1X(),parameters.UnPick1Y(),parameters.UnPick1Z());
+    bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(parameters.UnPick1X(),parameters.UnPick1Y(),parameters.UnPick1Z());
     if(result)
     {
         //todo one fuction
@@ -80,7 +80,7 @@ bool LutModule::moveToPick2Lens()
 {
     bool result = grabber->Set(false);
     if(result)
-        result = carrier->Move_SZ_SY_XY_Z_Sync(parameters.Pick2X(),parameters.Pick2Y(),parameters.Pick2Z());
+        result = carrier->Move_SZ_SY_X_Y_Z_Sync(parameters.Pick2X(),parameters.Pick2Y(),parameters.Pick2Z());
     if(result)
     {
         double reuslt_pos;
@@ -94,7 +94,7 @@ bool LutModule::moveToPick2Lens()
 
 bool LutModule::moveToUnPick2Lens()
 {
-    bool result = carrier->Move_SZ_SY_XY_Z_Sync(parameters.UnPick2X(),parameters.UnPick2Y(),parameters.UnPick2Z());
+    bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(parameters.UnPick2X(),parameters.UnPick2Y(),parameters.UnPick2Z());
     if(result)
     {
         double reuslt_pos;

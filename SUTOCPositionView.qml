@@ -11,8 +11,6 @@ ColumnLayout {
             text: sutParams.OCX
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
@@ -27,8 +25,6 @@ ColumnLayout {
             text: sutParams.OCY
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
@@ -43,8 +39,6 @@ ColumnLayout {
             text: sutParams.OCZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }

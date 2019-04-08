@@ -6,6 +6,8 @@
 #include <QQuickImageProvider>
 #include <AVL.h>
 
+class BaslerPylonCamera;
+
 struct PRResultStruct {
     PRResultStruct() : x(0), y(0), theta(0), ret(false)
     {}
@@ -24,7 +26,7 @@ class VisionModule: public QObject, public QQuickImageProvider
 {
     Q_OBJECT
 public:
-    VisionModule();
+    VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera);
     /*
      * Use the most generic NCC template matching
      */
@@ -37,9 +39,9 @@ private:
     void displayPRResult(const QString, const PRResultStruct);
 
     bool grabImageFromCamera(QString cameraName, avl::Image &image);
-//    BaslerPylonCamera * downlookCamera;
-//    BaslerPylonCamera * uplookCamera;
-//    BaslerPylonCamera * pickarmCamera;
+    BaslerPylonCamera * downlookCamera;
+    BaslerPylonCamera * uplookCamera;
+    BaslerPylonCamera * pickarmCamera;
 signals :
     void callQmlRefeshImg();  // Preview 1
 };

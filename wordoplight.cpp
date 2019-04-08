@@ -5,6 +5,11 @@
 WordopLight::WordopLight()
 {
     port_name = "";
+    Init("com1");
+    OnOff(0, true);
+    OnOff(1, true);
+    OnOff(2, true);
+    OnOff(3, true);
     connect(this,&WordopLight::ChangeBrightnessSignal,this,&WordopLight::ChangeBrightness,Qt::QueuedConnection);
     connect(this,&WordopLight::ChangeDoneSignal,this,&WordopLight::ChangeDone,Qt::QueuedConnection);
 }

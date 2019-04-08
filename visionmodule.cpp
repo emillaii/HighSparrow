@@ -15,18 +15,20 @@
 #include <commonutils.h>
 #include "baslerpyloncamera.h"
 
-VisionModule::VisionModule()
+VisionModule:: VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera)
              :QQuickImageProvider(QQuickImageProvider::Image)
 {
-
+    this->downlookCamera = downlookCamera;
+    this->uplookCamera = uplookCamera;
+    this->pickarmCamera = pickarmCamera;
 }
 
 bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 {
     BaslerPylonCamera *camera = Q_NULLPTR;
-    if (cameraName.contains(CAMERA_AA1_DL)) {  }
-    else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { }
-    else if (cameraName.contains(PICKARM_VISION_CAMERA)) {  }
+    if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
+    else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
+    else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
     QPixmap p = QPixmap::fromImage(camera->getImage());
     QImage q2 = p.toImage();
     q2 = q2.convertToFormat(QImage::Format_RGB888);
@@ -139,20 +141,6 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         return error_code;
     }
     return error_code;
-}
-
-bool grabImageFromCamera(QString cameraName, avl::Image &image)
-{
-    BaslerPylonCamera *camera = Q_NULLPTR;
-    if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) {  }
-    else if (cameraName.contains(UPLOOK_VISION_CAMERA)) {  }
-    else if (cameraName.contains(PICKARM_VISION_CAMERA)) {  }
-    QPixmap p = QPixmap::fromImage(camera->getImage());
-    QImage q2 = p.toImage();
-    q2 = q2.convertToFormat(QImage::Format_RGB888);
-    avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-    image = image2;
-    return true;
 }
 
 void VisionModule::displayPRResult(const QString camera_name, const PRResultStruct prResult)

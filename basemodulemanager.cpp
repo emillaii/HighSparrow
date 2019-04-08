@@ -12,10 +12,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 //    pylonUplookCamera = new BaslerPylonCamera(CAMERA_LUT_DL);
 //    pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA1_DL);
     lightingModule = new WordopLight();
-    lightingModule->Init("com1");
-    lightingModule->OnOff(2, true);
-    lightingModule->OnOff(0, true);
-    visionModule = new VisionModule();
+    visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, Q_NULLPTR);
 //    pylonUplookCamera->start();
 //    pylonDownlookCamera->start();
 }

@@ -12,6 +12,7 @@ public:
     MaterialCarrierParameter():PropertyBase (){}
     Q_PROPERTY(QString Name READ Name WRITE setName NOTIFY NameChanged)
     Q_PROPERTY(double SafetyZ READ SafetyZ WRITE setSafetyZ NOTIFY SafetyZChanged)
+    Q_PROPERTY(double SafetyY READ SafetyY WRITE setSafetyY NOTIFY SafetyYChanged)
     Q_PROPERTY(double SafetyX READ SafetyX WRITE setSafetyX NOTIFY SafetyXChanged)
     Q_PROPERTY(double VisionX READ VisionX WRITE setVisionX NOTIFY VisionXChanged)
     Q_PROPERTY(double VisionY READ VisionY WRITE setVisionY NOTIFY VisionYChanged)
@@ -57,6 +58,11 @@ public:
     QString Name() const
     {
         return m_Name;
+    }
+
+    double SafetyY() const
+    {
+        return m_SafetyY;
     }
 
 public slots:
@@ -140,6 +146,16 @@ public slots:
         emit NameChanged(m_Name);
     }
 
+    void setSafetyY(double SafetyY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_SafetyY, SafetyY))
+            return;
+
+        m_SafetyY = SafetyY;
+        emit SafetyYChanged(m_SafetyY);
+    }
+
 signals:
     void SafetyZChanged(double SafetyZ);
 
@@ -157,6 +173,8 @@ signals:
 
     void NameChanged(QString Name);
 
+    void SafetyYChanged(double SafetyY);
+
 private:
     double m_SafetyZ = 0;
     double m_SafetyX = 0;
@@ -166,6 +184,7 @@ private:
     double m_CameraOffsetX = 0;
     double m_CameraOffsetY = 0;
     QString m_Name = "";
+    double m_SafetyY = 0;
 };
 
 #endif // MATERIAL_CARRIER_PARAMETER_H

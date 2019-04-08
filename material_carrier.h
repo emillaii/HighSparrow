@@ -20,6 +20,7 @@ public:
 public:
     bool Move_SZ_XY_Z_Sync(double x,double y,double z,int timeout = 3000);
     bool Move_SZ_SX_XY_Z_Sync(double x,double y,double z,int timeout = 3000);
+    bool Move_SZ_SY_XY_Z_Sync(double x,double y,double z,int timeout = 3000);
     bool Move_SZ_SX_XY_ToPos(double x,double y,bool use_offset = false,int timeout = 3000);
     bool Wait_XY_ToPos(double x,double y,bool use_offset = false,int timeout = 3000);
     bool Move_XY_Sync(double x,double y,int timeout = 3000);

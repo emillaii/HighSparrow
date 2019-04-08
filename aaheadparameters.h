@@ -184,20 +184,20 @@ signals:
 void paramsChanged();
 
 private:
-double m_PickLensPositionX;
-double m_PickLensPositionY;
-double m_PickLensPositionZ;
-double m_PickLensPositionA;
-double m_PickLensPositionB;
-double m_PickLensPositionC;
-double m_OCPositionX;
-double m_OCPositionY;
-double m_OCPositionZ;
-double m_OCPositionA;
-double m_OCPositionB;
-double m_OCPositionC;
-QString m_UplookPRName;
-double m_UplookPRLighting;
+double m_PickLensPositionX = 0;
+double m_PickLensPositionY = 0;
+double m_PickLensPositionZ = 0;
+double m_PickLensPositionA = 0;
+double m_PickLensPositionB = 0;
+double m_PickLensPositionC = 0;
+double m_OCPositionX = 0;
+double m_OCPositionY = 0;
+double m_OCPositionZ = 0;
+double m_OCPositionA = 0;
+double m_OCPositionB = 0;
+double m_OCPositionC = 0;
+QString m_UplookPRName = "";
+double m_UplookPRLighting = 0;
 };
 
 #endif // AAHEADPARAMETERS_H

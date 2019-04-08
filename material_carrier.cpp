@@ -28,7 +28,24 @@ bool MaterialCarrier::Move_SZ_SX_XY_Z_Sync(double x, double y, double z, int tim
     bool result;
     result = motor_z->MoveToPosSync(parameters.SafetyZ());
     if(!result) return false;
-    result = motor_y->MoveToPosSync(parameters.SafetyX());
+    result = motor_x->MoveToPosSync(parameters.SafetyX());
+    if(!result) return false;
+    motor_x->MoveToPos(x);
+    motor_y->MoveToPos(y);
+    result = motor_x->WaitArrivedTargetPos(x,timeout);
+    result &= motor_y->WaitArrivedTargetPos(y,timeout);
+    if(!result) return false;
+    result = motor_z->MoveToPosSync(z);
+    return result;
+}
+
+bool MaterialCarrier::Move_SZ_SY_XY_Z_Sync(double x, double y, double z, int timeout)
+{
+
+    bool result;
+    result = motor_z->MoveToPosSync(parameters.SafetyZ());
+    if(!result) return false;
+    result = motor_x->MoveToPosSync(parameters.SafetyY());
     if(!result) return false;
     motor_x->MoveToPos(x);
     motor_y->MoveToPos(y);

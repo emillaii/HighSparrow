@@ -9,7 +9,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 {
     is_init = false;
     profile_loaded = false;
-    pylonUplookCamera = new BaslerPylonCamera(CAMERA_LUT_DL);
+//    pylonUplookCamera = new BaslerPylonCamera(CAMERA_LUT_DL);
 //    pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA1_DL);
     lightingModule = new WordopLight();
     lightingModule->Init("com1");
@@ -50,8 +50,9 @@ bool BaseModuleManager::LoadProfile()
     if(res!=0)
     {
         QString temp_name;
-        XtGeneralInput::count = XT_Controler_Extend::Profile_Get_IoIn_Count();
-        for (int i = 0; i < XtGeneralInput::count; ++i) {
+        int input_count = XT_Controler_Extend::Profile_Get_IoIn_Count();
+        XtGeneralInput::count = input_count;
+        for (int i = 0; i < input_count; ++i) {
            temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoIn_Name(i));
            if(temp_name == ""||input_ios.contains(temp_name))
            {
@@ -61,8 +62,9 @@ bool BaseModuleManager::LoadProfile()
            XtGeneralInput* input_io = new XtGeneralInput(temp_name,i);
            input_ios.insert(temp_name,input_io);
         }
-        XtGeneralOutput::count = XT_Controler_Extend::Profile_Get_IoOut_Count();
-        for (int i = 0; i < XtGeneralOutput::count; ++i) {
+        int output_count = XT_Controler_Extend::Profile_Get_IoOut_Count();
+        XtGeneralOutput::count = output_count;
+        for (int i = 0; i < output_count; ++i) {
            temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoOut_Name(i));
            if(temp_name == ""||output_ios.contains(temp_name))
            {
@@ -72,8 +74,9 @@ bool BaseModuleManager::LoadProfile()
            XtGeneralOutput* output_io = new XtGeneralOutput(temp_name,i);
            output_ios.insert(temp_name,output_io);
         }
-        XtMotor::axis_id_resource = XT_Controler_Extend::Profile_Get_Axis_Count();
-        for (int i = 0; i <  XtMotor::axis_id_resource; ++i) {
+        int motor_count = XT_Controler_Extend::Profile_Get_Axis_Count();
+        XtMotor::axis_id_resource = motor_count;
+        for (int i = 0; i < motor_count; ++i) {
            temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_Axis_Name(i));
            if(temp_name == ""||motors.contains(temp_name))
            {
@@ -107,18 +110,19 @@ bool BaseModuleManager::InitStruct()
     y = GetMotorByName("LUT_Y");
     z_v = GetVcMotorByName("LUT_Z");
     v = GetVacuumByName("LUT_V");
-    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
+//    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
     lut_carrier = new MaterialCarrier("LUT",x,y,z_v,v);
     v_u = GetVacuumByName("LUT_V_U");
-    if(lut_carrier == nullptr||pylonUplookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr || v_u == nullptr)return false;
+//    if(lut_carrier == nullptr||pylonUplookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr || v_u == nullptr)return false;
     lut_module = new LutModule(lut_carrier,pylonUplookCamera,lightingModule,visionModule,v,v_u);
     x = GetMotorByName("SUT_X");
     y = GetMotorByName("SUT_Y");
     z_v = GetVcMotorByName("SUT_Z");
     v = GetVacuumByName("SUT_V");
-    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
+//    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
     sut_carrier =new MaterialCarrier("SUT",x,y,z_v,v);
-    if(sut_carrier == nullptr||pylonDownlookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr)return false;
+//    if(sut_carrier == nullptr||pylonDownlookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr)return false;
+
     sut_module = new SutModule(sut_carrier,pylonDownlookCamera,lightingModule,visionModule);
     x = GetMotorByName("AA_X");
     y = GetMotorByName("AA_Y");
@@ -127,7 +131,7 @@ bool BaseModuleManager::InitStruct()
     b = GetMotorByName("AA_B");
     c = GetMotorByName("AA_C");
     v = GetVacuumByName("AA_V");
-    if(x == nullptr||y == nullptr||z == nullptr||a == nullptr||b == nullptr||c == nullptr||v == nullptr)return false;
+//    if(x == nullptr||y == nullptr||z == nullptr||a == nullptr||b == nullptr||c == nullptr||v == nullptr)return false;
     aa_head_module = new AAHeadModule("AAHead",x,y,z,a,b,c,v);
     profile_loaded = true;
     return true;

@@ -26,7 +26,7 @@ BaseModuleManager::~BaseModuleManager()
 void BaseModuleManager::testVision()
 {
     PRResultStruct prResult;
-    visionModule->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, prResult);
+    visionModule->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "", prResult);
     qInfo("%f %f %f", prResult.x, prResult.y, prResult.theta);
 }
 
@@ -260,4 +260,9 @@ XtGeneralInput *BaseModuleManager::GetInputIoByName(QString name)
 XtVacuum *BaseModuleManager::GetVacuumByName(QString name)
 {
     return nullptr;
+}
+
+bool BaseModuleManager::stepMove(QString name, double step, bool isPositive)
+{
+    return true;
 }

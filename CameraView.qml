@@ -24,7 +24,7 @@ Grid {
         Image {
             id: image
             anchors.fill: parent
-            source: "icons/home.png"
+            source: "icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
 
@@ -78,11 +78,7 @@ Grid {
                     image.source = "image://uplookCameraImage"
                 }
             }
-
-
-
         }
-
     }
 
     Frame {
@@ -93,7 +89,7 @@ Grid {
         Image {
             id: image1
             anchors.fill: parent
-            source: "icons/home.png"
+            source: "icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
 
@@ -151,7 +147,7 @@ Grid {
         Image {
             id: image2
             anchors.fill: parent
-            source: "icons/home.png"
+            source: "icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
 
             Slider {
@@ -185,21 +181,8 @@ Grid {
         Image {
             id: image3
             anchors.fill: parent
-            source: "icons/home.png"
+            source: "icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
         }
     }
 }
-
-
-
-
-
-
-
-
-
-/*##^## Designer {
-    D{i:17;anchors_x:0}
-}
- ##^##*/

@@ -15,7 +15,7 @@ bool LutModule::MoveToPR(PRResultStruct &pr_result)
     lighting->ChangeBrightnessSignal(LIGHTING_UPLOOK,parameters.Lighting());
     bool result = carrier->Move_Vision_Sync();
     if(result)
-        vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA,pr_result);
+        vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "",pr_result);
     return result;
 }
 

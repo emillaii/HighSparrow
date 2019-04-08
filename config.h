@@ -20,7 +20,7 @@
 #define AA_CALIBRATION_CONFIG_JSON   "config//aaCalibrationConfig.json"
 #define PR_CONFIG_JSON               "config//prConfig.json"
 #define AA_HEAD_MODULE_JSON          "config//aaHeadConfig.json"
-
+#define SUT_MODULE_JSON              "config//sutConfig.json"
 #define FLOWCHART_URL                "http://127.0.0.1:8000/flowchart.html"
 
 //Title naming

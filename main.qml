@@ -56,7 +56,8 @@ ApplicationWindow {
         onError: console.log(msg)
     }
 
-    header: ToolBar {
+    header:
+        ToolBar {
         id: toolBar
         height: 80
         anchors.right: parent.right
@@ -164,7 +165,7 @@ ApplicationWindow {
         ToolButton {
             text: qsTr("Dialog")
             anchors.left: parent.left
-            anchors.leftMargin: 90*4
+            anchors.leftMargin: 90*5
             transformOrigin: Item.Center
             display: Button.TextUnderIcon
             anchors.top: parent.top

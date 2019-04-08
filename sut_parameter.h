@@ -1,21 +1,21 @@
 #ifndef SUT_PARAMETER_H
 #define SUT_PARAMETER_H
-
-#include "PropertyBase.h"
+#include "propertybase.h"
 
 class SutParameter : public PropertyBase
 {
+    Q_OBJECT
 public:
-    explicit SutParameter():PropertyBase (){}
+    explicit SutParameter(){}
 
-    Q_PROPERTY(double OCX READ OCX WRITE setOCX NOTIFY OCXChanged)
-    Q_PROPERTY(double OCY READ OCY WRITE setOCY NOTIFY OCYChanged)
-    Q_PROPERTY(double OCZ READ OCZ WRITE setOCZ NOTIFY OCZChanged)
-    Q_PROPERTY(double LoadX READ LoadX WRITE setLoadX NOTIFY LoadXChanged)
-    Q_PROPERTY(double LoadY READ LoadY WRITE setLoadY NOTIFY LoadYChanged)
-    Q_PROPERTY(double LoadZ READ LoadZ WRITE setLoadZ NOTIFY LoadZChanged)
-    Q_PROPERTY(double Lighting READ Lighting WRITE setLighting NOTIFY LightingChanged)
-    Q_PROPERTY(double Force READ Force WRITE setForce NOTIFY ForceChanged)
+    Q_PROPERTY(double OCX READ OCX WRITE setOCX NOTIFY paramsChanged)
+    Q_PROPERTY(double OCY READ OCY WRITE setOCY NOTIFY paramsChanged)
+    Q_PROPERTY(double OCZ READ OCZ WRITE setOCZ NOTIFY paramsChanged)
+    Q_PROPERTY(double LoadX READ LoadX WRITE setLoadX NOTIFY paramsChanged)
+    Q_PROPERTY(double LoadY READ LoadY WRITE setLoadY NOTIFY paramsChanged)
+    Q_PROPERTY(double LoadZ READ LoadZ WRITE setLoadZ NOTIFY paramsChanged)
+    Q_PROPERTY(double Lighting READ Lighting WRITE setLighting NOTIFY paramsChanged)
+    Q_PROPERTY(double Force READ Force WRITE setForce NOTIFY paramsChanged)
     double OCX() const
     {
         return m_OCX;
@@ -55,102 +55,55 @@ public:
         return m_Force;
     }
 
+signals:
+    void paramsChanged();
 public slots:
     void setOCX(double OCX)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_OCX, OCX))
-            return;
-
         m_OCX = OCX;
-        emit OCXChanged(m_OCX);
+        emit paramsChanged();
     }
     void setOCY(double OCY)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_OCY, OCY))
-            return;
-
         m_OCY = OCY;
-        emit OCYChanged(m_OCY);
+        emit paramsChanged();
     }
 
     void setOCZ(double OCZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_OCZ, OCZ))
-            return;
-
         m_OCZ = OCZ;
-        emit OCZChanged(m_OCZ);
+        emit paramsChanged();
     }
 
     void setLoadX(double LoadX)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_LoadX, LoadX))
-            return;
-
         m_LoadX = LoadX;
-        emit LoadXChanged(m_LoadX);
+        emit paramsChanged();
     }
 
     void setLoadY(double LoadY)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_LoadY, LoadY))
-            return;
-
         m_LoadY = LoadY;
-        emit LoadYChanged(m_LoadY);
+        emit paramsChanged();
     }
 
     void setLoadZ(double LoadZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_LoadZ, LoadZ))
-            return;
-
         m_LoadZ = LoadZ;
-        emit LoadZChanged(m_LoadZ);
+        emit paramsChanged();
     }
 
     void setLighting(double Lighting)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_Lighting, Lighting))
-            return;
-
         m_Lighting = Lighting;
-        emit LightingChanged(m_Lighting);
+        emit paramsChanged();
     }
 
     void setForce(double Force)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_Force, Force))
-            return;
-
         m_Force = Force;
-        emit ForceChanged(m_Force);
+        emit paramsChanged();
     }
-
-signals:
-    void OCXChanged(double OCX);
-    void OCYChanged(double OCY);
-
-    void OCZChanged(double OCZ);
-
-    void LoadXChanged(double LoadX);
-
-    void LoadYChanged(double LoadY);
-
-    void LoadZChanged(double LoadZ);
-
-    void LightingChanged(double Lighting);
-
-    void ForceChanged(double Force);
-
 private:
     double m_OCX = 0;
     double m_OCY = 0;

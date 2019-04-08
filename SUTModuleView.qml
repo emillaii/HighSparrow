@@ -12,11 +12,11 @@ ColumnLayout {
     }
     GroupBox{
         title: qsTr("OC Position")
-        OCPositionView {}
+        SUTOCPositionView {}
     }
     GroupBox{
         title: qsTr("Pick Lens Position")
-        PickLensPositionView {}
+        SUTLoadPositionView {}
     }
 
     GroupBox{
@@ -27,9 +27,11 @@ ColumnLayout {
                     text: qsTr("Load PR Name")
                 }
                 TextField {
-                    id: uplookCameraPR
-                    text: aaHeadParams.UplookPRName
+                    id: downlookCameraPR
+                    text: "PR"
                     horizontalAlignment: TextInput.AlignHCenter
+                    onTextChanged: {
+                    }
                 }
                 FileDialog {
                     id: loadfileDialog
@@ -37,10 +39,10 @@ ColumnLayout {
                     selectExisting: true
                     selectFolder: false
                     selectMultiple: false
+
                     nameFilters: ["avdata文件 (*.avdata)"]
                     onAccepted: {
-                        uplookCameraPR.text = loadfileDialog.fileUrl
-                        aaHeadParams.setUplookPRName(uplookCameraPR.text)
+                        downlookCameraPR.text = loadfileDialog.fileUrl
                     }
                 }
 
@@ -51,24 +53,6 @@ ColumnLayout {
                     onClicked: {
                         loadfileDialog.open()
                     }
-                }
-                Slider {
-                    id: slider
-                    stepSize: 1
-                    to: 255
-                    from: 0
-                    value: aaHeadParams.UplookPRLighting
-                    onValueChanged: {
-                        baseModuleManager.setUplookLighting(value)
-                        aaHeadParams.setUplookPRLighting(slider.value)
-                    }
-                }
-                Label {
-                    y: 6
-                    color: "#46eb46"
-                    text: slider.value
-                    font.pointSize: 20
-                    font.family: "Times New Roman"
                 }
             }
         }

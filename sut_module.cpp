@@ -6,6 +6,22 @@ SutModule::SutModule(QString name, XtMotor *motor_x, XtMotor *motor_y, XtVcMotor
     this->camera = camera;
     this->lighting = lighting;
     this->vision = vision;
+    this->loadParams();
+    connect(&this->parameters, &SutParameter::paramsChanged, this, &SutModule::updateParams);
+}
+
+void SutModule::updateParams()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("SUT_PARAMS", &this->parameters);
+    PropertyBase::saveJsonConfig(SUT_MODULE_JSON, temp_map);
+}
+
+void SutModule::loadParams()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("SUT_PARAMS", &parameters);
+    PropertyBase::loadJsonConfig(SUT_MODULE_JSON, temp_map);
 }
 
 bool SutModule::MoveToPR(bool use_offset)
@@ -15,8 +31,7 @@ bool SutModule::MoveToPR(bool use_offset)
     if(result)
     {
         PRResultStruct pr_result;
-        vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA,pr_result);
-//        camera->
+        vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "", pr_result);
     }
     return result;
 }

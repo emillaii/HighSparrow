@@ -20,7 +20,7 @@ VisionModule::VisionModule()
 
 }
 
-ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, PRResultStruct &prResult)
+ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult)
 {
     ErrorCodeStruct error_code = { OK, ""};
     try {

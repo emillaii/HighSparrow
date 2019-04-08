@@ -344,13 +344,6 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     }
     xTilt = weighted_vector.z * weighted_vector.x;
     yTilt = weighted_vector.z * weighted_vector.y;
-    qInfo("xTilt: %f yTilt: %f", xTilt, yTilt);
-//    if (!isnan(xTilt) && !isnan(yTilt))
-//    {
-//        emit chartChanged(clustered_sfr, runningTestItemName, weighted_vector.z * weighted_vector.x, weighted_vector.z * weighted_vector.y,
-//                          ccIndex, ulIndex, urIndex, llIndex, lrIndex,
-//                          ur_peak_z, ul_peak_z, lr_peak_z, ll_peak_z, cc_peak_z);
-//    }
     aaData_1.clear();
     for (unsigned int i = 0; i < clustered_sfr.size(); i++)
     {

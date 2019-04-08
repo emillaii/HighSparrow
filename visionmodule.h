@@ -27,7 +27,7 @@ public:
     /*
      * Use the most generic NCC template matching
      */
-    ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, PRResultStruct &prResult);
+    ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 
 private:

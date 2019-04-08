@@ -4,9 +4,6 @@
 #include <QObject>
 #include <propertybase.h>
 #include "config.h"
-#include <QChart>
-#include <QSplineSeries>
-using namespace QtCharts;
 
 class AAHeadParameters : public PropertyBase
 {
@@ -25,7 +22,8 @@ public:
     Q_PROPERTY(double OCPositionA READ OCPositionA WRITE setOCPositionA NOTIFY paramsChanged)
     Q_PROPERTY(double OCPositionB READ OCPositionB WRITE setOCPositionB NOTIFY paramsChanged)
     Q_PROPERTY(double OCPositionC READ OCPositionC WRITE setOCPositionC NOTIFY paramsChanged)
-
+    Q_PROPERTY(QString UplookPRName READ UplookPRName WRITE setUplookPRName NOTIFY paramsChanged)
+    Q_PROPERTY(double UplookPRLighting READ UplookPRLighting WRITE setUplookPRLighting NOTIFY paramsChanged)
 double PickLensPositionX() const
 {
     return m_PickLensPositionX;
@@ -85,80 +83,105 @@ double OCPositionC() const
     return m_OCPositionC;
 }
 
+QString UplookPRName() const
+{
+    return m_UplookPRName;
+}
+
+double UplookPRLighting() const
+{
+    return m_UplookPRLighting;
+}
+
 public slots:
 void setPickLensPositionX(double PickLensPositionX)
 {
     m_PickLensPositionX = PickLensPositionX;
-    emit paramsChanged(m_PickLensPositionX);
+    emit paramsChanged();
 }
 void setPickLensPositionY(double PickLensPositionY)
 {
     m_PickLensPositionY = PickLensPositionY;
-    emit paramsChanged(m_PickLensPositionY);
+    emit paramsChanged();
 }
 
 void setPickLensPositionZ(double PickLensPositionZ)
 {
     m_PickLensPositionZ = PickLensPositionZ;
-    emit paramsChanged(m_PickLensPositionZ);
+    emit paramsChanged();
 }
 
 void setPickLensPositionA(double PickLensPositionA)
 {
     m_PickLensPositionA = PickLensPositionA;
-    emit paramsChanged(m_PickLensPositionA);
+    emit paramsChanged();
 }
 
 void setPickLensPositionB(double PickLensPositionB)
 {
     m_PickLensPositionB = PickLensPositionB;
-    emit paramsChanged(m_PickLensPositionB);
+    emit paramsChanged();
 }
 
 void setPickLensPositionC(double PickLensPositionC)
 {
     m_PickLensPositionC = PickLensPositionC;
-    emit paramsChanged(m_PickLensPositionC);
+    emit paramsChanged();
 }
 
 void setOCPositionX(double OCPositionX)
 {
     m_OCPositionX = OCPositionX;
-    emit paramsChanged(m_OCPositionX);
+    emit paramsChanged();
 }
 
 void setOCPositionY(double OCPositionY)
 {
     m_OCPositionY = OCPositionY;
-    emit paramsChanged(m_OCPositionY);
+    emit paramsChanged();
 }
 
 void setOCPositionZ(double OCPositionZ)
 {
     m_OCPositionZ = OCPositionZ;
-    emit paramsChanged(m_OCPositionZ);
+    emit paramsChanged();
 }
 
 void setOCPositionA(double OCPositionA)
 {
     m_OCPositionA = OCPositionA;
-    emit paramsChanged(m_OCPositionA);
+    emit paramsChanged();
 }
 
 void setOCPositionB(double OCPositionB)
 {
     m_OCPositionB = OCPositionB;
-    emit paramsChanged(m_OCPositionB);
+    emit paramsChanged();
 }
 
 void setOCPositionC(double OCPositionC)
 {
     m_OCPositionC = OCPositionC;
-    emit paramsChanged(m_OCPositionC);
+    emit paramsChanged();
+}
+
+void setUplookPRName(QString UplookPRName)
+{
+    if (m_UplookPRName == UplookPRName)
+        return;
+
+    m_UplookPRName = UplookPRName;
+    emit paramsChanged();
+}
+
+void setUplookPRLighting(double UplookPRLighting)
+{
+    m_UplookPRLighting = UplookPRLighting;
+    emit paramsChanged();
 }
 
 signals:
-void paramsChanged(double value);
+void paramsChanged();
 
 private:
 double m_PickLensPositionX;
@@ -173,6 +196,8 @@ double m_OCPositionZ;
 double m_OCPositionA;
 double m_OCPositionB;
 double m_OCPositionC;
+QString m_UplookPRName;
+double m_UplookPRLighting;
 };
 
 #endif // AAHEADPARAMETERS_H

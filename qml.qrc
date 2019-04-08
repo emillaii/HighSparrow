@@ -13,5 +13,9 @@
         <file>OCPositionView.qml</file>
         <file>PickLensPositionView.qml</file>
         <file>MotionDialog.qml</file>
+        <file>SUTModuleView.qml</file>
+        <file>SUTLoadPositionView.qml</file>
+        <file>SUTOCPositionView.qml</file>
     </qresource>
+    <qresource prefix="/sut"/>
 </RCC>

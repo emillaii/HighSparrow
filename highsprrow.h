@@ -3,6 +3,7 @@
 #include <QObject>
 #include "errorcode.h"
 #include "aaheadmodule.h"
+#include "sut_module.h"
 #include "logicmanager.h"
 #include "basemodulemanager.h"
 #include "STD.h"
@@ -17,6 +18,7 @@ private:
     ErrorCodeStruct InitComponent();
 public:
     AAHeadModule * aaHeadModule = Q_NULLPTR;
+    SutModule * sutModule = Q_NULLPTR;
     BaseModuleManager * baseModuleManager = Q_NULLPTR;
     LogicManager * logicManager = Q_NULLPTR;
 public:

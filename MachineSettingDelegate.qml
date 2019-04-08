@@ -29,8 +29,23 @@ ItemDelegate {
         }
 
         ColumnLayout {
-            visible: root.checked
+            visible: {
+                if (model.index === 1)
+                    return root.checked
+                else
+                    return false
+            }
             AAHeadModuleView {
+            }
+        }
+        ColumnLayout {
+            visible: {
+                if (model.index === 2)
+                    return root.checked
+                else
+                    return false
+            }
+            SUTModuleView {
             }
         }
     }

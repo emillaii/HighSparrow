@@ -264,10 +264,22 @@ XtVacuum *BaseModuleManager::GetVacuumByName(QString name)
 
 bool BaseModuleManager::stepMove(QString name, double step, bool isPositive)
 {
-    qInfo("Step move: %s %f %d", name.toStdString().c_str(), step, isPositive);
+
     if (motors.contains(name)) {
-        motors[name]->StepMoveSync(step, isPositive);
+        qInfo("Step move: %s %f %d %f", name.toStdString().c_str(), step, isPositive, motors[name]->GetFeedbackPos());
+        if (isPositive)
+            motors[name]->StepMove(step);
+        else {
+            motors[name]->StepMove(-step);
+        }
         return true;
     } else
         return false;
+}
+
+double BaseModuleManager::getMotorFeedbackPos(QString name)
+{
+     if (motors.contains(name)) {
+          return motors[name]->GetFeedbackPos();
+     }
 }

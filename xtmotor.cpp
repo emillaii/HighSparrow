@@ -545,6 +545,7 @@ bool XtMotor::WaitSeekDone(int thread,int timeout)
         if (buffer_len == 0 && finish == 1)
         {
             SetFeedbackZero(GetOutpuPos());
+            qInfo("axis %s seek origin success",name.toStdString().c_str());
             return true;
         }
         timeout-=10;

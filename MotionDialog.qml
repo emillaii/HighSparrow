@@ -78,6 +78,23 @@ Popup {
                 }
             }
             ScrollView {
+                Timer {
+                    interval: 300; running: true; repeat: true
+                    onTriggered: {
+                        if (dialog.visible) {
+                            aa1_x_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_X)
+                            aa1_y_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_Y)
+                            aa1_z_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_Z)
+                            aa1_a_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_A)
+                            aa1_b_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_B)
+                            aa1_c_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_C)
+                            sut_x_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
+                            sut_y_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)
+                            sut_z_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_Z)
+                        }
+                    }
+                }
+
                 implicitHeight: 300
                 clip: true
                 ColumnLayout {
@@ -101,7 +118,7 @@ Popup {
                             }
                         }
                         Label {
-                            text: qsTr("100")
+                            id: aa1_x_label
                             color: "lightskyblue"
                         }
                     }
@@ -123,7 +140,7 @@ Popup {
                             }
                         }
                         Label {
-                            text: qsTr("100")
+                            id: aa1_y_label
                             color: "lightskyblue"
                         }
                     }
@@ -145,7 +162,7 @@ Popup {
                             }
                         }
                         Label {
-                            text: qsTr("100")
+                            id: aa1_z_label
                             color: "lightskyblue"
                         }
                     }
@@ -167,7 +184,7 @@ Popup {
                             }
                         }
                         Label {
-                            text: qsTr("100")
+                            id: aa1_a_label
                             color: "lightskyblue"
                         }
                     }
@@ -189,7 +206,7 @@ Popup {
                             }
                         }
                         Label {
-                            text: qsTr("100")
+                            id: aa1_b_label
                             color: "lightskyblue"
                         }
                     }
@@ -211,7 +228,7 @@ Popup {
                             }
                         }
                         Label {
-                            text: qsTr("100")
+                            id: aa1_c_label
                             color: "lightskyblue"
                         }
                     }
@@ -233,8 +250,9 @@ Popup {
                             }
                         }
                         Label {
-                            text: qsTr("100")
+                            id: sut_x_label
                             color: "lightskyblue"
+
                         }
                     }
                     RowLayout {
@@ -255,7 +273,7 @@ Popup {
                             }
                         }
                         Label {
-                            text: qsTr("100")
+                            id: sut_y_label
                             color: "lightskyblue"
                         }
                     }
@@ -277,7 +295,7 @@ Popup {
                             }
                         }
                         Label {
-                            text: qsTr("100")
+                            id: sut_z_label
                             color: "lightskyblue"
                         }
                     }

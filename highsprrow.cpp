@@ -5,6 +5,7 @@
 HighSprrow::HighSprrow()
 {
     if (!QDir(CONFIG_DIR).exists()) {QDir().mkdir(CONFIG_DIR);}
+    if (!QDir(PR_CONFIG_DIR).exists()) {QDir().mkdir(PR_CONFIG_DIR);}
     baseModuleManager = new BaseModuleManager();
     baseModuleManager->LoadProfile();
     logicManager = new LogicManager(baseModuleManager);

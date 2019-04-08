@@ -191,7 +191,8 @@ ApplicationWindow {
                 highSprrow.callQProcess("GenericNCCavproj.avexe")
             }
             navigationFeatureButton.onClicked: {
-                logicManager.start()
+                //logicManager.start()
+                aaHeadModule.testVision()
             }
         }
 

@@ -22,7 +22,10 @@ VisionModule::VisionModule()
 
 ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult)
 {
-    ErrorCodeStruct error_code = { OK, ""};
+    pr_name.replace("file:///", "");
+    QString pr_offset_name = pr_name;
+    pr_offset_name.replace(".avdata", "_offset.avdata");
+    ErrorCodeStruct error_code = { OK, "" };
     try {
         atl::String g_constData1;
         atl::String g_constData2;
@@ -37,9 +40,9 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
                         .append(getCurrentTimeString())
                         .append(".jpg");
         g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\04blens_lighting100-220 (1)\\04blens_lighting100-220\\04blighting150.jpg";
-        g_constData2 = L"C:\\Users\\emil\\Desktop\\Test\\Genric_NCC\\default_offset.avdata";
+        g_constData2 = pr_offset_name.toStdString().c_str();
         g_constData3 = L"Vector2D";
-        g_constData4 = L"C:\\Users\\emil\\Desktop\\Test\\Genric_NCC\\default.avdata";
+        g_constData4 = pr_name.toStdString().c_str();
         g_constData5 = L"GrayModel";
         g_constData6 = L"Angle:";
         g_emptyString = L"";
@@ -113,7 +116,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avs::DrawPoints_SingleColor( image4, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image5 );
         avs::DrawRectangles_SingleColor( image5, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 2.0f, false, atl::NIL, 1.0f), true, image6 );
         avl::SaveImageToJpeg( image6 , imageName.toStdString().c_str(), atl::NIL, false );
-        displayPRResult(camera_name, prResult);
+        //displayPRResult(camera_name, prResult);
     } catch(const atl::Error& error) {
         qWarning(error.Message());
         return error_code;
@@ -132,7 +135,7 @@ void VisionModule::displayPRResult(const QString camera_name, const PRResultStru
     else if (camera_name.contains(PICKARM_VISION_CAMERA)) {
         last_pickarm_pr_result = prResult;
     }
-    emit callQmlRefeshImg();
+    //emit callQmlRefeshImg();
 }
 
 QImage VisionModule::requestImage(const QString &id, QSize *size, const QSize &requestedSize)

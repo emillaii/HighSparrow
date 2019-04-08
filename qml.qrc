@@ -16,6 +16,7 @@
         <file>SUTModuleView.qml</file>
         <file>SUTLoadPositionView.qml</file>
         <file>SUTOCPositionView.qml</file>
+        <file>LUTModuleView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

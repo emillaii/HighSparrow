@@ -56,6 +56,10 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         imageName.append(getVisionLogDir())
                         .append(getCurrentTimeString())
                         .append(".jpg");
+        QString rawImageName;
+        rawImageName.append(getVisionLogDir())
+                    .append(getCurrentTimeString())
+                    .append("_raw.jpg");
         g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\04blens_lighting100-220 (1)\\04blens_lighting100-220\\04blighting150.jpg";
         g_constData2 = pr_offset_name.toStdString().c_str();
         g_constData3 = L"Vector2D";
@@ -84,6 +88,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         //avl::LoadImage( g_constData1, false, image1 );
 
         this->grabImageFromCamera(camera_name, image1);
+        avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
+
         //Testing use
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
         avs::LoadObject< avl::Vector2D >( g_constData2, avl::StreamMode::Binary, g_constData3, vector2D1 );

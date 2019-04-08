@@ -11,5 +11,9 @@ ListModel {
         label: "SUT 配置"
         index: 2
     }
+    ListElement {
+        label: "LUT 配置"
+        index: 3
+    }
 }
 

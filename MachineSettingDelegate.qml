@@ -48,5 +48,15 @@ ItemDelegate {
             SUTModuleView {
             }
         }
+        ColumnLayout {
+            visible: {
+                if (model.index === 3)
+                    return root.checked
+                else
+                    return false
+            }
+            LUTModuleView {
+            }
+        }
     }
 }

@@ -92,16 +92,21 @@ Popup {
                             sut_x_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
                             sut_y_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)
                             sut_z_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_Z)
+
+                            lut_x_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_X)
+                            lut_y_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_Y)
+                            lut_z_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_Z)
                         }
                     }
                 }
 
-                implicitHeight: 300
+                implicitWidth:  300
+                implicitHeight: 600
                 clip: true
                 ColumnLayout {
                     RowLayout {
                         Text {
-                            text: " AA_X"
+                            text: " AA_X "
                             color: "white"
                         }
                         RoundButton {
@@ -125,7 +130,7 @@ Popup {
                     }
                     RowLayout {
                         Text {
-                            text: " AA_Y"
+                            text: " AA_Y "
                             color: "white"
                         }
                         RoundButton {
@@ -147,7 +152,7 @@ Popup {
                     }
                     RowLayout {
                         Text {
-                            text: " AA_Z"
+                            text: " AA_Z "
                             color: "white"
                         }
                         RoundButton {
@@ -169,7 +174,7 @@ Popup {
                     }
                     RowLayout {
                         Text {
-                            text: " AA_A"
+                            text: " AA_A "
                             color: "white"
                         }
                         RoundButton {
@@ -191,7 +196,7 @@ Popup {
                     }
                     RowLayout {
                         Text {
-                            text: " AA_B"
+                            text: " AA_B "
                             color: "white"
                         }
                         RoundButton {
@@ -213,7 +218,7 @@ Popup {
                     }
                     RowLayout {
                         Text {
-                            text: " AA_C"
+                            text: " AA_C "
                             color: "white"
                         }
                         RoundButton {
@@ -297,6 +302,72 @@ Popup {
                         }
                         Label {
                             id: sut_z_label
+                            color: "lightskyblue"
+                        }
+                    }
+                    RowLayout {
+                        Text {
+                            text: " LUT_X"
+                            color: "white"
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, true)
+                            }
+                        }
+                        RoundButton {
+                            text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_SUT1_Z, selectedStepSize, false)
+                            }
+                        }
+                        Label {
+                            id: lut_x_label
+                            color: "lightskyblue"
+                        }
+                    }
+                    RowLayout {
+                        Text {
+                            text: " LUT_X"
+                            color: "white"
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, true)
+                            }
+                        }
+                        RoundButton {
+                            text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, false)
+                            }
+                        }
+                        Label {
+                            id: lut_y_label
+                            color: "lightskyblue"
+                        }
+                    }
+                    RowLayout {
+                        Text {
+                            text: " LUT_Z"
+                            color: "white"
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_LUT1_Z, selectedStepSize, true)
+                            }
+                        }
+                        RoundButton {
+                            text: "-"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_LUT1_Z, selectedStepSize, false)
+                            }
+                        }
+                        Label {
+                            id: lut_z_label
                             color: "lightskyblue"
                         }
                     }

@@ -13,10 +13,9 @@ class LutModule : public QObject
 {
     Q_OBJECT
 public:
-    LutModule(MaterialCarrier* carrier,BaslerPylonCamera* camera,WordopLight* lighting,VisionModule* vision,XtVacuum* load_vacuum,XtVacuum* unload_vacuum);
-
-private:
+    LutModule(MaterialCarrier* carrier, BaslerPylonCamera* camera, WordopLight* lighting,VisionModule* vision, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
     LutParameter parameters;
+private:
     MaterialCarrier* carrier;
     BaslerPylonCamera* camera;
     WordopLight* lighting;

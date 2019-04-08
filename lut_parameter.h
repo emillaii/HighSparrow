@@ -24,7 +24,7 @@ public:
     Q_PROPERTY(double LoadZ READ LoadZ WRITE setLoadZ NOTIFY paramsChanged)
     Q_PROPERTY(double PickForce READ PickForce WRITE setPickForce NOTIFY paramsChanged)
     Q_PROPERTY(int Lighting READ Lighting WRITE setLighting NOTIFY paramsChanged)
-
+    Q_PROPERTY(QString prName READ prName WRITE setPRName NOTIFY paramsChanged)
     double Pick1X() const
     {
         return m_Pick1X;
@@ -107,6 +107,11 @@ public:
     double UnPick2Z() const
     {
         return m_UnPick2Z;
+    }
+
+    QString prName() const
+    {
+        return m_prName;
     }
 
 public slots:
@@ -213,6 +218,14 @@ public slots:
         emit paramsChanged();
     }
 
+    void setPRName(QString prName)
+    {
+        if (m_prName == prName)
+            return;
+        m_prName = prName;
+        emit paramsChanged();
+    }
+
 signals:
     void paramsChanged();
 
@@ -234,6 +247,7 @@ private:
     double m_UnPick2X = 0;
     double m_UnPick2Y = 0;
     double m_UnPick2Z = 0;
+    QString m_prName;
 };
 
 #endif // LUT_PARAMERTER_H

@@ -14,6 +14,7 @@ public:
     Q_PROPERTY(double LoadY READ LoadY WRITE setLoadY NOTIFY paramsChanged)
     Q_PROPERTY(double LoadZ READ LoadZ WRITE setLoadZ NOTIFY paramsChanged)
     Q_PROPERTY(double Lighting READ Lighting WRITE setLighting NOTIFY paramsChanged)
+    Q_PROPERTY(QString prName READ prName WRITE setPRName NOTIFY paramsChanged)
     Q_PROPERTY(double Force READ Force WRITE setForce NOTIFY paramsChanged)
     double OCX() const
     {
@@ -52,6 +53,11 @@ public:
     double Force() const
     {
         return m_Force;
+    }
+
+    QString prName() const
+    {
+        return m_prName;
     }
 
 signals:
@@ -105,6 +111,14 @@ public slots:
         emit paramsChanged();
     }
 
+    void setPRName(QString prName)
+    {
+        if (m_prName == prName)
+            return;
+        m_prName = prName;
+        emit paramsChanged();
+    }
+
 private:
     double m_OCX = 0;
     double m_OCY = 0;
@@ -114,6 +128,7 @@ private:
     double m_LoadZ = 0;
     double m_Lighting = 0;
     double m_Force = 0;
+    QString m_prName = "";
 };
 
 #endif // SUT_PARAMETER_H

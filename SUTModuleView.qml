@@ -15,7 +15,7 @@ ColumnLayout {
         SUTOCPositionView {}
     }
     GroupBox{
-        title: qsTr("Pick Lens Position")
+        title: qsTr("Load Position")
         SUTLoadPositionView {}
     }
     GroupBox{
@@ -36,7 +36,7 @@ ColumnLayout {
                 }
                 TextField {
                     id: downlookCameraPR
-                    text: sutCarrierParams.Name
+                    text: sutParams.prName
                     horizontalAlignment: TextInput.AlignHCenter
                     onTextChanged: {
                     }
@@ -51,7 +51,7 @@ ColumnLayout {
                     nameFilters: ["avdata文件 (*.avdata)"]
                     onAccepted: {
                         downlookCameraPR.text = loadfileDialog.fileUrl
-                        sutCarrierParams.setName(downlookCameraPR.text)
+                        sutParams.setPRName(loadfileDialog.fileUrl)
                     }
                 }
 

@@ -11,7 +11,7 @@ ColumnLayout {
         }
     }
     GroupBox{
-        title: qsTr("Pick Lens Position 1")
+        title: qsTr("Load Position")
         LUTLoadPositionView {}
     }
     GroupBox{
@@ -48,7 +48,7 @@ ColumnLayout {
                 }
                 TextField {
                     id: uplookCameraPR
-                    text: lutCarrierParams.Name
+                    text: lutParams.prName
                     horizontalAlignment: TextInput.AlignHCenter
                     onTextChanged: {
                     }
@@ -63,7 +63,7 @@ ColumnLayout {
                     nameFilters: ["avdata文件 (*.avdata)"]
                     onAccepted: {
                         uplookCameraPR.text = loadfileDialog.fileUrl
-                        lutCarrierParams.setName(loadfileDialog.fileUrl)
+                        lutParams.setPRName(loadfileDialog.fileUrl)
                     }
                 }
 

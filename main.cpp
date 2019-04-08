@@ -48,8 +48,13 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("aaHeadModule", highSprrow.baseModuleManager->aa_head_module);
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module->parameters);
+
     engine.rootContext()->setContextProperty("sutParams", &highSprrow.baseModuleManager->sut_module->parameters);
+    engine.rootContext()->setContextProperty("sutCarrierParams",  &highSprrow.baseModuleManager->sut_module->carrier->parameters);
+
     engine.rootContext()->setContextProperty("lutParams", &highSprrow.baseModuleManager->lut_module->parameters);
+    engine.rootContext()->setContextProperty("lutCarrierParams", &highSprrow.baseModuleManager->lut_module->carrier->parameters);
+
     //QImage Provider
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);
     engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);

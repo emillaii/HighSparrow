@@ -18,6 +18,14 @@ ColumnLayout {
         title: qsTr("Pick Lens Position")
         SUTLoadPositionView {}
     }
+    GroupBox{
+        title: qsTr("PR Position")
+        SUTPRPositionView {}
+    }
+    GroupBox{
+        title: qsTr("Safety Position")
+        SUTSafetyPositionView {}
+    }
 
     GroupBox{
         title: qsTr("Uplook PR Config")
@@ -28,7 +36,7 @@ ColumnLayout {
                 }
                 TextField {
                     id: downlookCameraPR
-                    text: "PR"
+                    text: sutCarrierParams.Name
                     horizontalAlignment: TextInput.AlignHCenter
                     onTextChanged: {
                     }
@@ -43,6 +51,7 @@ ColumnLayout {
                     nameFilters: ["avdata文件 (*.avdata)"]
                     onAccepted: {
                         downlookCameraPR.text = loadfileDialog.fileUrl
+                        sutCarrierParams.setName(downlookCameraPR.text)
                     }
                 }
 
@@ -53,6 +62,24 @@ ColumnLayout {
                     onClicked: {
                         loadfileDialog.open()
                     }
+                }
+                Slider {
+                    id: slider
+                    stepSize: 1
+                    to: 255
+                    from: 0
+                    value: sutParams.Lighting
+                    onValueChanged: {
+                        baseModuleManager.setDownlookLighting(value)
+                        sutParams.setLighting(value)
+                    }
+                }
+                Label {
+                    y: 6
+                    color: "#46eb46"
+                    text: slider.value
+                    font.pointSize: 20
+                    font.family: "Times New Roman"
                 }
             }
         }

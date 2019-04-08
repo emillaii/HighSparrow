@@ -8,6 +8,26 @@ LutModule::LutModule(MaterialCarrier* carrier, BaslerPylonCamera* camera,WordopL
     this->vision = vision;
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuun;
+    this->loadParams();
+    connect(&this->parameters, &LutParameter::paramsChanged, this, &LutModule::updateParams);
+    connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &LutModule::updateParams);
+}
+
+
+void LutModule::updateParams()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("LUT_PARAMS", &this->parameters);
+    temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
+    PropertyBase::saveJsonConfig("config//lutConfig.json", temp_map);
+}
+
+void LutModule::loadParams()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("LUT_PARAMS", &parameters);
+    temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
+    PropertyBase::loadJsonConfig("config//lutConfig.json", temp_map);
 }
 
 bool LutModule::moveToPR()

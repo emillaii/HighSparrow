@@ -13,10 +13,10 @@ class SutModule : public QObject
 public:
     SutModule(MaterialCarrier* carrier,BaslerPylonCamera* camera,WordopLight* lighting,VisionModule* vision);
     SutParameter parameters;
+    MaterialCarrier* carrier;
 public slots:
     void updateParams();
 private:
-    MaterialCarrier* carrier;
     BaslerPylonCamera* camera;
     WordopLight* lighting;
     VisionModule* vision;

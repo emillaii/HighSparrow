@@ -17,6 +17,15 @@
         <file>SUTLoadPositionView.qml</file>
         <file>SUTOCPositionView.qml</file>
         <file>LUTModuleView.qml</file>
+        <file>SUTPRPositionView.qml</file>
+        <file>LUTPickPositionView.qml</file>
+        <file>LUTPick2PositionView.qml</file>
+        <file>LUTLoadPositionView.qml</file>
+        <file>LUTUnPickPositionView.qml</file>
+        <file>LUTUnPick2PositionView.qml</file>
+        <file>LUTPRPositionView.qml</file>
+        <file>LUTSafetyPositionView.qml</file>
+        <file>SUTSafetyPositionView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

@@ -8,20 +8,23 @@ SutModule::SutModule(MaterialCarrier* carrier , BaslerPylonCamera *camera, Wordo
     this->vision = vision;
     this->loadParams();
     connect(&this->parameters, &SutParameter::paramsChanged, this, &SutModule::updateParams);
+    connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &SutModule::updateParams);
 }
 
 void SutModule::updateParams()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("SUT_PARAMS", &this->parameters);
-    PropertyBase::saveJsonConfig(SUT_MODULE_JSON, temp_map);
+    temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
+    PropertyBase::saveJsonConfig("config//sutConfig.json", temp_map);
 }
 
 void SutModule::loadParams()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("SUT_PARAMS", &parameters);
-    PropertyBase::loadJsonConfig(SUT_MODULE_JSON, temp_map);
+    temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
+    PropertyBase::loadJsonConfig("config//sutConfig.json", temp_map);
 }
 
 bool SutModule::moveToPR()

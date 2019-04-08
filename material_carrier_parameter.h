@@ -1,24 +1,22 @@
 #ifndef MATERIAL_CARRIER_PARAMETER_H
 #define MATERIAL_CARRIER_PARAMETER_H
 
-#include "PropertyBase.h"
-
-
+#include "propertybase.h"
 
 class MaterialCarrierParameter:public PropertyBase
 {
     Q_OBJECT
 public:
     MaterialCarrierParameter():PropertyBase (){}
-    Q_PROPERTY(QString Name READ Name WRITE setName NOTIFY NameChanged)
-    Q_PROPERTY(double SafetyZ READ SafetyZ WRITE setSafetyZ NOTIFY SafetyZChanged)
-    Q_PROPERTY(double SafetyY READ SafetyY WRITE setSafetyY NOTIFY SafetyYChanged)
-    Q_PROPERTY(double SafetyX READ SafetyX WRITE setSafetyX NOTIFY SafetyXChanged)
-    Q_PROPERTY(double VisionX READ VisionX WRITE setVisionX NOTIFY VisionXChanged)
-    Q_PROPERTY(double VisionY READ VisionY WRITE setVisionY NOTIFY VisionYChanged)
-    Q_PROPERTY(double VisionZ READ VisionZ WRITE setVisionZ NOTIFY VisionZChanged)
-    Q_PROPERTY(double CameraOffsetX READ CameraOffsetX WRITE setCameraOffsetX NOTIFY CameraOffsetXChanged)
-    Q_PROPERTY(double CameraOffsetY READ CameraOffsetY WRITE setCameraOffsetY NOTIFY CameraOffsetYChanged)
+    Q_PROPERTY(QString Name READ Name WRITE setName NOTIFY paramsChanged)
+    Q_PROPERTY(double SafetyZ READ SafetyZ WRITE setSafetyZ NOTIFY paramsChanged)
+    Q_PROPERTY(double SafetyY READ SafetyY WRITE setSafetyY NOTIFY paramsChanged)
+    Q_PROPERTY(double SafetyX READ SafetyX WRITE setSafetyX NOTIFY paramsChanged)
+    Q_PROPERTY(double VisionX READ VisionX WRITE setVisionX NOTIFY paramsChanged)
+    Q_PROPERTY(double VisionY READ VisionY WRITE setVisionY NOTIFY paramsChanged)
+    Q_PROPERTY(double VisionZ READ VisionZ WRITE setVisionZ NOTIFY paramsChanged)
+    Q_PROPERTY(double CameraOffsetX READ CameraOffsetX WRITE setCameraOffsetX NOTIFY paramsChanged)
+    Q_PROPERTY(double CameraOffsetY READ CameraOffsetY WRITE setCameraOffsetY NOTIFY paramsChanged)
 
     double SafetyZ() const
     {
@@ -69,72 +67,44 @@ public slots:
 
     void setSafetyZ(double SafetyZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_SafetyZ, SafetyZ))
-            return;
-
         m_SafetyZ = SafetyZ;
-        emit SafetyZChanged(m_SafetyZ);
+        emit paramsChanged();
     }
 
     void setSafetyX(double SafetyX)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_SafetyX, SafetyX))
-            return;
-
         m_SafetyX = SafetyX;
-        emit SafetyXChanged(m_SafetyX);
+        emit paramsChanged();
     }
 
     void setVisionX(double VisionX)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_VisionX, VisionX))
-            return;
-
         m_VisionX = VisionX;
-        emit VisionXChanged(m_VisionX);
+        emit paramsChanged();
     }
 
     void setVisionY(double VisionY)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_VisionY, VisionY))
-            return;
-
         m_VisionY = VisionY;
-        emit VisionYChanged(m_VisionY);
+        emit paramsChanged();
     }
 
     void setVisionZ(double VisionZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_VisionZ, VisionZ))
-            return;
-
         m_VisionZ = VisionZ;
-        emit VisionZChanged(m_VisionZ);
+        emit paramsChanged();
     }
 
     void setCameraOffsetX(double CameraOffsetX)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_CameraOffsetX, CameraOffsetX))
-            return;
-
         m_CameraOffsetX = CameraOffsetX;
-        emit CameraOffsetXChanged(m_CameraOffsetX);
+        emit paramsChanged();
     }
 
     void setCameraOffsetY(double CameraOffsetY)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_CameraOffsetY, CameraOffsetY))
-            return;
-
-        m_CameraOffsetY = CameraOffsetY;
-        emit CameraOffsetYChanged(m_CameraOffsetY);
+        m_CameraOffsetY = CameraOffsetY;   
+        emit paramsChanged();
     }
 
     void setName(QString Name)
@@ -143,37 +113,17 @@ public slots:
             return;
 
         m_Name = Name;
-        emit NameChanged(m_Name);
+        emit paramsChanged();
     }
 
     void setSafetyY(double SafetyY)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_SafetyY, SafetyY))
-            return;
-
         m_SafetyY = SafetyY;
-        emit SafetyYChanged(m_SafetyY);
+        emit paramsChanged();
     }
 
 signals:
-    void SafetyZChanged(double SafetyZ);
-
-    void SafetyXChanged(double SafetyX);
-
-    void VisionXChanged(double VisionX);
-
-    void VisionYChanged(double VisionY);
-
-    void VisionZChanged(double VisionZ);
-
-    void CameraOffsetXChanged(double CameraOffsetX);
-
-    void CameraOffsetYChanged(double CameraOffsetY);
-
-    void NameChanged(QString Name);
-
-    void SafetyYChanged(double SafetyY);
+    void paramsChanged();
 
 private:
     double m_SafetyZ = 0;

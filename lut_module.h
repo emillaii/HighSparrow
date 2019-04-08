@@ -15,8 +15,10 @@ class LutModule : public QObject
 public:
     LutModule(MaterialCarrier* carrier, BaslerPylonCamera* camera, WordopLight* lighting,VisionModule* vision, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
     LutParameter parameters;
-private:
     MaterialCarrier* carrier;
+public slots:
+    void updateParams();
+private:
     BaslerPylonCamera* camera;
     WordopLight* lighting;
     VisionModule* vision;
@@ -25,6 +27,7 @@ private:
     XtVacuum* unload_vacuum;
 
     PRResultStruct pr_result;
+    void loadParams();
 public:
     Q_INVOKABLE bool moveToPR();
     Q_INVOKABLE bool moveToLoadPos();

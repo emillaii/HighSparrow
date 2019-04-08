@@ -11,12 +11,32 @@ ColumnLayout {
         }
     }
     GroupBox{
-        title: qsTr("OC Position")
-        SUTOCPositionView {}
+        title: qsTr("Pick Lens Position 1")
+        LUTLoadPositionView {}
     }
     GroupBox{
-        title: qsTr("Pick Lens Position")
-        SUTLoadPositionView {}
+        title: qsTr("Pick Lens Position 1")
+        LUTPickPositionView {}
+    }
+    GroupBox{
+        title: qsTr("unPick Lens Position 1")
+        LUTUnPickPositionView {}
+    }
+    GroupBox{
+        title: qsTr("Pick Lens Position 2")
+        LUTPick2PositionView {}
+    }
+    GroupBox{
+        title: qsTr("UnPick Lens Position 2")
+        LUTUnPick2PositionView {}
+    }
+    GroupBox{
+        title: qsTr("PR Position")
+        LUTPRPositionView {}
+    }
+    GroupBox{
+        title: qsTr("Safety Position")
+        LUTSafetyPositionView {}
     }
 
     GroupBox{
@@ -27,8 +47,8 @@ ColumnLayout {
                     text: qsTr("Load PR Name")
                 }
                 TextField {
-                    id: downlookCameraPR
-                    text: "PR"
+                    id: uplookCameraPR
+                    text: lutCarrierParams.Name
                     horizontalAlignment: TextInput.AlignHCenter
                     onTextChanged: {
                     }
@@ -42,7 +62,8 @@ ColumnLayout {
 
                     nameFilters: ["avdata文件 (*.avdata)"]
                     onAccepted: {
-                        downlookCameraPR.text = loadfileDialog.fileUrl
+                        uplookCameraPR.text = loadfileDialog.fileUrl
+                        lutCarrierParams.setName(loadfileDialog.fileUrl)
                     }
                 }
 
@@ -53,6 +74,24 @@ ColumnLayout {
                     onClicked: {
                         loadfileDialog.open()
                     }
+                }
+                Slider {
+                    id: slider
+                    stepSize: 1
+                    to: 255
+                    from: 0
+                    value: lutParams.Lighting
+                    onValueChanged: {
+                        baseModuleManager.setUplookLighting(value)
+                        lutParams.setLighting(value)
+                    }
+                }
+                Label {
+                    y: 6
+                    color: "#46eb46"
+                    text: slider.value
+                    font.pointSize: 20
+                    font.family: "Times New Roman"
                 }
             }
         }

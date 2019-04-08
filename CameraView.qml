@@ -45,6 +45,8 @@ Grid {
             Slider {
                 id: slider
                 y: 256
+                width: 120
+                height: 48
                 stepSize: 1
                 to: 255
                 from: 0
@@ -59,15 +61,29 @@ Grid {
                 }
                 Label {
                     id: label
-                    y: 6
+                    y: 10
                     color: "#46eb46"
                     text: baseModuleManager.uplookLighting
                     font.pointSize: 20
                     font.family: "Times New Roman"
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 12
+                    anchors.bottomMargin: 8
                     anchors.left: parent.left
-                    anchors.leftMargin: 202
+                    anchors.leftMargin: 115
+                }
+                Button {
+                    x: 241
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "lightGreen"
+                    icon.source: "icons/save.png"
+                    onClicked: {
+                        console.log("Save Image")
+                        visionModule.saveImage(0)
+                    }
                 }
             }
 
@@ -98,6 +114,8 @@ Grid {
                 stepSize: 1
                 to: 255
                 from: 0
+                width: 120
+                height: 48
                 anchors.left: parent.left
                 anchors.leftMargin: 0
                 anchors.bottom: parent.bottom
@@ -107,15 +125,29 @@ Grid {
                     baseModuleManager.setDownlookLighting(value)
                 }
                 Label {
-                    y: 6
+                    y: 10
                     color: "#46eb46"
                     text: baseModuleManager.downlookLighting
                     font.pointSize: 20
                     font.family: "Times New Roman"
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 12
+                    anchors.bottomMargin: 8
                     anchors.left: parent.left
-                    anchors.leftMargin: 202
+                    anchors.leftMargin: 118
+                }
+                Button {
+                    x: 241
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "lightGreen"
+                    icon.source: "icons/save.png"
+                    onClicked: {
+                        console.log("Save Image")
+                        visionModule.saveImage(1)
+                    }
                 }
             }
 
@@ -153,6 +185,8 @@ Grid {
             Slider {
                 id: slider1
                 y: 250
+                width: 120
+                height: 48
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: -22
                 anchors.left: parent.left
@@ -160,15 +194,29 @@ Grid {
                 value: 0.5
 
                 Label {
-                    y: 6
+                    y: 10
                     color: "#46eb46"
                     text: baseModuleManager.downlookLighting
                     font.pointSize: 20
                     font.family: "Times New Roman"
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 12
+                    anchors.bottomMargin: 8
                     anchors.left: parent.left
-                    anchors.leftMargin: 202
+                    anchors.leftMargin: 117
+                }
+                Button {
+                    x: 241
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "lightGreen"
+                    icon.source: "icons/save.png"
+                    onClicked: {
+                        console.log("Save Image")
+                        visionModule.saveImage(2)
+                    }
                 }
             }
         }

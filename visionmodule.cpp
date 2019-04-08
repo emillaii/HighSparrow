@@ -29,12 +29,36 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
     if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
     else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
     else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
+
+    if (camera == Q_NULLPTR || !camera->isCameraGrabbing()) return false;
     QPixmap p = QPixmap::fromImage(camera->getImage());
     QImage q2 = p.toImage();
     q2 = q2.convertToFormat(QImage::Format_RGB888);
     avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
     image = image2;
     return true;
+}
+
+void VisionModule::saveImage(int channel)
+{
+    avl::Image image1; bool ret;
+    if (channel == 0)
+        ret = this->grabImageFromCamera(UPLOOK_VISION_CAMERA, image1);
+    else if (channel == 1)
+        ret = this->grabImageFromCamera(DOWNLOOK_VISION_CAMERA, image1);
+    else if (channel == 2)
+        ret = this->grabImageFromCamera(PICKARM_VISION_CAMERA, image1);
+    else return;
+    if (!ret) {
+        qInfo("Cannot save image due to camera is not running");
+        return;
+    }
+    QString imageName;
+    imageName.append(getVisionLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".jpg");
+    if (!image1.Empty())
+        avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
 }
 
 ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult)

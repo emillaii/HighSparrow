@@ -209,10 +209,10 @@ ApplicationWindow {
         currentIndex: swipeView.currentIndex
 
         TabButton {
-            text: qsTr("Page 1")
+            text: qsTr("Main Page")
         }
         TabButton {
-            text: qsTr("Page 2")
+            text: qsTr("Data")
         }
         TabButton {
             text: qsTr("流程图")

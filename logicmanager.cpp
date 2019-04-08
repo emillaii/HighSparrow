@@ -1,9 +1,9 @@
 #include "logicmanager.h"
 
-LogicManager::LogicManager(QObject *parent)
+LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     : QThread (parent)
 {
-    aaCore = new AACore();
+    aaCore = new AACore(device_manager->aa_head_module,device_manager->lut_module,device_manager->sut_module);
     sfrWorkerController = new SfrWorkerController(aaCore);
     aaCore->setSfrWorkerController(sfrWorkerController);
 }

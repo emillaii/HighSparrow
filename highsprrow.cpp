@@ -7,7 +7,7 @@ HighSprrow::HighSprrow()
     if (!QDir(CONFIG_DIR).exists()) {QDir().mkdir(CONFIG_DIR);}
     baseModuleManager = new BaseModuleManager();
     baseModuleManager->LoadProfile();
-    logicManager = new LogicManager();
+    logicManager = new LogicManager(baseModuleManager);
 //    aaHeadModule = new AAHeadModule(Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,
 //                                    Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,
 //                                    Q_NULLPTR);

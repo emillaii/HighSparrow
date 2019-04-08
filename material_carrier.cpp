@@ -90,11 +90,15 @@ bool MaterialCarrier::Wait_XY_ToPos(double x, double y,bool use_offset, int time
     return result;
 }
 
-bool MaterialCarrier::Move_XY_Sync(double x, double y, int timeout)
+bool MaterialCarrier::StepMove_XY_Sync(double step_x, double step_y, int timeout)
 {
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
-    return Wait_XY_ToPos(x,y,timeout);
+    double cur_x = motor_x->GetFeedbackPos();
+    double cur_y = motor_y->GetFeedbackPos();
+    double target_x = cur_x + step_x;
+    double target_y = cur_y + step_y;
+    motor_x->MoveToPos(target_x);
+    motor_y->MoveToPos(target_y);
+    return Wait_XY_ToPos(target_x,target_y,timeout);
 }
 
 void MaterialCarrier::Move_XY_ToPos(double x, double y)

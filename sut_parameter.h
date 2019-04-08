@@ -7,7 +7,6 @@ class SutParameter : public PropertyBase
     Q_OBJECT
 public:
     explicit SutParameter(){}
-
     Q_PROPERTY(double OCX READ OCX WRITE setOCX NOTIFY paramsChanged)
     Q_PROPERTY(double OCY READ OCY WRITE setOCY NOTIFY paramsChanged)
     Q_PROPERTY(double OCZ READ OCZ WRITE setOCZ NOTIFY paramsChanged)
@@ -57,6 +56,7 @@ public:
 
 signals:
     void paramsChanged();
+
 public slots:
     void setOCX(double OCX)
     {
@@ -104,6 +104,7 @@ public slots:
         m_Force = Force;
         emit paramsChanged();
     }
+
 private:
     double m_OCX = 0;
     double m_OCY = 0;

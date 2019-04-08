@@ -13,7 +13,7 @@ class AAHeadModule : public QObject
 {
     Q_OBJECT
 public:
-    AAHeadModule(XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtVacuum * v);
+    AAHeadModule(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtVacuum * v);
 
 public slots:
     void updateParams();
@@ -31,10 +31,11 @@ private:
 public:
     AAHeadParameters parameters;
 public:
-    bool moveToPickLensPsotion();
-    bool moveToOCPsotion();
-    bool Move_XY_Sync(double x,double y);
-    bool Move_AB_Sync(double a,double b);
+    Q_INVOKABLE bool moveToPickLensPsotion();
+    Q_INVOKABLE bool moveToOCPsotion();
+    Q_INVOKABLE bool stepMove_XY_Sync(double step_x,double step_y);
+    Q_INVOKABLE bool stepMove_AB_Sync(double step_a,double step_b);
+    Q_INVOKABLE bool stepMove_Z_Sync(double step_z);
 private:
     bool moveToSync(double x, double y, double z, double a, double b, double c);
 

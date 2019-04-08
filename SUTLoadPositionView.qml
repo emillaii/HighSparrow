@@ -61,7 +61,7 @@ ColumnLayout {
             height: 40
             visible: root.checked
             onClicked: {
-                console.log("Move To");
+                sutModule.moveToLoadPos()
             }
         }
         Button {
@@ -70,7 +70,7 @@ ColumnLayout {
             height: 40
             visible: root.checked
             onClicked: {
-                console.log("Read Encdoer");
+                console.log("Read Encdoer")
             }
         }
     }

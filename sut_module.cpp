@@ -1,8 +1,8 @@
 #include "sut_module.h"
 
-SutModule::SutModule(QString name, XtMotor *motor_x, XtMotor *motor_y, XtVcMotor *motor_z, XtVacuum *vacuum, BaslerPylonCamera *camera, WordopLight *lighting, VisionModule *vision)
+SutModule::SutModule(MaterialCarrier* carrier , BaslerPylonCamera *camera, WordopLight *lighting, VisionModule *vision)
 {
-    this->carrier = new MaterialCarrier(name,motor_x,motor_y,motor_z,vacuum);
+    this->carrier = carrier;
     this->camera = camera;
     this->lighting = lighting;
     this->vision = vision;
@@ -24,29 +24,28 @@ void SutModule::loadParams()
     PropertyBase::loadJsonConfig(SUT_MODULE_JSON, temp_map);
 }
 
-bool SutModule::MoveToPR(bool use_offset)
+bool SutModule::moveToPR()
 {
     lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,parameters.Lighting());
     bool result = carrier->Move_Vision_Sync();
     if(result)
     {
-        PRResultStruct pr_result;
         vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "", pr_result);
     }
     return result;
 }
 
-bool SutModule::MoveToLoadPos()
+bool SutModule::moveToLoadPos()
 {
     return carrier->Move_SZ_SX_XY_Z_Sync(parameters.LoadX(),parameters.LoadY(),parameters.LoadZ());
 }
 
-bool SutModule::MoveToOCPos()
+bool SutModule::moveToOCPos()
 {
     return carrier->Move_SZ_SX_XY_Z_Sync(parameters.OCX(),parameters.OCY(),parameters.OCZ());
 }
 
-bool SutModule::Move_XY_Sync(double x, double y)
+bool SutModule::stepMove_XY_Sync(double x, double y)
 {
-    return carrier->Move_XY_Sync(x,y);
+    return carrier->StepMove_XY_Sync(x,y);
 }

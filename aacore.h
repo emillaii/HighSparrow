@@ -13,11 +13,14 @@
 #include <errorcode.h>
 #include <QMap>
 #include "aadata.h"
+#include "aaheadmodule.h"
+#include "lut_module.h"
+#include "sut_module.h"
 class AACore : public QThread
 {
     Q_OBJECT
 public:
-    explicit AACore(QObject *parent = nullptr);
+    explicit AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,QObject *parent = nullptr);
     ~AACore();
 
 protected:
@@ -31,6 +34,9 @@ public:
     AAData aaData_1;
 
 private:
+    AAHeadModule* aa_head;
+    LutModule* lut;
+    SutModule* sut;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QJsonDocument flowchartDocument;
@@ -42,6 +48,7 @@ signals:
     void sfrResultsReady(unsigned int, vector<Sfr_entry>, int);
     void sfrResultsDetectFinished();
 public slots:
+
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);
     void stopZScan();
     void setFlowchartDocument(QString json){

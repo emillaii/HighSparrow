@@ -6,13 +6,14 @@ HighSprrow::HighSprrow()
 {
     if (!QDir(CONFIG_DIR).exists()) {QDir().mkdir(CONFIG_DIR);}
     baseModuleManager = new BaseModuleManager();
+    baseModuleManager->LoadProfile();
     logicManager = new LogicManager();
-    aaHeadModule = new AAHeadModule(Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,
-                                    Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,
-                                    Q_NULLPTR);
-    sutModule = new SutModule(Q_NULLPTR, Q_NULLPTR, Q_NULLPTR,
-                              Q_NULLPTR, Q_NULLPTR, Q_NULLPTR,
-                              Q_NULLPTR, Q_NULLPTR);
+//    aaHeadModule = new AAHeadModule(Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,
+//                                    Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,
+//                                    Q_NULLPTR);
+//    sutModule = new SutModule(Q_NULLPTR, Q_NULLPTR, Q_NULLPTR,
+//                              Q_NULLPTR, Q_NULLPTR, Q_NULLPTR,
+//                              Q_NULLPTR, Q_NULLPTR);
 }
 
 HighSprrow::~HighSprrow()

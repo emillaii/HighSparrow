@@ -13,8 +13,11 @@
 #include "aa_util.h"
 #include "visionavadaptor.h"
 
-AACore::AACore(QObject *parent) : QThread(parent)
+AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,QObject *parent) : QThread(parent)
 {
+    this->aa_head = aa_head;
+    this->lut = lut;
+    this->sut = sut;
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
     connect(this, &AACore::sfrResultsDetectFinished, this, &AACore::stopZScan);
 }

@@ -61,7 +61,7 @@ ColumnLayout {
             height: 40
             visible: root.checked
             onClicked: {
-                console.log("Move To");
+                sutModule.moveToOCPos()
             }
         }
         Button {

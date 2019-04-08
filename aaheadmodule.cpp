@@ -1,8 +1,9 @@
 #include "aaheadmodule.h"
 #include "config.h"
 
-AAHeadModule::AAHeadModule(XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtVacuum * v)
+AAHeadModule::AAHeadModule(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtVacuum * v)
 {
+    parameters.setName(name);
     this->motor_x = motor_x;
     this->motor_y = motor_y;
     this->motor_z = motor_z;
@@ -38,8 +39,10 @@ bool AAHeadModule::moveToOCPsotion()
     return  moveToSync(parameters.OCPositionX(),parameters.OCPositionY(),parameters.OCPositionZ(),parameters.OCPositionA(),parameters.OCPositionB(),parameters.OCPositionC());
 }
 
-bool AAHeadModule::Move_XY_Sync(double x, double y)
+bool AAHeadModule::stepMove_XY_Sync(double step_x, double step_y)
 {
+    double x = step_x + motor_x->GetFeedbackPos();
+    double y = step_y + motor_y->GetFeedbackPos();
     motor_x->MoveToPos(x);
     motor_y->MoveToPos(y);
     bool result = motor_x->WaitArrivedTargetPos(x);
@@ -47,13 +50,22 @@ bool AAHeadModule::Move_XY_Sync(double x, double y)
     return result;
 }
 
-bool AAHeadModule::Move_AB_Sync(double a, double b)
+bool AAHeadModule::stepMove_AB_Sync(double step_a, double step_b)
 {
+    double a = step_a + motor_a->GetFeedbackPos();
+    double b = step_b + motor_b->GetFeedbackPos();
     motor_a->MoveToPos(a);
     motor_b->MoveToPos(b);
     bool result = motor_a->WaitArrivedTargetPos(a);
     result &= motor_b->WaitArrivedTargetPos(b);
     return result;
+}
+
+bool AAHeadModule::stepMove_Z_Sync(double step_z)
+{
+    double z = step_z + motor_z->GetFeedbackPos();
+    motor_z->MoveToPos(z);
+    return motor_z->WaitArrivedTargetPos(z);
 }
 
 bool AAHeadModule::moveToSync(double x, double y, double z, double a, double b, double c)

@@ -10,6 +10,7 @@ class AAHeadParameters : public PropertyBase
     Q_OBJECT
 public:
     explicit AAHeadParameters(){}
+    Q_PROPERTY(QString Name READ Name WRITE setName NOTIFY NameChanged)
     Q_PROPERTY(double PickLensPositionX READ PickLensPositionX WRITE setPickLensPositionX NOTIFY paramsChanged)
     Q_PROPERTY(double PickLensPositionY READ PickLensPositionY WRITE setPickLensPositionY NOTIFY paramsChanged)
     Q_PROPERTY(double PickLensPositionZ READ PickLensPositionZ WRITE setPickLensPositionZ NOTIFY paramsChanged)
@@ -91,6 +92,11 @@ QString UplookPRName() const
 double UplookPRLighting() const
 {
     return m_UplookPRLighting;
+}
+
+QString Name() const
+{
+    return m_Name;
 }
 
 public slots:
@@ -180,8 +186,19 @@ void setUplookPRLighting(double UplookPRLighting)
     emit paramsChanged();
 }
 
+void setName(QString Name)
+{
+    if (m_Name == Name)
+        return;
+
+    m_Name = Name;
+    emit NameChanged(m_Name);
+}
+
 signals:
 void paramsChanged();
+
+void NameChanged(QString Name);
 
 private:
 double m_PickLensPositionX = 0;
@@ -198,6 +215,7 @@ double m_OCPositionB = 0;
 double m_OCPositionC = 0;
 QString m_UplookPRName = "";
 double m_UplookPRLighting = 0;
+QString m_Name;
 };
 
 #endif // AAHEADPARAMETERS_H

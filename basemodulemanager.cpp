@@ -9,7 +9,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 {
     is_init = false;
     profile_loaded = false;
-//    pylonUplookCamera = new BaslerPylonCamera(CAMERA_LUT_DL);
+    pylonUplookCamera = new BaslerPylonCamera(CAMERA_LUT_DL);
 //    pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA1_DL);
     lightingModule = new WordopLight();
     lightingModule->Init("com1");
@@ -44,6 +44,7 @@ bool BaseModuleManager::LoadProfile()
 {
     if(profile_loaded)
         return true;
+    profile_loaded = false;
     LPWSTR path = profile_path;
     int res = XT_Controler_Extend::Profile_Load(path);
     if(res!=0)
@@ -90,19 +91,53 @@ bool BaseModuleManager::LoadProfile()
         XtVcMotor* motor_sut_vcm = new XtVcMotor();
         motor_sut_vcm->Init("SUT_Z",sut_vcm_parameters);
         motors.insert("SUT_Z",motor_sut_vcm);
-
+        if(!InitStruct())return false;
         profile_loaded = true;
         return true;
     }
-    profile_loaded = false;
     return false;
+}
+
+bool BaseModuleManager::InitStruct()
+{
+    XtMotor *x,*y,*z,*a,*b,*c;
+    XtVcMotor *z_v;
+    XtVacuum *v,*v_u;
+    x = GetMotorByName("LUT_X");
+    y = GetMotorByName("LUT_Y");
+    z_v = GetVcMotorByName("LUT_Z");
+    v = GetVacuumByName("LUT_V");
+    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
+    lut_carrier = new MaterialCarrier("LUT",x,y,z_v,v);
+    v_u = GetVacuumByName("LUT_V_U");
+    if(lut_carrier == nullptr||pylonUplookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr || v_u == nullptr)return false;
+    lut_module = new LutModule(lut_carrier,pylonUplookCamera,lightingModule,visionModule,v,v_u);
+    x = GetMotorByName("SUT_X");
+    y = GetMotorByName("SUT_Y");
+    z_v = GetVcMotorByName("SUT_Z");
+    v = GetVacuumByName("SUT_V");
+    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
+    sut_carrier =new MaterialCarrier("SUT",x,y,z_v,v);
+    if(sut_carrier == nullptr||pylonDownlookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr)return false;
+    sut_module = new SutModule(sut_carrier,pylonDownlookCamera,lightingModule,visionModule);
+    x = GetMotorByName("AA_X");
+    y = GetMotorByName("AA_Y");
+    z = GetMotorByName("AA_Z");
+    a = GetMotorByName("AA_A");
+    b = GetMotorByName("AA_B");
+    c = GetMotorByName("AA_C");
+    v = GetVacuumByName("AA_V");
+    if(x == nullptr||y == nullptr||z == nullptr||a == nullptr||b == nullptr||c == nullptr||v == nullptr)return false;
+    aa_head_module = new AAHeadModule("AAHead",x,y,z,a,b,c,v);
+    profile_loaded = true;
+    return true;
 }
 
 bool BaseModuleManager::initialDevice()
 {
     if(is_init)
         return true;
-    if(!LoadProfile())
+    if(!profile_loaded)
         return false;
 
     qInfo("Init module manager");

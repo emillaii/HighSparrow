@@ -12,7 +12,7 @@
 class LutModule
 {
 public:
-    LutModule(QString name, XtMotor* motor_x,XtMotor* motor_y,XtVcMotor* motor_z,BaslerPylonCamera* camera,WordopLight* lighting,VisionModule* vision,XtVacuum* load_vacuum,XtVacuum* unload_vacuum);
+    LutModule(MaterialCarrier* carrier,BaslerPylonCamera* camera,WordopLight* lighting,VisionModule* vision,XtVacuum* load_vacuum,XtVacuum* unload_vacuum);
 
 private:
     LutParameter parameters;
@@ -24,13 +24,14 @@ private:
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;
 
+    PRResultStruct pr_result;
 public:
-    bool MoveToPR(PRResultStruct& pr_result);
-    bool MoveToLoadPos();
-    bool MoveToPick1Lens();
-    bool MoveToUnPick1Lens();
-    bool MoveToPick2Lens();
-    bool MoveToUnPick2Lens();
+    Q_INVOKABLE bool moveToPR();
+    Q_INVOKABLE bool moveToLoadPos();
+    Q_INVOKABLE bool moveToPick1Lens();
+    Q_INVOKABLE bool moveToUnPick1Lens();
+    Q_INVOKABLE bool moveToPick2Lens();
+    Q_INVOKABLE bool moveToUnPick2Lens();
 
 };
 

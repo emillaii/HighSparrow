@@ -13,6 +13,10 @@
 #include "XtVacuum.h"
 #include "XtCylinder.h"
 #include "XtVcMotor.h"
+#include "aaheadmodule.h"
+#include "material_carrier.h"
+#include "lut_module.h"
+#include "sut_module.h"
 
 class BaseModuleManager : public PropertyBase
 {
@@ -40,6 +44,12 @@ public:
     VisionModule * visionModule = Q_NULLPTR;
     WordopLight * lightingModule = Q_NULLPTR;
     LontryLight * lightPanel = Q_NULLPTR;
+
+    AAHeadModule* aa_head_module;
+    MaterialCarrier* lut_carrier;
+    MaterialCarrier* sut_carrier;
+    LutModule *lut_module;
+    SutModule *sut_module;
 
     Q_INVOKABLE void testVision();
 
@@ -102,8 +112,9 @@ private:
     VCM_Parameter_struct sut_vcm_parameters = {
         500/*MaxVel*/,10000/*MaxAcc*/,200000/*MaxJerk*/,33/*MaxRange*/,0/*MinRange*/,10/*CanID*/,1/*dir*/,5000/*scale*/};
 private:
-    bool LoadProfile();
+    bool InitStruct();
 public:
+    bool LoadProfile();
     bool ReadParameters();
     bool SaveParameters();
     Q_INVOKABLE bool initialDevice();

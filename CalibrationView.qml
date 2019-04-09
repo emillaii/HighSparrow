@@ -5,8 +5,6 @@ import QtQuick.Dialogs 1.2
 
 ColumnLayout {
     id: columnLayout
-    anchors.fill: parent
-
 
     RowLayout {
         FileDialog {
@@ -22,15 +20,33 @@ ColumnLayout {
                 sutParams.setPRName(loadfileDialog.fileUrl)
             }
         }
+
+
+        Dial {
+            id: downlookLighingDial
+            width: 25
+            from: 0
+            value: sutParams.Lighting
+            to: 255
+            stepSize: 1
+
+            Label {
+                text: downlookLighingDial.value.toFixed(0)
+                color: "white"
+                font.pixelSize: Qt.application.font.pixelSize * 3
+                anchors.centerIn: parent
+            }
+            onValueChanged: {
+                sutParams.setLighting(value)
+                lightingController.setDownlookLighting(value)
+            }
+        }
+
         Button {
             text: qsTr("Load PR")
             onClicked: {
                 loadfileDialog.open()
             }
-        }
-        Slider {
-            id: slider
-            value: 0.5
         }
 
         Button {
@@ -41,13 +57,11 @@ ColumnLayout {
             }
         }
 
-        Text {
+        TextField {
             id: downlookPRFileName
             color: "#57f529"
             text: sutParams.prName
-            Layout.fillHeight: false
-            Layout.fillWidth: true
-            font.pixelSize: 27
+            font.pixelSize: 14
         }
 
 
@@ -67,6 +81,27 @@ ColumnLayout {
                 lutParams.setPRName(loadUplookFileDialog.fileUrl)
             }
         }
+
+        Dial {
+            id: uplookLighingDial
+            width: 25
+            from: 0
+            value: lutParams.Lighting
+            to: 255
+            stepSize: 1
+
+            Label {
+                text: uplookLighingDial.value.toFixed(0)
+                color: "white"
+                font.pixelSize: Qt.application.font.pixelSize * 3
+                anchors.centerIn: parent
+            }
+            onValueChanged: {
+                lutParams.setLighting(value)
+                lightingController.setUplookLighting(value)
+            }
+        }
+
         Button {
             id: button2
             text: qsTr("Load PR")
@@ -74,12 +109,6 @@ ColumnLayout {
                 loadUplookFileDialog.open()
             }
         }
-
-        Slider {
-            id: slider1
-            value: 0.5
-        }
-
         Button {
             id: button3
             text: qsTr("Start Downlook Cali")
@@ -88,13 +117,12 @@ ColumnLayout {
             }
         }
 
-        Text {
+        TextField {
             color: "#57f529"
             text: lutParams.prName
-            Layout.fillHeight: false
-            Layout.fillWidth: true
-            font.pixelSize: 27
+            font.pixelSize: 14
         }
+
 
 
     }
@@ -109,7 +137,28 @@ ColumnLayout {
 
             nameFilters: ["avdata文件 (*.avdata)"]
             onAccepted: {
+                console.log(fileUrl)
+                lutParams.setUpDownLookPrName(fileUrl)
+            }
+        }
 
+        Dial {
+            id: upDownlookUpCalibLighingDial
+            width: 25
+            from: 0
+            value: lutParams.UpDnLookLighting
+            to: 255
+            stepSize: 1
+
+            Label {
+                text: upDownlookUpCalibLighingDial.value.toFixed(0)
+                color: "white"
+                font.pixelSize: Qt.application.font.pixelSize * 3
+                anchors.centerIn: parent
+            }
+            onValueChanged: {
+                lutParams.setUpDnLookLighting(value)
+                lightingController.setUplookLighting(value)
             }
         }
         Button {
@@ -119,12 +168,10 @@ ColumnLayout {
             }
         }
 
-        Text {
+        TextField {
             color: "#57f529"
-            text: qsTr("Testing")
-            Layout.fillHeight: false
-            Layout.fillWidth: true
-            font.pixelSize: 27
+            text: lutParams.upDownLookPrName
+            font.pixelSize: 14
         }
     }
 
@@ -138,59 +185,44 @@ ColumnLayout {
 
             nameFilters: ["avdata文件 (*.avdata)"]
             onAccepted: {
+                sutParams.setUpDownLookPrName(fileUrl)
+            }
+        }
+        Dial {
+            id: upDownlookDownCalibLighingDial
+            width: 26
+            from: 0
+            value: sutParams.UpDnLookLighting
+            to: 255
+            stepSize: 1
 
+            Label {
+                text: upDownlookDownCalibLighingDial.value.toFixed(0)
+                color: "white"
+                font.pixelSize: Qt.application.font.pixelSize * 3
+                anchors.centerIn: parent
+            }
+            onValueChanged: {
+                sutParams.setUpDnLookLighting(value)
+                lightingController.setDownlookLighting(value)
             }
         }
         Button {
             text: qsTr("Load UpDnlook Down Cali PR")
             onClicked: {
-                loadUpDnlookUpCaliFileDialog.open()
+                loadUpDnlookDownCaliFileDialog.open()
             }
         }
-
         Button {
             text: qsTr("Start UpDnLook Cali")
             onClicked: {
                 baseModuleManager.performUpDownlookCalibration()
             }
         }
-        Text {
+        TextField {
             color: "#57f529"
-            text: qsTr("Testing")
-            Layout.fillHeight: false
-            Layout.fillWidth: true
-            font.pixelSize: 27
-        }
-    }
-    RowLayout {
-        Button {
-            text: qsTr("Save Calibration Params")
-            onClicked: {
-            }
+            text: sutParams.upDownLookPrName
+            font.pixelSize: 14
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*##^## Designer {
-    D{i:0;autoSize:true;height:480;width:640}D{i:1;anchors_height:100;anchors_width:100}
-}
- ##^##*/

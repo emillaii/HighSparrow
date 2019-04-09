@@ -134,8 +134,8 @@ bool BaseModuleManager::InitStruct()
     y = GetMotorByName("SUT1_Y");
 //    if(x == nullptr||y == nullptr)return false;
     calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,sut_module->parameters.Lighting(),DOWNLOOK_VISION_CAMERA,sut_module->parameters.prName()));
-    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,lut_module->parameters.Lighting(),UPLOOK_VISION_CAMERA,lut_module->parameters.prName()));
-    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,sut_module->parameters.Lighting(),DOWNLOOK_VISION_CAMERA,sut_module->parameters.prName()));
+    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,lut_module->parameters.UpDnLookLighting(),UPLOOK_VISION_CAMERA,lut_module->parameters.upDownLookPrName()));
+    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,sut_module->parameters.UpDnLookLighting(),DOWNLOOK_VISION_CAMERA,sut_module->parameters.upDownLookPrName()));
     profile_loaded = true;
     return true;
 }

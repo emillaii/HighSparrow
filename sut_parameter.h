@@ -16,6 +16,9 @@ public:
     Q_PROPERTY(int Lighting READ Lighting WRITE setLighting NOTIFY paramsChanged)
     Q_PROPERTY(QString prName READ prName WRITE setPRName NOTIFY paramsChanged)
     Q_PROPERTY(double Force READ Force WRITE setForce NOTIFY paramsChanged)
+    Q_PROPERTY(int UpDnLookLighting READ UpDnLookLighting WRITE setUpDnLookLighting NOTIFY paramsChanged)
+    Q_PROPERTY(QString upDownLookPrName READ upDownLookPrName WRITE setUpDownLookPrName NOTIFY paramsChanged)
+
     double OCX() const
     {
         return m_OCX;
@@ -58,6 +61,16 @@ public:
     QString prName() const
     {
         return m_prName;
+    }
+
+    int UpDnLookLighting() const
+    {
+        return m_UpDnLookLighting;
+    }
+
+    QString upDownLookPrName() const
+    {
+        return m_upDownLookPrName;
     }
 
 signals:
@@ -119,6 +132,24 @@ public slots:
         emit paramsChanged();
     }
 
+    void setUpDnLookLighting(int UpDnLookLighting)
+    {
+        if (m_UpDnLookLighting == UpDnLookLighting)
+            return;
+
+        m_UpDnLookLighting = UpDnLookLighting;
+        emit paramsChanged();
+    }
+
+    void setUpDownLookPrName(QString upDownLookPrName)
+    {
+        if (m_upDownLookPrName == upDownLookPrName)
+            return;
+
+        m_upDownLookPrName = upDownLookPrName;
+        emit paramsChanged();
+    }
+
 private:
     double m_OCX = 0;
     double m_OCY = 0;
@@ -129,6 +160,8 @@ private:
     int m_Lighting = 0;
     double m_Force = 0;
     QString m_prName = "";
+    int m_UpDnLookLighting;
+    QString m_upDownLookPrName;
 };
 
 #endif // SUT_PARAMETER_H

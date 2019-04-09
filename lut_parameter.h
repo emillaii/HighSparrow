@@ -25,6 +25,9 @@ public:
     Q_PROPERTY(double PickForce READ PickForce WRITE setPickForce NOTIFY paramsChanged)
     Q_PROPERTY(int Lighting READ Lighting WRITE setLighting NOTIFY paramsChanged)
     Q_PROPERTY(QString prName READ prName WRITE setPRName NOTIFY paramsChanged)
+    Q_PROPERTY(int UpDnLookLighting READ UpDnLookLighting WRITE setUpDnLookLighting NOTIFY paramsChanged)
+    Q_PROPERTY(QString upDownLookPrName READ upDownLookPrName WRITE setUpDownLookPrName NOTIFY paramsChanged)
+
     double Pick1X() const
     {
         return m_Pick1X;
@@ -112,6 +115,16 @@ public:
     QString prName() const
     {
         return m_prName;
+    }
+
+    int UpDnLookLighting() const
+    {
+        return m_UpDnLookLighting;
+    }
+
+    QString upDownLookPrName() const
+    {
+        return m_upDownLookPrName;
     }
 
 public slots:
@@ -226,6 +239,24 @@ public slots:
         emit paramsChanged();
     }
 
+    void setUpDnLookLighting(int UpDnLookLighting)
+    {
+        if (m_UpDnLookLighting == UpDnLookLighting)
+            return;
+
+        m_UpDnLookLighting = UpDnLookLighting;
+        emit paramsChanged();
+    }
+
+    void setUpDownLookPrName(QString upDownLookPrName)
+    {
+        if (m_upDownLookPrName == upDownLookPrName)
+            return;
+
+        m_upDownLookPrName = upDownLookPrName;
+        emit paramsChanged();
+    }
+
 signals:
     void paramsChanged();
 
@@ -248,6 +279,8 @@ private:
     double m_UnPick2Y = 0;
     double m_UnPick2Z = 0;
     QString m_prName;
+    int m_UpDnLookLighting;
+    QString m_upDownLookPrName;
 };
 
 #endif // LUT_PARAMERTER_H

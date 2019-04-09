@@ -6,7 +6,6 @@ import FileContentItem 1.0
 
 ColumnLayout {
     id: columnLayout
-    anchors.fill: parent
 
     FileDialog {
         id: loadfileDialog

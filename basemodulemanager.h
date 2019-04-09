@@ -68,6 +68,20 @@ public slots:
         if (sut_module) sut_module->updateParams();
         if (lut_module) lut_module->updateParams();
         if (dothinkey) dothinkey->updateParams();
+        foreach(const QString &key, this->calibrations.keys()){
+            if (key == AA1_UPLOOK_CALIBRATION) {
+                calibrations[AA1_UPLOOK_CALIBRATION]->changeParameter(lut_module->parameters.Lighting(), lut_module->parameters.prName());
+            }
+            else if (key == AA1_DOWNLOOK_CALIBRATION) {
+                calibrations[AA1_DOWNLOOK_CALIBRATION]->changeParameter(sut_module->parameters.Lighting(), sut_module->parameters.prName());
+            }
+            else if (key == AA1_UPDownLOOK_UP_CALIBRATION) {
+                calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->changeParameter(lut_module->parameters.UpDnLookLighting(), lut_module->parameters.upDownLookPrName());
+            }
+            else if (key == AA1_UPDownLOOK_DOWN_CALIBRATION) {
+                calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->changeParameter(sut_module->parameters.UpDnLookLighting(), sut_module->parameters.upDownLookPrName());
+            }
+        }
     }
 
     void setLightPanelLighting(int lightPanelLighting)

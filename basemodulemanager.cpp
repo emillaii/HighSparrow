@@ -8,14 +8,14 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 {
     is_init = false;
     profile_loaded = false;
-//    pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
-//    pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
+    pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
+    pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
     lightingModule = new WordopLight();
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, Q_NULLPTR);
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
-//    pylonUplookCamera->start();
-//    pylonDownlookCamera->start();
+    pylonUplookCamera->start();
+    pylonDownlookCamera->start();
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -352,23 +352,23 @@ double BaseModuleManager::getMotorFeedbackPos(QString name)
 
 bool BaseModuleManager::initSensor()
 {
-//    const int channel = 0;
-//    bool res = dothinkey->DothinkeyEnum();
-//    if (!res) { qCritical("Cannot find dothinkey"); return false; }
-//    dothinkey->DothinkeyOpen();
-//    if (!res) { qCritical("Cannot open dothinkey"); return false; }
-//    dothinkey->DothinkeyLoadIniFile(channel);
-//    if (!res) { qCritical("Cannot load dothinkey ini file"); return false; }
-//    dothinkey->DothinkeyStartCamera(channel);
-//    if (!res) { qCritical("Cannot start camera"); return false; }
+    const int channel = 0;
+    bool res = dothinkey->DothinkeyEnum();
+    if (!res) { qCritical("Cannot find dothinkey"); return false; }
+    dothinkey->DothinkeyOpen();
+    if (!res) { qCritical("Cannot open dothinkey"); return false; }
+    dothinkey->DothinkeyLoadIniFile(channel);
+    if (!res) { qCritical("Cannot load dothinkey ini file"); return false; }
+    dothinkey->DothinkeyStartCamera(channel);
+    if (!res) { qCritical("Cannot start camera"); return false; }
     imageGrabberThread->start();
     return true;
 }
 
 bool BaseModuleManager::closeSensor()
 {
-    //imageThread->stop();
-    //Sleep(100);
-    //imageThread->exit();
+    imageGrabberThread->stop();
+    Sleep(100);
+    imageGrabberThread->exit();
     return dothinkey->DothinkeyClose();
 }

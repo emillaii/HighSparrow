@@ -33,7 +33,7 @@ public:
     ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
     Q_INVOKABLE void saveImage(int channel);
-
+    Q_INVOKABLE void testVision();
 private:
     QString last_uplook_pr_result;
     QString last_downlook_pr_result;

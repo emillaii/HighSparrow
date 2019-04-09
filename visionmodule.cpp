@@ -39,6 +39,13 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
     return true;
 }
 
+void VisionModule::testVision()
+{
+    PRResultStruct prResult;
+    this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
+    qInfo("%f %f %f", prResult.x, prResult.y, prResult.theta);
+}
+
 void VisionModule::saveImage(int channel)
 {
     avl::Image image1; bool ret;
@@ -84,10 +91,10 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         rawImageName.append(getVisionLogDir())
                     .append(getCurrentTimeString())
                     .append("_raw.jpg");
-        g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\04blens_lighting100-220 (1)\\04blens_lighting100-220\\04blighting150.jpg";
-        g_constData2 = pr_offset_name.toStdString().c_str();
+        g_constData1 = L"test.jpg";
+        g_constData2 = L"C:\\Users\\20190404AA1\\Documents\\HighSparrow.git\\build-HighSprrowQ-Desktop_Qt_5_12_0_MSVC2017_64bit-Debug\\config\\prConfig\\downlook_offset.avdata";
         g_constData3 = L"Vector2D";
-        g_constData4 = pr_name.toStdString().c_str();
+        g_constData4 = L"C:\\Users\\20190404AA1\\Documents\\HighSparrow.git\\build-HighSprrowQ-Desktop_Qt_5_12_0_MSVC2017_64bit-Debug\\config\\prConfig\\downlook.avdata";
         g_constData5 = L"GrayModel";
         g_constData6 = L"Angle:";
         g_emptyString = L"";
@@ -109,9 +116,9 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::Image image4;
         avl::Image image5;
         avl::Image image6;
-        //avl::LoadImage( g_constData1, false, image1 );
+        avl::LoadImage( g_constData1, false, image1 );
 
-        this->grabImageFromCamera(camera_name, image1);
+        //this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
 
         //Testing use

@@ -228,7 +228,7 @@ ApplicationWindow {
             }
             navigationFeatureButton.onClicked: {
                 //logicManager.start()
-                aaHeadModule.testVision()
+                visionModule.testVision()
             }
         }
 

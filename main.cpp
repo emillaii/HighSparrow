@@ -22,6 +22,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<FileContent>("FileContentItem", 1, 0, "FileContentItem");
     QApplication app(argc, argv);
     QApplication::setApplicationName("High Sparrow");
+    app.setOrganizationName("Sillicool"); //1
+    app.setOrganizationDomain("sillicool.com");
     //qInstallMessageHandler(sparrowLogOutput);
     qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{type}] %{file}:%{line}(%{function}):%{message}");
     app.setWindowIcon(QIcon(ICON_SPARROW));

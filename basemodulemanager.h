@@ -17,6 +17,7 @@
 #include "material_carrier.h"
 #include "lut_module.h"
 #include "sut_module.h"
+#include "calibration.h"
 #include "dothinkey.h"
 #include "imagegrabbingworkerthread.h"
 
@@ -34,6 +35,7 @@ public:
     QMap<QString,XtMotor*> motors;
     QMap<QString,XtGeneralInput*> input_ios;
     QMap<QString,XtGeneralOutput*> output_ios;
+    QMap<QString,Calibration*> calibrations;
 
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;

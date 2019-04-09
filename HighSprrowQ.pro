@@ -47,11 +47,14 @@ SOURCES += \
     sut_module.cpp \
     aadata.cpp \
     material_carrier.cpp \
-    dothinkey.cpp \
+    pixel2mech.cpp \
+    Matrix/Matrix.cpp \
+    calibration.cpp \
+    chart_calibration.cpp \
+    imagegrabbingworkerthread.cpp\
+	dothinkey.cpp \
     iniparser.cpp \
-    imagegrabbingworkerthread.cpp \
     imageprovider.cpp
-
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -133,11 +136,15 @@ HEADERS += \
     lut_parameter.h \
     sut_module.h \
     aadata.h \
+    calibration.h \
+    pixel2mech.h \
+    Matrix/Matrix.h \
+    calibration_parameter.h \
+    chart_calibration.h \
+    imagegrabbingworkerthread.h\
     dothinkey.h \
     iniparser.h \
-    imagegrabbingworkerthread.h \
-    imageprovider.h
-
+    imageprovider.h \
     XtVacuum.h
 
 DISTFILES += \

@@ -13,7 +13,7 @@ public:
     Q_PROPERTY(double LoadX READ LoadX WRITE setLoadX NOTIFY paramsChanged)
     Q_PROPERTY(double LoadY READ LoadY WRITE setLoadY NOTIFY paramsChanged)
     Q_PROPERTY(double LoadZ READ LoadZ WRITE setLoadZ NOTIFY paramsChanged)
-    Q_PROPERTY(double Lighting READ Lighting WRITE setLighting NOTIFY paramsChanged)
+    Q_PROPERTY(int Lighting READ Lighting WRITE setLighting NOTIFY paramsChanged)
     Q_PROPERTY(QString prName READ prName WRITE setPRName NOTIFY paramsChanged)
     Q_PROPERTY(double Force READ Force WRITE setForce NOTIFY paramsChanged)
     double OCX() const
@@ -45,7 +45,7 @@ public:
         return m_LoadZ;
     }
 
-    double Lighting() const
+    int Lighting() const
     {
         return m_Lighting;
     }
@@ -99,7 +99,7 @@ public slots:
         emit paramsChanged();
     }
 
-    void setLighting(double Lighting)
+    void setLighting(int Lighting)
     {
         m_Lighting = Lighting;
         emit paramsChanged();
@@ -126,7 +126,7 @@ private:
     double m_LoadX = 0;
     double m_LoadY = 0;
     double m_LoadZ = 0;
-    double m_Lighting = 0;
+    int m_Lighting = 0;
     double m_Force = 0;
     QString m_prName = "";
 };

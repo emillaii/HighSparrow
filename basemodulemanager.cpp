@@ -112,7 +112,7 @@ bool BaseModuleManager::InitStruct()
     z_v = GetVcMotorByName("SUT_Z");
     v = GetVacuumByName("SUT_V");
 //    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
-    sut_carrier =new MaterialCarrier("SUT",x,y,z_v,v);
+    sut_carrier = new MaterialCarrier("SUT",x,y,z_v,v);
 //    if(sut_carrier == nullptr||pylonDownlookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr)return false;
 
     sut_module = new SutModule(sut_carrier,pylonDownlookCamera,lightingModule,visionModule);
@@ -125,6 +125,17 @@ bool BaseModuleManager::InitStruct()
     v = GetVacuumByName("AA_V");
 //    if(x == nullptr||y == nullptr||z == nullptr||a == nullptr||b == nullptr||c == nullptr||v == nullptr)return false;
     aa_head_module = new AAHeadModule("AAHead",x,y,z,a,b,c,v);
+
+    x = GetMotorByName("AA1_X");
+    y = GetMotorByName("AA1_Y");
+//    if(x == nullptr||y == nullptr)return false;
+    calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,lut_module->parameters.Lighting(),UPLOOK_VISION_CAMERA,lut_module->parameters.prName()));
+    x = GetMotorByName("SUT1_X");
+    y = GetMotorByName("SUT1_Y");
+//    if(x == nullptr||y == nullptr)return false;
+    calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,sut_module->parameters.Lighting(),DOWNLOOK_VISION_CAMERA,sut_module->parameters.prName()));
+    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,lut_module->parameters.Lighting(),UPLOOK_VISION_CAMERA,lut_module->parameters.prName()));
+    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,sut_module->parameters.Lighting(),DOWNLOOK_VISION_CAMERA,sut_module->parameters.prName()));
     profile_loaded = true;
     return true;
 }
@@ -258,6 +269,31 @@ void BaseModuleManager::stopSeeking()
         m->StopSeeking();
         m->Disable();
     }
+}
+
+void BaseModuleManager::performUplookCalibration()
+{
+    if(calibrations.contains(AA1_UPLOOK_CALIBRATION))
+        calibrations[AA1_UPLOOK_CALIBRATION]->performCalibration();
+}
+
+void BaseModuleManager::performDownlookCalibration()
+{
+    if(calibrations.contains(AA1_DOWNLOOK_CALIBRATION))
+        calibrations[AA1_DOWNLOOK_CALIBRATION]->performCalibration();
+}
+
+void BaseModuleManager::performUpDownlookCalibration()
+{
+    if(calibrations.contains(AA1_UPDownLOOK_UP_CALIBRATION))
+        if(calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->performCalibration())
+            if(calibrations.contains(AA1_UPDownLOOK_DOWN_CALIBRATION))
+                calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->performCalibration();
+}
+
+void BaseModuleManager::UpdateCalibrationParameters()
+{
+
 }
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)

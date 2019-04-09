@@ -96,7 +96,17 @@
 #define UPLOOK_LENS_HOLDER_IMX363_EDGE_MODEL      "config//vision_config_1//Lens.4e95ee99.avdata"
 #define DOWNLOOK_CMOS_IMX363_EDGE_MODEL           "config//vision_config_1//downlook_sensor.ad9e6e81.avdata"
 //calibration
-const static QString CALIBRATION_RESULT_PATH = "./config/calibrationConfig.json";
+#define CALIBRATION_RESULT_PATH         ".//config//calibrationConfig//"
+#define LENS_PICKARM_CALIBRATION         "lens_pickarm_calibration"
+#define SENSOR_PICKARM_CALIBRATION       "sensor_pickarm_calibration"
+#define AA1_UPLOOK_CALIBRATION           "aa1_upLook_calibration"
+#define AA2_UPLOOK_CALIBRATION           "aa2_upLook_calibration"
+#define AA1_DOWNLOOK_CALIBRATION         "aa1_downLook_calibration"
+#define AA2_DOWNLOOK_CALIBRATION         "aa2_downLook_calibration"
+#define AA1_UPDownLOOK_UP_CALIBRATION    "aa1_updownLook_up_calibration"
+#define AA1_UPDownLOOK_DOWN_CALIBRATION  "aa1_updownLook_down_calibration"
+#define AA2_UPDownLOOK_UP_CALIBRATION    "aa2_updownLook_up_calibration"
+#define AA2_UPDownLOOK_DOWN_CALIBRATION  "aa2_updownLook_down_calibration"
 
 //PR
 #define PR_SENSOR_PACKAGE_IMX362        "IMX362"

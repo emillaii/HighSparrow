@@ -9,8 +9,9 @@ ItemDelegate {
     width: parent.width
     checkable: true
 
-    onClicked: ListView.view.currentIndex = index
-
+    onClicked: {
+        ListView.view.currentIndex = index
+    }
     contentItem: ColumnLayout {
         spacing: 0
         RowLayout {
@@ -56,6 +57,16 @@ ItemDelegate {
                     return false
             }
             LUTModuleView {
+            }
+        }
+        ColumnLayout {
+            visible: {
+                if (model.index === 4)
+                    return root.checked
+                else
+                    return false
+            }
+            ImageGrabberView {
             }
         }
     }

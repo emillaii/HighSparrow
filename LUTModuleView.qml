@@ -82,7 +82,7 @@ ColumnLayout {
                     from: 0
                     value: lutParams.Lighting
                     onValueChanged: {
-                        baseModuleManager.setUplookLighting(value)
+                        lightingController.setUplookLighting(value)
                         lutParams.setLighting(value)
                     }
                 }

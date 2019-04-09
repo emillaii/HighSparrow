@@ -15,5 +15,9 @@ ListModel {
         label: "LUT 配置"
         index: 3
     }
+    ListElement {
+        label: "Image Grabber 配置"
+        index: 4
+    }
 }
 

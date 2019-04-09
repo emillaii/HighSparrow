@@ -26,6 +26,8 @@
         <file>LUTPRPositionView.qml</file>
         <file>LUTSafetyPositionView.qml</file>
         <file>SUTSafetyPositionView.qml</file>
+        <file>PopupMessageView.qml</file>
+        <file>ImageGrabberView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

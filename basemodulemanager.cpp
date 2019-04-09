@@ -4,17 +4,18 @@
 wchar_t BaseModuleManager::ip[] =  L"192.168.0.251";
 wchar_t BaseModuleManager::profile_path[] = L"./xt_motion_config.csv";
 BaseModuleManager::BaseModuleManager(QObject *parent)
-    : PropertyBase (parent),
-      m_downlookLighting(0), m_uplookLighting(0)
+    : PropertyBase (parent)
 {
     is_init = false;
     profile_loaded = false;
-    pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
-    pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
+//    pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
+//    pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
     lightingModule = new WordopLight();
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, Q_NULLPTR);
-    pylonUplookCamera->start();
-    pylonDownlookCamera->start();
+    dothinkey = new Dothinkey();
+    imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
+//    pylonUplookCamera->start();
+//    pylonDownlookCamera->start();
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -311,4 +312,27 @@ double BaseModuleManager::getMotorFeedbackPos(QString name)
      if (motors.contains(name)) {
           return motors[name]->GetFeedbackPos();
      }
+}
+
+bool BaseModuleManager::initSensor()
+{
+//    const int channel = 0;
+//    bool res = dothinkey->DothinkeyEnum();
+//    if (!res) { qCritical("Cannot find dothinkey"); return false; }
+//    dothinkey->DothinkeyOpen();
+//    if (!res) { qCritical("Cannot open dothinkey"); return false; }
+//    dothinkey->DothinkeyLoadIniFile(channel);
+//    if (!res) { qCritical("Cannot load dothinkey ini file"); return false; }
+//    dothinkey->DothinkeyStartCamera(channel);
+//    if (!res) { qCritical("Cannot start camera"); return false; }
+    imageGrabberThread->start();
+    return true;
+}
+
+bool BaseModuleManager::closeSensor()
+{
+    //imageThread->stop();
+    //Sleep(100);
+    //imageThread->exit();
+    return dothinkey->DothinkeyClose();
 }

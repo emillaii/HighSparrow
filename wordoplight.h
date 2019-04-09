@@ -4,7 +4,7 @@
 #include <QString>
 #include <QObject>
 #include <qmutex.h>
-
+#include "config.h"
 typedef enum {
     LIGHTING_UPLOOK,
     LIGHTING_DOWNLOOK,
@@ -13,7 +13,8 @@ typedef enum {
 
 class WordopLight: public QObject
 {
-
+    Q_PROPERTY(int downlookLighting READ downlookLighting WRITE setDownlookLighting NOTIFY paramsChanged)
+    Q_PROPERTY(int uplookLighting READ uplookLighting WRITE setUplookLighting NOTIFY paramsChanged)
     Q_OBJECT
 
     struct LongCommand
@@ -66,13 +67,47 @@ public:
     void setPickarmCmosSensorPRLighting(int val);
     void setPickarmProductPRLighting(int value);
 
+    int downlookLighting() const
+    {
+        return m_downlookLighting;
+    }
+
+    int uplookLighting() const
+    {
+        return m_uplookLighting;
+    }
+
 signals:
     void ChangeBrightnessSignal(int ch, uint8_t brightness);
     void ChangeDoneSignal(bool result);
 
+    void paramsChanged(int downlookLighting);
+
 public slots:
 void ChangeBrightness(int ch, uint8_t brightness);
 void ChangeDone(bool result);
+
+void setDownlookLighting(int downlookLighting)
+{
+    qInfo("Set downlook lighting %d", downlookLighting);
+    if (m_downlookLighting == downlookLighting)
+        return;
+
+    m_downlookLighting = downlookLighting;
+    emit paramsChanged(m_downlookLighting);
+    SetBrightness(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
+}
+
+void setUplookLighting(int uplookLighting)
+{
+    qInfo("Set uplook lighting %d", uplookLighting);
+    if (m_uplookLighting == uplookLighting)
+        return;
+
+    m_uplookLighting = uplookLighting;
+    emit paramsChanged(m_uplookLighting);
+    SetBrightness(LIGHTING_LUT_UL, (uint8_t)uplookLighting);
+}
 
 private:
     const static uint8_t CMD_SET_ID = 0x09;
@@ -116,6 +151,10 @@ private:
     bool change_result = false;
 
     int now_brightness[10]={0};
+
+    int m_downlookLighting = 0;
+
+    int m_uplookLighting = 0;
 
 private slots:
     void readyReadSlot();

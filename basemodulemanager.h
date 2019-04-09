@@ -17,22 +17,18 @@
 #include "material_carrier.h"
 #include "lut_module.h"
 #include "sut_module.h"
+#include "dothinkey.h"
+#include "imagegrabbingworkerthread.h"
 
 class BaseModuleManager : public PropertyBase
 {
     Q_OBJECT
-    int m_downlookLighting;
-
-    int m_uplookLighting;
-
     int m_lightPanelLighting;
 
 public:
     explicit BaseModuleManager(QObject *parent = nullptr);
     ~BaseModuleManager();
 
-    Q_PROPERTY(int downlookLighting READ downlookLighting WRITE setDownlookLighting NOTIFY lightingValueChanged)
-    Q_PROPERTY(int uplookLighting READ uplookLighting WRITE setUplookLighting NOTIFY lightingValueChanged)
     Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged)
 
     QMap<QString,XtMotor*> motors;
@@ -44,22 +40,14 @@ public:
     VisionModule * visionModule = Q_NULLPTR;
     WordopLight * lightingModule = Q_NULLPTR;
     LontryLight * lightPanel = Q_NULLPTR;
+    Dothinkey * dothinkey = Q_NULLPTR;
+    ImageGrabbingWorkerThread * imageGrabberThread = Q_NULLPTR;
 
     AAHeadModule* aa_head_module = Q_NULLPTR;
     MaterialCarrier* lut_carrier = Q_NULLPTR;
     MaterialCarrier* sut_carrier = Q_NULLPTR;
     LutModule *lut_module = Q_NULLPTR;
     SutModule *sut_module = Q_NULLPTR;
-
-    int downlookLighting() const
-    {
-        return m_downlookLighting;
-    }
-
-    int uplookLighting() const
-    {
-        return m_uplookLighting;
-    }
 
     int lightPanelLighting() const
     {
@@ -77,25 +65,9 @@ public slots:
         if (aa_head_module) aa_head_module->updateParams();
         if (sut_module) sut_module->updateParams();
         if (lut_module) lut_module->updateParams();
+        if (dothinkey) dothinkey->updateParams();
     }
-    void setDownlookLighting(int downlookLighting)
-    {
-        if (m_downlookLighting == downlookLighting)
-            return;
 
-        m_downlookLighting = downlookLighting;
-        lightingModule->SetBrightness(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
-        emit lightingValueChanged(m_downlookLighting);
-    }
-    void setUplookLighting(int uplookLighting)
-    {
-        if (m_uplookLighting == uplookLighting)
-            return;
-
-        m_uplookLighting = uplookLighting;
-        lightingModule->SetBrightness(LIGHTING_LUT_UL, (uint8_t)uplookLighting);
-        emit lightingValueChanged(m_uplookLighting);
-    }
     void setLightPanelLighting(int lightPanelLighting)
     {
         if (m_lightPanelLighting == lightPanelLighting)
@@ -125,6 +97,8 @@ public:
     Q_INVOKABLE bool initialDevice();
     Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);
     Q_INVOKABLE double getMotorFeedbackPos(QString name);
+    Q_INVOKABLE bool initSensor();
+    Q_INVOKABLE bool closeSensor();
     void EnableMotors();
     void DisableAllMotors();
     Q_INVOKABLE bool allMotorsSeekOrigin();
@@ -136,8 +110,6 @@ public:
     XtGeneralInput *GetInputIoByName(QString name);
     XtVacuum *GetVacuumByName(QString name);
     XtCylinder *GetCylinderByName(QString name);
-
-
 };
 
 #endif // dBASEMODULEMANAGER_H

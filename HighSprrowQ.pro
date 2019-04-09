@@ -46,7 +46,11 @@ SOURCES += \
     lut_module.cpp \
     sut_module.cpp \
     aadata.cpp \
-    material_carrier.cpp
+    material_carrier.cpp \
+    dothinkey.cpp \
+    iniparser.cpp \
+    imagegrabbingworkerthread.cpp \
+    imageprovider.cpp
 
 RESOURCES += qml.qrc \
     icons.qrc
@@ -82,15 +86,17 @@ LIBS += -L$$PWD/../libs/sparrow_core/sparrow_core/lib/ -lSparrowCore
 INCLUDEPATH += $$PWD/../libs/sparrow_core/sparrow_core/include
 DEPENDPATH += $$PWD/../libs/sparrow_core/sparrow_core/include
 
-
 LIBS += -L$$PWD/../libs/motion_x64/ -lMotionControlDll
 LIBS += -L$$PWD/../libs/motion_x64/ -lMotionControlExtendDll
 LIBS += -L$$PWD/../libs/motion_x64/ -lvoice_motor_dll
 
 INCLUDEPATH += $$PWD/../libs/motion_x64
 DEPENDPATH += $$PWD/../libs/motion_x64
-
 INCLUDEPATH += $$PWD/../libs/eigen/eigen-eigen-5a0156e40feb
+
+LIBS += -L$$PWD/../libs/DTCCM2_SDK/X64_Lib/ -ldtccm2
+INCLUDEPATH += $$PWD/../libs/DTCCM2_SDK
+DEPENDPATH += $$PWD/../libs/DTCCM2_SDK/X64_Lib
 
 HEADERS += \
     baslerpyloncamera.h \
@@ -126,7 +132,11 @@ HEADERS += \
     lut_module.h \
     lut_parameter.h \
     sut_module.h \
-    aadata.h
+    aadata.h \
+    dothinkey.h \
+    iniparser.h \
+    imagegrabbingworkerthread.h \
+    imageprovider.h
 
     XtVacuum.h
 

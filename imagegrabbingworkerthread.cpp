@@ -1,0 +1,111 @@
+#include "imagegrabbingworkerthread.h"
+#include <Qmutex>
+#include "sfr.h"
+#include <QFileDialog>
+#include <QTextStream>
+
+QImage ImageGrabbingWorkerThread::cvMat2QImage(const cv::Mat& mat)
+{
+    // 8-bits unsigned, NO. OF CHANNELS = 1
+    if(mat.type() == CV_8UC1)
+    {
+        QImage image(mat.cols, mat.rows, QImage::Format_Indexed8);
+        // Set the color table (used to translate colour indexes to qRgb values)
+        image.setColorCount(256);
+        for(int i = 0; i < 256; i++)
+        {
+            image.setColor(i, qRgb(i, i, i));
+        }
+        // Copy input Mat
+        uchar *pSrc = mat.data;
+        for(int row = 0; row < mat.rows; row ++)
+        {
+            uchar *pDest = image.scanLine(row);
+            memcpy(pDest, pSrc, mat.cols);
+            pSrc += mat.step;
+        }
+        return image;
+    }
+    // 8-bits unsigned, NO. OF CHANNELS = 3
+    else if(mat.type() == CV_8UC3)
+    {
+        // Copy input Mat
+        const uchar *pSrc = (const uchar*)mat.data;
+        // Create QImage with same dimensions as input Mat
+        QImage image(pSrc, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
+        return image.rgbSwapped();
+    }
+    else if(mat.type() == CV_8UC4)
+    {
+        // Copy input Mat
+        const uchar *pSrc = (const uchar*)mat.data;
+        // Create QImage with same dimensions as input Mat
+        QImage image(pSrc, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
+        return image.copy();
+    }
+    else
+    {
+        return QImage();
+    }
+}
+
+ImageGrabbingWorkerThread::ImageGrabbingWorkerThread(Dothinkey* dk, QObject *)
+    : QQuickImageProvider(QQuickImageProvider::Image)
+    , forceStop(false)
+{
+    this->dk = dk;
+    connect(this, &ImageGrabbingWorkerThread::imageGrabbed, this, &ImageGrabbingWorkerThread::onImageGrabbed);
+}
+
+void ImageGrabbingWorkerThread::onImageGrabbed()
+{
+    qInfo("Image grabbed");
+    emit callQmlRefeshSensorImg();
+     qInfo("End");
+}
+
+void ImageGrabbingWorkerThread::run()
+{
+    qInfo("Start thread");
+    forceStop = false;
+    while(true) {
+        if(this->forceStop) break;
+        QMutexLocker locker(&mutex);
+        //QImage* newImage =  dk->DothinkeyGrabImage(0);
+        //emit imageChanged(*newImage);
+        //latestImage = newImage->copy();
+        //delete newImage;
+        qInfo("CP 1");
+        QImage * image = new QImage("C:\\Sparrow\\1932084659.jpg");
+        latestImage = image->copy();
+        latestImage.save("fuck.jpg");
+        qInfo("CP 2");
+        //delete image;
+        qInfo("CP 3");
+        emit imageGrabbed();
+        qInfo("CP 4");
+        locker.unlock();
+        qInfo("CP 5");
+        QThread::msleep(500); //Slow down the cpu cooldown
+    }
+}
+
+void ImageGrabbingWorkerThread::stop()
+{
+    forceStop = true;
+}
+
+void ImageGrabbingWorkerThread::toggleMTFLive(int count)
+{
+    mtf_live = true;
+    mtf_test_count = count;
+    resultData = "";
+    index = 0;
+}
+
+QImage ImageGrabbingWorkerThread::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
+{
+    qInfo("Grab image!!!");
+    return latestImage;
+}
+

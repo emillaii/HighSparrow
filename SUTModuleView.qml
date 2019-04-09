@@ -70,7 +70,7 @@ ColumnLayout {
                     from: 0
                     value: sutParams.Lighting
                     onValueChanged: {
-                        baseModuleManager.setDownlookLighting(value)
+                        lightingController.setDownlookLighting(value)
                         sutParams.setLighting(value)
                     }
                 }

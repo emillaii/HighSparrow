@@ -46,6 +46,10 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sutModule", highSprrow.baseModuleManager->sut_module);
     engine.rootContext()->setContextProperty("lutModule", highSprrow.baseModuleManager->lut_module);
     engine.rootContext()->setContextProperty("aaHeadModule", highSprrow.baseModuleManager->aa_head_module);
+
+    //Device
+    engine.rootContext()->setContextProperty("imageGrabber", highSprrow.baseModuleManager->dothinkey);
+    engine.rootContext()->setContextProperty("lightingController", highSprrow.baseModuleManager->lightingModule);
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module->parameters);
 
@@ -59,6 +63,7 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);
     engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);
     engine.addImageProvider(QLatin1String("preview1"), highSprrow.baseModuleManager->visionModule);
+    engine.addImageProvider(QLatin1String("imageGrabberLiveImage"), highSprrow.baseModuleManager->imageGrabberThread);
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())

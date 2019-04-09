@@ -51,6 +51,10 @@ ApplicationWindow {
         id: motionDialog
     }
 
+    PopupMessageView {
+        id: messageDialog
+    }
+
     FileContentItem {
         id: file
         onError: console.log(msg)
@@ -176,6 +180,8 @@ ApplicationWindow {
             icon.source: "icons/save.png"
             onClicked: {
                 baseModuleManager.updateParams()
+                messageDialog.messageText.text = "Save Complete"
+                messageDialog.open()
             }
         }
 

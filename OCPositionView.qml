@@ -121,7 +121,19 @@ ColumnLayout {
             height: 40
             visible: root.checked
             onClicked: {
-                console.log("Read Encdoer");
+                var x = baseModuleManager.getMotorFeedbackPos(m_AA1_X)
+                var y = baseModuleManager.getMotorFeedbackPos(m_AA1_Y)
+                var z = baseModuleManager.getMotorFeedbackPos(m_AA1_Z)
+                var a = baseModuleManager.getMotorFeedbackPos(m_AA1_A)
+                var b = baseModuleManager.getMotorFeedbackPos(m_AA1_B)
+                var c = baseModuleManager.getMotorFeedbackPos(m_AA1_C)
+
+                aaHeadParams.setOCPositionX(x)
+                aaHeadParams.setOCPositionY(y)
+                aaHeadParams.setOCPositionZ(z)
+                aaHeadParams.setOCPositionA(a)
+                aaHeadParams.setOCPositionB(b)
+                aaHeadParams.setOCPositionC(c)
             }
         }
     }

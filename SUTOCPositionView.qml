@@ -64,7 +64,12 @@ ColumnLayout {
             height: 40
             visible: root.checked
             onClicked: {
-                console.log("Read Encdoer");
+                var x = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
+                var y = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)
+                var z = baseModuleManager.getMotorFeedbackPos(m_SUT1_Z)
+                sutParams.setOCX(x)
+                sutParams.setOCY(y)
+                sutParams.setOCZ(z)
             }
         }
     }

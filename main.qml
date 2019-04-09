@@ -13,6 +13,19 @@ ApplicationWindow {
     readonly property string title_move_to: "移動"
     readonly property string title_read_encoder: "讀取"
 
+    readonly property string m_AA1_X: "AA1_X"
+    readonly property string m_AA1_Y: "AA1_Y"
+    readonly property string m_AA1_Z: "AA1_Z"
+    readonly property string m_AA1_A: "AA1_A"
+    readonly property string m_AA1_B: "AA1_B"
+    readonly property string m_AA1_C: "AA1_C"
+    readonly property string m_SUT1_X: "SUT1_X"
+    readonly property string m_SUT1_Y: "SUT1_Y"
+    readonly property string m_SUT1_Z: "SUT_Z"
+    readonly property string m_LUT1_X: "LUT_X"
+    readonly property string m_LUT1_Y: "LUT_Y"
+    readonly property string m_LUT1_Z: "LUT_Z"
+
     FileDialog {
         id: loadfileDialog
         title: qsTr("选择加载文件")

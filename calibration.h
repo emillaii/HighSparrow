@@ -41,7 +41,7 @@ public:
 
     Calibration(const Calibration &calibration) = delete;
     Calibration &operator=(const Calibration &calibration) = delete;
-    void ChangeParameter(WordopLight * light_controller,int ch,int lighting,QString camera_name, QString pr_name);
+    void changeParameter(int lighting, QString pr_name);
     void loadJsonConfig();
     void saveJsonConfig();
     bool performCalibration();

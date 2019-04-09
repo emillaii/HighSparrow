@@ -8,8 +8,8 @@ class CalibrationParameter:public PropertyBase
     Q_OBJECT
 public:
     CalibrationParameter():PropertyBase(){}
-    Q_PROPERTY(double imageWidth READ imageWidth WRiTE setimageWidth NOTiFY imageWidthChanged)
-    Q_PROPERTY(double imageHeight READ imageHeight WRiTE setimageHeight NOTiFY imageHeightChanged)
+    Q_PROPERTY(double imageWidth READ imageWidth WRITE setimageWidth NOTIFY imageWidthChanged)
+    Q_PROPERTY(double imageHeight READ imageHeight WRITE setimageHeight NOTIFY imageHeightChanged)
     Q_PROPERTY(double originX READ originX WRITE setOriginX NOTIFY originXChanged)
     Q_PROPERTY(double originY READ originY WRITE setOriginY NOTIFY originYChanged)
     Q_PROPERTY(double matrix11 READ matrix11 WRITE setMatrix11 NOTIFY matrix11Changed)
@@ -149,6 +149,26 @@ public slots:
         emit deltaYChanged(m_deltaY);
     }
 
+    void setimageWidth(double imageWidth)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_imageWidth, imageWidth))
+            return;
+
+        m_imageWidth = imageWidth;
+        emit imageWidthChanged(m_imageWidth);
+    }
+
+    void setimageHeight(double imageHeight)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_imageHeight, imageHeight))
+            return;
+
+        m_imageHeight = imageHeight;
+        emit imageHeightChanged(m_imageHeight);
+    }
+
 signals:
     void originXChanged(double originX);
 
@@ -165,6 +185,10 @@ signals:
     void deltaXChanged(double deltaX);
 
     void deltaYChanged(double deltaY);
+
+    void imageWidthChanged(double imageWidth);
+
+    void imageHeightChanged(double imageHeight);
 
 private:
     double m_imageWidth = 0;

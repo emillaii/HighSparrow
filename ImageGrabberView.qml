@@ -4,7 +4,9 @@ import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.2
 import FileContentItem 1.0
 
-Item {
+ColumnLayout {
+    id: columnLayout
+    anchors.fill: parent
 
     FileDialog {
         id: loadfileDialog
@@ -20,68 +22,58 @@ Item {
         }
     }
 
-    ColumnLayout {
-        id: columnLayout
-        anchors.fill: parent
+    RowLayout {
+        id: rowLayout
+        width: 100
+        height: 100
 
-        RowLayout {
-            id: rowLayout
-            width: 100
-            height: 100
-
-            RoundButton {
-                id: roundButton
-                text: "+"
-                onClicked: {
-                    loadfileDialog.open()
-                }
+        RoundButton {
+            id: roundButton
+            text: "+"
+            onClicked: {
+                loadfileDialog.open()
             }
-
-            Text {
-                id: element1
-                color: "#3ef340"
-                text: qsTr("Ini: ")
-                font.pixelSize: 14
-            }
-
-            Text {
-                id: element
-                width: 20
-                height: 35
-                color: "#3ef340"
-                text: imageGrabber.IniFilename
-                Layout.fillWidth: true
-                font.pixelSize: 14
-            }
-
         }
 
-        RowLayout {
-            id: rowLayout1
-            width: 100
-            height: 100
+        Text {
+            id: element1
+            color: "#3ef340"
+            text: qsTr("Ini: ")
+            font.pixelSize: 14
+        }
 
-            Button {
-                id: button
-                text: qsTr("Open Camera")
-                onClicked: {
-                    baseModuleManager.initSensor()
-                }
+        Text {
+            id: element
+            width: 20
+            height: 35
+            color: "#3ef340"
+            text: imageGrabber.IniFilename
+            Layout.fillWidth: true
+            font.pixelSize: 14
+        }
+
+    }
+
+    RowLayout {
+        id: rowLayout1
+        width: 100
+        height: 100
+
+        Button {
+            id: button
+            text: qsTr("Open Camera")
+            onClicked: {
+                baseModuleManager.initSensor()
             }
+        }
 
-            Button {
-                id: button1
-                text: qsTr("Close Camera")
-                onClicked: {
-                    baseModuleManager.closeSensor()
-                }
+        Button {
+            id: button1
+            text: qsTr("Close Camera")
+            onClicked: {
+                baseModuleManager.closeSensor()
             }
         }
     }
-
 }
 
-/*##^## Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
- ##^##*/

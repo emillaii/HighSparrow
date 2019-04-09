@@ -69,5 +69,14 @@ ItemDelegate {
             ImageGrabberView {
             }
         }
+        ColumnLayout {
+            visible: {
+                if (model.index === 5)
+                    return root.checked
+                else
+                    return false
+            }
+            CalibrationView {}
+        }
     }
 }

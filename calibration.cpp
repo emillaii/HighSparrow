@@ -17,12 +17,9 @@ Calibration::Calibration(QString name,QString file_name,XtMotor *motor_x, XtMoto
     this->pr_name = pr_name;
 }
 
-void Calibration::ChangeParameter(WordopLight *light_controller, int ch, int lighting, QString camera_name, QString pr_name)
+void Calibration::changeParameter(int lighting, QString pr_name)
 {
-    this->light_controller =light_controller;
-    this->ch = ch;
     this->lighting = lighting;
-    this->camera_name = camera_name;
     this->pr_name = pr_name;
 }
 

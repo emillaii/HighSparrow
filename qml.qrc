@@ -28,6 +28,7 @@
         <file>SUTSafetyPositionView.qml</file>
         <file>PopupMessageView.qml</file>
         <file>ImageGrabberView.qml</file>
+        <file>CalibrationView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

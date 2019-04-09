@@ -19,5 +19,9 @@ ListModel {
         label: "Image Grabber 配置"
         index: 4
     }
+    ListElement {
+        label: "Calibration 配置"
+        index: 5
+    }
 }
 

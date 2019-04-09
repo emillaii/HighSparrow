@@ -63,21 +63,13 @@ void ImageGrabbingWorkerThread::run()
     while(true) {
         if(this->forceStop) break;
         QMutexLocker locker(&mutex);
-        //QImage* newImage =  dk->DothinkeyGrabImage(0);
-        //emit imageChanged(*newImage);
-        //latestImage = newImage->copy();
-        //delete newImage;
-        qInfo("CP 1");
-        QImage * image = new QImage("C:\\Sparrow\\1932084659.jpg");
-        latestImage = image->copy();
-        delete image;
-        latestImage.save("fuck.jpg");
+        QImage* newImage =  dk->DothinkeyGrabImage(0);
+        latestImage = newImage->copy();
+        delete newImage;
         m_pImgProvider->img = latestImage;
         emit callQmlRefeshImg();
-        qInfo("CP 4");
         locker.unlock();
-        qInfo("CP 5");
-        QThread::msleep(500); //Slow down the cpu cooldown
+        QThread::msleep(100); //Slow down the cpu cooldown
     }
 }
 

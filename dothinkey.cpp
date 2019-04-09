@@ -101,8 +101,9 @@ BOOL Dothinkey::DothinkeyLoadIniFile(int channel) {
     SensorTab *pCurrentSensor;
     pCurrentSensor = &(this->m_CameraChannels[channel].current_sensor);
     iniParser *iniParser_ = new iniParser();
-    std::string str_filename = this->m_IniFilename.toStdString();
-    //std::string str_filename = "d:\\dothinkey_S5K4H7_A8S04B_ok.ini";
+    QString filename = this->m_IniFilename;
+    filename.replace("file:///", "");
+    std::string str_filename = filename.toStdString();
     iniParser_->SetIniFilename(str_filename);
     if (channel == 0 || channel == 1) {
         m_CameraChannels[channel].m_fMclk = (float)iniParser_->ReadIniData("Sensor", "mclk", 0x01) / 1000;
@@ -110,7 +111,6 @@ BOOL Dothinkey::DothinkeyLoadIniFile(int channel) {
         m_CameraChannels[channel].m_fDovdd = (float)iniParser_->ReadIniData("Sensor", "dovdd", 0x00) / 1000;
         m_CameraChannels[channel].m_fDvdd = (float)iniParser_->ReadIniData("Sensor", "dvdd", 0x00) / 1000;
     }
-
     pCurrentSensor->width = iniParser_->ReadIniData("Sensor", "width", 0);
     pCurrentSensor->height = iniParser_->ReadIniData("Sensor", "height", 0);
     pCurrentSensor->type = iniParser_->ReadIniData("Sensor", "type", 2);
@@ -150,11 +150,11 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     SensorTab *pSensor = nullptr;
     ULONG *grabSize = nullptr;
     int iDevID = -1;
-    float fMclk;
-    float fAvdd;
-    float fDvdd;
-    float fDovdd;
-    float fAfvcc;
+    float fMclk = 0;
+    float fAvdd = 0;
+    float fDvdd = 0;
+    float fDovdd = 0;
+    float fAfvcc = 0;
     UINT vpp;
     if (channel == 0 || channel == 1) {
         pSensor = &(m_CameraChannels[channel].current_sensor);
@@ -166,14 +166,7 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
         fDovdd = m_CameraChannels[channel].m_fDovdd;
         fAfvcc = m_CameraChannels[channel].m_fAfvcc;
         vpp = m_CameraChannels[channel].m_vpp;
-        qInfo("current iDevID : %d",iDevID);
-        qInfo("current m_GrabSize : %lu",m_CameraChannels[channel].m_GrabSize);
-        qInfo("current fMclk : %f",fMclk);
-        qInfo("current fDvdd : %f",fDvdd);
-        qInfo("current fDovdd : %f",fDovdd);
-        qInfo("current fAfvcc : %f",fAfvcc);
     }
-    //ToDo: KillDataBuffer
     SetSoftPinPullUp(IO_NOPULL, 0);
     if (SetSensorClock(false, (USHORT)(0 * 10), iDevID) != DT_ERROR_OK)
     {

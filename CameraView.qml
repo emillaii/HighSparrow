@@ -236,7 +236,6 @@ Grid {
         Connections {
             target: imageGrabberThread
             onCallQmlRefeshImg: {
-                console.log("......")
                 image3.source = ""
                 image3.source = "image://imageGrabberLiveImage"
             }

@@ -7,7 +7,6 @@ ImageProvider::ImageProvider()
 
 QImage ImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    qInfo("........");
     return this->img;
 }
 

@@ -127,7 +127,7 @@ Grid {
                 Label {
                     y: 10
                     color: "#46eb46"
-                    text: qsTr("0")
+                    text: lightingController.downlookLighting
                     font.pointSize: 20
                     font.family: "Times New Roman"
                     anchors.bottom: parent.bottom
@@ -232,14 +232,13 @@ Grid {
             source: "icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
-
-            Connections {
-                target: imageGrabber
-                onCallQmlRefeshSensorImg: {
-                    console.log("......")
-                    image3.source = ""
-                    image3.source = "image://imageGrabberLiveImage//sensor"
-                }
+        }
+        Connections {
+            target: imageGrabberThread
+            onCallQmlRefeshImg: {
+                console.log("......")
+                image3.source = ""
+                image3.source = "image://imageGrabberLiveImage"
             }
         }
     }

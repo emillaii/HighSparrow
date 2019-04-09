@@ -50,18 +50,10 @@ QImage ImageGrabbingWorkerThread::cvMat2QImage(const cv::Mat& mat)
 }
 
 ImageGrabbingWorkerThread::ImageGrabbingWorkerThread(Dothinkey* dk, QObject *)
-    : QQuickImageProvider(QQuickImageProvider::Image)
-    , forceStop(false)
+    : forceStop(false)
 {
     this->dk = dk;
-    connect(this, &ImageGrabbingWorkerThread::imageGrabbed, this, &ImageGrabbingWorkerThread::onImageGrabbed);
-}
-
-void ImageGrabbingWorkerThread::onImageGrabbed()
-{
-    qInfo("Image grabbed");
-    emit callQmlRefeshSensorImg();
-     qInfo("End");
+    m_pImgProvider = new ImageProvider();
 }
 
 void ImageGrabbingWorkerThread::run()
@@ -78,11 +70,10 @@ void ImageGrabbingWorkerThread::run()
         qInfo("CP 1");
         QImage * image = new QImage("C:\\Sparrow\\1932084659.jpg");
         latestImage = image->copy();
+        delete image;
         latestImage.save("fuck.jpg");
-        qInfo("CP 2");
-        //delete image;
-        qInfo("CP 3");
-        emit imageGrabbed();
+        m_pImgProvider->img = latestImage;
+        emit callQmlRefeshImg();
         qInfo("CP 4");
         locker.unlock();
         qInfo("CP 5");
@@ -101,11 +92,5 @@ void ImageGrabbingWorkerThread::toggleMTFLive(int count)
     mtf_test_count = count;
     resultData = "";
     index = 0;
-}
-
-QImage ImageGrabbingWorkerThread::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
-{
-    qInfo("Grab image!!!");
-    return latestImage;
 }
 

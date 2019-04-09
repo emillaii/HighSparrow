@@ -3,10 +3,10 @@
 #include <QThread>
 #include <QImage>
 #include "dothinkey.h"
-#include <QQuickImageProvider>
 #include <QMutex>
+#include "imageprovider.h"
 
-class ImageGrabbingWorkerThread : public QThread, public QQuickImageProvider
+class ImageGrabbingWorkerThread : public QThread
 {
     Q_OBJECT
 public:
@@ -14,8 +14,7 @@ public:
     void stop();
     void toggleMTFLive(int count);
     static QImage cvMat2QImage(const cv::Mat& mat);
-    QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
-
+    ImageProvider *m_pImgProvider;
 protected:
     void run() override;
     bool forceStop;
@@ -29,10 +28,7 @@ private:
     QImage latestImage;
 signals:
     void done();
-    void imageGrabbed();
-    void callQmlRefeshSensorImg();
-public slots:
-    void onImageGrabbed();
+    void callQmlRefeshImg();
 };
 
 #endif // IMAGEGRABBINGWORKERTHREAD_H

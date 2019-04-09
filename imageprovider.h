@@ -2,16 +2,17 @@
 #define IMAGEPROVIDER_H
 
 #include <QObject>
+#include <QQuickImageProvider>
 
-class ImageProvider : public QObject
+class ImageProvider : public QQuickImageProvider
 {
-    Q_OBJECT
 public:
-    explicit ImageProvider(QObject *parent = nullptr);
+    ImageProvider();
 
-signals:
+    QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
+    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
 
-public slots:
+    QImage img;
+
 };
-
 #endif // IMAGEPROVIDER_H

@@ -106,6 +106,12 @@ public:
     Q_INVOKABLE bool allMotorsSeekOrigin();
     Q_INVOKABLE void stopSeeking();
 
+    Q_INVOKABLE void performUplookCalibration();
+    Q_INVOKABLE void performDownlookCalibration();
+    Q_INVOKABLE void performUpDownlookCalibration();
+    Q_INVOKABLE void UpdateCalibrationParameters();
+
+
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);
     XtGeneralOutput *GetOutputIoByName(QString name);

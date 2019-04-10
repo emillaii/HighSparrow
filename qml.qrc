@@ -8,7 +8,6 @@
         <file>FeatureButton.qml</file>
         <file>AAHeadModuleView.qml</file>
         <file>MachineSettingModel.qml</file>
-        <file>MachineSettingDelegate.qml</file>
         <file>Page3Form.ui.qml</file>
         <file>OCPositionView.qml</file>
         <file>PickLensPositionView.qml</file>
@@ -29,6 +28,7 @@
         <file>PopupMessageView.qml</file>
         <file>ImageGrabberView.qml</file>
         <file>CalibrationView.qml</file>
+        <file>MachineConfigListView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

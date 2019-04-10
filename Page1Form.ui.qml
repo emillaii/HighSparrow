@@ -94,8 +94,7 @@ Page {
         anchors.rightMargin: -3
     }
 
-    ListView {
-        id: machineConfigListView
+    MachineConfigListView {
         anchors.right: parent.right
         anchors.rightMargin: 627
         anchors.bottom: parent.bottom
@@ -104,10 +103,6 @@ Page {
         anchors.bottomMargin: 49
         anchors.leftMargin: 112
         anchors.topMargin: 35
-        model: MachineSettingModel {
-        }
-        delegate: MachineSettingDelegate {
-        }
     }
     TextArea {
         id: textArea

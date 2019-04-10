@@ -57,16 +57,13 @@ ColumnLayout {
             text: title_move_to
             width: 40
             height: 40
-            visible: root.checked
             onClicked: {
-
             }
         }
         Button {
             text: title_read_encoder
             width: 20
             height: 40
-            visible: root.checked
             onClicked: {
                 var x = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
                 var y = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)

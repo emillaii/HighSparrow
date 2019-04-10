@@ -9,7 +9,6 @@ import QtQuick.Controls.Material 2.12
 
 Page {
     id: page1
-    x: -1
     width: 1280
     height: 720
     property alias featureButton: featureButton
@@ -23,6 +22,9 @@ Page {
 
     RowLayout {
         id: mainRowLayout
+        anchors.bottomMargin: 86
+        anchors.leftMargin: 24
+        anchors.topMargin: -38
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.top: parent.top
@@ -100,9 +102,9 @@ Page {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.bottomMargin: 49
+        anchors.bottomMargin: 122
         anchors.leftMargin: 112
-        anchors.topMargin: 35
+        anchors.topMargin: -38
     }
     TextArea {
         id: textArea

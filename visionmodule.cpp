@@ -92,9 +92,9 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
                     .append(getCurrentTimeString())
                     .append("_raw.jpg");
         g_constData1 = L"test.jpg";
-        g_constData2 = L"C:\\Users\\20190404AA1\\Documents\\HighSparrow.git\\build-HighSprrowQ-Desktop_Qt_5_12_0_MSVC2017_64bit-Debug\\config\\prConfig\\downlook_offset.avdata";
+        g_constData2 = L"C:\\Users\\emil\\Documents\\Projects\\HighSparrow.git\\build-HighSprrowQ-Desktop_Qt_5_12_0_MSVC2017_64bit-Debug\\config\\prConfig\\aaUplook_offset.avdata";
         g_constData3 = L"Vector2D";
-        g_constData4 = L"C:\\Users\\20190404AA1\\Documents\\HighSparrow.git\\build-HighSprrowQ-Desktop_Qt_5_12_0_MSVC2017_64bit-Debug\\config\\prConfig\\downlook.avdata";
+        g_constData4 = L"C:\\Users\\emil\\Documents\\Projects\\HighSparrow.git\\build-HighSprrowQ-Desktop_Qt_5_12_0_MSVC2017_64bit-Debug\\config\\prConfig\\aaUplook.avdata";
         g_constData5 = L"GrayModel";
         g_constData6 = L"Angle:";
         g_emptyString = L"";
@@ -172,7 +172,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avs::DrawPoints_SingleColor( image4, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image5 );
         avs::DrawRectangles_SingleColor( image5, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 2.0f, false, atl::NIL, 1.0f), true, image6 );
         avl::SaveImageToJpeg( image6 , imageName.toStdString().c_str(), atl::NIL, false );
-        //displayPRResult(camera_name, prResult);
+        displayPRResult(camera_name, prResult);
     } catch(const atl::Error& error) {
         qWarning(error.Message());
         return error_code;
@@ -191,7 +191,7 @@ void VisionModule::displayPRResult(const QString camera_name, const PRResultStru
     else if (camera_name.contains(PICKARM_VISION_CAMERA)) {
         last_pickarm_pr_result = prResult.imageName;
     }
-    //emit callQmlRefeshImg();
+    emit callQmlRefeshImg();
 }
 
 QImage VisionModule::requestImage(const QString &id, QSize *size, const QSize &requestedSize)

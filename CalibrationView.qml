@@ -139,9 +139,6 @@ ItemDelegate {
                     text: lutParams.prName
                     font.pixelSize: 14
                 }
-
-
-
             }
 
             RowLayout {

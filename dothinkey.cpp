@@ -16,6 +16,7 @@ Dothinkey::Dothinkey(QObject *parent) : PropertyBase(parent)
 Dothinkey::~Dothinkey()
 {
     //Clear things here
+    loadParams();
 }
 
 void Dothinkey::updateParams()

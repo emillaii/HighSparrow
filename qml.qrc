@@ -9,7 +9,6 @@
         <file>AAHeadModuleView.qml</file>
         <file>MachineSettingModel.qml</file>
         <file>Page3Form.ui.qml</file>
-        <file>OCPositionView.qml</file>
         <file>PickLensPositionView.qml</file>
         <file>MotionDialog.qml</file>
         <file>SUTModuleView.qml</file>
@@ -29,6 +28,9 @@
         <file>ImageGrabberView.qml</file>
         <file>CalibrationView.qml</file>
         <file>MachineConfigListView.qml</file>
+        <file>AAHeadMushroomPosition.qml</file>
+        <file>AAHeadPickLensPosition.qml</file>
+        <file>AAHeadOCPosition.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

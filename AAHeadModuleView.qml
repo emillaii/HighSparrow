@@ -30,12 +30,18 @@ ItemDelegate {
                 }
             }
             GroupBox{
-                title: qsTr("OC Position")
-                OCPositionView {}
+                title: qsTr("Mushroom Position")
+                AAHeadMushroomPosition {}
             }
+
             GroupBox{
                 title: qsTr("Pick Lens Position")
-                PickLensPositionView {}
+                AAHeadPickLensPosition {}
+            }
+
+            GroupBox{
+                title: qsTr("OC Position")
+                AAHeadOCPosition {}
             }
         }
     }

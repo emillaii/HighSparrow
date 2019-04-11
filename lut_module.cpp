@@ -15,6 +15,7 @@ void LutModule::Init(MaterialCarrier *carrier, Calibration *updown_calibration, 
     this->vision = vision;
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuum;
+    loadParams();
 }
 
 void LutModule::updateParams()

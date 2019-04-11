@@ -49,6 +49,9 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lutModule", &highSprrow.baseModuleManager->lut_module);
     engine.rootContext()->setContextProperty("aaHeadModule", &highSprrow.baseModuleManager->aa_head_module);
 
+    //Position
+    engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);
+
     //Device
     engine.rootContext()->setContextProperty("imageGrabber", highSprrow.baseModuleManager->dothinkey);
     engine.rootContext()->setContextProperty("imageGrabberThread", highSprrow.baseModuleManager->imageGrabberThread);

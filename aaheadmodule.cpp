@@ -10,7 +10,16 @@ void AAHeadModule::loadParams()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("AA_HEAD_PARAMS", &parameters);
+    temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
     PropertyBase::loadJsonConfig(AA_HEAD_MODULE_JSON, temp_map);
+}
+
+void AAHeadModule::updateParams()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("AA_HEAD_PARAMS", &this->parameters);
+    temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
+    PropertyBase::saveJsonConfig(AA_HEAD_MODULE_JSON,temp_map);
 }
 
 void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMotor *motor_z, XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtCylinder *v)
@@ -22,14 +31,7 @@ void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMoto
     this->motor_b = motor_b;
     this->motor_c = motor_c;
     this->v = v;
-
-}
-
-void AAHeadModule::updateParams()
-{
-    QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("AA_HEAD_PARAMS", &this->parameters);
-    PropertyBase::saveJsonConfig(AA_HEAD_MODULE_JSON,temp_map);
+    loadParams();
 }
 
 bool AAHeadModule::moveToPickLensPosition()

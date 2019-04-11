@@ -16,8 +16,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) sutCarrierParams.setSafetyX(text)
+            onEditingFinished: {
+                sutCarrierParams.setSafetyX(text)
             }
         }
         Label {
@@ -32,8 +32,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if (!focus) sutCarrierParams.setSafetyY(text)
+            onEditingFinished: {
+                sutCarrierParams.setSafetyY(text)
             }
         }
         Label {
@@ -46,8 +46,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) sutCarrierParams.setSafetyZ(text)
+            onEditingFinished: {
+                sutCarrierParams.setSafetyZ(text)
             }
         }
     }

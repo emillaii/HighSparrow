@@ -13,6 +13,7 @@ void SutModule::Init(MaterialCarrier *carrier, Calibration *down_calibration, Ca
     this->updown_calibration = updown_calibration;
     this->lighting = lighting;
     this->vision = vision;
+    loadParams();
 }
 
 void SutModule::updateParams()

@@ -8,48 +8,44 @@ ColumnLayout {
             text: qsTr("AA_X")
         }
         TextField {
-            text: aaHeadParams.OCPositionX
+            text: aaHeadMushroomPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) aaHeadParams.setOCPositionX(text)
+            onEditingFinished: {
+                console.log(aaHeadModule)
+                console.log(aaHeadMushroomPosition)
+                aaHeadMushroomPosition.setX(text)
             }
         }
         Label {
             text: qsTr("AA_Y")
         }
         TextField {
-            text: aaHeadParams.OCPositionY
+            text: aaHeadMushroomPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onFocusChanged: {
-                if(!focus) aaHeadParams.setOCPositionY(text)
+                if(!focus) aaHeadMushroomPosition.setY(text)
             }
         }
         Label {
             text: qsTr("AA_Z")
         }
         TextField {
-            text: aaHeadParams.OCPositionZ
+            text: aaHeadMushroomPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if (!focus) aaHeadParams.setOCPositionZ(text)
+            onEditingFinished: {
+                aaHeadMushroomPosition.setZ(text)
             }
         }
     }
@@ -59,48 +55,42 @@ ColumnLayout {
             text: qsTr("AA_A")
         }
         TextField {
-            text: aaHeadParams.OCPositionA
+            text: aaHeadMushroomPosition.A
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) aaHeadParams.setOCPositionA(text)
+            onEditingFinished: {
+                aaHeadMushroomPosition.setA(text)
             }
         }
         Label {
             text: qsTr("AA_B")
         }
         TextField {
-            text: aaHeadParams.OCPositionB
+            text: aaHeadMushroomPosition.B
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) aaHeadParams.setOCPositionB(text)
+            onEditingFinished: {
+                aaHeadMushroomPosition.setB(text)
             }
         }
         Label {
             text: qsTr("AA_C")
         }
         TextField {
-            text: aaHeadParams.OCPositionC
+            text: aaHeadMushroomPosition.C
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                bottom: -100
-                top: 100
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) aaHeadParams.setOCPositionC(text)
+            onEditingFinished: {
+                aaHeadMushroomPosition.setC(text)
             }
         }
     }
@@ -111,7 +101,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                aaHeadModule.moveToOCPosition()
+                //
             }
         }
         Button {
@@ -126,12 +116,12 @@ ColumnLayout {
                 var b = baseModuleManager.getMotorFeedbackPos(m_AA1_B)
                 var c = baseModuleManager.getMotorFeedbackPos(m_AA1_C)
 
-                aaHeadParams.setOCPositionX(x)
-                aaHeadParams.setOCPositionY(y)
-                aaHeadParams.setOCPositionZ(z)
-                aaHeadParams.setOCPositionA(a)
-                aaHeadParams.setOCPositionB(b)
-                aaHeadParams.setOCPositionC(c)
+                aaHeadMushroomPosition.setX(x)
+                aaHeadMushroomPosition.setY(y)
+                aaHeadMushroomPosition.setZ(z)
+                aaHeadMushroomPosition.setA(a)
+                aaHeadMushroomPosition.setB(b)
+                aaHeadMushroomPosition.setC(c)
             }
         }
     }

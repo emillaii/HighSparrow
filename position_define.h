@@ -25,6 +25,7 @@ struct mPoint6D
 };
 class Position3D:public PropertyBase
 {
+    Q_OBJECT
 public:
     Position3D():PropertyBase(){}
     Position3D(mPoint3D point):PropertyBase(){m_X = point.X;m_Y = point.Y;m_Z = point.Z;}
@@ -91,6 +92,7 @@ private:
 
 class Position6D:public PropertyBase
 {
+    Q_OBJECT
 public:
     Position6D():PropertyBase(){}
     Position6D(mPoint6D point):PropertyBase(){m_X = point.X;m_Y = point.Y;m_Z = point.Z;m_A = point.A;m_B = point.B;m_Z = point.C;}

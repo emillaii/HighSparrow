@@ -8,42 +8,42 @@ ColumnLayout {
             text: qsTr("SUT_X")
         }
         TextField {
-            text: sutParams.LoadX
+            text: sutLoadPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if (!focus) sutParams.setLoadX(text)
+            onEditingFinished: {
+                sutLoadPosition.setX(text)
             }
         }
         Label {
             text: qsTr("SUT_Y")
         }
         TextField {
-            text: sutParams.LoadY
+            text: sutLoadPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if (!focus) sutParams.setLoadY(text)
+            onEditingFinished: {
+                sutLoadPosition.setY(text)
             }
         }
         Label {
             text: qsTr("SUT_Z")
         }
         TextField {
-            text: sutParams.LoadZ
+            text: sutLoadPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if (!focus) sutParams.setLoadZ(text)
+            onEditingFinished: {
+                sutLoadPosition.setZ(text)
             }
         }
     }
@@ -65,9 +65,9 @@ ColumnLayout {
                 var x = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
                 var y = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)
                 var z = baseModuleManager.getMotorFeedbackPos(m_SUT1_Z)
-                sutParams.setLoadX(x)
-                sutParams.setLoadY(y)
-                sutParams.setLoadZ(z)
+                sutLoadPosition.setX(x)
+                sutLoadPosition.setY(y)
+                sutLoadPosition.setZ(z)
             }
         }
     }

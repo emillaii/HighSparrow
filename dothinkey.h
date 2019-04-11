@@ -25,7 +25,7 @@ public:
     ~Dothinkey();
     Q_PROPERTY(QString IniFilename READ IniFilename WRITE setIniFilename NOTIFY paramsChanged)
     Q_INVOKABLE bool initSensor();
-
+    void loadParams();
     BOOL DothinkeyEnum();   //Enumerate the dothinkey devices
     BOOL DothinkeyOpen();   //Open Camera Devices
     BOOL DothinkeyClose();  //Close Camera Devices
@@ -95,7 +95,6 @@ private:
     std::string iniFilename;
 
     QString m_IniFilename;
-    void loadParams();
 };
 
 #endif // DOTHINKEY_H

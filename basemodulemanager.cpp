@@ -23,6 +23,10 @@ BaseModuleManager::~BaseModuleManager()
 
 bool BaseModuleManager::ReadParameters()
 {
+    aa_head_module.loadParams();
+    sut_module.loadParams();
+    lut_module.loadParams();
+    dothinkey->loadParams();
     return true;
 }
 

@@ -16,6 +16,7 @@ class LutModule : public QObject
 public:
     LutModule();
     void Init(MaterialCarrier* carrier,Calibration* updown_calibration, WordopLight* lighting,VisionModule* vision, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
+    void loadParams();
     LutParameter parameters;
     Position3D updownlook_position;
 public slots:
@@ -30,7 +31,6 @@ private:
     XtVacuum* unload_vacuum;
 
     PRResultStruct pr_result;
-    void loadParams();
 public:
     Q_INVOKABLE bool moveToUpdownlookPos();
     Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true);

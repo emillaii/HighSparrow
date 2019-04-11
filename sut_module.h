@@ -14,6 +14,7 @@ class SutModule : public QObject
 public:
     SutModule();
     void Init(MaterialCarrier* carrier,Calibration* down_calibration,Calibration* updown_calibration,WordopLight* lighting,VisionModule* vision);
+    void loadParams();
     SutParameter parameters;
     Position3D load_position;
     Position3D downlook_position;
@@ -29,7 +30,6 @@ private:
     VisionModule* vision;
 
     PRResultStruct pr_result;
-    void loadParams();
 public:
     Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true);
     Q_INVOKABLE bool moveToLoadPos();

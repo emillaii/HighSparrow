@@ -3,7 +3,6 @@
 
 AAHeadModule::AAHeadModule()
 {
-    this->loadParams();
     //connect(&this->parameters, &AAHeadParameters::paramsChanged, this, &AAHeadModule::updateParams);
 }
 

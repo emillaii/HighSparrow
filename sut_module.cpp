@@ -2,7 +2,6 @@
 
 SutModule::SutModule()
 {
-    this->loadParams();
     //connect(&this->parameters, &SutParameter::paramsChanged, this, &SutModule::updateParams);
     //connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &SutModule::updateParams);
 }

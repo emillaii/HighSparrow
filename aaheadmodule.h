@@ -29,14 +29,14 @@ private:
     XtMotor* motor_c = Q_NULLPTR;
     XtCylinder * v = Q_NULLPTR;
     Position6D last_aa_position;
-    void loadParams();
 public:
+
     AAHeadParameters parameters;
     Position6D mushroom_position;
     double uplook_x;
     double uplook_y;
     double uplook_theta;
-public:
+    void loadParams();
     Q_INVOKABLE bool moveToPickLensPosition();
     Q_INVOKABLE bool moveToOCPosition();
     bool moveToAAPosition();

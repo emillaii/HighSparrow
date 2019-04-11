@@ -1,13 +1,10 @@
 #include "dispense_module.h"
-#include "dispensepather.h"
 #include <config.h>
 
 DispenseModule::DispenseModule()
 {
     loadConfig();
 }
-
-
 
 void DispenseModule::Init(Calibration *calibration, Dispenser *dispenser,VisionModule* vision,MaterialCarrier* carrier,XtGeneralOutput* dispense_io)
 {

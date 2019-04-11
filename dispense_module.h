@@ -1,10 +1,10 @@
 #ifndef DISPENSE_MODULE_H
 #define DISPENSE_MODULE_H
 
-#include "dispensepather.h"
 #include "dispenser.h"
-
-
+#include "calibration.h"
+#include "position_define.h"
+#include "dispense_parameter.h"
 
 class DispenseModule
 {

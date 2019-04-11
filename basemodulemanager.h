@@ -38,7 +38,6 @@ public:
     QMap<QString,XtGeneralInput*> input_ios;
     QMap<QString,XtGeneralOutput*> output_ios;
     QMap<QString,Calibration*> calibrations;
-    QMap<QString,Dispenser*> dispensers;
 
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;

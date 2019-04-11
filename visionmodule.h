@@ -27,6 +27,7 @@ class VisionModule: public QObject, public QQuickImageProvider
     Q_OBJECT
 public:
     VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera);
+   QVector<QPoint> VisionModule::Read_Dispense_Path();
     /*
      * Use the most generic NCC template matching
      */

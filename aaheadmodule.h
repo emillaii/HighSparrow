@@ -1,6 +1,7 @@
 #ifndef AAHEADMODULE_H
 #define AAHEADMODULE_H
 
+#include "XtCylinder.h"
 #include "XtVacuum.h"
 #include "position_define.h"
 #include "xtmotor.h"
@@ -15,7 +16,7 @@ class AAHeadModule : public QObject
     Q_OBJECT
 public:
     AAHeadModule();
-    void Init(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtVacuum * v);
+    void Init(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtCylinder * v);
 public slots:
     void updateParams();
 
@@ -26,7 +27,7 @@ private:
     XtMotor* motor_a = Q_NULLPTR;
     XtMotor* motor_b = Q_NULLPTR;
     XtMotor* motor_c = Q_NULLPTR;
-    XtVacuum * v = Q_NULLPTR;
+    XtCylinder * v = Q_NULLPTR;
     Position6D last_aa_position;
     void loadParams();
 public:

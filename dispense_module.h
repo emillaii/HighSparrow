@@ -10,14 +10,13 @@ class DispenseModule
 {
 public:
     DispenseModule();
-    void Init(Calibration* calibration,Dispenser* dispenser);
+    void Init(Calibration* calibration,Dispenser* dispenser,VisionModule* vision);
     void loadConfig();
     void saveConfig();
     void updatePath();
     void setMapPosition(double x,double y,double pr_theta);
 private:
     QVector<mPoint3D> getDispensePath();
-    QVector<QPoint> Read_Dispense_Path();
     bool PerformDispense();
 private:
 public:
@@ -29,6 +28,7 @@ private:
     double pr_theta = 0;
     DispenseParameter parameters;
     Dispenser* dispenser;
+    VisionModule* vision;
 };
 
 #endif // DISPENSE_MODULE_H

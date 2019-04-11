@@ -22,7 +22,30 @@ VisionModule:: VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera
     this->uplookCamera = uplookCamera;
     this->pickarmCamera = pickarmCamera;
 }
+QVector<QPoint> VisionModule::Read_Dispense_Path()
+{
+    atl::String g_constData1 = DISPENSE_PATH_2D_POINT_FILE;
+    atl::String g_constData2 = L"PathArray";
+    QVector<QPoint> results = QVector<QPoint>();
 
+    atl::Array< avl::Path > pathArray1;
+    atl::Array< avl::Point2D > point2DArray1;
+
+    avs::LoadObject< atl::Array< avl::Path > >( g_constData1, avl::StreamMode::Binary, g_constData2, pathArray1 );
+
+    for( int i = 0; i < pathArray1.Size(); ++i )
+    {
+        avs::AvsFilter_AccessPath( pathArray1[i], point2DArray1, atl::Dummy<bool>().Get() );
+        for ( int j = 0; j < point2DArray1.Size(); ++j)
+        {
+            float x = point2DArray1[j].x;
+            float y = point2DArray1[j].y;
+            qInfo(" %d : x: %f y: %f", j, x, y);
+            results.push_back(QPoint(x, y));
+        }
+    }
+    return results;
+}
 bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 {
     BaslerPylonCamera *camera = Q_NULLPTR;

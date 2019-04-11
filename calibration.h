@@ -56,7 +56,6 @@ public:
     bool getDeltaDistanceFromCenter(const QPointF pixelPoint, QPointF &distanceMech);
     bool getMechPoint(QPointF pixelPoint, QPointF &mechPoint);
     bool getCaliMapping(Pixel2Mech &caliMapping);
-    bool getDeltaDistanceFromCenter(CaliType caliType, QPointF pixelPoint, QPointF &distanceMech);
     bool getMechPoint(CaliType caliType, QPointF pixelPoint, QPointF &mechPoint);
     bool getCaliMapping(CaliType caliType, Pixel2Mech &caliMapping);
 

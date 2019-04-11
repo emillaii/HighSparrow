@@ -1,12 +1,5 @@
 #include "dispense_module.h"
 #include "dispensepather.h"
-#include "AVL.h"
-#include "STD.h"
-#include "ATL/Error.h"
-#include "ATL/Dummy.h"
-#include "ATL/Optional.h"
-#include "ATL/AtlTypes.h"
-#include "ThirdPartySdk.h"
 #include <config.h>
 
 DispenseModule::DispenseModule()
@@ -14,35 +7,13 @@ DispenseModule::DispenseModule()
     loadConfig();
 }
 
-QVector<QPoint> DispenseModule::Read_Dispense_Path()
-{
-    atl::String g_constData1 = DISPENSE_PATH_2D_POINT_FILE;
-    atl::String g_constData2 = L"PathArray";
-    QVector<QPoint> results = QVector<QPoint>();
 
-    atl::Array< avl::Path > pathArray1;
-    atl::Array< avl::Point2D > point2DArray1;
 
-    avs::LoadObject< atl::Array< avl::Path > >( g_constData1, avl::StreamMode::Binary, g_constData2, pathArray1 );
-
-    for( int i = 0; i < pathArray1.Size(); ++i )
-    {
-        avs::AvsFilter_AccessPath( pathArray1[i], point2DArray1, atl::Dummy<bool>().Get() );
-        for ( int j = 0; j < point2DArray1.Size(); ++j)
-        {
-            float x = point2DArray1[j].x;
-            float y = point2DArray1[j].y;
-            qInfo(" %d : x: %f y: %f", j, x, y);
-            results.push_back(QPoint(x, y));
-        }
-    }
-    return results;
-}
-
-void DispenseModule::Init(Calibration *calibration, Dispenser *dispenser)
+void DispenseModule::Init(Calibration *calibration, Dispenser *dispenser,VisionModule* vision)
 {
     this->calibration = calibration;
     this->dispenser = dispenser;
+    this->vision = vision;
 }
 
 void DispenseModule::loadConfig()
@@ -63,12 +34,12 @@ void DispenseModule::saveConfig()
 
 void DispenseModule::updatePath()
 {
-    QVector<QPoint> map_path = Read_Dispense_Path();
+    QVector<QPoint> map_path = vision->Read_Dispense_Path();
     mechPoints.clear();
     foreach(QPoint pt, map_path)
     {
         QPointF mechPoint;
-        if(calibration->getDeltaDistanceFromCenter(caliDownSensor, pt, mechPoint))
+        if(calibration->getDeltaDistanceFromCenter(pt, mechPoint))
         {
             mechPoints.push_back(QPointF(-mechPoint.x(), -mechPoint.y()));
         }

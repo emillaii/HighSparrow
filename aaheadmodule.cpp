@@ -14,7 +14,7 @@ void AAHeadModule::loadParams()
     PropertyBase::loadJsonConfig(AA_HEAD_MODULE_JSON, temp_map);
 }
 
-void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMotor *motor_z, XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtVacuum *v)
+void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMotor *motor_z, XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtCylinder *v)
 {
     this->motor_x = motor_x;
     this->motor_y = motor_y;

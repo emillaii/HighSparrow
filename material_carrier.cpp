@@ -57,37 +57,21 @@ bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z, int ti
     return result;
 }
 
-bool MaterialCarrier::Move_SZ_XY_ToPos(double x, double y,bool use_offset, int timeout)
+bool MaterialCarrier::Move_SZ_XY_ToPos(double x, double y, int timeout)
 {
     bool result;
     result = motor_z->MoveToPosSync(parameters.SafetyZ());
     if(!result) return false;
-    if(use_offset)
-    {
-        motor_x->MoveToPos(x + parameters.CameraOffsetX());
-        motor_y->MoveToPos(y + parameters.CameraOffsetY());
-    }
-    else
-    {
-        motor_x->MoveToPos(x);
-        motor_y->MoveToPos(y);
-    }
+    motor_x->MoveToPos(x);
+    motor_y->MoveToPos(y);
     return true;
 }
 
-bool MaterialCarrier::Wait_XY_ToPos(double x, double y,bool use_offset, int timeout)
+bool MaterialCarrier::Wait_XY_ToPos(double x, double y, int timeout)
 {
     bool result;
-    if(use_offset)
-    {
-        result = motor_x->WaitArrivedTargetPos(x + parameters.CameraOffsetX(),timeout);
-        result &= motor_y->WaitArrivedTargetPos(y + parameters.CameraOffsetY(),timeout);
-    }
-    else
-    {
-        result = motor_x->WaitArrivedTargetPos(x,timeout);
-        result &= motor_y->WaitArrivedTargetPos(y,timeout);
-    }
+    result = motor_x->WaitArrivedTargetPos(x,timeout);
+    result &= motor_y->WaitArrivedTargetPos(y,timeout);
     return result;
 }
 
@@ -136,11 +120,6 @@ bool MaterialCarrier::ZSerchReturn()
     bool result = motor_z->DoSoftLandingReturn();
     result &= motor_z->WaitSoftLandingDone();
     return result;
-}
-
-bool MaterialCarrier::Move_Vision_Sync()
-{
-    return  Move_SZ_XY_Z_Sync(parameters.VisionX(),parameters.VisionY(),parameters.VisionZ());
 }
 
 mPoint3D MaterialCarrier::GetFeedBackPos()

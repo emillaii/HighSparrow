@@ -7,12 +7,6 @@ class SutParameter : public PropertyBase
     Q_OBJECT
 public:
     explicit SutParameter(){}
-    Q_PROPERTY(double OCX READ OCX WRITE setOCX NOTIFY paramsChanged)
-    Q_PROPERTY(double OCY READ OCY WRITE setOCY NOTIFY paramsChanged)
-    Q_PROPERTY(double OCZ READ OCZ WRITE setOCZ NOTIFY paramsChanged)
-    Q_PROPERTY(double LoadX READ LoadX WRITE setLoadX NOTIFY paramsChanged)
-    Q_PROPERTY(double LoadY READ LoadY WRITE setLoadY NOTIFY paramsChanged)
-    Q_PROPERTY(double LoadZ READ LoadZ WRITE setLoadZ NOTIFY paramsChanged)
     Q_PROPERTY(int Lighting READ Lighting WRITE setLighting NOTIFY paramsChanged)
     Q_PROPERTY(QString prName READ prName WRITE setPRName NOTIFY paramsChanged)
     Q_PROPERTY(double Force READ Force WRITE setForce NOTIFY paramsChanged)
@@ -160,8 +154,8 @@ private:
     int m_Lighting = 0;
     double m_Force = 0;
     QString m_prName = "";
-    int m_UpDnLookLighting;
-    QString m_upDownLookPrName;
+    int m_UpDnLookLighting = 0;
+    QString m_upDownLookPrName ="";
 };
 
 #endif // SUT_PARAMETER_H

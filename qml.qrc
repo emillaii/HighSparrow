@@ -13,7 +13,6 @@
         <file>MotionDialog.qml</file>
         <file>SUTModuleView.qml</file>
         <file>SUTLoadPositionView.qml</file>
-        <file>SUTOCPositionView.qml</file>
         <file>LUTModuleView.qml</file>
         <file>SUTPRPositionView.qml</file>
         <file>LUTPickPositionView.qml</file>
@@ -31,6 +30,8 @@
         <file>AAHeadMushroomPosition.qml</file>
         <file>AAHeadPickLensPosition.qml</file>
         <file>AAHeadOCPosition.qml</file>
+        <file>SUTMushroomPosition.qml</file>
+        <file>SUTToollookPosition.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

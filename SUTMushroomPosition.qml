@@ -8,42 +8,42 @@ ColumnLayout {
             text: qsTr("SUT_X")
         }
         TextField {
-            text: sutDownlookPosition.X
+            text: sutMushroomPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutDownlookPosition.setX(text)
+                sutMushroomPosition.setX(text)
             }
         }
         Label {
             text: qsTr("SUT_Y")
         }
         TextField {
-            text: sutDownlookPosition.Y
+            text: sutMushroomPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutDownlookPosition.setY(text)
+                sutMushroomPosition.setY(text)
             }
         }
         Label {
             text: qsTr("SUT_Z")
         }
         TextField {
-            text: sutDownlookPosition.Z
+            text: sutMushroomPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutDownlookPosition.setZ(text)
+                sutMushroomPosition.setZ(text)
             }
         }
     }
@@ -54,7 +54,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                sutModule.moveToDownlookPos()
+                sutModule.moveToMushroomPos()
             }
         }
         Button {
@@ -65,9 +65,9 @@ ColumnLayout {
                 var x = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
                 var y = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)
                 var z = baseModuleManager.getMotorFeedbackPos(m_SUT1_Z)
-                sutDownlookPosition.setX(x)
-                sutDownlookPosition.setY(y)
-                sutDownlookPosition.setZ(z)
+                sutLoadPosition.setX(x)
+                sutLoadPosition.setY(y)
+                sutLoadPosition.setZ(z)
             }
         }
     }

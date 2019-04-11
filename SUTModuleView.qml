@@ -30,8 +30,8 @@ ItemDelegate {
                 }
             }
             GroupBox{
-                title: qsTr("OC Position")
-                SUTOCPositionView {}
+                title: qsTr("Mushroom Position")
+                SUTMushroomPosition {}
             }
             GroupBox{
                 title: qsTr("Load Position")
@@ -42,66 +42,12 @@ ItemDelegate {
                 SUTPRPositionView {}
             }
             GroupBox{
+                title: qsTr("UpDn Look Calibration Position")
+                SUTToollookPosition {}
+            }
+            GroupBox{
                 title: qsTr("Safety Position")
                 SUTSafetyPositionView {}
-            }
-
-            GroupBox{
-                title: qsTr("Uplook PR Config")
-                ColumnLayout {
-                    RowLayout {
-                        Label {
-                            text: qsTr("选择加载PR文件")
-                        }
-                        TextField {
-                            id: downlookCameraPR
-                            text: sutParams.prName
-                            horizontalAlignment: TextInput.AlignHCenter
-                            onTextChanged: {
-                            }
-                        }
-                        FileDialog {
-                            id: loadfileDialog
-                            title: "选择加载PR文件"
-                            selectExisting: true
-                            selectFolder: false
-                            selectMultiple: false
-
-                            nameFilters: ["avdata文件 (*.avdata)"]
-                            onAccepted: {
-                                downlookCameraPR.text = loadfileDialog.fileUrl
-                                sutParams.setPRName(loadfileDialog.fileUrl)
-                            }
-                        }
-
-                        Button {
-                            text: qsTr("选择加载PR文件")
-                            width: 20
-                            height: 40
-                            onClicked: {
-                                loadfileDialog.open()
-                            }
-                        }
-                        Slider {
-                            id: slider
-                            stepSize: 1
-                            to: 255
-                            from: 0
-                            value: sutParams.Lighting
-                            onValueChanged: {
-                                lightingController.setDownlookLighting(value)
-                                sutParams.setLighting(value)
-                            }
-                        }
-                        Label {
-                            y: 6
-                            color: "#46eb46"
-                            text: slider.value
-                            font.pointSize: 20
-                            font.family: "Times New Roman"
-                        }
-                    }
-                }
             }
         }
     }

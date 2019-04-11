@@ -14,6 +14,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     {
         pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
         pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
+        QDir().mkdir(".//notopencamera");
     }
     lightingModule = new WordopLight();
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, Q_NULLPTR);

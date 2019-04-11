@@ -18,6 +18,7 @@ public:
     void Init(MaterialCarrier* carrier,Calibration* updown_calibration, WordopLight* lighting,VisionModule* vision, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
     void loadParams();
     LutParameter parameters;
+    Position3D load_uplook_position;
     Position3D load_position;
     Position3D aa1_updownlook_position;
     Position3D aa1_picklens_position;
@@ -40,11 +41,16 @@ private:
 
     PRResultStruct pr_result;
 public:
+    Q_INVOKABLE bool moveToAA1UplookPos();
+    Q_INVOKABLE bool moveToAA1UplookPR(PrOffset &offset,bool close_lighting = true);
+    Q_INVOKABLE bool moveToAA2UplookPos();
+    Q_INVOKABLE bool moveToAA2UplookPR(PrOffset &offset,bool close_lighting = true);
     Q_INVOKABLE bool moveToAA1UpdownlookPos();
     Q_INVOKABLE bool moveToAA1UpDwonlookPR(PrOffset &offset,bool close_lighting = true);
     Q_INVOKABLE bool moveToAA2UpdownlookPos();
     Q_INVOKABLE bool moveToAA2UpDwonlookPR(PrOffset &offset,bool close_lighting = true);
     Q_INVOKABLE bool moveToLoadPos();
+    Q_INVOKABLE bool moveToLoadUplookPos();
     Q_INVOKABLE bool moveToAA1PickLens();
     Q_INVOKABLE bool moveToAA1UnPickLens();
     Q_INVOKABLE bool moveToAA2PickLens();

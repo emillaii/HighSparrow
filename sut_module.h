@@ -18,8 +18,9 @@ public:
     SutParameter parameters;
     Position3D load_position;
     Position3D downlook_position;
-    Position3D toollook_position;
+    Position3D tool_downlook_position;
     Position3D mushroom_positon;
+    Position3D tool_uplook_positon;
 public slots:
     void updateParams();
 private:
@@ -31,11 +32,12 @@ private:
 
     PRResultStruct pr_result;
 public:
-    Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true);
     Q_INVOKABLE bool moveToLoadPos();
+    Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true);
     Q_INVOKABLE bool moveToDownlookPos();
     Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true);
-    Q_INVOKABLE bool moveToToollookPos();
+    Q_INVOKABLE bool moveToToolDownlookPos();
+    Q_INVOKABLE bool moveToToolUplookPos();
     Q_INVOKABLE bool moveToMushroomPos();
     bool stepMove_XY_Sync(double x,double y);
 };

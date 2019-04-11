@@ -23,6 +23,7 @@ void LutModule::updateParams()
     temp_map.insert("LUT_PARAMS", &parameters);
     temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &load_position);
+    temp_map.insert("LOAD_POSITION", &load_uplook_position);
     temp_map.insert("AA1_UPDOWNLOOK_POSITION", &aa1_updownlook_position);
     temp_map.insert("AA1_PICKLENS_POSITION", &aa1_picklens_position);
     temp_map.insert("AA1_UNPICKLENS_POSITION", &aa1_unpicklens_position);
@@ -34,12 +35,73 @@ void LutModule::updateParams()
     PropertyBase::saveJsonConfig("config//lutConfig.json", temp_map);
 }
 
+bool LutModule::moveToAA1UplookPos()
+{
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_uplook_position.X(),aa1_uplook_position.Y(),aa1_uplook_position.Z());
+}
+
+bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting)
+{
+
+    lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,parameters.Lighting());
+    bool result = moveToAA1UplookPos();
+    if(result)
+    {
+      ErrorCodeStruct temp =  vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, parameters.prName(), pr_result);
+      if(ErrorCode::OK == temp.code)
+      {
+          QPointF mech;
+          if(updown_calibration->getDeltaDistanceFromCenter(QPointF(pr_result.x,pr_result.y),mech))
+          {
+             offset.X = mech.x();
+             offset.Y = mech.y();
+             offset.Theta = pr_result.theta;
+             return true;
+          }
+      }
+    }
+    if(close_lighting)
+        lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,0);
+    return false;
+}
+
+bool LutModule::moveToAA2UplookPos()
+{
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_uplook_position.X(),aa2_uplook_position.Y(),aa2_uplook_position.Z());
+}
+
+bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting)
+{
+
+    lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,parameters.Lighting());
+    bool result = moveToAA2UplookPos();
+    if(result)
+    {
+      ErrorCodeStruct temp =  vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, parameters.prName(), pr_result);
+      if(ErrorCode::OK == temp.code)
+      {
+          QPointF mech;
+          if(updown_calibration->getDeltaDistanceFromCenter(QPointF(pr_result.x,pr_result.y),mech))
+          {
+             offset.X = mech.x();
+             offset.Y = mech.y();
+             offset.Theta = pr_result.theta;
+             return true;
+          }
+      }
+    }
+    if(close_lighting)
+        lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,0);
+    return false;
+}
+
 void LutModule::loadParams()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LUT_PARAMS", &parameters);
     temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &load_position);
+    temp_map.insert("LOAD_POSITION", &load_uplook_position);
     temp_map.insert("AA1_UPDOWNLOOK_POSITION", &aa1_updownlook_position);
     temp_map.insert("AA1_PICKLENS_POSITION", &aa1_picklens_position);
     temp_map.insert("AA1_UNPICKLENS_POSITION", &aa1_unpicklens_position);
@@ -112,6 +174,11 @@ bool LutModule::moveToAA2UpDwonlookPR(PrOffset &offset, bool close_lighting)
 bool LutModule::moveToLoadPos()
 {
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z());
+}
+
+bool LutModule::moveToLoadUplookPos()
+{
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_uplook_position.X(),load_uplook_position.Y(),load_uplook_position.Z());
 }
 
 bool LutModule::moveToAA1PickLens()

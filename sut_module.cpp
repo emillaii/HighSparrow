@@ -22,7 +22,8 @@ void SutModule::updateParams()
     temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &this->load_position);
     temp_map.insert("DOWNLOOK_POSITION", &this->downlook_position);
-    temp_map.insert("TOOLLOOK_POSITION", &this->toollook_position);
+    temp_map.insert("TOOLLOOK_POSITION", &this->tool_uplook_positon);
+    temp_map.insert("TOOLLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
     PropertyBase::saveJsonConfig("config//sutConfig.json", temp_map);
 }
@@ -34,7 +35,8 @@ void SutModule::loadParams()
     temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &this->load_position);
     temp_map.insert("DOWNLOOK_POSITION", &this->downlook_position);
-    temp_map.insert("TOOLLOOK_POSITION", &this->toollook_position);
+    temp_map.insert("TOOLLOOK_POSITION", &this->tool_uplook_positon);
+    temp_map.insert("TOOLLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
     PropertyBase::loadJsonConfig("config//sutConfig.json", temp_map);
 }
@@ -97,9 +99,14 @@ bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting)
     return false;
 }
 
-bool SutModule::moveToToollookPos()
+bool SutModule::moveToToolDownlookPos()
 {
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(toollook_position.X(),toollook_position.Y(),toollook_position.Z());
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_downlook_position.X(),tool_downlook_position.Y(),tool_downlook_position.Z());
+}
+
+bool SutModule::moveToToolUplookPos()
+{
+     return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_uplook_positon.X(),tool_uplook_positon.Y(),tool_uplook_positon.Z());
 }
 
 bool SutModule::moveToMushroomPos()

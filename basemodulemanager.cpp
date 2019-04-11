@@ -1,21 +1,30 @@
 #include "XtVcMotor.h"
 #include "basemodulemanager.h"
 
-wchar_t BaseModuleManager::ip[] =  L"192.168.0.251";
+#include <qdir.h>
+
+wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
 wchar_t BaseModuleManager::profile_path[] = L"./xt_motion_config.csv";
 BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent)
 {
     is_init = false;
     profile_loaded = false;
-//    pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
-//    pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
+    if(!QDir(".//notopencamera").exists())
+    {
+        pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
+        pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
+    }
     lightingModule = new WordopLight();
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, Q_NULLPTR);
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
-//    pylonUplookCamera->start();
-//    pylonDownlookCamera->start();
+
+    if(!QDir(".//notopencamera").exists())
+    {
+        pylonUplookCamera->start();
+        pylonDownlookCamera->start();
+    }
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -231,34 +240,32 @@ bool BaseModuleManager::allMotorsSeekOrigin()
 {
     bool result;
     motors["SUT_Z"]->SeekOrigin();
-    motors["LUT_Z"]->SeekOrigin();
+    motors["LUT_Y"]->SeekOrigin();
     result = motors["SUT_Z"]->WaitSeekDone();
-    result &= motors["LUT_Z"]->WaitSeekDone();
+    if(!result)return false;
+    motors["SUT1_Y"]->SeekOrigin();
+    result &= motors["LUT_Y"]->WaitSeekDone();
+    result &= motors["SUT1_Y"]->WaitSeekDone();
     if(!result)return false;
     motors["AA1_Y"]->SeekOrigin();
     result = motors["AA1_Y"]->WaitSeekDone();
     if(!result)return false;
-    motors["LUT_Y"]->SeekOrigin();
+    motors["LUT_Z"]->SeekOrigin();
     motors["AA1_X"]->SeekOrigin();
     motors["AA1_Z"]->SeekOrigin();
     motors["AA1_A"]->SeekOrigin();
     motors["AA1_B"]->SeekOrigin();
     motors["AA1_C"]->SeekOrigin();
     motors["SUT1_X"]->SeekOrigin();
-    motors["SUT1_Y"]->SeekOrigin();
-    result = motors["LUT_Y"]->WaitSeekDone();
-    if(result)
-    {
-        motors["LUT_X"]->SeekOrigin();
-        result &= motors["LUT_X"]->WaitSeekDone();
-    }
+    motors["LUT_X"]->SeekOrigin();
     result &= motors["AA1_X"]->WaitSeekDone();
     result &= motors["AA1_Z"]->WaitSeekDone();
     result &= motors["AA1_A"]->WaitSeekDone();
     result &= motors["AA1_B"]->WaitSeekDone();
     result &= motors["AA1_C"]->WaitSeekDone();
     result &= motors["SUT1_X"]->WaitSeekDone();
-    result &= motors["SUT1_Y"]->WaitSeekDone();
+    result &= motors["LUT_X"]->WaitSeekDone();
+    result &= motors["LUT_Z"]->WaitSeekDone();
     if(!result)return false;
     qInfo("all motor seeked origin successed!");
     return  true;

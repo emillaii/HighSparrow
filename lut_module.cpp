@@ -177,6 +177,11 @@ bool LutModule::moveToLoadPos()
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z());
 }
 
+bool LutModule::moveToUnloadPos()
+{
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(unload_position.X(),unload_position.Y(),unload_position.Z());
+}
+
 bool LutModule::moveToLoadUplookPos()
 {
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_uplook_position.X(),load_uplook_position.Y(),load_uplook_position.Z());

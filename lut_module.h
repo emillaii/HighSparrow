@@ -20,6 +20,7 @@ public:
     LutParameter parameters;
     Position3D load_uplook_position;
     Position3D load_position;
+    Position3D unload_position;
     Position3D aa1_updownlook_position;
     Position3D aa1_picklens_position;
     Position3D aa1_unpicklens_position;

@@ -31,88 +31,51 @@ ItemDelegate {
             }
             GroupBox{
                 title: qsTr("Load Position")
-                LUTLoadPositionView {}
-            }
-            GroupBox{
-                title: qsTr("Pick Lens Position 1")
-                LUTPickPositionView {}
-            }
-            GroupBox{
-                title: qsTr("unPick Lens Position 1")
-                LUTUnPickPositionView {}
-            }
-            GroupBox{
-                title: qsTr("Pick Lens Position 2")
-                LUTPick2PositionView {}
-            }
-            GroupBox{
-                title: qsTr("UnPick Lens Position 2")
-                LUTUnPick2PositionView {}
-            }
-            GroupBox{
-                title: qsTr("PR Position")
-                LUTPRPositionView {}
-            }
-            GroupBox{
-                title: qsTr("Safety Position")
-                LUTSafetyPositionView {}
+                LUTLoadPositionView {
+                }
             }
 
             GroupBox{
-                title: qsTr("Uplook PR Config")
-                ColumnLayout {
-                    RowLayout {
-                        Label {
-                            text: qsTr("Load PR Name")
-                        }
-                        TextField {
-                            id: uplookCameraPR
-                            text: lutParams.prName
-                            horizontalAlignment: TextInput.AlignHCenter
-                            onTextChanged: {
-                            }
-                        }
-                        FileDialog {
-                            id: loadfileDialog
-                            title: "选择加载PR文件"
-                            selectExisting: true
-                            selectFolder: false
-                            selectMultiple: false
+                title: qsTr("AA_1 Uplook Position")
+                LUTAA1UplookPosition {
+                }
+            }
 
-                            nameFilters: ["avdata文件 (*.avdata)"]
-                            onAccepted: {
-                                uplookCameraPR.text = loadfileDialog.fileUrl
-                                lutParams.setPRName(loadfileDialog.fileUrl)
-                            }
-                        }
+            GroupBox{
+                title: qsTr("AA_1 Pick Lens Position")
+                LUTAA1PickLensPosition {
+                }
+            }
+            GroupBox{
+                title: qsTr("AA_1 UnPick Lens Position")
+                LUTAA1UnpickLensPosition {
+                }
+            }
+            GroupBox{
+                title: qsTr("AA_1 UpDownlook Position")
+                LUTAA1UpDownlookPosition {
+                }
+            }
 
-                        Button {
-                            text: qsTr("Load PR Result")
-                            width: 20
-                            height: 40
-                            onClicked: {
-                                loadfileDialog.open()
-                            }
-                        }
-                        Slider {
-                            id: slider
-                            stepSize: 1
-                            to: 255
-                            from: 0
-                            value: lutParams.Lighting
-                            onValueChanged: {
-                                lightingController.setUplookLighting(value)
-                                lutParams.setLighting(value)
-                            }
-                        }
-                        Label {
-                            y: 6
-                            color: "#46eb46"
-                            text: slider.value
-                            font.pointSize: 20
-                            font.family: "Times New Roman"
-                        }
-                    }
+            GroupBox{
+                title: qsTr("AA_2 Uplook Position")
+                LUTAA2UplookPosition {
+                }
+            }
+
+            GroupBox{
+                title: qsTr("AA_2 Pick Lens Position")
+                LUTAA2PickLensPosition {
+                }
+            }
+            GroupBox{
+                title: qsTr("AA_2 UnPick Lens Position")
+                LUTAA2UnPickLensPosition {
+                }
+            }
+            GroupBox{
+                title: qsTr("AA_2 UpDownlook Position")
+                LUTAA2UpDownlookPosition {
                 }
             }
         }

@@ -8,42 +8,42 @@ ColumnLayout {
             text: qsTr("LUT_X")
         }
         TextField {
-            text: lutLoadPosition.X
+            text: lutUnPickLensPositionAA2.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lutLoadPosition.setX(text)
+                lutUnPickLensPositionAA2.setX(text)
             }
         }
         Label {
             text: qsTr("LUT_Y")
         }
         TextField {
-            text: lutLoadPosition.Y
+            text: lutUnPickLensPositionAA2.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lutLoadPosition.setY(text)
+                lutUnPickLensPositionAA2.setY(text)
             }
         }
         Label {
-            text: qsTr("SUT_Z")
+            text: qsTr("LUT_Z")
         }
         TextField {
-            text: lutLoadPosition.Z
+            text: lutUnPickLensPositionAA2.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lutLoadPosition.setZ(text)
+                lutUnPickLensPositionAA2.setZ(text)
             }
         }
     }
@@ -54,7 +54,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToLoadPos()
+                lutModule.moveToAA2UnPickLens()
             }
         }
         Button {
@@ -65,9 +65,9 @@ ColumnLayout {
                 var x = baseModuleManager.getMotorFeedbackPos(m_LUT1_X)
                 var y = baseModuleManager.getMotorFeedbackPos(m_LUT1_Y)
                 var z = baseModuleManager.getMotorFeedbackPos(m_LUT1_Z)
-                lutLoadPosition.setX(x)
-                lutLoadPosition.setY(y)
-                lutLoadPosition.setZ(z)
+                lutUnPickLensPositionAA2.setX(x)
+                lutUnPickLensPositionAA2.setY(y)
+                lutUnPickLensPositionAA2.setZ(z)
             }
         }
     }

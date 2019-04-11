@@ -15,12 +15,7 @@
         <file>SUTLoadPositionView.qml</file>
         <file>LUTModuleView.qml</file>
         <file>SUTPRPositionView.qml</file>
-        <file>LUTPickPositionView.qml</file>
-        <file>LUTPick2PositionView.qml</file>
         <file>LUTLoadPositionView.qml</file>
-        <file>LUTUnPickPositionView.qml</file>
-        <file>LUTUnPick2PositionView.qml</file>
-        <file>LUTPRPositionView.qml</file>
         <file>LUTSafetyPositionView.qml</file>
         <file>SUTSafetyPositionView.qml</file>
         <file>PopupMessageView.qml</file>
@@ -32,6 +27,15 @@
         <file>AAHeadOCPosition.qml</file>
         <file>SUTMushroomPosition.qml</file>
         <file>SUTToollookPosition.qml</file>
+        <file>LUTAA1UpDownlookPosition.qml</file>
+        <file>LUTAA1PickLensPosition.qml</file>
+        <file>LUTAA1UnpickLensPosition.qml</file>
+        <file>LUTAA1UplookPosition.qml</file>
+        <file>LUTAA2UpDownlookPosition.qml</file>
+        <file>LUTAA2PickLensPosition.qml</file>
+        <file>LUTAA2UnPickLensPosition.qml</file>
+        <file>LUTAA2UplookPosition.qml</file>
+        <file>SUTToolUplookPosition.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

@@ -5,45 +5,45 @@ import QtQuick.Layouts 1.11
 ColumnLayout {
     RowLayout {
         Label {
-            text: qsTr("LUT_X")
+            text: qsTr("SUT_X")
         }
         TextField {
-            text: lutLoadPosition.X
+            text: sutToolUplookPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lutLoadPosition.setX(text)
+                sutToolUplookPosition.setX(text)
             }
         }
         Label {
-            text: qsTr("LUT_Y")
+            text: qsTr("SUT_Y")
         }
         TextField {
-            text: lutLoadPosition.Y
+            text: sutToolUplookPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lutLoadPosition.setY(text)
+                sutToolUplookPosition.setY(text)
             }
         }
         Label {
             text: qsTr("SUT_Z")
         }
         TextField {
-            text: lutLoadPosition.Z
+            text: sutToolUplookPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lutLoadPosition.setZ(text)
+                sutToolUplookPosition.setZ(text)
             }
         }
     }
@@ -54,7 +54,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToLoadPos()
+                sutModule.moveToToolUplookPos()
             }
         }
         Button {
@@ -62,12 +62,12 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(m_LUT1_X)
-                var y = baseModuleManager.getMotorFeedbackPos(m_LUT1_Y)
-                var z = baseModuleManager.getMotorFeedbackPos(m_LUT1_Z)
-                lutLoadPosition.setX(x)
-                lutLoadPosition.setY(y)
-                lutLoadPosition.setZ(z)
+                var x = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
+                var y = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)
+                var z = baseModuleManager.getMotorFeedbackPos(m_SUT1_Z)
+                sutToolUplookPosition.setX(x)
+                sutToolUplookPosition.setY(y)
+                sutToolUplookPosition.setZ(z)
             }
         }
     }

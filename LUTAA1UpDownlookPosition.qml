@@ -8,42 +8,42 @@ ColumnLayout {
             text: qsTr("LUT_X")
         }
         TextField {
-            text: lutLoadPosition.X
+            text: lutUpDownlookPositionAA1.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lutLoadPosition.setX(text)
+                lutUpDownlookPositionAA1.setX(text)
             }
         }
         Label {
             text: qsTr("LUT_Y")
         }
         TextField {
-            text: lutLoadPosition.Y
+            text: lutUpDownlookPositionAA1.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lutLoadPosition.setY(text)
+                lutUpDownlookPositionAA1.setY(text)
             }
         }
         Label {
-            text: qsTr("SUT_Z")
+            text: qsTr("LUT_Z")
         }
         TextField {
-            text: lutLoadPosition.Z
+            text: lutUpDownlookPositionAA1.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lutLoadPosition.setZ(text)
+                lutUpDownlookPositionAA1.setZ(text)
             }
         }
     }
@@ -54,7 +54,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToLoadPos()
+                lutModule.moveToAA1UpdownlookPos()
             }
         }
         Button {
@@ -65,9 +65,9 @@ ColumnLayout {
                 var x = baseModuleManager.getMotorFeedbackPos(m_LUT1_X)
                 var y = baseModuleManager.getMotorFeedbackPos(m_LUT1_Y)
                 var z = baseModuleManager.getMotorFeedbackPos(m_LUT1_Z)
-                lutLoadPosition.setX(x)
-                lutLoadPosition.setY(y)
-                lutLoadPosition.setZ(z)
+                lutUpDownlookPositionAA1.setX(x)
+                lutUpDownlookPositionAA1.setY(y)
+                lutUpDownlookPositionAA1.setZ(z)
             }
         }
     }

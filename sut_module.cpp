@@ -23,8 +23,8 @@ void SutModule::updateParams()
     temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &this->load_position);
     temp_map.insert("DOWNLOOK_POSITION", &this->downlook_position);
-    temp_map.insert("TOOLLOOK_POSITION", &this->tool_uplook_positon);
-    temp_map.insert("TOOLLOOK_POSITION", &this->tool_downlook_position);
+    temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
+    temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
     PropertyBase::saveJsonConfig("config//sutConfig.json", temp_map);
 }
@@ -36,8 +36,8 @@ void SutModule::loadParams()
     temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &this->load_position);
     temp_map.insert("DOWNLOOK_POSITION", &this->downlook_position);
-    temp_map.insert("TOOLLOOK_POSITION", &this->tool_uplook_positon);
-    temp_map.insert("TOOLLOOK_POSITION", &this->tool_downlook_position);
+    temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
+    temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
     PropertyBase::loadJsonConfig("config//sutConfig.json", temp_map);
 }

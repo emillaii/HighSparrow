@@ -110,7 +110,6 @@ ColumnLayout {
             text: title_move_to
             width: 40
             height: 40
-            visible: root.checked
             onClicked: {
                 aaHeadModule.moveToOCPosition()
             }
@@ -119,7 +118,6 @@ ColumnLayout {
             text: title_read_encoder
             width: 20
             height: 40
-            visible: root.checked
             onClicked: {
                 var x = baseModuleManager.getMotorFeedbackPos(m_AA1_X)
                 var y = baseModuleManager.getMotorFeedbackPos(m_AA1_Y)

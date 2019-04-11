@@ -9,7 +9,6 @@ import QtQuick.Controls.Material 2.12
 
 Page {
     id: page1
-    x: -1
     width: 1280
     height: 720
     property alias featureButton: featureButton
@@ -22,103 +21,105 @@ Page {
     }
 
     RowLayout {
-        id: mainRowLayout
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.margins: 24
-        spacing: 36
+        id: rowLayout
+        anchors.fill: parent
 
-        Container {
-            id: leftTabBar
+        RowLayout {
+            id: mainRowLayout
+            anchors.bottomMargin: 86
+            anchors.leftMargin: 24
+            anchors.topMargin: -38
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.margins: 24
+            spacing: 36
 
-            currentIndex: 1
+            Container {
+                id: leftTabBar
 
-            Layout.fillWidth: false
-            Layout.fillHeight: true
+                currentIndex: 1
 
-            ButtonGroup {
-                buttons: columnLayout.children
-            }
+                Layout.fillWidth: false
+                Layout.fillHeight: true
 
-            contentItem: ColumnLayout {
-                id: columnLayout
-                spacing: 3
+                ButtonGroup {
+                    buttons: columnLayout.children
+                }
 
-                Repeater {
-                    model: leftTabBar.contentModel
+                contentItem: ColumnLayout {
+                    id: columnLayout
+                    spacing: 3
+
+                    Repeater {
+                        model: leftTabBar.contentModel
+                    }
+                }
+
+                FeatureButton {
+                    id: navigationFeatureButton
+                    text: qsTr("Navigation")
+                    icon.name: "navigation"
+                    Layout.fillHeight: true
+                }
+
+                FeatureButton {
+                    id: featureButton
+                    text: qsTr("机械视觉")
+                    icon.source: "icons/select.png"
+                    checked: true
+                    Layout.fillHeight: true
+                }
+
+                FeatureButton {
+                    text: qsTr("Navigation")
+                    icon.name: "message"
+                    Layout.fillHeight: true
+                }
+
+                FeatureButton {
+                    text: qsTr("Navigation")
+                    icon.name: "command"
+                    Layout.fillHeight: true
+                }
+
+                FeatureButton {
+                    text: qsTr("Settings")
+                    icon.name: "settings"
+                    Layout.fillHeight: true
                 }
             }
-
-            FeatureButton {
-                id: navigationFeatureButton
-                text: qsTr("Navigation")
-                icon.name: "navigation"
-                Layout.fillHeight: true
-            }
-
-            FeatureButton {
-                id: featureButton
-                text: qsTr("机械视觉")
-                icon.source: "icons/select.png"
-                checked: true
-                Layout.fillHeight: true
-            }
-
-            FeatureButton {
-                text: qsTr("Navigation")
-                icon.name: "message"
-                Layout.fillHeight: true
-            }
-
-            FeatureButton {
-                text: qsTr("Navigation")
-                icon.name: "command"
-                Layout.fillHeight: true
-            }
-
-            FeatureButton {
-                text: qsTr("Settings")
-                icon.name: "settings"
-                Layout.fillHeight: true
-            }
         }
-    }
 
-    CameraView {
-        id: cameraView
-        x: 659
-        width: 624
-        anchors.bottomMargin: 150
-        anchors.topMargin: -38
-        anchors.rightMargin: -3
-    }
+        MachineConfigListView {
+            anchors.right: parent.right
+            anchors.rightMargin: 627
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottomMargin: 122
+            anchors.leftMargin: 112
+            anchors.topMargin: -38
+        }
 
-    ListView {
-        id: machineConfigListView
-        anchors.right: parent.right
-        anchors.rightMargin: 627
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottomMargin: 49
-        anchors.leftMargin: 112
-        anchors.topMargin: 35
-        model: MachineSettingModel {
+        CameraView {
+            id: cameraView
+            height: 661
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            anchors.left: mainRowLayout.right
+            anchors.leftMargin: 592
+            anchors.right: parent.right
+            anchors.bottomMargin: 150
+            anchors.topMargin: -38
+            anchors.rightMargin: 25
         }
-        delegate: MachineSettingDelegate {
-        }
-    }
-    TextArea {
-        id: textArea
-        x: 659
-        width: 608
-        text: qsTr("Text Area")
-        anchors.right: parent.right
-        anchors.rightMargin: 13
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 8
-        anchors.top: parent.top
-        anchors.topMargin: 582
     }
 }
+
+
+
+/*##^## Designer {
+    D{i:80;anchors_height:100;anchors_width:100}
+}
+ ##^##*/

@@ -2,7 +2,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 import FileContentItem 1.0
-
+import QtQuick.Layouts 1.11
 
 ApplicationWindow {
     visible: true
@@ -75,145 +75,115 @@ ApplicationWindow {
 
     header:
         ToolBar {
-        id: toolBar
-        height: 80
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-        anchors.left: parent.left
-        anchors.leftMargin: 8
-        anchors.top: parent.top
-        anchors.topMargin: 8
-
-        ToolButton {
-            id: initButton
-            text: qsTr("Init")
-            transformOrigin: Item.Center
-            display: Button.TextUnderIcon
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 8
-            icon.width: 50
-            icon.height: 50
-            icon.source: "icons/initial.png"
-            onClicked: {
-                console.log("Initial Device")
-                baseModuleManager.initialDevice();
+            id: toolBar
+            height: 60
+            background: Rectangle {
+                color: "black"
             }
-        }
 
-        ToolButton {
-            id: homeButton
-            objectName: "HomeButtonObject"
-            text: qsTr("Home")
-            transformOrigin: Item.Center
-            display: Button.TextUnderIcon
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 90
-            icon.width: 50
-            icon.height: 50
-            icon.source: "icons/home.png"
-            onClicked: {
-                baseModuleManager.allMotorsSeekOrigin();
+        RowLayout {
+            ToolButton {
+                text: qsTr("初始化")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/initial.png"
+                icon.color: "cyan"
+                onClicked: {
+                    console.log("Initial Device")
+                    baseModuleManager.initialDevice();
+                }
             }
-        }
-
-        ToolButton {
-            id: stopHomeButton
-            objectName: "StopHomeButtonObject"
-            text: qsTr("StopHome")
-            transformOrigin: Item.Center
-            display: Button.TextUnderIcon
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 90*2
-            icon.width: 50
-            icon.height: 50
-            icon.source: "icons/home.png"
-            onClicked: {
-                baseModuleManager.stopSeeking();
+            ToolButton {
+                objectName: "HomeButtonObject"
+                text: qsTr("Home")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/home.png"
+                icon.color: "cyan"
+                onClicked: {
+                    baseModuleManager.allMotorsSeekOrigin();
+                }
             }
+            ToolButton {
+               id: stopHomeButton
+               objectName: "StopHomeButtonObject"
+               text: qsTr("停Home")
+               transformOrigin: Item.Center
+               display: Button.TextUnderIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/home.png"
+               icon.color: "red"
+               onClicked: {
+                   baseModuleManager.stopSeeking();
+               }
+           }
+           ToolButton {
+                id: loadFlowChartButton
+                text: qsTr("加载流程图")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/flowchart.png"
+                icon.color: "lightGreen"
+                onClicked: {
+                    loadfileDialog.open()
+                }
+           }
+           ToolButton {
+              id: saveFlowChart
+              text: qsTr("保存流程图")
+              transformOrigin: Item.Center
+              display: Button.TextUnderIcon
+              icon.width: 30
+              icon.height: 30
+              icon.source: "icons/save.png"
+              icon.color: "lightGreen"
+              onClicked: {
+                  var command = "document.getElementsByClassName('get_data')[0].click()";
+                  flowChartPage.webView.runJavaScript(command, function(result) {
+                      command = "document.getElementById('flowchart_data').value";
+                      flowChartPage.webView.runJavaScript(command, function(result) {
+                          console.log(result)
+                          file.setData(result)
+                          saveFileDialog.open()
+                      })
+                  })
+              }
+           }
+           ToolButton {
+               id: saveParams
+               text: qsTr("保存参数")
+               transformOrigin: Item.Center
+               display: Button.TextUnderIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/save.png"
+               icon.color: "cyan"
+               onClicked: {
+                   baseModuleManager.updateParams()
+                   messageDialog.messageText.text = "Save Complete"
+                   messageDialog.open()
+               }
+           }
+           ToolButton {
+               text: qsTr("电机")
+               transformOrigin: Item.Center
+               display: Button.TextUnderIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/machine.png"
+               icon.color: "lime"
+               onClicked: {
+                   motionDialog.open()
+               }
+           }
         }
-        ToolButton {
-            id: loadFlowChartButton
-            text: qsTr("加载流程图")
-            anchors.left: parent.left
-            anchors.leftMargin: 90*3
-            transformOrigin: Item.Center
-            display: Button.TextUnderIcon
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            icon.width: 50
-            icon.height: 50
-            icon.source: "icons/flowchart.png"
-            onClicked: {
-                loadfileDialog.open()
-            }
-        }
-
-        ToolButton {
-            id: saveFlowChart
-            text: qsTr("保存流程图")
-            anchors.left: parent.left
-            anchors.leftMargin: 90*4
-            transformOrigin: Item.Center
-            display: Button.TextUnderIcon
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            icon.width: 50
-            icon.height: 50
-            icon.source: "icons/save.png"
-            onClicked: {
-                var command = "document.getElementsByClassName('get_data')[0].click()";
-                flowChartPage.webView.runJavaScript(command, function(result) {
-                    command = "document.getElementById('flowchart_data').value";
-                    flowChartPage.webView.runJavaScript(command, function(result) {
-                        console.log(result)
-                        file.setData(result)
-                        saveFileDialog.open()
-                    })
-                })
-            }
-        }
-
-        ToolButton {
-            id: saveParams
-            text: qsTr("保存")
-            anchors.left: parent.left
-            anchors.leftMargin: 90*5
-            transformOrigin: Item.Center
-            display: Button.TextUnderIcon
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            icon.width: 50
-            icon.height: 50
-            icon.source: "icons/save.png"
-            onClicked: {
-                baseModuleManager.updateParams()
-                messageDialog.messageText.text = "Save Complete"
-                messageDialog.open()
-            }
-        }
-
-        ToolButton {
-            text: qsTr("Dialog")
-            anchors.left: parent.left
-            anchors.leftMargin: 90*6
-            transformOrigin: Item.Center
-            display: Button.TextUnderIcon
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            icon.width: 50
-            icon.height: 50
-            icon.source: "icons/machine.png"
-            onClicked: {
-                motionDialog.open()
-            }
-        }
-
     }
 
     SwipeView {

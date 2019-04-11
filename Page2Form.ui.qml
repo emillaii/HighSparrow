@@ -5,8 +5,8 @@ import QtQuick.Layouts 1.12
 
 Page {
 
-    readonly property string downlookCameraName: "DownlookCamera"
-    readonly property string uplookCameraName: "UplookCamera"
+    readonly property string downlookCameraName: "AA_DLCamera1"
+    readonly property string uplookCameraName: "LUT_ULCamera"
     readonly property string pickarmCameraName: "PickarmCamera"
 
     id: page2

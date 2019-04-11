@@ -49,11 +49,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lutModule", &highSprrow.baseModuleManager->lut_module);
     engine.rootContext()->setContextProperty("aaHeadModule", &highSprrow.baseModuleManager->aa_head_module);
 
-    engine.rootContext()->setContextProperty("downlookCalibration", highSprrow.baseModuleManager->calibrations[AA1_DOWNLOOK_CALIBRATION]);
-    engine.rootContext()->setContextProperty("uplookCalibration", highSprrow.baseModuleManager->calibrations[AA1_UPLOOK_CALIBRATION]);
-    engine.rootContext()->setContextProperty("upDownlookCalibration_up", highSprrow.baseModuleManager->calibrations[AA1_UPDownLOOK_UP_CALIBRATION]);
-    engine.rootContext()->setContextProperty("upDownlookCalibration_down", highSprrow.baseModuleManager->calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]);
-
     //Device
     engine.rootContext()->setContextProperty("imageGrabber", highSprrow.baseModuleManager->dothinkey);
     engine.rootContext()->setContextProperty("imageGrabberThread", highSprrow.baseModuleManager->imageGrabberThread);

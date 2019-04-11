@@ -8,11 +8,11 @@ Grid {
     width: 800
     height: 800
 
-    function calculateOffset(w, h, px, py, pw, ph)
+    function calculateOffset(w, h, px, py, rw, rh)
     {
         var delta = {};
-        delta.x = (w/2 - px)/pw;
-        delta.y = (h/2 - py)/ph;
+        delta.x = (w/2 - px)*rw;
+        delta.y = (h/2 - py)*rh;
         return delta;
     }
 
@@ -38,7 +38,8 @@ Grid {
                         return console.log("Image Click Out of range")
                     }
                     var delta = calculateOffset(image.width, image.height, mouseX, mouseY,
-                                                image.paintedWidth, image.paintedHeight)
+                                                image.sourceSize.width/image.paintedWidth,
+                                                image.sourceSize.height/image.paintedHeight)
                     console.log("x: " + delta.x +  " y:" + delta.y)
                 }
             }
@@ -139,7 +140,8 @@ Grid {
                         return console.log("Image Click Out of range")
                     }
                     var delta = calculateOffset(image1.width, image1.height, mouseX, mouseY,
-                                                image1.paintedWidth, image1.paintedHeight)
+                                                image1.source.width/image1.paintedWidth,
+                                                image1.source.height/image1.paintedHeight)
                     console.log("x: " + delta.x +  " y:" + delta.y)
                 }
             }
@@ -227,7 +229,8 @@ Grid {
                         return console.log("Image Click Out of range")
                     }
                     var delta = calculateOffset(image2.width, image2.height, mouseX, mouseY,
-                                                image2.paintedWidth, image2.paintedHeight)
+                                                image2.sourceSize.width/image2.paintedWidth,
+                                                image2.sourceSize.height/image2.paintedHeight)
                     console.log("x: " + delta.x +  " y:" + delta.y)
                 }
             }
@@ -291,8 +294,10 @@ Grid {
                     {
                         return console.log("Image Click Out of range")
                     }
+
                     var delta = calculateOffset(image3.width, image3.height, mouseX, mouseY,
-                                                image3.paintedWidth, image3.paintedHeight)
+                                                image3.sourceSize.width/image3.paintedWidth,
+                                                image3.sourceSize.height/image3.paintedHeight)
                     console.log("x: " + delta.x +  " y:" + delta.y)
                 }
             }

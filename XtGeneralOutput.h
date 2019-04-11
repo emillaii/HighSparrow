@@ -16,7 +16,7 @@ public:
     operator bool();
     operator int();
     XtGeneralOutput &operator =(const bool &b );
-
+    int GetID();
     void Set(bool value,int thread = -1);
     void SetOnTllTimeSpan(int time_span, int thread);
     bool Value();

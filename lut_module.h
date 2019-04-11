@@ -6,6 +6,7 @@
 #include "baslerpyloncamera.h"
 #include "lut_parameter.h"
 #include "visionmodule.h"
+#include "calibration.h"
 
 #include <QObject>
 
@@ -13,13 +14,15 @@ class LutModule : public QObject
 {
     Q_OBJECT
 public:
-    LutModule(MaterialCarrier* carrier, BaslerPylonCamera* camera, WordopLight* lighting,VisionModule* vision, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
+    LutModule();
+    void Init(MaterialCarrier* carrier,Calibration* updown_calibration, WordopLight* lighting,VisionModule* vision, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
     LutParameter parameters;
-    MaterialCarrier* carrier;
+    Position3D updownlook_position;
 public slots:
     void updateParams();
 private:
-    BaslerPylonCamera* camera;
+    MaterialCarrier* carrier;
+    Calibration* updown_calibration;
     WordopLight* lighting;
     VisionModule* vision;
     XtVacuum* grabber;
@@ -29,7 +32,8 @@ private:
     PRResultStruct pr_result;
     void loadParams();
 public:
-    Q_INVOKABLE bool moveToPR();
+    Q_INVOKABLE bool moveToUpdownlookPos();
+    Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true);
     Q_INVOKABLE bool moveToLoadPos();
     Q_INVOKABLE bool moveToPick1Lens();
     Q_INVOKABLE bool moveToUnPick1Lens();

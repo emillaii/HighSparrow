@@ -25,7 +25,7 @@ void XtVcMotor::ConfigVCM()
     SetPosModeAcc(vcm_id,max_acc);
     SetPosModejerk(vcm_id,max_jerk);
     SetPosLimit(vcm_id,max_range,min_range);
-    SetSoftlandingSlot(vcm_id,curve_resource++);
+    SetSoftlandingSlot(vcm_id,GetCurveResource());
     is_init = true;
 }
 
@@ -48,7 +48,7 @@ void XtVcMotor::Init(const QString& motor_name,VCM_Parameter_struct parameters)
     vcm_resource.iAxis = axis_id;
     vcm_resource.IO_ID = origin.ID();
     vcm_resource.iThread = default_using_thread;
-    vcm_resource.iThread_Curve = thread_resource++;
+    vcm_resource.iThread_Curve = GetThreadResource();
     vcm_resource.Connet_Rebuild = 0;
     all_parameter.append(vcm_resource);
 }

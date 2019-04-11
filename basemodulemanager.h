@@ -20,6 +20,8 @@
 #include "calibration.h"
 #include "dothinkey.h"
 #include "imagegrabbingworkerthread.h"
+#include "dispenser.h"
+#include "dispense_module.h"
 
 class BaseModuleManager : public PropertyBase
 {
@@ -36,6 +38,7 @@ public:
     QMap<QString,XtGeneralInput*> input_ios;
     QMap<QString,XtGeneralOutput*> output_ios;
     QMap<QString,Calibration*> calibrations;
+    QMap<QString,Dispenser*> dispensers;
 
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
@@ -45,11 +48,13 @@ public:
     Dothinkey * dothinkey = Q_NULLPTR;
     ImageGrabbingWorkerThread * imageGrabberThread = Q_NULLPTR;
 
-    AAHeadModule* aa_head_module = Q_NULLPTR;
-    MaterialCarrier* lut_carrier = Q_NULLPTR;
-    MaterialCarrier* sut_carrier = Q_NULLPTR;
-    LutModule *lut_module = Q_NULLPTR;
-    SutModule *sut_module = Q_NULLPTR;
+    AAHeadModule aa_head_module;
+    MaterialCarrier lut_carrier;
+    MaterialCarrier sut_carrier;
+    LutModule lut_module;
+    SutModule sut_module;
+    Dispenser dispenser;
+    DispenseModule dispense_module;
 
     int lightPanelLighting() const
     {
@@ -64,22 +69,22 @@ signals:
 public slots:
     Q_INVOKABLE void updateParams()
     {
-        if (aa_head_module) aa_head_module->updateParams();
-        if (sut_module) sut_module->updateParams();
-        if (lut_module) lut_module->updateParams();
-        if (dothinkey) dothinkey->updateParams();
+        aa_head_module.updateParams();
+        sut_module.updateParams();
+        lut_module.updateParams();
+        dothinkey->updateParams();
         foreach(const QString &key, this->calibrations.keys()){
             if (key == AA1_UPLOOK_CALIBRATION) {
-                calibrations[AA1_UPLOOK_CALIBRATION]->changeParameter(lut_module->parameters.Lighting(), lut_module->parameters.prName());
+                calibrations[AA1_UPLOOK_CALIBRATION]->changeParameter(lut_module.parameters.Lighting(), lut_module.parameters.prName());
             }
             else if (key == AA1_DOWNLOOK_CALIBRATION) {
-                calibrations[AA1_DOWNLOOK_CALIBRATION]->changeParameter(sut_module->parameters.Lighting(), sut_module->parameters.prName());
+                calibrations[AA1_DOWNLOOK_CALIBRATION]->changeParameter(sut_module.parameters.Lighting(), sut_module.parameters.prName());
             }
             else if (key == AA1_UPDownLOOK_UP_CALIBRATION) {
-                calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->changeParameter(lut_module->parameters.UpDnLookLighting(), lut_module->parameters.upDownLookPrName());
+                calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->changeParameter(lut_module.parameters.UpDnLookLighting(), lut_module.parameters.upDownLookPrName());
             }
             else if (key == AA1_UPDownLOOK_DOWN_CALIBRATION) {
-                calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->changeParameter(sut_module->parameters.UpDnLookLighting(), sut_module->parameters.upDownLookPrName());
+                calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->changeParameter(sut_module.parameters.UpDnLookLighting(), sut_module.parameters.upDownLookPrName());
             }
         }
     }

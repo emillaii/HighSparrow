@@ -4,10 +4,10 @@
 #include <QFile>
 #include <QTextStream>
 
-Calibration::Calibration(QString name,QString file_name,XtMotor *motor_x, XtMotor *motor_y, WordopLight *light_controller, int ch, int lighting, QString camera_name, QString pr_name, QObject *parent)
+Calibration::Calibration(QString name,QString file_path,XtMotor *motor_x, XtMotor *motor_y, WordopLight *light_controller, int ch, int lighting, QString camera_name, QString pr_name, QObject *parent)
 {
     this->name = name;
-    this->file_name =file_name;
+    this->file_path = file_path;
     this->motor_x = motor_x;
     this->motor_y = motor_y;
     this->light_controller =light_controller;
@@ -25,7 +25,7 @@ void Calibration::changeParameter(int lighting, QString pr_name)
 
 void Calibration::loadJsonConfig()
 {
-    if(PropertyBase::loadJsonConfig(file_name,name, &parameters))
+    if(PropertyBase::loadJsonConfig(file_path,name, &parameters))
         mapping.ChangeParameter(QMatrix(parameters.matrix11(),
                                         parameters.matrix12(),
                                         parameters.matrix21(),
@@ -36,7 +36,7 @@ void Calibration::loadJsonConfig()
 }
 void Calibration::saveJsonConfig()
 {
-    PropertyBase::saveJsonConfig(file_name,name, &parameters);
+    PropertyBase::saveJsonConfig(file_path,name, &parameters);
 }
 bool Calibration::performCalibration()
 {

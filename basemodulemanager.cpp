@@ -98,24 +98,38 @@ bool BaseModuleManager::InitStruct()
     XtMotor *x,*y,*z,*a,*b,*c;
     XtVcMotor *z_v;
     XtVacuum *v,*v_u;
+    XtGeneralOutput *o;
     x = GetMotorByName("LUT_X");
     y = GetMotorByName("LUT_Y");
     z_v = GetVcMotorByName("LUT_Z");
     v = GetVacuumByName("LUT_V");
-//    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
-    lut_carrier = new MaterialCarrier("LUT",x,y,z_v,v);
+    //    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
+    lut_carrier.Init("LUT",x,y,z_v,v);
+    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,lut_module.parameters.UpDnLookLighting(),UPLOOK_VISION_CAMERA,lut_module.parameters.upDownLookPrName()));
     v_u = GetVacuumByName("LUT_V_U");
-//    if(lut_carrier == nullptr||pylonUplookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr || v_u == nullptr)return false;
-    lut_module = new LutModule(lut_carrier,pylonUplookCamera,lightingModule,visionModule,v,v_u);
+    //    if(lut_carrier == nullptr||pylonUplookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr || v_u == nullptr)return false;
+    lut_module.Init(&lut_carrier,calibrations[AA1_UPDownLOOK_UP_CALIBRATION],lightingModule,visionModule,v,v_u);
     x = GetMotorByName("SUT1_X");
     y = GetMotorByName("SUT1_Y");
     z_v = GetVcMotorByName("SUT_Z");
     v = GetVacuumByName("SUT_V");
-//    if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
-    sut_carrier = new MaterialCarrier("SUT",x,y,z_v,v);
-//    if(sut_carrier == nullptr||pylonDownlookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr)return false;
+    //if(x == nullptr||y == nullptr||z_v == nullptr||v == nullptr)return false;
+    sut_carrier.Init("SUT",x,y,z_v,v);
+    //if(sut_carrier == nullptr||pylonDownlookCamera == nullptr||lightingModule == nullptr||visionModule == nullptr)return false;
 
-    sut_module = new SutModule(sut_carrier,pylonDownlookCamera,lightingModule,visionModule);
+    sut_module.Init(&sut_carrier,calibrations[AA1_DOWNLOOK_CALIBRATION],calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION],lightingModule,visionModule);
+
+    //if(x == nullptr||y == nullptr)return false;
+    calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,sut_module.parameters.Lighting(),DOWNLOOK_VISION_CAMERA,sut_module.parameters.prName()));
+    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,sut_module.parameters.UpDnLookLighting(),DOWNLOOK_VISION_CAMERA,sut_module.parameters.upDownLookPrName()));
+
+    QVector<XtMotor *> executive_motors;
+    executive_motors.push_back(x);
+    executive_motors.push_back(y);
+    executive_motors.push_back(z);
+    o = GetOutputIoByName("Dispense");
+    dispenser.Init(DISPENSER_PARAMETER_PATH,AA1_DISPENSER,XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,o);
+    dispense_module.Init(calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser);
     x = GetMotorByName("AA1_X");
     y = GetMotorByName("AA1_Y");
     z = GetMotorByName("AA1_Z");
@@ -123,20 +137,17 @@ bool BaseModuleManager::InitStruct()
     b = GetMotorByName("AA1_B");
     c = GetMotorByName("AA1_C");
     v = GetVacuumByName("AA_V");
-//    if(x == nullptr||y == nullptr||z == nullptr||a == nullptr||b == nullptr||c == nullptr||v == nullptr)return false;
-    aa_head_module = new AAHeadModule("AAHead",x,y,z,a,b,c,v);
+    //if(x == nullptr||y == nullptr||z == nullptr||a == nullptr||b == nullptr||c == nullptr||v == nullptr)return false;
+    aa_head_module.Init("AAHead",x,y,z,a,b,c,v);
 
-    x = GetMotorByName("AA1_X");
-    y = GetMotorByName("AA1_Y");
-//    if(x == nullptr||y == nullptr)return false;
-    calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,lut_module->parameters.Lighting(),UPLOOK_VISION_CAMERA,lut_module->parameters.prName()));
+    //if(x == nullptr||y == nullptr)return false;
+    calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,lut_module.parameters.Lighting(),UPLOOK_VISION_CAMERA,lut_module.parameters.prName()));
     x = GetMotorByName("SUT1_X");
     y = GetMotorByName("SUT1_Y");
-//    if(x == nullptr||y == nullptr)return false;
-    calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,sut_module->parameters.Lighting(),DOWNLOOK_VISION_CAMERA,sut_module->parameters.prName()));
-    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,lut_module->parameters.UpDnLookLighting(),UPLOOK_VISION_CAMERA,lut_module->parameters.upDownLookPrName()));
-    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,x,y,lightingModule,0,sut_module->parameters.UpDnLookLighting(),DOWNLOOK_VISION_CAMERA,sut_module->parameters.upDownLookPrName()));
+
+
     profile_loaded = true;
+
     return true;
 }
 

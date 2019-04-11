@@ -2,6 +2,7 @@
 #define SUT_MODULE_H
 
 #include "baslerpyloncamera.h"
+#include "calibration.h"
 #include "material_carrier.h"
 #include "sut_parameter.h"
 #include "visionmodule.h"
@@ -11,22 +12,31 @@ class SutModule : public QObject
 {
     Q_OBJECT
 public:
-    SutModule(MaterialCarrier* carrier,BaslerPylonCamera* camera,WordopLight* lighting,VisionModule* vision);
+    SutModule();
+    void Init(MaterialCarrier* carrier,Calibration* down_calibration,Calibration* updown_calibration,WordopLight* lighting,VisionModule* vision);
     SutParameter parameters;
-    MaterialCarrier* carrier;
+    Position3D load_position;
+    Position3D downlook_position;
+    Position3D toollook_position;
+    Position3D mushroom_positon;
 public slots:
     void updateParams();
 private:
-    BaslerPylonCamera* camera;
+    MaterialCarrier* carrier;
+    Calibration* down_calibration;
+    Calibration* updown_calibration;
     WordopLight* lighting;
     VisionModule* vision;
 
     PRResultStruct pr_result;
     void loadParams();
 public:
-    Q_INVOKABLE bool moveToPR();
+    Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true);
     Q_INVOKABLE bool moveToLoadPos();
-    Q_INVOKABLE bool moveToOCPos();
+    Q_INVOKABLE bool moveToDownlookPos();
+    Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true);
+    Q_INVOKABLE bool moveToToollookPos();
+    Q_INVOKABLE bool moveToMushroomPos();
     bool stepMove_XY_Sync(double x,double y);
 };
 

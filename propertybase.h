@@ -14,9 +14,9 @@ public:
     void read(const QJsonObject &json);
     void write(QJsonObject &json) const;
 
-    static void saveJsonConfig(QString file_path,const QMap<QString, PropertyBase*> &parameters);
+    static void saveJsonConfig(QString file_name,const QMap<QString, PropertyBase*> &parameters);
     static void saveJsonConfig(QString file_path,const QString name,const PropertyBase* parameters);
-    static bool loadJsonConfig(QString file_path,QMap<QString, PropertyBase*> &parameters);
+    static bool loadJsonConfig(QString file_name,QMap<QString, PropertyBase*> &parameters);
     static bool loadJsonConfig(QString file_path,const QString name,PropertyBase* parameters);
 
 };

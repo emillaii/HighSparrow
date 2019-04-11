@@ -22,6 +22,16 @@ void XtMotor::WaitSync(int thread)
     XT_Controler::WaitForAllInsFinish(thread);
 }
 
+int XtMotor::GetCurveResource()
+{
+    return curve_resource++;
+}
+
+int XtMotor::GetThreadResource()
+{
+    return thread_resource++;
+}
+
 void XtMotor::SetAxisDelay()
 {
 //    QJsonObject json = XtMotion::motor_extend_param[name].toObject();

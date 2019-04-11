@@ -45,9 +45,9 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.logicManager->aaCore->aaData_1);
 
     //Module
-    engine.rootContext()->setContextProperty("sutModule", highSprrow.baseModuleManager->sut_module);
-    engine.rootContext()->setContextProperty("lutModule", highSprrow.baseModuleManager->lut_module);
-    engine.rootContext()->setContextProperty("aaHeadModule", highSprrow.baseModuleManager->aa_head_module);
+    engine.rootContext()->setContextProperty("sutModule", &highSprrow.baseModuleManager->sut_module);
+    engine.rootContext()->setContextProperty("lutModule", &highSprrow.baseModuleManager->lut_module);
+    engine.rootContext()->setContextProperty("aaHeadModule", &highSprrow.baseModuleManager->aa_head_module);
 
     engine.rootContext()->setContextProperty("downlookCalibration", highSprrow.baseModuleManager->calibrations[AA1_DOWNLOOK_CALIBRATION]);
     engine.rootContext()->setContextProperty("uplookCalibration", highSprrow.baseModuleManager->calibrations[AA1_UPLOOK_CALIBRATION]);
@@ -60,13 +60,13 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("lightingController", highSprrow.baseModuleManager->lightingModule);
     //Params
-    engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module->parameters);
+    engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);
 
-    engine.rootContext()->setContextProperty("sutParams", &highSprrow.baseModuleManager->sut_module->parameters);
-    engine.rootContext()->setContextProperty("sutCarrierParams",  &highSprrow.baseModuleManager->sut_module->carrier->parameters);
+    engine.rootContext()->setContextProperty("sutParams", &highSprrow.baseModuleManager->sut_module.parameters);
+    engine.rootContext()->setContextProperty("sutCarrierParams",  &highSprrow.baseModuleManager->sut_carrier.parameters);
 
-    engine.rootContext()->setContextProperty("lutParams", &highSprrow.baseModuleManager->lut_module->parameters);
-    engine.rootContext()->setContextProperty("lutCarrierParams", &highSprrow.baseModuleManager->lut_module->carrier->parameters);
+    engine.rootContext()->setContextProperty("lutParams", &highSprrow.baseModuleManager->lut_module.parameters);
+    engine.rootContext()->setContextProperty("lutCarrierParams", &highSprrow.baseModuleManager->lut_carrier.parameters);
 
     //QImage Provider
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);

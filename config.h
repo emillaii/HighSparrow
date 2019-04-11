@@ -107,6 +107,11 @@
 #define AA1_UPDownLOOK_DOWN_CALIBRATION  "aa1_updownLook_down_calibration"
 #define AA2_UPDownLOOK_UP_CALIBRATION    "aa2_updownLook_up_calibration"
 #define AA2_UPDownLOOK_DOWN_CALIBRATION  "aa2_updownLook_down_calibration"
+//dispenser
+
+#define DISPENSER_PARAMETER_PATH         ".//config//dispenserConfig//"
+#define AA1_DISPENSER                    "aa1_dispenser"
+#define AA2_DISPENSER                    "aa2_dispenser"
 
 //PR
 #define PR_SENSOR_PACKAGE_IMX362        "IMX362"

@@ -61,11 +61,11 @@ void PropertyBase::write(QJsonObject &json) const
     }
 }
 
-void PropertyBase::saveJsonConfig(QString file_path, const QMap<QString, PropertyBase*> &parameters)
+void PropertyBase::saveJsonConfig(QString file_name, const QMap<QString, PropertyBase*> &parameters)
 {
-    QFile saveFile(file_path);
+    QFile saveFile(file_name);
     if (!saveFile.open(QIODevice::WriteOnly)) {
-        qWarning("save parameters to %s failed, Couldn't open save file.",file_path.toStdString().data());
+        qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return;
     }
     QJsonObject json;
@@ -81,7 +81,7 @@ void PropertyBase::saveJsonConfig(QString file_path, const QMap<QString, Propert
 
 void PropertyBase::saveJsonConfig(QString file_path, const QString name, const PropertyBase* parameters)
 {
-    QFile saveFile(file_path);
+    QFile saveFile(file_path + name +".json");
     if (!saveFile.open(QIODevice::WriteOnly)) {
         qWarning("save parameters to %s failed, Couldn't open save file.",file_path.toStdString().data());
         return;
@@ -95,11 +95,11 @@ void PropertyBase::saveJsonConfig(QString file_path, const QString name, const P
     saveFile.write(saveDoc.toJson());
 }
 
-bool PropertyBase::loadJsonConfig(QString file_path, QMap<QString, PropertyBase*> &parameters)
+bool PropertyBase::loadJsonConfig(QString file_name, QMap<QString, PropertyBase*> &parameters)
 {
     QString val;
     QFile file;
-    file.setFileName(file_path);
+    file.setFileName(file_name);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))return false;
     val = file.readAll();
     file.close();
@@ -118,7 +118,7 @@ bool PropertyBase::loadJsonConfig(QString file_path, const QString name, Propert
 {
     QString val;
     QFile file;
-    file.setFileName(file_path);
+    file.setFileName(file_path + name +".json");
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))return false;
     val = file.readAll();
     file.close();

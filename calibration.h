@@ -25,19 +25,26 @@ enum CaliType{
     caliPickarmSensor,
     caliSensorChart
 };
+struct PrOffset
+{
+    PrOffset() {X = 0;Y = 0;Theta = 0;}
+    PrOffset(double x,double y,double theta) {X = x;Y = y;Theta = theta;}
+    double X;
+    double Y;
+    double Theta;
+};
+//const static QPointF IMG_CENTER=QPointF(329,247);
+//const static QPointF CHART_IMG_CENTER=QPointF(3264/2,2448/2);
 
-const static QPointF IMG_CENTER=QPointF(329,247);
-const static QPointF CHART_IMG_CENTER=QPointF(3264/2,2448/2);
-
-const static QList<QString> CaliName={ "upMush", "upDownGlass", "downSensor",
-                                      "downLen", "dispenseTipOffset", "upLens",
-                                      "pickarmSensor","sensorChart"};
+//const static QList<QString> CaliName={ "upMush", "upDownGlass", "downSensor",
+//                                      "downLen", "dispenseTipOffset", "upLens",
+//                                      "pickarmSensor","sensorChart"};
 
 class Calibration : public QObject,public ErrorBase
 {
     Q_OBJECT
 public:
-    explicit Calibration(QString name,QString file_name,XtMotor* motor_x,XtMotor* motor_y,WordopLight * light_controller,int ch,int lighting,QString camera_name, QString pr_name, QObject *parent = nullptr);
+    explicit Calibration(QString name,QString file_path,XtMotor* motor_x,XtMotor* motor_y,WordopLight * light_controller,int ch,int lighting,QString camera_name, QString pr_name, QObject *parent = nullptr);
 
     Calibration(const Calibration &calibration) = delete;
     Calibration &operator=(const Calibration &calibration) = delete;
@@ -63,7 +70,7 @@ private:
 public:
 protected:
     QString name;
-    QString file_name;
+    QString file_path;
     XtMotor* motor_x;
     XtMotor* motor_y;
     WordopLight *light_controller;

@@ -1,24 +1,29 @@
 #include "lut_module.h"
 
-LutModule::LutModule(MaterialCarrier* carrier, BaslerPylonCamera* camera,WordopLight* lighting,VisionModule* vision,XtVacuum* load_vacuum,XtVacuum* unload_vacuun)
+LutModule::LutModule()
 {
-    this->carrier = carrier;
-    this->camera = camera;
-    this->lighting =lighting;
-    this->vision = vision;
-    this->load_vacuum = load_vacuum;
-    this->unload_vacuum = unload_vacuun;
     this->loadParams();
     //connect(&this->parameters, &LutParameter::paramsChanged, this, &LutModule::updateParams);
     //connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &LutModule::updateParams);
 }
 
 
+void LutModule::Init(MaterialCarrier *carrier, Calibration *updown_calibration, WordopLight *lighting, VisionModule *vision, XtVacuum *load_vacuum, XtVacuum *unload_vacuum)
+{
+    this->carrier = carrier;
+    this->updown_calibration = updown_calibration;
+    this->lighting =lighting;
+    this->vision = vision;
+    this->load_vacuum = load_vacuum;
+    this->unload_vacuum = unload_vacuum;
+}
+
 void LutModule::updateParams()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LUT_PARAMS", &this->parameters);
     temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
+    temp_map.insert("UPDOWNLOOK_POSITION", &this->updownlook_position);
     PropertyBase::saveJsonConfig("config//lutConfig.json", temp_map);
 }
 
@@ -27,16 +32,37 @@ void LutModule::loadParams()
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LUT_PARAMS", &parameters);
     temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
+    temp_map.insert("UPDOWNLOOK_POSITION", &updownlook_position);
     PropertyBase::loadJsonConfig("config//lutConfig.json", temp_map);
 }
 
-bool LutModule::moveToPR()
+bool LutModule::moveToUpdownlookPos()
 {
-    lighting->ChangeBrightnessSignal(LIGHTING_UPLOOK,parameters.Lighting());
-    bool result = carrier->Move_Vision_Sync();
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(updownlook_position.X(),updownlook_position.Y(),updownlook_position.Z());
+}
+
+bool LutModule::moveToUpDwonlookPR(PrOffset &offset, bool close_lighting)
+{
+    lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,parameters.UpDnLookLighting());
+    bool result = moveToUpdownlookPos();
     if(result)
-        vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "",pr_result);
-    return result;
+    {
+      ErrorCodeStruct temp =  vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, parameters.upDownLookPrName(), pr_result);
+      if(ErrorCode::OK == temp.code)
+      {
+          QPointF mech;
+          if(updown_calibration->getDeltaDistanceFromCenter(QPointF(pr_result.x,pr_result.y),mech))
+          {
+             offset.X = mech.x();
+             offset.Y = mech.y();
+             offset.Theta = pr_result.theta;
+             return true;
+          }
+      }
+    }
+    if(close_lighting)
+        lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,0);
+    return false;
 }
 
 bool LutModule::moveToLoadPos()

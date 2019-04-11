@@ -1,8 +1,11 @@
 #include "material_carrier.h"
 
-MaterialCarrier::MaterialCarrier(QString name,XtMotor* motor_x,XtMotor* motor_y,XtVcMotor* motor_z,XtVacuum* vacuum)
+MaterialCarrier::MaterialCarrier()
 {
-//    parameters.setDisplayName(name);
+}
+
+void MaterialCarrier::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtVcMotor *motor_z, XtVacuum *vacuum)
+{
     this->motor_x = motor_x;
     this->motor_y = motor_y;
     this->motor_z = motor_z;
@@ -131,5 +134,10 @@ bool MaterialCarrier::ZSerchReturn()
 bool MaterialCarrier::Move_Vision_Sync()
 {
     return  Move_SZ_XY_Z_Sync(parameters.VisionX(),parameters.VisionY(),parameters.VisionZ());
+}
+
+mPoint3D MaterialCarrier::GetFeedBackPos()
+{
+    return mPoint3D(motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos());
 }
 

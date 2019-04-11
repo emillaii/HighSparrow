@@ -29,7 +29,8 @@ class XtMotor
 public:
 //static void Move2AxisToPos(XtMotor* axis1,  double pos1, XtMotor *axis2, double pos2, int thread = -1);
 static void WaitSync(int thread);
-
+static int GetCurveResource();
+static int GetThreadResource();
 public:
     XtMotor();
     virtual void Init(const QString& motor_name);

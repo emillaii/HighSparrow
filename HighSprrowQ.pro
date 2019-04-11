@@ -42,7 +42,6 @@ SOURCES += \
     xtmotor.cpp \
     XtVcMotor.cpp \
     XtVacuum.cpp \
-    structure_composition.cpp \
     lut_module.cpp \
     sut_module.cpp \
     aadata.cpp \
@@ -54,7 +53,9 @@ SOURCES += \
     imagegrabbingworkerthread.cpp\
 	dothinkey.cpp \
     iniparser.cpp \
-    imageprovider.cpp
+    imageprovider.cpp \
+    dispenser.cpp \
+    dispense_module.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -129,7 +130,6 @@ HEADERS += \
     XtVcMotor.h \
     material_carrier.h \
     XtVacuum.h \
-    structure_composition.h \
     sut_parameter.h \
     material_carrier_parameter.h \
     lut_module.h \
@@ -145,7 +145,12 @@ HEADERS += \
     dothinkey.h \
     iniparser.h \
     imageprovider.h \
-    XtVacuum.h
+    XtVacuum.h \
+    dispenser.h \
+    dispenser_parameter.h \
+    dispense_module.h \
+    dispense_parameter.h \
+    position_define.h
 
 DISTFILES += \
     icons/index.theme

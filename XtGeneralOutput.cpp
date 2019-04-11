@@ -48,6 +48,11 @@ XtGeneralOutput &XtGeneralOutput::operator =(const bool &b)
     return *this;
 }
 
+int XtGeneralOutput::GetID()
+{
+    return output_id;
+}
+
 void XtGeneralOutput::Set(bool value, int thread)
 {
     if(output_id<0)

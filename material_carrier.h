@@ -1,15 +1,16 @@
 #ifndef MATERIAL_CARRIER_H
 #define MATERIAL_CARRIER_H
 
-#include "PropertyBase.h"
 #include "XtVacuum.h"
 #include "XtVcMotor.h"
 #include "material_carrier_parameter.h"
+#include "position_define.h"
 #include "xtmotor.h"
 class MaterialCarrier
 {
 public:
-    MaterialCarrier(QString name, XtMotor* motor_x,XtMotor* motor_y,XtVcMotor* motor_z,XtVacuum* vacuum);
+    MaterialCarrier();
+    void Init(QString name, XtMotor* motor_x,XtMotor* motor_y,XtVcMotor* motor_z,XtVacuum* vacuum);
 private:
     XtMotor* motor_x = Q_NULLPTR;
     XtMotor* motor_y = Q_NULLPTR;
@@ -29,6 +30,7 @@ public:
     bool ZSerchByForce(double& result_pos,double force,double search_limit = -1,int vacuum_state = -1,XtVacuum* excute_vacuum = nullptr);
     bool ZSerchReturn();
     bool Move_Vision_Sync();
+    mPoint3D GetFeedBackPos();
 };
 
 #endif // MATERIAL_CARRIER_H

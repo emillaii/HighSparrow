@@ -34,6 +34,11 @@ ItemDelegate {
                 LUTLoadPositionView {
                 }
             }
+            GroupBox{
+                title: qsTr("Load Uplook Position")
+                LUTLoadUplookPosition {
+                }
+            }
 
             GroupBox{
                 title: qsTr("AA_1 Uplook Position")

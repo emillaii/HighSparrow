@@ -24,7 +24,7 @@ void LutModule::updateParams()
     temp_map.insert("LUT_PARAMS", &parameters);
     temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &load_position);
-    temp_map.insert("LOAD_POSITION", &load_uplook_position);
+    temp_map.insert("LOAD_UPLOOK_POSITION", &load_uplook_position);
     temp_map.insert("AA1_UPDOWNLOOK_POSITION", &aa1_updownlook_position);
     temp_map.insert("AA1_PICKLENS_POSITION", &aa1_picklens_position);
     temp_map.insert("AA1_UNPICKLENS_POSITION", &aa1_unpicklens_position);
@@ -34,6 +34,24 @@ void LutModule::updateParams()
     temp_map.insert("AA2_UNPICKLENS_POSITION", &aa2_unpicklens_position);
     temp_map.insert("AA2_UPLOOK_POSITION", &aa2_uplook_position);
     PropertyBase::saveJsonConfig("config//lutConfig.json", temp_map);
+}
+
+void LutModule::loadParams()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("LUT_PARAMS", &parameters);
+    temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
+    temp_map.insert("LOAD_POSITION", &load_position);
+    temp_map.insert("LOAD_UPLOOK_POSITION", &load_uplook_position);
+    temp_map.insert("AA1_UPDOWNLOOK_POSITION", &aa1_updownlook_position);
+    temp_map.insert("AA1_PICKLENS_POSITION", &aa1_picklens_position);
+    temp_map.insert("AA1_UNPICKLENS_POSITION", &aa1_unpicklens_position);
+    temp_map.insert("AA1_UPLOOK_POSITION", &aa1_uplook_position);
+    temp_map.insert("AA2_UPDOWNLOOK_POSITION", &aa2_updownlook_position);
+    temp_map.insert("AA2_PICKLENS_POSITION", &aa2_picklens_position);
+    temp_map.insert("AA2_UNPICKLENS_POSITION", &aa2_unpicklens_position);
+    temp_map.insert("AA2_UPLOOK_POSITION", &aa2_uplook_position);
+    PropertyBase::loadJsonConfig("config//lutConfig.json", temp_map);
 }
 
 bool LutModule::moveToAA1UplookPos()
@@ -94,24 +112,6 @@ bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting)
     if(close_lighting)
         lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,0);
     return false;
-}
-
-void LutModule::loadParams()
-{
-    QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("LUT_PARAMS", &parameters);
-    temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
-    temp_map.insert("LOAD_POSITION", &load_position);
-    temp_map.insert("LOAD_POSITION", &load_uplook_position);
-    temp_map.insert("AA1_UPDOWNLOOK_POSITION", &aa1_updownlook_position);
-    temp_map.insert("AA1_PICKLENS_POSITION", &aa1_picklens_position);
-    temp_map.insert("AA1_UNPICKLENS_POSITION", &aa1_unpicklens_position);
-    temp_map.insert("AA1_UPLOOK_POSITION", &aa1_uplook_position);
-    temp_map.insert("AA2_UPDOWNLOOK_POSITION", &aa2_updownlook_position);
-    temp_map.insert("AA2_PICKLENS_POSITION", &aa2_picklens_position);
-    temp_map.insert("AA2_UNPICKLENS_POSITION", &aa2_unpicklens_position);
-    temp_map.insert("AA2_UPLOOK_POSITION", &aa2_uplook_position);
-    PropertyBase::loadJsonConfig("config//lutConfig.json", temp_map);
 }
 
 bool LutModule::moveToAA1UpdownlookPos()

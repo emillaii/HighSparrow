@@ -51,6 +51,7 @@ public:
     Q_INVOKABLE bool moveToAA2UpdownlookPos();
     Q_INVOKABLE bool moveToAA2UpDwonlookPR(PrOffset &offset,bool close_lighting = true);
     Q_INVOKABLE bool moveToLoadPos();
+    Q_INVOKABLE bool moveToUnloadPos();
     Q_INVOKABLE bool moveToLoadUplookPos();
     Q_INVOKABLE bool moveToAA1PickLens();
     Q_INVOKABLE bool moveToAA1UnPickLens();

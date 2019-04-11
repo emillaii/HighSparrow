@@ -5,12 +5,12 @@
 #include "calibration.h"
 #include "position_define.h"
 #include "dispense_parameter.h"
-
+#include "material_carrier.h"
 class DispenseModule
 {
 public:
     DispenseModule();
-    void Init(Calibration* calibration,Dispenser* dispenser,VisionModule* vision,MaterialCarrier* carrier,XtGeneralOutput* dispense_io);
+    void Init(Calibration* calibration,Dispenser* dispenser,VisionModule* vision, MaterialCarrier* carrier,XtGeneralOutput* dispense_io);
     void loadConfig();
     void saveConfig();
     void updatePath();

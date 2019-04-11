@@ -24,6 +24,7 @@ void LutModule::updateParams()
     temp_map.insert("LUT_PARAMS", &parameters);
     temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &load_position);
+    temp_map.insert("UNLOAD_POSITION", &unload_position);
     temp_map.insert("LOAD_UPLOOK_POSITION", &load_uplook_position);
     temp_map.insert("AA1_UPDOWNLOOK_POSITION", &aa1_updownlook_position);
     temp_map.insert("AA1_PICKLENS_POSITION", &aa1_picklens_position);
@@ -42,6 +43,7 @@ void LutModule::loadParams()
     temp_map.insert("LUT_PARAMS", &parameters);
     temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &load_position);
+    temp_map.insert("UNLOAD_POSITION", &unload_position);
     temp_map.insert("LOAD_UPLOOK_POSITION", &load_uplook_position);
     temp_map.insert("AA1_UPDOWNLOOK_POSITION", &aa1_updownlook_position);
     temp_map.insert("AA1_PICKLENS_POSITION", &aa1_picklens_position);

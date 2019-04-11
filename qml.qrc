@@ -37,6 +37,7 @@
         <file>LUTAA2UplookPosition.qml</file>
         <file>SUTToolUplookPosition.qml</file>
         <file>LUTLoadUplookPosition.qml</file>
+        <file>LUTUnloadPosition.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

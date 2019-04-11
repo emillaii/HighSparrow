@@ -15,6 +15,7 @@ Calibration::Calibration(QString name,QString file_path,XtMotor *motor_x, XtMoto
     this->lighting = lighting;
     this->camera_name = camera_name;
     this->pr_name = pr_name;
+    loadJsonConfig();
 }
 
 void Calibration::changeParameter(int lighting, QString pr_name)

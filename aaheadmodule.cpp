@@ -23,6 +23,7 @@ void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMoto
     this->motor_b = motor_b;
     this->motor_c = motor_c;
     this->v = v;
+
 }
 
 void AAHeadModule::updateParams()
@@ -93,14 +94,9 @@ void AAHeadModule::SetAAPosion(mPoint6D point)
     last_aa_position.SetPosition(point);
 }
 
-double AAHeadModule::getZFeedback()
+mPoint6D AAHeadModule::GetFeedBack()
 {
-    return motor_z->GetFeedbackPos();
-}
-
-double AAHeadModule::getZLogicPos()
-{
-    return motor_z->GetOutpuPos();
+    return mPoint6D(motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos(),motor_a->GetFeedbackPos(),motor_b->GetFeedbackPos(),motor_c->GetFeedbackPos());
 }
 
 bool AAHeadModule::moveToDiffrentZSync(double z)

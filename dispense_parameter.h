@@ -15,6 +15,7 @@ public:
     Q_PROPERTY(double dispenseYOffset READ dispenseYOffset WRITE setDispenseYOffset NOTIFY dispenseYOffsetChanged)
     Q_PROPERTY(double dispenseZPos READ dispenseZPos WRITE setDispenseZPos NOTIFY dispenseZPosChanged)
     Q_PROPERTY(double dispenseZOffset READ dispenseZOffset WRITE setDispenseZOffset NOTIFY dispenseZOffsetChanged)
+    Q_PROPERTY(double testForce READ testForce WRITE setTestForce NOTIFY testForceChanged)
     double InitTheta() const
     {
         return m_InitTheta;
@@ -37,6 +38,11 @@ public:
     double dispenseZOffset() const
     {
         return m_dispenseZOffset;
+    }
+
+    double testForce() const
+    {
+        return m_testForce;
     }
 
 public slots:
@@ -89,6 +95,16 @@ public slots:
         emit dispenseZOffsetChanged(m_dispenseZOffset);
     }
 
+    void setTestForce(double testForce)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_testForce, testForce))
+            return;
+
+        m_testForce = testForce;
+        emit testForceChanged(m_testForce);
+    }
+
 signals:
     void InitThetaChanged(double InitTheta);
     void dispenseXOffsetChanged(double dispenseXOffset);
@@ -99,12 +115,15 @@ signals:
 
     void dispenseZOffsetChanged(double dispenseZOffset);
 
+    void testForceChanged(double testForce);
+
 private:
     double m_InitTheta = 0;
     double m_dispenseXOffset;
     double m_dispenseYOffset;
     double m_dispenseZPos;
     double m_dispenseZOffset;
+    double m_testForce;
 };
 
 #endif // DISPENSE_PATHER_H

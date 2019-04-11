@@ -43,6 +43,8 @@ public:
     Dispenser();
     void Init(QString file_path,QString name,int curve_id,int thread_curve,int thread_trig,QVector<XtMotor *> executive_motors,XtGeneralOutput* output_io);
     ~Dispenser();
+    void loadParams();
+    void saveParams();
     bool Dispense(QVector<DispensePathPoint> &dispense_path);
     void CleanUpCurve();
 

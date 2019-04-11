@@ -131,7 +131,7 @@ bool BaseModuleManager::InitStruct()
     executive_motors.push_back(sut_y);
     executive_motors.push_back(sut_z);
     dispenser.Init(DISPENSER_PARAMETER_PATH,AA1_DISPENSER,XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,dispense_o);
-    dispense_module.Init(calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule);
+    dispense_module.Init(calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule,&sut_carrier,dispense_o);
 
     profile_loaded = true;
 

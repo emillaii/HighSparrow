@@ -9,11 +9,13 @@ DispenseModule::DispenseModule()
 
 
 
-void DispenseModule::Init(Calibration *calibration, Dispenser *dispenser,VisionModule* vision)
+void DispenseModule::Init(Calibration *calibration, Dispenser *dispenser,VisionModule* vision,MaterialCarrier* carrier,XtGeneralOutput* dispense_io)
 {
     this->calibration = calibration;
     this->dispenser = dispenser;
     this->vision = vision;
+    this->carrier = carrier;
+    this->dispense_io = dispense_io;
 }
 
 void DispenseModule::loadConfig()
@@ -51,6 +53,33 @@ void DispenseModule::setMapPosition(double x, double y, double pr_theta)
     this->x = x;
     this->y = y;
     this->pr_theta = pr_theta;
+}
+
+void DispenseModule::MoveToDispenseDot()
+{
+    start_pos = carrier->GetFeedBackPos();
+    if(!carrier->StepMove_SZ_XY_Sync(parameters.dispenseXOffset(),parameters.dispenseYOffset()))
+    {
+        return;
+    }
+    double result;
+    if(carrier->ZSerchByForce(result,parameters.testForce()))
+    {
+        dispense_io->Set(true);
+        Sleep(1000);
+        dispense_io->Set(false);
+        carrier->ZSerchReturn();
+    }
+    carrier->Move_SZ_XY_Z_Sync(start_pos.X,start_pos.Y,start_pos.Z);
+}
+
+void DispenseModule::CalulateOffset()
+{
+    mPoint3D end_pos = carrier->GetFeedBackPos();
+    double x = parameters.dispenseXOffset() + end_pos.X - start_pos.X;
+    double y = parameters.dispenseYOffset() + end_pos.Y - start_pos.Y;
+    parameters.setDispenseXOffset(x);
+    parameters.setDispenseYOffset(y);
 }
 
 QVector<mPoint3D> DispenseModule::getDispensePath()

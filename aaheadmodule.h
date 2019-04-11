@@ -47,8 +47,7 @@ public:
     bool stepMove_Z_Sync(double step_z);
     void SetAAPosion(mPoint6D point);
     void MotoAAPosition();
-    double getZFeedback();
-    double getZLogicPos();
+    mPoint6D GetFeedBack();
 private:
     bool moveToDiffrentZSync(double z);
     bool moveToSync(double x, double y, double z, double a, double b, double c);

@@ -1,5 +1,4 @@
 ﻿#include "dispenser.h"
-
 DispensePathPoint::DispensePathPoint()
 {
 
@@ -32,11 +31,22 @@ void Dispenser::Init(QString file_path, QString name, int curve_id, int thread_c
     this->executive_motors = executive_motors;
     this->dem = executive_motors.length();
     this->output_io = output_io;
+    loadParams();
 }
 
 Dispenser::~Dispenser()
 {
 
+}
+
+void Dispenser::loadParams()
+{
+    PropertyBase::loadJsonConfig(file_path,name,&parameters);
+}
+
+void Dispenser::saveParams()
+{
+     PropertyBase::saveJsonConfig(file_path,name,&parameters);
 }
 bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
 {

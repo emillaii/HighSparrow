@@ -102,6 +102,13 @@ bool MaterialCarrier::StepMove_XY_Sync(double step_x, double step_y, int timeout
     return Wait_XY_ToPos(target_x,target_y,timeout);
 }
 
+bool MaterialCarrier::StepMove_SZ_XY_Sync(double step_x, double step_y, int timeout)
+{
+    if(!motor_z->MoveToPosSync(parameters.SafetyZ()))
+        return false;
+    return StepMove_XY_Sync(step_x,step_y);
+}
+
 void MaterialCarrier::Move_XY_ToPos(double x, double y)
 {
     motor_x->MoveToPos(x);

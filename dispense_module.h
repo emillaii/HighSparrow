@@ -10,11 +10,13 @@ class DispenseModule
 {
 public:
     DispenseModule();
-    void Init(Calibration* calibration,Dispenser* dispenser,VisionModule* vision);
+    void Init(Calibration* calibration,Dispenser* dispenser,VisionModule* vision,MaterialCarrier* carrier,XtGeneralOutput* dispense_io);
     void loadConfig();
     void saveConfig();
     void updatePath();
     void setMapPosition(double x,double y,double pr_theta);
+    void MoveToDispenseDot();
+    void CalulateOffset();
 private:
     QVector<mPoint3D> getDispensePath();
     bool PerformDispense();
@@ -29,6 +31,9 @@ private:
     DispenseParameter parameters;
     Dispenser* dispenser;
     VisionModule* vision;
+    MaterialCarrier* carrier;
+    XtGeneralOutput* dispense_io;
+    mPoint3D start_pos;
 };
 
 #endif // DISPENSE_MODULE_H

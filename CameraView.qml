@@ -41,6 +41,7 @@ Grid {
                                                 image.sourceSize.width/image.paintedWidth,
                                                 image.sourceSize.height/image.paintedHeight)
                     console.log("x: " + delta.x +  " y:" + delta.y)
+                    console.log("image.sourceSize.width: " + image.sourceSize.width + "image.sourceSize.height" + image.sourceSize.height)
                 }
             }
             Text {
@@ -140,8 +141,8 @@ Grid {
                         return console.log("Image Click Out of range")
                     }
                     var delta = calculateOffset(image1.width, image1.height, mouseX, mouseY,
-                                                image1.source.width/image1.paintedWidth,
-                                                image1.source.height/image1.paintedHeight)
+                                                image1.sourceSize.width/image1.paintedWidth,
+                                                image1.sourceSize.height/image1.paintedHeight)
                     console.log("x: " + delta.x +  " y:" + delta.y)
                 }
             }

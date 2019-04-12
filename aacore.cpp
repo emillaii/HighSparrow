@@ -12,7 +12,6 @@
 #include <QJsonObject>
 #include "aa_util.h"
 #include "visionavadaptor.h"
-
 AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,QObject *parent) : QThread(parent)
 {
     this->aa_head = aa_head;
@@ -32,8 +31,8 @@ void AACore::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
 }
 
 void AACore::run(){
-    //runFlowchartTest();
-    performAAOffline();
+    runFlowchartTest();
+    //performAAOffline();
     qInfo("End");
 }
 
@@ -57,7 +56,7 @@ bool AACore::runFlowchartTest()
                    currentPointer = value["toOperator"].toString();
                    if (links.size() == 1) {
                        QJsonValue op = operators[currentPointer.toStdString().c_str()];
-                       //performTest(currentPointer.toStdString().c_str(), op["properties"]);
+                       performTest(currentPointer.toStdString().c_str(), op["properties"]);
                    }
                    end = false;
                    break;
@@ -66,8 +65,9 @@ bool AACore::runFlowchartTest()
                    qInfo(QString("Do Test:" + currentPointer).toStdString().c_str());
                    QJsonValue op = operators[currentPointer.toStdString().c_str()];\
                    //Choose Path base on the result
-                   //bool ret = performTest(currentPointer.toStdString().c_str(), op["properties"]);
+                   ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
                    bool ret = true;
+                   if (ret_error.code != ErrorCode::OK) ret = false;
                    if (ret) {
                        currentPointer = value["toOperator"].toString();
                    } else {
@@ -84,7 +84,7 @@ bool AACore::runFlowchartTest()
                        }
                        if (!hasFailPath) {
                            //qInfo() << "Missing fail path, will put to reject test item";
-                          // qInfo() << "Reject! -> To Reject Tray";
+                           // qInfo() << "Reject! -> To Reject Tray";
                            //qInfo() << "End of graph";
                            end = true;
                            break;
@@ -171,6 +171,105 @@ bool AACore::runFlowchartTest()
        }
     }
     return true;
+}
+
+ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
+{
+    ErrorCodeStruct ret = { ErrorCode::OK, "" };
+    QString testName = properties["title"].toString();
+    QJsonValue params = properties["params"];
+    int retry_count = params["retry"].toInt(0);
+    QJsonValue delay_in_ms_qjv = params["delay_in_ms"];
+    unsigned int delay_in_ms = delay_in_ms_qjv.toInt(0);
+    for (int i = 0; i <= retry_count; i++) {
+        if (testName.contains(AA_PIECE_START)) { qInfo("Performing Start"); }
+        else if (testItemName.contains(AA_PIECE_LOAD_CAMERA)) {
+            qInfo("Performing load camera");
+        }
+        else if (testItemName.contains(AA_PIECE_INIT_CAMERA)) {
+            qInfo("Performing init camera");
+        }
+        else if (testItemName.contains(AA_PIECE_PR_TO_BOND)) {
+            qInfo("Performing PR To Bond");
+        }
+        else if (testItemName.contains(AA_PIECE_INITIAL_TILT)) {
+            qInfo("Performing Initial Tilt");
+            double initial_roll = params["roll"].toDouble();
+            double initial_pitch = params["pitch"].toDouble();
+        }
+        else if (testItemName.contains(AA_PIECE_Z_OFFSET)) {
+            qInfo("Performaing Z Offset");
+            int type = params["type"].toInt(0);
+            double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
+        }
+        else if (testItemName.contains(AA_PIECE_PICK_LENS)) {
+            qInfo("Performing AA pick lens");
+        }
+        else if (testItemName.contains(AA_PIECE_UNLOAD_LENS)) {
+            qInfo("Performing AA unload lens");
+        }
+        else if (testItemName.contains(AA_UNLOAD_CAMERA)) {
+            qInfo("AA Unload Camera");
+        }
+        else if (testItemName.contains(AA_PIECE_OC)) {
+            qInfo("Performing OC");
+            bool enable_motion = params["enable_motion"].toInt();
+            bool fast_mode = params["fast_mode"].toInt();
+        }
+        else if (testItemName.contains(AA_PIECE_AA)) {
+            qInfo("Performing AA");
+            int mode = params["mode"].toInt();
+            double start_pos = params["start_pos"].toDouble();
+            double stop_pos = params["stop_pos"].toDouble();
+            double offset_in_um = params["offset_in_um"].toDouble()/1000;
+            double step_size = params["step_size"].toDouble()/1000;
+            int delay_z_in_ms = params["delay_Z_in_ms"].toInt();
+            int wait_tilt = params["wait_tilt"].toInt();
+            int edge_filter_mode = params["edge_filter"].toInt();
+            int is_debug = params["is_debug"].toInt();
+            double estimated_aa_fov = params["estimated_aa_fov"].toDouble();
+            double estimated_fov_slope = params["estimated_fov_slope"].toDouble();
+            sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER;
+            if (edge_filter_mode == 1) {
+                edgeFilter = sfr::EdgeFilter::VERTICAL_ONLY;
+            } else if (edge_filter_mode == 2) {
+                edgeFilter = sfr::EdgeFilter::HORIZONTAL_ONLY;
+            }
+        }
+        else if (testItemName.contains(AA_PIECE_MTF)) {
+            qInfo("Performing MTF");
+        }
+        else if (testItemName.contains(AA_PIECE_UV)) {
+            qInfo("Performing UV");
+        }
+        else if (testItemName.contains(AA_PIECE_DISPENSE)) {
+            qInfo("Performing Dispense");
+            int enable_save_image = params["enable_save_image"].toInt();
+            int lighting = params["lighting"].toInt();
+        }
+        else if (testItemName.contains(AA_PIECE_DELAY)) {
+            qInfo("Performing Delay");
+        }
+        else if (testItemName.contains(AA_PIECE_ACCEPT))
+        {
+            qInfo("Performing Accept");
+        }
+        else if (testItemName.contains(AA_PIECE_REJECT))
+        {
+            qInfo("Performing Reject");
+        }
+        else if (testItemName.contains(AA_PIECE_JOIN))
+        {
+            qInfo("Performing Join");
+        }
+        else if (testItemName.contains(AA_PIECE_SAVE_IMAGE))
+        {
+            qInfo("Performing Save Image");
+            int cameraChannel = params["type"].toInt();
+            int lighting = params["lighting"].toInt();
+        }
+    }
+    return ret;
 }
 
 void AACore::performAAOffline()

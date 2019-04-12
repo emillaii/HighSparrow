@@ -6,7 +6,8 @@ typedef enum {
     OK = 300,
     INIT_COMPONENT_ERROR,
     AA_ZSCAN_DFOV,
-    AA_MTF_TIMEOUT
+    AA_MTF_TIMEOUT,
+    PR_OBJECT_NOT_FOUND
 } ErrorCode;
 
 

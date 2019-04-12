@@ -186,6 +186,10 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             point2D2 = atl::NIL;
             string1 = atl::NIL;
             rectangle2D1 = atl::NIL;
+            error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+            error_code.errorMessage = "PR Object Not Found";
+            qInfo("PR Error! Object Not Found");
+            return error_code;
         }
 
         stringArray1.Resize(1);

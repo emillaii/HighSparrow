@@ -31,6 +31,7 @@ public:
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
     bool runFlowchartTest();
+    ErrorCodeStruct performTest(QString testItemName, QJsonValue properties);
     AAData aaData_1;
 
 private:

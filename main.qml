@@ -197,8 +197,16 @@ ApplicationWindow {
                 highSprrow.callQProcess("GenericNCCavproj.avexe")
             }
             navigationFeatureButton.onClicked: {
-                //logicManager.start()
-                visionModule.testVision()
+                var command = "document.getElementsByClassName('get_data')[0].click()";
+                flowChartPage.webView.runJavaScript(command, function(result) {
+                    command = "document.getElementById('flowchart_data').value";
+                    flowChartPage.webView.runJavaScript(command, function(result) {
+                        console.log(result)
+                        logicManager.loadFlowchart(result)
+                        logicManager.start()
+                    })
+                })
+                //visionModule.testVision()
             }
         }
 

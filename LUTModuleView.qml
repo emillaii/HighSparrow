@@ -53,21 +53,21 @@ ItemDelegate {
                 }
             }
 
-            GroupBox{
-                title: qsTr("AA_1 Pick Lens Position")
-                LUTAA1PickLensPosition {
-                }
-            }
-            GroupBox{
-                title: qsTr("AA_1 UnPick Lens Position")
-                LUTAA1UnpickLensPosition {
-                }
-            }
-            GroupBox{
-                title: qsTr("AA_1 UpDownlook Position")
-                LUTAA1UpDownlookPosition {
-                }
-            }
+//            GroupBox{
+//                title: qsTr("AA_1 Pick Lens Position")
+//                LUTAA1PickLensPosition {
+//                }
+//            }
+//            GroupBox{
+//                title: qsTr("AA_1 UnPick Lens Position")
+//                LUTAA1UnpickLensPosition {
+//                }
+//            }
+//            GroupBox{
+//                title: qsTr("AA_1 UpDownlook Position")
+//                LUTAA1UpDownlookPosition {
+//                }
+//            }
 
             GroupBox{
                 title: qsTr("AA_2 Uplook Position")
@@ -75,19 +75,24 @@ ItemDelegate {
                 }
             }
 
+//            GroupBox{
+//                title: qsTr("AA_2 Pick Lens Position")
+//                LUTAA2PickLensPosition {
+//                }
+//            }
+//            GroupBox{
+//                title: qsTr("AA_2 UnPick Lens Position")
+//                LUTAA2UnPickLensPosition {
+//                }
+//            }
+//            GroupBox{
+//                title: qsTr("AA_2 UpDownlook Position")
+//                LUTAA2UpDownlookPosition {
+//                }
+//            }
             GroupBox{
-                title: qsTr("AA_2 Pick Lens Position")
-                LUTAA2PickLensPosition {
-                }
-            }
-            GroupBox{
-                title: qsTr("AA_2 UnPick Lens Position")
-                LUTAA2UnPickLensPosition {
-                }
-            }
-            GroupBox{
-                title: qsTr("AA_2 UpDownlook Position")
-                LUTAA2UpDownlookPosition {
+                title: qsTr("LUT Safety Position")
+                LUTSafetyPositionView{
                 }
             }
         }

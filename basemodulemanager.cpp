@@ -14,7 +14,6 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     {
         pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
         pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
-        QDir().mkdir(".//notopencamera");
     }
     lightingModule = new WordopLight();
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, Q_NULLPTR);
@@ -29,7 +28,22 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 }
 
 BaseModuleManager::~BaseModuleManager()
-{}
+{
+    QString temp;
+    for (int i = 0; i < motors.size(); ++i) {
+        temp = motors.keys()[i];
+        if(temp == "SUT1_Z"||temp == "LUT_Z")
+            delete  GetVcMotorByName(temp);
+        else
+            delete  GetMotorByName(temp);
+    }
+    for (int i = 0; i < output_ios.size(); ++i)
+            delete  GetOutputIoByName(output_ios.keys()[i]);
+    for (int i = 0; i < input_ios.size(); ++i)
+            delete  GetInputIoByName(input_ios.keys()[i]);
+    for (int i = 0; i < calibrations.size(); ++i)
+            delete  calibrations[calibrations.keys()[i]];
+}
 
 bool BaseModuleManager::ReadParameters()
 {
@@ -196,13 +210,13 @@ bool BaseModuleManager::initialDevice()
     XT_Controler_Extend::Stop_Buffer_Sync();
 
     XtVcMotor::InitAllVCM();
-    XtVcMotor* temp_motor = dynamic_cast<XtVcMotor*>(motors["LUT_Z"]);
+    XtVcMotor* temp_motor = GetVcMotorByName("LUT_Z");
     if(temp_motor==nullptr)
         qInfo("motor LUT_Z is null");
     else
         temp_motor->ConfigVCM();
 
-    temp_motor = dynamic_cast<XtVcMotor*>(motors["SUT_Z"]);
+    temp_motor = GetVcMotorByName("SUT_Z");
     if(temp_motor==nullptr)
         qInfo("motor SUT_Z is null");
     else
@@ -240,6 +254,7 @@ void BaseModuleManager::DisableAllMotors()
 bool BaseModuleManager::allMotorsSeekOrigin()
 {
     bool result;
+
     motors["SUT_Z"]->SeekOrigin();
     motors["LUT_Y"]->SeekOrigin();
     result = motors["SUT_Z"]->WaitSeekDone();
@@ -295,10 +310,14 @@ void BaseModuleManager::performDownlookCalibration()
 
 void BaseModuleManager::performUpDownlookCalibration()
 {
+    if(calibrations.contains(AA1_UPDownLOOK_DOWN_CALIBRATION))
+        calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->performCalibration();
+}
+
+void BaseModuleManager::performUpDownlookUpCalibration()
+{
     if(calibrations.contains(AA1_UPDownLOOK_UP_CALIBRATION))
-        if(calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->performCalibration())
-            if(calibrations.contains(AA1_UPDownLOOK_DOWN_CALIBRATION))
-                calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->performCalibration();
+        calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->performCalibration();
 }
 
 void BaseModuleManager::UpdateCalibrationParameters()

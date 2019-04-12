@@ -135,6 +135,7 @@ ItemDelegate {
                 }
 
                 TextField {
+                    id: uplookPRFileName
                     color: "#57f529"
                     text: lutParams.prName
                     font.pixelSize: 14
@@ -151,7 +152,7 @@ ItemDelegate {
 
                     nameFilters: ["avdata文件 (*.avdata)"]
                     onAccepted: {
-                        console.log(fileUrl)
+                        loadUpDnlookUpPRFileName.text = loadUplookFileDialog.fileUrl
                         lutParams.setUpDownLookPrName(fileUrl)
                     }
                 }
@@ -181,8 +182,14 @@ ItemDelegate {
                         loadUpDnlookUpCaliFileDialog.open()
                     }
                 }
-
+                Button {
+                    text: qsTr("Start UpDnLook Up Cali")
+                    onClicked: {
+                        baseModuleManager.performUpDownlookUpCalibration();
+                    }
+                }
                 TextField {
+                    id: loadUpDnlookUpPRFileName
                     color: "#57f529"
                     text: lutParams.upDownLookPrName
                     font.pixelSize: 14
@@ -199,6 +206,7 @@ ItemDelegate {
 
                     nameFilters: ["avdata文件 (*.avdata)"]
                     onAccepted: {
+                        loadUpDnlookDownPRFileName.text = loadUplookFileDialog.fileUrl
                         sutParams.setUpDownLookPrName(fileUrl)
                     }
                 }
@@ -228,12 +236,13 @@ ItemDelegate {
                     }
                 }
                 Button {
-                    text: qsTr("Start UpDnLook Cali")
+                    text: qsTr("Start UpDnLook Down Cali")
                     onClicked: {
                         baseModuleManager.performUpDownlookCalibration()
                     }
                 }
                 TextField {
+                    id: loadUpDnlookDownPRFileName
                     color: "#57f529"
                     text: sutParams.upDownLookPrName
                     font.pixelSize: 14

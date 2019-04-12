@@ -55,14 +55,14 @@ ColumnLayout {
     }
 
     RowLayout {
-        Button {
-            text: title_move_to
-            width: 40
-            height: 40
-            onClicked: {
+//        Button {
+//            text: title_move_to
+//            width: 40
+//            height: 40
+//            onClicked: {
 
-            }
-        }
+//            }
+//        }
         Button {
             text: title_read_encoder
             width: 20

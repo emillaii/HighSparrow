@@ -167,8 +167,8 @@ ApplicationWindow {
                icon.color: "cyan"
                onClicked: {
                    baseModuleManager.updateParams()
-                   messageDialog.messageText.text = "Save Complete"
-                   messageDialog.open()
+//                   messageDialog.messageText.text = "Save Complete"
+//                   messageDialog.open()
                }
            }
            ToolButton {

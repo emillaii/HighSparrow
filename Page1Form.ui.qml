@@ -94,6 +94,8 @@ Page {
         CameraView {
             id: cameraView
             height: 661
+            clip: false
+            visible: true
             Layout.fillHeight: true
             Layout.fillWidth: true
             anchors.left: mainRowLayout.right

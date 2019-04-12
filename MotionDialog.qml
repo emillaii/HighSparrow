@@ -314,7 +314,7 @@ Popup {
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_SUT1_Z, selectedStepSize, false)
+                                 var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, false)
                             }
                         }
                         Label {
@@ -324,19 +324,19 @@ Popup {
                     }
                     RowLayout {
                         Text {
-                            text: " LUT_X"
+                            text: " LUT_Y"
                             color: "white"
                         }
                         RoundButton {
                             text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, true)
+                                 var res = baseModuleManager.stepMove(m_LUT1_Y, selectedStepSize, true)
                             }
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, false)
+                                 var res = baseModuleManager.stepMove(m_LUT1_Y, selectedStepSize, false)
                             }
                         }
                         Label {

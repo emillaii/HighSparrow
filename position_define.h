@@ -51,7 +51,6 @@ public:
 public slots:
     void setX(double X)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_X, X))
             return;
 
@@ -60,7 +59,6 @@ public slots:
     }
     void setY(double Y)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_Y, Y))
             return;
 
@@ -70,7 +68,6 @@ public slots:
 
     void setZ(double Z)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_Z, Z))
             return;
 
@@ -135,7 +132,6 @@ public:
 public slots:
     void setX(double X)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_X, X))
             return;
 
@@ -144,7 +140,6 @@ public slots:
     }
     void setY(double Y)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_Y, Y))
             return;
 
@@ -154,7 +149,6 @@ public slots:
 
     void setZ(double Z)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_Z, Z))
             return;
 
@@ -164,7 +158,6 @@ public slots:
 
     void setA(double A)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_A, A))
             return;
 
@@ -174,7 +167,6 @@ public slots:
 
     void setB(double B)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_B, B))
             return;
 
@@ -184,7 +176,6 @@ public slots:
 
     void setC(double C)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_C, C))
             return;
 

@@ -68,9 +68,9 @@ ItemDelegate {
 
                 Button {
                     id: button
-                    text: qsTr("Start Uplook Cali")
+                    text: qsTr("Start Downlook Cali")
                     onClicked: {
-                        baseModuleManager.performUplookCalibration()
+                        baseModuleManager.performDownlookCalibration()
                     }
                 }
 
@@ -128,7 +128,7 @@ ItemDelegate {
                 }
                 Button {
                     id: button3
-                    text: qsTr("Start Downlook Cali")
+                    text: qsTr("Start Uplook Cali")
                     onClicked: {
                         baseModuleManager.performUplookCalibration()
                     }

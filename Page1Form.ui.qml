@@ -23,14 +23,6 @@ Page {
 
         RowLayout {
             id: mainRowLayout
-            anchors.bottomMargin: 86
-            anchors.leftMargin: 24
-            anchors.topMargin: -38
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.margins: 24
-            spacing: 36
 
             Container {
                 id: leftTabBar
@@ -116,7 +108,3 @@ Page {
 
 
 
-/*##^## Designer {
-    D{i:80;anchors_height:100;anchors_width:100}
-}
- ##^##*/

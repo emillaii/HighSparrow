@@ -71,17 +71,14 @@ public:
 public slots:
     void setOriginX(double originX)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_originX, originX))
             return;
-
         m_originX = originX;
         emit originXChanged(m_originX);
     }
 
     void setOriginY(double originY)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_originY, originY))
             return;
 
@@ -91,7 +88,6 @@ public slots:
 
     void setMatrix11(double matrix11)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_matrix11, matrix11))
             return;
 
@@ -101,7 +97,6 @@ public slots:
 
     void setMatrix12(double matrix12)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_matrix12, matrix12))
             return;
 
@@ -111,7 +106,6 @@ public slots:
 
     void setMatrix21(double matrix21)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_matrix21, matrix21))
             return;
 
@@ -121,7 +115,6 @@ public slots:
 
     void setMatrix22(double matrix22)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_matrix22, matrix22))
             return;
 
@@ -131,7 +124,6 @@ public slots:
 
     void setDeltaX(double deltaX)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_deltaX, deltaX))
             return;
 
@@ -141,7 +133,6 @@ public slots:
 
     void setDeltaY(double deltaY)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_deltaY, deltaY))
             return;
 
@@ -151,7 +142,6 @@ public slots:
 
     void setimageWidth(double imageWidth)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_imageWidth, imageWidth))
             return;
 
@@ -161,7 +151,6 @@ public slots:
 
     void setimageHeight(double imageHeight)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_imageHeight, imageHeight))
             return;
 

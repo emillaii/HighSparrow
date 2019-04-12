@@ -34,7 +34,6 @@ public:
 public slots:
     void setSafetyZ(double SafetyZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_SafetyZ, SafetyZ))
             return;
 
@@ -43,7 +42,6 @@ public slots:
     }
     void setSafetyY(double SafetyY)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_SafetyY, SafetyY))
             return;
 
@@ -53,7 +51,6 @@ public slots:
 
     void setSafetyX(double SafetyX)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_SafetyX, SafetyX))
             return;
 

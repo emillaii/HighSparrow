@@ -17,6 +17,17 @@ Popup {
         RowLayout {
             ColumnLayout {
                 RadioButton {
+                    id: step20Button
+                    text: qsTr("20")
+                    font.pixelSize: 10
+                    onCheckedChanged: {
+                        if (step20Button.checked)
+                        {
+                            selectedStepSize = 20
+                        }
+                    }
+                }
+                RadioButton {
                     id: step10Button
                     text: qsTr("10")
                     font.pixelSize: 10
@@ -25,7 +36,6 @@ Popup {
                         {
                             selectedStepSize = 10
                         }
-                        console.log(selectedStepSize)
                     }
                 }
                 RadioButton {
@@ -37,7 +47,6 @@ Popup {
                         {
                             selectedStepSize = 1
                         }
-                        console.log(selectedStepSize)
                     }
                 }
                 RadioButton {
@@ -50,7 +59,6 @@ Popup {
                         {
                             selectedStepSize = 0.1
                         }
-                        console.log(selectedStepSize)
                     }
                 }
                 RadioButton {

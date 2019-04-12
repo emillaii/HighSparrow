@@ -8,5 +8,6 @@
         <file>icons/save.png</file>
         <file>icons/select.png</file>
         <file>icons/machine.png</file>
+        <file>icons/camera_off.png</file>
     </qresource>
 </RCC>

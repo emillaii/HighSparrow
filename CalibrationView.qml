@@ -23,122 +23,145 @@ ItemDelegate {
         }
         ColumnLayout {
             visible: calibrationViewSwitch.checked
-            RowLayout {
-                FileDialog {
-                    id: loadfileDialog
-                    title: "选择加载PR文件"
-                    selectExisting: true
-                    selectFolder: false
-                    selectMultiple: false
 
-                    nameFilters: ["avdata文件 (*.avdata)"]
-                    onAccepted: {
-                        downlookPRFileName.text = loadfileDialog.fileUrl
-                        sutParams.setPRName(loadfileDialog.fileUrl)
+            GroupBox {
+                title: "Downlook calibration"
+
+                RowLayout {
+                    FileDialog {
+                        id: loadfileDialog
+                        title: "选择加载PR文件"
+                        selectExisting: true
+                        selectFolder: false
+                        selectMultiple: false
+
+                        nameFilters: ["avdata文件 (*.avdata)"]
+                        onAccepted: {
+                            downlookPRFileName.text = loadfileDialog.fileUrl
+                            sutParams.setPRName(loadfileDialog.fileUrl)
+                        }
                     }
-                }
 
 
-                Dial {
-                    id: downlookLighingDial
-                    width: 25
-                    from: 0
-                    value: sutParams.Lighting
-                    to: 255
-                    stepSize: 1
+                    Dial {
+                        id: downlookLighingDial
+                        width: 25
+                        from: 0
+                        value: sutParams.Lighting
+                        to: 255
+                        stepSize: 1
 
-                    Label {
-                        text: downlookLighingDial.value.toFixed(0)
-                        color: "white"
-                        font.pixelSize: Qt.application.font.pixelSize * 3
-                        anchors.centerIn: parent
+                        Label {
+                            text: downlookLighingDial.value.toFixed(0)
+                            color: "white"
+                            font.pixelSize: Qt.application.font.pixelSize * 3
+                            anchors.centerIn: parent
+                        }
+                        onValueChanged: {
+                            sutParams.setLighting(value)
+                            lightingController.setDownlookLighting(value)
+                        }
                     }
-                    onValueChanged: {
-                        sutParams.setLighting(value)
-                        lightingController.setDownlookLighting(value)
+
+                    Button {
+                        text: qsTr("Load PR")
+                        onClicked: {
+                            loadfileDialog.open()
+                        }
                     }
-                }
 
-                Button {
-                    text: qsTr("Load PR")
-                    onClicked: {
-                        loadfileDialog.open()
+                    Button {
+                        id: button
+                        text: qsTr("Start Downlook Cali")
+                        onClicked: {
+                            baseModuleManager.performDownlookCalibration()
+                        }
                     }
-                }
 
-                Button {
-                    id: button
-                    text: qsTr("Start Downlook Cali")
-                    onClicked: {
-                        baseModuleManager.performDownlookCalibration()
+                    TextField {
+                        id: downlookPRFileName
+                        color: "#57f529"
+                        text: sutParams.prName
+                        font.pixelSize: 14
                     }
+
+
                 }
-
-                TextField {
-                    id: downlookPRFileName
-                    color: "#57f529"
-                    text: sutParams.prName
-                    font.pixelSize: 14
-                }
-
-
             }
 
-            RowLayout {
-                FileDialog {
-                    id: loadUplookFileDialog
-                    title: "选择加载PR文件"
-                    selectExisting: true
-                    selectFolder: false
-                    selectMultiple: false
+            GroupBox {
+                ColumnLayout {
+                    RowLayout {
+                        FileDialog {
+                            id: loadUplookFileDialog
+                            title: "选择加载PR文件"
+                            selectExisting: true
+                            selectFolder: false
+                            selectMultiple: false
 
-                    nameFilters: ["avdata文件 (*.avdata)"]
-                    onAccepted: {
-                        uplookPRFileName.text = loadUplookFileDialog.fileUrl
-                        lutParams.setPRName(loadUplookFileDialog.fileUrl)
-                    }
-                }
+                            nameFilters: ["avdata文件 (*.avdata)"]
+                            onAccepted: {
+                                uplookPRFileName.text = loadUplookFileDialog.fileUrl
+                                lutParams.setPRName(loadUplookFileDialog.fileUrl)
+                            }
+                        }
 
-                Dial {
-                    id: uplookLighingDial
-                    width: 25
-                    from: 0
-                    value: lutParams.Lighting
-                    to: 255
-                    stepSize: 1
+                        Dial {
+                            id: uplookLighingDial
+                            width: 25
+                            from: 0
+                            value: lutParams.Lighting
+                            to: 255
+                            stepSize: 1
 
-                    Label {
-                        text: uplookLighingDial.value.toFixed(0)
-                        color: "white"
-                        font.pixelSize: Qt.application.font.pixelSize * 3
-                        anchors.centerIn: parent
-                    }
-                    onValueChanged: {
-                        lutParams.setLighting(value)
-                        lightingController.setUplookLighting(value)
-                    }
-                }
+                            Label {
+                                text: uplookLighingDial.value.toFixed(0)
+                                color: "white"
+                                font.pixelSize: Qt.application.font.pixelSize * 3
+                                anchors.centerIn: parent
+                            }
+                            onValueChanged: {
+                                lutParams.setLighting(value)
+                                lightingController.setUplookLighting(value)
+                            }
+                        }
 
-                Button {
-                    id: button2
-                    text: qsTr("Load PR")
-                    onClicked: {
-                        loadUplookFileDialog.open()
-                    }
-                }
-                Button {
-                    id: button3
-                    text: qsTr("Start Uplook Cali")
-                    onClicked: {
-                        baseModuleManager.performUplookCalibration()
-                    }
-                }
+                        Button {
+                            id: button2
+                            text: qsTr("Load PR")
+                            onClicked: {
+                                loadUplookFileDialog.open()
+                            }
+                        }
+                        Button {
+                            text: qsTr("Move To Uplook Cali")
+                            onClicked: {
+                                lutModule.moveToAA1UplookPos()
+                            }
+                        }
 
-                TextField {
-                    id: uplookPRFileName
-                    color: "#57f529"
-                    text: lutParams.prName
-                    font.pixelSize: 14
+                        Button {
+                            text: qsTr("Perform PR")
+                            onClicked: {
+
+                            }
+                        }
+
+                        TextField {
+                            id: uplookPRFileName
+                            color: "#57f529"
+                            text: lutParams.prName
+                            font.pixelSize: 14
+                        }
+                    }
+                    RowLayout {
+                        Button {
+                            text: qsTr("Start Uplook Cali")
+                            onClicked: {
+                                baseModuleManager.performUplookCalibration()
+                            }
+                        }
+                    }
                 }
             }
 

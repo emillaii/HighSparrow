@@ -124,6 +124,17 @@
 #define PR_UPDOWNLOOK_CALIB_GLASS_PR    "updownlook_calib_glass_pr"
 #define PR_PICKARM_LENS_TREAY_PR        "pickarm_lens_tray_pr"
 
+#define PR_PARAMETER_FILE_PATH           ".//config//pr_param//"
+#define PR_AA1_TOOL_UPLOOK               "pr_aa1_tool_uplook"
+#define PR_AA1_TOOL_DOWNLOOK             "pr_aa1_tool_downlook"
+#define PR_AA1_LUT_UPLOOK                "pr_aa1_lut_uplook"
+#define PR_AA2_TOOL_UPLOOK               "pr_aa2_tool_uplook"
+#define PR_AA2_TOOL_DOWNLOOK             "pr_aa2_tool_downlook"
+#define PR_AA2_LUT_UPLOOK                "pr_aa2_lut_uplook"
+#define PR_SUT_DOWNLOOK                  "pr_sut_downlook"
+#define PR_LOAD_LUT_UPLOOK               "pr_load_lut_uplook"
+
+
 //Lighting Config
 #define LIGHTING_UPLOOK_LENS_HOLDER_PR         "uplookLensHolderPRLighting"
 #define LIGHTING_DOWNLOOK_CMOS_PR              "downlookCmosPRLighting"

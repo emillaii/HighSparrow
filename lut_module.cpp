@@ -7,12 +7,12 @@ LutModule::LutModule()
 }
 
 
-void LutModule::Init(MaterialCarrier *carrier, Calibration *updown_calibration, WordopLight *lighting, VisionModule *vision, XtVacuum *load_vacuum, XtVacuum *unload_vacuum)
+void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum)
 {
     this->carrier = carrier;
-    this->updown_calibration = updown_calibration;
-    this->lighting =lighting;
-    this->vision = vision;
+    this->uplook_location = uplook_location;
+    this->updownlook_location = updownlook_location;
+    this->load_location = load_location;
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuum;
     loadParams();
@@ -64,25 +64,14 @@ bool LutModule::moveToAA1UplookPos()
 bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting)
 {
 
-    lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,parameters.Lighting());
+    uplook_location->OpenLight();
     bool result = moveToAA1UplookPos();
     if(result)
     {
-      ErrorCodeStruct temp =  vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, parameters.prName(), pr_result);
-      if(ErrorCode::OK == temp.code)
-      {
-          QPointF mech;
-          if(updown_calibration->getDeltaDistanceFromCenter(QPointF(pr_result.x,pr_result.y),mech))
-          {
-             offset.X = mech.x();
-             offset.Y = mech.y();
-             offset.Theta = pr_result.theta;
-             return true;
-          }
-      }
+      uplook_location->performPR(offset);
     }
     if(close_lighting)
-        lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,0);
+        uplook_location->CloseLight();
     return false;
 }
 
@@ -93,26 +82,14 @@ bool LutModule::moveToAA2UplookPos()
 
 bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting)
 {
-
-    lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,parameters.Lighting());
+    uplook_location->OpenLight();
     bool result = moveToAA2UplookPos();
     if(result)
     {
-      ErrorCodeStruct temp =  vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, parameters.prName(), pr_result);
-      if(ErrorCode::OK == temp.code)
-      {
-          QPointF mech;
-          if(updown_calibration->getDeltaDistanceFromCenter(QPointF(pr_result.x,pr_result.y),mech))
-          {
-             offset.X = mech.x();
-             offset.Y = mech.y();
-             offset.Theta = pr_result.theta;
-             return true;
-          }
-      }
+      uplook_location->performPR(offset);
     }
     if(close_lighting)
-        lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,0);
+        uplook_location->CloseLight();
     return false;
 }
 
@@ -123,25 +100,14 @@ bool LutModule::moveToAA1UpdownlookPos()
 
 bool LutModule::moveToAA1UpDwonlookPR(PrOffset &offset, bool close_lighting)
 {
-    lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,parameters.UpDnLookLighting());
+    updownlook_location->OpenLight();
     bool result = moveToAA1UpdownlookPos();
     if(result)
     {
-      ErrorCodeStruct temp =  vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, parameters.upDownLookPrName(), pr_result);
-      if(ErrorCode::OK == temp.code)
-      {
-          QPointF mech;
-          if(updown_calibration->getDeltaDistanceFromCenter(QPointF(pr_result.x,pr_result.y),mech))
-          {
-             offset.X = mech.x();
-             offset.Y = mech.y();
-             offset.Theta = pr_result.theta;
-             return true;
-          }
-      }
+      updownlook_location->performPR(offset);
     }
     if(close_lighting)
-        lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,0);
+        updownlook_location->CloseLight();
     return false;
 }
 
@@ -152,25 +118,14 @@ bool LutModule::moveToAA2UpdownlookPos()
 
 bool LutModule::moveToAA2UpDwonlookPR(PrOffset &offset, bool close_lighting)
 {
-    lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,parameters.UpDnLookLighting());
+    updownlook_location->OpenLight();
     bool result = moveToAA2UpdownlookPos();
     if(result)
     {
-      ErrorCodeStruct temp =  vision->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, parameters.upDownLookPrName(), pr_result);
-      if(ErrorCode::OK == temp.code)
-      {
-          QPointF mech;
-          if(updown_calibration->getDeltaDistanceFromCenter(QPointF(pr_result.x,pr_result.y),mech))
-          {
-             offset.X = mech.x();
-             offset.Y = mech.y();
-             offset.Theta = pr_result.theta;
-             return true;
-          }
-      }
+      updownlook_location->performPR(offset);
     }
     if(close_lighting)
-        lighting->ChangeBrightnessSignal(LIGHTING_DOWNLOOK,0);
+        updownlook_location->CloseLight();
     return false;
 }
 

@@ -4,24 +4,14 @@
 #include <QFile>
 #include <QTextStream>
 
-Calibration::Calibration(QString name,QString file_path,XtMotor *motor_x, XtMotor *motor_y, WordopLight *light_controller, int ch, int lighting, QString camera_name, QString pr_name, QObject *parent)
+Calibration::Calibration(QString name,QString file_path,XtMotor *motor_x, XtMotor *motor_y, VisionLocation* location, QObject *parent)
 {
     this->name = name;
     this->file_path = file_path;
     this->motor_x = motor_x;
     this->motor_y = motor_y;
-    this->light_controller =light_controller;
-    this->ch = ch;
-    this->lighting = lighting;
-    this->camera_name = camera_name;
-    this->pr_name = pr_name;
+    this->location =location;
     loadJsonConfig();
-}
-
-void Calibration::changeParameter(int lighting, QString pr_name)
-{
-    this->lighting = lighting;
-    this->pr_name = pr_name;
 }
 
 void Calibration::loadJsonConfig()
@@ -53,7 +43,7 @@ bool Calibration::performCalibration()
     QVector<QPointF> pixelPoints;
     QVector<QPointF> motorPoints;
 
-    light_controller->SetBrightness(ch,lighting);
+    location->OpenLight();
 
     for (int i = 1; i<=4; i++)
     {
@@ -136,11 +126,21 @@ bool Calibration::getDeltaDistanceFromCenter(const QPointF pixelPoint, QPointF &
 
     if(mapping.hasCalibration())
     {
-        mapping.CalcMechDistance(pixelPoint);
+        mapping.CalcMechDistance(pixelPoint,distanceMech);
         qInfo("%s mech Result (%f,%f)",name.toStdString().c_str(),distanceMech.x(),distanceMech.y());
         return true;
     }
     return false;
+}
+
+QPointF Calibration::getOnePxielDistance()
+{
+    QPointF zero_zero,one_one;
+   if(getDeltaDistanceFromCenter(QPointF(0,0),zero_zero))
+       return QPointF();
+   if(getDeltaDistanceFromCenter(QPointF(1,1),one_one))
+       return QPointF();
+   return QPointF(one_one.x()-zero_zero.x(),one_one.y()-zero_zero.y());
 }
 
 bool Calibration::getMechPoint(QPointF pixelPoint, QPointF &mechPoint)
@@ -168,6 +168,11 @@ bool Calibration::getCaliMapping(Pixel2Mech &caliMapping)
     }
     else
         return false;
+}
+
+Pixel2Mech *Calibration::getCaliMapping()
+{
+    return &mapping;
 }
 
 bool Calibration::coordinateA2BMapping(const QVector<QPointF> &APoints, const QVector<QPointF> &BPoints)
@@ -218,13 +223,15 @@ double Calibration::caculateRotationAngle()
 
 bool Calibration::GetPixelPoint(double &x, double &y)
 {
-    if(nullptr == visionModule)return false;
     PRResultStruct prResult;
-    ErrorCodeStruct temp = visionModule->PR_Generic_NCC_Template_Matching(camera_name,pr_name,prResult);
-    x = prResult.x;
-    y = prResult.y;
-    qInfo((name + " pixel x: %f y: %f t: %f image: %s").toStdString().data(), prResult.x, prResult.y,prResult.theta,prResult.imageName.toStdString().c_str());
-    return  temp.code == ErrorCode::OK;
+    if(location->performPR(prResult))
+    {
+        x = prResult.x;
+        y = prResult.y;
+        qInfo((name + " pixel x: %f y: %f t: %f image: %s").toStdString().data(), prResult.x, prResult.y,prResult.theta,prResult.imageName.toStdString().c_str());
+        return  true;
+    }
+    return  false;
 }
 
 

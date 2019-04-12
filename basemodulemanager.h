@@ -22,6 +22,7 @@
 #include "imagegrabbingworkerthread.h"
 #include "dispenser.h"
 #include "dispense_module.h"
+#include "vision_location.h"
 
 class BaseModuleManager : public PropertyBase
 {
@@ -38,6 +39,7 @@ public:
     QMap<QString,XtGeneralInput*> input_ios;
     QMap<QString,XtGeneralOutput*> output_ios;
     QMap<QString,Calibration*> calibrations;
+    QMap<QString,VisionLocation*> vision_locations;
 
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
@@ -72,20 +74,6 @@ public slots:
         sut_module.updateParams();
         lut_module.updateParams();
         dothinkey->updateParams();
-        foreach(const QString &key, this->calibrations.keys()){
-            if (key == AA1_UPLOOK_CALIBRATION) {
-                calibrations[AA1_UPLOOK_CALIBRATION]->changeParameter(lut_module.parameters.Lighting(), lut_module.parameters.prName());
-            }
-            else if (key == AA1_DOWNLOOK_CALIBRATION) {
-                calibrations[AA1_DOWNLOOK_CALIBRATION]->changeParameter(sut_module.parameters.Lighting(), sut_module.parameters.prName());
-            }
-            else if (key == AA1_UPDownLOOK_UP_CALIBRATION) {
-                calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->changeParameter(lut_module.parameters.UpDnLookLighting(), lut_module.parameters.upDownLookPrName());
-            }
-            else if (key == AA1_UPDownLOOK_DOWN_CALIBRATION) {
-                calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->changeParameter(sut_module.parameters.UpDnLookLighting(), sut_module.parameters.upDownLookPrName());
-            }
-        }
     }
 
     void setLightPanelLighting(int lightPanelLighting)

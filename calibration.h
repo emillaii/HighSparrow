@@ -3,15 +3,12 @@
 
 #include <QObject>
 #include "pixel2mech.h"
-//#include "motor.h"
 #include <qmath.h>
 #include <QVector>
 #include <QPointF>
-//#include "dothinkey.h"
 #include "calibration_parameter.h"
 #include "errorcode.h"
-#include "visionmodule.h"
-#include "wordoplight.h"
+#include "vision_location.h"
 #include "xtmotor.h"
 
 
@@ -25,14 +22,6 @@ enum CaliType{
     caliPickarmSensor,
     caliSensorChart
 };
-struct PrOffset
-{
-    PrOffset() {X = 0;Y = 0;Theta = 0;}
-    PrOffset(double x,double y,double theta) {X = x;Y = y;Theta = theta;}
-    double X;
-    double Y;
-    double Theta;
-};
 //const static QPointF IMG_CENTER=QPointF(329,247);
 //const static QPointF CHART_IMG_CENTER=QPointF(3264/2,2448/2);
 
@@ -44,20 +33,20 @@ class Calibration : public QObject,public ErrorBase
 {
     Q_OBJECT
 public:
-    explicit Calibration(QString name,QString file_path,XtMotor* motor_x,XtMotor* motor_y,WordopLight * light_controller,int ch,int lighting,QString camera_name, QString pr_name, QObject *parent = nullptr);
+    explicit Calibration(QString name,QString file_path,XtMotor* motor_x,XtMotor* motor_y,VisionLocation* location, QObject *parent = nullptr);
 
     Calibration(const Calibration &calibration) = delete;
     Calibration &operator=(const Calibration &calibration) = delete;
-    void changeParameter(int lighting, QString pr_name);
     void loadJsonConfig();
     void saveJsonConfig();
     bool performCalibration();
     double getRotationAngle();
     bool getDeltaDistanceFromCenter(const QPointF pixelPoint, QPointF &distanceMech);
+    QPointF getOnePxielDistance();
+    double caculateRotationAngle();
     bool getMechPoint(QPointF pixelPoint, QPointF &mechPoint);
     bool getCaliMapping(Pixel2Mech &caliMapping);
-    bool getMechPoint(CaliType caliType, QPointF pixelPoint, QPointF &mechPoint);
-    bool getCaliMapping(CaliType caliType, Pixel2Mech &caliMapping);
+    Pixel2Mech *getCaliMapping();
 
 signals:
     void vision_image_changed_signal(QImage image);
@@ -65,23 +54,16 @@ public slots:
 private:
     virtual bool GetPixelPoint(double &x,double &y);
     bool coordinateA2BMapping(const QVector<QPointF>& APoints, const QVector<QPointF>& BPoints);
-    double caculateRotationAngle();
 public:
+    CalibrationParameter parameters;
 protected:
     QString name;
     QString file_path;
     XtMotor* motor_x;
     XtMotor* motor_y;
-    WordopLight *light_controller;
-    int ch;
-    int lighting;
-    VisionModule * visionModule;
-    QString camera_name;
-    QString pr_name;
+    VisionLocation* location;
 
-    CalibrationParameter parameters;
     Pixel2Mech mapping;
-
     Pixel2Mech mA2BMapping;
     bool mIsMapping;
     QMatrix mA2BMatrix;

@@ -25,6 +25,14 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         pylonUplookCamera->start();
         pylonDownlookCamera->start();
     }
+    vision_locations.insert(PR_AA1_TOOL_UPLOOK,new VisionLocation());
+    vision_locations.insert(PR_AA1_TOOL_DOWNLOOK,new VisionLocation());
+    vision_locations.insert(PR_AA1_LUT_UPLOOK,new VisionLocation());
+//    vision_locations.insert(PR_AA2_TOOL_UPLOOK,new VisionLocation());
+//    vision_locations.insert(PR_AA2_TOOL_DOWNLOOK,new VisionLocation());
+//    vision_locations.insert(PR_AA2_LUT_UPLOOK,new VisionLocation());
+    vision_locations.insert(PR_SUT_DOWNLOOK,new VisionLocation());
+    vision_locations.insert(PR_LOAD_LUT_UPLOOK,new VisionLocation());
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -147,13 +155,23 @@ bool BaseModuleManager::InitStruct()
     sut_carrier.Init("SUT",sut_x,sut_y,sut_z,sut_v);
     aa_head_module.Init("AAHead",aa_x,aa_y,aa_z,aa_a,aa_b,aa_c,sut_j);
 
-    calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,aa_x,aa_y,lightingModule,0,lut_module.parameters.Lighting(),UPLOOK_VISION_CAMERA,lut_module.parameters.prName()));
-    calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,lightingModule,0,sut_module.parameters.Lighting(),DOWNLOOK_VISION_CAMERA,sut_module.parameters.prName()));
-    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,lightingModule,0,lut_module.parameters.UpDnLookLighting(),UPLOOK_VISION_CAMERA,lut_module.parameters.upDownLookPrName()));
-    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,lightingModule,0,sut_module.parameters.UpDnLookLighting(),DOWNLOOK_VISION_CAMERA,sut_module.parameters.upDownLookPrName()));
+    calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,aa_x,aa_y,vision_locations[PR_AA1_LUT_UPLOOK]));
+    calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_SUT_DOWNLOOK]));
+    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_AA1_TOOL_UPLOOK]));
+    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_AA1_TOOL_DOWNLOOK]));
 
-    lut_module.Init(&lut_carrier,calibrations[AA1_UPDownLOOK_UP_CALIBRATION],lightingModule,visionModule,lut_v,lut_v_u);
-    sut_module.Init(&sut_carrier,calibrations[AA1_DOWNLOOK_CALIBRATION],calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION],lightingModule,visionModule);
+
+    vision_locations[PR_AA1_TOOL_UPLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->getCaliMapping(),lightingModule);
+    vision_locations[PR_AA1_TOOL_DOWNLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->getCaliMapping(),lightingModule);
+    vision_locations[PR_AA1_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_AA2_TOOL_UPLOOK]->Init(visionModule,calibrations[AA2_UPDownLOOK_UP_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_AA2_TOOL_DOWNLOOK]->Init(visionModule,calibrations[AA2_UPDownLOOK_DOWN_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_AA2_LUT_UPLOOK]->Init(visionModule,calibrations[AA2_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
+    vision_locations[PR_SUT_DOWNLOOK]->Init(visionModule,calibrations[AA1_DOWNLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
+    vision_locations[PR_LOAD_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
+
+    lut_module.Init(&lut_carrier,vision_locations[PR_AA1_LUT_UPLOOK],vision_locations[PR_AA1_TOOL_UPLOOK],vision_locations[PR_LOAD_LUT_UPLOOK],lut_v,lut_v_u);
+    sut_module.Init(&sut_carrier,vision_locations[PR_SUT_DOWNLOOK],vision_locations[PR_AA1_TOOL_DOWNLOOK],sut_v);
     QVector<XtMotor *> executive_motors;
     executive_motors.push_back(sut_x);
     executive_motors.push_back(sut_y);

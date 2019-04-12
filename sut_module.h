@@ -5,6 +5,7 @@
 #include "calibration.h"
 #include "material_carrier.h"
 #include "sut_parameter.h"
+#include "vision_location.h"
 #include "visionmodule.h"
 #include "wordoplight.h"
 
@@ -13,7 +14,7 @@ class SutModule : public QObject
     Q_OBJECT
 public:
     SutModule();
-    void Init(MaterialCarrier* carrier,Calibration* down_calibration,Calibration* updown_calibration,WordopLight* lighting,VisionModule* vision);
+    void Init(MaterialCarrier* carrier,VisionLocation* downlook_location,VisionLocation* updownlook_location, XtVacuum *vacuum);
     void loadParams();
     SutParameter parameters;
     Position3D load_position;
@@ -25,10 +26,9 @@ public slots:
     void updateParams();
 private:
     MaterialCarrier* carrier;
-    Calibration* down_calibration;
-    Calibration* updown_calibration;
-    WordopLight* lighting;
-    VisionModule* vision;
+    VisionLocation* downlook_location;
+    VisionLocation* updownlook_location;
+    XtVacuum* vacuum;
 
     PRResultStruct pr_result;
 public:

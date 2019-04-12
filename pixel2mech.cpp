@@ -34,12 +34,15 @@ QMatrix Pixel2Mech::DoCalibration(const QPointF pixel_points[], const QPointF me
     return transformation;
 }
 
-QPointF Pixel2Mech::CalcMechDistance(const QPointF &pixel_point)
+bool Pixel2Mech::CalcMechDistance(const QPointF &pixel_point,QPointF &mech_point)
 {
     if(has_calibration)
-        return QPointF(0.0,0.0);
+        return false;
     QPointF mech = transformation.map(pixel_point);
-    return mech - center_of_mech;
+    QPointF mech_distence = mech - center_of_mech;
+    mech_point.setX(mech_distence.x());
+    mech_point.setY(mech_distence.y());
+    return true;
 }
 
 QPointF Pixel2Mech::pixel2MechPoint(const QPointF &pixelPoint)

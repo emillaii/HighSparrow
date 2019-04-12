@@ -6,6 +6,7 @@
 #include "position_define.h"
 #include "dispense_parameter.h"
 #include "material_carrier.h"
+#include "visionmodule.h"
 class DispenseModule
 {
 public:

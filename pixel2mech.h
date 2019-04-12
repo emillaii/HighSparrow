@@ -4,6 +4,15 @@
 #include <QPointF>
 #include <QMatrix>
 
+struct PrOffset
+{
+    PrOffset() {X = 0;Y = 0;Theta = 0;}
+    PrOffset(double x,double y,double theta) {X = x;Y = y;Theta = theta;}
+    double X;
+    double Y;
+    double Theta;
+};
+
 class Pixel2Mech
 {
 public:
@@ -14,7 +23,7 @@ public:
 //三点校正，提供三个像素点，和对应的三个机械点，还有相机的中心点的坐标，返回变换矩阵供存档
     QMatrix DoCalibration(const QPointF pixel_points[3], const QPointF mech_points[3],const QPointF & center_of_pixel);
 //计算传入的像素点和相机中心的机械距离
-    QPointF CalcMechDistance(const QPointF & pixel_point);
+    bool CalcMechDistance(const QPointF &pixel_point,QPointF &mech_point);
 
     QPointF pixel2MechPoint(const QPointF &pixelPoint);
 

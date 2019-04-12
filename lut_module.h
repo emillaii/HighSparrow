@@ -7,6 +7,7 @@
 #include "lut_parameter.h"
 #include "visionmodule.h"
 #include "calibration.h"
+#include "vision_location.h"
 
 #include <QObject>
 
@@ -15,7 +16,7 @@ class LutModule : public QObject
     Q_OBJECT
 public:
     LutModule();
-    void Init(MaterialCarrier* carrier,Calibration* updown_calibration, WordopLight* lighting,VisionModule* vision, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
+    void Init(MaterialCarrier* carrier,VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
     void loadParams();
     LutParameter parameters;
     Position3D load_uplook_position;
@@ -33,9 +34,9 @@ public slots:
     void updateParams();
 private:
     MaterialCarrier* carrier;
-    Calibration* updown_calibration;
-    WordopLight* lighting;
-    VisionModule* vision;
+    VisionLocation* uplook_location;
+    VisionLocation* updownlook_location;
+    VisionLocation* load_location;
     XtVacuum* grabber;
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;

@@ -104,16 +104,16 @@ Grid {
             }
 
             Connections {
-//                target: uplookCamera
-//                onCallQmlRefeshImg: {
-//                    image.source = ""
-//                    image.source = "image://uplookCameraImage"
-//                }
+                target: uplookCamera
+                onCallQmlRefeshImg: {
+                    image.source = ""
+                    image.source = "image://uplookCameraImage"
+                }/*
                 target: visionModule
                 onCallQmlRefeshImg: {
                     image.source = ""
                     image.source = "image://preview1/" + "AA_DLCamera1"
-                }
+                }*/
             }
         }
     }

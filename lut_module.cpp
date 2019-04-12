@@ -207,3 +207,8 @@ bool LutModule::moveToAA2UnPickLens()
     }
     return result;
 }
+
+bool LutModule::stepMove_XY_Sync(double x, double y)
+{
+    return carrier->StepMove_XY_Sync(x,y);
+}

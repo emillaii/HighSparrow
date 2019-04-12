@@ -58,6 +58,7 @@ public:
     Q_INVOKABLE bool moveToAA1UnPickLens();
     Q_INVOKABLE bool moveToAA2PickLens();
     Q_INVOKABLE bool moveToAA2UnPickLens();
+    bool stepMove_XY_Sync(double x,double y);
 
 };
 

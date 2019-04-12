@@ -29,6 +29,7 @@ void HighSprrow::init()
 
 void HighSprrow::home()
 {
+    baseModuleManager->allMotorsSeekOrigin();
 }
 
 void HighSprrow::callQProcess(QString arg)

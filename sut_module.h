@@ -14,7 +14,7 @@ class SutModule : public QObject
     Q_OBJECT
 public:
     SutModule();
-    void Init(MaterialCarrier* carrier,VisionLocation* downlook_location,VisionLocation* updownlook_location, XtVacuum *vacuum);
+    void Init(MaterialCarrier* carrier,VisionLocation* vision_downlook_location,VisionLocation* updownlook_location, XtVacuum *vacuum);
     void loadParams();
     SutParameter parameters;
     Position3D load_position;
@@ -26,8 +26,8 @@ public slots:
     void updateParams();
 private:
     MaterialCarrier* carrier;
-    VisionLocation* downlook_location;
-    VisionLocation* updownlook_location;
+    VisionLocation* vision_downlook_location;
+    VisionLocation* vision_updownlook_location;
     XtVacuum* vacuum;
 
     PRResultStruct pr_result;

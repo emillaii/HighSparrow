@@ -22,6 +22,8 @@ public:
 public:
     Q_INVOKABLE void init();
     Q_INVOKABLE void home();
+    Q_INVOKABLE void performSUTDownlookPR();
+    Q_INVOKABLE void performLUTUplookPR();
     Q_INVOKABLE void callQProcess(QString arg);
 public slots:
     void homeAllMotors();

@@ -38,6 +38,8 @@
         <file>SUTToolUplookPosition.qml</file>
         <file>LUTLoadUplookPosition.qml</file>
         <file>LUTUnloadPosition.qml</file>
+        <file>CalibrationDownlookView.qml</file>
+        <file>CalibrationUplookView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

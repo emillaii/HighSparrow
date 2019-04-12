@@ -32,6 +32,27 @@ void HighSprrow::home()
     baseModuleManager->allMotorsSeekOrigin();
 }
 
+void HighSprrow::performSUTDownlookPR()
+{
+    PrOffset offset;
+    if (baseModuleManager->sut_module.moveToDownlookPR(offset, false))
+    {
+        qInfo("Perform SUT Downlook PR OffsetX %f OffsetY %f", offset.X, offset.Y);
+        baseModuleManager->sut_module.stepMove_XY_Sync(offset.X, offset.Y);
+    } else {
+        qInfo("Perform SUT Downlook PR Fail");
+    }
+}
+
+void HighSprrow::performLUTUplookPR()
+{
+    PrOffset offset;
+    if (baseModuleManager->lut_module.moveToAA1UplookPR(offset, false))
+    {
+        baseModuleManager->lut_carrier.StepMove_XY_Sync(offset.X, offset.Y);
+    }
+}
+
 void HighSprrow::callQProcess(QString arg)
 {
     QStringList arguments;

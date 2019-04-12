@@ -9,8 +9,8 @@ SutModule::SutModule()
 void SutModule::Init(MaterialCarrier *carrier, VisionLocation* downlook_location,VisionLocation* updownlook_location, XtVacuum *vacuum)
 {
     this->carrier = carrier;
-    this->downlook_location = downlook_location;
-    this->updownlook_location = updownlook_location;
+    this->vision_downlook_location = downlook_location;
+    this->vision_updownlook_location = updownlook_location;
     this->vacuum = vacuum;
     loadParams();
 }
@@ -25,6 +25,8 @@ void SutModule::updateParams()
     temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
     temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
+    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
+    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
     PropertyBase::saveJsonConfig("config//sutConfig.json", temp_map);
 }
 
@@ -38,19 +40,21 @@ void SutModule::loadParams()
     temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
     temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
+    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
+    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
     PropertyBase::loadJsonConfig("config//sutConfig.json", temp_map);
 }
 
 bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting)
 {
-    downlook_location->OpenLight();
+    vision_downlook_location->OpenLight();
     bool result = moveToDownlookPos();
     if(result)
     {
-        downlook_location->performPR(offset);
+        vision_downlook_location->performPR(offset);
     }
     if(close_lighting)
-        downlook_location->CloseLight();
+        vision_downlook_location->CloseLight();
     return false;
 }
 
@@ -66,14 +70,14 @@ bool SutModule::moveToDownlookPos()
 
 bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting)
 {
-    updownlook_location->OpenLight();
+    vision_updownlook_location->OpenLight();
     bool result = moveToToolDownlookPos();
     if(result)
     {
-        updownlook_location->performPR(offset);
+        vision_updownlook_location->performPR(offset);
     }
     if(close_lighting)
-        updownlook_location->CloseLight();
+        vision_updownlook_location->CloseLight();
     return false;
 }
 

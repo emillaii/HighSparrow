@@ -30,12 +30,15 @@ bool VisionLocation::performPR(PrOffset &offset)
     if(ErrorCode::OK == temp.code)
     {
         QPointF mech;
+        qInfo("Perform PR Success. PR_Result: %f %f %f", pr_result.x, pr_result.y, pr_result.theta);
         if(mapping->CalcMechDistance(QPointF(pr_result.x,pr_result.y),mech))
         {
            offset.X = mech.x();
            offset.Y = mech.y();
            offset.Theta = pr_result.theta;
            return true;
+        } else {
+            qInfo("CalcMechDistance Fail");
         }
     }
     return false;

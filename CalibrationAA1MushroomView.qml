@@ -67,7 +67,7 @@ ColumnLayout {
         Button {
             text: qsTr("Perform PR")
             onClicked: {
-                //highSprrow.performSUTDownlookPR()
+                highSprrow.performLUTMushroomPR()
             }
         }
     }

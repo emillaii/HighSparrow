@@ -7,7 +7,7 @@ LutModule::LutModule()
 }
 
 
-void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum)
+void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum)
 {
     this->carrier = carrier;
     this->uplook_location = uplook_location;
@@ -15,6 +15,7 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     this->load_location = load_location;
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuum;
+    this->mushroom_location = mushroom_location;
     loadParams();
 }
 
@@ -37,6 +38,7 @@ void LutModule::updateParams()
     temp_map.insert("VISION_UPLOOK_LOCATION", &this->uplook_location->parameters);
     temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->updownlook_location->parameters);
     temp_map.insert("VISION_LOAD_LOCATION", &this->load_location->parameters);
+    temp_map.insert("VISION_MUSHROOM_LOCATION", &this->mushroom_location->parameters);
     PropertyBase::saveJsonConfig("config//lutConfig.json", temp_map);
 }
 
@@ -59,19 +61,20 @@ void LutModule::loadParams()
     temp_map.insert("VISION_UPLOOK_LOCATION", &this->uplook_location->parameters);
     temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->updownlook_location->parameters);
     temp_map.insert("VISION_LOAD_LOCATION", &this->load_location->parameters);
+    temp_map.insert("VISION_MUSHROOM_LOCATION", &this->mushroom_location->parameters);
     PropertyBase::loadJsonConfig("config//lutConfig.json", temp_map);
 }
 
-bool LutModule::moveToAA1UplookPos()
+bool LutModule::moveToAA1UplookPos(bool check_autochthonous)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_uplook_position.X(),aa1_uplook_position.Y(),aa1_uplook_position.Z());
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_uplook_position.X(),aa1_uplook_position.Y(),aa1_uplook_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting)
+bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous)
 {
 
     uplook_location->OpenLight();
-    bool result = moveToAA1UplookPos();
+    bool result = moveToAA1UplookPos(check_autochthonous);
     if(result)
     {
       uplook_location->performPR(offset);
@@ -81,15 +84,15 @@ bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting)
     return false;
 }
 
-bool LutModule::moveToAA2UplookPos()
+bool LutModule::moveToAA2UplookPos(bool check_autochthonous)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_uplook_position.X(),aa2_uplook_position.Y(),aa2_uplook_position.Z());
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_uplook_position.X(),aa2_uplook_position.Y(),aa2_uplook_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting)
+bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous)
 {
     uplook_location->OpenLight();
-    bool result = moveToAA2UplookPos();
+    bool result = moveToAA2UplookPos(check_autochthonous);
     if(result)
     {
       uplook_location->performPR(offset);
@@ -99,15 +102,15 @@ bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting)
     return false;
 }
 
-bool LutModule::moveToAA1UpdownlookPos()
+bool LutModule::moveToAA1UpdownlookPos(bool check_autochthonous)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_updownlook_position.X(),aa1_updownlook_position.Y(),aa1_updownlook_position.Z());
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_updownlook_position.X(),aa1_updownlook_position.Y(),aa1_updownlook_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToAA1UpDwonlookPR(PrOffset &offset, bool close_lighting)
+bool LutModule::moveToAA1UpDwonlookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous)
 {
     updownlook_location->OpenLight();
-    bool result = moveToAA1UpdownlookPos();
+    bool result = moveToAA1UpdownlookPos(check_autochthonous);
     if(result)
     {
       updownlook_location->performPR(offset);
@@ -117,15 +120,15 @@ bool LutModule::moveToAA1UpDwonlookPR(PrOffset &offset, bool close_lighting)
     return false;
 }
 
-bool LutModule::moveToAA2UpdownlookPos()
+bool LutModule::moveToAA2UpdownlookPos(bool check_autochthonous)
 {
-     return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_updownlook_position.X(),aa2_updownlook_position.Y(),aa2_updownlook_position.Z());
+     return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_updownlook_position.X(),aa2_updownlook_position.Y(),aa2_updownlook_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToAA2UpDwonlookPR(PrOffset &offset, bool close_lighting)
+bool LutModule::moveToAA2UpDwonlookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous)
 {
     updownlook_location->OpenLight();
-    bool result = moveToAA2UpdownlookPos();
+    bool result = moveToAA2UpdownlookPos(check_autochthonous);
     if(result)
     {
       updownlook_location->performPR(offset);
@@ -135,26 +138,26 @@ bool LutModule::moveToAA2UpDwonlookPR(PrOffset &offset, bool close_lighting)
     return false;
 }
 
-bool LutModule::moveToLoadPos()
+bool LutModule::moveToLoadPos(bool check_autochthonous)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z());
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToUnloadPos()
+bool LutModule::moveToUnloadPos(bool check_autochthonous)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(unload_position.X(),unload_position.Y(),unload_position.Z());
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(unload_position.X(),unload_position.Y(),unload_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToLoadUplookPos()
+bool LutModule::moveToLoadUplookPos(bool check_autochthonous)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_uplook_position.X(),load_uplook_position.Y(),load_uplook_position.Z());
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_uplook_position.X(),load_uplook_position.Y(),load_uplook_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToAA1PickLens()
+bool LutModule::moveToAA1PickLens(bool check_autochthonous)
 {
     bool result = grabber->Set(false);
     if(result)
-        result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z());
+        result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
     if(result)
     {
         //todo one fuction
@@ -167,9 +170,9 @@ bool LutModule::moveToAA1PickLens()
     return result;
 }
 
-bool LutModule::moveToAA1UnPickLens()
+bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
 {
-    bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),aa1_unpicklens_position.Z());
+    bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),aa1_unpicklens_position.Z(),check_autochthonous);
     if(result)
     {
         //todo one fuction
@@ -182,11 +185,11 @@ bool LutModule::moveToAA1UnPickLens()
     return result;
 }
 
-bool LutModule::moveToAA2PickLens()
+bool LutModule::moveToAA2PickLens(bool check_autochthonous)
 {
     bool result = grabber->Set(false);
     if(result)
-        result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z());
+        result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
     if(result)
     {
         double reuslt_pos;
@@ -198,11 +201,11 @@ bool LutModule::moveToAA2PickLens()
     return result;
 }
 
-bool LutModule::moveToAA2UnPickLens()
+bool LutModule::moveToAA2UnPickLens(bool check_autochthonous)
 {
     bool result = grabber->Set(false);
     if(result)
-        result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),aa2_unpicklens_position.Z());
+        result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),aa2_unpicklens_position.Z(),check_autochthonous);
     if(result)
     {
         double reuslt_pos;
@@ -212,6 +215,16 @@ bool LutModule::moveToAA2UnPickLens()
         result &= carrier->ZSerchReturn();
     }
     return result;
+}
+
+bool LutModule::moveToAA1MushroomLens(bool check_autochthonous)
+{
+     return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_mushroom_position.X(),aa1_mushroom_position.Y(),aa1_mushroom_position.Z(),check_autochthonous);
+}
+
+bool LutModule::moveToAA2MushroomLens(bool check_autochthonous)
+{
+     return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_mushroom_position.X(),aa2_mushroom_position.Y(),aa2_mushroom_position.Z(),check_autochthonous);
 }
 
 bool LutModule::stepMove_XY_Sync(double x, double y)

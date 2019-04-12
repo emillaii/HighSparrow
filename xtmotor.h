@@ -102,7 +102,7 @@ protected:
     static int curve_resource;
     static int thread_resource;
 
-    QString name;
+    QString name = "";
     int axis_id;
     int axis_sub_id;
 

@@ -6,7 +6,7 @@ import QtQuick.Dialogs 1.2
 ColumnLayout {
     RowLayout {
         FileDialog {
-            id: loadUplookFileDialog
+            id: loadDownlookFileDialog
             title: "选择加载PR文件"
             selectExisting: true
             selectFolder: false
@@ -14,25 +14,25 @@ ColumnLayout {
 
             nameFilters: ["avdata文件 (*.avdata)"]
             onAccepted: {
-                prAA1LUTUplookParams.setPrFileName(fileUrl)
+                prAA1MushroomParams.setPrFileName(fileUrl)
             }
         }
 
         Dial {
             width: 25
             from: 0
-            value: prAA1LUTUplookParams.lightBrightness
+            value: prAA1MushroomParams.lightBrightness
             to: 255
             stepSize: 1
 
             Label {
-                text: prAA1LUTUplookParams.lightBrightness
+                text: prAA1MushroomParams.lightBrightness
                 color: "white"
                 font.pixelSize: Qt.application.font.pixelSize * 3
                 anchors.centerIn: parent
             }
             onValueChanged: {
-                prAA1LUTUplookParams.setLightBrightness(value)
+                prAA1MushroomParams.setLightBrightness(value)
                 lightingController.setUplookLighting(value)
             }
         }
@@ -40,34 +40,34 @@ ColumnLayout {
         Button {
             text: qsTr("Load PR")
             onClicked: {
-                loadUplookFileDialog.open()
+                loadDownlookFileDialog.open()
             }
         }
 
         TextField {
             color: "#57f529"
-            text: prAA1LUTUplookParams.prFileName
+            text: prAA1MushroomParams.prFileName
             font.pixelSize: 14
         }
     }
     RowLayout {
         Button {
-            text: qsTr("Move To Uplook Position")
+            text: qsTr("Move To Mushroom Position")
             onClicked: {
-                lutModule.moveToAA1UplookPos(true)
+                lutModule.moveToAA1MushroomLens(true)
             }
         }
 
         Button {
-            text: qsTr("Start Downlook Cali")
+            text: qsTr("Start Mushroom Cali")
             onClicked: {
-                baseModuleManager.performUplookCalibration()
+                baseModuleManager.performAA1MushroomHeadCalibration()
             }
         }
         Button {
             text: qsTr("Perform PR")
             onClicked: {
-                highSprrow.performLUTUplookPR()
+                //highSprrow.performSUTDownlookPR()
             }
         }
     }

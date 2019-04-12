@@ -29,6 +29,11 @@ ItemDelegate {
                 }
             }
             GroupBox {
+                title: qsTr("LUT Mushroom PR")
+                CalibrationAA1MushroomView {
+                }
+            }
+            GroupBox {
                 title: qsTr("LUT Uplook PR")
                 CalibrationUplookView {
                 }

@@ -10,7 +10,7 @@ void VisionLocation::Init(VisionModule *vison,Pixel2Mech* mapping, WordopLight *
     this->vison = vison;
     this->mapping = mapping;
     this->lighting = lighting;
-    loadParam();
+//    loadParam();
 }
 
 void VisionLocation::loadParam()
@@ -44,6 +44,7 @@ bool VisionLocation::performPR(PrOffset &offset)
 bool VisionLocation::performPR(PRResultStruct &pr_result)
 {
     ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result);
+    qInfo("camera %s perform PR result:%d name:%s",parameters.cameraName().toStdString().c_str(),temp.code,parameters.prFileName().toStdString().c_str());
     return  ErrorCode::OK == temp.code;
 }
 

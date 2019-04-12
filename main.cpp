@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
     //PR Params
     engine.rootContext()->setContextProperty("prSUTDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
     engine.rootContext()->setContextProperty("prAA1LUTUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_LUT_UPLOOK]->parameters);
+    engine.rootContext()->setContextProperty("prAA1MushroomParams",  &highSprrow.baseModuleManager->vision_locations[PR_AA1_MUSHROOMHEAD]->parameters);
 //    engine.rootContext()->setContextProperty("prDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
 //    engine.rootContext()->setContextProperty("prDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
 

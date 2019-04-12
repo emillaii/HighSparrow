@@ -40,6 +40,7 @@
         <file>LUTUnloadPosition.qml</file>
         <file>CalibrationDownlookView.qml</file>
         <file>CalibrationUplookView.qml</file>
+        <file>CalibrationAA1MushroomView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

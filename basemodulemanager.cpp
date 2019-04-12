@@ -33,6 +33,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 //    vision_locations.insert(PR_AA2_LUT_UPLOOK,new VisionLocation());
     vision_locations.insert(PR_SUT_DOWNLOOK,new VisionLocation());
     vision_locations.insert(PR_LOAD_LUT_UPLOOK,new VisionLocation());
+    vision_locations.insert(PR_AA1_MUSHROOMHEAD,new VisionLocation());
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -159,18 +160,21 @@ bool BaseModuleManager::InitStruct()
     calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_SUT_DOWNLOOK]));
     calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_AA1_TOOL_UPLOOK]));
     calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_AA1_TOOL_DOWNLOOK]));
+    calibrations.insert(AA1_MUSHROOMHEAD_CALIBRATION,new Calibration(AA1_MUSHROOMHEAD_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_AA1_MUSHROOMHEAD]));
 
 
     vision_locations[PR_AA1_TOOL_UPLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->getCaliMapping(),lightingModule);
+    //vision_locations[PR_AA1_TOOL_UPLOOK]->parameters.setCameraName(UPLOOK_VISION_CAMERA);
     vision_locations[PR_AA1_TOOL_DOWNLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->getCaliMapping(),lightingModule);
+    //vision_locations[PR_AA1_TOOL_DOWNLOOK]->parameters.setCameraName(DOWNLOOK_VISION_CAMERA);
     vision_locations[PR_AA1_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_AA2_TOOL_UPLOOK]->Init(visionModule,calibrations[AA2_UPDownLOOK_UP_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_AA2_TOOL_DOWNLOOK]->Init(visionModule,calibrations[AA2_UPDownLOOK_DOWN_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_AA2_LUT_UPLOOK]->Init(visionModule,calibrations[AA2_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
+    //vision_locations[PR_AA1_LUT_UPLOOK]->parameters.setCameraName(UPLOOK_VISION_CAMERA);
     vision_locations[PR_SUT_DOWNLOOK]->Init(visionModule,calibrations[AA1_DOWNLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
+    //vision_locations[PR_SUT_DOWNLOOK]->parameters.setCameraName(DOWNLOOK_VISION_CAMERA);
     vision_locations[PR_LOAD_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
-
-    lut_module.Init(&lut_carrier,vision_locations[PR_AA1_LUT_UPLOOK],vision_locations[PR_AA1_TOOL_UPLOOK],vision_locations[PR_LOAD_LUT_UPLOOK],lut_v,lut_v_u);
+    vision_locations[PR_AA1_MUSHROOMHEAD]->Init(visionModule,calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->getCaliMapping(),lightingModule);
+    //vision_locations[PR_LOAD_LUT_UPLOOK]->parameters.setCameraName(UPLOOK_VISION_CAMERA);
+    lut_module.Init(&lut_carrier,vision_locations[PR_AA1_LUT_UPLOOK],vision_locations[PR_AA1_TOOL_UPLOOK],vision_locations[PR_LOAD_LUT_UPLOOK],vision_locations[PR_AA1_MUSHROOMHEAD],lut_v,lut_v_u);
     sut_module.Init(&sut_carrier,vision_locations[PR_SUT_DOWNLOOK],vision_locations[PR_AA1_TOOL_DOWNLOOK],sut_v);
     QVector<XtMotor *> executive_motors;
     executive_motors.push_back(sut_x);
@@ -336,6 +340,12 @@ void BaseModuleManager::performUpDownlookUpCalibration()
 {
     if(calibrations.contains(AA1_UPDownLOOK_UP_CALIBRATION))
         calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->performCalibration();
+}
+
+void BaseModuleManager::performAA1MushroomHeadCalibration()
+{
+    if(calibrations.contains(AA1_MUSHROOMHEAD_CALIBRATION))
+        calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->performCalibration();
 }
 
 void BaseModuleManager::UpdateCalibrationParameters()

@@ -107,6 +107,7 @@
 #define AA1_UPDownLOOK_DOWN_CALIBRATION  "aa1_updownLook_down_calibration"
 #define AA2_UPDownLOOK_UP_CALIBRATION    "aa2_updownLook_up_calibration"
 #define AA2_UPDownLOOK_DOWN_CALIBRATION  "aa2_updownLook_down_calibration"
+#define AA1_MUSHROOMHEAD_CALIBRATION      "aa1_mushroomhead_calibration"
 //dispenser
 
 #define DISPENSER_PARAMETER_PATH         ".//config//dispenserConfig//"
@@ -125,6 +126,7 @@
 #define PR_PICKARM_LENS_TREAY_PR        "pickarm_lens_tray_pr"
 
 #define PR_PARAMETER_FILE_PATH           ".//config//pr_param//"
+#define PR_AA1_MUSHROOMHEAD              "pr_aa1_mushroom"
 #define PR_AA1_TOOL_UPLOOK               "pr_aa1_tool_uplook"
 #define PR_AA1_TOOL_DOWNLOOK             "pr_aa1_tool_downlook"
 #define PR_AA1_LUT_UPLOOK                "pr_aa1_lut_uplook"

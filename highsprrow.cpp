@@ -47,7 +47,7 @@ void HighSprrow::performSUTDownlookPR()
 void HighSprrow::performLUTUplookPR()
 {
     PrOffset offset;
-    if (baseModuleManager->lut_module.moveToAA1UplookPR(offset, false))
+    if (baseModuleManager->lut_module.moveToAA1UplookPR(offset, false,true))
     {
         baseModuleManager->lut_carrier.StepMove_XY_Sync(offset.X, offset.Y);
     }

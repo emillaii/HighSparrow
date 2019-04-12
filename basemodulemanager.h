@@ -116,6 +116,7 @@ public:
     Q_INVOKABLE void performDownlookCalibration();
     Q_INVOKABLE void performUpDownlookCalibration();
     Q_INVOKABLE void performUpDownlookUpCalibration();
+    Q_INVOKABLE void performAA1MushroomHeadCalibration();
     Q_INVOKABLE void UpdateCalibrationParameters();
 
 

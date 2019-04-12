@@ -32,13 +32,13 @@ private:
 
     PRResultStruct pr_result;
 public:
-    Q_INVOKABLE bool moveToLoadPos();
-    Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true);
-    Q_INVOKABLE bool moveToDownlookPos();
-    Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true);
-    Q_INVOKABLE bool moveToToolDownlookPos();
-    Q_INVOKABLE bool moveToToolUplookPos();
-    Q_INVOKABLE bool moveToMushroomPos();
+    Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToDownlookPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToToolDownlookPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToToolUplookPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToMushroomPos(bool check_autochthonous = false);
     bool stepMove_XY_Sync(double x,double y);
 };
 

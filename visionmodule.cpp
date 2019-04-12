@@ -93,6 +93,7 @@ void VisionModule::saveImage(int channel)
 
 ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult)
 {
+    qInfo("%s perform %s",camera_name.toStdString().c_str(),pr_name.toStdString().c_str());
     pr_name.replace("file:///", "");
     QString pr_offset_name = pr_name;
     pr_offset_name.replace(".avdata", "_offset.avdata");

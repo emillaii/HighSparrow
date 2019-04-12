@@ -26,8 +26,13 @@ bool MaterialCarrier::Move_SZ_XY_Z_Sync(double x, double y, double z, int timeou
     return result;
 }
 
-bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z, int timeout)
+bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool check_autochthonous, int timeout)
 {
+    if(check_autochthonous)
+    {
+        if(abs(motor_x->GetFeedbackPos()-x)<0.001&&abs(motor_y->GetFeedbackPos()-y)<0.001&&abs(motor_z->GetFeedbackPos()-z)<0.001)
+            return true;
+    }
     bool result;
     result = motor_z->MoveToPosSync(parameters.SafetyZ());
     if(!result) return false;
@@ -38,12 +43,17 @@ bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z, int ti
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
+    Sleep(200);
     return result;
 }
 
-bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z, int timeout)
+bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool check_autochthonous, int timeout)
 {
-
+    if(check_autochthonous)
+    {
+        if(abs(motor_x->GetFeedbackPos()-x)<0.001&&abs(motor_y->GetFeedbackPos()-y)<0.001&&abs(motor_z->GetFeedbackPos()-z)<0.001)
+            return true;
+    }
     bool result;
     result = motor_z->MoveToPosSync(parameters.SafetyZ());
     if(!result) return false;
@@ -54,6 +64,7 @@ bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z, int ti
     result = motor_y->MoveToPosSync(y);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
+    Sleep(200);
     return result;
 }
 

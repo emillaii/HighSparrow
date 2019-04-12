@@ -499,7 +499,7 @@ bool XtMotor::StepMoveSync(double step, int thread)
         Sleep(10);
         count-=10;
         if (count == 0) {
-            qInfo("Motion Timeout.");
+            qInfo("Motion Timeout. id %d init %d,targetPos %f currPos %f",axis_sub_id,is_init,targetPos,currPos);
             return false;
         }
     }

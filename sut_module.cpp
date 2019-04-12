@@ -45,10 +45,10 @@ void SutModule::loadParams()
     PropertyBase::loadJsonConfig("config//sutConfig.json", temp_map);
 }
 
-bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting)
+bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check_autochthonous)
 {
     vision_downlook_location->OpenLight();
-    bool result = moveToDownlookPos();
+    bool result = moveToDownlookPos(check_autochthonous);
     if(result)
     {
         vision_downlook_location->performPR(offset);
@@ -58,20 +58,20 @@ bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting)
     return false;
 }
 
-bool SutModule::moveToLoadPos()
+bool SutModule::moveToLoadPos(bool check_autochthonous)
 {
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z());
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
 }
 
-bool SutModule::moveToDownlookPos()
+bool SutModule::moveToDownlookPos(bool check_autochthonous)
 {
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),downlook_position.Z());
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),downlook_position.Z(),check_autochthonous);
 }
 
-bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting)
+bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting,bool check_autochthonous)
 {
     vision_updownlook_location->OpenLight();
-    bool result = moveToToolDownlookPos();
+    bool result = moveToToolDownlookPos(check_autochthonous);
     if(result)
     {
         vision_updownlook_location->performPR(offset);
@@ -81,19 +81,19 @@ bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting)
     return false;
 }
 
-bool SutModule::moveToToolDownlookPos()
+bool SutModule::moveToToolDownlookPos(bool check_autochthonous)
 {
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_downlook_position.X(),tool_downlook_position.Y(),tool_downlook_position.Z());
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_downlook_position.X(),tool_downlook_position.Y(),tool_downlook_position.Z(),check_autochthonous);
 }
 
-bool SutModule::moveToToolUplookPos()
+bool SutModule::moveToToolUplookPos(bool check_autochthonous)
 {
-     return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_uplook_positon.X(),tool_uplook_positon.Y(),tool_uplook_positon.Z());
+     return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_uplook_positon.X(),tool_uplook_positon.Y(),tool_uplook_positon.Z(),check_autochthonous);
 }
 
-bool SutModule::moveToMushroomPos()
+bool SutModule::moveToMushroomPos(bool check_autochthonous)
 {
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(mushroom_positon.X(),mushroom_positon.Y(),mushroom_positon.Z());
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(mushroom_positon.X(),mushroom_positon.Y(),mushroom_positon.Z(),check_autochthonous);
 }
 
 bool SutModule::stepMove_XY_Sync(double x, double y)

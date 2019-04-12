@@ -81,7 +81,8 @@ void PropertyBase::saveJsonConfig(QString file_name, const QMap<QString, Propert
 
 void PropertyBase::saveJsonConfig(QString file_path, const QString name, const PropertyBase* parameters)
 {
-    QFile saveFile(file_path + name +".json");
+    file_path.append(name).append(".json");
+    QFile saveFile(file_path);
     if (!saveFile.open(QIODevice::WriteOnly)) {
         qWarning("save parameters to %s failed, Couldn't open save file.",file_path.toStdString().data());
         return;

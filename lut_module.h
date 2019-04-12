@@ -16,7 +16,7 @@ class LutModule : public QObject
     Q_OBJECT
 public:
     LutModule();
-    void Init(MaterialCarrier* carrier,VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
+    void Init(MaterialCarrier* carrier,VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
     void loadParams();
     LutParameter parameters;
     Position3D load_uplook_position;
@@ -30,6 +30,8 @@ public:
     Position3D aa2_picklens_position;
     Position3D aa2_unpicklens_position;
     Position3D aa2_uplook_position;
+    Position3D aa1_mushroom_position;
+    Position3D aa2_mushroom_position;
 public slots:
     void updateParams();
 private:
@@ -37,27 +39,30 @@ private:
     VisionLocation* uplook_location;
     VisionLocation* updownlook_location;
     VisionLocation* load_location;
+    VisionLocation* mushroom_location;
     XtVacuum* grabber;
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;
 
     PRResultStruct pr_result;
 public:
-    Q_INVOKABLE bool moveToAA1UplookPos();
-    Q_INVOKABLE bool moveToAA1UplookPR(PrOffset &offset,bool close_lighting = true);
-    Q_INVOKABLE bool moveToAA2UplookPos();
-    Q_INVOKABLE bool moveToAA2UplookPR(PrOffset &offset,bool close_lighting = true);
-    Q_INVOKABLE bool moveToAA1UpdownlookPos();
-    Q_INVOKABLE bool moveToAA1UpDwonlookPR(PrOffset &offset,bool close_lighting = true);
-    Q_INVOKABLE bool moveToAA2UpdownlookPos();
-    Q_INVOKABLE bool moveToAA2UpDwonlookPR(PrOffset &offset,bool close_lighting = true);
-    Q_INVOKABLE bool moveToLoadPos();
-    Q_INVOKABLE bool moveToUnloadPos();
-    Q_INVOKABLE bool moveToLoadUplookPos();
-    Q_INVOKABLE bool moveToAA1PickLens();
-    Q_INVOKABLE bool moveToAA1UnPickLens();
-    Q_INVOKABLE bool moveToAA2PickLens();
-    Q_INVOKABLE bool moveToAA2UnPickLens();
+    Q_INVOKABLE bool moveToAA1UplookPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA1UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA2UplookPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA2UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA1UpdownlookPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA1UpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA2UpdownlookPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA2UpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToUnloadPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToLoadUplookPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA1PickLens(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA1UnPickLens(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA2PickLens(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA2UnPickLens(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA1MushroomLens(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA2MushroomLens(bool check_autochthonous = false);
     bool stepMove_XY_Sync(double x,double y);
 
 };

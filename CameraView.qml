@@ -27,6 +27,24 @@ Grid {
             source: "icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
+
+            Rectangle {
+                color: "springgreen"
+                opacity: 0.8
+                x: (image.width - image.paintedWidth)/2
+                y: image.height/2
+                width: image.paintedWidth
+                height: 1
+            }
+            Rectangle {
+                color: "springgreen"
+                opacity: 0.8
+                x: image.width/2
+                y: (image.height - image.paintedHeight)/2
+                width: 1
+                height: image.paintedHeight
+            }
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
@@ -129,6 +147,23 @@ Grid {
             source: "icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
+
+            Rectangle {
+                color: "springgreen"
+                opacity: 0.8
+                x: (image1.width - image1.paintedWidth)/2
+                y: image1.height/2
+                width: image1.paintedWidth
+                height: 1
+            }
+            Rectangle {
+                color: "springgreen"
+                opacity: 0.8
+                x: image1.width/2
+                y: (image1.height - image1.paintedHeight)/2
+                width: 1
+                height: image1.paintedHeight
+            }
 
             MouseArea {
                 anchors.fill: parent

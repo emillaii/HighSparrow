@@ -1,12 +1,11 @@
 #ifndef VISION_LOCATION_PARAMETER_H
 #define VISION_LOCATION_PARAMETER_H
 
-#include "PropertyBase.h"
-
-
+#include "propertybase.h"
 
 class VisionLocationParameter:public PropertyBase
 {
+    Q_OBJECT
 public:
     VisionLocationParameter():PropertyBase(){}
     Q_PROPERTY(QString prFileName READ prFileName WRITE setPrFileName NOTIFY prFileNameChanged)

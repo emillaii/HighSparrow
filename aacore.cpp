@@ -11,12 +11,13 @@
 #include <QFileDialog>
 #include <QJsonObject>
 #include "aa_util.h"
-#include "visionavadaptor.h"
-AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,QObject *parent) : QThread(parent)
+#define PI  3.14159265
+AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey* dk,QObject *parent) : QThread(parent)
 {
     this->aa_head = aa_head;
     this->lut = lut;
     this->sut = sut;
+    this->dk = dk;
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
     connect(this, &AACore::sfrResultsDetectFinished, this, &AACore::stopZScan);
 }
@@ -31,8 +32,9 @@ void AACore::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
 }
 
 void AACore::run(){
-    runFlowchartTest();
+    //runFlowchartTest();
     //performAAOffline();
+    performOC(false, true);
     qInfo("End");
 }
 
@@ -370,9 +372,78 @@ void AACore::performAAOffline()
     //unitlog->addVariantMap("AA", map);
 }
 
+ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
+{
+    ErrorCodeStruct ret = { ErrorCode::OK, "" };
+    QVariantMap map;
+    QVariantMap stepTimerMap;
+    QElapsedTimer timer, stepTimer;
+    timer.start(); stepTimer.start();/*
+    this->lightingController->SetBrightness(LIGHTING_UPLOOK, 0);
+    this->lightingController->SetBrightness(LIGHTING_DOWNLOOK, 0);*/
+    //cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_10.bmp");
+    QImage outImage;
+    double offsetX, offsetY;
+    unsigned int ccIndex = 10000, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
+    int method = 1;  //1: Pattern ; else : Mass center
+    if (method == 1)
+    {
+        std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, fastMode,
+                                                                        ccIndex, ulIndex, urIndex,
+                                                                        llIndex, lrIndex);
+        stepTimerMap.insert("search_pattern", stepTimer.elapsed());
+        stepTimer.restart();
+        if( vector.size()<1 || ccIndex > 9 ) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
+        offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
+        offsetY = vector[ccIndex].center.y() - (vector[ccIndex].height/2);
+        qInfo("OC OffsetX: %f %f", offsetX, offsetY);
+    } else {
+        QImage outImage; QPointF center;
+        if (!AA_Helper::calculateOC(img, center, outImage)) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
+        //emit autoTabImageChanged(outImage);
+        offsetX = center.x() - img.cols/2;
+        offsetY = center.y() - img.rows/2;
+    }
+    bool reverse = true;
+    if (enableMotion)
+    {
+        double stepX = offsetX; /// cmosPixelToMM_X;  //Pixel to um
+        double stepY = offsetY; /// cmosPixelToMM_Y;
+
+        if(abs(stepX)>0.5||abs(stepY)>0.5)
+        {
+            //qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,cmosPixelToMM_X,cmosPixelToMM_Y);
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
+        }
+        if (reverse) {
+            this->aa_head->stepMove_AB_Sync(stepY, -stepX);
+        } else {
+            this->aa_head->stepMove_AB_Sync(stepX, stepY);
+        }
+    }
+    return ret;
+}
+
 double AACore::calculateDFOV(cv::Mat img)
 {
-    return 100;
+    QImage outImage;
+    unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
+    std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, true,
+                                                                    ccIndex, ulIndex, urIndex,
+                                                                    llIndex, lrIndex);
+    if (vector.size() >= 5)
+    {
+        double d1 = sqrt(pow((vector[ulIndex].center.x() - vector[lrIndex].center.x()), 2) + pow((vector[ulIndex].center.y() - vector[lrIndex].center.y()), 2));
+        double d2 = sqrt(pow((vector[urIndex].center.x() - vector[llIndex].center.x()), 2) + pow((vector[urIndex].center.y() - vector[llIndex].center.y()), 2));
+        double f = 2.47;
+        double dfov1 = 2*atan(d1/(2*cmosPixelToMM_X*f))*180/PI;
+        double dfov2 = 2*atan(d2/(2*cmosPixelToMM_Y*f))*180/PI;
+        double dfov = (dfov1 + dfov2)/2;
+        qInfo("DFOV: %f", dfov);
+        return dfov;
+    }
+    return -1;
 }
 
 void AACore::storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElapsed)
@@ -463,4 +534,12 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     ur_zPeak = ur_peak_z;
     ll_zPeak = ll_peak_z;
     lr_zPeak = lr_peak_z;
+}
+
+std::vector<AA_Helper::patternAttr> AACore::search_mtf_pattern(cv::Mat inImage, QImage &image, bool isFastMode, unsigned int &ccROIIndex, unsigned int &ulROIIndex, unsigned int &urROIIndex, unsigned int &llROIIndex, unsigned int &lrROIIndex)
+{
+    int max_intensity = 50;
+    int min_area = 25000; int max_area = 90000;
+
+    return AA_Helper::AA_Search_MTF_Pattern(inImage, image, isFastMode, ccROIIndex, ulROIIndex, urROIIndex, llROIIndex, lrROIIndex, max_intensity, min_area, max_area);
 }

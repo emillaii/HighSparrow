@@ -7,7 +7,8 @@ typedef enum {
     INIT_COMPONENT_ERROR,
     AA_ZSCAN_DFOV,
     AA_MTF_TIMEOUT,
-    PR_OBJECT_NOT_FOUND
+    PR_OBJECT_NOT_FOUND,
+    GENERIC_ERROR
 } ErrorCode;
 
 

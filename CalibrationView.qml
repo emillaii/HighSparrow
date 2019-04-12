@@ -84,8 +84,6 @@ ItemDelegate {
                         text: sutParams.prName
                         font.pixelSize: 14
                     }
-
-
                 }
             }
 

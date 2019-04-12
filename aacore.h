@@ -16,11 +16,14 @@
 #include "aaheadmodule.h"
 #include "lut_module.h"
 #include "sut_module.h"
+#include "dothinkey.h"
+#include "visionavadaptor.h"
+
 class AACore : public QThread
 {
     Q_OBJECT
 public:
-    explicit AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,QObject *parent = nullptr);
+    explicit AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey *dk, QObject *parent = nullptr);
     ~AACore();
 
 protected:
@@ -28,6 +31,7 @@ protected:
 
 public:
     void performAAOffline();
+    ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
     bool runFlowchartTest();
@@ -38,13 +42,20 @@ private:
     AAHeadModule* aa_head;
     LutModule* lut;
     SutModule* sut;
+    Dothinkey* dk;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QJsonDocument flowchartDocument;
     bool isZScanNeedToStop = false;
+    double cmosPixelToMM_X = 0,cmosPixelToMM_Y = 0;
     void sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
                              double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak);
-
+    std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,
+                                                               unsigned int & ccROIIndex,
+                                                               unsigned int & ulROIIndex,
+                                                               unsigned int & urROIIndex,
+                                                               unsigned int & llROIIndex,
+                                                               unsigned int & lrROIIndex);
 signals:
     void sfrResultsReady(unsigned int, vector<Sfr_entry>, int);
     void sfrResultsDetectFinished();

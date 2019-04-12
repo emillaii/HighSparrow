@@ -1,0 +1,93 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Architects+Daughter" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="css/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="css/print.css" media="print">
+    <link rel="stylesheet" href="css/jquery.flowchart.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery-1.10.2.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    
+    <script src="js/jquery.panzoom.min.js"></script>
+    <script src="js/jquery.mousewheel.min.js"></script>
+    
+    <script src="js/jquery.flowchart.js"></script>
+    <script src="js/main.js"></script>
+ 
+    <title>Flow chart</title>
+  </head>
+
+  <div class="flowchart-example"  style="margin-left: 2%">
+
+    <h2>Silicool Process Diagram</h2>
+    <button class="btn btn-primary create_start">Start</button>
+	<button class="btn btn-primary create_load_camera">Load Camera</button>
+	<button class="btn btn-primary create_init_camera">Init Camera</button>
+	<button class="btn btn-primary create_pr_to_bond">PR To Bond</button>
+	<button class="btn btn-primary create_initial_tilt">Initial Tilt</button>
+	</br></br>
+	<button class="btn btn-success create_aa_pick_lens">AA Pick Lens</button>
+	<button class="btn btn-success create_aa_unload_lens">AA Unload Lens</button>
+    <button class="btn btn-success create_oc">OC</button>
+    <button class="btn btn-success create_aa">AA</button>
+	<button class="btn btn-success create_mtf">MTF</button>
+    <button class="btn btn-success create_uv">UV</button>
+    <button class="btn btn-success create_disp">Dispense</button>
+	<button class="btn btn-success create_save_image">Save Image</button>
+	<button class="btn btn-success create_aa_unload_camera">AA Unload Camera</button>
+	</br></br>
+	<button class="btn btn-info create_z_offset">Z Offset</button>
+	<button class="btn btn-info create_xy_offset">XY Offset</button>
+	<button class="btn btn-info create_delay">Delay</button>
+    <button class="btn btn-info create_accept">Accept</button>
+    <button class="btn btn-info create_reject">Reject</button>
+	<button class="btn btn-info create_terminate">Terminate</button>
+	<button class="btn btn-danger create_thread">Parallel Test</button>
+	<button class="btn btn-danger create_join_thread">End Parallel Test</button>
+    <div class="flowchart-example-container flowchart-container" id="example_7">
+      <svg class="flowchart-links-layer">
+      </svg>
+    </div>
+    <button class="delete_selected_button">Delete selected operator / link</button>
+    <button class="get_data">Get data</button>
+    <button class="set_data">Set data</button>
+    <div id="operator_properties">
+      <label for="operator_title">Operator's title: </label><input type="text" id="operator_title">
+    </div>
+    <div id="aa_operator_properties">
+      <label for="aa_operator_title">Operator's title: </label><input type="text" id="aa_operator_title">
+    </div>
+	  <div id="initial_tilt_properties">
+      <label for="initial_tilt_title">Operator's title: </label><input type="text" id="initial_tilt_operator_title">
+    </div>
+    <div id="oc_operator_properties">
+      <label for="oc_operator_title">Operator's title: </label><input type="text" id="oc_operator_title">
+    </div>
+	<div id="aa_z_offset_operator_properties">
+      <label for="aa_z_offset_operator_title">Operator's title: </label><input type="text" id="aa_z_offset_operator_title">
+    </div>
+    <div id="aa_xy_offset_operator_properties">
+      <label for="aa_xy_offset_operator_title">Operator's title: </label><input type="text" id="aa_xy_offset_operator_title">
+    </div>
+	<div id="save_image_operator_properties">
+      <label for="save_image_operator_title">Operator's title: </label><input type="text" id="save_image_operator_title">
+    </div>
+	<div id="dispense_operator_properties">
+      <label for="dispense_operator_title">Operator's title: </label><input type="text" id="dispense_operator_title">
+    </div>
+	<div id="mtf_table">
+		<label for="mtf_operator_title">Operator's title: </label><input type="text" id="mtf_operator_title">
+		<table id="mtf_table_form" style="width:50%">
+		</table>
+	</div>
+    <button class="update_data">Update data</button>
+  <div>
+  <div>
+    <textarea id="flowchart_data"></textarea>
+  </div>
+</html>

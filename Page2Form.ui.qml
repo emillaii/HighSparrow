@@ -2,7 +2,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtCharts 2.0
 import QtQuick.Layouts 1.12
-
+import QtCharts 2.0
 Page {
 
     readonly property string downlookCameraName: "AA_DLCamera1"
@@ -95,8 +95,7 @@ Page {
 
     ChartView {
         id: spline1
-
-        title: "Spline xxxxxxxxxxxxxxxxxxxxx"
+        title: "AA"
         antialiasing: true
         y: 306
         width: 608
@@ -119,6 +118,7 @@ Page {
 
         ValueAxis {
             id: axisX
+            titleText: "Z (um)"
             gridVisible: true
         }
 

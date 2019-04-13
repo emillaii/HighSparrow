@@ -12,5 +12,6 @@ QImage ImageProvider::requestImage(const QString &id, QSize *size, const QSize &
 
 QPixmap ImageProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
+    qInfo("......");
     return QPixmap::fromImage(this->img);
 }

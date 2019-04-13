@@ -216,6 +216,9 @@ ApplicationWindow {
         Page3Form {
             id: flowChartPage
         }
+        Page4FormForm {
+
+        }
     }
 
     footer: TabBar {
@@ -230,6 +233,9 @@ ApplicationWindow {
         }
         TabButton {
             text: qsTr("流程图")
+        }
+        TabButton {
+            text: qsTr("AA Data")
         }
     }
 }

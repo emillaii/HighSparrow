@@ -42,7 +42,9 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("baseModuleManager", highSprrow.baseModuleManager);
     engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);
+    engine.rootContext()->setContextProperty("aaCore", highSprrow.logicManager->aaCore);
     engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.logicManager->aaCore->aaData_1);
+    engine.rootContext()->setContextProperty("dataFromCpp2", &highSprrow.logicManager->aaCore->aaData_2);
 
     //Module
     engine.rootContext()->setContextProperty("sutModule", &highSprrow.baseModuleManager->sut_module);
@@ -99,6 +101,7 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);
     engine.addImageProvider(QLatin1String("preview1"), highSprrow.baseModuleManager->visionModule);
     engine.addImageProvider(QLatin1String("imageGrabberLiveImage"), highSprrow.baseModuleManager->imageGrabberThread->m_pImgProvider);
+    engine.addImageProvider(QLatin1String("ocImage1"), highSprrow.logicManager->aaCore->ocImageProvider_1);
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())

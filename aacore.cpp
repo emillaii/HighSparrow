@@ -18,6 +18,7 @@ AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey* dk
     this->lut = lut;
     this->sut = sut;
     this->dk = dk;
+    ocImageProvider_1 = new ImageProvider();
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
     connect(this, &AACore::sfrResultsDetectFinished, this, &AACore::stopZScan);
 }
@@ -33,7 +34,7 @@ void AACore::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
 
 void AACore::run(){
     //runFlowchartTest();
-    //performAAOffline();
+    performAAOffline();
     performOC(false, true);
     qInfo("End");
 }
@@ -389,11 +390,14 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
     int method = 1;  //1: Pattern ; else : Mass center
     if (method == 1)
     {
-        std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, fastMode,
+        std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, false,
                                                                         ccIndex, ulIndex, urIndex,
                                                                         llIndex, lrIndex);
         stepTimerMap.insert("search_pattern", stepTimer.elapsed());
         stepTimer.restart();
+        outImage.save("fuck.jpg");
+        ocImageProvider_1->img = outImage;
+        emit callQmlRefeshImg();
         if( vector.size()<1 || ccIndex > 9 ) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
         offsetY = vector[ccIndex].center.y() - (vector[ccIndex].height/2);
@@ -517,18 +521,35 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     }
     xTilt = weighted_vector.z * weighted_vector.x;
     yTilt = weighted_vector.z * weighted_vector.y;
-    aaData_1.clear();
-    for (unsigned int i = 0; i < clustered_sfr.size(); i++)
-    {
-        for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
-            if (i == ccIndex) this->aaData_1.addData(0, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-            else if (i == ulIndex) this->aaData_1.addData(1, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-            else if (i == urIndex) this->aaData_1.addData(2, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-            else if (i == llIndex) this->aaData_1.addData(3, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-            else if (i == lrIndex) this->aaData_1.addData(4, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+    if (currentChartDisplayChannel == 0) {
+        currentChartDisplayChannel = 1;
+        aaData_1.clear();
+        for (unsigned int i = 0; i < clustered_sfr.size(); i++)
+        {
+            for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
+                if (i == ccIndex) this->aaData_1.addData(0, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == ulIndex) this->aaData_1.addData(1, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == urIndex) this->aaData_1.addData(2, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == llIndex) this->aaData_1.addData(3, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == lrIndex) this->aaData_1.addData(4, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+            }
         }
+        aaData_1.plot();
+    } else {
+        currentChartDisplayChannel = 1;
+        aaData_2.clear();
+        for (unsigned int i = 0; i < clustered_sfr.size(); i++)
+        {
+            for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
+                if (i == ccIndex) this->aaData_2.addData(0, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == ulIndex) this->aaData_2.addData(1, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == urIndex) this->aaData_2.addData(2, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == llIndex) this->aaData_2.addData(3, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == lrIndex) this->aaData_2.addData(4, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+            }
+        }
+        aaData_2.plot();
     }
-    aaData_1.plot();
     zPeak = cc_peak_z;
     ul_zPeak = ul_peak_z;
     ur_zPeak = ur_peak_z;

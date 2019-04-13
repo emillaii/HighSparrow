@@ -18,6 +18,7 @@
 #include "sut_module.h"
 #include "dothinkey.h"
 #include "visionavadaptor.h"
+#include "imageprovider.h"
 
 class AACore : public QThread
 {
@@ -36,7 +37,9 @@ public:
     void setSfrWorkerController(SfrWorkerController*);
     bool runFlowchartTest();
     ErrorCodeStruct performTest(QString testItemName, QJsonValue properties);
-    AAData aaData_1;
+    AAData aaData_1;  // For Display Channel 1
+    AAData aaData_2;  // For Display Channel 2
+    ImageProvider * ocImageProvider_1;
 
 private:
     AAHeadModule* aa_head;
@@ -48,6 +51,8 @@ private:
     QJsonDocument flowchartDocument;
     bool isZScanNeedToStop = false;
     double cmosPixelToMM_X = 0,cmosPixelToMM_Y = 0;
+    int currentChartDisplayChannel = 0;
+    int currentOCDisplayChannel = 0;
     void sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
                              double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,
@@ -59,6 +64,7 @@ private:
 signals:
     void sfrResultsReady(unsigned int, vector<Sfr_entry>, int);
     void sfrResultsDetectFinished();
+    void callQmlRefeshImg();
 public slots:
 
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);

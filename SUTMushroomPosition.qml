@@ -54,7 +54,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                sutModule.moveToMushroomPos()
+                console.log("sut move to mushroom pos")
+                logicManager.sutMoveToMushroomPos()
             }
         }
         Button {

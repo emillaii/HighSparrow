@@ -99,7 +99,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                aaHeadModule.moveToMushroomPosition()
+                logicManager.aaMoveToMushroomPos()
             }
         }
         Button {

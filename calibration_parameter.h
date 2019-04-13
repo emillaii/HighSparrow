@@ -2,7 +2,7 @@
 #define CALIBRATION_PARAMETER_H
 
 #include "propertybase.h"
-
+#include "config.h"
 class CalibrationParameter:public PropertyBase
 {
     Q_OBJECT
@@ -180,8 +180,8 @@ signals:
     void imageHeightChanged(double imageHeight);
 
 private:
-    double m_imageWidth = 0;
-    double m_imageHeight = 0;
+    double m_imageWidth = DOWNLOOK_VISION_CAMERA_WIDTH;
+    double m_imageHeight = DOWNLOOK_VISION_CAMERA_HEIGHT;
     double m_originX = 0;
     double m_originY = 0;
     double m_matrix11 = 0;

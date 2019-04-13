@@ -72,7 +72,6 @@ bool LutModule::moveToAA1UplookPos(bool check_autochthonous)
 
 bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous)
 {
-
     uplook_location->OpenLight();
     bool result = moveToAA1UplookPos(check_autochthonous);
     if(result)

@@ -15,8 +15,6 @@ ColumnLayout {
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                console.log(aaHeadModule)
-                console.log(aaHeadMushroomPosition)
                 aaHeadMushroomPosition.setX(text)
             }
         }
@@ -30,8 +28,8 @@ ColumnLayout {
                 decimals: 3
                 notation: DoubleValidator.StandardNotation
             }
-            onFocusChanged: {
-                if(!focus) aaHeadMushroomPosition.setY(text)
+            onEditingFinished: {
+                aaHeadMushroomPosition.setY(text)
             }
         }
         Label {

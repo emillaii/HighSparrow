@@ -33,7 +33,7 @@ ColumnLayout {
             }
             onValueChanged: {
                 prSUTDownlookParams.setLightBrightness(value)
-                lightingController.setUplookLighting(value)
+                lightingController.setDownlookLighting(value)
             }
         }
 

@@ -59,7 +59,7 @@ ColumnLayout {
         }
 
         Button {
-            text: qsTr("Start Downlook Cali")
+            text: qsTr("Start Uplook Cali")
             onClicked: {
                 baseModuleManager.performUplookCalibration()
             }

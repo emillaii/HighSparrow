@@ -9,5 +9,6 @@
         <file>icons/select.png</file>
         <file>icons/machine.png</file>
         <file>icons/camera_off.png</file>
+        <file>icons/settings_input_composite.png</file>
     </qresource>
 </RCC>

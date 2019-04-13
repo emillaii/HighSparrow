@@ -11,12 +11,12 @@ bool Dothinkey::CameraChannel::CloseCameraChannel()
 
 Dothinkey::Dothinkey(QObject *parent) : PropertyBase(parent)
 {
+    loadParams();
 }
 
 Dothinkey::~Dothinkey()
 {
     //Clear things here
-    loadParams();
 }
 
 void Dothinkey::updateParams()

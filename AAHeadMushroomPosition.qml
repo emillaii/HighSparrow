@@ -101,7 +101,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                //
+                aaHeadModule.moveToMushroomPosition()
             }
         }
         Button {

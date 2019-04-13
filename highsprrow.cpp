@@ -35,17 +35,12 @@ void HighSprrow::home()
 void HighSprrow::performLUTMushroomPR()
 {
     PrOffset offset;
-    if (baseModuleManager->lut_module.moveToAA1UplookPos(true))
+    if (baseModuleManager->vision_locations[PR_AA1_MUSHROOMHEAD]->performPR(offset))
     {
-        if (baseModuleManager->vision_locations[PR_AA1_MUSHROOMHEAD]->performPR(offset))
-        {
-            qInfo("Perform LUT Mushroom OffsetX %f OffsetY %f", offset.X, offset.Y);
-            baseModuleManager->lut_carrier.StepMove_XY_Sync(offset.X, offset.Y);
-        } else {
-            qInfo("Perform LUT Mushroom PR fail");
-        }
+        qInfo("Perform LUT Mushroom OffsetX %f OffsetY %f", offset.X, offset.Y);
+        baseModuleManager->lut_carrier.StepMove_XY_Sync(-offset.X, -offset.Y);
     } else {
-        qInfo("Perform SUT Downlook PR Fail");
+        qInfo("Perform LUT Mushroom PR fail");
     }
 }
 
@@ -55,7 +50,7 @@ void HighSprrow::performSUTDownlookPR()
     if (baseModuleManager->sut_module.moveToDownlookPR(offset, false))
     {
         qInfo("Perform SUT Downlook PR OffsetX %f OffsetY %f", offset.X, offset.Y);
-        baseModuleManager->sut_module.stepMove_XY_Sync(offset.X, offset.Y);
+        baseModuleManager->sut_module.stepMove_XY_Sync(-offset.X, -offset.Y);
     } else {
         qInfo("Perform SUT Downlook PR Fail");
     }
@@ -66,7 +61,7 @@ void HighSprrow::performLUTUplookPR()
     PrOffset offset;
     if (baseModuleManager->lut_module.moveToAA1UplookPR(offset, false,true))
     {
-        baseModuleManager->lut_carrier.StepMove_XY_Sync(offset.X, offset.Y);
+        baseModuleManager->lut_carrier.StepMove_XY_Sync(-offset.X, -offset.Y);
     }
 }
 

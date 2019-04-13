@@ -37,6 +37,7 @@ public:
     double uplook_y;
     double uplook_theta;
     void loadParams();
+    Q_INVOKABLE bool moveToMushroomPosition();
     Q_INVOKABLE bool moveToPickLensPosition();
     Q_INVOKABLE bool moveToOCPosition();
     bool moveToAAPosition();

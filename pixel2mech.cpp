@@ -36,7 +36,7 @@ QMatrix Pixel2Mech::DoCalibration(const QPointF pixel_points[], const QPointF me
 
 bool Pixel2Mech::CalcMechDistance(const QPointF &pixel_point,QPointF &mech_point)
 {
-    if(has_calibration)
+    if(!has_calibration)
     {
         qInfo("Missing calibration");
         return false;

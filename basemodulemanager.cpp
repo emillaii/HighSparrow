@@ -405,6 +405,14 @@ bool BaseModuleManager::stepMove(QString name, double step, bool isPositive)
         return false;
 }
 
+void BaseModuleManager::setOutput(QString name, bool on)
+{
+    if (this->output_ios.contains(name)){
+        qInfo("set output : %s %d", name.toStdString().c_str(), on);
+        output_ios[name]->Set(on);
+    }
+}
+
 double BaseModuleManager::getMotorFeedbackPos(QString name)
 {
      if (motors.contains(name)) {

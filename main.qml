@@ -64,6 +64,10 @@ ApplicationWindow {
         id: motionDialog
     }
 
+    IODialog {
+        id: ioDialog
+    }
+
     PopupMessageView {
         id: messageDialog
     }
@@ -183,6 +187,19 @@ ApplicationWindow {
                    motionDialog.open()
                }
            }
+           ToolButton {
+               text: qsTr("IO")
+               transformOrigin: Item.Center
+               display: Button.TextUnderIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/settings_input_composite.png"
+               icon.color: "lime"
+               onClicked: {
+                   ioDialog.open()
+               }
+           }
+
         }
     }
 

@@ -43,6 +43,7 @@
         <file>CalibrationAA1MushroomView.qml</file>
         <file>Page4FormForm.ui.qml</file>
         <file>AADataView.qml</file>
+        <file>IODialog.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

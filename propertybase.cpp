@@ -117,9 +117,11 @@ bool PropertyBase::loadJsonConfig(QString file_name, QMap<QString, PropertyBase*
 
 bool PropertyBase::loadJsonConfig(QString file_path, const QString name, PropertyBase* parameters)
 {
+    file_path.append(name)
+             .append(".json");
     QString val;
     QFile file;
-    file.setFileName(file_path + name +".json");
+    file.setFileName(file_path);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))return false;
     val = file.readAll();
     file.close();

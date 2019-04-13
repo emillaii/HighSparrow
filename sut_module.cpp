@@ -51,11 +51,11 @@ bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check
     bool result = moveToDownlookPos(check_autochthonous);
     if(result)
     {
-        vision_downlook_location->performPR(offset);
+        result = vision_downlook_location->performPR(offset);
     }
     if(close_lighting)
         vision_downlook_location->CloseLight();
-    return false;
+    return result;
 }
 
 bool SutModule::moveToLoadPos(bool check_autochthonous)

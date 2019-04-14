@@ -203,6 +203,18 @@ ApplicationWindow {
                    ioDialog.open()
                }
            }
+           ToolButton {
+               text: qsTr("Auto")
+               transformOrigin: Item.Center
+               display: Button.TextUnderIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/auto-run.png"
+               icon.color: "lime"
+               onClicked: {
+                   logicManager.autoRun()
+               }
+           }
 
         }
     }

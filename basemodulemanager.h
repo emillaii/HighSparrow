@@ -23,6 +23,7 @@
 #include "dispenser.h"
 #include "dispense_module.h"
 #include "vision_location.h"
+#include "chart_calibration.h"
 
 class BaseModuleManager : public PropertyBase
 {
@@ -40,7 +41,7 @@ public:
     QMap<QString,XtGeneralOutput*> output_ios;
     QMap<QString,Calibration*> calibrations;
     QMap<QString,VisionLocation*> vision_locations;
-
+    ChartCalibration * chartCalibration;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
     VisionModule * visionModule = Q_NULLPTR;
@@ -118,6 +119,7 @@ public:
     Q_INVOKABLE void performUpDownlookCalibration();
     Q_INVOKABLE void performUpDownlookUpCalibration();
     Q_INVOKABLE void performAA1MushroomHeadCalibration();
+    Q_INVOKABLE void performChartCalibration();
     Q_INVOKABLE void UpdateCalibrationParameters();
 
 

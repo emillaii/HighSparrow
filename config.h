@@ -8,6 +8,7 @@
 #define AA_HELPER_DIR                "aa_helper_log//"
 #define BASE_LOG_DIR                 "log//"
 #define SYSTEM_LOG_DIR               "system_log//"
+#define GRABBER_DEBUG_DIR            "grabber_log//"
 #define VISION_PR_DEBUG_DIR          "pr_log//"
 #define AA_DEBUG_DIR                 "aa_log//"
 #define AA_SAVE_IMAGE_DIR            "aa_save_image//"
@@ -96,7 +97,7 @@
 #define UPLOOK_LENS_HOLDER_IMX363_EDGE_MODEL      "config//vision_config_1//Lens.4e95ee99.avdata"
 #define DOWNLOOK_CMOS_IMX363_EDGE_MODEL           "config//vision_config_1//downlook_sensor.ad9e6e81.avdata"
 //calibration
-#define CALIBRATION_RESULT_PATH         ".//config//calibrationConfig//"
+#define CALIBRATION_RESULT_PATH          ".//config//calibrationConfig//"
 #define LENS_PICKARM_CALIBRATION         "lens_pickarm_calibration"
 #define SENSOR_PICKARM_CALIBRATION       "sensor_pickarm_calibration"
 #define AA1_UPLOOK_CALIBRATION           "aa1_upLook_calibration"
@@ -107,7 +108,9 @@
 #define AA1_UPDownLOOK_DOWN_CALIBRATION  "aa1_updownLook_down_calibration"
 #define AA2_UPDownLOOK_UP_CALIBRATION    "aa2_updownLook_up_calibration"
 #define AA2_UPDownLOOK_DOWN_CALIBRATION  "aa2_updownLook_down_calibration"
-#define AA1_MUSHROOMHEAD_CALIBRATION      "aa1_mushroomhead_calibration"
+#define AA1_MUSHROOMHEAD_CALIBRATION     "aa1_mushroomhead_calibration"
+
+#define CHART_CALIBRATION                "chart_calibration"
 //dispenser
 
 #define DISPENSER_PARAMETER_PATH         ".//config//dispenserConfig//"
@@ -228,6 +231,11 @@
 #define AA_PARAM_Z_OFFSET_TYPE "type"
 #define AA_PARAM_Z_OFFSET_IN_UM "z_offset_in_um"
 #define AA_PARAM_DELAY_IN_MS "delay"
+
+//AA Params ToDo Move to System Property
+#define AA_MAX_INTENSITY 50
+#define AA_MIN_AREA 10000
+#define AA_MAX_AREA 90000
 
 #endif
 // CONFIG_H

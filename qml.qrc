@@ -45,6 +45,7 @@
         <file>AADataView.qml</file>
         <file>IODialog.qml</file>
         <file>BusyDialog.qml</file>
+        <file>CalibrationChart.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

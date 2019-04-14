@@ -29,21 +29,24 @@ void Calibration::saveJsonConfig()
 {
     PropertyBase::saveJsonConfig(file_path,name, &parameters);
 }
-bool Calibration::performCalibration()
+bool Calibration::performCalibration(double x_step, double y_step)
 {
     if(nullptr == motor_x||nullptr == motor_y)
     {
         AppendLineError(u8"轴为空");
         return false;
     }
-    double xMove = 1;
-    double yMove = 1;
+    double xMove = x_step;
+    double yMove = y_step;
 
     double pixel_x,pixel_y;
     QVector<QPointF> pixelPoints;
     QVector<QPointF> motorPoints;
-
-    location->OpenLight();
+    if (location)
+        location->OpenLight();
+    else {
+        qInfo("This is not require vision");
+    }
 
     for (int i = 1; i<=4; i++)
     {
@@ -136,12 +139,33 @@ bool Calibration::getDeltaDistanceFromCenter(const QPointF pixelPoint, QPointF &
 QPointF Calibration::getOnePxielDistance()
 {
     QPointF zero_zero,one_one;
-   if(getDeltaDistanceFromCenter(QPointF(0,0),zero_zero))
+   if(!getDeltaDistanceFromCenter(QPointF(0,0),zero_zero))
        return QPointF();
-   if(getDeltaDistanceFromCenter(QPointF(1,1),one_one))
+   if(!getDeltaDistanceFromCenter(QPointF(1,1),one_one))
        return QPointF();
    return QPointF(one_one.x()-zero_zero.x(),one_one.y()-zero_zero.y());
 }
+
+QPointF Calibration::getOneXPxielDistance()
+{
+    QPointF zero_zero,one_one;
+   if(!getDeltaDistanceFromCenter(QPointF(0,0),zero_zero))
+       return QPointF();
+   if(!getDeltaDistanceFromCenter(QPointF(1,0),one_one))
+       return QPointF();
+   return QPointF(one_one.x()-zero_zero.x(),one_one.y()-zero_zero.y());
+}
+
+QPointF Calibration::getOneYPxielDistance()
+{
+    QPointF zero_zero,one_one;
+   if(!getDeltaDistanceFromCenter(QPointF(0,0),zero_zero))
+       return QPointF();
+   if(!getDeltaDistanceFromCenter(QPointF(0,1),one_one))
+       return QPointF();
+   return QPointF(one_one.x()-zero_zero.x(),one_one.y()-zero_zero.y());
+}
+
 
 bool Calibration::getMechPoint(QPointF pixelPoint, QPointF &mechPoint)
 {

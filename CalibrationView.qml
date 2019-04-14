@@ -38,6 +38,11 @@ ItemDelegate {
                 CalibrationUplookView {
                 }
             }
+            GroupBox {
+                title: qsTr("Chart")
+                CalibrationChart {
+                }
+            }
         }
     }
 }

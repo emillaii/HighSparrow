@@ -38,13 +38,25 @@ Popup {
                     Switch {
                         text: qsTr("SUT1吸真空")
                         onCheckedChanged: {
-                                baseModuleManager.setOutput("SUT1吸真空", checked)
+                                baseModuleManager.setOutput("SUT1吸真空", !checked)
                         }
                     }
                     Switch {
                         text: qsTr("AA1_Gripper")
                         onCheckedChanged: {
                                 baseModuleManager.setOutput("AA1_GripON", checked)
+                        }
+                    }
+                    Switch {
+                        text: qsTr("LUT吸真空")
+                        onCheckedChanged: {
+                                baseModuleManager.setOutput("LUT吸真空", checked)
+                        }
+                    }
+                    Switch {
+                        text: qsTr("LUT破真空")
+                        onCheckedChanged: {
+                                baseModuleManager.setOutput("LUT破真空", checked)
                         }
                     }
                 }

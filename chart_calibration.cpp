@@ -1,6 +1,6 @@
 #include "chart_calibration.h"
 #include "visionavadaptor.h"
-
+#include "commonutils.h"
 ChartCalibration::ChartCalibration(Dothinkey *dothinkey, int max_intensity, int min_area, int max_area, QString name, QString file_name, XtMotor *motor_x, XtMotor *motor_y, QObject *parent)
     :Calibration(name,file_name,motor_x,motor_y,nullptr,nullptr)
 {
@@ -13,13 +13,19 @@ ChartCalibration::ChartCalibration(Dothinkey *dothinkey, int max_intensity, int 
 bool ChartCalibration::GetPixelPoint(double &x, double &y)
 {
     cv::Mat img = dothinkey->DothinkeyGrabImageCV(0);
+
     QImage outImage;
     double offsetX, offsetY;
     unsigned int ccIndex = 10000, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
-
+    QString imageName;
+    imageName.append(getGrabberLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".jpg");
+    cv::imwrite(imageName.toStdString().c_str(), img);
     std::vector<AA_Helper::patternAttr> vector = AA_Helper::AA_Search_MTF_Pattern(img, outImage, false,
                                                                                   ccIndex, ulIndex, urIndex, llIndex, lrIndex,max_intensity,min_area,max_area);
-
+    this->parameters.setimageWidth(img.cols);
+    this->parameters.setimageHeight(img.rows);
     if( vector.size()<1 || ccIndex > 9 )
     {
         qInfo(("error in get center of " + name ).toStdString().data());
@@ -28,7 +34,7 @@ bool ChartCalibration::GetPixelPoint(double &x, double &y)
     offsetX = vector[ccIndex].center.x();
     offsetY = vector[ccIndex].center.y();
     qInfo((name + " pixel x: %f y: %f").toStdString().data(), offsetX, offsetY);
-    x = offsetY;
-    y = -offsetX;
-        return true;
+    x = offsetX;
+    y = offsetY;
+    return true;
 }

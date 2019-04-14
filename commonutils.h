@@ -10,5 +10,6 @@ void createAllDir();
 QString getCurrentTimeString();
 QString getCurrentDateString();
 QString getVisionLogDir();
+QString getGrabberLogDir();
 
 #endif // COMMONUTILS_H

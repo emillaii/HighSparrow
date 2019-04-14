@@ -7,6 +7,7 @@ enum CommandType{
     MOTION_INIT,
     MOTION_HOME,
     MOTION_STOP_HOME,     // Interrupt
+    MODE_AUTO_RUN,
     AA_MOVETO_MUSHROOM_CMD,
     AA_MOVETO_PICK_LENS_CMD,
     AA_MOVETO_OC_CMD,
@@ -16,13 +17,18 @@ enum CommandType{
     LUT_MOVETO_UNLOAD_CMD,
     LUT_MOVETO_LOAD_UPLOOK_CMD,
     LUT_MOVETO_AA1_UPLOOK_CMD,
-    LUT_MOVETO_AA2_UPLOOK_CMD
+    LUT_MOVETO_AA2_UPLOOK_CMD,
+    CALIBRATION_CHART,
+    CALIBRATION_MUSHROOM,
+    CALIBRATION_UPLOOK,
+    CALIBRATION_DOWNLOOK,
+    PERFORM_OC
 };
 
 LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     : QThread (parent), m_currentMode(CommandType::IDLE)
 {
-    aaCore = new AACore(&device_manager->aa_head_module,&device_manager->lut_module,&device_manager->sut_module, device_manager->dothinkey);
+    aaCore = new AACore(&device_manager->aa_head_module,&device_manager->lut_module,&device_manager->sut_module, device_manager->dothinkey, device_manager->chartCalibration);
     sfrWorkerController = new SfrWorkerController(aaCore);
     aaCore->setSfrWorkerController(sfrWorkerController);
     baseModuleManage = device_manager;
@@ -35,6 +41,13 @@ void LogicManager::run() {
 
     if (m_currentMode == CommandType::MOTION_STOP_HOME) {
         baseModuleManage->stopSeeking();
+    }
+    else if (m_currentMode == CommandType::MODE_AUTO_RUN) {
+        aaCore->start();
+        aaCore->wait();
+    }
+    else if (m_currentMode == CommandType::PERFORM_OC) {
+        aaCore->performOC(true, true);
     }
     else if (m_currentMode == CommandType::MOTION_HOME) {
         baseModuleManage->allMotorsSeekOrigin();
@@ -72,16 +85,21 @@ void LogicManager::run() {
     {
         baseModuleManage->lut_module.moveToAA2UplookPos();
     }
+    else if (m_currentMode == CommandType::CALIBRATION_CHART)
+    {
+        baseModuleManage->performChartCalibration();
+    }
     m_currentMode = CommandType::IDLE;
     qInfo("End");
 }
 
 void LogicManager::moveToCmd(int cmd) {
-    if (m_currentMode == CommandType::IDLE)
+    if (m_currentMode == CommandType::IDLE || cmd == CommandType::MOTION_STOP_HOME)
     {
         setCurrentMode(cmd);
         this->start();
-    } else {
+    }
+    else {
         qInfo("%s Fail ! Due to previous command is running", __FUNCTION__);
     }
 }
@@ -107,3 +125,11 @@ void LogicManager::lutMoveToUnloadPos(){setStateMessage(__FUNCTION__);moveToCmd(
 void LogicManager::lutMoveToLoadUplookPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_MOVETO_LOAD_UPLOOK_CMD);}
 void LogicManager::lutMoveToAA1UplookPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_MOVETO_AA1_UPLOOK_CMD);}
 void LogicManager::lutMoveToAA2UplookPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_MOVETO_AA2_UPLOOK_CMD);}
+
+void LogicManager::performChartCalibration(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::CALIBRATION_CHART);}
+
+
+void LogicManager::autoRun(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MODE_AUTO_RUN);}
+
+void LogicManager::performOC(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::PERFORM_OC);}
+

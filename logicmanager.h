@@ -23,6 +23,8 @@ public:
     Q_INVOKABLE void home();
     Q_INVOKABLE void stopHome();
 
+    Q_INVOKABLE void autoRun();
+
     Q_INVOKABLE void aaMoveToMushroomPos();
     Q_INVOKABLE void aaMoveToPickLensPos();
     Q_INVOKABLE void aaMoveToOCPos();
@@ -35,6 +37,10 @@ public:
     Q_INVOKABLE void lutMoveToLoadUplookPos();
     Q_INVOKABLE void lutMoveToAA1UplookPos();
     Q_INVOKABLE void lutMoveToAA2UplookPos();
+
+    Q_INVOKABLE void performChartCalibration();
+
+    Q_INVOKABLE void performOC();
 
     int currentMode() const
     {

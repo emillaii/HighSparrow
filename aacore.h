@@ -19,12 +19,12 @@
 #include "dothinkey.h"
 #include "visionavadaptor.h"
 #include "imageprovider.h"
-
+#include "chart_calibration.h"
 class AACore : public QThread
 {
     Q_OBJECT
 public:
-    explicit AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey *dk, QObject *parent = nullptr);
+    explicit AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey *dk, ChartCalibration * chartCalibration,  QObject *parent = nullptr);
     ~AACore();
 
 protected:
@@ -52,6 +52,7 @@ private:
     LutModule* lut;
     SutModule* sut;
     Dothinkey* dk;
+    ChartCalibration* chartCalibration;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QJsonDocument flowchartDocument;

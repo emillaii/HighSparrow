@@ -52,6 +52,7 @@ BaseModuleManager::~BaseModuleManager()
             delete  GetInputIoByName(input_ios.keys()[i]);
     for (int i = 0; i < calibrations.size(); ++i)
             delete  calibrations[calibrations.keys()[i]];
+    delete chartCalibration;
 }
 
 bool BaseModuleManager::ReadParameters()
@@ -162,6 +163,7 @@ bool BaseModuleManager::InitStruct()
     calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_AA1_TOOL_DOWNLOOK]));
     calibrations.insert(AA1_MUSHROOMHEAD_CALIBRATION,new Calibration(AA1_MUSHROOMHEAD_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_AA1_MUSHROOMHEAD]));
 
+    chartCalibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH, sut_x, sut_y);
 
     vision_locations[PR_AA1_TOOL_UPLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->getCaliMapping(),lightingModule);
     //vision_locations[PR_AA1_TOOL_UPLOOK]->parameters.setCameraName(UPLOOK_VISION_CAMERA);
@@ -346,6 +348,13 @@ void BaseModuleManager::performAA1MushroomHeadCalibration()
 {
     if(calibrations.contains(AA1_MUSHROOMHEAD_CALIBRATION))
         calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->performCalibration();
+}
+
+void BaseModuleManager::performChartCalibration()
+{
+    qInfo("perform Chart Calibration");
+    if (chartCalibration)
+        chartCalibration->performCalibration(0.1, 0.1);
 }
 
 void BaseModuleManager::UpdateCalibrationParameters()

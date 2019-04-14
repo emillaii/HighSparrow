@@ -20,7 +20,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
     //std::vector<AA_Helper::patternAttr> patterns = aa_core::search_mtf_pattern(img, outImage, true,
     //                            ccIndex, ulIndex, urIndex, lrIndex, llIndex);
-    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AA_Search_MTF_Pattern(img, outImage, true, ccIndex, ulIndex, urIndex, lrIndex, llIndex, 50, 25000, 90000);
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AA_Search_MTF_Pattern(img, outImage, true, ccIndex, ulIndex, urIndex, lrIndex, llIndex, 50, 10000, 90000);
     //Add protection here
     std::vector<Sfr_entry> sfr_v;
     if (patterns.size() < 5) {
@@ -31,7 +31,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     }
     cv::Rect roi;
     double area = patterns[0].area;
-    roi.width = sqrt(area)*1.25;
+    roi.width = sqrt(area)*1.6;
     roi.height = roi.width;
 
     cv::Mat ccMat, ulMat, urMat, llMat, lrMat;
@@ -55,7 +55,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
             if (k == llIndex) llMat = cropImage.clone();
             if (k == lrIndex) lrMat = cropImage.clone();
             //if (k == ccIndex) ccMat = cropImage.clone();
-            //imwrite(QString::number(index).append(QString::number(k)).append(".bmp").toStdString().c_str(), cropImage);
+            imwrite(QString::number(index).append(QString::number(k)).append(".bmp").toStdString().c_str(), cropImage);
             if (k == ccIndex)
             {
                 vector<Sfr_entry> sv = sfr::calculateSfr(z, cropImage, edgeFilter);

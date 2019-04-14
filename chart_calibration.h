@@ -21,9 +21,9 @@ private:
     bool GetPixelPoint(double &x, double &y)override;
 private:
     Dothinkey *dothinkey;
-     int max_intensity;
-     int min_area;
-     int max_area;
+    int max_intensity;
+    int min_area;
+    int max_area;
 };
 
 #endif // CHART_CALIBRATION_H

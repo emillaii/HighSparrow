@@ -5,7 +5,6 @@
 #include <visionavadaptor.h>
 #include <config.h>
 #include <QThread>
-#include <windows.h>
 #include <stdlib.h>
 #include <QFile>
 #include <QFileDialog>
@@ -18,12 +17,13 @@ typedef enum {
     AA_ZSCAN_NORMAL
 } ZSCAN_MODE;
 
-AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey* dk,QObject *parent) : QThread(parent)
+AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey* dk, ChartCalibration * chartCalibration,QObject *parent) : QThread(parent)
 {
     this->aa_head = aa_head;
     this->lut = lut;
     this->sut = sut;
     this->dk = dk;
+    this->chartCalibration = chartCalibration;
     ocImageProvider_1 = new ImageProvider();
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
     connect(this, &AACore::sfrResultsDetectFinished, this, &AACore::stopZScan);
@@ -39,9 +39,9 @@ void AACore::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
 }
 
 void AACore::run(){
-    //runFlowchartTest();
-    performAAOffline();
-    performOC(false, true);
+    runFlowchartTest();
+    //performAAOffline();
+    //performOC(true, true);
     qInfo("End");
 }
 
@@ -244,6 +244,8 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
             } else if (edge_filter_mode == 2) {
                 edgeFilter = sfr::EdgeFilter::HORIZONTAL_ONLY;
             }
+            performAA(start_pos, stop_pos, step_size, true, delay_z_in_ms,wait_tilt,mode);
+            qInfo("End of perform AA");
         }
         else if (testItemName.contains(AA_PIECE_MTF)) {
             qInfo("Performing MTF");
@@ -393,16 +395,16 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
                                    bool is_debug, sfr::EdgeFilter edgeFilter,
                                    double estimated_fov_slope, double zOffset)
 {
+    qInfo("start: %f stop: %f step_size: %f", start, stop, step_size);
     int imageWidth, imageHeight;
     double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
     double corner_deviation = 0;
     unsigned int zScanCount = 0;
-    double xsum=0,x2sum=0,ysum=0,xysum=0;
+//    double xsum=0,x2sum=0,ysum=0,xysum=0;
     vector<cv::Mat> images;
     sut->moveToZPos(start);
     mPoint3D start_pos = sut->carrier->GetFeedBackPos();
     int count = 0;
-    return ErrorCodeStruct {ErrorCode::OK, ""};
     if (zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
         count = (int)fabs((start - stop)/step_size);
         for (int i = 0; i < count; i++)
@@ -410,25 +412,37 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
            sut->moveToZPos(start+(i*step_size));
            msleep(zSleepInMs);
            double realZ = sut->carrier->GetFeedBackPos().Z;
-           qInfo("Z scan start from %f to %f, real: %f, time:%d", start_pos, realZ);
+           qInfo("Z scan start from %f to %f, real: %f, time:%d", start_pos.Z, realZ);
            cv::Mat img = dk->DothinkeyGrabImageCV(0);
-           if (is_debug)
-           {
-               QString debugImageName = "d://debug";
-               debugImageName.append("//zscan_")
-                             .append(QString::number(i))
-                             .append(".bmp");
-               cv::imwrite(debugImageName.toStdString().c_str(), img);
-           }
+           imageWidth = img.cols; imageHeight = img.rows;
+           QString imageName;
+           imageName.append(getGrabberLogDir())
+                           .append(getCurrentTimeString())
+                           .append(".jpg");
+           cv::imwrite(imageName.toStdString().c_str(), img);
            double dfov = calculateDFOV(img);
            qInfo("fov: %f  syt_z: %f", dfov,sut->carrier->GetFeedBackPos().Z);
            imageWidth = img.cols;
            imageHeight = img.rows;
            images.push_back(std::move(img));
            zScanCount++;
-           emit sfrWorkerController->calculate(i, start+i*step_size, images[i], false, edgeFilter);
+           emit sfrWorkerController->calculate(i, start+i*step_size, images[i], false, sfr::EdgeFilter::NO_FILTER);
        }
     }
+    qInfo("End of zscan motion");
+    int timeout=1000;
+    while(this->clustered_sfr_map.size() != zScanCount && timeout >0) {
+        Sleep(10);
+        timeout--;
+    }
+    if (timeout <= 0) {
+        qInfo("Error in performing AA Offline: %d", timeout);
+        return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
+    }
+    sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak);
+    clustered_sfr_map.clear();
+    qInfo("xTilt: %f yTilt: %f zPeak: %f", xTilt, yTilt, zPeak);
+    return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
@@ -437,11 +451,17 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
     QVariantMap map;
     QVariantMap stepTimerMap;
     QElapsedTimer timer, stepTimer;
-    timer.start(); stepTimer.start();/*
+    timer.start(); stepTimer.start();
+    /*
     this->lightingController->SetBrightness(LIGHTING_UPLOOK, 0);
     this->lightingController->SetBrightness(LIGHTING_DOWNLOOK, 0);*/
-    //cv::Mat img = dk->DothinkeyGrabImageCV(0);
-    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_10.bmp");
+    cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    QString imageName;
+    imageName.append(getGrabberLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".jpg");
+    cv::imwrite(imageName.toStdString().c_str(), img);
+    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_10.bmp");
     QImage outImage;
     double offsetX, offsetY;
     unsigned int ccIndex = 10000, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
@@ -467,22 +487,21 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
         offsetX = center.x() - img.cols/2;
         offsetY = center.y() - img.rows/2;
     }
-    bool reverse = true;
     if (enableMotion)
     {
-        double stepX = offsetX; /// cmosPixelToMM_X;  //Pixel to um
-        double stepY = offsetY; /// cmosPixelToMM_Y;
-
+        QPointF x_ratio = chartCalibration->getOneXPxielDistance();
+        qInfo("x pixel Ratio: %f %f ", x_ratio.x(), x_ratio.y());
+        QPointF y_ratio = chartCalibration->getOneYPxielDistance();
+        qInfo("y pixel Ratio: %f %f ", y_ratio.x(), y_ratio.y());
+        double stepX = offsetX * x_ratio.x() + offsetY * y_ratio.x();
+        double stepY = offsetX * x_ratio.y() + offsetY * y_ratio.y();
+        qInfo("xy step: %f %f ", stepX, stepY);
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
-            //qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,cmosPixelToMM_X,cmosPixelToMM_Y);
+            qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
         }
-        if (reverse) {
-            this->aa_head->stepMove_AB_Sync(stepY, -stepX);
-        } else {
-            this->aa_head->stepMove_AB_Sync(stepX, stepY);
-        }
+        this->sut->stepMove_XY_Sync(-stepX, -stepY);
     }
     return ret;
 }
@@ -540,7 +559,7 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     double g_x_max = -99999;
 
     //sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, cmosPixelToMM, cmosPixelToMM);
-    sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, 800, 800);
+    sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, 892, 892);
     //ToDo: Check whether the points result is determinitics
     if (points.size() == 5) {
        ul_peak_z = points[0].z;
@@ -618,7 +637,7 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
 std::vector<AA_Helper::patternAttr> AACore::search_mtf_pattern(cv::Mat inImage, QImage &image, bool isFastMode, unsigned int &ccROIIndex, unsigned int &ulROIIndex, unsigned int &urROIIndex, unsigned int &llROIIndex, unsigned int &lrROIIndex)
 {
     int max_intensity = 50;
-    int min_area = 25000; int max_area = 90000;
+    int min_area = 10000; int max_area = 90000;
 
     return AA_Helper::AA_Search_MTF_Pattern(inImage, image, isFastMode, ccROIIndex, ulROIIndex, urROIIndex, llROIIndex, lrROIIndex, max_intensity, min_area, max_area);
 }

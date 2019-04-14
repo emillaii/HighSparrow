@@ -403,13 +403,17 @@ cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel)
     CameraBuffer = (LPBYTE)malloc(nSize);
     if ((CameraBuffer == NULL))
     {
-        //return NULL;
+        qInfo("CameraBuffer is Null");
+        cv::Mat img;
+        return img;
     }
     memset(CameraBuffer, 0, nSize);
     int ret = GrabFrame(CameraBuffer, grabSize, &retSize, &frameInfo, iDevID);
     if (ret == DT_ERROR_OK)
     {
         GetMipiCrcErrorCount(&crcCount, CHANNEL_A, iDevID);
+    } else {
+        qInfo("Camera Grab Frame Fail");
     }
     ImageProcess(CameraBuffer, bmpBuffer, width, height, &frameInfo, iDevID);
     CvSize mSize;

@@ -39,10 +39,12 @@ public:
     Calibration &operator=(const Calibration &calibration) = delete;
     void loadJsonConfig();
     void saveJsonConfig();
-    bool performCalibration();
+    bool performCalibration(double x_step = 1, double y_step =1 );
     double getRotationAngle();
     bool getDeltaDistanceFromCenter(const QPointF pixelPoint, QPointF &distanceMech);
     QPointF getOnePxielDistance();
+    QPointF getOneXPxielDistance();
+    QPointF getOneYPxielDistance();
     double caculateRotationAngle();
     bool getMechPoint(QPointF pixelPoint, QPointF &mechPoint);
     bool getCaliMapping(Pixel2Mech &caliMapping);

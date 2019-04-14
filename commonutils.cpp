@@ -29,3 +29,18 @@ QString getVisionLogDir()
     }
     return QString(BASE_LOG_DIR).append(VISION_PR_DEBUG_DIR).append(getCurrentDateString()).append("//");
 }
+
+QString getGrabberLogDir()
+{
+    QString dir_name;
+    if (!QDir(BASE_LOG_DIR).exists()) { QDir().mkdir(BASE_LOG_DIR); }
+    if (!QDir(QString(BASE_LOG_DIR).append(GRABBER_DEBUG_DIR)).exists()) {
+         QDir().mkdir(QString(BASE_LOG_DIR).append(GRABBER_DEBUG_DIR));
+    }
+    if (!QDir(QString(BASE_LOG_DIR).append(GRABBER_DEBUG_DIR).append(getCurrentDateString())).exists()) {
+         QDir().mkdir(QString(BASE_LOG_DIR).append(GRABBER_DEBUG_DIR).append(getCurrentDateString()));
+    }
+    return QString(BASE_LOG_DIR).append(GRABBER_DEBUG_DIR).append(getCurrentDateString()).append("//");
+}
+
+

@@ -32,6 +32,12 @@ protected:
 
 public:
     void performAAOffline();
+    ErrorCodeStruct performPRToBond();
+    ErrorCodeStruct performAA(double start, double stop, double step_size,
+                   bool enableMotion, int zSleepInMs, bool isWaitTiltMotion,
+                   int zScanMode = 0, double estimated_aa_fov = 0,
+                   bool is_debug = false, sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER,
+                   double estimated_fov_slope = -16, double zOffset=0);
     ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);

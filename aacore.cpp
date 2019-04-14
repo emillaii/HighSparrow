@@ -11,7 +11,13 @@
 #include <QFileDialog>
 #include <QJsonObject>
 #include "aa_util.h"
+#include "commonutils.h"
 #define PI  3.14159265
+
+typedef enum {
+    AA_ZSCAN_NORMAL
+} ZSCAN_MODE;
+
 AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey* dk,QObject *parent) : QThread(parent)
 {
     this->aa_head = aa_head;
@@ -373,6 +379,58 @@ void AACore::performAAOffline()
     //unitlog->addVariantMap("AA", map);
 }
 
+ErrorCodeStruct AACore::performPRToBond()
+{
+    if (!this->aa_head->moveToMushroomPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
+    if (!this->lut->moveToUnloadPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT cannot move to unload Pos"};}
+    if (!this->sut->moveToMushroomPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to mushroom Pos"};}
+    return ErrorCodeStruct {ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
+                                   bool enableMotion, int zSleepInMs, bool isWaitTiltMotion,
+                                   int zScanMode, double estimated_aa_fov,
+                                   bool is_debug, sfr::EdgeFilter edgeFilter,
+                                   double estimated_fov_slope, double zOffset)
+{
+    int imageWidth, imageHeight;
+    double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
+    double corner_deviation = 0;
+    unsigned int zScanCount = 0;
+    double xsum=0,x2sum=0,ysum=0,xysum=0;
+    vector<cv::Mat> images;
+    sut->moveToZPos(start);
+    mPoint3D start_pos = sut->carrier->GetFeedBackPos();
+    int count = 0;
+    return ErrorCodeStruct {ErrorCode::OK, ""};
+    if (zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
+        count = (int)fabs((start - stop)/step_size);
+        for (int i = 0; i < count; i++)
+        {
+           sut->moveToZPos(start+(i*step_size));
+           msleep(zSleepInMs);
+           double realZ = sut->carrier->GetFeedBackPos().Z;
+           qInfo("Z scan start from %f to %f, real: %f, time:%d", start_pos, realZ);
+           cv::Mat img = dk->DothinkeyGrabImageCV(0);
+           if (is_debug)
+           {
+               QString debugImageName = "d://debug";
+               debugImageName.append("//zscan_")
+                             .append(QString::number(i))
+                             .append(".bmp");
+               cv::imwrite(debugImageName.toStdString().c_str(), img);
+           }
+           double dfov = calculateDFOV(img);
+           qInfo("fov: %f  syt_z: %f", dfov,sut->carrier->GetFeedBackPos().Z);
+           imageWidth = img.cols;
+           imageHeight = img.rows;
+           images.push_back(std::move(img));
+           zScanCount++;
+           emit sfrWorkerController->calculate(i, start+i*step_size, images[i], false, edgeFilter);
+       }
+    }
+}
+
 ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
 {
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
@@ -395,7 +453,6 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
                                                                         llIndex, lrIndex);
         stepTimerMap.insert("search_pattern", stepTimer.elapsed());
         stepTimer.restart();
-        outImage.save("fuck.jpg");
         ocImageProvider_1->img = outImage;
         emit callQmlRefeshImg();
         if( vector.size()<1 || ccIndex > 9 ) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
@@ -405,7 +462,8 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
     } else {
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage)) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
-        //emit autoTabImageChanged(outImage);
+        ocImageProvider_1->img = outImage;
+        emit callQmlRefeshImg();
         offsetX = center.x() - img.cols/2;
         offsetY = center.y() - img.rows/2;
     }

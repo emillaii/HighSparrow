@@ -22,16 +22,6 @@ ErrorCodeStruct HighSprrow::InitComponent()
     return ret;
 }
 
-void HighSprrow::init()
-{
-    InitComponent();
-}
-
-void HighSprrow::home()
-{
-    baseModuleManager->allMotorsSeekOrigin();
-}
-
 void HighSprrow::performLUTMushroomPR()
 {
     PrOffset offset;

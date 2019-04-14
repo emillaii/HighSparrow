@@ -68,6 +68,11 @@ ApplicationWindow {
         id: ioDialog
     }
 
+    BusyDialog {
+        id: busyDialog
+        visible: false
+    }
+
     PopupMessageView {
         id: messageDialog
     }
@@ -95,8 +100,7 @@ ApplicationWindow {
                 icon.source: "icons/initial.png"
                 icon.color: "cyan"
                 onClicked: {
-                    console.log("Initial Device")
-                    baseModuleManager.initialDevice();
+                    logicManager.init()
                 }
             }
             ToolButton {
@@ -109,7 +113,7 @@ ApplicationWindow {
                 icon.source: "icons/home.png"
                 icon.color: "cyan"
                 onClicked: {
-                    baseModuleManager.allMotorsSeekOrigin();
+                    logicManager.home()
                 }
             }
             ToolButton {
@@ -123,7 +127,7 @@ ApplicationWindow {
                icon.source: "icons/home.png"
                icon.color: "red"
                onClicked: {
-                   baseModuleManager.stopSeeking();
+                   logicManager.stopHome()
                }
            }
            ToolButton {

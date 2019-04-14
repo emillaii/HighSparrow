@@ -100,3 +100,15 @@ bool SutModule::stepMove_XY_Sync(double x, double y)
 {
     return carrier->StepMove_XY_Sync(x,y);
 }
+
+bool SutModule::stepMove_Z_Sync(double step_z)
+{
+    return carrier->StepMove_Z(step_z);
+}
+
+bool SutModule::moveToZPos(double z)
+{
+    return carrier->Move_Z_Sync(z);
+}
+
+

@@ -20,8 +20,6 @@ public:
     BaseModuleManager * baseModuleManager = Q_NULLPTR;
     LogicManager * logicManager = Q_NULLPTR;
 public:
-    Q_INVOKABLE void init();
-    Q_INVOKABLE void home();
     Q_INVOKABLE void performLUTMushroomPR();
     Q_INVOKABLE void performSUTDownlookPR();
     Q_INVOKABLE void performLUTUplookPR();

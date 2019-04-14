@@ -11,10 +11,18 @@ class LogicManager : public QThread
     Q_OBJECT
 public:
     explicit LogicManager(BaseModuleManager* device_manager, QObject *parent = nullptr);
+    Q_PROPERTY(int currentMode READ currentMode WRITE setCurrentMode)
+    Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage)
+
     Q_INVOKABLE void loadFlowchart(QString);
     AACore * aaCore = Q_NULLPTR;
 
     void performMotionThread();
+
+    Q_INVOKABLE void init();
+    Q_INVOKABLE void home();
+    Q_INVOKABLE void stopHome();
+
     Q_INVOKABLE void aaMoveToMushroomPos();
     Q_INVOKABLE void aaMoveToPickLensPos();
     Q_INVOKABLE void aaMoveToOCPos();
@@ -28,11 +36,36 @@ public:
     Q_INVOKABLE void lutMoveToAA1UplookPos();
     Q_INVOKABLE void lutMoveToAA2UplookPos();
 
+    int currentMode() const
+    {
+        return m_currentMode;
+    }
+
+    QString stateMessage() const
+    {
+        return m_stateMessage;
+    }
+
+public slots:
+    void setCurrentMode(int currentMode)
+    {
+        m_currentMode = currentMode;
+    }
+
+    void setStateMessage(QString stateMessage)
+    {
+        m_stateMessage = stateMessage;
+    }
+
 private:
     BaseModuleManager * baseModuleManage;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     void moveToCmd(int);
-    int currentMode;
+
+    int m_currentMode;
+
+    QString m_stateMessage;
+
 protected:
     void run();
 };

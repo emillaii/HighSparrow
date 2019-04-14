@@ -111,7 +111,7 @@ public:
     void EnableMotors();
     void DisableAllMotors();
     Q_INVOKABLE bool allMotorsSeekOrigin();
-    Q_INVOKABLE void stopSeeking();
+    void stopSeeking();
 
     Q_INVOKABLE void performUplookCalibration();
     Q_INVOKABLE void performDownlookCalibration();

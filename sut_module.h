@@ -22,10 +22,10 @@ public:
     Position3D tool_downlook_position;
     Position3D mushroom_positon;
     Position3D tool_uplook_positon;
+    MaterialCarrier* carrier;
 public slots:
     void updateParams();
 private:
-    MaterialCarrier* carrier;
     VisionLocation* vision_downlook_location;
     VisionLocation* vision_updownlook_location;
     XtVacuum* vacuum;
@@ -40,6 +40,8 @@ public:
     Q_INVOKABLE bool moveToToolUplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToMushroomPos(bool check_autochthonous = false);
     bool stepMove_XY_Sync(double x,double y);
+    bool stepMove_Z_Sync(double step_z);
+    bool moveToZPos(double z);
 };
 
 #endif // SUT_MODULE_H

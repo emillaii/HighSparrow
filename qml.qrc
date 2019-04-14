@@ -44,6 +44,7 @@
         <file>Page4FormForm.ui.qml</file>
         <file>AADataView.qml</file>
         <file>IODialog.qml</file>
+        <file>BusyDialog.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

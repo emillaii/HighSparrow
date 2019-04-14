@@ -104,15 +104,24 @@ bool MaterialCarrier::StepMove_SZ_XY_Sync(double step_x, double step_y, int time
     return StepMove_XY_Sync(step_x,step_y);
 }
 
-void MaterialCarrier::Move_XY_ToPos(double x, double y)
+bool MaterialCarrier::StepMove_Z(double step_z, int timeout)
 {
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
+    double cur_z = motor_z->GetFeedbackPos();
+    double target_z = cur_z + step_z;
+    motor_z->MoveToPos(target_z);
+    return motor_z->WaitArrivedTargetPos(target_z, timeout);
 }
 
 bool MaterialCarrier::Move_Z_Sync(double z, int timeout)
 {
-    return  motor_z->MoveToPosSync(z);
+    motor_z->MoveToPos(z);
+    return motor_z->WaitArrivedTargetPos(z, timeout);
+}
+
+void MaterialCarrier::Move_XY_ToPos(double x, double y)
+{
+    motor_x->MoveToPos(x);
+    motor_y->MoveToPos(y);
 }
 
 bool MaterialCarrier::ZSerchByForce(double &result_pos, double force, double search_limit, int vacuum_state,XtVacuum* excute_vacuum)

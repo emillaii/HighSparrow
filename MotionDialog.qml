@@ -12,7 +12,7 @@ Popup {
     contentItem: Rectangle {
         id: rectangle
         color: "black"
-        implicitWidth: 400
+        implicitWidth: 500
         implicitHeight: 800
         RowLayout {
             ColumnLayout {
@@ -87,7 +87,6 @@ Popup {
                             sut_x_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
                             sut_y_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)
                             sut_z_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_Z)
-//aa1_a_i_label.text =
                             lut_x_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_X)
                             lut_y_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_Y)
                             lut_z_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_Z)
@@ -95,7 +94,7 @@ Popup {
                     }
                 }
 
-                implicitWidth:  300
+                implicitWidth:  400
                 implicitHeight: 600
                 clip: true
                 ColumnLayout {
@@ -105,17 +104,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                var res = baseModuleManager.stepMove(m_AA1_X, selectedStepSize, true)
-                                console.log("result: " + res)
+                                baseModuleManager.homeMotor(m_AA1_X)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
                                 var res = baseModuleManager.stepMove(m_AA1_X, selectedStepSize, false)
-                                console.log("AA X move -");
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                var res = baseModuleManager.stepMove(m_AA1_X, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -129,15 +135,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_Y, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_AA1_Y)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
                                  var res = baseModuleManager.stepMove(m_AA1_Y, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_Y, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -151,15 +166,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_Z, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_AA1_Z)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
                                  var res = baseModuleManager.stepMove(m_AA1_Z, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_Z, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -173,15 +197,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_A, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_AA1_A)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
                                  var res = baseModuleManager.stepMove(m_AA1_A, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_A, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -214,15 +247,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_B, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_AA1_B)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
                                  var res = baseModuleManager.stepMove(m_AA1_B, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                 var res = baseModuleManager.stepMove(m_AA1_B, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -254,15 +296,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_C, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_AA1_C)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_C, selectedStepSize, false)
+                                var res = baseModuleManager.stepMove(m_AA_C, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                var res = baseModuleManager.stepMove(m_AA_C, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -276,15 +327,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_SUT1_X, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_SUT1_X)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_SUT1_X, selectedStepSize, false)
+                                var res = baseModuleManager.stepMove(m_SUT1_X, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                var res = baseModuleManager.stepMove(m_SUT1_X, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -299,15 +359,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_SUT1_Y, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_SUT1_Y)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_SUT1_Y, selectedStepSize, false)
+                                var res = baseModuleManager.stepMove(m_SUT1_Y, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                var res = baseModuleManager.stepMove(m_SUT1_Y, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -321,15 +390,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_SUT1_Z, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_SUT1_Z)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_SUT1_Z, selectedStepSize, false)
+                                var res = baseModuleManager.stepMove(m_SUT1_Z, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                var res = baseModuleManager.stepMove(m_SUT1_Z, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -343,15 +421,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_LUT1_X)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, false)
+                                var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -365,15 +452,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_LUT1_Y, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_LUT1_Y)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_LUT1_Y, selectedStepSize, false)
+                                var res = baseModuleManager.stepMove(m_LUT1_Y, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                var res = baseModuleManager.stepMove(m_LUT1_Y, selectedStepSize, true)
                             }
                         }
                         Label {
@@ -387,15 +483,24 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_LUT1_Z, selectedStepSize, true)
+                                baseModuleManager.homeMotor(m_LUT1_Z)
                             }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                 var res = baseModuleManager.stepMove(m_LUT1_Z, selectedStepSize, false)
+                                var res = baseModuleManager.stepMove(m_LUT1_Z, selectedStepSize, false)
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                var res = baseModuleManager.stepMove(m_LUT1_Z, selectedStepSize, true)
                             }
                         }
                         Label {

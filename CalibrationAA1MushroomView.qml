@@ -32,8 +32,10 @@ ColumnLayout {
                 anchors.centerIn: parent
             }
             onValueChanged: {
-                prAA1MushroomParams.setLightBrightness(value)
-                lightingController.setUplookLighting(value)
+                if (calibrationViewSwitch.checked) {
+                    prAA1MushroomParams.setLightBrightness(value)
+                    lightingController.setUplookLighting(value)
+                }
             }
         }
 

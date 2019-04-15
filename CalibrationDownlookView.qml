@@ -32,8 +32,10 @@ ColumnLayout {
                 anchors.centerIn: parent
             }
             onValueChanged: {
-                prSUTDownlookParams.setLightBrightness(value)
-                lightingController.setDownlookLighting(value)
+                if (calibrationViewSwitch.checked) {
+                    prSUTDownlookParams.setLightBrightness(value)
+                    lightingController.setDownlookLighting(value)
+                }
             }
         }
 

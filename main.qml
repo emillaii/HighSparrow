@@ -98,7 +98,7 @@ ApplicationWindow {
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/initial.png"
-                icon.color: "cyan"
+                icon.color: "deepskyblue"
                 onClicked: {
                     logicManager.init()
                 }
@@ -111,7 +111,7 @@ ApplicationWindow {
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/home.png"
-                icon.color: "cyan"
+                icon.color: "deepskyblue"
                 onClicked: {
                     logicManager.home()
                 }
@@ -138,7 +138,7 @@ ApplicationWindow {
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/flowchart.png"
-                icon.color: "lightGreen"
+                icon.color: "deepskyblue"
                 onClicked: {
                     loadfileDialog.open()
                 }
@@ -151,7 +151,7 @@ ApplicationWindow {
               icon.width: 30
               icon.height: 30
               icon.source: "icons/save.png"
-              icon.color: "lightGreen"
+              icon.color: "deepskyblue"
               onClicked: {
                   var command = "document.getElementsByClassName('get_data')[0].click()";
                   flowChartPage.webView.runJavaScript(command, function(result) {
@@ -172,7 +172,7 @@ ApplicationWindow {
                icon.width: 30
                icon.height: 30
                icon.source: "icons/save.png"
-               icon.color: "cyan"
+               icon.color: "deepskyblue"
                onClicked: {
                    baseModuleManager.updateParams()
 //                   messageDialog.messageText.text = "Save Complete"
@@ -186,7 +186,7 @@ ApplicationWindow {
                icon.width: 30
                icon.height: 30
                icon.source: "icons/machine.png"
-               icon.color: "lime"
+               icon.color: "deepskyblue"
                onClicked: {
                    motionDialog.open()
                }
@@ -198,7 +198,7 @@ ApplicationWindow {
                icon.width: 30
                icon.height: 30
                icon.source: "icons/settings_input_composite.png"
-               icon.color: "lime"
+               icon.color: "deepskyblue"
                onClicked: {
                    ioDialog.open()
                }
@@ -210,7 +210,7 @@ ApplicationWindow {
                icon.width: 30
                icon.height: 30
                icon.source: "icons/auto-run.png"
-               icon.color: "lime"
+               icon.color: "deepskyblue"
                onClicked: {
                    logicManager.autoRun()
                }

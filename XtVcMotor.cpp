@@ -25,8 +25,28 @@ void XtVcMotor::ConfigVCM()
     SetPosModeAcc(vcm_id,max_acc);
     SetPosModejerk(vcm_id,max_jerk);
     SetPosLimit(vcm_id,max_range,min_range);
+    qInfo("ConfigVCM::vcm_id:%d,max_range:%f min_range:%f",vcm_id,max_range,min_range);
+
     SetSoftlandingSlot(vcm_id,GetCurveResource());
+    double current[4]{0.1,1,2,3};
+    double force[4]{100,1000,2000,3000};
+    MapCurrent2Force(vcm_id,current,force,4);
     is_init = true;
+}
+
+void XtVcMotor::ChangeDiretion()
+{
+    if(parameters.direction ==0)
+        parameters.direction = 1;
+    else
+        parameters.direction = 0;
+    direction_is_opposite = (parameters.direction != 0);
+    SetRunDirect(vcm_id, parameters.direction, parameters.scale);
+//    double temo_range = max_range;
+//    max_range = - min_range;
+//    min_range = - temo_range;
+//    SetPosLimit(vcm_id,max_range,min_range);
+//    qInfo("ChangeDiretion::vcm_id:%d,max_range:%f min_range:%f",vcm_id,max_range,min_range);
 }
 
 void XtVcMotor::Init(const QString& motor_name,VCM_Parameter_struct parameters)
@@ -308,8 +328,7 @@ bool XtVcMotor::SearchPosByForce(double &result, double force, double  search_li
         return false;
     if(search_limit<0)search_limit = max_range;
     double start_pos = GetOutpuPos();
-    qInfo("start_pos: %f,force:%f,search_limit:%f",start_pos,force,search_limit);
-    SetSoftLanding(max_vel,max_acc, force, start_pos, search_limit, 1);
+    SetSoftLanding(10,max_acc, force, start_pos,start_pos + (search_limit - start_pos)/2,abs(search_limit - start_pos)/2.1);
     bool res;
     res = DoSoftLanding();
     res &= WaitSoftLandingDone();
@@ -338,6 +357,8 @@ void XtVcMotor::SetSoftLanding(double slow_speed, double slow_acc, double force,
 {
     if(!is_init)
         return;
+
+    qInfo("slow_speed:%f start_pos: %f,force:%f,target_pos:%f,margin:%f",slow_speed,start_pos,force,target_pos,margin);
     SetFastSpeed(vcm_id,max_vel);
     SetFastAcc(vcm_id, max_acc);
     SetSlowSpeed(vcm_id, slow_speed);

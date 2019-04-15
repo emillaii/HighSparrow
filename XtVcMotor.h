@@ -27,6 +27,7 @@ class XtVcMotor : public XtMotor
 public:
     XtVcMotor();
     void ConfigVCM();
+    void ChangeDiretion();
     void ConfigSUT_Z_VCM();
     void Init(const QString& motor_name) override;
     void Init(const QString& motor_name,VCM_Parameter_struct parameters);

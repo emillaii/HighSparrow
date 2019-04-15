@@ -7,7 +7,7 @@ LutModule::LutModule()
 }
 
 
-void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum)
+void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper)
 {
     this->carrier = carrier;
     this->uplook_location = uplook_location;
@@ -16,6 +16,7 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuum;
     this->mushroom_location = mushroom_location;
+    this->gripper = gripper;
     loadParams();
 }
 
@@ -152,21 +153,37 @@ bool LutModule::moveToLoadUplookPos(bool check_autochthonous)
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_uplook_position.X(),load_uplook_position.Y(),load_uplook_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToAA1PickLens(bool check_autochthonous)
+bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
 {
-    bool result = grabber->Set(false);
-    if(result)
+    gripper->Set(true);
+    bool result;
         result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
     if(result)
     {
         //todo one fuction
         double reuslt_pos;
-        result = carrier->ZSerchByForce(reuslt_pos,parameters.PickForce(),-1,0,load_vacuum);
+        result = carrier->ZSerchByForce(reuslt_pos,parameters.pickForce(),-1,0,load_vacuum);
         if(result)
-            grabber->Set(false);
-        result &= carrier->ZSerchReturn();
+        {
+            gripper->Set(false);
+            Sleep(180);
+            load_vacuum->Set(false);
+            Sleep(20);
+        }
+        if(need_return)
+            result &= carrier->ZSerchReturn();
     }
     return result;
+}
+
+bool LutModule::vcmReturn()
+{
+    return  carrier->ZSerchReturn();
+}
+
+bool LutModule::moveToAA1PickLensPos(bool check_autochthonous)
+{
+    return carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
 }
 
 bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
@@ -176,9 +193,9 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
     {
         //todo one fuction
         double reuslt_pos;
-        result = carrier->ZSerchByForce(reuslt_pos,parameters.PickForce(),-1,1,unload_vacuum);
+        result = carrier->ZSerchByForce(reuslt_pos,parameters.pickForce(),-1,1,unload_vacuum);
         if(result)
-            grabber->Set(true);
+            gripper->Set(true);
         result &= carrier->ZSerchReturn();
     }
     return result;
@@ -186,13 +203,14 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
 
 bool LutModule::moveToAA2PickLens(bool check_autochthonous)
 {
-    bool result = grabber->Set(false);
+    bool result;
+    gripper->Set(false);
     if(result)
         result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
     if(result)
     {
         double reuslt_pos;
-        result = carrier->ZSerchByForce(reuslt_pos,parameters.PickForce(),-1,0,load_vacuum);
+        result = carrier->ZSerchByForce(reuslt_pos,parameters.pickForce(),-1,0,load_vacuum);
         if(result)
 //   todo        grabber->Set(false);
         result &= carrier->ZSerchReturn();
@@ -202,13 +220,14 @@ bool LutModule::moveToAA2PickLens(bool check_autochthonous)
 
 bool LutModule::moveToAA2UnPickLens(bool check_autochthonous)
 {
-    bool result = grabber->Set(false);
+    bool result;
+    gripper->Set(false);
     if(result)
         result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),aa2_unpicklens_position.Z(),check_autochthonous);
     if(result)
     {
         double reuslt_pos;
-        result = carrier->ZSerchByForce(reuslt_pos,parameters.PickForce(),-1,0,load_vacuum);
+        result = carrier->ZSerchByForce(reuslt_pos,parameters.pickForce(),-1,0,load_vacuum);
         if(result)
 //  todo          grabber->Set(false);
         result &= carrier->ZSerchReturn();

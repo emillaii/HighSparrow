@@ -71,3 +71,12 @@ void HighSprrow::homeAllMotors()
     qInfo("Home All Motors");
 }
 
+void HighSprrow::aa_A_Inter(double step)
+{
+    baseModuleManager->aa_head_module.stepInterpolation_AB_Sync(step,0);
+}
+
+void HighSprrow::aa_B_Inter(double step)
+{
+    baseModuleManager->aa_head_module.stepInterpolation_AB_Sync(0,step);
+}

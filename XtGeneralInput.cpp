@@ -30,7 +30,7 @@ void XtGeneralInput::Init(const QString &input_name)
      input_id = XT_Controler_Extend::Profile_Find_IoIn_Name((LPWSTR)name.utf16());
      if(input_id<0)
      {
-         count++;
+         count+=2;
          input_id = count;
      }
 

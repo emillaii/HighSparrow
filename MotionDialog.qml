@@ -87,7 +87,7 @@ Popup {
                             sut_x_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
                             sut_y_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)
                             sut_z_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_Z)
-
+//aa1_a_i_label.text =
                             lut_x_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_X)
                             lut_y_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_Y)
                             lut_z_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_Z)
@@ -189,6 +189,25 @@ Popup {
                             color: "lightskyblue"
                         }
                     }
+
+                    RowLayout {
+                        Text {
+                            text: " AA_A_Inter "
+                            color: "white"
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                highSprrow.aa_A_Inter(selectedStepSize);
+                            }
+                        }
+                        RoundButton {
+                            text: "-"
+                            onClicked: {
+                                highSprrow.aa_A_Inter(-selectedStepSize);
+                            }
+                        }
+                    }
                     RowLayout {
                         Text {
                             text: " AA_B "
@@ -209,6 +228,24 @@ Popup {
                         Label {
                             id: aa1_b_label
                             color: "lightskyblue"
+                        }
+                    }
+                    RowLayout {
+                        Text {
+                            text: " AA_B_Inter "
+                            color: "white"
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                highSprrow.aa_B_Inter(selectedStepSize);
+                            }
+                        }
+                        RoundButton {
+                            text: "-"
+                            onClicked: {
+                                highSprrow.aa_B_Inter(-selectedStepSize);
+                            }
                         }
                     }
                     RowLayout {

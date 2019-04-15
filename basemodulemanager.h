@@ -41,6 +41,7 @@ public:
     QMap<QString,XtGeneralOutput*> output_ios;
     QMap<QString,Calibration*> calibrations;
     QMap<QString,VisionLocation*> vision_locations;
+    QMap<QString,XtVacuum*> vacuums;
     ChartCalibration * chartCalibration;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
@@ -93,7 +94,7 @@ private:
     static wchar_t profile_path[];
 
     VCM_Parameter_struct lut_vcm_parameters = {
-        5000/*MaxVel*/,20000/*MaxAcc*/,200000/*MaxJerk*/,19/*MaxRange*/,0/*MinRange*/,9/*CanID*/,1/*dir*/,1024/*scale*/};
+        500/*MaxVel*/,20000/*MaxAcc*/,200000/*MaxJerk*/,0/*MaxRange*/,-19/*MinRange*/,9/*CanID*/,1/*dir*/,1024/*scale*/};
     VCM_Parameter_struct sut_vcm_parameters = {
         500/*MaxVel*/,10000/*MaxAcc*/,200000/*MaxJerk*/,33/*MaxRange*/,0/*MinRange*/,10/*CanID*/,1/*dir*/,5000/*scale*/};
 private:

@@ -49,9 +49,11 @@ bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool ch
 
 bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool check_autochthonous, int timeout)
 {
+    qInfo("move to x:%f y:%f z:%f check_autochthonous:%d",x,y,z,check_autochthonous);
     if(check_autochthonous)
     {
-        if(abs(motor_x->GetFeedbackPos()-x)<0.001&&abs(motor_y->GetFeedbackPos()-y)<0.001&&abs(motor_z->GetFeedbackPos()-z)<0.001)
+        qInfo("target to x:%f y:%f z:%f",motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos());
+        if(abs(motor_x->GetFeedbackPos()-x)<0.001&&abs(motor_y->GetFeedbackPos()-y)<0.001&&abs(motor_z->GetFeedbackPos()-z)<0.01)
             return true;
     }
     bool result;
@@ -128,8 +130,8 @@ bool MaterialCarrier::ZSerchByForce(double &result_pos, double force, double sea
 {
     if(nullptr != excute_vacuum)vacuum = excute_vacuum;
     bool result  = motor_z->SearchPosByForce(result_pos,force,search_limit);
-    if(result && vacuum_state > -1)
-        result &= vacuum->Set(vacuum_state > 0);
+    if(result && vacuum_state > -1&&vacuum != nullptr)
+//        result &= vacuum->Set(vacuum_state > 0);
 //    result &= motor_z->DoSoftLandingReturn();
 //    result &= motor_z->WaitSoftLandingDone();
     return result;

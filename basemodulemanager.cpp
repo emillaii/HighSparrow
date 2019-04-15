@@ -1,4 +1,4 @@
-#include "XtVcMotor.h"
+﻿#include "XtVcMotor.h"
 #include "basemodulemanager.h"
 
 #include <qdir.h>
@@ -123,6 +123,8 @@ bool BaseModuleManager::LoadProfile()
         XtVcMotor* motor_sut_vcm = new XtVcMotor();
         motor_sut_vcm->Init("SUT_Z",sut_vcm_parameters);
         motors.insert("SUT_Z",motor_sut_vcm);
+
+        vacuums.insert("LUT_V",new XtVacuum(GetOutputIoByName(u8"LUT吸真空"),GetInputIoByName(u8"LUT真空检测"),GetOutputIoByName(u8"LUT破真空"),u8"LUT_V"));
         if(!InitStruct())return false;
         profile_loaded = true;
         return true;
@@ -152,10 +154,11 @@ bool BaseModuleManager::InitStruct()
 //    XtCylinder *sut_p = GetCylinderByName("SUT_P");
     XtCylinder *sut_j = GetCylinderByName("SUT_J");
     XtGeneralOutput *dispense_o = GetOutputIoByName("Dispense");
+    XtGeneralOutput *gripper = GetOutputIoByName("AA1_GripON");
 
     lut_carrier.Init("LUT",lut_x,lut_y,lut_z,lut_v);
     sut_carrier.Init("SUT",sut_x,sut_y,sut_z,sut_v);
-    aa_head_module.Init("AAHead",aa_x,aa_y,aa_z,aa_a,aa_b,aa_c,sut_j);
+    aa_head_module.Init("AAHead",aa_x,aa_y,aa_z,aa_a,aa_b,aa_c,gripper);
 
     calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,aa_x,aa_y,vision_locations[PR_AA1_LUT_UPLOOK]));
     calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_SUT_DOWNLOOK]));
@@ -176,7 +179,7 @@ bool BaseModuleManager::InitStruct()
     vision_locations[PR_LOAD_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
     vision_locations[PR_AA1_MUSHROOMHEAD]->Init(visionModule,calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->getCaliMapping(),lightingModule);
     //vision_locations[PR_LOAD_LUT_UPLOOK]->parameters.setCameraName(UPLOOK_VISION_CAMERA);
-    lut_module.Init(&lut_carrier,vision_locations[PR_AA1_LUT_UPLOOK],vision_locations[PR_AA1_TOOL_UPLOOK],vision_locations[PR_LOAD_LUT_UPLOOK],vision_locations[PR_AA1_MUSHROOMHEAD],lut_v,lut_v_u);
+    lut_module.Init(&lut_carrier,vision_locations[PR_AA1_LUT_UPLOOK],vision_locations[PR_AA1_TOOL_UPLOOK],vision_locations[PR_LOAD_LUT_UPLOOK],vision_locations[PR_AA1_MUSHROOMHEAD],lut_v,lut_v_u,gripper);
     sut_module.Init(&sut_carrier,vision_locations[PR_SUT_DOWNLOOK],vision_locations[PR_AA1_TOOL_DOWNLOOK],sut_v);
     QVector<XtMotor *> executive_motors;
     executive_motors.push_back(sut_x);
@@ -307,6 +310,7 @@ bool BaseModuleManager::allMotorsSeekOrigin()
     result &= motors["LUT_X"]->WaitSeekDone();
     result &= motors["LUT_Z"]->WaitSeekDone();
     if(!result)return false;
+    GetVcMotorByName("LUT_Z")->ChangeDiretion();
     qInfo("all motor seeked origin successed!");
     return  true;
 }
@@ -392,6 +396,8 @@ XtGeneralInput *BaseModuleManager::GetInputIoByName(QString name)
 
 XtVacuum *BaseModuleManager::GetVacuumByName(QString name)
 {
+    if(vacuums.contains(name))
+        return vacuums[name];
     return nullptr;
 }
 

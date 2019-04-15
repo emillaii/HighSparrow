@@ -7,13 +7,13 @@ class LutParameter:public PropertyBase
     Q_OBJECT
 public:
     LutParameter():PropertyBase(){}
-    Q_PROPERTY(double PickForce READ PickForce WRITE setPickForce NOTIFY paramsChanged)
+    Q_PROPERTY(double pickForce READ pickForce WRITE setPickForce NOTIFY paramsChanged)
     Q_PROPERTY(int Lighting READ Lighting WRITE setLighting NOTIFY paramsChanged)
     Q_PROPERTY(QString prName READ prName WRITE setPRName NOTIFY paramsChanged)
     Q_PROPERTY(int UpDnLookLighting READ UpDnLookLighting WRITE setUpDnLookLighting NOTIFY paramsChanged)
     Q_PROPERTY(QString upDownLookPrName READ upDownLookPrName WRITE setUpDownLookPrName NOTIFY paramsChanged)
 
-    double PickForce() const
+    double pickForce() const
     {
         return m_PickForce;
     }
@@ -87,7 +87,7 @@ private:
     int m_Lighting = 0;
     QString m_prName = "";
     int m_UpDnLookLighting = 0;
-    QString m_upDownLookPrName = 0;
+    QString m_upDownLookPrName = "";
 };
 
 #endif // LUT_PARAMERTER_H

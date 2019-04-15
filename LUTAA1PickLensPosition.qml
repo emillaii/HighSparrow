@@ -54,7 +54,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToAA1PickLens()
+                lutModule.moveToAA1PickLensPos(true)
             }
         }
         Button {
@@ -68,6 +68,37 @@ ColumnLayout {
                 lutPickLensPositionAA1.setX(x)
                 lutPickLensPositionAA1.setY(y)
                 lutPickLensPositionAA1.setZ(z)
+            }
+        }
+
+        Label {
+            text: qsTr("PickForce")
+        }
+        TextField {
+            text: lutParams.pickForce
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 3
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                lutParams.setPickForce(text)
+            }
+        }
+        Button {
+            text: qsTr("Pick")
+            width: 40
+            height: 40
+            onClicked: {
+                lutModule.moveToAA1PickLens(false,true)
+            }
+        }
+        Button {
+            text: qsTr("Return")
+            width: 40
+            height: 40
+            onClicked: {
+                lutModule.vcmReturn()
             }
         }
     }

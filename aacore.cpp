@@ -389,6 +389,15 @@ ErrorCodeStruct AACore::performPRToBond()
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
+ErrorCodeStruct AACore::performAAPickLens()
+{
+    if (!this->aa_head->moveToMushroomPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
+    if(!this->lut->moveToAA1PickLens()){return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT AA1 ccan not move to pick lens"};}
+    if(!this->lut->moveToLoadPos()){return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT ccan not move to lut load pos"};}
+
+    return ErrorCodeStruct {ErrorCode::OK, ""};
+}
+
 ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
                                    bool enableMotion, int zSleepInMs, bool isWaitTiltMotion,
                                    int zScanMode, double estimated_aa_fov,

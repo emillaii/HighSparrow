@@ -1,5 +1,7 @@
-#include "aaheadmodule.h"
+﻿#include "aaheadmodule.h"
 #include "config.h"
+#include "XT_MotionControlerExtend_Client_Lib.h"
+#include <QtMath>
 
 AAHeadModule::AAHeadModule()
 {
@@ -22,7 +24,7 @@ void AAHeadModule::updateParams()
     PropertyBase::saveJsonConfig(AA_HEAD_MODULE_JSON,temp_map);
 }
 
-void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMotor *motor_z, XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtCylinder *v)
+void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMotor *motor_z, XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtGeneralOutput *gripper)
 {
     this->motor_x = motor_x;
     this->motor_y = motor_y;
@@ -30,7 +32,7 @@ void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMoto
     this->motor_a = motor_a;
     this->motor_b = motor_b;
     this->motor_c = motor_c;
-    this->v = v;
+    this->gripper = gripper;
     loadParams();
 }
 
@@ -88,6 +90,23 @@ bool AAHeadModule::stepMove_AB_Sync(double step_a, double step_b)
     return result;
 }
 
+bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)
+{
+    double dy = qSin(qDegreesToRadians(step_a))*AA_Z_OFFSET;
+    double new_z = qCos(qDegreesToRadians(step_a))*AA_Z_OFFSET;
+    double dx = qSin(qDegreesToRadians(step_b))*new_z;
+    new_z = qCos(qDegreesToRadians(step_b))*new_z;
+    double dz = new_z-AA_Z_OFFSET;
+
+    double x = -dx + motor_x->GetFeedbackPos();
+    double y = dy + motor_y->GetFeedbackPos();
+    double z = dz + motor_z->GetFeedbackPos();
+    double a = step_a + motor_a->GetFeedbackPos();
+    double b = step_b + motor_b->GetFeedbackPos();
+
+    return XYZAB_Interpolation(x,y,z,a,b);
+}
+
 bool AAHeadModule::stepMove_Z_Sync(double step_z)
 {
     double z = step_z + motor_z->GetFeedbackPos();
@@ -138,5 +157,57 @@ bool AAHeadModule::stepMove_XYC_ToSync(double x, double y,double c)
     result &= motor_y->WaitArrivedTargetPos(y);
     result &= motor_c->WaitArrivedTargetPos(c);
     return result;
+}
+
+bool AAHeadModule::XYZAB_Interpolation(double x, double y, double z, double a, double b)
+{
+    static int curve_id = XtMotor::GetCurveResource();
+
+    int dem = 5;
+
+    int nPoint_Index = 0;
+    int axis[] = {motor_x->AxisId(),motor_y->AxisId(),motor_z->AxisId(),motor_a->AxisId(),motor_b->AxisId()};
+    int axis_combine[]={1,1,1,1,1};
+    double axis_max_vel[] = {motor_x->GetMaxVel(),motor_y->GetMaxVel(),motor_z->GetMaxVel(),motor_a->GetMaxVel(),motor_b->GetMaxVel()};
+    double axis_max_acc[] = {motor_x->GetMaxAcc(),motor_y->GetMaxAcc(),motor_z->GetMaxAcc(),motor_a->GetMaxAcc(),motor_b->GetMaxAcc()};
+    double axis_max_jerk[] = {motor_x->GetMaxJerk(),motor_y->GetMaxJerk(),motor_z->GetMaxJerk(),motor_a->GetMaxJerk(),motor_b->GetMaxJerk()};
+
+    double start[] = {motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos(),motor_a->GetFeedbackPos(),motor_b->GetFeedbackPos()};
+    double end[] = {x,y,z,a,b};
+
+    int res = XT_Controler_Extend::Set_Curve_Param(curve_id, 0.1, dem, axis, axis_max_vel, axis_max_acc, axis_max_jerk, axis_combine);
+    if(1!=res)
+    {
+        qInfo("error in Set_Curve_Param");
+        return false;
+    }
+    res = XT_Controler_Extend::Append_Line_Pos(curve_id, dem, axis, start, axis_max_vel[0], axis_max_vel[0], 0, nPoint_Index);
+    if(1!=res)
+    {
+        qInfo("error in set start point");
+        return false;
+    }
+    res = XT_Controler_Extend::Append_Line_Pos(curve_id, dem, axis, end, axis_max_vel[0], 0, 0, nPoint_Index);
+    if(1!=res)
+    {
+        qInfo("error in set end point");
+        return false;
+    }
+    res = XT_Controler_Extend::Exec_Curve(curve_id, motor_x->default_using_thread, motor_y->default_using_thread, 1);
+    if(1!=res)
+    {
+        qInfo("path execute fail");
+        return false;
+    }
+    int time = 3000;
+    while(time>0)
+    {
+        if(XT_Controler_Extend::Check_Finish(curve_id)==1)
+            return true;
+        time-=10;
+        Sleep(10);
+    }
+    qInfo("path execute timeout");
+    return false;
 }
 

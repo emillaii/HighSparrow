@@ -16,7 +16,7 @@ class LutModule : public QObject
     Q_OBJECT
 public:
     LutModule();
-    void Init(MaterialCarrier* carrier,VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum* load_vacuum, XtVacuum* unload_vacuum);
+    void Init(MaterialCarrier* carrier,VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper);
     void loadParams();
     LutParameter parameters;
     Position3D load_uplook_position;
@@ -40,7 +40,7 @@ private:
     VisionLocation* updownlook_location;
     VisionLocation* load_location;
     VisionLocation* mushroom_location;
-    XtVacuum* grabber;
+    XtGeneralOutput* gripper;
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;
 
@@ -57,7 +57,9 @@ public:
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToUnloadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadUplookPos(bool check_autochthonous = false);
-    Q_INVOKABLE bool moveToAA1PickLens(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA1PickLens(bool need_return = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool vcmReturn();
+    Q_INVOKABLE bool moveToAA1PickLensPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1UnPickLens(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2PickLens(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UnPickLens(bool check_autochthonous = false);

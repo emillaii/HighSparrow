@@ -33,6 +33,7 @@ protected:
 public:
     void performAAOffline();
     ErrorCodeStruct performPRToBond();
+    ErrorCodeStruct performAAPickLens();
     ErrorCodeStruct performAA(double start, double stop, double step_size,
                    bool enableMotion, int zSleepInMs, bool isWaitTiltMotion,
                    int zScanMode = 0, double estimated_aa_fov = 0,

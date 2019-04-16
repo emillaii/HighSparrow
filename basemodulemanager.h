@@ -56,8 +56,8 @@ public:
     MaterialCarrier sut_carrier;
     LutModule lut_module;
     SutModule sut_module;
-    Dispenser dispenser;
     DispenseModule dispense_module;
+    Dispenser dispenser;
 
     int lightPanelLighting() const
     {

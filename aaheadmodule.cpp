@@ -92,11 +92,11 @@ bool AAHeadModule::stepMove_AB_Sync(double step_a, double step_b)
 
 bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)
 {
-    double dy = qSin(qDegreesToRadians(step_a))*AA_Z_OFFSET;
-    double new_z = qCos(qDegreesToRadians(step_a))*AA_Z_OFFSET;
+    double dy = qSin(qDegreesToRadians(step_a))*parameters.rotateZOffset();
+    double new_z = qCos(qDegreesToRadians(step_a))*parameters.rotateZOffset();
     double dx = qSin(qDegreesToRadians(step_b))*new_z;
     new_z = qCos(qDegreesToRadians(step_b))*new_z;
-    double dz = new_z-AA_Z_OFFSET;
+    double dz = new_z - parameters.rotateZOffset();
 
     double x = -dx + motor_x->GetFeedbackPos();
     double y = dy + motor_y->GetFeedbackPos();

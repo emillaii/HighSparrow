@@ -29,7 +29,7 @@ private:
     VisionLocation* vision_downlook_location;
     VisionLocation* vision_updownlook_location;
     XtVacuum* vacuum;
-
+    mPoint3D record_position;
     PRResultStruct pr_result;
 public:
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
@@ -39,9 +39,11 @@ public:
     Q_INVOKABLE bool moveToToolDownlookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToToolUplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToMushroomPos(bool check_autochthonous = false);
-    bool stepMove_XY_Sync(double x,double y);
-    bool stepMove_Z_Sync(double step_z);
-    bool moveToZPos(double z);
+    Q_INVOKABLE bool stepMove_XY_Sync(double x,double y);
+    Q_INVOKABLE bool stepMove_Z_Sync(double step_z);
+    Q_INVOKABLE bool moveToZPos(double z);
+    Q_INVOKABLE void recordCurrentPos();
+    Q_INVOKABLE bool movetoRecordPos(bool check_autochthonous = false);
 };
 
 #endif // SUT_MODULE_H

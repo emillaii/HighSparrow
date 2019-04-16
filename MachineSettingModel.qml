@@ -16,12 +16,16 @@ ListModel {
         index: 3
     }
     ListElement {
-        label: "Image Grabber 配置"
+        label: "Dispense 配置"
         index: 4
     }
     ListElement {
-        label: "Calibration 配置"
+        label: "Image Grabber 配置"
         index: 5
+    }
+    ListElement {
+        label: "Calibration 配置"
+        index: 6
     }
 }
 

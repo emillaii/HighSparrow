@@ -150,7 +150,7 @@ double XtVcMotor::GetOutpuPos() const
     return 0;
 }
 
-double XtVcMotor::GetFeedbackPos() const
+double XtVcMotor::GetFeedbackPos(int decimal_digit) const
 {
     if(!is_init)
         return 0;
@@ -169,7 +169,7 @@ double XtVcMotor::GetFeedbackPos() const
         while(--times>0);
         if(direction_is_opposite)
             val = -val;
-        return val;
+        return round((val*pow(10,decimal_digit))/pow(10,decimal_digit));
     }
     return 0;
 }

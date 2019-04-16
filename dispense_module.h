@@ -7,8 +7,9 @@
 #include "dispense_parameter.h"
 #include "material_carrier.h"
 #include "visionmodule.h"
-class DispenseModule
+class DispenseModule:public QObject
 {
+    Q_OBJECT
 public:
     DispenseModule();
     void Init(Calibration* calibration,Dispenser* dispenser,VisionModule* vision, MaterialCarrier* carrier,XtGeneralOutput* dispense_io);
@@ -16,20 +17,20 @@ public:
     void saveConfig();
     void updatePath();
     void setMapPosition(double x,double y,double pr_theta);
-    void MoveToDispenseDot();
-    void CalulateOffset();
+    Q_INVOKABLE void moveToDispenseDot(bool record_z = true);
+    Q_INVOKABLE void calulateOffset();
+    Q_INVOKABLE bool performDispense();
 private:
     QVector<mPoint3D> getDispensePath();
-    bool PerformDispense();
 private:
 public:
+    DispenseParameter parameters;
 private:
     QVector<QPointF> mechPoints;
     Calibration* calibration;
     double x = 0;
     double y = 0;
     double pr_theta = 0;
-    DispenseParameter parameters;
     Dispenser* dispenser;
     VisionModule* vision;
     MaterialCarrier* carrier;

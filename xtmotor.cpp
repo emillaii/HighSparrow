@@ -181,16 +181,16 @@ double XtMotor::GetOutpuPos() const
     return 0;
 }
 
-double XtMotor::GetFeedbackPos() const
+double XtMotor::GetFeedbackPos(int decimal_digit) const
 {
     if(encoder_id>0)
     {
         long long val;
         int res = XT_Controler_Extend::Encoder_Read_Value(encoder_id,val);
         if(res!=0)
-            return val * encoder_ratio;
+            return round(val * encoder_ratio*pow(10,decimal_digit))/decimal_digit;
     }
-    return GetOutpuPos();
+    return round(GetOutpuPos()*pow(10,decimal_digit))/decimal_digit;
 }
 
 double XtMotor::GetCurVel() const

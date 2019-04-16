@@ -10,13 +10,13 @@ class DispenseParameter:public PropertyBase
     Q_OBJECT
 public:
     DispenseParameter():PropertyBase(){}
-    Q_PROPERTY(double InitTheta READ InitTheta WRITE setInitTheta NOTIFY InitThetaChanged)
+    Q_PROPERTY(double initTheta READ initTheta WRITE setInitTheta NOTIFY InitThetaChanged)
     Q_PROPERTY(double dispenseXOffset READ dispenseXOffset WRITE setDispenseXOffset NOTIFY dispenseXOffsetChanged)
     Q_PROPERTY(double dispenseYOffset READ dispenseYOffset WRITE setDispenseYOffset NOTIFY dispenseYOffsetChanged)
     Q_PROPERTY(double dispenseZPos READ dispenseZPos WRITE setDispenseZPos NOTIFY dispenseZPosChanged)
     Q_PROPERTY(double dispenseZOffset READ dispenseZOffset WRITE setDispenseZOffset NOTIFY dispenseZOffsetChanged)
     Q_PROPERTY(double testForce READ testForce WRITE setTestForce NOTIFY testForceChanged)
-    double InitTheta() const
+    double initTheta() const
     {
         return m_InitTheta;
     }
@@ -106,7 +106,7 @@ public slots:
     }
 
 signals:
-    void InitThetaChanged(double InitTheta);
+    void InitThetaChanged(double initTheta);
     void dispenseXOffsetChanged(double dispenseXOffset);
 
     void dispenseYOffsetChanged(double dispenseYOffset);
@@ -119,11 +119,11 @@ signals:
 
 private:
     double m_InitTheta = 0;
-    double m_dispenseXOffset;
-    double m_dispenseYOffset;
-    double m_dispenseZPos;
-    double m_dispenseZOffset;
-    double m_testForce;
+    double m_dispenseXOffset = 0;
+    double m_dispenseYOffset = 0;
+    double m_dispenseZPos = 0;
+    double m_dispenseZOffset = 0;
+    double m_testForce = 0;
 };
 
 #endif // DISPENSE_PATHER_H

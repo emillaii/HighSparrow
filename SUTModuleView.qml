@@ -19,11 +19,11 @@ ItemDelegate {
                 }
             }
             Switch {
-                id: sutViewSwitch
+                id: dispenseViewSwitch
             }
         }
         ColumnLayout {
-            visible: sutViewSwitch.checked
+            visible: dispenseViewSwitch.checked
             RowLayout {
                 Label {
                     text: qsTr("")

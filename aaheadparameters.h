@@ -12,6 +12,7 @@ public:
     explicit AAHeadParameters(){}
     Q_PROPERTY(double PickLensPositionZ READ PickLensPositionZ WRITE setPickLensPositionZ NOTIFY paramsChanged)
     Q_PROPERTY(double OCPositionZ READ OCPositionZ WRITE setOCPositionZ NOTIFY paramsChanged)
+    Q_PROPERTY(double rotateZOffset READ rotateZOffset WRITE setRotateZOffset NOTIFY rotateZOffsetChanged)
 
 double PickLensPositionZ() const
 {
@@ -21,6 +22,11 @@ double PickLensPositionZ() const
 double OCPositionZ() const
 {
     return m_OCPositionZ;
+}
+
+double rotateZOffset() const
+{
+    return m_rotateZOffset;
 }
 
 public slots:
@@ -36,11 +42,24 @@ void setOCPositionZ(double OCPositionZ)
     emit paramsChanged();
 }
 
+void setRotateZOffset(double rotateZOffset)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_rotateZOffset, rotateZOffset))
+        return;
+
+    m_rotateZOffset = rotateZOffset;
+    emit rotateZOffsetChanged(m_rotateZOffset);
+}
+
 signals:
 void paramsChanged();
+void rotateZOffsetChanged(double rotateZOffset);
+
 private:
 double m_PickLensPositionZ = 0;
 double m_OCPositionZ = 0;
+double m_rotateZOffset = 31.5;
 };
 
 #endif // AAHEADPARAMETERS_H

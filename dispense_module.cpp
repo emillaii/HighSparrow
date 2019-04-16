@@ -1,9 +1,8 @@
 #include "dispense_module.h"
 #include <config.h>
 
-DispenseModule::DispenseModule()
+DispenseModule::DispenseModule():QObject ()
 {
-    loadConfig();
 }
 
 void DispenseModule::Init(Calibration *calibration, Dispenser *dispenser,VisionModule* vision,MaterialCarrier* carrier,XtGeneralOutput* dispense_io)
@@ -13,6 +12,7 @@ void DispenseModule::Init(Calibration *calibration, Dispenser *dispenser,VisionM
     this->vision = vision;
     this->carrier = carrier;
     this->dispense_io = dispense_io;
+    loadConfig();
 }
 
 void DispenseModule::loadConfig()
@@ -52,7 +52,7 @@ void DispenseModule::setMapPosition(double x, double y, double pr_theta)
     this->pr_theta = pr_theta;
 }
 
-void DispenseModule::MoveToDispenseDot()
+void DispenseModule::moveToDispenseDot(bool record_z)
 {
     start_pos = carrier->GetFeedBackPos();
     if(!carrier->StepMove_SZ_XY_Sync(parameters.dispenseXOffset(),parameters.dispenseYOffset()))
@@ -64,13 +64,15 @@ void DispenseModule::MoveToDispenseDot()
     {
         dispense_io->Set(true);
         Sleep(1000);
+        if(record_z)
+            parameters.setDispenseZPos(carrier->GetFeedBackPos().Z);
         dispense_io->Set(false);
         carrier->ZSerchReturn();
     }
     carrier->Move_SZ_XY_Z_Sync(start_pos.X,start_pos.Y,start_pos.Z);
 }
 
-void DispenseModule::CalulateOffset()
+void DispenseModule::calulateOffset()
 {
     mPoint3D end_pos = carrier->GetFeedBackPos();
     double x = parameters.dispenseXOffset() + end_pos.X - start_pos.X;
@@ -85,15 +87,16 @@ QVector<mPoint3D> DispenseModule::getDispensePath()
         updatePath();
     double x,y;
     QVector<mPoint3D> dispense_path = QVector<mPoint3D>();
+    double temp_theta = pr_theta - parameters.initTheta();
     for (int i = 0; i < mechPoints.size(); ++i) {
         x = mechPoints[i].x() + x;
         y = mechPoints[i].y() + y;
-        dispense_path.push_back(mPoint3D(x*cos(pr_theta) + y*sin(pr_theta) + parameters.dispenseXOffset(),y*cos(pr_theta)- x*sin(pr_theta) + parameters.dispenseYOffset(),parameters.dispenseZPos() - parameters.dispenseZOffset()));
+        dispense_path.push_back(mPoint3D(x*cos(temp_theta) + y*sin(temp_theta) + parameters.dispenseXOffset(),y*cos(temp_theta)- x*sin(temp_theta) + parameters.dispenseYOffset(),parameters.dispenseZPos() - parameters.dispenseZOffset()));
     }
     return dispense_path;
 }
 
-bool DispenseModule::PerformDispense()
+bool DispenseModule::performDispense()
 {
    QVector<mPoint3D> temp_path = getDispensePath();
    if(temp_path.size()<2)return false;

@@ -40,7 +40,7 @@ public:
 
     //these are running state
     double GetOutpuPos() const override;
-    double GetFeedbackPos() const override;
+    double GetFeedbackPos(int decimal_digit = 4) const override;
     double GetCurADC() const override;
     bool IsRunning() const override;
     //these are run parameter

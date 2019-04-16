@@ -46,6 +46,11 @@
         <file>IODialog.qml</file>
         <file>BusyDialog.qml</file>
         <file>CalibrationChart.qml</file>
+        <file>DispenseModuleView.qml</file>
+        <file>DispenserParam.qml</file>
+        <file>DispenseXYOffset.qml</file>
+        <file>DispenseParam.qml</file>
+        <file>DispenseZPos.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

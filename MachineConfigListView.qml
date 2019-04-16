@@ -10,8 +10,9 @@ ListView {
                 case 1 : return "AAHeadModuleView.qml"
                 case 2 : return "SUTModuleView.qml"
                 case 3 : return "LUTModuleView.qml"
-                case 4 : return "ImageGrabberView.qml"
-                case 5 : return "CalibrationView.qml"
+                case 4 : return "DispenseModuleView.qml"
+                case 5 : return "ImageGrabberView.qml"
+                case 6 : return "CalibrationView.qml"
             }
         }
     }

@@ -44,7 +44,7 @@ public:
 
 //these are running state
     virtual double GetOutpuPos() const;
-    virtual double GetFeedbackPos() const;
+    virtual double GetFeedbackPos(int decimal_digit = 4) const;
     virtual double GetCurVel() const;
     virtual double GetCurAcc() const;
     virtual double GetCurADC() const;

@@ -20,11 +20,12 @@
 #include "visionavadaptor.h"
 #include "imageprovider.h"
 #include "chart_calibration.h"
+#include "dispense_module.h"
 class AACore : public QThread
 {
     Q_OBJECT
 public:
-    explicit AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey *dk, ChartCalibration * chartCalibration,  QObject *parent = nullptr);
+    explicit AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey *dk, ChartCalibration * chartCalibration,DispenseModule* dispense,  QObject *parent = nullptr);
     ~AACore();
 
 protected:
@@ -44,6 +45,7 @@ public:
     void setSfrWorkerController(SfrWorkerController*);
     bool runFlowchartTest();
     ErrorCodeStruct performTest(QString testItemName, QJsonValue properties);
+    ErrorCodeStruct performDispense();
     AAData aaData_1;  // For Display Channel 1
     AAData aaData_2;  // For Display Channel 2
     ImageProvider * ocImageProvider_1;
@@ -54,6 +56,7 @@ private:
     SutModule* sut;
     Dothinkey* dk;
     ChartCalibration* chartCalibration;
+    DispenseModule* dispense;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QJsonDocument flowchartDocument;

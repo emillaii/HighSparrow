@@ -12,7 +12,7 @@
 #include <visionmodule.h>
 #include <aaheadparameters.h>
 
-#define AA_Z_OFFSET (31.5)
+//#define AA_Z_OFFSET (31.5)
 
 class AAHeadModule : public QObject
 {

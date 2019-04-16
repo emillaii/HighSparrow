@@ -189,7 +189,6 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
 
 
     }
-
     res = XT_Controler_Extend::Exec_Curve(curve_id, thread_curve, thread_trig, 1);
     if(1!=res)
     {

@@ -111,4 +111,14 @@ bool SutModule::moveToZPos(double z)
     return carrier->Move_Z_Sync(z);
 }
 
+void SutModule::recordCurrentPos()
+{
+    record_position = carrier->GetFeedBackPos();
+}
+
+bool SutModule::movetoRecordPos(bool check_autochthonous)
+{
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(record_position.X,record_position.Y,record_position.Z,check_autochthonous);
+}
+
 

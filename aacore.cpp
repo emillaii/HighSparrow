@@ -17,13 +17,15 @@ typedef enum {
     AA_ZSCAN_NORMAL
 } ZSCAN_MODE;
 
-AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey* dk, ChartCalibration * chartCalibration,QObject *parent) : QThread(parent)
+AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey* dk, ChartCalibration * chartCalibration,DispenseModule* dispense,QObject *parent) : QThread(parent)
 {
     this->aa_head = aa_head;
     this->lut = lut;
     this->sut = sut;
     this->dk = dk;
     this->chartCalibration = chartCalibration;
+    this->dispense = dispense;
+
     ocImageProvider_1 = new ImageProvider();
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
     connect(this, &AACore::sfrResultsDetectFinished, this, &AACore::stopZScan);
@@ -213,6 +215,7 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
         }
         else if (testItemName.contains(AA_PIECE_PICK_LENS)) {
             qInfo("Performing AA pick lens");
+
         }
         else if (testItemName.contains(AA_PIECE_UNLOAD_LENS)) {
             qInfo("Performing AA unload lens");
@@ -281,6 +284,14 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
         }
     }
     return ret;
+}
+
+ErrorCodeStruct AACore::performDispense()
+{
+    sut->recordCurrentPos();
+    if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
+    if(!sut->movetoRecordPos()){return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
+    return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
 void AACore::performAAOffline()

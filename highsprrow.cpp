@@ -1,6 +1,7 @@
 #include "highsprrow.h"
 #include <QDir>
 #include <QProcess>
+#include <qmessagebox.h>
 
 HighSprrow::HighSprrow()
 {
@@ -51,7 +52,7 @@ void HighSprrow::performLUTUplookPR()
     PrOffset offset;
     if (baseModuleManager->lut_module.moveToAA1UplookPR(offset, false, true))
     {
-        baseModuleManager->aa_head_module.stepMove_XY_Sync(-offset.X, -offset.Y);
+        baseModuleManager->aa_head_module.stepMove_XYC_Sync(-offset.X, -offset.Y,-offset.Theta);
     }
 }
 

@@ -35,7 +35,24 @@ bool VisionLocation::performPR(PrOffset &offset)
         {
            offset.X = mech.x();
            offset.Y = mech.y();
-           offset.Theta = pr_result.theta;
+
+           if(abs(pr_result.theta) < parameters.maximunAngle())
+               offset.Theta = pr_result.theta;
+           if(abs(pr_result.theta - 90) < parameters.maximunAngle())
+               offset.Theta = pr_result.theta - 90;
+           else if(abs(pr_result.theta - 180) < parameters.maximunAngle())
+               offset.Theta = pr_result.theta - 180;
+           else if(abs(pr_result.theta - 270) < parameters.maximunAngle())
+               offset.Theta = pr_result.theta -270;
+           else if(abs(pr_result.theta - 360) < parameters.maximunAngle())
+               offset.Theta = pr_result.theta -360;
+           else
+           {
+               qInfo("theta result too big: %f %f %f", offset.X, offset.Y, offset.Theta);
+               return false;
+           }
+
+           qInfo("mech: %f %f %f", offset.X, offset.Y, offset.Theta);
            return true;
         } else {
             qInfo("CalcMechDistance Fail");
@@ -47,7 +64,8 @@ bool VisionLocation::performPR(PrOffset &offset)
 bool VisionLocation::performPR(PRResultStruct &pr_result)
 {
     ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result);
-    qInfo("camera %s perform PR result:%d name:%s",parameters.cameraName().toStdString().c_str(),temp.code,parameters.prFileName().toStdString().c_str());
+    qInfo("PR_Result: %f %f %f", pr_result.x, pr_result.y, pr_result.theta);
+//    qInfo("camera %s perform PR result:%d name:%s",parameters.cameraName().toStdString().c_str(),temp.code,parameters.prFileName().toStdString().c_str());
     return  ErrorCode::OK == temp.code;
 }
 

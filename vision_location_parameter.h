@@ -12,6 +12,7 @@ public:
     Q_PROPERTY(QString cameraName READ cameraName WRITE setCameraName NOTIFY cameraNameChanged)
     Q_PROPERTY(int lightChannel READ lightChannel WRITE setlightChannel NOTIFY lightChannelChanged)
     Q_PROPERTY(int lightBrightness READ lightBrightness WRITE setLightBrightness NOTIFY lightBrightnessChanged)
+    Q_PROPERTY(double maximunAngle READ maximunAngle WRITE setMaximunAngle NOTIFY maximunAngleChanged)
 
     QString prFileName() const
     {
@@ -31,6 +32,11 @@ public:
     int lightBrightness() const
     {
         return m_lightBrightness;
+    }
+
+    double maximunAngle() const
+    {
+        return m_maximunAngle;
     }
 
 public slots:
@@ -70,6 +76,16 @@ public slots:
         emit lightBrightnessChanged(m_lightBrightness);
     }
 
+    void setMaximunAngle(double maximunAngle)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_maximunAngle, maximunAngle))
+            return;
+
+        m_maximunAngle = maximunAngle;
+        emit maximunAngleChanged(m_maximunAngle);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -79,11 +95,14 @@ signals:
 
     void lightBrightnessChanged(uint8_t lightBrightness);
 
+    void maximunAngleChanged(double maximunAngle);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
     int m_lightChannel = 0;
     int m_lightBrightness = 0;
+    double m_maximunAngle = 15;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

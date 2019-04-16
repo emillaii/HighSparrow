@@ -79,6 +79,20 @@ bool AAHeadModule::stepMove_XY_Sync(double step_x, double step_y)
     return result;
 }
 
+bool AAHeadModule::stepMove_XYC_Sync(double step_x, double step_y, double step_c)
+{
+    double x = step_x + motor_x->GetFeedbackPos();
+    double y = step_y + motor_y->GetFeedbackPos();
+    double c = step_c + motor_y->GetFeedbackPos();
+    motor_x->MoveToPos(x);
+    motor_y->MoveToPos(y);
+    motor_c->MoveToPos(c);
+    bool result = motor_x->WaitArrivedTargetPos(x);
+    result &= motor_y->WaitArrivedTargetPos(y);
+    result &= motor_c->WaitArrivedTargetPos(c);
+    return result;
+}
+
 bool AAHeadModule::stepMove_AB_Sync(double step_a, double step_b)
 {
     double a = step_a + motor_a->GetFeedbackPos();

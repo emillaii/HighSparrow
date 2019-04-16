@@ -47,6 +47,7 @@ public:
     void setUplookResult(double x,double y,double theta);
     bool moveToUplookResultPosition();
     Q_INVOKABLE bool stepMove_XY_Sync(double step_x,double step_y);
+    Q_INVOKABLE bool stepMove_XYC_Sync(double step_x,double step_y,double step_c);
     Q_INVOKABLE bool stepMove_AB_Sync(double step_a,double step_b);
     Q_INVOKABLE bool stepInterpolation_AB_Sync(double step_a,double step_b);
     bool stepMove_Z_Sync(double step_z);

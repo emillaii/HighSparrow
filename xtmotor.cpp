@@ -188,9 +188,9 @@ double XtMotor::GetFeedbackPos(int decimal_digit) const
         long long val;
         int res = XT_Controler_Extend::Encoder_Read_Value(encoder_id,val);
         if(res!=0)
-            return round(val * encoder_ratio*pow(10,decimal_digit))/decimal_digit;
+            return round(val * encoder_ratio*pow(10,decimal_digit))/pow(10,decimal_digit);
     }
-    return round(GetOutpuPos()*pow(10,decimal_digit))/decimal_digit;
+    return round(GetOutpuPos()*pow(10,decimal_digit))/pow(10,decimal_digit);
 }
 
 double XtMotor::GetCurVel() const

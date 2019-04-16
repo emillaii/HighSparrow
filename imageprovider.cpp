@@ -7,11 +7,18 @@ ImageProvider::ImageProvider()
 
 QImage ImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    return this->img;
+    QMutexLocker locker(&mutex);
+    QImage image_copy = img.copy();
+    return image_copy;
 }
 
 QPixmap ImageProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    qInfo("......");
     return QPixmap::fromImage(this->img);
+}
+
+void ImageProvider::setImage(QImage img)
+{
+    QMutexLocker locker(&mutex);
+    this->img = img;
 }

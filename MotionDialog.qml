@@ -307,13 +307,13 @@ Popup {
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                var res = baseModuleManager.stepMove(m_AA_C, selectedStepSize, false)
+                                var res = baseModuleManager.stepMove(m_AA1_C, selectedStepSize, false)
                             }
                         }
                         RoundButton {
                             text: "+"
                             onClicked: {
-                                var res = baseModuleManager.stepMove(m_AA_C, selectedStepSize, true)
+                                var res = baseModuleManager.stepMove(m_AA1_C, selectedStepSize, true)
                             }
                         }
                         Label {

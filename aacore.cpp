@@ -416,7 +416,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
                                    double estimated_fov_slope, double zOffset)
 {
     qInfo("start: %f stop: %f step_size: %f", start, stop, step_size);
-    int imageWidth, imageHeight;
+    int imageWidth = 0, imageHeight = 0;
     double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
     double corner_deviation = 0;
     unsigned int zScanCount = 0;
@@ -462,6 +462,13 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak);
     clustered_sfr_map.clear();
     qInfo("xTilt: %f yTilt: %f zPeak: %f", xTilt, yTilt, zPeak);
+    sut->stepMove_Z_Sync(-0.1);
+    msleep(zSleepInMs);
+    aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
+    msleep(zSleepInMs);
+    performOC(true, true);
+    msleep(zSleepInMs);
+    sut->moveToZPos(zPeak);
     return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
 
@@ -493,7 +500,7 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
                                                                         llIndex, lrIndex);
         stepTimerMap.insert("search_pattern", stepTimer.elapsed());
         stepTimer.restart();
-        ocImageProvider_1->img = outImage;
+        ocImageProvider_1->setImage(outImage);
         emit callQmlRefeshImg();
         if( vector.size()<1 || ccIndex > 9 ) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
@@ -502,7 +509,7 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
     } else {
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage)) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
-        ocImageProvider_1->img = outImage;
+        ocImageProvider_1->setImage(outImage);
         emit callQmlRefeshImg();
         offsetX = center.x() - img.cols/2;
         offsetY = center.y() - img.rows/2;
@@ -537,7 +544,7 @@ double AACore::calculateDFOV(cv::Mat img)
     {
         double d1 = sqrt(pow((vector[ulIndex].center.x() - vector[lrIndex].center.x()), 2) + pow((vector[ulIndex].center.y() - vector[lrIndex].center.y()), 2));
         double d2 = sqrt(pow((vector[urIndex].center.x() - vector[llIndex].center.x()), 2) + pow((vector[urIndex].center.y() - vector[llIndex].center.y()), 2));
-        double f = 2.47;
+        double f = 1.98;
         double dfov1 = 2*atan(d1/(2*cmosPixelToMM_X*f))*180/PI;
         double dfov2 = 2*atan(d2/(2*cmosPixelToMM_Y*f))*180/PI;
         double dfov = (dfov1 + dfov2)/2;
@@ -633,7 +640,7 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
         }
         aaData_1.plot();
     } else {
-        currentChartDisplayChannel = 1;
+        currentChartDisplayChannel = 0;
         aaData_2.clear();
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {

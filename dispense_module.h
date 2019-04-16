@@ -15,7 +15,7 @@ public:
     void Init(Calibration* calibration,Dispenser* dispenser,VisionModule* vision, MaterialCarrier* carrier,XtGeneralOutput* dispense_io);
     void loadConfig();
     void saveConfig();
-    void updatePath();
+    Q_INVOKABLE void updatePath();
     void setMapPosition(double x,double y,double pr_theta);
     Q_INVOKABLE void moveToDispenseDot(bool record_z = true);
     Q_INVOKABLE void calulateOffset();

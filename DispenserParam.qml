@@ -51,6 +51,14 @@ ColumnLayout {
             }
         }
         Button {
+            text: qsTr("更新图纸")
+            width: 20
+            height: 40
+            onClicked: {
+                dispenseModule.updatePath()
+            }
+        }
+        Button {
             text: qsTr("点胶")
             width: 20
             height: 40
@@ -60,5 +68,5 @@ ColumnLayout {
                 sutModule.movetoRecordPos();
             }
         }
-}
+    }
 }

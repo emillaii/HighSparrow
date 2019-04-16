@@ -41,6 +41,9 @@ public:
                    bool is_debug = false, sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER,
                    double estimated_fov_slope = -16, double zOffset=0);
     ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
+    ErrorCodeStruct performMTF();
+    ErrorCodeStruct performZOffset(double zOffset);
+    ErrorCodeStruct performDelay(int);
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
     bool runFlowchartTest();
@@ -49,7 +52,7 @@ public:
     AAData aaData_1;  // For Display Channel 1
     AAData aaData_2;  // For Display Channel 2
     ImageProvider * ocImageProvider_1;
-
+    ImageProvider * sfrImageProvider;
 private:
     AAHeadModule* aa_head;
     LutModule* lut;
@@ -76,6 +79,7 @@ signals:
     void sfrResultsReady(unsigned int, vector<Sfr_entry>, int);
     void sfrResultsDetectFinished();
     void callQmlRefeshImg();
+    void callQmlRefeshSfrImg();
 public slots:
 
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);
@@ -83,6 +87,7 @@ public slots:
     void setFlowchartDocument(QString json){
         flowchartDocument = QJsonDocument::fromJson(json.toUtf8());
     }
+    void sfrImageReady(QImage);
 };
 
 #endif // AACORE_H

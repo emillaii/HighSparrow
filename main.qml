@@ -212,7 +212,13 @@ ApplicationWindow {
                icon.source: "icons/auto-run.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   logicManager.autoRun()
+                   var command = "document.getElementsByClassName('get_data')[0].click()";
+                   flowChartPage.webView.runJavaScript(command, function(result) {
+                       command = "document.getElementById('flowchart_data').value";
+                       flowChartPage.webView.runJavaScript(command, function(result) {
+                           logicManager.autoRun(result)
+                       })
+                   })
                }
            }
 

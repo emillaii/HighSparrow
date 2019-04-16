@@ -27,6 +27,7 @@ AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey* dk
     this->dispense = dispense;
 
     ocImageProvider_1 = new ImageProvider();
+    sfrImageProvider = new ImageProvider();
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
     connect(this, &AACore::sfrResultsDetectFinished, this, &AACore::stopZScan);
 }
@@ -202,16 +203,18 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
         }
         else if (testItemName.contains(AA_PIECE_PR_TO_BOND)) {
             qInfo("Performing PR To Bond");
+            ret = performPRToBond();
         }
         else if (testItemName.contains(AA_PIECE_INITIAL_TILT)) {
             qInfo("Performing Initial Tilt");
-            double initial_roll = params["roll"].toDouble();
-            double initial_pitch = params["pitch"].toDouble();
+            //double initial_roll = params["roll"].toDouble();
+            //double initial_pitch = params["pitch"].toDouble();
         }
         else if (testItemName.contains(AA_PIECE_Z_OFFSET)) {
             qInfo("Performaing Z Offset");
-            int type = params["type"].toInt(0);
+            //int type = params["type"].toInt(0);
             double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
+            performZOffset(z_offset_in_um);
         }
         else if (testItemName.contains(AA_PIECE_PICK_LENS)) {
             qInfo("Performing AA pick lens");
@@ -227,6 +230,8 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
             qInfo("Performing OC");
             bool enable_motion = params["enable_motion"].toInt();
             bool fast_mode = params["fast_mode"].toInt();
+            performOC(enable_motion, fast_mode);
+            qInfo("End of perform OC");
         }
         else if (testItemName.contains(AA_PIECE_AA)) {
             qInfo("Performing AA");
@@ -247,11 +252,14 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
             } else if (edge_filter_mode == 2) {
                 edgeFilter = sfr::EdgeFilter::HORIZONTAL_ONLY;
             }
-            performAA(start_pos, stop_pos, step_size, true, delay_z_in_ms,wait_tilt,mode);
+            ret = performAA(start_pos, stop_pos, step_size, true, delay_z_in_ms, wait_tilt, mode,
+                            estimated_aa_fov, is_debug, edgeFilter, estimated_fov_slope, offset_in_um);
             qInfo("End of perform AA");
         }
         else if (testItemName.contains(AA_PIECE_MTF)) {
             qInfo("Performing MTF");
+            ret = performMTF();
+            qInfo("End of perform MTF");
         }
         else if (testItemName.contains(AA_PIECE_UV)) {
             qInfo("Performing UV");
@@ -263,6 +271,7 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
         }
         else if (testItemName.contains(AA_PIECE_DELAY)) {
             qInfo("Performing Delay");
+            performDelay(delay_in_ms);
         }
         else if (testItemName.contains(AA_PIECE_ACCEPT))
         {
@@ -365,29 +374,8 @@ void AACore::performAAOffline()
         qInfo("if (isnan(xTilt) || isnan(yTilt)) failed");
         return;
     }
-    double corner_deviation = AA_Helper::calculateAACornerDeviation(ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak);
     clustered_sfr_map.clear();
     qInfo("[performAAOffline] Finished xTilt: %f yTilt: %f zPeak: %f ulPeak: %f", xTilt, yTilt, zPeak, ul_zPeak);
-//    runningTestItemName = "AA Offline";
-//    map.insert("test_name", runningTestItemName);
-    map.insert("fov_slope", fov_slope);
-    map.insert("fov_intercept", fov_intercept);
-    map.insert("imageWidth", imageWidth);
-    map.insert("imageHeight", imageHeight);
-    map.insert("z_scan_steps", inputImageCount);
-    map.insert("xTilt", xTilt);
-    map.insert("yTilt", yTilt);
-    map.insert("zPeak", zPeak);
-    map.insert("dfov", dFovMap);
-    map.insert("ur_zPeak", ur_zPeak);
-    map.insert("ul_zPeak", ul_zPeak);
-    map.insert("lr_zPeak", lr_zPeak);
-    map.insert("ll_zPeak", ll_zPeak);
-    map.insert("corner_deviation", corner_deviation);
-    map.insert("result", "PASS");
-    map.insert("time_breakdown", stepTimerMap);
-    map.insert("sfr_breakdown", sfrTimeElapsedMap);
-    map.insert("timeElapsed", timer.elapsed());
     qInfo("time elapsed: %d", timer.elapsed());
     //unitlog->addVariantMap("AA", map);
 }
@@ -420,7 +408,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
     double corner_deviation = 0;
     unsigned int zScanCount = 0;
-//    double xsum=0,x2sum=0,ysum=0,xysum=0;
+    double xsum=0,x2sum=0,ysum=0,xysum=0;
     vector<cv::Mat> images;
     sut->moveToZPos(start);
     mPoint3D start_pos = sut->carrier->GetFeedBackPos();
@@ -432,15 +420,19 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
            sut->moveToZPos(start+(i*step_size));
            msleep(zSleepInMs);
            double realZ = sut->carrier->GetFeedBackPos().Z;
-           qInfo("Z scan start from %f to %f, real: %f, time:%d", start_pos.Z, realZ);
+           qInfo("Z scan start from %f to %f, real: %f", start_pos.Z, realZ);
            cv::Mat img = dk->DothinkeyGrabImageCV(0);
            imageWidth = img.cols; imageHeight = img.rows;
            QString imageName;
            imageName.append(getGrabberLogDir())
                            .append(getCurrentTimeString())
                            .append(".jpg");
-           cv::imwrite(imageName.toStdString().c_str(), img);
+           //cv::imwrite(imageName.toStdString().c_str(), img);
            double dfov = calculateDFOV(img);
+           xsum=xsum+realZ;
+           ysum=ysum+dfov;
+           x2sum=x2sum+pow(realZ,2);
+           xysum=xysum+realZ*dfov;
            qInfo("fov: %f  syt_z: %f", dfov,sut->carrier->GetFeedBackPos().Z);
            imageWidth = img.cols;
            imageHeight = img.rows;
@@ -459,10 +451,15 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
         qInfo("Error in performing AA Offline: %d", timeout);
         return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
     }
+
+    double fov_slope     = (zScanCount*xysum-xsum*ysum)/(zScanCount*x2sum-xsum*xsum);       //calculate slope
+    double fov_intercept = (x2sum*ysum-xsum*xysum)/(x2sum*zScanCount-xsum*xsum);            //calculate intercept
+    qInfo("fov_slope: %f fov_intercept: %f", fov_slope, fov_intercept);
+
     sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak);
     clustered_sfr_map.clear();
     qInfo("xTilt: %f yTilt: %f zPeak: %f", xTilt, yTilt, zPeak);
-    sut->stepMove_Z_Sync(-0.1);
+    sut->stepMove_Z_Sync(-0.2);
     msleep(zSleepInMs);
     aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
     msleep(zSleepInMs);
@@ -533,6 +530,89 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
     return ret;
 }
 
+ErrorCodeStruct AACore::performMTF()
+{
+    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
+    //cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    int imageWidth = img.cols;
+    int imageHeight = img.rows;
+    double fov = this->calculateDFOV(img);
+    if (fov == -1) {
+        qInfo("Error in calculating fov");
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+    }
+    emit sfrWorkerController->calculate(0, 0, img, true);
+    int timeout=1000;
+    while(this->clustered_sfr_map.size() != 1 && timeout >0) {
+        Sleep(10);
+        timeout--;
+    }
+    if (timeout <= 0) {
+        qInfo("Error in performing MTF: %d", timeout);
+
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+    }
+    vector<Sfr_entry> sfr_entry = clustered_sfr_map.at(0);
+    double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
+    unsigned int ccROIIndex = 0 , ulROIIndex = 0, urROIIndex = 0, llROIIndex = 0, lrROIIndex = 0;
+    for (unsigned int i = 0; i < sfr_entry.size(); i++)
+    {
+        double cc_d = sqrt(pow(sfr_entry.at(i).px - imageWidth/2, 2) + pow(sfr_entry.at(i).py - imageHeight/2, 2));
+        double ul_d = sqrt(pow(sfr_entry.at(i).px, 2) + pow(sfr_entry.at(i).py, 2));
+        double ur_d = sqrt(pow(sfr_entry.at(i).px - imageWidth, 2) + pow(sfr_entry.at(i).py, 2));
+        double ll_d = sqrt(pow(sfr_entry.at(i).px, 2) + pow(sfr_entry.at(i).py - imageHeight, 2));
+        double lr_d = sqrt(pow(sfr_entry.at(i).px - imageWidth, 2) + pow(sfr_entry.at(i).py - imageHeight, 2));
+        if (cc_d < cc_min_d) {
+              cc_min_d = cc_d;
+              ccROIIndex = i;
+        }
+        if (ul_d < ul_min_d) {
+             ul_min_d = ul_d;
+             ulROIIndex = i;
+        }
+        if (ur_d < ur_min_d) {
+             ur_min_d = ur_d;
+             urROIIndex = i;
+        }
+        if (ll_d < ll_min_d) {
+             ll_min_d = ll_d;
+             llROIIndex = i;
+        }
+        if (lr_d < lr_min_d) {
+            lr_min_d = lr_d;
+            lrROIIndex = i;
+        }
+    }
+    std::vector<double> sfr_v;
+    sfr_v.push_back(sfr_entry[ccROIIndex].sfr);
+    sfr_v.push_back(sfr_entry[urROIIndex].sfr);
+    sfr_v.push_back(sfr_entry[ulROIIndex].sfr);
+    sfr_v.push_back(sfr_entry[lrROIIndex].sfr);
+    sfr_v.push_back(sfr_entry[llROIIndex].sfr);
+    std::sort(sfr_v.begin(), sfr_v.end());
+    clustered_sfr_map.clear();
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACore::performDelay(int delay_in_ms)
+{
+    QVariantMap map;
+    Sleep(delay_in_ms);
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACore::performZOffset(double zOffset)
+{
+    sut->stepMove_Z_Sync(zOffset);
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+void AACore::sfrImageReady(QImage img)
+{
+    sfrImageProvider->setImage(img);
+    emit callQmlRefeshSfrImg();
+}
+
 double AACore::calculateDFOV(cv::Mat img)
 {
     QImage outImage;
@@ -545,10 +625,9 @@ double AACore::calculateDFOV(cv::Mat img)
         double d1 = sqrt(pow((vector[ulIndex].center.x() - vector[lrIndex].center.x()), 2) + pow((vector[ulIndex].center.y() - vector[lrIndex].center.y()), 2));
         double d2 = sqrt(pow((vector[urIndex].center.x() - vector[llIndex].center.x()), 2) + pow((vector[urIndex].center.y() - vector[llIndex].center.y()), 2));
         double f = 1.98;
-        double dfov1 = 2*atan(d1/(2*cmosPixelToMM_X*f))*180/PI;
-        double dfov2 = 2*atan(d2/(2*cmosPixelToMM_Y*f))*180/PI;
+        double dfov1 = 2*atan(d1/(2*this->chartCalibration->getOneXPxielDistance().x()*f))*180/PI;
+        double dfov2 = 2*atan(d2/(2*this->chartCalibration->getOneXPxielDistance().y()*cmosPixelToMM_Y*f))*180/PI;
         double dfov = (dfov1 + dfov2)/2;
-        qInfo("DFOV: %f", dfov);
         return dfov;
     }
     return -1;
@@ -625,9 +704,18 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     }
     xTilt = weighted_vector.z * weighted_vector.x;
     yTilt = weighted_vector.z * weighted_vector.y;
+    double corner_deviation = AA_Helper::calculateAACornerDeviation(ul_peak_z, ur_peak_z, ll_peak_z, lr_peak_z);
+    qInfo("corner_deviation: %f", corner_deviation);
     if (currentChartDisplayChannel == 0) {
         currentChartDisplayChannel = 1;
         aaData_1.clear();
+        aaData_1.setDev(round(corner_deviation*1000)/1000);
+        aaData_1.setWCCPeakZ(round(cc_peak_z*1000));
+        aaData_1.setWULPeakZ(round(ul_peak_z*1000));
+        aaData_1.setWURPeakZ(round(ur_peak_z*1000));
+        aaData_1.setWLLPeakZ(round(ll_peak_z*1000));
+        aaData_1.setWLRPeakZ(round(lr_peak_z*1000));
+
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {
             for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
@@ -642,6 +730,12 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     } else {
         currentChartDisplayChannel = 0;
         aaData_2.clear();
+        aaData_2.setDev(round(corner_deviation*1000)/1000);
+        aaData_2.setWCCPeakZ(round(cc_peak_z*1000));
+        aaData_2.setWULPeakZ(round(ul_peak_z*1000));
+        aaData_2.setWURPeakZ(round(ur_peak_z*1000));
+        aaData_2.setWLLPeakZ(round(ll_peak_z*1000));
+        aaData_2.setWLRPeakZ(round(lr_peak_z*1000));
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {
             for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
@@ -659,6 +753,7 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     ur_zPeak = ur_peak_z;
     ll_zPeak = ll_peak_z;
     lr_zPeak = lr_peak_z;
+
 }
 
 std::vector<AA_Helper::patternAttr> AACore::search_mtf_pattern(cv::Mat inImage, QImage &image, bool isFastMode, unsigned int &ccROIIndex, unsigned int &ulROIIndex, unsigned int &urROIIndex, unsigned int &llROIIndex, unsigned int &lrROIIndex)

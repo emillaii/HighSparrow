@@ -5,7 +5,7 @@
 #include <aacore.h>
 #include <QElapsedTimer>
 #include <QImage>
-
+#include "imagegrabbingworkerthread.h"
 double prev_cc_score = 0, prev_ul_score = 0, prev_ur_score = 0, prev_ll_score = 0, prev_lr_score = 0;
 bool is_cc_falling = false, is_ul_falling = false, is_ur_falling = false, is_ll_falling = false, is_lr_falling = false;
 
@@ -18,8 +18,6 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     cv::Mat image = img.clone();
     QImage outImage;
     unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
-    //std::vector<AA_Helper::patternAttr> patterns = aa_core::search_mtf_pattern(img, outImage, true,
-    //                            ccIndex, ulIndex, urIndex, lrIndex, llIndex);
     std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AA_Search_MTF_Pattern(img, outImage, true, ccIndex, ulIndex, urIndex, lrIndex, llIndex, 50, 10000, 90000);
     //Add protection here
     std::vector<Sfr_entry> sfr_v;
@@ -31,7 +29,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     }
     cv::Rect roi;
     double area = patterns[0].area;
-    roi.width = sqrt(area)*1.6;
+    roi.width = sqrt(area)*1.3;
     roi.height = roi.width;
 
     cv::Mat ccMat, ulMat, urMat, llMat, lrMat;
@@ -209,18 +207,16 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
             double y = sfr_v[i].py;
             cv::Point centroid(x, y);
             cv::Point centroid_shift(x+10, y-10);
-            cv::circle(image, centroid, radius, cv::Scalar(255, 0, 255), 3);
+            cv::circle(image, centroid, radius, cv::Scalar(0, 255, 0), 3);
             QString score_str = QString::number(sfr_v[i].sfr);
             if (score_str.size() > 5)
                 score_str = score_str.remove(5, score_str.size());
             cv::putText(image, score_str.toStdString(), centroid_shift, cv::FONT_HERSHEY_SIMPLEX, 2.5, cv::Scalar(255, 0,255), 3);
-            //displayQImageOnScene(qImage, mainPageGraphicsScene, ui->mainPageGraphicsView);
          }
-        // QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(image);
-        // emit imageReady(std::move(qImage));
+        QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(image);
+        emit imageReady(std::move(qImage));
     }
     emit sfrResultsReady(index, std::move(sfr_v),timerTest.elapsed());
-
     image.release();
     ulMat.release();
     urMat.release();
@@ -236,8 +232,7 @@ SfrWorkerController::SfrWorkerController(AACore *a)
    worker->moveToThread(&workerThread);
    connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
    connect(this, &SfrWorkerController::calculate, worker, &SfrWorker::doWork);
-   //connect(worker, &SfrWorker::imageReady, sparrow, &Sparrow::displaySfrQImageSignal);
-   //connect(worker, &SfrWorker::sfrResultsReady, this, &SfrWorkerController::forwardSfrResults);
+   connect(worker, &SfrWorker::imageReady, aaCore_, &AACore::sfrImageReady);
    connect(worker, &SfrWorker::sfrResultsReady, aaCore_, &AACore::sfrResultsReady);
    connect(worker, &SfrWorker::sfrResultsDetectFinished, aaCore_, &AACore::sfrResultsDetectFinished);
    workerThread.start();

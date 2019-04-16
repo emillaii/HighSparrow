@@ -106,6 +106,7 @@ Grid {
                 axisY: axisY1
             }
             Label {
+                id: spline1Label
                 text: "Any Supplmentary Data "
                 background: Rectangle {
                     color: "black"
@@ -116,6 +117,9 @@ Grid {
         Connections {
             target: dataFromCpp
             onWValueChanged: {
+                spline1Label.text = "CC: " + dataFromCpp.wCCPeakZ + " UL: " + dataFromCpp.wULPeakZ +
+                        " UR: " + dataFromCpp.wURPeakZ + " LL: " + dataFromCpp.wLLPeakZ +
+                        " LR: " + dataFromCpp.wLRPeakZ + " DEV: " + dataFromCpp.dev
                 ccSeries.append(dataFromCpp.wCCValue.x, dataFromCpp.wCCValue.y)
                 ulSeries.append(dataFromCpp.wULValue.x, dataFromCpp.wULValue.y)
                 urSeries.append(dataFromCpp.wURValue.x, dataFromCpp.wURValue.y)
@@ -145,6 +149,20 @@ Grid {
         id: frame4
         width: grid.width/3
         height: grid.height/2
+        Image {
+            id: image4
+            anchors.fill: parent
+            source: "icons/sparrow.png"
+            fillMode: Image.PreserveAspectFit
+            cache: false
+            Connections {
+                target: aaCore
+                onCallQmlRefeshSfrImg: {
+                    image4.source = ""
+                    image4.source = "image://sfrImage"
+                }
+            }
+        }
     }
 
     Frame {
@@ -203,7 +221,7 @@ Grid {
                 axisY: axisY2
             }
             Label {
-                text: "Any Supplmentary Data "
+                id: spline2Label
                 background: Rectangle {
                     color: "black"
                 }
@@ -213,6 +231,10 @@ Grid {
         Connections {
             target: dataFromCpp2
             onWValueChanged: {
+                spline2Label.text = "CC: " + dataFromCpp2.wCCPeakZ + " UL: " + dataFromCpp2.wULPeakZ +
+                        " UR: " + dataFromCpp2.wURPeakZ + " LL: " + dataFromCpp2.wLLPeakZ +
+                        " LR: " + dataFromCpp2.wLRPeakZ + " DEV: " + dataFromCpp2.dev
+                ccSeries2.name = "CC " + dataFromCpp2.wCCPeakZ
                 ccSeries2.append(dataFromCpp2.wCCValue.x, dataFromCpp2.wCCValue.y)
                 ulSeries2.append(dataFromCpp2.wULValue.x, dataFromCpp2.wULValue.y)
                 urSeries2.append(dataFromCpp2.wURValue.x, dataFromCpp2.wURValue.y)

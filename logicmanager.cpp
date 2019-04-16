@@ -36,8 +36,6 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
 
 void LogicManager::run() {
     qInfo("Logic manager is running");
-//    aaCore->start();
-//    aaCore->wait();
 
     if (m_currentMode == CommandType::MOTION_STOP_HOME) {
         baseModuleManage->stopSeeking();
@@ -129,7 +127,10 @@ void LogicManager::lutMoveToAA2UplookPos(){setStateMessage(__FUNCTION__);moveToC
 void LogicManager::performChartCalibration(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::CALIBRATION_CHART);}
 
 
-void LogicManager::autoRun(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MODE_AUTO_RUN);}
+void LogicManager::autoRun(QString json){
+    aaCore->setFlowchartDocument(json);
+    setStateMessage(__FUNCTION__);moveToCmd(CommandType::MODE_AUTO_RUN);
+}
 
 void LogicManager::performOC(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::PERFORM_OC);}
 

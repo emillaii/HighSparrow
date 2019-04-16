@@ -23,7 +23,7 @@ public:
     Q_INVOKABLE void home();
     Q_INVOKABLE void stopHome();
 
-    Q_INVOKABLE void autoRun();
+    Q_INVOKABLE void autoRun(QString);
 
     Q_INVOKABLE void aaMoveToMushroomPos();
     Q_INVOKABLE void aaMoveToPickLensPos();

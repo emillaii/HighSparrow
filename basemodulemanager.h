@@ -76,6 +76,7 @@ public slots:
         sut_module.updateParams();
         lut_module.updateParams();
         dothinkey->updateParams();
+        dispense_module.saveConfig();
     }
 
     void setLightPanelLighting(int lightPanelLighting)

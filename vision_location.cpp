@@ -38,7 +38,7 @@ bool VisionLocation::performPR(PrOffset &offset)
 
            if(abs(pr_result.theta) < parameters.maximunAngle())
                offset.Theta = pr_result.theta;
-           if(abs(pr_result.theta - 90) < parameters.maximunAngle())
+           else if(abs(pr_result.theta - 90) < parameters.maximunAngle())
                offset.Theta = pr_result.theta - 90;
            else if(abs(pr_result.theta - 180) < parameters.maximunAngle())
                offset.Theta = pr_result.theta - 180;

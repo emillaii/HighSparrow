@@ -125,6 +125,7 @@ bool BaseModuleManager::LoadProfile()
         motors.insert("SUT_Z",motor_sut_vcm);
 
         vacuums.insert("LUT_V",new XtVacuum(GetOutputIoByName(u8"LUT吸真空"),GetInputIoByName(u8"LUT真空检测"),GetOutputIoByName(u8"LUT破真空"),u8"LUT_V"));
+        vacuums.insert("SUT_V",new XtVacuum(GetOutputIoByName(u8"SUT1吸真空"),GetInputIoByName(u8"SUT1真空检测"),GetOutputIoByName(u8"SUT1破真空"),u8"LUT_V"));
         if(!InitStruct())return false;
         profile_loaded = true;
         return true;
@@ -153,7 +154,7 @@ bool BaseModuleManager::InitStruct()
     XtVacuum *sut_v = GetVacuumByName("SUT_V");
 //    XtCylinder *sut_p = GetCylinderByName("SUT_P");
     XtCylinder *sut_j = GetCylinderByName("SUT_J");
-    XtGeneralOutput *dispense_o = GetOutputIoByName("Dispense");
+    XtGeneralOutput *dispense_o = GetOutputIoByName(u8"SUT1点胶阀");
     XtGeneralOutput *gripper = GetOutputIoByName("AA1_GripON");
 
     lut_carrier.Init("LUT",lut_x,lut_y,lut_z,lut_v);
@@ -185,8 +186,8 @@ bool BaseModuleManager::InitStruct()
     executive_motors.push_back(sut_x);
     executive_motors.push_back(sut_y);
     executive_motors.push_back(sut_z);
-    dispenser.Init(DISPENSER_PARAMETER_PATH,AA1_DISPENSER,XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,dispense_o);
-    dispense_module.Init(calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule,&sut_carrier,dispense_o);
+    dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,dispense_o);
+    dispense_module.Init(DISPENSER_PARAMETER_PATH,AA1_DISPENSE,calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule,&sut_carrier,dispense_o);
 
     profile_loaded = true;
 
@@ -433,6 +434,7 @@ double BaseModuleManager::getMotorFeedbackPos(QString name)
      if (motors.contains(name)) {
           return motors[name]->GetFeedbackPos();
      }
+     return 0;
 }
 
 bool BaseModuleManager::initSensor()

@@ -41,16 +41,16 @@ private:
 
 public:
     Dispenser();
-    void Init(QString file_path,QString name,int curve_id,int thread_curve,int thread_trig,QVector<XtMotor *> executive_motors,XtGeneralOutput* output_io);
+    void Init(int curve_id,int thread_curve,int thread_trig,QVector<XtMotor *> executive_motors,XtGeneralOutput* output_io);
     ~Dispenser();
-    void loadParams();
-    void saveParams();
+//    void loadParams();
+//    void saveParams();
     bool Dispense(QVector<DispensePathPoint> &dispense_path);
+    bool WaitForFinish(int time = 60000);
     void CleanUpCurve();
 
     DISPENSER_STATE GetState();
 
-    bool WaitFinish(int timeout =30000);
 public:
     DispenserParameter parameters;
 private:

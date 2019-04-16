@@ -12,11 +12,11 @@ class DispenseModule:public QObject
     Q_OBJECT
 public:
     DispenseModule();
-    void Init(Calibration* calibration,Dispenser* dispenser,VisionModule* vision, MaterialCarrier* carrier,XtGeneralOutput* dispense_io);
+    void Init(QString file_path,QString name,Calibration* calibration,Dispenser* dispenser,VisionModule* vision, MaterialCarrier* carrier,XtGeneralOutput* dispense_io);
     void loadConfig();
     void saveConfig();
     Q_INVOKABLE void updatePath();
-    void setMapPosition(double x,double y,double pr_theta);
+    void setMapPosition(double pos_x,double pos_y, double pr_x,double pr_y,double pr_theta);
     Q_INVOKABLE void moveToDispenseDot(bool record_z = true);
     Q_INVOKABLE void calulateOffset();
     Q_INVOKABLE bool performDispense();
@@ -28,14 +28,18 @@ public:
 private:
     QVector<QPointF> mechPoints;
     Calibration* calibration;
-    double x = 0;
-    double y = 0;
+    double pos_x = 0;
+    double pos_y = 0;
+    double pr_x = 0;
+    double pr_y = 0;
     double pr_theta = 0;
-    Dispenser* dispenser;
-    VisionModule* vision;
-    MaterialCarrier* carrier;
-    XtGeneralOutput* dispense_io;
+    Dispenser* dispenser = Q_NULLPTR;
+    VisionModule* vision = Q_NULLPTR;
+    MaterialCarrier* carrier = Q_NULLPTR;
+    XtGeneralOutput* dispense_io = Q_NULLPTR;
     mPoint3D start_pos;
+    QString file_path = "";
+    QString name = "";
 };
 
 #endif // DISPENSE_MODULE_H

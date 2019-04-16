@@ -15,7 +15,7 @@ ColumnLayout {
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
-                    dispenseParams.setDispenseZOffset(text)
+                    dispenseParams.setDispenseZPos(text)
                 }
             }
 

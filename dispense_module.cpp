@@ -5,8 +5,10 @@ DispenseModule::DispenseModule():QObject ()
 {
 }
 
-void DispenseModule::Init(Calibration *calibration, Dispenser *dispenser,VisionModule* vision,MaterialCarrier* carrier,XtGeneralOutput* dispense_io)
+void DispenseModule::Init(QString file_path,QString name,Calibration *calibration, Dispenser *dispenser,VisionModule* vision,MaterialCarrier* carrier,XtGeneralOutput* dispense_io)
 {
+    this->file_path = file_path;
+    this->name = name;
     this->calibration = calibration;
     this->dispenser = dispenser;
     this->vision = vision;
@@ -18,17 +20,25 @@ void DispenseModule::Init(Calibration *calibration, Dispenser *dispenser,VisionM
 void DispenseModule::loadConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("Dispense_PARAMS", &parameters);
-    temp_map.insert("Dispenser_PARAMS", &this->dispenser->parameters);
-    PropertyBase::loadJsonConfig("config//Dispense.json", temp_map);
+    temp_map.insert(name, &parameters);
+    QString temp ="";
+            temp.append(name).append("R");
+    temp_map.insert(temp, &this->dispenser->parameters);
+    temp ="";
+    temp.append(file_path).append(name).append(".json");
+    PropertyBase::loadJsonConfig(temp, temp_map);
 }
 
 void DispenseModule::saveConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("Dispense_PARAMS", &this->parameters);
-    temp_map.insert("Dispenser_PARAMS", &this->dispenser->parameters);
-    PropertyBase::saveJsonConfig("config//lutConfig.json", temp_map);
+    temp_map.insert(name, &parameters);
+    QString temp ="";
+            temp.append(name).append("R");
+    temp_map.insert(temp, &this->dispenser->parameters);
+    temp ="";
+    temp.append(file_path).append(name).append(".json");
+    PropertyBase::saveJsonConfig(temp, temp_map);
 }
 
 void DispenseModule::updatePath()
@@ -43,12 +53,15 @@ void DispenseModule::updatePath()
             mechPoints.push_back(QPointF(-mechPoint.x(), -mechPoint.y()));
         }
     }
+    qInfo("read point :%d",mechPoints.size());
 }
 
-void DispenseModule::setMapPosition(double x, double y, double pr_theta)
+void DispenseModule::setMapPosition(double pos_x,double pos_y,double pr_x, double pr_y, double pr_theta)
 {
-    this->x = x;
-    this->y = y;
+    this->pos_x = pos_x;
+    this->pos_y = pos_y;
+    this->pr_x = pr_x;
+    this->pr_y = pr_y;
     this->pr_theta = pr_theta;
 }
 
@@ -62,11 +75,16 @@ void DispenseModule::moveToDispenseDot(bool record_z)
     double result;
     if(carrier->ZSerchByForce(result,parameters.testForce()))
     {
+        if(dispense_io != nullptr)
         dispense_io->Set(true);
+        else
+            qInfo("dispense_io is null");
         Sleep(1000);
         if(record_z)
             parameters.setDispenseZPos(carrier->GetFeedBackPos().Z);
-        dispense_io->Set(false);
+
+        if(dispense_io != nullptr)
+            dispense_io->Set(false);
         carrier->ZSerchReturn();
     }
     carrier->Move_SZ_XY_Z_Sync(start_pos.X,start_pos.Y,start_pos.Z);
@@ -85,13 +103,12 @@ QVector<mPoint3D> DispenseModule::getDispensePath()
 {
     if(mechPoints.size() < 2)
         updatePath();
-    double x,y;
     QVector<mPoint3D> dispense_path = QVector<mPoint3D>();
     double temp_theta = pr_theta - parameters.initTheta();
     for (int i = 0; i < mechPoints.size(); ++i) {
-        x = mechPoints[i].x() + x;
-        y = mechPoints[i].y() + y;
-        dispense_path.push_back(mPoint3D(x*cos(temp_theta) + y*sin(temp_theta) + parameters.dispenseXOffset(),y*cos(temp_theta)- x*sin(temp_theta) + parameters.dispenseYOffset(),parameters.dispenseZPos() - parameters.dispenseZOffset()));
+        double x = mechPoints[i].x() + pr_x;
+        double y = mechPoints[i].y() + pr_y;
+        dispense_path.push_back(mPoint3D(x*cos(temp_theta) + y*sin(temp_theta) + pos_x + parameters.dispenseXOffset(),y*cos(temp_theta)- x*sin(temp_theta) + pos_y + parameters.dispenseYOffset(),parameters.dispenseZPos() - parameters.dispenseZOffset()));
     }
     return dispense_path;
 }
@@ -99,9 +116,13 @@ QVector<mPoint3D> DispenseModule::getDispensePath()
 bool DispenseModule::performDispense()
 {
    QVector<mPoint3D> temp_path = getDispensePath();
-   if(temp_path.size()<2)return false;
+   if(temp_path.size()<2)
+   {
+       qInfo("point too small :%d",temp_path.size());
+       return false;
+   }
    QVector<DispensePathPoint> dispense_path;
-   for (int i = 0; i < dispense_path.size(); ++i)
+   for (int i = 0; i < temp_path.size(); ++i)
    {
        QVector<double> pos;
        PATH_POINT_TYPE type = PATH_POINT_LINE;
@@ -113,5 +134,8 @@ bool DispenseModule::performDispense()
        else type = PATH_POINT_OPEN_VALVE;
        dispense_path.append(DispensePathPoint(3,pos,type));
    }
-   return dispenser->Dispense(dispense_path);
+   if( dispenser->Dispense(dispense_path))
+       return dispenser->WaitForFinish();
+    qInfo("Dispense fail");
+   return false;
 }

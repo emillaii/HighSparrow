@@ -114,8 +114,8 @@
 //dispenser
 
 #define DISPENSER_PARAMETER_PATH         ".//config//dispenserConfig//"
-#define AA1_DISPENSER                    "aa1_dispenser"
-#define AA2_DISPENSER                    "aa2_dispenser"
+#define AA1_DISPENSE                     "aa1_dispense"
+#define AA2_DISPENSE                     "aa2_dispense"
 
 //PR
 #define PR_SENSOR_PACKAGE_IMX362        "IMX362"

@@ -18,20 +18,19 @@ DispensePathPoint::DispensePathPoint(int dem_of_point, QVector<double> point, PA
 int Dispenser::dispenser_count = 0;
 Dispenser::Dispenser()
 {
-    state = DISPENSER_IDLE;
 }
 
-void Dispenser::Init(QString file_path, QString name, int curve_id, int thread_curve, int thread_trig, QVector<XtMotor *> executive_motors, XtGeneralOutput *output_io)
+void Dispenser::Init(int curve_id, int thread_curve, int thread_trig, QVector<XtMotor *> executive_motors, XtGeneralOutput *output_io)
 {
     dispenser_count++;
-    this->file_path = file_path;
-    this->name = name;
     this->curve_id = curve_id;
     this->thread_curve = thread_curve;
+    this->thread_trig = thread_trig;
     this->executive_motors = executive_motors;
     this->dem = executive_motors.length();
     this->output_io = output_io;
-    loadParams();
+    state = DISPENSER_IDLE;
+//    loadParams();
 }
 
 Dispenser::~Dispenser()
@@ -39,15 +38,16 @@ Dispenser::~Dispenser()
 
 }
 
-void Dispenser::loadParams()
-{
-    PropertyBase::loadJsonConfig(file_path,name,&parameters);
-}
+//void Dispenser::loadParams()
+//{
+//    PropertyBase::loadJsonConfig(file_path,name,&parameters);
+//}
 
-void Dispenser::saveParams()
-{
-     PropertyBase::saveJsonConfig(file_path,name,&parameters);
-}
+//void Dispenser::saveParams()
+//{
+
+//     PropertyBase::saveJsonConfig(file_path,name,&parameters);
+//}
 bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
 {
     if(GetState()!= DISPENSER_IDLE)
@@ -189,6 +189,13 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
 
 
     }
+    XT_Controler::SGO(thread_curve,axis[0],dispense_path[0].p[0]);
+    XT_Controler::SGO(thread_curve,axis[1],dispense_path[0].p[1]);
+    XT_Controler::TILLSTOP(thread_curve,axis[0]);
+    XT_Controler::TILLSTOP(thread_curve,axis[1]);
+    XT_Controler::SGO(thread_curve,axis[2],dispense_path[0].p[2]);
+    XT_Controler::TILLSTOP(thread_curve,axis[2]);
+    XT_Controler::TILLSTOP(thread_trig,axis[2]);
     res = XT_Controler_Extend::Exec_Curve(curve_id, thread_curve, thread_trig, 1);
     if(1!=res)
     {
@@ -197,6 +204,20 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
         return false;
     }
     return true;
+}
+
+bool Dispenser::WaitForFinish(int time)
+{
+    while (time>0) {
+        DISPENSER_STATE temp_state = GetState();
+        if(temp_state == DISPENSER_STATE::DISPENSER_IDLE)
+            return true;
+        else if(temp_state == DISPENSER_STATE::DISPENSER_ERROR)
+            return false;
+        time-=10;
+        Sleep(10);
+    }
+    return false;
 }
 
 void Dispenser::CleanUpCurve()
@@ -215,20 +236,5 @@ DISPENSER_STATE Dispenser::GetState()
         return DISPENSER_BUSY;
     return DISPENSER_IDLE;
 }
-
-bool Dispenser::WaitFinish(int timeout)
-{
-    int time = timeout;
-    while(time>0)
-    {
-        if(GetState() == DISPENSER_IDLE)
-            return true;
-        time-=10;
-        Sleep(10);
-    }
-    return false;
-}
-
-
 
 

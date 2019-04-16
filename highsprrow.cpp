@@ -41,6 +41,9 @@ void HighSprrow::performSUTDownlookPR()
     if (baseModuleManager->sut_module.moveToDownlookPR(offset, false))
     {
         qInfo("Perform SUT Downlook PR OffsetX %f OffsetY %f", offset.X, offset.Y);
+        baseModuleManager->dispense_module.setMapPosition(baseModuleManager->sut_module.downlook_position.X(),
+                                                          baseModuleManager->sut_module.downlook_position.Y(),
+                                                          offset.X, offset.Y,offset.Theta);
         baseModuleManager->sut_module.stepMove_XY_Sync(-offset.X, -offset.Y);
     } else {
         qInfo("Perform SUT Downlook PR Fail");

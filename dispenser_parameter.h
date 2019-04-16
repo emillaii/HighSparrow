@@ -12,7 +12,7 @@ public:
     Q_PROPERTY(double closeOffset READ closeOffset WRITE setCloseOffset NOTIFY closeOffsetChanged)
     Q_PROPERTY(double maximumSpeed READ maximumSpeed WRITE setMaximumSpeed NOTIFY maximumSpeedChanged)
     Q_PROPERTY(double endSpeed READ endSpeed WRITE setEndSpeed NOTIFY endSpeedChanged)
-    Q_PROPERTY(double theta READ theta WRITE setTheta NOTIFY ThetaChanged)
+//    Q_PROPERTY(double theta READ theta WRITE setTheta NOTIFY ThetaChanged)
     double openOffset() const
     {
         return m_openOffset;
@@ -32,10 +32,10 @@ public:
         return m_endSpeed;
     }
 
-    double theta() const
-    {
-        return m_theta;
-    }
+//    double theta() const
+//    {
+//        return m_theta;
+//    }
 
 public slots:
     void setOpenOffset(double openOffset)
@@ -77,15 +77,15 @@ public slots:
         emit endSpeedChanged(m_endSpeed);
     }
 
-    void setTheta(double theta)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_theta, theta))
-            return;
+//    void setTheta(double theta)
+//    {
+//        qWarning("Floating point comparison needs context sanity check");
+//        if (qFuzzyCompare(m_theta, theta))
+//            return;
 
-        m_theta = theta;
-        emit ThetaChanged(m_theta);
-    }
+//        m_theta = theta;
+//        emit ThetaChanged(m_theta);
+//    }
 
 signals:
     void openOffsetChanged(double openOffset);
@@ -104,14 +104,14 @@ signals:
 
     void dispenseYOffsetChanged(double dispenseYOffset);
 
-    void ThetaChanged(double theta);
+//    void ThetaChanged(double theta);
 
 private:
     double m_openOffset = 0;
     double m_closeOffset = 0;
     double m_maximumSpeed = 0;
     double m_endSpeed = 0;
-    double m_theta = 0;
+//    double m_theta = 0;
 };
 
 #endif // DISPENSER_PARAMETER_H

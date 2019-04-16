@@ -406,7 +406,6 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     qInfo("start: %f stop: %f step_size: %f", start, stop, step_size);
     int imageWidth = 0, imageHeight = 0;
     double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
-    double corner_deviation = 0;
     unsigned int zScanCount = 0;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     vector<cv::Mat> images;
@@ -440,8 +439,51 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
            zScanCount++;
            emit sfrWorkerController->calculate(i, start+i*step_size, images[i], false, sfr::EdgeFilter::NO_FILTER);
        }
+    }else if (zScanMode == AA_ZSCAN_DFOV) {
+        isZScanNeedToStop = false;
+        msleep(zSleepInMs);
+        cv::Mat img = dk->DothinkeyGrabImageCV(0);
+        double dfov = calculateDFOV(img);
+        if (dfov <= -1) {
+            qInfo("Cannot find the target FOV!");
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+        }
+        double estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
+        double target_z = estimated_aa_z + zOffset;
+        qInfo("The estimated target z is: %f dfov is%f", target_z, dfov);
+        if (target_z >= stop) {
+            qInfo("The estimated target is too large. value: %f", target_z);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};;
+        }
+        if (target_z <= start-1) {
+            qInfo("The estimated target is too small. value: %f", target_z);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+        }
+        sut->moveToZPos(target_z);
+        for (unsigned int i = 0; i < 10; i++) {
+            if (isZScanNeedToStop) {
+                qInfo("z scan detected finished");
+                break;
+            }
+            sut->moveToZPos(target_z+(i*step_size));
+            msleep(zSleepInMs);
+            mPoint3D currPos = sut->carrier->GetFeedBackPos();
+            cv::Mat img = dk->DothinkeyGrabImageCV(0);
+            double dfov = calculateDFOV(img);
+            if (dfov <= -1) {
+                qInfo("Cannot find the target FOV!");
+                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+            }
+            xsum=xsum+currPos.Z;                        //calculate sigma(xi)
+            ysum=ysum+dfov;                         //calculate sigma(yi)
+            x2sum=x2sum+pow(currPos.Z,2);               //calculate sigma(x^2i)
+            xysum=xysum+currPos.Z*dfov;                 //calculate sigma(xi*yi)
+            imageWidth = img.cols;
+            imageHeight = img.rows;
+            images.push_back(std::move(img));
+            zScanCount++;
+        }
     }
-    qInfo("End of zscan motion");
     int timeout=1000;
     while(this->clustered_sfr_map.size() != zScanCount && timeout >0) {
         Sleep(10);

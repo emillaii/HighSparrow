@@ -21,6 +21,8 @@
 #include "imageprovider.h"
 #include "chart_calibration.h"
 #include "dispense_module.h"
+#include "unitlog.h"
+
 class AACore : public QThread
 {
     Q_OBJECT
@@ -54,6 +56,8 @@ public:
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
 private:
+    Unitlog unitLog;
+    QString runningUnit;
     AAHeadModule* aa_head;
     LutModule* lut;
     SutModule* sut;
@@ -68,7 +72,7 @@ private:
     int currentChartDisplayChannel = 0;
     int currentOCDisplayChannel = 0;
     void sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
-                             double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak);
+                             double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak, double &dev);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,
                                                                unsigned int & ccROIIndex,
                                                                unsigned int & ulROIIndex,

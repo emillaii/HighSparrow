@@ -56,7 +56,8 @@ SOURCES += \
     imageprovider.cpp \
     dispenser.cpp \
     dispense_module.cpp \
-    vision_location.cpp
+    vision_location.cpp \
+    unitlog.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -153,7 +154,8 @@ HEADERS += \
     dispense_parameter.h \
     position_define.h \
     vision_location_parameter.h \
-    vision_location.h
+    vision_location.h \
+    unitlog.h
 
 DISTFILES += \
     icons/index.theme

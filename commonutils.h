@@ -11,5 +11,6 @@ QString getCurrentTimeString();
 QString getCurrentDateString();
 QString getVisionLogDir();
 QString getGrabberLogDir();
+QString getMTFLogDir();
 
 #endif // COMMONUTILS_H

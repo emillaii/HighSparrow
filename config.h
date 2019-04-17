@@ -9,6 +9,7 @@
 #define BASE_LOG_DIR                 "log//"
 #define SYSTEM_LOG_DIR               "system_log//"
 #define GRABBER_DEBUG_DIR            "grabber_log//"
+#define MTF_DEBUG_DIR            "mtf_log//"
 #define VISION_PR_DEBUG_DIR          "pr_log//"
 #define AA_DEBUG_DIR                 "aa_log//"
 #define AA_SAVE_IMAGE_DIR            "aa_save_image//"

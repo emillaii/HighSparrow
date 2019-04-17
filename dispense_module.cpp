@@ -1,6 +1,6 @@
 #include "dispense_module.h"
 #include <config.h>
-
+#define PI 3.1415926535898
 DispenseModule::DispenseModule():QObject ()
 {
 }
@@ -56,15 +56,18 @@ void DispenseModule::updatePath()
     qInfo("read point :%d",mechPoints.size());
 }
 
-void DispenseModule::setMapPosition(double pos_x,double pos_y,double pr_x, double pr_y, double pr_theta)
+void DispenseModule::setMapPosition(double pos_x, double pos_y)
 {
     this->pos_x = pos_x;
     this->pos_y = pos_y;
-    this->pr_x = pr_x;
-    this->pr_y = pr_y;
-    this->pr_theta = pr_theta;
 }
 
+void DispenseModule::setPRPosition(double pr_x, double pr_y, double pr_theta)
+{
+    this->pr_x = -pr_x;
+    this->pr_y = -pr_y;
+    this->pr_theta = -pr_theta;
+}
 void DispenseModule::moveToDispenseDot(bool record_z)
 {
     start_pos = carrier->GetFeedBackPos();
@@ -79,7 +82,7 @@ void DispenseModule::moveToDispenseDot(bool record_z)
         dispense_io->Set(true);
         else
             qInfo("dispense_io is null");
-        Sleep(1000);
+        Sleep(parameters.openTime());
         if(record_z)
             parameters.setDispenseZPos(carrier->GetFeedBackPos().Z);
 
@@ -90,13 +93,13 @@ void DispenseModule::moveToDispenseDot(bool record_z)
     carrier->Move_SZ_XY_Z_Sync(start_pos.X,start_pos.Y,start_pos.Z);
 }
 
-void DispenseModule::calulateOffset()
+void DispenseModule::calulateOffset(int digit)
 {
     mPoint3D end_pos = carrier->GetFeedBackPos();
-    double x = parameters.dispenseXOffset() + end_pos.X - start_pos.X;
-    double y = parameters.dispenseYOffset() + end_pos.Y - start_pos.Y;
-    parameters.setDispenseXOffset(x);
-    parameters.setDispenseYOffset(y);
+    double x = parameters.dispenseXOffset() -(end_pos.X - start_pos.X);
+    double y = parameters.dispenseYOffset() -(end_pos.Y - start_pos.Y);
+    parameters.setDispenseXOffset((round(x*pow(10,4))/pow(10,4)));
+    parameters.setDispenseYOffset((round(y*pow(10,4))/pow(10,4)));
 }
 
 QVector<mPoint3D> DispenseModule::getDispensePath()
@@ -104,7 +107,7 @@ QVector<mPoint3D> DispenseModule::getDispensePath()
     if(mechPoints.size() < 2)
         updatePath();
     QVector<mPoint3D> dispense_path = QVector<mPoint3D>();
-    double temp_theta = pr_theta - parameters.initTheta();
+    double temp_theta = (pr_theta - parameters.initTheta())*PI/180;
     for (int i = 0; i < mechPoints.size(); ++i) {
         double x = mechPoints[i].x() + pr_x;
         double y = mechPoints[i].y() + pr_y;

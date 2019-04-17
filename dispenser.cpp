@@ -92,14 +92,8 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
     double first_line_len=0;
     for(int i=0; i<dispense_path.length(); i++)
     {
-        if(i==2)
         res = XT_Controler_Extend::Append_Line_Pos(curve_id, dem, axis.data(), dispense_path[i].p.data(),
                                                    parameters.maximumSpeed(), parameters.endSpeed(), 0, nPoint_Index);
-        else {
-            res = XT_Controler_Extend::Append_Line_Pos(curve_id, dem, axis.data(), dispense_path[i].p.data(),
-                                                       parameters.maximumSpeed(), parameters.endSpeed(), 0, nPoint_Index);
-
-        }
         qInfo("point %d : %f,%f",i, dispense_path[i].p.data()[0],dispense_path[i].p.data()[1]);
         if(1!=res)
         {
@@ -146,7 +140,7 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
         {
             res = XT_Controler_Extend::Append_Line_Pos(curve_id, dem, axis.data(), dispense_path[0].p.data(),
                                                        parameters.maximumSpeed(), parameters.endSpeed(), 0, nPoint_Index);
-            qInfo("point end0%d : %f,%f",i, dispense_path[0].p.data()[0],dispense_path[0].p.data()[1]);
+            qInfo("point end0%d : %f,%f,%f",i, dispense_path[0].p.data()[0],dispense_path[0].p.data()[1],dispense_path[0].p.data()[2]);
             if(1!=res)
             {
                 qInfo("error in adding No%d point!",i+1);
@@ -155,7 +149,7 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
             }
             res = XT_Controler_Extend::Append_Line_Pos(curve_id, dem, axis.data(), dispense_path[1].p.data(),
                                                        parameters.maximumSpeed(), parameters.endSpeed(), 0, nPoint_Index);
-            qInfo("point end1%d : %f,%f",i, dispense_path[1].p.data()[0],dispense_path[1].p.data()[1]);
+            qInfo("point end1%d : %f,%f,%f",i, dispense_path[1].p.data()[0],dispense_path[1].p.data()[1],dispense_path[1].p.data()[2]);
             if(1!=res)
             {
                 qInfo("error in adding No%d point!",i+2);

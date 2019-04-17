@@ -417,6 +417,23 @@ XtCylinder *BaseModuleManager::GetCylinderByName(QString name)
     return nullptr;
 }
 
+bool BaseModuleManager::stepMove(QString name, double step, bool isPositive)
+{
+    if (!motors.contains(name)) {
+        qInfo("Selected motor does not exist");
+        return false;
+    }
+    XtMotor* temp_motor = motors[name];
+    qInfo("Step move: %s %f %d %f", temp_motor->Name().toStdString().c_str(), step, isPositive, temp_motor->GetFeedbackPos());
+    if (isPositive)
+        temp_motor->StepMove(step);
+    else {
+        temp_motor->StepMove(-step);
+    }
+    return true;
+}
+
+
 bool BaseModuleManager::stepMove(int index, double step, bool isPositive)
 {
     XtMotor* temp_motor = motors.values()[index];

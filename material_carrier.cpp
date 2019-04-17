@@ -26,47 +26,51 @@ bool MaterialCarrier::Move_SZ_XY_Z_Sync(double x, double y, double z, int timeou
     return result;
 }
 
-bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool check_autochthonous, int timeout)
+bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool check_autochthonous,double check_distance, int timeout)
 {
     if(check_autochthonous)
     {
-        if(abs(motor_x->GetFeedbackPos()-x)<0.001&&abs(motor_y->GetFeedbackPos()-y)<0.001&&abs(motor_z->GetFeedbackPos()-z)<0.001)
-            return true;
+        if(abs(motor_x->GetFeedbackPos()-x)>check_distance||abs(motor_y->GetFeedbackPos()-y)>check_distance||abs(motor_z->GetFeedbackPos()-z)>check_distance)
+            check_autochthonous = false;
     }
     bool result;
-    result = motor_z->MoveToPosSync(parameters.SafetyZ());
-    if(!result) return false;
-    result = motor_x->MoveToPosSync(parameters.SafetyX());
-    if(!result) return false;
+    if(!check_autochthonous)
+    {
+        result = motor_z->MoveToPosSync(parameters.SafetyZ());
+        if(!result) return false;
+        result = motor_x->MoveToPosSync(parameters.SafetyX());
+        if(!result) return false;
+    }
     result = motor_y->MoveToPosSync(y);
     if(!result) return false;
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-    Sleep(200);
+    Sleep(300);
     return result;
 }
 
-bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool check_autochthonous, int timeout)
+bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool check_autochthonous,double check_distance, int timeout)
 {
-    qInfo("move to x:%f y:%f z:%f check_autochthonous:%d",x,y,z,check_autochthonous);
     if(check_autochthonous)
     {
-        qInfo("target to x:%f y:%f z:%f",motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos());
-        if(abs(motor_x->GetFeedbackPos()-x)<0.001&&abs(motor_y->GetFeedbackPos()-y)<0.001&&abs(motor_z->GetFeedbackPos()-z)<0.01)
-            return true;
+        if(abs(motor_x->GetFeedbackPos()-x)>check_distance||abs(motor_y->GetFeedbackPos()-y)>check_distance||abs(motor_z->GetFeedbackPos()-z)>check_distance)
+            check_autochthonous = false;
     }
     bool result;
-    result = motor_z->MoveToPosSync(parameters.SafetyZ());
-    if(!result) return false;
-    result = motor_y->MoveToPosSync(parameters.SafetyY());
-    if(!result) return false;
+    if(!check_autochthonous)
+    {
+        result = motor_z->MoveToPosSync(parameters.SafetyZ());
+        if(!result) return false;
+        result = motor_y->MoveToPosSync(parameters.SafetyY());
+        if(!result) return false;
+    }
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_y->MoveToPosSync(y);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-    Sleep(200);
+    Sleep(300);
     return result;
 }
 

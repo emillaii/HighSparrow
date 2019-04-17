@@ -22,6 +22,7 @@ public:
 public:
     Q_INVOKABLE void performLUTMushroomPR();
     Q_INVOKABLE void performSUTDownlookPR();
+    Q_INVOKABLE void performOnlySUTDownlookPR();
     Q_INVOKABLE void performLUTUplookPR();
     Q_INVOKABLE void callQProcess(QString arg);
     Q_INVOKABLE void aa_A_Inter(double step);

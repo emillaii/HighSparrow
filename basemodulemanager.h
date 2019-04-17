@@ -106,6 +106,7 @@ public:
     bool SaveParameters();
 
     Q_INVOKABLE bool initialDevice();
+    Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);
     Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
     Q_INVOKABLE void setOutput(QString name, bool on);
     Q_INVOKABLE double getMotorFeedbackPos(QString name);

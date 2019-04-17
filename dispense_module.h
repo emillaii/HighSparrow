@@ -16,9 +16,10 @@ public:
     void loadConfig();
     void saveConfig();
     Q_INVOKABLE void updatePath();
-    void setMapPosition(double pos_x,double pos_y, double pr_x,double pr_y,double pr_theta);
+    void setMapPosition(double pos_x,double pos_y);
+    void setPRPosition(double pr_x,double pr_y,double pr_theta);
     Q_INVOKABLE void moveToDispenseDot(bool record_z = true);
-    Q_INVOKABLE void calulateOffset();
+    Q_INVOKABLE void calulateOffset(int digit = 4);
     Q_INVOKABLE bool performDispense();
 private:
     QVector<mPoint3D> getDispensePath();

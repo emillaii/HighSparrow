@@ -303,8 +303,9 @@ ErrorCodeStruct AACore::performDispense()
 {
     sut->recordCurrentPos();
     PrOffset offset;
+    dispense->setMapPosition(sut->downlook_position.X(),sut->downlook_position.Y());
     if(!sut->moveToDownlookPR(offset)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "downlook pr fail"};}
-    dispense->setMapPosition(sut->downlook_position.X(),sut->downlook_position.Y(),offset.X,offset.Y,offset.Theta);
+    dispense->setPRPosition(offset.X,offset.Y,offset.Theta);
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
     if(!sut->movetoRecordPos()){return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
     return ErrorCodeStruct {ErrorCode::OK, ""};
@@ -516,6 +517,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
             zScanCount++;
             emit sfrWorkerController->calculate(i, start+i*step_size, images[i], false, sfr::EdgeFilter::NO_FILTER);
             if (isCrashDetected) {
+                qInfo("Total zCount: %d", zScanCount);
                 break;
             }
         }
@@ -527,6 +529,13 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     }
     if (timeout <= 0) {
         qInfo("Error in performing AA: %d", timeout);
+        clustered_sfr_map.clear();
+        return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
+    }
+
+    if (zScanCount < 6) {
+        qInfo("Error in performing AA due to insufficient.");
+        clustered_sfr_map.clear();
         return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
     }
 
@@ -537,13 +546,17 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak, dev);
     clustered_sfr_map.clear();
     qInfo("xTilt: %f yTilt: %f zPeak: %f", xTilt, yTilt, zPeak);
-    sut->stepMove_Z_Sync(-0.2);
+    //sut->stepMove_Z_Sync(-0.2);
     msleep(zSleepInMs);
+    qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
+    //aa_head->stepMove_AB_Sync(xTilt, yTilt);
     aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
+    qInfo("aa_head after :%f", aa_head->GetFeedBack().Z);
     msleep(zSleepInMs);
-    performOC(true, true);
+    //performOC(true, true);
     msleep(zSleepInMs);
     sut->moveToZPos(zPeak);
+    msleep(zSleepInMs);
     map.insert("X_TILT", xTilt);
     map.insert("Y_TILT", yTilt);
     map.insert("Z_PEAK_CC", zPeak);
@@ -627,8 +640,8 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
 ErrorCodeStruct AACore::performMTF()
 {
     QVariantMap map;
-    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    //cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
+    cv::Mat img = dk->DothinkeyGrabImageCV(0);
     int imageWidth = img.cols;
     int imageHeight = img.rows;
     double fov = this->calculateDFOV(img);
@@ -699,7 +712,9 @@ ErrorCodeStruct AACore::performDelay(int delay_in_ms)
 
 ErrorCodeStruct AACore::performZOffset(double zOffset)
 {
-    sut->stepMove_Z_Sync(zOffset);
+    double target_z = sut->carrier->GetFeedBackPos().Z + zOffset;
+    sut->moveToZPos(target_z);
+    QThread::msleep(200);
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -854,7 +869,7 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     ur_zPeak = ur_peak_z;
     ll_zPeak = ll_peak_z;
     lr_zPeak = lr_peak_z;
-
+    qInfo("End of sfrFitCurve");
 }
 
 std::vector<AA_Helper::patternAttr> AACore::search_mtf_pattern(cv::Mat inImage, QImage &image, bool isFastMode, unsigned int &ccROIIndex, unsigned int &ulROIIndex, unsigned int &urROIIndex, unsigned int &llROIIndex, unsigned int &lrROIIndex)

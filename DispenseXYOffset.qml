@@ -33,6 +33,21 @@ ColumnLayout {
                 dispenseParams.setDispenseYOffset(text)
             }
         }
+
+        Label {
+            text: qsTr("OpenTime")
+        }
+        TextField {
+            text: dispenseParams.openTime
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 3
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                dispenseParams.setOpenTime(text)
+            }
+        }
     }
     RowLayout {
         Button {

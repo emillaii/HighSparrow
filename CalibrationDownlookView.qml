@@ -67,9 +67,16 @@ ColumnLayout {
             }
         }
         Button {
-            text: qsTr("Perform PR")
+            text: qsTr("MoveTo PR")
             onClicked: {
                 highSprrow.performSUTDownlookPR()
+            }
+        }
+
+        Button {
+            text: qsTr("only PR")
+            onClicked: {
+                highSprrow.performOnlySUTDownlookPR()
             }
         }
     }

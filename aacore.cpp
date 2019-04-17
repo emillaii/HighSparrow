@@ -414,11 +414,18 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     unsigned int zScanCount = 0;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     vector<cv::Mat> images;
-    sut->moveToZPos(start);
+    if (start > 0) sut->moveToZPos(start);
     mPoint3D start_pos = sut->carrier->GetFeedBackPos();
     int count = 0;
+    QPointF prev_point = {0, 0};
+    double prev_fov_slope = 0;
     if (zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
-        count = (int)fabs((start - stop)/step_size);
+        if (start <= 0) {
+            start = start_pos.Z;
+            count = 6;
+        } else {
+            count = (int)fabs((start - stop)/step_size);
+        }
         for (int i = 0; i < count; i++)
         {
            sut->moveToZPos(start+(i*step_size));
@@ -475,12 +482,28 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
             mPoint3D currPos = sut->carrier->GetFeedBackPos();
             cv::Mat img = dk->DothinkeyGrabImageCV(0);
             double dfov = calculateDFOV(img);
+            bool isCrashDetected = false;
+            if (i > 1) {
+                double slope = (dfov - prev_point.y()) / (currPos.Z - prev_point.x());
+                double error = 0;
+                if (prev_fov_slope != 0) {
+                    error = (slope - prev_fov_slope) / prev_fov_slope;
+                }
+                if (fabs(error) > 0.1) {
+                    qInfo("Crash detection is triggered");
+                    isCrashDetected = true;
+                }
+                qInfo("current slope %f  prev_slope %f error %f", slope, prev_fov_slope, error);
+                prev_fov_slope = slope;
+            }
+            prev_point.setX(currPos.Z); prev_point.setY(dfov);
+
             if (dfov <= -1) {
                 qInfo("Cannot find the target FOV!");
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
             }
             xsum=xsum+currPos.Z;                        //calculate sigma(xi)
-            ysum=ysum+dfov;                         //calculate sigma(yi)
+            ysum=ysum+dfov;                             //calculate sigma(yi)
             x2sum=x2sum+pow(currPos.Z,2);               //calculate sigma(x^2i)
             xysum=xysum+currPos.Z*dfov;                 //calculate sigma(xi*yi)
             imageWidth = img.cols;
@@ -488,6 +511,9 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
             images.push_back(std::move(img));
             zScanCount++;
             emit sfrWorkerController->calculate(i, start+i*step_size, images[i], false, sfr::EdgeFilter::NO_FILTER);
+            if (isCrashDetected) {
+                break;
+            }
         }
     }
     int timeout=1000;

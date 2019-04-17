@@ -214,6 +214,7 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
             qInfo("Performaing Z Offset");
             //int type = params["type"].toInt(0);
             double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
+            z_offset_in_um /= 1000;
             performZOffset(z_offset_in_um);
         }
         else if (testItemName.contains(AA_PIECE_PICK_LENS)) {
@@ -268,6 +269,7 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
             qInfo("Performing Dispense");
             int enable_save_image = params["enable_save_image"].toInt();
             int lighting = params["lighting"].toInt();
+            ret = performDispense();
         }
         else if (testItemName.contains(AA_PIECE_DELAY)) {
             qInfo("Performing Delay");
@@ -298,6 +300,9 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
 ErrorCodeStruct AACore::performDispense()
 {
     sut->recordCurrentPos();
+    PrOffset offset;
+    if(!sut->moveToDownlookPR(offset)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "downlook pr fail"};}
+    dispense->setMapPosition(sut->downlook_position.X(),sut->downlook_position.Y(),offset.X,offset.Y,offset.Theta);
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
     if(!sut->movetoRecordPos()){return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
     return ErrorCodeStruct {ErrorCode::OK, ""};
@@ -439,7 +444,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
            zScanCount++;
            emit sfrWorkerController->calculate(i, start+i*step_size, images[i], false, sfr::EdgeFilter::NO_FILTER);
        }
-    }else if (zScanMode == AA_ZSCAN_DFOV) {
+    }else {
         isZScanNeedToStop = false;
         msleep(zSleepInMs);
         cv::Mat img = dk->DothinkeyGrabImageCV(0);
@@ -482,6 +487,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
             imageHeight = img.rows;
             images.push_back(std::move(img));
             zScanCount++;
+            emit sfrWorkerController->calculate(i, start+i*step_size, images[i], false, sfr::EdgeFilter::NO_FILTER);
         }
     }
     int timeout=1000;
@@ -490,7 +496,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
         timeout--;
     }
     if (timeout <= 0) {
-        qInfo("Error in performing AA Offline: %d", timeout);
+        qInfo("Error in performing AA: %d", timeout);
         return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
     }
 
@@ -574,14 +580,16 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
 
 ErrorCodeStruct AACore::performMTF()
 {
-    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    //cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
+    cv::Mat img = dk->DothinkeyGrabImageCV(0);
     int imageWidth = img.cols;
     int imageHeight = img.rows;
     double fov = this->calculateDFOV(img);
     if (fov == -1) {
         qInfo("Error in calculating fov");
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+    } else {
+        qInfo("DFOV :%f", fov);
     }
     emit sfrWorkerController->calculate(0, 0, img, true);
     int timeout=1000;
@@ -667,8 +675,8 @@ double AACore::calculateDFOV(cv::Mat img)
         double d1 = sqrt(pow((vector[ulIndex].center.x() - vector[lrIndex].center.x()), 2) + pow((vector[ulIndex].center.y() - vector[lrIndex].center.y()), 2));
         double d2 = sqrt(pow((vector[urIndex].center.x() - vector[llIndex].center.x()), 2) + pow((vector[urIndex].center.y() - vector[llIndex].center.y()), 2));
         double f = 1.98;
-        double dfov1 = 2*atan(d1/(2*this->chartCalibration->getOneXPxielDistance().x()*f))*180/PI;
-        double dfov2 = 2*atan(d2/(2*this->chartCalibration->getOneXPxielDistance().y()*cmosPixelToMM_Y*f))*180/PI;
+        double dfov1 = 2*atan(d1/(2*892*f))*180/PI;
+        double dfov2 = 2*atan(d2/(2*892*f))*180/PI;
         double dfov = (dfov1 + dfov2)/2;
         return dfov;
     }

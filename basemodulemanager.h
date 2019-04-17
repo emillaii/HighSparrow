@@ -106,9 +106,10 @@ public:
     bool SaveParameters();
 
     Q_INVOKABLE bool initialDevice();
-    Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);
+    Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
     Q_INVOKABLE void setOutput(QString name, bool on);
     Q_INVOKABLE double getMotorFeedbackPos(QString name);
+    Q_INVOKABLE double getMotorFeedbackPos(int index);
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();
     void EnableMotors();
@@ -123,7 +124,8 @@ public:
     Q_INVOKABLE void performAA1MushroomHeadCalibration();
     Q_INVOKABLE void performChartCalibration();
     Q_INVOKABLE void UpdateCalibrationParameters();
-
+    Q_INVOKABLE int getNumberOfMotors();
+    Q_INVOKABLE QString getMotorsName(int);
 
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);

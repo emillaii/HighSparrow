@@ -367,6 +367,16 @@ void BaseModuleManager::UpdateCalibrationParameters()
 
 }
 
+int BaseModuleManager::getNumberOfMotors()
+{
+    return motors.size();
+}
+
+QString BaseModuleManager::getMotorsName(int index)
+{
+    return motors.keys()[index];
+}
+
 XtMotor *BaseModuleManager::GetMotorByName(QString name)
 {
     if(motors.contains(name))
@@ -407,18 +417,16 @@ XtCylinder *BaseModuleManager::GetCylinderByName(QString name)
     return nullptr;
 }
 
-bool BaseModuleManager::stepMove(QString name, double step, bool isPositive)
+bool BaseModuleManager::stepMove(int index, double step, bool isPositive)
 {
-    if (motors.contains(name)) {
-        qInfo("Step move: %s %f %d %f", name.toStdString().c_str(), step, isPositive, motors[name]->GetFeedbackPos());
-        if (isPositive)
-            motors[name]->StepMove(step);
-        else {
-            motors[name]->StepMove(-step);
-        }
-        return true;
-    } else
-        return false;
+    XtMotor* temp_motor = motors.values()[index];
+    qInfo("Step move: %s %f %d %f", temp_motor->Name().toStdString().c_str(), step, isPositive, temp_motor->GetFeedbackPos());
+    if (isPositive)
+        temp_motor->StepMove(step);
+    else {
+        temp_motor->StepMove(-step);
+    }
+    return true;
 }
 
 void BaseModuleManager::setOutput(QString name, bool on)
@@ -435,6 +443,11 @@ double BaseModuleManager::getMotorFeedbackPos(QString name)
           return motors[name]->GetFeedbackPos();
      }
      return 0;
+}
+
+double BaseModuleManager::getMotorFeedbackPos(int index)
+{
+    return motors.values()[index]->GetFeedbackPos();
 }
 
 bool BaseModuleManager::initSensor()

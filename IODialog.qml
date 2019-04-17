@@ -59,6 +59,12 @@ Popup {
                                 baseModuleManager.setOutput("LUT破真空", checked)
                         }
                     }
+                    Switch {
+                        text: qsTr("SUT1点胶阀")
+                        onCheckedChanged: {
+                                baseModuleManager.setOutput("SUT1点胶阀", checked)
+                        }
+                    }
                 }
             }
         }

@@ -245,7 +245,6 @@ ApplicationWindow {
                         logicManager.start()
                     })
                 })
-                //visionModule.testVision()
             }
         }
 

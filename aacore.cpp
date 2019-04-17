@@ -231,7 +231,7 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
             qInfo("Performing OC");
             bool enable_motion = params["enable_motion"].toInt();
             bool fast_mode = params["fast_mode"].toInt();
-            performOC(enable_motion, fast_mode);
+            ret = performOC(enable_motion, fast_mode);
             qInfo("End of perform OC");
         }
         else if (testItemName.contains(AA_PIECE_AA)) {
@@ -444,7 +444,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
            ysum=ysum+dfov;
            x2sum=x2sum+pow(realZ,2);
            xysum=xysum+realZ*dfov;
-           qInfo("fov: %f  syt_z: %f", dfov,sut->carrier->GetFeedBackPos().Z);
+           qInfo("fov: %f  sut_z: %f", dfov,sut->carrier->GetFeedBackPos().Z);
            imageWidth = img.cols;
            imageHeight = img.rows;
            images.push_back(std::move(img));
@@ -795,11 +795,11 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {
             for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
-                if (i == ccIndex) this->aaData_1.addData(0, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == ulIndex) this->aaData_1.addData(1, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == urIndex) this->aaData_1.addData(2, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == llIndex) this->aaData_1.addData(3, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == lrIndex) this->aaData_1.addData(4, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+                if (i == ccIndex) this->aaData_1.addData(0, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == ulIndex) this->aaData_1.addData(1, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == urIndex) this->aaData_1.addData(2, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == llIndex) this->aaData_1.addData(3, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == lrIndex) this->aaData_1.addData(4, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
             }
         }
         aaData_1.plot();
@@ -815,11 +815,11 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {
             for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
-                if (i == ccIndex) this->aaData_2.addData(0, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == ulIndex) this->aaData_2.addData(1, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == urIndex) this->aaData_2.addData(2, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == llIndex) this->aaData_2.addData(3, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == lrIndex) this->aaData_2.addData(4, clustered_sfr.at(i).at(j).pz*100000, clustered_sfr.at(i).at(j).sfr);
+                if (i == ccIndex) this->aaData_2.addData(0, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == ulIndex) this->aaData_2.addData(1, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == urIndex) this->aaData_2.addData(2, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == llIndex) this->aaData_2.addData(3, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
+                else if (i == lrIndex) this->aaData_2.addData(4, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
             }
         }
         aaData_2.plot();

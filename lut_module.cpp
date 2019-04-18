@@ -120,6 +120,24 @@ bool LutModule::moveToAA1UpDwonlookPR(PrOffset &offset, bool close_lighting,bool
     return false;
 }
 
+bool LutModule::toolUplookPR(PrOffset &offset, bool close_lighting, bool motion)
+{
+    updownlook_location->OpenLight();
+      if(!updownlook_location->performPR(offset))
+          return false;
+    if(close_lighting)
+        updownlook_location->CloseLight();
+    if(motion)
+        return  carrier->StepMove_XY_Sync(-offset.X,-offset.Y);
+    return false;
+}
+
+bool LutModule::toolUplookPR(bool close_lighting, bool motion)
+{
+    PrOffset offset;
+    return toolUplookPR(offset,close_lighting,motion);
+}
+
 bool LutModule::moveToAA2UpdownlookPos(bool check_autochthonous)
 {
      return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_updownlook_position.X(),aa2_updownlook_position.Y(),aa2_updownlook_position.Z(),check_autochthonous);

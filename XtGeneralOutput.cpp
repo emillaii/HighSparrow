@@ -73,7 +73,21 @@ void XtGeneralOutput::SetOnTllTimeSpan(int time_span, int thread)
         return;
     XT_Controler_Extend::DIGITOUT_PRECIOUTTRIG_SET_OUTPUT_IO(thread,output_id,0,1);
     XT_Controler::TILLTIME(thread,time_span);
-    XT_Controler_Extend::DIGITOUT_PRECIOUTTRIG_SET_OUTPUT_IO(thread,output_id,0,1);
+    XT_Controler_Extend::DIGITOUT_PRECIOUTTRIG_SET_OUTPUT_IO(thread,output_id,0,0);
+}
+
+void XtGeneralOutput::SetOnTillTimeSpan(int time_span, int thread)
+{
+    if(output_id<0)
+        return;
+    XT_Controler::SET_OUTPUT_IO(thread,output_id,1);
+    XT_Controler::TILLTIME(thread,time_span);
+    XT_Controler::SET_OUTPUT_IO(thread,output_id,0);
+}
+
+void XtGeneralOutput::WaitForFInish(int thread)
+{
+    XT_Controler::WaitForAllInsFinish(thread);
 }
 
 bool XtGeneralOutput::Value()

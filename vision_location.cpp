@@ -35,7 +35,11 @@ bool VisionLocation::performPR(PrOffset &offset)
         {
            offset.X = mech.x();
            offset.Y = mech.y();
-
+            if(abs(offset.X)>parameters.maximumLength()||abs(offset.Y)>parameters.maximumLength())
+            {
+                qInfo("pr result too big: %f %f %f", offset.X, offset.Y, offset.Theta);
+                return false;
+            }
            if(abs(pr_result.theta) < parameters.maximunAngle())
                offset.Theta = pr_result.theta;
            else if(abs(pr_result.theta - 90) < parameters.maximunAngle())

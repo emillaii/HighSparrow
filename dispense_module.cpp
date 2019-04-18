@@ -66,7 +66,7 @@ void DispenseModule::setPRPosition(double pr_x, double pr_y, double pr_theta)
 {
     this->pr_x = -pr_x;
     this->pr_y = -pr_y;
-    this->pr_theta = -pr_theta;
+    this->pr_theta = pr_theta;
 }
 void DispenseModule::moveToDispenseDot(bool record_z)
 {

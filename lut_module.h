@@ -52,6 +52,8 @@ public:
     Q_INVOKABLE bool moveToAA2UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1UpdownlookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1UpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool toolUplookPR(PrOffset &offset,bool close_lighting = true,bool motion = false);
+    Q_INVOKABLE bool toolUplookPR(bool close_lighting = true,bool motion = false);
     Q_INVOKABLE bool moveToAA2UpdownlookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);

@@ -24,7 +24,12 @@ void AAHeadModule::updateParams()
     PropertyBase::saveJsonConfig(AA_HEAD_MODULE_JSON,temp_map);
 }
 
-void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMotor *motor_z, XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtGeneralOutput *gripper)
+void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMotor *motor_z, XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtGeneralOutput *gripper,
+                        XtGeneralOutput * uv1,
+                        XtGeneralOutput * uv2,
+                        XtGeneralOutput * uv3,
+                        XtGeneralOutput * uv4,
+                        int thread_id)
 {
     this->motor_x = motor_x;
     this->motor_y = motor_y;
@@ -33,6 +38,11 @@ void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMoto
     this->motor_b = motor_b;
     this->motor_c = motor_c;
     this->gripper = gripper;
+    this->uv1 = uv1;
+    this->uv2 = uv2;
+    this->uv3 = uv3;
+    this->uv4 = uv4;
+    this->thread_id = thread_id;
     loadParams();
 }
 
@@ -66,6 +76,27 @@ void AAHeadModule::setUplookResult(double x, double y, double theta)
 bool AAHeadModule::moveToUplookResultPosition()
 {
     return stepMove_XYC_ToSync(uplook_x,uplook_y,uplook_theta);
+}
+
+void AAHeadModule::openUVTillTime(int till_time)
+{
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),1);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),1);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),1);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),1);
+    XT_Controler::TILLTIME(thread_id,till_time);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),0);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),0);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),0);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),0);
+    XT_Controler::WaitForAllInsFinish(thread_id);
+
+}
+
+void AAHeadModule::openGripper()
+{
+    gripper->Set(true);
+    Sleep(200);
 }
 
 bool AAHeadModule::stepMove_XY_Sync(double step_x, double step_y)

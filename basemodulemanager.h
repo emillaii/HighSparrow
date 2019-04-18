@@ -109,6 +109,8 @@ public:
     Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);
     Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
     Q_INVOKABLE void setOutput(QString name, bool on);
+    Q_INVOKABLE bool GetOutput(QString name);
+
     Q_INVOKABLE double getMotorFeedbackPos(QString name);
     Q_INVOKABLE double getMotorFeedbackPos(int index);
     Q_INVOKABLE bool initSensor();

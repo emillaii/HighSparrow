@@ -28,7 +28,6 @@ void HighSprrow::performLUTMushroomPR()
     PrOffset offset;
     if (baseModuleManager->vision_locations[PR_AA1_MUSHROOMHEAD]->performPR(offset))
     {
-        qInfo("Perform LUT Mushroom OffsetX %f OffsetY %f", offset.X, offset.Y);
         baseModuleManager->lut_carrier.StepMove_XY_Sync(-offset.X, -offset.Y);
     } else {
         qInfo("Perform LUT Mushroom PR fail");

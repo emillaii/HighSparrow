@@ -221,6 +221,7 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
         }
         else if (testItemName.contains(AA_PIECE_PICK_LENS)) {
             qInfo("Performing AA pick lens");
+            ret = performAAPickLens();
 
         }
         else if (testItemName.contains(AA_PIECE_UNLOAD_LENS)) {
@@ -228,6 +229,7 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
         }
         else if (testItemName.contains(AA_UNLOAD_CAMERA)) {
             qInfo("AA Unload Camera");
+            ret = performCameraUnload();
         }
         else if (testItemName.contains(AA_PIECE_OC)) {
             qInfo("Performing OC");
@@ -265,7 +267,13 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
             qInfo("End of perform MTF");
         }
         else if (testItemName.contains(AA_PIECE_UV)) {
+
             qInfo("Performing UV");
+            int uv_time = 3000;
+//            bool uv_time = params["time"].toInt();
+            qInfo("uv_time:%d",uv_time);
+            aa_head->openUVTillTime(uv_time);
+
         }
         else if (testItemName.contains(AA_PIECE_DISPENSE)) {
             qInfo("Performing Dispense");
@@ -389,17 +397,24 @@ void AACore::performAAOffline()
     //unitlog->addVariantMap("AA", map);
 }
 
+ErrorCodeStruct AACore::performInitSensor()
+{
+    return ErrorCodeStruct {ErrorCode::OK, ""};
+}
+
 ErrorCodeStruct AACore::performPRToBond()
 {
-    if (!this->aa_head->moveToMushroomPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     if (!this->lut->moveToUnloadPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT cannot move to unload Pos"};}
+    if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook   Pos"};}
+    if (!this->aa_head->moveToMushroomPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     if (!this->sut->moveToMushroomPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to mushroom Pos"};}
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACore::performAAPickLens()
 {
-    if (!this->aa_head->moveToMushroomPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
+    if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
+    if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
     if(!this->lut->moveToAA1PickLens()){return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT AA1 ccan not move to pick lens"};}
     if(!this->lut->moveToLoadPos()){return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT ccan not move to lut load pos"};}
 
@@ -710,6 +725,12 @@ ErrorCodeStruct AACore::performDelay(int delay_in_ms)
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
+ErrorCodeStruct AACore::performCameraUnload()
+{
+    aa_head->openGripper();
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
 ErrorCodeStruct AACore::performZOffset(double zOffset)
 {
     double target_z = sut->carrier->GetFeedBackPos().Z + zOffset;
@@ -784,8 +805,8 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, 892, 892);
     //ToDo: Check whether the points result is determinitics
     if (points.size() == 5) {
-       ul_peak_z = points[0].z;
-       ur_peak_z = points[1].z;
+       ul_peak_z = points[1].z;
+       ur_peak_z = points[2].z;
        ll_peak_z = points[3].z;
        lr_peak_z = points[4].z;
     }

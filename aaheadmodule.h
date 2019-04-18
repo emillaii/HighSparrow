@@ -19,7 +19,12 @@ class AAHeadModule : public QObject
     Q_OBJECT
 public:
     AAHeadModule();
-    void Init(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtGeneralOutput * gripper);
+    void Init(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtGeneralOutput * gripper,
+              XtGeneralOutput * uv1,
+              XtGeneralOutput * uv2,
+              XtGeneralOutput * uv3,
+              XtGeneralOutput * uv4,
+              int thread_id);
 public slots:
     void updateParams();
 
@@ -31,7 +36,12 @@ private:
     XtMotor* motor_b = Q_NULLPTR;
     XtMotor* motor_c = Q_NULLPTR;
     XtGeneralOutput * gripper = Q_NULLPTR;
+    XtGeneralOutput * uv1 = Q_NULLPTR;
+    XtGeneralOutput * uv2 = Q_NULLPTR;
+    XtGeneralOutput * uv3 = Q_NULLPTR;
+    XtGeneralOutput * uv4 = Q_NULLPTR;
     Position6D last_aa_position;
+    int thread_id;
 public:
 
     AAHeadParameters parameters;
@@ -46,6 +56,8 @@ public:
     bool moveToAAPosition();
     void setUplookResult(double x,double y,double theta);
     bool moveToUplookResultPosition();
+    void openUVTillTime(int till_time);
+    void openGripper();
     Q_INVOKABLE bool stepMove_XY_Sync(double step_x,double step_y);
     Q_INVOKABLE bool stepMove_XYC_Sync(double step_x,double step_y,double step_c);
     Q_INVOKABLE bool stepMove_AB_Sync(double step_a,double step_b);

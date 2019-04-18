@@ -81,6 +81,24 @@ bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting,bool che
     return false;
 }
 
+bool SutModule::toolDownlookPR(PrOffset &offset, bool close_lighting, bool motion)
+{
+    vision_updownlook_location->OpenLight();
+    if(!vision_updownlook_location->performPR(offset))
+        return false;
+    if(close_lighting)
+        vision_updownlook_location->CloseLight();
+    if(motion)
+        carrier->StepMove_XY_Sync(-offset.X,-offset.Y);
+    return false;
+}
+
+bool SutModule::toolDownlookPR(bool close_lighting, bool motion)
+{
+    PrOffset offset;
+    return toolDownlookPR(offset,close_lighting,motion);
+}
+
 bool SutModule::moveToToolDownlookPos(bool check_autochthonous)
 {
     return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_downlook_position.X(),tool_downlook_position.Y(),tool_downlook_position.Z(),check_autochthonous);

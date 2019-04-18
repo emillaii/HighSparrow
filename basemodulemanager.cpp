@@ -148,6 +148,10 @@ bool BaseModuleManager::InitStruct()
     XtMotor *aa_a = GetMotorByName("AA1_A");
     XtMotor *aa_b = GetMotorByName("AA1_B");
     XtMotor *aa_c = GetMotorByName("AA1_C");
+    XtGeneralOutput * uv1 = GetOutputIoByName(u8"AA1_UV灯1");
+    XtGeneralOutput * uv2 = GetOutputIoByName(u8"AA1_UV灯2");
+    XtGeneralOutput * uv3 = GetOutputIoByName(u8"AA1_UV灯3");
+    XtGeneralOutput * uv4 = GetOutputIoByName(u8"AA1_UV灯4");
 
     XtVacuum *lut_v = GetVacuumByName("LUT_V");
     XtVacuum *lut_v_u = GetVacuumByName("LUT_V_U");
@@ -159,7 +163,7 @@ bool BaseModuleManager::InitStruct()
 
     lut_carrier.Init("LUT",lut_x,lut_y,lut_z,lut_v);
     sut_carrier.Init("SUT",sut_x,sut_y,sut_z,sut_v);
-    aa_head_module.Init("AAHead",aa_x,aa_y,aa_z,aa_a,aa_b,aa_c,gripper);
+    aa_head_module.Init("AAHead",aa_x,aa_y,aa_z,aa_a,aa_b,aa_c,gripper,uv1,uv2,uv3,uv4,XtMotor::GetThreadResource());
 
     calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,aa_x,aa_y,vision_locations[PR_AA1_LUT_UPLOOK]));
     calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_SUT_DOWNLOOK]));
@@ -188,6 +192,7 @@ bool BaseModuleManager::InitStruct()
     executive_motors.push_back(sut_z);
     dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,dispense_o);
     dispense_module.Init(DISPENSER_PARAMETER_PATH,AA1_DISPENSE,calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule,&sut_carrier,dispense_o);
+    dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
     profile_loaded = true;
 
@@ -452,6 +457,14 @@ void BaseModuleManager::setOutput(QString name, bool on)
         qInfo("set output : %s %d", name.toStdString().c_str(), on);
         output_ios[name]->Set(on);
     }
+}
+
+bool BaseModuleManager::GetOutput(QString name)
+{
+    if (this->output_ios.contains(name)){
+        return  output_ios[name]->Value();
+    }
+    return  false;
 }
 
 double BaseModuleManager::getMotorFeedbackPos(QString name)

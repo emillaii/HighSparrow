@@ -85,8 +85,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("prSUTDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
     engine.rootContext()->setContextProperty("prAA1LUTUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_LUT_UPLOOK]->parameters);
     engine.rootContext()->setContextProperty("prAA1MushroomParams",  &highSprrow.baseModuleManager->vision_locations[PR_AA1_MUSHROOMHEAD]->parameters);
-//    engine.rootContext()->setContextProperty("prDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
-//    engine.rootContext()->setContextProperty("prDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
+    engine.rootContext()->setContextProperty("prAA1ToolDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_TOOL_DOWNLOOK]->parameters);
+    engine.rootContext()->setContextProperty("prAA1ToolUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_TOOL_UPLOOK]->parameters);
 
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);

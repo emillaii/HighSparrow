@@ -51,6 +51,8 @@
         <file>DispenseXYOffset.qml</file>
         <file>DispenseParam.qml</file>
         <file>DispenseZPos.qml</file>
+        <file>CalibrationAA1ToolDownlookView.qml</file>
+        <file>CalibrationAA1ToolUplookView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

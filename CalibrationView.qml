@@ -27,6 +27,12 @@ ItemDelegate {
                 title: qsTr("SUT Downlook PR")
                 CalibrationDownlookView {
                 }
+            }GroupBox {
+                title: qsTr("SUT ToolDownlook PR")
+                CalibrationAA1ToolDownlookView{}
+            }GroupBox {
+                title: qsTr("LUT ToolUplook PR")
+                CalibrationAA1ToolUplookView{}
             }
             GroupBox {
                 title: qsTr("LUT Mushroom PR")

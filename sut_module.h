@@ -36,6 +36,8 @@ public:
     Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool toolDownlookPR(PrOffset &offset,bool close_lighting = true,bool motion = false);
+    Q_INVOKABLE bool toolDownlookPR(bool close_lighting = true,bool motion = false);
     Q_INVOKABLE bool moveToToolDownlookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToToolUplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToMushroomPos(bool check_autochthonous = false);

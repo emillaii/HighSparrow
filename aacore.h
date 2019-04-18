@@ -35,6 +35,8 @@ protected:
 
 public:
     void performAAOffline();
+
+    ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond();
     ErrorCodeStruct performAAPickLens();
     ErrorCodeStruct performAA(double start, double stop, double step_size,
@@ -46,6 +48,8 @@ public:
     ErrorCodeStruct performMTF();
     ErrorCodeStruct performZOffset(double zOffset);
     ErrorCodeStruct performDelay(int);
+    ErrorCodeStruct performCameraUnload();
+
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
     bool runFlowchartTest();

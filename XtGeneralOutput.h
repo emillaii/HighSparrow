@@ -19,6 +19,8 @@ public:
     int GetID();
     void Set(bool value,int thread = -1);
     void SetOnTllTimeSpan(int time_span, int thread);
+    void SetOnTillTimeSpan(int time_span, int thread);
+    void WaitForFInish(int thread);
     bool Value();
     QString Name();
 private:

@@ -45,7 +45,7 @@
 #define UPLOOK_VISION_CAMERA_SN         "22574541"
 #define DOWNLOOK_VISION_CAMERA          "AA_DLCamera1"
 #define UPLOOK_VISION_CAMERA            "LUT_ULCamera"
-#define PICKARM_VISION_CAMERA           "PickarmCamera"
+#define PICKARM_VISION_CAMERA           "LPA_DLCamera"
 
 #define CAMERA_AA1_DL                    "AA_DLCamera1"
 #define CAMERA_AA2_DL                    "AA_DLCamera2"

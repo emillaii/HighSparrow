@@ -15,6 +15,7 @@ class WordopLight: public QObject
 {
     Q_PROPERTY(int downlookLighting READ downlookLighting WRITE setDownlookLighting NOTIFY paramsChanged)
     Q_PROPERTY(int uplookLighting READ uplookLighting WRITE setUplookLighting NOTIFY paramsChanged)
+    Q_PROPERTY(int pickarmLighting READ pickarmLighting WRITE setPickarmLighting NOTIFY paramsChanged)
     Q_OBJECT
 
     struct LongCommand
@@ -77,6 +78,11 @@ public:
         return m_uplookLighting;
     }
 
+    int pickarmLighting() const
+    {
+        return m_pickarmLighting;
+    }
+
 signals:
     void ChangeBrightnessSignal(int ch, uint8_t brightness);
     void ChangeDoneSignal(bool result);
@@ -107,6 +113,17 @@ void setUplookLighting(int uplookLighting)
     m_uplookLighting = uplookLighting;
     emit paramsChanged(m_uplookLighting);
     SetBrightness(LIGHTING_LUT_UL, (uint8_t)uplookLighting);
+}
+
+void setPickarmLighting(int pickarmLighting)
+{
+    qInfo("Set pickarm lighting %d", pickarmLighting);
+    if (m_pickarmLighting == pickarmLighting)
+        return;
+
+    m_pickarmLighting = pickarmLighting;
+    emit paramsChanged(m_pickarmLighting);
+    SetBrightness(LIGHTING_LPA_DL, (uint8_t)pickarmLighting);
 }
 
 private:
@@ -155,6 +172,8 @@ private:
     int m_downlookLighting = 0;
 
     int m_uplookLighting = 0;
+
+    int m_pickarmLighting = 0;
 
 private slots:
     void readyReadSlot();

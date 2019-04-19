@@ -45,6 +45,7 @@ public:
     ChartCalibration * chartCalibration;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
+    BaslerPylonCamera * pylonPickarmCamera = Q_NULLPTR;
     VisionModule * visionModule = Q_NULLPTR;
     WordopLight * lightingModule = Q_NULLPTR;
     LontryLight * lightPanel = Q_NULLPTR;

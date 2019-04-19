@@ -125,12 +125,7 @@ Grid {
                 onCallQmlRefeshImg: {
                     image.source = ""
                     image.source = "image://uplookCameraImage"
-                }/*
-                target: visionModule
-                onCallQmlRefeshImg: {
-                    image.source = ""
-                    image.source = "image://preview1/" + "AA_DLCamera1"
-                }*/
+                }
             }
         }
     }
@@ -253,6 +248,32 @@ Grid {
             anchors.fill: parent
             source: "icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
+            cache: false
+            Rectangle {
+                color: "springgreen"
+                opacity: 0.8
+                x: (image.width - image.paintedWidth)/2
+                y: image.height/2
+                width: image.paintedWidth
+                height: 1
+            }
+            Rectangle {
+                color: "springgreen"
+                opacity: 0.8
+                x: image.width/2
+                y: (image.height - image.paintedHeight)/2
+                width: 1
+                height: image.paintedHeight
+            }
+
+            Connections {
+                target: pickarmCamera
+                onCallQmlRefeshImg: {
+                    image2.source = ""
+                    image2.source = "image://pickarmCameraImage"
+                }
+            }
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
@@ -274,16 +295,21 @@ Grid {
                 y: 250
                 width: 120
                 height: 48
+                stepSize: 1
+                to: 255
+                from: 0
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: -22
                 anchors.left: parent.left
                 anchors.leftMargin: -5
-                value: 0.5
-
+                value: lightingController.pickarmLighting
+                onValueChanged: {
+                    lightingController.setPickarmLighting(value)
+                }
                 Label {
                     y: 10
                     color: "#46eb46"
-                    text: qsTr("0")
+                    text: lightingController.pickarmLighting
                     font.pointSize: 20
                     font.family: "Times New Roman"
                     anchors.bottom: parent.bottom
@@ -306,6 +332,7 @@ Grid {
                     }
                 }
             }
+
         }
     }
 

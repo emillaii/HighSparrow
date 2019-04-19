@@ -14,9 +14,10 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     {
         pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
         pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
+        pylonPickarmCamera = new BaslerPylonCamera(PICKARM_VISION_CAMERA);
     }
     lightingModule = new WordopLight();
-    visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, Q_NULLPTR);
+    visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
 
@@ -24,6 +25,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     {
         pylonUplookCamera->start();
         pylonDownlookCamera->start();
+        pylonPickarmCamera->start();
     }
     vision_locations.insert(PR_AA1_TOOL_UPLOOK,new VisionLocation());
     vision_locations.insert(PR_AA1_TOOL_DOWNLOOK,new VisionLocation());

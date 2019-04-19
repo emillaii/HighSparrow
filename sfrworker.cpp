@@ -118,7 +118,6 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
         double ur_d = sqrt(pow(sv[i].px - roi.width/2*3, 2) + pow(sv[i].py - roi.height/2, 2));
         double ll_d = sqrt(pow(sv[i].px - roi.width/2, 2) + pow(sv[i].py - roi.height/2*3, 2));
         double lr_d = sqrt(pow(sv[i].px - roi.width/2*3, 2) + pow(sv[i].py - roi.height/2*3, 2));
-        qInfo("ul_d: %f ur_d: %f ll_d: %f lr_d: %f", ul_d, ur_d, ll_d, lr_d);
         if (ul_d < tolerence) {
             roi_index = ulIndex;
             if (sv[i].sfr + 10 < prev_ul_score) {
@@ -148,13 +147,11 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
             prev_lr_score = sv[i].sfr;
             isLRIndexFound = true;
         }
-        qInfo("In merging image px: %f py: %f sfr: %f", sv[i].px, sv[i].py, sv[i].sfr);
         sv[i].px = patterns[roi_index].center.x();
         sv[i].py = patterns[roi_index].center.y();
         sv[i].area = patterns[roi_index].area;
 
         sfr_v.push_back(sv[i]);
-        qInfo("Real px: %f py: %f sfr: %f", sv[i].px, sv[i].py, sv[i].sfr);
     }
 
     if (!isURIndexFound) {

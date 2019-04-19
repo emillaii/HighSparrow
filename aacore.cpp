@@ -800,16 +800,42 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     int cc_curve_index = 0;
     double g_x_min = 99999;
     double g_x_max = -99999;
-
-    //sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, cmosPixelToMM, cmosPixelToMM);
     sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, 892, 892);
-    //ToDo: Check whether the points result is determinitics
+    double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
+    unsigned int ccROIIndex, ulROIIndex, urROIIndex, llROIIndex, lrROIIndex;
     if (points.size() == 5) {
-       ul_peak_z = points[1].z;
-       ur_peak_z = points[2].z;
-       ll_peak_z = points[3].z;
-       lr_peak_z = points[4].z;
-    }
+        for (int i = 0; i < 5; i++) {
+            double cc_d = sqrt(pow(points[i].x - imageWidth/2, 2) + pow(points[i].y - imageHeight/2, 2));
+            double ul_d = sqrt(pow(points[i].x, 2) + pow(points[i].y, 2));
+            double ur_d = sqrt(pow(points[i].x - imageWidth, 2) + pow(points[i].y, 2));
+            double ll_d = sqrt(pow(points[i].x, 2) + pow(points[i].y - imageHeight, 2));
+            double lr_d = sqrt(pow(points[i].x - imageWidth, 2) + pow(points[i].y - imageHeight, 2));
+            if (cc_d < cc_min_d) {
+                  cc_min_d = cc_d;
+                  ccROIIndex = i;
+            }
+            if (ul_d < ul_min_d) {
+                 ul_min_d = ul_d;
+                 ulROIIndex = i;
+            }
+            if (ur_d < ur_min_d) {
+                 ur_min_d = ur_d;
+                 urROIIndex = i;
+            }
+            if (ll_d < ll_min_d) {
+                 ll_min_d = ll_d;
+                 llROIIndex = i;
+            }
+            if (lr_d < lr_min_d) {
+                lr_min_d = lr_d;
+                lrROIIndex = i;
+            }
+        }
+    } else { qInfo("Insufficient curve point"); return; }
+    ul_peak_z = points[ulROIIndex].z;
+    ur_peak_z = points[urROIIndex].z;
+    ll_peak_z = points[llROIIndex].z;
+    lr_peak_z = points[lrROIIndex].z;
     threeDPoint weighted_vector = planeFitting(points);
 
     unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, llIndex = 0, lrIndex = 0;

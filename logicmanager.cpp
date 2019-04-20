@@ -39,22 +39,16 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
 void LogicManager::run() {
     qInfo("Logic manager is running");
 
-    if (m_currentMode == CommandType::STOP)  // Stop all running thread here
-    {
-        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_IDLE_MODE);
-        m_currentMode = CommandType::IDLE;
-        return;
-    }
-
     if (m_currentMode == CommandType::MOTION_STOP_HOME) {
         baseModuleManage->stopSeeking();
     }
     else if (m_currentMode == CommandType::MODE_AUTO_RUN) {
-        aaCore->start();
+        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_AUTO_MODE);
         aaCore->wait();
     }
     else if (m_currentMode == CommandType::PERFORM_LOOP_TEST) {
         aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE);
+        return;
     }
     else if (m_currentMode == CommandType::PERFORM_OC) {
         aaCore->performOC(true, true);
@@ -99,15 +93,18 @@ void LogicManager::run() {
     {
         baseModuleManage->performChartCalibration();
     }
-    else if (m_currentMode == CommandType::PERFORM_LOOP_TEST)
-    {
-        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE);
-    }
     m_currentMode = CommandType::IDLE;
     qInfo("End");
 }
 
 void LogicManager::moveToCmd(int cmd) {
+    if (cmd == CommandType::STOP)
+    {
+        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_IDLE_MODE);
+        m_currentMode = CommandType::IDLE;
+        return;
+    }
+
     if (m_currentMode == CommandType::IDLE || cmd == CommandType::MOTION_STOP_HOME)
     {
         setCurrentMode(cmd);

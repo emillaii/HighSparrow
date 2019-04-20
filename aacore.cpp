@@ -683,8 +683,8 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
 ErrorCodeStruct AACore::performMTF()
 {
     QVariantMap map;
-    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    //cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
+    cv::Mat img = dk->DothinkeyGrabImageCV(0);
     int imageWidth = img.cols;
     int imageHeight = img.rows;
     double fov = this->calculateDFOV(img);
@@ -877,6 +877,9 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     ur_peak_z = points[urROIIndex].z;
     ll_peak_z = points[llROIIndex].z;
     lr_peak_z = points[lrROIIndex].z;
+    for (int i = 0; i < 5; i++) {
+        points[i].x /= 892; points[i].y /= 892;
+    }
     threeDPoint weighted_vector = planeFitting(points);
 
     unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, llIndex = 0, lrIndex = 0;

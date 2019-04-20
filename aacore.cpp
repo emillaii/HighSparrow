@@ -683,8 +683,8 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
 ErrorCodeStruct AACore::performMTF()
 {
     QVariantMap map;
-    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
+    //cv::Mat img = dk->DothinkeyGrabImageCV(0);
     int imageWidth = img.cols;
     int imageHeight = img.rows;
     double fov = this->calculateDFOV(img);
@@ -755,6 +755,8 @@ ErrorCodeStruct AACore::performMTF()
                             .append(",")
                             .append(QString::number(sfr_entry[lrROIIndex].sfr))
                             .append(",\n");
+
+        this->mtf_log.incrementData(sfr_entry[ccROIIndex].sfr, sfr_entry[ulROIIndex].sfr, sfr_entry[urROIIndex].sfr, sfr_entry[llROIIndex].sfr,sfr_entry[lrROIIndex].sfr);
     }
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }

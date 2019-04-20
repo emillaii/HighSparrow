@@ -70,6 +70,7 @@ public:
     ErrorCodeStruct performDispense();
     AAData aaData_1;  // For Display Channel 1
     AAData aaData_2;  // For Display Channel 2
+    AAData mtf_log;   // For Display MTF Log
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
 private:

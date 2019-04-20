@@ -64,6 +64,5 @@ bool Unitlog::saveToCSV(QString uuid)
         file.write(doc.toJson());
         file.close();
     }
-    qInfo("Cannot find the unit: %f", uuid.toStdString().c_str());
     return false;
 }

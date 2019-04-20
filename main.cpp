@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("aaCore", highSprrow.logicManager->aaCore);
     engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.logicManager->aaCore->aaData_1);
     engine.rootContext()->setContextProperty("dataFromCpp2", &highSprrow.logicManager->aaCore->aaData_2);
+    engine.rootContext()->setContextProperty("dataFromCpp3", &highSprrow.logicManager->aaCore->mtf_log);
 
     //Module
     engine.rootContext()->setContextProperty("sutModule", &highSprrow.baseModuleManager->sut_module);
@@ -79,7 +80,6 @@ int main(int argc, char *argv[])
     //Device
     engine.rootContext()->setContextProperty("imageGrabber", highSprrow.baseModuleManager->dothinkey);
     engine.rootContext()->setContextProperty("imageGrabberThread", highSprrow.baseModuleManager->imageGrabberThread);
-
     engine.rootContext()->setContextProperty("lightingController", highSprrow.baseModuleManager->lightingModule);
 
     //PR Params

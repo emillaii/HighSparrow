@@ -34,6 +34,28 @@ Grid {
                     antialiasing: true
                     theme: ChartView.ChartThemeDark
 
+                    Connections {
+                        target: dataFromCpp3
+                        onWValueChanged: {
+                            console.log(dataFromCpp3.wCCValue.x + " " + dataFromCpp3.wCCValue.y)
+                            ccSeries.append(dataFromCpp3.wCCValue.x, dataFromCpp3.wCCValue.y)
+                            ulSeries.append(dataFromCpp3.wULValue.x, dataFromCpp3.wULValue.y)
+                            urSeries.append(dataFromCpp3.wURValue.x, dataFromCpp3.wURValue.y)
+                            llSeries.append(dataFromCpp3.wLLValue.x, dataFromCpp3.wLLValue.y)
+                            lrSeries.append(dataFromCpp3.wLRValue.x, dataFromCpp3.wLRValue.y)
+                            axisX.min = ccSeries.at(0).x
+                            axisX.max = ccSeries.at(ccSeries.count - 1).x
+                        }
+                        onWValueClear: {
+                            console.log("Clear")
+                            ccSeries.clear()
+                            ulSeries.clear()
+                            urSeries.clear()
+                            llSeries.clear()
+                            lrSeries.clear()
+                        }
+                    }
+
                     ValueAxis {
                         id: axisY1
                         titleText: "SFR"

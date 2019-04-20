@@ -29,6 +29,7 @@ class AAData : public QThread
 public:
     AAData(QObject *parent=Q_NULLPTR);
     void addData(int i, double x, double y);
+    void incrementData(double y1, double y2, double y3, double y4, double y5);
     void clear();
     void plot();
     QPointF wValue() const{
@@ -126,6 +127,7 @@ signals:
 private slots:
     void wTimeout();
 private:
+    int count = 0;
     QTimer * m_wTimer;
     QPointF m_wValue;
     QList<QPointF> m_CCPointsList;

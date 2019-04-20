@@ -23,6 +23,17 @@
 #include "dispense_module.h"
 #include "unitlog.h"
 
+typedef enum {
+    AA_IDLE_MODE,
+    AA_REPEATABILITY_TEST_MODE,
+    AA_ACCURACY_TEST_MODE,
+    AA_TILTING_TEST_MODE,
+    AA_MTF_TEST_MODE,
+    AA_OC_TEST_MODE,
+    AA_OFFLINE_TEST_MODE,
+    AA_AUTO_MODE
+} AA_DIGNOSTICS_MODE;
+
 class AACore : public QThread
 {
     Q_OBJECT
@@ -50,6 +61,8 @@ public:
     ErrorCodeStruct performDelay(int);
     ErrorCodeStruct performCameraUnload();
 
+    void performLoopTest(AA_DIGNOSTICS_MODE);
+
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
     bool runFlowchartTest();
@@ -60,6 +73,8 @@ public:
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
 private:
+    QString loopTestResult;
+    AA_DIGNOSTICS_MODE currentAAMode;
     Unitlog unitLog;
     QString runningUnit;
     AAHeadModule* aa_head;

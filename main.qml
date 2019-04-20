@@ -221,6 +221,18 @@ ApplicationWindow {
                    })
                }
            }
+           ToolButton {
+               text: qsTr("Stop")
+               transformOrigin: Item.Center
+               display: Button.TextUnderIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/auto-run.png"
+               icon.color: "deepskyblue"
+               onClicked: {
+                    logicManager.stop()
+               }
+           }
 
         }
     }
@@ -248,15 +260,12 @@ ApplicationWindow {
             }
         }
 
-        Page2Form {
-        }
-
+        Page2Form {}
         Page3Form {
             id: flowChartPage
         }
-        Page4FormForm {
-
-        }
+        Page4FormForm {}
+        Page5Form {}
     }
 
     footer: TabBar {
@@ -274,6 +283,9 @@ ApplicationWindow {
         }
         TabButton {
             text: qsTr("AA Data")
+        }
+        TabButton {
+            text: qsTr("Dignostics")
         }
     }
 }

@@ -4,6 +4,7 @@
 
 enum CommandType{
     IDLE,
+    STOP,
     MOTION_INIT,
     MOTION_HOME,
     MOTION_STOP_HOME,     // Interrupt
@@ -22,7 +23,8 @@ enum CommandType{
     CALIBRATION_MUSHROOM,
     CALIBRATION_UPLOOK,
     CALIBRATION_DOWNLOOK,
-    PERFORM_OC
+    PERFORM_OC,
+    PERFORM_LOOP_TEST
 };
 
 LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
@@ -37,12 +39,22 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
 void LogicManager::run() {
     qInfo("Logic manager is running");
 
+    if (m_currentMode == CommandType::STOP)  // Stop all running thread here
+    {
+        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_IDLE_MODE);
+        m_currentMode = CommandType::IDLE;
+        return;
+    }
+
     if (m_currentMode == CommandType::MOTION_STOP_HOME) {
         baseModuleManage->stopSeeking();
     }
     else if (m_currentMode == CommandType::MODE_AUTO_RUN) {
         aaCore->start();
         aaCore->wait();
+    }
+    else if (m_currentMode == CommandType::PERFORM_LOOP_TEST) {
+        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE);
     }
     else if (m_currentMode == CommandType::PERFORM_OC) {
         aaCore->performOC(true, true);
@@ -87,6 +99,10 @@ void LogicManager::run() {
     {
         baseModuleManage->performChartCalibration();
     }
+    else if (m_currentMode == CommandType::PERFORM_LOOP_TEST)
+    {
+        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE);
+    }
     m_currentMode = CommandType::IDLE;
     qInfo("End");
 }
@@ -110,6 +126,7 @@ void LogicManager::loadFlowchart(QString json)
 void LogicManager::home(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_HOME);}
 void LogicManager::init(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_INIT);}
 void LogicManager::stopHome(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_STOP_HOME);}
+void LogicManager::stop(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::STOP);}
 
 void LogicManager::aaMoveToMushroomPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::AA_MOVETO_MUSHROOM_CMD);}
 void LogicManager::aaMoveToPickLensPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::AA_MOVETO_PICK_LENS_CMD);}
@@ -133,4 +150,8 @@ void LogicManager::autoRun(QString json){
 }
 
 void LogicManager::performOC(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::PERFORM_OC);}
-
+void LogicManager::performLoopTest(int mode){
+    qInfo("Loop Test Mode: %d", mode);
+    setStateMessage(__FUNCTION__);
+    moveToCmd(CommandType::PERFORM_LOOP_TEST);
+}

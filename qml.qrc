@@ -53,6 +53,8 @@
         <file>DispenseZPos.qml</file>
         <file>CalibrationAA1ToolDownlookView.qml</file>
         <file>CalibrationAA1ToolUplookView.qml</file>
+        <file>Page5Form.ui.qml</file>
+        <file>DiagnosticsView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

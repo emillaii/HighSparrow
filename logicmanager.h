@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE void init();
     Q_INVOKABLE void home();
     Q_INVOKABLE void stopHome();
+    Q_INVOKABLE void stop();
 
     Q_INVOKABLE void autoRun(QString);
 
@@ -41,6 +42,7 @@ public:
     Q_INVOKABLE void performChartCalibration();
 
     Q_INVOKABLE void performOC();
+    Q_INVOKABLE void performLoopTest(int mode);
 
     int currentMode() const
     {

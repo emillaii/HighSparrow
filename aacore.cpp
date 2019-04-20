@@ -42,11 +42,42 @@ void AACore::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
 }
 
 void AACore::run(){
-    runFlowchartTest();
+    if (currentAAMode == AA_DIGNOSTICS_MODE::AA_AUTO_MODE)
+    {
+        runFlowchartTest();
+    }
+    else if (currentAAMode == AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE)
+    {
+        loopTestResult.append("CC, UL,UR,LL,LR,\n");
+        while (currentAAMode == AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE) {
+            performMTF();
+        }
+        qInfo(loopTestResult.toStdString().c_str());
+        QString filename = "";
+        filename.append(getMTFLogDir())
+                        .append("mtfLoopTest.csv");
+        QFile file(filename);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        file.write(loopTestResult.toStdString().c_str());
+        file.close();
+    }
     unitLog.saveToCSV(runningUnit);
     //performAAOffline();
     //performOC(true, true);
     qInfo("End");
+}
+
+void AACore::performLoopTest(AA_DIGNOSTICS_MODE mode)
+{
+    if (mode == AA_DIGNOSTICS_MODE::AA_IDLE_MODE) {
+        currentAAMode = mode;
+        return;
+    }
+    if (!this->isRunning()) {
+        loopTestResult = "";
+        currentAAMode = mode;
+        this->start();
+    }
 }
 
 bool AACore::runFlowchartTest()
@@ -561,14 +592,11 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak, dev);
     clustered_sfr_map.clear();
     qInfo("xTilt: %f yTilt: %f zPeak: %f", xTilt, yTilt, zPeak);
-    //sut->stepMove_Z_Sync(-0.2);
     msleep(zSleepInMs);
     qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
-    //aa_head->stepMove_AB_Sync(xTilt, yTilt);
     aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
     qInfo("aa_head after :%f", aa_head->GetFeedBack().Z);
     msleep(zSleepInMs);
-    //performOC(true, true);
     msleep(zSleepInMs);
     sut->moveToZPos(zPeak);
     msleep(zSleepInMs);
@@ -655,8 +683,8 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
 ErrorCodeStruct AACore::performMTF()
 {
     QVariantMap map;
-    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
+    //cv::Mat img = dk->DothinkeyGrabImageCV(0);
     int imageWidth = img.cols;
     int imageHeight = img.rows;
     double fov = this->calculateDFOV(img);
@@ -713,8 +741,21 @@ ErrorCodeStruct AACore::performMTF()
     map.insert("UL_SFR", sfr_entry[ulROIIndex].sfr);
     map.insert("LR_SFR", sfr_entry[lrROIIndex].sfr);
     map.insert("LL_SFR", sfr_entry[llROIIndex].sfr);
+    map.insert("DFOV", fov);
     clustered_sfr_map.clear();
     unitLog.pushDataToUnit(this->runningUnit, "MTF", map);
+    if (currentAAMode == AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE) {
+        this->loopTestResult.append(QString::number(sfr_entry[ccROIIndex].sfr))
+                            .append(",")
+                            .append(QString::number(sfr_entry[ulROIIndex].sfr))
+                            .append(",")
+                            .append(QString::number(sfr_entry[urROIIndex].sfr))
+                            .append(",")
+                            .append(QString::number(sfr_entry[llROIIndex].sfr))
+                            .append(",")
+                            .append(QString::number(sfr_entry[lrROIIndex].sfr))
+                            .append(",\n");
+    }
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 

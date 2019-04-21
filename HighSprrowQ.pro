@@ -155,7 +155,8 @@ HEADERS += \
     position_define.h \
     vision_location_parameter.h \
     vision_location.h \
-    unitlog.h
+    unitlog.h \
+    aacoreparameters.h
 
 DISTFILES += \
     icons/index.theme

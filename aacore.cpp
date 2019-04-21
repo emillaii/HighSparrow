@@ -28,6 +28,7 @@ AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey* dk
 
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();
+    loadParams();
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
     connect(this, &AACore::sfrResultsDetectFinished, this, &AACore::stopZScan);
 }
@@ -35,6 +36,20 @@ AACore::AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey* dk
 AACore::~AACore()
 {
 
+}
+
+void AACore::loadParams()
+{
+    QMap<QString, PropertyBase*> temp_map;
+    temp_map.insert("AA_CORE_PARAMS", &parameters);
+    PropertyBase::loadJsonConfig(AA_CORE_MODULE_JSON, temp_map);
+}
+
+void AACore::updateParams()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("AA_CORE_PARAMS", &this->parameters);
+    PropertyBase::saveJsonConfig(AA_CORE_MODULE_JSON,temp_map);
 }
 
 void AACore::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
@@ -799,9 +814,9 @@ double AACore::calculateDFOV(cv::Mat img)
     {
         double d1 = sqrt(pow((vector[ulIndex].center.x() - vector[lrIndex].center.x()), 2) + pow((vector[ulIndex].center.y() - vector[lrIndex].center.y()), 2));
         double d2 = sqrt(pow((vector[urIndex].center.x() - vector[llIndex].center.x()), 2) + pow((vector[urIndex].center.y() - vector[llIndex].center.y()), 2));
-        double f = 1.98;
-        double dfov1 = 2*atan(d1/(2*892*f))*180/PI;
-        double dfov2 = 2*atan(d2/(2*892*f))*180/PI;
+        double f = parameters.EFL();
+        double dfov1 = 2*atan(d1/(2*parameters.SensorXRatio()*f))*180/PI;
+        double dfov2 = 2*atan(d2/(2*parameters.SensorYRatio()*f))*180/PI;
         double dfov = (dfov1 + dfov2)/2;
         return dfov;
     }
@@ -838,7 +853,7 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     int cc_curve_index = 0;
     double g_x_min = 99999;
     double g_x_max = -99999;
-    sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, 892, 892);
+    sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, parameters.SensorXRatio(), parameters.SensorYRatio());
     double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
     unsigned int ccROIIndex, ulROIIndex, urROIIndex, llROIIndex, lrROIIndex;
     if (points.size() == 5) {
@@ -875,7 +890,7 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     ll_peak_z = points[llROIIndex].z;
     lr_peak_z = points[lrROIIndex].z;
     for (int i = 0; i < 5; i++) {
-        points[i].x /= 892; points[i].y /= 892;
+        points[i].x /= parameters.SensorXRatio(); points[i].y /= parameters.SensorYRatio();
     }
     threeDPoint weighted_vector = planeFitting(points);
 
@@ -962,8 +977,5 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
 
 std::vector<AA_Helper::patternAttr> AACore::search_mtf_pattern(cv::Mat inImage, QImage &image, bool isFastMode, unsigned int &ccROIIndex, unsigned int &ulROIIndex, unsigned int &urROIIndex, unsigned int &llROIIndex, unsigned int &lrROIIndex)
 {
-    int max_intensity = 50;
-    int min_area = 10000; int max_area = 90000;
-
-    return AA_Helper::AA_Search_MTF_Pattern(inImage, image, isFastMode, ccROIIndex, ulROIIndex, urROIIndex, llROIIndex, lrROIIndex, max_intensity, min_area, max_area);
+    return AA_Helper::AA_Search_MTF_Pattern(inImage, image, isFastMode, ccROIIndex, ulROIIndex, urROIIndex, llROIIndex, lrROIIndex, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
 }

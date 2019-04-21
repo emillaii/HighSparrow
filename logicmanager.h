@@ -15,6 +15,7 @@ public:
     Q_PROPERTY(int currentMode READ currentMode WRITE setCurrentMode)
     Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage)
 
+    Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString);
     AACore * aaCore = Q_NULLPTR;
 

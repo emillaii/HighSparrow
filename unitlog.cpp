@@ -66,6 +66,7 @@ bool Unitlog::postDataToELK(QString uuid)
     } else {
         qInfo("Cannot find the unit: %s", uuid.toStdString().c_str());
     }
+    return true;
 }
 
 bool Unitlog::saveToCSV(QString uuid)

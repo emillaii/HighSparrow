@@ -55,6 +55,7 @@
         <file>CalibrationAA1ToolUplookView.qml</file>
         <file>Page5Form.ui.qml</file>
         <file>DiagnosticsView.qml</file>
+        <file>AACoreView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

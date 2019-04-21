@@ -175,6 +175,7 @@ ApplicationWindow {
                icon.color: "deepskyblue"
                onClicked: {
                    baseModuleManager.updateParams()
+                   logicManager.updateParams()
 //                   messageDialog.messageText.text = "Save Complete"
 //                   messageDialog.open()
                }

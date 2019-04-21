@@ -22,7 +22,7 @@
 #include "chart_calibration.h"
 #include "dispense_module.h"
 #include "unitlog.h"
-
+#include "aacoreparameters.h"
 typedef enum {
     AA_IDLE_MODE,
     AA_REPEATABILITY_TEST_MODE,
@@ -46,7 +46,6 @@ protected:
 
 public:
     void performAAOffline();
-
     ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond();
     ErrorCodeStruct performAAPickLens();
@@ -69,6 +68,9 @@ public:
     bool runFlowchartTest();
     ErrorCodeStruct performTest(QString testItemName, QJsonValue properties);
     ErrorCodeStruct performDispense();
+    AACoreParameters parameters;
+    void loadParams();
+    void updateParams();
     AAData aaData_1;  // For Display Channel 1
     AAData aaData_2;  // For Display Channel 2
     AAData mtf_log;   // For Display MTF Log

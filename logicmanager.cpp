@@ -39,6 +39,11 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     connect(aaCore, &AACore::postDataToELK, &unitlog, &Unitlog::postDataToELK);
 }
 
+void LogicManager::updateParams()
+{
+    aaCore->updateParams();
+}
+
 void LogicManager::run() {
     qInfo("Logic manager is running");
     QString uuid = unitlog.createUnit();

@@ -27,5 +27,9 @@ ListModel {
         label: "Calibration 配置"
         index: 6
     }
+    ListElement {
+        label: "AA Core 配置"
+        index: 7
+    }
 }
 

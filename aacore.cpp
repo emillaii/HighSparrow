@@ -42,37 +42,41 @@ void AACore::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
 }
 
 void AACore::run(){
-    if (currentAAMode == AA_DIGNOSTICS_MODE::AA_AUTO_MODE)
-    {
+    qInfo("Current running unit: %s", runningUnit.toStdString().c_str());
+    switch (currentAAMode) {
+    case AA_DIGNOSTICS_MODE::AA_AUTO_MODE:
         runFlowchartTest();
+        break;
+    case AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE:
+        performMTFLoopTest();
+        break;
+    default:
+        break;
     }
-    else if (currentAAMode == AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE)
-    {
-        loopTestResult.append("CC, UL,UR,LL,LR,\n");
-        while (currentAAMode == AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE) {
-            performMTF();
-        }
-        qInfo(loopTestResult.toStdString().c_str());
-        QString filename = "";
-        filename.append(getMTFLogDir())
-                        .append("mtfLoopTest.csv");
-        QFile file(filename);
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        file.write(loopTestResult.toStdString().c_str());
-        file.close();
-    }
-    unitLog.saveToCSV(runningUnit);
-    //performAAOffline();
-    //performOC(true, true);
-    qInfo("End");
+    qInfo("Current running unit: %s", runningUnit.toStdString().c_str());
+    emit postDataToELK(runningUnit);
+    qInfo("AACore End of thread");
 }
 
-void AACore::performLoopTest(AA_DIGNOSTICS_MODE mode)
+void AACore::performMTFLoopTest()
 {
+    aaData_2.clear();
+    loopTestResult = "";
+    loopTestResult.append("CC, UL,UR,LL,LR,\n");
+    while (currentAAMode == AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE) {
+        performMTF();
+    }
+    writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
+}
+
+void AACore::performLoopTest(AA_DIGNOSTICS_MODE mode, QString uuid)
+{
+    qInfo("Running...%s", uuid.toStdString().c_str());
     if (mode == AA_DIGNOSTICS_MODE::AA_IDLE_MODE) {
         currentAAMode = mode;
         return;
     }
+    runningUnit = uuid;
     if (!this->isRunning()) {
         loopTestResult = "";
         currentAAMode = mode;
@@ -83,7 +87,6 @@ void AACore::performLoopTest(AA_DIGNOSTICS_MODE mode)
 bool AACore::runFlowchartTest()
 {
     qInfo("aaAutoTest Started");
-    runningUnit = unitLog.createUnit();
     QVariantMap jsonMap = flowchartDocument.object().toVariantMap();
     QJsonObject links = jsonMap["links"].toJsonObject();
     QJsonObject operators = jsonMap["operators"].toJsonObject();
@@ -610,7 +613,8 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     map.insert("FOV_SLOPE", fov_slope);
     map.insert("FOV_INTERCEPT", fov_intercept);
     map.insert("DEV", dev);
-    unitLog.pushDataToUnit(runningUnit, "AA", map);
+    emit pushDataToUnit(runningUnit, "AA", map);
+    //unitLog.pushDataToUnit(runningUnit, "AA", map);
     return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
 
@@ -621,9 +625,6 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
     QVariantMap stepTimerMap;
     QElapsedTimer timer, stepTimer;
     timer.start(); stepTimer.start();
-    /*
-    this->lightingController->SetBrightness(LIGHTING_UPLOOK, 0);
-    this->lightingController->SetBrightness(LIGHTING_DOWNLOOK, 0);*/
     cv::Mat img = dk->DothinkeyGrabImageCV(0);
     QString imageName;
     imageName.append(getGrabberLogDir())
@@ -676,15 +677,15 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
         }
         this->sut->stepMove_XY_Sync(-stepX, -stepY);
     }
-    unitLog.pushDataToUnit(runningUnit, "OC", map);
+    //unitLog.pushDataToUnit(runningUnit, "OC", map);
     return ret;
 }
 
 ErrorCodeStruct AACore::performMTF()
 {
     QVariantMap map;
-    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    //cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
+    cv::Mat img = dk->DothinkeyGrabImageCV(0);
     int imageWidth = img.cols;
     int imageHeight = img.rows;
     double fov = this->calculateDFOV(img);
@@ -743,7 +744,7 @@ ErrorCodeStruct AACore::performMTF()
     map.insert("LL_SFR", sfr_entry[llROIIndex].sfr);
     map.insert("DFOV", fov);
     clustered_sfr_map.clear();
-    unitLog.pushDataToUnit(this->runningUnit, "MTF", map);
+    emit pushDataToUnit(this->runningUnit, "MTF", map);
     if (currentAAMode == AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE) {
         this->loopTestResult.append(QString::number(sfr_entry[ccROIIndex].sfr))
                             .append(",")
@@ -755,7 +756,6 @@ ErrorCodeStruct AACore::performMTF()
                             .append(",")
                             .append(QString::number(sfr_entry[lrROIIndex].sfr))
                             .append(",\n");
-
         this->mtf_log.incrementData(sfr_entry[ccROIIndex].sfr, sfr_entry[ulROIIndex].sfr, sfr_entry[urROIIndex].sfr, sfr_entry[llROIIndex].sfr,sfr_entry[lrROIIndex].sfr);
     }
     return ErrorCodeStruct{ErrorCode::OK, ""};
@@ -785,11 +785,6 @@ ErrorCodeStruct AACore::performZOffset(double zOffset)
 void AACore::sfrImageReady(QImage img)
 {
     sfrImageProvider->setImage(img);
-    QString imageName;
-    imageName.append(getMTFLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
-    img.save(imageName);
     emit callQmlRefeshSfrImg();
 }
 

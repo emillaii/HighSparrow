@@ -12,5 +12,8 @@ QString getCurrentDateString();
 QString getVisionLogDir();
 QString getGrabberLogDir();
 QString getMTFLogDir();
+QString getDir(QString);
+
+void writeFile(QString data, QString dir, QString filename);
 
 #endif // COMMONUTILS_H

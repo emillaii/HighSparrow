@@ -17,11 +17,14 @@ public:
     Unitlog(QObject* parent = 0);
     ~Unitlog();
     QString createUnit();
-    bool pushDataToUnit(QString uuid, QString name, QVariantMap&);
     bool saveToCSV(QString uuid);
 private:
     QMap<QString, QVariantMap> unit_log_list;
     QMap<QString, std::vector<QString>> unit_log_test_name_list;
+    QNetworkAccessManager * nam = Q_NULLPTR;
+public slots:
+    bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
+    bool postDataToELK(QString uuid);
 };
 
 #endif // UNITLOGGER_H

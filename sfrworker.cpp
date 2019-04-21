@@ -53,7 +53,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
             if (k == llIndex) llMat = cropImage.clone();
             if (k == lrIndex) lrMat = cropImage.clone();
             //if (k == ccIndex) ccMat = cropImage.clone();
-            imwrite(QString::number(index).append(QString::number(k)).append(".bmp").toStdString().c_str(), cropImage);
+            //imwrite(QString::number(index).append(QString::number(k)).append(".bmp").toStdString().c_str(), cropImage);
             if (k == ccIndex)
             {
                 vector<Sfr_entry> sv = sfr::calculateSfr(z, cropImage, edgeFilter);

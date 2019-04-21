@@ -19,7 +19,6 @@ Grid {
             anchors.fill: parent
             RowLayout {
                 Button {
-                    id: button
                     text: qsTr("MTF Loop Test")
                     onClicked: {
                         logicManager.performLoopTest(4)
@@ -47,7 +46,6 @@ Grid {
                             axisX.max = ccSeries.at(ccSeries.count - 1).x
                         }
                         onWValueClear: {
-                            console.log("Clear")
                             ccSeries.clear()
                             ulSeries.clear()
                             urSeries.clear()

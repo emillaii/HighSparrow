@@ -61,7 +61,8 @@ public:
     ErrorCodeStruct performDelay(int);
     ErrorCodeStruct performCameraUnload();
 
-    void performLoopTest(AA_DIGNOSTICS_MODE);
+    void performLoopTest(AA_DIGNOSTICS_MODE mode, QString uuid);
+    void performMTFLoopTest();
 
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
@@ -76,7 +77,6 @@ public:
 private:
     QString loopTestResult;
     AA_DIGNOSTICS_MODE currentAAMode;
-    Unitlog unitLog;
     QString runningUnit;
     AAHeadModule* aa_head;
     LutModule* lut;
@@ -104,6 +104,8 @@ signals:
     void sfrResultsDetectFinished();
     void callQmlRefeshImg();
     void callQmlRefeshSfrImg();
+    void pushDataToUnit(QString uuid, QString name, QVariantMap map);
+    void postDataToELK(QString);
 public slots:
 
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);

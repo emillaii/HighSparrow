@@ -5,6 +5,7 @@
 
 #include <QThread>
 #include <aacore.h>
+#include <unitlog.h>
 
 class LogicManager : public QThread
 {
@@ -65,15 +66,15 @@ public slots:
         m_stateMessage = stateMessage;
     }
 
+
+
 private:
     BaseModuleManager * baseModuleManage;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     void moveToCmd(int);
-
     int m_currentMode;
-
     QString m_stateMessage;
-
+    Unitlog unitlog;
 protected:
     void run();
 };

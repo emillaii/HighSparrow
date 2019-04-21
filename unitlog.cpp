@@ -7,6 +7,7 @@
 #include "commonutils.h"
 Unitlog::Unitlog(QObject * parent) : QObject(parent)
 {
+    nam = new QNetworkAccessManager();
 }
 
 Unitlog::~Unitlog() {}
@@ -21,7 +22,7 @@ QString Unitlog::createUnit() {
     return uuid;
 }
 
-bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap &map)
+bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap map)
 {
     QVariantMap testMap;
     if (unit_log_list.contains(uuid))
@@ -44,6 +45,27 @@ bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap &map)
     }
     qInfo("Cannot find the unit: %f", uuid.toStdString().c_str());
     return false;
+}
+
+bool Unitlog::postDataToELK(QString uuid)
+{
+    if (unit_log_list.contains(uuid))
+    {
+         QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
+         QJsonDocument doc(json);
+         QUrl sfrlog_endpoint = QString("http://192.168.1.223:5044");
+         QNetworkRequest request(sfrlog_endpoint);
+         request.setHeader(QNetworkRequest::ContentTypeHeader,
+                           QVariant(QString("application/json")));
+         if (nam) {
+             nam->post(request, doc.toJson());
+             qInfo("Push data to ELK success: %s", uuid.toStdString().c_str());
+         } else {
+             qInfo("Post data to ELK fail");
+         }
+    } else {
+        qInfo("Cannot find the unit: %s", uuid.toStdString().c_str());
+    }
 }
 
 bool Unitlog::saveToCSV(QString uuid)

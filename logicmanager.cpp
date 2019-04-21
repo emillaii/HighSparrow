@@ -34,20 +34,23 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     sfrWorkerController = new SfrWorkerController(aaCore);
     aaCore->setSfrWorkerController(sfrWorkerController);
     baseModuleManage = device_manager;
+    //Connections
+    connect(aaCore, &AACore::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
+    connect(aaCore, &AACore::postDataToELK, &unitlog, &Unitlog::postDataToELK);
 }
 
 void LogicManager::run() {
     qInfo("Logic manager is running");
-
+    QString uuid = unitlog.createUnit();
     if (m_currentMode == CommandType::MOTION_STOP_HOME) {
         baseModuleManage->stopSeeking();
     }
     else if (m_currentMode == CommandType::MODE_AUTO_RUN) {
-        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_AUTO_MODE);
+        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_AUTO_MODE, uuid);
         aaCore->wait();
     }
     else if (m_currentMode == CommandType::PERFORM_LOOP_TEST) {
-        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE);
+        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE, uuid);
         return;
     }
     else if (m_currentMode == CommandType::PERFORM_OC) {
@@ -100,7 +103,7 @@ void LogicManager::run() {
 void LogicManager::moveToCmd(int cmd) {
     if (cmd == CommandType::STOP)
     {
-        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_IDLE_MODE);
+        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_IDLE_MODE, "");
         m_currentMode = CommandType::IDLE;
         return;
     }

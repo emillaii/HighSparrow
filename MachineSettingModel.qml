@@ -35,6 +35,10 @@ ListModel {
         label: "System 配置"
         index: 8
     }
+    ListElement{
+        label:"LensPickArm 配置"
+        index: 9
+    }
 
 }
 

@@ -101,7 +101,26 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lutCarrierParams", &highSprrow.baseModuleManager->lut_carrier.parameters);
     engine.rootContext()->setContextProperty("dispenserParams",&highSprrow.baseModuleManager->dispenser.parameters);
     engine.rootContext()->setContextProperty("dispenseParams",&highSprrow.baseModuleManager->dispense_module.parameters);
+//*
+    double tray_start_x1 = highSprrow.baseModuleManager->
+            material_tray.parameters[0]->tray_start_position.X();
+    double tray_start_y1 = highSprrow.baseModuleManager->
+            material_tray.parameters[0]->tray_start_position.Y();
+    double tray_start_x2 = highSprrow.baseModuleManager->
+            material_tray.parameters[1]->tray_start_position.X();
+    double tray_start_y2 = highSprrow.baseModuleManager->
+            material_tray.parameters[1]->tray_start_position.Y();
 
+    double tray_end_x = highSprrow.baseModuleManager->material_tray.first_tray_end_position.X();
+    double tray_end_y = highSprrow.baseModuleManager->material_tray.first_tray_end_position.Y();
+
+    engine.rootContext()->setContextProperty("tray_start_x1",tray_start_x1);
+    engine.rootContext()->setContextProperty("tray_start_x2",tray_start_x2);
+    engine.rootContext()->setContextProperty("tray_start_y1",tray_start_y1);
+    engine.rootContext()->setContextProperty("tray_start_y2",tray_start_y2);
+    engine.rootContext()->setContextProperty("tray_end_x",tray_end_x);
+    engine.rootContext()->setContextProperty("tray_end_y",tray_end_y);
+//*/
     QStringList data = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames",data);
 

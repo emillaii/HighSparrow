@@ -57,6 +57,8 @@
         <file>DiagnosticsView.qml</file>
         <file>AACoreView.qml</file>
         <file>SystemConfigView.qml</file>
+        <file>LensPickArmModuleView.qml</file>
+        <file>TrayParamater.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

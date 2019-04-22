@@ -26,6 +26,7 @@
 #include "chart_calibration.h"
 #include "sparrowqserver.h"
 #include "sparrowqclient.h"
+#include "lenspickarmmodule.h"
 
 class BaseModuleManager : public PropertyBase
 {
@@ -64,6 +65,8 @@ public:
     SutModule sut_module;
     DispenseModule dispense_module;
     Dispenser dispenser;
+    LensPickArmModule lens_pick_arm_module;
+    MaterialTray material_tray;
 
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;

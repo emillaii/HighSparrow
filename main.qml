@@ -228,8 +228,8 @@ ApplicationWindow {
                display: Button.TextUnderIcon
                icon.width: 30
                icon.height: 30
-               icon.source: "icons/auto-run.png"
-               icon.color: "deepskyblue"
+               icon.source: "icons/stop.png"
+               icon.color: "red"
                onClicked: {
                     logicManager.stop()
                }

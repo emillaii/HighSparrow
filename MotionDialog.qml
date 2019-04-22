@@ -3,7 +3,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.11
 import QtQuick 2.11
-
+// 2，5，0.2 0.5 0.02 0.05
 Popup {
     property double selectedStepSize: 0.1
 
@@ -14,6 +14,7 @@ Popup {
         color: "black"
         implicitWidth: 500
         implicitHeight: 800
+
         RowLayout {
             ColumnLayout {
                 RadioButton {
@@ -38,6 +39,28 @@ Popup {
                         }
                     }
                 }
+				RadioButton {
+                    id: step001Button
+                    text: qsTr("5")
+                    font.pixelSize: 10
+                    onCheckedChanged: {
+                        if (step001Button.checked)
+                        {
+                            selectedStepSize = 5
+                        }
+                    }
+                }
+				RadioButton {
+                    id: step001Button
+                    text: qsTr("2")
+                    font.pixelSize: 10
+                    onCheckedChanged: {
+                        if (step001Button.checked)
+                        {
+                            selectedStepSize = 2
+                        }
+                    }
+                }
                 RadioButton {
                     id: step1Button
                     text: qsTr("1")
@@ -46,6 +69,28 @@ Popup {
                         if (step1Button.checked)
                         {
                             selectedStepSize = 1
+                        }
+                    }
+                }
+				RadioButton {
+                    id: step001Button
+                    text: qsTr("0.5")
+                    font.pixelSize: 10
+                    onCheckedChanged: {
+                        if (step001Button.checked)
+                        {
+                            selectedStepSize = 0.5
+                        }
+                    }
+                }
+				RadioButton {
+                    id: step001Button
+                    text: qsTr("0.2")
+                    font.pixelSize: 10
+                    onCheckedChanged: {
+                        if (step001Button.checked)
+                        {
+                            selectedStepSize = 0.2
                         }
                     }
                 }
@@ -58,6 +103,28 @@ Popup {
                         if (step01Button.checked)
                         {
                             selectedStepSize = 0.1
+                        }
+                    }
+                }
+				RadioButton {
+                    id: step001Button
+                    text: qsTr("0.05")
+                    font.pixelSize: 10
+                    onCheckedChanged: {
+                        if (step001Button.checked)
+                        {
+                            selectedStepSize = 0.05
+                        }
+                    }
+                }
+				RadioButton {
+                    id: step001Button
+                    text: qsTr("0.02")
+                    font.pixelSize: 10
+                    onCheckedChanged: {
+                        if (step001Button.checked)
+                        {
+                            selectedStepSize = 0.02
                         }
                     }
                 }
@@ -75,29 +142,108 @@ Popup {
             }
             ScrollView {
                 Timer {
+                    id:timer
                     interval: 300; running: true; repeat: true
-                    onTriggered: {
-                        if (dialog.visible) {
-                            aa1_x_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_X)
-                            aa1_y_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_Y)
-                            aa1_z_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_Z)
-                            aa1_a_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_A)
-                            aa1_b_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_B)
-                            aa1_c_label.text = baseModuleManager.getMotorFeedbackPos(m_AA1_C)
-                            sut_x_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
-                            sut_y_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)
-                            sut_z_label.text = baseModuleManager.getMotorFeedbackPos(m_SUT1_Z)
-                            lut_x_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_X)
-                            lut_y_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_Y)
-                            lut_z_label.text = baseModuleManager.getMotorFeedbackPos(m_LUT1_Z)
-                        }
-                    }
                 }
 
                 implicitWidth:  400
                 implicitHeight: 600
                 clip: true
+
                 ColumnLayout {
+                    RowLayout {
+                        Text {
+                            text: " AA_A_Inter "
+                            color: "white"
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                highSprrow.aa_A_Inter(selectedStepSize);
+                            }
+                        }
+                        RoundButton {
+                            text: "-"
+                            onClicked: {
+                                highSprrow.aa_A_Inter(-selectedStepSize);
+                            }
+                        }
+                    }
+                    RowLayout {
+                        id:inter_layout_b
+                        Text {
+                            text: " AA_B_Inter "
+                            color: "white"
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                highSprrow.aa_B_Inter(selectedStepSize);
+                            }
+                        }
+                        RoundButton {
+                            text: "-"
+                            onClicked: {
+                                highSprrow.aa_B_Inter(-selectedStepSize);
+                            }
+                        }
+                    }
+
+                    ListView{
+                        anchors.top:inter_layout_b.bottom
+                        id:list
+                        //anchors.top:  inter_layout_b.bottom
+                        height: 1000
+                        model: motorsNames
+                        delegate: RowLayout{
+                        Rectangle{
+                            width: 65
+                            Text{
+                               anchors.verticalCenter: parent.verticalCenter
+                               text:modelData
+                               wrapMode: width
+                               color:"white"
+                            }
+                        }
+                        RoundButton {
+                            onClicked: {
+                                baseModuleManager.homeMotor(modelData)
+                            }
+                            transformOrigin: Item.Center
+                            display: Button.IconOnly
+                            icon.source: "icons/home.png"
+                            icon.color: "cyan"
+                        }
+                        RoundButton{
+                            text:"+"
+                            onClicked: {
+                               var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
+                               console.log(motorsNames.length)
+                               console.log("result: "+res)
+                            }
+                        }
+                        RoundButton{
+                            text:"-"
+                            onClicked: {
+                               var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
+                               console.log("result: "+res)
+                            }
+                        }
+                        Label{
+                           Connections{
+                               target: timer
+                               onTriggered:{
+                                    lbl.text = baseModuleManager.getMotorFeedbackPos(modelData)
+                               }
+                            }
+                            id:lbl
+                            color:"lightskyblue"
+                        }
+                        }
+                    }
+
+
+/*
                     RowLayout {
                         Text {
                             text: " AA_X "
@@ -129,385 +275,10 @@ Popup {
                             color: "lightskyblue"
                         }
                     }
-                    RowLayout {
-                        Text {
-                            text: " AA_Y "
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_AA1_Y)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_Y, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_Y, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: aa1_y_label
-                            color: "lightskyblue"
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " AA_Z "
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_AA1_Z)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_Z, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_Z, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: aa1_z_label
-                            color: "lightskyblue"
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " AA_A "
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_AA1_A)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_A, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_A, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: aa1_a_label
-                            color: "lightskyblue"
-                        }
-                    }
+//*/
+                    /*
+                   //*/
 
-                    RowLayout {
-                        Text {
-                            text: " AA_A_Inter "
-                            color: "white"
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                highSprrow.aa_A_Inter(selectedStepSize);
-                            }
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                highSprrow.aa_A_Inter(-selectedStepSize);
-                            }
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " AA_B "
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_AA1_B)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_B, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                 var res = baseModuleManager.stepMove(m_AA1_B, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: aa1_b_label
-                            color: "lightskyblue"
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " AA_B_Inter "
-                            color: "white"
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                highSprrow.aa_B_Inter(selectedStepSize);
-                            }
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                highSprrow.aa_B_Inter(-selectedStepSize);
-                            }
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " AA_C "
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_AA1_C)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_AA1_C, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_AA1_C, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: aa1_c_label
-                            color: "lightskyblue"
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " SUT_X"
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_SUT1_X)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_SUT1_X, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_SUT1_X, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: sut_x_label
-                            color: "lightskyblue"
-
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " SUT_Y"
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_SUT1_Y)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_SUT1_Y, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_SUT1_Y, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: sut_y_label
-                            color: "lightskyblue"
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " SUT_Z"
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_SUT1_Z)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_SUT1_Z, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_SUT1_Z, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: sut_z_label
-                            color: "lightskyblue"
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " LUT_X"
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_LUT1_X)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_LUT1_X, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: lut_x_label
-                            color: "lightskyblue"
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " LUT_Y"
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_LUT1_Y)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_LUT1_Y, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_LUT1_Y, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: lut_y_label
-                            color: "lightskyblue"
-                        }
-                    }
-                    RowLayout {
-                        Text {
-                            text: " LUT_Z"
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_LUT1_Z)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_LUT1_Z, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_LUT1_Z, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: lut_z_label
-                            color: "lightskyblue"
-                        }
-                    }
                 }
             }
         }

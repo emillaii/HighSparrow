@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.11
 
 ColumnLayout {
     RowLayout {
+        Layout.fillHeight: false
         Label {
             text: qsTr("LUT_X")
         }

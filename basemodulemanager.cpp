@@ -20,6 +20,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     if (ServerMode() == 0) {
         qInfo("This sparrow is in Master mode");
         sparrowQServer = new SparrowQServer(ServerPort());
+        sparrowQClient = new SparrowClient(QUrl("ws://localhost:9999"), true);
     } else {
         sparrowQClient = new SparrowClient(QUrl(ServerURL()), true);
     }
@@ -519,4 +520,10 @@ bool BaseModuleManager::closeSensor()
     Sleep(100);
     imageGrabberThread->exit();
     return dothinkey->DothinkeyClose();
+}
+
+void BaseModuleManager::testCommand()
+{
+    QJsonObject obj = this->sparrowQServer->commandDequeue();
+    qInfo("CMD: %s", obj["cmd"].toString().toStdString().c_str());
 }

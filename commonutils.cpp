@@ -2,6 +2,8 @@
 #include <QTime>
 #include <config.h>
 #include <QDir>
+#include <QJsonDocument>
+#include <QDebug>
 
 QString getCurrentTimeString()
 {
@@ -44,4 +46,19 @@ void writeFile(QString data, QString dir, QString filename)
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     file.write(data.toStdString().c_str());
     file.close();
+}
+
+
+// QString >> QJson
+QJsonObject getJsonObjectFromString(const QString jsonString){
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonString.toLocal8Bit().data());
+    if( jsonDocument.isNull() ){
+        qDebug()<< "===> please check the string "<< jsonString.toLocal8Bit().data();
+    }
+    QJsonObject jsonObject = jsonDocument.object();
+    return jsonObject;
+}
+// QJson >> QString
+QString getStringFromJsonObject(const QJsonObject& jsonObject){
+    return QString(QJsonDocument(jsonObject).toJson());
 }

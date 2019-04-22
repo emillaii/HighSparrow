@@ -175,6 +175,7 @@ public:
     Q_INVOKABLE void UpdateCalibrationParameters();
     Q_INVOKABLE int getNumberOfMotors();
     Q_INVOKABLE QString getMotorsName(int);
+    Q_INVOKABLE void testCommand();
 
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);

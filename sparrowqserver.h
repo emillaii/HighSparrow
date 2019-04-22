@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtWebSockets/QWebSocketServer>
 #include <QtWebSockets/QWebSocket>
+#include <QQueue>
 
 class SparrowQServer : public QObject
 {
@@ -11,9 +12,13 @@ class SparrowQServer : public QObject
 public:
     explicit SparrowQServer(quint16 port, QObject *parent = nullptr);
     ~SparrowQServer();
+    QJsonObject commandDequeue();
+    int commandQueueSize();
+    void clearCommandQueue();
 private:
     QWebSocketServer *m_pWebSocketServer;
     QList<QWebSocket *> m_clients;
+    QQueue<QJsonObject> commandQueue;
 
 Q_SIGNALS:
     void closed();

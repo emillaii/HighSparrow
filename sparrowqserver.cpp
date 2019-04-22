@@ -1,7 +1,7 @@
 #include "sparrowqserver.h"
 #include "QtWebSockets/qwebsocketserver.h"
 #include "QtWebSockets/qwebsocket.h"
-
+#include "commonutils.h"
 QT_USE_NAMESPACE
 
 SparrowQServer::SparrowQServer(quint16 port, QObject *parent) :
@@ -38,9 +38,12 @@ void SparrowQServer::processTextMessage(QString message)
 {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     qDebug() << "Server Message received:" << message;
-    if (pClient) {
-        pClient->sendTextMessage(message);
-    }
+    QJsonObject obj = getJsonObjectFromString(message);
+    commandQueue.enqueue(obj);
+    qInfo("Command queue: %d", commandQueue.count());
+//    if (pClient) {
+//        pClient->sendTextMessage(message);
+//    }
 }
 
 void SparrowQServer::processBinaryMessage(QByteArray message)
@@ -60,4 +63,16 @@ void SparrowQServer::socketDisconnected()
         m_clients.removeAll(pClient);
         pClient->deleteLater();
     }
+}
+
+QJsonObject SparrowQServer::commandDequeue()
+{
+    QJsonObject emptyObj;
+    if (commandQueue.size() > 0) return commandQueue.dequeue();
+    return emptyObj;
+}
+
+int SparrowQServer::commandQueueSize()
+{
+    return commandQueue.size();
 }

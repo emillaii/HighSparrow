@@ -1,7 +1,7 @@
 #include "sparrowqclient.h"
 
 #include <QtCore/QDebug>
-
+#include <QJsonObject>
 QT_USE_NAMESPACE
 
 //! [constructor]
@@ -37,3 +37,15 @@ void SparrowClient::onTextMessageReceived(QString message)
     m_webSocket.close();
 }
 //! [onTextMessageReceived]
+
+QJsonObject SparrowClient::commandDequeue()
+{
+    QJsonObject emptyObj;
+    if (commandQueue.size() > 0) return commandQueue.dequeue();
+    return emptyObj;
+}
+
+int SparrowClient::commandQueueSize()
+{
+    return commandQueue.size();
+}

@@ -2,9 +2,7 @@
 #define COMMONUTILS_H
 
 #include <QString>
-/*
- * This function will return time string in "11-14-499"
- */
+#include <QJsonObject>
 
 void createAllDir();
 QString getCurrentTimeString();
@@ -15,5 +13,7 @@ QString getMTFLogDir();
 QString getDir(QString);
 
 void writeFile(QString data, QString dir, QString filename);
+QJsonObject getJsonObjectFromString(const QString jsonString);
+QString getStringFromJsonObject(const QJsonObject& jsonObject);
 
 #endif // COMMONUTILS_H

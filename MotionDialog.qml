@@ -40,7 +40,7 @@ Popup {
                     }
                 }
 				RadioButton {
-                    id: step001Button
+                    id: step5Button
                     text: qsTr("5")
                     font.pixelSize: 10
                     onCheckedChanged: {
@@ -51,7 +51,7 @@ Popup {
                     }
                 }
 				RadioButton {
-                    id: step001Button
+                    id: step2Button
                     text: qsTr("2")
                     font.pixelSize: 10
                     onCheckedChanged: {
@@ -73,7 +73,7 @@ Popup {
                     }
                 }
 				RadioButton {
-                    id: step001Button
+                    id: step05Button
                     text: qsTr("0.5")
                     font.pixelSize: 10
                     onCheckedChanged: {
@@ -84,7 +84,7 @@ Popup {
                     }
                 }
 				RadioButton {
-                    id: step001Button
+                    id: step02Button
                     text: qsTr("0.2")
                     font.pixelSize: 10
                     onCheckedChanged: {
@@ -107,7 +107,7 @@ Popup {
                     }
                 }
 				RadioButton {
-                    id: step001Button
+                    id: step005Button
                     text: qsTr("0.05")
                     font.pixelSize: 10
                     onCheckedChanged: {
@@ -118,7 +118,7 @@ Popup {
                     }
                 }
 				RadioButton {
-                    id: step001Button
+                    id: step002Button
                     text: qsTr("0.02")
                     font.pixelSize: 10
                     onCheckedChanged: {

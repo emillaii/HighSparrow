@@ -5,7 +5,6 @@ BaslerPylonCamera::BaslerPylonCamera(QString name)
     : QQuickImageProvider(QQuickImageProvider::Image),
       cameraChannelName(name)
 {
-    name.compare(DOWNLOOK_VISION_CAMERA) == 0 ?  isLiveView = true : isLiveView = false;
     isGrabbing = false;
     PylonInitialize();
     Init();
@@ -16,9 +15,6 @@ void BaslerPylonCamera::OnImageGrabbed( CInstantCamera&, const CGrabResultPtr& p
    QMutexLocker locker(&mutex);
    CopyBufferToQImage(ptrGrabResult, latestImage);
    emit callQmlRefeshImg();
-   if (isLiveView) {
-       imageChanged(latestImage);
-   }
 }
 
 BaslerPylonCamera::~BaslerPylonCamera()
@@ -116,15 +112,7 @@ QImage BaslerPylonCamera::getImage()
     return image_copy;
 }
 
-bool BaslerPylonCamera::isLiveOn() { return isLiveView; }
-
 bool BaslerPylonCamera::isCameraGrabbing() { return isGrabbing; }
-
-void BaslerPylonCamera::toogleLiveView()
-{
-     QMutexLocker locker(&mutex);
-     isLiveView = !isLiveView;
-}
 
 void BaslerPylonCamera::CopyBufferToQImage(CGrabResultPtr pInBuffer, QImage& outImage)
 {

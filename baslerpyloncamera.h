@@ -24,8 +24,6 @@ public:
     bool GrabImage();
     void CopyBufferToQImage(CGrabResultPtr, QImage&);
     QImage getImage();
-    void toogleLiveView();
-    bool isLiveOn();
     bool isCameraGrabbing();
     void switchCameraChannel();
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
@@ -36,7 +34,6 @@ protected:
 private:
     CInstantCamera camera;
     QMutex mutex;
-    bool isLiveView;
     bool isGrabbing;
     bool isReady;
     QString cameraChannelName;

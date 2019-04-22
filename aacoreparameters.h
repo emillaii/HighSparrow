@@ -61,7 +61,6 @@ int SensorYRatio() const
 public slots:
 void setEFL(double EFL)
 {
-    qWarning("Floating point comparison needs context sanity check");
     if (qFuzzyCompare(m_EFL, EFL))
         return;
 

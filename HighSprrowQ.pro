@@ -59,6 +59,13 @@ SOURCES += \
     dispense_module.cpp \
     vision_location.cpp \
     unitlog.cpp \
+    workers_manager.cpp \
+    thread_worker_base.cpp \
+    sensor_pickarm.cpp \
+    materialtray.cpp \
+    unitlog.cpp \
+    pick_arm_xxyp.cpp \
+    lenspickarmmodule.cpp \
     sparrowqserver.cpp \
     sparrowqclient.cpp
 RESOURCES += qml.qrc \
@@ -159,6 +166,17 @@ HEADERS += \
     vision_location_parameter.h \
     vision_location.h \
     unitlog.h \
+    workers_manager.h \
+    thread_worker_base.h \
+    sensor_pickarm.h \
+    materialtray.h \
+    unitlog.h \
+    pick_arm_xxyp.h \
+    material_picker.h \
+    lenspickarmmodule.h \
+    lenspickarmmoduleparameter.h \
+    traystandardsparameter.h \
+    trayparameter.h \
     aacoreparameters.h \
     sparrowqserver.h \
     sparrowqclient.h

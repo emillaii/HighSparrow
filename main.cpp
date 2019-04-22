@@ -81,7 +81,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("imageGrabber", highSprrow.baseModuleManager->dothinkey);
     engine.rootContext()->setContextProperty("imageGrabberThread", highSprrow.baseModuleManager->imageGrabberThread);
     engine.rootContext()->setContextProperty("lightingController", highSprrow.baseModuleManager->lightingModule);
-
+    QList<QString> temp_names = highSprrow.baseModuleManager->motors.keys();
+    engine.rootContext()->setContextProperty("motorsNames", QVariant::fromValue(highSprrow.baseModuleManager->motors.keys()));
     //PR Params
     engine.rootContext()->setContextProperty("prSUTDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
     engine.rootContext()->setContextProperty("prAA1LUTUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_LUT_UPLOOK]->parameters);

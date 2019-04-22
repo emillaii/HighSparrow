@@ -301,44 +301,32 @@ bool XtVcMotor::SearchPosByADC(double vel, double search_limit, double threshold
     return false;
 }
 
-bool XtVcMotor::SearchPosByForce(double slow_speed, double search_limit, double force, double margin, double &result)
+bool XtVcMotor::SearchPosByForce(double speed, double force, double limit, double margin,int timeout)
 {
     if(!is_init)
         return false;
     double start_pos = GetOutpuPos();
-    qInfo("start_pos: %f,force:%f,search_limit:%f",start_pos,force,search_limit);
-    SetSoftLanding(slow_speed, slow_speed*10, force, start_pos, search_limit, margin);
+    qInfo("start_pos: %f,force:%f,search_limit:%f speed:%f margin:%f",start_pos,force,limit,speed,margin);
+    SetSoftLanding(speed, speed*10, force, start_pos, limit, margin);
     bool res;
     res = DoSoftLanding();
-    res |= WaitSoftLandingDone();
-    if(!res)
-    {
-        result = start_pos;
-//        SetCurrentLimit(vcm_id,10,-10);
-        return false;
-    }
-    result = GetFeedbackPos();
-
-    return true;
+    res &= WaitSoftLandingDone(timeout);
+    if(res)qInfo("sooftlanding pos:%f",GetFeedbackPos());
+    return res;
 }
 
-bool XtVcMotor::SearchPosByForce(double &result, double force, double  search_limit)
+double XtVcMotor::SearchPosByForce(double speed,double force,int timeout)
 {
     if(!is_init)
-        return false;
-    if(search_limit<0)search_limit = max_range;
+        return 0.0;
     double start_pos = GetOutpuPos();
-    SetSoftLanding(10,max_acc, force, start_pos,start_pos + (search_limit - start_pos)/2,abs(search_limit - start_pos)/2.1);
+    SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.01);
     bool res;
     res = DoSoftLanding();
-    res &= WaitSoftLandingDone();
-    if(!res)
-    {
-        result = start_pos;
-        return false;
-    }
-    result = GetFeedbackPos();
-    return  true;
+    res &= WaitSoftLandingDone(timeout);
+    if(res)
+        return  GetFeedbackPos();
+    return start_pos;
 }
 
 void XtVcMotor::RestoreForce()
@@ -357,7 +345,6 @@ void XtVcMotor::SetSoftLanding(double slow_speed, double slow_acc, double force,
 {
     if(!is_init)
         return;
-
     qInfo("slow_speed:%f start_pos: %f,force:%f,target_pos:%f,margin:%f",slow_speed,start_pos,force,target_pos,margin);
     SetFastSpeed(vcm_id,max_vel);
     SetFastAcc(vcm_id, max_acc);
@@ -372,6 +359,9 @@ void XtVcMotor::SetSoftLanding(double slow_speed, double slow_acc, double force,
 
 bool XtVcMotor::DoSoftLanding()
 {
+    if(!is_init)
+        return false;
+    is_softlanding = true;
     int res = Do_SoftDown(vcm_id);
     if(res==0)
         return true;
@@ -383,11 +373,22 @@ bool XtVcMotor::DoSoftLandingReturn()
 {
     if(!is_init)
         return false;
+    is_returning = true;
     int res = Do_SoftUp(vcm_id);
     if(res==0)
         return true;
     qInfo("VCM %d DoSoftLandingReturn Failed! code: %d",vcm_id,res);
     return false;
+}
+
+bool XtVcMotor::resetSoftLanding(int timeout)
+{
+    if(is_softlanding|is_returning)
+        if(!WaitSoftLandingDone(timeout))return false;
+    if(is_softlanded)
+        return  DoSoftLandingReturn()&WaitSoftLandingDone(timeout);
+    return true;
+
 }
 
 bool XtVcMotor::WaitSoftLandingDone(int timeout)
@@ -404,6 +405,9 @@ bool XtVcMotor::WaitSoftLandingDone(int timeout)
         timeout-=10;
         QThread::msleep(10);
     }
+    is_softlanded = is_softlanding;
+    is_softlanding = false;
+    is_returning = false;
     return false;
 }
 

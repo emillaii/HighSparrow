@@ -13,7 +13,7 @@ ApplicationWindow {
     readonly property string title_move_to: "移動"
     readonly property string title_read_encoder: "讀取"
 
-    readonly property string m_AA1_X: "AA1_X"
+    readonly property string m_AA1_X: "AA1_X";
     readonly property string m_AA1_Y: "AA1_Y"
     readonly property string m_AA1_Z: "AA1_Z"
     readonly property string m_AA1_A: "AA1_A"

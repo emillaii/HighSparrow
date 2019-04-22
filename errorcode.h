@@ -23,8 +23,11 @@ struct ErrorCodeStruct
 #define DEVICES_MANAGER_NAME "DevicesMannager"
 
 typedef enum {
-    Warning,
-    Error
+    TipNonblock = 1<1,
+    WarningBlock = 1<2,
+    ErrorCanSkip = 1<3,
+    ErrorCanRetry = 1<4,
+    ErrorMustStop = 1<5
 } ErrorLevel;
 
 
@@ -39,6 +42,8 @@ private:
 public:
     void AppendError(QString error);
     void AppendLineError(QString error = "");
-    QString GetCurrentError();
+    virtual QString GetCurrentError();
+    void setCurrentErrorLevel(ErrorLevel current_level);
+    virtual ErrorLevel GetCurrentErrorLevel();
 };
 #endif // ERRORCODE_H

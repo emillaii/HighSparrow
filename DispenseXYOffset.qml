@@ -60,6 +60,7 @@ ColumnLayout {
         }
         Button {
             text: qsTr("计算")
+            spacing: 3
             width: 20
             height: 40
             onClicked: {

@@ -3,6 +3,129 @@
 
 #include "propertybase.h"
 
+#include <qpoint.h>
+class Position:public PropertyBase
+{
+    Q_OBJECT
+public:
+    Position():PropertyBase(){}
+    Position(QPointF point):PropertyBase(){m_X = point.x();m_Y = point.y();}
+    void SetPosition(QPointF point){m_X = point.x();m_Y = point.y();}
+    Position(double x,double y):PropertyBase(){m_X= x;m_Y= y;}
+    QPointF ToPointF(){return QPointF(m_X,m_Y);}
+    Q_PROPERTY(double X READ X WRITE setX NOTIFY XChanged)
+    Q_PROPERTY(double Y READ Y WRITE setY NOTIFY YChanged)
+
+    double X() const
+    {
+        return m_X;
+    }
+    double Y() const
+    {
+        return m_Y;
+    }
+
+public slots:
+    void setX(double X)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_X, X))
+            return;
+
+        m_X = X;
+        emit XChanged(m_X);
+    }
+    void setY(double Y)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_Y, Y))
+            return;
+
+        m_Y = Y;
+        emit YChanged(m_Y);
+    }
+
+signals:
+    void XChanged(double X);
+    void YChanged(double Y);
+
+private:
+    double m_X;
+    double m_Y;
+};
+
+struct mPositionT
+{
+    mPositionT() {}
+    mPositionT(double x,double y,double theta){X= x;Y= y;Theta= theta;}
+    double X = 0;
+    double Y = 0;
+    double Theta = 0;
+};
+class PositionT:public PropertyBase
+{
+    Q_OBJECT
+public:
+    PositionT() {}
+    PositionT(double x,double y,double theta){m_X= x;m_Y= y;m_Theta= theta;}
+    mPositionT tomPointT(){return mPositionT(m_X,m_Y,m_Theta);}
+    void setValue(mPositionT value){setX(value.X);setY(value.Y);setTheta(value.Theta);}
+    Q_PROPERTY(double X READ X WRITE setX NOTIFY XChanged)
+    Q_PROPERTY(double Y READ Y WRITE setY NOTIFY YChanged)
+    Q_PROPERTY(double Theta READ Theta WRITE setTheta NOTIFY ThetaChanged)
+    double X() const
+    {
+        return m_X;
+    }
+    double Y() const
+    {
+        return m_Y;
+    }
+    double Theta() const
+    {
+        return m_Theta;
+    }
+
+public slots:
+    void setX(double X)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_X, X))
+            return;
+
+        m_X = X;
+        emit XChanged(m_X);
+    }
+    void setY(double Y)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_Y, Y))
+            return;
+
+        m_Y = Y;
+        emit YChanged(m_Y);
+    }
+    void setTheta(double Theta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_Theta, Theta))
+            return;
+
+        m_Theta = Theta;
+        emit ThetaChanged(m_Theta);
+    }
+
+signals:
+    void XChanged(double X);
+    void YChanged(double Y);
+    void ThetaChanged(double Theta);
+
+private:
+    double m_X = 0;
+    double m_Y = 0;
+    double m_Theta = 0;
+};
+
 struct mPoint3D
 {
     mPoint3D() {}

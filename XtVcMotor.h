@@ -73,13 +73,14 @@ public:
     void GetMasterAxisID() override;
 
     bool SearchPosByADC(double vel, double search_limit, double threshold, bool search_above, double &result) override;
-    bool SearchPosByForce(double slow_speed, double  search_limit, double force, double margin, double &result);
-    bool SearchPosByForce(double &result, double force, double  search_limit = -1);
+    bool SearchPosByForce(double speed, double force, double  limit, double margin,int timeout=30000);
+    double SearchPosByForce(double speed,double force,int timeout=30000);
     void RestoreForce();
     void ShowSetting();
     void SetSoftLanding(double slow_speed, double slow_acc, double force, double start_pos, double target_pos, double margin);
     bool DoSoftLanding();
     bool DoSoftLandingReturn();
+    bool resetSoftLanding(int timeout = 30000);
     bool WaitSoftLandingDone(int timeout = 30000);
 
     static QVector<VCM_Resource_struct> all_parameter;
@@ -91,6 +92,9 @@ private:
     bool origin_result = true;
 
     int vcm_id;
+    bool is_softlanding = false;
+    bool is_softlanded = false;
+    bool is_returning = false;
 public:
     VCM_Resource_struct vcm_resource;
     static int vcm_count;

@@ -2,8 +2,6 @@
 
 LutModule::LutModule()
 {
-    //connect(&this->parameters, &LutParameter::paramsChanged, this, &LutModule::updateParams);
-    //connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &LutModule::updateParams);
 }
 
 

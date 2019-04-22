@@ -98,7 +98,6 @@ public:
 
 protected:
     bool is_init;
-
     static int curve_resource;
     static int thread_resource;
 

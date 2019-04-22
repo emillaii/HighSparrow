@@ -26,3 +26,14 @@ QString ErrorBase::GetCurrentError()
     error_content = "";
     return temp_error;
 }
+
+void ErrorBase::setCurrentErrorLevel(ErrorLevel current_level)
+{
+    error_level = current_level;
+}
+
+ErrorLevel ErrorBase::GetCurrentErrorLevel()
+{
+    error_level = ErrorLevel::TipNonblock;
+    return error_level;
+}

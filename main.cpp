@@ -104,6 +104,25 @@ int main(int argc, char *argv[])
     QStringList data = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames",data);
 
+    QStringList outputListRaw = highSprrow.baseModuleManager->output_ios.keys();
+    QStringList outputList;
+    for(QString output:outputListRaw){
+        if(output.contains('.')||output.startsWith("SUT1补充"))
+            continue;
+        outputList<<output;
+    }
+
+    engine.rootContext()->setContextProperty("outputList",outputList);
+
+    QStringList inputListRaw = highSprrow.baseModuleManager->input_ios.keys();
+    QStringList inputList;
+    for(QString input:inputListRaw){
+        if(input.contains('.'))
+            continue;
+        inputList<<input;
+    }
+    engine.rootContext()->setContextProperty("inputList",inputList);
+
     //QImage Provider
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);
     engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);

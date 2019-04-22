@@ -15,19 +15,60 @@ Popup {
         implicitWidth: 400
         implicitHeight: 800
         RowLayout {
+            Timer {
+                id:timer
+                interval: 300; running: true; repeat: true
+            }
             ScrollView {
-                Timer {
-                    interval: 300; running: true; repeat: true
-                    onTriggered: {
-                        if (dialog.visible) {
+                id:output_sv
+                implicitWidth:  200
+                implicitHeight: 600
+                clip: true
+                ColumnLayout{
+                    Switch {
+                        id:special_ouput
+                        text: qsTr("SUT Presser")
+                        Connections{
+                            target: timer
+                            onTriggered: {
+                                if (dialog.visible) {
+                                    if(output_swich_id.checked != baseModuleManager.getOutput("SUT1补充_1"))
+                                        output_swich_id.toggle()
+                                    //if(index%2==0&&!swich_id.checked)swich_id.toggle()
+                                }
+                            }
+                        }
+                        onCheckedChanged: {
+                            baseModuleManager.setOutput("SUT1补充_1", checked)
+                            baseModuleManager.setOutput("SUT1补充_2", !checked)
+                        }
+                    }
+                    ListView{
+                        model: outputList
+                        height: 1100
+                        anchors.top: special_ouput.bottom
+                        delegate: Switch{
+                            id:output_swich_id
+                            Connections{
+                                target: timer
+                                onTriggered: {
+                                    if (dialog.visible) {
+                                        if(output_swich_id.checked != baseModuleManager.getOutput(modelData))
+                                            output_swich_id.toggle()
+                                        //if(index%2==0&&!swich_id.checked)swich_id.toggle()
+                                    }
+                                }
+                            }
+                            text:qsTr(modelData)
+                            onCheckableChanged: {
+                                baseModuleManager.setOutput(modelData,checked);
+                            }
                         }
                     }
                 }
-
-                implicitWidth:  150
-                implicitHeight: 600
-                clip: true
+/*
                 ColumnLayout {
+
                     Switch {
                         text: qsTr("SUT Presser")
                         onCheckedChanged: {
@@ -63,6 +104,36 @@ Popup {
                         text: qsTr("SUT1点胶阀")
                         onCheckedChanged: {
                                 baseModuleManager.setOutput("SUT1点胶阀", checked)
+                        }
+                    }
+
+                }
+//*/
+            }
+            ScrollView{
+                id:input_sv
+                anchors.left:output_sv.right
+                implicitWidth:  200
+                implicitHeight: 600
+                clip: true
+                ListView{
+                    model:inputList
+                    anchors.fill: parent
+                    delegate: Switch{
+                        id:input_swich_id
+                        Connections{
+                            target: timer
+                            onTriggered: {
+                                if (dialog.visible) {
+                                    if(input_swich_id.checked != baseModuleManager.getOutput(modelData))
+                                        input_swich_id.toggle()
+                                    //if(index%2==0&&!swich_id.checked)swich_id.toggle()
+                                }
+                            }
+                        }
+                        text:qsTr(modelData)
+                        onCheckableChanged: {
+                            baseModuleManager.setOutput(modelData,checked);
                         }
                     }
                 }

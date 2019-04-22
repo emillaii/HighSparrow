@@ -467,15 +467,19 @@ bool BaseModuleManager::stepMove(int index, double step, bool isPositive)
 
 void BaseModuleManager::setOutput(QString name, bool on)
 {
+    if(name=="SUT1吸真空")
+        on = !on;
     if (this->output_ios.contains(name)){
         qInfo("set output : %s %d", name.toStdString().c_str(), on);
         output_ios[name]->Set(on);
     }
 }
 
-bool BaseModuleManager::GetOutput(QString name)
+bool BaseModuleManager::getOutput(QString name)
 {
     if (this->output_ios.contains(name)){
+        if(name=="SUT1吸真空")
+            return !output_ios[name]->Value();
         return  output_ios[name]->Value();
     }
     return  false;

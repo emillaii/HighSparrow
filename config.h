@@ -26,6 +26,7 @@
 #define AA_CORE_MODULE_JSON          "config//aaCoreConfig.json"
 #define SUT_MODULE_JSON              "config//sutConfig.json"
 #define LUT_MODULE_JSON              "config//lutConfig.json"
+#define BASE_MODULE_JSON             "config//baseModuleConfig.json"
 #define FLOWCHART_URL                "http://127.0.0.1:8000/flowchart.html"
 
 //Title naming

@@ -16,6 +16,13 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
         pylonPickarmCamera = new BaslerPylonCamera(PICKARM_VISION_CAMERA);
     }
+
+    if (ServerMode() == 0) {
+        qInfo("This sparrow is in Master mode");
+        sparrowQServer = new SparrowQServer(ServerPort());
+    } else {
+        sparrowQClient = new SparrowClient(QUrl(ServerURL()), true);
+    }
     lightingModule = new WordopLight();
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
     dothinkey = new Dothinkey();
@@ -36,6 +43,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     vision_locations.insert(PR_SUT_DOWNLOOK,new VisionLocation());
     vision_locations.insert(PR_LOAD_LUT_UPLOOK,new VisionLocation());
     vision_locations.insert(PR_AA1_MUSHROOMHEAD,new VisionLocation());
+
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -59,6 +67,10 @@ BaseModuleManager::~BaseModuleManager()
 
 bool BaseModuleManager::ReadParameters()
 {
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("BASE_MODULE_PARAMS", this);
+    PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
+
     aa_head_module.loadParams();
     sut_module.loadParams();
     lut_module.loadParams();

@@ -24,6 +24,8 @@
 #include "dispense_module.h"
 #include "vision_location.h"
 #include "chart_calibration.h"
+#include "sparrowqserver.h"
+#include "sparrowqclient.h"
 
 class BaseModuleManager : public PropertyBase
 {
@@ -35,6 +37,9 @@ public:
     ~BaseModuleManager();
 
     Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged)
+    Q_PROPERTY(int ServerMode READ ServerMode WRITE setServerMode NOTIFY paramsChanged)
+    Q_PROPERTY(int ServerPort READ ServerPort WRITE setServerPort NOTIFY paramsChanged)
+    Q_PROPERTY(QString ServerURL READ ServerURL WRITE setServerURL NOTIFY paramsChanged)
 
     QMap<QString,XtMotor*> motors;
     QMap<QString,XtGeneralInput*> input_ios;
@@ -60,6 +65,9 @@ public:
     DispenseModule dispense_module;
     Dispenser dispenser;
 
+    SparrowQServer * sparrowQServer;
+    SparrowClient * sparrowQClient;
+
     int lightPanelLighting() const
     {
         return m_lightPanelLighting;
@@ -70,9 +78,15 @@ signals:
 
     void lightPanelValueChanged(int lightPanelLighting);
 
+    void paramsChanged();
+
 public slots:
     Q_INVOKABLE void updateParams()
     {
+        QMap<QString,PropertyBase*> temp_map;
+        temp_map.insert("BASE_MODULE_PARAMS", this);
+        PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
+
         aa_head_module.updateParams();
         sut_module.updateParams();
         lut_module.updateParams();
@@ -89,6 +103,33 @@ public slots:
 
         emit lightPanelValueChanged(m_lightPanelLighting);
     }
+    void setServerMode(int ServerMode)
+    {
+        if (m_ServerMode == ServerMode)
+            return;
+
+        m_ServerMode = ServerMode;
+        emit paramsChanged();
+    }
+
+    void setServerPort(int ServerPort)
+    {
+        if (m_ServerPort == ServerPort)
+        return;
+
+        m_ServerPort = ServerPort;
+        emit paramsChanged();
+    }
+
+    void setServerURL(QString ServerURL)
+    {
+        if (m_ServerURL == ServerURL)
+        return;
+
+        m_ServerURL = ServerURL;
+        emit paramsChanged();
+    }
+
 private:
     bool is_init;
     bool profile_loaded;
@@ -101,6 +142,10 @@ private:
         500/*MaxVel*/,10000/*MaxAcc*/,200000/*MaxJerk*/,33/*MaxRange*/,0/*MinRange*/,10/*CanID*/,1/*dir*/,5000/*scale*/};
 private:
     bool InitStruct();
+    int m_ServerPort = 9999;
+    QString m_ServerURL = "ws://localhost:61916";
+    int m_ServerMode = 0;
+
 public:
     bool LoadProfile();
     bool ReadParameters();
@@ -137,6 +182,18 @@ public:
     XtGeneralInput *GetInputIoByName(QString name);
     XtVacuum *GetVacuumByName(QString name);
     XtCylinder *GetCylinderByName(QString name);
+    int ServerMode() const
+    {
+        return m_ServerMode;
+    }
+    int ServerPort() const
+    {
+        return m_ServerPort;
+    }
+    QString ServerURL() const
+    {
+        return m_ServerURL;
+    }
 };
 
 #endif // dBASEMODULEMANAGER_H

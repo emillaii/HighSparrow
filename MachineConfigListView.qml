@@ -14,6 +14,7 @@ ListView {
                 case 5 : return "ImageGrabberView.qml"
                 case 6 : return "CalibrationView.qml"
                 case 7 : return "AACoreView.qml"
+                case 8 : return "SystemConfigView.qml"
             }
         }
     }

@@ -3,6 +3,7 @@ QT += serialport
 QT += webengine
 QT += widgets
 QT += charts qml quick
+QT += websockets
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -57,7 +58,9 @@ SOURCES += \
     dispenser.cpp \
     dispense_module.cpp \
     vision_location.cpp \
-    unitlog.cpp
+    unitlog.cpp \
+    sparrowqserver.cpp \
+    sparrowqclient.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -156,7 +159,9 @@ HEADERS += \
     vision_location_parameter.h \
     vision_location.h \
     unitlog.h \
-    aacoreparameters.h
+    aacoreparameters.h \
+    sparrowqserver.h \
+    sparrowqclient.h
 
 DISTFILES += \
     icons/index.theme

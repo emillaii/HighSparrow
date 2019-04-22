@@ -61,7 +61,6 @@ SOURCES += \
     unitlog.cpp \
     workers_manager.cpp \
     thread_worker_base.cpp \
-    sensor_pickarm.cpp \
     materialtray.cpp \
     unitlog.cpp \
     pick_arm_xxyp.cpp \
@@ -168,7 +167,6 @@ HEADERS += \
     unitlog.h \
     workers_manager.h \
     thread_worker_base.h \
-    sensor_pickarm.h \
     materialtray.h \
     unitlog.h \
     pick_arm_xxyp.h \

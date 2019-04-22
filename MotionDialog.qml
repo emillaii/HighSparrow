@@ -196,89 +196,51 @@ Popup {
                         height: 1000
                         model: motorsNames
                         delegate: RowLayout{
-                        Rectangle{
-                            width: 65
-                            Text{
-                               anchors.verticalCenter: parent.verticalCenter
-                               text:modelData
-                               wrapMode: width
-                               color:"white"
+                            Rectangle{
+                                width: 65
+                                Text{
+                                   anchors.verticalCenter: parent.verticalCenter
+                                   text:modelData
+                                   wrapMode: width
+                                   color:"white"
+                                }
                             }
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(modelData)
+                            RoundButton {
+                                onClicked: {
+                                    baseModuleManager.homeMotor(modelData)
+                                }
+                                transformOrigin: Item.Center
+                                display: Button.IconOnly
+                                icon.source: "icons/home.png"
+                                icon.color: "cyan"
                             }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton{
-                            text:"+"
-                            onClicked: {
-                               var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
-                               console.log(motorsNames.length)
-                               console.log("result: "+res)
+                            RoundButton{
+                                text:"+"
+                                onClicked: {
+                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
+                                   console.log(motorsNames.length)
+                                   console.log("result: "+res)
+                                }
                             }
-                        }
-                        RoundButton{
-                            text:"-"
-                            onClicked: {
-                               var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
-                               console.log("result: "+res)
+                            RoundButton{
+                                text:"-"
+                                onClicked: {
+                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
+                                   console.log("result: "+res)
+                                }
                             }
-                        }
-                        Label{
-                           Connections{
-                               target: timer
-                               onTriggered:{
-                                    lbl.text = baseModuleManager.getMotorFeedbackPos(modelData)
-                               }
+                            Label{
+                                id:lbl
+                                color:"lightskyblue"
+                                Connections{
+                                   target: timer
+                                   onTriggered:{
+                                        lbl.text = baseModuleManager.getMotorFeedbackPos(modelData)
+                                   }
+                                }
                             }
-                            id:lbl
-                            color:"lightskyblue"
-                        }
                         }
                     }
-
-
-/*
-                    RowLayout {
-                        Text {
-                            text: " AA_X "
-                            color: "white"
-                        }
-                        RoundButton {
-                            onClicked: {
-                                baseModuleManager.homeMotor(m_AA1_X)
-                            }
-                            transformOrigin: Item.Center
-                            display: Button.IconOnly
-                            icon.source: "icons/home.png"
-                            icon.color: "cyan"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_AA1_X, selectedStepSize, false)
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                var res = baseModuleManager.stepMove(m_AA1_X, selectedStepSize, true)
-                            }
-                        }
-                        Label {
-                            id: aa1_x_label
-                            color: "lightskyblue"
-                        }
-                    }
-//*/
-                    /*
-                   //*/
-
                 }
             }
         }

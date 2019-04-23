@@ -36,6 +36,9 @@ ColumnLayout{
             text:title_move_to
             width: 40
             height: 40
+            onClicked: {
+                logicManager.lensPickArmMoveToTray1StartPos()
+            }
         }
         Button{
             text:title_read_encoder
@@ -77,6 +80,9 @@ ColumnLayout{
             text:title_move_to
             width: 40
             height: 40
+            onClicked: {
+                logicManager.lensPickArmMoveToTray2StartPos()
+            }
         }
         Button{
             text:title_read_encoder
@@ -118,6 +124,10 @@ ColumnLayout{
             text:title_move_to
             width: 40
             height: 40
+            onClicked: {
+
+                logicManager.lensPickArmMoveToTray1EndPos()
+            }
         }
         Button{
             text:title_read_encoder
@@ -183,7 +193,7 @@ ColumnLayout{
 
     RowLayout{
         Label{
-            text: qsTr("nColumn")
+            text: qsTr("tray1_nColumn")
         }
         TextField{
             text: "0"
@@ -191,17 +201,23 @@ ColumnLayout{
             validator: IntValidator
         }
         Label{
-            text: qsTr("nRow")
+            text: qsTr("tray1_nRow")
         }
         TextField{
             text: "0"
             horizontalAlignment: TextInput.AlignHCenter
             validator: IntValidator
+            onEditingFinished: {
+
+            }
         }
         Button{
             text:title_move_to
             width: 40
             height: 40
+            onClicked: {
+                //logicManager.lensPickArmMoveToTray1Pos();
+            }
         }
     }
 }

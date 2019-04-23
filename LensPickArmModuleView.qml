@@ -31,17 +31,27 @@ ItemDelegate {
                     text: qsTr("")
                 }
             }
+
             GroupBox{
-                title:qsTr("tray Parameter")
-                TrayParamater{}
+                title:qsTr("lens 头参数")
+                LensHeadParameter{}
+            }
+
+            GroupBox{
+                title:qsTr("lens 料盘1")
+                MaterialTray1{}
             }
             GroupBox{
-                title:qsTr("LensPickArmParameter")
-                LensPickArmModuleParameter{}
+                title:qsTr("lens 料盘2")
+                MaterialTray2{}
             }
             GroupBox{
-                title:qsTr("LensPickArmOtherParameter")
-                LensPickArmOtherParameter{}
+                title:qsTr("料盘规格")
+                TraySpecs{}
+            }
+            GroupBox{
+                title:qsTr("LUT")
+                LensPcikArmLUT{}
             }
         }
     }

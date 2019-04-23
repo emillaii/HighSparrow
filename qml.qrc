@@ -61,6 +61,11 @@
         <file>TrayParamater.qml</file>
         <file>LensPickArmModuleParameter.qml</file>
         <file>LensPickArmOtherParameter.qml</file>
+        <file>MaterialTray1.qml</file>
+        <file>MaterialTray2.qml</file>
+        <file>TraySpecs.qml</file>
+        <file>LensHeadParameter.qml</file>
+        <file>LensPcikArmLUT.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

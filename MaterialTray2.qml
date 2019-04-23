@@ -96,12 +96,13 @@ ColumnLayout {
             }
 
             RowLayout{
+                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
-                    text:qsTr("lensPR")
+                    text:qsTr("取lens视觉")
                     width: 40
                     height: 40
                     onClicked: {
-
+                        logicManager.lensPickArmLensPR()
                     }
                 }
                 Button{
@@ -112,6 +113,15 @@ ColumnLayout {
                         logicManager.lensPickArmMoveToPickLensFromTray2()
                     }
                 }
+                Button{
+                    text:qsTr("放lens视觉")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        logicManager.lensPickArmVacancyTrayPR()
+                    }
+                }
+
                 Button{
                     text:qsTr("放lens")
                     width: 40

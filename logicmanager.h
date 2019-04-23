@@ -60,11 +60,11 @@ public:
     Q_INVOKABLE void lensPickArmMoveToPlaceLensToTray1();
     Q_INVOKABLE void lensPickArmMoveToPlaceLensToTray2();
     Q_INVOKABLE void lensPickArmMoveToPlaceLensToLut();
-    Q_INVOKABLE void lensPickArmLensPR();
-    Q_INVOKABLE void lensPickArmVacancyTrayPR();
-    Q_INVOKABLE void lensPickArmLUTPR();
-    Q_INVOKABLE void lensPickArmLensMeasureHeight();
-    Q_INVOKABLE void lensPickArmLUTMeasureHeight();
+    Q_INVOKABLE void lensPickArmLensPR();//取
+    Q_INVOKABLE void lensPickArmVacancyTrayPR();//放
+    Q_INVOKABLE void lensPickArmLUTPR();//取
+    Q_INVOKABLE void lensPickArmLensMeasureHeight();//tray lens测高
+    Q_INVOKABLE void lensPickArmLUTMeasureHeight();//lut 测高
 
 
 

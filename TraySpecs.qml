@@ -66,7 +66,7 @@ ColumnLayout {
             height: 40
             text:qsTr("计算")
             onClicked: {
-
+                material_tray.calculateDelta()
             }
         }
     }

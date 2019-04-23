@@ -13,7 +13,7 @@ class MaterialTray:public QObject
     Q_OBJECT
 public:
     MaterialTray();
-    void calculateDelta();
+    Q_INVOKABLE void calculateDelta();
     QPointF getPosition(int column_index,int row_index,int tray_index = 0);
     QPointF getPositionByIndex(int index,int tray_index = 0);
     bool findNextPositionOfInitState(int tray_index = 0);

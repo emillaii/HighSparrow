@@ -170,27 +170,37 @@ ColumnLayout {
                 }
 
                 Button{
-                    text:qsTr("lensPR")
-                    width: 40
-                    height: 40
-                    onClicked: {
-
-                    }
-                }
-                Button{
                     text:qsTr("测高")
                     width: 40
                     height: 40
                     onClicked: {
-
+                        logicManager.lensPickArmLensMeasureHeight()
                     }
                 }
+
+                Button{
+                    text:qsTr("取lens视觉")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        logicManager.lensPickArmLensPR()
+                    }
+                }
+
                 Button{
                     text:qsTr("取lens")
                     width: 40
                     height: 40
                     onClicked: {
                         logicManager.lensPickArmMoveToPickLensFromTray1()
+                    }
+                }
+                Button{
+                    text:qsTr("放lens视觉")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        logicManager.lensPickArmVacancyTrayPR()
                     }
                 }
                 Button{

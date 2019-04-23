@@ -11,6 +11,7 @@ ColumnLayout {
                 }
                 TextField{
                     text:lut_pr_position1.X
+                    horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 3
                         notation: DoubleValidator.StandardNotation
@@ -24,6 +25,7 @@ ColumnLayout {
                 }
                 TextField{
                     text:lut_pr_position1.Y
+                    horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 3
                         notation: DoubleValidator.StandardNotation
@@ -74,7 +76,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        logicManager.lensPickArmLUTMeasureHeight()
                     }
                 }
                 Button{
@@ -97,6 +99,7 @@ ColumnLayout {
                 }
                 TextField{
                     text:lut_pr_position2.X
+                    horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 3
                         notation: DoubleValidator.StandardNotation
@@ -110,6 +113,7 @@ ColumnLayout {
                 }
                 TextField{
                     text:lut_pr_position2.Y
+                    horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 3
                         notation: DoubleValidator.StandardNotation
@@ -140,12 +144,13 @@ ColumnLayout {
                 }
             }
             RowLayout{
+                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
                     text:qsTr("视觉")
                     width:40
                     height: 40
                     onClicked: {
-
+                        logicManager.lensPickArmLUTPR()
                     }
                 }
                 Button{

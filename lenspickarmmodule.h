@@ -24,17 +24,25 @@ enum HandlePosition
     };
 enum HandlePR
     {
-        LNES_PR = 1<<3,
-        VACANCY_PR = 2<<3,
-        LUT_PR = 3<<3
+        RESET_PR = 1 <<4,
+        LENS_PR = 2<<4,
+        VACANCY_PR = 2<<4,
+        LUT_PR = 3<<4
     };
+enum HandleToWorkPos
+{
+    ToWork = 1<<5
+};
+
 enum handlePickerAction
-    {
-        PICK_LENS_FROM_TRAY = 1<<5,
-        PLACE_LENS_TO_LUT = 2<<5,
-        PICK_NG_LENS_FROM_LUT = 3<<5,
-        PLACE_NG_LENS_TO_TRAY = 4<<5
-    };
+{
+    PICK_LENS_FROM_TRAY = 1<<5,
+    PLACE_LENS_TO_LUT = 2<<5,
+    PICK_NG_LENS_FROM_LUT = 3<<5,
+    PLACE_NG_LENS_TO_TRAY = 4<<5,
+    MeasureLensInTray = 5<<5,
+    MeasureLensInLUT = 6<<5
+};
 
 //}
 class LensPickArmModule:public ThreadWorkerBase
@@ -60,6 +68,7 @@ private:
     bool performLensPR();
     bool performVacancyPR();
     bool performLUTPR();
+    void resetPR();
 
     bool moveToWorkPos(bool check_softlanding = false);
     bool vcmSearchZ(double z,bool check_softlanding = false);
@@ -67,6 +76,7 @@ private:
     bool placeLensToLUT(bool check_softlanding = false);
     bool pickLUTLens(bool check_softlanding = false);
     bool placeLensToTray(bool check_softlanding = false);
+    bool measureHight(bool is_tray);
 
 
     bool moveToTrayPos(int index,int tray_index);
@@ -85,8 +95,8 @@ public slots:
     void stopWork(bool wait_finish);
     void performHandlingOperation(int cmd, int &finished_type);
 public:
-    LensPickArmModuleParameter module_parameters;
-    LensPickArmModuleState module_states;
+    LensPickArmModuleParameter parameters;
+    LensPickArmModuleState states;
     Position lut_pr_position1;
     Position lut_pr_position2;
     Position lut_camera_position;

@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("tray_start_point2",&highSprrow.baseModuleManager->material_tray.parameters[1]->tray_start_position);
     engine.rootContext()->setContextProperty("tray_standard_parameter",&highSprrow.baseModuleManager->material_tray.standards_parameters);
     engine.rootContext()->setContextProperty("lensPickArmModuleParameter",
-                                             &highSprrow.baseModuleManager->lens_pick_arm_module.module_parameters);
+                                             &highSprrow.baseModuleManager->lens_pick_arm_module.parameters);
     engine.rootContext()->setContextProperty("lut_pr_position1",
                                              &highSprrow.baseModuleManager->lens_pick_arm_module.lut_pr_position1);
     engine.rootContext()->setContextProperty("lut_pr_position2",

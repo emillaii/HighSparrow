@@ -60,6 +60,12 @@ public:
     Q_INVOKABLE void lensPickArmMoveToPlaceLensToTray1();
     Q_INVOKABLE void lensPickArmMoveToPlaceLensToTray2();
     Q_INVOKABLE void lensPickArmMoveToPlaceLensToLut();
+    Q_INVOKABLE void lensPickArmLensPR();
+    Q_INVOKABLE void lensPickArmVacancyTrayPR();
+    Q_INVOKABLE void lensPickArmLUTPR();
+    Q_INVOKABLE void lensPickArmLensMeasureHeight();
+    Q_INVOKABLE void lensPickArmLUTMeasureHeight();
+
 
 
     int currentMode() const

@@ -315,7 +315,19 @@ bool XtVcMotor::SearchPosByForce(double speed, double force, double limit, doubl
     return res;
 }
 
-double XtVcMotor::SearchPosByForce(double speed,double force,int timeout)
+bool XtVcMotor::SearchPosByForce(double speed,double force,int timeout)
+{
+    if(!is_init)
+        return 0.0;
+    double start_pos = GetOutpuPos();
+    SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.01);
+    bool res;
+    res = DoSoftLanding();
+    res &= WaitSoftLandingDone(timeout);
+    return res;
+}
+
+double XtVcMotor::SearchPosByForceOnyDown(double speed, double force, int timeout)
 {
     if(!is_init)
         return 0.0;

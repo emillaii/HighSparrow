@@ -74,7 +74,8 @@ public:
 
     bool SearchPosByADC(double vel, double search_limit, double threshold, bool search_above, double &result) override;
     bool SearchPosByForce(double speed, double force, double  limit, double margin,int timeout=30000);
-    double SearchPosByForce(double speed,double force,int timeout=30000);
+    bool SearchPosByForce(double speed,double force,int timeout = 30000);
+    double SearchPosByForceOnyDown(double speed,double force,int timeout = 30000);
     void RestoreForce();
     void ShowSetting();
     void SetSoftLanding(double slow_speed, double slow_acc, double force, double start_pos, double target_pos, double margin);

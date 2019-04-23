@@ -47,10 +47,14 @@ bool PickArmXXYP::Move_SZ_Sync(double z,bool check_softlanding, int timeout)
     return   picker->motor_z->WaitArrivedTargetPos(z,timeout);
 }
 
-double PickArmXXYP::ZSerchByForce(double speed, double force,bool check_softlanding,int timeout)
+bool PickArmXXYP::ZSerchByForce(double speed, double force,bool check_softlanding,int timeout)
 {
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
-    return  picker->motor_z->SearchPosByForce(speed,force);
+    bool result = picker->motor_z->SearchPosByForce(speed,force);
+    QThread::msleep(200);
+    softlanding_position = picker->motor_z->GetFeedbackPos();
+    result &= picker->motor_z->DoSoftLandingReturn();
+    return result;
 }
 
 bool PickArmXXYP::ZSerchByForce(double speed, double force, double limit, double margin,int finish_time,bool open_vacuum, int timeout)

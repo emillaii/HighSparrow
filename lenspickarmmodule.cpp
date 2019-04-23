@@ -37,7 +37,7 @@ void LensPickArmModule::ResetLogic()
 void LensPickArmModule::loadJsonConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("LENS_PICKARM_PARAMS", &module_parameters);
+    temp_map.insert("LENS_PICKARM_PARAMS", &parameters);
     temp_map.insert("LUT_PR_POSITION1", &lut_pr_position1);
     temp_map.insert("LUT_PR_POSITION2", &lut_pr_position2);
     temp_map.insert("LUT_CAMERA_POSITION1", &lut_camera_position);
@@ -48,7 +48,7 @@ void LensPickArmModule::loadJsonConfig()
 void LensPickArmModule::saveJsonConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("LENS_PICKARM_PARAMS", &module_parameters);
+    temp_map.insert("LENS_PICKARM_PARAMS", &parameters);
     temp_map.insert("LUT_PR_POSITION1", &lut_pr_position1);
     temp_map.insert("LUT_PR_POSITION2", &lut_pr_position2);
     temp_map.insert("LUT_CAMERA_POSITION1", &lut_camera_position);
@@ -67,14 +67,14 @@ void LensPickArmModule::run(bool has_material)
     while (is_run)
     {
         //放NGLens
-        if(module_states.hasPickedNgLens())
+        if(states.hasPickedNgLens())
         {
             if(moveToTrayPos(picked_material.material_id,picked_material.tray_id)&&
                     performVacancyPR()&&
                     moveToWorkPos()&&
                     placeLensToTray())
             {
-                module_states.setHasPickedNgLens(false);
+                states.setHasPickedNgLens(false);
             }
             else
             {
@@ -84,16 +84,16 @@ void LensPickArmModule::run(bool has_material)
             }
         }
         //取料
-        if((!module_states.hasPickedNgLens())&&(!module_states.hasPickedLens()))
+        if((!states.hasPickedNgLens())&&(!states.hasPickedLens()))
         {
-            if(moveToNextTrayPos(module_states.currentTray())&&
+            if(moveToNextTrayPos(states.currentTray())&&
                     performLensPR()&&
                     moveToWorkPos()&&
                     pickTrayLens())
             {
-                picked_material.tray_id = module_states.currentTray();
-                picked_material.material_id = lens_tray->getCurrentIndex(module_states.currentTray());
-                module_states.setHasPickedLens(true);
+                picked_material.tray_id = states.currentTray();
+                picked_material.material_id = lens_tray->getCurrentIndex(states.currentTray());
+                states.setHasPickedLens(true);
 
             }
             else {
@@ -110,14 +110,14 @@ void LensPickArmModule::run(bool has_material)
             //todo
         }
         //放料到LUT
-        if(module_states.needloadLens()&&module_states.hasPickedLens())
+        if(states.needloadLens()&&states.hasPickedLens())
         {
             if(moveToWorkPos()&&placeLensToLUT())
             {
                 lut_material.tray_id = picked_material.tray_id;
                 lut_material.material_id = picked_material.material_id;
-                module_states.setneedloadLens(false);
-                module_states.setHasPickedLens(false);
+                states.setneedloadLens(false);
+                states.setHasPickedLens(false);
             }
             else
             {
@@ -127,7 +127,7 @@ void LensPickArmModule::run(bool has_material)
             }
         }
         //取NGlens
-        if(module_states.lutHasNgLens()&&(!module_states.hasPickedLens())&&(!module_states.hasPickedNgLens()))
+        if(states.lutHasNgLens()&&(!states.hasPickedLens())&&(!states.hasPickedNgLens()))
         {
             if(moveToLUTPRPos2()&&
                     performLUTPR()&&
@@ -136,8 +136,8 @@ void LensPickArmModule::run(bool has_material)
             {
                 picked_material.tray_id = picked_material.tray_id;
                 picked_material.material_id = picked_material.material_id;
-                module_states.setLutHasNgLens(false);
-                module_states.setHasPickedNgLens(true);
+                states.setLutHasNgLens(false);
+                states.setHasPickedNgLens(true);
             }
             else
             {
@@ -153,19 +153,19 @@ bool LensPickArmModule::moveToNextTrayPos(int tray_index)
 {
     if(lens_tray->findNextPositionOfInitState(tray_index))
     {
-        return  pick_arm->move_XtXY_Synic(lens_tray->getCurrentPosition(tray_index),module_parameters.visonPositionX());
+        return  pick_arm->move_XtXY_Synic(lens_tray->getCurrentPosition(tray_index),parameters.visonPositionX());
     }
     return  false;
 }
 
 bool LensPickArmModule::moveToLUTPRPos1(bool check_softlanding)
 {
-    return  pick_arm->move_XtXY_Synic(lut_pr_position1.ToPointF(),module_parameters.visonPositionX(),check_softlanding);
+    return  pick_arm->move_XtXY_Synic(lut_pr_position1.ToPointF(),parameters.visonPositionX(),check_softlanding);
 }
 
 bool LensPickArmModule::moveToLUTPRPos2(bool check_softlanding)
 {
-    return  pick_arm->move_XtXY_Synic(lut_pr_position2.ToPointF(),module_parameters.visonPositionX(),check_softlanding);
+    return  pick_arm->move_XtXY_Synic(lut_pr_position2.ToPointF(),parameters.visonPositionX(),check_softlanding);
 }
 
 bool LensPickArmModule::performLensPR()
@@ -183,6 +183,13 @@ bool LensPickArmModule::performLUTPR()
     return lut_vision->performPR(pr_offset);
 }
 
+void LensPickArmModule::resetPR()
+{
+    pr_offset.X = 0;
+    pr_offset.Y = 0;
+    pr_offset.Theta = 0;
+}
+
 bool LensPickArmModule::moveToWorkPos(bool check_softlanding)
 {
     PrOffset temp(lut_camera_position.X() - lut_picker_position.X()- pr_offset.X,
@@ -192,47 +199,60 @@ bool LensPickArmModule::moveToWorkPos(bool check_softlanding)
 
 bool LensPickArmModule::vcmSearchZ(double z,bool check_softlanding)
 {
-    return pick_arm->ZSerchByForce(module_parameters.vcmWorkSpeed(),module_parameters.vcmWorkForce(),z,module_parameters.vcmMargin(),check_softlanding);
+    return pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),check_softlanding);
 }
 
 bool LensPickArmModule::pickTrayLens(bool check_softlanding)
 {
-    return vcmSearchZ(module_parameters.pickLensZ(),check_softlanding);
+    return vcmSearchZ(parameters.pickLensZ(),check_softlanding);
 }
 
 bool LensPickArmModule::placeLensToLUT(bool check_softlanding)
 {
-    return vcmSearchZ(module_parameters.placeLensZ(),check_softlanding);
+    return vcmSearchZ(parameters.placeLensZ(),check_softlanding);
 }
 
 bool LensPickArmModule::pickLUTLens(bool check_softlanding)
 {
-    return vcmSearchZ(module_parameters.placeLensZ(),check_softlanding);
+    return vcmSearchZ(parameters.placeLensZ(),check_softlanding);
 }
 
 bool LensPickArmModule::placeLensToTray(bool check_softlanding)
 {
-    return vcmSearchZ(module_parameters.pickLensZ(),check_softlanding);
+    return vcmSearchZ(parameters.pickLensZ(),check_softlanding);
+}
+
+bool LensPickArmModule::measureHight(bool is_tray)
+{
+    if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
+    {
+        if(is_tray)
+            parameters.setPickLensZ(pick_arm->GetSoftladngPosition());
+        else
+            parameters.setPlaceLensZ(pick_arm->GetSoftladngPosition());
+        return true;
+    }
+    return false;
 }
 
 bool LensPickArmModule::moveToTrayPos(int index, int tray_index)
 {
-    return pick_arm->move_XtXY_Synic(lens_tray->getPositionByIndex(index,tray_index),module_parameters.visonPositionX());
+    return pick_arm->move_XtXY_Synic(lens_tray->getPositionByIndex(index,tray_index),parameters.visonPositionX());
 }
 
 bool LensPickArmModule::moveToTrayPos(int tray_index)
 {
-    return  pick_arm->move_XtXY_Synic(lens_tray->getCurrentPosition(tray_index),module_parameters.visonPositionX(),true);
+    return  pick_arm->move_XtXY_Synic(lens_tray->getCurrentPosition(tray_index),parameters.visonPositionX(),true);
 }
 
 bool LensPickArmModule::moveToStartPos(int tray_index)
 {
-    return pick_arm->move_XtXY_Synic(lens_tray->getStartPosition(tray_index),module_parameters.visonPositionX(),true);
+    return pick_arm->move_XtXY_Synic(lens_tray->getStartPosition(tray_index),parameters.visonPositionX(),true);
 }
 
 bool LensPickArmModule::moveToTray1EndPos()
 {
-    return pick_arm->move_XtXY_Synic(lens_tray->getEndPosition(),module_parameters.visonPositionX(),true);
+    return pick_arm->move_XtXY_Synic(lens_tray->getEndPosition(),parameters.visonPositionX(),true);
 }
 
 bool LensPickArmModule::isRunning()
@@ -278,6 +298,8 @@ void LensPickArmModule::performHandlingOperation(int cmd, int &finished_type)
         return;
     }
     if(cmd&HandlePR::LUT_PR)
+        resetPR();
+    else if(cmd&HandlePR::LUT_PR)
         result = performLensPR();
     else if(cmd&HandlePR::VACANCY_PR)
         result = performVacancyPR();
@@ -285,6 +307,13 @@ void LensPickArmModule::performHandlingOperation(int cmd, int &finished_type)
         result = performLUTPR();
     else
         result = true;
+    if(!result)
+    {
+        finished_type = FinishedType::Alarm;
+        return;
+    }
+    if(cmd&HandleToWorkPos::ToWork)
+        result = moveToWorkPos();
     if(!result)
     {
         finished_type = FinishedType::Alarm;
@@ -298,6 +327,10 @@ void LensPickArmModule::performHandlingOperation(int cmd, int &finished_type)
         result = pickLUTLens(true);
     else if(cmd&handlePickerAction::PLACE_NG_LENS_TO_TRAY)
         result = placeLensToTray();
+    else if(cmd&handlePickerAction::MeasureLensInLUT)
+        result = measureHight(false);
+    else if(cmd&handlePickerAction::MeasureLensInTray)
+        result = measureHight(true);
     else
         result = true;
     if(!result)

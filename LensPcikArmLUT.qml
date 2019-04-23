@@ -45,7 +45,11 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
+                        var x = baseModuleManager.getMotorFeedbackPos(m_LTL_X)
+                        var y = baseModuleManager.getMotorFeedbackPos(m_LPA_Y)
 
+                        lut_pr_position1.setX(x);
+                        lut_pr_position1.setY(y);
                     }
                 }
             }
@@ -127,7 +131,11 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
+                        var x = baseModuleManager.getMotorFeedbackPos(m_LTL_X)
+                        var y = baseModuleManager.getMotorFeedbackPos(m_LPA_Y)
 
+                        lut_pr_position2.setX(x);
+                        lut_pr_position2.setY(y);
                     }
                 }
             }

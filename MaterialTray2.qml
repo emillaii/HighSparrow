@@ -46,6 +46,13 @@ ColumnLayout {
                     text:title_read_encoder
                     width: 40
                     height: 40
+                    onClicked: {
+                        var x = baseModuleManager.getMotorFeedbackPos(m_LTL_X)
+                        var y = baseModuleManager.getMotorFeedbackPos(m_LPA_Y)
+
+                        tray_start_point2.setX(x);
+                        tray_start_point2.setY(y);
+                    }
                 }
             }
         }

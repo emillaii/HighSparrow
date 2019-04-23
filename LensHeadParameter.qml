@@ -31,8 +31,10 @@ ColumnLayout {
                 lensPickArmModuleParameter.setVcmWorkSpeed(text)
             }
         }
+    }
+    RowLayout{
         Label{
-            text:qsTr("限力空间")
+            text:qsTr("限力区间")
         }
         TextField{
             text:lensPickArmModuleParameter.vcmMargin
@@ -43,6 +45,21 @@ ColumnLayout {
             }
             onEditingFinished: {
                 lensPickArmModuleParameter.setVcmMargin(text)
+            }
+        }
+
+        Label{
+            text:qsTr("视觉位置X")
+        }
+        TextField{
+            text:lensPickArmModuleParameter.visonPositionX
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 3
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                lensPickArmModuleParameter.setVisonPositionX(text)
             }
         }
     }

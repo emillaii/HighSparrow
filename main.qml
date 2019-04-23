@@ -26,6 +26,12 @@ ApplicationWindow {
     readonly property string m_LUT1_Y: "LUT_Y"
     readonly property string m_LUT1_Z: "LUT_Z"
 
+    readonly property string m_LTL_X: "LPA_X" //X
+    readonly property string m_LPA_X: "LPA_X"  //visonpositionX
+    readonly property string m_LPA_Y: "LPA_Y" //Y
+    readonly property string m_LPA_Z: "LPA_Z" //物料高度
+
+
     FileDialog {
         id: loadfileDialog
         title: qsTr("选择加载文件")

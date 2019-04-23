@@ -32,8 +32,8 @@ Popup {
                             target: timer
                             onTriggered: {
                                 if (dialog.visible) {
-                                    if(output_swich_id.checked != baseModuleManager.getOutput("SUT1补充_1"))
-                                        output_swich_id.toggle()
+                                    if(special_ouput.checked != baseModuleManager.getOutput("SUT1补充_1"))
+                                        special_ouput.toggle()
                                     //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                 }
                             }
@@ -48,13 +48,13 @@ Popup {
                         height: 1100
                         anchors.top: special_ouput.bottom
                         delegate: Switch{
-                            id:output_swich_id
+                            id:output_switch_id
                             Connections{
                                 target: timer
                                 onTriggered: {
                                     if (dialog.visible) {
-                                        if(output_swich_id.checked != baseModuleManager.getOutput(modelData))
-                                            output_swich_id.toggle()
+                                        if(output_switch_id.checked != baseModuleManager.getOutput(modelData))
+                                            output_switch_id.toggle()
                                         //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                     }
                                 }

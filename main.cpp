@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     QStringList outputListRaw = highSprrow.baseModuleManager->output_ios.keys();
     QStringList outputList;
     for(QString output:outputListRaw){
-        if(output.contains('.')||output.startsWith("SUT1补充"))
+        if(output.contains('.')||output.startsWith("SUT1补充")||output.contains("OUT"))
             continue;
         outputList<<output;
     }
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     QStringList inputListRaw = highSprrow.baseModuleManager->input_ios.keys();
     QStringList inputList;
     for(QString input:inputListRaw){
-        if(input.contains('.'))
+        if(input.contains('.')||input.contains("IN"))
             continue;
         inputList<<input;
     }

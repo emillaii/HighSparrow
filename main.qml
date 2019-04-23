@@ -4,6 +4,8 @@ import QtQuick.Dialogs 1.2
 import FileContentItem 1.0
 import QtQuick.Layouts 1.11
 
+
+
 ApplicationWindow {
     visible: true
     width: 1320
@@ -109,6 +111,19 @@ ApplicationWindow {
                     logicManager.init()
                 }
             }
+
+            MessageDialog {
+                id: qmessageDialog
+                text: "是否确定要进行Home操作？"
+                standardButtons: StandardButton.Yes|StandardButton.No
+                icon:StandardIcon.Question
+                onYes: {
+                    console.log("home start!")
+                     logicManager.home()
+                }
+                //Component.onCompleted: visible = true
+            }
+
             ToolButton {
                 objectName: "HomeButtonObject"
                 text: qsTr("Home")
@@ -119,7 +134,7 @@ ApplicationWindow {
                 icon.source: "icons/home.png"
                 icon.color: "deepskyblue"
                 onClicked: {
-                    logicManager.home()
+                    qmessageDialog.open()
                 }
             }
             ToolButton {

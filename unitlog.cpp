@@ -53,7 +53,7 @@ bool Unitlog::postDataToELK(QString uuid)
     {
          QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
          QJsonDocument doc(json);
-         QUrl sfrlog_endpoint = QString("http://192.168.1.223:5044");
+         QUrl sfrlog_endpoint = QString("http://192.168.0.252:5044");
          QNetworkRequest request(sfrlog_endpoint);
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));

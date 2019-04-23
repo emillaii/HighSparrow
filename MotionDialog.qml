@@ -207,7 +207,7 @@ Popup {
                             }
                             RoundButton {
                                 onClicked: {
-                                    baseModuleManager.homeMotor(modelData)
+                                    baseModuleManager.motorSeekOrigin(modelData)
                                 }
                                 transformOrigin: Item.Center
                                 display: Button.IconOnly

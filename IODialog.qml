@@ -17,7 +17,7 @@ Popup {
         RowLayout {
             Timer {
                 id:timer
-                interval: 300; running: true; repeat: true
+                interval: 500; running: true; repeat: true
             }
             ScrollView {
                 id:output_sv
@@ -32,15 +32,16 @@ Popup {
                             target: timer
                             onTriggered: {
                                 if (dialog.visible) {
-                                    if(special_ouput.checked != baseModuleManager.getOutput("SUT1补充_1"))
+                                    if(special_ouput.checked != baseModuleManager.getOutput("POGOPIN下"))
                                         special_ouput.toggle()
                                     //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                 }
                             }
                         }
-                        onCheckedChanged: {
-                            baseModuleManager.setOutput("SUT1补充_1", checked)
-                            baseModuleManager.setOutput("SUT1补充_2", !checked)
+                        onCheckedChanged:{
+
+                            baseModuleManager.setOutput("POGOPIN下", checked)
+                            baseModuleManager.setOutput("POGOPIN上", !checked)
                         }
                     }
                     ListView{
@@ -53,15 +54,19 @@ Popup {
                                 target: timer
                                 onTriggered: {
                                     if (dialog.visible) {
-                                        if(output_switch_id.checked != baseModuleManager.getOutput(modelData))
+                                        if(output_switch_id.checked != baseModuleManager.getOutput(modelData)){
                                             output_switch_id.toggle()
+                                            console.log("22"+modelData+output_switch_id.checked)
+                                        }
+
                                         //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                     }
                                 }
                             }
                             text:qsTr(modelData)
-                            onCheckableChanged: {
+                            onCheckedChanged: {
                                 baseModuleManager.setOutput(modelData,checked);
+                                console.log(modelData+checked)
                             }
                         }
                     }

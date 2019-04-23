@@ -163,6 +163,7 @@ public:
     Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
     Q_INVOKABLE void setOutput(QString name, bool on);
     Q_INVOKABLE bool getOutput(QString name);
+    Q_INVOKABLE void motorSeekOrigin(QString name);
 
     Q_INVOKABLE double getMotorFeedbackPos(QString name);
     Q_INVOKABLE double getMotorFeedbackPos(int index);

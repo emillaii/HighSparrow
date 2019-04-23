@@ -503,6 +503,13 @@ bool BaseModuleManager::getOutput(QString name)
     return  false;
 }
 
+void BaseModuleManager::motorSeekOrigin(QString name)
+{
+    if (motors.contains(name)) {
+         motors[name]->SeekOrigin();
+    }
+}
+
 double BaseModuleManager::getMotorFeedbackPos(QString name)
 {
      if (motors.contains(name)) {

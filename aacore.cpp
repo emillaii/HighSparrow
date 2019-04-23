@@ -800,6 +800,11 @@ ErrorCodeStruct AACore::performZOffset(double zOffset)
 void AACore::sfrImageReady(QImage img)
 {
     sfrImageProvider->setImage(img);
+    QString filename = "";
+    filename.append(getMTFLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".jpg");
+    img.save(filename);
     emit callQmlRefeshSfrImg();
 }
 

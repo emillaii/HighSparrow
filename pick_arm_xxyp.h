@@ -3,6 +3,7 @@
 
 #include "material_picker.h"
 #include "materialtray.h"
+#include "pickarmxxypparameter.h"
 #include "vision_location.h"
 
 
@@ -10,7 +11,7 @@
 class PickArmXXYP:public ErrorBase
 {
 public:
-    PickArmXXYP(QString name);
+    PickArmXXYP(QString name = "LensPickArm");
     void Init(XtMotor *motor_x_tray,XtMotor *motor_x,XtMotor *motor_y,MaterialPicker * picker);
     bool move_XtXY_Synic(QPointF position,double x,bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XYTp_Synic(PrOffset position,bool check_softlanding = false,int timeout = 10000);
@@ -25,7 +26,8 @@ private:
     XtMotor *motor_y = Q_NULLPTR;
     MaterialPicker * picker = Q_NULLPTR;
     double softlanding_position = 0;
-
+public:
+    PickArmXXYPParameter parameters;
     // ErrorBase interface
 public:
     QString GetCurrentError();

@@ -177,7 +177,8 @@ HEADERS += \
     trayparameter.h \
     aacoreparameters.h \
     sparrowqserver.h \
-    sparrowqclient.h
+    sparrowqclient.h \
+    pickarmxxypparameter.h
 
 DISTFILES += \
     icons/index.theme

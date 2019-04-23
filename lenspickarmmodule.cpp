@@ -5,6 +5,16 @@ LensPickArmModule::LensPickArmModule(QString name):ThreadWorkerBase (name)
 
 }
 
+void LensPickArmModule::Init(PickArmXXYP *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision)
+{
+    this->pick_arm = pick_arm;
+    this->lens_tray = lens_tray;
+    this->lut_carrier = lut_carrier;
+    this->lens_vision = lens_vision;
+    this->vacancy_vision = vacancy_vision;
+    this->lut_vision = lut_vision;
+}
+
 QString LensPickArmModule::GetCurrentError()
 {
     AppendLineError(pick_arm->GetCurrentError()/*&

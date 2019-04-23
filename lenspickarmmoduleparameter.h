@@ -50,7 +50,6 @@ public:
     {
         return m_visonPositionX;
     }
-
 public slots:
     void setRunMode(int runMode)
     {
@@ -133,8 +132,6 @@ signals:
     void placeLensZChanged(double placeLensZ);
 
     void visonPositionXChanged(double visonPositionX);
-
-
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -308,15 +305,15 @@ signals:
     void hasPickedNgLensChanged(bool hasPickedNgLens);
 
 private:
-    bool m_hasTray;
-    bool m_lutHasLens;
-    bool m_lutHasNgLens;
-    bool m_needloadLens;
-    int m_currentTray;
-    bool m_needChangTray;
-    bool m_allowChangeTray;
-    bool m_hasPickedLens;
-    bool m_hasPickedNgLens;
+    bool m_hasTray = true;
+    bool m_lutHasLens = false;
+    bool m_lutHasNgLens = false;
+    bool m_needloadLens = false;
+    int m_currentTray = false;
+    bool m_needChangTray = false;
+    bool m_allowChangeTray = false;
+    bool m_hasPickedLens = false;
+    bool m_hasPickedNgLens = false;
 };
 
 #endif // LENSPICKARMMODULEPARAMETER_H

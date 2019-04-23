@@ -49,7 +49,7 @@ class LensPickArmModule:public ThreadWorkerBase
 {
     Q_OBJECT
 public:
-    LensPickArmModule(QString name = "LensPickArm");
+    LensPickArmModule(QString name = "LensPickArmModule");
     void Init(PickArmXXYP *pick_arm,MaterialTray *lens_tray,MaterialCarrier *lut_carrier,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision);
     void ResetLogic();

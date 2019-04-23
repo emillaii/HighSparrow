@@ -139,6 +139,9 @@
 #define PR_AA2_LUT_UPLOOK                "pr_aa2_lut_uplook"
 #define PR_SUT_DOWNLOOK                  "pr_sut_downlook"
 #define PR_LOAD_LUT_UPLOOK               "pr_load_lut_uplook"
+#define PR_LENS_LPALOOK               "pr_lens_lpalook"
+#define PR_VACANCY_LPALOOK               "pr_vacancy_lpalook"
+#define PR_LENS_LUTLOOK               "pr_lens_lutlook"
 
 
 //Lighting Config

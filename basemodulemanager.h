@@ -60,6 +60,8 @@ public:
 
     MaterialCarrier lut_carrier;
     MaterialCarrier sut_carrier;
+    MaterialPicker lens_picker;
+    PickArmXXYP lens_pick_arm;
     MaterialTray material_tray;
     AAHeadModule aa_head_module;
     LutModule lut_module;

@@ -9,7 +9,8 @@
 class MaterialPicker
 {
 public:
-    MaterialPicker(XtVcMotor* motor_z,XtMotor* motor_t,XtVacuum* vacuum)
+    MaterialPicker(){}
+    void Init(XtVcMotor* motor_z,XtMotor* motor_t,XtVacuum* vacuum)
     {
         this->motor_z = motor_z;
         this->motor_t = motor_t;

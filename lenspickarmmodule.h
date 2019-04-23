@@ -15,7 +15,7 @@ struct materialMessage
 class LensPickArmModule:public ThreadWorkerBase
 {
 public:
-    LensPickArmModule(QString name);
+    LensPickArmModule(QString name = "LensPickArm");
     void Init(PickArmXXYP *pick_arm,MaterialTray *lens_tray,MaterialCarrier *lut_carrier,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision);
     void ResetLogic();

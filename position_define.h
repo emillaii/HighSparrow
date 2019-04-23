@@ -8,7 +8,7 @@ class Position:public PropertyBase
 {
     Q_OBJECT
 public:
-    Position():PropertyBase(){}
+    Position():PropertyBase(){m_X = 0;m_Y = 0;}
     Position(QPointF point):PropertyBase(){m_X = point.x();m_Y = point.y();}
     void SetPosition(QPointF point){m_X = point.x();m_Y = point.y();}
     Position(double x,double y):PropertyBase(){m_X= x;m_Y= y;}

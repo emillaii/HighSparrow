@@ -32,8 +32,16 @@ ItemDelegate {
                 }
             }
             GroupBox{
-                title:qsTr("trays Parameter")
+                title:qsTr("tray Parameter")
                 TrayParamater{}
+            }
+            GroupBox{
+                title:qsTr("LensPickArmParameter")
+                LensPickArmModuleParameter{}
+            }
+            GroupBox{
+                title:qsTr("LensPickArmOtherParameter")
+                LensPickArmOtherParameter{}
             }
         }
     }

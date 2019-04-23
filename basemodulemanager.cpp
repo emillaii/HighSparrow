@@ -44,7 +44,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     vision_locations.insert(PR_SUT_DOWNLOOK,new VisionLocation());
     vision_locations.insert(PR_LOAD_LUT_UPLOOK,new VisionLocation());
     vision_locations.insert(PR_AA1_MUSHROOMHEAD,new VisionLocation());
-
+  material_tray.standards_parameters.setTrayCount(2);
 }
 
 BaseModuleManager::~BaseModuleManager()

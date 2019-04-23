@@ -59,6 +59,8 @@
         <file>SystemConfigView.qml</file>
         <file>LensPickArmModuleView.qml</file>
         <file>TrayParamater.qml</file>
+        <file>LensPickArmModuleParameter.qml</file>
+        <file>LensPickArmOtherParameter.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

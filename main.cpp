@@ -102,24 +102,20 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dispenserParams",&highSprrow.baseModuleManager->dispenser.parameters);
     engine.rootContext()->setContextProperty("dispenseParams",&highSprrow.baseModuleManager->dispense_module.parameters);
 //*
-    double tray_start_x1 = highSprrow.baseModuleManager->
-            material_tray.parameters[0]->tray_start_position.X();
-    double tray_start_y1 = highSprrow.baseModuleManager->
-            material_tray.parameters[0]->tray_start_position.Y();
-    double tray_start_x2 = highSprrow.baseModuleManager->
-            material_tray.parameters[1]->tray_start_position.X();
-    double tray_start_y2 = highSprrow.baseModuleManager->
-            material_tray.parameters[1]->tray_start_position.Y();
-
-    double tray_end_x = highSprrow.baseModuleManager->material_tray.first_tray_end_position.X();
-    double tray_end_y = highSprrow.baseModuleManager->material_tray.first_tray_end_position.Y();
-
-    engine.rootContext()->setContextProperty("tray_start_x1",tray_start_x1);
-    engine.rootContext()->setContextProperty("tray_start_x2",tray_start_x2);
-    engine.rootContext()->setContextProperty("tray_start_y1",tray_start_y1);
-    engine.rootContext()->setContextProperty("tray_start_y2",tray_start_y2);
-    engine.rootContext()->setContextProperty("tray_end_x",tray_end_x);
-    engine.rootContext()->setContextProperty("tray_end_y",tray_end_y);
+    engine.rootContext()->setContextProperty("first_tray_end_position",&highSprrow.baseModuleManager->material_tray.first_tray_end_position);
+    engine.rootContext()->setContextProperty("tray_start_point1",&highSprrow.baseModuleManager->material_tray.parameters[0]->tray_start_position);
+    engine.rootContext()->setContextProperty("tray_start_point2",&highSprrow.baseModuleManager->material_tray.parameters[1]->tray_start_position);
+    engine.rootContext()->setContextProperty("tray_standard_parameter",&highSprrow.baseModuleManager->material_tray.standards_parameters);
+    engine.rootContext()->setContextProperty("lensPickArmModuleParameter",
+                                             &highSprrow.baseModuleManager->lens_pick_arm_module.module_parameters);
+    engine.rootContext()->setContextProperty("lut_pr_position1",
+                                             &highSprrow.baseModuleManager->lens_pick_arm_module.lut_pr_position1);
+    engine.rootContext()->setContextProperty("lut_pr_position2",
+                                             &highSprrow.baseModuleManager->lens_pick_arm_module.lut_pr_position2);
+    engine.rootContext()->setContextProperty("lut_camera_position",
+                                             &highSprrow.baseModuleManager->lens_pick_arm_module.lut_camera_position);
+    engine.rootContext()->setContextProperty("lut_picker_position",
+                                             &highSprrow.baseModuleManager->lens_pick_arm_module.lut_picker_position);
 //*/
     QStringList data = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames",data);

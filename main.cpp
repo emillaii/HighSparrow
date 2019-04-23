@@ -112,15 +112,15 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("tray_start_point2",&highSprrow.baseModuleManager->material_tray.parameters[1]->tray_start_position);
     engine.rootContext()->setContextProperty("tray_standard_parameter",&highSprrow.baseModuleManager->material_tray.standards_parameters);
     engine.rootContext()->setContextProperty("lensPickArmModuleParameter",
-                                             &highSprrow.baseModuleManager->lens_pick_arm_module.parameters);
+                                             &highSprrow.baseModuleManager->lens_loader_module.parameters);
     engine.rootContext()->setContextProperty("lut_pr_position1",
-                                             &highSprrow.baseModuleManager->lens_pick_arm_module.lut_pr_position1);
+                                             &highSprrow.baseModuleManager->lens_loader_module.lut_pr_position1);
     engine.rootContext()->setContextProperty("lut_pr_position2",
-                                             &highSprrow.baseModuleManager->lens_pick_arm_module.lut_pr_position2);
+                                             &highSprrow.baseModuleManager->lens_loader_module.lut_pr_position2);
     engine.rootContext()->setContextProperty("lut_camera_position",
-                                             &highSprrow.baseModuleManager->lens_pick_arm_module.lut_camera_position);
+                                             &highSprrow.baseModuleManager->lens_loader_module.lut_camera_position);
     engine.rootContext()->setContextProperty("lut_picker_position",
-                                             &highSprrow.baseModuleManager->lens_pick_arm_module.lut_picker_position);
+                                             &highSprrow.baseModuleManager->lens_loader_module.lut_picker_position);
 //*/
     QStringList data = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames",data);

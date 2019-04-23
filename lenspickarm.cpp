@@ -1,11 +1,11 @@
-#include "pick_arm_xxyp.h"
+#include "lenspickarm.h"
 
-PickArmXXYP::PickArmXXYP(QString name):ErrorBase (name)
+LensPickArm::LensPickArm(QString name):ErrorBase (name)
 {
 
 }
 
-void PickArmXXYP::Init(XtMotor *motor_x_tray, XtMotor *motor_x, XtMotor *motor_y, MaterialPicker *picker)
+void LensPickArm::Init(XtMotor *motor_x_tray, XtMotor *motor_x, XtMotor *motor_y, MaterialPicker *picker)
 {
     this->motor_x_tray = motor_x_tray;
     this->motor_x = motor_x;
@@ -13,7 +13,7 @@ void PickArmXXYP::Init(XtMotor *motor_x_tray, XtMotor *motor_x, XtMotor *motor_y
     this->picker = picker;
 }
 
-bool PickArmXXYP::move_XtXY_Synic(QPointF position,double x,bool check_softlanding,int timeout)
+bool LensPickArm::move_XtXY_Synic(QPointF position,double x,bool check_softlanding,int timeout)
 {
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
     motor_x_tray->MoveToPos(position.x());
@@ -25,7 +25,7 @@ bool PickArmXXYP::move_XtXY_Synic(QPointF position,double x,bool check_softlandi
     return resut;
 }
 
-bool PickArmXXYP::stepMove_XYTp_Synic(PrOffset position,bool check_softlanding,int timeout)
+bool LensPickArm::stepMove_XYTp_Synic(PrOffset position,bool check_softlanding,int timeout)
 {
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
     double target_x = position.X + motor_x->GetFeedbackPos();
@@ -40,14 +40,14 @@ bool PickArmXXYP::stepMove_XYTp_Synic(PrOffset position,bool check_softlanding,i
     return resut;
 }
 
-bool PickArmXXYP::Move_SZ_Sync(double z,bool check_softlanding, int timeout)
+bool LensPickArm::Move_SZ_Sync(double z,bool check_softlanding, int timeout)
 {
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
     picker->motor_z->MoveToPos(z);
     return   picker->motor_z->WaitArrivedTargetPos(z,timeout);
 }
 
-bool PickArmXXYP::ZSerchByForce(double speed, double force,bool check_softlanding,int timeout)
+bool LensPickArm::ZSerchByForce(double speed, double force,bool check_softlanding,int timeout)
 {
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
     bool result = picker->motor_z->SearchPosByForce(speed,force);
@@ -57,7 +57,7 @@ bool PickArmXXYP::ZSerchByForce(double speed, double force,bool check_softlandin
     return result;
 }
 
-bool PickArmXXYP::ZSerchByForce(double speed, double force, double limit, double margin,int finish_time,bool open_vacuum, int timeout)
+bool LensPickArm::ZSerchByForce(double speed, double force, double limit, double margin,int finish_time,bool open_vacuum, int timeout)
 {
     bool result = picker->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
     if(result)
@@ -67,19 +67,19 @@ bool PickArmXXYP::ZSerchByForce(double speed, double force, double limit, double
     return result;
 }
 
-bool PickArmXXYP::ZSerchReturn(int timeout)
+bool LensPickArm::ZSerchReturn(int timeout)
 {
     return picker->motor_z->resetSoftLanding(timeout);
 }
 
-double PickArmXXYP::GetSoftladngPosition(bool get_current)
+double LensPickArm::GetSoftladngPosition(bool get_current)
 {
     if(get_current)
         return picker->motor_z->GetFeedbackPos();
     return softlanding_position;
 }
 
-QString PickArmXXYP::GetCurrentError()
+QString LensPickArm::GetCurrentError()
 {
 //    AppendLineError(motor_x_tray->GetCurrentError());
 //    AppendLineError(motor_x->GetCurrentError());

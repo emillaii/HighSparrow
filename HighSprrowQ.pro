@@ -63,10 +63,10 @@ SOURCES += \
     thread_worker_base.cpp \
     materialtray.cpp \
     unitlog.cpp \
-    pick_arm_xxyp.cpp \
-    lenspickarmmodule.cpp \
     sparrowqserver.cpp \
-    sparrowqclient.cpp
+    sparrowqclient.cpp \
+    lenspickarm.cpp \
+    lensloadermodule.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -169,16 +169,16 @@ HEADERS += \
     thread_worker_base.h \
     materialtray.h \
     unitlog.h \
-    pick_arm_xxyp.h \
     material_picker.h \
-    lenspickarmmodule.h \
-    lenspickarmmoduleparameter.h \
     traystandardsparameter.h \
     trayparameter.h \
     aacoreparameters.h \
     sparrowqserver.h \
     sparrowqclient.h \
-    pickarmxxypparameter.h
+    lenspickarm.h \
+    lenspickarmparameter.h \
+    lensloaderparameter.h \
+    lensloadermodule.h
 
 DISTFILES += \
     icons/index.theme

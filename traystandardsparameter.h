@@ -123,7 +123,7 @@ signals:
 private:
     int m_columnCount = 1;
     int m_rowCount = 1;
-    bool m_useByRow = true;
+    bool m_useByRow = false;
     double m_columnDeta = 0;
     double m_rowDelta = 0;
     int m_trayCount = 1;

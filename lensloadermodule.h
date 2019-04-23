@@ -1,9 +1,9 @@
 #ifndef LENSPICKARMMODULE_H
 #define LENSPICKARMMODULE_H
 
-#include "lenspickarmmoduleparameter.h"
+#include "lensloaderparameter.h"
 #include "material_carrier.h"
-#include "pick_arm_xxyp.h"
+#include "lenspickarm.h"
 #include "thread_worker_base.h"
 
 struct materialMessage
@@ -45,12 +45,12 @@ enum handlePickerAction
 };
 
 //}
-class LensPickArmModule:public ThreadWorkerBase
+class LensLoaderModule:public ThreadWorkerBase
 {
     Q_OBJECT
 public:
-    LensPickArmModule(QString name = "LensPickArmModule");
-    void Init(PickArmXXYP *pick_arm,MaterialTray *lens_tray,MaterialCarrier *lut_carrier,
+    LensLoaderModule(QString name = "LensPickArmModule");
+    void Init(LensPickArm *pick_arm,MaterialTray *lens_tray,MaterialCarrier *lut_carrier,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision);
     void ResetLogic();
     void loadJsonConfig();
@@ -95,14 +95,14 @@ public slots:
     void stopWork(bool wait_finish);
     void performHandlingOperation(int cmd, int &finished_type);
 public:
-    LensPickArmModuleParameter parameters;
+    LensLoaderModuleParameter parameters;
     LensPickArmModuleState states;
     Position lut_pr_position1;
     Position lut_pr_position2;
     Position lut_camera_position;
     Position lut_picker_position;
 private:
-    PickArmXXYP *pick_arm = Q_NULLPTR;
+    LensPickArm *pick_arm = Q_NULLPTR;
     MaterialTray *lens_tray = Q_NULLPTR;
     MaterialCarrier *lut_carrier = Q_NULLPTR;
     VisionLocation * lens_vision = Q_NULLPTR;

@@ -75,17 +75,29 @@ void HighSprrow::performLUTUplookPR()
 
 void HighSprrow::performLPALensPR()
 {
-
+    PrOffset offset;
+    if(baseModuleManager->vision_locations[PR_LENS_LPALOOK]->performPR(offset))
+    {
+        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
+    }
 }
 
 void HighSprrow::performLUTLensPR()
 {
-
+    PrOffset offset;
+    if(baseModuleManager->vision_locations[PR_LENS_LUTLOOK]->performPR(offset))
+    {
+        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
+    }
 }
 
 void HighSprrow::performVacancyLensPR()
 {
-
+    PrOffset offset;
+    if(baseModuleManager->vision_locations[PR_VACANCY_LPALOOK]->performPR(offset))
+    {
+        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
+    }
 }
 
 void HighSprrow::callQProcess(QString arg)

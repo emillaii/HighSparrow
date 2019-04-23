@@ -189,13 +189,13 @@ bool BaseModuleManager::InitStruct()
                        GetMotorByName(lens_pick_arm.parameters.motorYName()),
                                       &lens_picker);
     aa_head_module.Init("AAHead",aa_x,aa_y,aa_z,aa_a,aa_b,aa_c,gripper,uv1,uv2,uv3,uv4,XtMotor::GetThreadResource());
-
+    material_tray.Init();
     calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,aa_x,aa_y,vision_locations[PR_AA1_LUT_UPLOOK]));
     calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_SUT_DOWNLOOK]));
     calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_AA1_TOOL_UPLOOK]));
     calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_AA1_TOOL_DOWNLOOK]));
     calibrations.insert(AA1_MUSHROOMHEAD_CALIBRATION,new Calibration(AA1_MUSHROOMHEAD_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_AA1_MUSHROOMHEAD]));
-    calibrations.insert(PR_LENS_LPALOOK,new Calibration(PR_LENS_LPALOOK,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_LENS_LPALOOK]));
+    calibrations.insert(LPA_LENS_CALIBRATION,new Calibration(LPA_LENS_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_LENS_LPALOOK]));
 
     chartCalibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH, sut_x, sut_y);
 
@@ -205,9 +205,9 @@ bool BaseModuleManager::InitStruct()
     vision_locations[PR_SUT_DOWNLOOK]->Init(visionModule,calibrations[AA1_DOWNLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
     vision_locations[PR_LOAD_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
     vision_locations[PR_AA1_MUSHROOMHEAD]->Init(visionModule,calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->getCaliMapping(),lightingModule);
-    vision_locations[PR_LENS_LPALOOK]->Init(visionModule,calibrations[PR_LENS_LPALOOK]->getCaliMapping(),lightingModule);
-    vision_locations[PR_VACANCY_LPALOOK]->Init(visionModule,calibrations[PR_LENS_LPALOOK]->getCaliMapping(),lightingModule);
-    vision_locations[PR_LENS_LUTLOOK]->Init(visionModule,calibrations[PR_LENS_LPALOOK]->getCaliMapping(),lightingModule);
+    vision_locations[PR_LENS_LPALOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
+    vision_locations[PR_VACANCY_LPALOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
+    vision_locations[PR_LENS_LUTLOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
 
     lut_module.Init(&lut_carrier,vision_locations[PR_AA1_LUT_UPLOOK],vision_locations[PR_AA1_TOOL_UPLOOK],vision_locations[PR_LOAD_LUT_UPLOOK],vision_locations[PR_AA1_MUSHROOMHEAD],lut_v,lut_v_u,gripper);
     sut_module.Init(&sut_carrier,vision_locations[PR_SUT_DOWNLOOK],vision_locations[PR_AA1_TOOL_DOWNLOOK],sut_v);
@@ -219,7 +219,7 @@ bool BaseModuleManager::InitStruct()
     dispense_module.Init(DISPENSER_PARAMETER_PATH,AA1_DISPENSE,calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule,&sut_carrier,dispense_o);
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
-    lens_pick_arm_module.Init(&lens_pick_arm,&material_tray,&lut_carrier,vision_locations[PR_LENS_LPALOOK],vision_locations[PR_VACANCY_LPALOOK],vision_locations[PR_LENS_LUTLOOK]);
+    lens_loader_module.Init(&lens_pick_arm,&material_tray,&lut_carrier,vision_locations[PR_LENS_LPALOOK],vision_locations[PR_VACANCY_LPALOOK],vision_locations[PR_LENS_LUTLOOK]);
     profile_loaded = true;
 
     return true;
@@ -388,7 +388,8 @@ void BaseModuleManager::performAA1MushroomHeadCalibration()
 
 void BaseModuleManager::performLPALensCalibration()
 {
-
+    if(calibrations.contains(LPA_LENS_CALIBRATION))
+        calibrations[LPA_LENS_CALIBRATION]->performCalibration();
 }
 
 void BaseModuleManager::performChartCalibration()

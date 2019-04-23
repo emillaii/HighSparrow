@@ -5,11 +5,11 @@
 
 
 
-class PickArmXXYPParameter:public PropertyBase
+class LensPickArmParameter:public PropertyBase
 {
     Q_OBJECT
 public:
-    PickArmXXYPParameter():PropertyBase(){}
+    LensPickArmParameter():PropertyBase(){}
     Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
     Q_PROPERTY(QString motorTrayName READ motorTrayName WRITE setMotorTrayName NOTIFY motorTrayNameChanged)
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)

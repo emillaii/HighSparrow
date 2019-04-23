@@ -110,6 +110,8 @@
 #define AA2_UPDownLOOK_UP_CALIBRATION    "aa2_updownLook_up_calibration"
 #define AA2_UPDownLOOK_DOWN_CALIBRATION  "aa2_updownLook_down_calibration"
 #define AA1_MUSHROOMHEAD_CALIBRATION     "aa1_mushroomhead_calibration"
+#define LPA_LENS_CALIBRATION               "lpa_lens_calibration"
+
 
 #define CHART_CALIBRATION                "chart_calibration"
 //dispenser

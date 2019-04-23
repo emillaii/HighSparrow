@@ -5,11 +5,11 @@
 
 
 
-class LensPickArmModuleParameter:public PropertyBase
+class LensLoaderModuleParameter:public PropertyBase
 {
     Q_OBJECT
 public:
-    LensPickArmModuleParameter():PropertyBase(){}
+    LensLoaderModuleParameter():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(double vcmWorkForce READ vcmWorkForce WRITE setVcmWorkForce NOTIFY vcmWorkForceChanged)
     Q_PROPERTY(double vcmWorkSpeed READ vcmWorkSpeed WRITE setVcmWorkSpeed NOTIFY vcmWorkSpeedChanged)

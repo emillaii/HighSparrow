@@ -13,7 +13,10 @@ class MaterialTray:public QObject
     Q_OBJECT
 public:
     MaterialTray();
+    void Init();
     Q_INVOKABLE void calculateDelta();
+    void loadJsonConfig();
+    void saveJsonConfig();
     QPointF getPosition(int column_index,int row_index,int tray_index = 0);
     QPointF getPositionByIndex(int index,int tray_index = 0);
     bool findNextPositionOfInitState(int tray_index = 0);

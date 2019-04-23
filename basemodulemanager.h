@@ -26,7 +26,7 @@
 #include "chart_calibration.h"
 #include "sparrowqserver.h"
 #include "sparrowqclient.h"
-#include "lenspickarmmodule.h"
+#include "lensloadermodule.h"
 
 class BaseModuleManager : public PropertyBase
 {
@@ -61,14 +61,14 @@ public:
     MaterialCarrier lut_carrier;
     MaterialCarrier sut_carrier;
     MaterialPicker lens_picker;
-    PickArmXXYP lens_pick_arm;
+    LensPickArm lens_pick_arm;
     MaterialTray material_tray;
     AAHeadModule aa_head_module;
     LutModule lut_module;
     SutModule sut_module;
     DispenseModule dispense_module;
     Dispenser dispenser;
-    LensPickArmModule lens_pick_arm_module;
+    LensLoaderModule lens_loader_module;
 
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;
@@ -97,6 +97,8 @@ public slots:
         lut_module.updateParams();
         dothinkey->updateParams();
         dispense_module.saveConfig();
+        material_tray.saveJsonConfig();
+        lens_loader_module.saveJsonConfig();
     }
 
     void setLightPanelLighting(int lightPanelLighting)

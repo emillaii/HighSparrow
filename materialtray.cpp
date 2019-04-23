@@ -5,10 +5,39 @@ MaterialTray::MaterialTray():QObject ()
     connect(&standards_parameters,&TrayStandardsParameter::trayCountChanged,this,&MaterialTray::changeTrayCount);
 }
 
+void MaterialTray::Init()
+{
+    loadJsonConfig();
+}
+
 void MaterialTray::calculateDelta()
 {
     standards_parameters.setColumnDeta((first_tray_end_position.X() - parameters[0]->tray_start_position.X())/(standards_parameters.columnCount()-1));
     standards_parameters.setRowDelta((first_tray_end_position.Y() - parameters[0]->tray_start_position.Y())/(standards_parameters.rowCount()-1));
+}
+
+void MaterialTray::loadJsonConfig()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("LENS_PICKARM_PARAMS", &standards_parameters);
+    temp_map.insert("END_POSITION", &first_tray_end_position);
+    temp_map.insert("TRAY1_PARAMETER", parameters[0]);
+    temp_map.insert("TRAY2_PARAMETER", parameters[1]);
+    temp_map.insert("TRAY1_START_POSITION", &parameters[0]->tray_start_position);
+    temp_map.insert("TRAY2_START_POSITION", &parameters[1]->tray_start_position);
+    PropertyBase::loadJsonConfig("config//materilTray.json", temp_map);
+}
+
+void MaterialTray::saveJsonConfig()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("LENS_PICKARM_PARAMS", &standards_parameters);
+    temp_map.insert("END_POSITION", &first_tray_end_position);
+    temp_map.insert("TRAY1_PARAMETER", parameters[0]);
+    temp_map.insert("TRAY2_PARAMETER", parameters[1]);
+    temp_map.insert("TRAY1_START_POSITION", &parameters[0]->tray_start_position);
+    temp_map.insert("TRAY2_START_POSITION", &parameters[1]->tray_start_position);
+    PropertyBase::saveJsonConfig("config//materilTray.json", temp_map);
 }
 
 QPointF MaterialTray::getRelativePosition(int column_index, int row_index)

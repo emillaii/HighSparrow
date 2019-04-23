@@ -386,6 +386,11 @@ void BaseModuleManager::performAA1MushroomHeadCalibration()
         calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->performCalibration();
 }
 
+void BaseModuleManager::performLPALensCalibration()
+{
+
+}
+
 void BaseModuleManager::performChartCalibration()
 {
     qInfo("perform Chart Calibration");

@@ -176,6 +176,7 @@ public:
     Q_INVOKABLE void performUpDownlookCalibration();
     Q_INVOKABLE void performUpDownlookUpCalibration();
     Q_INVOKABLE void performAA1MushroomHeadCalibration();
+    Q_INVOKABLE void performLPALensCalibration();
     Q_INVOKABLE void performChartCalibration();
     Q_INVOKABLE void UpdateCalibrationParameters();
     Q_INVOKABLE int getNumberOfMotors();

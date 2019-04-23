@@ -49,6 +49,18 @@ ItemDelegate {
                 CalibrationChart {
                 }
             }
+            GroupBox{
+                title:qsTr("料盘Lens视觉")
+                CalibrationPrLENSLpaLookView{}
+            }
+            GroupBox{
+                title:qsTr("料盘空位视觉")
+                CalibrationPrVACANCYLpaLookView{}
+            }
+            GroupBox{
+                title:qsTr("Lut Lens 视觉")
+                CalibrationPrLENSLutLookView{}
+            }
         }
     }
 }

@@ -66,6 +66,9 @@
         <file>TraySpecs.qml</file>
         <file>LensHeadParameter.qml</file>
         <file>LensPcikArmLUT.qml</file>
+        <file>CalibrationPrLENSLpaLookView.qml</file>
+        <file>CalibrationPrVACANCYLpaLookView.qml</file>
+        <file>CalibrationPrLENSLutLookView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

@@ -73,6 +73,21 @@ void HighSprrow::performLUTUplookPR()
     }
 }
 
+void HighSprrow::performLPALensPR()
+{
+
+}
+
+void HighSprrow::performLUTLensPR()
+{
+
+}
+
+void HighSprrow::performVacancyLensPR()
+{
+
+}
+
 void HighSprrow::callQProcess(QString arg)
 {
     QStringList arguments;

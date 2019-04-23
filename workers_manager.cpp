@@ -12,6 +12,7 @@ bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
         workers.insert(worker->Name(),worker);
         connect(this,&WorkersManager::startWorkersSignal,worker,&ThreadWorkerBase::startWork);
         connect(this,&WorkersManager::stopWorkersSignal,worker,&ThreadWorkerBase::stopWork);
+        connect(worker,&ThreadWorkerBase::sendHandlingOperation,worker,&ThreadWorkerBase::performHandlingOperation);
         return true;
     }
     return false;

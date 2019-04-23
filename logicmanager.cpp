@@ -104,7 +104,6 @@ void LogicManager::run() {
     m_currentMode = CommandType::IDLE;
     qInfo("End");
 }
-
 void LogicManager::moveToCmd(int cmd) {
     if (cmd == CommandType::STOP)
     {
@@ -159,4 +158,69 @@ void LogicManager::performLoopTest(int mode){
     qInfo("Loop Test Mode: %d", mode);
     setStateMessage(__FUNCTION__);
     moveToCmd(CommandType::PERFORM_LOOP_TEST);
+}
+
+void LogicManager::lensPickArmMoveToTray1Pos()
+{
+    baseModuleManage->lens_pick_arm_module.performHandling(HandlePosition::LENS_TRAY1,m_currentMode);
+}
+
+void LogicManager::lensPickArmMoveToTray2Pos()
+{
+    baseModuleManage->lens_pick_arm_module.performHandling(HandlePosition::LENS_TRAY2,m_currentMode);
+}
+
+void LogicManager::lensPickArmMoveToTray1StartPos()
+{
+    baseModuleManage->lens_pick_arm_module.performHandling(HandlePosition::LENS_TRAY1_START_POS,m_currentMode);
+}
+
+void LogicManager::lensPickArmMoveToTray2StartPos()
+{
+    baseModuleManage->lens_pick_arm_module.performHandling(HandlePosition::LENS_TRAY2_START_POS,m_currentMode);
+}
+
+void LogicManager::lensPickArmMoveToTray1EndPos()
+{
+    baseModuleManage->lens_pick_arm_module.performHandling(HandlePosition::LENS_TRAY2_START_POS,m_currentMode);
+}
+
+void LogicManager::lensPickArmMoveToLutPos1()
+{
+
+}
+
+void LogicManager::lensPickArmMoveToLutPos2()
+{
+
+}
+
+void LogicManager::lensPickArmMoveToPickLensFromTray1()
+{
+
+}
+
+void LogicManager::lensPickArmMoveToPickLensFromTray2()
+{
+
+}
+
+void LogicManager::lensPickArmMoveToPickLensFromLut()
+{
+
+}
+
+void LogicManager::lensPickArmMoveToPlaceLensToTray1()
+{
+
+}
+
+void LogicManager::lensPickArmMoveToPlaceLensToTray2()
+{
+
+}
+
+void LogicManager::lensPickArmMoveToPlaceLensToLut()
+{
+
 }

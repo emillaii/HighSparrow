@@ -15,6 +15,7 @@ public:
     MaterialTray();
     void calculateDelta();
     QPointF getPosition(int column_index,int row_index,int tray_index = 0);
+    QPointF getPositionByIndex(int index,int tray_index = 0);
     bool findNextPositionOfInitState(int tray_index = 0);
     bool isTrayNeedChange(int tray_index);
     int getCurrentIndex(int tray_index = 0);
@@ -23,12 +24,17 @@ public:
     void setCurrentMaterialState(int state,int tray_index = 0);
     int getMaterialState(int column_index,int row_index,int tray_index = 0);
     void setMaterialState(int column_index,int row_index,int state,int tray_index = 0);
+    void setTrayCurrent(const int column_index,const int row_index,const int tray_index = 0);
+    void getTrayCurrent(int& column_index,int& row_index,const int tray_index = 0);
     void resetTrayState(int tray_index = 0);
+    QPointF getStartPosition(int tray_index);
+    QPointF getEndPosition();
 public slots:
     void changeTrayCount(int trayCount);
 private:
     QPointF getOffsetPositon(int column_index,int row_index);
     int getMaterialIndex(int column_index,int row_index);
+    int getMaterialIndex(int index);
     int getColumnIndex(int column_index);
     int getRowIndex(int row_index);
     void getColumnAndRowIndex(const int index,int& column_index,int& row_index);

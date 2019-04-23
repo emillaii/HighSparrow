@@ -25,7 +25,7 @@ bool PickArmXXYP::move_XtXY_Synic(QPointF position,double x,bool check_softlandi
     return resut;
 }
 
-bool PickArmXXYP::stepMove_XYTp_Synic(mPositionT position,bool check_softlanding,int timeout)
+bool PickArmXXYP::stepMove_XYTp_Synic(PrOffset position,bool check_softlanding,int timeout)
 {
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
     double target_x = position.X + motor_x->GetFeedbackPos();
@@ -58,8 +58,21 @@ bool PickArmXXYP::ZSerchByForce(double speed, double force, double limit, double
     bool result = picker->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
     if(result)
         result &= picker->vacuum->Set(open_vacuum,true,finish_time);
+    softlanding_position = picker->motor_z->GetFeedbackPos();
     result &= picker->motor_z->DoSoftLandingReturn();
     return result;
+}
+
+bool PickArmXXYP::ZSerchReturn(int timeout)
+{
+    return picker->motor_z->resetSoftLanding(timeout);
+}
+
+double PickArmXXYP::GetSoftladngPosition(bool get_current)
+{
+    if(get_current)
+        return picker->motor_z->GetFeedbackPos();
+    return softlanding_position;
 }
 
 QString PickArmXXYP::GetCurrentError()

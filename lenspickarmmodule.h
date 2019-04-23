@@ -11,9 +11,35 @@ struct materialMessage
     int material_id;
     int tray_id;
 };
+//namespace LensPickArmEnum {
+enum HandlePosition
+    {
+        LENS_TRAY1 = 1,
+        LENS_TRAY2 = 2,
+        LUT_POS1 = 3,
+        LUT_POS2 = 4,
+        LENS_TRAY1_START_POS = 5,
+        LENS_TRAY2_START_POS = 6,
+        LENS_TRAY1_END_POS = 7,
+    };
+enum HandlePR
+    {
+        LNES_PR = 1<<3,
+        VACANCY_PR = 2<<3,
+        LUT_PR = 3<<3
+    };
+enum handlePickerAction
+    {
+        PICK_LENS_FROM_TRAY = 1<<5,
+        PLACE_LENS_TO_LUT = 2<<5,
+        PICK_NG_LENS_FROM_LUT = 3<<5,
+        PLACE_NG_LENS_TO_TRAY = 4<<5
+    };
 
+//}
 class LensPickArmModule:public ThreadWorkerBase
 {
+    Q_OBJECT
 public:
     LensPickArmModule(QString name = "LensPickArm");
     void Init(PickArmXXYP *pick_arm,MaterialTray *lens_tray,MaterialCarrier *lut_carrier,
@@ -21,32 +47,32 @@ public:
     void ResetLogic();
     void loadJsonConfig();
     void saveJsonConfig();
+    void performHandling(int cmd,int& finished_type);
 signals:
     void changeTray();
 private:
     void run(bool has_material);
 
     bool moveToNextTrayPos(int tray_index);
-    bool moveToLUTPRPos1();
-    bool moveToLUTPRPos2();
+    bool moveToLUTPRPos1(bool check_softlanding = false);
+    bool moveToLUTPRPos2(bool check_softlanding = false);
 
     bool performLensPR();
     bool performVacancyPR();
     bool performLUTPR();
 
-    bool moveToWorkPos();
-    bool vcmSearchZ(double z);
-    bool pickTrayLens();
-    bool placeLensToLUT();
-    bool pickLUTLens();
-    bool placeLensToTray();
+    bool moveToWorkPos(bool check_softlanding = false);
+    bool vcmSearchZ(double z,bool check_softlanding = false);
+    bool pickTrayLens(bool check_softlanding = false);
+    bool placeLensToLUT(bool check_softlanding = false);
+    bool pickLUTLens(bool check_softlanding = false);
+    bool placeLensToTray(bool check_softlanding = false);
 
 
     bool moveToTrayPos(int index,int tray_index);
-    bool moveToTrayPos(int column,int row,int tray_index);
-    bool moveToPerformPR(int selected_pr,bool back_position,mPositionT& result);
-    bool moveToPRResult(const mPositionT pr_result);
-    bool moveToPerformAction(int selected_action,bool do_vision);
+    bool moveToTrayPos(int tray_index);
+    bool moveToStartPos(int tray_index);
+    bool moveToTray1EndPos();
 
     bool isRunning();
     // ErrorBase interface
@@ -57,6 +83,7 @@ public:
 public slots:
     void startWork(bool reset_logic, int run_mode);
     void stopWork(bool wait_finish);
+    void performHandlingOperation(int cmd, int &finished_type);
 public:
     LensPickArmModuleParameter module_parameters;
     LensPickArmModuleState module_states;
@@ -77,6 +104,7 @@ private:
     materialMessage lut_material;
     materialMessage lut_ng_material;
     materialMessage picked_material;
+
 };
 
 #endif // LENSPICKARMMODULE_H

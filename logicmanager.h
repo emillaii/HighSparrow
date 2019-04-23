@@ -46,6 +46,22 @@ public:
     Q_INVOKABLE void performOC();
     Q_INVOKABLE void performLoopTest(int mode);
 
+    //lenpickarmModule
+    Q_INVOKABLE void lensPickArmMoveToTray1Pos();
+    Q_INVOKABLE void lensPickArmMoveToTray2Pos();
+    Q_INVOKABLE void lensPickArmMoveToTray1StartPos();
+    Q_INVOKABLE void lensPickArmMoveToTray2StartPos();
+    Q_INVOKABLE void lensPickArmMoveToTray1EndPos();
+    Q_INVOKABLE void lensPickArmMoveToLutPos1();
+    Q_INVOKABLE void lensPickArmMoveToLutPos2();
+    Q_INVOKABLE void lensPickArmMoveToPickLensFromTray1();
+    Q_INVOKABLE void lensPickArmMoveToPickLensFromTray2();
+    Q_INVOKABLE void lensPickArmMoveToPickLensFromLut();
+    Q_INVOKABLE void lensPickArmMoveToPlaceLensToTray1();
+    Q_INVOKABLE void lensPickArmMoveToPlaceLensToTray2();
+    Q_INVOKABLE void lensPickArmMoveToPlaceLensToLut();
+
+
     int currentMode() const
     {
         return m_currentMode;

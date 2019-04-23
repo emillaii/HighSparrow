@@ -58,15 +58,15 @@ public:
     Dothinkey * dothinkey = Q_NULLPTR;
     ImageGrabbingWorkerThread * imageGrabberThread = Q_NULLPTR;
 
-    AAHeadModule aa_head_module;
     MaterialCarrier lut_carrier;
     MaterialCarrier sut_carrier;
+    MaterialTray material_tray;
+    AAHeadModule aa_head_module;
     LutModule lut_module;
     SutModule sut_module;
     DispenseModule dispense_module;
     Dispenser dispenser;
     LensPickArmModule lens_pick_arm_module;
-    MaterialTray material_tray;
 
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;

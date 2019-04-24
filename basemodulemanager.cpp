@@ -164,7 +164,7 @@ bool BaseModuleManager::LoadVcmFile()
 {
     QString val;
     QFile file;
-    file.setFileName(".//config//vcm_parameter.json");
+    file.setFileName(VCM_PARAMETER_FILENAME);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         if(!file.open(QFile::ReadWrite)){
@@ -195,15 +195,27 @@ bool BaseModuleManager::LoadVcmFile()
         QJsonDocument doucment = QJsonDocument::fromJson(val.toUtf8(), &error);
         if (!doucment.isNull() && (error.error == QJsonParseError::NoError)) { //解析否出现错误
             if (doucment.isArray()) { // 数组判断
-                QJsonArray array = doucment.array();  // 转数组
-                VcMotorParameter temp_param;
+                QJsonArray array = doucment.array(); // 转数组
+                QJsonArray array_new;
                 for (int i = 0; i < array.count(); i++)
                 {
-                    temp_param.read(array.at(i).toObject());
                     XtVcMotor* temp_motor = new XtVcMotor();
-                    temp_motor->Init(temp_param.motorName(),temp_param.toparameter(),temp_param.FindOriginCurrent(),temp_param.TouchDistance());
-                    if(!motors.contains(temp_param.motorName()))
-                        motors.insert(temp_param.motorName(),temp_motor);
+                   temp_motor->parameters.read(array.at(i).toObject());
+                    temp_motor->Init();
+                    QJsonObject temp_object;
+                    temp_motor->parameters.write(temp_object);
+                    array_new.append(temp_object);
+                    if(!motors.contains(temp_motor->parameters.motorName()))
+                        motors.insert(temp_motor->parameters.motorName(),temp_motor);
+                    else
+                        delete temp_motor;
+                }
+
+                QFile saveFile(VCM_PARAMETER_FILENAME);
+                if (saveFile.open(QIODevice::WriteOnly)) {
+                    QJsonDocument saveDoc(array_new);
+                    saveFile.write(saveDoc.toJson());
+                    saveFile.close();
                 }
             }
         }
@@ -254,7 +266,7 @@ bool BaseModuleManager::InitStruct()
     calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_AA1_TOOL_UPLOOK]));
     calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_AA1_TOOL_DOWNLOOK]));
     calibrations.insert(AA1_MUSHROOMHEAD_CALIBRATION,new Calibration(AA1_MUSHROOMHEAD_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_AA1_MUSHROOMHEAD]));
-    calibrations.insert(LPA_LENS_CALIBRATION,new Calibration(LPA_LENS_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_LENS_LPALOOK]));
+    calibrations.insert(LPA_LENS_CALIBRATION,new Calibration(LPA_LENS_CALIBRATION,CALIBRATION_RESULT_PATH,GetMotorByName(lens_pick_arm.parameters.motorTrayName()),GetMotorByName(lens_pick_arm.parameters.motorYName()),vision_locations[PR_LENS_LPALOOK]));
 
     chartCalibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH, sut_x, sut_y);
 
@@ -368,13 +380,21 @@ bool BaseModuleManager::allMotorsSeekOrigin()
     bool result;
 
     motors["SUT_Z"]->SeekOrigin();
+    motors["LPA_Z"]->SeekOrigin();
+    result = motors["LPA_Z"]->WaitSeekDone();
+    if(!result)return false;
+    motors["LPA_X"]->SeekOrigin();
+    motors["LPA_Y"]->SeekOrigin();
     motors["LUT_Y"]->SeekOrigin();
     result = motors["SUT_Z"]->WaitSeekDone();
     if(!result)return false;
     motors["SUT1_Y"]->SeekOrigin();
     result &= motors["LUT_Y"]->WaitSeekDone();
     result &= motors["SUT1_Y"]->WaitSeekDone();
+    result &= motors["LPA_Y"]->WaitSeekDone();
     if(!result)return false;
+    //降下气缸
+    motors["LTL_X"]->SeekOrigin();
     motors["AA1_Y"]->SeekOrigin();
     result = motors["AA1_Y"]->WaitSeekDone();
     if(!result)return false;
@@ -394,6 +414,8 @@ bool BaseModuleManager::allMotorsSeekOrigin()
     result &= motors["SUT1_X"]->WaitSeekDone();
     result &= motors["LUT_X"]->WaitSeekDone();
     result &= motors["LUT_Z"]->WaitSeekDone();
+    result &= motors["LPA_X"]->WaitSeekDone();
+    result &= motors["LTL_X"]->WaitSeekDone();
     if(!result)return false;
     GetVcMotorByName("LUT_Z")->ChangeDiretion();
     qInfo("all motor seeked origin successed!");

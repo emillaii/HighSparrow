@@ -18,9 +18,9 @@ XtVcMotor::XtVcMotor()
 
 void XtVcMotor::ConfigVCM()
 {
-    if(parameters.direction!=0)
+    if(parameters.direction()!=0)
         direction_is_opposite = true;
-    SetRunDirect(vcm_id, parameters.direction, parameters.scale);
+    SetRunDirect(vcm_id, parameters.direction(), parameters.scale());
     SetPosModeSpeed(vcm_id,max_vel);
     SetPosModeAcc(vcm_id,max_acc);
     SetPosModejerk(vcm_id,max_jerk);
@@ -36,40 +36,32 @@ void XtVcMotor::ConfigVCM()
 
 void XtVcMotor::ChangeDiretion()
 {
-    if(parameters.direction ==0)
-        parameters.direction = 1;
+    if(parameters.direntionAfterSeek()!=0)
+        direction_is_opposite = true;
     else
-        parameters.direction = 0;
-    direction_is_opposite = (parameters.direction != 0);
-    SetRunDirect(vcm_id, parameters.direction, parameters.scale);
-//    double temo_range = max_range;
-//    max_range = - min_range;
-//    min_range = - temo_range;
-//    SetPosLimit(vcm_id,max_range,min_range);
-//    qInfo("ChangeDiretion::vcm_id:%d,max_range:%f min_range:%f",vcm_id,max_range,min_range);
+        direction_is_opposite = false;
+    SetRunDirect(vcm_id, parameters.direntionAfterSeek(), parameters.scale());
 }
 
-void XtVcMotor::Init(const QString& motor_name,VCM_Parameter_struct parameters,double find_origin_current,double distance)
+void XtVcMotor::Init()
 {
-    origin_current = find_origin_current;
-    origin_distance = distance;
-    name = motor_name;
+    name = parameters.motorName();
     origin.Init(name+"_O");
     origin2.Init(name+"_O2");
     max_vel = 100;
 
-    this->parameters = parameters;
     axis_id = axis_id_resource++;
     default_using_thread = axis_id + 20;
-    max_vel = parameters.MaxVel;
-    max_acc = parameters.MaxAcc;
-    max_jerk = parameters.MaxJerk;
-    max_range = parameters.MaxPos;
-    min_range = parameters.MinPos;
+    max_vel = parameters.maxVel();
+    max_acc = parameters.maxAcc();
+    max_jerk = parameters.maxJerk();
+    max_range = parameters.maxRange();
+    min_range = parameters.minRange();
 
-    vcm_resource.CanID = parameters.CanID;
+    vcm_resource.CanID = parameters.canId();
     vcm_resource.iAxis = axis_id;
     vcm_resource.IO_ID = origin.ID();
+    vcm_resource.Z_Index_ID = origin2.ID();
     vcm_resource.iThread = default_using_thread;
     vcm_resource.iThread_Curve = GetThreadResource();
     vcm_resource.Connet_Rebuild = 0;
@@ -271,8 +263,8 @@ void XtVcMotor::SeekOrigin(int thread)
     if(!is_enable)
         return;
     int result;
-    if(origin_current > 0)
-        result = Touch_Go_Zero(vcm_id,origin_current,origin_distance);
+    if(parameters.findOriginCurrent() > 0)
+        result = Touch_Go_Zero(vcm_id,parameters.findOriginCurrent(),parameters.touchDistance());
     else {
 
         SetZeroPos(vcm_id,0);
@@ -285,6 +277,7 @@ void XtVcMotor::SeekOrigin(int thread)
         origin_result = false;
         qInfo("axis %s seek origin fail!",name.toStdString().c_str());
     }
+    ChangeDiretion();
 }
 
 

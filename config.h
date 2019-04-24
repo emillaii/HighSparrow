@@ -29,6 +29,7 @@
 #define BASE_MODULE_JSON             "config//baseModuleConfig.json"
 #define LUT_CARRIER_FILE_NAME        "config//lutCarrierConfig.json"
 #define SUT_CARRIER_FILE_NAME        "config//sutCarrierConfig.json"
+#define VCM_PARAMETER_FILENAME       "config//vcm_parameter.json"
 #define FLOWCHART_URL                "http://127.0.0.1:8000/flowchart.html"
 
 //Title naming

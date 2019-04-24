@@ -7,6 +7,7 @@
 #include <qvector.h>
 #include "xtmotor.h"
 #include "VCM_init_Struct.h"
+#include "xtvcmotorparameter.h"
 
 struct VCM_Parameter_struct
 {
@@ -30,7 +31,7 @@ public:
     void ChangeDiretion();
     void ConfigSUT_Z_VCM();
     void Init(const QString& motor_name) override;
-    void Init(const QString& motor_name,VCM_Parameter_struct parameters,double find_origin_current,double distance);
+    void Init();
     void SetADC(int can_id,int data_ch) override;
     void SetEncoderFeedback(int can_id, int data_ch, double ratio) override;
     void SetFeedbackZero(double new_value = 0) override;
@@ -86,13 +87,11 @@ public:
 
     static QVector<VCM_Resource_struct> all_parameter;
     static void InitAllVCM();
-
+public:
+    VcMotorParameter parameters;
 private:
-    VCM_Parameter_struct parameters;
     bool direction_is_opposite;
     bool origin_result = true;
-    int origin_current;
-    int origin_distance;
 
     int vcm_id;
     bool is_softlanding = false;

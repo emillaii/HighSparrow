@@ -1,7 +1,6 @@
 #ifndef XTVCMOTORPARAMETER_H
 #define XTVCMOTORPARAMETER_H
 
-#include "XtVcMotor.h"
 #include "propertybase.h"
 
 
@@ -11,29 +10,19 @@ class VcMotorParameter:public PropertyBase
     Q_OBJECT
 public:
     VcMotorParameter():PropertyBase(){}
-    VCM_Parameter_struct toparameter(){
-        VCM_Parameter_struct param;
-        param.CanID = canId();
-        param.scale = scale();
-        param.MaxAcc = maxAcc();
-        param.MaxPos = maxRange();
-        param.MinPos = minRange();
-        param.MaxJerk = MaxJerk();
-        param.direction = direction();
-        return param;
-    }
     Q_PROPERTY(QString motorName READ motorName WRITE setMotorName NOTIFY motorNameChanged)
     Q_PROPERTY(int canId READ canId WRITE setCanId NOTIFY canIdChanged)
-    Q_PROPERTY(int channel READ channel WRITE setChannel NOTIFY channelChanged)
     Q_PROPERTY(int direction READ direction WRITE setDirection NOTIFY directionChanged)
     Q_PROPERTY(double minRange READ minRange WRITE setMinRange NOTIFY minRangeChanged)
     Q_PROPERTY(double maxRange READ maxRange WRITE setMaxRange NOTIFY maxRangeChanged)
     Q_PROPERTY(double scale READ scale WRITE setScale NOTIFY scaleChanged)
     Q_PROPERTY(double maxVel READ maxVel WRITE setMaxVel NOTIFY maxVelChanged)
     Q_PROPERTY(double maxAcc READ maxAcc WRITE setMaxAcc NOTIFY maxAccChanged)
-    Q_PROPERTY(double MaxJerk READ MaxJerk WRITE setMaxJerk NOTIFY MaxJerkChanged)
-    Q_PROPERTY(double FindOriginCurrent READ FindOriginCurrent WRITE setFindOriginCurrent NOTIFY FindOriginCurrentChanged)
-    Q_PROPERTY(double TouchDistance READ TouchDistance WRITE setTouchDistance NOTIFY TouchDistanceChanged)
+    Q_PROPERTY(double maxJerk READ maxJerk WRITE setMaxJerk NOTIFY MaxJerkChanged)
+    Q_PROPERTY(double findOriginCurrent READ findOriginCurrent WRITE setFindOriginCurrent NOTIFY FindOriginCurrentChanged)
+    Q_PROPERTY(double touchDistance READ touchDistance WRITE setTouchDistance NOTIFY TouchDistanceChanged)
+    Q_PROPERTY(int direntionAfterSeek READ direntionAfterSeek WRITE setDirentionAfterSeek NOTIFY direntionAfterSeekChanged)
+    Q_PROPERTY(double originOffset READ originOffset WRITE setOriginOffset NOTIFY originOffsetChanged)
     QString motorName() const
     {
         return m_motorName;
@@ -41,11 +30,6 @@ public:
     int canId() const
     {
         return m_canId;
-    }
-
-    int channel() const
-    {
-        return m_channel;
     }
 
     int direction() const
@@ -78,19 +62,29 @@ public:
         return m_maxAcc;
     }
 
-    double MaxJerk() const
+    double maxJerk() const
     {
         return m_MaxJerk;
     }
 
-    double FindOriginCurrent() const
+    double findOriginCurrent() const
     {
         return m_LimitCurrent;
     }
 
-    double TouchDistance() const
+    double touchDistance() const
     {
         return m_TouchDistance;
+    }
+
+    int direntionAfterSeek() const
+    {
+        return m_direntionAfterSeek;
+    }
+
+    double originOffset() const
+    {
+        return m_originOffset;
     }
 
 public slots:
@@ -111,14 +105,6 @@ public slots:
         emit canIdChanged(m_canId);
     }
 
-    void setChannel(int channel)
-    {
-        if (m_channel == channel)
-            return;
-
-        m_channel = channel;
-        emit channelChanged(m_channel);
-    }
 
     void setDirection(int direction)
     {
@@ -209,11 +195,28 @@ public slots:
         emit TouchDistanceChanged(m_TouchDistance);
     }
 
+    void setDirentionAfterSeek(int direntionAfterSeek)
+    {
+        if (m_direntionAfterSeek == direntionAfterSeek)
+            return;
+
+        m_direntionAfterSeek = direntionAfterSeek;
+        emit direntionAfterSeekChanged(m_direntionAfterSeek);
+    }
+
+    void setOriginOffset(double originOffset)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_originOffset, originOffset))
+            return;
+
+        m_originOffset = originOffset;
+        emit originOffsetChanged(m_originOffset);
+    }
+
 signals:
     void motorNameChanged(QString motorName);
     void canIdChanged(int canId);
-
-    void channelChanged(int channel);
 
     void directionChanged(int direction);
 
@@ -227,16 +230,20 @@ signals:
 
     void maxAccChanged(double maxAcc);
 
-    void MaxJerkChanged(double MaxJerk);
+    void MaxJerkChanged(double maxJerk);
 
-    void FindOriginCurrentChanged(double FindOriginCurrent);
+    void FindOriginCurrentChanged(double findOriginCurrent);
 
-    void TouchDistanceChanged(double TouchDistance);
+    void TouchDistanceChanged(double touchDistance);
+
+
+    void direntionAfterSeekChanged(int direntionAfterSeek);
+
+    void originOffsetChanged(double originOffset);
 
 private:
     QString m_motorName = "Unnaming";
     int m_canId = 0;
-    int m_channel = 0;
     int m_direction = 0;
     double m_minRange = 0;
     double m_maxRange = 0;
@@ -246,6 +253,8 @@ private:
     double m_MaxJerk = 0;
     double m_LimitCurrent = -1;
     double m_TouchDistance = 0;
+    int m_direntionAfterSeek = 1;
+    double m_originOffset = 0;
 };
 
 #endif // XTVCMOTORPARAMETER_H

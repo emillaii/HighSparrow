@@ -1,7 +1,10 @@
 ﻿#include "XtVcMotor.h"
 #include "basemodulemanager.h"
+#include "xtvcmotorparameter.h"
 
 #include <qdir.h>
+#include <qjsonarray.h>
+#include <qjsondocument.h>
 
 wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
 wchar_t BaseModuleManager::profile_path[] = L"./xt_motion_config.csv";
@@ -134,13 +137,14 @@ bool BaseModuleManager::LoadProfile()
            motor->Init(temp_name);
            motors.insert(temp_name,motor);
         }
-        XtVcMotor* motor_lut_vcm = new XtVcMotor();
-        motor_lut_vcm->Init("LUT_Z",lut_vcm_parameters);
-        motors.insert("LUT_Z",motor_lut_vcm);
+//        XtVcMotor* motor_lut_vcm = new XtVcMotor();
+//        motor_lut_vcm->Init("LUT_Z",lut_vcm_parameters);
+//        motors.insert("LUT_Z",motor_lut_vcm);
 
-        XtVcMotor* motor_sut_vcm = new XtVcMotor();
-        motor_sut_vcm->Init("SUT_Z",sut_vcm_parameters);
-        motors.insert("SUT_Z",motor_sut_vcm);
+//        XtVcMotor* motor_sut_vcm = new XtVcMotor();
+//        motor_sut_vcm->Init("SUT_Z",sut_vcm_parameters);
+//        motors.insert("SUT_Z",motor_sut_vcm);
+        LoadVcmFile();
 
         vacuums.insert("LUT_V",new XtVacuum(GetOutputIoByName(u8"LUT吸真空"),GetInputIoByName(u8"LUT真空检测"),GetOutputIoByName(u8"LUT破真空"),u8"LUT_V"));
         vacuums.insert("SUT_V",new XtVacuum(GetOutputIoByName(u8"SUT1吸真空"),GetInputIoByName(u8"SUT1真空检测"),GetOutputIoByName(u8"SUT1破真空"),u8"LUT_V"));
@@ -150,6 +154,56 @@ bool BaseModuleManager::LoadProfile()
     }
     InitStruct();
     return false;
+}
+
+bool BaseModuleManager::LoadVcmFile()
+{
+    QString val;
+    QFile file;
+    file.setFileName(".//config//vcm_parameter.json");
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        if(!file.open(QFile::ReadWrite)){
+            return false;
+        }
+        VcMotorParameter temp_param;
+        QString motor_name = temp_param.motorName();
+        QJsonArray json;
+        for (int i = 0; i < 4; ++i) {
+            QJsonObject temp_object;
+            QString temp_name = motor_name;
+            temp_name.append(QString::number(i));
+            temp_param.setMotorName(temp_name);
+            temp_param.write(temp_object);
+            json.append(temp_object);
+        }
+        QJsonDocument document;
+        document.setArray(json);
+        QJsonDocument saveDoc(json);
+        file.write(document.toJson());
+        file.close();
+        return false;
+    }
+    val = file.readAll();
+    file.close();
+
+    QJsonParseError error;
+        QJsonDocument doucment = QJsonDocument::fromJson(val.toUtf8(), &error);
+        if (!doucment.isNull() && (error.error == QJsonParseError::NoError)) { //解析否出现错误
+            if (doucment.isArray()) { // 数组判断
+                QJsonArray array = doucment.array();  // 转数组
+                VcMotorParameter temp_param;
+                for (int i = 0; i < array.count(); i++)
+                {
+                    temp_param.read(array.at(i).toObject());
+                    XtVcMotor* temp_motor = new XtVcMotor();
+                    temp_motor->Init(temp_param.motorName(),temp_param.toparameter());
+                    if(!motors.contains(temp_param.motorName()))
+                        motors.insert(temp_param.motorName(),temp_motor);
+                }
+            }
+        }
+    return true;
 }
 
 bool BaseModuleManager::InitStruct()
@@ -269,18 +323,12 @@ bool BaseModuleManager::initialDevice()
     XT_Controler_Extend::Stop_Buffer_Sync();
 
     XtVcMotor::InitAllVCM();
-    XtVcMotor* temp_motor = GetVcMotorByName("LUT_Z");
-    if(temp_motor==nullptr)
-        qInfo("motor LUT_Z is null");
-    else
-        temp_motor->ConfigVCM();
-
-    temp_motor = GetVcMotorByName("SUT_Z");
-    if(temp_motor==nullptr)
-        qInfo("motor SUT_Z is null");
-    else
-        temp_motor->ConfigVCM();
-
+    XtVcMotor* temp_motor;
+    foreach (QString mator_name, motors.keys()) {
+        temp_motor = GetVcMotorByName(mator_name);
+        if(temp_motor!= nullptr)
+            temp_motor->ConfigVCM();
+    }
     XT_Controler_Extend::Start_Buffer_Sync(-1);
 
     is_init = true;

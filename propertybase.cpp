@@ -94,6 +94,7 @@ void PropertyBase::saveJsonConfig(QString file_path, const QString name, const P
     json["Timestamp"] = QDateTime::currentDateTime().toString(Qt::ISODate);
     QJsonDocument saveDoc(json);
     saveFile.write(saveDoc.toJson());
+    saveFile.close();
 }
 
 bool PropertyBase::loadJsonConfig(QString file_name, QMap<QString, PropertyBase*> &parameters)

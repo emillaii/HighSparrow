@@ -155,6 +155,7 @@ private:
 
 public:
     bool LoadProfile();
+    bool LoadVcmFile();
     bool ReadParameters();
     bool SaveParameters();
 

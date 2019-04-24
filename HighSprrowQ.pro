@@ -178,7 +178,8 @@ HEADERS += \
     lenspickarm.h \
     lenspickarmparameter.h \
     lensloaderparameter.h \
-    lensloadermodule.h
+    lensloadermodule.h \
+    xtvcmotorparameter.h
 
 DISTFILES += \
     icons/index.theme

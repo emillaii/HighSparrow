@@ -13,7 +13,7 @@ Unitlog::Unitlog(QObject * parent) : QObject(parent)
 Unitlog::~Unitlog() {}
 
 QString Unitlog::createUnit() {
-    QString uuid = QUuid::createUuid().toString().mid(1,10).toUpper();
+    QString uuid = QUuid::createUuid().toString().mid(1,32).toUpper();
     QVariantMap map;
     std::vector<QString> nameList;
     this->unit_log_list.insert(uuid, map);

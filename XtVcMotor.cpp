@@ -49,10 +49,13 @@ void XtVcMotor::ChangeDiretion()
 //    qInfo("ChangeDiretion::vcm_id:%d,max_range:%f min_range:%f",vcm_id,max_range,min_range);
 }
 
-void XtVcMotor::Init(const QString& motor_name,VCM_Parameter_struct parameters)
+void XtVcMotor::Init(const QString& motor_name,VCM_Parameter_struct parameters,double find_origin_current,double distance)
 {
+    origin_current = find_origin_current;
+    origin_distance = distance;
     name = motor_name;
     origin.Init(name+"_O");
+    origin2.Init(name+"_O2");
     max_vel = 100;
 
     this->parameters = parameters;
@@ -267,8 +270,14 @@ void XtVcMotor::SeekOrigin(int thread)
         return;
     if(!is_enable)
         return;
-    SetZeroPos(vcm_id,0);
-    int result = Init_Go_Zero(vcm_id);
+    int result;
+    if(origin_current > 0)
+        result = Touch_Go_Zero(vcm_id,origin_current,origin_distance);
+    else {
+
+        SetZeroPos(vcm_id,0);
+        result = Init_Go_Zero(vcm_id);
+    }
     if(result == 1)
         origin_result = true;
     else

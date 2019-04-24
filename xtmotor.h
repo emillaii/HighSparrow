@@ -134,6 +134,7 @@ protected:
     XtGeneralInput alm;
     XtGeneralInput rdy;
     XtGeneralInput origin;
+    XtGeneralInput origin2;
 
     void ChangeCurPos(double pos);
     void CheckLimit(double &pos);

@@ -32,6 +32,8 @@ public:
     Q_PROPERTY(double maxVel READ maxVel WRITE setMaxVel NOTIFY maxVelChanged)
     Q_PROPERTY(double maxAcc READ maxAcc WRITE setMaxAcc NOTIFY maxAccChanged)
     Q_PROPERTY(double MaxJerk READ MaxJerk WRITE setMaxJerk NOTIFY MaxJerkChanged)
+    Q_PROPERTY(double FindOriginCurrent READ FindOriginCurrent WRITE setFindOriginCurrent NOTIFY FindOriginCurrentChanged)
+    Q_PROPERTY(double TouchDistance READ TouchDistance WRITE setTouchDistance NOTIFY TouchDistanceChanged)
     QString motorName() const
     {
         return m_motorName;
@@ -79,6 +81,16 @@ public:
     double MaxJerk() const
     {
         return m_MaxJerk;
+    }
+
+    double FindOriginCurrent() const
+    {
+        return m_LimitCurrent;
+    }
+
+    double TouchDistance() const
+    {
+        return m_TouchDistance;
     }
 
 public slots:
@@ -177,6 +189,26 @@ public slots:
         emit MaxJerkChanged(m_MaxJerk);
     }
 
+    void setFindOriginCurrent(double LimitCurrent)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_LimitCurrent, LimitCurrent))
+            return;
+
+        m_LimitCurrent = LimitCurrent;
+        emit FindOriginCurrentChanged(m_LimitCurrent);
+    }
+
+    void setTouchDistance(double TouchDistance)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_TouchDistance, TouchDistance))
+            return;
+
+        m_TouchDistance = TouchDistance;
+        emit TouchDistanceChanged(m_TouchDistance);
+    }
+
 signals:
     void motorNameChanged(QString motorName);
     void canIdChanged(int canId);
@@ -197,6 +229,10 @@ signals:
 
     void MaxJerkChanged(double MaxJerk);
 
+    void FindOriginCurrentChanged(double FindOriginCurrent);
+
+    void TouchDistanceChanged(double TouchDistance);
+
 private:
     QString m_motorName = "Unnaming";
     int m_canId = 0;
@@ -208,6 +244,8 @@ private:
     double m_maxVel = 0;
     double m_maxAcc = 0;
     double m_MaxJerk = 0;
+    double m_LimitCurrent = -1;
+    double m_TouchDistance = 0;
 };
 
 #endif // XTVCMOTORPARAMETER_H

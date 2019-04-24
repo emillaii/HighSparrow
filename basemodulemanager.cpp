@@ -201,7 +201,7 @@ bool BaseModuleManager::LoadVcmFile()
                 {
                     temp_param.read(array.at(i).toObject());
                     XtVcMotor* temp_motor = new XtVcMotor();
-                    temp_motor->Init(temp_param.motorName(),temp_param.toparameter());
+                    temp_motor->Init(temp_param.motorName(),temp_param.toparameter(),temp_param.FindOriginCurrent(),temp_param.TouchDistance());
                     if(!motors.contains(temp_param.motorName()))
                         motors.insert(temp_param.motorName(),temp_motor);
                 }

@@ -51,6 +51,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     vision_locations.insert(PR_VACANCY_LPALOOK,new VisionLocation());
     vision_locations.insert(PR_LENS_LUTLOOK,new VisionLocation());
   material_tray.standards_parameters.setTrayCount(2);
+  lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
+  sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -79,6 +81,8 @@ bool BaseModuleManager::ReadParameters()
     PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
 
     aa_head_module.loadParams();
+    lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
+    sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
     sut_module.loadParams();
     lut_module.loadParams();
     dothinkey->loadParams();
@@ -233,6 +237,7 @@ bool BaseModuleManager::InitStruct()
     XtGeneralOutput *dispense_o = GetOutputIoByName(u8"SUT1点胶阀");
     XtGeneralOutput *gripper = GetOutputIoByName("AA1_GripON");
 
+//    lut_carrier.Init("lut_carrier",lut_carrier.parameters)
     lut_carrier.Init("LUT",lut_x,lut_y,lut_z,lut_v);
     sut_carrier.Init("SUT",sut_x,sut_y,sut_z,sut_v);
     lens_picker.Init(GetVcMotorByName(lens_pick_arm.parameters.motorXName()),

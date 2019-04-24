@@ -19,7 +19,6 @@ enum RunMode
 };
 enum FinishedType
 {
-    NotFinish,
     Success,
     Alarm
 };

@@ -61,6 +61,41 @@ void PropertyBase::write(QJsonObject &json) const
     }
 }
 
+bool PropertyBase::loadJsonConfig(QString file_name,QString param_name)
+{
+    QString val;
+    QFile file;
+    file.setFileName(file_name);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qWarning("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return false;
+    }
+    val = file.readAll();
+    file.close();
+    QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
+    QJsonObject jsonObject = d.object();
+    this->read(jsonObject.value(param_name).toObject());
+    return true;
+}
+
+void PropertyBase::saveJsonConfig(QString file_name,QString param_name)
+{
+    QFile saveFile(file_name);
+    if (!saveFile.open(QIODevice::WriteOnly)) {
+        qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return;
+    }
+    QJsonObject json;
+    QJsonObject temp_data;
+    this->write(temp_data);
+    json[param_name] = temp_data;
+    json["Timestamp"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+    QJsonDocument saveDoc(json);
+    saveFile.write(saveDoc.toJson());
+    saveFile.close();
+}
+
 void PropertyBase::saveJsonConfig(QString file_name, const QMap<QString, PropertyBase*> &parameters)
 {
     QFile saveFile(file_name);
@@ -79,12 +114,13 @@ void PropertyBase::saveJsonConfig(QString file_name, const QMap<QString, Propert
     saveFile.write(saveDoc.toJson());
 }
 
-void PropertyBase::saveJsonConfig(QString file_path, const QString name, const PropertyBase* parameters)
+void PropertyBase::saveJsonConfig(QString file_path, const QString name, const PropertyBase *parameters)
 {
-    file_path.append(name).append(".json");
-    QFile saveFile(file_path);
+    QString file_name = file_path;
+    file_name.append(name).append(".json");
+    QFile saveFile(file_name);
     if (!saveFile.open(QIODevice::WriteOnly)) {
-        qWarning("save parameters to %s failed, Couldn't open save file.",file_path.toStdString().data());
+        qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return;
     }
     QJsonObject json;
@@ -116,14 +152,18 @@ bool PropertyBase::loadJsonConfig(QString file_name, QMap<QString, PropertyBase*
     return true;
 }
 
-bool PropertyBase::loadJsonConfig(QString file_path, const QString name, PropertyBase* parameters)
+bool PropertyBase::loadJsonConfig(QString file_path, const QString name, PropertyBase *parameters)
 {
-    file_path.append(name)
-             .append(".json");
+    QString file_name = file_path;
+    file_name.append(name).append(".json");
     QString val;
     QFile file;
-    file.setFileName(file_path);
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))return false;
+    file.setFileName(file_name);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qWarning("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return false;
+    }
     val = file.readAll();
     file.close();
     QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());

@@ -12,7 +12,6 @@ public:
     Q_PROPERTY(double Force READ Force WRITE setForce NOTIFY paramsChanged)
     Q_PROPERTY(int UpDnLookLighting READ UpDnLookLighting WRITE setUpDnLookLighting NOTIFY paramsChanged)
     Q_PROPERTY(QString upDownLookPrName READ upDownLookPrName WRITE setUpDownLookPrName NOTIFY paramsChanged)
-
     double OCX() const
     {
         return m_OCX;

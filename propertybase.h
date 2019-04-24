@@ -13,6 +13,8 @@ public:
     ~PropertyBase();
     void read(const QJsonObject &json);
     void write(QJsonObject &json) const;
+    bool loadJsonConfig(QString file_name,QString param_name);
+    void saveJsonConfig(QString file_name,QString param_name);
 
     static void saveJsonConfig(QString file_name,const QMap<QString, PropertyBase*> &parameters);
     static void saveJsonConfig(QString file_path,const QString name,const PropertyBase* parameters);

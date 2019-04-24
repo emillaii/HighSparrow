@@ -19,7 +19,7 @@ void SutModule::updateParams()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("SUT_PARAMS", &this->parameters);
-    temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
+//    temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &this->load_position);
     temp_map.insert("DOWNLOOK_POSITION", &this->downlook_position);
     temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
@@ -34,7 +34,7 @@ void SutModule::loadParams()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("SUT_PARAMS", &parameters);
-    temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
+//    temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &this->load_position);
     temp_map.insert("DOWNLOOK_POSITION", &this->downlook_position);
     temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);

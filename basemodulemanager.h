@@ -99,6 +99,9 @@ public slots:
         dispense_module.saveConfig();
         material_tray.saveJsonConfig();
         lens_loader_module.saveJsonConfig();
+
+        lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
+        sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
     }
 
     void setLightPanelLighting(int lightPanelLighting)

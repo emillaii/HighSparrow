@@ -53,7 +53,7 @@ void LensLoaderModule::loadJsonConfig()
     temp_map.insert("LUT_PR_POSITION2", &lut_pr_position2);
     temp_map.insert("LUT_CAMERA_POSITION1", &lut_camera_position);
     temp_map.insert("LUT_PICKE_POSITION1", &lut_picker_position);
-    PropertyBase::loadJsonConfig("config//lensPickArmModule.json", temp_map);
+    PropertyBase::loadJsonConfig("config//lensLoaderModule.json", temp_map);
 }
 
 void LensLoaderModule::saveJsonConfig()
@@ -64,7 +64,7 @@ void LensLoaderModule::saveJsonConfig()
     temp_map.insert("LUT_PR_POSITION2", &lut_pr_position2);
     temp_map.insert("LUT_CAMERA_POSITION1", &lut_camera_position);
     temp_map.insert("LUT_PICKE_POSITION1", &lut_picker_position);
-    PropertyBase::saveJsonConfig("config//lensPickArmModule.json", temp_map);
+    PropertyBase::saveJsonConfig("config//lensLoaderModule.json", temp_map);
 }
 
 void LensLoaderModule::performHandling(int cmd, int &finished_type)

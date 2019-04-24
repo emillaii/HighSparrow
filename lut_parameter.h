@@ -12,7 +12,11 @@ public:
     Q_PROPERTY(QString prName READ prName WRITE setPRName NOTIFY paramsChanged)
     Q_PROPERTY(int UpDnLookLighting READ UpDnLookLighting WRITE setUpDnLookLighting NOTIFY paramsChanged)
     Q_PROPERTY(QString upDownLookPrName READ upDownLookPrName WRITE setUpDownLookPrName NOTIFY paramsChanged)
-
+    Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
+    Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
+    Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
+    Q_PROPERTY(QString vacuum1Name READ vacuum1Name WRITE setVacuum1Name NOTIFY vacuum1NameChanged)
+    Q_PROPERTY(QString vacuum2Name READ vacuum2Name WRITE setVacuum2Name NOTIFY vacuum2NameChanged)
     double pickForce() const
     {
         return m_PickForce;
@@ -36,6 +40,31 @@ public:
     QString upDownLookPrName() const
     {
         return m_upDownLookPrName;
+    }
+
+    QString motorXName() const
+    {
+        return m_motorXName;
+    }
+
+    QString motorYName() const
+    {
+        return m_motorYName;
+    }
+
+    QString motorZName() const
+    {
+        return m_motorZName;
+    }
+
+    QString vacuum1Name() const
+    {
+        return m_vacuum1Name;
+    }
+
+    QString vacuum2Name() const
+    {
+        return m_vacuum2Name;
     }
 
 public slots:
@@ -79,8 +108,63 @@ public slots:
         emit paramsChanged();
     }
 
+    void setMotorXName(QString motorXName)
+    {
+        if (m_motorXName == motorXName)
+            return;
+
+        m_motorXName = motorXName;
+        emit motorXNameChanged(m_motorXName);
+    }
+
+    void setMotorYName(QString motorYName)
+    {
+        if (m_motorYName == motorYName)
+            return;
+
+        m_motorYName = motorYName;
+        emit motorYNameChanged(m_motorYName);
+    }
+
+    void setMotorZName(QString motorZName)
+    {
+        if (m_motorZName == motorZName)
+            return;
+
+        m_motorZName = motorZName;
+        emit motorZNameChanged(m_motorZName);
+    }
+
+    void setVacuum1Name(QString vacuum1Name)
+    {
+        if (m_vacuum1Name == vacuum1Name)
+            return;
+
+        m_vacuum1Name = vacuum1Name;
+        emit vacuum1NameChanged(m_vacuum1Name);
+    }
+
+    void setVacuum2Name(QString vacuum2Name)
+    {
+        if (m_vacuum2Name == vacuum2Name)
+            return;
+
+        m_vacuum2Name = vacuum2Name;
+        emit vacuum2NameChanged(m_vacuum2Name);
+    }
+
 signals:
     void paramsChanged();
+
+    void motorXNameChanged(QString motorXName);
+
+    void motorYNameChanged(QString motorYName);
+
+    void motorZNameChanged(QString motorZName);
+
+    void vacuum1NameChanged(QString vacuum1Name);
+
+    void vacuum2NameChanged(QString vacuum2Name);
 
 private:
     double m_PickForce = 0;
@@ -88,6 +172,11 @@ private:
     QString m_prName = "";
     int m_UpDnLookLighting = 0;
     QString m_upDownLookPrName = "";
+    QString m_motorXName = "LUT_X";
+    QString m_motorYName = "LUT_Y";
+    QString m_motorZName = "LUT_Z";
+    QString m_vacuum1Name = "LUT_V1";
+    QString m_vacuum2Name = "LUT_V2";
 };
 
 #endif // LUT_PARAMERTER_H

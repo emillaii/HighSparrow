@@ -11,6 +11,10 @@ wchar_t BaseModuleManager::profile_path[] = L"./xt_motion_config.csv";
 BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent)
 {
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("BASE_MODULE_PARAMS", this);
+    PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
+    qInfo("Server Mode: %d", ServerMode());
     is_init = false;
     profile_loaded = false;
     if(!QDir(".//notopencamera").exists())
@@ -27,7 +31,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     } else {
         sparrowQClient = new SparrowClient(QUrl(ServerURL()), true);
     }
-    lightingModule = new WordopLight();
+    lightingModule = new WordopLight(ServerMode());
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
@@ -76,10 +80,6 @@ BaseModuleManager::~BaseModuleManager()
 
 bool BaseModuleManager::ReadParameters()
 {
-    QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("BASE_MODULE_PARAMS", this);
-    PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
-
     aa_head_module.loadParams();
     lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
     sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");

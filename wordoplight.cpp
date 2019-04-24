@@ -2,8 +2,9 @@
 #include <QMutexLocker>
 #include <QThread>
 
-WordopLight::WordopLight()
+WordopLight::WordopLight(int mode)
 {
+    this->mode = mode;
     port_name = "";
     Init("com1");
     OnOff(0, true);

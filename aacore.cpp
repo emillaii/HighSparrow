@@ -75,7 +75,7 @@ void AACore::run(){
 
 void AACore::performMTFLoopTest()
 {
-    aaData_2.clear();
+    mtf_log.clear();
     loopTestResult = "";
     loopTestResult.append("CC, UL,UR,LL,LR,\n");
     while (currentAAMode == AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE) {

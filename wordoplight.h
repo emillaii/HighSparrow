@@ -42,7 +42,7 @@ class WordopLight: public QObject
     };
 
 public:
-    WordopLight();
+    WordopLight(int mode);
     ~WordopLight();
 
     bool Init(const QString &com_port);
@@ -101,7 +101,11 @@ void setDownlookLighting(int downlookLighting)
 
     m_downlookLighting = downlookLighting;
     emit paramsChanged(m_downlookLighting);
-    SetBrightness(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
+    if (mode == 0)
+        SetBrightness(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
+    else {
+        SetBrightness(LIGHTING_AA2_DL, (uint8_t)downlookLighting);
+    }
 }
 
 void setUplookLighting(int uplookLighting)
@@ -123,7 +127,11 @@ void setPickarmLighting(int pickarmLighting)
 
     m_pickarmLighting = pickarmLighting;
     emit paramsChanged(m_pickarmLighting);
-    SetBrightness(LIGHTING_LPA_DL, (uint8_t)pickarmLighting);
+    if (mode == 0)
+        SetBrightness(LIGHTING_LPA_DL, (uint8_t)pickarmLighting);
+    else {
+        SetBrightness(LIGHTING_SPA_DL, (uint8_t)pickarmLighting);
+    }
 }
 
 private:
@@ -140,6 +148,7 @@ private:
 
     const static uint8_t DEV_CODE = 0x01;
 
+    int mode;
     int uplookLensHolderPRLighting = 0;
     int downlookCmosSensorPRLighting = 0;
     int updownlookCalibGlassPRLighting = 0;

@@ -119,12 +119,12 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(m_AA1_X)
-                var y = baseModuleManager.getMotorFeedbackPos(m_AA1_Y)
-                var z = baseModuleManager.getMotorFeedbackPos(m_AA1_Z)
-                var a = baseModuleManager.getMotorFeedbackPos(m_AA1_A)
-                var b = baseModuleManager.getMotorFeedbackPos(m_AA1_B)
-                var c = baseModuleManager.getMotorFeedbackPos(m_AA1_C)
+                var x = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorYName)
+                var z = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorZName)
+                var a = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorAName)
+                var b = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorBName)
+                var c = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorCName)
 
                 aaHeadParams.setPickLensPositionX(x)
                 aaHeadParams.setPickLensPositionY(y)

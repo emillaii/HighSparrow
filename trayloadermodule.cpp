@@ -15,6 +15,11 @@ void TrayLoaderModule::ResetLogic()
 
 }
 
+void TrayLoaderModule::performHandling(int cmd, int &finished_type)
+{
+    emit sendHandlingOperation(cmd,finished_type);
+}
+
 void TrayLoaderModule::run(bool has_tray)
 {
 

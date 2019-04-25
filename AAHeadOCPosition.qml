@@ -35,7 +35,7 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var z = baseModuleManager.getMotorFeedbackPos(m_AA1_Z)
+                var z = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorZName)
                 aaHeadParams.setOCPositionZ(z)
             }
         }

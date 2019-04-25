@@ -62,9 +62,9 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(m_LUT1_X)
-                var y = baseModuleManager.getMotorFeedbackPos(m_LUT1_Y)
-                var z = baseModuleManager.getMotorFeedbackPos(m_LUT1_Z)
+                var x = baseModuleManager.getMotorFeedbackPos(lutParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(lutParams.motorYName)
+                var z = baseModuleManager.getMotorFeedbackPos(lutParams.motorZName)
                 lutUnPickLensPositionAA2.setX(x)
                 lutUnPickLensPositionAA2.setY(y)
                 lutUnPickLensPositionAA2.setZ(z)

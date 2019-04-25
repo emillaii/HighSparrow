@@ -62,9 +62,9 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(m_SUT1_X)
-                var y = baseModuleManager.getMotorFeedbackPos(m_SUT1_Y)
-                var z = baseModuleManager.getMotorFeedbackPos(m_SUT1_Z)
+                var x = baseModuleManager.getMotorFeedbackPos(sutParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(sutParams.motorYName)
+                var z = baseModuleManager.getMotorFeedbackPos(sutParams.motorZName)
                 sutLoadPosition.setX(x)
                 sutLoadPosition.setY(y)
                 sutLoadPosition.setZ(z)

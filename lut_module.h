@@ -34,7 +34,7 @@ public:
     Position3D aa2_mushroom_position;
 public slots:
     void saveJsonConfig();
-private:
+public:
     MaterialCarrier* carrier;
     VisionLocation* uplook_location;
     VisionLocation* updownlook_location;
@@ -44,6 +44,7 @@ private:
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;
 
+private:
     PRResultStruct pr_result;
 public:
     Q_INVOKABLE bool moveToAA1UplookPos(bool check_autochthonous = false);

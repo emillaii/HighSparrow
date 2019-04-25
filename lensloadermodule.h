@@ -20,7 +20,7 @@ enum HandlePosition
         LUT_POS2 = 4,
         LENS_TRAY1_START_POS = 5,
         LENS_TRAY2_START_POS = 6,
-        LENS_TRAY1_END_POS = 7,
+        LENS_TRAY1_END_POS = 7
     };
 enum HandlePR
     {

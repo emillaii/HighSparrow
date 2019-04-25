@@ -151,20 +151,20 @@ double XtVcMotor::GetFeedbackPos(int decimal_digit) const
         return 0;
 
     {
-        //return GetOutpuPos();
-        double val;
-        int times = 10;
-        do{
-            int res = GetNowPos(vcm_id,val);
-            if(res==1)
-                break;
-            Sleep(1);
-            qInfo("VCM GetNowPos failed! %d",times);
-        }
-        while(--times>0);
-        if(direction_is_opposite)
-            val = -val;
-        return round(val*pow(10,decimal_digit))/pow(10,decimal_digit);
+        return GetOutpuPos();
+//        double val;
+//        int times = 10;
+//        do{
+//            int res = GetNowPos(vcm_id,val);
+//            if(res==1)
+//                break;
+//            Sleep(1);
+//            qInfo("VCM GetNowPos failed! %d",times);
+//        }
+//        while(--times>0);
+//        if(direction_is_opposite)
+//            val = -val;
+//        return round(val*pow(10,decimal_digit))/pow(10,decimal_digit);
     }
     return 0;
 }

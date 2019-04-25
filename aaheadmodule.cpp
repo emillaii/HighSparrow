@@ -145,7 +145,7 @@ bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)
 
     double x = -dx + motor_x->GetFeedbackPos();
     double y = dy + motor_y->GetFeedbackPos();
-    double z = dz + motor_z->GetFeedbackPos();
+    double z = -dz + motor_z->GetFeedbackPos();
     double a = step_a + motor_a->GetFeedbackPos();
     double b = step_b + motor_b->GetFeedbackPos();
 

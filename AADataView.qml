@@ -1,7 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtCharts 2.0
-
+import QtQuick.Layouts 1.11
 Grid {
     id: grid
     columns: 3
@@ -105,11 +105,18 @@ Grid {
                 axisX: axisX
                 axisY: axisY1
             }
-            Label {
-                id: spline1Label
-                text: "Any Supplmentary Data "
-                background: Rectangle {
-                    color: "black"
+            ColumnLayout {
+                Label {
+                    id: spline1Label
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
+                Label {
+                    id: spline1Label2
+                    background: Rectangle {
+                        color: "black"
+                    }
                 }
             }
         }
@@ -120,6 +127,7 @@ Grid {
                 spline1Label.text = "CC: " + dataFromCpp.wCCPeakZ + " UL: " + dataFromCpp.wULPeakZ +
                         " UR: " + dataFromCpp.wURPeakZ + " LL: " + dataFromCpp.wLLPeakZ +
                         " LR: " + dataFromCpp.wLRPeakZ + " DEV: " + dataFromCpp.dev
+                spline1Label2.text = "XTilt: " + dataFromCpp.xTilt + " YTilt: " + dataFromCpp.yTilt
                 ccSeries.append(dataFromCpp.wCCValue.x, dataFromCpp.wCCValue.y)
                 ulSeries.append(dataFromCpp.wULValue.x, dataFromCpp.wULValue.y)
                 urSeries.append(dataFromCpp.wURValue.x, dataFromCpp.wURValue.y)
@@ -220,10 +228,18 @@ Grid {
                 axisX: axisX2
                 axisY: axisY2
             }
-            Label {
-                id: spline2Label
-                background: Rectangle {
-                    color: "black"
+            ColumnLayout {
+                Label {
+                    id: spline2Label
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
+                Label {
+                    id: spline2Label2
+                    background: Rectangle {
+                        color: "black"
+                    }
                 }
             }
         }
@@ -234,6 +250,7 @@ Grid {
                 spline2Label.text = "CC: " + dataFromCpp2.wCCPeakZ + " UL: " + dataFromCpp2.wULPeakZ +
                         " UR: " + dataFromCpp2.wURPeakZ + " LL: " + dataFromCpp2.wLLPeakZ +
                         " LR: " + dataFromCpp2.wLRPeakZ + " DEV: " + dataFromCpp2.dev
+                spline2Label2.text = "XTilt: " + dataFromCpp2.xTilt + " YTilt: " + dataFromCpp2.yTilt
                 ccSeries2.name = "CC " + dataFromCpp2.wCCPeakZ
                 ccSeries2.append(dataFromCpp2.wCCValue.x, dataFromCpp2.wCCValue.y)
                 ulSeries2.append(dataFromCpp2.wULValue.x, dataFromCpp2.wULValue.y)

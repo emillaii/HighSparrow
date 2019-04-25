@@ -477,6 +477,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
                                    double estimated_fov_slope, double zOffset)
 {
     QVariantMap map;
+    QElapsedTimer timer; timer.start();
     qInfo("start: %f stop: %f step_size: %f", start, stop, step_size);
     int imageWidth = 0, imageHeight = 0;
     double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
@@ -558,7 +559,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
                 if (prev_fov_slope != 0) {
                     error = (slope - prev_fov_slope) / prev_fov_slope;
                 }
-                if (fabs(error) > 0.1) {
+                if (fabs(error) > 0.2) {
                     qInfo("Crash detection is triggered");
                     isCrashDetected = true;
                 }
@@ -579,7 +580,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
             imageHeight = img.rows;
             images.push_back(std::move(img));
             zScanCount++;
-            emit sfrWorkerController->calculate(i, start+i*step_size, images[i], false, sfr::EdgeFilter::NO_FILTER);
+            emit sfrWorkerController->calculate(i, currPos.Z, images[i], false, sfr::EdgeFilter::NO_FILTER);
             if (isCrashDetected) {
                 qInfo("Total zCount: %d", zScanCount);
                 break;
@@ -613,9 +614,8 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     msleep(zSleepInMs);
     qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
     aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
+    //aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
     qInfo("aa_head after :%f", aa_head->GetFeedBack().Z);
-    msleep(zSleepInMs);
-    msleep(zSleepInMs);
     sut->moveToZPos(zPeak);
     msleep(zSleepInMs);
     map.insert("X_TILT", xTilt);
@@ -628,6 +628,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     map.insert("FOV_SLOPE", fov_slope);
     map.insert("FOV_INTERCEPT", fov_intercept);
     map.insert("DEV", dev);
+    map.insert("TIME_ELAPSED", timer.elapsed());
     emit pushDataToUnit(runningUnit, "AA", map);
     //unitLog.pushDataToUnit(runningUnit, "AA", map);
     return ErrorCodeStruct{ ErrorCode::OK, ""};
@@ -939,6 +940,8 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
         aaData_1.setWURPeakZ(round(ur_peak_z*1000));
         aaData_1.setWLLPeakZ(round(ll_peak_z*1000));
         aaData_1.setWLRPeakZ(round(lr_peak_z*1000));
+        aaData_1.setXTilt(xTilt);
+        aaData_1.setYTilt(yTilt);
 
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {
@@ -960,6 +963,8 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
         aaData_2.setWURPeakZ(round(ur_peak_z*1000));
         aaData_2.setWLLPeakZ(round(ll_peak_z*1000));
         aaData_2.setWLRPeakZ(round(lr_peak_z*1000));
+        aaData_2.setXTilt(xTilt);
+        aaData_2.setYTilt(yTilt);
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {
             for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {

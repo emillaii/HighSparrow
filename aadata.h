@@ -17,7 +17,10 @@ class AAData : public QThread
     Q_PROPERTY(QPointF wURValue READ wURValue)
     Q_PROPERTY(QPointF wLLValue READ wLLValue)
     Q_PROPERTY(QPointF wLRValue READ wLRValue)
+
     Q_PROPERTY(double dev READ dev WRITE setDev)
+    Q_PROPERTY(double xTilt READ xTilt WRITE setXTilt)
+    Q_PROPERTY(double yTilt READ yTilt WRITE setYTilt)
     Q_PROPERTY(double wCCPeakZ READ wCCPeakZ WRITE setWCCPeakZ)
     Q_PROPERTY(double wULPeakZ READ wULPeakZ WRITE setWULPeakZ)
     Q_PROPERTY(double wURPeakZ READ wURPeakZ WRITE setWURPeakZ)
@@ -90,6 +93,16 @@ public:
         return m_wLRPeakZ;
     }
 
+    double xTilt() const
+    {
+        return m_xTilt;
+    }
+
+    double yTilt() const
+    {
+        return m_yTilt;
+    }
+
 public slots:
     void setDev(double dev)
     {
@@ -119,6 +132,16 @@ public slots:
     void setWLLPeakZ(double wLLPeakZ)
     {
         m_wLLPeakZ = wLLPeakZ;
+    }
+
+    void setXTilt(double xTilt)
+    {
+        m_xTilt = xTilt;
+    }
+
+    void setYTilt(double yTilt)
+    {
+        m_yTilt = yTilt;
     }
 
 signals:
@@ -152,6 +175,10 @@ private:
     double m_wLLPeakZ;
 
     double m_wLRPeakZ;
+
+    double m_xTilt;
+
+    double m_yTilt;
 
 protected:
     void run();

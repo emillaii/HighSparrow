@@ -1,9 +1,33 @@
 #include "lut_module.h"
+#include "commonutils.h"
 
 LutModule::LutModule()
 {
 }
 
+void LutModule::openServer(int port)
+{
+    server = new SparrowQServer(port);
+    connect(server, &SparrowQServer::receiveRequestMessage, this, &LutModule::receiveRequestMessage);
+}
+
+void LutModule::receiveRequestMessage(QString message, QString client_ip)
+{
+    bool isLocalHost = false;
+    qInfo("Lut Module receive command:%s from ip: %s", message.toStdString().c_str(), client_ip.toStdString().c_str());
+    if(client_ip == "::1") {
+        qInfo("This command come from localhost");
+        isLocalHost = true;
+    }
+    QJsonObject obj = getJsonObjectFromString(message);
+    QString cmd = obj["cmd"].toString("");
+    qInfo("cmd: %s", cmd.toStdString().c_str());
+    if (cmd == "moveToUplookPosition") {
+        isLocalHost ? moveToAA1UplookPos() : moveToAA2UplookPos();
+    } else if (cmd == "moveToPickLensPosition") {
+        isLocalHost ? moveToAA1PickLensPos() : moveToAA2PickLens();
+    }
+}
 
 void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper)
 {

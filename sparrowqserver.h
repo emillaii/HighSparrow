@@ -22,6 +22,7 @@ private:
 
 Q_SIGNALS:
     void closed();
+    void receiveRequestMessage(QString, QString);
 private Q_SLOTS:
     void onNewConnection();
     void processTextMessage(QString message);

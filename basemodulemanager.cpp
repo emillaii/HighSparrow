@@ -35,10 +35,11 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 
     if (ServerMode() == 0) {
         qInfo("This sparrow is in Master mode");
-        sparrowQServer = new SparrowQServer(ServerPort());
-        sparrowQClient = new SparrowClient(QUrl("ws://localhost:9999"), true);
+        //sparrowQServer = new SparrowQServer(ServerPort());
+        //sparrowQClient = new SparrowClient(QUrl("ws://localhost:9999"), true);
     } else {
-        sparrowQClient = new SparrowClient(QUrl(ServerURL()), true);
+        this->lut_module.openServer(19998);
+        sparrowQClient = new SparrowClient(QUrl("ws://localhost:19998"), true);
     }
     lightingModule = new WordopLight(ServerMode());
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
@@ -759,47 +760,83 @@ void BaseModuleManager::DisableAllMotors()
 
 bool BaseModuleManager::allMotorsSeekOrigin()
 {
-    bool result;
+    if (ServerMode() == 0) {
+       return allMotorsSeekOriginal1();
+    } else {
+       return allMotorsSeekOriginal2();
+    }
+}
 
-    motors["SUT_Z"]->SeekOrigin();
-    if (this->ServerMode() == 0) motors["LPA_Z"]->SeekOrigin();
-    if (this->ServerMode() == 0) result = motors["LPA_Z"]->WaitSeekDone();
+bool BaseModuleManager::allMotorsSeekOriginal1()
+{
+    bool result;
+    GetMotorByName(sut_module.parameters.motorZName())->SeekOrigin();
+
+    GetMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();
+    result = GetMotorByName(this->lens_pick_arm.parameters.motorZName())->WaitSeekDone();
     if(!result)return false;
-    if (this->ServerMode() == 0) motors["LPA_X"]->SeekOrigin();
-    if (this->ServerMode() == 0) motors["LPA_Y"]->SeekOrigin();
-    if (this->ServerMode() == 0) motors["LUT_Y"]->SeekOrigin();
-    result = motors["SUT_Z"]->WaitSeekDone();
-    if(!result)return false;
-    motors["SUT1_Y"]->SeekOrigin();
-    if (this->ServerMode() == 0)result &= motors["LUT_Y"]->WaitSeekDone();
-    result &= motors["SUT1_Y"]->WaitSeekDone();
-    if (this->ServerMode() == 0) result &= motors["LPA_Y"]->WaitSeekDone();
+    GetMotorByName(this->lens_pick_arm.parameters.motorXName())->SeekOrigin();
+    GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();
+    GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();
+    result = GetMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
+    if (!result) return false;
+    result &= GetMotorByName(sut_module.parameters.motorYName())->WaitSeekDone();
+    result &= GetMotorByName(this->lut_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
     //降下气缸
-    if (this->ServerMode() == 0) motors["LTL_X"]->SeekOrigin();
-    motors["AA1_Y"]->SeekOrigin();
-    result = motors["AA1_Y"]->WaitSeekDone();
+    GetMotorByName(this->lut_module.parameters.motorXName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();
+    result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
-    if (this->ServerMode() == 0) motors["LUT_Z"]->SeekOrigin();
-    motors["AA1_X"]->SeekOrigin();
-    motors["AA1_Z"]->SeekOrigin();
-    motors["AA1_A"]->SeekOrigin();
-    motors["AA1_B"]->SeekOrigin();
-    motors["AA1_C"]->SeekOrigin();
-    motors["SUT1_X"]->SeekOrigin();
-    if (this->ServerMode() == 0) motors["LUT_X"]->SeekOrigin();
-    result &= motors["AA1_X"]->WaitSeekDone();
-    result &= motors["AA1_Z"]->WaitSeekDone();
-    result &= motors["AA1_A"]->WaitSeekDone();
-    result &= motors["AA1_B"]->WaitSeekDone();
-    result &= motors["AA1_C"]->WaitSeekDone();
-    result &= motors["SUT1_X"]->WaitSeekDone();
-    if (this->ServerMode() == 0) result &= motors["LUT_X"]->WaitSeekDone();
-    if (this->ServerMode() == 0) result &= motors["LUT_Z"]->WaitSeekDone();
-    if (this->ServerMode() == 0) result &= motors["LPA_X"]->WaitSeekDone();
-    if (this->ServerMode() == 0) result &= motors["LTL_X"]->WaitSeekDone();
+    GetMotorByName(this->lut_module.parameters.motorZName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
+    GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
+    GetMotorByName(this->lut_module.parameters.motorXName())->SeekOrigin();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
+    result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->lut_module.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->lut_module.parameters.motorZName())->WaitSeekDone();
+    result &= GetMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
+    //result &= motors["LTL_X"]->WaitSeekDone();
     if(!result)return false;
-    if (this->ServerMode() == 0)GetVcMotorByName("LUT_Z")->ChangeDiretion();
+    GetVcMotorByName(this->lut_module.parameters.motorZName())->ChangeDiretion();
+    return true;
+}
+
+bool BaseModuleManager::allMotorsSeekOriginal2()
+{
+    bool result;
+    GetMotorByName(sut_module.parameters.motorZName())->SeekOrigin();
+    result = GetMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
+    if(!result) return false;
+    GetMotorByName(sut_module.parameters.motorYName())->SeekOrigin();
+    result &= GetMotorByName(sut_module.parameters.motorYName())->WaitSeekDone();
+    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();
+
+    result &= GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
+    if(!result)return false;
+    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
+    GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
+
+    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
+    result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
+
     qInfo("all motor seeked origin successed!");
     return  true;
 }

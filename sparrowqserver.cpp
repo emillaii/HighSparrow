@@ -37,6 +37,7 @@ void SparrowQServer::onNewConnection()
 void SparrowQServer::processTextMessage(QString message)
 {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
+    emit receiveRequestMessage(message, pClient->peerAddress().toString());
     qDebug() << "Server Message received:" << message;
     QJsonObject obj = getJsonObjectFromString(message);
     commandQueue.enqueue(obj);

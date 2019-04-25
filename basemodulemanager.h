@@ -89,6 +89,9 @@ signals:
 public slots:
     Q_INVOKABLE void updateParams()
     {
+        QMap<QString,PropertyBase*> temp_map;
+        temp_map.insert("BASE_MODULE_PARAMS", this);
+        PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
         SaveParameters();
         loadParameters();
     }

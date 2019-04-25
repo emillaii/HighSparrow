@@ -86,9 +86,6 @@ BaseModuleManager::~BaseModuleManager()
 
 bool BaseModuleManager::loadParameters()
 {
-//    QMap<QString,PropertyBase*> temp_map;
-//    temp_map.insert("BASE_MODULE_PARAMS", this);
-//    PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
 
     material_tray.loadJsonConfig();
     aa_head_module.loadJsonConfig();
@@ -431,7 +428,7 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
     {
         QJsonObject data_object =array.at(i).toObject();
         Calibration* temp_calibration;
-        if(data_object["calibrationName"].toString() == "aa2_chart_calibration")
+        if(data_object["calibrationName"].toString().contains("chart_calibration"))
         {
             qInfo("get chart calibration");
             temp_calibration = chart_calibration;

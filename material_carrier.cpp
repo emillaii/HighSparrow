@@ -10,6 +10,7 @@ void MaterialCarrier::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtV
     this->motor_y = motor_y;
     this->motor_z = motor_z;
     this->vacuum = vacuum;
+    setName(name);
 }
 
 bool MaterialCarrier::Move_SZ_XY_Z_Sync(double x, double y, double z, int timeout)

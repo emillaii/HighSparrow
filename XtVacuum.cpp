@@ -3,12 +3,16 @@
 //#include "xtmotion.h"
 #include "XtVacuum.h"
 
-XtVacuum::XtVacuum(XtGeneralOutput *output_io, XtGeneralInput *input_io,XtGeneralOutput *oupout_break_io, QString name)
+XtVacuum::XtVacuum():ErrorBase ()
+{
+}
+
+void XtVacuum::Init(XtGeneralOutput *output_io, XtGeneralInput *input_io, XtGeneralOutput *output_break_io)
 {
     in_io = input_io;
     out_io = output_io;
-    break_io = oupout_break_io;
-    this->name = std::move(name);
+    break_io = output_break_io;
+    setName(parameters.vacuumName());
 }
 
 bool XtVacuum::Set(bool new_state, bool wait_done,int finish_delay, int timeout,int input_null_delay)

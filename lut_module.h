@@ -33,7 +33,7 @@ public:
     Position3D aa1_mushroom_position;
     Position3D aa2_mushroom_position;
 public slots:
-    void updateParams();
+    void saveJsonConfig();
 private:
     MaterialCarrier* carrier;
     VisionLocation* uplook_location;

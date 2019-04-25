@@ -48,6 +48,7 @@ public:
     QMap<QString,Calibration*> calibrations;
     QMap<QString,VisionLocation*> vision_locations;
     QMap<QString,XtVacuum*> vacuums;
+    QMap<QString,XtCylinder*> cylinder;
     ChartCalibration * chartCalibration;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
@@ -88,20 +89,8 @@ signals:
 public slots:
     Q_INVOKABLE void updateParams()
     {
-        QMap<QString,PropertyBase*> temp_map;
-        temp_map.insert("BASE_MODULE_PARAMS", this);
-        PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
-
-        aa_head_module.updateParams();
-        sut_module.updateParams();
-        lut_module.updateParams();
-        dothinkey->updateParams();
-        dispense_module.saveConfig();
-        material_tray.saveJsonConfig();
-        lens_loader_module.saveJsonConfig();
-
-        lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
-        sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
+        SaveParameters();
+        loadParameters();
     }
 
     void setLightPanelLighting(int lightPanelLighting)
@@ -158,8 +147,18 @@ private:
 
 public:
     bool LoadProfile();
-    bool LoadVcmFile();
-    bool ReadParameters();
+    bool LoadVcmFile(QString file_name);
+    bool saveVcmfile(QString file_name);
+    bool loadVacuumFiles(QString file_name);
+    bool saveVacuumFiles(QString file_name);
+    bool loadCylinderFiles(QString file_name);
+    bool saveCylinderFiles(QString file_name);
+    bool loadVisionLoactionFiles(QString file_name);
+    bool saveVisionLoactionFiles(QString file_name);
+
+    bool loadJsonArray(QString file_name, QJsonArray &array);
+    bool saveJsonArray(QString file_name,QJsonArray &array);
+    bool loadParameters();
     bool SaveParameters();
 
     Q_INVOKABLE bool initialDevice();
@@ -196,6 +195,8 @@ public:
     XtGeneralInput *GetInputIoByName(QString name);
     XtVacuum *GetVacuumByName(QString name);
     XtCylinder *GetCylinderByName(QString name);
+    VisionLocation *GetVisionLocationByName(QString name);
+    Pixel2Mech *GetPixel2MechByName(QString name);
     int ServerMode() const
     {
         return m_ServerMode;

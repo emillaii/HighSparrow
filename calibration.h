@@ -33,8 +33,8 @@ class Calibration : public QObject,public ErrorBase
 {
     Q_OBJECT
 public:
-    explicit Calibration(QString name,QString file_path,XtMotor* motor_x,XtMotor* motor_y,VisionLocation* location, QObject *parent = nullptr);
-
+    explicit Calibration(QString name = "UnmaningCalibration",QString file_path = "config//", QObject *parent = nullptr);
+    void Init(XtMotor* motor_x,XtMotor* motor_y,VisionLocation* location);
     Calibration(const Calibration &calibration) = delete;
     Calibration &operator=(const Calibration &calibration) = delete;
     void loadJsonConfig();

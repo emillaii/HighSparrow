@@ -4,14 +4,19 @@
 #include <QFile>
 #include <QTextStream>
 
-Calibration::Calibration(QString name,QString file_path,XtMotor *motor_x, XtMotor *motor_y, VisionLocation* location, QObject *parent)
+Calibration::Calibration(QString name,QString file_path, QObject *parent)
 {
     this->name = name;
     this->file_path = file_path;
+    setName(name);
+}
+
+void Calibration::Init(XtMotor *motor_x, XtMotor *motor_y, VisionLocation *location)
+{
     this->motor_x = motor_x;
     this->motor_y = motor_y;
     this->location =location;
-    loadJsonConfig();
+//    setName(parameters.calibrationName());
 }
 
 void Calibration::loadJsonConfig()

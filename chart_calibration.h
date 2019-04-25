@@ -10,7 +10,7 @@ class ChartCalibration : public Calibration
 {
     Q_OBJECT
 public:
-    explicit ChartCalibration(Dothinkey *dothinkey,int max_intensity, int min_area, int max_area,QString name,QString file_path,XtMotor* motor_x,XtMotor* motor_y,QObject *parent = nullptr);
+    explicit ChartCalibration(Dothinkey *dothinkey,int max_intensity, int min_area, int max_area,QString name,QString file_path,QObject *parent = nullptr);
 
 signals:
 

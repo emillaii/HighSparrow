@@ -24,7 +24,7 @@ public:
     Position3D tool_uplook_positon;
     MaterialCarrier* carrier;
 public slots:
-    void updateParams();
+    void saveJsonConfig();
 private:
     VisionLocation* vision_downlook_location;
     VisionLocation* vision_updownlook_location;

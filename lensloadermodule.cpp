@@ -13,7 +13,6 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     this->lens_vision = lens_vision;
     this->vacancy_vision = vacancy_vision;
     this->lut_vision = lut_vision;
-    loadJsonConfig();
 }
 
 QString LensLoaderModule::GetCurrentError()

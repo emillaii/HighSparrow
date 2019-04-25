@@ -71,7 +71,7 @@ public:
     }
 
 public slots:
-    void updateParams();
+    void saveJsonConfig();
     void setIniFilename(QString IniFilename)
     {
         if (m_IniFilename == IniFilename)

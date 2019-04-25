@@ -5,6 +5,11 @@ ErrorBase::ErrorBase(QString name)
     error_source = name;
 }
 
+void ErrorBase::setName(QString name)
+{
+    this->error_source = name;
+}
+
 void ErrorBase::AppendError(QString error)
 {
     error_content.append(error);

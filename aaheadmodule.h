@@ -14,7 +14,7 @@
 
 //#define AA_Z_OFFSET (31.5)
 
-class AAHeadModule : public QObject
+class AAHeadModule : public QObject,public ErrorBase
 {
     Q_OBJECT
 public:
@@ -26,7 +26,7 @@ public:
               XtGeneralOutput * uv4,
               int thread_id);
 public slots:
-    void updateParams();
+    void saveJsonConfig();
 
 private:
     XtMotor* motor_x = Q_NULLPTR;
@@ -49,7 +49,7 @@ public:
     double uplook_x;
     double uplook_y;
     double uplook_theta;
-    void loadParams();
+    void loadJsonConfig();
     Q_INVOKABLE bool moveToMushroomPosition();
     Q_INVOKABLE bool moveToPickLensPosition();
     Q_INVOKABLE bool moveToOCPosition();

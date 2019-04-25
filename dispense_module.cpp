@@ -14,7 +14,6 @@ void DispenseModule::Init(QString file_path,QString name,Calibration *calibratio
     this->vision = vision;
     this->carrier = carrier;
     this->dispense_io = dispense_io;
-    loadConfig();
 }
 
 void DispenseModule::loadConfig()

@@ -19,7 +19,7 @@ Dothinkey::~Dothinkey()
     //Clear things here
 }
 
-void Dothinkey::updateParams()
+void Dothinkey::saveJsonConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("DOTHINKEY_PARAMS", this);

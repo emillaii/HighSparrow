@@ -8,12 +8,14 @@ class VisionLocationParameter:public PropertyBase
     Q_OBJECT
 public:
     VisionLocationParameter():PropertyBase(){}
+    Q_PROPERTY(QString locationName READ locationName WRITE setLocationName NOTIFY locationNameChanged)
     Q_PROPERTY(QString prFileName READ prFileName WRITE setPrFileName NOTIFY prFileNameChanged)
     Q_PROPERTY(QString cameraName READ cameraName WRITE setCameraName NOTIFY cameraNameChanged)
     Q_PROPERTY(int lightChannel READ lightChannel WRITE setlightChannel NOTIFY lightChannelChanged)
     Q_PROPERTY(int lightBrightness READ lightBrightness WRITE setLightBrightness NOTIFY lightBrightnessChanged)
     Q_PROPERTY(double maximunAngle READ maximunAngle WRITE setMaximunAngle NOTIFY maximunAngleChanged)
     Q_PROPERTY(double maximumLength READ maximumLength WRITE setMaximumLength NOTIFY maximumLengthChanged)
+    Q_PROPERTY(QString calibrationName READ calibrationName WRITE setCalibrationName NOTIFY calibrationNameChanged)
 
     QString prFileName() const
     {
@@ -43,6 +45,16 @@ public:
     double maximumLength() const
     {
         return m_maximumLength;
+    }
+
+    QString locationName() const
+    {
+        return m_locationName;
+    }
+
+    QString calibrationName() const
+    {
+        return m_calibrationName;
     }
 
 public slots:
@@ -102,6 +114,24 @@ public slots:
         emit maximumLengthChanged(m_maximumLength);
     }
 
+    void setLocationName(QString lcationName)
+    {
+        if (m_locationName == lcationName)
+            return;
+
+        m_locationName = lcationName;
+        emit locationNameChanged(m_locationName);
+    }
+
+    void setCalibrationName(QString calibrationName)
+    {
+        if (m_calibrationName == calibrationName)
+            return;
+
+        m_calibrationName = calibrationName;
+        emit calibrationNameChanged(m_calibrationName);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -115,6 +145,10 @@ signals:
 
     void maximumLengthChanged(double maximumLength);
 
+    void locationNameChanged(QString locationName);
+
+    void calibrationNameChanged(QString calibrationName);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -122,6 +156,8 @@ private:
     int m_lightBrightness = 0;
     double m_maximunAngle = 15;
     double m_maximumLength = 3;
+    QString m_locationName = "Location";
+    QString m_calibrationName = "Calibration";
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

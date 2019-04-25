@@ -18,6 +18,7 @@ public:
     Q_PROPERTY(double matrix22 READ matrix22 WRITE setMatrix22 NOTIFY matrix22Changed)
     Q_PROPERTY(double deltaX READ deltaX WRITE setDeltaX NOTIFY deltaXChanged)
     Q_PROPERTY(double deltaY READ deltaY WRITE setDeltaY NOTIFY deltaYChanged) 
+    Q_PROPERTY(QString calibrationName READ calibrationName WRITE setCalibrationName NOTIFY calibrationNameChanged)
     double imageWidth() const
     {
         return m_imageWidth;
@@ -66,6 +67,11 @@ public:
     double deltaY() const
     {
         return m_deltaY;
+    }
+
+    QString calibrationName() const
+    {
+        return m_calibrationName;
     }
 
 public slots:
@@ -158,6 +164,15 @@ public slots:
         emit imageHeightChanged(m_imageHeight);
     }
 
+    void setCalibrationName(QString calibrationName)
+    {
+        if (m_calibrationName == calibrationName)
+            return;
+
+        m_calibrationName = calibrationName;
+        emit calibrationNameChanged(m_calibrationName);
+    }
+
 signals:
     void originXChanged(double originX);
 
@@ -179,6 +194,8 @@ signals:
 
     void imageHeightChanged(double imageHeight);
 
+    void calibrationNameChanged(QString calibrationName);
+
 private:
     double m_imageWidth = DOWNLOOK_VISION_CAMERA_WIDTH;
     double m_imageHeight = DOWNLOOK_VISION_CAMERA_HEIGHT;
@@ -190,6 +207,7 @@ private:
     double m_matrix22 = 0;
     double m_deltaX = 0;
     double m_deltaY = 0;
+    QString m_calibrationName = "Calibration";
 };
 
 #endif // CALIBRATION_PARAMETER_H

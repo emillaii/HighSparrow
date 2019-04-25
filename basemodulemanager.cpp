@@ -7,7 +7,9 @@
 #include <qjsondocument.h>
 
 wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
-wchar_t BaseModuleManager::profile_path[] = L"./xt_motion_config.csv";
+//wchar_t BaseModuleManager::profile_path[] = L"..\\config\\xt_motion_config.csv";
+//wchar_t BaseModuleManager::profile_path[] = L".\\config\\xt_motion_config.csv";
+wchar_t BaseModuleManager::profile_path[] = L".\\xt_motion_config.csv";
 BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent)
 {
@@ -47,21 +49,31 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonDownlookCamera) pylonDownlookCamera->start();
         if(pylonPickarmCamera) pylonPickarmCamera->start();
     }
-    vision_locations.insert(PR_AA1_TOOL_UPLOOK,new VisionLocation());
-    vision_locations.insert(PR_AA1_TOOL_DOWNLOOK,new VisionLocation());
-    vision_locations.insert(PR_AA1_LUT_UPLOOK,new VisionLocation());
-//    vision_locations.insert(PR_AA2_TOOL_UPLOOK,new VisionLocation());
-//    vision_locations.insert(PR_AA2_TOOL_DOWNLOOK,new VisionLocation());
-//    vision_locations.insert(PR_AA2_LUT_UPLOOK,new VisionLocation());
-    vision_locations.insert(PR_SUT_DOWNLOOK,new VisionLocation());
-    vision_locations.insert(PR_LOAD_LUT_UPLOOK,new VisionLocation());
-    vision_locations.insert(PR_AA1_MUSHROOMHEAD,new VisionLocation());
-    vision_locations.insert(PR_LENS_LPALOOK,new VisionLocation());
-    vision_locations.insert(PR_VACANCY_LPALOOK,new VisionLocation());
-    vision_locations.insert(PR_LENS_LUTLOOK,new VisionLocation());
+
+    calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH));
+    calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH));
+    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH));
+    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH));
+    calibrations.insert(AA1_MUSHROOMHEAD_CALIBRATION,new Calibration(AA1_MUSHROOMHEAD_CALIBRATION,CALIBRATION_RESULT_PATH));
+    calibrations.insert(LPA_LENS_CALIBRATION,new Calibration(LPA_LENS_CALIBRATION,CALIBRATION_RESULT_PATH));
+
+    chartCalibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH);
+
+//    vision_locations.insert(PR_AA1_TOOL_UPLOOK,new VisionLocation());
+//    vision_locations.insert(PR_AA1_TOOL_DOWNLOOK,new VisionLocation());
+//    vision_locations.insert(PR_AA1_LUT_UPLOOK,new VisionLocation());
+////    vision_locations.insert(PR_AA2_TOOL_UPLOOK,new VisionLocation());
+////    vision_locations.insert(PR_AA2_TOOL_DOWNLOOK,new VisionLocation());
+////    vision_locations.insert(PR_AA2_LUT_UPLOOK,new VisionLocation());
+//    vision_locations.insert(PR_SUT_DOWNLOOK,new VisionLocation());
+//    vision_locations.insert(PR_LOAD_LUT_UPLOOK,new VisionLocation());
+//    vision_locations.insert(PR_AA1_MUSHROOMHEAD,new VisionLocation());
+//    vision_locations.insert(PR_LENS_LPALOOK,new VisionLocation());
+//    vision_locations.insert(PR_VACANCY_LPALOOK,new VisionLocation());
+//    vision_locations.insert(PR_LENS_LUTLOOK,new VisionLocation());
   material_tray.standards_parameters.setTrayCount(2);
-  lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
-  sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
+//  lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
+//  sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -75,28 +87,57 @@ BaseModuleManager::~BaseModuleManager()
             delete  GetMotorByName(temp);
     }
     for (int i = 0; i < output_ios.size(); ++i)
-            delete  GetOutputIoByName(output_ios.keys()[i]);
+        delete  GetOutputIoByName(output_ios.keys()[i]);
     for (int i = 0; i < input_ios.size(); ++i)
-            delete  GetInputIoByName(input_ios.keys()[i]);
+        delete  GetInputIoByName(input_ios.keys()[i]);
     for (int i = 0; i < calibrations.size(); ++i)
-            delete  calibrations[calibrations.keys()[i]];
+        delete  calibrations[calibrations.keys()[i]];
     delete chartCalibration;
 }
 
-bool BaseModuleManager::ReadParameters()
+bool BaseModuleManager::loadParameters()
 {
-    aa_head_module.loadParams();
-    lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
-    sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
+//    QMap<QString,PropertyBase*> temp_map;
+//    temp_map.insert("BASE_MODULE_PARAMS", this);
+//    PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
+
+    material_tray.loadJsonConfig();
+    aa_head_module.loadJsonConfig();
     sut_module.loadParams();
     lut_module.loadParams();
     dothinkey->loadParams();
+    dispense_module.loadConfig();
+    material_tray.loadJsonConfig();
+    lens_loader_module.loadJsonConfig();
+    lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
+    sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
+    LoadVcmFile(VCM_PARAMETER_FILENAME);
+    loadCylinderFiles(CYLINDER_PARAMETER_FILENAME);
+    loadVacuumFiles(VACUUM_PARAMETER_FILENAME);
+    loadVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
+    if(!InitStruct())
+        return false;
     return true;
 }
 
 bool BaseModuleManager::SaveParameters()
 {
-return true;
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("BASE_MODULE_PARAMS", this);
+    PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
+
+    material_tray.saveJsonConfig();
+    aa_head_module.saveJsonConfig();
+    sut_module.saveJsonConfig();
+    lut_module.saveJsonConfig();
+    dothinkey->saveJsonConfig();
+    dispense_module.saveConfig();
+    material_tray.saveJsonConfig();
+    lens_loader_module.saveJsonConfig();
+    lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
+    sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
+    saveVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
+    return true;
 }
 
 bool BaseModuleManager::LoadProfile()
@@ -112,52 +153,41 @@ bool BaseModuleManager::LoadProfile()
         int input_count = XT_Controler_Extend::Profile_Get_IoIn_Count();
         XtGeneralInput::count = input_count;
         for (int i = 0; i < input_count; ++i) {
-           temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoIn_Name(i));
-           if(temp_name == ""||input_ios.contains(temp_name))
-           {
-               qInfo("this already has an input io : %s",temp_name.toStdString().c_str());
-               continue;
-           }
-           XtGeneralInput* input_io = new XtGeneralInput(temp_name,i);
-           input_ios.insert(temp_name,input_io);
+            temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoIn_Name(i));
+            if(temp_name == ""||input_ios.contains(temp_name))
+            {
+                qInfo("this already has an input io : %s",temp_name.toStdString().c_str());
+                continue;
+            }
+            XtGeneralInput* input_io = new XtGeneralInput(temp_name,i);
+            input_ios.insert(temp_name,input_io);
         }
         int output_count = XT_Controler_Extend::Profile_Get_IoOut_Count();
         XtGeneralOutput::count = output_count;
         for (int i = 0; i < output_count; ++i) {
-           temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoOut_Name(i));
-           if(temp_name == ""||output_ios.contains(temp_name))
-           {
-               qInfo("this already has an output io : %s",temp_name.toStdString().c_str());
-               continue;
-           }
-           XtGeneralOutput* output_io = new XtGeneralOutput(temp_name,i);
-           output_ios.insert(temp_name,output_io);
+            temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoOut_Name(i));
+            if(temp_name == ""||output_ios.contains(temp_name))
+            {
+                qInfo("this already has an output io : %s",temp_name.toStdString().c_str());
+                continue;
+            }
+            XtGeneralOutput* output_io = new XtGeneralOutput(temp_name,i);
+            output_ios.insert(temp_name,output_io);
         }
         int motor_count = XT_Controler_Extend::Profile_Get_Axis_Count();
         XtMotor::axis_id_resource = motor_count;
         for (int i = 0; i < motor_count; ++i) {
-           temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_Axis_Name(i));
-           if(temp_name == ""||motors.contains(temp_name))
-           {
-               qInfo("this already has an motor io : %s",temp_name.toStdString().c_str());
-               continue;
-           }
-           XtMotor* motor = new XtMotor();
-           motor->Init(temp_name);
-           motors.insert(temp_name,motor);
+            temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_Axis_Name(i));
+            if(temp_name == ""||motors.contains(temp_name))
+            {
+                qInfo("this already has an motor io : %s",temp_name.toStdString().c_str());
+                continue;
+            }
+            XtMotor* motor = new XtMotor();
+            motor->Init(temp_name);
+            motors.insert(temp_name,motor);
         }
-//        XtVcMotor* motor_lut_vcm = new XtVcMotor();
-//        motor_lut_vcm->Init("LUT_Z",lut_vcm_parameters);
-//        motors.insert("LUT_Z",motor_lut_vcm);
-
-//        XtVcMotor* motor_sut_vcm = new XtVcMotor();
-//        motor_sut_vcm->Init("SUT_Z",sut_vcm_parameters);
-//        motors.insert("SUT_Z",motor_sut_vcm);
-        LoadVcmFile();
-
-        vacuums.insert("LUT_V",new XtVacuum(GetOutputIoByName(u8"LUT吸真空"),GetInputIoByName(u8"LUT真空检测"),GetOutputIoByName(u8"LUT破真空"),u8"LUT_V"));
-        vacuums.insert("SUT_V",new XtVacuum(GetOutputIoByName(u8"SUT1吸真空"),GetInputIoByName(u8"SUT1真空检测"),GetOutputIoByName(u8"SUT1破真空"),u8"LUT_V"));
-        if(!InitStruct())return false;
+        if(loadParameters())return false;
         profile_loaded = true;
         return true;
     }
@@ -165,16 +195,48 @@ bool BaseModuleManager::LoadProfile()
     return false;
 }
 
-bool BaseModuleManager::LoadVcmFile()
+bool BaseModuleManager::LoadVcmFile(QString file_name)
 {
-    QString val;
-    QFile file;
-    file.setFileName(VCM_PARAMETER_FILENAME);
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    QJsonArray array;
+    if(!loadJsonArray(file_name,array))
     {
-        if(!file.open(QFile::ReadWrite)){
-            return false;
+        saveVcmfile(file_name);
+        return false;
+    }
+    for (int i = 0; i < array.count(); i++)
+    {
+        XtVcMotor* temp_motor = new XtVcMotor();
+        temp_motor->parameters.read(array.at(i).toObject());
+        temp_motor->Init();
+        QJsonObject temp_object;
+        temp_motor->parameters.write(temp_object);
+        if(!motors.contains(temp_motor->parameters.motorName()))
+            motors.insert(temp_motor->parameters.motorName(),temp_motor);
+        else
+        {
+            qInfo("vcm motor param name(%s)repeat!",temp_motor->parameters.motorName().toStdString().c_str());
+            delete temp_motor;
         }
+    }
+    return true;
+}
+
+bool BaseModuleManager::saveVcmfile(QString file_name)
+{
+    QJsonArray array;
+    foreach (QString motor_name, motors.keys()) {
+        XtVcMotor* temp_motor = GetVcMotorByName(motor_name);
+        if(temp_motor != nullptr)
+        {
+            QJsonObject object;
+            temp_motor->parameters.write(object);
+            array.append(object);
+        }
+    }
+    if(array.size() > 0)
+        return  saveJsonArray(file_name,array);
+    else
+    {
         VcMotorParameter temp_param;
         QString motor_name = temp_param.motorName();
         QJsonArray json;
@@ -186,116 +248,380 @@ bool BaseModuleManager::LoadVcmFile()
             temp_param.write(temp_object);
             json.append(temp_object);
         }
-        QJsonDocument document;
-        document.setArray(json);
-        QJsonDocument saveDoc(json);
-        file.write(document.toJson());
-        file.close();
+        return  saveJsonArray(file_name,json);
+    }
+}
+
+bool BaseModuleManager::loadVacuumFiles(QString file_name)
+{
+    QJsonArray array;
+    if(!loadJsonArray(file_name,array))
+    {
+        saveVacuumFiles(file_name);
+        return false;
+    }
+    for (int i = 0; i < array.count(); i++)
+    {
+        XtVacuum* temp_vacuum = new XtVacuum();
+        temp_vacuum->parameters.read(array.at(i).toObject());
+        QJsonObject temp_object;
+        temp_vacuum->parameters.write(temp_object);
+        if(!motors.contains(temp_vacuum->parameters.vacuumName()))
+            vacuums.insert(temp_vacuum->parameters.vacuumName(),temp_vacuum);
+        else
+        {
+            qInfo("vcm motor param name(%s)repeat!",temp_vacuum->parameters.vacuumName().toStdString().c_str());
+            delete temp_vacuum;
+        }
+    }
+    return true;
+}
+
+bool BaseModuleManager::saveVacuumFiles(QString file_name)
+{
+    QJsonArray array;
+    foreach (QString temp_name, vacuums.keys()) {
+        XtVacuum* temp_vacuum = GetVacuumByName(temp_name);
+        if(temp_vacuum != nullptr)
+        {
+            QJsonObject object;
+            temp_vacuum->parameters.write(object);
+            array.append(object);
+        }
+    }
+    if(array.size() > 0)
+        return  saveJsonArray(file_name,array);
+    else
+    {
+        XtVacuumParameter temp_param;
+        QString vcauum_name = temp_param.vacuumName();
+        QJsonArray json;
+        for (int i = 0; i < 6; ++i) {
+            QJsonObject temp_object;
+            QString temp_name = vcauum_name;
+            temp_name.append(QString::number(i));
+            temp_param.setVacuumName(temp_name);
+            temp_param.write(temp_object);
+            json.append(temp_object);
+        }
+        return  saveJsonArray(file_name,json);
+    }
+}
+
+bool BaseModuleManager::loadCylinderFiles(QString file_name)
+{
+    QJsonArray array;
+    if(!loadJsonArray(file_name,array))
+    {
+        saveCylinderFiles(file_name);
+        return false;
+    }
+    for (int i = 0; i < array.count(); i++)
+    {
+        XtCylinder* temp_cylinder = new XtCylinder();
+        temp_cylinder->parameters.read(array.at(i).toObject());
+        QJsonObject temp_object;
+        temp_cylinder->parameters.write(temp_object);
+        if(!motors.contains(temp_cylinder->parameters.cylinderName()))
+            cylinder.insert(temp_cylinder->parameters.cylinderName(),temp_cylinder);
+        else
+        {
+            qInfo("vcm motor param name(%s)repeat!",temp_cylinder->parameters.cylinderName().toStdString().c_str());
+            delete temp_cylinder;
+        }
+    }
+    return true;
+}
+
+bool BaseModuleManager::saveCylinderFiles(QString file_name)
+{
+    QJsonArray array;
+    foreach (QString temp_name, vacuums.keys()) {
+        XtCylinder* temp_cylinder = GetCylinderByName(temp_name);
+        if(temp_cylinder != nullptr)
+        {
+            QJsonObject object;
+            temp_cylinder->parameters.write(object);
+            array.append(object);
+        }
+    }
+    if(array.size() > 0)
+        return  saveJsonArray(file_name,array);
+    else
+    {
+        XtCylinderParameter temp_param;
+        QString vcauum_name = temp_param.cylinderName();
+        QJsonArray json;
+        for (int i = 0; i < 6; ++i) {
+            QJsonObject temp_object;
+            QString temp_name = vcauum_name;
+            temp_name.append(QString::number(i));
+            temp_param.setCylinderName(temp_name);
+            temp_param.write(temp_object);
+            json.append(temp_object);
+        }
+        return  saveJsonArray(file_name,json);
+    }
+}
+
+bool BaseModuleManager::loadVisionLoactionFiles(QString file_name)
+{
+    QJsonArray array;
+    if(!loadJsonArray(file_name,array))
+    {
+        saveVisionLoactionFiles(file_name);
+        return false;
+    }
+    for (int i = 0; i < array.count(); i++)
+    {
+        VisionLocation* temp_location = new VisionLocation();
+        temp_location->parameters.read(array.at(i).toObject());
+        QJsonObject temp_object;
+        temp_location->parameters.write(temp_object);
+        if(!motors.contains(temp_location->parameters.locationName()))
+            vision_locations.insert(temp_location->parameters.locationName(),temp_location);
+        else
+        {
+            qInfo("vcm motor param name(%s)repeat!",temp_location->parameters.locationName().toStdString().c_str());
+            delete temp_location;
+        }
+    }
+    return true;
+}
+
+bool BaseModuleManager::saveVisionLoactionFiles(QString file_name)
+{
+    QJsonArray array;
+    foreach (QString temp_name, vision_locations.keys()) {
+        VisionLocation* temp_location = GetVisionLocationByName(temp_name);
+        if(temp_location != nullptr)
+        {
+            QJsonObject object;
+            temp_location->parameters.write(object);
+            array.append(object);
+        }
+    }
+    if(array.size() > 0)
+        return  saveJsonArray(file_name,array);
+    else
+    {
+        VisionLocationParameter temp_param;
+        QString location_name = temp_param.locationName();
+        QJsonArray json;
+        for (int i = 0; i < 6; ++i) {
+            QJsonObject temp_object;
+            QString temp_name = location_name;
+            temp_name.append(QString::number(i));
+            temp_param.setLocationName(temp_name);
+            temp_param.write(temp_object);
+            json.append(temp_object);
+        }
+        return  saveJsonArray(file_name,json);
+    }
+}
+
+//bool BaseModuleManager::LoadVcmFile()
+//{
+//    QString val;
+//    QFile file;
+//    file.setFileName(VCM_PARAMETER_FILENAME);
+//    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+//    {
+//        if(!file.open(QFile::ReadWrite)){
+//            return false;
+//        }
+//        VcMotorParameter temp_param;
+//        QString motor_name = temp_param.motorName();
+//        QJsonArray json;
+//        for (int i = 0; i < 4; ++i) {
+//            QJsonObject temp_object;
+//            QString temp_name = motor_name;
+//            temp_name.append(QString::number(i));
+//            temp_param.setMotorName(temp_name);
+//            temp_param.write(temp_object);
+//            json.append(temp_object);
+//        }
+//        QJsonDocument document;
+//        document.setArray(json);
+//        QJsonDocument saveDoc(json);
+//        file.write(document.toJson());
+//        file.close();
+//        return false;
+//    }
+//    val = file.readAll();
+//    file.close();
+
+//    QJsonParseError error;
+//    QJsonDocument doucment = QJsonDocument::fromJson(val.toUtf8(), &error);
+//    if (!doucment.isNull() && (error.error == QJsonParseError::NoError)) { //解析否出现错误
+//        if (doucment.isArray()) { // 数组判断
+//            QJsonArray array = doucment.array(); // 转数组
+//            QJsonArray array_new;
+//            for (int i = 0; i < array.count(); i++)
+//            {
+//                XtVcMotor* temp_motor = new XtVcMotor();
+//                temp_motor->parameters.read(array.at(i).toObject());
+//                temp_motor->Init();
+//                QJsonObject temp_object;
+//                temp_motor->parameters.write(temp_object);
+//                array_new.append(temp_object);
+//                if(!motors.contains(temp_motor->parameters.motorName()))
+//                    motors.insert(temp_motor->parameters.motorName(),temp_motor);
+//                else
+//                    delete temp_motor;
+//            }
+
+//            QFile saveFile(VCM_PARAMETER_FILENAME);
+//            if (saveFile.open(QIODevice::WriteOnly)) {
+//                QJsonDocument saveDoc(array_new);
+//                saveFile.write(saveDoc.toJson());
+//                saveFile.close();
+//            }
+//        }
+//    }
+//    return true;
+//}
+
+bool BaseModuleManager::loadJsonArray(QString file_name,QJsonArray &array)
+{
+    QString val;
+    QFile file;
+    file.setFileName(file_name);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qWarning("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return false;
     }
     val = file.readAll();
     file.close();
 
     QJsonParseError error;
-        QJsonDocument doucment = QJsonDocument::fromJson(val.toUtf8(), &error);
-        if (!doucment.isNull() && (error.error == QJsonParseError::NoError)) { //解析否出现错误
-            if (doucment.isArray()) { // 数组判断
-                QJsonArray array = doucment.array(); // 转数组
-                QJsonArray array_new;
-                for (int i = 0; i < array.count(); i++)
-                {
-                    XtVcMotor* temp_motor = new XtVcMotor();
-                   temp_motor->parameters.read(array.at(i).toObject());
-                    temp_motor->Init();
-                    QJsonObject temp_object;
-                    temp_motor->parameters.write(temp_object);
-                    array_new.append(temp_object);
-                    if(!motors.contains(temp_motor->parameters.motorName()))
-                        motors.insert(temp_motor->parameters.motorName(),temp_motor);
-                    else
-                        delete temp_motor;
-                }
-
-                QFile saveFile(VCM_PARAMETER_FILENAME);
-                if (saveFile.open(QIODevice::WriteOnly)) {
-                    QJsonDocument saveDoc(array_new);
-                    saveFile.write(saveDoc.toJson());
-                    saveFile.close();
-                }
-            }
+    QJsonDocument doucment = QJsonDocument::fromJson(val.toUtf8(), &error);
+    if (!doucment.isNull() && (error.error == QJsonParseError::NoError)) { //解析否出现错误
+        if (doucment.isArray()) { // 数组判断
+            array = doucment.array(); // 转数组
         }
+    }
+    if(array.size()>0)
+        return true;
+    else
+        return false;
+}
+
+bool BaseModuleManager::saveJsonArray(QString file_name,QJsonArray &array)
+{
+    QFile file;
+    file.setFileName(file_name);
+    if(!file.open(QFile::ReadWrite)){
+        qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return false;
+    }
+    QJsonDocument document;
+    document.setArray(array);
+    file.write(document.toJson());
+    file.close();
     return true;
 }
 
 bool BaseModuleManager::InitStruct()
 {
-    XtMotor *lut_x = GetMotorByName("LUT_X");
-    XtMotor *lut_y = GetMotorByName("LUT_Y");
-    XtVcMotor *lut_z = GetVcMotorByName("LUT_Z");
-    XtMotor *sut_x = GetMotorByName("SUT1_X");
-    XtMotor *sut_y = GetMotorByName("SUT1_Y");
-    XtVcMotor *sut_z = GetVcMotorByName("SUT_Z");
-    XtMotor *aa_x = GetMotorByName("AA1_X");
-    XtMotor *aa_y = GetMotorByName("AA1_Y");
-    XtMotor *aa_z = GetMotorByName("AA1_Z");
-    XtMotor *aa_a = GetMotorByName("AA1_A");
-    XtMotor *aa_b = GetMotorByName("AA1_B");
-    XtMotor *aa_c = GetMotorByName("AA1_C");
-    XtGeneralOutput * uv1 = GetOutputIoByName(u8"AA1_UV灯1");
-    XtGeneralOutput * uv2 = GetOutputIoByName(u8"AA1_UV灯2");
-    XtGeneralOutput * uv3 = GetOutputIoByName(u8"AA1_UV灯3");
-    XtGeneralOutput * uv4 = GetOutputIoByName(u8"AA1_UV灯4");
+    foreach (XtVacuum* temp_vacuum, vacuums.values()) {
+        temp_vacuum->Init(GetOutputIoByName(temp_vacuum->parameters.outIoName()),
+                          GetInputIoByName(temp_vacuum->parameters.inIoName()),
+                          GetOutputIoByName(temp_vacuum->parameters.breakIoName()));
+    }
 
-    XtVacuum *lut_v = GetVacuumByName("LUT_V");
-    XtVacuum *lut_v_u = GetVacuumByName("LUT_V_U");
-    XtVacuum *sut_v = GetVacuumByName("SUT_V");
-//    XtCylinder *sut_p = GetCylinderByName("SUT_P");
-    XtCylinder *sut_j = GetCylinderByName("SUT_J");
-    XtGeneralOutput *dispense_o = GetOutputIoByName(u8"SUT1点胶阀");
-    XtGeneralOutput *gripper = GetOutputIoByName("AA1_GripON");
-
-//    lut_carrier.Init("lut_carrier",lut_carrier.parameters)
-    lut_carrier.Init("LUT",lut_x,lut_y,lut_z,lut_v);
-    sut_carrier.Init("SUT",sut_x,sut_y,sut_z,sut_v);
+    foreach (XtCylinder* temp_cylinder, cylinder.values()) {
+        temp_cylinder->Init(GetOutputIoByName(temp_cylinder->parameters.oneInName()),
+                            GetInputIoByName(temp_cylinder->parameters.oneInName()),
+                            GetInputIoByName(temp_cylinder->parameters.zeroInName()),
+                            GetOutputIoByName(temp_cylinder->parameters.zeroOutName()));
+    }
+    lut_carrier.Init("lut_carrier",GetMotorByName(lut_module.parameters.motorXName()),
+                     GetMotorByName(lut_module.parameters.motorYName()),
+                     GetVcMotorByName(lut_module.parameters.motorZName()),
+                     GetVacuumByName(lut_module.parameters.vacuum1Name()));
+    sut_carrier.Init("sut_carrier",GetMotorByName(sut_module.parameters.motorXName()),
+                     GetMotorByName(sut_module.parameters.motorYName()),
+                     GetVcMotorByName(sut_module.parameters.motorZName()),
+                     GetVacuumByName(sut_module.parameters.vacuumName()));
     lens_picker.Init(GetVcMotorByName(lens_pick_arm.parameters.motorXName()),
                      GetMotorByName(lens_pick_arm.parameters.motorTName()),
                      GetVacuumByName(lens_pick_arm.parameters.vacuumName()));
     lens_pick_arm.Init(GetMotorByName(lens_pick_arm.parameters.motorTrayName()),
                        GetMotorByName(lens_pick_arm.parameters.motorXName()),
                        GetMotorByName(lens_pick_arm.parameters.motorYName()),
-                                      &lens_picker);
-    aa_head_module.Init("AAHead",aa_x,aa_y,aa_z,aa_a,aa_b,aa_c,gripper,uv1,uv2,uv3,uv4,XtMotor::GetThreadResource());
-    material_tray.Init();
-    calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,aa_x,aa_y,vision_locations[PR_AA1_LUT_UPLOOK]));
-    calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_SUT_DOWNLOOK]));
-    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_AA1_TOOL_UPLOOK]));
-    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH,sut_x,sut_y,vision_locations[PR_AA1_TOOL_DOWNLOOK]));
-    calibrations.insert(AA1_MUSHROOMHEAD_CALIBRATION,new Calibration(AA1_MUSHROOMHEAD_CALIBRATION,CALIBRATION_RESULT_PATH,lut_x,lut_y,vision_locations[PR_AA1_MUSHROOMHEAD]));
-    calibrations.insert(LPA_LENS_CALIBRATION,new Calibration(LPA_LENS_CALIBRATION,CALIBRATION_RESULT_PATH,GetMotorByName(lens_pick_arm.parameters.motorTrayName()),GetMotorByName(lens_pick_arm.parameters.motorYName()),vision_locations[PR_LENS_LPALOOK]));
+                       &lens_picker);
+    aa_head_module.Init("AAHead",GetMotorByName(aa_head_module.parameters.motorXName()),
+                        GetMotorByName(aa_head_module.parameters.motorYName()),
+                        GetMotorByName(aa_head_module.parameters.motorZName()),
+                        GetMotorByName(aa_head_module.parameters.motorAName()),
+                        GetMotorByName(aa_head_module.parameters.motorBName()),
+                        GetMotorByName(aa_head_module.parameters.motorCName()),
+                        GetOutputIoByName(aa_head_module.parameters.gripperName()),
+                        GetOutputIoByName(aa_head_module.parameters.uv1Name()),
+                        GetOutputIoByName(aa_head_module.parameters.uv2Name()),
+                        GetOutputIoByName(aa_head_module.parameters.uv3Name()),
+                        GetOutputIoByName(aa_head_module.parameters.uv4Name()),
+                        XtMotor::GetThreadResource());
 
-    chartCalibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH, sut_x, sut_y);
+    calibrations[AA1_UPLOOK_CALIBRATION]->Init(GetMotorByName(aa_head_module.parameters.motorXName()),
+                                               GetMotorByName(aa_head_module.parameters.motorYName()),
+                                               GetVisionLocationByName(PR_AA1_LUT_UPLOOK));
+    calibrations[AA1_DOWNLOOK_CALIBRATION]->Init(GetMotorByName(sut_module.parameters.motorXName()),
+                                                 GetMotorByName(sut_module.parameters.motorYName()),
+                                                 GetVisionLocationByName(PR_SUT_DOWNLOOK));
+    calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->Init(GetMotorByName(lut_module.parameters.motorXName()),
+                                                      GetMotorByName(lut_module.parameters.motorYName()),
+                                                      GetVisionLocationByName(PR_AA1_TOOL_UPLOOK));
+    calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->Init(GetMotorByName(sut_module.parameters.motorXName()),
+                                                        GetMotorByName(sut_module.parameters.motorYName()),
+                                                        GetVisionLocationByName(PR_AA1_TOOL_DOWNLOOK));
+    calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->Init(GetMotorByName(lut_module.parameters.motorXName()),
+                                                     GetMotorByName(lut_module.parameters.motorYName()),
+                                                     GetVisionLocationByName(PR_AA1_MUSHROOMHEAD));
+    calibrations[LPA_LENS_CALIBRATION]->Init(GetMotorByName(lens_pick_arm.parameters.motorTrayName()),
+                                             GetMotorByName(lens_pick_arm.parameters.motorYName()),
+                                             GetVisionLocationByName(PR_LENS_LPALOOK));
 
-    vision_locations[PR_AA1_TOOL_UPLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->getCaliMapping(),lightingModule);
-    vision_locations[PR_AA1_TOOL_DOWNLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->getCaliMapping(),lightingModule);
-    vision_locations[PR_AA1_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
-    vision_locations[PR_SUT_DOWNLOOK]->Init(visionModule,calibrations[AA1_DOWNLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
-    vision_locations[PR_LOAD_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
-    vision_locations[PR_AA1_MUSHROOMHEAD]->Init(visionModule,calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->getCaliMapping(),lightingModule);
-    vision_locations[PR_LENS_LPALOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
-    vision_locations[PR_VACANCY_LPALOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
-    vision_locations[PR_LENS_LUTLOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
+    chartCalibration->Init(GetMotorByName(lut_module.parameters.motorXName()),
+                           GetMotorByName(lut_module.parameters.motorYName()),
+                           nullptr);
+    foreach (VisionLocation* temp_vision, vision_locations.values()) {
+        temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
+    }
+//    vision_locations[PR_AA1_TOOL_UPLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_AA1_TOOL_DOWNLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_AA1_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_SUT_DOWNLOOK]->Init(visionModule,calibrations[AA1_DOWNLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_LOAD_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_AA1_MUSHROOMHEAD]->Init(visionModule,calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_LENS_LPALOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_VACANCY_LPALOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
+//    vision_locations[PR_LENS_LUTLOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
 
-    lut_module.Init(&lut_carrier,vision_locations[PR_AA1_LUT_UPLOOK],vision_locations[PR_AA1_TOOL_UPLOOK],vision_locations[PR_LOAD_LUT_UPLOOK],vision_locations[PR_AA1_MUSHROOMHEAD],lut_v,lut_v_u,gripper);
-    sut_module.Init(&sut_carrier,vision_locations[PR_SUT_DOWNLOOK],vision_locations[PR_AA1_TOOL_DOWNLOOK],sut_v);
+    lut_module.Init(&lut_carrier,GetVisionLocationByName(PR_AA1_LUT_UPLOOK),
+                    GetVisionLocationByName(PR_AA1_TOOL_UPLOOK),
+                    GetVisionLocationByName(PR_LOAD_LUT_UPLOOK),
+                    GetVisionLocationByName(PR_AA1_MUSHROOMHEAD),
+                    GetVacuumByName(lut_module.parameters.vacuum1Name()),
+                    GetVacuumByName(lut_module.parameters.vacuum1Name()),
+                    GetOutputIoByName(aa_head_module.parameters.gripperName()));
+    sut_module.Init(&sut_carrier,GetVisionLocationByName(PR_SUT_DOWNLOOK),
+                    GetVisionLocationByName(PR_AA1_TOOL_DOWNLOOK),
+                    GetVacuumByName(sut_module.parameters.vacuumName()));
     QVector<XtMotor *> executive_motors;
-    executive_motors.push_back(sut_x);
-    executive_motors.push_back(sut_y);
-    executive_motors.push_back(sut_z);
-    dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,dispense_o);
-    dispense_module.Init(DISPENSER_PARAMETER_PATH,AA1_DISPENSE,calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule,&sut_carrier,dispense_o);
+    executive_motors.push_back(GetMotorByName(lut_module.parameters.motorXName()));
+    executive_motors.push_back(GetMotorByName(lut_module.parameters.motorYName()));
+    executive_motors.push_back(GetMotorByName(lut_module.parameters.motorZName()));
+    dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,
+                   GetOutputIoByName(dispenser.parameters.dispenseIo()));
+    dispense_module.Init(DISPENSER_PARAMETER_PATH,AA1_DISPENSE,calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule,&sut_carrier,
+                         GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
-    lens_loader_module.Init(&lens_pick_arm,&material_tray,&lut_carrier,vision_locations[PR_LENS_LPALOOK],vision_locations[PR_VACANCY_LPALOOK],vision_locations[PR_LENS_LUTLOOK]);
+    lens_loader_module.Init(&lens_pick_arm,&material_tray,&lut_carrier,GetVisionLocationByName(PR_LENS_LPALOOK),
+                            GetVisionLocationByName(PR_VACANCY_LPALOOK),GetVisionLocationByName(PR_LENS_LUTLOOK));
     profile_loaded = true;
 
     return true;
@@ -430,10 +756,10 @@ bool BaseModuleManager::allMotorsSeekOrigin()
 void BaseModuleManager::stopSeeking()
 {
     if(is_init)
-    foreach (XtMotor *m, motors.values()) {
-        m->StopSeeking();
-        m->Disable();
-    }
+        foreach (XtMotor *m, motors.values()) {
+            m->StopSeeking();
+            m->Disable();
+        }
 }
 
 void BaseModuleManager::performUplookCalibration()
@@ -496,41 +822,81 @@ QString BaseModuleManager::getMotorsName(int index)
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)
 {
+    if(name == "")return nullptr;
     if(motors.contains(name))
         return motors[name];
+    else
+        qInfo("can not find motor io %s",name.toStdString().c_str());
     return nullptr;
 }
 
 XtVcMotor *BaseModuleManager::GetVcMotorByName(QString name)
 {
+    if(name == "")return nullptr;
     if(motors.contains(name))
         return  dynamic_cast<XtVcMotor*>(motors[name]);
+    else
+        qInfo("can not find vcm motor io %s",name.toStdString().c_str());
     return nullptr;
 }
 
 XtGeneralOutput *BaseModuleManager::GetOutputIoByName(QString name)
 {
+    if(name == "")return nullptr;
     if(output_ios.contains(name))
         return output_ios[name];
+    else
+        qInfo("can not find output io %s",name.toStdString().c_str());
     return nullptr;
 }
 
 XtGeneralInput *BaseModuleManager::GetInputIoByName(QString name)
 {
+    if(name == "")return nullptr;
     if(output_ios.contains(name))
         return input_ios[name];
+    else
+        qInfo("can not find input io %s",name.toStdString().c_str());
     return nullptr;
 }
 
 XtVacuum *BaseModuleManager::GetVacuumByName(QString name)
 {
+    if(name == "")return nullptr;
     if(vacuums.contains(name))
         return vacuums[name];
+    else
+        qInfo("can not find vacuum io %s",name.toStdString().c_str());
     return nullptr;
 }
 
 XtCylinder *BaseModuleManager::GetCylinderByName(QString name)
 {
+    if(name == "")return nullptr;
+    if(cylinder.contains(name))
+        return cylinder[name];
+    else
+        qInfo("can not find cylinder io %s",name.toStdString().c_str());
+    return nullptr;
+}
+
+VisionLocation *BaseModuleManager::GetVisionLocationByName(QString name)
+{
+    if(name == "")return nullptr;
+    if(vision_locations.contains(name))
+        return vision_locations[name];
+    else
+        qInfo("can not find vision location io %s",name.toStdString().c_str());
+    return nullptr;
+}
+
+Pixel2Mech *BaseModuleManager::GetPixel2MechByName(QString name)
+{
+    if(name == "")return nullptr;
+    if(calibrations.contains(name))
+        return calibrations[name]->getCaliMapping();
+    else
+        qInfo("can not find calibration io %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -586,16 +952,16 @@ bool BaseModuleManager::getOutput(QString name)
 void BaseModuleManager::motorSeekOrigin(QString name)
 {
     if (motors.contains(name)) {
-         motors[name]->SeekOrigin();
+        motors[name]->SeekOrigin();
     }
 }
 
 double BaseModuleManager::getMotorFeedbackPos(QString name)
 {
-     if (motors.contains(name)) {
-          return motors[name]->GetFeedbackPos();
-     }
-     return 0;
+    if (motors.contains(name)) {
+        return motors[name]->GetFeedbackPos();
+    }
+    return 0;
 }
 
 double BaseModuleManager::getMotorFeedbackPos(int index)

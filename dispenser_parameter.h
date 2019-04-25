@@ -12,6 +12,7 @@ public:
     Q_PROPERTY(double closeOffset READ closeOffset WRITE setCloseOffset NOTIFY closeOffsetChanged)
     Q_PROPERTY(double maximumSpeed READ maximumSpeed WRITE setMaximumSpeed NOTIFY maximumSpeedChanged)
     Q_PROPERTY(double endSpeed READ endSpeed WRITE setEndSpeed NOTIFY endSpeedChanged)
+    Q_PROPERTY(QString dispenseIo READ dispenseIo WRITE setDispenseIo NOTIFY DispenseIoChanged)
 //    Q_PROPERTY(double theta READ theta WRITE setTheta NOTIFY ThetaChanged)
     double openOffset() const
     {
@@ -36,6 +37,11 @@ public:
 //    {
 //        return m_theta;
 //    }
+
+    QString dispenseIo() const
+    {
+        return m_dispenseIo;
+    }
 
 public slots:
     void setOpenOffset(double openOffset)
@@ -87,6 +93,15 @@ public slots:
 //        emit ThetaChanged(m_theta);
 //    }
 
+    void setDispenseIo(QString dispenseIo)
+    {
+        if (m_dispenseIo == dispenseIo)
+            return;
+
+        m_dispenseIo = dispenseIo;
+        emit DispenseIoChanged(m_dispenseIo);
+    }
+
 signals:
     void openOffsetChanged(double openOffset);
 
@@ -106,12 +121,15 @@ signals:
 
 //    void ThetaChanged(double theta);
 
+    void DispenseIoChanged(QString dispenseIo);
+
 private:
     double m_openOffset = 0;
     double m_closeOffset = 0;
     double m_maximumSpeed = 0;
     double m_endSpeed = 0;
-//    double m_theta = 0;
+    //    double m_theta = 0;
+    QString m_dispenseIo ="SUT_DISPENSE";
 };
 
 #endif // DISPENSER_PARAMETER_H

@@ -15,7 +15,7 @@ void SutModule::Init(MaterialCarrier *carrier, VisionLocation* downlook_location
     loadParams();
 }
 
-void SutModule::updateParams()
+void SutModule::saveJsonConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("SUT_PARAMS", &this->parameters);
@@ -25,8 +25,8 @@ void SutModule::updateParams()
     temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
     temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
-    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
-    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
+//    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
+//    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
     PropertyBase::saveJsonConfig("config//sutConfig.json", temp_map);
 }
 
@@ -40,8 +40,8 @@ void SutModule::loadParams()
     temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
     temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
-    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
-    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
+//    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
+//    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
     PropertyBase::loadJsonConfig("config//sutConfig.json", temp_map);
 }
 

@@ -30,7 +30,6 @@ void Dispenser::Init(int curve_id, int thread_curve, int thread_trig, QVector<Xt
     this->dem = executive_motors.length();
     this->output_io = output_io;
     state = DISPENSER_IDLE;
-//    loadParams();
 }
 
 Dispenser::~Dispenser()

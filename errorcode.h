@@ -40,6 +40,7 @@ private:
     QString error_source;
     QString error_content;
 public:
+    void setName(QString name);
     void AppendError(QString error);
     void AppendLineError(QString error = "");
     virtual QString GetCurrentError();

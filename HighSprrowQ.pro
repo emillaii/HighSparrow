@@ -185,7 +185,9 @@ HEADERS += \
     trayloadermodule.h \
     trayclip.h \
     trayloaderparameter.h \
-    trayclipstandardsparameter.h
+    trayclipstandardsparameter.h\
+    xtvacuumparameter.h \
+    xtcylinderparameter.h
 
 DISTFILES += \
     icons/index.theme

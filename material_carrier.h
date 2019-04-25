@@ -6,7 +6,7 @@
 #include "material_carrier_parameter.h"
 #include "position_define.h"
 #include "xtmotor.h"
-class MaterialCarrier
+class MaterialCarrier:public ErrorBase
 {
 public:
     MaterialCarrier();

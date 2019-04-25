@@ -15,10 +15,9 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     this->unload_vacuum = unload_vacuum;
     this->mushroom_location = mushroom_location;
     this->gripper = gripper;
-    loadParams();
 }
 
-void LutModule::updateParams()
+void LutModule::saveJsonConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LUT_PARAMS", &parameters);
@@ -34,10 +33,10 @@ void LutModule::updateParams()
     temp_map.insert("AA2_PICKLENS_POSITION", &aa2_picklens_position);
     temp_map.insert("AA2_UNPICKLENS_POSITION", &aa2_unpicklens_position);
     temp_map.insert("AA2_UPLOOK_POSITION", &aa2_uplook_position);
-    temp_map.insert("VISION_UPLOOK_LOCATION", &this->uplook_location->parameters);
-    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->updownlook_location->parameters);
-    temp_map.insert("VISION_LOAD_LOCATION", &this->load_location->parameters);
-    temp_map.insert("VISION_MUSHROOM_LOCATION", &this->mushroom_location->parameters);
+//    temp_map.insert("VISION_UPLOOK_LOCATION", &this->uplook_location->parameters);
+//    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->updownlook_location->parameters);
+//    temp_map.insert("VISION_LOAD_LOCATION", &this->load_location->parameters);
+//    temp_map.insert("VISION_MUSHROOM_LOCATION", &this->mushroom_location->parameters);
     PropertyBase::saveJsonConfig("config//lutConfig.json", temp_map);
 }
 
@@ -57,10 +56,10 @@ void LutModule::loadParams()
     temp_map.insert("AA2_PICKLENS_POSITION", &aa2_picklens_position);
     temp_map.insert("AA2_UNPICKLENS_POSITION", &aa2_unpicklens_position);
     temp_map.insert("AA2_UPLOOK_POSITION", &aa2_uplook_position);
-    temp_map.insert("VISION_UPLOOK_LOCATION", &this->uplook_location->parameters);
-    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->updownlook_location->parameters);
-    temp_map.insert("VISION_LOAD_LOCATION", &this->load_location->parameters);
-    temp_map.insert("VISION_MUSHROOM_LOCATION", &this->mushroom_location->parameters);
+//    temp_map.insert("VISION_UPLOOK_LOCATION", &this->uplook_location->parameters);
+//    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->updownlook_location->parameters);
+//    temp_map.insert("VISION_LOAD_LOCATION", &this->load_location->parameters);
+//    temp_map.insert("VISION_MUSHROOM_LOCATION", &this->mushroom_location->parameters);
     PropertyBase::loadJsonConfig("config//lutConfig.json", temp_map);
 }
 

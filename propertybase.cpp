@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QMetaProperty>
+#include <qjsonarray.h>
 
 
 PropertyBase::PropertyBase(QObject *parent) : QObject(parent)

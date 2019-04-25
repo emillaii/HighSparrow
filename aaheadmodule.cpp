@@ -8,7 +8,7 @@ AAHeadModule::AAHeadModule()
     //connect(&this->parameters, &AAHeadParameters::paramsChanged, this, &AAHeadModule::updateParams);
 }
 
-void AAHeadModule::loadParams()
+void AAHeadModule::loadJsonConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("AA_HEAD_PARAMS", &parameters);
@@ -16,7 +16,7 @@ void AAHeadModule::loadParams()
     PropertyBase::loadJsonConfig(AA_HEAD_MODULE_JSON, temp_map);
 }
 
-void AAHeadModule::updateParams()
+void AAHeadModule::saveJsonConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("AA_HEAD_PARAMS", &this->parameters);
@@ -43,7 +43,7 @@ void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMoto
     this->uv3 = uv3;
     this->uv4 = uv4;
     this->thread_id = thread_id;
-    loadParams();
+    setName(name);
 }
 
 bool AAHeadModule::moveToMushroomPosition()

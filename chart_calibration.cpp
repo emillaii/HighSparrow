@@ -1,8 +1,8 @@
 #include "chart_calibration.h"
 #include "visionavadaptor.h"
 #include "commonutils.h"
-ChartCalibration::ChartCalibration(Dothinkey *dothinkey, int max_intensity, int min_area, int max_area, QString name, QString file_name, XtMotor *motor_x, XtMotor *motor_y, QObject *parent)
-    :Calibration(name,file_name,motor_x,motor_y,nullptr,nullptr)
+ChartCalibration::ChartCalibration(Dothinkey *dothinkey, int max_intensity, int min_area, int max_area, QString name, QString file_name, QObject *parent)
+    :Calibration(name,file_name,nullptr)
 {
     this->dothinkey = dothinkey;
     this->max_intensity = max_intensity;

@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
 //    engine.rootContext()->setContextProperty("prVACANCYLpaLook",&highSprrow.baseModuleManager->vision_locations[PR_VACANCY_LPALOOK]->parameters);
 //    engine.rootContext()->setContextProperty("prLENSLutLook",&highSprrow.baseModuleManager->vision_locations[PR_LENS_LUTLOOK]->parameters);
 
+
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);
     engine.rootContext()->setContextProperty("aaCoreParams", &highSprrow.logicManager->aaCore->parameters);

@@ -3,7 +3,111 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.2
 
+
+
 ItemDelegate {
+    property var moveTo1 : function(){
+        console.log("Move To Downlook Position")
+        sutModule.moveToDownlookPos()
+    }
+    property var cali1 : function(){
+        console.log("Start Downlook Cali")
+        baseModuleManager.performDownlookCalibration()
+    }
+    property var perform1 : function(){
+        console.log("only PR")
+        highSprrow.performOnlySUTDownlookPR()
+    }
+
+    property var moveTo2 : function(){
+        console.log("Move To Tool Downlook Position")
+        sutModule.moveToToolDownlookPos(true)
+    }
+    property var cali2 : function(){
+        console.log("Start Mushroom Cali")
+        baseModuleManager.performUpDownlookCalibration()
+    }
+    property var perform2 : function(){
+        console.log("Perform PR")
+        sutModule.toolDownlookPR(false,true)
+    }
+
+    property var moveTo3 : function(){
+        console.log("Move To Tool Uplook Position")
+        lutModule.moveToToolUplookPos(true)
+    }
+    property var cali3 : function(){
+        console.log("Start Mushroom Cali")
+        baseModuleManager.performUpDownlookUpCalibration()
+    }
+    property var perform3 : function(){
+        console.log("Perform PR")
+        lutModule.toolUplookPR(false,true)
+    }
+
+    property var moveTo4 : function(){
+        console.log("Move To Mushroom Position")
+        lutModule.moveToAA1MushroomLens(true)
+    }
+    property var cali4 : function(){
+        console.log("Start Mushroom Cali")
+        baseModuleManager.performAA1MushroomHeadCalibration()
+    }
+    property var perform4 : function(){
+        console.log("Perform PR")
+        highSprrow.performLUTMushroomPR()
+    }
+
+    property var moveTo5 : function(){
+        console.log("Move To Uplook Position")
+        lutModule.moveToAA1UplookPos(true)
+    }
+    property var cali5 : function(){
+        console.log("Start Uplook Cali")
+        baseModuleManager.performUplookCalibration()
+    }
+    property var perform5 : function(){
+        console.log("Perform PR")
+        highSprrow.performLUTUplookPR()
+    }
+
+    property var moveTo6 : function(){
+        console.log("料盘lens视觉移动")
+        logicManager.lensPickArmMoveToTray1StartPos()
+    }
+    property var cali6 : function(){
+        console.log("料盘lens视觉校正")
+        baseModuleManager.performLPALensCalibration()
+    }
+    property var perform6 : function(){
+        console.log("料盘lens视觉执行PR")
+        highSprrow.performLPALensPR()
+    }
+
+    property var moveTo7 : function(){
+        console.log("料盘空位视觉移动")
+        logicManager.lensPickArmMoveToTray1StartPos()
+    }
+    property var cali7 : function(){
+        console.log("此项无校正方法···")
+    }
+    property var perform7 : function(){
+        console.log("料盘空位视觉执行PR")
+        highSprrow.performVacancyLensPR()
+    }
+
+    property var moveTo8 : function(){
+        console.log("Lut Lens 视觉移动")
+        logicManager.lensPickArmMoveToLutPos2()
+    }
+    property var cali8 : function(){
+        console.log("此项无此方法···")
+    }
+    property var perform8 : function(){
+        console.log("Lut Lens 视觉执行PR")
+        highSprrow.performLUTLensPR()
+    }
+
     width: parent.width
     contentItem: ColumnLayout {
         spacing: 0
@@ -23,6 +127,159 @@ ItemDelegate {
         }
         ColumnLayout {
             visible: calibrationViewSwitch.checked
+
+
+
+            ListModel{
+                id: calibration_model
+//*
+                ListElement{
+                    name:"SUT Downlook PR"
+                    item: "prSUTDownlookParams"
+                }
+                ListElement{
+                    name:"SUT ToolDownlook PR"
+                    item:"prAA1ToolDownlookParams"
+                }
+                ListElement{
+                    name:"LUT ToolUplook PR"
+                    item:"prAA1ToolUplookParams"
+                }
+                ListElement{
+                    name:"LUT Mushroom PR"
+                    item:"prAA1MushroomParams"
+                }
+                ListElement{
+                    name:"LUT Uplook PR"
+                    item:"prAA1LUTUplookParams"
+                }
+                ListElement{
+                    name:"料盘Lens视觉"
+                    item:"prLENSLpaLook"
+                }
+                ListElement{
+                    name:"料盘空位视觉"
+                    item:"prVACANCYLpaLook"
+                }
+                ListElement{
+                    name:"Lut Lens 视觉"
+                    item:"prLENSLutLook"
+                }
+
+//*/
+            }
+            ListView{
+                height: 1600
+                model:calibration_model
+                delegate: GroupBox{
+                    property var delegateMap:{
+                        "prSUTDownlookParams":prSUTDownlookParams,
+                        "prAA1ToolDownlookParams":prAA1ToolDownlookParams,
+                        "prAA1ToolUplookParams":prAA1ToolUplookParams,
+                        "prAA1MushroomParams":prAA1MushroomParams,
+                        "prAA1LUTUplookParams":prAA1LUTUplookParams,
+                        "prLENSLpaLook":prLENSLpaLook,
+                        "prVACANCYLpaLook":prVACANCYLpaLook,
+                        "prLENSLutLook":prLENSLutLook
+                    }
+                    property var movetoMap:{
+                        "prSUTDownlookParams":moveTo1,
+                        "prAA1ToolDownlookParams":moveTo2,
+                        "prAA1ToolUplookParams":moveTo3,
+                        "prAA1MushroomParams":moveTo4,
+                        "prAA1LUTUplookParams":moveTo5,
+                        "prLENSLpaLook":moveTo6,
+                        "prVACANCYLpaLook":moveTo7,
+                        "prLENSLutLook":moveTo8
+                    }
+
+                    property var caliMap:{
+                        "prSUTDownlookParams":cali1,
+                        "prAA1ToolDownlookParams":cali2,
+                        "prAA1ToolUplookParams":cali3,
+                        "prAA1MushroomParams":cali4,
+                        "prAA1LUTUplookParams":cali5,
+                        "prLENSLpaLook":cali6,
+                        "prVACANCYLpaLook":cali7,
+                        "prLENSLutLook":cali8
+                    }
+
+                    property var performMap:{
+                        "prSUTDownlookParams":perform1,
+                        "prAA1ToolDownlookParams":perform2,
+                        "prAA1ToolUplookParams":perform3,
+                        "prAA1MushroomParams":perform4,
+                        "prAA1LUTUplookParams":perform5,
+                        "prLENSLpaLook":perform6,
+                        "prVACANCYLpaLook":perform7,
+                        "prLENSLutLook":perform8
+                    }
+
+                    title:name
+                    ColumnLayout{
+                        RowLayout{
+                            FileDialog{
+                                id:file_dialog
+                                title:"选择加载PR文件"
+                                selectExisting: true
+                                selectFolder: false
+                                selectMultiple: false
+
+                                nameFilters: ["avdata文件 (*.avdata)"]
+                                onAccepted:{
+                                    delegateMap[item].setPrFileName(fileUrl)
+                                }
+                            }
+                            Dial{
+                                width: 25
+                                from: 0
+                                value: delegateMap[item].lightBrightness
+                                to: 255
+                                stepSize: 1
+
+                                Label {
+                                    text: delegateMap[item].lightBrightness
+                                    color: "white"
+                                    font.pixelSize: Qt.application.font.pixelSize * 3
+                                    anchors.centerIn: parent
+                                }
+                                onValueChanged: {
+                                    if (calibrationViewSwitch.checked) {
+                                        delegateMap[item].setLightBrightness(value)
+                                        lightingController.setUplookLighting(value)
+                                    }
+                                }
+                            }
+                            Button{
+                                text:qsTr("读取PR文件")
+                                onClicked: {
+                                    file_dialog.open()
+                                }
+                            }
+                            TextField{
+                                color: "#57f529"
+                                text: delegateMap[item].prFileName
+                                font.pixelSize: 14
+                            }
+                        }
+                        RowLayout{
+                            Button{
+                                text:qsTr("移动")
+                                onClicked:movetoMap[item]()
+                            }
+                            Button{
+                                text:qsTr("校正")
+                                onClicked:caliMap[item]()
+                            }
+                            Button{
+                                text:qsTr("执行PR")
+                                onClicked:performMap[item]()
+                            }
+                        }
+                    }
+                }
+            }
+/*
             GroupBox {
                 title: qsTr("SUT Downlook PR")
                 CalibrationDownlookView {
@@ -61,6 +318,9 @@ ItemDelegate {
                 title:qsTr("Lut Lens 视觉")
                 CalibrationPrLENSLutLookView{}
             }
+//*/
+
+
         }
     }
 }

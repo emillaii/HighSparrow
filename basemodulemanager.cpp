@@ -667,7 +667,7 @@ bool BaseModuleManager::InitStruct()
     executive_motors.push_back(GetMotorByName(lut_module.parameters.motorZName()));
     dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,
                    GetOutputIoByName(dispenser.parameters.dispenseIo()));
-    dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule,&sut_carrier,
+    dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",chart_calibration,&dispenser,visionModule,&sut_carrier,
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 

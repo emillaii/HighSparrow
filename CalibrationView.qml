@@ -136,34 +136,42 @@ ItemDelegate {
                 ListElement{
                     name:"SUT Downlook PR"
                     item: "prSUTDownlookParams"
+                    isCali:1
                 }
                 ListElement{
                     name:"SUT ToolDownlook PR"
                     item:"prAA1ToolDownlookParams"
+                    isCali:1
                 }
                 ListElement{
                     name:"LUT ToolUplook PR"
                     item:"prAA1ToolUplookParams"
+                    isCali:1
                 }
                 ListElement{
                     name:"LUT Mushroom PR"
                     item:"prAA1MushroomParams"
+                    isCali:1
                 }
                 ListElement{
                     name:"LUT Uplook PR"
                     item:"prAA1LUTUplookParams"
+                    isCali:1
                 }
                 ListElement{
                     name:"料盘Lens视觉"
                     item:"prLENSLpaLook"
+                    isCali:1
                 }
                 ListElement{
                     name:"料盘空位视觉"
                     item:"prVACANCYLpaLook"
+                    isCali:0
                 }
                 ListElement{
                     name:"Lut Lens 视觉"
                     item:"prLENSLutLook"
+                    isCali:0
                 }
 
 //*/
@@ -268,6 +276,7 @@ ItemDelegate {
                                 onClicked:movetoMap[item]()
                             }
                             Button{
+                                visible:isCali
                                 text:qsTr("校正")
                                 onClicked:caliMap[item]()
                             }
@@ -277,6 +286,11 @@ ItemDelegate {
                             }
                         }
                     }
+                }
+            }
+            GroupBox {
+                title: qsTr("Chart")
+                CalibrationChart {
                 }
             }
 /*

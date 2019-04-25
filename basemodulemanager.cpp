@@ -597,7 +597,7 @@ bool BaseModuleManager::InitStruct()
     }
 
     foreach (XtCylinder* temp_cylinder, cylinder.values()) {
-        temp_cylinder->Init(GetOutputIoByName(temp_cylinder->parameters.oneInName()),
+        temp_cylinder->Init(GetOutputIoByName(temp_cylinder->parameters.oneOutName()),
                             GetInputIoByName(temp_cylinder->parameters.oneInName()),
                             GetInputIoByName(temp_cylinder->parameters.zeroInName()),
                             GetOutputIoByName(temp_cylinder->parameters.zeroOutName()));
@@ -904,7 +904,7 @@ XtGeneralOutput *BaseModuleManager::GetOutputIoByName(QString name)
 XtGeneralInput *BaseModuleManager::GetInputIoByName(QString name)
 {
     if(name == "")return nullptr;
-    if(output_ios.contains(name))
+    if(input_ios.contains(name))
         return input_ios[name];
     else
         qInfo("can not find input io %s",name.toStdString().c_str());

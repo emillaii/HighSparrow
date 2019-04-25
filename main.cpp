@@ -84,15 +84,15 @@ int main(int argc, char *argv[])
     QList<QString> temp_names = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames", QVariant::fromValue(highSprrow.baseModuleManager->motors.keys()));
     //PR Params
-    engine.rootContext()->setContextProperty("prSUTDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
-    engine.rootContext()->setContextProperty("prAA1LUTUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_LUT_UPLOOK]->parameters);
-    engine.rootContext()->setContextProperty("prAA1MushroomParams",  &highSprrow.baseModuleManager->vision_locations[PR_AA1_MUSHROOMHEAD]->parameters);
-    engine.rootContext()->setContextProperty("prAA1ToolDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_TOOL_DOWNLOOK]->parameters);
-    engine.rootContext()->setContextProperty("prAA1ToolUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_TOOL_UPLOOK]->parameters);
+//    engine.rootContext()->setContextProperty("prSUTDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
+//    engine.rootContext()->setContextProperty("prAA1LUTUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_LUT_UPLOOK]->parameters);
+//    engine.rootContext()->setContextProperty("prAA1MushroomParams",  &highSprrow.baseModuleManager->vision_locations[PR_AA1_MUSHROOMHEAD]->parameters);
+//    engine.rootContext()->setContextProperty("prAA1ToolDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_TOOL_DOWNLOOK]->parameters);
+//    engine.rootContext()->setContextProperty("prAA1ToolUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_TOOL_UPLOOK]->parameters);
 
-    engine.rootContext()->setContextProperty("prLENSLpaLook",&highSprrow.baseModuleManager->vision_locations[PR_LENS_LPALOOK]->parameters);
-    engine.rootContext()->setContextProperty("prVACANCYLpaLook",&highSprrow.baseModuleManager->vision_locations[PR_VACANCY_LPALOOK]->parameters);
-    engine.rootContext()->setContextProperty("prLENSLutLook",&highSprrow.baseModuleManager->vision_locations[PR_LENS_LUTLOOK]->parameters);
+//    engine.rootContext()->setContextProperty("prLENSLpaLook",&highSprrow.baseModuleManager->vision_locations[PR_LENS_LPALOOK]->parameters);
+//    engine.rootContext()->setContextProperty("prVACANCYLpaLook",&highSprrow.baseModuleManager->vision_locations[PR_VACANCY_LPALOOK]->parameters);
+//    engine.rootContext()->setContextProperty("prLENSLutLook",&highSprrow.baseModuleManager->vision_locations[PR_LENS_LUTLOOK]->parameters);
 
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);

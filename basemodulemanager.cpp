@@ -19,9 +19,14 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     profile_loaded = false;
     if(!QDir(".//notopencamera").exists())
     {
-        pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
-        pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
-        pylonPickarmCamera = new BaslerPylonCamera(PICKARM_VISION_CAMERA);
+        if (ServerMode() == 0) {
+            pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
+            pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
+            pylonPickarmCamera = new BaslerPylonCamera(PICKARM_VISION_CAMERA);
+        } else{
+            pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA2_DL);
+            pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SPA_DL);
+        }
     }
 
     if (ServerMode() == 0) {
@@ -38,9 +43,9 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 
     if(!QDir(".//notopencamera").exists())
     {
-        pylonUplookCamera->start();
-        pylonDownlookCamera->start();
-        pylonPickarmCamera->start();
+        if(pylonUplookCamera) pylonUplookCamera->start();
+        if(pylonDownlookCamera) pylonDownlookCamera->start();
+        if(pylonPickarmCamera) pylonPickarmCamera->start();
     }
     vision_locations.insert(PR_AA1_TOOL_UPLOOK,new VisionLocation());
     vision_locations.insert(PR_AA1_TOOL_DOWNLOOK,new VisionLocation());

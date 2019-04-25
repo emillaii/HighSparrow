@@ -52,7 +52,8 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
     if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
     else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
     else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
-
+    else if (cameraName.contains(CAMERA_AA2_DL)) { camera = downlookCamera; }
+    else if (cameraName.contains(CAMERA_SPA_DL)) { camera = pickarmCamera; }
     if (camera == Q_NULLPTR || !camera->isCameraGrabbing()) return false;
     QPixmap p = QPixmap::fromImage(camera->getImage());
     QImage q2 = p.toImage();

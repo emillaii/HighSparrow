@@ -118,14 +118,16 @@
 #define AA2_UPDownLOOK_DOWN_CALIBRATION  "aa2_updownLook_down_calibration"
 #define AA1_MUSHROOMHEAD_CALIBRATION     "aa1_mushroomhead_calibration"
 #define LPA_LENS_CALIBRATION               "lpa_lens_calibration"
+#define SPA_SENSOR_CALIBRATION               "spa_sensor_calibration"
 
 
 #define CHART_CALIBRATION                "chart_calibration"
 //dispenser
 
-#define DISPENSER_PARAMETER_PATH         ".//config//dispenserConfig//"
-#define AA1_DISPENSE                     "aa1_dispense"
-#define AA2_DISPENSE                     "aa2_dispense"
+#define DISPENSER_PARAMETER_PATH        ".//config//dispenser_parameter.json"
+#define DISPENSER_PARAMETER        "dispenser_parameter"
+#define DISPENSE_MODULE_PARAMETER_PATH  ".//config//dispense_module_parameter.json"
+#define DISPENSER_MODULE_PARAMETER        "dispense_module_parameter"
 
 //PR
 #define PR_SENSOR_PACKAGE_IMX362        "IMX362"

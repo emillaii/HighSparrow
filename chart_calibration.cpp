@@ -8,7 +8,6 @@ ChartCalibration::ChartCalibration(Dothinkey *dothinkey, int max_intensity, int 
     this->max_intensity = max_intensity;
     this->min_area = min_area;
     this->max_area = max_area;
-    loadJsonConfig();
 }
 
 bool ChartCalibration::GetPixelPoint(double &x, double &y)

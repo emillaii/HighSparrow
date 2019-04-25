@@ -16,29 +16,29 @@ void DispenseModule::Init(QString file_path,QString name,Calibration *calibratio
     this->dispense_io = dispense_io;
 }
 
-void DispenseModule::loadConfig()
-{
-    QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert(name, &parameters);
-    QString temp ="";
-            temp.append(name).append("R");
-    temp_map.insert(temp, &this->dispenser->parameters);
-    temp ="";
-    temp.append(file_path).append(name).append(".json");
-    PropertyBase::loadJsonConfig(temp, temp_map);
-}
+//void DispenseModule::loadConfig()
+//{
+//    QMap<QString,PropertyBase*> temp_map;
+//    temp_map.insert(name, &parameters);
+//    QString temp ="";
+//            temp.append(name).append("R");
+//    temp_map.insert(temp, &this->dispenser->parameters);
+//    temp ="";
+//    temp.append(file_path).append(name).append(".json");
+//    PropertyBase::loadJsonConfig(temp, temp_map);
+//}
 
-void DispenseModule::saveConfig()
-{
-    QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert(name, &parameters);
-    QString temp ="";
-            temp.append(name).append("R");
-    temp_map.insert(temp, &this->dispenser->parameters);
-    temp ="";
-    temp.append(file_path).append(name).append(".json");
-    PropertyBase::saveJsonConfig(temp, temp_map);
-}
+//void DispenseModule::saveConfig()
+//{
+//    QMap<QString,PropertyBase*> temp_map;
+//    temp_map.insert(name, &parameters);
+//    QString temp ="";
+//            temp.append(name).append("R");
+//    temp_map.insert(temp, &this->dispenser->parameters);
+//    temp ="";
+//    temp.append(file_path).append(name).append(".json");
+//    PropertyBase::saveJsonConfig(temp, temp_map);
+//}
 
 void DispenseModule::updatePath()
 {

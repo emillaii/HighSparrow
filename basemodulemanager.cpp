@@ -94,7 +94,8 @@ bool BaseModuleManager::loadParameters()
     sut_module.loadParams();
     lut_module.loadParams();
     dothinkey->loadParams();
-    dispense_module.loadConfig();
+    dispenser.parameters.loadJsonConfig(DISPENSER_PARAMETER_PATH,DISPENSER_PARAMETER);
+    dispense_module.parameters.loadJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
     material_tray.loadJsonConfig();
     lens_loader_module.loadJsonConfig();
     lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
@@ -104,7 +105,6 @@ bool BaseModuleManager::loadParameters()
     loadVacuumFiles(VACUUM_PARAMETER_FILENAME);
     loadVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
     loadCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
-    chart_calibration->loadJsonConfig();
     if(!InitStruct())
         return false;
     return true;
@@ -112,23 +112,19 @@ bool BaseModuleManager::loadParameters()
 
 bool BaseModuleManager::SaveParameters()
 {
-    QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("BASE_MODULE_PARAMS", this);
-    PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
-
     material_tray.saveJsonConfig();
     aa_head_module.saveJsonConfig();
     sut_module.saveJsonConfig();
     lut_module.saveJsonConfig();
     dothinkey->saveJsonConfig();
-    dispense_module.saveConfig();
+    dispenser.parameters.saveJsonConfig(DISPENSER_PARAMETER_PATH,DISPENSER_PARAMETER);
+    dispense_module.parameters.saveJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
     material_tray.saveJsonConfig();
     lens_loader_module.saveJsonConfig();
     lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
     sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
+    saveCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
     saveVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
-    saveCylinderFiles(CALIBRATION_PARAMETER_FILENAME);
-    chart_calibration->saveJsonConfig();
     return true;
 }
 
@@ -432,8 +428,16 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
     }
     for (int i = 0; i < array.count(); i++)
     {
-        Calibration* temp_calibration = new Calibration();
-        temp_calibration->parameters.read(array.at(i).toObject());
+        QJsonObject data_object =array.at(i).toObject();
+        Calibration* temp_calibration;
+        if(data_object["calibrationName"].toString() == "aa2_chart_calibration")
+        {
+            qInfo("get chart calibration");
+            temp_calibration = chart_calibration;
+        }
+        else
+            temp_calibration = new Calibration();
+        temp_calibration->parameters.read(data_object);
         QJsonObject temp_object;
         temp_calibration->parameters.write(temp_object);
         if(!motors.contains(temp_calibration->parameters.calibrationName()))
@@ -563,7 +567,10 @@ bool BaseModuleManager::loadJsonArray(QString file_name,QJsonArray &array)
     if(array.size()>0)
         return true;
     else
+    {
+         qInfo("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return false;
+    }
 }
 
 bool BaseModuleManager::saveJsonArray(QString file_name,QJsonArray &array)
@@ -660,7 +667,7 @@ bool BaseModuleManager::InitStruct()
     executive_motors.push_back(GetMotorByName(lut_module.parameters.motorZName()));
     dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,
                    GetOutputIoByName(dispenser.parameters.dispenseIo()));
-    dispense_module.Init(DISPENSER_PARAMETER_PATH,AA1_DISPENSE,calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule,&sut_carrier,
+    dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",calibrations[AA1_DOWNLOOK_CALIBRATION],&dispenser,visionModule,&sut_carrier,
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
@@ -755,44 +762,44 @@ bool BaseModuleManager::allMotorsSeekOrigin()
     bool result;
 
     motors["SUT_Z"]->SeekOrigin();
-    motors["LPA_Z"]->SeekOrigin();
-    result = motors["LPA_Z"]->WaitSeekDone();
+    if (this->ServerMode() == 0) motors["LPA_Z"]->SeekOrigin();
+    if (this->ServerMode() == 0) result = motors["LPA_Z"]->WaitSeekDone();
     if(!result)return false;
-    motors["LPA_X"]->SeekOrigin();
-    motors["LPA_Y"]->SeekOrigin();
-    motors["LUT_Y"]->SeekOrigin();
+    if (this->ServerMode() == 0) motors["LPA_X"]->SeekOrigin();
+    if (this->ServerMode() == 0) motors["LPA_Y"]->SeekOrigin();
+    if (this->ServerMode() == 0) motors["LUT_Y"]->SeekOrigin();
     result = motors["SUT_Z"]->WaitSeekDone();
     if(!result)return false;
     motors["SUT1_Y"]->SeekOrigin();
-    result &= motors["LUT_Y"]->WaitSeekDone();
+    if (this->ServerMode() == 0)result &= motors["LUT_Y"]->WaitSeekDone();
     result &= motors["SUT1_Y"]->WaitSeekDone();
-    result &= motors["LPA_Y"]->WaitSeekDone();
+    if (this->ServerMode() == 0) result &= motors["LPA_Y"]->WaitSeekDone();
     if(!result)return false;
     //降下气缸
-    motors["LTL_X"]->SeekOrigin();
+    if (this->ServerMode() == 0) motors["LTL_X"]->SeekOrigin();
     motors["AA1_Y"]->SeekOrigin();
     result = motors["AA1_Y"]->WaitSeekDone();
     if(!result)return false;
-    motors["LUT_Z"]->SeekOrigin();
+    if (this->ServerMode() == 0) motors["LUT_Z"]->SeekOrigin();
     motors["AA1_X"]->SeekOrigin();
     motors["AA1_Z"]->SeekOrigin();
     motors["AA1_A"]->SeekOrigin();
     motors["AA1_B"]->SeekOrigin();
     motors["AA1_C"]->SeekOrigin();
     motors["SUT1_X"]->SeekOrigin();
-    motors["LUT_X"]->SeekOrigin();
+    if (this->ServerMode() == 0) motors["LUT_X"]->SeekOrigin();
     result &= motors["AA1_X"]->WaitSeekDone();
     result &= motors["AA1_Z"]->WaitSeekDone();
     result &= motors["AA1_A"]->WaitSeekDone();
     result &= motors["AA1_B"]->WaitSeekDone();
     result &= motors["AA1_C"]->WaitSeekDone();
     result &= motors["SUT1_X"]->WaitSeekDone();
-    result &= motors["LUT_X"]->WaitSeekDone();
-    result &= motors["LUT_Z"]->WaitSeekDone();
-    result &= motors["LPA_X"]->WaitSeekDone();
-    result &= motors["LTL_X"]->WaitSeekDone();
+    if (this->ServerMode() == 0) result &= motors["LUT_X"]->WaitSeekDone();
+    if (this->ServerMode() == 0) result &= motors["LUT_Z"]->WaitSeekDone();
+    if (this->ServerMode() == 0) result &= motors["LPA_X"]->WaitSeekDone();
+    if (this->ServerMode() == 0) result &= motors["LTL_X"]->WaitSeekDone();
     if(!result)return false;
-    GetVcMotorByName("LUT_Z")->ChangeDiretion();
+    if (this->ServerMode() == 0)GetVcMotorByName("LUT_Z")->ChangeDiretion();
     qInfo("all motor seeked origin successed!");
     return  true;
 }

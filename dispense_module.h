@@ -13,8 +13,8 @@ class DispenseModule:public QObject
 public:
     DispenseModule();
     void Init(QString file_path,QString name,Calibration* calibration,Dispenser* dispenser,VisionModule* vision, MaterialCarrier* carrier,XtGeneralOutput* dispense_io);
-    void loadConfig();
-    void saveConfig();
+//    void loadConfig();
+//    void saveConfig();
     Q_INVOKABLE void updatePath();
     void setMapPosition(double pos_x,double pos_y);
     void setPRPosition(double pr_x,double pr_y,double pr_theta);

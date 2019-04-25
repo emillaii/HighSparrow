@@ -43,8 +43,6 @@ public:
     Dispenser();
     void Init(int curve_id,int thread_curve,int thread_trig,QVector<XtMotor *> executive_motors,XtGeneralOutput* output_io);
     ~Dispenser();
-//    void loadParams();
-//    void saveParams();
     bool Dispense(QVector<DispensePathPoint> &dispense_path);
     bool WaitForFinish(int time = 60000);
     void CleanUpCurve();

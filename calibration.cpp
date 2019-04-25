@@ -20,21 +20,21 @@ void Calibration::Init(XtMotor *motor_x, XtMotor *motor_y, VisionLocation *locat
 
 }
 
-void Calibration::loadJsonConfig()
-{
-    if(PropertyBase::loadJsonConfig(file_path,name, &parameters))
-        mapping.ChangeParameter(QMatrix(parameters.matrix11(),
-                                        parameters.matrix12(),
-                                        parameters.matrix21(),
-                                        parameters.matrix22(),
-                                        parameters.deltaX(),
-                                        parameters.deltaY()),
-                                QPointF(parameters.imageWidth()/2,parameters.imageHeight()/2));
-}
-void Calibration::saveJsonConfig()
-{
-    PropertyBase::saveJsonConfig(file_path,name, &parameters);
-}
+//void Calibration::loadJsonConfig()
+//{
+//    if(PropertyBase::loadJsonConfig(file_path,name, &parameters))
+//        mapping.ChangeParameter(QMatrix(parameters.matrix11(),
+//                                        parameters.matrix12(),
+//                                        parameters.matrix21(),
+//                                        parameters.matrix22(),
+//                                        parameters.deltaX(),
+//                                        parameters.deltaY()),
+//                                QPointF(parameters.imageWidth()/2,parameters.imageHeight()/2));
+//}
+//void Calibration::saveJsonConfig()
+//{
+//    PropertyBase::saveJsonConfig(file_path,name, &parameters);
+//}
 bool Calibration::performCalibration(double x_step, double y_step)
 {
     if(nullptr == motor_x||nullptr == motor_y)
@@ -120,7 +120,7 @@ bool Calibration::performCalibration(double x_step, double y_step)
                                    parameters.deltaY()),
                                    QPointF(parameters.imageWidth()/2,parameters.imageHeight()/2));
 
-        saveJsonConfig();
+//        saveJs onConfig();
     }
     return true;
 }

@@ -276,7 +276,6 @@ void LensLoaderModule::startWork(bool reset_logic, int run_mode)
     if(reset_logic)ResetLogic();
     if(run_mode&RunMode::Normal)run(true);
     else if(run_mode&RunMode::NoMaterial)run(false);
-
 }
 
 void LensLoaderModule::stopWork(bool wait_finish)

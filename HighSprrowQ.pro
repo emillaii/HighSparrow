@@ -66,7 +66,9 @@ SOURCES += \
     sparrowqserver.cpp \
     sparrowqclient.cpp \
     lenspickarm.cpp \
-    lensloadermodule.cpp
+    lensloadermodule.cpp \
+    trayloadermodule.cpp \
+    trayclip.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -179,7 +181,11 @@ HEADERS += \
     lenspickarmparameter.h \
     lensloaderparameter.h \
     lensloadermodule.h \
-    xtvcmotorparameter.h
+    xtvcmotorparameter.h \
+    trayloadermodule.h \
+    trayclip.h \
+    trayloaderparameter.h \
+    trayclipstandardsparameter.h
 
 DISTFILES += \
     icons/index.theme

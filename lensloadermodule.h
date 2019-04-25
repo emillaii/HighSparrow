@@ -26,8 +26,8 @@ enum HandlePR
     {
         RESET_PR = 1 <<4,
         LENS_PR = 2<<4,
-        VACANCY_PR = 2<<4,
-        LUT_PR = 3<<4
+        VACANCY_PR = 3<<4,
+        LUT_PR = 4<<4
     };
 enum HandleToWorkPos
 {

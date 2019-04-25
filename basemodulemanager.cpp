@@ -2,14 +2,16 @@
 #include "basemodulemanager.h"
 #include "xtvcmotorparameter.h"
 
+#include <qcoreapplication.h>
 #include <qdir.h>
+#include <qfileinfo.h>
 #include <qjsonarray.h>
 #include <qjsondocument.h>
 
 wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
-//wchar_t BaseModuleManager::profile_path[] = L"..\\config\\xt_motion_config.csv";
-//wchar_t BaseModuleManager::profile_path[] = L".\\config\\xt_motion_config.csv";
-wchar_t BaseModuleManager::profile_path[] = L".\\xt_motion_config.csv";
+wchar_t BaseModuleManager::profile_path1[] = L".\\config\\xt_motion_config.csv";
+wchar_t BaseModuleManager::profile_path2[] = L"..\\config\\xt_motion_config.csv";
+//wchar_t BaseModuleManager::profile_path2[] = L".\\xt_motion_config.csv";
 BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent)
 {
@@ -50,30 +52,16 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonPickarmCamera) pylonPickarmCamera->start();
     }
 
-    calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH));
-    calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH));
-    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH));
-    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH));
-    calibrations.insert(AA1_MUSHROOMHEAD_CALIBRATION,new Calibration(AA1_MUSHROOMHEAD_CALIBRATION,CALIBRATION_RESULT_PATH));
-    calibrations.insert(LPA_LENS_CALIBRATION,new Calibration(LPA_LENS_CALIBRATION,CALIBRATION_RESULT_PATH));
+//    calibrations.insert(AA1_UPLOOK_CALIBRATION,new Calibration(AA1_UPLOOK_CALIBRATION,CALIBRATION_RESULT_PATH));
+//    calibrations.insert(AA1_DOWNLOOK_CALIBRATION,new Calibration(AA1_DOWNLOOK_CALIBRATION,CALIBRATION_RESULT_PATH));
+//    calibrations.insert(AA1_UPDownLOOK_UP_CALIBRATION,new Calibration(AA1_UPDownLOOK_UP_CALIBRATION,CALIBRATION_RESULT_PATH));
+//    calibrations.insert(AA1_UPDownLOOK_DOWN_CALIBRATION,new Calibration(AA1_UPDownLOOK_DOWN_CALIBRATION,CALIBRATION_RESULT_PATH));
+//    calibrations.insert(AA1_MUSHROOMHEAD_CALIBRATION,new Calibration(AA1_MUSHROOMHEAD_CALIBRATION,CALIBRATION_RESULT_PATH));
+//    calibrations.insert(LPA_LENS_CALIBRATION,new Calibration(LPA_LENS_CALIBRATION,CALIBRATION_RESULT_PATH));
 
-    chartCalibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH);
+    chart_calibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH);
 
-//    vision_locations.insert(PR_AA1_TOOL_UPLOOK,new VisionLocation());
-//    vision_locations.insert(PR_AA1_TOOL_DOWNLOOK,new VisionLocation());
-//    vision_locations.insert(PR_AA1_LUT_UPLOOK,new VisionLocation());
-////    vision_locations.insert(PR_AA2_TOOL_UPLOOK,new VisionLocation());
-////    vision_locations.insert(PR_AA2_TOOL_DOWNLOOK,new VisionLocation());
-////    vision_locations.insert(PR_AA2_LUT_UPLOOK,new VisionLocation());
-//    vision_locations.insert(PR_SUT_DOWNLOOK,new VisionLocation());
-//    vision_locations.insert(PR_LOAD_LUT_UPLOOK,new VisionLocation());
-//    vision_locations.insert(PR_AA1_MUSHROOMHEAD,new VisionLocation());
-//    vision_locations.insert(PR_LENS_LPALOOK,new VisionLocation());
-//    vision_locations.insert(PR_VACANCY_LPALOOK,new VisionLocation());
-//    vision_locations.insert(PR_LENS_LUTLOOK,new VisionLocation());
-  material_tray.standards_parameters.setTrayCount(2);
-//  lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
-//  sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
+    material_tray.standards_parameters.setTrayCount(2);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -92,7 +80,7 @@ BaseModuleManager::~BaseModuleManager()
         delete  GetInputIoByName(input_ios.keys()[i]);
     for (int i = 0; i < calibrations.size(); ++i)
         delete  calibrations[calibrations.keys()[i]];
-    delete chartCalibration;
+    delete chart_calibration;
 }
 
 bool BaseModuleManager::loadParameters()
@@ -115,6 +103,8 @@ bool BaseModuleManager::loadParameters()
     loadCylinderFiles(CYLINDER_PARAMETER_FILENAME);
     loadVacuumFiles(VACUUM_PARAMETER_FILENAME);
     loadVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
+    loadCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
+    chart_calibration->loadJsonConfig();
     if(!InitStruct())
         return false;
     return true;
@@ -137,6 +127,8 @@ bool BaseModuleManager::SaveParameters()
     lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
     sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
     saveVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
+    saveCylinderFiles(CALIBRATION_PARAMETER_FILENAME);
+    chart_calibration->saveJsonConfig();
     return true;
 }
 
@@ -145,8 +137,18 @@ bool BaseModuleManager::LoadProfile()
     if(profile_loaded)
         return true;
     profile_loaded = false;
-    LPWSTR path = profile_path;
-    int res = XT_Controler_Extend::Profile_Load(path);
+    int res;
+    QString temp = QCoreApplication::applicationDirPath();
+    if(temp == QDir::currentPath())
+    {
+        LPWSTR path = profile_path1;
+        res = XT_Controler_Extend::Profile_Load(path);
+    }
+    else
+    {
+        LPWSTR path = profile_path2;
+        res = XT_Controler_Extend::Profile_Load(path);
+    }
     if(res!=0)
     {
         QString temp_name;
@@ -420,6 +422,62 @@ bool BaseModuleManager::saveVisionLoactionFiles(QString file_name)
     }
 }
 
+bool BaseModuleManager::loadCalibrationFiles(QString file_name)
+{
+    QJsonArray array;
+    if(!loadJsonArray(file_name,array))
+    {
+        saveCalibrationFiles(file_name);
+        return false;
+    }
+    for (int i = 0; i < array.count(); i++)
+    {
+        Calibration* temp_calibration = new Calibration();
+        temp_calibration->parameters.read(array.at(i).toObject());
+        QJsonObject temp_object;
+        temp_calibration->parameters.write(temp_object);
+        if(!motors.contains(temp_calibration->parameters.calibrationName()))
+            calibrations.insert(temp_calibration->parameters.calibrationName(),temp_calibration);
+        else
+        {
+            qInfo("vcm motor param name(%s)repeat!",temp_calibration->parameters.calibrationName().toStdString().c_str());
+            delete temp_calibration;
+        }
+    }
+    return true;
+}
+
+bool BaseModuleManager::saveCalibrationFiles(QString file_name)
+{
+    QJsonArray array;
+    foreach (QString temp_name, calibrations.keys()) {
+        Calibration* temp_calibration = GetCalibrationByName(temp_name);
+        if(temp_calibration != nullptr)
+        {
+            QJsonObject object;
+            temp_calibration->parameters.write(object);
+            array.append(object);
+        }
+    }
+    if(array.size() > 0)
+        return  saveJsonArray(file_name,array);
+    else
+    {
+        CalibrationParameter temp_param;
+        QString caibration_name = temp_param.calibrationName();
+        QJsonArray json;
+        for (int i = 0; i < 6; ++i) {
+            QJsonObject temp_object;
+            QString temp_name = caibration_name;
+            temp_name.append(QString::number(i));
+            temp_param.setCalibrationName(temp_name);
+            temp_param.write(temp_object);
+            json.append(temp_object);
+        }
+        return  saveJsonArray(file_name,json);
+    }
+}
+
 //bool BaseModuleManager::LoadVcmFile()
 //{
 //    QString val;
@@ -565,27 +623,13 @@ bool BaseModuleManager::InitStruct()
                         GetOutputIoByName(aa_head_module.parameters.uv4Name()),
                         XtMotor::GetThreadResource());
 
-    calibrations[AA1_UPLOOK_CALIBRATION]->Init(GetMotorByName(aa_head_module.parameters.motorXName()),
-                                               GetMotorByName(aa_head_module.parameters.motorYName()),
-                                               GetVisionLocationByName(PR_AA1_LUT_UPLOOK));
-    calibrations[AA1_DOWNLOOK_CALIBRATION]->Init(GetMotorByName(sut_module.parameters.motorXName()),
-                                                 GetMotorByName(sut_module.parameters.motorYName()),
-                                                 GetVisionLocationByName(PR_SUT_DOWNLOOK));
-    calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->Init(GetMotorByName(lut_module.parameters.motorXName()),
-                                                      GetMotorByName(lut_module.parameters.motorYName()),
-                                                      GetVisionLocationByName(PR_AA1_TOOL_UPLOOK));
-    calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->Init(GetMotorByName(sut_module.parameters.motorXName()),
-                                                        GetMotorByName(sut_module.parameters.motorYName()),
-                                                        GetVisionLocationByName(PR_AA1_TOOL_DOWNLOOK));
-    calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->Init(GetMotorByName(lut_module.parameters.motorXName()),
-                                                     GetMotorByName(lut_module.parameters.motorYName()),
-                                                     GetVisionLocationByName(PR_AA1_MUSHROOMHEAD));
-    calibrations[LPA_LENS_CALIBRATION]->Init(GetMotorByName(lens_pick_arm.parameters.motorTrayName()),
-                                             GetMotorByName(lens_pick_arm.parameters.motorYName()),
-                                             GetVisionLocationByName(PR_LENS_LPALOOK));
-
-    chartCalibration->Init(GetMotorByName(lut_module.parameters.motorXName()),
-                           GetMotorByName(lut_module.parameters.motorYName()),
+    foreach (Calibration* temp_calibraion, calibrations) {
+        temp_calibraion->Init(GetMotorByName(temp_calibraion->parameters.motorXName()),
+                              GetMotorByName(temp_calibraion->parameters.motorYName()),
+                              GetVisionLocationByName(temp_calibraion->parameters.locationName()));
+    }
+    chart_calibration->Init(GetMotorByName(chart_calibration->parameters.motorXName()),
+                           GetMotorByName(chart_calibration->parameters.motorYName()),
                            nullptr);
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
@@ -801,8 +845,8 @@ void BaseModuleManager::performLPALensCalibration()
 void BaseModuleManager::performChartCalibration()
 {
     qInfo("perform Chart Calibration");
-    if (chartCalibration)
-        chartCalibration->performCalibration(0.1, 0.1);
+    if (chart_calibration)
+        chart_calibration->performCalibration(0.1, 0.1);
 }
 
 void BaseModuleManager::UpdateCalibrationParameters()
@@ -895,6 +939,16 @@ Pixel2Mech *BaseModuleManager::GetPixel2MechByName(QString name)
     if(name == "")return nullptr;
     if(calibrations.contains(name))
         return calibrations[name]->getCaliMapping();
+    else
+        qInfo("can not find calibration pixel2mech io %s",name.toStdString().c_str());
+    return nullptr;
+}
+
+Calibration *BaseModuleManager::GetCalibrationByName(QString name)
+{
+    if(name == "")return nullptr;
+    if(calibrations.contains(name))
+        return calibrations[name];
     else
         qInfo("can not find calibration io %s",name.toStdString().c_str());
     return nullptr;

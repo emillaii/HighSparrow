@@ -49,7 +49,7 @@ public:
     QMap<QString,VisionLocation*> vision_locations;
     QMap<QString,XtVacuum*> vacuums;
     QMap<QString,XtCylinder*> cylinder;
-    ChartCalibration * chartCalibration;
+    ChartCalibration * chart_calibration;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonPickarmCamera = Q_NULLPTR;
@@ -133,7 +133,8 @@ private:
     bool is_init;
     bool profile_loaded;
     static wchar_t ip[];
-    static wchar_t profile_path[];
+    static wchar_t profile_path1[];
+    static wchar_t profile_path2[];
 
     VCM_Parameter_struct lut_vcm_parameters = {
         500/*MaxVel*/,20000/*MaxAcc*/,200000/*MaxJerk*/,0/*MaxRange*/,-19/*MinRange*/,9/*CanID*/,1/*dir*/,1024/*scale*/};
@@ -155,6 +156,8 @@ public:
     bool saveCylinderFiles(QString file_name);
     bool loadVisionLoactionFiles(QString file_name);
     bool saveVisionLoactionFiles(QString file_name);
+    bool loadCalibrationFiles(QString file_name);
+    bool saveCalibrationFiles(QString file_name);
 
     bool loadJsonArray(QString file_name, QJsonArray &array);
     bool saveJsonArray(QString file_name,QJsonArray &array);
@@ -197,6 +200,7 @@ public:
     XtCylinder *GetCylinderByName(QString name);
     VisionLocation *GetVisionLocationByName(QString name);
     Pixel2Mech *GetPixel2MechByName(QString name);
+    Calibration *GetCalibrationByName(QString name);
     int ServerMode() const
     {
         return m_ServerMode;

@@ -17,6 +17,7 @@ void Calibration::Init(XtMotor *motor_x, XtMotor *motor_y, VisionLocation *locat
     this->motor_y = motor_y;
     this->location =location;
 //    setName(parameters.calibrationName());
+
 }
 
 void Calibration::loadJsonConfig()

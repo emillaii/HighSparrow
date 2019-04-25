@@ -33,6 +33,7 @@
 #define CYLINDER_PARAMETER_FILENAME  "config//cylinder_parameter.json"
 #define VACUUM_PARAMETER_FILENAME    "config//vacuum_parameter.json"
 #define VISION_LOCATION_PARAMETER_FILENAME   "config//vision_location_parameter.json"
+#define CALIBRATION_PARAMETER_FILENAME   "config//calibration_parameter.json"
 #define FLOWCHART_URL                "http://127.0.0.1:8000/flowchart.html"
 
 //Title naming

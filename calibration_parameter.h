@@ -19,6 +19,9 @@ public:
     Q_PROPERTY(double deltaX READ deltaX WRITE setDeltaX NOTIFY deltaXChanged)
     Q_PROPERTY(double deltaY READ deltaY WRITE setDeltaY NOTIFY deltaYChanged) 
     Q_PROPERTY(QString calibrationName READ calibrationName WRITE setCalibrationName NOTIFY calibrationNameChanged)
+    Q_PROPERTY(QString locationName READ locationName WRITE setLocationName NOTIFY locationNameChanged)
+    Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
+    Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
     double imageWidth() const
     {
         return m_imageWidth;
@@ -72,6 +75,21 @@ public:
     QString calibrationName() const
     {
         return m_calibrationName;
+    }
+
+    QString locationName() const
+    {
+        return m_locationName;
+    }
+
+    QString motorXName() const
+    {
+        return m_motorXName;
+    }
+
+    QString motorYName() const
+    {
+        return m_motorYName;
     }
 
 public slots:
@@ -173,6 +191,33 @@ public slots:
         emit calibrationNameChanged(m_calibrationName);
     }
 
+    void setLocationName(QString locationName)
+    {
+        if (m_locationName == locationName)
+            return;
+
+        m_locationName = locationName;
+        emit locationNameChanged(m_locationName);
+    }
+
+    void setMotorXName(QString motorXName)
+    {
+        if (m_motorXName == motorXName)
+            return;
+
+        m_motorXName = motorXName;
+        emit motorXNameChanged(m_motorXName);
+    }
+
+    void setMotorYName(QString motorYName)
+    {
+        if (m_motorYName == motorYName)
+            return;
+
+        m_motorYName = motorYName;
+        emit motorYNameChanged(m_motorYName);
+    }
+
 signals:
     void originXChanged(double originX);
 
@@ -196,6 +241,12 @@ signals:
 
     void calibrationNameChanged(QString calibrationName);
 
+    void locationNameChanged(QString locationName);
+
+    void motorXNameChanged(QString motorXName);
+
+    void motorYNameChanged(QString motorYName);
+
 private:
     double m_imageWidth = DOWNLOOK_VISION_CAMERA_WIDTH;
     double m_imageHeight = DOWNLOOK_VISION_CAMERA_HEIGHT;
@@ -208,6 +259,9 @@ private:
     double m_deltaX = 0;
     double m_deltaY = 0;
     QString m_calibrationName = "Calibration";
+    QString m_locationName = "";
+    QString m_motorXName = "";
+    QString m_motorYName = "";
 };
 
 #endif // CALIBRATION_PARAMETER_H

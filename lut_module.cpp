@@ -213,6 +213,9 @@ bool LutModule::moveToAA2PickLensPos(bool check_autochthonous)
 bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
 {
     qInfo("moveToAA2PickLens");
+    QJsonObject gripperOnMessage;
+    gripperOnMessage.insert("cmd", "gripperOnReq");
+    emit sendMessageToClient("remote", getStringFromJsonObject(gripperOnMessage));
     bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
     if(result)
     {

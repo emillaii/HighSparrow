@@ -29,7 +29,6 @@ void LutClient::receiveMessage(QString message)
         this->state = LutClientState::LUT_CLIENT_IDLE;
         return;
     }
-
     if (cmd == "gripperOnReq") {
         qInfo("AA Gripper On Request");
         emit this->triggerAAGripper(true);

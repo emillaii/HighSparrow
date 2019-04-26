@@ -28,6 +28,7 @@
 #define LUT_MODULE_JSON              "config//lutConfig.json"
 #define BASE_MODULE_JSON             "config//baseModuleConfig.json"
 #define LUT_CARRIER_FILE_NAME        "config//lutCarrierConfig.json"
+#define LENS_PICKARM_FILE_NAME        "config//lensPickArmConfig.json"
 #define SUT_CARRIER_FILE_NAME        "config//sutCarrierConfig.json"
 #define VCM_PARAMETER_FILENAME       "config//vcm_parameter.json"
 #define CYLINDER_PARAMETER_FILENAME  "config//cylinder_parameter.json"

@@ -8,38 +8,17 @@ class LutParameter:public PropertyBase
 public:
     LutParameter():PropertyBase(){}
     Q_PROPERTY(double pickForce READ pickForce WRITE setPickForce NOTIFY paramsChanged)
-    Q_PROPERTY(int Lighting READ Lighting WRITE setLighting NOTIFY paramsChanged)
-    Q_PROPERTY(QString prName READ prName WRITE setPRName NOTIFY paramsChanged)
-    Q_PROPERTY(int UpDnLookLighting READ UpDnLookLighting WRITE setUpDnLookLighting NOTIFY paramsChanged)
-    Q_PROPERTY(QString upDownLookPrName READ upDownLookPrName WRITE setUpDownLookPrName NOTIFY paramsChanged)
     Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
     Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
     Q_PROPERTY(QString vacuum1Name READ vacuum1Name WRITE setVacuum1Name NOTIFY vacuum1NameChanged)
     Q_PROPERTY(QString vacuum2Name READ vacuum2Name WRITE setVacuum2Name NOTIFY vacuum2NameChanged)
+    Q_PROPERTY(QString uplookLocationName READ uplookLocationName WRITE setUplookLocationName NOTIFY uplookLocationNameChanged)
+    Q_PROPERTY(QString loadlookLocationName READ loadlookLocationName WRITE setLoadlookLocationName NOTIFY loadlookLocationNameChanged)
+    Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
     double pickForce() const
     {
         return m_PickForce;
-    }
-
-    int Lighting() const
-    {
-        return m_Lighting;
-    }
-
-    QString prName() const
-    {
-        return m_prName;
-    }
-
-    int UpDnLookLighting() const
-    {
-        return m_UpDnLookLighting;
-    }
-
-    QString upDownLookPrName() const
-    {
-        return m_upDownLookPrName;
     }
 
     QString motorXName() const
@@ -67,44 +46,25 @@ public:
         return m_vacuum2Name;
     }
 
+    QString uplookLocationName() const
+    {
+        return m_uplookLocationName;
+    }
+
+    QString loadlookLocationName() const
+    {
+        return m_loadlookLocationName;
+    }
+
+    QString mushroomLocationName() const
+    {
+        return m_mushroomLocationName;
+    }
+
 public slots:
     void setPickForce(double PickForce)
     {
         m_PickForce = PickForce;
-        emit paramsChanged();
-    }
-
-    void setLighting(int Lighting)
-    {
-        if (m_Lighting == Lighting)
-            return;
-        m_Lighting = Lighting;
-        emit paramsChanged();
-    }
-
-    void setPRName(QString prName)
-    {
-        if (m_prName == prName)
-            return;
-        m_prName = prName;
-        emit paramsChanged();
-    }
-
-    void setUpDnLookLighting(int UpDnLookLighting)
-    {
-        if (m_UpDnLookLighting == UpDnLookLighting)
-            return;
-
-        m_UpDnLookLighting = UpDnLookLighting;
-        emit paramsChanged();
-    }
-
-    void setUpDownLookPrName(QString upDownLookPrName)
-    {
-        if (m_upDownLookPrName == upDownLookPrName)
-            return;
-
-        m_upDownLookPrName = upDownLookPrName;
         emit paramsChanged();
     }
 
@@ -153,6 +113,33 @@ public slots:
         emit vacuum2NameChanged(m_vacuum2Name);
     }
 
+    void setUplookLocationName(QString uplookLocationName)
+    {
+        if (m_uplookLocationName == uplookLocationName)
+            return;
+
+        m_uplookLocationName = uplookLocationName;
+        emit uplookLocationNameChanged(m_uplookLocationName);
+    }
+
+    void setLoadlookLocationName(QString loadlookLocationName)
+    {
+        if (m_loadlookLocationName == loadlookLocationName)
+            return;
+
+        m_loadlookLocationName = loadlookLocationName;
+        emit loadlookLocationNameChanged(m_loadlookLocationName);
+    }
+
+    void setMushroomLocationName(QString mushroomLocationName)
+    {
+        if (m_mushroomLocationName == mushroomLocationName)
+            return;
+
+        m_mushroomLocationName = mushroomLocationName;
+        emit mushroomLocationNameChanged(m_mushroomLocationName);
+    }
+
 signals:
     void paramsChanged();
 
@@ -166,17 +153,22 @@ signals:
 
     void vacuum2NameChanged(QString vacuum2Name);
 
+    void uplookLocationNameChanged(QString uplookLocationName);
+
+    void loadlookLocationNameChanged(QString loadlookLocationName);
+
+    void mushroomLocationNameChanged(QString mushroomLocationName);
+
 private:
     double m_PickForce = 0;
-    int m_Lighting = 0;
-    QString m_prName = "";
-    int m_UpDnLookLighting = 0;
-    QString m_upDownLookPrName = "";
     QString m_motorXName = "LUT_X";
     QString m_motorYName = "LUT_Y";
     QString m_motorZName = "LUT_Z";
     QString m_vacuum1Name = "LUT_V1";
     QString m_vacuum2Name = "LUT_V2";
+    QString m_uplookLocationName = "";
+    QString m_loadlookLocationName = "";
+    QString m_mushroomLocationName = "";
 };
 
 #endif // LUT_PARAMERTER_H

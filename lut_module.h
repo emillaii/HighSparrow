@@ -16,7 +16,9 @@ class LutModule : public QObject
     Q_OBJECT
 public:
     LutModule();
-    void Init(MaterialCarrier* carrier,VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper);
+    void Init(MaterialCarrier* carrier,
+              VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location,
+              XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper);
     void loadParams();
     void openServer(int port);
     LutParameter parameters;
@@ -36,10 +38,9 @@ public:
 public slots:
     void saveJsonConfig();
     void receiveRequestMessage(QString string, QString client_ip);
-public:
+private:
     MaterialCarrier* carrier;
     VisionLocation* uplook_location;
-    VisionLocation* updownlook_location;
     VisionLocation* load_location;
     VisionLocation* mushroom_location;
     XtGeneralOutput* gripper;
@@ -54,12 +55,6 @@ public:
     Q_INVOKABLE bool moveToAA1UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
-    Q_INVOKABLE bool moveToAA1UpdownlookPos(bool check_autochthonous = false);
-    Q_INVOKABLE bool moveToAA1UpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
-    Q_INVOKABLE bool toolUplookPR(PrOffset &offset,bool close_lighting = true,bool motion = false);
-    Q_INVOKABLE bool toolUplookPR(bool close_lighting = true,bool motion = false);
-    Q_INVOKABLE bool moveToAA2UpdownlookPos(bool check_autochthonous = false);
-    Q_INVOKABLE bool moveToAA2UpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToUnloadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadUplookPos(bool check_autochthonous = false);

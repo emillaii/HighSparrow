@@ -17,6 +17,10 @@ public:
     Q_PROPERTY(double pickLensZ READ pickLensZ WRITE setPickLensZ NOTIFY pickLensZChanged)
     Q_PROPERTY(double placeLensZ READ placeLensZ WRITE setPlaceLensZ NOTIFY placeLensZChanged)
     Q_PROPERTY(double visonPositionX READ visonPositionX WRITE setVisonPositionX NOTIFY visonPositionXChanged)
+    Q_PROPERTY(QString lensLocationName READ lensLocationName WRITE setLensLocationName NOTIFY lensLocationNameChanged)
+    Q_PROPERTY(QString vacancyLocationName READ vacancyLocationName WRITE setVacancyLocationName NOTIFY vacancyLocationNameChanged)
+    Q_PROPERTY(QString lutLocationName READ lutLocationName WRITE setLutLocationName NOTIFY lutLocationNameChanged)
+    Q_PROPERTY(QString lutLensLocationName READ lutLensLocationName WRITE setLutLensLocationName NOTIFY lutLensLocationNameChanged)
     int runMode() const
     {
         return m_runMode;
@@ -50,6 +54,26 @@ public:
     {
         return m_visonPositionX;
     }
+    QString lensLocationName() const
+    {
+        return m_lensLocationName;
+    }
+
+    QString vacancyLocationName() const
+    {
+        return m_vacancyLocationName;
+    }
+
+    QString lutLocationName() const
+    {
+        return m_lutLocationName;
+    }
+
+    QString lutLensLocationName() const
+    {
+        return m_lueLensLocationName;
+    }
+
 public slots:
     void setRunMode(int runMode)
     {
@@ -119,6 +143,42 @@ public slots:
         emit visonPositionXChanged(m_visonPositionX);
     }
 
+    void setLensLocationName(QString lensLocationName)
+    {
+        if (m_lensLocationName == lensLocationName)
+            return;
+
+        m_lensLocationName = lensLocationName;
+        emit lensLocationNameChanged(m_lensLocationName);
+    }
+
+    void setVacancyLocationName(QString vacancyLocationName)
+    {
+        if (m_vacancyLocationName == vacancyLocationName)
+            return;
+
+        m_vacancyLocationName = vacancyLocationName;
+        emit vacancyLocationNameChanged(m_vacancyLocationName);
+    }
+
+    void setLutLocationName(QString lutLocationName)
+    {
+        if (m_lutLocationName == lutLocationName)
+            return;
+
+        m_lutLocationName = lutLocationName;
+        emit lutLocationNameChanged(m_lutLocationName);
+    }
+
+    void setLutLensLocationName(QString lueLensLocationName)
+    {
+        if (m_lueLensLocationName == lueLensLocationName)
+            return;
+
+        m_lueLensLocationName = lueLensLocationName;
+        emit lutLensLocationNameChanged(m_lueLensLocationName);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -132,6 +192,14 @@ signals:
     void placeLensZChanged(double placeLensZ);
 
     void visonPositionXChanged(double visonPositionX);
+    void lensLocationNameChanged(QString lensLocationName);
+
+    void vacancyLocationNameChanged(QString vacancyLocationName);
+
+    void lutLocationNameChanged(QString lutLocationName);
+
+    void lutLensLocationNameChanged(QString lutLensLocationName);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -140,6 +208,10 @@ private:
     double m_pickLensZ = 0;
     double m_placeLensZ = 0;
     double m_visonPositionX = 0;
+    QString m_lensLocationName = "";
+    QString m_vacancyLocationName = "";
+    QString m_lutLocationName = "";
+    QString m_lueLensLocationName = "";
 };
 
 class LensPickArmModuleState:public PropertyBase
@@ -156,7 +228,6 @@ public:
     Q_PROPERTY(bool allowChangeTray READ allowChangeTray WRITE setAllowChangeTray NOTIFY allowChangeTrayChanged)
     Q_PROPERTY(bool hasPickedLens READ hasPickedLens WRITE setHasPickedLens NOTIFY hasPickedLensChanged)
     Q_PROPERTY(bool hasPickedNgLens READ hasPickedNgLens WRITE setHasPickedNgLens NOTIFY hasPickedNgLensChanged)
-
 public:
     bool hasTray() const
     {

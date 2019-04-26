@@ -6,12 +6,14 @@ SutModule::SutModule()
     //connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &SutModule::updateParams);
 }
 
-void SutModule::Init(MaterialCarrier *carrier, VisionLocation* downlook_location,VisionLocation* updownlook_location, XtVacuum *vacuum)
+void SutModule::Init(MaterialCarrier *carrier, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin)
 {
     this->carrier = carrier;
     this->vision_downlook_location = downlook_location;
-    this->vision_updownlook_location = updownlook_location;
+    this->vision_updownlook_down_location = updownlook_down_location;
+    this->vision_updownlook_up_location = updownlook_up_locationn;
     this->vacuum = vacuum;
+    this->popgpin = popgpin;
     loadParams();
 }
 
@@ -70,24 +72,36 @@ bool SutModule::moveToDownlookPos(bool check_autochthonous)
 
 bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting,bool check_autochthonous)
 {
-    vision_updownlook_location->OpenLight();
+    vision_updownlook_down_location->OpenLight();
     bool result = moveToToolDownlookPos(check_autochthonous);
     if(result)
     {
-        vision_updownlook_location->performPR(offset);
+        vision_updownlook_down_location->performPR(offset);
     }
     if(close_lighting)
-        vision_updownlook_location->CloseLight();
+        vision_updownlook_down_location->CloseLight();
     return false;
 }
 
 bool SutModule::toolDownlookPR(PrOffset &offset, bool close_lighting, bool motion)
 {
-    vision_updownlook_location->OpenLight();
-    if(!vision_updownlook_location->performPR(offset))
+    vision_updownlook_down_location->OpenLight();
+    if(!vision_updownlook_down_location->performPR(offset))
         return false;
     if(close_lighting)
-        vision_updownlook_location->CloseLight();
+        vision_updownlook_down_location->CloseLight();
+    if(motion)
+        carrier->StepMove_XY_Sync(-offset.X,-offset.Y);
+    return false;
+}
+
+bool SutModule::toolUplookPR(PrOffset &offset, bool close_lighting, bool motion)
+{
+    vision_updownlook_up_location->OpenLight();
+    if(!vision_updownlook_up_location->performPR(offset))
+        return false;
+    if(close_lighting)
+        vision_updownlook_up_location->CloseLight();
     if(motion)
         carrier->StepMove_XY_Sync(-offset.X,-offset.Y);
     return false;

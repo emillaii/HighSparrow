@@ -51,7 +51,7 @@ class LensLoaderModule:public ThreadWorkerBase
 public:
     LensLoaderModule(QString name = "LensPickArmModule");
     void Init(LensPickArm *pick_arm,MaterialTray *lens_tray,MaterialCarrier *lut_carrier,
-              VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision);
+              VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision);
     void ResetLogic();
     void loadJsonConfig();
     void saveJsonConfig();
@@ -108,6 +108,7 @@ private:
     VisionLocation * lens_vision = Q_NULLPTR;
     VisionLocation * vacancy_vision = Q_NULLPTR;
     VisionLocation * lut_vision = Q_NULLPTR;
+    VisionLocation * lut_lens_vision = Q_NULLPTR;
     bool is_run = false;
     ErrorLevel error_level;
     PrOffset pr_offset;

@@ -1,6 +1,7 @@
 #ifndef SUT_MODULE_H
 #define SUT_MODULE_H
 
+#include "XtCylinder.h"
 #include "baslerpyloncamera.h"
 #include "calibration.h"
 #include "material_carrier.h"
@@ -14,7 +15,9 @@ class SutModule : public QObject
     Q_OBJECT
 public:
     SutModule();
-    void Init(MaterialCarrier* carrier,VisionLocation* vision_downlook_location,VisionLocation* updownlook_location, XtVacuum *vacuum);
+    void Init(MaterialCarrier* carrier,
+              VisionLocation* vision_downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn,
+              XtVacuum *vacuum,XtCylinder* popgpin);
     void loadParams();
     SutParameter parameters;
     Position3D load_position;
@@ -27,8 +30,10 @@ public slots:
     void saveJsonConfig();
 private:
     VisionLocation* vision_downlook_location;
-    VisionLocation* vision_updownlook_location;
+    VisionLocation* vision_updownlook_down_location;
+    VisionLocation* vision_updownlook_up_location;
     XtVacuum* vacuum;
+    XtCylinder *popgpin;
     mPoint3D record_position;
     PRResultStruct pr_result;
 public:
@@ -37,6 +42,7 @@ public:
     Q_INVOKABLE bool moveToDownlookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool toolDownlookPR(PrOffset &offset,bool close_lighting = true,bool motion = false);
+    Q_INVOKABLE bool toolUplookPR(PrOffset &offset,bool close_lighting = true,bool motion = false);
     Q_INVOKABLE bool toolDownlookPR(bool close_lighting = true,bool motion = false);
     Q_INVOKABLE bool moveToToolDownlookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToToolUplookPos(bool check_autochthonous = false);

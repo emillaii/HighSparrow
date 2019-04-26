@@ -96,6 +96,7 @@ bool BaseModuleManager::loadParameters()
     dispense_module.parameters.loadJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
     material_tray.loadJsonConfig();
     lens_loader_module.loadJsonConfig();
+    lens_pick_arm.parameters.loadJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
     lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
     sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
     LoadVcmFile(VCM_PARAMETER_FILENAME);
@@ -119,6 +120,7 @@ bool BaseModuleManager::SaveParameters()
     dispense_module.parameters.saveJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
     material_tray.saveJsonConfig();
     lens_loader_module.saveJsonConfig();
+    lens_pick_arm.parameters.saveJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
     lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
     sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
     saveCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
@@ -639,26 +641,17 @@ bool BaseModuleManager::InitStruct()
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
     }
-//    vision_locations[PR_AA1_TOOL_UPLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_AA1_TOOL_DOWNLOOK]->Init(visionModule,calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_AA1_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_SUT_DOWNLOOK]->Init(visionModule,calibrations[AA1_DOWNLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_LOAD_LUT_UPLOOK]->Init(visionModule,calibrations[AA1_UPLOOK_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_AA1_MUSHROOMHEAD]->Init(visionModule,calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_LENS_LPALOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_VACANCY_LPALOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
-//    vision_locations[PR_LENS_LUTLOOK]->Init(visionModule,calibrations[LPA_LENS_CALIBRATION]->getCaliMapping(),lightingModule);
-
-    lut_module.Init(&lut_carrier,GetVisionLocationByName(PR_AA1_LUT_UPLOOK),
-                    GetVisionLocationByName(PR_AA1_TOOL_UPLOOK),
-                    GetVisionLocationByName(PR_LOAD_LUT_UPLOOK),
-                    GetVisionLocationByName(PR_AA1_MUSHROOMHEAD),
+    lut_module.Init(&lut_carrier,GetVisionLocationByName(lut_module.parameters.uplookLocationName()),
+                    GetVisionLocationByName(lut_module.parameters.loadlookLocationName()),
+                    GetVisionLocationByName(lut_module.parameters.mushroomLocationName()),
                     GetVacuumByName(lut_module.parameters.vacuum1Name()),
                     GetVacuumByName(lut_module.parameters.vacuum1Name()),
                     GetOutputIoByName(aa_head_module.parameters.gripperName()));
-    sut_module.Init(&sut_carrier,GetVisionLocationByName(PR_SUT_DOWNLOOK),
-                    GetVisionLocationByName(PR_AA1_TOOL_DOWNLOOK),
-                    GetVacuumByName(sut_module.parameters.vacuumName()));
+    sut_module.Init(&sut_carrier,GetVisionLocationByName(sut_module.parameters.downlookLocationName()),
+                    GetVisionLocationByName(sut_module.parameters.updownlookDownLocationName()),
+                    GetVisionLocationByName(sut_module.parameters.updownlookUpLocationName()),
+                    GetVacuumByName(sut_module.parameters.vacuumName()),
+                    GetCylinderByName(sut_module.parameters.cylinderName()));
     QVector<XtMotor *> executive_motors;
     executive_motors.push_back(GetMotorByName(lut_module.parameters.motorXName()));
     executive_motors.push_back(GetMotorByName(lut_module.parameters.motorYName()));
@@ -669,8 +662,11 @@ bool BaseModuleManager::InitStruct()
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
-    lens_loader_module.Init(&lens_pick_arm,&material_tray,&lut_carrier,GetVisionLocationByName(PR_LENS_LPALOOK),
-                            GetVisionLocationByName(PR_VACANCY_LPALOOK),GetVisionLocationByName(PR_LENS_LUTLOOK));
+    lens_loader_module.Init(&lens_pick_arm,&material_tray,&lut_carrier,
+                            GetVisionLocationByName(lens_loader_module.parameters.lensLocationName()),
+                            GetVisionLocationByName(lens_loader_module.parameters.vacancyLocationName()),
+                            GetVisionLocationByName(lens_loader_module.parameters.lutLocationName()),
+                            GetVisionLocationByName(lens_loader_module.parameters.lutLensLocationName()));
     profile_loaded = true;
 
     return true;
@@ -923,7 +919,7 @@ VisionLocation *BaseModuleManager::GetVisionLocationByName(QString name)
     if(vision_locations.contains(name))
         return vision_locations[name];
     else
-        qInfo("can not find vision location io %s",name.toStdString().c_str());
+        qInfo("can not find vision location: %s",name.toStdString().c_str());
     return nullptr;
 }
 

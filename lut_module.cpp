@@ -29,11 +29,10 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
     }
 }
 
-void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* updownlook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper)
+void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper)
 {
     this->carrier = carrier;
     this->uplook_location = uplook_location;
-    this->updownlook_location = updownlook_location;
     this->load_location = load_location;
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuum;
@@ -120,60 +119,6 @@ bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting,bool che
     }
     if(close_lighting)
         uplook_location->CloseLight();
-    return false;
-}
-
-bool LutModule::moveToAA1UpdownlookPos(bool check_autochthonous)
-{
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_updownlook_position.X(),aa1_updownlook_position.Y(),aa1_updownlook_position.Z(),check_autochthonous);
-}
-
-bool LutModule::moveToAA1UpDwonlookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous)
-{
-    updownlook_location->OpenLight();
-    bool result = moveToAA1UpdownlookPos(check_autochthonous);
-    if(result)
-    {
-      updownlook_location->performPR(offset);
-    }
-    if(close_lighting)
-        updownlook_location->CloseLight();
-    return false;
-}
-
-bool LutModule::toolUplookPR(PrOffset &offset, bool close_lighting, bool motion)
-{
-    updownlook_location->OpenLight();
-      if(!updownlook_location->performPR(offset))
-          return false;
-    if(close_lighting)
-        updownlook_location->CloseLight();
-    if(motion)
-        return  carrier->StepMove_XY_Sync(-offset.X,-offset.Y);
-    return false;
-}
-
-bool LutModule::toolUplookPR(bool close_lighting, bool motion)
-{
-    PrOffset offset;
-    return toolUplookPR(offset,close_lighting,motion);
-}
-
-bool LutModule::moveToAA2UpdownlookPos(bool check_autochthonous)
-{
-     return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_updownlook_position.X(),aa2_updownlook_position.Y(),aa2_updownlook_position.Z(),check_autochthonous);
-}
-
-bool LutModule::moveToAA2UpDwonlookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous)
-{
-    updownlook_location->OpenLight();
-    bool result = moveToAA2UpdownlookPos(check_autochthonous);
-    if(result)
-    {
-      updownlook_location->performPR(offset);
-    }
-    if(close_lighting)
-        updownlook_location->CloseLight();
     return false;
 }
 

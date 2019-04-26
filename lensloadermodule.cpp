@@ -5,7 +5,7 @@ LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 
 }
 
-void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision)
+void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision)
 {
     this->pick_arm = pick_arm;
     this->lens_tray = lens_tray;
@@ -13,6 +13,7 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     this->lens_vision = lens_vision;
     this->vacancy_vision = vacancy_vision;
     this->lut_vision = lut_vision;
+    this->lut_lens_vision = lut_lens_vision;
 }
 
 QString LensLoaderModule::GetCurrentError()

@@ -12,8 +12,10 @@ public:
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
     Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
     Q_PROPERTY(QString vacuumName READ vacuumName WRITE setVacuum1Name NOTIFY vacuum1NameChanged)
-    Q_PROPERTY(QString sylinderName READ sylinderName WRITE setsylinderName NOTIFY sylinderNameChanged)
-
+    Q_PROPERTY(QString cylinderName READ cylinderName WRITE setCylinderName NOTIFY cylinderNameChanged)
+    Q_PROPERTY(QString downlookLocationName READ downlookLocationName WRITE setDownlookLocationName NOTIFY downlookLocationNameChanged)
+    Q_PROPERTY(QString updownlookUpLocationName READ updownlookUpLocationName WRITE setUpdownlookUpLocationName NOTIFY updownlookUpLocationNameChanged)
+    Q_PROPERTY(QString updownlookDownLocationName READ updownlookDownLocationName WRITE setUpdownlookDownLocationName NOTIFY updownlookDownLocationNameChanged)
     double Force() const
     {
         return m_Force;
@@ -39,11 +41,25 @@ public:
         return m_vacuumName;
     }
 
-    QString sylinderName() const
+    QString cylinderName() const
     {
         return m_sylinderName;
     }
 
+    QString downlookLocationName() const
+    {
+        return m_downlookLocationName;
+    }
+
+    QString updownlookUpLocationName() const
+    {
+        return m_updownlookUpLocationName;
+    }
+
+    QString updownlookDownLocationName() const
+    {
+        return m_updownlookDownLocationName;
+    }
 public slots:
     void setForce(double Force)
     {
@@ -91,15 +107,41 @@ public slots:
         emit vacuum1NameChanged(m_vacuumName);
     }
 
-    void setsylinderName(QString sylinderName)
+    void setCylinderName(QString sylinderName)
     {
         if (m_sylinderName == sylinderName)
             return;
 
         m_sylinderName = sylinderName;
-        emit sylinderNameChanged(m_sylinderName);
+        emit cylinderNameChanged(m_sylinderName);
     }
 
+    void setDownlookLocationName(QString downlookLocationName)
+    {
+        if (m_downlookLocationName == downlookLocationName)
+            return;
+
+        m_downlookLocationName = downlookLocationName;
+        emit downlookLocationNameChanged(m_downlookLocationName);
+    }
+
+    void setUpdownlookUpLocationName(QString updownlookUpLocationName)
+    {
+        if (m_updownlookUpLocationName == updownlookUpLocationName)
+            return;
+
+        m_updownlookUpLocationName = updownlookUpLocationName;
+        emit updownlookUpLocationNameChanged(m_updownlookUpLocationName);
+    }
+
+    void setUpdownlookDownLocationName(QString updownlookDownLocationName)
+    {
+        if (m_updownlookDownLocationName == updownlookDownLocationName)
+            return;
+
+        m_updownlookDownLocationName = updownlookDownLocationName;
+        emit updownlookDownLocationNameChanged(m_updownlookDownLocationName);
+    }
 signals:
     void paramsChanged(double Force);
 
@@ -111,7 +153,15 @@ signals:
 
     void vacuum1NameChanged(QString vacuumName);
 
-    void sylinderNameChanged(QString sylinderName);
+    void cylinderNameChanged(QString cylinderName);
+
+    void downlookLocationNameChanged(QString downlookLocationName);
+
+    void updownlookUpLocationNameChanged(QString updownlookUpLocationName);
+
+    void updownlookDownLocationNameChanged(QString updownlookDownLocationName);
+
+    void mushroomLocationNameChanged(QString mushroomLocationName);
 
 private:
     double m_Force = 0;
@@ -120,6 +170,9 @@ private:
     QString m_motorZName = "SUT_Z";
     QString m_vacuumName = "SUT_V";
     QString m_sylinderName = "SUT_P";
+    QString m_downlookLocationName;
+    QString m_updownlookUpLocationName;
+    QString m_updownlookDownLocationName;
 };
 
 #endif // SUT_PARAMETER_H

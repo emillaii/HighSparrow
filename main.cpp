@@ -83,6 +83,15 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lightingController", highSprrow.baseModuleManager->lightingModule);
     QList<QString> temp_names = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames", QVariant::fromValue(highSprrow.baseModuleManager->motors.keys()));
+
+    QStringList vision_locations_list = highSprrow.baseModuleManager->vision_locations.keys();
+    QList<QObject*> vl_parameter_list;
+    for(QString key:vision_locations_list){
+        vl_parameter_list<<&(highSprrow.baseModuleManager->vision_locations[key]->parameters);
+    }
+    //QStringList calibrations_list = highSprrow.baseModuleManager->calibrations.keys();
+    //engine.rootContext()->setContextProperty("vision_locations_list",QVariant::fromValue(vision_locations_list));
+    engine.rootContext()->setContextProperty("vl_parameter_list",QVariant::fromValue(vl_parameter_list));
     //PR Params
 //    engine.rootContext()->setContextProperty("prSUTDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
 //    engine.rootContext()->setContextProperty("prAA1LUTUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_LUT_UPLOOK]->parameters);

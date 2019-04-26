@@ -6,6 +6,7 @@ import QtQuick.Dialogs 1.2
 
 
 ItemDelegate {
+/*
     property var moveTo1 : function(){
         console.log("Move To Downlook Position")
         sutModule.moveToDownlookPos()
@@ -107,7 +108,7 @@ ItemDelegate {
         console.log("Lut Lens 视觉执行PR")
         highSprrow.performLUTLensPR()
     }
-
+//*/
     width: parent.width
     contentItem: ColumnLayout {
         spacing: 0
@@ -127,12 +128,10 @@ ItemDelegate {
         }
         ColumnLayout {
             visible: calibrationViewSwitch.checked
-
-
-
+            Layout.alignment: Qt.AlignTop
             ListModel{
                 id: calibration_model
-//*
+/*
                 ListElement{
                     name:"SUT Downlook PR"
                     item: "prSUTDownlookParams"
@@ -177,9 +176,10 @@ ItemDelegate {
 //*/
             }
             ListView{
-                height: 1600
-                model:calibration_model
+                model:vl_parameter_list
+                height: 2000
                 delegate: GroupBox{
+/*
                     property var delegateMap:{
                         "prSUTDownlookParams":prSUTDownlookParams,
                         "prAA1ToolDownlookParams":prAA1ToolDownlookParams,
@@ -222,8 +222,9 @@ ItemDelegate {
                         "prVACANCYLpaLook":perform7,
                         "prLENSLutLook":perform8
                     }
+//*/
 
-                    title:name
+                    title:locationName
                     ColumnLayout{
                         RowLayout{
                             FileDialog{
@@ -235,25 +236,27 @@ ItemDelegate {
 
                                 nameFilters: ["avdata文件 (*.avdata)"]
                                 onAccepted:{
-                                    delegateMap[item].setPrFileName(fileUrl)
+                                    setPrFileName(fileUrl)
+                                    //delegateMap[item].setPrFileName(fileUrl)
                                 }
                             }
                             Dial{
                                 width: 25
                                 from: 0
-                                value: delegateMap[item].lightBrightness
+                                value: lightBrightness
                                 to: 255
                                 stepSize: 1
 
                                 Label {
-                                    text: delegateMap[item].lightBrightness
+                                    text: lightBrightness
                                     color: "white"
                                     font.pixelSize: Qt.application.font.pixelSize * 3
                                     anchors.centerIn: parent
                                 }
                                 onValueChanged: {
                                     if (calibrationViewSwitch.checked) {
-                                        delegateMap[item].setLightBrightness(value)
+                                        setLightBrightness(value)
+                                        //console.log("after setLightBrightness")
                                         lightingController.setUplookLighting(value)
                                     }
                                 }
@@ -266,34 +269,36 @@ ItemDelegate {
                             }
                             TextField{
                                 color: "#57f529"
-                                text: delegateMap[item].prFileName
+                                text: prFileName
                                 font.pixelSize: 14
                             }
                         }
                         RowLayout{
                             Button{
-                                text:qsTr("移动")
-                                onClicked:movetoMap[item]()
-                            }
-                            Button{
-                                visible:isCali
+                                visible: needCalibration
                                 text:qsTr("校正")
-                                onClicked:caliMap[item]()
+                                onClicked:{
+                                    logicManager.performCalibration(calibrationName)
+                                }
                             }
                             Button{
                                 text:qsTr("执行PR")
-                                onClicked:performMap[item]()
+                                onClicked:{
+                                    logicManager.performLocation(locationName)
+                                }
                             }
                         }
                     }
                 }
             }
-            GroupBox {
-                title: qsTr("Chart")
-                CalibrationChart {
-                }
-            }
+
 /*
+
+            GroupBox {
+                 title: qsTr("Chart")
+                 CalibrationChart {
+                 }
+            }
             GroupBox {
                 title: qsTr("SUT Downlook PR")
                 CalibrationDownlookView {

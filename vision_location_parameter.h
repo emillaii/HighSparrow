@@ -175,7 +175,7 @@ private:
     double m_maximumLength = 3;
     QString m_locationName = "Location";
     QString m_calibrationName = "Calibration";
-    bool m_needCalibration;
+    bool m_needCalibration = false;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

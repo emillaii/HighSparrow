@@ -15,20 +15,8 @@ void LutModule::openServer(int port)
 
 void LutModule::receiveRequestMessage(QString message, QString client_ip)
 {
-    bool isLocalHost = false;
     qInfo("Lut Module receive command:%s from ip: %s", message.toStdString().c_str(), client_ip.toStdString().c_str());
-    if(client_ip == "::1") {
-        qInfo("This command come from localhost");
-        isLocalHost = true;
-    }
     QJsonObject obj = getJsonObjectFromString(message);
-    QString cmd = obj["cmd"].toString("");
-    obj.insert("client_ip", client_ip);
-    if (cmd == "moveToUplookPosition") {
-        isLocalHost ? moveToAA1UplookPos() : moveToAA2UplookPos();
-    } else if (cmd == "moveToPickLensPosition") {
-        isLocalHost ? moveToAA1PickLensPos() : moveToAA2PickLens();
-    }
     requestQueue.enqueue(obj);
 }
 
@@ -48,12 +36,12 @@ void LutModule::run()
                 isLocalHost = true;
             }
             if (cmd == "lensReq") {
-                isLocalHost ? moveToAA1UplookPos() : moveToAA2UplookPos();
+               // isLocalHost ? moveToAA1UplookPos() : moveToAA2UplookPos();
                 result.insert("event", "lensResp");
             } else if (cmd == "prReq") {
                 result.insert("event", "prResp");
             } else if (cmd == "lutLeaveReq") {
-                moveToUnloadPos();
+                //moveToUnloadPos();
                 result.insert("event", "lutLeaveResp");
             }
             emit sendMessageToClient(obj["client_ip"].toString(), getStringFromJsonObject(result));

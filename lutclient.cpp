@@ -13,7 +13,8 @@ void LutClient::receiveMessage(QString message)
 {
     QJsonObject json = getJsonObjectFromString(message);
     qInfo("Lut Client receive message: %s", message.toStdString().c_str());
-    QString event = json["event"].toString();
+    QString event = json["event"].toString("");
+    QString cmd = json["cmd"].toString("");
     QJsonObject obj;
     if (event == "lensResp") {
         qInfo("AA Head need to pick lens");
@@ -27,11 +28,13 @@ void LutClient::receiveMessage(QString message)
         qInfo("LUT move to load lens position");
         this->state = LutClientState::LUT_CLIENT_IDLE;
         return;
-    } else if (event == "gripperOnReq") {
+    }
+
+    if (cmd == "gripperOnReq") {
         qInfo("AA Gripper On Request");
         emit this->triggerAAGripper(true);
         QThread::msleep(200);
-    } else if (event == "gripperOffReq") {
+    } else if (cmd == "gripperOffReq") {
         qInfo("AA Gripper Of Request");
         emit this->triggerAAGripper(false);
         QThread::msleep(200);

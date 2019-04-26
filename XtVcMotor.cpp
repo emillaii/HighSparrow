@@ -34,13 +34,15 @@ void XtVcMotor::ConfigVCM()
     is_init = true;
 }
 
-void XtVcMotor::ChangeDiretion()
+void XtVcMotor::ChangeDiretion(bool befor_seek)
 {
-    if(parameters.direntionAfterSeek()!=0)
+    int direction = parameters.direntionAfterSeek();
+    if(befor_seek)direction =  parameters.direction();
+    if(direction!=0)
         direction_is_opposite = true;
     else
         direction_is_opposite = false;
-    SetRunDirect(vcm_id, parameters.direntionAfterSeek(), parameters.scale());
+    SetRunDirect(vcm_id, direction, parameters.scale());
 }
 
 void XtVcMotor::Init()
@@ -263,6 +265,7 @@ void XtVcMotor::SeekOrigin(int thread)
     if(!is_enable)
         return;
     int result;
+    ChangeDiretion(true);
     if(parameters.findOriginCurrent() > 0)
         result = Touch_Go_Zero(vcm_id,parameters.findOriginCurrent(),parameters.touchDistance());
     else {

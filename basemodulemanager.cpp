@@ -1010,11 +1010,11 @@ QString BaseModuleManager::getCalibrationParam(QString calibration_name)
     if(temp_caliration == nullptr)return  "no calibration";
     QString temp_value = "(";
     QPointF temp_point = temp_caliration->getOnePxielDistance();
-    temp_value.append(QString::number(temp_point.x()));
+    temp_value.append(QString::number(round(temp_point.x()*10000)/10000));
     temp_value.append(",");
-    temp_value.append(QString::number(temp_point.y()));
+    temp_value.append(QString::number(round(temp_point.y()*10000)/10000));
     temp_value.append(",");
-    temp_value.append(QString::number(temp_caliration->getRotationAngle()));
+    temp_value.append(QString::number(round(temp_caliration->getRotationAngle()*100)/100));
     temp_value.append(")");
     return temp_value;
 }

@@ -19,10 +19,8 @@ enum CommandType{
     LUT_MOVETO_LOAD_UPLOOK_CMD,
     LUT_MOVETO_AA1_UPLOOK_CMD,
     LUT_MOVETO_AA2_UPLOOK_CMD,
-    CALIBRATION_CHART,
-    CALIBRATION_MUSHROOM,
-    CALIBRATION_UPLOOK,
-    CALIBRATION_DOWNLOOK,
+    PERFORM_CALIBRATION,
+    PERFORM_LOCATION,
     PERFORM_OC,
     PERFORM_LOOP_TEST
 };
@@ -98,9 +96,17 @@ void LogicManager::run() {
     {
         baseModuleManage->lut_module.moveToAA2UplookPos();
     }
-    else if (m_currentMode == CommandType::CALIBRATION_CHART)
+    else if (m_currentMode == CommandType::PERFORM_CALIBRATION)
     {
-        baseModuleManage->performChartCalibration();
+        baseModuleManage->performCalibration(calibration_name);
+    }
+    else if (m_currentMode == CommandType::PERFORM_CALIBRATION)
+    {
+        baseModuleManage->performCalibration(calibration_name);
+    }
+    else if (m_currentMode == CommandType::PERFORM_LOCATION)
+    {
+        baseModuleManage->performLocation(location_name);
     }
     m_currentMode = CommandType::IDLE;
     qInfo("End");
@@ -146,7 +152,26 @@ void LogicManager::lutMoveToLoadUplookPos(){setStateMessage(__FUNCTION__);moveTo
 void LogicManager::lutMoveToAA1UplookPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_MOVETO_AA1_UPLOOK_CMD);}
 void LogicManager::lutMoveToAA2UplookPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_MOVETO_AA2_UPLOOK_CMD);}
 
-void LogicManager::performChartCalibration(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::CALIBRATION_CHART);}
+void LogicManager::performChartCalibration()
+{
+    setStateMessage(__FUNCTION__);
+    calibration_name = baseModuleManage->chart_calibration->parameters.calibrationName();
+    moveToCmd(CommandType::PERFORM_CALIBRATION);
+}
+
+void LogicManager::performCalibration(QString calibration_name)
+{
+    setStateMessage(__FUNCTION__);
+    this->calibration_name = calibration_name;
+    moveToCmd(CommandType::PERFORM_CALIBRATION);
+}
+
+void LogicManager::performLocation(QString location_name)
+{
+    setStateMessage(__FUNCTION__);
+    this->calibration_name = location_name;
+    moveToCmd(CommandType::PERFORM_LOCATION);
+}
 
 
 void LogicManager::autoRun(QString json){

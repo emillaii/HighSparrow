@@ -170,12 +170,16 @@ public:
     Q_INVOKABLE bool initialDevice();
     Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);
     Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
+    bool performCalibration(QString calibration_name);
+    bool performLocation(QString location_name);
+    Q_INVOKABLE QString getCalibrationParam(QString calibration_name);
     Q_INVOKABLE void setOutput(QString name, bool on);
     Q_INVOKABLE bool getOutput(QString name);
     Q_INVOKABLE void motorSeekOrigin(QString name);
 
     Q_INVOKABLE double getMotorFeedbackPos(QString name);
     Q_INVOKABLE double getMotorFeedbackPos(int index);
+
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();
     void EnableMotors();
@@ -185,14 +189,6 @@ public:
     bool allMotorsSeekOriginal2();
     void stopSeeking();
 
-    Q_INVOKABLE void performUplookCalibration();
-    Q_INVOKABLE void performDownlookCalibration();
-    Q_INVOKABLE void performUpDownlookCalibration();
-    Q_INVOKABLE void performUpDownlookUpCalibration();
-    Q_INVOKABLE void performAA1MushroomHeadCalibration();
-    Q_INVOKABLE void performLPALensCalibration();
-    Q_INVOKABLE void performChartCalibration();
-    Q_INVOKABLE void UpdateCalibrationParameters();
     Q_INVOKABLE int getNumberOfMotors();
     Q_INVOKABLE QString getMotorsName(int);
     Q_INVOKABLE void testCommand();

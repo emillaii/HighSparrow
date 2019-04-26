@@ -39,7 +39,8 @@ public:
     Calibration &operator=(const Calibration &calibration) = delete;
 //    void loadJsonConfig();
 //    void saveJsonConfig();
-    bool performCalibration(double x_step = 1, double y_step =1 );
+    bool performCalibration();
+    bool performPRResult(PrOffset offset);
     double getRotationAngle();
     bool getDeltaDistanceFromCenter(const QPointF pixelPoint, QPointF &distanceMech);
     QPointF getOnePxielDistance();

@@ -17,7 +17,15 @@ void Calibration::Init(XtMotor *motor_x, XtMotor *motor_y, VisionLocation *locat
     this->motor_y = motor_y;
     this->location =location;
 //    setName(parameters.calibrationName());
-
+    QPointF image_center(parameters.imageWidth()/2,parameters.imageHeight()/2);
+    mapping.ChangeParameter(QMatrix(parameters.matrix11(),
+                                    parameters.matrix12(),
+                                    parameters.matrix21(),
+                                    parameters.matrix22(),
+                                    parameters.deltaX(),
+                                    parameters.deltaY()),
+                            image_center);
+    mOriginB = mA2BMapping.pixel2MechPoint(image_center);
 }
 
 //void Calibration::loadJsonConfig()
@@ -35,15 +43,15 @@ void Calibration::Init(XtMotor *motor_x, XtMotor *motor_y, VisionLocation *locat
 //{
 //    PropertyBase::saveJsonConfig(file_path,name, &parameters);
 //}
-bool Calibration::performCalibration(double x_step, double y_step)
+bool Calibration::performCalibration()
 {
     if(nullptr == motor_x||nullptr == motor_y)
     {
         AppendLineError(u8"轴为空");
         return false;
     }
-    double xMove = x_step;
-    double yMove = y_step;
+    double xMove = parameters.calibrationStep();
+    double yMove = parameters.calibrationStep();
 
     double pixel_x,pixel_y;
     QVector<QPointF> pixelPoints;
@@ -123,6 +131,17 @@ bool Calibration::performCalibration(double x_step, double y_step)
 //        saveJs onConfig();
     }
     return true;
+}
+
+bool Calibration::performPRResult(PrOffset offset)
+{
+    double cur_x = motor_x->GetFeedbackPos();
+    double cur_y = motor_y->GetFeedbackPos();
+    motor_x->StepMove(-offset.X);
+    motor_y->StepMove(-offset.Y);
+    bool result = motor_x->WaitArrivedTargetPos(cur_x - offset.X);
+    result &= motor_x->WaitArrivedTargetPos(cur_y - offset.Y);
+    return result;
 }
 
 double Calibration::getRotationAngle()

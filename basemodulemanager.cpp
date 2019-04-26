@@ -847,54 +847,6 @@ void BaseModuleManager::stopSeeking()
         }
 }
 
-void BaseModuleManager::performUplookCalibration()
-{
-    if(calibrations.contains(AA1_UPLOOK_CALIBRATION))
-        calibrations[AA1_UPLOOK_CALIBRATION]->performCalibration();
-}
-
-void BaseModuleManager::performDownlookCalibration()
-{
-    if(calibrations.contains(AA1_DOWNLOOK_CALIBRATION))
-        calibrations[AA1_DOWNLOOK_CALIBRATION]->performCalibration();
-}
-
-void BaseModuleManager::performUpDownlookCalibration()
-{
-    if(calibrations.contains(AA1_UPDownLOOK_DOWN_CALIBRATION))
-        calibrations[AA1_UPDownLOOK_DOWN_CALIBRATION]->performCalibration();
-}
-
-void BaseModuleManager::performUpDownlookUpCalibration()
-{
-    if(calibrations.contains(AA1_UPDownLOOK_UP_CALIBRATION))
-        calibrations[AA1_UPDownLOOK_UP_CALIBRATION]->performCalibration();
-}
-
-void BaseModuleManager::performAA1MushroomHeadCalibration()
-{
-    if(calibrations.contains(AA1_MUSHROOMHEAD_CALIBRATION))
-        calibrations[AA1_MUSHROOMHEAD_CALIBRATION]->performCalibration();
-}
-
-void BaseModuleManager::performLPALensCalibration()
-{
-    if(calibrations.contains(LPA_LENS_CALIBRATION))
-        calibrations[LPA_LENS_CALIBRATION]->performCalibration();
-}
-
-void BaseModuleManager::performChartCalibration()
-{
-    qInfo("perform Chart Calibration");
-    if (chart_calibration)
-        chart_calibration->performCalibration(0.1, 0.1);
-}
-
-void BaseModuleManager::UpdateCalibrationParameters()
-{
-
-}
-
 int BaseModuleManager::getNumberOfMotors()
 {
     return motors.size();
@@ -1022,6 +974,40 @@ bool BaseModuleManager::stepMove(int index, double step, bool isPositive)
         temp_motor->StepMove(-step);
     }
     return true;
+}
+
+bool BaseModuleManager::performCalibration(QString calibration_name)
+{
+    Calibration* temp_caliration = GetCalibrationByName(calibration_name);
+    if(temp_caliration == nullptr)return  false;
+    return  temp_caliration->performCalibration();
+}
+
+bool BaseModuleManager::performLocation(QString location_name)
+{
+    VisionLocation* temp_location = GetVisionLocationByName(location_name);
+    if(temp_location == nullptr)return false;
+    PrOffset offset;
+    if(!temp_location->performPR(offset))return false;
+    Calibration* temp_caliration = GetCalibrationByName(temp_location->parameters.calibrationName());
+    if(temp_caliration == nullptr)return  false;
+    temp_caliration->performPRResult(offset);
+    return true;
+}
+
+QString BaseModuleManager::getCalibrationParam(QString calibration_name)
+{
+    Calibration* temp_caliration = GetCalibrationByName(calibration_name);
+    if(temp_caliration == nullptr)return  "no calibration";
+    QString temp_value = "(";
+    QPointF temp_point = temp_caliration->getOnePxielDistance();
+    temp_value.append(QString::number(temp_point.x()));
+    temp_value.append(",");
+    temp_value.append(QString::number(temp_point.y()));
+    temp_value.append(",");
+    temp_value.append(QString::number(temp_caliration->getRotationAngle()));
+    temp_value.append(")");
+    return temp_value;
 }
 
 void BaseModuleManager::setOutput(QString name, bool on)

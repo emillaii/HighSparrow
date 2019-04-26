@@ -22,6 +22,7 @@ public:
     Q_PROPERTY(QString locationName READ locationName WRITE setLocationName NOTIFY locationNameChanged)
     Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
+    Q_PROPERTY(double calibrationStep READ calibrationStep WRITE setCalibrationStep NOTIFY calibrationStepChanged)
     double imageWidth() const
     {
         return m_imageWidth;
@@ -90,6 +91,11 @@ public:
     QString motorYName() const
     {
         return m_motorYName;
+    }
+
+    double calibrationStep() const
+    {
+        return m_calibrationStep;
     }
 
 public slots:
@@ -218,6 +224,16 @@ public slots:
         emit motorYNameChanged(m_motorYName);
     }
 
+    void setCalibrationStep(double calibrationStep)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_calibrationStep, calibrationStep))
+            return;
+
+        m_calibrationStep = calibrationStep;
+        emit calibrationStepChanged(m_calibrationStep);
+    }
+
 signals:
     void originXChanged(double originX);
 
@@ -247,6 +263,8 @@ signals:
 
     void motorYNameChanged(QString motorYName);
 
+    void calibrationStepChanged(double calibrationStep);
+
 private:
     double m_imageWidth = DOWNLOOK_VISION_CAMERA_WIDTH;
     double m_imageHeight = DOWNLOOK_VISION_CAMERA_HEIGHT;
@@ -262,6 +280,7 @@ private:
     QString m_locationName = "";
     QString m_motorXName = "";
     QString m_motorYName = "";
+    double m_calibrationStep = 1;
 };
 
 #endif // CALIBRATION_PARAMETER_H

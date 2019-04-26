@@ -16,6 +16,7 @@ public:
     Q_PROPERTY(double maximunAngle READ maximunAngle WRITE setMaximunAngle NOTIFY maximunAngleChanged)
     Q_PROPERTY(double maximumLength READ maximumLength WRITE setMaximumLength NOTIFY maximumLengthChanged)
     Q_PROPERTY(QString calibrationName READ calibrationName WRITE setCalibrationName NOTIFY calibrationNameChanged)
+    Q_PROPERTY(bool needCalibration READ needCalibration WRITE setNeedCalibration NOTIFY needCalibrationChanged)
 
     QString prFileName() const
     {
@@ -55,6 +56,11 @@ public:
     QString calibrationName() const
     {
         return m_calibrationName;
+    }
+
+    bool needCalibration() const
+    {
+        return m_needCalibration;
     }
 
 public slots:
@@ -132,6 +138,15 @@ public slots:
         emit calibrationNameChanged(m_calibrationName);
     }
 
+    void setNeedCalibration(bool needCalibration)
+    {
+        if (m_needCalibration == needCalibration)
+            return;
+
+        m_needCalibration = needCalibration;
+        emit needCalibrationChanged(m_needCalibration);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -149,6 +164,8 @@ signals:
 
     void calibrationNameChanged(QString calibrationName);
 
+    void needCalibrationChanged(bool needCalibration);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -158,6 +175,7 @@ private:
     double m_maximumLength = 3;
     QString m_locationName = "Location";
     QString m_calibrationName = "Calibration";
+    bool m_needCalibration;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

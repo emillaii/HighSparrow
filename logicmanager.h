@@ -42,6 +42,8 @@ public:
     Q_INVOKABLE void lutMoveToAA2UplookPos();
 
     Q_INVOKABLE void performChartCalibration();
+    Q_INVOKABLE void performCalibration(QString calibration_name);
+    Q_INVOKABLE void performLocation(QString location_name);
 
     Q_INVOKABLE void performOC();
     Q_INVOKABLE void performLoopTest(int mode);
@@ -98,6 +100,9 @@ private:
     int m_currentMode;
     QString m_stateMessage;
     Unitlog unitlog;
+
+    QString location_name;
+    QString calibration_name;
 protected:
     void run();
 };

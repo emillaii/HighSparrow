@@ -48,8 +48,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(m_LTL_X)
-                        var y = baseModuleManager.getMotorFeedbackPos(m_LPA_Y)
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
 
                         tray_start_point1.setX(x);
                         tray_start_point1.setY(y);
@@ -106,8 +106,8 @@ ColumnLayout {
                     height: 40
 
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(m_LTL_X)
-                        var y = baseModuleManager.getMotorFeedbackPos(m_LPA_Y)
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
 
                         first_tray_end_position.setX(x);
                         first_tray_end_position.setY(y);
@@ -160,6 +160,7 @@ ColumnLayout {
                 }
                 TextField{
                     text:lensPickArmModuleParameter.pickLensZ
+                    horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 3
                         notation: DoubleValidator.StandardNotation
@@ -179,7 +180,7 @@ ColumnLayout {
                 }
 
                 Button{
-                    text:qsTr("取lens视觉")
+                    text:qsTr("lens视觉")
                     width: 40
                     height: 40
                     onClicked: {
@@ -195,8 +196,11 @@ ColumnLayout {
                         logicManager.lensPickArmMoveToPickLensFromTray1()
                     }
                 }
+            }
+            RowLayout{
+                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
-                    text:qsTr("放lens视觉")
+                    text:qsTr("空位视觉")
                     width: 40
                     height: 40
                     onClicked: {

@@ -115,6 +115,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lutCarrierParams", &highSprrow.baseModuleManager->lut_carrier.parameters);
     engine.rootContext()->setContextProperty("dispenserParams",&highSprrow.baseModuleManager->dispenser.parameters);
     engine.rootContext()->setContextProperty("dispenseParams",&highSprrow.baseModuleManager->dispense_module.parameters);
+    engine.rootContext()->setContextProperty("lensPickArmParams",&highSprrow.baseModuleManager->lens_pick_arm.parameters);
 //*
     engine.rootContext()->setContextProperty("material_tray",&highSprrow.baseModuleManager->material_tray);
     engine.rootContext()->setContextProperty("first_tray_end_position",&highSprrow.baseModuleManager->material_tray.first_tray_end_position);
@@ -153,6 +154,8 @@ int main(int argc, char *argv[])
         inputList<<input;
     }
     engine.rootContext()->setContextProperty("inputList",inputList);
+
+
 
     //QImage Provider
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);

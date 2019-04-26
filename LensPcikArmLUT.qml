@@ -48,8 +48,8 @@ ColumnLayout {
                     height: 40
                     onClicked: {
 
-                        var x = baseModuleManager.getMotorFeedbackPos(lutParams.motorXName)
-                        var y = baseModuleManager.getMotorFeedbackPos(lutParams.motorYName)
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
 
                         lut_pr_position1.setX(x);
                         lut_pr_position1.setY(y);
@@ -136,8 +136,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(lutParams.motorXName)
-                        var y = baseModuleManager.getMotorFeedbackPos(lutParams.motorYName)
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
 
                         lut_pr_position2.setX(x);
                         lut_pr_position2.setY(y);
@@ -147,7 +147,7 @@ ColumnLayout {
             RowLayout{
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
-                    text:qsTr("视觉")
+                    text:qsTr("NGLens视觉")
                     width:40
                     height: 40
                     onClicked: {

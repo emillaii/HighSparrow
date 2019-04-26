@@ -39,7 +39,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         //sparrowQClient = new SparrowClient(QUrl("ws://localhost:9999"), true);
     } else {
         this->lut_module.openServer(19998);
-        sparrowQClient = new SparrowClient(QUrl("ws://localhost:19998"), true);
+        lutClient = new LutClient("ws://localhost:19998");
+        //sparrowQClient = new SparrowClient(QUrl("ws://localhost:19998"), true);
     }
     lightingModule = new WordopLight(ServerMode());
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
@@ -1078,8 +1079,3 @@ bool BaseModuleManager::closeSensor()
     return dothinkey->DothinkeyClose();
 }
 
-void BaseModuleManager::testCommand()
-{
-    QJsonObject obj = this->sparrowQServer->commandDequeue();
-    qInfo("CMD: %s", obj["cmd"].toString().toStdString().c_str());
-}

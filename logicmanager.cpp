@@ -28,7 +28,7 @@ enum CommandType{
 LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     : QThread (parent), m_currentMode(CommandType::IDLE)
 {
-    aaCore = new AACore(&device_manager->aa_head_module,&device_manager->lut_module,&device_manager->sut_module, device_manager->dothinkey, device_manager->chart_calibration,&device_manager->dispense_module);
+    aaCore = new AACore(&device_manager->aa_head_module,device_manager->lutClient,&device_manager->sut_module, device_manager->dothinkey, device_manager->chart_calibration,&device_manager->dispense_module);
     sfrWorkerController = new SfrWorkerController(aaCore);
     aaCore->setSfrWorkerController(sfrWorkerController);
     baseModuleManage = device_manager;
@@ -50,6 +50,7 @@ void LogicManager::run() {
         baseModuleManage->stopSeeking();
     }
     else if (m_currentMode == CommandType::MODE_AUTO_RUN) {
+        baseModuleManage->lut_module.start();
         aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_AUTO_MODE, uuid);
         aaCore->wait();
     }

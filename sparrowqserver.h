@@ -12,17 +12,14 @@ class SparrowQServer : public QObject
 public:
     explicit SparrowQServer(quint16 port, QObject *parent = nullptr);
     ~SparrowQServer();
-    QJsonObject commandDequeue();
-    int commandQueueSize();
-    void clearCommandQueue();
 private:
     QWebSocketServer *m_pWebSocketServer;
     QList<QWebSocket *> m_clients;
-    QQueue<QJsonObject> commandQueue;
-
 Q_SIGNALS:
     void closed();
     void receiveRequestMessage(QString, QString);
+public Q_SLOTS:
+    void sendMessageToClient(QString destAddress, QString message);
 private Q_SLOTS:
     void onNewConnection();
     void processTextMessage(QString message);

@@ -68,7 +68,8 @@ SOURCES += \
     lenspickarm.cpp \
     lensloadermodule.cpp \
     trayloadermodule.cpp \
-    trayclip.cpp
+    trayclip.cpp \
+    lutclient.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -187,7 +188,8 @@ HEADERS += \
     trayloaderparameter.h \
     trayclipstandardsparameter.h\
     xtvacuumparameter.h \
-    xtcylinderparameter.h
+    xtcylinderparameter.h \
+    lutclient.h
 
 DISTFILES += \
     icons/index.theme

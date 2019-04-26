@@ -1,14 +1,16 @@
 #include "lut_module.h"
 #include "commonutils.h"
 
-LutModule::LutModule()
+LutModule::LutModule(QObject *parent) : QThread (parent)
 {
 }
+
 
 void LutModule::openServer(int port)
 {
     server = new SparrowQServer(port);
     connect(server, &SparrowQServer::receiveRequestMessage, this, &LutModule::receiveRequestMessage);
+    connect(this, &LutModule::sendMessageToClient, this->server, &SparrowQServer::sendMessageToClient);
 }
 
 void LutModule::receiveRequestMessage(QString message, QString client_ip)
@@ -21,11 +23,42 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
     }
     QJsonObject obj = getJsonObjectFromString(message);
     QString cmd = obj["cmd"].toString("");
-    qInfo("cmd: %s", cmd.toStdString().c_str());
+    obj.insert("client_ip", client_ip);
     if (cmd == "moveToUplookPosition") {
         isLocalHost ? moveToAA1UplookPos() : moveToAA2UplookPos();
     } else if (cmd == "moveToPickLensPosition") {
         isLocalHost ? moveToAA1PickLensPos() : moveToAA2PickLens();
+    }
+    requestQueue.enqueue(obj);
+}
+
+void LutModule::run()
+{
+    qInfo("Start Lut Module Thread");
+    while(true){
+        if (requestQueue.size()>0) {
+            QJsonObject obj = requestQueue.dequeue();
+            QJsonObject result;
+            qInfo("Start to consume request: %s", getStringFromJsonObject(obj).toStdString().c_str());
+            QString client_ip = obj["client_ip"].toString("");
+            QString cmd = obj["cmd"].toString("");
+            bool isLocalHost = false;
+            if(client_ip == "::1") {
+                qInfo("This command come from localhost");
+                isLocalHost = true;
+            }
+            if (cmd == "lensReq") {
+                isLocalHost ? moveToAA1UplookPos() : moveToAA2UplookPos();
+                result.insert("event", "lensResp");
+            } else if (cmd == "prReq") {
+                result.insert("event", "prResp");
+            } else if (cmd == "lutLeaveReq") {
+                moveToUnloadPos();
+                result.insert("event", "lutLeaveResp");
+            }
+            emit sendMessageToClient(obj["client_ip"].toString(), getStringFromJsonObject(result));
+        }
+        QThread::msleep(500);
     }
 }
 

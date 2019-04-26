@@ -39,12 +39,6 @@ void SparrowQServer::processTextMessage(QString message)
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     emit receiveRequestMessage(message, pClient->peerAddress().toString());
     qDebug() << "Server Message received:" << message;
-    QJsonObject obj = getJsonObjectFromString(message);
-    commandQueue.enqueue(obj);
-    qInfo("Command queue: %d", commandQueue.count());
-//    if (pClient) {
-//        pClient->sendTextMessage(message);
-//    }
 }
 
 void SparrowQServer::processBinaryMessage(QByteArray message)
@@ -66,14 +60,13 @@ void SparrowQServer::socketDisconnected()
     }
 }
 
-QJsonObject SparrowQServer::commandDequeue()
+void SparrowQServer::sendMessageToClient(QString dest, QString message)
 {
-    QJsonObject emptyObj;
-    if (commandQueue.size() > 0) return commandQueue.dequeue();
-    return emptyObj;
-}
-
-int SparrowQServer::commandQueueSize()
-{
-    return commandQueue.size();
+    for(int i = 0; i < m_clients.size(); i++)
+    {
+        if (dest == m_clients[i]->peerAddress().toString()) {
+            qInfo("addr %s", m_clients[i]->peerAddress().toString().toStdString().c_str());
+            m_clients[i]->sendTextMessage(message);
+        }
+    }
 }

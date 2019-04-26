@@ -23,6 +23,7 @@
 #include "dispense_module.h"
 #include "unitlog.h"
 #include "aacoreparameters.h"
+#include "lutclient.h"
 typedef enum {
     AA_IDLE_MODE,
     AA_REPEATABILITY_TEST_MODE,
@@ -38,7 +39,7 @@ class AACore : public QThread
 {
     Q_OBJECT
 public:
-    explicit AACore(AAHeadModule* aa_head,LutModule* lut,SutModule* sut,Dothinkey *dk, ChartCalibration * chartCalibration,DispenseModule* dispense,  QObject *parent = nullptr);
+    explicit AACore(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk, ChartCalibration * chartCalibration,DispenseModule* dispense,  QObject *parent = nullptr);
     ~AACore();
 
 protected:
@@ -81,7 +82,7 @@ private:
     AA_DIGNOSTICS_MODE currentAAMode;
     QString runningUnit;
     AAHeadModule* aa_head;
-    LutModule* lut;
+    LutClient* lut;
     SutModule* sut;
     Dothinkey* dk;
     ChartCalibration* chartCalibration;
@@ -108,6 +109,7 @@ signals:
     void callQmlRefeshSfrImg();
     void pushDataToUnit(QString uuid, QString name, QVariantMap map);
     void postDataToELK(QString);
+    void sendLensRequestToLut();
 public slots:
 
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);

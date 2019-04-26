@@ -25,7 +25,6 @@ void SparrowClient::onConnected()
         qDebug() << "WebSocket connected";
     connect(&m_webSocket, &QWebSocket::textMessageReceived,
             this, &SparrowClient::onTextMessageReceived);
-    m_webSocket.sendTextMessage(QStringLiteral("Hello, world!"));
 }
 //! [onConnected]
 
@@ -33,8 +32,9 @@ void SparrowClient::onConnected()
 void SparrowClient::onTextMessageReceived(QString message)
 {
     if (m_debug)
-        qDebug() << "Message received:" << message;
-    m_webSocket.close();
+        qDebug() << "Client Socket Message received:" << message;
+    //m_webSocket.close();
+    emit receiveMessage(message);
 }
 //! [onTextMessageReceived]
 
@@ -48,4 +48,9 @@ QJsonObject SparrowClient::commandDequeue()
 int SparrowClient::commandQueueSize()
 {
     return commandQueue.size();
+}
+
+void SparrowClient::sendMessage(QString message)
+{
+    m_webSocket.sendTextMessage(message);
 }

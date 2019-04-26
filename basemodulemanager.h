@@ -27,7 +27,7 @@
 #include "sparrowqserver.h"
 #include "sparrowqclient.h"
 #include "lensloadermodule.h"
-
+#include "lutclient.h"
 class BaseModuleManager : public PropertyBase
 {
     Q_OBJECT
@@ -73,6 +73,7 @@ public:
 
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;
+    LutClient * lutClient;
 
     int lightPanelLighting() const
     {
@@ -191,7 +192,6 @@ public:
 
     Q_INVOKABLE int getNumberOfMotors();
     Q_INVOKABLE QString getMotorsName(int);
-    Q_INVOKABLE void testCommand();
 
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);

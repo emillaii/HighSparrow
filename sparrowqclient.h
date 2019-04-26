@@ -11,9 +11,12 @@ public:
     QJsonObject commandDequeue();
     int commandQueueSize();
     void clearCommandQueue();
+
 Q_SIGNALS:
     void closed();
-
+    void receiveMessage(QString);
+public Q_SLOTS:
+    void sendMessage(QString);
 private Q_SLOTS:
     void onConnected();
     void onTextMessageReceived(QString message);

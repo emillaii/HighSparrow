@@ -10,12 +10,13 @@
 #include "vision_location.h"
 #include "sparrowqserver.h"
 #include <QObject>
+#include <QQueue>
 
-class LutModule : public QObject
+class LutModule : public QThread
 {
     Q_OBJECT
 public:
-    LutModule();
+    explicit LutModule(QObject * parent = nullptr);
     void Init(MaterialCarrier* carrier,
               VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location,
               XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper);
@@ -35,6 +36,8 @@ public:
     Position3D aa2_uplook_position;
     Position3D aa1_mushroom_position;
     Position3D aa2_mushroom_position;
+signals:
+    void sendMessageToClient(QString destAddress, QString message);
 public slots:
     void saveJsonConfig();
     void receiveRequestMessage(QString string, QString client_ip);
@@ -46,10 +49,12 @@ private:
     XtGeneralOutput* gripper;
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;
-
+protected:
+    void run();
 private:
     PRResultStruct pr_result;
     SparrowQServer * server;
+    QQueue<QJsonObject> requestQueue;
 public:
     Q_INVOKABLE bool moveToAA1UplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);

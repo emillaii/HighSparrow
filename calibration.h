@@ -54,8 +54,9 @@ public:
 signals:
     void vision_image_changed_signal(QImage image);
 public slots:
-private:
+public:
     virtual bool GetPixelPoint(double &x,double &y);
+private:
     bool coordinateA2BMapping(const QVector<QPointF>& APoints, const QVector<QPointF>& BPoints);
 public:
     CalibrationParameter parameters;

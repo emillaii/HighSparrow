@@ -17,7 +17,7 @@ signals:
 public slots:
 private:
     // Calibration interface
-private:
+public:
     bool GetPixelPoint(double &x, double &y)override;
 private:
     Dothinkey *dothinkey;

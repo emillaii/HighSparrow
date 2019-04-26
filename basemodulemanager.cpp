@@ -987,10 +987,19 @@ bool BaseModuleManager::performLocation(QString location_name)
 {
     VisionLocation* temp_location = GetVisionLocationByName(location_name);
     if(temp_location == nullptr)return false;
-    PrOffset offset;
-    if(!temp_location->performPR(offset))return false;
     Calibration* temp_caliration = GetCalibrationByName(temp_location->parameters.calibrationName());
     if(temp_caliration == nullptr)return  false;
+    PrOffset offset;
+    if(temp_location->parameters.calibrationName().contains("chart_calibraion"))
+    {
+        double x,y;
+        if(!temp_caliration->GetPixelPoint(x,y)) return false;
+        offset.X = x; offset.Y = y;
+    }
+    else
+    {
+        if(!temp_location->performPR(offset))return false;
+    }
     temp_caliration->performPRResult(offset);
     return true;
 }

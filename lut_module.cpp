@@ -197,8 +197,6 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
     bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),aa1_unpicklens_position.Z(),check_autochthonous);
     if(result)
     {
-        //todo one fuction
-        double reuslt_pos;
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,1,unload_vacuum);
         if(result)
             gripper->Set(true);
@@ -207,23 +205,24 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
     return result;
 }
 
-bool LutModule::moveToAA2PickLensPos(bool need_return, bool check_autochthonous)
+bool LutModule::moveToAA2PickLensPos(bool check_autochthonous)
 {
      return carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToAA2PickLens(bool check_autochthonous)
+bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
 {
+    qInfo("moveToAA2PickLens");
     bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
     if(result)
     {
-        double reuslt_pos;
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
         QJsonObject gripperOffMessage;
-        gripperOffMessage.insert("cmd", "gripperOnReq");
+        gripperOffMessage.insert("cmd", "gripperOffReq");
         emit sendMessageToClient("remote", getStringFromJsonObject(gripperOffMessage));
-//        if(result)
-//            result &= carrier->ZSerchReturn();
+        Sleep(250);
+        if(need_return)
+            result &= carrier->ZSerchReturn();
     }
     return result;
 }

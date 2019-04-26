@@ -67,8 +67,8 @@ public:
     Q_INVOKABLE bool vcmReturn();
     Q_INVOKABLE bool moveToAA1PickLensPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1UnPickLens(bool check_autochthonous = false);
-    Q_INVOKABLE bool moveToAA2PickLensPos(bool need_return = true,bool check_autochthonous = false);
-    Q_INVOKABLE bool moveToAA2PickLens(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA2PickLensPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA2PickLens(bool need_return = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UnPickLens(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1MushroomLens(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2MushroomLens(bool check_autochthonous = false);

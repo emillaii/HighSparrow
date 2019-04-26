@@ -435,8 +435,8 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
     int count = time_out;
     while ( fabs(currPos - targetPos) >= POS_ERROR)
     {
-        currPos = GetFeedbackPos();
         Sleep(10);
+        currPos = GetFeedbackPos();
         count-=10;
         if (count < 1) {
             qInfo("Motion Timeout.target pos:%f current pos:%f",pos,currPos);

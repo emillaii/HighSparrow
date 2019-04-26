@@ -143,7 +143,7 @@ Popup {
             ScrollView {
                 Timer {
                     id:timer
-                    interval: 300; running: true; repeat: true
+                    interval: 600; running: true; repeat: true
                 }
 
                 implicitWidth:  400
@@ -235,6 +235,7 @@ Popup {
                                 Connections{
                                    target: timer
                                    onTriggered:{
+                                       if(lbl.visible)
                                         lbl.text = baseModuleManager.getMotorFeedbackPos(modelData)
                                    }
                                 }

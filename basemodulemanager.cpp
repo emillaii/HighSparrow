@@ -774,6 +774,8 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     result = GetMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
     if (!result) return false;
     result &= GetMotorByName(sut_module.parameters.motorYName())->WaitSeekDone();
+    GetMotorByName(this->lut_module.parameters.motorZName())->SeekOrigin();
+    result &= GetMotorByName(this->lut_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->lut_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
     //降下气缸
@@ -781,14 +783,13 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();
     result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
-    GetMotorByName(this->lut_module.parameters.motorZName())->SeekOrigin();
+
     GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
-    GetMotorByName(this->lut_module.parameters.motorXName())->SeekOrigin();
     result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
@@ -796,12 +797,16 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
     result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->lut_module.parameters.motorXName())->WaitSeekDone();
-    result &= GetMotorByName(this->lut_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->lens_pick_arm.parameters.motorYName())->WaitSeekDone();
     //result &= motors["LTL_X"]->WaitSeekDone();
-    if(!result)return false;
-    GetVcMotorByName(this->lut_module.parameters.motorZName())->ChangeDiretion();
-    return true;
+
+    if(result)
+    {
+        qInfo("all motors seeked origin");
+        return true;
+    }
+    return false;
 }
 
 bool BaseModuleManager::allMotorsSeekOriginal2()

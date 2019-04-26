@@ -2,7 +2,7 @@
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
 #include "C_SoftLanding_dll.h"
-
+#include <QElapsedTimer>
 int XtVcMotor::vcm_count = 0;
 QVector<VCM_Resource_struct> XtVcMotor::all_parameter;
 XtVcMotor::XtVcMotor()
@@ -147,6 +147,7 @@ double XtVcMotor::GetOutpuPos() const
     return 0;
 }
 
+
 double XtVcMotor::GetFeedbackPos(int decimal_digit) const
 {
     if(!is_init)
@@ -154,6 +155,10 @@ double XtVcMotor::GetFeedbackPos(int decimal_digit) const
 
     {
         return GetOutpuPos();
+//        QThread::msleep(50);
+//        static int time = 0;
+//        qInfo("spance:%d", QTime::currentTime().msec()-time);
+//        time = QTime::currentTime().msec();
 //        double val;
 //        int times = 10;
 //        do{
@@ -274,7 +279,10 @@ void XtVcMotor::SeekOrigin(int thread)
         result = Init_Go_Zero(vcm_id);
     }
     if(result == 1)
+    {
         origin_result = true;
+        qInfo("axis %s seek origin succees!",name.toStdString().c_str());
+    }
     else
     {
         origin_result = false;

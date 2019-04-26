@@ -306,7 +306,7 @@ bool XtVcMotor::SearchPosByADC(double vel, double search_limit, double threshold
     return false;
 }
 
-bool XtVcMotor::SearchPosByForce(double speed, double force, double limit, double margin,int timeout)
+bool XtVcMotor::SearchPosByForce(const double speed,const double force,const double limit,const double margin,const int timeout)
 {
     if(!is_init)
         return false;
@@ -320,7 +320,7 @@ bool XtVcMotor::SearchPosByForce(double speed, double force, double limit, doubl
     return res;
 }
 
-bool XtVcMotor::SearchPosByForce(double speed,double force,int timeout)
+bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int timeout)
 {
     if(!is_init)
         return 0.0;

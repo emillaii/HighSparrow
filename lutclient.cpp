@@ -27,7 +27,16 @@ void LutClient::receiveMessage(QString message)
         qInfo("LUT move to load lens position");
         this->state = LutClientState::LUT_CLIENT_IDLE;
         return;
-    } else { return; }
+    } else if (event == "gripperOnReq") {
+        qInfo("AA Gripper On Request");
+        emit this->triggerAAGripper(true);
+        QThread::msleep(200);
+    } else if (event == "gripperOffReq") {
+        qInfo("AA Gripper Of Request");
+        emit this->triggerAAGripper(false);
+        QThread::msleep(200);
+    }
+    else { return; }
     QString jsonString = getStringFromJsonObject(obj);
     emit sendMessageToServer(jsonString);
 }

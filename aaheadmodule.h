@@ -58,6 +58,7 @@ public:
     bool moveToUplookResultPosition();
     void openUVTillTime(int till_time);
     void openGripper();
+    void closeGripper();
     Q_INVOKABLE bool stepMove_XY_Sync(double step_x,double step_y);
     Q_INVOKABLE bool stepMove_XYC_Sync(double step_x,double step_y,double step_c);
     Q_INVOKABLE bool stepMove_AB_Sync(double step_a,double step_b);

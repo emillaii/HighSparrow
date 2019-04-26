@@ -99,6 +99,12 @@ void AAHeadModule::openGripper()
     Sleep(200);
 }
 
+void AAHeadModule::closeGripper()
+{
+    gripper->Set(false);
+    Sleep(200);
+}
+
 bool AAHeadModule::stepMove_XY_Sync(double step_x, double step_y)
 {
     double x = step_x + motor_x->GetFeedbackPos();

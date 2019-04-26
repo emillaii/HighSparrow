@@ -75,11 +75,11 @@ ItemDelegate {
                 }
             }
 
-//            GroupBox{
-//                title: qsTr("AA_2 Pick Lens Position")
-//                LUTAA2PickLensPosition {
-//                }
-//            }
+            GroupBox{
+                title: qsTr("AA_2 Pick Lens Position")
+                LUTAA2PickLensPosition {
+                }
+            }
 //            GroupBox{
 //                title: qsTr("AA_2 UnPick Lens Position")
 //                LUTAA2UnPickLensPosition {

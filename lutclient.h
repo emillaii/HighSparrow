@@ -22,6 +22,7 @@ private:
     SparrowClient * socketClient;
 signals:
     void sendMessageToServer(QString message);
+    void triggerAAGripper(bool isOn);
 public slots:
     void receiveMessage(QString messsage);
 };

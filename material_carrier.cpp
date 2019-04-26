@@ -131,10 +131,10 @@ void MaterialCarrier::Move_XY_ToPos(double x, double y)
     motor_y->MoveToPos(y);
 }
 
-bool MaterialCarrier::ZSerchByForce(double &result_pos, double force, double search_limit, int vacuum_state,XtVacuum* excute_vacuum)
+bool MaterialCarrier::ZSerchByForce(const double speed,const double force,const double search_limit,const int vacuum_state,XtVacuum* excute_vacuum)
 {
     if(nullptr != excute_vacuum)vacuum = excute_vacuum;
-    bool result  = motor_z->SearchPosByForce(result_pos,force);
+    bool result  = motor_z->SearchPosByForce(speed,force);
 //    if(result && vacuum_state > -1&&vacuum != nullptr)
 //        result &= vacuum->Set(vacuum_state > 0);
 //    result &= motor_z->DoSoftLandingReturn();

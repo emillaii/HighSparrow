@@ -55,7 +55,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToAA2PickLens()
+                lutModule.moveToAA2PickLensPos(true)
             }
         }
         Button {
@@ -69,6 +69,22 @@ ColumnLayout {
                 lutPickLensPositionAA2.setX(x)
                 lutPickLensPositionAA2.setY(y)
                 lutPickLensPositionAA2.setZ(z)
+            }
+        }
+        Button {
+            text: qsTr("Pick")
+            width: 40
+            height: 40
+            onClicked: {
+                lutModule.moveToAA2PickLens(false,true)
+            }
+        }
+        Button {
+            text: qsTr("Return")
+            width: 40
+            height: 40
+            onClicked: {
+                //lutModule.vcmReturn()
             }
         }
     }

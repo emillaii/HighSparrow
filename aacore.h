@@ -111,7 +111,7 @@ signals:
     void postDataToELK(QString);
     void sendLensRequestToLut();
 public slots:
-
+    void triggerGripperOn(bool isOn);
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);
     void stopZScan();
     void setFlowchartDocument(QString json){

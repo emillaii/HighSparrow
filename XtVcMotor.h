@@ -74,8 +74,8 @@ public:
     void GetMasterAxisID() override;
 
     bool SearchPosByADC(double vel, double search_limit, double threshold, bool search_above, double &result) override;
-    bool SearchPosByForce(double speed, double force, double  limit, double margin,int timeout=30000);
-    bool SearchPosByForce(double speed,double force,int timeout = 30000);
+    bool SearchPosByForce(const double speed,const double force,const double  limit,const double margin,const int timeout=30000);
+    bool SearchPosByForce(const double speed,const double force,const int timeout = 30000);
     double SearchPosByForceOnyDown(double speed,double force,int timeout = 30000);
     void RestoreForce();
     void ShowSetting();

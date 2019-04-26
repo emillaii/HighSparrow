@@ -31,6 +31,7 @@ AACore::AACore(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey* dk
     loadParams();
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
     connect(this, &AACore::sfrResultsDetectFinished, this, &AACore::stopZScan);
+    connect(lut, &LutClient::triggerAAGripper, this, &AACore::triggerGripperOn);
 }
 
 AACore::~AACore()
@@ -989,4 +990,11 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
 std::vector<AA_Helper::patternAttr> AACore::search_mtf_pattern(cv::Mat inImage, QImage &image, bool isFastMode, unsigned int &ccROIIndex, unsigned int &ulROIIndex, unsigned int &urROIIndex, unsigned int &llROIIndex, unsigned int &lrROIIndex)
 {
     return AA_Helper::AA_Search_MTF_Pattern(inImage, image, isFastMode, ccROIIndex, ulROIIndex, urROIIndex, llROIIndex, lrROIIndex, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
+}
+
+void AACore::triggerGripperOn(bool isOn)
+{
+    qInfo("Trigger gripper : %d", isOn);
+    if (isOn) aa_head->openGripper();
+    else aa_head->closeGripper();
 }

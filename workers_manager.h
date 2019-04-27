@@ -2,7 +2,6 @@
 #define WORKERS_MANAGER_H
 
 #include "thread_worker_base.h"
-
 #include <qmap.h>
 
 class WorkersManager:public QObject
@@ -10,7 +9,6 @@ class WorkersManager:public QObject
     Q_OBJECT
 public:
     WorkersManager(QObject *parent = nullptr);
-
     bool registerWorker(ThreadWorkerBase* worker);
 signals:
     void startWorkersSignal(bool reset = false,int run_mode = 0);

@@ -7,6 +7,7 @@
 #include "logicmanager.h"
 #include "basemodulemanager.h"
 #include "STD.h"
+#include "workers_manager.h"
 
 class HighSprrow : public QObject
 {
@@ -17,6 +18,7 @@ public:
 private:
     ErrorCodeStruct InitComponent();
 public:
+    WorkersManager threadWorkerManager;
     BaseModuleManager * baseModuleManager = Q_NULLPTR;
     LogicManager * logicManager = Q_NULLPTR;
 public:

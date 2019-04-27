@@ -159,6 +159,24 @@ bool LutModule::moveToLoadUplookPos(bool check_autochthonous)
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_uplook_position.X(),load_uplook_position.Y(),load_uplook_position.Z(),check_autochthonous);
 }
 
+bool LutModule::moveToLoadUplookPR(bool check_autochthonous)
+{
+    load_location->OpenLight();
+    if(moveToLoadUplookPos(check_autochthonous))
+        return  load_location->performPR();
+    return false;
+}
+
+double LutModule::getLoadUplookPRX()
+{
+    return load_location->getCurrentOffset().x();
+}
+
+double LutModule::getLoadUplookPRY()
+{
+    return load_location->getCurrentOffset().y();
+}
+
 bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
 {
     gripper->Set(true);

@@ -14,7 +14,9 @@ public:
     void loadParam();
     void saveParam();
     bool performPR(PrOffset &offset);
+    bool performPR();
     bool performPR(PRResultStruct &pr_result);
+    Q_INVOKABLE QPointF getCurrentOffset();
     void OpenLight();
     void CloseLight();
 
@@ -24,6 +26,7 @@ private:
     VisionModule* vison;
     Pixel2Mech* mapping;
     WordopLight* lighting;
+    PrOffset current_pr_offset;
 };
 
 #endif // VISION_LOCATION_H

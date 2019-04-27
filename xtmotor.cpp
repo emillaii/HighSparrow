@@ -407,6 +407,10 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
         return false;
     if(!is_enable)
         return false;
+    if(target_position>max_range)
+        target_position = max_range;
+    if(target_position<min_range)
+        target_position = min_range;
     if(fabs(GetFeedbackPos() - target_position) < POS_ERROR)return true;
     while (timeout>0) {
 

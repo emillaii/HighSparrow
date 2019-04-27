@@ -12,6 +12,8 @@ class LogicManager : public QThread
     Q_OBJECT
 public:
     explicit LogicManager(BaseModuleManager* device_manager, QObject *parent = nullptr);
+
+
     Q_PROPERTY(int currentMode READ currentMode WRITE setCurrentMode)
     Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage)
 

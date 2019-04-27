@@ -28,6 +28,7 @@
 #include "sparrowqclient.h"
 #include "lensloadermodule.h"
 #include "lutclient.h"
+#include "workers_manager.h"
 #include "trayloadermodule.h"
 
 class BaseModuleManager : public PropertyBase
@@ -171,6 +172,7 @@ public:
     bool saveJsonArray(QString file_name,QJsonArray &array);
     bool loadParameters();
     bool SaveParameters();
+    bool registerWorkers(WorkersManager* manager);
 
     Q_INVOKABLE bool initialDevice();
     Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);

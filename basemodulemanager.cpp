@@ -129,6 +129,13 @@ bool BaseModuleManager::SaveParameters()
     return true;
 }
 
+bool BaseModuleManager::registerWorkers(WorkersManager *manager)
+{
+    bool result = manager->registerWorker(&lens_loader_module);
+//    result &= manager->registerWorker(&lut_module);
+    return result;
+}
+
 bool BaseModuleManager::LoadProfile()
 {
     if(profile_loaded)
@@ -1038,7 +1045,8 @@ bool BaseModuleManager::performLocation(QString location_name)
     {
         if(!temp_location->performPR(offset))return false;
     }
-    temp_caliration->performPRResult(offset);
+    if(temp_location->parameters.canMotion())
+        temp_caliration->performPRResult(offset);
     return true;
 }
 

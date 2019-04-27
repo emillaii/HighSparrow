@@ -63,6 +63,9 @@ public:
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToUnloadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadUplookPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToLoadUplookPR(bool check_autochthonous = false);
+    Q_INVOKABLE double getLoadUplookPRX();
+    Q_INVOKABLE double getLoadUplookPRY();
     Q_INVOKABLE bool moveToAA1PickLens(bool need_return = true,bool check_autochthonous = false);
     Q_INVOKABLE bool vcmReturn();
     Q_INVOKABLE bool moveToAA1PickLensPos(bool check_autochthonous = false);

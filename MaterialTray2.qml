@@ -89,7 +89,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        material_tray.setTrayCurrent(t_ncol-1,t_nrow-1,1)
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                         logicManager.lensPickArmMoveToTray2Pos()
                     }
                 }

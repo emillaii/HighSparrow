@@ -15,6 +15,7 @@ void LensPickArm::Init(XtMotor *motor_x_tray, XtMotor *motor_x, XtMotor *motor_y
 
 bool LensPickArm::move_XtXY_Synic(QPointF position,double x,bool check_softlanding,int timeout)
 {
+    qInfo("move to (%f,%f,%f)",position.x(),position.y(),x);
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
     motor_x_tray->MoveToPos(position.x());
     motor_y->MoveToPos(position.y());

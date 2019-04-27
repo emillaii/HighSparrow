@@ -279,12 +279,12 @@ bool LensLoaderModule::moveToTray1EndPos()
     return pick_arm->move_XtXY_Synic(lens_tray->getEndPosition(),parameters.visonPositionX(),true);
 }
 
-bool LensLoaderModule::moveToLoadCameraPos()
+bool LensLoaderModule::moveToUpdownlookDownPos()
 {
     return pick_arm->move_XY_Synic(lut_camera_position.X(),lut_camera_position.Y(),true);
 }
 
-bool LensLoaderModule::moveToLoadPickerPos()
+bool LensLoaderModule::moveToUpdownlookUpPos()
 {
     return pick_arm->move_XY_Synic(lut_picker_position.X(),lut_picker_position.Y(),true);
 }
@@ -310,24 +310,24 @@ void LensLoaderModule::performHandlingOperation(int cmd)
 {
     qInfo("performHandling %d",cmd);
     bool result;
-    if(cmd&HandlePosition::LUT_POS1)
+    if(cmd%10 == HandlePosition::LUT_POS1)
         result = moveToLUTPRPos1(true);
-    else if(cmd&HandlePosition::LUT_POS2)
+    else if(cmd%10 == HandlePosition::LUT_POS2)
         result = moveToLUTPRPos2(true);
-    else if(cmd&HandlePosition::LENS_TRAY1)
+    else if(cmd%10 == HandlePosition::LENS_TRAY1)
         result = moveToTrayPos(0);
-    else if(cmd&HandlePosition::LENS_TRAY2)
+    else if(cmd%10 == HandlePosition::LENS_TRAY2)
         result = moveToTrayPos(1);
-    else if(cmd&HandlePosition::LENS_TRAY1_START_POS)
+    else if(cmd%10 == HandlePosition::LENS_TRAY1_START_POS)
         result = moveToStartPos(0);
-    else if(cmd&HandlePosition::LENS_TRAY2_START_POS)
+    else if(cmd%10 == HandlePosition::LENS_TRAY2_START_POS)
         result = moveToStartPos(1);
-    else if(cmd&HandlePosition::LENS_TRAY1_END_POS)
+    else if(cmd%10 == HandlePosition::LENS_TRAY1_END_POS)
         result = moveToTray1EndPos();
-    else if(cmd&HandlePosition::LENS_TRAY1_END_POS)
-        result = moveToTray1EndPos();
-    else if(cmd&HandlePosition::LENS_TRAY1_END_POS)
-        result = moveToTray1EndPos();
+    else if(cmd%10 == HandlePosition::UPDOWNLOOK_DOWN_POS)
+        result = moveToUpdownlookDownPos();
+    else if(cmd%10 == HandlePosition::UPDOWNLOOK_UP_POS)
+        result = moveToUpdownlookUpPos();
     else
         result = true;
     if(!result)
@@ -335,17 +335,17 @@ void LensLoaderModule::performHandlingOperation(int cmd)
 //        finished_type = FinishedType::Alarm;
         return;
     }
-    if(cmd&HandlePR::LUT_PR)
+    if(cmd%100 == HandlePR::LUT_PR)
         resetPR();
-    else if(cmd&HandlePR::LUT_PR)
+    else if(cmd%100 == HandlePR::LUT_PR)
         result = performLensPR();
-    else if(cmd&HandlePR::VACANCY_PR)
+    else if(cmd%100 == HandlePR::VACANCY_PR)
         result = performVacancyPR();
-    else if(cmd&HandlePR::LUT_PR)
+    else if(cmd%100 == HandlePR::LUT_PR)
         result = performLUTPR();
-    else if(cmd&HandlePR::UPDOWNLOOK_DOWN_PR)
+    else if(cmd%100 == HandlePR::UPDOWNLOOK_DOWN_PR)
         result = performUpDownlookDownPR();
-    else if(cmd&HandlePR::UPDOWNLOOK_UP_PR)
+    else if(cmd%100 == HandlePR::UPDOWNLOOK_UP_PR)
         result = performUpdowlookUpPR();
     else
         result = true;
@@ -354,24 +354,24 @@ void LensLoaderModule::performHandlingOperation(int cmd)
 //        finished_type = FinishedType::Alarm;
         return;
     }
-    if(cmd&HandleToWorkPos::ToWork)
+    if(cmd%1000 == HandleToWorkPos::ToWork)
         result = moveToWorkPos();
     if(!result)
     {
 //        finished_type = FinishedType::Alarm;
         return;
     }
-    if(cmd&handlePickerAction::PICK_LENS_FROM_TRAY)
+    if(cmd%10000 == handlePickerAction::PICK_LENS_FROM_TRAY)
         result = pickTrayLens(true);
-    else if(cmd&handlePickerAction::PLACE_LENS_TO_LUT)
+    else if(cmd%1000 == handlePickerAction::PLACE_LENS_TO_LUT)
         result = placeLensToLUT(true);
-    else if(cmd&handlePickerAction::PICK_NG_LENS_FROM_LUT)
+    else if(cmd%10000 == handlePickerAction::PICK_NG_LENS_FROM_LUT)
         result = pickLUTLens(true);
-    else if(cmd&handlePickerAction::PLACE_NG_LENS_TO_TRAY)
+    else if(cmd%10000 == handlePickerAction::PLACE_NG_LENS_TO_TRAY)
         result = placeLensToTray();
-    else if(cmd&handlePickerAction::MeasureLensInLUT)
+    else if(cmd%10000 == handlePickerAction::MeasureLensInLUT)
         result = measureHight(false);
-    else if(cmd&handlePickerAction::MeasureLensInTray)
+    else if(cmd%10000 == handlePickerAction::MeasureLensInTray)
         result = measureHight(true);
     else
         result = true;

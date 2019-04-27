@@ -26,26 +26,26 @@ enum HandlePosition
     };
 enum HandlePR
     {
-        RESET_PR = 1 <<4,
-        LENS_PR = 2<<4,
-        VACANCY_PR = 3<<4,
-        LUT_PR = 4<<4,
-        UPDOWNLOOK_DOWN_PR = 5<<4,
-        UPDOWNLOOK_UP_PR = 6<<4
+        RESET_PR = 10,
+        LENS_PR = 20,
+        VACANCY_PR = 30,
+        LUT_PR = 40,
+        UPDOWNLOOK_DOWN_PR = 50,
+        UPDOWNLOOK_UP_PR = 60
     };
 enum HandleToWorkPos
 {
-    ToWork = 1<<6
+    ToWork = 100
 };
 
 enum handlePickerAction
 {
-    PICK_LENS_FROM_TRAY = 1<<7,
-    PLACE_LENS_TO_LUT = 2<<7,
-    PICK_NG_LENS_FROM_LUT = 3<<7,
-    PLACE_NG_LENS_TO_TRAY = 4<<7,
-    MeasureLensInTray = 5<<7,
-    MeasureLensInLUT = 6<<7
+    PICK_LENS_FROM_TRAY = 1000,
+    PLACE_LENS_TO_LUT = 2000,
+    PICK_NG_LENS_FROM_LUT = 3000,
+    PLACE_NG_LENS_TO_TRAY = 4000,
+    MeasureLensInTray = 5000,
+    MeasureLensInLUT = 6000
 };
 
 //}
@@ -90,8 +90,8 @@ private:
     bool moveToTrayPos(int tray_index);
     bool moveToStartPos(int tray_index);
     bool moveToTray1EndPos();
-    bool moveToLoadCameraPos();
-    bool moveToLoadPickerPos();
+    bool moveToUpdownlookDownPos();
+    bool moveToUpdownlookUpPos();
 
     bool isRunning();
     // ErrorBase interface

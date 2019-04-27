@@ -63,6 +63,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     chart_calibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH);
 
     material_tray.standards_parameters.setTrayCount(2);
+
 }
 
 BaseModuleManager::~BaseModuleManager()

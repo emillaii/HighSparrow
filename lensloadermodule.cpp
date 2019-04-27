@@ -72,6 +72,7 @@ void LensLoaderModule::saveJsonConfig()
 void LensLoaderModule::performHandling(int cmd, int &finished_type)
 {
     emit sendHandlingOperation(cmd,finished_type);
+    qInfo("emit performHandling %d",cmd);
 }
 
 void LensLoaderModule::run(bool has_material)
@@ -307,6 +308,7 @@ void LensLoaderModule::stopWork(bool wait_finish)
 
 void LensLoaderModule::performHandlingOperation(int cmd, int &finished_type)
 {
+    qInfo("performHandling %d",cmd);
     bool result;
     if(cmd&HandlePosition::LUT_POS1)
         result = moveToLUTPRPos1(true);

@@ -1092,6 +1092,16 @@ void BaseModuleManager::motorSeekOrigin(QString name)
     }
 }
 
+double BaseModuleManager::getPROffsetX(QString location_name)
+{
+    return  GetVisionLocationByName(location_name)->getCurrentOffset().x();
+}
+
+double BaseModuleManager::getPROffsetY(QString location_name)
+{
+    return  GetVisionLocationByName(location_name)->getCurrentOffset().y();
+}
+
 double BaseModuleManager::getMotorFeedbackPos(QString name)
 {
     if (motors.contains(name)) {

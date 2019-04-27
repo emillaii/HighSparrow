@@ -21,6 +21,8 @@ public:
     Q_PROPERTY(QString vacancyLocationName READ vacancyLocationName WRITE setVacancyLocationName NOTIFY vacancyLocationNameChanged)
     Q_PROPERTY(QString lutLocationName READ lutLocationName WRITE setLutLocationName NOTIFY lutLocationNameChanged)
     Q_PROPERTY(QString lutLensLocationName READ lutLensLocationName WRITE setLutLensLocationName NOTIFY lutLensLocationNameChanged)
+    Q_PROPERTY(QString uplookPickLocation READ uplookPickLocation WRITE setUplookPickLocation NOTIFY uplookPickLocationChanged)
+    Q_PROPERTY(QString uplookCameraLocaation READ uplookCameraLocaation WRITE setUplookCameraLocaation NOTIFY uplookCameraLocaationChanged)
     int runMode() const
     {
         return m_runMode;
@@ -72,6 +74,16 @@ public:
     QString lutLensLocationName() const
     {
         return m_lueLensLocationName;
+    }
+
+    QString uplookPickLocation() const
+    {
+        return m_uplookPickLocation;
+    }
+
+    QString uplookCameraLocaation() const
+    {
+        return m_uplookCameraLocaation;
     }
 
 public slots:
@@ -179,6 +191,24 @@ public slots:
         emit lutLensLocationNameChanged(m_lueLensLocationName);
     }
 
+    void setUplookPickLocation(QString uplookPickLocation)
+    {
+        if (m_uplookPickLocation == uplookPickLocation)
+            return;
+
+        m_uplookPickLocation = uplookPickLocation;
+        emit uplookPickLocationChanged(m_uplookPickLocation);
+    }
+
+    void setUplookCameraLocaation(QString uplookCameraLocaation)
+    {
+        if (m_uplookCameraLocaation == uplookCameraLocaation)
+            return;
+
+        m_uplookCameraLocaation = uplookCameraLocaation;
+        emit uplookCameraLocaationChanged(m_uplookCameraLocaation);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -200,6 +230,10 @@ signals:
 
     void lutLensLocationNameChanged(QString lutLensLocationName);
 
+    void uplookPickLocationChanged(QString uplookPickLocation);
+
+    void uplookCameraLocaationChanged(QString uplookCameraLocaation);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -212,6 +246,8 @@ private:
     QString m_vacancyLocationName = "";
     QString m_lutLocationName = "";
     QString m_lueLensLocationName = "";
+    QString m_uplookPickLocation = "";
+    QString m_uplookCameraLocaation = "";
 };
 
 class LensPickArmModuleState:public PropertyBase

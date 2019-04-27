@@ -203,12 +203,16 @@ ColumnLayout {
                 Button{
                     text:title_move_to
                     onClicked: {
-
+                        logicManager.lensPickArmMoveToUplookCameraPos()
                     }
                 }
                 Button{
                     text:title_read_encoder
                     onClicked: {
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)-baseModuleManager.getPROffsetX(lensPickArmModuleParameter.uplookCameraLocaation)
+                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)-baseModuleManager.getPROffsetY(lensPickArmModuleParameter.uplookCameraLocaation)
+                        lut_picker_position.setX(x)
+                        lut_picker_position.setX(y)
 
                     }
                 }
@@ -253,13 +257,16 @@ ColumnLayout {
                 Button{
                     text:title_move_to
                     onClicked: {
-
+                        logicManager.lensPickArmMoveToUplookPickerPos()
                     }
                 }
                 Button{
                     text:title_read_encoder
                     onClicked: {
-
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)-baseModuleManager.getPROffsetX(lensPickArmModuleParameter.uplookPickLocation)
+                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)-baseModuleManager.getPROffsetY(lensPickArmModuleParameter.uplookPickLocation)
+                        lut_picker_position.setX(x)
+                        lut_picker_position.setX(y)
                     }
                 }
             }

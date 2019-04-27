@@ -183,6 +183,8 @@ public:
     Q_INVOKABLE void setOutput(QString name, bool on);
     Q_INVOKABLE bool getOutput(QString name);
     Q_INVOKABLE void motorSeekOrigin(QString name);
+    Q_INVOKABLE double getPROffsetX(QString location_name);
+    Q_INVOKABLE double getPROffsetY(QString location_name);
 
     Q_INVOKABLE double getMotorFeedbackPos(QString name);
     Q_INVOKABLE double getMotorFeedbackPos(int index);

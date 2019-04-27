@@ -7,12 +7,12 @@
 class ClipStandardsParameter:public PropertyBase{
     Q_OBJECT
 private:
-    int m_columnCount;
-    bool m_fromTop;
-    double m_columnDelta;
-    double m_firstTrayPos;
-    double m_lastTrayPos;
-    int m_currentIndex;
+    int m_columnCount=2;
+    bool m_fromTop=1;
+    double m_columnDelta=0;
+    double m_firstTrayPos=0;
+    double m_lastTrayPos=0;
+    int m_currentIndex=0;
 
 public:
     ClipStandardsParameter():PropertyBase (){}

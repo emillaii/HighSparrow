@@ -177,7 +177,7 @@ ItemDelegate {
             }
             ListView{
                 model:vl_parameter_list
-                height: 2000
+                height: 2500
                 delegate: GroupBox{
 /*
                     property var delegateMap:{

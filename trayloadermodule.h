@@ -11,37 +11,43 @@ class TrayLoaderModule : public ThreadWorkerBase{
     Q_OBJECT
 public:
     TrayLoaderModule(QString name="TrayLoaderModule");
-    void Init(XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtCylinder*,XtCylinder*,XtCylinder*,XtCylinder*);
+    void Init(XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtCylinder*,XtCylinder*,XtCylinder*,XtCylinder*,TrayClip*,TrayClip*);
     void ResetLogic();
     void performHandling(int cmd,int& finished_type);
 
     TrayClip* tray_clip = Q_NULLPTR;
+    TrayClip* tray_clip_out = Q_NULLPTR;
     TrayLoaderModuleParameter parameters;
 signals:
 
 private:
     void run(bool has_tray);
     bool moveMotorClip();
-    bool moveToCurrentPos();
+    bool moveToNextTrayPos();
     bool ejectTray();
 
     bool moveMotorIn();
     bool motorInPress();
-    bool moveToPosition1();
+    bool moveToLtkx1GetPos();
+    bool moveToLtkx1SetPos();
     bool motorInRealease();
 
 
 
     bool moveMotorWork();
+    bool moveToLtlGetPos();
     bool motorWorkPress();
-    bool moveToPosition2();
+    bool moveToLtlSetPos();
     bool motorWorkRelease();
 
 
     bool moveMotorOut();
+    bool moveToLtkx2GetPos();
     bool motorOutPress();
-    bool moveToPosition3();
+    bool moveToLtkx2SetPos();
     bool motorOutRelease();
+
+    bool moveToNextEmptyPos();
 
 
     bool is_run=false;

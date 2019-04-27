@@ -6,13 +6,6 @@
 
 class TrayLoaderModuleParameter:public PropertyBase{
 private:
-    double m_position1;
-    double m_position2;
-    double m_position3;
-    double m_position4;
-    double m_position5;
-    double m_position6;
-
     QString m_motorLTIEName;
     QString m_motorLTOEName;
     QString m_motorLTKX1Name;
@@ -24,14 +17,21 @@ private:
     QString m_cylinderLTK2Name;
     QString m_cylinderTrayName;
 
+    double m_ltkx1GetPos;
+    double m_ltkx1SetPos;
+    double m_ltlGetPos;
+    double m_ltlSetPos;
+    double m_ltkx2GetPos;
+    double m_ltkx2SetPos;
+
 public:
     TrayLoaderModuleParameter():PropertyBase(){}
-    Q_PROPERTY(double position1 READ position1 WRITE setPosition1 NOTIFY position1Changed)
-    Q_PROPERTY(double position2 READ position2 WRITE setPosition2 NOTIFY position2Changed)
-    Q_PROPERTY(double position3 READ position3 WRITE setPosition3 NOTIFY position3Changed)
-    Q_PROPERTY(double position4 READ position4 WRITE setPosition4 NOTIFY position4Changed)
-    Q_PROPERTY(double position5 READ position5 WRITE setPosition5 NOTIFY position5Changed)
-    Q_PROPERTY(double position6 READ position6 WRITE setPosition6 NOTIFY position6Changed)
+    Q_PROPERTY(double ltkx1GetPos READ ltkx1GetPos WRITE setLtkx1GetPos NOTIFY ltkx1GetPosChanged)
+    Q_PROPERTY(double ltkx1SetPos READ ltkx1SetPos WRITE setLtkx1SetPos NOTIFY ltkx1SetPosChanged)
+    Q_PROPERTY(double ltlGetPos READ ltlGetPos WRITE setLtlGetPos NOTIFY ltlGetPosChanged)
+    Q_PROPERTY(double ltlSetPos READ ltlSetPos WRITE setLtlSetPos NOTIFY ltlSetPosChanged)
+    Q_PROPERTY(double ltkx2GetPos READ ltkx2GetPos WRITE setLtkx2GetPos NOTIFY ltkx2GetPosChanged)
+    Q_PROPERTY(double ltkx2SetPos READ ltkx2SetPos WRITE setLtkx2SetPos NOTIFY ltkx2SetPosChanged)
     Q_PROPERTY(QString motorLTIEName READ motorLTIEName WRITE setMotorLTIEName NOTIFY motorTLIENameChanged)
     Q_PROPERTY(QString motorLTOEName READ motorLTOEName WRITE setMotorLTOEName NOTIFY motorLTOENameChanged)
     Q_PROPERTY(QString motorLTKX1Name READ motorLTKX1Name WRITE setMotorLTKX1Name NOTIFY motorLTKX1NameChanged)
@@ -41,35 +41,6 @@ public:
     Q_PROPERTY(QString cylinderLTK1Name READ cylinderLTK1Name WRITE setCylinderLTK1Name NOTIFY cylinderLTK1NameChanged)
     Q_PROPERTY(QString cylinderLTK2Name READ cylinderLTK2Name WRITE setCylinderLTK2Name NOTIFY cylinderLTK2NameChanged)
     Q_PROPERTY(QString cylinderTrayName READ cylinderTrayName WRITE setCylinderTrayName NOTIFY cylinderTrayNameChanged)
-
-double position1() const
-{
-    return m_position1;
-}
-double position2() const
-{
-    return m_position2;
-}
-
-double position3() const
-{
-    return m_position3;
-}
-
-double position4() const
-{
-    return m_position4;
-}
-
-double position5() const
-{
-    return m_position5;
-}
-
-double position6() const
-{
-    return m_position6;
-}
 
 QString motorLTIEName() const
 {
@@ -116,65 +87,37 @@ QString cylinderTrayName() const
     return m_cylinderTrayName;
 }
 
+double ltkx1GetPos() const
+{
+    return m_ltkx1GetPos;
+}
+
+double ltkx1SetPos() const
+{
+    return m_ltkx1SetPos;
+}
+
+double ltlGetPos() const
+{
+    return m_ltlGetPos;
+}
+
+double ltlSetPos() const
+{
+    return m_ltlSetPos;
+}
+
+double ltkx2GetPos() const
+{
+    return m_ltkx2GetPos;
+}
+
+double ltkx2SetPos() const
+{
+    return m_ltkx2SetPos;
+}
+
 public slots:
-void setPosition1(double position1)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_position1, position1))
-        return;
-
-    m_position1 = position1;
-    emit position1Changed(m_position1);
-}
-void setPosition2(double position2)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_position2, position2))
-        return;
-
-    m_position2 = position2;
-    emit position2Changed(m_position2);
-}
-
-void setPosition3(double position3)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_position3, position3))
-        return;
-
-    m_position3 = position3;
-    emit position3Changed(m_position3);
-}
-
-void setPosition4(double position4)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_position4, position4))
-        return;
-
-    m_position4 = position4;
-    emit position4Changed(m_position4);
-}
-
-void setPosition5(double position5)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_position5, position5))
-        return;
-
-    m_position5 = position5;
-    emit position5Changed(m_position5);
-}
-
-void setPosition6(double position6)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_position6, position6))
-        return;
-
-    m_position6 = position6;
-    emit position6Changed(m_position6);
-}
 
 void setMotorLTIEName(QString motorLTIEName)
 {
@@ -257,13 +200,67 @@ void setCylinderTrayName(QString cylinderTrayName)
     emit cylinderTrayNameChanged(m_cylinderTrayName);
 }
 
+void setLtkx1GetPos(double ltkx1GetPos)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_ltkx1GetPos, ltkx1GetPos))
+        return;
+
+    m_ltkx1GetPos = ltkx1GetPos;
+    emit ltkx1GetPosChanged(m_ltkx1GetPos);
+}
+
+void setLtkx1SetPos(double ltkx1SetPos)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_ltkx1SetPos, ltkx1SetPos))
+        return;
+
+    m_ltkx1SetPos = ltkx1SetPos;
+    emit ltkx1SetPosChanged(m_ltkx1SetPos);
+}
+
+void setLtlGetPos(double ltlGetPos)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_ltlGetPos, ltlGetPos))
+        return;
+
+    m_ltlGetPos = ltlGetPos;
+    emit ltlGetPosChanged(m_ltlGetPos);
+}
+
+void setLtlSetPos(double ltlSetPos)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_ltlSetPos, ltlSetPos))
+        return;
+
+    m_ltlSetPos = ltlSetPos;
+    emit ltlSetPosChanged(m_ltlSetPos);
+}
+
+void setLtkx2GetPos(double ltkx2GetPos)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_ltkx2GetPos, ltkx2GetPos))
+        return;
+
+    m_ltkx2GetPos = ltkx2GetPos;
+    emit ltkx2GetPosChanged(m_ltkx2GetPos);
+}
+
+void setLtkx2SetPos(double ltkx2SetPos)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_ltkx2SetPos, ltkx2SetPos))
+        return;
+
+    m_ltkx2SetPos = ltkx2SetPos;
+    emit ltkx2SetPosChanged(m_ltkx2SetPos);
+}
+
 signals:
-void position1Changed(double position1);
-void position2Changed(double position2);
-void position3Changed(double position3);
-void position4Changed(double position4);
-void position5Changed(double position5);
-void position6Changed(double position6);
 void motorTLIENameChanged(QString motorLTIEName);
 void motorLTOENameChanged(QString motorLTOEName);
 void motorLTKX1NameChanged(QString motorLTKX1Name);
@@ -273,6 +270,12 @@ void cylinderClipChanged(QString cylinderClipName);
 void cylinderLTK1NameChanged(QString cylinderLTK1Name);
 void cylinderLTK2NameChanged(QString cylinderLTK2Name);
 void cylinderTrayNameChanged(QString cylinderTrayName);
+void ltkx1GetPosChanged(double ltkx1GetPos);
+void ltkx1SetPosChanged(double ltkx1SetPos);
+void ltlGetPosChanged(double ltlGetPos);
+void ltlSetPosChanged(double ltlSetPos);
+void ltkx2GetPosChanged(double ltkx2GetPos);
+void ltkx2SetPosChanged(double ltkx2SetPos);
 };
 
 #endif // TRAYLOADERPARAMETER_H

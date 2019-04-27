@@ -134,6 +134,10 @@
 #define TRAY_LOADER_PATH  ".//config//tray_loader_parameter.json"
 #define TRAY_LOADER_PARAMETER "tray_loader_parameter"
 
+//trayclip
+#define TRAY_CLIP_PATH  ".//config//tray_clip_parameter.json"
+#define TRAY_CLIPIN_PARAMETER "tray_clipin_parameter"
+#define TRAY_CLIPOUT_PARAMETER "tray_clipout_parameter"
 //PR
 #define PR_SENSOR_PACKAGE_IMX362        "IMX362"
 #define PR_SENSOR_PACKAGE_IMX363        "IMX363"

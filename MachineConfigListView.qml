@@ -16,6 +16,7 @@ ListView {
                 case 7 : return "AACoreView.qml"
                 case 8 : return "SystemConfigView.qml"
                 case 9 : return "LensPickArmModuleView.qml"
+                case 10: return "TrayLoaderModuleView.qml"
             }
         }
     }

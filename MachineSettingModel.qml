@@ -39,6 +39,10 @@ ListModel {
         label:"LensPickArm 配置"
         index: 9
     }
+    ListElement{
+        label:"TrayLoader 配置"
+        index:10
+    }
 
 }
 

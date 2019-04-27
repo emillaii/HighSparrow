@@ -75,6 +75,8 @@ public:
     LensLoaderModule lens_loader_module;
     TrayLoaderModule tray_loader_module;
 
+    TrayClip trayClipIn;
+    TrayClip trayClipOut;
 
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;
@@ -93,14 +95,6 @@ signals:
     void paramsChanged();
 
 public slots:
-    Q_INVOKABLE void updateParams()
-    {
-        QMap<QString,PropertyBase*> temp_map;
-        temp_map.insert("BASE_MODULE_PARAMS", this);
-        PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
-        SaveParameters();
-        loadParameters();
-    }
 
     void setLightPanelLighting(int lightPanelLighting)
     {
@@ -202,6 +196,7 @@ public:
     Q_INVOKABLE int getNumberOfMotors();
     Q_INVOKABLE QString getMotorsName(int);
 
+    Q_INVOKABLE void updateParams();
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);
     XtGeneralOutput *GetOutputIoByName(QString name);

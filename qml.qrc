@@ -69,6 +69,7 @@
         <file>CalibrationPrLENSLpaLookView.qml</file>
         <file>CalibrationPrVACANCYLpaLookView.qml</file>
         <file>CalibrationPrLENSLutLookView.qml</file>
+        <file>TrayLoaderModuleView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

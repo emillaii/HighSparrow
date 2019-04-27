@@ -96,6 +96,9 @@ bool BaseModuleManager::loadParameters()
     dispenser.parameters.loadJsonConfig(DISPENSER_PARAMETER_PATH,DISPENSER_PARAMETER);
     dispense_module.parameters.loadJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
     tray_loader_module.parameters.loadJsonConfig(TRAY_LOADER_PATH,TRAY_LOADER_PARAMETER);
+    trayClipIn.standards_parameters.loadJsonConfig(TRAY_CLIP_PATH,TRAY_CLIPIN_PARAMETER);
+    trayClipOut.standards_parameters.loadJsonConfig(TRAY_CLIP_PATH,TRAY_CLIPOUT_PARAMETER);
+
     material_tray.loadJsonConfig();
     lens_loader_module.loadJsonConfig();
     lens_pick_arm.parameters.loadJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
@@ -385,7 +388,7 @@ bool BaseModuleManager::loadVisionLoactionFiles(QString file_name)
         temp_location->parameters.read(array.at(i).toObject());
         QJsonObject temp_object;
         temp_location->parameters.write(temp_object);
-        if(!motors.contains(temp_location->parameters.locationName()))
+        if(!vision_locations.contains(temp_location->parameters.locationName()))
             vision_locations.insert(temp_location->parameters.locationName(),temp_location);
         else
         {
@@ -686,7 +689,8 @@ bool BaseModuleManager::InitStruct()
                             GetCylinderByName(tray_loader_module.parameters.cylinderClipName()),
                             GetCylinderByName(tray_loader_module.parameters.cylinderLTK1Name()),
                             GetCylinderByName(tray_loader_module.parameters.cylinderLTK2Name()),
-                            GetCylinderByName(tray_loader_module.parameters.cylinderTrayName()));
+                            GetCylinderByName(tray_loader_module.parameters.cylinderTrayName()),
+                            &trayClipIn,&trayClipOut);
 
 
     profile_loaded = true;
@@ -903,6 +907,15 @@ int BaseModuleManager::getNumberOfMotors()
 QString BaseModuleManager::getMotorsName(int index)
 {
     return motors.keys()[index];
+}
+
+void BaseModuleManager::updateParams()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("BASE_MODULE_PARAMS", this);
+    PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
+    SaveParameters();
+    loadParameters();
 }
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)

@@ -267,6 +267,7 @@ ApplicationWindow {
 
         Page1Form {
             featureButton.onClicked: {
+                //visionModule.testVision()
                 highSprrow.callQProcess("GenericNCCavproj.avexe")
             }
             navigationFeatureButton.onClicked: {

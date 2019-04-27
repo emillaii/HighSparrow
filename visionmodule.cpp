@@ -66,7 +66,8 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 void VisionModule::testVision()
 {
     PRResultStruct prResult;
-    this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
+    //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
+    this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
     qInfo("%f %f %f", prResult.x, prResult.y, prResult.theta);
 }
 
@@ -203,6 +204,145 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::SaveImageToJpeg( image6 , imageName.toStdString().c_str(), atl::NIL, false );
         displayPRResult(camera_name, prResult);
     } catch(const atl::Error& error) {
+        qWarning(error.Message());
+        return error_code;
+    }
+    return error_code;
+}
+
+ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult)
+{
+    qInfo("%s perform edge templage matching pr %s",camera_name.toStdString().c_str(),pr_name.toStdString().c_str());
+    pr_name.replace("file:///", "");
+    ErrorCodeStruct error_code = { OK, "" };
+    static atl::String g_constData1;
+    static atl::String g_constData2;
+    static atl::String g_constData3;
+    static avl::Region g_constData4;
+    static atl::String g_constData5;
+    static atl::String g_emptyString;
+    static atl::String g_constData6;
+    static atl::String g_constData7;
+    static atl::Array< atl::Conditional< avl::Location > > g_constData8;
+    static atl::Array< atl::Conditional< avl::Location > > g_constData9;
+    g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\calibrationPhotot\\sut_updownlook_up.jpg";
+
+    g_constData2 = L"C:\\Users\\emil\\Desktop\\Test\\EdgeFinder_New\\config\\prConfig\\spa_up_edgeModel.avdata";
+
+    g_constData3 = L"EdgeModel?";
+
+    g_constData5 = L"Angle:";
+
+    g_emptyString = L"";
+
+    g_constData6 = L"W:";
+
+    g_constData7 = L" H:";
+
+    g_constData8.Reset(1);
+    g_constData8[0] = avl::Location(125, 19);
+
+    g_constData9.Reset(1);
+    g_constData9[0] = avl::Location(178, 55);
+
+    avl::Image image1;
+    atl::Conditional< avl::EdgeModel > edgeModel1;
+    atl::Conditional< atl::Array< avl::Path > > pathArray1;
+    atl::Array< avl::Path > pathArray2;
+    atl::Conditional< avl::Path > path1;
+    atl::Conditional< atl::String > string1;
+    atl::Conditional< atl::String > string2;
+    atl::String string3;
+    atl::String string4;
+    atl::String string5;
+    avl::Image image2;
+    atl::Array< atl::Conditional< atl::String > > stringArray1;
+    avl::Image image3;
+    atl::Array< atl::Conditional< atl::String > > stringArray2;
+    avl::Image image4;
+    atl::Conditional< avl::Rectangle2D > rectangle2D1;
+
+    try {
+        QString imageName;
+        imageName.append(getVisionLogDir())
+                        .append(getCurrentTimeString())
+                        .append(".jpg");
+        avl::LoadImage( g_constData1, false, image1 );
+        avs::LoadObject< atl::Conditional< avl::EdgeModel > >( g_constData2, avl::StreamMode::Binary, g_constData3, edgeModel1 );
+        qInfo("Load Object Finish");
+        if (edgeModel1 != atl::NIL)
+        {
+            avl::LocateSingleObject_Edges( image1, atl::NIL, edgeModel1.Get(), 0, 3, 10.0f, false, false, 0.6f, atl::Dummy< atl::Conditional< avl::Object2D > >().Get(), pathArray1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+
+            if (pathArray1 != atl::NIL)
+            {
+                avl::JoinAdjacentPaths( pathArray1.Get(), 10.0f, 180.0f, 1.0f, atl::NIL, 100.0f, pathArray2 );
+                avl::GetMaximumPath_OrNil( pathArray2, avl::PathFeature::Length, path1, atl::Dummy< atl::Conditional< float > >().Get(), atl::Dummy< atl::Conditional< int > >().Get() );
+
+                if (path1 != atl::NIL)
+                {
+                    float real1;
+                    float real2;
+                    float real3;
+
+                    rectangle2D1.AssignNonNil();
+                    string1.AssignNonNil();
+                    string2.AssignNonNil();
+
+                    avl::PathBoundingRectangle( path1.Get(), avl::BoundingRectangleFeature::MinimalArea, 90.0f, avl::RectangleOrientation::Horizontal, rectangle2D1.Get(), atl::NIL, atl::NIL, atl::NIL );
+                    real1 = rectangle2D1.Get().Angle();
+                    avl::RealToString( real1, string3 );
+
+                    // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
+                    avs::AvsFilter_ConcatenateStrings( g_constData5, string3, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string1.Get() );
+                    real2 = rectangle2D1.Get().Width();
+                    real3 = rectangle2D1.Get().Height();
+                    avl::RealToString( real3, string4 );
+                    avl::RealToString( real2, string5 );
+
+                    // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
+                    avs::AvsFilter_ConcatenateStrings( g_constData6, string5, g_constData7, string4, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string2.Get() );
+                }
+                else
+                {
+                    rectangle2D1 = atl::NIL;
+                    string1 = atl::NIL;
+                    string2 = atl::NIL;
+                    error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                    return error_code;
+                }
+            }
+            else
+            {
+                rectangle2D1 = atl::NIL;
+                string1 = atl::NIL;
+                string2 = atl::NIL;
+                error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                return error_code;
+            }
+        }
+        else
+        {
+            rectangle2D1 = atl::NIL;
+            string1 = atl::NIL;
+            string2 = atl::NIL;
+            error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+            return error_code;
+        }
+        qInfo("DOne");
+        prResult.x = rectangle2D1.Get().Origin().X();
+        prResult.y = rectangle2D1.Get().Origin().Y();
+        prResult.theta = rectangle2D1.Get().Angle();
+        avs::DrawRectangles_SingleColor( image1, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 128.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, atl::NIL, 1.0f), true, image2 );
+        stringArray1.Resize(1);
+        stringArray1[0] = string1;
+        avs::DrawStrings_SingleColor( image2, stringArray1, g_constData8, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), 32.0f, 0.0f, true, atl::NIL, image3 );
+        stringArray2.Resize(1);
+        stringArray2[0] = string2;
+        avs::DrawStrings_SingleColor( image3, stringArray2, g_constData9, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), 32.0f, 0.0f, true, atl::NIL, image4 );
+        //avl::SaveImageToJpeg( image4 , imageName.toStdString().c_str(), atl::NIL, false );
+    } catch(const atl::Error& error) {
+        error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
         qWarning(error.Message());
         return error_code;
     }

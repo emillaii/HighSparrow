@@ -74,6 +74,7 @@ public:
     LensLoaderModule lens_loader_module;
     TrayLoaderModule tray_loader_module;
 
+
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;
     LutClient * lutClient;

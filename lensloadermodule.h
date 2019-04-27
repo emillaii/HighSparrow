@@ -20,28 +20,32 @@ enum HandlePosition
         LUT_POS2 = 4,
         LENS_TRAY1_START_POS = 5,
         LENS_TRAY2_START_POS = 6,
-        LENS_TRAY1_END_POS = 7
+        LENS_TRAY1_END_POS = 7,
+        LUT_UPLOOK_CAMERA = 8,
+        LUT_UPLOOK_PICKER =9
     };
 enum HandlePR
     {
         RESET_PR = 1 <<4,
         LENS_PR = 2<<4,
         VACANCY_PR = 3<<4,
-        LUT_PR = 4<<4
+        LUT_PR = 4<<4,
+        UPLOOK_CAMERA_PR = 5<<4,
+        UPLOOK_PICKER_PR = 6<<4
     };
 enum HandleToWorkPos
 {
-    ToWork = 1<<5
+    ToWork = 1<<6
 };
 
 enum handlePickerAction
 {
-    PICK_LENS_FROM_TRAY = 1<<5,
-    PLACE_LENS_TO_LUT = 2<<5,
-    PICK_NG_LENS_FROM_LUT = 3<<5,
-    PLACE_NG_LENS_TO_TRAY = 4<<5,
-    MeasureLensInTray = 5<<5,
-    MeasureLensInLUT = 6<<5
+    PICK_LENS_FROM_TRAY = 1<<7,
+    PLACE_LENS_TO_LUT = 2<<7,
+    PICK_NG_LENS_FROM_LUT = 3<<7,
+    PLACE_NG_LENS_TO_TRAY = 4<<7,
+    MeasureLensInTray = 5<<7,
+    MeasureLensInLUT = 6<<7
 };
 
 //}
@@ -68,6 +72,8 @@ private:
     bool performLensPR();
     bool performVacancyPR();
     bool performLUTPR();
+    bool performUplookCameraPR();
+    bool performUplookPickerPR();
     void resetPR();
 
     bool moveToWorkPos(bool check_softlanding = false);
@@ -83,6 +89,8 @@ private:
     bool moveToTrayPos(int tray_index);
     bool moveToStartPos(int tray_index);
     bool moveToTray1EndPos();
+    bool moveToLoadCameraPos();
+    bool moveToLoadPickerPos();
 
     bool isRunning();
     // ErrorBase interface
@@ -109,6 +117,8 @@ private:
     VisionLocation * vacancy_vision = Q_NULLPTR;
     VisionLocation * lut_vision = Q_NULLPTR;
     VisionLocation * lut_lens_vision = Q_NULLPTR;
+    VisionLocation * uplook_camera_vision = Q_NULLPTR;
+    VisionLocation * uplook_picker_vision = Q_NULLPTR;
     bool is_run = false;
     ErrorLevel error_level;
     PrOffset pr_offset;

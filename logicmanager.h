@@ -69,8 +69,8 @@ public:
     Q_INVOKABLE void lensPickArmLUTPR();//取
     Q_INVOKABLE void lensPickArmLensMeasureHeight();//tray lens测高
     Q_INVOKABLE void lensPickArmLUTMeasureHeight();//lut 测高
-
-
+    Q_INVOKABLE void lensPickArmMoveToUplookCameraPos();
+    Q_INVOKABLE void lensPickArmMoveToUplookPickerPos();
 
     int currentMode() const
     {

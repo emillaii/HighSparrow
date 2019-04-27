@@ -25,6 +25,16 @@ bool LensPickArm::move_XtXY_Synic(QPointF position,double x,bool check_softlandi
     return resut;
 }
 
+bool LensPickArm::move_XY_Synic(double x, double y, bool check_softlanding, int timeout)
+{
+    if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
+    motor_x->MoveToPos(x);
+    motor_y->MoveToPos(y);
+    bool resut = motor_x->WaitArrivedTargetPos(x,timeout);
+    resut &= motor_y->WaitArrivedTargetPos(y,timeout);
+    return resut;
+}
+
 bool LensPickArm::stepMove_XYTp_Synic(PrOffset position,bool check_softlanding,int timeout)
 {
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;

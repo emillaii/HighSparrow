@@ -294,3 +294,13 @@ void LogicManager::lensPickArmLUTMeasureHeight()
 {
     baseModuleManage->lens_loader_module.performHandling( handlePickerAction::MeasureLensInLUT,m_currentMode);
 }
+
+void LogicManager::lensPickArmMoveToUplookCameraPos()
+{
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_UPLOOK_CAMERA|HandlePR::UPLOOK_CAMERA_PR,m_currentMode);
+}
+
+void LogicManager::lensPickArmMoveToUplookPickerPos()
+{
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_UPLOOK_PICKER|HandlePR::UPLOOK_PICKER_PR,m_currentMode);
+}

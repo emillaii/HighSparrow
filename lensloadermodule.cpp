@@ -194,6 +194,16 @@ bool LensLoaderModule::performLUTPR()
     return lut_vision->performPR(pr_offset);
 }
 
+bool LensLoaderModule::performUplookCameraPR()
+{
+    return uplook_camera_vision->performPR(pr_offset);
+}
+
+bool LensLoaderModule::performUplookPickerPR()
+{
+    return uplook_picker_vision->performPR(pr_offset);
+}
+
 void LensLoaderModule::resetPR()
 {
     pr_offset.X = 0;
@@ -266,6 +276,16 @@ bool LensLoaderModule::moveToTray1EndPos()
     return pick_arm->move_XtXY_Synic(lens_tray->getEndPosition(),parameters.visonPositionX(),true);
 }
 
+bool LensLoaderModule::moveToLoadCameraPos()
+{
+    return pick_arm->move_XY_Synic(lut_camera_position.X(),lut_camera_position.Y(),true);
+}
+
+bool LensLoaderModule::moveToLoadPickerPos()
+{
+    return pick_arm->move_XY_Synic(lut_picker_position.X(),lut_picker_position.Y(),true);
+}
+
 bool LensLoaderModule::isRunning()
 {
     return is_run;
@@ -300,6 +320,10 @@ void LensLoaderModule::performHandlingOperation(int cmd, int &finished_type)
         result = moveToStartPos(1);
     else if(cmd&HandlePosition::LENS_TRAY1_END_POS)
         result = moveToTray1EndPos();
+    else if(cmd&HandlePosition::LENS_TRAY1_END_POS)
+        result = moveToTray1EndPos();
+    else if(cmd&HandlePosition::LENS_TRAY1_END_POS)
+        result = moveToTray1EndPos();
     else
         result = true;
     if(!result)
@@ -315,6 +339,10 @@ void LensLoaderModule::performHandlingOperation(int cmd, int &finished_type)
         result = performVacancyPR();
     else if(cmd&HandlePR::LUT_PR)
         result = performLUTPR();
+    else if(cmd&HandlePR::UPLOOK_CAMERA_PR)
+        result = performUplookCameraPR();
+    else if(cmd&HandlePR::UPLOOK_PICKER_PR)
+        result = performUplookPickerPR();
     else
         result = true;
     if(!result)

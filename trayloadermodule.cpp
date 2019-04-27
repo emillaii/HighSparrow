@@ -2,12 +2,30 @@
 
 
 
-void TrayLoaderModule::Init(XtMotor *motor_clip, XtMotor *motor_in, XtMotor *motor_work, XtMotor *motor_out)
+TrayLoaderModule::TrayLoaderModule(QString name):ThreadWorkerBase(name)
 {
-    this->motor_clip = motor_clip;
-    this->motor_in = motor_in;
-    this->motor_work = motor_work;
-    this->motor_out = motor_out;
+
+}
+
+void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
+                            XtMotor *_motor_in,
+                            XtMotor *_motor_work,
+                            XtMotor *_motor_out,
+                            XtMotor *_motor_clip_out,
+                            XtCylinder* _cylinder_clip,
+                            XtCylinder* _cylinder_ltk1,
+                            XtCylinder* _cylinder_ltk2,
+                            XtCylinder* _cylinder_tray)
+{
+    this->motor_clip_in = _motor_clip_in;
+    this->motor_in = _motor_in;
+    this->motor_work = _motor_work;
+    this->motor_out = _motor_out;
+    this->motor_clip_out = _motor_clip_out;
+    this->cylinder_clip = _cylinder_clip;
+    this->cylinder_ltk1 = _cylinder_ltk1;
+    this->cylinder_ltk2 = _cylinder_ltk2;
+    this->cylinder_tray = _cylinder_tray;
 }
 
 void TrayLoaderModule::ResetLogic()
@@ -38,8 +56,8 @@ bool TrayLoaderModule::moveMotorClip()
 bool TrayLoaderModule::moveToCurrentPos()
 {
     double pos = tray_clip->getCurrentPosition();
-    motor_clip->MoveToPos(pos);
-    bool result = motor_clip->WaitArrivedTargetPos(pos);
+    motor_clip_in->MoveToPos(pos);
+    bool result = motor_clip_in->WaitArrivedTargetPos(pos);
     return result;
 }
 

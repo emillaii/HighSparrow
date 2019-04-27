@@ -28,6 +28,8 @@
 #include "sparrowqclient.h"
 #include "lensloadermodule.h"
 #include "lutclient.h"
+#include "trayloadermodule.h"
+
 class BaseModuleManager : public PropertyBase
 {
     Q_OBJECT
@@ -70,6 +72,7 @@ public:
     DispenseModule dispense_module;
     Dispenser dispenser;
     LensLoaderModule lens_loader_module;
+    TrayLoaderModule tray_loader_module;
 
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;

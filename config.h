@@ -130,6 +130,10 @@
 #define DISPENSE_MODULE_PARAMETER_PATH  ".//config//dispense_module_parameter.json"
 #define DISPENSER_MODULE_PARAMETER        "dispense_module_parameter"
 
+//trayloader
+#define TRAY_LOADER_PATH  ".//config//tray_loader_parameter.json"
+#define TRAY_LOADER_PARAMETER "tray_loader_parameter"
+
 //PR
 #define PR_SENSOR_PACKAGE_IMX362        "IMX362"
 #define PR_SENSOR_PACKAGE_IMX363        "IMX363"

@@ -94,6 +94,7 @@ bool BaseModuleManager::loadParameters()
     dothinkey->loadParams();
     dispenser.parameters.loadJsonConfig(DISPENSER_PARAMETER_PATH,DISPENSER_PARAMETER);
     dispense_module.parameters.loadJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
+    tray_loader_module.parameters.loadJsonConfig(TRAY_LOADER_PATH,TRAY_LOADER_PARAMETER);
     material_tray.loadJsonConfig();
     lens_loader_module.loadJsonConfig();
     lens_pick_arm.parameters.loadJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
@@ -667,6 +668,17 @@ bool BaseModuleManager::InitStruct()
                             GetVisionLocationByName(lens_loader_module.parameters.vacancyLocationName()),
                             GetVisionLocationByName(lens_loader_module.parameters.lutLocationName()),
                             GetVisionLocationByName(lens_loader_module.parameters.lutLensLocationName()));
+    tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
+                            GetMotorByName(tray_loader_module.parameters.motorLTKX1Name()),
+                            GetMotorByName(tray_loader_module.parameters.motorLTLXName()),
+                            GetMotorByName(tray_loader_module.parameters.motorLTKX2Name()),
+                            GetMotorByName(tray_loader_module.parameters.motorLTOEName()),
+                            GetCylinderByName(tray_loader_module.parameters.cylinderClipName()),
+                            GetCylinderByName(tray_loader_module.parameters.cylinderLTK1Name()),
+                            GetCylinderByName(tray_loader_module.parameters.cylinderLTK2Name()),
+                            GetCylinderByName(tray_loader_module.parameters.cylinderTrayName()));
+
+
     profile_loaded = true;
 
     return true;

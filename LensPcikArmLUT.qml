@@ -165,4 +165,104 @@ ColumnLayout {
             }
         }
     }
+    GroupBox{
+        title:"camera位置"
+        ColumnLayout{
+            RowLayout{
+                Label{
+                    text:qsTr("X")
+                }
+                TextField{
+                    text:lut_camera_position.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 3
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        lut_camera_position.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("Y")
+                }
+                TextField{
+                    text:lut_camera_position.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 3
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        lut_camera_position.setY(text)
+                    }
+                }
+            }
+            RowLayout{
+                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
+                Button{
+                    text:title_move_to
+                    onClicked: {
+
+                    }
+                }
+                Button{
+                    text:title_read_encoder
+                    onClicked: {
+
+                    }
+                }
+            }
+        }
+    }
+    GroupBox{
+        title:"picker位置"
+        ColumnLayout{
+            RowLayout{
+                Label{
+                    text:qsTr("X")
+                }
+                TextField{
+                    text:lut_picker_position.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 3
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        lut_picker_position.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("Y")
+                }
+                TextField{
+                    text:lut_picker_position.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 3
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        lut_picker_position.setY(text)
+                    }
+                }
+            }
+            RowLayout{
+                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
+                Button{
+                    text:title_move_to
+                    onClicked: {
+
+                    }
+                }
+                Button{
+                    text:title_read_encoder
+                    onClicked: {
+
+                    }
+                }
+            }
+        }
+    }
 }

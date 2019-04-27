@@ -63,7 +63,11 @@ bool TrayLoaderModule::moveToCurrentPos()
 
 bool TrayLoaderModule::ejectTray()
 {
-    return 1;
+    int res = cylinder_clip->Set(true);
+    if(!cylinder_clip->Set(false)){
+        //qDebug()<<"";
+    }
+    return res;
 }
 
 bool TrayLoaderModule::moveMotorIn()

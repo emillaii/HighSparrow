@@ -72,6 +72,21 @@ public:
     Q_INVOKABLE void lensPickArmMoveToUpdownlookDownPos();
     Q_INVOKABLE void lensPickArmMoveToUpdownlookUpPos();
 
+    Q_INVOKABLE void trayLoaderModuleLTIEMovetoFirstPos();
+    Q_INVOKABLE void trayLoaderModuleLTIEMovetoLastPos();
+    Q_INVOKABLE void trayLoaderModuleLTOEMovetoFirstPos();
+    Q_INVOKABLE void trayLoaderModuleLTOEMovetoLastPos();
+
+    Q_INVOKABLE void trayLoaderModuleLTKX1MovetoGetPos();
+    Q_INVOKABLE void trayLoaderModuleLTKX1MovetoSetPos();
+    Q_INVOKABLE void trayLoaderModuleLTKX2MovetoGetPos();
+    Q_INVOKABLE void trayLoaderModuleLTKX2MovetoSetPos();
+    Q_INVOKABLE void trayLoaderModuleLTLMovetoGetPos();
+    Q_INVOKABLE void trayLoaderModuleLTLMovetoSetPos();
+
+    Q_INVOKABLE void trayLoaderModuleLTIEMovetoColumnIndex(int);
+    Q_INVOKABLE void trayLoaderModuleLTOEMovetoColumnIndex(int);
+
     int currentMode() const
     {
         return m_currentMode;

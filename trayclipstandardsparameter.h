@@ -15,7 +15,11 @@ private:
     int m_currentIndex=0;
 
 public:
-    ClipStandardsParameter():PropertyBase (){}
+    ClipStandardsParameter():PropertyBase (){
+        connect(this,SIGNAL(columnCountChanged(int)),this,SLOT(calColumnDelta()));
+        connect(this,SIGNAL(firstTrayPosChanged(double)),this,SLOT(calColumnDelta()));
+        connect(this,SIGNAL(lastTrayPosChanged(double)),this,SLOT(calColumnDelta()));
+    }
     Q_PROPERTY(int columnCount READ columnCount WRITE setColumnCount NOTIFY columnCountChanged)
     Q_PROPERTY(bool fromTop READ fromTop WRITE setFromTop NOTIFY fromTopChanged)
     Q_PROPERTY(double columnDelta READ columnDelta WRITE setColumnDelta NOTIFY columnDeltaChanged)
@@ -52,6 +56,10 @@ int currentIndex() const
 }
 
 public slots:
+void calColumnDelta(){
+    double delta = (m_lastTrayPos-m_firstTrayPos)/(m_columnCount-1);
+    setColumnDelta(delta);
+}
 void setColumnCount(int columnCount)
 {
     if (m_columnCount == columnCount)

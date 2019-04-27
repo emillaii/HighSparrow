@@ -306,3 +306,65 @@ void LogicManager::lensPickArmMoveToUpdownlookUpPos()
 {
     baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_UP_POS+HandlePR::UPDOWNLOOK_UP_PR);
 }
+
+void LogicManager::trayLoaderModuleLTIEMovetoFirstPos()
+{
+    baseModuleManage->tray_loader_module.LTIEMovetoColumnIndex(0);
+}
+
+void LogicManager::trayLoaderModuleLTIEMovetoLastPos()
+{
+    int col = baseModuleManage->tray_loader_module.tray_clip->standards_parameters.columnCount()-1;
+    baseModuleManage->tray_loader_module.LTIEMovetoColumnIndex(col);
+}
+
+void LogicManager::trayLoaderModuleLTOEMovetoFirstPos()
+{
+    baseModuleManage->tray_loader_module.LTOEMovetoColumnIndex(0);
+}
+
+void LogicManager::trayLoaderModuleLTOEMovetoLastPos()
+{
+    int col = baseModuleManage->tray_loader_module.tray_clip->standards_parameters.columnCount()-1;
+    baseModuleManage->tray_loader_module.LTOEMovetoColumnIndex(col);
+}
+
+void LogicManager::trayLoaderModuleLTKX1MovetoGetPos()
+{
+    baseModuleManage->tray_loader_module.moveToLtkx1GetPos();
+}
+
+void LogicManager::trayLoaderModuleLTKX1MovetoSetPos()
+{
+    baseModuleManage->tray_loader_module.moveToLtkx1SetPos();
+}
+
+void LogicManager::trayLoaderModuleLTKX2MovetoGetPos()
+{
+    baseModuleManage->tray_loader_module.moveToLtkx2GetPos();
+}
+
+void LogicManager::trayLoaderModuleLTKX2MovetoSetPos()
+{
+    baseModuleManage->tray_loader_module.moveToLtkx2SetPos();
+}
+
+void LogicManager::trayLoaderModuleLTLMovetoGetPos()
+{
+    baseModuleManage->tray_loader_module.moveToLtlGetPos();
+}
+
+void LogicManager::trayLoaderModuleLTLMovetoSetPos()
+{
+    baseModuleManage->tray_loader_module.moveToLtlSetPos();
+}
+
+void LogicManager::trayLoaderModuleLTIEMovetoColumnIndex(int idx)
+{
+    baseModuleManage->tray_loader_module.LTIEMovetoColumnIndex(idx);
+}
+
+void LogicManager::trayLoaderModuleLTOEMovetoColumnIndex(int idx)
+{
+    baseModuleManage->tray_loader_module.LTOEMovetoColumnIndex(idx);
+}

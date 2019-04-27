@@ -1,6 +1,7 @@
 #include "trayloadermodule.h"
 
 #include <QDebug>
+#include <QObject>
 
 TrayLoaderModule::TrayLoaderModule(QString name):ThreadWorkerBase(name)
 {
@@ -188,6 +189,30 @@ bool TrayLoaderModule::moveToNextEmptyPos()
             tray_clip_out->standards_parameters.setCurrentIndex(tray_clip_out->standards_parameters.currentIndex()+1);
     }
     return result;
+}
+
+bool TrayLoaderModule::LTIEMovetoColumnIndex(int col)
+{
+    if(col<tray_clip->standards_parameters.columnCount()){
+        double pos = tray_clip->standards_parameters.firstTrayPos() + col*tray_clip->standards_parameters.columnDelta();
+        motor_clip_in->MoveToPos(pos);
+        int res = motor_clip_in->WaitArrivedTargetPos(pos);
+        return res;
+    }else{
+        return false;
+    }
+}
+
+bool TrayLoaderModule::LTOEMovetoColumnIndex(int col)
+{
+    if(col<tray_clip_out->standards_parameters.columnCount()){
+        double pos = tray_clip_out->standards_parameters.firstTrayPos() + col*tray_clip_out->standards_parameters.columnDelta();
+        motor_clip_out->MoveToPos(pos);
+        int res = motor_clip_out->WaitArrivedTargetPos(pos);
+        return res;
+    }else{
+        return false;
+    }
 }
 
 void TrayLoaderModule::startWork(bool reset_logic, int run_mode)

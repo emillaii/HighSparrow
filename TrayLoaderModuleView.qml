@@ -51,7 +51,9 @@ ItemDelegate {
                         }
                         Button{
                             text:title_move_to
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTIEMovetoFirstPos()
+                            }
                         }
                         Button{
                             text:title_read_encoder
@@ -73,12 +75,14 @@ ItemDelegate {
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                tray_clipin_parameter.setLastTrayPos(text);
+                                tray_clipin_parameter.setLastTrayPos(text)
                             }
                         }
                         Button{
                             text:title_move_to
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTIEMovetoLastPos()
+                            }
                         }
                         Button{
                             text:title_read_encoder
@@ -112,11 +116,9 @@ ItemDelegate {
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
-                            onEditingFinished: {
-                                tray_clipin_parameter.setColumnDelta(text)
-                            }
                         }
                         Button{
+                            visible: false
                             text:qsTr("计算")
                             onClicked: {
                                 var y1 = tray_clipin_parameter.firstTrayPos;
@@ -131,6 +133,7 @@ ItemDelegate {
                             text:qsTr("目标位置")
                         }
                         TextField{
+                            id:col_in
                             text:tray_clipin_parameter.currentIndex+1
                             validator: IntValidator{
                                 bottom: 1
@@ -143,7 +146,9 @@ ItemDelegate {
                         }
                         Button{
                             text:qsTr("移动")
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in-1)
+                            }
                         }
                     }
                 }
@@ -168,7 +173,9 @@ ItemDelegate {
                         }
                         Button{
                             text:title_move_to
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTOEMovetoFirstPos()
+                            }
                         }
                         Button{
                             text:title_read_encoder
@@ -195,7 +202,9 @@ ItemDelegate {
                         }
                         Button{
                             text:title_move_to
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTOEMovetoLastPos()
+                            }
                         }
                         Button{
                             text:title_read_encoder
@@ -229,11 +238,9 @@ ItemDelegate {
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
-                            onEditingFinished: {
-                                tray_clipout_parameter.setColumnDelta(text)
-                            }
                         }
                         Button{
+                            visible: false
                             text:qsTr("计算")
                             onClicked: {
                                 var y1 = tray_clipin_parameter.firstTrayPos;
@@ -248,6 +255,7 @@ ItemDelegate {
                             text:qsTr("目标位置")
                         }
                         TextField{
+                            id:col_out
                             text:tray_clipout_parameter.currentIndex+1
                             validator: IntValidator{
                                 bottom: 1
@@ -260,7 +268,9 @@ ItemDelegate {
                         }
                         Button{
                             text:qsTr("移动")
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTOEMovetoColumnIndex(col_out-1)
+                            }
                         }
                     }
                 }
@@ -284,7 +294,9 @@ ItemDelegate {
                         }
                         Button{
                             text:title_move_to
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTKX1MovetoGetPos()
+                            }
                         }
                         Button{
                             text:title_read_encoder
@@ -310,7 +322,9 @@ ItemDelegate {
                         }
                         Button{
                             text:title_move_to
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTKX1MovetoSetPos()
+                            }
                         }
                         Button{
                             text:title_read_encoder
@@ -343,7 +357,9 @@ ItemDelegate {
                         }
                         Button{
                             text:title_move_to
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTKX2MovetoGetPos()
+                            }
                         }
                         Button{
                             text:title_read_encoder
@@ -369,7 +385,9 @@ ItemDelegate {
                         }
                         Button{
                             text:title_move_to
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTKX2MovetoSetPos()
+                            }
                         }
                         Button{
                             text:title_read_encoder
@@ -402,7 +420,9 @@ ItemDelegate {
                         }
                         Button{
                             text:title_move_to
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTLMovetoGetPos()
+                            }
                         }
                         Button{
                             text:title_read_encoder
@@ -428,7 +448,9 @@ ItemDelegate {
                         }
                         Button{
                             text:title_move_to
-                            onClicked: {}
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTLMovetoSetPos()
+                            }
                         }
                         Button{
                             text:title_read_encoder
@@ -441,8 +463,10 @@ ItemDelegate {
                     RowLayout{
                         Layout.alignment: Qt.AlignRight
                         Button{
-                            text: qsTr("ltl cylinder操作")
-                            onClicked: {}
+                            text: qsTr("ltkx1 cylinder操作")
+                            onClicked: {
+
+                            }
                         }
                     }
                 }

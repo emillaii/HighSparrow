@@ -18,10 +18,6 @@ public:
     TrayClip* tray_clip = Q_NULLPTR;
     TrayClip* tray_clip_out = Q_NULLPTR;
     TrayLoaderModuleParameter parameters;
-signals:
-
-private:
-    void run(bool has_tray);
     bool moveMotorClip();
     bool moveToNextTrayPos();
     bool ejectTray();
@@ -48,6 +44,13 @@ private:
     bool motorOutRelease();
 
     bool moveToNextEmptyPos();
+
+    bool LTIEMovetoColumnIndex(int);
+    bool LTOEMovetoColumnIndex(int);
+signals:
+
+private:
+    void run(bool has_tray);
 
 
     bool is_run=false;

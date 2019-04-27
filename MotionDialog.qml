@@ -157,15 +157,15 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
-                            onClicked: {
-                                highSprrow.aa_A_Inter(selectedStepSize);
-                            }
-                        }
-                        RoundButton {
                             text: "-"
                             onClicked: {
                                 highSprrow.aa_A_Inter(-selectedStepSize);
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                highSprrow.aa_A_Inter(selectedStepSize);
                             }
                         }
                     }
@@ -176,15 +176,15 @@ Popup {
                             color: "white"
                         }
                         RoundButton {
-                            text: "+"
-                            onClicked: {
-                                highSprrow.aa_B_Inter(selectedStepSize);
-                            }
-                        }
-                        RoundButton {
                             text: "-"
                             onClicked: {
                                 highSprrow.aa_B_Inter(-selectedStepSize);
+                            }
+                        }
+                        RoundButton {
+                            text: "+"
+                            onClicked: {
+                                highSprrow.aa_B_Inter(selectedStepSize);
                             }
                         }
                     }
@@ -215,17 +215,17 @@ Popup {
                                 icon.color: "cyan"
                             }
                             RoundButton{
-                                text:"+"
+                                text:"-"
                                 onClicked: {
-                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
-                                   console.log(motorsNames.length)
+                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
                                    console.log("result: "+res)
                                 }
                             }
                             RoundButton{
-                                text:"-"
+                                text:"+"
                                 onClicked: {
-                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
+                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
+                                   console.log(motorsNames.length)
                                    console.log("result: "+res)
                                 }
                             }

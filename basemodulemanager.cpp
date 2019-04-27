@@ -674,7 +674,9 @@ bool BaseModuleManager::InitStruct()
                             GetVisionLocationByName(lens_loader_module.parameters.lensLocationName()),
                             GetVisionLocationByName(lens_loader_module.parameters.vacancyLocationName()),
                             GetVisionLocationByName(lens_loader_module.parameters.lutLocationName()),
-                            GetVisionLocationByName(lens_loader_module.parameters.lutLensLocationName()));
+                            GetVisionLocationByName(lens_loader_module.parameters.lutLensLocationName()),
+                            GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookUpLocationName()),
+                            GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()));
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
                             GetMotorByName(tray_loader_module.parameters.motorLTKX1Name()),
                             GetMotorByName(tray_loader_module.parameters.motorLTLXName()),
@@ -1031,9 +1033,17 @@ bool BaseModuleManager::performCalibration(QString calibration_name)
 bool BaseModuleManager::performLocation(QString location_name)
 {
     VisionLocation* temp_location = GetVisionLocationByName(location_name);
-    if(temp_location == nullptr)return false;
+    if(temp_location == nullptr)
+    {
+        qInfo("location(%s) is null",location_name.toStdString().c_str());
+        return false;
+    }
     Calibration* temp_caliration = GetCalibrationByName(temp_location->parameters.calibrationName());
-    if(temp_caliration == nullptr)return  false;
+    if(temp_caliration == nullptr)
+    {
+        qInfo("calibraion(%s)is null",temp_location->parameters.calibrationName().toStdString().c_str());
+        return  false;
+    }
     PrOffset offset;
     if(temp_location->parameters.calibrationName().contains("chart_calibraion"))
     {
@@ -1113,6 +1123,11 @@ double BaseModuleManager::getMotorFeedbackPos(QString name)
 double BaseModuleManager::getMotorFeedbackPos(int index)
 {
     return motors.values()[index]->GetFeedbackPos();
+}
+
+void BaseModuleManager::setLightingBrightness(QString location_name)
+{
+    GetVisionLocationByName(location_name)->OpenLight();
 }
 
 bool BaseModuleManager::initSensor()

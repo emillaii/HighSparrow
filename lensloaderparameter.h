@@ -21,8 +21,8 @@ public:
     Q_PROPERTY(QString vacancyLocationName READ vacancyLocationName WRITE setVacancyLocationName NOTIFY vacancyLocationNameChanged)
     Q_PROPERTY(QString lutLocationName READ lutLocationName WRITE setLutLocationName NOTIFY lutLocationNameChanged)
     Q_PROPERTY(QString lutLensLocationName READ lutLensLocationName WRITE setLutLensLocationName NOTIFY lutLensLocationNameChanged)
-    Q_PROPERTY(QString uplookPickLocation READ uplookPickLocation WRITE setUplookPickLocation NOTIFY uplookPickLocationChanged)
-    Q_PROPERTY(QString uplookCameraLocaation READ uplookCameraLocaation WRITE setUplookCameraLocaation NOTIFY uplookCameraLocaationChanged)
+    Q_PROPERTY(QString lpaUpdownlookUpLocationName READ lpaUpdownlookUpLocationName WRITE setLpaUpdownlookUpLocation NOTIFY lpaUpdownlookUpkLocationChanged)
+    Q_PROPERTY(QString lpaUpdownlookDownLocationName READ lpaUpdownlookDownLocationName WRITE setLpaupdownlookDownLocationName NOTIFY lpaUpdownlookDownLocaationNameChanged)
     int runMode() const
     {
         return m_runMode;
@@ -76,12 +76,12 @@ public:
         return m_lueLensLocationName;
     }
 
-    QString uplookPickLocation() const
+    QString lpaUpdownlookUpLocationName() const
     {
         return m_uplookPickLocation;
     }
 
-    QString uplookCameraLocaation() const
+    QString lpaUpdownlookDownLocationName() const
     {
         return m_uplookCameraLocaation;
     }
@@ -191,22 +191,22 @@ public slots:
         emit lutLensLocationNameChanged(m_lueLensLocationName);
     }
 
-    void setUplookPickLocation(QString uplookPickLocation)
+    void setLpaUpdownlookUpLocation(QString uplookPickLocation)
     {
         if (m_uplookPickLocation == uplookPickLocation)
             return;
 
         m_uplookPickLocation = uplookPickLocation;
-        emit uplookPickLocationChanged(m_uplookPickLocation);
+        emit lpaUpdownlookUpkLocationChanged(m_uplookPickLocation);
     }
 
-    void setUplookCameraLocaation(QString uplookCameraLocaation)
+    void setLpaupdownlookDownLocationName(QString uplookCameraLocaation)
     {
         if (m_uplookCameraLocaation == uplookCameraLocaation)
             return;
 
         m_uplookCameraLocaation = uplookCameraLocaation;
-        emit uplookCameraLocaationChanged(m_uplookCameraLocaation);
+        emit lpaUpdownlookDownLocaationNameChanged(m_uplookCameraLocaation);
     }
 
 signals:
@@ -230,9 +230,9 @@ signals:
 
     void lutLensLocationNameChanged(QString lutLensLocationName);
 
-    void uplookPickLocationChanged(QString uplookPickLocation);
+    void lpaUpdownlookUpkLocationChanged(QString lpaUpdownlookUpLocationName);
 
-    void uplookCameraLocaationChanged(QString uplookCameraLocaation);
+    void lpaUpdownlookDownLocaationNameChanged(QString lpaUpdownlookDownLocationName);
 
 private:
     int m_runMode = 0;

@@ -71,7 +71,7 @@ public:
     virtual void MoveToPos(double pos,int thread = -1);
     virtual void SlowMoveToPos(double pos,double vel_ratio = 0.2, int thread = -1);
     virtual bool WaitMoveStop(int timeout=30000);
-    bool WaitArrivedTargetPos(double target_position,int timeout=10000);
+    bool WaitArrivedTargetPos(double target_position,int timeout=5000);
     virtual bool MoveToPosSync(double pos,int thread = -1,int time_out = 30000);
     virtual bool SlowMoveToPosSync(double pos,double vel_ratio =0.2,int thread = -1);
     virtual void StepMove(double step,int thread = -1);

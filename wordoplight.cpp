@@ -53,7 +53,7 @@ bool WordopLight::ReInit(const QString &com_port) {
     return Init(com_port);
 }
 
-bool WordopLight::SetBrightness(int ch, uint8_t brightness)
+bool WordopLight::setBrightness(int ch, uint8_t brightness)
 {
     if(QThread::currentThreadId()==creator_tid)
     {

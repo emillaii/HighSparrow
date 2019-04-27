@@ -21,8 +21,8 @@ enum HandlePosition
         LENS_TRAY1_START_POS = 5,
         LENS_TRAY2_START_POS = 6,
         LENS_TRAY1_END_POS = 7,
-        LUT_UPLOOK_CAMERA = 8,
-        LUT_UPLOOK_PICKER =9
+        UPDOWNLOOK_DOWN_POS = 8,
+        UPDOWNLOOK_UP_POS =9
     };
 enum HandlePR
     {
@@ -30,8 +30,8 @@ enum HandlePR
         LENS_PR = 2<<4,
         VACANCY_PR = 3<<4,
         LUT_PR = 4<<4,
-        UPLOOK_CAMERA_PR = 5<<4,
-        UPLOOK_PICKER_PR = 6<<4
+        UPDOWNLOOK_DOWN_PR = 5<<4,
+        UPDOWNLOOK_UP_PR = 6<<4
     };
 enum HandleToWorkPos
 {
@@ -55,7 +55,8 @@ class LensLoaderModule:public ThreadWorkerBase
 public:
     LensLoaderModule(QString name = "LensPickArmModule");
     void Init(LensPickArm *pick_arm,MaterialTray *lens_tray,MaterialCarrier *lut_carrier,
-              VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision);
+              VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision,
+              VisionLocation *lap_updownlook_up_vision, VisionLocation *lap_updownlook_down_vision);
     void ResetLogic();
     void loadJsonConfig();
     void saveJsonConfig();
@@ -72,8 +73,8 @@ private:
     bool performLensPR();
     bool performVacancyPR();
     bool performLUTPR();
-    bool performUplookCameraPR();
-    bool performUplookPickerPR();
+    bool performUpDownlookDownPR();
+    bool performUpdowlookUpPR();
     void resetPR();
 
     bool moveToWorkPos(bool check_softlanding = false);
@@ -117,8 +118,8 @@ private:
     VisionLocation * vacancy_vision = Q_NULLPTR;
     VisionLocation * lut_vision = Q_NULLPTR;
     VisionLocation * lut_lens_vision = Q_NULLPTR;
-    VisionLocation * uplook_camera_vision = Q_NULLPTR;
-    VisionLocation * uplook_picker_vision = Q_NULLPTR;
+    VisionLocation * lap_updownlook_up_vision = Q_NULLPTR;
+    VisionLocation * lap_updownlook_down_vision = Q_NULLPTR;
     bool is_run = false;
     ErrorLevel error_level;
     PrOffset pr_offset;

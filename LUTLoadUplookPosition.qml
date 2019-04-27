@@ -62,8 +62,8 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(lutParams.motorXName)-lutModule.getLoadUplookPRX()
-                var y = baseModuleManager.getMotorFeedbackPos(lutParams.motorYName)-lutModule.getLoadUplookPRY()
+                var x = baseModuleManager.getMotorFeedbackPos(lutParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(lutParams.motorYName)
                 var z = baseModuleManager.getMotorFeedbackPos(lutParams.motorZName)
                 lutLoadUplookPosition.setX(x)
                 lutLoadUplookPosition.setY(y)

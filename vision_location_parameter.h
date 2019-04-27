@@ -193,7 +193,7 @@ private:
     QString m_locationName = "Location";
     QString m_calibrationName = "Calibration";
     bool m_needCalibration = false;
-    bool m_canMotion;
+    bool m_canMotion = true;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

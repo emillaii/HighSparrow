@@ -108,7 +108,9 @@ void LogicManager::run() {
     else if (m_currentMode == CommandType::PERFORM_LOCATION)
     {
         baseModuleManage->performLocation(location_name);
+        qInfo("location End");
     }
+
     m_currentMode = CommandType::IDLE;
     qInfo("End");
 }
@@ -170,7 +172,7 @@ void LogicManager::performCalibration(QString calibration_name)
 void LogicManager::performLocation(QString location_name)
 {
     setStateMessage(__FUNCTION__);
-    this->calibration_name = location_name;
+    this->location_name = location_name;
     moveToCmd(CommandType::PERFORM_LOCATION);
 }
 
@@ -295,12 +297,12 @@ void LogicManager::lensPickArmLUTMeasureHeight()
     baseModuleManage->lens_loader_module.performHandling( handlePickerAction::MeasureLensInLUT,m_currentMode);
 }
 
-void LogicManager::lensPickArmMoveToUplookCameraPos()
+void LogicManager::lensPickArmMoveToUpdownlookDownPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_UPLOOK_CAMERA|HandlePR::UPLOOK_CAMERA_PR,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_DOWN_POS|HandlePR::UPDOWNLOOK_DOWN_PR,m_currentMode);
 }
 
-void LogicManager::lensPickArmMoveToUplookPickerPos()
+void LogicManager::lensPickArmMoveToUpdownlookUpPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_UPLOOK_PICKER|HandlePR::UPLOOK_PICKER_PR,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_UP_POS|HandlePR::UPDOWNLOOK_UP_PR,m_currentMode);
 }

@@ -140,7 +140,7 @@ bool Calibration::performPRResult(PrOffset offset)
     motor_x->StepMove(-offset.X);
     motor_y->StepMove(-offset.Y);
     bool result = motor_x->WaitArrivedTargetPos(cur_x - offset.X);
-    result &= motor_x->WaitArrivedTargetPos(cur_y - offset.Y);
+    result &= motor_y->WaitArrivedTargetPos(cur_y - offset.Y);
     return result;
 }
 

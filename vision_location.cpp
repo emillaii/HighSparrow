@@ -123,10 +123,10 @@ QPointF VisionLocation::getCurrentOffset()
 
 void VisionLocation::OpenLight()
 {
-    lighting->SetBrightness(parameters.lightChannel(),parameters.lightBrightness());
+    lighting->setBrightness(parameters.lightChannel(),parameters.lightBrightness());
 }
 
 void VisionLocation::CloseLight()
 {
-    lighting->SetBrightness(parameters.lightChannel(),0);
+    lighting->setBrightness(parameters.lightChannel(),0);
 }

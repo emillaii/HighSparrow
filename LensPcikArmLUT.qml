@@ -203,16 +203,16 @@ ColumnLayout {
                 Button{
                     text:title_move_to
                     onClicked: {
-                        logicManager.lensPickArmMoveToUplookCameraPos()
+                        logicManager.lensPickArmMoveToUpdownlookDownPos()
                     }
                 }
                 Button{
                     text:title_read_encoder
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)-baseModuleManager.getPROffsetX(lensPickArmModuleParameter.uplookCameraLocaation)
-                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)-baseModuleManager.getPROffsetY(lensPickArmModuleParameter.uplookCameraLocaation)
-                        lut_picker_position.setX(x)
-                        lut_picker_position.setX(y)
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)-baseModuleManager.getPROffsetX(lensPickArmModuleParameter.lpaUpdownlookDownLocationName)
+                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)-baseModuleManager.getPROffsetY(lensPickArmModuleParameter.lpaUpdownlookDownLocationName)
+                        lut_camera_position.setX(x)
+                        lut_camera_position.setY(y)
 
                     }
                 }
@@ -257,16 +257,16 @@ ColumnLayout {
                 Button{
                     text:title_move_to
                     onClicked: {
-                        logicManager.lensPickArmMoveToUplookPickerPos()
+                        logicManager.lensPickArmMoveToUpdownlookUpPos()
                     }
                 }
                 Button{
                     text:title_read_encoder
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)-baseModuleManager.getPROffsetX(lensPickArmModuleParameter.uplookPickLocation)
-                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)-baseModuleManager.getPROffsetY(lensPickArmModuleParameter.uplookPickLocation)
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
+                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
                         lut_picker_position.setX(x)
-                        lut_picker_position.setX(y)
+                        lut_picker_position.setY(y)
                     }
                 }
             }

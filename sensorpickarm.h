@@ -5,11 +5,6 @@
 #include "material_picker.h"
 #include "pixel2mech.h"
 
-#include <QSizeF>
-
-#include <C:/Program Files (x86)/Windows Kits/10/include/10.0.14393.0/ucrt/share.h>
-
-
 
 class SensorPickArm: public ErrorBase
 {

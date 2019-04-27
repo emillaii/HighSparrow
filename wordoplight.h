@@ -47,7 +47,7 @@ public:
 
     bool Init(const QString &com_port);
     bool ReInit(const QString &com_port);
-    bool SetBrightness(int ch, uint8_t brightness);
+    bool setBrightness(int ch, uint8_t brightness);
     int GetBrightness(int ch);
     bool SetPWM(int ch,uint8_t pwm);
     bool SetTrigMode(int ch, uint8_t mode);
@@ -102,9 +102,9 @@ void setDownlookLighting(int downlookLighting)
     m_downlookLighting = downlookLighting;
     emit paramsChanged(m_downlookLighting);
     if (mode == 0)
-        SetBrightness(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
+        setBrightness(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
     else {
-        SetBrightness(LIGHTING_AA2_DL, (uint8_t)downlookLighting);
+        setBrightness(LIGHTING_AA2_DL, (uint8_t)downlookLighting);
     }
 }
 
@@ -116,7 +116,7 @@ void setUplookLighting(int uplookLighting)
 
     m_uplookLighting = uplookLighting;
     emit paramsChanged(m_uplookLighting);
-    SetBrightness(LIGHTING_LUT_UL, (uint8_t)uplookLighting);
+    setBrightness(LIGHTING_LUT_UL, (uint8_t)uplookLighting);
 }
 
 void setPickarmLighting(int pickarmLighting)
@@ -128,9 +128,9 @@ void setPickarmLighting(int pickarmLighting)
     m_pickarmLighting = pickarmLighting;
     emit paramsChanged(m_pickarmLighting);
     if (mode == 0)
-        SetBrightness(LIGHTING_LPA_DL, (uint8_t)pickarmLighting);
+        setBrightness(LIGHTING_LPA_DL, (uint8_t)pickarmLighting);
     else {
-        SetBrightness(LIGHTING_SPA_DL, (uint8_t)pickarmLighting);
+        setBrightness(LIGHTING_SPA_DL, (uint8_t)pickarmLighting);
     }
 }
 

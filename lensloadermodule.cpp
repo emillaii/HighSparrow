@@ -5,7 +5,7 @@ LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 
 }
 
-void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision)
+void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,VisionLocation *lap_updownlook_up_vision, VisionLocation *lap_updownlook_down_vision)
 {
     this->pick_arm = pick_arm;
     this->lens_tray = lens_tray;
@@ -14,6 +14,8 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     this->vacancy_vision = vacancy_vision;
     this->lut_vision = lut_vision;
     this->lut_lens_vision = lut_lens_vision;
+    this->lap_updownlook_up_vision = lap_updownlook_up_vision;
+    this->lap_updownlook_down_vision = lap_updownlook_down_vision;
 }
 
 QString LensLoaderModule::GetCurrentError()
@@ -194,14 +196,14 @@ bool LensLoaderModule::performLUTPR()
     return lut_vision->performPR(pr_offset);
 }
 
-bool LensLoaderModule::performUplookCameraPR()
+bool LensLoaderModule::performUpDownlookDownPR()
 {
-    return uplook_camera_vision->performPR(pr_offset);
+    return lap_updownlook_down_vision->performPR(pr_offset);
 }
 
-bool LensLoaderModule::performUplookPickerPR()
+bool LensLoaderModule::performUpdowlookUpPR()
 {
-    return uplook_picker_vision->performPR(pr_offset);
+    return lap_updownlook_up_vision->performPR(pr_offset);
 }
 
 void LensLoaderModule::resetPR()
@@ -339,10 +341,10 @@ void LensLoaderModule::performHandlingOperation(int cmd, int &finished_type)
         result = performVacancyPR();
     else if(cmd&HandlePR::LUT_PR)
         result = performLUTPR();
-    else if(cmd&HandlePR::UPLOOK_CAMERA_PR)
-        result = performUplookCameraPR();
-    else if(cmd&HandlePR::UPLOOK_PICKER_PR)
-        result = performUplookPickerPR();
+    else if(cmd&HandlePR::UPDOWNLOOK_DOWN_PR)
+        result = performUpDownlookDownPR();
+    else if(cmd&HandlePR::UPDOWNLOOK_UP_PR)
+        result = performUpdowlookUpPR();
     else
         result = true;
     if(!result)

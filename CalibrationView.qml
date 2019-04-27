@@ -256,8 +256,7 @@ ItemDelegate {
                                 onValueChanged: {
                                     if (calibrationViewSwitch.checked) {
                                         setLightBrightness(value)
-                                        //console.log("after setLightBrightness")
-                                        lightingController.setUplookLighting(value)
+                                        baseModuleManager.setLightingBrightness(locationName)
                                     }
                                 }
                             }

@@ -60,7 +60,7 @@ public:
     void ResetLogic();
     void loadJsonConfig();
     void saveJsonConfig();
-    void performHandling(int cmd,int& finished_type);
+    void performHandling(int cmd);
 signals:
     void changeTray();
 private:
@@ -102,7 +102,7 @@ public:
 public slots:
     void startWork(bool reset_logic, int run_mode);
     void stopWork(bool wait_finish);
-    void performHandlingOperation(int cmd, int &finished_type);
+    void performHandlingOperation(int cmd);
 public:
     LensLoaderModuleParameter parameters;
     LensPickArmModuleState states;

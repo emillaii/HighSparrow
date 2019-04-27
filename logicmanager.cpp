@@ -191,37 +191,37 @@ void LogicManager::performLoopTest(int mode){
 
 void LogicManager::lensPickArmMoveToTray1Pos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1);
 }
 
 void LogicManager::lensPickArmMoveToTray2Pos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY2,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY2);
 }
 
 void LogicManager::lensPickArmMoveToTray1StartPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1_START_POS,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1_START_POS);
 }
 
 void LogicManager::lensPickArmMoveToTray2StartPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY2_START_POS,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY2_START_POS);
 }
 
 void LogicManager::lensPickArmMoveToTray1EndPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1_END_POS,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1_END_POS);
 }
 
 void LogicManager::lensPickArmMoveToLutPos1()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS1,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS1);
 }
 
 void LogicManager::lensPickArmMoveToLutPos2()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS2,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS2);
 }
 
 void LogicManager::lensPickArmMoveToPickLensFromTray1()
@@ -229,7 +229,7 @@ void LogicManager::lensPickArmMoveToPickLensFromTray1()
     baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1|
                                                            HandlePR::LENS_PR|
                                                            HandleToWorkPos::ToWork|
-                                                           handlePickerAction::PICK_LENS_FROM_TRAY,m_currentMode);
+                                                           handlePickerAction::PICK_LENS_FROM_TRAY);
 }
 
 void LogicManager::lensPickArmMoveToPickLensFromTray2()
@@ -237,7 +237,7 @@ void LogicManager::lensPickArmMoveToPickLensFromTray2()
     baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY2|
                                                            HandlePR::LENS_PR|
                                                            HandleToWorkPos::ToWork|
-                                                           handlePickerAction::PICK_LENS_FROM_TRAY,m_currentMode);
+                                                           handlePickerAction::PICK_LENS_FROM_TRAY);
 }
 
 void LogicManager::lensPickArmMoveToPickLensFromLut()
@@ -245,7 +245,7 @@ void LogicManager::lensPickArmMoveToPickLensFromLut()
     baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS2|
                                                            HandlePR::LUT_PR|
                                                            HandleToWorkPos::ToWork|
-                                                           handlePickerAction::PICK_NG_LENS_FROM_LUT,m_currentMode);
+                                                           handlePickerAction::PICK_NG_LENS_FROM_LUT);
 }
 
 void LogicManager::lensPickArmMoveToPlaceLensToTray1()
@@ -253,7 +253,7 @@ void LogicManager::lensPickArmMoveToPlaceLensToTray1()
     baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1|
                                                            HandlePR::VACANCY_PR|
                                                            HandleToWorkPos::ToWork|
-                                                           handlePickerAction::PLACE_NG_LENS_TO_TRAY,m_currentMode);
+                                                           handlePickerAction::PLACE_NG_LENS_TO_TRAY);
 }
 
 void LogicManager::lensPickArmMoveToPlaceLensToTray2()
@@ -261,7 +261,7 @@ void LogicManager::lensPickArmMoveToPlaceLensToTray2()
     baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY2|
                                                            HandlePR::VACANCY_PR|
                                                            HandleToWorkPos::ToWork|
-                                                           handlePickerAction::PLACE_NG_LENS_TO_TRAY,m_currentMode);
+                                                           handlePickerAction::PLACE_NG_LENS_TO_TRAY);
 }
 
 void LogicManager::lensPickArmMoveToPlaceLensToLut()
@@ -269,40 +269,40 @@ void LogicManager::lensPickArmMoveToPlaceLensToLut()
     baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS1|
                                                            HandlePR::RESET_PR|
                                                            HandleToWorkPos::ToWork|
-                                                           handlePickerAction::PLACE_NG_LENS_TO_TRAY,m_currentMode);
+                                                           handlePickerAction::PLACE_NG_LENS_TO_TRAY);
 }
 
 void LogicManager::lensPickArmLensPR()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePR::LENS_PR|HandleToWorkPos::ToWork,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePR::LENS_PR|HandleToWorkPos::ToWork);
 }
 
 void LogicManager::lensPickArmVacancyTrayPR()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePR::VACANCY_PR|HandleToWorkPos::ToWork,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePR::VACANCY_PR|HandleToWorkPos::ToWork);
 }
 
 void LogicManager::lensPickArmLUTPR()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePR::LUT_PR|HandleToWorkPos::ToWork,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePR::LUT_PR|HandleToWorkPos::ToWork);
 }
 
 void LogicManager::lensPickArmLensMeasureHeight()
 {
- baseModuleManage->lens_loader_module.performHandling( handlePickerAction::MeasureLensInTray,m_currentMode);
+ baseModuleManage->lens_loader_module.performHandling( handlePickerAction::MeasureLensInTray);
 }
 
 void LogicManager::lensPickArmLUTMeasureHeight()
 {
-    baseModuleManage->lens_loader_module.performHandling( handlePickerAction::MeasureLensInLUT,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling( handlePickerAction::MeasureLensInLUT);
 }
 
 void LogicManager::lensPickArmMoveToUpdownlookDownPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_DOWN_POS|HandlePR::UPDOWNLOOK_DOWN_PR,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_DOWN_POS|HandlePR::UPDOWNLOOK_DOWN_PR);
 }
 
 void LogicManager::lensPickArmMoveToUpdownlookUpPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_UP_POS|HandlePR::UPDOWNLOOK_UP_PR,m_currentMode);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_UP_POS|HandlePR::UPDOWNLOOK_UP_PR);
 }

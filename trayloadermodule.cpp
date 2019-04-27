@@ -35,9 +35,9 @@ void TrayLoaderModule::ResetLogic()
 
 }
 
-void TrayLoaderModule::performHandling(int cmd, int &finished_type)
+void TrayLoaderModule::performHandling(int cmd)
 {
-    emit sendHandlingOperation(cmd,finished_type);
+    emit sendHandlingOperation(cmd);
 }
 
 void TrayLoaderModule::run(bool has_tray)
@@ -202,7 +202,7 @@ void TrayLoaderModule::stopWork(bool wait_finish)
     is_run = false;
 }
 
-void TrayLoaderModule::performHandlingOperation(int cmd, int &finished_type)
+void TrayLoaderModule::performHandlingOperation(int cmd)
 {
 
 }

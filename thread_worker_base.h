@@ -37,14 +37,14 @@ public:
 
 signals:
     void sendErrorMessage(int alarm_id,int error_level,QString error_message);
-    void sendHandlingOperation(int cmd,int& finished_type);
+    void sendHandlingOperation(int cmd);
     void NameChanged(QString Name);
 
 public slots:
     virtual void startWork(bool reset_logic = false,int run_mode = 0) = 0;
     virtual void stopWork(bool wait_finish = true) = 0;
     void receiveMessage(const int message_id,const int result_message);
-    virtual void performHandlingOperation(int cmd,int& finished_type) = 0;
+    virtual void performHandlingOperation(int cmd) = 0;
     void setName(QString Name);
 private:
     QThread work_thread;

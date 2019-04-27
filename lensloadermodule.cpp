@@ -69,9 +69,9 @@ void LensLoaderModule::saveJsonConfig()
     PropertyBase::saveJsonConfig("config//lensLoaderModule.json", temp_map);
 }
 
-void LensLoaderModule::performHandling(int cmd, int &finished_type)
+void LensLoaderModule::performHandling(int cmd)
 {
-    emit sendHandlingOperation(cmd,finished_type);
+    emit sendHandlingOperation(cmd);
     qInfo("emit performHandling %d",cmd);
 }
 
@@ -306,7 +306,7 @@ void LensLoaderModule::stopWork(bool wait_finish)
     is_run = false;
 }
 
-void LensLoaderModule::performHandlingOperation(int cmd, int &finished_type)
+void LensLoaderModule::performHandlingOperation(int cmd)
 {
     qInfo("performHandling %d",cmd);
     bool result;
@@ -332,7 +332,7 @@ void LensLoaderModule::performHandlingOperation(int cmd, int &finished_type)
         result = true;
     if(!result)
     {
-        finished_type = FinishedType::Alarm;
+//        finished_type = FinishedType::Alarm;
         return;
     }
     if(cmd&HandlePR::LUT_PR)
@@ -351,14 +351,14 @@ void LensLoaderModule::performHandlingOperation(int cmd, int &finished_type)
         result = true;
     if(!result)
     {
-        finished_type = FinishedType::Alarm;
+//        finished_type = FinishedType::Alarm;
         return;
     }
     if(cmd&HandleToWorkPos::ToWork)
         result = moveToWorkPos();
     if(!result)
     {
-        finished_type = FinishedType::Alarm;
+//        finished_type = FinishedType::Alarm;
         return;
     }
     if(cmd&handlePickerAction::PICK_LENS_FROM_TRAY)
@@ -377,8 +377,8 @@ void LensLoaderModule::performHandlingOperation(int cmd, int &finished_type)
         result = true;
     if(!result)
     {
-        finished_type = FinishedType::Alarm;
+//        finished_type = FinishedType::Alarm;
         return;
     }
-    finished_type = FinishedType::Success;
+//    finished_type = FinishedType::Success;
 }

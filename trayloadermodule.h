@@ -13,7 +13,7 @@ public:
     TrayLoaderModule(QString name="TrayLoaderModule");
     void Init(XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtCylinder*,XtCylinder*,XtCylinder*,XtCylinder*,TrayClip*,TrayClip*);
     void ResetLogic();
-    void performHandling(int cmd,int& finished_type);
+    void performHandling(int cmd);
 
     TrayClip* tray_clip = Q_NULLPTR;
     TrayClip* tray_clip_out = Q_NULLPTR;
@@ -65,7 +65,7 @@ private:
 public slots:
     void startWork(bool reset_logic,int run_mode);
     void stopWork(bool wait_finish);
-    void performHandlingOperation(int cmd,int& finished_type);
+    void performHandlingOperation(int cmd);
 
 };
 

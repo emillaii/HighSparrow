@@ -622,7 +622,7 @@ bool BaseModuleManager::InitStruct()
                      GetMotorByName(sut_module.parameters.motorYName()),
                      GetVcMotorByName(sut_module.parameters.motorZName()),
                      GetVacuumByName(sut_module.parameters.vacuumName()));
-    lens_picker.Init(GetVcMotorByName(lens_pick_arm.parameters.motorXName()),
+    lens_picker.Init(GetVcMotorByName(lens_pick_arm.parameters.motorZName()),
                      GetMotorByName(lens_pick_arm.parameters.motorTName()),
                      GetVacuumByName(lens_pick_arm.parameters.vacuumName()));
     lens_pick_arm.Init(GetMotorByName(lens_pick_arm.parameters.motorTrayName()),
@@ -915,7 +915,7 @@ void BaseModuleManager::updateParams()
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
     SaveParameters();
-    loadParameters();
+//    loadParameters();
 }
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)

@@ -12,8 +12,9 @@ void MaterialTray::Init()
 
 void MaterialTray::calculateDelta()
 {
-    standards_parameters.setColumnDeta((first_tray_end_position.X() - parameters[0]->tray_start_position.X())/(standards_parameters.columnCount()-1));
-    standards_parameters.setRowDelta((first_tray_end_position.Y() - parameters[0]->tray_start_position.Y())/(standards_parameters.rowCount()-1));
+    int digit =100;
+    standards_parameters.setColumnDeta(round(digit*(first_tray_end_position.X() - parameters[0]->tray_start_position.X())/(standards_parameters.columnCount()-1))/digit);
+    standards_parameters.setRowDelta(round(digit*(first_tray_end_position.Y() - parameters[0]->tray_start_position.Y())/(standards_parameters.rowCount()-1))/digit);
 }
 
 void MaterialTray::loadJsonConfig()

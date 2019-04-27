@@ -62,6 +62,9 @@ bool VisionLocation::performPR(PrOffset &offset)
             qInfo("CalcMechDistance Fail");
         }
     }
+    else {
+        qInfo("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
+    }
     return false;
 }
 

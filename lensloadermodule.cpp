@@ -216,8 +216,9 @@ void LensLoaderModule::resetPR()
 
 bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
 {
-    PrOffset temp(lut_camera_position.X() - lut_picker_position.X()- pr_offset.X,
-                    lut_camera_position.X() - lut_picker_position.X()- pr_offset.X,pr_offset.Theta);
+    PrOffset temp(lut_picker_position.X() - lut_camera_position.X() - pr_offset.X,
+                    lut_picker_position.Y() - lut_camera_position.Y() - pr_offset.Y,pr_offset.Theta);
+    qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
     return  pick_arm->stepMove_XYTp_Synic(temp,check_softlanding);
 }
 
@@ -330,14 +331,15 @@ void LensLoaderModule::performHandlingOperation(int cmd)
         result = moveToUpdownlookUpPos();
     else
         result = true;
+    cmd =cmd/10*10;
     if(!result)
     {
 //        finished_type = FinishedType::Alarm;
         return;
     }
-    if(cmd%100 == HandlePR::LUT_PR)
+    if(cmd%100 == HandlePR::RESET_PR)
         resetPR();
-    else if(cmd%100 == HandlePR::LUT_PR)
+    else if(cmd%100 == HandlePR::LENS_PR)
         result = performLensPR();
     else if(cmd%100 == HandlePR::VACANCY_PR)
         result = performVacancyPR();
@@ -354,6 +356,7 @@ void LensLoaderModule::performHandlingOperation(int cmd)
 //        finished_type = FinishedType::Alarm;
         return;
     }
+    cmd =cmd/100*100;
     if(cmd%1000 == HandleToWorkPos::ToWork)
         result = moveToWorkPos();
     if(!result)
@@ -361,6 +364,7 @@ void LensLoaderModule::performHandlingOperation(int cmd)
 //        finished_type = FinishedType::Alarm;
         return;
     }
+    cmd =cmd/1000*1000;
     if(cmd%10000 == handlePickerAction::PICK_LENS_FROM_TRAY)
         result = pickTrayLens(true);
     else if(cmd%1000 == handlePickerAction::PLACE_LENS_TO_LUT)

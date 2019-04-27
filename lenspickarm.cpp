@@ -28,6 +28,7 @@ bool LensPickArm::move_XtXY_Synic(QPointF position,double x,bool check_softlandi
 
 bool LensPickArm::move_XY_Synic(double x, double y, bool check_softlanding, int timeout)
 {
+    qInfo("move to (%f,%f)",x,y);
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
     motor_x->MoveToPos(x);
     motor_y->MoveToPos(y);
@@ -40,8 +41,8 @@ bool LensPickArm::stepMove_XYTp_Synic(PrOffset position,bool check_softlanding,i
 {
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
     double target_x = position.X + motor_x->GetFeedbackPos();
-    double target_y = position.Y +  motor_x->GetFeedbackPos();
-    double target_t = position.Theta +  motor_x->GetFeedbackPos();
+    double target_y = position.Y +  motor_y->GetFeedbackPos();
+    double target_t = position.Theta +  picker->motor_t->GetFeedbackPos();
     motor_x->StepMove(position.X);
     motor_y->StepMove(position.Y);
     picker->motor_t->StepMove(position.Theta);

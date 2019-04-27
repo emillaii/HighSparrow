@@ -299,12 +299,12 @@ void LogicManager::lensPickArmLUTMeasureHeight()
 
 void LogicManager::lensPickArmMoveToUpdownlookDownPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_DOWN_POS+HandlePR::UPDOWNLOOK_DOWN_PR);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_DOWN_POS);
 }
 
 void LogicManager::lensPickArmMoveToUpdownlookUpPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_UP_POS+HandlePR::UPDOWNLOOK_UP_PR);
+    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_UP_POS);
 }
 
 void LogicManager::trayLoaderModuleLTIEMovetoFirstPos()

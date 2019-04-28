@@ -5,11 +5,16 @@
 
 TrayLoaderModule::TrayLoaderModule(QString name):ThreadWorkerBase(name)
 {
-    connect(this,SIGNAL(dragIn()),this,SLOT(onDragIn()));
-    connect(this,SIGNAL(dragOut()),this,SLOT(onDragOut()));
-    connect(this,SIGNAL(relayToLTLX()),this,SLOT(onRelayToLTLX()));
-    connect(this,SIGNAL(relayToLTKX2()),this,SLOT(onRelayToLTLX()));
-    connect(this,SIGNAL(layDown()),this,SLOT(onLayDown()));
+    connect(this,SIGNAL(nextTrayPos()),this,SLOT(onNextTrayPos()));
+    connect(this,SIGNAL(nextEmptyPos()),this,SLOT(onNextEmptyPos()));
+    connect(this,SIGNAL(ltkx1Pickup()),this,SLOT(onLtkx1Pickup()));
+    connect(this,SIGNAL(ltkx2Pickup()),this,SLOT(onLtkx2Pickup()));
+    connect(this,SIGNAL(ltlxPickup()),this,SLOT(onLtlxPickup()));
+    connect(this,SIGNAL(ltlxPutdown()),this,SLOT(onLtlxPutdown()));
+
+    connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltlxPutdown()));
+    connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltkx1Pickup()));
+
 }
 
 void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
@@ -45,8 +50,20 @@ void TrayLoaderModule::performHandling(int cmd)
     emit sendHandlingOperation(cmd);
 }
 
+bool TrayLoaderModule::startUp()
+{
+    int ret = moveToLtkx1GetPos();
+    ret&=moveToLtkx2GetPos();
+    ret&=moveToNextTrayPos();
+    ret&=ejectTray();
+    return ret;
+}
+
 void TrayLoaderModule::run(bool has_tray)
 {
+    if(is_run){
+        startUp();
+    }
 
 }
 
@@ -236,53 +253,70 @@ void TrayLoaderModule::performHandlingOperation(int cmd)
 
 }
 
-void TrayLoaderModule::onDragIn()
+void TrayLoaderModule::onNextTrayPos()
 {
-    if(cylinder_ltk1->Value())cylinder_ltk1->Set(false);
-    if(!moveToLtkx1GetPos())
-       return;
-    if(!motorInPress())
-        return;
-    if(!moveToLtkx1SetPos())
-        return;
-    emit relayToLTLX();
+    moveToNextTrayPos();
+    ejectTray();
 }
 
-void TrayLoaderModule::onDragOut()
+void TrayLoaderModule::onLtkx1Pickup()
 {
-    if(!moveToLtkx2SetPos())
+    if(!motorInPress()){
         return;
-    if(!motorOutRelease())
+    }
+    if(!moveToLtkx1SetPos()){
         return;
-    emit layDown();
+    }
+    emit nextTrayPos();
+    if(!motorInRealease()){
+        return;
+    }
+    if(!moveToLtkx1GetPos()){
+        return;
+    }
 }
 
-void TrayLoaderModule::onRelayToLTLX()
+void TrayLoaderModule::onLtlxPickup()
 {
-    if(!moveToLtlGetPos())
+    if(!moveToLtlGetPos()){
         return;
-    if(!motorWorkPress())
+    }
+    if(!motorWorkPress()){
         return;
-    if(!motorInRealease())
-        return;
-    //emit some signals;
+    }
+    emit trayReady();
 }
 
-void TrayLoaderModule::onRelayToLTKX2()
+void TrayLoaderModule::onLtlxPutdown()
 {
-    if(!moveToLtlSetPos())
+    if(!moveToLtlSetPos()){
         return;
-    if(!moveToLtkx2GetPos())
+    }
+    if(!motorWorkRelease()){
         return;
-    if(!motorOutPress())
-        return;
-    if(!motorWorkRelease())
-        return;
-    emit dragOut();
+    }
+    emit ltkx2Pickup();
+    emit ltlxPickup();
 }
 
-void TrayLoaderModule::onLayDown()
+void TrayLoaderModule::onLtkx2Pickup()
+{
+    if(!motorOutPress()){
+        return;
+    }
+    if(!moveToLtkx2SetPos()){
+        return;
+    }
+    if(!motorOutRelease()){
+        return;
+    }
+    if(!moveToLtkx2GetPos()){
+        return;
+    }
+    emit nextEmptyPos();
+}
+
+void TrayLoaderModule::onNextEmptyPos()
 {
     moveToNextEmptyPos();
-    //emit some signals
 }

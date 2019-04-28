@@ -505,6 +505,45 @@ ItemDelegate {
                     }
                 }
             }
+            GroupBox{
+                title:qsTr("流程测试")
+                ColumnLayout{
+                    RowLayout{
+                        Label{
+                            text:qsTr("状态")
+                        }
+                        Label{
+                            id:state_id
+                            text:qsTr("空闲")
+                        }
+                    }
+
+                    RowLayout{
+                        Button{
+                            text:qsTr("Start up")
+                            onClicked: {
+                                logicManager.trayLoaderModuleStartup()
+                            }
+                        }
+                        Button{
+                            id:emit_sinal_trayused
+                            enabled: false
+                            text:qsTr("发射空闲信号")
+                            onClicked: {
+                                logicManager.trayLoaderModuleEmitTestTrayUsed()
+                            }
+                        }
+                        Connections{
+                            target:tray_loader_module_parameters
+                            onTrayReady:{
+                                state_id.text = "工作中..."
+                                emit_sinal_trayused.enabled = true
+                            }
+                        }
+
+                    }
+                }
+            }
         }
     }
 }

@@ -25,6 +25,7 @@ SparrowQServer::~SparrowQServer()
 
 void SparrowQServer::onNewConnection()
 {
+    qInfo("New connection established");
     QWebSocket *pSocket = m_pWebSocketServer->nextPendingConnection();
 
     connect(pSocket, &QWebSocket::textMessageReceived, this, &SparrowQServer::processTextMessage);

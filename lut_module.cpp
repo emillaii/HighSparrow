@@ -1,15 +1,19 @@
 #include "lut_module.h"
 #include "commonutils.h"
 
-LutModule::LutModule(QObject *parent) : QThread (parent)
+LutModule::LutModule(QString name, QObject *parent):ThreadWorkerBase (name)
 {
 }
 
+LUTState LutModule::getLUTState()
+{
+    return state;
+}
 
 void LutModule::openServer(int port)
 {
     server = new SparrowQServer(port);
-    connect(server, &SparrowQServer::receiveRequestMessage, this, &LutModule::receiveRequestMessage);
+    connect(server, &SparrowQServer::receiveRequestMessage, this, &LutModule::receiveRequestMessage, Qt::DirectConnection);
     connect(this, &LutModule::sendMessageToClient, this->server, &SparrowQServer::sendMessageToClient);
 }
 
@@ -18,14 +22,21 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
     qInfo("Lut Module receive command:%s from ip: %s", message.toStdString().c_str(), client_ip.toStdString().c_str());
     QJsonObject obj = getJsonObjectFromString(message);
     obj.insert("client_ip",client_ip);
-    requestQueue.enqueue(obj);
+    if (obj["cmd"] == "lensReq")
+        requestQueue.enqueue(obj);
+    else {
+        actionQueue.enqueue(obj);
+    }
 }
 
-void LutModule::run()
+void LutModule::run(bool has_material)
 {
     qInfo("Start Lut Module Thread");
-    while(true){
-        if (requestQueue.size()>0) {
+    state = HAS_LENS;
+    is_run = true;
+    while(is_run){
+        if (requestQueue.size()>0 && state == HAS_LENS) {
+            state = BUSY;
             QJsonObject obj = requestQueue.dequeue();
             QJsonObject result;
             qInfo("Start to consume request: %s", getStringFromJsonObject(obj).toStdString().c_str());
@@ -37,18 +48,59 @@ void LutModule::run()
                 isLocalHost = true;
             }
             if (cmd == "lensReq") {
-                isLocalHost ? moveToAA1UplookPos() : moveToAA2UplookPos();
+                //isLocalHost ? moveToAA1UplookPos() : moveToAA2UplookPos();
                 result.insert("event", "lensResp");
-            } else if (cmd == "prReq") {
-                result.insert("event", "prResp");
-            } else if (cmd == "lutLeaveReq") {
-                moveToUnloadPos();
-                result.insert("event", "lutLeaveResp");
             }
             emit sendMessageToClient(obj["client_ip"].toString(), getStringFromJsonObject(result));
         }
+        if (actionQueue.size()>0 && state == BUSY) {
+            QJsonObject obj = actionQueue.dequeue();
+            QJsonObject result;
+            qInfo("Start to consume action request: %s", getStringFromJsonObject(obj).toStdString().c_str());
+            QString client_ip = obj["client_ip"].toString("");
+            QString cmd = obj["cmd"].toString("");
+            bool isLocalHost = false;
+            if(client_ip == "::1") {
+                qInfo("This command come from localhost");
+                isLocalHost = true;
+            }
+            if (cmd == "prReq") {
+                result.insert("event", "prResp");
+            } else if (cmd == "lutLeaveReq") {
+                //moveToUnloadPos();
+                result.insert("event", "lutLeaveResp");
+                //state = NO_LENS;
+                state = HAS_LENS;
+            }
+            emit sendMessageToClient(obj["client_ip"].toString(), getStringFromJsonObject(result));
+        }
+        qInfo("Working in state : %d", state);
         QThread::msleep(500);
     }
+    qInfo("LUT Module end of thread");
+}
+
+
+void LutModule::startWork(bool reset_logic, int run_mode)
+{
+    qInfo("Lut Module start work in run mode: %d", run_mode);
+    //if(reset_logic)ResetLogic();
+    if(run_mode == RunMode::Normal)run(true);
+    else if(run_mode == RunMode::NoMaterial)run(false);
+    return;
+}
+
+void LutModule::stopWork(bool wait_finish)
+{
+    qInfo("Lut Module stop work");
+    is_run = false;
+    return;
+}
+
+void LutModule::performHandlingOperation(int cmd)
+{
+    qInfo("Lut Module perform command: %d", cmd);
+    return;
 }
 
 void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper)
@@ -279,3 +331,4 @@ bool LutModule::stepMove_XY_Sync(double x, double y)
 {
     return carrier->StepMove_XY_Sync(x,y);
 }
+

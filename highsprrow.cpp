@@ -10,8 +10,8 @@ HighSprrow::HighSprrow()
     worker_manager = new WorkersManager(this);
     baseModuleManager = new BaseModuleManager(this);
     baseModuleManager->LoadProfile();
-   logicManager = new LogicManager(baseModuleManager);
-   baseModuleManager->registerWorkers(worker_manager);
+    logicManager = new LogicManager(baseModuleManager);
+    baseModuleManager->registerWorkers(worker_manager);
 }
 
 HighSprrow::~HighSprrow()

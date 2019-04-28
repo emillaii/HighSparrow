@@ -24,7 +24,9 @@ private:
     double m_ltlSetPos = 0;
     double m_ltkx2GetPos = 0;
     double m_ltkx2SetPos = 0;
-
+signals:
+    void testTrayTest();
+    void trayReady();
 public:
     TrayLoaderModuleParameter():PropertyBase(){}
     Q_PROPERTY(double ltkx1PressPos READ ltkx1PressPos WRITE setLtkx1PressPos NOTIFY ltkx1PressPosChanged)

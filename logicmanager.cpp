@@ -403,3 +403,13 @@ void LogicManager::trayLoaderModuleLTLXCylinderOff()
 {
     baseModuleManage->tray_loader_module.motorWorkRelease();
 }
+
+void LogicManager::trayLoaderModuleStartup()
+{
+    //baseModuleManage->tray_loader_module.startUp();
+    emit baseModuleManage->tray_loader_module.parameters.trayReady();
+}
+
+void LogicManager::trayLoaderModuleEmitTestTrayUsed(){
+    emit baseModuleManage->tray_loader_module.testTrayUsed();
+}

@@ -98,6 +98,9 @@ public:
     Q_INVOKABLE void trayLoaderModuleLTLXCylinderOn();
     Q_INVOKABLE void trayLoaderModuleLTLXCylinderOff();
 
+    Q_INVOKABLE void trayLoaderModuleStartup();
+    Q_INVOKABLE void trayLoaderModuleEmitTestTrayUsed();
+
     int currentMode() const
     {
         return m_currentMode;

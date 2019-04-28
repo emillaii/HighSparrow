@@ -18,6 +18,8 @@ public:
     TrayClip* tray_clip = Q_NULLPTR;
     TrayClip* tray_clip_out = Q_NULLPTR;
     TrayLoaderModuleParameter parameters;
+    bool startUp();
+
     bool moveMotorClip();
     bool moveToNextTrayPos();
     bool ejectTray();
@@ -47,8 +49,6 @@ public:
 
     bool LTIEMovetoColumnIndex(int);
     bool LTOEMovetoColumnIndex(int);
-signals:
-
 private:
     void run(bool has_tray);
 
@@ -65,23 +65,30 @@ private:
     XtCylinder* cylinder_ltk2 = Q_NULLPTR; //LTK2气缸
     XtCylinder* cylinder_tray = Q_NULLPTR; //LTL_TRAY气缸
 
+    XtGeneralInput *tray_check_input = Q_NULLPTR;
+
 signals:
-    void dragIn();
-    void dragOut();
-    void relayToLTLX();
-    void relayToLTKX2();
-    void layDown();
+    void nextTrayPos();
+    void ltkx1Pickup();
+    void ltlxPickup();
+    void ltlxPutdown();
+    void ltkx2Pickup();
+    void nextEmptyPos();
+    void trayReady();
+    void testTrayUsed();
 
 public slots:
     void startWork(bool reset_logic,int run_mode);
     void stopWork(bool wait_finish);
     void performHandlingOperation(int cmd);
 
-    void onDragIn();
-    void onDragOut();
-    void onRelayToLTLX();
-    void onRelayToLTKX2();
-    void onLayDown();
+    void onNextTrayPos();
+    void onLtkx1Pickup();
+    void onLtlxPickup();
+    void onLtlxPutdown();
+    void onLtkx2Pickup();
+    void onNextEmptyPos();
+
 
 };
 

@@ -65,10 +65,23 @@ private:
     XtCylinder* cylinder_ltk2 = Q_NULLPTR; //LTK2气缸
     XtCylinder* cylinder_tray = Q_NULLPTR; //LTL_TRAY气缸
 
+signals:
+    void dragIn();
+    void dragOut();
+    void relayToLTLX();
+    void relayToLTKX2();
+    void layDown();
+
 public slots:
     void startWork(bool reset_logic,int run_mode);
     void stopWork(bool wait_finish);
     void performHandlingOperation(int cmd);
+
+    void onDragIn();
+    void onDragOut();
+    void onRelayToLTLX();
+    void onRelayToLTKX2();
+    void onLayDown();
 
 };
 

@@ -5,7 +5,11 @@
 
 TrayLoaderModule::TrayLoaderModule(QString name):ThreadWorkerBase(name)
 {
-
+    connect(this,SIGNAL(dragIn()),this,SLOT(onDragIn()));
+    connect(this,SIGNAL(dragOut()),this,SLOT(onDragOut()));
+    connect(this,SIGNAL(relayToLTLX()),this,SLOT(onRelayToLTLX()));
+    connect(this,SIGNAL(relayToLTKX2()),this,SLOT(onRelayToLTLX()));
+    connect(this,SIGNAL(layDown()),this,SLOT(onLayDown()));
 }
 
 void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
@@ -230,4 +234,55 @@ void TrayLoaderModule::stopWork(bool wait_finish)
 void TrayLoaderModule::performHandlingOperation(int cmd)
 {
 
+}
+
+void TrayLoaderModule::onDragIn()
+{
+    if(cylinder_ltk1->Value())cylinder_ltk1->Set(false);
+    if(!moveToLtkx1GetPos())
+       return;
+    if(!motorInPress())
+        return;
+    if(!moveToLtkx1SetPos())
+        return;
+    emit relayToLTLX();
+}
+
+void TrayLoaderModule::onDragOut()
+{
+    if(!moveToLtkx2SetPos())
+        return;
+    if(!motorOutRelease())
+        return;
+    emit layDown();
+}
+
+void TrayLoaderModule::onRelayToLTLX()
+{
+    if(!moveToLtlGetPos())
+        return;
+    if(!motorWorkPress())
+        return;
+    if(!motorInRealease())
+        return;
+    //emit some signals;
+}
+
+void TrayLoaderModule::onRelayToLTKX2()
+{
+    if(!moveToLtlSetPos())
+        return;
+    if(!moveToLtkx2GetPos())
+        return;
+    if(!motorOutPress())
+        return;
+    if(!motorWorkRelease())
+        return;
+    emit dragOut();
+}
+
+void TrayLoaderModule::onLayDown()
+{
+    moveToNextEmptyPos();
+    //emit some signals
 }

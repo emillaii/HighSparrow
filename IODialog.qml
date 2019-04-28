@@ -130,7 +130,7 @@ Popup {
                             target: timer
                             onTriggered: {
                                 if (dialog.visible) {
-                                    if(input_swich_id.checked != baseModuleManager.getOutput(modelData))
+                                    if(input_swich_id.checked != baseModuleManager.getInput(modelData))
                                         input_swich_id.toggle()
                                     //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                 }

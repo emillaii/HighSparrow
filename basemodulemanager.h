@@ -176,6 +176,7 @@ public:
     Q_INVOKABLE QString getCalibrationParam(QString calibration_name);
     Q_INVOKABLE void setOutput(QString name, bool on);
     Q_INVOKABLE bool getOutput(QString name);
+    Q_INVOKABLE bool getInput(QString name);
     Q_INVOKABLE void motorSeekOrigin(QString name);
     Q_INVOKABLE double getPROffsetX(QString location_name);
     Q_INVOKABLE double getPROffsetY(QString location_name);

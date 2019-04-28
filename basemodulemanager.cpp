@@ -1108,6 +1108,14 @@ bool BaseModuleManager::getOutput(QString name)
     return  false;
 }
 
+bool BaseModuleManager::getInput(QString name)
+{
+    if (this->input_ios.contains(name)){
+        return  input_ios[name]->Value();
+    }
+    return  false;
+}
+
 void BaseModuleManager::motorSeekOrigin(QString name)
 {
     if (motors.contains(name)) {

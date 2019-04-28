@@ -124,6 +124,7 @@ private:
     VisionLocation * lap_updownlook_down_vision = Q_NULLPTR;
     bool is_run = false;
     bool finish_stop = false;
+    bool debug = true;
     ErrorLevel error_level;
     PrOffset pr_offset;
     materialMessage lut_material;

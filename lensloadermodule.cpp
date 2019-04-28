@@ -78,7 +78,7 @@ void LensLoaderModule::performHandling(int cmd)
 void LensLoaderModule::receiveLensRequst(bool need_lens,int ng_lens,int ng_len_tray)
 {
     states.setneedloadLens(need_lens);
-    if(ng_lens > 0)
+    if(ng_lens >= 0)
     {
         states.setLutHasNgLens(true);
         lut_ng_material.tray_id = ng_len_tray;
@@ -91,11 +91,16 @@ void LensLoaderModule::run(bool has_material)
 {
     is_run = true;
     int pr_times = 5;
+    bool has_task = true;
     while (is_run)
     {
+        if(!has_task)
+            QThread::msleep(1000);
+        has_task = false;
         //放NGLens
         if(states.hasPickedNgLens())
         {
+            has_task = true;
             if(!moveToTrayPos(picked_material.material_id,picked_material.tray_id))
             {
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -130,6 +135,7 @@ void LensLoaderModule::run(bool has_material)
         //取料
         if((!finish_stop)&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
         {
+            has_task = true;
             if(!moveToNextTrayPos(states.currentTray()))
             {
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -178,6 +184,7 @@ void LensLoaderModule::run(bool has_material)
         //放料到LUT
         if(states.needloadLens()&&states.hasPickedLens())
         {
+            has_task = true;
             if(!moveToLUTPRPos1())
             {
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -212,6 +219,7 @@ void LensLoaderModule::run(bool has_material)
         //取NGlens
         if(states.lutHasNgLens()&&(!states.hasPickedLens())&&(!states.hasPickedNgLens()))
         {
+            has_task = true;
             if(!moveToLUTPRPos2())
             {
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -258,6 +266,8 @@ void LensLoaderModule::run(bool has_material)
 
 bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 {
+    qInfo("moveToNextTrayPos:%d",tray_index);
+    if(debug)return true;
     if(lens_tray->findNextPositionOfInitState(tray_index))
     {
         return  pick_arm->move_XtXY_Synic(lens_tray->getCurrentPosition(tray_index),parameters.visonPositionX());
@@ -267,36 +277,50 @@ bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 
 bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 {
+    qInfo("moveToLUTPRPos1");
+    if(debug)return true;
     return  pick_arm->move_XtXY_Synic(lut_pr_position1.ToPointF(),parameters.visonPositionX(),check_softlanding);
 }
 
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
+    qInfo("moveToLUTPRPos2");
+    if(debug)return true;
     return  pick_arm->move_XtXY_Synic(lut_pr_position2.ToPointF(),parameters.visonPositionX(),check_softlanding);
 }
 
 bool LensLoaderModule::performLensPR()
 {
+    qInfo("performLensPR");
+    if(debug)return true;
     return  lens_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performVacancyPR()
 {
+    qInfo("performVacancyPR:%d");
+    if(debug)return true;
     return  vacancy_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performLUTPR()
 {
+    qInfo("performLUTPR");
+    if(debug)return true;
     return lut_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performUpDownlookDownPR()
 {
+    qInfo("performUpDownlookDownPR");
+    if(debug)return true;
     return lap_updownlook_down_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performUpdowlookUpPR()
 {
+    qInfo("performUpdowlookUpPR");
+    if(debug)return true;
     return lap_updownlook_up_vision->performPR(pr_offset);
 }
 
@@ -309,6 +333,8 @@ void LensLoaderModule::resetPR()
 
 bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
 {
+    qInfo("moveToWorkPos");
+    if(debug)return true;
     PrOffset temp(lut_picker_position.X() - lut_camera_position.X() - pr_offset.X,
                     lut_picker_position.Y() - lut_camera_position.Y() - pr_offset.Y,pr_offset.Theta);
     qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
@@ -319,31 +345,43 @@ bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
 
 bool LensLoaderModule::vcmSearchZ(double z,bool check_softlanding)
 {
+    qInfo("vcmSearchZ");
+    if(debug)return true;
     return pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),check_softlanding);
 }
 
 bool LensLoaderModule::pickTrayLens(bool check_softlanding)
 {
+    qInfo("pickTrayLens");
+    if(debug)return true;
     return vcmSearchZ(parameters.pickLensZ(),check_softlanding);
 }
 
 bool LensLoaderModule::placeLensToLUT(bool check_softlanding)
 {
+    qInfo("placeLensToLUT");
+    if(debug)return true;
     return vcmSearchZ(parameters.placeLensZ(),check_softlanding);
 }
 
 bool LensLoaderModule::pickLUTLens(bool check_softlanding)
 {
+    qInfo("pickLUTLens");
+    if(debug)return true;
     return vcmSearchZ(parameters.placeLensZ(),check_softlanding);
 }
 
 bool LensLoaderModule::placeLensToTray(bool check_softlanding)
 {
+    qInfo("placeLensToTray");
+    if(debug)return true;
     return vcmSearchZ(parameters.pickLensZ(),check_softlanding);
 }
 
 bool LensLoaderModule::measureHight(bool is_tray)
 {
+    qInfo("measureHight");
+    if(debug)return true;
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         if(is_tray)
@@ -357,31 +395,43 @@ bool LensLoaderModule::measureHight(bool is_tray)
 
 bool LensLoaderModule::moveToTrayPos(int index, int tray_index)
 {
+    qInfo("moveToTrayPos");
+    if(debug)return true;
     return pick_arm->move_XtXY_Synic(lens_tray->getPositionByIndex(index,tray_index),parameters.visonPositionX());
 }
 
 bool LensLoaderModule::moveToTrayPos(int tray_index)
 {
+    qInfo("moveToTrayPos%d",tray_index);
+    if(debug)return true;
     return  pick_arm->move_XtXY_Synic(lens_tray->getCurrentPosition(tray_index),parameters.visonPositionX(),true);
 }
 
 bool LensLoaderModule::moveToStartPos(int tray_index)
 {
+    qInfo("moveToTrayPos%d",tray_index);
+    if(debug)return true;
     return pick_arm->move_XtXY_Synic(lens_tray->getStartPosition(tray_index),parameters.visonPositionX(),true);
 }
 
 bool LensLoaderModule::moveToTray1EndPos()
 {
+    qInfo("moveToTray1EndPos");
+    if(debug)return true;
     return pick_arm->move_XtXY_Synic(lens_tray->getEndPosition(),parameters.visonPositionX(),true);
 }
 
 bool LensLoaderModule::moveToUpdownlookDownPos()
 {
+    qInfo("moveToUpdownlookDownPos");
+    if(debug)return true;
     return pick_arm->move_XY_Synic(lut_camera_position.X(),lut_camera_position.Y(),true);
 }
 
 bool LensLoaderModule::moveToUpdownlookUpPos()
 {
+    qInfo("moveToUpdownlookUpPos");
+    if(debug)return true;
     return pick_arm->move_XY_Synic(lut_picker_position.X(),lut_picker_position.Y(),true);
 }
 
@@ -400,6 +450,7 @@ void LensLoaderModule::startWork(bool reset_logic, int run_mode)
 
 void LensLoaderModule::stopWork(bool wait_finish)
 {
+    qInfo("LensLoader stop");
 //    if(wait_finish)
 //        finish_stop = true;
 //    else

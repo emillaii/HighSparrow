@@ -13,7 +13,7 @@ class LensPickArm:public ErrorBase
 public:
     LensPickArm(QString name = "LensPickArm");
     void Init(XtMotor *motor_x_tray,XtMotor *motor_x,XtMotor *motor_y,MaterialPicker * picker);
-    bool move_XtXY_Synic(QPointF position,double x,bool check_softlanding = false,int timeout = 10000);
+    bool move_XtXY_Synic(QPointF position,double x,bool check_softlanding = false,int timeout = 30000);
     bool move_XY_Synic(double x,double y,bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XYTp_Synic(PrOffset position,bool check_softlanding = false,int timeout = 10000);
     bool Move_SZ_Sync(double z,bool check_softlanding = false,int timeout = 10000);

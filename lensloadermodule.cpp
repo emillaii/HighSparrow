@@ -130,7 +130,7 @@ void LensLoaderModule::run(bool has_material)
         //取料
         if((!finish_stop)&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
         {
-            if(moveToNextTrayPos(states.currentTray()))
+            if(!moveToNextTrayPos(states.currentTray()))
             {
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
@@ -163,6 +163,7 @@ void LensLoaderModule::run(bool has_material)
             }
             else
                 states.setHasPickedLens(true);
+            lens_tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
             picked_material.tray_id = states.currentTray();
             picked_material.material_id = lens_tray->getCurrentIndex(states.currentTray());
             if(!is_run)break;
@@ -399,9 +400,9 @@ void LensLoaderModule::startWork(bool reset_logic, int run_mode)
 
 void LensLoaderModule::stopWork(bool wait_finish)
 {
-    if(wait_finish)
-        finish_stop = true;
-    else
+//    if(wait_finish)
+//        finish_stop = true;
+//    else
         is_run = false;
 }
 

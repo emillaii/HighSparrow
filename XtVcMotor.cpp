@@ -42,6 +42,7 @@ void XtVcMotor::ChangeDiretion(bool befor_seek)
         direction_is_opposite = true;
     else
         direction_is_opposite = false;
+    qInfo("VCM %d:dirention:%d",vcm_id,direction);
     SetRunDirect(vcm_id, direction, parameters.scale());
 }
 
@@ -155,7 +156,7 @@ double XtVcMotor::GetFeedbackPos(int decimal_digit) const
 
     {
 //        return GetOutpuPos();
-        QThread::msleep(5);
+//        QThread::msleep(5);
         static int time = 0;
         qInfo("spance:%d", QTime::currentTime().msec()-time);
         time = QTime::currentTime().msec();
@@ -333,7 +334,7 @@ bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int
     if(!is_init)
         return 0.0;
     double start_pos = GetOutpuPos();
-    SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.01);
+    SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.1);
     bool res;
     res = DoSoftLanding();
     res &= WaitSoftLandingDone(timeout);
@@ -345,7 +346,7 @@ double XtVcMotor::SearchPosByForceOnyDown(double speed, double force, int timeou
     if(!is_init)
         return 0.0;
     double start_pos = GetOutpuPos();
-    SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.01);
+    SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.1);
     bool res;
     res = DoSoftLanding();
     res &= WaitSoftLandingDone(timeout);
@@ -409,7 +410,8 @@ bool XtVcMotor::DoSoftLandingReturn()
 bool XtVcMotor::resetSoftLanding(int timeout)
 {
     if(is_softlanding|is_returning)
-        if(!WaitSoftLandingDone(timeout))return false;
+        if(!WaitSoftLandingDone(timeout))
+            return false;
     if(is_softlanded)
         return  DoSoftLandingReturn()&WaitSoftLandingDone(timeout);
     return true;
@@ -433,6 +435,7 @@ bool XtVcMotor::WaitSoftLandingDone(int timeout)
     is_softlanded = is_softlanding;
     is_softlanding = false;
     is_returning = false;
+    qInfo("WaitSoftLandingDone fail");
     return false;
 }
 

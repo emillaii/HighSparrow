@@ -9,15 +9,17 @@
 class BaslerPylonCamera;
 
 struct PRResultStruct {
-    PRResultStruct() : x(0), y(0), theta(0), ret(false)
+    PRResultStruct() : x(0), y(0), theta(0), width(0), height(0), ret(false)
     {}
-    PRResultStruct(double x, double y, double theta, bool ret)
+    PRResultStruct(double x, double y, double theta, bool ret, double width, double height)
         : x(x), y(y), theta(theta),
-          ret(ret)
+          width(width), height(height), ret(ret)
     {}
     double x;
     double y;
     double theta;
+    double width;
+    double height;
     bool ret;
     QString imageName;
 };

@@ -67,8 +67,8 @@ void VisionModule::testVision()
 {
     PRResultStruct prResult;
     //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
-    this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
-    qInfo("%f %f %f", prResult.x, prResult.y, prResult.theta);
+    this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
+    qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
 }
 
 void VisionModule::saveImage(int channel)
@@ -95,6 +95,9 @@ void VisionModule::saveImage(int channel)
 
 ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult)
 {
+    if (pr_name.contains("_edgeModel")) {
+        return PR_Edge_Template_Matching(camera_name, pr_name, prResult);
+    }
     qInfo("%s perform %s",camera_name.toStdString().c_str(),pr_name.toStdString().c_str());
     pr_name.replace("file:///", "");
     QString pr_offset_name = pr_name;
@@ -227,7 +230,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
     static atl::Array< atl::Conditional< avl::Location > > g_constData9;
     g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\calibrationPhotot\\sut_updownlook_up.jpg";
 
-    g_constData2 = L"C:\\Users\\emil\\Desktop\\Test\\EdgeFinder_New\\config\\prConfig\\spa_up_edgeModel.avdata";
+    //g_constData2 = L"C:\\Users\\emil\\Desktop\\Test\\EdgeFinder_New\\config\\prConfig\\spa_up_edgeModel.avdata";
+    g_constData2 = pr_name.toStdString().c_str();
 
     g_constData3 = L"EdgeModel?";
 
@@ -267,9 +271,9 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
         imageName.append(getVisionLogDir())
                         .append(getCurrentTimeString())
                         .append(".jpg");
-        avl::LoadImage( g_constData1, false, image1 );
+        //avl::LoadImage( g_constData1, false, image1 );
+        this->grabImageFromCamera(camera_name, image1);
         avs::LoadObject< atl::Conditional< avl::EdgeModel > >( g_constData2, avl::StreamMode::Binary, g_constData3, edgeModel1 );
-        qInfo("Load Object Finish");
         if (edgeModel1 != atl::NIL)
         {
             avl::LocateSingleObject_Edges( image1, atl::NIL, edgeModel1.Get(), 0, 3, 10.0f, false, false, 0.6f, atl::Dummy< atl::Conditional< avl::Object2D > >().Get(), pathArray1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
@@ -329,10 +333,11 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
             error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
             return error_code;
         }
-        qInfo("DOne");
         prResult.x = rectangle2D1.Get().Origin().X();
         prResult.y = rectangle2D1.Get().Origin().Y();
         prResult.theta = rectangle2D1.Get().Angle();
+        prResult.width = rectangle2D1.Get().Width();
+        prResult.height = rectangle2D1.Get().Height();
         avs::DrawRectangles_SingleColor( image1, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 128.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, atl::NIL, 1.0f), true, image2 );
         stringArray1.Resize(1);
         stringArray1[0] = string1;
@@ -340,7 +345,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
         stringArray2.Resize(1);
         stringArray2[0] = string2;
         avs::DrawStrings_SingleColor( image3, stringArray2, g_constData9, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), 32.0f, 0.0f, true, atl::NIL, image4 );
-        //avl::SaveImageToJpeg( image4 , imageName.toStdString().c_str(), atl::NIL, false );
+        avl::SaveImageToJpeg( image4 , imageName.toStdString().c_str(), atl::NIL, false );
     } catch(const atl::Error& error) {
         error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
         qWarning(error.Message());

@@ -6,8 +6,10 @@
 
 struct PrOffset
 {
+public:
     PrOffset() {X = 0;Y = 0;Theta = 0;}
     PrOffset(double x,double y,double theta) {X = x;Y = y;Theta = theta;}
+    void ReSet(){X = 0;Y = 0;Theta = 0;}
     double X;
     double Y;
     double Theta;

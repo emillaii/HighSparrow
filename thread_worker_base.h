@@ -6,16 +6,17 @@
 #include <QObject>
 #include <qmutex.h>
 #include <qthread.h>
-struct ErroeMessage
+enum AlarmOperation
 {
-    ErrorLevel level;
-    QString message;
+    Continue = 0,
+    GiveUp = 1,
+    Retray = 2
 };
 enum RunMode
 {
-    Normal = 1<<0,//1
-    ChangeType = 1<<1,//2
-    NoMaterial = 1<<2,//4
+    Normal = 0,
+    ChangeType = 1,
+    NoMaterial = 2,
 };
 enum FinishedType
 {
@@ -34,7 +35,6 @@ public:
     void setAlarmId(int id);
     void sendAlarmMessage(int error_level,QString error_message);
     int waitMessageReturn(bool &interruput);
-
 signals:
     void sendErrorMessage(int alarm_id,int error_level,QString error_message);
     void sendHandlingOperation(int cmd);
@@ -51,7 +51,8 @@ private:
     QString m_Name;
     int message_result;
     bool message_returned;
-    int alarm_id;
+    int
+    alarm_id = 0;
     QMutex message_mutex;
 };
 

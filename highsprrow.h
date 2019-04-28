@@ -18,7 +18,7 @@ public:
 private:
     ErrorCodeStruct InitComponent();
 public:
-    WorkersManager threadWorkerManager;
+    WorkersManager* worker_manager;
     BaseModuleManager * baseModuleManager = Q_NULLPTR;
     LogicManager * logicManager = Q_NULLPTR;
 public:

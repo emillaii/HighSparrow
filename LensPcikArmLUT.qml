@@ -270,6 +270,20 @@ ColumnLayout {
                     }
                 }
             }
+            RowLayout{
+                Button {
+                    text: "start"
+                    onClicked: {
+                        workersManager.startWorkers(true,2)
+                    }
+                }
+                Button {
+                    text: "stop"
+                    onClicked: {
+                        workersManager.stopWorkers()
+                    }
+                }
+        }
         }
     }
 }

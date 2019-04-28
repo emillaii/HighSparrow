@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lutModule", &highSprrow.baseModuleManager->lut_module);
     engine.rootContext()->setContextProperty("aaHeadModule", &highSprrow.baseModuleManager->aa_head_module);
     engine.rootContext()->setContextProperty("dispenseModule", &highSprrow.baseModuleManager->dispense_module);
+    engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
 
     //Position
     engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);

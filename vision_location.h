@@ -26,7 +26,7 @@ private:
     VisionModule* vison;
     Pixel2Mech* mapping;
     WordopLight* lighting;
-    PrOffset current_pr_offset;
+    PrOffset current_offset;
 };
 
 #endif // VISION_LOCATION_H

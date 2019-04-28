@@ -1,4 +1,4 @@
-#include "lensloadermodule.h"
+﻿#include "lensloadermodule.h"
 
 LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 {
@@ -44,7 +44,7 @@ ErrorLevel LensLoaderModule::GetCurrentErrorLevel()
 
 void LensLoaderModule::ResetLogic()
 {
-
+    receiveLensRequst(true,0,0);
 }
 
 void LensLoaderModule::loadJsonConfig()
@@ -75,90 +75,182 @@ void LensLoaderModule::performHandling(int cmd)
     qInfo("emit performHandling %d",cmd);
 }
 
+void LensLoaderModule::receiveLensRequst(bool need_lens,int ng_lens,int ng_len_tray)
+{
+    states.setneedloadLens(need_lens);
+    if(ng_lens > 0)
+    {
+        states.setLutHasNgLens(true);
+        lut_ng_material.tray_id = ng_len_tray;
+        lut_ng_material.material_id = ng_lens;
+    }
+
+}
+
 void LensLoaderModule::run(bool has_material)
 {
     is_run = true;
+    int pr_times = 5;
     while (is_run)
     {
         //放NGLens
         if(states.hasPickedNgLens())
         {
-            if(moveToTrayPos(picked_material.material_id,picked_material.tray_id)&&
-                    performVacancyPR()&&
-                    moveToWorkPos()&&
-                    placeLensToTray())
+            if(!moveToTrayPos(picked_material.material_id,picked_material.tray_id))
             {
-                states.setHasPickedNgLens(false);
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
             }
-            else
+            if((!performVacancyPR())&&has_material)
             {
-                ErrorLevel temp_level = GetCurrentErrorLevel();
-                sendAlarmMessage(GetCurrentErrorLevel(),GetCurrentError());
-                //todo
+                AppendError(u8"空盘视觉失败！");
+                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                int result = waitMessageReturn(is_run);
+                if(!result)is_run = false;
+                if(!is_run)break;
+                if(result)
+                    continue;
             }
+            if(!moveToWorkPos())
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            if(!placeLensToTray())
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                waitMessageReturn(is_run);
+            }
+            lens_tray->setCurrentMaterialState(MaterialState::IsNg,states.currentTray());
+            states.setHasPickedNgLens(false);
+            if(!is_run)break;
         }
         //取料
-        if((!states.hasPickedNgLens())&&(!states.hasPickedLens()))
+        if((!finish_stop)&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
         {
-            if(moveToNextTrayPos(states.currentTray())&&
-                    performLensPR()&&
-                    moveToWorkPos()&&
-                    pickTrayLens())
+            if(moveToNextTrayPos(states.currentTray()))
             {
-                picked_material.tray_id = states.currentTray();
-                picked_material.material_id = lens_tray->getCurrentIndex(states.currentTray());
-                states.setHasPickedLens(true);
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            if((!performLensPR())&&has_material)
+            {
+                if(pr_times > 0)
+                    continue;
+                else
+                {
+                    pr_times = 5;
+                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                    waitMessageReturn(is_run);
+                    if(is_run)break;
+                }
+            }
+            if(!moveToWorkPos())
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
 
+            if(!pickTrayLens())
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                if(!waitMessageReturn(is_run))
+                    states.setHasPickedLens(true);
             }
-            else {
-                ErrorLevel temp_level = GetCurrentErrorLevel();
-                sendAlarmMessage(GetCurrentErrorLevel(),GetCurrentError());
-                //todo
-            }
+            else
+                states.setHasPickedLens(true);
+            picked_material.tray_id = states.currentTray();
+            picked_material.material_id = lens_tray->getCurrentIndex(states.currentTray());
+            if(!is_run)break;
         }
-        //等待
+        //等待位置
         if(!moveToLUTPRPos1())
         {
-            ErrorLevel temp_level = GetCurrentErrorLevel();
-            sendAlarmMessage(GetCurrentErrorLevel(),GetCurrentError());
-            //todo
+            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+            is_run = false;
+            break;
         }
         //放料到LUT
         if(states.needloadLens()&&states.hasPickedLens())
         {
-            if(moveToWorkPos()&&placeLensToLUT())
+            if(!moveToLUTPRPos1())
             {
-                lut_material.tray_id = picked_material.tray_id;
-                lut_material.material_id = picked_material.material_id;
-                states.setneedloadLens(false);
-                states.setHasPickedLens(false);
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            if(!moveToWorkPos())
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            if(!placeLensToLUT())
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                    states.setHasPickedLens(false);
+                else
+                {
+                    states.setneedloadLens(false);
+                    states.setHasPickedLens(false);
+                }
             }
             else
             {
-                ErrorLevel temp_level = GetCurrentErrorLevel();
-                sendAlarmMessage(GetCurrentErrorLevel(),GetCurrentError());
-                //todo
+                states.setneedloadLens(false);
+                states.setHasPickedLens(false);
             }
+            lut_material.tray_id = picked_material.tray_id;
+            lut_material.material_id = picked_material.material_id;
         }
         //取NGlens
         if(states.lutHasNgLens()&&(!states.hasPickedLens())&&(!states.hasPickedNgLens()))
         {
-            if(moveToLUTPRPos2()&&
-                    performLUTPR()&&
-                    moveToWorkPos()&&
-                    placeLensToLUT())
+            if(!moveToLUTPRPos2())
             {
-                picked_material.tray_id = picked_material.tray_id;
-                picked_material.material_id = picked_material.material_id;
-                states.setLutHasNgLens(false);
-                states.setHasPickedNgLens(true);
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            if((!performLUTPR())&&has_material)
+            {
+                AppendError(u8"NG视觉失败！");
+                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                int result = waitMessageReturn(is_run);
+                if(!result)is_run = false;
+                if(!is_run)break;
+                if(result)
+                    continue;
+            }
+            if(!moveToWorkPos())
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            if(!placeLensToLUT())
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                    states.setLutHasNgLens(false);
+                else
+                {
+                    states.setLutHasNgLens(false);
+                    states.setHasPickedNgLens(true);
+                }
             }
             else
             {
-                ErrorLevel temp_level = GetCurrentErrorLevel();
-                sendAlarmMessage(GetCurrentErrorLevel(),GetCurrentError());
-                //todo
+                states.setLutHasNgLens(false);
+                states.setHasPickedNgLens(true);
             }
+            picked_material.tray_id = lut_ng_material.tray_id;
+            picked_material.material_id = lut_ng_material.material_id;
         }
     }
 }
@@ -219,7 +311,9 @@ bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
     PrOffset temp(lut_picker_position.X() - lut_camera_position.X() - pr_offset.X,
                     lut_picker_position.Y() - lut_camera_position.Y() - pr_offset.Y,pr_offset.Theta);
     qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
-    return  pick_arm->stepMove_XYTp_Synic(temp,check_softlanding);
+    bool result = pick_arm->stepMove_XYTp_Synic(temp,check_softlanding);
+    pr_offset.ReSet();
+    return  result;
 }
 
 bool LensLoaderModule::vcmSearchZ(double z,bool check_softlanding)
@@ -297,14 +391,18 @@ bool LensLoaderModule::isRunning()
 
 void LensLoaderModule::startWork(bool reset_logic, int run_mode)
 {
+    qInfo("Lensloader start reset:%d run_mode :%d",reset_logic,run_mode);
     if(reset_logic)ResetLogic();
-    if(run_mode&RunMode::Normal)run(true);
-    else if(run_mode&RunMode::NoMaterial)run(false);
+    if(run_mode == RunMode::Normal)run(true);
+    else if(run_mode == RunMode::NoMaterial)run(false);
 }
 
 void LensLoaderModule::stopWork(bool wait_finish)
 {
-    is_run = false;
+    if(wait_finish)
+        finish_stop = true;
+    else
+        is_run = false;
 }
 
 void LensLoaderModule::performHandlingOperation(int cmd)

@@ -23,11 +23,12 @@ struct ErrorCodeStruct
 #define DEVICES_MANAGER_NAME "DevicesMannager"
 
 typedef enum {
-    TipNonblock = 1<1,
-    WarningBlock = 1<2,
-    ErrorCanSkip = 1<3,
-    ErrorCanRetry = 1<4,
-    ErrorMustStop = 1<5
+    TipNonblock = 0,
+    WarningBlock = 1,
+    ContinueOrGiveUp = 2,
+    ContinueOrRetry = 3,
+    RetryOrStop = 4,
+    ErrorMustStop = 5
 } ErrorLevel;
 
 

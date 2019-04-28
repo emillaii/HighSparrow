@@ -100,6 +100,12 @@ int MaterialTray::getCurrentMaterialState(int tray_index)
     return current_tray->tray_material_state[current_tray->currentIndex()];
 }
 
+void MaterialTray::setCurrentMaterialState(int state, int tray_index)
+{
+    TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
+    current_tray->tray_material_state[current_tray->currentIndex()] = state;
+}
+
 int MaterialTray::getMaterialState(int column_index, int row_index,int tray_index)
 {
     return parameters[getTrayIndex(tray_index)]->tray_material_state[getMaterialIndex(getColumnIndex(column_index),getRowIndex(row_index))];

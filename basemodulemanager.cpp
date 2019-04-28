@@ -82,8 +82,8 @@ BaseModuleManager::~BaseModuleManager()
         delete  GetInputIoByName(input_ios.keys()[i]);
     for (int i = 0; i < calibrations.size(); ++i)
         delete  calibrations[calibrations.keys()[i]];
-    delete chart_calibration;
-}
+//    delete chart_calibration;
+ }
 
 bool BaseModuleManager::loadParameters()
 {

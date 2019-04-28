@@ -15,6 +15,10 @@ signals:
     void stopWorkersSignal(bool wait_finish = true);
     void startWorkerSignal(bool reset = false,int run_mode = 0);
     void stopWorkerSignal(bool wait_finish = true);
+public slots:
+    void receiveAlarm(int sender_id,int level, QString error_message);
+private:
+    void ShowAlarm(const int sender_id,const int level, const QString error_message);
 public:
     Q_INVOKABLE void startWorkers(bool reset = false,int run_mode = 0);
     Q_INVOKABLE void stopWorkers(bool wait_finish = true);

@@ -5,7 +5,12 @@
 #include "traystandardsparameter.h"
 
 #include <qpoint.h>
-
+enum MaterialState
+{
+    IsEmpty = 0,
+    IsRaw = 1,
+    IsNg = 2
+};
 
 
 class MaterialTray:public QObject

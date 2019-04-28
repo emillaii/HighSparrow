@@ -63,6 +63,8 @@ public:
     void performHandling(int cmd);
 signals:
     void changeTray();
+public slots:
+    void receiveLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
 private:
     void run(bool has_material);
 
@@ -121,6 +123,7 @@ private:
     VisionLocation * lap_updownlook_up_vision = Q_NULLPTR;
     VisionLocation * lap_updownlook_down_vision = Q_NULLPTR;
     bool is_run = false;
+    bool finish_stop = false;
     ErrorLevel error_level;
     PrOffset pr_offset;
     materialMessage lut_material;

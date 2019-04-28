@@ -20,6 +20,12 @@ QString ThreadWorkerBase::Name() const
     return m_Name;
 }
 
+void ThreadWorkerBase::setAlarmId(int id)
+{
+    if(id > 0 && alarm_id == 0)
+        alarm_id = id;
+}
+
 void ThreadWorkerBase::sendAlarmMessage(int error_level, QString error_message)
 {
     message_returned = false;
@@ -49,7 +55,7 @@ int ThreadWorkerBase::waitMessageReturn(bool &interruput)
             }
         }
     }
-    return 0;
+    return 1;
 }
 
 void ThreadWorkerBase::setName(QString Name)

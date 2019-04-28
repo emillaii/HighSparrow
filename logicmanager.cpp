@@ -368,3 +368,38 @@ void LogicManager::trayLoaderModuleLTOEMovetoColumnIndex(int idx)
 {
     baseModuleManage->tray_loader_module.LTOEMovetoColumnIndex(idx);
 }
+
+void LogicManager::trayLoaderModuleEjectTray()
+{
+    baseModuleManage->tray_loader_module.ejectTray();
+}
+
+void LogicManager::trayLoaderModuleLTKX1CylinderOn()
+{
+    baseModuleManage->tray_loader_module.motorInPress();
+}
+
+void LogicManager::trayLoaderModuleLTKX1CylinderOff()
+{
+    baseModuleManage->tray_loader_module.motorInRealease();
+}
+
+void LogicManager::trayLoaderModuleLTKX2CylinderOn()
+{
+    baseModuleManage->tray_loader_module.motorOutPress();
+}
+
+void LogicManager::trayLoaderModuleLTKX2CylinderOff()
+{
+    baseModuleManage->tray_loader_module.motorOutRelease();
+}
+
+void LogicManager::trayLoaderModuleLTLXCylinderOn()
+{
+    baseModuleManage->tray_loader_module.motorWorkPress();
+}
+
+void LogicManager::trayLoaderModuleLTLXCylinderOff()
+{
+    baseModuleManage->tray_loader_module.motorWorkRelease();
+}

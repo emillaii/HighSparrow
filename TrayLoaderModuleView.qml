@@ -150,6 +150,12 @@ ItemDelegate {
                                 logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in-1)
                             }
                         }
+                        Button{
+                            text:qsTr("弹出")
+                            onClicked: {
+                                logicManager.trayLoaderModuleEjectTray()
+                            }
+                        }
                     }
                 }
             }
@@ -283,13 +289,14 @@ ItemDelegate {
                             text:qsTr("ltkx1 位置1")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltkx1GetPos
+                            text:tray_loader_module_parameters.ltkx1PressPos
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
+                            horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtkx1GetPos(text)
+                                tray_loader_module_parameters.setLtkx1PressPos(text)
                             }
                         }
                         Button{
@@ -302,7 +309,7 @@ ItemDelegate {
                             text:title_read_encoder
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX1Name)
-                                tray_loader_module_parameters.setLtkx1GetPos(x)
+                                tray_loader_module_parameters.setLtkx1PressPos(x)
                             }
                         }
                     }
@@ -311,13 +318,14 @@ ItemDelegate {
                             text:qsTr("ltkx1 位置2")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltkx1SetPos
+                            text:tray_loader_module_parameters.ltkx1ReleasePos
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
+                            horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtkx1SetPos(text)
+                                tray_loader_module_parameters.setLtkx1ReleasePos(text)
                             }
                         }
                         Button{
@@ -330,15 +338,23 @@ ItemDelegate {
                             text:title_read_encoder
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX1Name)
-                                tray_loader_module_parameters.setLtkx1SetPos(x)
+                                tray_loader_module_parameters.setLtkx1ReleasePos(x)
                             }
                         }
                     }
                     RowLayout{
                         Layout.alignment: Qt.AlignRight
                         Button{
-                            text: qsTr("ltkx1 cylinder操作")
-                            onClicked: {}
+                            text: qsTr("夹紧")
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTKX1CylinderOn()
+                            }
+                        }
+                        Button{
+                            text:qsTr("松开")
+                            onClicked:{
+                                logicManager.trayLoaderModuleLTKX1CylinderOff();
+                            }
                         }
                     }
                     RowLayout{
@@ -346,13 +362,14 @@ ItemDelegate {
                             text:qsTr("ltkx2 位置1")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltkx2GetPos
+                            text:tray_loader_module_parameters.ltkx2PressPos
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
+                            horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtkx2GetPos(text)
+                                tray_loader_module_parameters.setLtkx2PressPos(text)
                             }
                         }
                         Button{
@@ -365,7 +382,7 @@ ItemDelegate {
                             text:title_read_encoder
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX2Name)
-                                tray_loader_module_parameters.setLtkx2GetPos(x)
+                                tray_loader_module_parameters.setLtkx2PressPos(x)
                             }
                         }
                     }
@@ -374,13 +391,14 @@ ItemDelegate {
                             text:qsTr("ltkx2 位置2")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltkx2SetPos
+                            text:tray_loader_module_parameters.ltkx2ReleasePos
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
+                            horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtkx2SetPos(text)
+                                tray_loader_module_parameters.setLtkx2ReleasePos(text)
                             }
                         }
                         Button{
@@ -393,15 +411,23 @@ ItemDelegate {
                             text:title_read_encoder
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX2Name)
-                                tray_loader_module_parameters.setLtkx2SetPos(x)
+                                tray_loader_module_parameters.setLtkx2ReleasePos(x)
                             }
                         }
                     }
                     RowLayout{
                         Layout.alignment: Qt.AlignRight
                         Button{
-                            text: qsTr("ltkx2 cylinder操作")
-                            onClicked: {}
+                            text: qsTr("夹紧")
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTKX2CylinderOn()
+                            }
+                        }
+                        Button{
+                            text:qsTr("松开")
+                            onClicked:{
+                                logicManager.trayLoaderModuleLTKX2CylinderOff();
+                            }
                         }
                     }
                     RowLayout{
@@ -409,13 +435,14 @@ ItemDelegate {
                             text:qsTr("ltl 位置1")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltlGetPos
+                            text:tray_loader_module_parameters.ltlPressPos
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
+                            horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtlGetPos(text)
+                                tray_loader_module_parameters.setLtlPressPos(text)
                             }
                         }
                         Button{
@@ -428,7 +455,7 @@ ItemDelegate {
                             text:title_read_encoder
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTLXName)
-                                tray_loader_module_parameters.setLtlGetPos(x)
+                                tray_loader_module_parameters.setLtlPressPos(x)
                             }
                         }
                     }
@@ -437,13 +464,14 @@ ItemDelegate {
                             text:qsTr("ltl 位置2")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltlSetPos
+                            text:tray_loader_module_parameters.ltlReleasePos
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
+                            horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtlSetPos(text)
+                                tray_loader_module_parameters.setLtlReleasePos(text)
                             }
                         }
                         Button{
@@ -456,16 +484,22 @@ ItemDelegate {
                             text:title_read_encoder
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTLXName)
-                                tray_loader_module_parameters.setLtlSetPos(x)
+                                tray_loader_module_parameters.setLtlReleasePos(x)
                             }
                         }
                     }
                     RowLayout{
                         Layout.alignment: Qt.AlignRight
                         Button{
-                            text: qsTr("ltkx1 cylinder操作")
+                            text: qsTr("夹紧")
                             onClicked: {
-
+                                logicManager.trayLoaderModuleLTLXCylinderOn()
+                            }
+                        }
+                        Button{
+                            text:qsTr("松开")
+                            onClicked:{
+                                logicManager.trayLoaderModuleLTLXCylinderOff();
                             }
                         }
                     }

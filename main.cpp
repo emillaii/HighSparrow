@@ -8,6 +8,8 @@
 #include "filecontent.h"
 #include <QtWebEngine/QtWebEngine>
 
+#include <QDebug>
+
 #include "aadata.h"
 int main(int argc, char *argv[])
 {
@@ -95,6 +97,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("vl_parameter_list",QVariant::fromValue(vl_parameter_list));
     engine.rootContext()->setContextProperty("tray_clipin_parameter",&highSprrow.baseModuleManager->trayClipIn.standards_parameters);
     engine.rootContext()->setContextProperty("tray_clipout_parameter",&highSprrow.baseModuleManager->trayClipOut.standards_parameters);
+    //engine.rootContext()->setContextProperty("tray_clipout_parameter",&highSprrow.baseModuleManager->tray_loader_module.tray_clip_out->standards_parameters);
+    //qDebug()<<highSprrow.baseModuleManager->tray_loader_module.parameters.ltlPressPos();
     engine.rootContext()->setContextProperty("tray_loader_module_parameters",&highSprrow.baseModuleManager->tray_loader_module.parameters);
     //PR Params
 //    engine.rootContext()->setContextProperty("prSUTDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);

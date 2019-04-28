@@ -87,6 +87,17 @@ public:
     Q_INVOKABLE void trayLoaderModuleLTIEMovetoColumnIndex(int);
     Q_INVOKABLE void trayLoaderModuleLTOEMovetoColumnIndex(int);
 
+    Q_INVOKABLE void trayLoaderModuleEjectTray();
+
+    Q_INVOKABLE void trayLoaderModuleLTKX1CylinderOn();
+    Q_INVOKABLE void trayLoaderModuleLTKX1CylinderOff();
+
+    Q_INVOKABLE void trayLoaderModuleLTKX2CylinderOn();
+    Q_INVOKABLE void trayLoaderModuleLTKX2CylinderOff();
+
+    Q_INVOKABLE void trayLoaderModuleLTLXCylinderOn();
+    Q_INVOKABLE void trayLoaderModuleLTLXCylinderOff();
+
     int currentMode() const
     {
         return m_currentMode;

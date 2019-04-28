@@ -47,7 +47,7 @@ Popup {
                     ListView{
                         model: outputList
                         height: 1100
-                        anchors.top: special_ouput.bottom
+                        //anchors.top: special_ouput.bottom
                         delegate: Switch{
                             id:output_switch_id
                             Connections{
@@ -117,7 +117,7 @@ Popup {
             }
             ScrollView{
                 id:input_sv
-                anchors.left:output_sv.right
+                //anchors.left:output_sv.right
                 implicitWidth:  200
                 implicitHeight: 600
                 clip: true

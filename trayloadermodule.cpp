@@ -95,15 +95,15 @@ bool TrayLoaderModule::motorInPress()
 
 bool TrayLoaderModule::moveToLtkx1GetPos()
 {
-    motor_in->MoveToPos(parameters.ltkx1GetPos());
-    bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1GetPos());
+    motor_in->MoveToPos(parameters.ltkx1PressPos());
+    bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1PressPos());
     return result;
 }
 
 bool TrayLoaderModule::moveToLtkx1SetPos()
 {
-    motor_in->MoveToPos(parameters.ltkx1SetPos());
-    bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1SetPos());
+    motor_in->MoveToPos(parameters.ltkx1ReleasePos());
+    bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
     return result;
 }
 
@@ -125,8 +125,8 @@ bool TrayLoaderModule::moveMotorWork()
 
 bool TrayLoaderModule::moveToLtlGetPos()
 {
-    motor_work->MoveToPos(parameters.ltlGetPos());
-    bool result = motor_work->WaitArrivedTargetPos(parameters.ltlGetPos());
+    motor_work->MoveToPos(parameters.ltlPressPos());
+    bool result = motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
     return result;
 }
 
@@ -138,8 +138,8 @@ bool TrayLoaderModule::motorWorkPress()
 
 bool TrayLoaderModule::moveToLtlSetPos()
 {
-    motor_work->MoveToPos(parameters.ltlSetPos());
-    bool result = motor_work->WaitArrivedTargetPos(parameters.ltlSetPos());
+    motor_work->MoveToPos(parameters.ltlReleasePos());
+    bool result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
     return result;
 }
 
@@ -157,8 +157,8 @@ bool TrayLoaderModule::moveMotorOut()
 
 bool TrayLoaderModule::moveToLtkx2GetPos()
 {
-    motor_out->MoveToPos(parameters.ltkx2GetPos());
-    bool result = motor_out->WaitArrivedTargetPos(parameters.ltkx2GetPos());
+    motor_out->MoveToPos(parameters.ltkx2PressPos());
+    bool result = motor_out->WaitArrivedTargetPos(parameters.ltkx2PressPos());
     return result;
 }
 
@@ -169,8 +169,8 @@ bool TrayLoaderModule::motorOutPress()
 
 bool TrayLoaderModule::moveToLtkx2SetPos()
 {
-    motor_out->MoveToPos(parameters.ltkx2SetPos());
-    bool result = motor_out->WaitArrivedTargetPos(parameters.ltkx2SetPos());
+    motor_out->MoveToPos(parameters.ltkx2ReleasePos());
+    bool result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
     return result;
 }
 

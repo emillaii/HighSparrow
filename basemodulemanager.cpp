@@ -276,7 +276,7 @@ bool BaseModuleManager::loadVacuumFiles(QString file_name)
         temp_vacuum->parameters.read(array.at(i).toObject());
         QJsonObject temp_object;
         temp_vacuum->parameters.write(temp_object);
-        if(!motors.contains(temp_vacuum->parameters.vacuumName()))
+        if(!vacuums.contains(temp_vacuum->parameters.vacuumName()))
             vacuums.insert(temp_vacuum->parameters.vacuumName(),temp_vacuum);
         else
         {
@@ -332,7 +332,7 @@ bool BaseModuleManager::loadCylinderFiles(QString file_name)
         temp_cylinder->parameters.read(array.at(i).toObject());
         QJsonObject temp_object;
         temp_cylinder->parameters.write(temp_object);
-        if(!motors.contains(temp_cylinder->parameters.cylinderName()))
+        if(!cylinder.contains(temp_cylinder->parameters.cylinderName()))
             cylinder.insert(temp_cylinder->parameters.cylinderName(),temp_cylinder);
         else
         {
@@ -452,7 +452,7 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
         temp_calibration->parameters.read(data_object);
         QJsonObject temp_object;
         temp_calibration->parameters.write(temp_object);
-        if(!motors.contains(temp_calibration->parameters.calibrationName()))
+        if(!calibrations.contains(temp_calibration->parameters.calibrationName()))
             calibrations.insert(temp_calibration->parameters.calibrationName(),temp_calibration);
         else
         {
@@ -691,7 +691,6 @@ bool BaseModuleManager::InitStruct()
                             GetCylinderByName(tray_loader_module.parameters.cylinderLTK2Name()),
                             GetCylinderByName(tray_loader_module.parameters.cylinderTrayName()),
                             &trayClipIn,&trayClipOut);
-
 
     profile_loaded = true;
 

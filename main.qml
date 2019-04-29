@@ -226,7 +226,7 @@ ApplicationWindow {
                }
            }
            ToolButton {
-               text: qsTr("Auto")
+               text: qsTr("Run Flowchart")
                transformOrigin: Item.Center
                display: Button.TextUnderIcon
                icon.width: 30
@@ -244,6 +244,25 @@ ApplicationWindow {
                }
            }
            ToolButton {
+               text: qsTr("Auto")
+               transformOrigin: Item.Center
+               display: Button.TextUnderIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/auto-run.png"
+               icon.color: "deepskyblue"
+               onClicked: {
+                   workersManager.startWorkers(true, 2)
+//                   var command = "document.getElementsByClassName('get_data')[0].click()";
+//                   flowChartPage.webView.runJavaScript(command, function(result) {
+//                       command = "document.getElementById('flowchart_data').value";
+//                       flowChartPage.webView.runJavaScript(command, function(result) {
+//                           logicManager.autoRun(result)
+//                       })
+//                   })
+               }
+           }
+           ToolButton {
                text: qsTr("Stop")
                transformOrigin: Item.Center
                display: Button.TextUnderIcon
@@ -252,7 +271,8 @@ ApplicationWindow {
                icon.source: "icons/stop.png"
                icon.color: "red"
                onClicked: {
-                    logicManager.stop()
+                   workersManager.stopWorkers(true)
+                    //logicManager.stop()
                }
            }
 

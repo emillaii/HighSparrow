@@ -5,44 +5,32 @@ LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 
 }
 
-void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,VisionLocation *lap_updownlook_up_vision, VisionLocation *lap_updownlook_down_vision)
+void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision)
 {
+    parts.clear();
     this->pick_arm = pick_arm;
-    this->lens_tray = lens_tray;
+    parts.append(this->pick_arm);
+    this->tray = lens_tray;
+    parts.append(this->tray);
     this->lut_carrier = lut_carrier;
+    parts.append(this->lut_carrier);
     this->lens_vision = lens_vision;
+    parts.append(this->lens_vision);
     this->vacancy_vision = vacancy_vision;
+    parts.append(this->vacancy_vision);
     this->lut_vision = lut_vision;
+    parts.append(this->lut_vision);
     this->lut_lens_vision = lut_lens_vision;
-    this->lap_updownlook_up_vision = lap_updownlook_up_vision;
-    this->lap_updownlook_down_vision = lap_updownlook_down_vision;
+    parts.append(this->lut_lens_vision);
+    this->lpa_updownlook_up_vision = lpa_updownlook_up_vision;
+    parts.append(this->lpa_updownlook_up_vision);
+    this->lpa_updownlook_down_vision = lpa_updownlook_down_vision;
+    parts.append(this->lpa_updownlook_down_vision);
+    lens_tray->resetTrayState(0);
+    lens_tray->resetTrayState(1);
 }
 
-QString LensLoaderModule::GetCurrentError()
-{
-    AppendLineError(pick_arm->GetCurrentError()/*&
-                                                                                                                    lens_tray->GetCurrentError()&
-                                                                                                                    lut_carrier->GetCurrentError()&
-                                                                                                                    lens_vision->GetCurrentError()&
-                                                                                                                    vacancy_vision->GetCurrentError()&
-                                                                                                                    lut_vision->GetCurrentError()*/
-                    );
-    return  ErrorBase::GetCurrentError();
-}
-
-ErrorLevel LensLoaderModule::GetCurrentErrorLevel()
-{
-    setCurrentErrorLevel(pick_arm->GetCurrentErrorLevel()/*&
-                                                                                                                                                      lens_tray->GetCurrentErrorLevel()&
-                                                                                                                                                      lut_carrier->GetCurrentErrorLevel()&
-                                                                                                                                                      lens_vision->GetCurrentErrorLevel()&
-                                                                                                                                                      vacancy_vision->GetCurrentErrorLevel()&
-                                                                                                                                                      lut_vision->GetCurrentErrorLevel()*/
-                         );
-    return  ErrorBase::GetCurrentErrorLevel();
-}
-
-void LensLoaderModule::ResetLogic()
+void LensLoaderModule::resetLogic()
 {
     receiveLensRequst(true,0,0);
 }
@@ -94,7 +82,7 @@ void LensLoaderModule::run(bool has_material)
     bool has_task = true;
     while (is_run)
     {
-        if(!has_task)
+//        if(!has_task)
             QThread::msleep(1000);
         has_task = false;
         //放NGLens
@@ -128,7 +116,7 @@ void LensLoaderModule::run(bool has_material)
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 waitMessageReturn(is_run);
             }
-            lens_tray->setCurrentMaterialState(MaterialState::IsNg,states.currentTray());
+            tray->setCurrentMaterialState(MaterialState::IsNg,states.currentTray());
             states.setHasPickedNgLens(false);
             if(!is_run)break;
         }
@@ -169,9 +157,9 @@ void LensLoaderModule::run(bool has_material)
             }
             else
                 states.setHasPickedLens(true);
-            lens_tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
+            tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
             picked_material.tray_id = states.currentTray();
-            picked_material.material_id = lens_tray->getCurrentIndex(states.currentTray());
+            picked_material.material_id = tray->getCurrentIndex(states.currentTray());
             if(!is_run)break;
         }
         //等待位置
@@ -242,7 +230,7 @@ void LensLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
-            if(!placeLensToLUT())
+            if(!pickLUTLens())
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
@@ -262,15 +250,15 @@ void LensLoaderModule::run(bool has_material)
             picked_material.material_id = lut_ng_material.material_id;
         }
     }
+    qInfo("LensLoader stoped");
 }
 
 bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 {
     qInfo("moveToNextTrayPos:%d",tray_index);
-    if(debug)return true;
-    if(lens_tray->findNextPositionOfInitState(tray_index))
+    if(tray->findNextPositionOfInitState(tray_index))
     {
-        return  pick_arm->move_XtXY_Synic(lens_tray->getCurrentPosition(tray_index),parameters.visonPositionX());
+        return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX());
     }
     return  false;
 }
@@ -278,63 +266,47 @@ bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 {
     qInfo("moveToLUTPRPos1");
-    if(debug)return true;
     return  pick_arm->move_XtXY_Synic(lut_pr_position1.ToPointF(),parameters.visonPositionX(),check_softlanding);
 }
 
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
     qInfo("moveToLUTPRPos2");
-    if(debug)return true;
     return  pick_arm->move_XtXY_Synic(lut_pr_position2.ToPointF(),parameters.visonPositionX(),check_softlanding);
 }
 
 bool LensLoaderModule::performLensPR()
 {
     qInfo("performLensPR");
-    if(debug)return true;
     return  lens_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performVacancyPR()
 {
     qInfo("performVacancyPR:%d");
-    if(debug)return true;
     return  vacancy_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performLUTPR()
 {
     qInfo("performLUTPR");
-    if(debug)return true;
     return lut_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performUpDownlookDownPR()
 {
     qInfo("performUpDownlookDownPR");
-    if(debug)return true;
-    return lap_updownlook_down_vision->performPR(pr_offset);
+    return lpa_updownlook_down_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performUpdowlookUpPR()
 {
     qInfo("performUpdowlookUpPR");
-    if(debug)return true;
-    return lap_updownlook_up_vision->performPR(pr_offset);
+    return lpa_updownlook_up_vision->performPR(pr_offset);
 }
-
-void LensLoaderModule::resetPR()
-{
-    pr_offset.X = 0;
-    pr_offset.Y = 0;
-    pr_offset.Theta = 0;
-}
-
 bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
 {
     qInfo("moveToWorkPos");
-    if(debug)return true;
     PrOffset temp(lut_picker_position.X() - lut_camera_position.X() - pr_offset.X,
                     lut_picker_position.Y() - lut_camera_position.Y() - pr_offset.Y,pr_offset.Theta);
     qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
@@ -343,45 +315,39 @@ bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
     return  result;
 }
 
-bool LensLoaderModule::vcmSearchZ(double z,bool check_softlanding)
+bool LensLoaderModule::vcmSearchZ(double z,bool is_open,bool check_softlanding)
 {
     qInfo("vcmSearchZ");
-    if(debug)return true;
-    return pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),check_softlanding);
+    return pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,check_softlanding);
 }
 
 bool LensLoaderModule::pickTrayLens(bool check_softlanding)
 {
     qInfo("pickTrayLens");
-    if(debug)return true;
-    return vcmSearchZ(parameters.pickLensZ(),check_softlanding);
+    return vcmSearchZ(parameters.pickLensZ(),false,check_softlanding);
 }
 
 bool LensLoaderModule::placeLensToLUT(bool check_softlanding)
 {
     qInfo("placeLensToLUT");
-    if(debug)return true;
     return vcmSearchZ(parameters.placeLensZ(),check_softlanding);
 }
 
 bool LensLoaderModule::pickLUTLens(bool check_softlanding)
 {
     qInfo("pickLUTLens");
-    if(debug)return true;
-    return vcmSearchZ(parameters.placeLensZ(),check_softlanding);
+    return vcmSearchZ(parameters.placeLensZ(),false,check_softlanding);
 }
 
 bool LensLoaderModule::placeLensToTray(bool check_softlanding)
 {
     qInfo("placeLensToTray");
-    if(debug)return true;
     return vcmSearchZ(parameters.pickLensZ(),check_softlanding);
 }
 
 bool LensLoaderModule::measureHight(bool is_tray)
 {
     qInfo("measureHight");
-    if(debug)return true;
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         if(is_tray)
@@ -396,42 +362,36 @@ bool LensLoaderModule::measureHight(bool is_tray)
 bool LensLoaderModule::moveToTrayPos(int index, int tray_index)
 {
     qInfo("moveToTrayPos");
-    if(debug)return true;
-    return pick_arm->move_XtXY_Synic(lens_tray->getPositionByIndex(index,tray_index),parameters.visonPositionX());
+    return pick_arm->move_XtXY_Synic(tray->getPositionByIndex(index,tray_index),parameters.visonPositionX());
 }
 
 bool LensLoaderModule::moveToTrayPos(int tray_index)
 {
     qInfo("moveToTrayPos%d",tray_index);
-    if(debug)return true;
-    return  pick_arm->move_XtXY_Synic(lens_tray->getCurrentPosition(tray_index),parameters.visonPositionX(),true);
+    return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),true);
 }
 
 bool LensLoaderModule::moveToStartPos(int tray_index)
 {
-    qInfo("moveToTrayPos%d",tray_index);
-    if(debug)return true;
-    return pick_arm->move_XtXY_Synic(lens_tray->getStartPosition(tray_index),parameters.visonPositionX(),true);
+    qInfo("moveToStartPos%d",tray_index);
+    return pick_arm->move_XtXY_Synic(tray->getStartPosition(tray_index),parameters.visonPositionX(),true);
 }
 
 bool LensLoaderModule::moveToTray1EndPos()
 {
     qInfo("moveToTray1EndPos");
-    if(debug)return true;
-    return pick_arm->move_XtXY_Synic(lens_tray->getEndPosition(),parameters.visonPositionX(),true);
+    return pick_arm->move_XtXY_Synic(tray->getEndPosition(),parameters.visonPositionX(),true);
 }
 
 bool LensLoaderModule::moveToUpdownlookDownPos()
 {
     qInfo("moveToUpdownlookDownPos");
-    if(debug)return true;
     return pick_arm->move_XY_Synic(lut_camera_position.X(),lut_camera_position.Y(),true);
 }
 
 bool LensLoaderModule::moveToUpdownlookUpPos()
 {
     qInfo("moveToUpdownlookUpPos");
-    if(debug)return true;
     return pick_arm->move_XY_Synic(lut_picker_position.X(),lut_picker_position.Y(),true);
 }
 
@@ -443,7 +403,7 @@ bool LensLoaderModule::isRunning()
 void LensLoaderModule::startWork(bool reset_logic, int run_mode)
 {
     qInfo("Lensloader start reset:%d run_mode :%d",reset_logic,run_mode);
-    if(reset_logic)ResetLogic();
+    if(reset_logic)resetLogic();
     if(run_mode == RunMode::Normal)run(true);
     else if(run_mode == RunMode::NoMaterial)run(false);
 }
@@ -488,7 +448,7 @@ void LensLoaderModule::performHandlingOperation(int cmd)
         return;
     }
     if(cmd%100 == HandlePR::RESET_PR)
-        resetPR();
+        pr_offset.ReSet();
     else if(cmd%100 == HandlePR::LENS_PR)
         result = performLensPR();
     else if(cmd%100 == HandlePR::VACANCY_PR)

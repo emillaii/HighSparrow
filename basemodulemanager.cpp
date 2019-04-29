@@ -1038,6 +1038,8 @@ bool BaseModuleManager::stepMove(int index, double step, bool isPositive)
 
 bool BaseModuleManager::performCalibration(QString calibration_name)
 {
+    if(calibration_name.contains("chart_calibration"))
+        return   chart_calibration->performCalibration();
     Calibration* temp_caliration = GetCalibrationByName(calibration_name);
     if(temp_caliration == nullptr)return  false;
     return  temp_caliration->performCalibration();

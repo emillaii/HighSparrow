@@ -95,6 +95,7 @@ void VisionModule::saveImage(int channel)
 
 ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult)
 {
+    if(is_debug)return ErrorCodeStruct{ OK, "" };
     if (pr_name.contains("_edgeModel")) {
         return PR_Edge_Template_Matching(camera_name, pr_name, prResult);
     }

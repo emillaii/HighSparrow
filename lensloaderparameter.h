@@ -23,6 +23,7 @@ public:
     Q_PROPERTY(QString lutLensLocationName READ lutLensLocationName WRITE setLutLensLocationName NOTIFY lutLensLocationNameChanged)
     Q_PROPERTY(QString lpaUpdownlookUpLocationName READ lpaUpdownlookUpLocationName WRITE setLpaUpdownlookUpLocation NOTIFY lpaUpdownlookUpkLocationChanged)
     Q_PROPERTY(QString lpaUpdownlookDownLocationName READ lpaUpdownlookDownLocationName WRITE setLpaupdownlookDownLocationName NOTIFY lpaUpdownlookDownLocaationNameChanged)
+    Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
     int runMode() const
     {
         return m_runMode;
@@ -84,6 +85,11 @@ public:
     QString lpaUpdownlookDownLocationName() const
     {
         return m_uplookCameraLocaation;
+    }
+
+    int finishDelay() const
+    {
+        return m_finishDelay;
     }
 
 public slots:
@@ -209,6 +215,15 @@ public slots:
         emit lpaUpdownlookDownLocaationNameChanged(m_uplookCameraLocaation);
     }
 
+    void setFinishDelay(int finishDelay)
+    {
+        if (m_finishDelay == finishDelay)
+            return;
+
+        m_finishDelay = finishDelay;
+        emit finishDelayChanged(m_finishDelay);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -234,6 +249,8 @@ signals:
 
     void lpaUpdownlookDownLocaationNameChanged(QString lpaUpdownlookDownLocationName);
 
+    void finishDelayChanged(int finishDelay);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -248,6 +265,7 @@ private:
     QString m_lueLensLocationName = "";
     QString m_uplookPickLocation = "";
     QString m_uplookCameraLocaation = "";
+    int m_finishDelay = 100;
 };
 
 class LensPickArmModuleState:public PropertyBase

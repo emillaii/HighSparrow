@@ -1,6 +1,7 @@
 #ifndef MATERIALTRAY_H
 #define MATERIALTRAY_H
 
+#include "errorcode.h"
 #include "trayparameter.h"
 #include "traystandardsparameter.h"
 
@@ -9,11 +10,12 @@ enum MaterialState
 {
     IsEmpty = 0,
     IsRaw = 1,
-    IsNg = 2
+    IsNg = 2,
+    IsProduct = 3
 };
 
 
-class MaterialTray:public QObject
+class MaterialTray:public QObject,public ErrorBase
 {
     Q_OBJECT
 public:

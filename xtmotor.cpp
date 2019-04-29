@@ -306,14 +306,22 @@ void XtMotor::Home(int thread)
 
 void XtMotor::CheckLimit(double &pos)
 {
+    if(qIsFinite(pos))
+    {
+        qInfo("target_position %f is illegal,change to %f",pos,min_range);
+        pos = min_range;
+    }
+
     if(pos>max_range)
     {
+        qInfo("target_position %f to big,change to %f",pos,max_range);
         pos=max_range;
     }
 
     if(pos<min_range)
     {
-        pos=min_range;
+        qInfo("target_position %f to small,change to %f",pos,min_range);
+        pos = min_range;
     }
 }
 
@@ -378,6 +386,7 @@ void XtMotor::TILLTIME(int ms, int thread)
 
 bool XtMotor::WaitMoveStop(int timeout)
 {
+    if(is_debug)return true;
     if(!is_init)
         return false;
     if(!is_enable)
@@ -402,11 +411,12 @@ bool XtMotor::WaitMoveStop(int timeout)
 
 bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
 {
-
+    if(is_debug)return true;
     if(!is_init)
         return false;
     if(!is_enable)
         return false;
+    CheckLimit(target_position);
     if(target_position > max_range)
     {
         qInfo("target_position %f to big,change to %f",target_position,max_range);
@@ -436,6 +446,7 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
 
 bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
 {
+    if(is_debug)return true;
     if(!is_init)
         return false;
     if(!is_enable)
@@ -459,6 +470,7 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
 
 bool XtMotor::SlowMoveToPosSync(double pos, double vel_ratio, int thread)
 {
+    if(is_debug)return true;
     if(!is_init)
         return false;
     if(!is_enable)
@@ -496,6 +508,7 @@ void XtMotor::StepMove(double step, int thread)
 
 bool XtMotor::StepMoveSync(double step, int thread)
 {
+    if(is_debug)return true;
     if(!is_init)
         return false;
     if(!is_enable)
@@ -519,6 +532,7 @@ bool XtMotor::StepMoveSync(double step, int thread)
 
 bool XtMotor::StepMoveSync(double step, bool dir, int thread)
 {
+    if(is_debug)return true;
     double temp_step = step;
     if(!dir)
         temp_step = - step;
@@ -553,6 +567,7 @@ void XtMotor::StopSeeking(int thread)
 
 bool XtMotor::WaitSeekDone(int thread,int timeout)
 {
+    if(is_debug)return true;
     if(!is_init)
         return false;
     if(!is_enable)
@@ -581,6 +596,7 @@ bool XtMotor::WaitSeekDone(int thread,int timeout)
 
 bool XtMotor::WaitStop(int timeout)
 {
+    if(is_debug)return true;
     if(!is_init)
         return true;
     if(!is_enable)
@@ -602,6 +618,7 @@ bool XtMotor::WaitStop(int timeout)
 
 bool XtMotor::SearchPosByADC(double vel, double search_limit, double threshold, bool search_above, double &result)
 {
+    if(is_debug)return true;
     if(!is_init)
         return false;
     if(!is_enable)
@@ -609,15 +626,7 @@ bool XtMotor::SearchPosByADC(double vel, double search_limit, double threshold, 
     int timeout = 100;
     double adc_value;
     int thread = default_using_thread;
-    if(search_limit > max_range)
-    {
-        search_limit = max_range;
-    }
-
-    if(search_limit < min_range)
-    {
-        search_limit = min_range;
-    }
+    CheckLimit(search_limit);
     double old_vel = GetMaxVel();
     XT_Controler::SET_MAX_VEL(thread, axis_id, vel);
     XT_Controler::SGO(thread, axis_id, search_limit);
@@ -663,6 +672,7 @@ bool XtMotor::SearchPosByADC(double vel, double search_limit, double threshold, 
 
 bool XtMotor::SearchPosByIO(double vel, double search_limit, bool search_rise, int io_id, double &result)
 {
+    if(is_debug)return true;
     if(!is_init)
         return false;
     if(!is_enable)
@@ -674,15 +684,7 @@ bool XtMotor::SearchPosByIO(double vel, double search_limit, bool search_rise, i
     double old_vel = GetMaxVel();
     qInfo("Tray Vel:%f",vel);
     SetVel(vel, thread);
-    if(search_limit>max_range)
-    {
-        search_limit=max_range;
-    }
-
-    if(search_limit<min_range)
-    {
-        search_limit=min_range;
-    }
+    CheckLimit(search_limit);
     if(search_limit < currPos)
         negative = max_range;
 

@@ -54,10 +54,10 @@ class LensLoaderModule:public ThreadWorkerBase
     Q_OBJECT
 public:
     LensLoaderModule(QString name = "LensPickArmModule");
-    void Init(LensPickArm *pick_arm,MaterialTray *lens_tray,MaterialCarrier *lut_carrier,
+    void Init(LensPickArm *pick_arm,MaterialTray *tray,MaterialCarrier *lut_carrier,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision,
-              VisionLocation *lap_updownlook_up_vision, VisionLocation *lap_updownlook_down_vision);
-    void ResetLogic();
+              VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision);
+    void resetLogic();
     void loadJsonConfig();
     void saveJsonConfig();
     void performHandling(int cmd);
@@ -77,10 +77,9 @@ private:
     bool performLUTPR();
     bool performUpDownlookDownPR();
     bool performUpdowlookUpPR();
-    void resetPR();
 
     bool moveToWorkPos(bool check_softlanding = false);
-    bool vcmSearchZ(double z,bool check_softlanding = false);
+    bool vcmSearchZ(double z,bool is_open = true,bool check_softlanding = false);
     bool pickTrayLens(bool check_softlanding = false);
     bool placeLensToLUT(bool check_softlanding = false);
     bool pickLUTLens(bool check_softlanding = false);
@@ -96,10 +95,6 @@ private:
     bool moveToUpdownlookUpPos();
 
     bool isRunning();
-    // ErrorBase interface
-public:
-    QString GetCurrentError();
-    ErrorLevel GetCurrentErrorLevel();
     // ThreadWorkerBase interface
 public slots:
     void startWork(bool reset_logic, int run_mode);
@@ -114,17 +109,16 @@ public:
     Position lut_picker_position;
 private:
     LensPickArm *pick_arm = Q_NULLPTR;
-    MaterialTray *lens_tray = Q_NULLPTR;
+    MaterialTray *tray = Q_NULLPTR;
     MaterialCarrier *lut_carrier = Q_NULLPTR;
     VisionLocation * lens_vision = Q_NULLPTR;
     VisionLocation * vacancy_vision = Q_NULLPTR;
     VisionLocation * lut_vision = Q_NULLPTR;
     VisionLocation * lut_lens_vision = Q_NULLPTR;
-    VisionLocation * lap_updownlook_up_vision = Q_NULLPTR;
-    VisionLocation * lap_updownlook_down_vision = Q_NULLPTR;
+    VisionLocation * lpa_updownlook_up_vision = Q_NULLPTR;
+    VisionLocation * lpa_updownlook_down_vision = Q_NULLPTR;
     bool is_run = false;
     bool finish_stop = false;
-    bool debug = true;
     ErrorLevel error_level;
     PrOffset pr_offset;
     materialMessage lut_material;

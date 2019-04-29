@@ -12,14 +12,27 @@ public:
     SensorPickArm(QString name = "SensorPickArm");
     void Init(XtMotor* motor_x,XtMotor* motor_y,MaterialPicker * picker1,MaterialPicker * picker2);
     bool move_XY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
-    bool stepMove_XYT1_Synic(const PrOffset offset,const bool check_softlanding = false,int timeout = 10000);
-    bool stepMove_XYT2_Synic(const PrOffset offset,const bool check_softlanding = false,int timeout = 10000);
-    bool move_XYT_Synic(const PrOffset offset,const bool check_softlanding = false,int timeout = 10000);
+    bool stepMove_XYT1_Synic(const double step_x,const double step_y,const double step_t1,const bool check_softlanding = false,int timeout = 10000);
+    bool stepMove_XYT2_Synic(const double step_x,const double step_y,const double step_t2,const bool check_softlanding = false,int timeout = 10000);
+
+    bool ZSerchByForce(double speed,double force,bool check_softlanding = false,int timeout = 10000);
+    bool ZSerchByForce(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true, int timeout = 10000);
+    bool ZSerchReturn(int timeout = 10000);
+    double GetSoftladngPosition(bool get_current = false);
+
+
+    bool ZSerchByForce2(double speed,double force,bool check_softlanding = false,int timeout = 10000);
+    bool ZSerchByForce2(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true, int timeout = 10000);
+    bool ZSerchReturn2(int timeout = 10000);
+    double GetSoftladngPosition2(bool get_current = false);
+private:
 private:
     XtMotor* motor_x = Q_NULLPTR;
     XtMotor* motor_y = Q_NULLPTR;
     MaterialPicker * picker1 = Q_NULLPTR;
     MaterialPicker * picker2 = Q_NULLPTR;
+    double softlanding_position;
+    double softlanding_position2;
 };
 
 #endif // SENSORPICKARM_H

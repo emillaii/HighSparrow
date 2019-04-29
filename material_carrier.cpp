@@ -1,6 +1,6 @@
 #include "material_carrier.h"
 
-MaterialCarrier::MaterialCarrier()
+MaterialCarrier::MaterialCarrier():ErrorBase ()
 {
 }
 

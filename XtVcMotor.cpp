@@ -317,6 +317,7 @@ bool XtVcMotor::SearchPosByADC(double vel, double search_limit, double threshold
 
 bool XtVcMotor::SearchPosByForce(const double speed,const double force,const double limit,const double margin,const int timeout)
 {
+    if(is_debug)return true;
     if(!is_init)
         return false;
     double start_pos = GetOutpuPos();
@@ -331,6 +332,7 @@ bool XtVcMotor::SearchPosByForce(const double speed,const double force,const dou
 
 bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int timeout)
 {
+    if(is_debug)return true;
     if(!is_init)
         return 0.0;
     double start_pos = GetOutpuPos();
@@ -397,6 +399,7 @@ bool XtVcMotor::DoSoftLanding()
 
 bool XtVcMotor::DoSoftLandingReturn()
 {
+    if(is_debug)return true;
     if(!is_init)
         return false;
     is_returning = true;

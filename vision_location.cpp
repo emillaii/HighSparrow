@@ -1,5 +1,5 @@
 #include "vision_location.h"
-VisionLocation::VisionLocation()
+VisionLocation::VisionLocation():ErrorBase ()
 {
 }
 
@@ -8,7 +8,7 @@ void VisionLocation::Init(VisionModule *vison,Pixel2Mech* mapping, WordopLight *
     this->vison = vison;
     this->mapping = mapping;
     this->lighting = lighting;
-//    loadParam();
+    setName(parameters.locationName());
 }
 
 void VisionLocation::loadParam()

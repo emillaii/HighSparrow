@@ -55,6 +55,7 @@ int XtGeneralOutput::GetID()
 
 void XtGeneralOutput::Set(bool value, int thread)
 {
+    if(is_debug)return;
     if(output_id<0)
         return;
     if(thread<0)
@@ -69,6 +70,7 @@ void XtGeneralOutput::Set(bool value, int thread)
 
 void XtGeneralOutput::SetOnTllTimeSpan(int time_span, int thread)
 {
+    if(is_debug)return;
     if(output_id<0)
         return;
     XT_Controler_Extend::DIGITOUT_PRECIOUTTRIG_SET_OUTPUT_IO(thread,output_id,0,1);
@@ -78,6 +80,7 @@ void XtGeneralOutput::SetOnTllTimeSpan(int time_span, int thread)
 
 void XtGeneralOutput::SetOnTillTimeSpan(int time_span, int thread)
 {
+    if(is_debug)return;
     if(output_id<0)
         return;
     XT_Controler::SET_OUTPUT_IO(thread,output_id,1);

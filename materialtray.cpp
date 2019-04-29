@@ -1,6 +1,6 @@
 #include "materialtray.h"
 
-MaterialTray::MaterialTray():QObject ()
+MaterialTray::MaterialTray():QObject (),ErrorBase ("MateryTray")
 {
     connect(&standards_parameters,&TrayStandardsParameter::trayCountChanged,this,&MaterialTray::changeTrayCount);
 }

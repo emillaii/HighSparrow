@@ -50,6 +50,8 @@ private:
     BaslerPylonCamera * pickarmCamera;
 signals :
     void callQmlRefeshImg();  // Preview 1
+public:
+    bool is_debug = false;
 };
 
 #endif // VISIONMODULE_H

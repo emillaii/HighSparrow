@@ -18,6 +18,7 @@ struct ErrorCodeStruct
     QString errorMessage;
 };
 
+#include <qlist.h>
 #include <qstring.h>
 
 #define DEVICES_MANAGER_NAME "DevicesMannager"
@@ -40,12 +41,14 @@ private:
     ErrorLevel error_level;
     QString error_source;
     QString error_content;
+protected:
+    QList<ErrorBase*> parts;
+public:
+    bool is_debug = false;
 public:
     void setName(QString name);
     void AppendError(QString error);
     void AppendLineError(QString error = "");
-    virtual QString GetCurrentError();
-    void setCurrentErrorLevel(ErrorLevel current_level);
-    virtual ErrorLevel GetCurrentErrorLevel();
+    QString GetCurrentError();
 };
 #endif // ERRORCODE_H

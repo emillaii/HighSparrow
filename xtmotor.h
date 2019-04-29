@@ -8,6 +8,7 @@
 #include "XtGeneralInput.h"
 #include "XtGeneralOutput.h"
 #include "PropertyBase.h"
+#include "errorcode.h"
 
 class XtMotorExtendParameters : public PropertyBase
 {
@@ -24,7 +25,7 @@ public slots:
 };
 
 
-class XtMotor
+class XtMotor:public ErrorBase
 {
 public:
 //static void Move2AxisToPos(XtMotor* axis1,  double pos1, XtMotor *axis2, double pos2, int thread = -1);

@@ -29,6 +29,7 @@ class ThreadWorkerBase : public QObject,public ErrorBase
     Q_OBJECT
 public:
     explicit ThreadWorkerBase(QString name = "UnnamingWorker",QObject *parent = nullptr);
+    ~ThreadWorkerBase();
     Q_PROPERTY(QString Name READ Name WRITE setName NOTIFY NameChanged)
 
     QString Name() const;

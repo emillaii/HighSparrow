@@ -12,7 +12,14 @@ ThreadWorkerBase::ThreadWorkerBase(QString name,QObject *parent) : QObject(paren
     setName(name);
     this->setObjectName(name);
     this->moveToThread(&work_thread);
+//    connect(&work_thread, SIGNAL(finished()), this, SLOT(deleteLater()));
     work_thread.start();
+}
+
+ThreadWorkerBase::~ThreadWorkerBase()
+{
+    work_thread.quit();
+    work_thread.wait();
 }
 
 QString ThreadWorkerBase::Name() const

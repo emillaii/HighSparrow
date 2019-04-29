@@ -45,6 +45,7 @@ void XtCylinder::SET(int thread, bool new_state)
 
 bool XtCylinder::Wait(bool target_state, int timeout,int input_null_delay)
 {
+    if(is_debug)return true;
     int count = timeout;
     bool state_fold , state_unfold;
     if(target_state)

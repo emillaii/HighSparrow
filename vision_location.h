@@ -6,7 +6,7 @@
 #include "visionmodule.h"
 #include "wordoplight.h"
 
-class VisionLocation
+class VisionLocation:public ErrorBase
 {
 public:
     VisionLocation();

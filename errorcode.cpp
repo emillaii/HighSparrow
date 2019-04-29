@@ -23,6 +23,12 @@ void ErrorBase::AppendLineError(QString error)
 
 QString ErrorBase::GetCurrentError()
 {
+    foreach (ErrorBase* temp_error, parts) {
+        QString temp_message = temp_error->GetCurrentError();
+        if(temp_message != "")
+            AppendLineError();
+    }
+
     if("" == error_content)
         return "";
     QString temp_error = error_source;
@@ -30,15 +36,4 @@ QString ErrorBase::GetCurrentError()
     temp_error.append(error_content);
     error_content = "";
     return temp_error;
-}
-
-void ErrorBase::setCurrentErrorLevel(ErrorLevel current_level)
-{
-    error_level = current_level;
-}
-
-ErrorLevel ErrorBase::GetCurrentErrorLevel()
-{
-    error_level = ErrorLevel::TipNonblock;
-    return error_level;
 }

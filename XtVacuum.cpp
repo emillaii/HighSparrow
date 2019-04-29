@@ -32,6 +32,7 @@ void XtVacuum::SET(int thread, bool new_state)
 
 bool XtVacuum::Wait(bool target_state, int timeout,int finish_delay,int input_null_delay)
 {
+    if(is_debug)return true;
     int count = timeout;
     while(count>0)
     {

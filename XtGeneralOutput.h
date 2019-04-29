@@ -1,11 +1,13 @@
 #ifndef XTGENERALOUTPUT_H
 #define XTGENERALOUTPUT_H
+#include "errorcode.h"
+
 #include <windows.h>
 #include <QObject>
 #include <QTime>
 #include <QString>
 
-class XtGeneralOutput
+class XtGeneralOutput:public ErrorBase
 {
 public:
     XtGeneralOutput();
@@ -25,7 +27,7 @@ public:
     QString Name();
 private:
     QString name;
-    int output_id;
+    int output_id = -1;
     bool is_hp;
 public:
     static int count;

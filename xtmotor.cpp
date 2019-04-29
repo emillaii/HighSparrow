@@ -306,7 +306,7 @@ void XtMotor::Home(int thread)
 
 void XtMotor::CheckLimit(double &pos)
 {
-    if(qIsFinite(pos))
+    if(!qIsFinite(pos))
     {
         qInfo("target_position %f is illegal,change to %f",pos,min_range);
         pos = min_range;

@@ -417,16 +417,6 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
     if(!is_enable)
         return false;
     CheckLimit(target_position);
-    if(target_position > max_range)
-    {
-        qInfo("target_position %f to big,change to %f",target_position,max_range);
-        target_position = max_range;
-    }
-    if(target_position < min_range)
-    {
-        qInfo("target_position %f to small,change to %f",target_position,min_range);
-        target_position = min_range;
-    }
     if(fabs(GetFeedbackPos() - target_position) < POS_ERROR)return true;
     while (timeout>0) {
 

@@ -126,7 +126,7 @@ bool BaseModuleManager::SaveParameters()
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)
 {
     bool result = manager->registerWorker(&lens_loader_module);
-//    result &= manager->registerWorker(&lut_module);
+    result &= manager->registerWorker(&lut_module);
     return result;
 }
 

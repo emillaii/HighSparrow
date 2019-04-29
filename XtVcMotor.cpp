@@ -155,11 +155,9 @@ double XtVcMotor::GetFeedbackPos(int decimal_digit) const
         return 0;
 
     {
-//        return GetOutpuPos();
-//        QThread::msleep(5);
-        static int time = 0;
-        qInfo("spance:%d", QTime::currentTime().msec()-time);
-        time = QTime::currentTime().msec();
+//        static int time = 0;
+//        qInfo("spance:%d", QTime::currentTime().msec()-time);
+//        time = QTime::currentTime().msec();
         double val;
         int times = 10;
         do{

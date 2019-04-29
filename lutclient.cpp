@@ -60,7 +60,7 @@ void LutClient::sendLensRequest()
     while (timeout>0 && this->state != LutClientState::LUT_CLIENT_IDLE)
     {
         timeout--;
-        qInfo("Waiting LUT ....");
+        //qInfo("Waiting LUT ....");
         QThread::msleep(1000);
     }
 }

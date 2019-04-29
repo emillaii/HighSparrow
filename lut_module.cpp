@@ -41,6 +41,7 @@ void LutModule::run(bool has_material)
             QJsonObject result;
             qInfo("Start to consume request: %s", getStringFromJsonObject(obj).toStdString().c_str());
             QString client_ip = obj["client_ip"].toString("");
+            servingIP = client_ip;
             QString cmd = obj["cmd"].toString("");
             bool isLocalHost = false;
             if(client_ip == "::1") {
@@ -49,9 +50,10 @@ void LutModule::run(bool has_material)
             }
             if (cmd == "lensReq") {
                 //isLocalHost ? moveToAA1UplookPos() : moveToAA2UplookPos();
+                isLocalHost ? moveToAA1PickLens() : moveToAA2PickLens();
                 result.insert("event", "lensResp");
             }
-            emit sendMessageToClient(obj["client_ip"].toString(), getStringFromJsonObject(result));
+            emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
         }
         if (actionQueue.size()>0 && state == BUSY) {
             QJsonObject obj = actionQueue.dequeue();
@@ -67,14 +69,14 @@ void LutModule::run(bool has_material)
             if (cmd == "prReq") {
                 result.insert("event", "prResp");
             } else if (cmd == "lutLeaveReq") {
-                //moveToUnloadPos();
+                moveToUnloadPos();
                 result.insert("event", "lutLeaveResp");
                 //state = NO_LENS;
                 state = HAS_LENS;
             }
-            emit sendMessageToClient(obj["client_ip"].toString(), getStringFromJsonObject(result));
+            emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
         }
-        qInfo("Working in state : %d", state);
+        //qInfo("Working in state : %d", state);
         QThread::msleep(500);
     }
     qInfo("LUT Module end of thread");
@@ -288,12 +290,15 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
     if(result)
     {
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
-        QJsonObject gripperOffMessage;
-        gripperOffMessage.insert("cmd", "gripperOffReq");
-        emit sendMessageToClient("remote", getStringFromJsonObject(gripperOffMessage));
-        Sleep(250);
-        if(need_return)
-            result &= carrier->ZSerchReturn();
+        if (result) {
+            QJsonObject gripperOffMessage;
+            gripperOffMessage.insert("cmd", "gripperOffReq");
+            emit sendMessageToClient("remote", getStringFromJsonObject(gripperOffMessage));
+            this->load_vacuum->Set(false);
+            Sleep(500);  //ToDo: Put that in UI
+            if(need_return)
+                result &= carrier->ZSerchReturn();
+        }
     }
     return result;
 }

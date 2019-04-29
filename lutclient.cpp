@@ -16,11 +16,14 @@ void LutClient::receiveMessage(QString message)
     QString event = json["event"].toString("");
     QString cmd = json["cmd"].toString("");
     QJsonObject obj;
+    bool isValid = false;
     if (event == "lensResp") {
+        isValid = true;
         qInfo("AA Head need to pick lens");
         this->state = LutClientState::WAITING_LENS_PR_EVENT;
         obj.insert("cmd", "prReq");
     } else if (event == "prResp") {
+        isValid = true;
         qInfo("PR Result...");
         obj.insert("cmd", "lutLeaveReq");
         this->state = LutClientState::WAITING_LUT_LEAVE_EVENT;
@@ -28,20 +31,22 @@ void LutClient::receiveMessage(QString message)
         qInfo("LUT move to load lens position");
         this->state = LutClientState::LUT_CLIENT_IDLE;
         return;
-    } else {
-        return;
     }
     if (cmd == "gripperOnReq") {
+        isValid = true;
         qInfo("AA Gripper On Request");
         emit this->triggerAAGripper(true);
         QThread::msleep(200);
     } else if (cmd == "gripperOffReq") {
+        isValid = true;
         qInfo("AA Gripper Of Request");
         emit this->triggerAAGripper(false);
         QThread::msleep(200);
     }
-    QString jsonString = getStringFromJsonObject(obj);
-    emit sendMessageToServer(jsonString);
+    if (isValid) {
+        QString jsonString = getStringFromJsonObject(obj);
+        emit sendMessageToServer(jsonString);
+    }
 }
 
 void LutClient::sendLensRequest()
@@ -51,7 +56,7 @@ void LutClient::sendLensRequest()
     QString jsonString = getStringFromJsonObject(obj);
     this->state = LutClientState::WAITING_LENS_PICK_EVENT;
     emit sendMessageToServer(jsonString);
-    int timeout = 30;
+    int timeout = 60;
     while (timeout>0 && this->state != LutClientState::LUT_CLIENT_IDLE)
     {
         timeout--;

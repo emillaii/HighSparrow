@@ -140,6 +140,7 @@ bool SutModule::stepMove_Z_Sync(double step_z)
 
 bool SutModule::moveToZPos(double z)
 {
+    qInfo("targert : %f",z);
     return carrier->Move_Z_Sync(z);
 }
 

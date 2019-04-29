@@ -1056,11 +1056,14 @@ bool BaseModuleManager::performLocation(QString location_name)
         return  false;
     }
     PrOffset offset;
-    if(temp_location->parameters.calibrationName().contains("chart_calibraion"))
+    if(temp_location->parameters.calibrationName().contains("chart_calibration"))
     {
         double x,y;
-        if(!temp_caliration->GetPixelPoint(x,y)) return false;
-        offset.X = x; offset.Y = y;
+        if(!temp_caliration->GetPixelPoint(x,y))
+            return false;
+        QPointF result_point;
+        temp_caliration->getDeltaDistanceFromCenter(QPointF(x,y),result_point);
+        offset.X = result_point.x(); offset.Y = result_point.y();
     }
     else
     {

@@ -101,11 +101,13 @@ void LogicManager::run() {
     else if (m_currentMode == CommandType::PERFORM_CALIBRATION)
     {
         baseModuleManage->performCalibration(calibration_name);
+        qInfo("calibration End");
     }
-    else if (m_currentMode == CommandType::PERFORM_CALIBRATION)
-    {
-        baseModuleManage->performCalibration(calibration_name);
-    }
+//    else if (m_currentMode == CommandType::PERFORM_CALIBRATION)
+//    {
+//        baseModuleManage->performCalibration(calibration_name);
+//        qInfo("calibration End");
+//    }
     else if (m_currentMode == CommandType::PERFORM_LOCATION)
     {
         baseModuleManage->performLocation(location_name);

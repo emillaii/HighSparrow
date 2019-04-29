@@ -101,6 +101,18 @@ void AAHeadModule::openUVTillTime(int till_time)
     XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),0);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),0);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),0);
+    XT_Controler::WaitForAllInsFinish(thread_id);
+    XT_Controler::TILLTIME(thread_id,mini_time);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),1);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),1);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),1);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),1);
+    XT_Controler::WaitForAllInsFinish(thread_id);
+    XT_Controler::TILLTIME(thread_id,mini_time);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),0);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),0);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),0);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),0);
 
 }
 

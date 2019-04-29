@@ -17,7 +17,7 @@ typedef enum {
     AA_ZSCAN_NORMAL
 } ZSCAN_MODE;
 
-AACore::AACore(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey* dk, ChartCalibration * chartCalibration,DispenseModule* dispense,QObject *parent) : QThread(parent)
+AACore::AACore(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey* dk, ChartCalibration * chartCalibration,DispenseModule* dispense,ImageGrabbingWorkerThread* imageThread, QObject *parent) : QThread(parent)
 {
     this->aa_head = aa_head;
     this->lut = lut;
@@ -25,7 +25,7 @@ AACore::AACore(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey* dk
     this->dk = dk;
     this->chartCalibration = chartCalibration;
     this->dispense = dispense;
-
+    this->imageThread = imageThread;
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();
     loadParams();
@@ -252,6 +252,7 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
         }
         else if (testItemName.contains(AA_PIECE_INIT_CAMERA)) {
             qInfo("Performing init camera");
+            ret = performInitSensor();
         }
         else if (testItemName.contains(AA_PIECE_PR_TO_BOND)) {
             qInfo("Performing PR To Bond");
@@ -449,6 +450,16 @@ void AACore::performAAOffline()
 
 ErrorCodeStruct AACore::performInitSensor()
 {
+    const int channel = 0;
+    bool res = dk->DothinkeyEnum();
+    if (!res) { qCritical("Cannot find dothinkey"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    dk->DothinkeyOpen();
+    if (!res) { qCritical("Cannot open dothinkey"); ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    dk->DothinkeyLoadIniFile(channel);
+    if (!res) { qCritical("Cannot load dothinkey ini file"); ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    dk->DothinkeyStartCamera(channel);
+    if (!res) { qCritical("Cannot start camera"); ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    imageThread->start();
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 

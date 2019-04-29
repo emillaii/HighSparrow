@@ -24,6 +24,7 @@
 #include "unitlog.h"
 #include "aacoreparameters.h"
 #include "lutclient.h"
+#include "imagegrabbingworkerthread.h"
 typedef enum {
     AA_IDLE_MODE,
     AA_REPEATABILITY_TEST_MODE,
@@ -39,7 +40,10 @@ class AACore : public QThread
 {
     Q_OBJECT
 public:
-    explicit AACore(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk, ChartCalibration * chartCalibration,DispenseModule* dispense,  QObject *parent = nullptr);
+    explicit AACore(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
+                    ChartCalibration * chartCalibration,DispenseModule* dispense,
+                    ImageGrabbingWorkerThread * imageThread,
+                    QObject *parent = nullptr);
     ~AACore();
 
 protected:
@@ -85,6 +89,7 @@ private:
     LutClient* lut;
     SutModule* sut;
     Dothinkey* dk;
+    ImageGrabbingWorkerThread* imageThread;
     ChartCalibration* chartCalibration;
     DispenseModule* dispense;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;

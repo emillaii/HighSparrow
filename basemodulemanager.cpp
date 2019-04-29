@@ -435,7 +435,7 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
         if(data_object["calibrationName"].toString().contains("chart_calibration"))
         {
             qInfo("get chart calibration");
-            temp_calibration = chart_calibration;
+            temp_calibration = chart_calibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH);
         }
         else
             temp_calibration = new Calibration();
@@ -655,12 +655,14 @@ bool BaseModuleManager::InitStruct()
                     GetVacuumByName(sut_module.parameters.vacuumName()),
                     GetCylinderByName(sut_module.parameters.cylinderName()));
     QVector<XtMotor *> executive_motors;
-    executive_motors.push_back(GetMotorByName(lut_module.parameters.motorXName()));
-    executive_motors.push_back(GetMotorByName(lut_module.parameters.motorYName()));
-    executive_motors.push_back(GetMotorByName(lut_module.parameters.motorZName()));
+    executive_motors.push_back(GetMotorByName(sut_module.parameters.motorXName()));
+    executive_motors.push_back(GetMotorByName(sut_module.parameters.motorYName()));
+    executive_motors.push_back(GetMotorByName(sut_module.parameters.motorZName()));
     dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,
                    GetOutputIoByName(dispenser.parameters.dispenseIo()));
-    dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",chart_calibration,&dispenser,visionModule,&sut_carrier,
+    dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",
+                         GetCalibrationByName(GetVisionLocationByName(sut_module.parameters.downlookLocationName())->parameters.calibrationName()),
+                         &dispenser,visionModule,&sut_carrier,
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
@@ -1031,7 +1033,11 @@ bool BaseModuleManager::performCalibration(QString calibration_name)
     if(calibration_name.contains("chart_calibration"))
         return   chart_calibration->performCalibration();
     Calibration* temp_caliration = GetCalibrationByName(calibration_name);
-    if(temp_caliration == nullptr)return  false;
+    if(temp_caliration == nullptr)
+    {
+        qInfo("not calibration %s",calibration_name.toStdString().c_str());
+        return  false;
+    }
     return  temp_caliration->performCalibration();
 }
 

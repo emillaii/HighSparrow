@@ -74,8 +74,7 @@ void DispenseModule::moveToDispenseDot(bool record_z)
     {
         return;
     }
-    double result;
-    if(carrier->ZSerchByForce(result,parameters.testForce()))
+    if(carrier->ZSerchByForce(10,parameters.testForce()))
     {
         if(dispense_io != nullptr)
         dispense_io->Set(true);
@@ -136,6 +135,7 @@ bool DispenseModule::performDispense()
        else type = PATH_POINT_OPEN_VALVE;
        dispense_path.append(DispensePathPoint(3,pos,type));
    }
+   qInfo("Dispense start");
    if( dispenser->Dispense(dispense_path))
        return dispenser->WaitForFinish();
     qInfo("Dispense fail");

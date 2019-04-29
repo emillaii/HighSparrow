@@ -26,6 +26,7 @@ bool LensPickArm::move_XtXY_Synic(QPointF position,double x,bool check_softlandi
     return resut;
 }
 
+
 bool LensPickArm::move_XY_Synic(double x, double y, bool check_softlanding, int timeout)
 {
     qInfo("move to (%f,%f)",x,y);

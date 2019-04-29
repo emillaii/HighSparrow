@@ -91,6 +91,7 @@ private:
     bool moveToTrayPos(int tray_index);
     bool moveToStartPos(int tray_index);
     bool moveToTray1EndPos();
+
     bool moveToUpdownlookDownPos();
     bool moveToUpdownlookUpPos();
 
@@ -115,6 +116,7 @@ private:
     VisionLocation * vacancy_vision = Q_NULLPTR;
     VisionLocation * lut_vision = Q_NULLPTR;
     VisionLocation * lut_lens_vision = Q_NULLPTR;
+
     VisionLocation * lpa_updownlook_up_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_down_vision = Q_NULLPTR;
     bool is_run = false;

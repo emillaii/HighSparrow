@@ -76,7 +76,6 @@ public:
     {
         return m_lueLensLocationName;
     }
-
     QString lpaUpdownlookUpLocationName() const
     {
         return m_uplookPickLocation;

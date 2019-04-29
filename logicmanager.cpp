@@ -50,7 +50,8 @@ void LogicManager::run() {
         baseModuleManage->stopSeeking();
     }
     else if (m_currentMode == CommandType::MODE_AUTO_RUN) {
-        baseModuleManage->lut_module.start();
+
+        //baseModuleManage->lut_module.start();
         aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_AUTO_MODE, uuid);
         aaCore->wait();
     }

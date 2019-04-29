@@ -11,12 +11,20 @@
 #include "sparrowqserver.h"
 #include <QObject>
 #include <QQueue>
+#include "thread_worker_base.h"
 
-class LutModule : public QThread
+enum LUTState
+{
+    NO_LENS,
+    HAS_LENS,
+    BUSY
+};
+
+class LutModule : public ThreadWorkerBase
 {
     Q_OBJECT
 public:
-    explicit LutModule(QObject * parent = nullptr);
+    explicit LutModule(QString name = "LUTModule", QObject * parent = nullptr);
     void Init(MaterialCarrier* carrier,
               VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location,
               XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper);
@@ -39,8 +47,14 @@ public:
 signals:
     void sendMessageToClient(QString destAddress, QString message);
 public slots:
+    //ThreadWorkerBase
+    void startWork(bool reset_logic, int run_mode) override;
+    void stopWork(bool wait_finish) override;
+    void performHandlingOperation(int cmd) override;
+    //End of ThreadWorkerBase
     void saveJsonConfig();
     void receiveRequestMessage(QString string, QString client_ip);
+    LUTState getLUTState();
 private:
     MaterialCarrier* carrier;
     VisionLocation* uplook_location;
@@ -49,12 +63,14 @@ private:
     XtGeneralOutput* gripper;
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;
-protected:
-    void run();
-private:
     PRResultStruct pr_result;
     SparrowQServer * server;
     QQueue<QJsonObject> requestQueue;
+    QQueue<QJsonObject> actionQueue;
+    LUTState state = NO_LENS;
+    bool is_run = false;
+    void run(bool has_material);
+
 public:
     Q_INVOKABLE bool moveToAA1UplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);

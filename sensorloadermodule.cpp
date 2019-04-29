@@ -1,4 +1,4 @@
-#include "sensorloadermodule.h"
+﻿#include "sensorloadermodule.h"
 
 SensorLoaderModule::SensorLoaderModule():ThreadWorkerBase ("SensorLoader")
 {
@@ -38,6 +38,7 @@ bool SensorLoaderModule::loadJsonConfig()
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
     PropertyBase::loadJsonConfig("config//SensorLoaderModule.json", temp_map);
+    return true;
 }
 
 void SensorLoaderModule::saveJsonConfig()
@@ -348,6 +349,13 @@ bool SensorLoaderModule::performSensorPR()
 {
     qInfo("performSensorPR");
     return  sensor_vision->performPR(pr_offset);
+}
+
+bool SensorLoaderModule::performVacancyPR()
+{
+    qInfo("performSensorPR");
+    return  vacancy_vision->performPR(pr_offset);
+
 }
 
 bool SensorLoaderModule::performSUTSensorPR()

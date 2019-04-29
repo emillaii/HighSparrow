@@ -116,11 +116,11 @@ private:
     VisionLocation * vacancy_vision = Q_NULLPTR;
     VisionLocation * lut_vision = Q_NULLPTR;
     VisionLocation * lut_lens_vision = Q_NULLPTR;
-
     VisionLocation * lpa_updownlook_up_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_down_vision = Q_NULLPTR;
     bool is_run = false;
     bool finish_stop = false;
+    bool debug = false;
     ErrorLevel error_level;
     PrOffset pr_offset;
     materialMessage lut_material;

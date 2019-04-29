@@ -463,10 +463,8 @@ ErrorCodeStruct AACore::performPRToBond()
 
 ErrorCodeStruct AACore::performAAPickLens()
 {
-//    if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
-//    if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
-//    if(!this->lut->moveToAA1PickLens()){return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT AA1 ccan not move to pick lens"};}
-//    if(!this->lut->moveToLoadPos()){return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT ccan not move to lut load pos"};}
+    if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
+    if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
     this->lut->sendLensRequest();
     qInfo("Done Pick Lens");
     return ErrorCodeStruct {ErrorCode::OK, ""};

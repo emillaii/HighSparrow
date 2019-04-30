@@ -29,7 +29,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     }
     cv::Rect roi;
     double area = patterns[0].area;
-    roi.width = sqrt(area)*1.3;
+    roi.width = sqrt(area)*1.45;
     roi.height = roi.width;
 
     cv::Mat ccMat, ulMat, urMat, llMat, lrMat;
@@ -107,7 +107,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     // QElapsedTimer timerTest;
     // timerTest.start();
     vector<Sfr_entry> sv = sfr::calculateSfr(z, ulMat, edgeFilter);
-    int tolerence = 50;
+    int tolerence = 70;
     bool isULIndexFound = false;
     bool isURIndexFound = false;
     bool isLLIndexFound = false;

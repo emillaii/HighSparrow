@@ -764,6 +764,8 @@ ErrorCodeStruct AACore::performMTF()
             lrROIIndex = i;
         }
     }
+    map.insert("OC_X", sfr_entry[ccROIIndex].px - imageWidth/2);
+    map.insert("OC_Y", sfr_entry[ccROIIndex].py - imageHeight/2);
     map.insert("CC_SFR", sfr_entry[ccROIIndex].sfr);
     map.insert("UR_SFR", sfr_entry[urROIIndex].sfr);
     map.insert("UL_SFR", sfr_entry[ulROIIndex].sfr);

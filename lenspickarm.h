@@ -18,9 +18,10 @@ public:
     bool stepMove_XYTp_Synic(PrOffset position,bool check_softlanding = false,int timeout = 10000);
     bool Move_SZ_Sync(double z,bool check_softlanding = false,int timeout = 10000);
     bool ZSerchByForce(double speed,double force,bool check_softlanding = false,int timeout = 10000);
-    bool ZSerchByForce(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true, int timeout = 10000);
+    bool ZSerchByForce(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true, bool need_z_return = true, int timeout = 10000);
     bool ZSerchReturn(int timeout = 10000);
     double GetSoftladngPosition(bool get_current = false);
+    bool pickarmVaccum(bool isOn);
 private:
     XtMotor *motor_x_tray = Q_NULLPTR;
     XtMotor *motor_x = Q_NULLPTR;

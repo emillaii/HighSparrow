@@ -43,6 +43,9 @@ public:
     Q_INVOKABLE void lutMoveToAA1UplookPos();
     Q_INVOKABLE void lutMoveToAA2UplookPos();
 
+    Q_INVOKABLE void lutPickLensToAA1();
+    Q_INVOKABLE void lutPickLensToAA2();
+
     Q_INVOKABLE void performChartCalibration();
     Q_INVOKABLE void performCalibration(QString calibration_name);
     Q_INVOKABLE void performLocation(QString location_name);

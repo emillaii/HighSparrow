@@ -185,6 +185,8 @@ void LensLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
+
+
             if(!placeLensToLUT())
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
@@ -311,26 +313,33 @@ bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
                     lut_picker_position.Y() - lut_camera_position.Y() - pr_offset.Y,pr_offset.Theta);
     qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
     bool result = pick_arm->stepMove_XYTp_Synic(temp,check_softlanding);
+    qInfo("Step move finished");
     pr_offset.ReSet();
     return  result;
 }
 
 bool LensLoaderModule::vcmSearchZ(double z,bool is_open,bool check_softlanding)
 {
-    qInfo("vcmSearchZ");
-    return pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,check_softlanding);
+    qInfo("vcmSearchZ limit: %f timeout: %d", z, parameters.finishDelay());
+
+    return pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open);
 }
 
 bool LensLoaderModule::pickTrayLens(bool check_softlanding)
 {
     qInfo("pickTrayLens");
-    return vcmSearchZ(parameters.pickLensZ(),false,check_softlanding);
+//    bool result = pick_arm->Move_SZ_Sync(parameters.pickLensZ());
+//    result = pick_arm->pickarmVaccum(true);
+//    Sleep(250);
+//    pick_arm->Move_SZ_Sync(parameters.placeLensZ())
+    bool result = vcmSearchZ(parameters.pickLensZ(),true,check_softlanding);
+    return result;
 }
 
 bool LensLoaderModule::placeLensToLUT(bool check_softlanding)
 {
     qInfo("placeLensToLUT");
-    return vcmSearchZ(parameters.placeLensZ(),check_softlanding);
+    return vcmSearchZ(parameters.placeLensZ(), false,check_softlanding);
 }
 
 bool LensLoaderModule::pickLUTLens(bool check_softlanding)
@@ -347,7 +356,7 @@ bool LensLoaderModule::placeLensToTray(bool check_softlanding)
 
 bool LensLoaderModule::measureHight(bool is_tray)
 {
-    qInfo("measureHight");
+    qInfo("measureHight speed: %f force: %f", parameters.vcmWorkSpeed(), parameters.vcmWorkForce());
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         if(is_tray)
@@ -367,8 +376,8 @@ bool LensLoaderModule::moveToTrayPos(int index, int tray_index)
 
 bool LensLoaderModule::moveToTrayPos(int tray_index)
 {
-    qInfo("moveToTrayPos%d",tray_index);
-    return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),true);
+    qInfo("moveToTrayPos %d",tray_index);
+    return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),false);
 }
 
 bool LensLoaderModule::moveToStartPos(int tray_index)
@@ -472,12 +481,14 @@ void LensLoaderModule::performHandlingOperation(int cmd)
     if(!result)
     {
 //        finished_type = FinishedType::Alarm;
+        qInfo("Move To Work Pos fail");
         return;
     }
     cmd =cmd/1000*1000;
+    qInfo("cmd : %d", cmd);
     if(cmd%10000 == handlePickerAction::PICK_LENS_FROM_TRAY)
         result = pickTrayLens(true);
-    else if(cmd%1000 == handlePickerAction::PLACE_LENS_TO_LUT)
+    else if(cmd%10000 == handlePickerAction::PLACE_LENS_TO_LUT)
         result = placeLensToLUT(true);
     else if(cmd%10000 == handlePickerAction::PICK_NG_LENS_FROM_LUT)
         result = pickLUTLens(true);

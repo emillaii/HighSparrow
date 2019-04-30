@@ -70,13 +70,16 @@ bool LensPickArm::ZSerchByForce(double speed, double force,bool check_softlandin
     return result;
 }
 
-bool LensPickArm::ZSerchByForce(double speed, double force, double limit, double margin,int finish_time,bool open_vacuum, int timeout)
+bool LensPickArm::ZSerchByForce(double speed, double force, double limit, double margin,int finish_time,bool open_vacuum, bool need_z_return, int timeout)
 {
-    bool result = picker->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
+    bool result = picker->motor_z->SearchPosByForce(speed,force,limit,margin, timeout);
     if(result)
         result &= picker->vacuum->Set(open_vacuum,true,finish_time);
+    else {
+        qInfo("SearchPosByForce fail");
+    }
     softlanding_position = picker->motor_z->GetFeedbackPos();
-    result &= picker->motor_z->DoSoftLandingReturn();
+    if (need_z_return) result &= picker->motor_z->DoSoftLandingReturn();
     return result;
 }
 
@@ -90,6 +93,11 @@ double LensPickArm::GetSoftladngPosition(bool get_current)
     if(get_current)
         return picker->motor_z->GetFeedbackPos();
     return softlanding_position;
+}
+
+bool LensPickArm::pickarmVaccum(bool isOn)
+{
+    return picker->vacuum->Set(isOn);
 }
 
 QString LensPickArm::GetCurrentError()

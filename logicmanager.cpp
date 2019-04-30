@@ -19,6 +19,8 @@ enum CommandType{
     LUT_MOVETO_LOAD_UPLOOK_CMD,
     LUT_MOVETO_AA1_UPLOOK_CMD,
     LUT_MOVETO_AA2_UPLOOK_CMD,
+    LUT_PICK_LENS_TO_AA2_CMD,
+    LUT_PICK_LENS_TO_AA1_CMD,
     PERFORM_CALIBRATION,
     PERFORM_LOCATION,
     PERFORM_OC,
@@ -105,11 +107,15 @@ void LogicManager::run() {
         baseModuleManage->performCalibration(calibration_name);
         qInfo("calibration End");
     }
-//    else if (m_currentMode == CommandType::PERFORM_CALIBRATION)
-//    {
-//        baseModuleManage->performCalibration(calibration_name);
-//        qInfo("calibration End");
-//    }
+    else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA1_CMD)
+    {
+        baseModuleManage->lut_module.moveToAA1PickLens();
+    }
+    else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA2_CMD)
+    {
+        qInfo("Move To AA2 PickLens");
+        baseModuleManage->lut_module.moveToAA2PickLens();
+    }
     else if (m_currentMode == CommandType::PERFORM_LOCATION)
     {
         baseModuleManage->performLocation(location_name);
@@ -159,6 +165,9 @@ void LogicManager::lutMoveToUnloadPos(){setStateMessage(__FUNCTION__);moveToCmd(
 void LogicManager::lutMoveToLoadUplookPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_MOVETO_LOAD_UPLOOK_CMD);}
 void LogicManager::lutMoveToAA1UplookPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_MOVETO_AA1_UPLOOK_CMD);}
 void LogicManager::lutMoveToAA2UplookPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_MOVETO_AA2_UPLOOK_CMD);}
+
+void LogicManager::lutPickLensToAA1(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_PICK_LENS_TO_AA1_CMD);}
+void LogicManager::lutPickLensToAA2(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_PICK_LENS_TO_AA2_CMD);}
 
 void LogicManager::performChartCalibration()
 {
@@ -274,7 +283,7 @@ void LogicManager::lensPickArmMoveToPlaceLensToLut()
     baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS1+
                                                            HandlePR::RESET_PR+
                                                            HandleToWorkPos::ToWork+
-                                                           handlePickerAction::PLACE_NG_LENS_TO_TRAY);
+                                                           handlePickerAction::PLACE_LENS_TO_LUT);
 }
 
 void LogicManager::lensPickArmLensPR()

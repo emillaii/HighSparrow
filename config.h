@@ -199,7 +199,7 @@
 #define ICON_MOVE            ":/images/icon/move.png"
 #define ICON_NO_IMAGE        ":/images/icon/no_image_placeholder.png"
 
-#define POS_ERROR           0.001
+#define POS_ERROR           0.01
 
 //Flowchart Params
 #define AA_PIECE_START "Start"

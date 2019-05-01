@@ -17,6 +17,11 @@ void LutModule::openServer(int port)
     connect(this, &LutModule::sendMessageToClient, this->server, &SparrowQServer::sendMessageToClient);
 }
 
+int LutModule::getConnectedClient()
+{
+    return server->getConnectedClients();
+}
+
 void LutModule::receiveRequestMessage(QString message, QString client_ip)
 {
     qInfo("Lut Module receive command:%s from ip: %s", message.toStdString().c_str(), client_ip.toStdString().c_str());

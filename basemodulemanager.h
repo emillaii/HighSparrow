@@ -43,6 +43,7 @@ public:
     Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged)
     Q_PROPERTY(int ServerMode READ ServerMode WRITE setServerMode NOTIFY paramsChanged)
     Q_PROPERTY(int ServerPort READ ServerPort WRITE setServerPort NOTIFY paramsChanged)
+    Q_PROPERTY(bool HomeState READ HomeState WRITE setHomeState NOTIFY paramsChanged)
     Q_PROPERTY(QString ServerURL READ ServerURL WRITE setServerURL NOTIFY paramsChanged)
 
     QMap<QString,XtMotor*> motors;
@@ -132,6 +133,11 @@ public slots:
         emit paramsChanged();
     }
 
+    void setHomeState(bool HomeState)
+    {
+        m_HomeState = HomeState;
+    }
+
 private:
     bool is_init;
     bool profile_loaded;
@@ -148,6 +154,8 @@ private:
     int m_ServerPort = 9999;
     QString m_ServerURL = "ws://localhost:61916";
     int m_ServerMode = 0;
+
+    bool m_HomeState = false;
 
 public:
     bool LoadProfile();
@@ -198,6 +206,7 @@ public:
     Q_INVOKABLE QString getMotorsName(int);
 
     Q_INVOKABLE void updateParams();
+
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);
     XtGeneralOutput *GetOutputIoByName(QString name);
@@ -218,6 +227,10 @@ public:
     QString ServerURL() const
     {
         return m_ServerURL;
+    }
+    bool HomeState() const
+    {
+        return m_HomeState;
     }
 };
 

@@ -20,6 +20,7 @@ Q_SIGNALS:
     void receiveRequestMessage(QString, QString);
 public Q_SLOTS:
     void sendMessageToClient(QString destAddress, QString message);
+    int getConnectedClients();
 private Q_SLOTS:
     void onNewConnection();
     void processTextMessage(QString message);

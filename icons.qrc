@@ -12,5 +12,6 @@
         <file>icons/settings_input_composite.png</file>
         <file>icons/auto-run.png</file>
         <file>icons/stop.png</file>
+        <file>icons/flowchart_1.png</file>
     </qresource>
 </RCC>

@@ -35,6 +35,11 @@ void SparrowQServer::onNewConnection()
     m_clients << pSocket;
 }
 
+int SparrowQServer::getConnectedClients()
+{
+    return m_clients.size();
+}
+
 void SparrowQServer::processTextMessage(QString message)
 {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());

@@ -125,8 +125,9 @@ bool BaseModuleManager::SaveParameters()
 
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)
 {
-    bool result = manager->registerWorker(&lens_loader_module);
-    result &= manager->registerWorker(&lut_module);
+    bool result = true;
+    if (this->ServerMode() == 0) result = manager->registerWorker(&lens_loader_module);
+    if (this->ServerMode() == 0) result = manager->registerWorker(&lut_module);
     return result;
 }
 
@@ -848,6 +849,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     if(result)
     {
         qInfo("all motors seeked origin");
+        setHomeState(true);
         return true;
     }
     return false;
@@ -880,6 +882,7 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
 
     qInfo("all motor seeked origin successed!");
+    setHomeState(true);
     return  true;
 }
 

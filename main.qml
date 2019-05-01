@@ -226,12 +226,12 @@ ApplicationWindow {
                }
            }
            ToolButton {
-               text: qsTr("Run Flowchart")
+               text: qsTr("运行流程图")
                transformOrigin: Item.Center
                display: Button.TextUnderIcon
                icon.width: 30
                icon.height: 30
-               icon.source: "icons/auto-run.png"
+               icon.source: "icons/flowchart_1.png"
                icon.color: "deepskyblue"
                onClicked: {
                    var command = "document.getElementsByClassName('get_data')[0].click()";
@@ -272,10 +272,40 @@ ApplicationWindow {
                icon.color: "red"
                onClicked: {
                    workersManager.stopWorkers(true)
-                    //logicManager.stop()
+                   logicManager.stop()
                }
            }
 
+           Timer {
+               interval: 500; running: true; repeat: true
+               onTriggered: {
+                    if (baseModuleManager.HomeState) {
+                        homeSignal.color = "green"
+                    }
+                    else {
+                        homeSignal.color = "red"
+                    }
+                    console.log(lutModule.getConnectedClient())
+                    if (lutModule.getConnectedClient() > 0) {
+                        lutSignal.color = "green"
+                    }
+               }
+           }
+
+           RoundButton {
+               text: qsTr("Home")
+               background: Rectangle {
+                   id: homeSignal
+                   color: "red"
+               }
+           }
+           RoundButton {
+               text: qsTr("LUT")
+               background: Rectangle {
+                   id: lutSignal
+                   color: "red"
+               }
+           }
         }
     }
 

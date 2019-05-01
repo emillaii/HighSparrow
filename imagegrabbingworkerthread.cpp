@@ -3,7 +3,7 @@
 #include "sfr.h"
 #include <QFileDialog>
 #include <QTextStream>
-
+#include "commonutils.h"
 QImage ImageGrabbingWorkerThread::cvMat2QImage(const cv::Mat& mat)
 {
     // 8-bits unsigned, NO. OF CHANNELS = 1
@@ -86,3 +86,13 @@ void ImageGrabbingWorkerThread::toggleMTFLive(int count)
     index = 0;
 }
 
+void ImageGrabbingWorkerThread::saveImage()
+{
+    QMutexLocker locker(&mutex);
+    QString imageName;
+    imageName.append(getGrabberLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".jpg");
+    locker.unlock();
+    this->latestImage.save(imageName);
+}

@@ -72,6 +72,7 @@ private:
     void run(bool has_material);
     QString servingIP = "";
 public:
+    Q_INVOKABLE int getConnectedClient();
     Q_INVOKABLE bool moveToAA1UplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UplookPos(bool check_autochthonous = false);

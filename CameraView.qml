@@ -16,6 +16,115 @@ Grid {
     }
 
     Frame {
+        id: frame3
+        width: grid.width/2
+        height: grid.height/2
+        Image {
+            id: image3
+            anchors.fill: parent
+            source: "icons/sparrow.png"
+            fillMode: Image.PreserveAspectFit
+            cache: false
+
+            Rectangle {
+                color: "pink"
+                opacity: 0.8
+                x: (image3.width - image3.paintedWidth)/2
+                y: image3.height/2
+                width: image3.paintedWidth
+                height: 1
+            }
+            Rectangle {
+                color: "pink"
+                opacity: 0.8
+                x: image3.width/2
+                y: (image3.height - image3.paintedHeight)/2
+                width: 1
+                height: image3.paintedHeight
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    var borderX = (image3.width - image3.paintedWidth) / 2
+                    var borderY = (image3.height - image3.paintedHeight) / 2
+                    if (mouseX < borderX || mouseX > image3.width - borderX ||
+                        mouseY < borderY || mouseY > image3.height - borderY)
+                    {
+                        return console.log("Image Click Out of range")
+                    }
+
+                    var delta = calculateOffset(image3.width, image3.height, mouseX, mouseY,
+                                                image3.sourceSize.width/image3.paintedWidth,
+                                                image3.sourceSize.height/image3.paintedHeight)
+                    console.log("x: " + delta.x +  " y:" + delta.y)
+                }
+            }
+            Text {
+                id: element
+                x: -12
+                y: -12
+                color: "#9ef678"
+                text: qsTr("Image Grabber")
+                wrapMode: Text.WordWrap
+                elide: Text.ElideLeft
+                fontSizeMode: Text.Fit
+                lineHeight: 3.1
+                anchors.fill: parent
+                font.pixelSize: 12
+            }
+            Slider {
+                id: slider3
+                y: 250
+                width: 120
+                height: 48
+                stepSize: 1
+                to: 255
+                from: 0
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: -22
+                anchors.left: parent.left
+                anchors.leftMargin: -5
+                value: 0
+                onValueChanged: {
+                    //lightingController.setPickarmLighting(value)
+                }
+                Label {
+                    y: 10
+                    color: "#46eb46"
+                    text: slider3.value
+                    font.pointSize: 20
+                    font.family: "Times New Roman"
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 8
+                    anchors.left: parent.left
+                    anchors.leftMargin: 117
+                }
+                Button {
+                    x: 241
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "lightGreen"
+                    icon.source: "icons/save.png"
+                    onClicked: {
+                        console.log("Save Image Grabber Image")
+                    }
+                }
+            }
+        }
+        Connections {
+            target: imageGrabberThread
+            onCallQmlRefeshImg: {
+                image3.source = ""
+                image3.source = "image://imageGrabberLiveImage"
+            }
+        }
+    }
+
+    Frame {
         id: frame
         width: grid.width/2
         height: grid.height/2
@@ -62,11 +171,10 @@ Grid {
                 }
             }
             Text {
-                id: element
                 x: -12
                 y: -12
                 color: "#9ef678"
-                text: qsTr("LUT Uplook Camera")
+                text: qsTr("Uplook Camera")
                 wrapMode: Text.WordWrap
                 elide: Text.ElideLeft
                 fontSizeMode: Text.Fit
@@ -290,6 +398,18 @@ Grid {
                     console.log("x: " + delta.x +  " y:" + delta.y)
                 }
             }
+            Text {
+                x: -12
+                y: -12
+                color: "#9ef678"
+                text: qsTr("Pickarm Camera")
+                wrapMode: Text.WordWrap
+                elide: Text.ElideLeft
+                fontSizeMode: Text.Fit
+                lineHeight: 3.1
+                anchors.fill: parent
+                font.pixelSize: 12
+            }
             Slider {
                 id: slider1
                 y: 250
@@ -336,58 +456,4 @@ Grid {
         }
     }
 
-    Frame {
-        id: frame3
-        width: grid.width/2
-        height: grid.height/2
-        Image {
-            id: image3
-            anchors.fill: parent
-            source: "icons/sparrow.png"
-            fillMode: Image.PreserveAspectFit
-            cache: false
-
-            Rectangle {
-                color: "pink"
-                opacity: 0.8
-                x: (image3.width - image3.paintedWidth)/2
-                y: image3.height/2
-                width: image3.paintedWidth
-                height: 1
-            }
-            Rectangle {
-                color: "pink"
-                opacity: 0.8
-                x: image3.width/2
-                y: (image3.height - image3.paintedHeight)/2
-                width: 1
-                height: image3.paintedHeight
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    var borderX = (image3.width - image3.paintedWidth) / 2
-                    var borderY = (image3.height - image3.paintedHeight) / 2
-                    if (mouseX < borderX || mouseX > image3.width - borderX ||
-                        mouseY < borderY || mouseY > image3.height - borderY)
-                    {
-                        return console.log("Image Click Out of range")
-                    }
-
-                    var delta = calculateOffset(image3.width, image3.height, mouseX, mouseY,
-                                                image3.sourceSize.width/image3.paintedWidth,
-                                                image3.sourceSize.height/image3.paintedHeight)
-                    console.log("x: " + delta.x +  " y:" + delta.y)
-                }
-            }
-        }
-        Connections {
-            target: imageGrabberThread
-            onCallQmlRefeshImg: {
-                image3.source = ""
-                image3.source = "image://imageGrabberLiveImage"
-            }
-        }
-    }
 }

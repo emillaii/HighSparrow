@@ -36,7 +36,7 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
 void LutModule::run(bool has_material)
 {
     qInfo("Start Lut Module Thread");
-    state = HAS_LENS;
+    state = HAS_LENS;  //ToDo: How to detect whether this has lens or not ?
     is_run = true;
     while(is_run){
         if (requestQueue.size()>0 && state == HAS_LENS) {

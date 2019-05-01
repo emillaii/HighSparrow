@@ -476,7 +476,7 @@ ErrorCodeStruct AACore::performAAPickLens()
 {
     if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
     if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
-    this->lut->sendLensRequest();
+    if (!this->lut->sendLensRequest()){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"}; }
     qInfo("Done Pick Lens");
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }

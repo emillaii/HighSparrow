@@ -45,7 +45,7 @@ Page {
                     }
                 }
 
-                FeatureButton {
+                Button {
                     id: navigationFeatureButton
                     text: qsTr("边缘视觉")
                     icon.name: "navigation"
@@ -53,28 +53,10 @@ Page {
                     Layout.fillHeight: true
                 }
 
-                FeatureButton {
+                Button {
                     id: featureButton
                     text: qsTr("机械视觉")
                     icon.source: "icons/select.png"
-                    Layout.fillHeight: true
-                }
-
-                FeatureButton {
-                    text: qsTr("Navigation")
-                    icon.name: "message"
-                    Layout.fillHeight: true
-                }
-
-                FeatureButton {
-                    text: qsTr("Navigation")
-                    icon.name: "command"
-                    Layout.fillHeight: true
-                }
-
-                FeatureButton {
-                    text: qsTr("Settings")
-                    icon.name: "settings"
                     Layout.fillHeight: true
                 }
             }

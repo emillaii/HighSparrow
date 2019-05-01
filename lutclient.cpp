@@ -49,7 +49,7 @@ void LutClient::receiveMessage(QString message)
     }
 }
 
-void LutClient::sendLensRequest()
+bool LutClient::sendLensRequest()
 {
     QJsonObject obj;
     obj.insert("cmd", "lensReq");
@@ -63,4 +63,9 @@ void LutClient::sendLensRequest()
         //qInfo("Waiting LUT ....");
         QThread::msleep(1000);
     }
+    if (timeout == 0) {
+        qInfo("Lut Client send lens request timeout. current state = %d", this->state);
+        return false;
+    }
+    return true;
 }

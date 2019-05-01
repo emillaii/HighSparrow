@@ -52,7 +52,7 @@ public:
     QMap<QString,VisionLocation*> vision_locations;
     QMap<QString,XtVacuum*> vacuums;
     QMap<QString,XtCylinder*> cylinder;
-    ChartCalibration * chart_calibration;
+    ChartCalibration * chart_calibration = Q_NULLPTR;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonPickarmCamera = Q_NULLPTR;

@@ -637,9 +637,11 @@ bool BaseModuleManager::InitStruct()
                               GetMotorByName(temp_calibraion->parameters.motorYName()),
                               GetVisionLocationByName(temp_calibraion->parameters.locationName()));
     }
-    chart_calibration->Init(GetMotorByName(chart_calibration->parameters.motorXName()),
-                           GetMotorByName(chart_calibration->parameters.motorYName()),
-                           nullptr);
+    if (chart_calibration) {
+        chart_calibration->Init(GetMotorByName(chart_calibration->parameters.motorXName()),
+                               GetMotorByName(chart_calibration->parameters.motorYName()),
+                               nullptr);
+    }
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
     }

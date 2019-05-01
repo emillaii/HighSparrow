@@ -21,10 +21,14 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
 {
     qInfo("Lut Module receive command:%s from ip: %s", message.toStdString().c_str(), client_ip.toStdString().c_str());
     QJsonObject obj = getJsonObjectFromString(message);
+    QString cmd = obj["cmd"].toString("");
     obj.insert("client_ip",client_ip);
-    if (obj["cmd"] == "lensReq")
+    if (cmd == "lensReq") {
+        qInfo("Enqueue the lens request command in request quene");
         requestQueue.enqueue(obj);
-    else {
+    }
+    else if (cmd.length() > 0) {
+        qInfo("Enqueue the %s in action queue", cmd.toStdString().c_str());
         actionQueue.enqueue(obj);
     }
 }
@@ -76,8 +80,7 @@ void LutModule::run(bool has_material)
             }
             emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
         }
-        //qInfo("Working in state : %d", state);
-        QThread::msleep(500);
+        QThread::msleep(100);
     }
     qInfo("LUT Module end of thread");
 }
@@ -120,7 +123,6 @@ void LutModule::saveJsonConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LUT_PARAMS", &parameters);
-//    temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &load_position);
     temp_map.insert("UNLOAD_POSITION", &unload_position);
     temp_map.insert("LOAD_UPLOOK_POSITION", &load_uplook_position);
@@ -132,10 +134,6 @@ void LutModule::saveJsonConfig()
     temp_map.insert("AA2_PICKLENS_POSITION", &aa2_picklens_position);
     temp_map.insert("AA2_UNPICKLENS_POSITION", &aa2_unpicklens_position);
     temp_map.insert("AA2_UPLOOK_POSITION", &aa2_uplook_position);
-//    temp_map.insert("VISION_UPLOOK_LOCATION", &this->uplook_location->parameters);
-//    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->updownlook_location->parameters);
-//    temp_map.insert("VISION_LOAD_LOCATION", &this->load_location->parameters);
-//    temp_map.insert("VISION_MUSHROOM_LOCATION", &this->mushroom_location->parameters);
     PropertyBase::saveJsonConfig("config//lutConfig.json", temp_map);
 }
 
@@ -143,7 +141,6 @@ void LutModule::loadParams()
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LUT_PARAMS", &parameters);
-//    temp_map.insert("LUT_CARRIER_PARAMS", &this->carrier->parameters);
     temp_map.insert("LOAD_POSITION", &load_position);
     temp_map.insert("UNLOAD_POSITION", &unload_position);
     temp_map.insert("LOAD_UPLOOK_POSITION", &load_uplook_position);
@@ -155,10 +152,6 @@ void LutModule::loadParams()
     temp_map.insert("AA2_PICKLENS_POSITION", &aa2_picklens_position);
     temp_map.insert("AA2_UNPICKLENS_POSITION", &aa2_unpicklens_position);
     temp_map.insert("AA2_UPLOOK_POSITION", &aa2_uplook_position);
-//    temp_map.insert("VISION_UPLOOK_LOCATION", &this->uplook_location->parameters);
-//    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->updownlook_location->parameters);
-//    temp_map.insert("VISION_LOAD_LOCATION", &this->load_location->parameters);
-//    temp_map.insert("VISION_MUSHROOM_LOCATION", &this->mushroom_location->parameters);
     PropertyBase::loadJsonConfig("config//lutConfig.json", temp_map);
 }
 

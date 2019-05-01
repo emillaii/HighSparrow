@@ -16,7 +16,7 @@ class LutClient : public QObject
     Q_OBJECT
 public:
     explicit LutClient(QString address, QObject *parent = nullptr);
-    void sendLensRequest();
+    bool sendLensRequest();
 private:
     LutClientState state;
     SparrowClient * socketClient;

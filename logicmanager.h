@@ -15,7 +15,7 @@ public:
 
 
     Q_PROPERTY(int currentMode READ currentMode WRITE setCurrentMode)
-    Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage)
+    Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage NOTIFY stateMessageChanged)
 
     Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString);
@@ -126,6 +126,9 @@ public slots:
     }
 
 
+
+signals:
+    void stateMessageChanged(QString stateMessage);
 
 private:
     BaseModuleManager * baseModuleManage;

@@ -37,9 +37,9 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     aaCore->setSfrWorkerController(sfrWorkerController);
     baseModuleManage = device_manager;
     //Connections
-    connect(aaCore, &AACore::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
-    connect(aaCore, &AACore::postDataToELK, &unitlog, &Unitlog::postDataToELK);
-    connect(aaCore, &AACore::postDataToELK, &unitlog, &Unitlog::saveToCSV);
+    connect(aaCore, &AACore::pushDataToUnit, &device_manager->unitlog, &Unitlog::pushDataToUnit);
+    connect(aaCore, &AACore::postDataToELK, &device_manager->unitlog, &Unitlog::postDataToELK);
+    connect(aaCore, &AACore::postDataToELK, &device_manager->unitlog, &Unitlog::saveToCSV);
 }
 
 void LogicManager::updateParams()
@@ -49,13 +49,11 @@ void LogicManager::updateParams()
 
 void LogicManager::run() {
     qInfo("Logic manager is running");
-    QString uuid = unitlog.createUnit();
+    QString uuid = baseModuleManage->unitlog.createUnit();
     if (m_currentMode == CommandType::MOTION_STOP_HOME) {
         baseModuleManage->stopSeeking();
     }
     else if (m_currentMode == CommandType::MODE_AUTO_RUN) {
-
-        //baseModuleManage->lut_module.start();
         aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_AUTO_MODE, uuid);
         aaCore->wait();
     }

@@ -30,7 +30,7 @@
 #include "lutclient.h"
 #include "workers_manager.h"
 #include "trayloadermodule.h"
-
+#include "unitlog.h"
 class BaseModuleManager : public PropertyBase
 {
     Q_OBJECT
@@ -45,6 +45,7 @@ public:
     Q_PROPERTY(int ServerPort READ ServerPort WRITE setServerPort NOTIFY paramsChanged)
     Q_PROPERTY(bool HomeState READ HomeState WRITE setHomeState NOTIFY paramsChanged)
     Q_PROPERTY(QString ServerURL READ ServerURL WRITE setServerURL NOTIFY paramsChanged)
+    Q_PROPERTY(QString DataServerURL READ DataServerURL WRITE setDataServerURL NOTIFY paramsChanged)
 
     QMap<QString,XtMotor*> motors;
     QMap<QString,XtGeneralInput*> input_ios;
@@ -82,6 +83,8 @@ public:
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;
     LutClient * lutClient;
+
+    Unitlog unitlog;
 
     int lightPanelLighting() const
     {
@@ -138,6 +141,13 @@ public slots:
         m_HomeState = HomeState;
     }
 
+    void setDataServerURL(QString DataServerURL)
+    {
+        if (m_DataServerURL == DataServerURL)
+            return;
+        m_DataServerURL = DataServerURL;
+    }
+
 private:
     bool is_init;
     bool profile_loaded;
@@ -156,6 +166,8 @@ private:
     int m_ServerMode = 0;
 
     bool m_HomeState = false;
+
+    QString m_DataServerURL;
 
 public:
     bool LoadProfile();
@@ -231,6 +243,10 @@ public:
     bool HomeState() const
     {
         return m_HomeState;
+    }
+    QString DataServerURL() const
+    {
+        return m_DataServerURL;
     }
 };
 

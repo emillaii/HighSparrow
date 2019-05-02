@@ -136,7 +136,6 @@ private:
     void moveToCmd(int);
     int m_currentMode;
     QString m_stateMessage;
-    Unitlog unitlog;
 
     QString location_name;
     QString calibration_name;

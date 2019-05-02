@@ -12,6 +12,11 @@ Unitlog::Unitlog(QObject * parent) : QObject(parent)
 
 Unitlog::~Unitlog() {}
 
+void Unitlog::setServerAddress(QString address)
+{
+    this->serverAddress = address;
+}
+
 QString Unitlog::createUnit() {
     QString uuid = QUuid::createUuid().toString().mid(1,32).toUpper();
     QVariantMap map;
@@ -53,8 +58,8 @@ bool Unitlog::postDataToELK(QString uuid)
     {
          QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
          QJsonDocument doc(json);
-         QUrl sfrlog_endpoint = QString("http://192.168.0.252:5044");
-         QNetworkRequest request(sfrlog_endpoint);
+         //QUrl sfrlog_endpoint = QString("http://192.168.0.252:5044");
+         QNetworkRequest request(serverAddress);
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));
          if (nam) {

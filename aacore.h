@@ -21,7 +21,6 @@
 #include "imageprovider.h"
 #include "chart_calibration.h"
 #include "dispense_module.h"
-#include "unitlog.h"
 #include "aacoreparameters.h"
 #include "lutclient.h"
 #include "imagegrabbingworkerthread.h"

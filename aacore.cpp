@@ -445,7 +445,6 @@ void AACore::performAAOffline()
     clustered_sfr_map.clear();
     qInfo("[performAAOffline] Finished xTilt: %f yTilt: %f zPeak: %f ulPeak: %f", xTilt, yTilt, zPeak, ul_zPeak);
     qInfo("time elapsed: %d", timer.elapsed());
-    //unitlog->addVariantMap("AA", map);
 }
 
 ErrorCodeStruct AACore::performInitSensor()
@@ -641,7 +640,6 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     map.insert("DEV", dev);
     map.insert("TIME_ELAPSED", timer.elapsed());
     emit pushDataToUnit(runningUnit, "AA", map);
-    //unitLog.pushDataToUnit(runningUnit, "AA", map);
     return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
 
@@ -704,7 +702,6 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
         }
         this->sut->stepMove_XY_Sync(-stepX, -stepY);
     }
-    //unitLog.pushDataToUnit(runningUnit, "OC", map);
     return ret;
 }
 
@@ -936,7 +933,6 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
                 s.insert("sfr", clustered_sfr[i][j].sfr);
                 sfrMap.insert(indexString, s);
                 sfrMap.insert("pz", clustered_sfr[i][j].pz);
-                //unitlog->postSfrDataToELK(sfrMap);
             }
         }
     }

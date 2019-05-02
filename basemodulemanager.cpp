@@ -11,7 +11,7 @@
 wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
 wchar_t BaseModuleManager::profile_path1[] = L".\\config\\xt_motion_config.csv";
 wchar_t BaseModuleManager::profile_path2[] = L"..\\config\\xt_motion_config.csv";
-//wchar_t BaseModuleManager::profile_path2[] = L".\\xt_motion_config.csv";
+
 BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent)
 {
@@ -53,7 +53,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonPickarmCamera) pylonPickarmCamera->start();
     }
     material_tray.standards_parameters.setTrayCount(2);
-
+    unitlog.setServerAddress(DataServerURL());
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -484,68 +484,6 @@ bool BaseModuleManager::saveCalibrationFiles(QString file_name)
         return  saveJsonArray(file_name,json);
     }
 }
-
-//bool BaseModuleManager::LoadVcmFile()
-//{
-//    QString val;
-//    QFile file;
-//    file.setFileName(VCM_PARAMETER_FILENAME);
-//    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-//    {
-//        if(!file.open(QFile::ReadWrite)){
-//            return false;
-//        }
-//        VcMotorParameter temp_param;
-//        QString motor_name = temp_param.motorName();
-//        QJsonArray json;
-//        for (int i = 0; i < 4; ++i) {
-//            QJsonObject temp_object;
-//            QString temp_name = motor_name;
-//            temp_name.append(QString::number(i));
-//            temp_param.setMotorName(temp_name);
-//            temp_param.write(temp_object);
-//            json.append(temp_object);
-//        }
-//        QJsonDocument document;
-//        document.setArray(json);
-//        QJsonDocument saveDoc(json);
-//        file.write(document.toJson());
-//        file.close();
-//        return false;
-//    }
-//    val = file.readAll();
-//    file.close();
-
-//    QJsonParseError error;
-//    QJsonDocument doucment = QJsonDocument::fromJson(val.toUtf8(), &error);
-//    if (!doucment.isNull() && (error.error == QJsonParseError::NoError)) { //解析否出现错误
-//        if (doucment.isArray()) { // 数组判断
-//            QJsonArray array = doucment.array(); // 转数组
-//            QJsonArray array_new;
-//            for (int i = 0; i < array.count(); i++)
-//            {
-//                XtVcMotor* temp_motor = new XtVcMotor();
-//                temp_motor->parameters.read(array.at(i).toObject());
-//                temp_motor->Init();
-//                QJsonObject temp_object;
-//                temp_motor->parameters.write(temp_object);
-//                array_new.append(temp_object);
-//                if(!motors.contains(temp_motor->parameters.motorName()))
-//                    motors.insert(temp_motor->parameters.motorName(),temp_motor);
-//                else
-//                    delete temp_motor;
-//            }
-
-//            QFile saveFile(VCM_PARAMETER_FILENAME);
-//            if (saveFile.open(QIODevice::WriteOnly)) {
-//                QJsonDocument saveDoc(array_new);
-//                saveFile.write(saveDoc.toJson());
-//                saveFile.close();
-//            }
-//        }
-//    }
-//    return true;
-//}
 
 bool BaseModuleManager::loadJsonArray(QString file_name,QJsonArray &array)
 {

@@ -5,13 +5,13 @@ import QtQuick.Layouts 1.11
 
 Grid {
     id: grid
-    columns: 3
+    columns: 2
     width: 800
     height: 800
 
     Frame {
         id: frame
-        width: grid.width/3
+        width: grid.width/2
         height: grid.height/2
 
         ColumnLayout {
@@ -63,7 +63,7 @@ Grid {
                     }
 
                     ValueAxis {
-                        titleText: "z (um)"
+                        titleText: "Index"
                         id: axisX
                         gridVisible: true
                     }

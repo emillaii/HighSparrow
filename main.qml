@@ -253,13 +253,13 @@ ApplicationWindow {
                icon.color: "deepskyblue"
                onClicked: {
                    workersManager.startWorkers(true, 2)
-//                   var command = "document.getElementsByClassName('get_data')[0].click()";
-//                   flowChartPage.webView.runJavaScript(command, function(result) {
-//                       command = "document.getElementById('flowchart_data').value";
-//                       flowChartPage.webView.runJavaScript(command, function(result) {
-//                           logicManager.autoRun(result)
-//                       })
-//                   })
+                   var command = "document.getElementsByClassName('get_data')[0].click()";
+                   flowChartPage.webView.runJavaScript(command, function(result) {
+                       command = "document.getElementById('flowchart_data').value";
+                       flowChartPage.webView.runJavaScript(command, function(result) {
+                           logicManager.autoRun(result)
+                       })
+                   })
                }
            }
            ToolButton {
@@ -277,7 +277,7 @@ ApplicationWindow {
            }
 
            Timer {
-               interval: 500; running: true; repeat: true
+               interval: 3000; running: true; repeat: true
                onTriggered: {
                     if (baseModuleManager.HomeState) {
                         homeSignal.color = "green"
@@ -285,8 +285,7 @@ ApplicationWindow {
                     else {
                         homeSignal.color = "red"
                     }
-                    console.log(lutModule.getConnectedClient())
-                    if (lutModule.getConnectedClient() > 0) {
+                    if (lutModule.getConnectedClient() > 1) {
                         lutSignal.color = "green"
                     }
                }

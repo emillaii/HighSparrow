@@ -20,6 +20,8 @@ class AACoreParameters : public PropertyBase
 
     int m_SensorYRatio = 892;
 
+    double m_ROIRatio = 1.45;
+
 public:
     explicit AACoreParameters(){}
     Q_PROPERTY(double EFL READ EFL WRITE setEFL NOTIFY paramsChanged)
@@ -28,7 +30,7 @@ public:
     Q_PROPERTY(int MaxArea READ MaxArea WRITE setMaxArea NOTIFY paramsChanged)
     Q_PROPERTY(int SensorXRatio READ SensorXRatio WRITE setSensorXRatio NOTIFY paramsChanged)
     Q_PROPERTY(int SensorYRatio READ SensorYRatio WRITE setSensorYRatio NOTIFY paramsChanged)
-
+    Q_PROPERTY(double ROIRatio READ ROIRatio WRITE setROIRatio NOTIFY paramsChanged)
 double EFL() const
 {
     return m_EFL;
@@ -56,6 +58,11 @@ int SensorXRatio() const
 int SensorYRatio() const
 {
     return m_SensorYRatio;
+}
+
+double ROIRatio() const
+{
+    return m_ROIRatio;
 }
 
 public slots:
@@ -89,6 +96,16 @@ void setSensorXRatio(int SensorXRatio)
 void setSensorYRatio(int SensorYRatio)
 {
     m_SensorYRatio = SensorYRatio;
+}
+
+void setROIRatio(double ROIRatio)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_ROIRatio, ROIRatio))
+        return;
+
+    m_ROIRatio = ROIRatio;
+    emit paramsChanged(m_ROIRatio);
 }
 
 signals:

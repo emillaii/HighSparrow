@@ -18,10 +18,12 @@ public:
     ~Unitlog();
     QString createUnit();
     bool saveToCSV(QString uuid);
+    void setServerAddress(QString);
 private:
     QMap<QString, QVariantMap> unit_log_list;
     QMap<QString, std::vector<QString>> unit_log_test_name_list;
     QNetworkAccessManager * nam = Q_NULLPTR;
+    QString serverAddress;
 public slots:
     bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
     bool postDataToELK(QString uuid);

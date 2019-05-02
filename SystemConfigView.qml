@@ -33,6 +33,20 @@ ItemDelegate {
                 ColumnLayout {
                     RowLayout {
                         Label {
+                            text: qsTr("Data Server Address ")
+                        }
+                        TextField {
+                            text: baseModuleManager.DataServerURL
+                            width: 300
+                            Layout.preferredWidth: 300
+                            onEditingFinished: {
+                                baseModuleManager.setDataServerURL()
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Label {
                             text: qsTr("Server Mode ")
                         }
                         ComboBox {

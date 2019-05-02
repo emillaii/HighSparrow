@@ -47,6 +47,20 @@ ItemDelegate {
                                 aaCoreParams.setEFL(text)
                             }
                         }
+                        Label {
+                            text: qsTr("ROI Ratio")
+                        }
+                        TextField {
+                            text: aaCoreParams.ROIRatio
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 3
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setROIRatio(text)
+                            }
+                        }
                     }
                     RowLayout {
                         Label {

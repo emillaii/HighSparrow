@@ -647,15 +647,14 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
 {
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
     QVariantMap map;
-    QVariantMap stepTimerMap;
-    QElapsedTimer timer, stepTimer;
-    timer.start(); stepTimer.start();
+    QElapsedTimer timer;
+    timer.start();
     cv::Mat img = dk->DothinkeyGrabImageCV(0);
     QString imageName;
     imageName.append(getGrabberLogDir())
                     .append(getCurrentTimeString())
                     .append(".jpg");
-    cv::imwrite(imageName.toStdString().c_str(), img);
+    //cv::imwrite(imageName.toStdString().c_str(), img);
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_10.bmp");
     QImage outImage;
     double offsetX, offsetY;
@@ -666,8 +665,6 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
         std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, false,
                                                                         ccIndex, ulIndex, urIndex,
                                                                         llIndex, lrIndex);
-        stepTimerMap.insert("search_pattern", stepTimer.elapsed());
-        stepTimer.restart();
         ocImageProvider_1->setImage(outImage);
         emit callQmlRefeshImg();
         if( vector.size()<1 || ccIndex > 9 ) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
@@ -702,6 +699,8 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
         }
         this->sut->stepMove_XY_Sync(-stepX, -stepY);
     }
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(this->runningUnit, "OC", map);
     return ret;
 }
 

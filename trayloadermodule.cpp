@@ -56,6 +56,8 @@ bool TrayLoaderModule::startUp()
     ret&=moveToLtkx2GetPos();
     ret&=moveToNextTrayPos();
     ret&=ejectTray();
+    qDebug()<<"1.emit testTrayUsed signal to start the chain";
+    emit testTrayUsed();
     return ret;
 }
 
@@ -112,8 +114,11 @@ bool TrayLoaderModule::moveToLtkx1SetPos()
 bool TrayLoaderModule::motorInRealease()
 {
     int res = cylinder_ltk1->Value();
-    if(res)res = cylinder_ltk1->Set(false);
-    return res;
+    if(res){
+        res = cylinder_ltk1->Set(false);
+        return res;
+    }
+    return 1;
 }
 
 bool TrayLoaderModule::moveToLtlGetPos()
@@ -139,8 +144,11 @@ bool TrayLoaderModule::moveToLtlSetPos()
 bool TrayLoaderModule::motorWorkRelease()
 {
     int res = cylinder_tray->Value();
-    if(res)res = cylinder_tray->Set(false);
-    return res;
+    if(res){
+        res = cylinder_tray->Set(false);
+        return res;
+    }
+    return 1;
 }
 
 bool TrayLoaderModule::moveToLtkx2GetPos()
@@ -152,7 +160,8 @@ bool TrayLoaderModule::moveToLtkx2GetPos()
 
 bool TrayLoaderModule::motorOutPress()
 {
-    return 1;
+    int res = cylinder_ltk2->Set(true);
+    return res;
 }
 
 bool TrayLoaderModule::moveToLtkx2SetPos()
@@ -164,6 +173,11 @@ bool TrayLoaderModule::moveToLtkx2SetPos()
 
 bool TrayLoaderModule::motorOutRelease()
 {
+    int res = cylinder_ltk2->Value();
+    if(res){
+        res = cylinder_ltk2->Set(false);
+        return res;
+    }
     return 1;
 }
 
@@ -234,6 +248,7 @@ void TrayLoaderModule::onLtkx1Pickup()
     if(!moveToLtkx1SetPos()){
         return;
     }
+    qDebug()<<"2.ltk_x1 has picked up prev tray,emit nextTrayPos signal eject next one";
     emit nextTrayPos();
     if(!motorInRealease()){
         return;
@@ -251,7 +266,9 @@ void TrayLoaderModule::onLtlxPickup()
     if(!motorWorkPress()){
         return;
     }
-    emit trayReady();
+    qDebug()<<"3.emit trayReady signal to start working";
+    emit parameters.trayReady();//debug
+    //emit trayReady();
 }
 
 void TrayLoaderModule::onLtlxPutdown()
@@ -262,6 +279,7 @@ void TrayLoaderModule::onLtlxPutdown()
     if(!motorWorkRelease()){
         return;
     }
+    qDebug()<<"4.ltl_x put down prev tray, emit ltkx2Pickup signal and ltlxPickup signal";
     emit ltkx2Pickup();
     emit ltlxPickup();
 }
@@ -280,6 +298,7 @@ void TrayLoaderModule::onLtkx2Pickup()
     if(!moveToLtkx2GetPos()){
         return;
     }
+    qDebug()<<"5.recieve a tray,move to next empty pos";
     emit nextEmptyPos();
 }
 

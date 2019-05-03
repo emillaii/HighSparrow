@@ -85,6 +85,7 @@ bool BaseModuleManager::loadParameters()
     dothinkey->loadParams();
     dispenser.parameters.loadJsonConfig(DISPENSER_PARAMETER_PATH,DISPENSER_PARAMETER);
     dispense_module.parameters.loadJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
+
     tray_loader_module.parameters.loadJsonConfig(TRAY_LOADER_PATH,TRAY_LOADER_PARAMETER);
     trayClipIn.standards_parameters.loadJsonConfig(TRAY_CLIP_PATH,TRAY_CLIPIN_PARAMETER);
     trayClipOut.standards_parameters.loadJsonConfig(TRAY_CLIP_PATH,TRAY_CLIPOUT_PARAMETER);
@@ -118,6 +119,11 @@ bool BaseModuleManager::SaveParameters()
     lens_pick_arm.parameters.saveJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
     lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
     sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
+
+    tray_loader_module.parameters.saveJsonConfig(TRAY_LOADER_PATH,TRAY_LOADER_PARAMETER);
+    trayClipIn.standards_parameters.saveJsonConfig(TRAY_CLIP_PATH,TRAY_CLIPIN_PARAMETER);
+    trayClipOut.standards_parameters.saveJsonConfig(TRAY_CLIP_PATH,TRAY_CLIPOUT_PARAMETER);
+
     saveCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
     saveVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
     return true;
@@ -750,8 +756,12 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();//AA_C
 
     //缩回气缸
-    //LTIE
-    //LTOE
+    GetCylinderByName(this->tray_loader_module.parameters.cylinderClipName())->Set(0);
+
+    GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->SeekOrigin();//LTIE
+
+    GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->SeekOrigin();//LTOE
+
     result = GetMotorByName(this->lut_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
     GetMotorByName(this->lut_module.parameters.motorXName())->SeekOrigin();//LUT_X
@@ -763,8 +773,12 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     //升起气缸,降下托盘
     //
     GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->SeekOrigin();//LTL
-    //LTK1
-    //LTK2
+
+
+    GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK1Name())->Set(0);
+    GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(0);
+    GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->SeekOrigin();//LTK1
+    GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->SeekOrigin();//LTK2
 
 
     result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
@@ -784,6 +798,10 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 
     result &= GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->WaitSeekDone();
 
+    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->WaitSeekDone();
+    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->WaitSeekDone();
+    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->WaitSeekDone();
+    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->WaitSeekDone();
     if(result)
     {
         qInfo("all motors seeked origin");

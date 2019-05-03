@@ -418,8 +418,8 @@ void LogicManager::trayLoaderModuleLTLXCylinderOff()
 
 void LogicManager::trayLoaderModuleStartup()
 {
-    //baseModuleManage->tray_loader_module.startUp();
-    emit baseModuleManage->tray_loader_module.parameters.trayReady();
+    baseModuleManage->tray_loader_module.startUp();
+    //emit baseModuleManage->tray_loader_module.parameters.trayReady();
 }
 
 void LogicManager::trayLoaderModuleEmitTestTrayUsed(){

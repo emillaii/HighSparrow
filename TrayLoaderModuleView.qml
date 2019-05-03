@@ -286,7 +286,7 @@ ItemDelegate {
                 ColumnLayout{
                     RowLayout{
                         Label{
-                            text:qsTr("ltkx1 位置1")
+                            text:qsTr("LTK_X1 接盘位置")
                         }
                         TextField{
                             text:tray_loader_module_parameters.ltkx1PressPos
@@ -315,7 +315,36 @@ ItemDelegate {
                     }
                     RowLayout{
                         Label{
-                            text:qsTr("ltkx1 位置2")
+                            text:qsTr("LTK_X1 中继位置")
+                        }
+                        TextField{
+                            text:tray_loader_module_parameters.ltkx1RelayPos
+                            validator: DoubleValidator{
+                                decimals: 3
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                tray_loader_module_parameters.setltkx1RelayPos()
+                            }
+                        }
+                        Button{
+                            text:title_move_to
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTKX1MoveToRelayPos()
+                            }
+                        }
+                        Button{
+                            text:title_read_encoder
+                            onClicked: {
+                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX1Name)
+                                tray_loader_module_parameters.setltkx1RelayPos(x)
+                            }
+                        }
+                    }
+                    RowLayout{
+                        Label{
+                            text:qsTr("LTK_X1 放盘位置")
                         }
                         TextField{
                             text:tray_loader_module_parameters.ltkx1ReleasePos
@@ -359,7 +388,7 @@ ItemDelegate {
                     }
                     RowLayout{
                         Label{
-                            text:qsTr("ltkx2 位置1")
+                            text:qsTr("LTK_X2 接盘位置")
                         }
                         TextField{
                             text:tray_loader_module_parameters.ltkx2PressPos
@@ -388,7 +417,7 @@ ItemDelegate {
                     }
                     RowLayout{
                         Label{
-                            text:qsTr("ltkx2 位置2")
+                            text:qsTr("LTK_X2 放盘位置")
                         }
                         TextField{
                             text:tray_loader_module_parameters.ltkx2ReleasePos
@@ -432,7 +461,7 @@ ItemDelegate {
                     }
                     RowLayout{
                         Label{
-                            text:qsTr("ltl 位置1")
+                            text:qsTr("LTL 接盘位置")
                         }
                         TextField{
                             text:tray_loader_module_parameters.ltlPressPos
@@ -461,7 +490,7 @@ ItemDelegate {
                     }
                     RowLayout{
                         Label{
-                            text:qsTr("ltl 位置2")
+                            text:qsTr("LTL 放盘位置")
                         }
                         TextField{
                             text:tray_loader_module_parameters.ltlReleasePos

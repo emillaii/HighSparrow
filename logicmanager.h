@@ -104,6 +104,8 @@ public:
     Q_INVOKABLE void trayLoaderModuleStartup();
     Q_INVOKABLE void trayLoaderModuleEmitTestTrayUsed();
 
+    Q_INVOKABLE void trayLoaderModuleLTKX1MoveToRelayPos();
+
     int currentMode() const
     {
         return m_currentMode;

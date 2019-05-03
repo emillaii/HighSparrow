@@ -24,11 +24,14 @@ private:
     double m_ltlSetPos = 0;
     double m_ltkx2GetPos = 0;
     double m_ltkx2SetPos = 0;
+    double m_ltkx1RelayPos = 0;
+
 signals:
     void testTrayTest();
     void trayReady();
 public:
     TrayLoaderModuleParameter():PropertyBase(){}
+    Q_PROPERTY(double ltkx1RelayPos READ ltkx1RelayPos WRITE setLtkx1RelayPos NOTIFY ltkx1RelayPosChanged)
     Q_PROPERTY(double ltkx1PressPos READ ltkx1PressPos WRITE setLtkx1PressPos NOTIFY ltkx1PressPosChanged)
     Q_PROPERTY(double ltkx1ReleasePos READ ltkx1ReleasePos WRITE setLtkx1ReleasePos NOTIFY ltkx1ReleasePosChanged)
     Q_PROPERTY(double ltlPressPos READ ltlPressPos WRITE setLtlPressPos NOTIFY ltlPressPosChanged)
@@ -118,6 +121,11 @@ double ltkx2PressPos() const
 double ltkx2ReleasePos() const
 {
     return m_ltkx2SetPos;
+}
+
+double ltkx1RelayPos() const
+{
+    return m_ltkx1RelayPos;
 }
 
 public slots:
@@ -263,6 +271,16 @@ void setLtkx2ReleasePos(double ltkx2SetPos)
     emit ltkx2ReleasePosChanged(m_ltkx2SetPos);
 }
 
+void setLtkx1RelayPos(double ltkx1RelayPos)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_ltkx1RelayPos, ltkx1RelayPos))
+        return;
+
+    m_ltkx1RelayPos = ltkx1RelayPos;
+    emit ltkx1RelayPosChanged(m_ltkx1RelayPos);
+}
+
 signals:
 void motorTLIENameChanged(QString motorLTIEName);
 void motorLTOENameChanged(QString motorLTOEName);
@@ -279,6 +297,7 @@ void ltlPressPosChanged(double ltlPressPos);
 void ltlReleasePosChanged(double ltlReleasePos);
 void ltkx2PressPosChanged(double ltkx2PressPos);
 void ltkx2ReleasePosChanged(double ltkx2ReleasePos);
+void ltkx1RelayPosChanged(double ltkx1RelayPos);
 };
 
 #endif // TRAYLOADERPARAMETER_H

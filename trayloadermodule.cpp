@@ -104,6 +104,13 @@ bool TrayLoaderModule::moveToLtkx1GetPos()
     return result;
 }
 
+bool TrayLoaderModule::moveToLtkx1RelayPos()
+{
+    motor_in->MoveToPos(parameters.ltkx1RelayPos());
+    bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1RelayPos());
+    return result;
+}
+
 bool TrayLoaderModule::moveToLtkx1SetPos()
 {
     motor_in->MoveToPos(parameters.ltkx1ReleasePos());

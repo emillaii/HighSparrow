@@ -25,6 +25,7 @@ public:
 
     bool motorInPress();
     bool moveToLtkx1GetPos();
+    bool moveToLtkx1RelayPos();
     bool moveToLtkx1SetPos();
     bool motorInRealease();
 

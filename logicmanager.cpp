@@ -425,3 +425,8 @@ void LogicManager::trayLoaderModuleStartup()
 void LogicManager::trayLoaderModuleEmitTestTrayUsed(){
     emit baseModuleManage->tray_loader_module.testTrayUsed();
 }
+
+void LogicManager::trayLoaderModuleLTKX1MoveToRelayPos()
+{
+    baseModuleManage->tray_loader_module.moveToLtkx1RelayPos();
+}

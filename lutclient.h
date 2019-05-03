@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "sparrowqclient.h"
-
+#include "aaheadmodule.h"
 enum LutClientState{
     LUT_CLIENT_IDLE,
     WAITING_LENS_PICK_EVENT,
@@ -15,11 +15,12 @@ class LutClient : public QObject
 {
     Q_OBJECT
 public:
-    explicit LutClient(QString address, QObject *parent = nullptr);
+    explicit LutClient(AAHeadModule *aaHead, QString address, QObject *parent = nullptr);
     bool sendLensRequest();
 private:
     LutClientState state;
     SparrowClient * socketClient;
+    AAHeadModule * aaHead;
 signals:
     void sendMessageToServer(QString message);
     void triggerAAGripper(bool isOn);

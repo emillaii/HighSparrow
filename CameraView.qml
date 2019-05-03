@@ -111,6 +111,7 @@ Grid {
                     icon.source: "icons/save.png"
                     onClicked: {
                         console.log("Save Image Grabber Image")
+                        imageGrabberThread.saveImage()
                     }
                 }
             }

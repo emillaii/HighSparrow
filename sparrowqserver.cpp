@@ -74,10 +74,12 @@ void SparrowQServer::sendMessageToClient(QString dest, QString message)
         if (dest == m_clients[i]->peerAddress().toString()) {
             qInfo("addr %s", m_clients[i]->peerAddress().toString().toStdString().c_str());
             m_clients[i]->sendTextMessage(message);
+            break;
         }
         if (dest == "remote" && m_clients[i]->peerAddress().toString() != "::1") {
             qInfo("Send to remote AA %s", message.toStdString().c_str());
             m_clients[i]->sendTextMessage(message);
+            break;
         }
     }
 }

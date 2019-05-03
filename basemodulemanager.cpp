@@ -36,10 +36,10 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     if (ServerMode() == 0) {
         qInfo("This sparrow is in Master mode");
         this->lut_module.openServer(19998);
-        lutClient = new LutClient("ws://localhost:19998");
+        lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
     } else {
         qInfo("This sparrow is in Slave mode");
-        lutClient = new LutClient("ws://192.168.0.250:19998");
+        lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
     }
     lightingModule = new WordopLight(ServerMode());
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);

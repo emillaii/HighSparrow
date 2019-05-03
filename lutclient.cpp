@@ -2,9 +2,10 @@
 #include <QJsonObject>
 #include <QThread>
 #include "commonutils.h"
-LutClient::LutClient(QString address, QObject *parent) : QObject(parent)
+LutClient::LutClient(AAHeadModule * aaHead, QString address, QObject *parent) : QObject(parent)
 {
     socketClient = new SparrowClient(QUrl(address),  true);
+    this->aaHead = aaHead;
     connect(socketClient, &SparrowClient::receiveMessage, this, &LutClient::receiveMessage);
     connect(this, &LutClient::sendMessageToServer, this->socketClient, &SparrowClient::sendMessage);
 }
@@ -24,8 +25,12 @@ void LutClient::receiveMessage(QString message)
         obj.insert("cmd", "prReq");
     } else if (event == "prResp") {
         isValid = true;
-        qInfo("PR Result...");
         obj.insert("cmd", "lutLeaveReq");
+        double prOffsetT = json["prOffsetT"].toDouble(0);
+        double prOffsetX = json["prOffsetX"].toDouble(0);
+        double prOffsetY = json["prOffsetY"].toDouble(0);
+        qInfo("PR Result...offsetX %f offsetY %f offsetT %f", prOffsetX, prOffsetY, prOffsetT);
+        aaHead->stepMove_XYC_Sync(-prOffsetX, -prOffsetY, -prOffsetT);
         this->state = LutClientState::WAITING_LUT_LEAVE_EVENT;
     } else if (event == "lutLeaveResp") {
         qInfo("LUT move to load lens position");
@@ -35,13 +40,12 @@ void LutClient::receiveMessage(QString message)
     if (cmd == "gripperOnReq") {
         isValid = true;
         qInfo("AA Gripper On Request");
-        emit this->triggerAAGripper(true);
+        aaHead->openGripper();
         QThread::msleep(200);
     } else if (cmd == "gripperOffReq") {
         isValid = true;
         qInfo("AA Gripper Of Request");
-        emit this->triggerAAGripper(false);
-        QThread::msleep(200);
+        aaHead->closeGripper();
     }
     if (isValid) {
         QString jsonString = getStringFromJsonObject(obj);

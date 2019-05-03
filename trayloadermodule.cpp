@@ -67,16 +67,6 @@ void TrayLoaderModule::run(bool has_tray)
 
 }
 
-bool TrayLoaderModule::moveMotorClip()
-{
-    if(moveToNextTrayPos()&&ejectTray())
-        return true;
-    else {
-        return false;
-    }
-
-}
-
 bool TrayLoaderModule::moveToNextTrayPos()
 {
     double pos = tray_clip->getCurrentPosition();
@@ -97,15 +87,6 @@ bool TrayLoaderModule::ejectTray()
         //warning
     }
     return res;
-}
-
-bool TrayLoaderModule::moveMotorIn()
-{
-    if(motorInPress()&&moveToLtkx1GetPos()&&motorInRealease()){
-        return true;
-    }else{
-        return false;
-    }
 }
 
 bool TrayLoaderModule::motorInPress()
@@ -135,15 +116,6 @@ bool TrayLoaderModule::motorInRealease()
     return res;
 }
 
-bool TrayLoaderModule::moveMotorWork()
-{
-    if(motorWorkPress()&&moveToLtlSetPos()&&motorWorkRelease())
-        return true;
-    else {
-        return false;
-    }
-}
-
 bool TrayLoaderModule::moveToLtlGetPos()
 {
     motor_work->MoveToPos(parameters.ltlPressPos());
@@ -169,11 +141,6 @@ bool TrayLoaderModule::motorWorkRelease()
     int res = cylinder_tray->Value();
     if(res)res = cylinder_tray->Set(false);
     return res;
-}
-
-bool TrayLoaderModule::moveMotorOut()
-{
-    return 1;
 }
 
 bool TrayLoaderModule::moveToLtkx2GetPos()

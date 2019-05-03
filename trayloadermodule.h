@@ -20,26 +20,19 @@ public:
     TrayLoaderModuleParameter parameters;
     bool startUp();
 
-    bool moveMotorClip();
     bool moveToNextTrayPos();
     bool ejectTray();
 
-    bool moveMotorIn();
     bool motorInPress();
     bool moveToLtkx1GetPos();
     bool moveToLtkx1SetPos();
     bool motorInRealease();
 
-
-
-    bool moveMotorWork();
     bool moveToLtlGetPos();
     bool motorWorkPress();
     bool moveToLtlSetPos();
     bool motorWorkRelease();
 
-
-    bool moveMotorOut();
     bool moveToLtkx2GetPos();
     bool motorOutPress();
     bool moveToLtkx2SetPos();

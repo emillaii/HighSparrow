@@ -46,7 +46,7 @@ Popup {
                     }
                     ListView{
                         model: outputList
-                        height: 1100
+                        height: 50*count
                         //anchors.top: special_ouput.bottom
                         delegate: Switch{
                             id:output_switch_id

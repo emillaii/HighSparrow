@@ -193,7 +193,7 @@ Popup {
                         //anchors.top:inter_layout_b.bottom
                         id:list
                         //anchors.top:  inter_layout_b.bottom
-                        height: 1000
+                        height: 50*count
                         model: motorsNames
                         delegate: RowLayout{
                             Rectangle{

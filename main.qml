@@ -81,6 +81,11 @@ ApplicationWindow {
         visible: false
     }
 
+    AlarmDialog {
+        id: alarmDialog
+        visible: false
+    }
+
     PopupMessageView {
         id: messageDialog
     }

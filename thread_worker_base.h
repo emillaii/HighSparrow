@@ -23,6 +23,11 @@ enum FinishedType
     Success,
     Alarm
 };
+enum OperationType
+{
+    Ok,
+    Cancel
+};
 
 class ThreadWorkerBase : public QObject,public ErrorBase
 {
@@ -52,8 +57,7 @@ private:
     QString m_Name;
     int message_result;
     bool message_returned;
-    int
-    alarm_id = 0;
+    int alarm_id = 0;
     QMutex message_mutex;
 };
 

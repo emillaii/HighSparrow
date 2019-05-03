@@ -31,12 +31,18 @@ void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message
     ShowAlarm(sender_id,level,error_message);
 }
 
+void WorkersManager::receiveOperation(int sender_id, int operation_type)
+{
+    qInfo("Receive operation from sender_id: %d operation_type: %d", sender_id, operation_type);
+
+}
+
 void WorkersManager::ShowAlarm(const int sender_id, const int level, const QString error_message)
 {
-    qInfo("message:%s",error_message.toStdString().c_str());
     if(level == ErrorLevel::TipNonblock||level == ErrorLevel::ErrorMustStop)
         return;
     //todo 显示错误窗口
+    this->setShowAlarmDialog(true);
 }
 
 void WorkersManager::startWorkers(bool reset,int run_mode)
@@ -71,4 +77,9 @@ void WorkersManager::stopWorker(QString name, bool wait_finish)
 QList<QString> WorkersManager::getWorkersNames()
 {
     return workers.keys();
+}
+
+QString WorkersManager::getAlarmMessage(QString workerName)
+{
+    return workers[workerName]->GetCurrentError();
 }

@@ -46,9 +46,14 @@ void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMoto
     setName(name);
 }
 
-bool AAHeadModule::moveToMushroomPosition()
+bool AAHeadModule::moveToMushroomPosition(bool moveXYC)
 {
-    return moveToDiffrentZSync(mushroom_position.Z());
+    if (moveXYC)
+        return moveToDiffrentZSync(mushroom_position.Z());
+    else {
+        mPoint6D point = this->GetFeedBack();
+        moveToSync(point.X,point.Y,mushroom_position.Z(),mushroom_position.A(),mushroom_position.B(),point.C);
+    }
 }
 
 bool AAHeadModule::moveToPickLensPosition()

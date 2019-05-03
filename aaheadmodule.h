@@ -50,7 +50,7 @@ public:
     double uplook_y;
     double uplook_theta;
     void loadJsonConfig();
-    Q_INVOKABLE bool moveToMushroomPosition();
+    Q_INVOKABLE bool moveToMushroomPosition(bool moveXYC = true);
     Q_INVOKABLE bool moveToPickLensPosition();
     Q_INVOKABLE bool moveToOCPosition();
     bool moveToAAPosition();

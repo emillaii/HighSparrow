@@ -484,7 +484,7 @@ ErrorCodeStruct AACore::performPRToBond()
        map.insert("prOffsetY_in_mm", offset.Y);
     }
     map.insert("moveToDownlookPR", stepTimer.elapsed()); stepTimer.restart();
-    if (!this->aa_head->moveToMushroomPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
+    if (!this->aa_head->moveToMushroomPosition(false)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
     if (!this->sut->moveToMushroomPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to mushroom Pos"};}
     map.insert("sut_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();

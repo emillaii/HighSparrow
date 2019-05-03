@@ -87,8 +87,8 @@ bool BaseModuleManager::loadParameters()
     dispense_module.parameters.loadJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
 
     tray_loader_module.parameters.loadJsonConfig(TRAY_LOADER_PATH,TRAY_LOADER_PARAMETER);
-    trayClipIn.standards_parameters.loadJsonConfig(TRAY_CLIP_PATH,TRAY_CLIPIN_PARAMETER);
-    trayClipOut.standards_parameters.loadJsonConfig(TRAY_CLIP_PATH,TRAY_CLIPOUT_PARAMETER);
+    trayClipIn.standards_parameters.loadJsonConfig(TRAY_CLIPIN_PATH,TRAY_CLIPIN_PARAMETER);
+    trayClipOut.standards_parameters.loadJsonConfig(TRAY_CLIPOUT_PATH,TRAY_CLIPOUT_PARAMETER);
 
     material_tray.loadJsonConfig();
     lens_loader_module.loadJsonConfig();
@@ -121,8 +121,8 @@ bool BaseModuleManager::SaveParameters()
     sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
 
     tray_loader_module.parameters.saveJsonConfig(TRAY_LOADER_PATH,TRAY_LOADER_PARAMETER);
-    trayClipIn.standards_parameters.saveJsonConfig(TRAY_CLIP_PATH,TRAY_CLIPIN_PARAMETER);
-    trayClipOut.standards_parameters.saveJsonConfig(TRAY_CLIP_PATH,TRAY_CLIPOUT_PARAMETER);
+    trayClipIn.standards_parameters.saveJsonConfig(TRAY_CLIPIN_PATH,TRAY_CLIPIN_PARAMETER);
+    trayClipOut.standards_parameters.saveJsonConfig(TRAY_CLIPOUT_PATH,TRAY_CLIPOUT_PARAMETER);
 
     saveCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
     saveVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);

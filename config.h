@@ -137,7 +137,8 @@
 #define TRAY_LOADER_PARAMETER "tray_loader_parameter"
 
 //trayclip
-#define TRAY_CLIP_PATH  ".//config//tray_clip_parameter.json"
+#define TRAY_CLIPOUT_PATH  ".//config//tray_clipout_parameter.json"
+#define TRAY_CLIPIN_PATH  ".//config//tray_clipin_parameter.json"
 #define TRAY_CLIPIN_PARAMETER "tray_clipin_parameter"
 #define TRAY_CLIPOUT_PARAMETER "tray_clipout_parameter"
 //PR

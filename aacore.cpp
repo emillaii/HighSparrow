@@ -449,25 +449,48 @@ void AACore::performAAOffline()
 
 ErrorCodeStruct AACore::performInitSensor()
 {
+    QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
+    QVariantMap map;
     const int channel = 0;
     bool res = dk->DothinkeyEnum();
     if (!res) { qCritical("Cannot find dothinkey"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
     dk->DothinkeyOpen();
-    if (!res) { qCritical("Cannot open dothinkey"); ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    map.insert("dothinkeyOpen", stepTimer.elapsed()); stepTimer.restart();
+    if (!res) { qCritical("Cannot open dothinkey"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
     dk->DothinkeyLoadIniFile(channel);
-    if (!res) { qCritical("Cannot load dothinkey ini file"); ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    map.insert("dothinkeyLoadIniFile", stepTimer.elapsed()); stepTimer.restart();
+    if (!res) { qCritical("Cannot load dothinkey ini file"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
     dk->DothinkeyStartCamera(channel);
-    if (!res) { qCritical("Cannot start camera"); ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
-    imageThread->start();
+    map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
+    if (!res) { qCritical("Cannot start camera"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    if (!imageThread->isRunning())
+        imageThread->start();
+    map.insert("timeElapsed", timer.elapsed());
+    map.insert("success", res);
+    emit pushDataToUnit(runningUnit, "InitSensor", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACore::performPRToBond()
 {
     //if (!this->lut->moveToUnloadPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT cannot move to unload Pos"};}
-    if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook   Pos"};}
+    QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
+    QVariantMap map;
+    PrOffset offset;
+    if (sut->moveToDownlookPR(offset, false,true))
+    {
+       sut->stepMove_XY_Sync(-offset.X, -offset.Y);
+       map.insert("prOffsetX_in_mm", -offset.X);
+       map.insert("prOffsetY_in_mm", -offset.Y);
+    }
+    map.insert("moveToDownlookPR", stepTimer.elapsed()); stepTimer.restart();
+    //if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
     if (!this->aa_head->moveToMushroomPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
+    map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
     if (!this->sut->moveToMushroomPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to mushroom Pos"};}
+    map.insert("sut_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "PrToBond", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 

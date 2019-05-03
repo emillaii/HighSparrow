@@ -76,6 +76,13 @@ void LutModule::run(bool has_material)
                 isLocalHost = true;
             }
             if (cmd == "prReq") {
+                bool prRet = false;
+                PrOffset prOffset;
+                isLocalHost ? prRet=moveToAA1UplookPR(prOffset, true) : prRet=moveToAA2UplookPR(prOffset, true);
+                result.insert("prOffsetX", prOffset.X);
+                result.insert("prOffsetY", prOffset.Y);
+                result.insert("prOffsetT", prOffset.Theta);
+                result.insert("prRet", prRet);
                 result.insert("event", "prResp");
             } else if (cmd == "lutLeaveReq") {
                 moveToUnloadPos();

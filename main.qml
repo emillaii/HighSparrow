@@ -285,7 +285,7 @@ ApplicationWindow {
                     else {
                         homeSignal.color = "red"
                     }
-                    if (lutModule.getConnectedClient() > 1) {
+                    if (baseModuleManager.ServerMode == 0 && lutModule.getConnectedClient() > 1) {
                         lutSignal.color = "green"
                     }
                }

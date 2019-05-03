@@ -135,6 +135,11 @@ bool MaterialCarrier::ZSerchByForce(const double speed,const double force,const 
 {
     if(nullptr != excute_vacuum)vacuum = excute_vacuum;
     bool result  = motor_z->SearchPosByForce(speed,force);
+    if(!result)
+    {
+        motor_z->resetSoftLanding();
+        motor_z->RestoreForce();
+    }
 //    if(result && vacuum_state > -1&&vacuum != nullptr)
 //        result &= vacuum->Set(vacuum_state > 0);
 //    result &= motor_z->DoSoftLandingReturn();

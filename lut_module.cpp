@@ -78,7 +78,10 @@ void LutModule::run(bool has_material)
             if (cmd == "prReq") {
                 bool prRet = false;
                 PrOffset prOffset;
-                isLocalHost ? prRet=moveToAA1UplookPR(prOffset, true) : prRet=moveToAA2UplookPR(prOffset, true);
+                qInfo("perform PR start");
+                uplook_location->performPR(prOffset);
+                qInfo("perform PR finished");
+                //isLocalHost ? prRet=moveToAA1UplookPR(prOffset, true) : prRet=moveToAA2UplookPR(prOffset, true);
                 result.insert("prOffsetX", prOffset.X);
                 result.insert("prOffsetY", prOffset.Y);
                 result.insert("prOffsetT", prOffset.Theta);

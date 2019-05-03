@@ -77,6 +77,7 @@ void LensLoaderModule::receiveLensRequst(bool need_lens,int ng_lens,int ng_len_t
 
 void LensLoaderModule::run(bool has_material)
 {
+    return ;
     is_run = true;
     int pr_times = 5;
     bool has_task = true;
@@ -280,12 +281,14 @@ bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 bool LensLoaderModule::performLensPR()
 {
     qInfo("performLensPR");
+    Sleep(500); //Position settling
     return  lens_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performVacancyPR()
 {
     qInfo("performVacancyPR:%d");
+    Sleep(500); //Position settling
     return  vacancy_vision->performPR(pr_offset);
 }
 

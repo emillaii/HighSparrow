@@ -410,12 +410,16 @@ bool XtVcMotor::DoSoftLandingReturn()
 
 bool XtVcMotor::resetSoftLanding(int timeout)
 {
+    bool ret = true;
     if(is_softlanding|is_returning)
         if(!WaitSoftLandingDone(timeout))
-            return false;
+            ret = false;
     if(is_softlanded)
-        return  DoSoftLandingReturn()&WaitSoftLandingDone(timeout);
-    return true;
+        ret = DoSoftLandingReturn()&WaitSoftLandingDone(timeout);
+    RestoreForce();
+    int code = get_motor_error(vcm_id);
+    qInfo("VCM %d get_motor_error Return %d",vcm_id, code);
+    return ret;
 
 }
 

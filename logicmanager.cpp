@@ -112,7 +112,7 @@ void LogicManager::run() {
     else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA2_CMD)
     {
         qInfo("Move To AA2 PickLens");
-        baseModuleManage->lut_module.moveToAA2PickLens();
+        baseModuleManage->lut_module.moveToAA2PickLens(false,true);
     }
     else if (m_currentMode == CommandType::PERFORM_LOCATION)
     {
@@ -121,7 +121,7 @@ void LogicManager::run() {
     }
 
     m_currentMode = CommandType::IDLE;
-    qInfo("End");
+    qInfo("Logic Manager End");
 }
 void LogicManager::moveToCmd(int cmd) {
     if (cmd == CommandType::STOP)

@@ -80,6 +80,9 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lutUnPickLensPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_unpicklens_position);
     engine.rootContext()->setContextProperty("lutUplookPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_uplook_position);
 
+    QString dirPath = app.applicationDirPath();
+    dirPath += "/..";
+    engine.rootContext()->setContextProperty("dirPath",dirPath);
     //Device
     engine.rootContext()->setContextProperty("imageGrabber", highSprrow.baseModuleManager->dothinkey);
     engine.rootContext()->setContextProperty("imageGrabberThread", highSprrow.baseModuleManager->imageGrabberThread);

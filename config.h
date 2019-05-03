@@ -35,7 +35,9 @@
 #define VACUUM_PARAMETER_FILENAME    "config//vacuum_parameter.json"
 #define VISION_LOCATION_PARAMETER_FILENAME   "config//vision_location_parameter.json"
 #define CALIBRATION_PARAMETER_FILENAME   "config//calibration_parameter.json"
+#define VISION_DISPENSE_PATH         "config//vision_dispense_path//resultImageWithPath.jpg"
 #define FLOWCHART_URL                "http://127.0.0.1:8000/flowchart.html"
+
 
 //Title naming
 #define MOTION_DIALOG_TITLE         u8"馬達"

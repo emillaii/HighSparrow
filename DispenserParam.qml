@@ -70,4 +70,9 @@ ColumnLayout {
             }
         }
     }
+    RowLayout{
+        Image{
+            source: "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
+        }
+    }
 }

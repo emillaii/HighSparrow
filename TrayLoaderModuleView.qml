@@ -147,7 +147,7 @@ ItemDelegate {
                         Button{
                             text:qsTr("移动")
                             onClicked: {
-                                logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in-1)
+                                logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in.text-1)
                             }
                         }
                         Button{
@@ -275,7 +275,7 @@ ItemDelegate {
                         Button{
                             text:qsTr("移动")
                             onClicked: {
-                                logicManager.trayLoaderModuleLTOEMovetoColumnIndex(col_out-1)
+                                logicManager.trayLoaderModuleLTOEMovetoColumnIndex(col_out.text-1)
                             }
                         }
                     }

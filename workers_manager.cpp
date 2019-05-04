@@ -24,22 +24,24 @@ bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
 
 void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message)
 {
-    qInfo("received alarm %d from sender %d in thread id :%d",level,sender_id,QThread::currentThreadId());
+    qInfo("dad received alarm %d from sender %d in thread id :%d",level,sender_id,QThread::currentThreadId());
     if(level == ErrorLevel::ErrorMustStop)
         emit stopWorkers();
 
     //三色灯
-    ShowAlarm(sender_id,level,error_message);
+    qInfo("..Check Point.......");
+    showAlarm(sender_id,level,error_message);
 }
 
-void WorkersManager::ShowAlarm(const int sender_id, const int level, const QString error_message)
+void WorkersManager::showAlarm(const int sender_id, const int level, const QString error_message)
 {
-    if(level == ErrorLevel::TipNonblock||level == ErrorLevel::ErrorMustStop)
-        return;
-    //todo 显示错误窗口
+    qInfo("ShowAlarm sender_id: %d level: %d", sender_id, level);
     this->setShowAlarmDialog(true);
     this->workersState.insert(sender_id, level);
     this->workersError.insert(sender_id, error_message);
+    if(level == ErrorLevel::TipNonblock||level == ErrorLevel::ErrorMustStop)
+        return;
+    //todo 显示错误窗口
 }
 
 void WorkersManager::startWorkers(bool reset,int run_mode)

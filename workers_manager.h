@@ -22,6 +22,7 @@ public slots:
 void receiveAlarm(int sender_id,int level, QString error_message);
 void setShowAlarmDialog(bool ShowAlarmDialog)
 {
+    qInfo("setShowAlarm: %d", ShowAlarmDialog);
     if (m_ShowAlarmDialog == ShowAlarmDialog)
         return;
 
@@ -30,7 +31,7 @@ void setShowAlarmDialog(bool ShowAlarmDialog)
 }
 
 private:
-    void ShowAlarm(const int sender_id,const int level, const QString error_message);
+    void showAlarm(const int sender_id,const int level, const QString error_message);
 public:
     Q_INVOKABLE void startWorkers(bool reset = false,int run_mode = 0);
     Q_INVOKABLE void stopWorkers(bool wait_finish = true);

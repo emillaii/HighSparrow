@@ -334,7 +334,7 @@ void TrayLoaderModule::onNextEmptyPos()
 
 void TrayLoaderModule::onTestTrayUsed()
 {
-    //LTL_X & LTK_X2 会合
+    //LTL_X 与 LTK_X2 会合
     motorOutRelease();
     motor_work->MoveToPos(parameters.ltlReleasePos());
     motor_out->MoveToPos(parameters.ltkx2PressPos());
@@ -349,6 +349,7 @@ void TrayLoaderModule::onTestTrayUsed()
     if(!motorOutPress()){
         return;
     }
+    //LTL_X 与 LTK_X1 会合，LTK_X2出盘
     motor_out->MoveToPos(parameters.ltkx2ReleasePos());
     motor_in->MoveToPos(parameters.ltkx1ReleasePos());
     motor_work->MoveToPos(parameters.ltlPressPos());
@@ -371,6 +372,9 @@ void TrayLoaderModule::onTestTrayUsed()
         return;
     }
     qDebug()<<"trayReady.....";
+    if(!moveToLtlSetPos()){
+        return;
+    }
     emit parameters.trayReady();
     emit onReset();
 }

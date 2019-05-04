@@ -325,7 +325,7 @@ ItemDelegate {
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setltkx1RelayPos()
+                                tray_loader_module_parameters.setLtkx1RelayPos(text)
                             }
                         }
                         Button{
@@ -338,7 +338,7 @@ ItemDelegate {
                             text:title_read_encoder
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX1Name)
-                                tray_loader_module_parameters.setltkx1RelayPos(x)
+                                tray_loader_module_parameters.setLtkx1RelayPos(x)
                             }
                         }
                     }

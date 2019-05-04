@@ -120,12 +120,16 @@ bool TrayLoaderModule::moveToLtkx1SetPos()
 
 bool TrayLoaderModule::motorInRealease()
 {
+    cylinder_ltk1->Set(false);
+    return 1;
+/*
     int res = cylinder_ltk1->Value();
     if(res){
         res = cylinder_ltk1->Set(false);
         return res;
     }
     return 1;
+//*/
 }
 
 bool TrayLoaderModule::moveToLtlGetPos()
@@ -148,14 +152,14 @@ bool TrayLoaderModule::motorWorkPress()
 bool TrayLoaderModule::moveToLtlSetPos()
 {
     motor_work->MoveToPos(parameters.ltlReleasePos());
-    bool result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
+    bool result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos(),10000);
     return result;
 }
 
 bool TrayLoaderModule::motorWorkRelease()
 {
     int res = cylinder_tray->Set(1);
-    return res;
+    return true;
 }
 
 bool TrayLoaderModule::moveToLtkx2GetPos()
@@ -253,9 +257,11 @@ void TrayLoaderModule::onLtkx1Pickup()
         return;
     }
     if(!moveToLtkx1SetPos()){
+        qDebug()<<"LTK_X1 move to setpos false";
         return;
     }
     if(!motorInRealease()){
+        qDebug()<<"LTK_X1 realease false";
         return;
     }
     if(!moveToLtkx1RelayPos()){
@@ -293,9 +299,11 @@ void TrayLoaderModule::onLtlxPickup()
 void TrayLoaderModule::onLtlxPutdown()
 {
     if(!moveToLtlSetPos()){
+        qDebug()<<"LTLX move to setpos false";
         return;
     }
     if(!motorWorkRelease()){
+        qDebug()<<"LTLX Release false";
         return;
     }
     qDebug()<<"4.ltl_x put down prev tray, emit ltkx2Pickup signal and ltlxPickup signal";

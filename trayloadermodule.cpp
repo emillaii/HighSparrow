@@ -5,16 +5,16 @@
 
 TrayLoaderModule::TrayLoaderModule(QString name):ThreadWorkerBase(name)
 {
-    connect(this,SIGNAL(nextTrayPos()),this,SLOT(onNextTrayPos()));
-    connect(this,SIGNAL(nextEmptyPos()),this,SLOT(onNextEmptyPos()));
-    connect(this,SIGNAL(ltkx1Pickup()),this,SLOT(onLtkx1Pickup()));
-    connect(this,SIGNAL(ltkx2Pickup()),this,SLOT(onLtkx2Pickup()));
-    connect(this,SIGNAL(ltlxPickup()),this,SLOT(onLtlxPickup()));
-    connect(this,SIGNAL(ltlxPutdown()),this,SLOT(onLtlxPutdown()));
+    connect(this,SIGNAL(nextTrayPos()),this,SLOT(onNextTrayPos()),Qt::QueuedConnection);
+    connect(this,SIGNAL(nextEmptyPos()),this,SLOT(onNextEmptyPos()),Qt::QueuedConnection);
+    connect(this,SIGNAL(ltkx1Pickup()),this,SLOT(onLtkx1Pickup()),Qt::QueuedConnection);
+    connect(this,SIGNAL(ltkx2Pickup()),this,SLOT(onLtkx2Pickup()),Qt::QueuedConnection);
+    connect(this,SIGNAL(ltlxPickup()),this,SLOT(onLtlxPickup()),Qt::QueuedConnection);
+    connect(this,SIGNAL(ltlxPutdown()),this,SLOT(onLtlxPutdown()),Qt::QueuedConnection);
 
-    //connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltlxPutdown()));
-    //connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltkx1Pickup()));
-
+    //connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltlxPutdown()),Qt::QueuedConnection);
+    //connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltkx1Pickup()),Qt::QueuedConnection);
+    connect(this,SIGNAL(testTrayUsed()),this,SLOT(onTestTrayUsed()),Qt::QueuedConnection);
 }
 
 void TrayLoaderModule::Init(XtMotor *_motor_clip_in,

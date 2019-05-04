@@ -6,11 +6,6 @@
 #include "lenspickarm.h"
 #include "thread_worker_base.h"
 
-struct materialMessage
-{
-    int material_id;
-    int tray_id;
-};
 //namespace LensPickArmEnum {
 enum HandlePosition
     {
@@ -62,9 +57,11 @@ public:
     void saveJsonConfig();
     void performHandling(int cmd);
 signals:
-    void changeTray();
+    void sendChangeTray();
+    void sendLensRequstFinish(int lens,int lens_tray);
 public slots:
     void receiveLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
+    void receiveChangeTrayFinish();
 private:
     void run(bool has_material);
 
@@ -118,14 +115,13 @@ private:
     VisionLocation * lut_lens_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_up_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_down_vision = Q_NULLPTR;
+    QMutex lut_mutex;
+    QMutex tray_mutex;
     bool is_run = false;
     bool finish_stop = false;
     bool debug = false;
     ErrorLevel error_level;
     PrOffset pr_offset;
-    materialMessage lut_material;
-    materialMessage lut_ng_material;
-    materialMessage picked_material;
 
 };
 

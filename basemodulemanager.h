@@ -204,7 +204,7 @@ public:
     Q_INVOKABLE double getMotorFeedbackPos(QString name);
     Q_INVOKABLE double getMotorFeedbackPos(int index);
     Q_INVOKABLE void setLightingBrightness(QString location_name);
-
+    Q_INVOKABLE void sendLoadLens(bool has_ng);
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();
     void EnableMotors();

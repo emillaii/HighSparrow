@@ -275,12 +275,19 @@ public:
     Q_PROPERTY(bool hasTray READ hasTray WRITE setHasTray NOTIFY hasTrayChanged)
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool lutHasNgLens READ lutHasNgLens WRITE setLutHasNgLens NOTIFY lutHasNgLensChanged)
-    Q_PROPERTY(bool needloadLens READ needloadLens WRITE setneedloadLens NOTIFY needloadLensChanged)
+    Q_PROPERTY(bool needLoadLens READ needLoadLens WRITE setNeedLoadLens NOTIFY needLoadLensChanged)
     Q_PROPERTY(int currentTray READ currentTray WRITE setCurrentTray NOTIFY currentTrayChanged)
     Q_PROPERTY(bool needChangTray READ needChangTray WRITE setNeedChangTray NOTIFY needChangTrayChanged)
     Q_PROPERTY(bool allowChangeTray READ allowChangeTray WRITE setAllowChangeTray NOTIFY allowChangeTrayChanged)
     Q_PROPERTY(bool hasPickedLens READ hasPickedLens WRITE setHasPickedLens NOTIFY hasPickedLensChanged)
     Q_PROPERTY(bool hasPickedNgLens READ hasPickedNgLens WRITE setHasPickedNgLens NOTIFY hasPickedNgLensChanged)
+    Q_PROPERTY(int lutTrayID READ lutTrayID WRITE setLutTrayID NOTIFY lutTrayIDChanged)
+    Q_PROPERTY(int lutLensID READ lutLensID WRITE setLutLensID NOTIFY lutLensIDChanged)
+    Q_PROPERTY(int pickedTrayID READ pickedTrayID WRITE setPickedTrayID NOTIFY pickedTrayIDChanged)
+    Q_PROPERTY(int pickedLensID READ pickedLensID WRITE setPickedLensID NOTIFY pickedLensIDChanged)
+    Q_PROPERTY(int lutNgTrayID READ lutNgTrayID WRITE setLutNgTrayID NOTIFY lutNgTrayIDChanged)
+    Q_PROPERTY(int lutNgLensID READ lutNgLensID WRITE setLutNgLensID NOTIFY lutNgLensIDChanged)
+    Q_PROPERTY(bool loadingLens READ loadingLens WRITE setLoadingLens NOTIFY loadingLensChanged)
 public:
     bool hasTray() const
     {
@@ -297,7 +304,7 @@ public:
         return m_lutHasNgLens;
     }
 
-    bool needloadLens() const
+    bool needLoadLens() const
     {
         return m_needloadLens;
     }
@@ -325,6 +332,41 @@ public:
     bool hasPickedNgLens() const
     {
         return m_hasPickedNgLens;
+    }
+
+    int lutTrayID() const
+    {
+        return m_lutTrayID;
+    }
+
+    int lutLensID() const
+    {
+        return m_lutLensID;
+    }
+
+    int pickedTrayID() const
+    {
+        return m_pickedTrayID;
+    }
+
+    int pickedLensID() const
+    {
+        return m_pickedLensID;
+    }
+
+    int lutNgTrayID() const
+    {
+        return m_lutNgTrayID;
+    }
+
+    int lutNgLensID() const
+    {
+        return m_lutNgLensID;
+    }
+
+    bool loadingLens() const
+    {
+        return m_loadingLens;
     }
 
 public slots:
@@ -355,13 +397,13 @@ public slots:
         emit lutHasNgLensChanged(m_lutHasNgLens);
     }
 
-    void setneedloadLens(bool needloadLens)
+    void setNeedLoadLens(bool needloadLens)
     {
         if (m_needloadLens == needloadLens)
             return;
 
         m_needloadLens = needloadLens;
-        emit needloadLensChanged(m_needloadLens);
+        emit needLoadLensChanged(m_needloadLens);
     }
 
     void setCurrentTray(int currentTray)
@@ -409,6 +451,69 @@ public slots:
         emit hasPickedNgLensChanged(m_hasPickedNgLens);
     }
 
+    void setLutTrayID(int lutTrayID)
+    {
+        if (m_lutTrayID == lutTrayID)
+            return;
+
+        m_lutTrayID = lutTrayID;
+        emit lutTrayIDChanged(m_lutTrayID);
+    }
+
+    void setLutLensID(int lutLensID)
+    {
+        if (m_lutLensID == lutLensID)
+            return;
+
+        m_lutLensID = lutLensID;
+        emit lutLensIDChanged(m_lutLensID);
+    }
+
+    void setPickedTrayID(int pickedTrayID)
+    {
+        if (m_pickedTrayID == pickedTrayID)
+            return;
+
+        m_pickedTrayID = pickedTrayID;
+        emit pickedTrayIDChanged(m_pickedTrayID);
+    }
+
+    void setPickedLensID(int pickedLensID)
+    {
+        if (m_pickedLensID == pickedLensID)
+            return;
+
+        m_pickedLensID = pickedLensID;
+        emit pickedLensIDChanged(m_pickedLensID);
+    }
+
+    void setLutNgTrayID(int lutNgTrayID)
+    {
+        if (m_lutNgTrayID == lutNgTrayID)
+            return;
+
+        m_lutNgTrayID = lutNgTrayID;
+        emit lutNgTrayIDChanged(m_lutNgTrayID);
+    }
+
+    void setLutNgLensID(int lutNgLensID)
+    {
+        if (m_lutNgLensID == lutNgLensID)
+            return;
+
+        m_lutNgLensID = lutNgLensID;
+        emit lutNgLensIDChanged(m_lutNgLensID);
+    }
+
+    void setLoadingLens(bool loadingLens)
+    {
+        if (m_loadingLens == loadingLens)
+            return;
+
+        m_loadingLens = loadingLens;
+        emit loadingLensChanged(m_loadingLens);
+    }
+
 signals:
     void hasTrayChanged(bool hasTray);
 
@@ -416,7 +521,7 @@ signals:
 
     void lutHasNgLensChanged(bool lutHasNgLens);
 
-    void needloadLensChanged(bool needloadLens);
+    void needLoadLensChanged(bool needLoadLens);
 
     void currentTrayChanged(int currentTray);
 
@@ -428,6 +533,20 @@ signals:
 
     void hasPickedNgLensChanged(bool hasPickedNgLens);
 
+    void lutTrayIDChanged(int lutTrayID);
+
+    void lutLensIDChanged(int lutLensID);
+
+    void pickedTrayIDChanged(int pickedTrayID);
+
+    void pickedLensIDChanged(int pickedLensID);
+
+    void lutNgTrayIDChanged(int lutNgTrayID);
+
+    void lutNgLensIDChanged(int lutNgLensID);
+
+    void loadingLensChanged(bool loadingLens);
+
 private:
     bool m_hasTray = true;
     bool m_lutHasLens = false;
@@ -438,6 +557,13 @@ private:
     bool m_allowChangeTray = false;
     bool m_hasPickedLens = false;
     bool m_hasPickedNgLens = false;
+    int m_lutTrayID = -1;
+    int m_lutLensID = -1;
+    int m_pickedTrayID = -1;
+    int m_pickedLensID = -1;
+    int m_lutNgTrayID = -1;
+    int m_lutNgLensID = -1;
+    bool m_loadingLens;
 };
 
 #endif // LENSPICKARMMODULEPARAMETER_H

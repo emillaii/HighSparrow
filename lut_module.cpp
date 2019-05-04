@@ -38,44 +38,56 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
     }
 }
 
+void LutModule::receiveLensRequstFinish(int lens, int lens_tray)
+{
+    qInfo("receiveLensRequstFinish lens: %d lens_tray: %d");
+    if(lens>-1 && lens_tray>-1)
+    {
+        states.setLutLensID(lens);
+        states.setLutTrayID(lens_tray);
+    }
+}
+
 void LutModule::run(bool has_material)
 {
     qInfo("Start Lut Module Thread");
     state = HAS_LENS;  //ToDo: How to detect whether this has lens or not ?
     is_run = true;
+    bool isLocalHost = false;
     while(is_run){
         if (requestQueue.size()>0 && state == HAS_LENS) {
             state = BUSY;
             QJsonObject obj = requestQueue.dequeue();
-            QJsonObject result;
             qInfo("Start to consume request: %s", getStringFromJsonObject(obj).toStdString().c_str());
             QString client_ip = obj["client_ip"].toString("");
             servingIP = client_ip;
             QString cmd = obj["cmd"].toString("");
-            bool isLocalHost = false;
             if(client_ip == "::1") {
                 qInfo("This command come from localhost");
                 isLocalHost = true;
             }
             if (cmd == "lensReq") {
-                //isLocalHost ? moveToAA1UplookPos() : moveToAA2UplookPos();
-                isLocalHost ? moveToAA1PickLens() : moveToAA2PickLens();
+                QJsonObject result;
                 result.insert("event", "lensResp");
+                emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
             }
-            emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
         }
         if (actionQueue.size()>0 && state == BUSY) {
             QJsonObject obj = actionQueue.dequeue();
-            QJsonObject result;
             qInfo("Start to consume action request: %s", getStringFromJsonObject(obj).toStdString().c_str());
             QString client_ip = obj["client_ip"].toString("");
             QString cmd = obj["cmd"].toString("");
-            bool isLocalHost = false;
-            if(client_ip == "::1") {
-                qInfo("This command come from localhost");
-                isLocalHost = true;
+
+            QJsonObject result;
+            if(cmd == "unloadNgLensReq")
+            {
+                bool action_result;
+                isLocalHost ?action_result = moveToAA1UnPickLens() : action_result = moveToAA2UnPickLens();
+                QJsonObject result;
+                result.insert("event", "unloadNgLensResp");
+                emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
             }
-            if (cmd == "prReq") {
+            else if (cmd == "prReq") {
                 bool prRet = false;
                 PrOffset prOffset;
                 qInfo("perform PR start");

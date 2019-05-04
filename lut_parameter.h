@@ -171,4 +171,175 @@ private:
     QString m_mushroomLocationName = "";
 };
 
+class LutState:public PropertyBase
+{
+    Q_OBJECT
+    Q_PROPERTY(int lutTrayID READ lutTrayID WRITE setLutTrayID NOTIFY lutTrayIDChanged)
+    Q_PROPERTY(int lutLensID READ lutLensID WRITE setLutLensID NOTIFY lutLensIDChanged)
+    Q_PROPERTY(int lutNgTrayID READ lutNgTrayID WRITE setLutNgTrayID NOTIFY lutNgTrayIDChanged)
+    Q_PROPERTY(int lutNgLensID READ lutNgLensID WRITE setLutNgLensID NOTIFY lutNgLensIDChanged)
+    Q_PROPERTY(int aa1TrayID READ aa1TrayID WRITE setAa1TrayID NOTIFY aa1TrayIDChanged)
+    Q_PROPERTY(int aa1LensID READ aa1LensID WRITE setAa1LensID NOTIFY aa1LensIDChanged)
+    Q_PROPERTY(int aa2TrayID READ aa2TrayID WRITE setAa2TrayID NOTIFY aa2TrayIDChanged)
+    Q_PROPERTY(int aa2LensID READ aa2LensID WRITE setAa2LensID NOTIFY aa2LensIDChanged)
+    Q_PROPERTY(bool waitLens READ waitLens WRITE setWaitLens NOTIFY waitLensChanged)
+public:
+    int lutTrayID() const
+    {
+        return m_lutTrayID;
+    }
+
+    int lutLensID() const
+    {
+        return m_lutLensID;
+    }
+
+    int lutNgTrayID() const
+    {
+        return m_lutNgTrayID;
+    }
+
+    int lutNgLensID() const
+    {
+        return m_lutNgLensID;
+    }
+
+    int aa1TrayID() const
+    {
+        return m_aa1TrayID;
+    }
+
+    int aa1LensID() const
+    {
+        return m_aa1LensID;
+    }
+
+    int aa2TrayID() const
+    {
+        return m_aa2TrayID;
+    }
+
+    int aa2LensID() const
+    {
+        return m_aa2LensID;
+    }
+
+    bool waitLens() const
+    {
+        return m_waitLens;
+    }
+
+public slots:
+    void setLutTrayID(int lutTrayID)
+    {
+        if (m_lutTrayID == lutTrayID)
+            return;
+
+        m_lutTrayID = lutTrayID;
+        emit lutTrayIDChanged(m_lutTrayID);
+    }
+
+    void setLutLensID(int lutLensID)
+    {
+        if (m_lutLensID == lutLensID)
+            return;
+
+        m_lutLensID = lutLensID;
+        emit lutLensIDChanged(m_lutLensID);
+    }
+
+    void setLutNgTrayID(int lutNgTrayID)
+    {
+        if (m_lutNgTrayID == lutNgTrayID)
+            return;
+
+        m_lutNgTrayID = lutNgTrayID;
+        emit lutNgTrayIDChanged(m_lutNgTrayID);
+    }
+
+    void setLutNgLensID(int lutNgLensID)
+    {
+        if (m_lutNgLensID == lutNgLensID)
+            return;
+
+        m_lutNgLensID = lutNgLensID;
+        emit lutNgLensIDChanged(m_lutNgLensID);
+    }
+
+    void setAa1TrayID(int aa1TrayID)
+    {
+        if (m_aa1TrayID == aa1TrayID)
+            return;
+
+        m_aa1TrayID = aa1TrayID;
+        emit aa1TrayIDChanged(m_aa1TrayID);
+    }
+
+    void setAa1LensID(int aa1LensID)
+    {
+        if (m_aa1LensID == aa1LensID)
+            return;
+
+        m_aa1LensID = aa1LensID;
+        emit aa1LensIDChanged(m_aa1LensID);
+    }
+
+    void setAa2TrayID(int aa2TrayID)
+    {
+        if (m_aa2TrayID == aa2TrayID)
+            return;
+
+        m_aa2TrayID = aa2TrayID;
+        emit aa2TrayIDChanged(m_aa2TrayID);
+    }
+
+    void setAa2LensID(int aa2LensID)
+    {
+        if (m_aa2LensID == aa2LensID)
+            return;
+
+        m_aa2LensID = aa2LensID;
+        emit aa2LensIDChanged(m_aa2LensID);
+    }
+
+    void setWaitLens(bool waitLens)
+    {
+        if (m_waitLens == waitLens)
+            return;
+
+        m_waitLens = waitLens;
+        emit waitLensChanged(m_waitLens);
+    }
+
+signals:
+    void lutTrayIDChanged(int lutTrayID);
+
+    void lutLensIDChanged(int lutLensID);
+
+    void lutNgTrayIDChanged(int lutNgTrayID);
+
+    void lutNgLensIDChanged(int lutNgLensID);
+
+    void aa1TrayIDChanged(int aa1TrayID);
+
+    void aa1LensIDChanged(int aa1LensID);
+
+    void aa2TrayIDChanged(int aa2TrayID);
+
+    void aa2LensIDChanged(int aa2LensID);
+
+    void waitLensChanged(bool waitLens);
+
+private:
+    int m_lutTrayID = -1;
+    int m_lutLensID = -1;
+    int m_lutNgTrayID = -1;
+    int m_lutNgLensID = -1;
+    int m_aa1TrayID = -1;
+    int m_aa1LensID = -1;
+    int m_aa2TrayID = -1;
+    int m_aa2LensID = -1;
+    bool m_waitLens = false;
+};
+
 #endif // LUT_PARAMERTER_H

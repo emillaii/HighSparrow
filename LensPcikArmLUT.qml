@@ -272,13 +272,25 @@ ColumnLayout {
             }
             RowLayout{
                 Button {
-                    text: "start"
+                    text: "开始"
                     onClicked: {
-                        workersManager.startWorkers(true,2)
+                        workersManager.startWorker("LensPickArmModule",true,2)
                     }
                 }
                 Button {
-                    text: "stop"
+                    text: "放Lens"
+                    onClicked: {
+                        baseModuleManager.sendLoadLens(false)
+                    }
+                }
+                Button {
+                    text: "放Lens&取ng"
+                    onClicked: {
+                        baseModuleManager.sendLoadLens(true)
+                    }
+                }
+                Button {
+                    text: "停止"
                     onClicked: {
                         workersManager.stopWorkers()
                     }

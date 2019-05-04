@@ -60,17 +60,25 @@ void WorkersManager::stopWorkers(bool wait_finish)
 
 void WorkersManager::startWorker(QString name,bool reset,int run_mode)
 {
-    if("" != current_name && name != current_name)
-        disconnect(this,&WorkersManager::startWorkerSignal,workers[current_name],&ThreadWorkerBase::startWork);
-    connect(this,&WorkersManager::startWorkerSignal,workers[name],&ThreadWorkerBase::startWork);
+    if(name != current_name)
+    {
+        if("" != current_name)
+            disconnect(this,&WorkersManager::startWorkerSignal,workers[current_name],&ThreadWorkerBase::startWork);
+        connect(this,&WorkersManager::startWorkerSignal,workers[name],&ThreadWorkerBase::startWork);
+        current_name = name;
+    }
     emit startWorkerSignal(reset,run_mode);
 }
 
 void WorkersManager::stopWorker(QString name, bool wait_finish)
 {
-    if("" != current_name && name != current_name)
-        disconnect(this,&WorkersManager::stopWorkerSignal,workers[current_name],&ThreadWorkerBase::stopWork);
-    connect(this,&WorkersManager::stopWorkerSignal,workers[name],&ThreadWorkerBase::stopWork);
+    if(name != current_name)
+    {
+        if("" != current_name)
+            disconnect(this,&WorkersManager::startWorkerSignal,workers[current_name],&ThreadWorkerBase::startWork);
+        connect(this,&WorkersManager::startWorkerSignal,workers[name],&ThreadWorkerBase::startWork);
+        current_name = name;
+    }
     emit stopWorkerSignal(wait_finish);
 }
 

@@ -54,24 +54,28 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     }
     material_tray.standards_parameters.setTrayCount(2);
     unitlog.setServerAddress(DataServerURL());
+
+    connect(&lut_module,&LutModule::sendLensRequst,&lens_loader_module,&LensLoaderModule::receiveLensRequst,Qt::DirectConnection);
+    connect(&lens_loader_module,&LensLoaderModule::sendLensRequstFinish,&lut_module,&LutModule::receiveLensRequstFinish,Qt::DirectConnection);
+
 }
 
 BaseModuleManager::~BaseModuleManager()
 {
-    QString temp;
-    for (int i = 0; i < motors.size(); ++i) {
-        temp = motors.keys()[i];
-        if(temp == "SUT1_Z"||temp == "LUT_Z")
-            delete  GetVcMotorByName(temp);
-        else
-            delete  GetMotorByName(temp);
-    }
-    for (int i = 0; i < output_ios.size(); ++i)
-        delete  GetOutputIoByName(output_ios.keys()[i]);
-    for (int i = 0; i < input_ios.size(); ++i)
-        delete  GetInputIoByName(input_ios.keys()[i]);
-    for (int i = 0; i < calibrations.size(); ++i)
-        delete  calibrations[calibrations.keys()[i]];
+//    QString temp;
+//    for (int i = 0; i < motors.size(); ++i) {
+//        temp = motors.keys()[i];
+//        if(temp == "SUT1_Z"||temp == "LUT_Z")
+//            delete  GetVcMotorByName(temp);
+//        else
+//            delete  GetMotorByName(temp);
+//    }
+//    for (int i = 0; i < output_ios.size(); ++i)
+//        delete  GetOutputIoByName(output_ios.keys()[i]);
+//    for (int i = 0; i < input_ios.size(); ++i)
+//        delete  GetInputIoByName(input_ios.keys()[i]);
+//    for (int i = 0; i < calibrations.size(); ++i)
+//        delete  calibrations[calibrations.keys()[i]];
 //    delete chart_calibration;
  }
 
@@ -1113,6 +1117,14 @@ double BaseModuleManager::getMotorFeedbackPos(int index)
 void BaseModuleManager::setLightingBrightness(QString location_name)
 {
     GetVisionLocationByName(location_name)->OpenLight();
+}
+
+void BaseModuleManager::sendLoadLens(bool has_ng)
+{
+    if(has_ng)
+        emit lut_module.sendLensRequst(true,0,0);
+    else
+        emit lut_module.sendLensRequst(true,-1,-1);
 }
 
 bool BaseModuleManager::initSensor()

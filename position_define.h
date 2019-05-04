@@ -4,6 +4,7 @@
 #include "propertybase.h"
 
 #include <qpoint.h>
+
 class Position:public PropertyBase
 {
     Q_OBJECT

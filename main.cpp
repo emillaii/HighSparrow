@@ -42,9 +42,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("uplookCamera", highSprrow.baseModuleManager->pylonUplookCamera);
     engine.rootContext()->setContextProperty("downlookCamera", highSprrow.baseModuleManager->pylonDownlookCamera);
     engine.rootContext()->setContextProperty("pickarmCamera", highSprrow.baseModuleManager->pylonPickarmCamera);
-
-    engine.rootContext()->setContextProperty("workerManager", highSprrow.worker_manager);
-    //engine.rootContext()->setContextProperty("workersName", QVariant::fromValue(highSprrow.worker_manager->getWorkersNames()));
     QStringList workerNameList;
     for(QString output:highSprrow.worker_manager->getWorkersNames()){
         workerNameList<<output;

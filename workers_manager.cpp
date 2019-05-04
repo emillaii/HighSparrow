@@ -31,18 +31,14 @@ void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message
     ShowAlarm(sender_id,level,error_message);
 }
 
-void WorkersManager::receiveOperation(int sender_id, int operation_type)
-{
-    qInfo("Receive operation from sender_id: %d operation_type: %d", sender_id, operation_type);
-
-}
-
 void WorkersManager::ShowAlarm(const int sender_id, const int level, const QString error_message)
 {
     if(level == ErrorLevel::TipNonblock||level == ErrorLevel::ErrorMustStop)
         return;
     //todo 显示错误窗口
     this->setShowAlarmDialog(true);
+    this->workersState.insert(sender_id, level);
+    this->workersError.insert(sender_id, error_message);
 }
 
 void WorkersManager::startWorkers(bool reset,int run_mode)
@@ -89,5 +85,26 @@ QList<QString> WorkersManager::getWorkersNames()
 
 QString WorkersManager::getAlarmMessage(QString workerName)
 {
-    return workers[workerName]->GetCurrentError();
+    if (workers.contains(workerName)){
+        int sender_id = workers[workerName]->getAlarmId();
+        return workersError[sender_id];
+    } else {
+        return "";
+    }
+}
+
+int WorkersManager::getAlarmState(QString workerName)
+{
+    if (workers.contains(workerName)){
+        int sender_id = workers[workerName]->getAlarmId();
+        return workersState[sender_id];
+    } else {
+        return 0;
+    }
+}
+
+void WorkersManager::sendOperation(QString workerName, int operation_type)
+{
+    qInfo("Workername: %s operationType: %d", workerName.toStdString().c_str(), operation_type);
+    //ToDo: Send back to worker for handling the user response
 }

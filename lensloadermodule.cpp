@@ -112,6 +112,7 @@ void LensLoaderModule::run(bool has_material)
             has_task = true;
             if(!moveToTrayPos(states.pickedLensID(),states.pickedTrayID()))
             {
+                AppendError("moveToTrayPos fial!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
@@ -128,12 +129,14 @@ void LensLoaderModule::run(bool has_material)
             }
             if(!moveToWorkPos())
             {
+                AppendError("moveToWorkPos fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
             }
             if(!placeLensToTray())
             {
+                AppendError("placeLensToTray fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 waitMessageReturn(is_run);
             }
@@ -147,6 +150,7 @@ void LensLoaderModule::run(bool has_material)
             has_task = true;
             if(!moveToNextTrayPos(states.currentTray()))
             {
+                AppendError("moveToTray Pos fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
@@ -158,6 +162,7 @@ void LensLoaderModule::run(bool has_material)
                 else
                 {
                     pr_times = 5;
+                    AppendError("performLensPR fial 5 times!");
                     sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                     waitMessageReturn(is_run);
                     if(is_run)break;
@@ -165,6 +170,7 @@ void LensLoaderModule::run(bool has_material)
             }
             if(!moveToWorkPos())
             {
+                AppendError("moveToWorkPos fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
@@ -172,6 +178,7 @@ void LensLoaderModule::run(bool has_material)
 
             if(!pickTrayLens())
             {
+                AppendError("pickTrayLens fial!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(!waitMessageReturn(is_run))
                     states.setHasPickedLens(true);
@@ -196,18 +203,21 @@ void LensLoaderModule::run(bool has_material)
             has_task = true;
             if(!moveToLUTPRPos1())
             {
+                AppendError("moveToLUTPRPos1 fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
             }
             if(!moveToWorkPos())
             {
+                AppendError("moveToWorkPos fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
             }
             if(!placeLensToLUT())
             {
+                AppendError("placeLensToLUT fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
                     states.setHasPickedLens(false);
@@ -237,6 +247,7 @@ void LensLoaderModule::run(bool has_material)
             has_task = true;
             if(!moveToLUTPRPos2())
             {
+                AppendError("moveToLUTPRPos2 fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
@@ -253,12 +264,14 @@ void LensLoaderModule::run(bool has_material)
             }
             if(!moveToWorkPos())
             {
+                AppendError("moveToWorkPos fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
             }
             if(!pickLUTLens())
             {
+                AppendError("pickLUTLens fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
                     lut_has_ng_lens = false;

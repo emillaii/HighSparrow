@@ -14,6 +14,7 @@ bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
         connect(this,&WorkersManager::stopWorkersSignal,worker,&ThreadWorkerBase::stopWork,Qt::DirectConnection);
         connect(worker,&ThreadWorkerBase::sendHandlingOperation,worker,&ThreadWorkerBase::performHandlingOperation);
         connect(worker,&ThreadWorkerBase::sendErrorMessage,this,&WorkersManager::receiveAlarm);
+        connect(this,&WorkersManager::feedbackOperation,worker,&ThreadWorkerBase::receiveOperation,Qt::DirectConnection);
         worker->setAlarmId(workers.count());
         qInfo("registerWorker :%s",worker->Name().toStdString().c_str());
         return true;
@@ -107,4 +108,5 @@ void WorkersManager::sendOperation(QString workerName, int operation_type)
 {
     qInfo("Workername: %s operationType: %d", workerName.toStdString().c_str(), operation_type);
     //ToDo: Send back to worker for handling the user response
+    emit feedbackOperation(workers[workerName]->getAlarmId(),operation_type);
 }

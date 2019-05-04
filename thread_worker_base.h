@@ -50,13 +50,13 @@ signals:
 public slots:
     virtual void startWork(bool reset_logic = false,int run_mode = 0) = 0;
     virtual void stopWork(bool wait_finish = true) = 0;
-    void receiveMessage(const int message_id,const int result_message);
+    void receiveOperation(const int sender_id,const int operation_type);
     virtual void performHandlingOperation(int cmd) = 0;
     void setName(QString Name);
 private:
     QThread work_thread;
     QString m_Name;
-    int message_result;
+    int operation_type;
     bool message_returned;
     int alarm_id = 0;
     QMutex message_mutex;

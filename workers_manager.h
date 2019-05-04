@@ -17,7 +17,7 @@ signals:
     void startWorkerSignal(bool reset = false,int run_mode = 0);
     void stopWorkerSignal(bool wait_finish = true);
     void paramsChanged(bool ShowAlarmDialog);
-
+    void feedbackOperation(const int sender_id,const int operation_type);
 public slots:
 void receiveAlarm(int sender_id,int level, QString error_message);
 void setShowAlarmDialog(bool ShowAlarmDialog)

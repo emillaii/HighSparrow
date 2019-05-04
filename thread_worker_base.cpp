@@ -44,13 +44,13 @@ void ThreadWorkerBase::sendAlarmMessage(int error_level, QString error_message)
     emit sendErrorMessage(alarm_id,error_level,error_message);
 }
 
-void ThreadWorkerBase::receiveMessage(const int message_id,const int result_message)
+void ThreadWorkerBase::receiveOperation(const int sender_id,const int operation_type)
 {
-    if(alarm_id == message_id)
+    if(alarm_id == sender_id)
     {
         QMutexLocker temp_locker(&message_mutex);
         message_returned = true;
-        message_result = result_message;
+        this->operation_type = operation_type;
     }
 }
 
@@ -63,7 +63,7 @@ int ThreadWorkerBase::waitMessageReturn(bool &interruput)
             if(message_returned)
             {
                 message_returned = false;
-                return  message_result;
+                return  operation_type;
             }
         }
     }

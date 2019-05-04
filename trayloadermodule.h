@@ -83,6 +83,8 @@ public slots:
     void onLtkx2Pickup();
     void onNextEmptyPos();
 
+    void onTestTrayUsed();
+
 
 };
 

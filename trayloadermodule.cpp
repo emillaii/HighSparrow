@@ -12,8 +12,8 @@ TrayLoaderModule::TrayLoaderModule(QString name):ThreadWorkerBase(name)
     connect(this,SIGNAL(ltlxPickup()),this,SLOT(onLtlxPickup()));
     connect(this,SIGNAL(ltlxPutdown()),this,SLOT(onLtlxPutdown()));
 
-    connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltlxPutdown()));
-    connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltkx1Pickup()));
+    //connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltlxPutdown()));
+    //connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltkx1Pickup()));
 
 }
 
@@ -332,4 +332,10 @@ void TrayLoaderModule::onLtkx2Pickup()
 void TrayLoaderModule::onNextEmptyPos()
 {
     moveToNextEmptyPos();
+}
+
+void TrayLoaderModule::onTestTrayUsed()
+{
+    emit ltlxPutdown();
+    emit ltkx1Pickup();
 }

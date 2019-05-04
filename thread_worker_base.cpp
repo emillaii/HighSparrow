@@ -69,7 +69,7 @@ int ThreadWorkerBase::waitMessageReturn(bool &interruput)
             }
         }
     }
-    return 1;
+    return 0;
 }
 
 void ThreadWorkerBase::setName(QString Name)

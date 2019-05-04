@@ -224,14 +224,12 @@ void LensLoaderModule::run(bool has_material)
                 else
                 {
                     need_load_lens = false;
-                    states.setNeedLoadLens(false);
                     states.setHasPickedLens(false);
                 }
             }
             else
             {
                 need_load_lens = false;
-                states.setNeedLoadLens(false);
                 states.setHasPickedLens(false);
             }
             {

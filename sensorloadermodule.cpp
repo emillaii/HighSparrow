@@ -216,6 +216,7 @@ void SensorLoaderModule::run(bool has_material)
             }
             if(!moveToWorkPos())
             {
+                AppendError("moveToWorkPos fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
@@ -288,6 +289,7 @@ void SensorLoaderModule::run(bool has_material)
             has_task = true;
             if(!moveToSUTPRPos())
             {
+                AppendError("moveToSUTPRPos fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
@@ -304,12 +306,14 @@ void SensorLoaderModule::run(bool has_material)
             }
             if(!moveToWorkPos2())
             {
+                AppendError("moveToWorkPos2 fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
             }
             if(!pickSUTSensor())
             {
+                AppendError("pickSUTSensor fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
                     states.setSutHasNgSensor(false);

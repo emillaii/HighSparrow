@@ -49,9 +49,9 @@ bool XtVacuum::Wait(bool target_state, int timeout,int finish_delay,int input_nu
         count-=10;
         QThread::msleep(10);
     }
-    return false;
     if((0 != finish_delay)&&(nullptr != break_io)&&(!target_state))
         break_io->Set(false);
+    return false;
 }
 
 bool XtVacuum::IsVacuum()

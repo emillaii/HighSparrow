@@ -431,10 +431,8 @@ void AACore::performAAOffline()
 //    }
     double fov_slope     = (20*xysum-xsum*ysum)/(20*x2sum-xsum*xsum);               //calculate slope
     double fov_intercept = (x2sum*ysum-xsum*xysum)/(x2sum*20-xsum*xsum);            //calculate intercept
-
     stepTimerMap.insert("sfr_wait", stepTimer.elapsed());
     stepTimer.restart();
-
     double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
     double dev = 0;
     sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak, dev);
@@ -445,6 +443,8 @@ void AACore::performAAOffline()
     clustered_sfr_map.clear();
     qInfo("[performAAOffline] Finished xTilt: %f yTilt: %f zPeak: %f ulPeak: %f", xTilt, yTilt, zPeak, ul_zPeak);
     qInfo("time elapsed: %d", timer.elapsed());
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "AAOffline", map);
 }
 
 ErrorCodeStruct AACore::performInitSensor()
@@ -938,14 +938,13 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
         if (i == ccIndex || i == ulIndex || i == urIndex || i == llIndex || i == lrIndex)
         {
             QString indexString;
-            QVariantMap sfrMap;
             if (i == ccIndex) indexString = "CC";
             else if (i == ulIndex) indexString = "UL";
             else if (i == urIndex) indexString = "UR";
             else if (i == llIndex) indexString = "LL";
             else if (i == lrIndex) indexString = "LR";
             for (unsigned int j = 0; j < clustered_sfr[i].size(); j++) {
-                QVariantMap s;
+                QVariantMap s; QVariantMap sfrMap;
                 s.insert("index", j);
                 s.insert("position", indexString);
                 s.insert("px", clustered_sfr[i][j].px);
@@ -954,6 +953,7 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
                 s.insert("sfr", clustered_sfr[i][j].sfr);
                 sfrMap.insert(indexString, s);
                 sfrMap.insert("pz", clustered_sfr[i][j].pz);
+                emit postSfrDataToELK(runningUnit, sfrMap);
             }
         }
     }

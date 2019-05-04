@@ -59,7 +59,9 @@ bool Unitlog::postDataToELK(QString uuid)
          QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
          QJsonDocument doc(json);
          //QUrl sfrlog_endpoint = QString("http://192.168.0.252:5044");
-         QNetworkRequest request(serverAddress);
+         QString unitLogEndpoint = serverAddress;
+         unitLogEndpoint.append(":").append(QString::number(UNIT_LOG_PORT));
+         QNetworkRequest request(unitLogEndpoint);
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));
          if (nam) {
@@ -72,6 +74,27 @@ bool Unitlog::postDataToELK(QString uuid)
         qInfo("Cannot find the unit: %s", uuid.toStdString().c_str());
     }
     return true;
+}
+
+bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
+{
+     data.insert("device_id", uuid);
+     QJsonObject json = QJsonObject::fromVariantMap(data);
+     QJsonDocument doc(json);
+     qInfo("Sfr log: %s", doc.toJson().toStdString().c_str());
+     QString sfrLogEndpoint = serverAddress;
+     sfrLogEndpoint.append(":").append(QString::number(5045));
+     qInfo(sfrLogEndpoint.toStdString().c_str());
+     QNetworkRequest request(sfrLogEndpoint);
+     request.setHeader(QNetworkRequest::ContentTypeHeader,
+                       QVariant(QString("application/json")));
+     if (nam) {
+         nam->post(request, doc.toJson());
+         qInfo("Push sfr data to ELK success: %s", uuid.toStdString().c_str());
+     } else {
+         qInfo("Post sfr data to ELK fail");
+     }
+     return true;
 }
 
 bool Unitlog::saveToCSV(QString uuid)

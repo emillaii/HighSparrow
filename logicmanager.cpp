@@ -40,6 +40,7 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     connect(aaCore, &AACore::pushDataToUnit, &device_manager->unitlog, &Unitlog::pushDataToUnit);
     connect(aaCore, &AACore::postDataToELK, &device_manager->unitlog, &Unitlog::postDataToELK);
     connect(aaCore, &AACore::postDataToELK, &device_manager->unitlog, &Unitlog::saveToCSV);
+    connect(aaCore, &AACore::postSfrDataToELK, &device_manager->unitlog, &Unitlog::postSfrDataToELK);
 }
 
 void LogicManager::updateParams()

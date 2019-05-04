@@ -113,6 +113,7 @@ signals:
     void callQmlRefeshSfrImg();
     void pushDataToUnit(QString uuid, QString name, QVariantMap map);
     void postDataToELK(QString);
+    void postSfrDataToELK(QString, QVariantMap);
     void sendLensRequestToLut();
 public slots:
     void triggerGripperOn(bool isOn);

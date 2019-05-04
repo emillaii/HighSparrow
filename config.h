@@ -264,5 +264,8 @@
 #define AA_MIN_AREA 10000
 #define AA_MAX_AREA 90000
 
+#define UNIT_LOG_PORT 5044
+#define SFR_LOG_PORT 5045
+
 #endif
 // CONFIG_H

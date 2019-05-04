@@ -27,6 +27,7 @@ private:
 public slots:
     bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
     bool postDataToELK(QString uuid);
+    bool postSfrDataToELK(QString uuid, QVariantMap data);
 };
 
 #endif // UNITLOGGER_H

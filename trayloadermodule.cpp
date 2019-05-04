@@ -11,7 +11,6 @@ TrayLoaderModule::TrayLoaderModule(QString name):ThreadWorkerBase(name)
     connect(this,SIGNAL(ltkx2Pickup()),this,SLOT(onLtkx2Pickup()),Qt::QueuedConnection);
     connect(this,SIGNAL(ltlxPickup()),this,SLOT(onLtlxPickup()),Qt::QueuedConnection);
     connect(this,SIGNAL(ltlxPutdown()),this,SLOT(onLtlxPutdown()),Qt::QueuedConnection);
-
     //connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltlxPutdown()),Qt::QueuedConnection);
     //connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltkx1Pickup()),Qt::QueuedConnection);
     connect(this,SIGNAL(testTrayUsed()),this,SLOT(onTestTrayUsed()),Qt::QueuedConnection);

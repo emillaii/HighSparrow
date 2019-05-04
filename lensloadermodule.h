@@ -118,6 +118,7 @@ private:
     QMutex lut_mutex;
     QMutex tray_mutex;
     bool is_run = false;
+    bool interruput = false;
     bool finish_stop = false;
     bool debug = false;
     ErrorLevel error_level;

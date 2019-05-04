@@ -819,6 +819,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 
 bool BaseModuleManager::allMotorsSeekOriginal2()
 {
+    qInfo("allMotorsSeekOriginal2 Start");
     bool result;
     GetMotorByName(sut_module.parameters.motorZName())->SeekOrigin();
     result = GetMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();

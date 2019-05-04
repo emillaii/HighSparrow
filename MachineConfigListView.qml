@@ -8,14 +8,21 @@ ListView {
         Loader {
             source: switch(index) {
                 case 1 : return "AAHeadModuleView.qml"
-                case 2 : return "SUTModuleView.qml"
-                case 3 : return "LUTModuleView.qml"
+                case 2 :
+                    return "SUTModuleView.qml"
+                case 3 :
+                    if (baseModuleManager.ServerMode == 0)
+                        return "LUTModuleView.qml"
+                    return "";
                 case 4 : return "DispenseModuleView.qml"
                 case 5 : return "ImageGrabberView.qml"
                 case 6 : return "CalibrationView.qml"
                 case 7 : return "AACoreView.qml"
                 case 8 : return "SystemConfigView.qml"
-                case 9 : return "LensPickArmModuleView.qml"
+                case 9 :
+                    if (baseModuleManager.ServerMode == 0)
+                        return "LensPickArmModuleView.qml"
+                    return ""
                 case 10: return "TrayLoaderModuleView.qml"
             }
         }

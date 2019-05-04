@@ -137,8 +137,12 @@ bool TrayLoaderModule::moveToLtlGetPos()
 
 bool TrayLoaderModule::motorWorkPress()
 {
-    int res = cylinder_tray->Set(true);
-    return res;
+    int res = cylinder_tray->Value();
+    if(res){
+        res = cylinder_tray->Set(false);
+        return res;
+    }
+    return 1;
 }
 
 bool TrayLoaderModule::moveToLtlSetPos()
@@ -150,12 +154,8 @@ bool TrayLoaderModule::moveToLtlSetPos()
 
 bool TrayLoaderModule::motorWorkRelease()
 {
-    int res = cylinder_tray->Value();
-    if(res){
-        res = cylinder_tray->Set(false);
-        return res;
-    }
-    return 1;
+    int res = cylinder_tray->Set(1);
+    return res;
 }
 
 bool TrayLoaderModule::moveToLtkx2GetPos()
@@ -249,6 +249,18 @@ void TrayLoaderModule::onNextTrayPos()
 
 void TrayLoaderModule::onLtkx1Pickup()
 {
+    if(!motorInPress()){
+        return;
+    }
+    if(!moveToLtkx1SetPos()){
+        return;
+    }
+    if(!motorInRealease()){
+        return;
+    }
+    if(!moveToLtkx1RelayPos()){
+        return;
+    }
     if(!motorInPress()){
         return;
     }

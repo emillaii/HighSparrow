@@ -33,6 +33,11 @@ void ThreadWorkerBase::setAlarmId(int id)
         alarm_id = id;
 }
 
+int ThreadWorkerBase::getAlarmId()
+{
+   return alarm_id;
+}
+
 void ThreadWorkerBase::sendAlarmMessage(int error_level, QString error_message)
 {
     message_returned = false;

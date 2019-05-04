@@ -23,7 +23,6 @@ void ErrorBase::AppendLineError(QString error)
 
 QString ErrorBase::GetCurrentError()
 {
-    return error_content;
     foreach (ErrorBase* temp_error, parts) {
         if (temp_error) {
             QString temp_message = temp_error->GetCurrentError();

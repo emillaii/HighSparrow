@@ -39,6 +39,7 @@ public:
 
     QString Name() const;
     void setAlarmId(int id);
+    int getAlarmId();
     void sendAlarmMessage(int error_level,QString error_message);
     int waitMessageReturn(bool &interruput);
 signals:

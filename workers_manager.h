@@ -19,7 +19,6 @@ signals:
     void paramsChanged(bool ShowAlarmDialog);
 
 public slots:
-void receiveOperation(int sender_id, int operation_type);
 void receiveAlarm(int sender_id,int level, QString error_message);
 void setShowAlarmDialog(bool ShowAlarmDialog)
 {
@@ -38,7 +37,9 @@ public:
     Q_INVOKABLE void startWorker(QString name,bool reset = false,int run_mode = 0);
     Q_INVOKABLE void stopWorker(QString name,bool wait_finish = true);
     Q_INVOKABLE QList<QString> getWorkersNames();
-    Q_INVOKABLE QString getAlarmMessage(QString workerName);;
+    Q_INVOKABLE QString getAlarmMessage(QString workerName);
+    Q_INVOKABLE int getAlarmState(QString workerName);
+    Q_INVOKABLE void sendOperation(QString workerName, int operation_type);
     bool ShowAlarmDialog() const
     {
         return m_ShowAlarmDialog;
@@ -48,6 +49,8 @@ private:
     QMap<QString,ThreadWorkerBase*> workers;
     QString current_name = "";
     bool m_ShowAlarmDialog = false;
+    QMap<int, QString> workersError;
+    QMap<int, int> workersState;
 };
 
 #endif // WORKERS_MANAGER_H

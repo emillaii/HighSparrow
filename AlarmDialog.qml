@@ -6,6 +6,7 @@ import QtQuick.Window 2.0
 
 Window {
     property int count: 0
+    property bool lightState: true
     id: alarmWindow
     title: "Alarm Dialog"
     width: 800
@@ -20,10 +21,9 @@ Window {
         id: timer
         interval: 500; running: true; repeat: true
         onTriggered: {
-            if (workerManager.ShowAlarmDialog) {
-                console.log("Need to show dialog. Type: " + workerManager.AlarmType)
+            lightState = !lightState
+            if (workersManager.ShowAlarmDialog) {
                 alarmDialog.visible = true
-               // errorMessage.text = workerManager.AlarmMessage
             } else {
                 alarmDialog.visible = false
             }
@@ -44,6 +44,7 @@ Window {
             id: numberDelegate
             RowLayout {
                 Rectangle {
+                    id: moduleRect
                     width:  100
                     height: 40
                     color: "lightGreen"
@@ -61,28 +62,55 @@ Window {
                         target: timer
                         onTriggered: {
                             if (alarmDialog.visible) {
-                                errorMessage.text = workerManager.getAlarmMessage(modelData)
+                                var alarmType = workersManager.getAlarmState(modelData)
+                                errorMessage.text = workersManager.getAlarmMessage(modelData)
+                                if (alarmType === 0) {
+                                    moduleRect.color = "lightGreen"
+                                    button1.text = "Ok"
+                                    button2.text = "Cancel"
+                                } else if (alarmType === 1) {
+                                    moduleRect.color = "orange"
+                                    button1.text = "Ok"
+                                    button2.text = "Cancel"
+                                } else if (alarmType === 2) {
+                                    moduleRect.color = "orange"
+                                    button1.text = "Continue"
+                                    button2.text = "Give Up"
+                                } else if (alarmType === 3) {
+                                    moduleRect.color = "orange"
+                                    button1.text = "Continue"
+                                    button2.text = "Retry"
+                                } else if (alarmType === 4) {
+                                    lightState ? moduleRect.color = "pink" : moduleRect.color = "red"
+                                    button1.text = "Retry"
+                                    button2.text = "Stop"
+                                }
+                                else {
+                                    moduleRect.color = "red"
+                                }
                             }
                         }
                     }
                     Text {
                         id: errorMessage
                         anchors.centerIn: parent
-                        font.pixelSize: 10
+                        font.pixelSize: 14
                         text: "modelData"
                         color: "white"
                     }
                 }
                 Button {
+                    id: button1
                     text: qsTr("OK")
                     onClicked: {
-                        console.log("OK..." + modelData)
+                        workersManager.sendOperation(modelData, 0);
                     }
                 }
                 Button {
+                    id: button2
                     text: qsTr("Cancel")
                     onClicked: {
-                        console.log("Cancel...")
+                        workersManager.sendOperation(modelData, 1);
                     }
                 }
             }
@@ -90,15 +118,3 @@ Window {
     }
 }
 
-
-
-
-
-
-
-
-
-/*##^## Designer {
-    D{i:21;anchors_height:300;anchors_width:80}
-}
- ##^##*/

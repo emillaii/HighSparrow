@@ -394,7 +394,7 @@ void LogicManager::trayLoaderModuleLTKX1CylinderOn()
 
 void LogicManager::trayLoaderModuleLTKX1CylinderOff()
 {
-    baseModuleManage->tray_loader_module.motorInRealease();
+    baseModuleManage->tray_loader_module.motorInRelease();
 }
 
 void LogicManager::trayLoaderModuleLTKX2CylinderOn()
@@ -420,6 +420,7 @@ void LogicManager::trayLoaderModuleLTLXCylinderOff()
 void LogicManager::trayLoaderModuleStartup()
 {
     baseModuleManage->tray_loader_module.startUp();
+    emit baseModuleManage->tray_loader_module.parameters.trayReady();
     //emit baseModuleManage->tray_loader_module.parameters.trayReady();
 }
 

@@ -27,7 +27,7 @@ public:
     bool moveToLtkx1GetPos();
     bool moveToLtkx1RelayPos();
     bool moveToLtkx1SetPos();
-    bool motorInRealease();
+    bool motorInRelease();
 
     bool moveToLtlGetPos();
     bool motorWorkPress();
@@ -71,6 +71,8 @@ signals:
     void trayReady();
     void testTrayUsed();
 
+    void reset();
+
 public slots:
     void startWork(bool reset_logic,int run_mode);
     void stopWork(bool wait_finish);
@@ -84,6 +86,8 @@ public slots:
     void onNextEmptyPos();
 
     void onTestTrayUsed();
+
+    void onReset();
 
 
 };

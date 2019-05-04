@@ -265,7 +265,6 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
         }
         else if (testItemName.contains(AA_PIECE_Z_OFFSET)) {
             qInfo("Performaing Z Offset");
-            //int type = params["type"].toInt(0);
             double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
             z_offset_in_um /= 1000;
             performZOffset(z_offset_in_um);
@@ -508,7 +507,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
                                    bool is_debug, sfr::EdgeFilter edgeFilter,
                                    double estimated_fov_slope, double zOffset)
 {
-    QVariantMap map;
+    QVariantMap map, dfovMap;
     QElapsedTimer timer; timer.start();
     qInfo("start: %f stop: %f step_size: %f", start, stop, step_size);
     int imageWidth = 0, imageHeight = 0;
@@ -542,6 +541,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
                            .append(".jpg");
            //cv::imwrite(imageName.toStdString().c_str(), img);
            double dfov = calculateDFOV(img);
+           dfovMap.insert(QString::number(i), dfov);
            xsum=xsum+realZ;
            ysum=ysum+dfov;
            x2sum=x2sum+pow(realZ,2);
@@ -558,6 +558,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
         msleep(zSleepInMs);
         cv::Mat img = dk->DothinkeyGrabImageCV(0);
         double dfov = calculateDFOV(img);
+        dfovMap.insert("-1", dfov);
         if (dfov <= -1) {
             qInfo("Cannot find the target FOV!");
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
@@ -584,6 +585,7 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
             mPoint3D currPos = sut->carrier->GetFeedBackPos();
             cv::Mat img = dk->DothinkeyGrabImageCV(0);
             double dfov = calculateDFOV(img);
+            dfovMap.insert(QString::number(i), dfov);
             bool isCrashDetected = false;
             if (i > 1) {
                 double slope = (dfov - prev_point.y()) / (currPos.Z - prev_point.x());
@@ -649,7 +651,6 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
     qInfo("aa_head after :%f", aa_head->GetFeedBack().Z);
     sut->moveToZPos(zPeak);
-    msleep(zSleepInMs);
     map.insert("X_TILT", xTilt);
     map.insert("Y_TILT", yTilt);
     map.insert("Z_PEAK_CC", zPeak);
@@ -660,7 +661,8 @@ ErrorCodeStruct AACore::performAA(double start, double stop, double step_size,
     map.insert("FOV_SLOPE", fov_slope);
     map.insert("FOV_INTERCEPT", fov_intercept);
     map.insert("DEV", dev);
-    map.insert("TIME_ELAPSED", timer.elapsed());
+    map.insert("timeElapsed", timer.elapsed());
+    map.insert("DFOV", dfovMap);
     emit pushDataToUnit(runningUnit, "AA", map);
     return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
@@ -728,6 +730,7 @@ ErrorCodeStruct AACore::performOC(bool enableMotion, bool fastMode)
 
 ErrorCodeStruct AACore::performMTF()
 {
+    QElapsedTimer timer; timer.start();
     QVariantMap map;
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
     cv::Mat img = dk->DothinkeyGrabImageCV(0);
@@ -782,6 +785,20 @@ ErrorCodeStruct AACore::performMTF()
             lrROIIndex = i;
         }
     }
+    mPoint6D motorsPosition = this->aa_head->GetFeedBack();
+    mPoint3D sutPosition = this->sut->carrier->GetFeedBackPos();
+    map.insert("AA_X", motorsPosition.X);
+    map.insert("AA_Y", motorsPosition.Y);
+    map.insert("AA_Z", motorsPosition.Z);
+    map.insert("AA_A", motorsPosition.A);
+    map.insert("AA_B", motorsPosition.B);
+    map.insert("AA_C", motorsPosition.C);
+    map.insert("AA_A", motorsPosition.A);
+    map.insert("AA_B", motorsPosition.B);
+    map.insert("AA_C", motorsPosition.C);
+    map.insert("SUT_X", sutPosition.X);
+    map.insert("SUT_Y", sutPosition.Y);
+    map.insert("SUT_Z", sutPosition.Z);
     map.insert("OC_X", sfr_entry[ccROIIndex].px - imageWidth/2);
     map.insert("OC_Y", sfr_entry[ccROIIndex].py - imageHeight/2);
     map.insert("CC_SFR", sfr_entry[ccROIIndex].sfr);
@@ -790,6 +807,7 @@ ErrorCodeStruct AACore::performMTF()
     map.insert("LR_SFR", sfr_entry[lrROIIndex].sfr);
     map.insert("LL_SFR", sfr_entry[llROIIndex].sfr);
     map.insert("DFOV", fov);
+    map.insert("timeElapsed", timer.elapsed());
     clustered_sfr_map.clear();
     emit pushDataToUnit(this->runningUnit, "MTF", map);
     if (currentAAMode == AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE) {

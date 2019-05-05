@@ -31,6 +31,7 @@
 #include "workers_manager.h"
 #include "trayloadermodule.h"
 #include "unitlog.h"
+#include "sensorloadermodule.h"
 class BaseModuleManager : public PropertyBase
 {
     Q_OBJECT
@@ -68,6 +69,9 @@ public:
     MaterialCarrier sut_carrier;
     MaterialPicker lens_picker;
     LensPickArm lens_pick_arm;
+    MaterialPicker sensor_picker1;
+    MaterialPicker sensor_picker2;
+    SensorPickArm sensor_pickarm;
     MaterialTray material_tray;
     AAHeadModule aa_head_module;
     LutModule lut_module;
@@ -75,6 +79,7 @@ public:
     DispenseModule dispense_module;
     Dispenser dispenser;
     LensLoaderModule lens_loader_module;
+    SensorLoaderModule sensor_loader_module;
     TrayLoaderModule tray_loader_module;
 
     TrayClip trayClipIn;
@@ -207,6 +212,7 @@ public:
     Q_INVOKABLE void sendLoadLens(bool has_ng);
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();
+    Q_INVOKABLE void loadSensorLoaderParameter();
     void EnableMotors();
     void DisableAllMotors();
     Q_INVOKABLE bool allMotorsSeekOrigin();

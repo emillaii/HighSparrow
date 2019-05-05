@@ -92,6 +92,7 @@ void SensorLoaderModule::run(bool has_material)
             has_task = true;
             if(!moveToTrayPos(sut_used_material,product_tray_index))
             {
+                AppendError(u8"moveToTrayPos fail");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
@@ -108,12 +109,14 @@ void SensorLoaderModule::run(bool has_material)
             }
             if(!moveToWorkPos())
             {
+                AppendError(u8"moveToWorkPos fail");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
             }
-            if(!placeProductToTray())
+            if((!placeProductToTray())&&has_material)
             {
+                AppendError(u8"placeProductToTray fail");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 waitMessageReturn(is_run);
             }
@@ -147,8 +150,9 @@ void SensorLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
-            if(!placeSensorToTray())
+            if((!placeSensorToTray())&&has_material)
             {
+                AppendError(u8"placeProductToTray fail");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 waitMessageReturn(is_run);
             }
@@ -185,7 +189,7 @@ void SensorLoaderModule::run(bool has_material)
                 break;
             }
 
-            if(!pickTraySensor())
+            if((!pickTraySensor())&&has_material)
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(!waitMessageReturn(is_run))
@@ -221,7 +225,7 @@ void SensorLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
-            if(!placeSensorToSUT())
+            if((!placeSensorToSUT())&&has_material)
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
@@ -265,7 +269,7 @@ void SensorLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
-            if(!pickSUTProduct())
+            if((!pickSUTProduct())&&has_material)
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
@@ -311,7 +315,7 @@ void SensorLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
-            if(!pickSUTSensor())
+            if((!pickSUTSensor())&&has_material)
             {
                 AppendError("pickSUTSensor fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());

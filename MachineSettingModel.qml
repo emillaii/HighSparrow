@@ -36,7 +36,7 @@ ListModel {
         index: 8
     }
     ListElement{
-        label:"LensPickArm 配置"
+        label:"MaterialLoder 配置"
         index: 9
     }
     ListElement{

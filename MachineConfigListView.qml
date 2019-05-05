@@ -22,7 +22,8 @@ ListView {
                 case 9 :
                     if (baseModuleManager.ServerMode == 0)
                         return "LensPickArmModuleView.qml"
-                    return ""
+                    else
+                        return "SensorLoaderModuleView.qml"
                 case 10: return "TrayLoaderModuleView.qml"
             }
         }

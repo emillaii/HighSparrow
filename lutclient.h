@@ -16,11 +16,12 @@ class LutClient : public QObject
     Q_OBJECT
 public:
     explicit LutClient(AAHeadModule *aaHead, QString address, QObject *parent = nullptr);
-    bool sendLensRequest();
+    bool sendLensRequest(bool has_ng_lens = false);
 private:
     LutClientState state;
     SparrowClient * socketClient;
     AAHeadModule * aaHead;
+    bool has_ng_lens;
 signals:
     void sendMessageToServer(QString message);
     void triggerAAGripper(bool isOn);

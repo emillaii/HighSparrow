@@ -85,7 +85,6 @@ bool BaseModuleManager::loadParameters()
     material_tray.loadJsonConfig();
     aa_head_module.loadJsonConfig();
     sut_module.loadParams();
-    lut_module.loadParams();
     dothinkey->loadParams();
     dispenser.parameters.loadJsonConfig(DISPENSER_PARAMETER_PATH,DISPENSER_PARAMETER);
     dispense_module.parameters.loadJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
@@ -95,9 +94,18 @@ bool BaseModuleManager::loadParameters()
     trayClipOut.standards_parameters.loadJsonConfig(TRAY_CLIPOUT_PATH,TRAY_CLIPOUT_PARAMETER);
 
     material_tray.loadJsonConfig();
-    lens_loader_module.loadJsonConfig();
-    lens_pick_arm.parameters.loadJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
-    lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
+    if(ServerMode())
+    {
+        sensor_loader_module.loadJsonConfig();
+        sensor_pickarm.parameters.loadJsonConfig(SENSOR_PICKARM_FILE_NAME,"sensor_pickarm");
+    }
+    else
+    {
+        lut_module.loadParams();
+        lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
+        lens_loader_module.loadJsonConfig();
+        lens_pick_arm.parameters.loadJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
+    }
     sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
     LoadVcmFile(VCM_PARAMETER_FILENAME);
     loadCylinderFiles(CYLINDER_PARAMETER_FILENAME);
@@ -123,7 +131,18 @@ bool BaseModuleManager::SaveParameters()
     lens_pick_arm.parameters.saveJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
     lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
     sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
-
+    if(ServerMode())
+    {
+        sensor_loader_module.saveJsonConfig();
+        sensor_pickarm.parameters.saveJsonConfig(SENSOR_PICKARM_FILE_NAME,"sensor_pickarm");
+    }
+    else
+    {
+        lut_module.saveJsonConfig();
+        lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
+        lens_loader_module.saveJsonConfig();
+        lens_pick_arm.parameters.saveJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
+    }
     tray_loader_module.parameters.saveJsonConfig(TRAY_LOADER_PATH,TRAY_LOADER_PARAMETER);
     trayClipIn.standards_parameters.saveJsonConfig(TRAY_CLIPIN_PATH,TRAY_CLIPIN_PARAMETER);
     trayClipOut.standards_parameters.saveJsonConfig(TRAY_CLIPOUT_PATH,TRAY_CLIPOUT_PARAMETER);
@@ -553,21 +572,10 @@ bool BaseModuleManager::InitStruct()
                             GetInputIoByName(temp_cylinder->parameters.zeroInName()),
                             GetOutputIoByName(temp_cylinder->parameters.zeroOutName()));
     }
-    lut_carrier.Init("lut_carrier",GetMotorByName(lut_module.parameters.motorXName()),
-                     GetMotorByName(lut_module.parameters.motorYName()),
-                     GetVcMotorByName(lut_module.parameters.motorZName()),
-                     GetVacuumByName(lut_module.parameters.vacuum1Name()));
     sut_carrier.Init("sut_carrier",GetMotorByName(sut_module.parameters.motorXName()),
                      GetMotorByName(sut_module.parameters.motorYName()),
                      GetVcMotorByName(sut_module.parameters.motorZName()),
                      GetVacuumByName(sut_module.parameters.vacuumName()));
-    lens_picker.Init(GetVcMotorByName(lens_pick_arm.parameters.motorZName()),
-                     GetMotorByName(lens_pick_arm.parameters.motorTName()),
-                     GetVacuumByName(lens_pick_arm.parameters.vacuumName()));
-    lens_pick_arm.Init(GetMotorByName(lens_pick_arm.parameters.motorTrayName()),
-                       GetMotorByName(lens_pick_arm.parameters.motorXName()),
-                       GetMotorByName(lens_pick_arm.parameters.motorYName()),
-                       &lens_picker);
     aa_head_module.Init("AAHead",GetMotorByName(aa_head_module.parameters.motorXName()),
                         GetMotorByName(aa_head_module.parameters.motorYName()),
                         GetMotorByName(aa_head_module.parameters.motorZName()),
@@ -594,12 +602,6 @@ bool BaseModuleManager::InitStruct()
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
     }
-    lut_module.Init(&lut_carrier,GetVisionLocationByName(lut_module.parameters.uplookLocationName()),
-                    GetVisionLocationByName(lut_module.parameters.loadlookLocationName()),
-                    GetVisionLocationByName(lut_module.parameters.mushroomLocationName()),
-                    GetVacuumByName(lut_module.parameters.vacuum1Name()),
-                    GetVacuumByName(lut_module.parameters.vacuum1Name()),
-                    GetOutputIoByName(aa_head_module.parameters.gripperName()));
     sut_module.Init(&sut_carrier,GetVisionLocationByName(sut_module.parameters.downlookLocationName()),
                     GetVisionLocationByName(sut_module.parameters.updownlookDownLocationName()),
                     GetVisionLocationByName(sut_module.parameters.updownlookUpLocationName()),
@@ -617,13 +619,52 @@ bool BaseModuleManager::InitStruct()
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
-    lens_loader_module.Init(&lens_pick_arm,&material_tray,&lut_carrier,
-                            GetVisionLocationByName(lens_loader_module.parameters.lensLocationName()),
-                            GetVisionLocationByName(lens_loader_module.parameters.vacancyLocationName()),
-                            GetVisionLocationByName(lens_loader_module.parameters.lutLocationName()),
-                            GetVisionLocationByName(lens_loader_module.parameters.lutLensLocationName()),
-                            GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookUpLocationName()),
-                            GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()));
+    if(ServerMode())
+    {
+        sensor_picker1.Init(GetVcMotorByName(sensor_pickarm.parameters.motorZName()),
+                         GetMotorByName(sensor_pickarm.parameters.motorTName()),
+                         GetVacuumByName(sensor_pickarm.parameters.vacuumName()));
+        sensor_picker2.Init(GetVcMotorByName(sensor_pickarm.parameters.motorZ2Name()),
+                         GetMotorByName(sensor_pickarm.parameters.motorT2Name()),
+                         GetVacuumByName(sensor_pickarm.parameters.vacuum2Name()));
+        sensor_pickarm.Init(GetMotorByName(lens_pick_arm.parameters.motorTrayName()),
+                           GetMotorByName(lens_pick_arm.parameters.motorXName()),
+                           &sensor_picker1,&sensor_picker2);
+        sensor_loader_module.Init(&sensor_pickarm,&material_tray,
+                                GetVisionLocationByName(sensor_loader_module.parameters.sensorLocationName()),
+                                GetVisionLocationByName(sensor_loader_module.parameters.vacancyLocationName()),
+                                GetVisionLocationByName(sensor_loader_module.parameters.sutLocationName()),
+                                GetVisionLocationByName(sensor_loader_module.parameters.sutSensorLocationName()),
+                                GetVisionLocationByName(sensor_loader_module.parameters.sutProductLocationName()));
+    }
+    else
+    {
+        lut_carrier.Init("lut_carrier",GetMotorByName(lut_module.parameters.motorXName()),
+                         GetMotorByName(lut_module.parameters.motorYName()),
+                         GetVcMotorByName(lut_module.parameters.motorZName()),
+                         GetVacuumByName(lut_module.parameters.vacuum1Name()));
+        lut_module.Init(&lut_carrier,GetVisionLocationByName(lut_module.parameters.uplookLocationName()),
+                        GetVisionLocationByName(lut_module.parameters.loadlookLocationName()),
+                        GetVisionLocationByName(lut_module.parameters.mushroomLocationName()),
+                        GetVacuumByName(lut_module.parameters.vacuum1Name()),
+                        GetVacuumByName(lut_module.parameters.vacuum1Name()),
+                        GetOutputIoByName(aa_head_module.parameters.gripperName()));
+        lens_picker.Init(GetVcMotorByName(lens_pick_arm.parameters.motorZName()),
+                         GetMotorByName(lens_pick_arm.parameters.motorTName()),
+                         GetVacuumByName(lens_pick_arm.parameters.vacuumName()));
+        lens_pick_arm.Init(GetMotorByName(lens_pick_arm.parameters.motorTrayName()),
+                           GetMotorByName(lens_pick_arm.parameters.motorXName()),
+                           GetMotorByName(lens_pick_arm.parameters.motorYName()),
+                           &lens_picker);
+        lens_loader_module.Init(&lens_pick_arm,&material_tray,&lut_carrier,
+                                GetVisionLocationByName(lens_loader_module.parameters.lensLocationName()),
+                                GetVisionLocationByName(lens_loader_module.parameters.vacancyLocationName()),
+                                GetVisionLocationByName(lens_loader_module.parameters.lutLocationName()),
+                                GetVisionLocationByName(lens_loader_module.parameters.lutLensLocationName()),
+                                GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookUpLocationName()),
+                                GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()));
+
+    }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
                             GetMotorByName(tray_loader_module.parameters.motorLTKX1Name()),
                             GetMotorByName(tray_loader_module.parameters.motorLTLXName()),
@@ -634,7 +675,6 @@ bool BaseModuleManager::InitStruct()
                             GetCylinderByName(tray_loader_module.parameters.cylinderLTK2Name()),
                             GetCylinderByName(tray_loader_module.parameters.cylinderTrayName()),
                             &trayClipIn,&trayClipOut);
-
     profile_loaded = true;
 
     return true;
@@ -1149,5 +1189,11 @@ bool BaseModuleManager::closeSensor()
     Sleep(100);
     imageGrabberThread->exit();
     return dothinkey->DothinkeyClose();
+}
+
+void BaseModuleManager::loadSensorLoaderParameter()
+{
+    material_tray.loadJsonConfig();
+    sensor_loader_module.loadJsonConfig();
 }
 

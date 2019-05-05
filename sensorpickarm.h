@@ -4,6 +4,7 @@
 #include "errorcode.h"
 #include "material_picker.h"
 #include "pixel2mech.h"
+#include "sensorpickarmparameter.h"
 
 
 class SensorPickArm: public ErrorBase
@@ -26,6 +27,8 @@ public:
     bool ZSerchReturn2(int timeout = 10000);
     double GetSoftladngPosition2(bool get_current = false);
 private:
+public:
+    SensorPickArmParameter parameters;
 private:
     XtMotor* motor_x = Q_NULLPTR;
     XtMotor* motor_y = Q_NULLPTR;

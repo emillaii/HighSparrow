@@ -22,8 +22,24 @@ void LutClient::receiveMessage(QString message)
         isValid = true;
         qInfo("AA Head need to pick lens");
         this->state = LutClientState::WAITING_LENS_PR_EVENT;
+        if(has_ng_lens)
+        {
+            qInfo("aa unpick ng lens");
+            obj.insert("cmd", "unpickNgLensReq");
+        }
+        else
+        {
+            qInfo("aa pick lens");
+            obj.insert("cmd", "pickLensReq");
+        }
+    } else if (event == "unpickNgLensResp") {
+        qInfo("aa pick lens");
+        obj.insert("cmd", "pickLensReq");
+    }else if (event == "picklensResp") {
+        qInfo("LUT move to load lens position");
+        qInfo("perform pickedlens pr");
         obj.insert("cmd", "prReq");
-    } else if (event == "prResp") {
+    }else if (event == "prResp") {
         isValid = true;
         obj.insert("cmd", "lutLeaveReq");
         double prOffsetT = json["prOffsetT"].toDouble(0);
@@ -53,8 +69,9 @@ void LutClient::receiveMessage(QString message)
     }
 }
 
-bool LutClient::sendLensRequest()
+bool LutClient::sendLensRequest(bool has_ng_lens)
 {
+    this->has_ng_lens = has_ng_lens;
     QJsonObject obj;
     obj.insert("cmd", "lensReq");
     QString jsonString = getStringFromJsonObject(obj);

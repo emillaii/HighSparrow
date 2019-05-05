@@ -100,23 +100,23 @@ void LutModule::run(bool has_material)
             QString client_ip = obj["client_ip"].toString("");
             QString cmd = obj["cmd"].toString("");
 
-            if(cmd == "unloadNgLensReq")
+            if(cmd == "unpickNgLensReq")
             {
                 bool action_result;
                 isLocalHost ?action_result = moveToAA1UnPickLens() : action_result = moveToAA2UnPickLens();
                 if(action_result)
                 {
-                    sendEvent("unloadNgLensResp");
+                    sendEvent("unpickNgLensResp");
                     states.setLutLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
                     states.setLutTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
                 }
             }
-            else if (cmd == "loadlensReq") {
+            else if (cmd == "picklensReq") {
                 bool action_result;
                 isLocalHost ?action_result = moveToAA1PickLens() : action_result = moveToAA2PickLens();
                 if(action_result)
                 {
-                    sendEvent("loadlensReq");
+                    sendEvent("picklensResp");
                     isLocalHost?states.setAa1LensID(states.lutLensID()):states.setAa2LensID(states.lutLensID());
                     isLocalHost?states.setAa1TrayID(states.lutTrayID()):states.setAa2TrayID(states.lutTrayID());
                 }
@@ -133,9 +133,9 @@ void LutModule::run(bool has_material)
                 action_result = moveToUnloadPos();
                 if(action_result)
                 {
-                    sendEvent("loadlensReq");
-                    state = NO_LENS;
+                    sendEvent("lutLeaveResp");
                     this->moveToLoadPos();
+                    state = NO_LENS;
                 }
             }
         }

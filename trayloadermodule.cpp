@@ -5,14 +5,6 @@
 
 TrayLoaderModule::TrayLoaderModule(QString name):ThreadWorkerBase(name)
 {
-    connect(this,SIGNAL(nextTrayPos()),this,SLOT(onNextTrayPos()),Qt::QueuedConnection);
-    connect(this,SIGNAL(nextEmptyPos()),this,SLOT(onNextEmptyPos()),Qt::QueuedConnection);
-    connect(this,SIGNAL(ltkx1Pickup()),this,SLOT(onLtkx1Pickup()),Qt::QueuedConnection);
-    connect(this,SIGNAL(ltkx2Pickup()),this,SLOT(onLtkx2Pickup()),Qt::QueuedConnection);
-    connect(this,SIGNAL(ltlxPickup()),this,SLOT(onLtlxPickup()),Qt::QueuedConnection);
-    connect(this,SIGNAL(ltlxPutdown()),this,SLOT(onLtlxPutdown()),Qt::QueuedConnection);
-    //connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltlxPutdown()),Qt::QueuedConnection);
-    //connect(this,SIGNAL(testTrayUsed()),this,SIGNAL(ltkx1Pickup()),Qt::QueuedConnection);
     connect(this,SIGNAL(testTrayUsed()),this,SLOT(onTestTrayUsed()),Qt::QueuedConnection);
 }
 
@@ -24,7 +16,11 @@ void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
                             XtCylinder* _cylinder_clip,
                             XtCylinder* _cylinder_ltk1,
                             XtCylinder* _cylinder_ltk2,
-                            XtCylinder* _cylinder_tray, TrayClip *trayClipIn, TrayClip *trayClipOut)
+                            XtCylinder* _cylinder_tray,
+                            TrayClip *trayClipIn,
+                            TrayClip *trayClipOut,
+                            XtGeneralInput* _tray_entry_input,
+                            XtGeneralInput*_tray_exit_input)
 {
     this->motor_clip_in = _motor_clip_in;
     this->motor_in = _motor_in;
@@ -37,6 +33,8 @@ void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
     this->cylinder_tray = _cylinder_tray;
     this->tray_clip = trayClipIn;
     this->tray_clip_out = trayClipOut;
+    this->tray_entry_input = _tray_entry_input;
+    this->tray_exit_input = _tray_exit_input;
 }
 
 void TrayLoaderModule::ResetLogic()
@@ -51,6 +49,10 @@ void TrayLoaderModule::performHandling(int cmd)
 
 bool TrayLoaderModule::startUp()
 {
+    if(!moveToLtlSetPos()){
+        qDebug()<<"LTL_X move to setpos failed";
+        return false;
+    }
     onReset();
     return true;
 }
@@ -65,6 +67,10 @@ void TrayLoaderModule::run(bool has_tray)
 
 bool TrayLoaderModule::moveToNextTrayPos()
 {
+    if(!tray_entry_input->Value()){
+        qDebug()<<"入口处检测到有盘";
+        return false;
+    }
     double pos = tray_clip->getCurrentPosition();
     motor_clip_in->MoveToPos(pos);
     bool result = motor_clip_in->WaitArrivedTargetPos(pos);
@@ -78,10 +84,10 @@ bool TrayLoaderModule::moveToNextTrayPos()
 bool TrayLoaderModule::ejectTray()
 {
     int res = cylinder_clip->Set(true,true);
+    Sleep(2000);
     //cylinder_clip->Set(true);
     if(!cylinder_clip->Set(false,true)){
         qDebug()<<"retraction failed";
-        //warning
     }
     return res;
 }
@@ -189,6 +195,10 @@ bool TrayLoaderModule::motorOutRelease()
 
 bool TrayLoaderModule::moveToNextEmptyPos()
 {
+    if(!tray_exit_input->Value()){
+        qDebug()<<"出口处检测到有盘";
+        return false;
+    }
     double pos = tray_clip_out->getCurrentPosition();
     motor_clip_out->MoveToPos(pos);
     bool result = motor_clip_out->WaitArrivedTargetPos(pos);

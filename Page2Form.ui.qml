@@ -3,6 +3,8 @@ import QtQuick.Controls 2.2
 import QtCharts 2.0
 import QtQuick.Layouts 1.12
 import QtCharts 2.0
+import Qt.labs.calendar 1.0
+
 Page {
 
     readonly property string downlookCameraName: "AA_DLCamera1"
@@ -12,6 +14,9 @@ Page {
     id: page2
     width: 1280
     height: 720
+    font.family: "Courier"
+    spacing: -1
+    wheelEnabled: true
     property alias frame: frame
     header: Label {
         text: qsTr("Page 2")
@@ -68,6 +73,34 @@ Page {
             id: frame2
             width: 300
             height: 300
+        }
+    }
+
+    Button {
+        id: test
+        text: qsTr("test")
+        //                onClicked: {
+
+        //                }
+    }
+
+    ScrollView {
+        id: scrollView
+        x: 0
+        y: 339
+        width: 900
+        height: 272
+
+        ListView {
+            id: listView
+            x: 77
+            y: 77
+            width: 110
+            height: 160
+            model: logList
+            delegate: Text {
+                text: modelData
+            }
         }
     }
 }

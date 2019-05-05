@@ -174,7 +174,19 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("inputList",inputList);
 
 
-
+    QStringList logList;
+    QFile file("./log/system_log/log.txt");
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
+        qDebug()<<"找不到log文件";
+    }else{
+        QTextStream in(&file);
+        QString line = in.readLine();
+        while(!line.isNull()){
+            logList<<line;
+            line = in.readLine();
+        }
+    }
+    engine.rootContext()->setContextProperty("logList",logList);
     //QImage Provider
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);
     engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);

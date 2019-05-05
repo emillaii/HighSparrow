@@ -26,6 +26,10 @@ private:
     double m_ltkx2SetPos = 0;
     double m_ltkx1RelayPos = 0;
 
+    QString m_clipinInputName;
+
+    QString m_clipoutInputName;
+
 signals:
     void testTrayTest();
     void trayReady();
@@ -47,6 +51,8 @@ public:
     Q_PROPERTY(QString cylinderLTK1Name READ cylinderLTK1Name WRITE setCylinderLTK1Name NOTIFY cylinderLTK1NameChanged)
     Q_PROPERTY(QString cylinderLTK2Name READ cylinderLTK2Name WRITE setCylinderLTK2Name NOTIFY cylinderLTK2NameChanged)
     Q_PROPERTY(QString cylinderTrayName READ cylinderTrayName WRITE setCylinderTrayName NOTIFY cylinderTrayNameChanged)
+    Q_PROPERTY(QString clipinInputName READ clipinInputName WRITE setClipinInputName NOTIFY clipinInputNameChanged)
+    Q_PROPERTY(QString clipoutInputName READ clipoutInputName WRITE setClipoutInputName NOTIFY clipoutInputNameChanged)
 
 QString motorLTIEName() const
 {
@@ -126,6 +132,16 @@ double ltkx2ReleasePos() const
 double ltkx1RelayPos() const
 {
     return m_ltkx1RelayPos;
+}
+
+QString clipinInputName() const
+{
+    return m_clipinInputName;
+}
+
+QString clipoutInputName() const
+{
+    return m_clipoutInputName;
 }
 
 public slots:
@@ -281,6 +297,24 @@ void setLtkx1RelayPos(double ltkx1RelayPos)
     emit ltkx1RelayPosChanged(m_ltkx1RelayPos);
 }
 
+void setClipinInputName(QString clipinInputName)
+{
+    if (m_clipinInputName == clipinInputName)
+        return;
+
+    m_clipinInputName = clipinInputName;
+    emit clipinInputNameChanged(m_clipinInputName);
+}
+
+void setClipoutInputName(QString clipoutInputName)
+{
+    if (m_clipoutInputName == clipoutInputName)
+        return;
+
+    m_clipoutInputName = clipoutInputName;
+    emit clipoutInputNameChanged(m_clipoutInputName);
+}
+
 signals:
 void motorTLIENameChanged(QString motorLTIEName);
 void motorLTOENameChanged(QString motorLTOEName);
@@ -298,6 +332,8 @@ void ltlReleasePosChanged(double ltlReleasePos);
 void ltkx2PressPosChanged(double ltkx2PressPos);
 void ltkx2ReleasePosChanged(double ltkx2ReleasePos);
 void ltkx1RelayPosChanged(double ltkx1RelayPos);
+void clipinInputNameChanged(QString clipinInputName);
+void clipoutInputNameChanged(QString clipoutInputName);
 };
 
 #endif // TRAYLOADERPARAMETER_H

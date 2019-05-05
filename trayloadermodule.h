@@ -61,6 +61,10 @@ private:
 
     XtGeneralInput *tray_check_input = Q_NULLPTR;
 
+    XtGeneralInput* tray_entry_input = Q_NULLPTR;
+    XtGeneralInput* tray_exit_input = Q_NULLPTR;
+
+
 signals:
     void nextTrayPos();
     void ltkx1Pickup();

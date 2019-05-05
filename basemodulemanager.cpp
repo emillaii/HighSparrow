@@ -674,7 +674,9 @@ bool BaseModuleManager::InitStruct()
                             GetCylinderByName(tray_loader_module.parameters.cylinderLTK1Name()),
                             GetCylinderByName(tray_loader_module.parameters.cylinderLTK2Name()),
                             GetCylinderByName(tray_loader_module.parameters.cylinderTrayName()),
-                            &trayClipIn,&trayClipOut);
+                            &trayClipIn,&trayClipOut,
+                            GetInputIoByName(tray_loader_module.parameters.clipinInputName()),
+                            GetInputIoByName(tray_loader_module.parameters.clipoutInputName()));
     profile_loaded = true;
 
     return true;

@@ -4,6 +4,7 @@
 #include "materialtray.h"
 #include "sensorloaderparameter.h"
 #include "sensorpickarm.h"
+#include "sparrowqserver.h"
 #include "thread_worker_base.h"
 #include "vision_location.h"
 
@@ -70,6 +71,11 @@ private:
     VisionLocation *sut_product_vision = Q_NULLPTR;
     VisionLocation *spa_updownlook_up_vision = Q_NULLPTR;
     VisionLocation *spa_updownlook_down_vision = Q_NULLPTR;
+
+    SparrowQServer * server;
+    QQueue<QJsonObject> requestQueue;
+    QQueue<QJsonObject> actionQueue;
+
     bool is_run = false;
     bool finish_stop = false;
     PrOffset pr_offset;

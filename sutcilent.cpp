@@ -1,13 +1,18 @@
 #include "sutcilent.h"
 #include <commonutils.h>
+#include <qthread.h>
 
 
-SutCilent::SutCilent(Sut *sut_carrier,QString address, QObject *parent)
+SutCilent::SutCilent(QString address, QObject *parent)
 {
     socketClient = new SparrowClient(QUrl(address),  true);
-    this->sut_carrier = sut_carrier;
     connect(socketClient, &SparrowClient::receiveMessage, this, &SutCilent::receiveMessage);
     connect(this, &SutCilent::sendMessageToServer, this->socketClient, &SparrowClient::sendMessage);
+}
+
+void SutCilent::Init(SutGripper *sut_gripper)
+{
+    this->sut_gripper = sut_gripper;
 }
 
 bool SutCilent::sendLensRequest(bool has_product, bool has_ng_sensor)
@@ -70,16 +75,38 @@ void SutCilent::receiveMessage(QString message)
     if (cmd == "gripperOnReq") {
         isValid = true;
         qInfo("AA Gripper On Request");
-        sut_carrier->openGripper();
+        sut_gripper->openGripper();
         QThread::msleep(200);
     } else if (cmd == "gripperOffReq") {
         isValid = true;
         qInfo("AA Gripper Of Request");
-        sut_carrier->closeGripper();
+        sut_gripper->closeGripper();
     }
 
     if (isValid) {
         QString jsonString = getStringFromJsonObject(obj);
         emit sendMessageToServer(jsonString);
     }
+}
+
+void SutGripper::Init(XtVacuum *vacuum, XtCylinder *cylinder)
+{
+    this->vacuum = vacuum;
+    this->cylinder = cylinder;
+}
+
+bool SutGripper::openGripper()
+{
+    bool result = vacuum->Set(true,false);
+    result &= cylinder->Set(true);
+    result &= vacuum->Wait(true);
+    return result;
+}
+
+bool SutGripper::closeGripper()
+{
+    bool result = vacuum->Set(false,false);
+    result &= cylinder->Set(false);
+    result &= vacuum->Wait(false);
+    return result;
 }

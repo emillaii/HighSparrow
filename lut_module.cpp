@@ -42,15 +42,20 @@ void LutModule::receiveLensRequstFinish(int lens, int lens_tray)
 {
     qInfo("receiveLensRequstFinish lens: %d lens_tray: %d",lens,lens_tray);
     QMutexLocker temp_locker(&loader_mutext);
-    if(states.pickingLens())
+    if(states.pickingLens()) {
+        qInfo("LutModule is picking lens...");
         return;
+    }
     states.setLutHasLens(true);
+    qInfo("LutModule set has lens");
     if(lens>-1 && lens_tray>-1)
     {
         states.setLutLensID(lens);
         states.setLutTrayID(lens_tray);
+        qInfo("LutModule current tray id lens: %d tray: %d", lens, lens_tray);
     }
     states.setPickingLens(true);
+    qInfo("LutModule set picking lens is true");
     qInfo("receiveLensRequstFinish take effect");
 }
 
@@ -58,6 +63,9 @@ void LutModule::run(bool has_material)
 {
     qInfo("Start Lut Module Thread");
     state = HAS_LENS;  //ToDo: How to detect whether this has lens or not ?
+    if (!has_material) {
+        state = NO_LENS;
+    }
     is_run = true;
     bool isLocalHost = false;
     while(is_run){
@@ -127,6 +135,7 @@ void LutModule::run(bool has_material)
                 {
                     sendEvent("loadlensReq");
                     state = NO_LENS;
+                    this->moveToLoadPos();
                 }
             }
         }
@@ -134,15 +143,18 @@ void LutModule::run(bool has_material)
         {
             if(states.waitLens())
             {
+                qInfo("LUT Module is waiting lens");
                 QMutexLocker temp_locker(&loader_mutext);
                 if(states.lutHasLens())
                 {
+                    qInfo("LUT Module has lens");
                     states.setWaitLens(false);
                     state = HAS_LENS;
                 }
             }
             else
             {
+                qInfo("LUT Module is not waiting lens");
                 QMutexLocker temp_locker(&loader_mutext);
                 states.setLutHasLens(false);
                 emit sendLensRequst(true,states.lutNgLensID(),states.lutNgTrayID());

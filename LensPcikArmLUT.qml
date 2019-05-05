@@ -275,6 +275,7 @@ ColumnLayout {
                     text: "开始"
                     onClicked: {
                         workersManager.startWorker("LensPickArmModule",true,2)
+                        workersManager.startWorker("LUTModule",true,2)
                     }
                 }
                 Button {

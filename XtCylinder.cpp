@@ -2,6 +2,7 @@
 //#include "xtmotion.h"
 
 #include <QThread>
+#include <QDebug>
 XtCylinder::XtCylinder():ErrorBase (){}
 
 void XtCylinder::Init(XtGeneralOutput *output_io,
@@ -30,8 +31,11 @@ bool XtCylinder::Set(bool new_state, bool wait_done, int timeout,int input_null_
             out_zero->Set(true);
         }
     }
-    else
+    else{
+        qDebug()<<"out set new_state:";
+        qDebug()<<new_state;
         out->Set(new_state);
+    }
     if(!wait_done)
         return true;
     return Wait(new_state);
@@ -45,6 +49,7 @@ void XtCylinder::SET(int thread, bool new_state)
 
 bool XtCylinder::Wait(bool target_state, int timeout,int input_null_delay)
 {
+    qDebug()<<"52.do Wait Done";
     if(is_debug)return true;
     int count = timeout;
     bool state_fold , state_unfold;

@@ -77,8 +77,9 @@ bool TrayLoaderModule::moveToNextTrayPos()
 
 bool TrayLoaderModule::ejectTray()
 {
-    int res = cylinder_clip->Set(true);
-    if(!cylinder_clip->Set(false)){
+    int res = cylinder_clip->Set(true,true);
+    //cylinder_clip->Set(true);
+    if(!cylinder_clip->Set(false,true)){
         qDebug()<<"retraction failed";
         //warning
     }

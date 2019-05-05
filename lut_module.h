@@ -63,10 +63,9 @@ private:
     VisionLocation* uplook_location;
     VisionLocation* load_location;
     VisionLocation* mushroom_location;
-    XtGeneralOutput* gripper;
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;
-    PRResultStruct pr_result;
+    QMutex loader_mutext;
     SparrowQServer * server;
     QQueue<QJsonObject> requestQueue;
     QQueue<QJsonObject> actionQueue;
@@ -74,6 +73,9 @@ private:
     bool is_run = false;
     void run(bool has_material);
     QString servingIP = "";
+    void sendEvent(const QString event);
+    void sendCmd(QString serving_ip,const QString cmd);
+    void sendPrEvent(const PrOffset pr_offset);
 public:
     Q_INVOKABLE int getConnectedClient();
     Q_INVOKABLE bool moveToAA1UplookPos(bool check_autochthonous = false);

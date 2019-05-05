@@ -40,12 +40,18 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
 
 void LutModule::receiveLensRequstFinish(int lens, int lens_tray)
 {
-    qInfo("receiveLensRequstFinish lens: %d lens_tray: %d");
+    qInfo("receiveLensRequstFinish lens: %d lens_tray: %d",lens,lens_tray);
+    QMutexLocker temp_locker(&loader_mutext);
+    if(states.pickingLens())
+        return;
+    states.setLutHasLens(true);
     if(lens>-1 && lens_tray>-1)
     {
         states.setLutLensID(lens);
         states.setLutTrayID(lens_tray);
     }
+    states.setPickingLens(true);
+    qInfo("receiveLensRequstFinish take effect");
 }
 
 void LutModule::run(bool has_material)
@@ -62,57 +68,116 @@ void LutModule::run(bool has_material)
             QString client_ip = obj["client_ip"].toString("");
             servingIP = client_ip;
             QString cmd = obj["cmd"].toString("");
-            if(client_ip == "::1") {
+            if(client_ip == "::1")
+            {
                 qInfo("This command come from localhost");
                 isLocalHost = true;
             }
-            if (cmd == "lensReq") {
-                QJsonObject result;
-                result.insert("event", "lensResp");
-                emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
+            else
+            {
+                qInfo("This command come from anther computer");
+                isLocalHost = false;
+            }
+
+            if (cmd == "lensReq")
+            {
+                qInfo("start commincate whit %s",servingIP.toStdString().c_str());
+                actionQueue.clear();
+                sendEvent("lensResp");
             }
         }
-        if (actionQueue.size()>0 && state == BUSY) {
+        else if (actionQueue.size()>0 && state == BUSY) {
             QJsonObject obj = actionQueue.dequeue();
             qInfo("Start to consume action request: %s", getStringFromJsonObject(obj).toStdString().c_str());
             QString client_ip = obj["client_ip"].toString("");
             QString cmd = obj["cmd"].toString("");
 
-            QJsonObject result;
             if(cmd == "unloadNgLensReq")
             {
                 bool action_result;
                 isLocalHost ?action_result = moveToAA1UnPickLens() : action_result = moveToAA2UnPickLens();
-                QJsonObject result;
-                result.insert("event", "unloadNgLensResp");
-                emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
+                if(action_result)
+                {
+                    sendEvent("unloadNgLensResp");
+                    states.setLutLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
+                    states.setLutTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
+                }
+            }
+            else if (cmd == "loadlensReq") {
+                bool action_result;
+                isLocalHost ?action_result = moveToAA1PickLens() : action_result = moveToAA2PickLens();
+                if(action_result)
+                {
+                    sendEvent("loadlensReq");
+                    isLocalHost?states.setAa1LensID(states.lutLensID()):states.setAa2LensID(states.lutLensID());
+                    isLocalHost?states.setAa1TrayID(states.lutTrayID()):states.setAa2TrayID(states.lutTrayID());
+                }
             }
             else if (cmd == "prReq") {
-                bool prRet = false;
-                PrOffset prOffset;
                 qInfo("perform PR start");
-                uplook_location->performPR(prOffset);
-                qInfo("perform PR finished");
-                //isLocalHost ? prRet=moveToAA1UplookPR(prOffset, true) : prRet=moveToAA2UplookPR(prOffset, true);
-                result.insert("prOffsetX", prOffset.X);
-                result.insert("prOffsetY", prOffset.Y);
-                result.insert("prOffsetT", prOffset.Theta);
-                result.insert("prRet", prRet);
-                result.insert("event", "prResp");
+                bool action_result;
+                PrOffset pr_offset;
+                action_result = uplook_location->performPR(pr_offset);
+                if(action_result)
+                    sendPrEvent(pr_offset);
             } else if (cmd == "lutLeaveReq") {
-                moveToUnloadPos();
-                result.insert("event", "lutLeaveResp");
-                //state = NO_LENS;
-                state = HAS_LENS;
+                bool action_result;
+                action_result = moveToUnloadPos();
+                if(action_result)
+                {
+                    sendEvent("loadlensReq");
+                    state = NO_LENS;
+                }
             }
-            emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
+        }
+        else  if (state == NO_LENS)
+        {
+            if(states.waitLens())
+            {
+                QMutexLocker temp_locker(&loader_mutext);
+                if(states.lutHasLens())
+                {
+                    states.setWaitLens(false);
+                    state = HAS_LENS;
+                }
+            }
+            else
+            {
+                QMutexLocker temp_locker(&loader_mutext);
+                states.setLutHasLens(false);
+                emit sendLensRequst(true,states.lutNgLensID(),states.lutNgTrayID());
+                states.setWaitLens(true);
+            }
+            QThread::msleep(1000);
         }
         QThread::msleep(100);
     }
     qInfo("LUT Module end of thread");
 }
 
+void LutModule::sendEvent(const QString event)
+{
+    QJsonObject result;
+    result.insert("event", event);
+    emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
+}
 
+void LutModule::sendCmd(QString serving_ip,const QString cmd)
+{
+    QJsonObject result;
+    result.insert("cmd", cmd);
+    emit sendMessageToClient(serving_ip, getStringFromJsonObject(result));
+}
+
+void LutModule::sendPrEvent(const PrOffset pr_offset)
+{
+    QJsonObject result;
+    result.insert("prOffsetX", pr_offset.X);
+    result.insert("prOffsetY", pr_offset.Y);
+    result.insert("prOffsetT", pr_offset.Theta);
+    result.insert("event", "prResp");
+    emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
+}
 void LutModule::startWork(bool reset_logic, int run_mode)
 {
     qInfo("Lut Module start work in run mode: %d", run_mode);
@@ -143,7 +208,6 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuum;
     this->mushroom_location = mushroom_location;
-    this->gripper = gripper;
 }
 
 void LutModule::saveJsonConfig()
@@ -253,7 +317,7 @@ double LutModule::getLoadUplookPRY()
 
 bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
 {
-    gripper->Set(true);
+    sendCmd("::1","gripperOnReq");
     bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
     if(result)
     {
@@ -261,10 +325,11 @@ bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
         if(result)
         {
-            gripper->Set(false);
-            Sleep(180);
+            sendCmd("::1","gripperOffReq");
+//            gripper->Set(false);
+//            Sleep(180);
             load_vacuum->Set(false);
-            Sleep(20);
+            Sleep(500);
         }
         if(need_return)
             result &= carrier->ZSerchReturn();
@@ -289,7 +354,11 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
     {
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,1,unload_vacuum);
         if(result)
-            gripper->Set(true);
+        {
+            sendCmd("::1","gripperOnReq");
+            this->unload_vacuum->Set(true);
+            Sleep(500);
+        }
         result &= carrier->ZSerchReturn();
     }
     return result;
@@ -303,35 +372,35 @@ bool LutModule::moveToAA2PickLensPos(bool check_autochthonous)
 bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
 {
     qInfo("moveToAA2PickLens");
-    QJsonObject gripperOnMessage;
-    gripperOnMessage.insert("cmd", "gripperOnReq");
-    emit sendMessageToClient("remote", getStringFromJsonObject(gripperOnMessage));
+    sendCmd("remote","gripperOnReq");
     bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
     if(result)
     {
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
         if (result) {
-            QJsonObject gripperOffMessage;
-            gripperOffMessage.insert("cmd", "gripperOffReq");
-            emit sendMessageToClient("remote", getStringFromJsonObject(gripperOffMessage));
+            sendCmd("remote","gripperOffReq");
+//            emit sendMessageToClient("remote", getStringFromJsonObject(gripperOffMessage));
             this->load_vacuum->Set(false);
             Sleep(500);  //ToDo: Put that in UI
-            if(need_return)
-                result &= carrier->ZSerchReturn();
         }
+        if(need_return)
+            result &= carrier->ZSerchReturn();
     }
     return result;
 }
 
 bool LutModule::moveToAA2UnPickLens(bool check_autochthonous)
 {
-    gripper->Set(false);
     bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),aa2_unpicklens_position.Z(),check_autochthonous);
     if(result)
     {
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
         if(result)
-//  todo          grabber->Set(false);
+        {
+            sendCmd("remote","gripperOnReq");
+            this->unload_vacuum->Set(true);
+            Sleep(500);  //ToDo: Put that in UI
+        }
         result &= carrier->ZSerchReturn();
     }
     return result;

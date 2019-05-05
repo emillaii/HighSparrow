@@ -71,6 +71,7 @@ void SparrowQServer::sendMessageToClient(QString dest, QString message)
     qInfo("send Message to client dest: %s message: %s", dest.toStdString().c_str(), message.toStdString().c_str());
     for(int i = 0; i < m_clients.size(); i++)
     {
+        QString temp_ip = m_clients[i]->peerAddress().toString();
         if (dest == m_clients[i]->peerAddress().toString()) {
             qInfo("addr %s", m_clients[i]->peerAddress().toString().toStdString().c_str());
             m_clients[i]->sendTextMessage(message);

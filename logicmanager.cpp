@@ -108,7 +108,7 @@ void LogicManager::run() {
     }
     else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA1_CMD)
     {
-        baseModuleManage->lut_module.moveToAA1PickLens();
+        baseModuleManage->lut_module.moveToAA1PickLens(false,true);
     }
     else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA2_CMD)
     {

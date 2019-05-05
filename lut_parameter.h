@@ -183,6 +183,9 @@ class LutState:public PropertyBase
     Q_PROPERTY(int aa2TrayID READ aa2TrayID WRITE setAa2TrayID NOTIFY aa2TrayIDChanged)
     Q_PROPERTY(int aa2LensID READ aa2LensID WRITE setAa2LensID NOTIFY aa2LensIDChanged)
     Q_PROPERTY(bool waitLens READ waitLens WRITE setWaitLens NOTIFY waitLensChanged)
+    Q_PROPERTY(QString servingIP READ servingIP WRITE setServingIP NOTIFY servingIPChanged)
+    Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
+    Q_PROPERTY(bool pickingLens READ pickingLens WRITE setPickingLens NOTIFY pickingLensChanged)
 public:
     int lutTrayID() const
     {
@@ -227,6 +230,21 @@ public:
     bool waitLens() const
     {
         return m_waitLens;
+    }
+
+    QString servingIP() const
+    {
+        return m_serviceIP;
+    }
+
+    bool lutHasLens() const
+    {
+        return m_lutHasLens;
+    }
+
+    bool pickingLens() const
+    {
+        return m_pickingLens;
     }
 
 public slots:
@@ -311,6 +329,33 @@ public slots:
         emit waitLensChanged(m_waitLens);
     }
 
+    void setServingIP(QString serviceIP)
+    {
+        if (m_serviceIP == serviceIP)
+            return;
+
+        m_serviceIP = serviceIP;
+        emit servingIPChanged(m_serviceIP);
+    }
+
+    void setLutHasLens(bool lutHasLens)
+    {
+        if (m_lutHasLens == lutHasLens)
+            return;
+
+        m_lutHasLens = lutHasLens;
+        emit lutHasLensChanged(m_lutHasLens);
+    }
+
+    void setPickingLens(bool pickingLens)
+    {
+        if (m_pickingLens == pickingLens)
+            return;
+
+        m_pickingLens = pickingLens;
+        emit pickingLensChanged(m_pickingLens);
+    }
+
 signals:
     void lutTrayIDChanged(int lutTrayID);
 
@@ -330,6 +375,12 @@ signals:
 
     void waitLensChanged(bool waitLens);
 
+    void servingIPChanged(QString servingIP);
+
+    void lutHasLensChanged(bool lutHasLens);
+
+    void pickingLensChanged(bool pickingLens);
+
 private:
     int m_lutTrayID = -1;
     int m_lutLensID = -1;
@@ -340,6 +391,9 @@ private:
     int m_aa2TrayID = -1;
     int m_aa2LensID = -1;
     bool m_waitLens = false;
+    QString m_serviceIP = "";
+    bool m_lutHasLens = false;
+    bool m_pickingLens = false;
 };
 
 #endif // LUT_PARAMERTER_H

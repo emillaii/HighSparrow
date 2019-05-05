@@ -11,7 +11,8 @@ class TrayLoaderModule : public ThreadWorkerBase{
     Q_OBJECT
 public:
     TrayLoaderModule(QString name="TrayLoaderModule");
-    void Init(XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtCylinder*,XtCylinder*,XtCylinder*,XtCylinder*,TrayClip*,TrayClip*);
+    void Init(XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtCylinder*,XtCylinder*,XtCylinder*,XtCylinder*,TrayClip*,TrayClip*,
+              XtGeneralInput* trayinio=Q_NULLPTR,XtGeneralInput* trayoutio=Q_NULLPTR);
     void ResetLogic();
     void performHandling(int cmd);
 

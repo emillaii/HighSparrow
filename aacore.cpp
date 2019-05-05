@@ -895,7 +895,7 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
 {
     std::vector<aa_util::aaCurve> aaCurves;
     std::vector<std::vector<Sfr_entry>> clustered_sfr;
-
+    QVariantMap map;
     for (unsigned int i = 0; i < clustered_sfr_map.size(); ++i) {
         if (clustered_sfr_map.find(i) != clustered_sfr_map.end()) {
             clustered_sfr.push_back(std::move(clustered_sfr_map[i]));
@@ -910,9 +910,9 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     double g_x_max = -99999;
     sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, parameters.SensorXRatio(), parameters.SensorYRatio());
     double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
-    unsigned int ccROIIndex, ulROIIndex, urROIIndex, llROIIndex, lrROIIndex;
+    unsigned int ccROIIndex = 0, ulROIIndex = 0, urROIIndex = 0, llROIIndex = 0, lrROIIndex = 0;
     if (points.size() == 5) {
-        for (int i = 0; i < 5; i++) {
+        for (unsigned int i = 0; i < 5; i++) {
             double cc_d = sqrt(pow(points[i].x - imageWidth/2, 2) + pow(points[i].y - imageHeight/2, 2));
             double ul_d = sqrt(pow(points[i].x, 2) + pow(points[i].y, 2));
             double ur_d = sqrt(pow(points[i].x - imageWidth, 2) + pow(points[i].y, 2));
@@ -953,6 +953,7 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
     AA_Helper::AA_Find_Charactertistics_Pattern(clustered_sfr, imageWidth, imageHeight,
                                                 ccIndex, ulIndex, urIndex, llIndex, lrIndex);
     for(unsigned i = 0; i < clustered_sfr.size(); i++) {
+        QVariantMap sfrMap;
         if (i == ccIndex || i == ulIndex || i == urIndex || i == llIndex || i == lrIndex)
         {
             QString indexString;
@@ -962,23 +963,33 @@ void AACore::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &
             else if (i == llIndex) indexString = "LL";
             else if (i == lrIndex) indexString = "LR";
             for (unsigned int j = 0; j < clustered_sfr[i].size(); j++) {
-                QVariantMap s; QVariantMap sfrMap;
+                QVariantMap s;
                 s.insert("index", j);
                 s.insert("position", indexString);
                 s.insert("px", clustered_sfr[i][j].px);
                 s.insert("py", clustered_sfr[i][j].py);
                 s.insert("area", clustered_sfr[i][j].area);
                 s.insert("sfr", clustered_sfr[i][j].sfr);
-                sfrMap.insert(indexString, s);
-                sfrMap.insert("pz", clustered_sfr[i][j].pz);
-                emit postSfrDataToELK(runningUnit, sfrMap);
+                s.insert("pz", clustered_sfr[i][j].pz);
+                sfrMap.insert(QString::number(j), s);
+//                emit postSfrDataToELK(runningUnit, sfrMap);
             }
+            map.insert(indexString, sfrMap);
         }
     }
     xTilt = weighted_vector.z * weighted_vector.x;
     yTilt = weighted_vector.z * weighted_vector.y;
     double corner_deviation = AA_Helper::calculateAACornerDeviation(ul_peak_z, ur_peak_z, ll_peak_z, lr_peak_z);
     dev = corner_deviation;
+    map.insert("ul_peak", ul_peak_z);
+    map.insert("ur_peak", ur_peak_z);
+    map.insert("ll_peak", ll_peak_z);
+    map.insert("lr_peak", lr_peak_z);
+    map.insert("cc_peak", cc_peak_z);
+    map.insert("xTilt", xTilt);
+    map.insert("yTilt", yTilt);
+    map.insert("dev", dev);
+    emit postSfrDataToELK(runningUnit, map);
     if (currentChartDisplayChannel == 0) {
         currentChartDisplayChannel = 1;
         aaData_1.clear();

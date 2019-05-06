@@ -140,7 +140,24 @@ ColumnLayout {
                     }
                 }
                 Button{
+                    text:qsTr("取成品视觉")
+                    width:40
+                    height: 40
+                    onClicked: {
+
+                    }
+                }
+
+                Button{
                     text:qsTr("取成品")
+                    width:40
+                    height: 40
+                    onClicked: {
+
+                    }
+                }
+                Button{
+                    text:qsTr("取ng Sensor视觉")
                     width:40
                     height: 40
                     onClicked: {
@@ -155,6 +172,7 @@ ColumnLayout {
 
                     }
                 }
+
             }
         }
     }
@@ -222,6 +240,16 @@ ColumnLayout {
                     }
                 }
                 Button{
+                    text:qsTr("取成品视觉")
+                    width:40
+                    height: 40
+                    onClicked: {
+
+                    }
+                }
+
+
+                Button{
                     text:qsTr("取成品")
                     width:40
                     height: 40
@@ -231,6 +259,14 @@ ColumnLayout {
                 }
                 Button{
                     text:qsTr("取Ng Sensor")
+                    width:40
+                    height: 40
+                    onClicked: {
+
+                    }
+                }
+                Button{
+                    text:qsTr("取ng Sensor视觉")
                     width:40
                     height: 40
                     onClicked: {

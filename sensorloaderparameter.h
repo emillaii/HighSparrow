@@ -24,6 +24,8 @@ public:
     Q_PROPERTY(double pickProductZ READ pickProductZ WRITE setPickProductZ NOTIFY pickProductZChanged)
     Q_PROPERTY(double placeProductZ READ placeProductZ WRITE setPlaceProductZ NOTIFY placeProductZChanged)
     Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
+    Q_PROPERTY(double pickNgSensorZ READ pickNgSensorZ WRITE setPickNgSensorZ NOTIFY pickNgSensorZChanged)
+    Q_PROPERTY(double placeNgSensorZ READ placeNgSensorZ WRITE setPlaceNgSensorZ NOTIFY placeNgSensorZChanged)
 
     double vcmWorkForce() const
     {
@@ -92,6 +94,16 @@ public:
     double zOffset() const
     {
         return m_zOffset;
+    }
+
+    double pickNgSensorZ() const
+    {
+        return m_pickNgSensorZ;
+    }
+
+    double placeNgSensorZ() const
+    {
+        return m_placeNgSensorZ;
     }
 
 public slots:
@@ -228,6 +240,26 @@ public slots:
         emit zOffsetChanged(m_zOffset);
     }
 
+    void setPickNgSensorZ(double pickNgSensorZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickNgSensorZ, pickNgSensorZ))
+            return;
+
+        m_pickNgSensorZ = pickNgSensorZ;
+        emit pickNgSensorZChanged(m_pickNgSensorZ);
+    }
+
+    void setPlaceNgSensorZ(double placeNgSensorZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeNgSensorZ, placeNgSensorZ))
+            return;
+
+        m_placeNgSensorZ = placeNgSensorZ;
+        emit placeNgSensorZChanged(m_placeNgSensorZ);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -257,6 +289,10 @@ signals:
 
     void zOffsetChanged(double zOffset);
 
+    void pickNgSensorZChanged(double pickNgSensorZ);
+
+    void placeNgSensorZChanged(double placeNgSensorZ);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -272,6 +308,8 @@ private:
     double m_pickProductZ = 0;
     double m_placeProductZ = 0;
     double m_zOffset = 0;
+    double m_pickNgSensorZ = 0;
+    double m_placeNgSensorZ = 0;
 };
 class SensorLoaderState:public PropertyBase
 {

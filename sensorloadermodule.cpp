@@ -619,7 +619,7 @@ bool SensorLoaderModule::picker1SearchZ(double z,bool is_open, int time_out)
 bool SensorLoaderModule::picker2SearchZ(double z,bool is_open, int time_out)
 {
     qInfo("picker2SearchZ");
-    bool result = pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
+    bool result = pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
     if(is_open)
         sendCmd("::1","vacuumOnReq");
     else
@@ -645,7 +645,7 @@ bool SensorLoaderModule::placeSensorToSUT(bool check_softlanding)
 bool SensorLoaderModule::pickSUTSensor(bool check_softlanding)
 {
     qInfo("pickSUTSensor");
-    return picker2SearchZ(parameters.placeSensorZ(),true,check_softlanding);
+    return picker2SearchZ(parameters.pickNgSensorZ(),true,check_softlanding);
 }
 
 bool SensorLoaderModule::pickSUTProduct(bool check_softlanding)
@@ -657,7 +657,7 @@ bool SensorLoaderModule::pickSUTProduct(bool check_softlanding)
 bool SensorLoaderModule::placeSensorToTray(bool check_softlanding)
 {
     qInfo("placeSensorToTray");
-    return picker2SearchZ(parameters.pickSensorZ(),false,check_softlanding);
+    return picker2SearchZ(parameters.placeNgSensorZ(),false,check_softlanding);
 }
 
 bool SensorLoaderModule::placeProductToTray(bool check_softlanding)

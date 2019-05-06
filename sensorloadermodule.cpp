@@ -36,7 +36,7 @@ bool SensorLoaderModule::loadJsonConfig()
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("parameters", &parameters);
     temp_map.insert("sut1_pr_position", &sut1_pr_position);
-    temp_map.insert("sut2_pr_position", &sut1_pr_position);
+    temp_map.insert("sut2_pr_position", &sut2_pr_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
     PropertyBase::loadJsonConfig("config//SensorLoaderModule.json", temp_map);
@@ -48,7 +48,7 @@ void SensorLoaderModule::saveJsonConfig()
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("parameters", &parameters);
     temp_map.insert("sut1_pr_position", &sut1_pr_position);
-    temp_map.insert("sut2_pr_position", &sut1_pr_position);
+    temp_map.insert("sut2_pr_position", &sut2_pr_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
     PropertyBase::saveJsonConfig("config//SensorLoaderModule.json", temp_map);
@@ -285,71 +285,25 @@ void SensorLoaderModule::run(bool has_material)
         if (actionQueue.size()>0 && states.beExchangeMaterial())
         {
             has_task = true;
-            if(states.cmd() == "")
+            while(states.beExchangeMaterial())
             {
-                QJsonObject obj = actionQueue.dequeue();
-                qInfo("Start to consume action request: %s", getStringFromJsonObject(obj).toStdString().c_str());
+                if(states.cmd() == "")
+                {
+                    QJsonObject obj = actionQueue.dequeue();
+                    qInfo("Start to consume action request: %s", getStringFromJsonObject(obj).toStdString().c_str());
 //                QString client_ip = obj["client_ip"].toString("");
-                states.setCmd(obj["cmd"].toString(""));
-            }
+                    states.setCmd(obj["cmd"].toString(""));
+                }
 
-            if((states.cmd() == "unloadProductReq")&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
-            {
-                if(!moveToSUTPRPos(isLocalHost))
+                if((states.cmd() == "unloadProductReq")&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
                 {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
-                }
-                if((!performSUTProductPR())&&has_material)
-                {
-                    AppendError(u8"NG视觉失败！");
-                    sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-                    int result = waitMessageReturn(is_run);
-                    if(!result)is_run = false;
-                    if(!is_run)break;
-                    if(result)
-                        continue;
-                }
-                if(!moveToWorkPos2())
-                {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
-                }
-                if((!pickSUTProduct(isLocalHost?"::1":"remote"))&&has_material)
-                {
-                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                        states.setSutHasProduct(false);
-                    else
+                    if(!moveToSUTPRPos(isLocalHost))
                     {
-                        states.setSutHasProduct(false);
-                        states.setHasPickedProduct(true);
-                    }
-                }
-                else
-                {
-                    states.setSutHasProduct(false);
-                    states.setHasPickedProduct(true);
-                }
-                sendEvent("unloadProductResp");
-                states.setCmd("");
-            }
-            else if((states.cmd() == "unloadNgSensorReq")&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
-            {
-                //取NGsensor
-                if(states.sutHasNgSensor()&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
-                {
-                    has_task = true;
-                    if(!moveToSUTPRPos())
-                    {
-                        AppendError("moveToSUTPRPos fail!");
                         sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                         is_run = false;
                         break;
                     }
-                    if((!performSUTSensorPR())&&has_material)
+                    if((!performSUTProductPR())&&has_material)
                     {
                         AppendError(u8"NG视觉失败！");
                         sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
@@ -361,54 +315,112 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     if(!moveToWorkPos2())
                     {
-                        AppendError("moveToWorkPos2 fail!");
                         sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                         is_run = false;
                         break;
                     }
-                    if((!pickSUTSensor(isLocalHost?"::1":"remote"))&&has_material)
+                    if((!pickSUTProduct(isLocalHost?"::1":"remote"))&&has_material)
                     {
-                        AppendError("pickSUTSensor fail!");
                         sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                         if(waitMessageReturn(is_run))
-                            states.setSutHasNgSensor(false);
+                            states.setSutHasProduct(false);
+                        else
+                        {
+                            states.setSutHasProduct(false);
+                            states.setHasPickedProduct(true);
+                        }
+                    }
+                    else
+                    {
+                        states.setSutHasProduct(false);
+                        states.setHasPickedProduct(true);
+                    }
+                    sendEvent("unloadProductResp");
+                    states.setCmd("");
+                }
+                else if((states.cmd() == "unloadNgSensorReq")&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
+                {
+                    //取NGsensor
+                    if(states.sutHasNgSensor()&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
+                    {
+                        has_task = true;
+                        if(!moveToSUTPRPos())
+                        {
+                            AppendError("moveToSUTPRPos fail!");
+                            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                            is_run = false;
+                            break;
+                        }
+                        if((!performSUTSensorPR())&&has_material)
+                        {
+                            AppendError(u8"NG视觉失败！");
+                            sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                            int result = waitMessageReturn(is_run);
+                            if(!result)is_run = false;
+                            if(!is_run)break;
+                            if(result)
+                                continue;
+                        }
+                        if(!moveToWorkPos2())
+                        {
+                            AppendError("moveToWorkPos2 fail!");
+                            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                            is_run = false;
+                            break;
+                        }
+                        if((!pickSUTSensor(isLocalHost?"::1":"remote"))&&has_material)
+                        {
+                            AppendError("pickSUTSensor fail!");
+                            sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                            if(waitMessageReturn(is_run))
+                                states.setSutHasNgSensor(false);
+                            else
+                            {
+                                states.setSutHasNgSensor(false);
+                                states.setHasPickedNgSensor(true);
+                            }
+                        }
                         else
                         {
                             states.setSutHasNgSensor(false);
                             states.setHasPickedNgSensor(true);
                         }
                     }
-                    else
+                    sendEvent("unloadNgSensorResp");
+                    states.setCmd("");
+                }
+                else if ((states.cmd() == "loadSensorReq")&&states.hasPickedSensor())
+                {
+                    //放料到SUT
+                    if(!moveToSUTPRPos(isLocalHost))
                     {
-                        states.setSutHasNgSensor(false);
-                        states.setHasPickedNgSensor(true);
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                        is_run = false;
+                        break;
                     }
-                }
-                sendEvent("unloadNgSensorResp");
-                states.setCmd("");
-            }
-            else if ((states.cmd() == "loadSensorReq")&&states.hasPickedSensor())
-            {
-                //放料到SUT
-                if(!moveToSUTPRPos(isLocalHost))
-                {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
-                }
-                if(!moveToWorkPos())
-                {
-                    AppendError("moveToWorkPos fail!");
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
-                }
-                if((!placeSensorToSUT(isLocalHost?"::1":"remote"))&&has_material)
-                {
-                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
-                    if(waitMessageReturn(is_run))
+                    if(!moveToWorkPos())
                     {
-                        states.setHasPickedSensor(false);
+                        AppendError("moveToWorkPos fail!");
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                        is_run = false;
+                        break;
+                    }
+                    if((!placeSensorToSUT(isLocalHost?"::1":"remote"))&&has_material)
+                    {
+                        sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                        if(waitMessageReturn(is_run))
+                        {
+                            states.setHasPickedSensor(false);
+                            break;
+                        }
+                        else
+                        {
+                            states.setNeedLoadSensor(false);
+                            states.setHasPickedSensor(false);
+                            sendEvent("loadSensorResp");
+                            states.setCmd("");
+                            states.setBeExchangeMaterial(false);
+                        }
                     }
                     else
                     {
@@ -419,16 +431,8 @@ void SensorLoaderModule::run(bool has_material)
                         states.setBeExchangeMaterial(false);
                     }
                 }
-                else
-                {
-                    states.setNeedLoadSensor(false);
-                    states.setHasPickedSensor(false);
-                    sendEvent("loadSensorResp");
-                    states.setCmd("");
-                    states.setBeExchangeMaterial(false);
-                }
             }
-        }
+            }
 //        //放料到SUT
 //        if(states.needLoadSensor()&&states.hasPickedSensor())
 //        {
@@ -674,13 +678,13 @@ bool SensorLoaderModule::placeSensorToSUT(QString dest,bool check_softlanding)
 bool SensorLoaderModule::pickSUTSensor(QString dest,bool check_softlanding)
 {
     qInfo("pickSUTSensor");
-    return picker1SearchSutZ(parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,check_softlanding);
+    return picker2SearchSutZ(parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,check_softlanding);
 }
 
 bool SensorLoaderModule::pickSUTProduct(QString dest,bool check_softlanding)
 {
     qInfo("pickSUTProduct");
-    return picker1SearchSutZ(parameters.pickProductZ(),dest,"vacuumOffReq",true,check_softlanding);
+    return picker2SearchSutZ(parameters.pickProductZ(),dest,"vacuumOffReq",true,check_softlanding);
 }
 
 bool SensorLoaderModule::placeSensorToTray(bool check_softlanding)

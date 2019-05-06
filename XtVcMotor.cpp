@@ -446,6 +446,11 @@ bool XtVcMotor::WaitSoftLandingDone(int timeout)
     is_softlanding = false;
     is_returning = false;
     qInfo("WaitSoftLandingDone fail");
+    if(is_init)
+    {
+        int code = get_motor_error(vcm_id);
+        qInfo("VCM %d get_motor_error Return %d",vcm_id, code);
+    }
     return false;
 }
 

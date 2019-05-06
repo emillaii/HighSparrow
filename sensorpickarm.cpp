@@ -130,7 +130,7 @@ bool SensorPickArm::ZSerchByForce2(double speed, double force, double limit, dou
 
 bool SensorPickArm::ZSerchReturn2(int timeout)
 {
-    return picker1->motor_z->resetSoftLanding(timeout);
+    return picker2->motor_z->resetSoftLanding(timeout);
 }
 
 double SensorPickArm::GetSoftladngPosition2(bool get_current)

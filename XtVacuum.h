@@ -6,7 +6,7 @@
 #include "xtvacuumparameter.h"
 #include <QString>
 #define VACUUM_TIMEOUT 3000
-#define VACUUM_INPUT_NULL_DELAY 100
+#define VACUUM_INPUT_NULL_DELAY 1000
 #define VACUUM_FINISH_DELAY 20
 class XtVacuum :public ErrorBase
 {

@@ -33,18 +33,27 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         }
     }
 
-    if (ServerMode() == 0) {
-        qInfo("This sparrow is in Master mode");
-        this->lut_module.openServer(19998);
-        lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
-    } else {
-        qInfo("This sparrow is in Slave mode");
-        lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
-    }
     lightingModule = new WordopLight(ServerMode());
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
+
+    if (ServerMode() == 0) {
+        qInfo("This sparrow is in Master mode");
+        this->lut_module.openServer(19998);
+        lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
+        sut_clitent = new SutClient("ws://192.168.0.251:19999");
+        connect(&lut_module,&LutModule::sendLoadLensRequst,&lens_loader_module,&LensLoaderModule::receiveLoadLensRequst,Qt::DirectConnection);
+        connect(&lens_loader_module,&LensLoaderModule::sendLoadLensRequstFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
+
+    } else {
+        qInfo("This sparrow is in Slave mode");
+        this->sensor_loader_module.openServer(19999);
+        lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
+        sut_clitent = new SutClient("ws://localhost:19999");
+    }
+    connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
+    connect(&aa_head_module,&AAHeadModule::sendSensrRequestToSut,&sut_module,&SutModule::receiveLoadSensorRequst,Qt::DirectConnection);
 
     if(!QDir(".//notopencamera").exists())
     {
@@ -54,9 +63,6 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     }
     material_tray.standards_parameters.setTrayCount(2);
     unitlog.setServerAddress(DataServerURL());
-
-    connect(&lut_module,&LutModule::sendLensRequst,&lens_loader_module,&LensLoaderModule::receiveLensRequst,Qt::DirectConnection);
-    connect(&lens_loader_module,&LensLoaderModule::sendLensRequstFinish,&lut_module,&LutModule::receiveLensRequstFinish,Qt::DirectConnection);
 
 }
 
@@ -155,8 +161,15 @@ bool BaseModuleManager::SaveParameters()
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)
 {
     bool result = true;
-    if (this->ServerMode() == 0) result = manager->registerWorker(&lens_loader_module);
-    if (this->ServerMode() == 0) result = manager->registerWorker(&lut_module);
+    if (this->ServerMode() == 0)
+    {
+        result &= manager->registerWorker(&lens_loader_module);
+        result &= manager->registerWorker(&lut_module);
+    }
+    else {
+        result &= manager->registerWorker(&sensor_loader_module);
+    }
+    result &= manager->registerWorker(&sut_module);
     return result;
 }
 
@@ -602,7 +615,9 @@ bool BaseModuleManager::InitStruct()
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
     }
-    sut_module.Init(&sut_carrier,GetVisionLocationByName(sut_module.parameters.downlookLocationName()),
+    sut_clitent->Init(GetVacuumByName(sut_module.parameters.vacuumName()));
+    sut_module.Init(&sut_carrier,sut_clitent,
+                    GetVisionLocationByName(sut_module.parameters.downlookLocationName()),
                     GetVisionLocationByName(sut_module.parameters.updownlookDownLocationName()),
                     GetVisionLocationByName(sut_module.parameters.updownlookUpLocationName()),
                     GetVacuumByName(sut_module.parameters.vacuumName()),
@@ -775,8 +790,8 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     bool result;
     GetVcMotorByName(this->lut_module.parameters.motorZName())->resetSoftLanding();
 
-    GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1);
-
+   if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
+       return false;
     GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
     GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
     GetMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
@@ -1165,9 +1180,19 @@ void BaseModuleManager::setLightingBrightness(QString location_name)
 void BaseModuleManager::sendLoadLens(bool has_ng)
 {
     if(has_ng)
-        emit lut_module.sendLensRequst(true,0,0);
+        emit lut_module.sendLoadLensRequst(true,0,0);
     else
-        emit lut_module.sendLensRequst(true,-1,-1);
+        emit lut_module.sendLoadLensRequst(true,-1,-1);
+}
+
+void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
+{
+    if(has_product)
+        emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::HAS_PRODUCT);
+    else if(has_ng)
+        emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::HAS_NG_SENSOR);
+    else
+        emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::NO_MATERIAL);
 }
 
 bool BaseModuleManager::initSensor()

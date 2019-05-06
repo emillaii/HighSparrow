@@ -179,6 +179,11 @@ mPoint6D AAHeadModule::GetFeedBack()
     return mPoint6D(motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos(),motor_a->GetFeedbackPos(),motor_b->GetFeedbackPos(),motor_c->GetFeedbackPos());
 }
 
+void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double offset_z)
+{
+    qInfo("receiveSensorFromSut %f %f %f",offset_x,offset_y,offset_z);
+}
+
 bool AAHeadModule::moveToDiffrentZSync(double z)
 {
     return  moveToSync(mushroom_position.X(),mushroom_position.Y(),z,mushroom_position.A(),mushroom_position.B(),mushroom_position.C());

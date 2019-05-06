@@ -17,13 +17,13 @@ public:
     bool stepMove_XYT2_Synic(const double step_x,const double step_y,const double step_t2,const bool check_softlanding = false,int timeout = 10000);
 
     bool ZSerchByForce(double speed,double force,bool check_softlanding = false,int timeout = 10000);
-    bool ZSerchByForce(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true, int timeout = 10000);
+    bool ZSerchByForce(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);
     bool ZSerchReturn(int timeout = 10000);
     double GetSoftladngPosition(bool get_current = false);
 
 
     bool ZSerchByForce2(double speed,double force,bool check_softlanding = false,int timeout = 10000);
-    bool ZSerchByForce2(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true, int timeout = 10000);
+    bool ZSerchByForce2(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);
     bool ZSerchReturn2(int timeout = 10000);
     double GetSoftladngPosition2(bool get_current = false);
 private:

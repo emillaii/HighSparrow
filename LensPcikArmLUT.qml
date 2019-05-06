@@ -270,33 +270,6 @@ ColumnLayout {
                     }
                 }
             }
-            RowLayout{
-                Button {
-                    text: "开始"
-                    onClicked: {
-                        workersManager.startWorker("LensPickArmModule",true,2)
-                        workersManager.startWorker("LUTModule",true,2)
-                    }
-                }
-                Button {
-                    text: "放Lens"
-                    onClicked: {
-                        baseModuleManager.sendLoadLens(false)
-                    }
-                }
-                Button {
-                    text: "放Lens&取ng"
-                    onClicked: {
-                        baseModuleManager.sendLoadLens(true)
-                    }
-                }
-                Button {
-                    text: "停止"
-                    onClicked: {
-                        workersManager.stopWorkers()
-                    }
-                }
-        }
         }
     }
 }

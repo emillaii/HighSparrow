@@ -25,30 +25,7 @@ public:
               XtGeneralOutput * uv3,
               XtGeneralOutput * uv4,
               int thread_id);
-public slots:
     void saveJsonConfig();
-
-private:
-    XtMotor* motor_x = Q_NULLPTR;
-    XtMotor* motor_y = Q_NULLPTR;
-    XtMotor* motor_z = Q_NULLPTR;
-    XtMotor* motor_a = Q_NULLPTR;
-    XtMotor* motor_b = Q_NULLPTR;
-    XtMotor* motor_c = Q_NULLPTR;
-    XtGeneralOutput * gripper = Q_NULLPTR;
-    XtGeneralOutput * uv1 = Q_NULLPTR;
-    XtGeneralOutput * uv2 = Q_NULLPTR;
-    XtGeneralOutput * uv3 = Q_NULLPTR;
-    XtGeneralOutput * uv4 = Q_NULLPTR;
-    Position6D last_aa_position;
-    int thread_id;
-public:
-
-    AAHeadParameters parameters;
-    Position6D mushroom_position;
-    double uplook_x;
-    double uplook_y;
-    double uplook_theta;
     void loadJsonConfig();
     Q_INVOKABLE bool moveToMushroomPosition(bool moveXYC = true);
     Q_INVOKABLE bool moveToPickLensPosition();
@@ -67,12 +44,37 @@ public:
     void SetAAPosion(mPoint6D point);
     void MotoAAPosition();
     mPoint6D GetFeedBack();
+
+signals:
+    void sendSensrRequestToSut(int sut_state);
+public slots:
+    void receiveSensorFromSut(double offset_x,double offset_y,double offset_z);
 private:
     bool moveToDiffrentZSync(double z);
     bool moveToSync(double x, double y, double z, double a, double b, double c);
     bool stepMove_XYC_ToSync(double x, double y,double c);
     bool XYZAB_Interpolation(double x, double y, double z, double a, double b);
 
+public:
+    AAHeadParameters parameters;
+    Position6D mushroom_position;
+    double uplook_x;
+    double uplook_y;
+    double uplook_theta;
+private:
+    XtMotor* motor_x = Q_NULLPTR;
+    XtMotor* motor_y = Q_NULLPTR;
+    XtMotor* motor_z = Q_NULLPTR;
+    XtMotor* motor_a = Q_NULLPTR;
+    XtMotor* motor_b = Q_NULLPTR;
+    XtMotor* motor_c = Q_NULLPTR;
+    XtGeneralOutput * gripper = Q_NULLPTR;
+    XtGeneralOutput * uv1 = Q_NULLPTR;
+    XtGeneralOutput * uv2 = Q_NULLPTR;
+    XtGeneralOutput * uv3 = Q_NULLPTR;
+    XtGeneralOutput * uv4 = Q_NULLPTR;
+    Position6D last_aa_position;
+    int thread_id;
 };
 
 #endif // AAHEADMODULE_H

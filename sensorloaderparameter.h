@@ -267,6 +267,8 @@ public:
     Q_PROPERTY(bool hasPickedSensor READ hasPickedSensor WRITE setHasPickedSensor NOTIFY hasPickedSensorChanged)
     Q_PROPERTY(bool hasPickedProduct READ hasPickedProduct WRITE setHasPickedProduct NOTIFY hasPickedProductChanged)
     Q_PROPERTY(bool hasPickedNgSensor READ hasPickedNgSensor WRITE setHasPickedNgSensor NOTIFY hasPickedNgSensorChanged)
+    Q_PROPERTY(bool beExchangeMaterial READ beExchangeMaterial WRITE setBeExchangeMaterial NOTIFY beExchangeMaterialChanged)
+    Q_PROPERTY(QString cmd READ cmd WRITE setCmd NOTIFY cmdChanged)
     int runMode() const
     {
         return m_runMode;
@@ -319,6 +321,16 @@ public:
     bool hasPickedNgSensor() const
     {
         return m_hasPickedNgSensor;
+    }
+
+    bool beExchangeMaterial() const
+    {
+        return m_beExchangeMaterial;
+    }
+
+    QString cmd() const
+    {
+        return m_cmd;
     }
 
 public slots:
@@ -420,6 +432,24 @@ public slots:
         emit hasPickedNgSensorChanged(m_hasPickedNgSensor);
     }
 
+    void setBeExchangeMaterial(bool beExchangeMaterial)
+    {
+        if (m_beExchangeMaterial == beExchangeMaterial)
+            return;
+
+        m_beExchangeMaterial = beExchangeMaterial;
+        emit beExchangeMaterialChanged(m_beExchangeMaterial);
+    }
+
+    void setCmd(QString cmd)
+    {
+        if (m_cmd == cmd)
+            return;
+
+        m_cmd = cmd;
+        emit cmdChanged(m_cmd);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayChanged(bool hasTray);
@@ -442,6 +472,10 @@ signals:
 
     void hasPickedNgSensorChanged(bool hasPickedNgSensor);
 
+    void beExchangeMaterialChanged(bool beExchangeMaterial);
+
+    void cmdChanged(QString cmd);
+
 private:
     int m_runMode = 0;
     bool m_hasTray = false;
@@ -454,6 +488,8 @@ private:
     bool m_hasPickedSensor = false;
     bool m_hasPickedProduct = false;
     bool m_hasPickedNgSensor = false;
+    bool m_beExchangeMaterial = false;
+    QString m_cmd = "";
 };
 
 #endif // SENSORLOADERPARAMETER_H

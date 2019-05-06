@@ -43,6 +43,10 @@ ListModel {
         label:"TrayLoader 配置"
         index:10
     }
+    ListElement{
+        label:"Thread Manager"
+        index:11
+    }
 
 }
 

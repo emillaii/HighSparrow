@@ -25,6 +25,7 @@ ListView {
                     else
                         return "SensorLoaderModuleView.qml"
                 case 10: return "TrayLoaderModuleView.qml"
+                case 11: return "ThreadManagerView.qml"
             }
         }
     }

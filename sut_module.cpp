@@ -2,13 +2,13 @@
 
 SutModule::SutModule()
 {
-    //connect(&this->parameters, &SutParameter::paramsChanged, this, &SutModule::updateParams);
-    //connect(&this->carrier->parameters, &MaterialCarrierParameter::paramsChanged, this, &SutModule::updateParams);
+    setName("SutModule");
 }
 
-void SutModule::Init(MaterialCarrier *carrier, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin)
+void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin)
 {
     this->carrier = carrier;
+    this->sut_cilent = sut_cilent;
     this->vision_downlook_location = downlook_location;
     this->vision_updownlook_down_location = updownlook_down_location;
     this->vision_updownlook_up_location = updownlook_up_locationn;
@@ -152,6 +152,114 @@ void SutModule::recordCurrentPos()
 bool SutModule::movetoRecordPos(bool check_autochthonous)
 {
     return carrier->Move_SZ_SX_Y_X_Z_Sync(record_position.X,record_position.Y,record_position.Z,check_autochthonous);
+}
+
+void SutModule::receiveLoadSensorRequst(int sut_state)
+{
+    qInfo("receiveLoadSensorRequst %d",sut_state);
+    if(states.allowLoadSensor())
+        return;
+    if(sut_state == SUT_STATE::NO_MATERIAL)
+    {
+        states.setSutHasSensor(false);
+        states.setSutHasNgSensor(false);
+        states.setSutHasProduct(false);
+    }
+    else if(sut_state == SUT_STATE::HAS_PRODUCT)
+    {
+        states.setSutHasSensor(false);
+        states.setSutHasNgSensor(false);
+        states.setSutHasProduct(true);
+    }
+    else if(sut_state == SUT_STATE::HAS_NG_SENSOR)
+    {
+        states.setSutHasSensor(false);
+        states.setSutHasNgSensor(true);
+        states.setSutHasProduct(false);
+    }
+    states.setAllowLoadSensor(true);
+}
+
+void SutModule::run(bool has_material)
+{
+    is_run = true;
+    while (is_run)
+    {
+        if(!states.allowLoadSensor())
+        {
+            QThread::msleep(1000);
+            continue;
+        }
+        if((!states.sutHasSensor()))
+        {
+            if(moveToLoadPos())
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run =false;
+                break;
+            }
+            if(!popgpin->Set(false))
+            {
+                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                waitMessageReturn(is_run);
+                continue;
+            }
+            QThread::msleep(100);
+            if(! sut_cilent->sendLensRequest(states.sutHasProduct(),states.sutHasNgSensor()))
+            {
+               sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+               waitMessageReturn(is_run);
+               continue;
+           }
+           else
+           {
+               states.setSutHasSensor(true);
+           }
+        }
+        if(states.sutHasSensor())
+        {
+            if(!popgpin->Set(true))
+            {
+                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                waitMessageReturn(is_run);
+                continue;
+            }
+            QThread::msleep(100);
+            if((!moveToDownlookPR(offset))&&has_material)
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            else
+            {
+                emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta+parameters.cameraTheta());
+                states.setAllowLoadSensor(false);
+            }
+        }
+    }
+}
+
+void SutModule::startWork(bool reset_logic, int run_mode)
+{
+    qInfo("Lut Module start work in run mode: %d", run_mode);
+//    if(reset_logic)ResetLogic();
+    is_run = true;
+    if(run_mode == RunMode::Normal)
+        has_material = true;
+    else if(run_mode == RunMode::NoMaterial)
+        has_material = false;;
+    return;
+}
+
+void SutModule::stopWork(bool wait_finish)
+{
+
+}
+
+void SutModule::performHandlingOperation(int cmd)
+{
+
 }
 
 

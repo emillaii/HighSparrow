@@ -16,6 +16,7 @@ public:
     Q_PROPERTY(QString downlookLocationName READ downlookLocationName WRITE setDownlookLocationName NOTIFY downlookLocationNameChanged)
     Q_PROPERTY(QString updownlookUpLocationName READ updownlookUpLocationName WRITE setUpdownlookUpLocationName NOTIFY updownlookUpLocationNameChanged)
     Q_PROPERTY(QString updownlookDownLocationName READ updownlookDownLocationName WRITE setUpdownlookDownLocationName NOTIFY updownlookDownLocationNameChanged)
+    Q_PROPERTY(double cameraTheta READ cameraTheta WRITE setCameraTheta NOTIFY cameraThetaChanged)
     double Force() const
     {
         return m_Force;
@@ -60,6 +61,11 @@ public:
     {
         return m_updownlookDownLocationName;
     }
+    double cameraTheta() const
+    {
+        return m_cameraTheta;
+    }
+
 public slots:
     void setForce(double Force)
     {
@@ -142,6 +148,16 @@ public slots:
         m_updownlookDownLocationName = updownlookDownLocationName;
         emit updownlookDownLocationNameChanged(m_updownlookDownLocationName);
     }
+    void setCameraTheta(double cameraTheta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_cameraTheta, cameraTheta))
+            return;
+
+        m_cameraTheta = cameraTheta;
+        emit cameraThetaChanged(m_cameraTheta);
+    }
+
 signals:
     void paramsChanged(double Force);
 
@@ -163,6 +179,8 @@ signals:
 
     void mushroomLocationNameChanged(QString mushroomLocationName);
 
+    void cameraThetaChanged(double cameraTheta);
+
 private:
     double m_Force = 0;
     QString m_motorXName = "SUT_X";
@@ -173,6 +191,125 @@ private:
     QString m_downlookLocationName;
     QString m_updownlookUpLocationName;
     QString m_updownlookDownLocationName;
+    double m_cameraTheta = 0;
+};
+
+class SutState:public PropertyBase
+{
+    Q_OBJECT
+    Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
+    Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
+    Q_PROPERTY(bool sutHasProduct READ sutHasProduct WRITE setSutHasProduct NOTIFY sutHasProductChanged)
+    Q_PROPERTY(bool allowLoadSensor READ allowLoadSensor WRITE setAllowLoadSensor NOTIFY allowLoadSensorChanged)
+    Q_PROPERTY(bool loadingSensor READ loadingSensor WRITE setLoadingSensor NOTIFY loadingSensorChanged)
+    Q_PROPERTY(bool waitLoading READ waitLoading WRITE setWaitLoading NOTIFY waitLoadingChanged)
+
+public:
+    bool sutHasSensor() const
+    {
+        return m_sutHasSensor;
+    }
+
+    bool sutHasNgSensor() const
+    {
+        return m_sutHasNgSensor;
+    }
+
+    bool sutHasProduct() const
+    {
+        return m_sutHasProduct;
+    }
+
+    bool allowLoadSensor() const
+    {
+        return m_allowLoadSensor;
+    }
+
+    bool loadingSensor() const
+    {
+        return m_loadingSensor;
+    }
+
+    bool waitLoading() const
+    {
+        return m_waitLoading;
+    }
+
+public slots:
+    void setSutHasSensor(bool sutHasSensor)
+    {
+        if (m_sutHasSensor == sutHasSensor)
+            return;
+
+        m_sutHasSensor = sutHasSensor;
+        emit sutHasSensorChanged(m_sutHasSensor);
+    }
+
+    void setSutHasNgSensor(bool sutHasNgSensor)
+    {
+        if (m_sutHasNgSensor == sutHasNgSensor)
+            return;
+
+        m_sutHasNgSensor = sutHasNgSensor;
+        emit sutHasNgSensorChanged(m_sutHasNgSensor);
+    }
+
+    void setSutHasProduct(bool sutHasProduct)
+    {
+        if (m_sutHasProduct == sutHasProduct)
+            return;
+
+        m_sutHasProduct = sutHasProduct;
+        emit sutHasProductChanged(m_sutHasProduct);
+    }
+
+    void setAllowLoadSensor(bool allowLoadSensor)
+    {
+        if (m_allowLoadSensor == allowLoadSensor)
+            return;
+
+        m_allowLoadSensor = allowLoadSensor;
+        emit allowLoadSensorChanged(m_allowLoadSensor);
+    }
+
+    void setLoadingSensor(bool loadingSensor)
+    {
+        if (m_loadingSensor == loadingSensor)
+            return;
+
+        m_loadingSensor = loadingSensor;
+        emit loadingSensorChanged(m_loadingSensor);
+    }
+
+    void setWaitLoading(bool waitLoading)
+    {
+        if (m_waitLoading == waitLoading)
+            return;
+
+        m_waitLoading = waitLoading;
+        emit waitLoadingChanged(m_waitLoading);
+    }
+
+signals:
+    void sutHasSensorChanged(bool sutHasSensor);
+
+    void sutHasNgSensorChanged(bool sutHasNgSensor);
+
+    void sutHasProductChanged(bool sutHasProduct);
+
+    void allowLoadSensorChanged(bool allowLoadSensor);
+
+    void loadingSensorChanged(bool loadingSensor);
+
+    void waitLoadingChanged(bool waitLoading);
+
+private:
+    bool m_sutHasSensor = false;
+    bool m_sutHasNgSensor = false;
+    bool m_sutHasProduct = false;
+    bool m_allowLoadSensor = false;
+    bool m_loadingSensor = false;
+    bool m_waitLoading = false;
 };
 
 #endif // SUT_PARAMETER_H

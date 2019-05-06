@@ -72,16 +72,21 @@ bool SensorPickArm::ZSerchByForce(double speed, double force, bool check_softlan
     QThread::msleep(200);
     softlanding_position = picker1->motor_z->GetFeedbackPos();
     result &= picker1->motor_z->DoSoftLandingReturn();
+    result &= picker1->motor_z->WaitSoftLandingDone(timeout);
     return result;
 }
 
-bool SensorPickArm::ZSerchByForce(double speed, double force, double limit, double margin, int finish_time, bool open_vacuum, int timeout)
+bool SensorPickArm::ZSerchByForce(double speed, double force, double limit, double margin, int finish_time, bool open_vacuum,bool need_return, int timeout)
 {
     bool result = picker1->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
     if(result)
         result &= picker1->vacuum->Set(open_vacuum,true,finish_time);
     softlanding_position = picker1->motor_z->GetFeedbackPos();
-    result &= picker1->motor_z->DoSoftLandingReturn();
+    if(need_return)
+    {
+        result &= picker1->motor_z->DoSoftLandingReturn();
+        result &= picker1->motor_z->WaitSoftLandingDone(timeout);
+    }
     return result;
 }
 
@@ -104,17 +109,22 @@ bool SensorPickArm::ZSerchByForce2(double speed, double force, bool check_softla
     QThread::msleep(200);
     softlanding_position = picker2->motor_z->GetFeedbackPos();
     result &= picker2->motor_z->DoSoftLandingReturn();
+    result &= picker2->motor_z->WaitSoftLandingDone(timeout);
     return result;
 
 }
 
-bool SensorPickArm::ZSerchByForce2(double speed, double force, double limit, double margin, int finish_time, bool open_vacuum, int timeout)
+bool SensorPickArm::ZSerchByForce2(double speed, double force, double limit, double margin, int finish_time, bool open_vacuum,bool need_return, int timeout)
 {
     bool result = picker2->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
     if(result)
         result &= picker2->vacuum->Set(open_vacuum,true,finish_time);
     softlanding_position = picker2->motor_z->GetFeedbackPos();
-    result &= picker2->motor_z->DoSoftLandingReturn();
+    if(need_return)
+    {
+        result &= picker2->motor_z->DoSoftLandingReturn();
+        result &= picker2->motor_z->WaitSoftLandingDone(timeout);
+    }
     return result;
 }
 

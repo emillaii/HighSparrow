@@ -38,7 +38,7 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
     }
 }
 
-void LutModule::receiveLensRequstFinish(int lens, int lens_tray)
+void LutModule::receiveLoadLensRequstFinish(int lens, int lens_tray)
 {
     qInfo("receiveLensRequstFinish lens: %d lens_tray: %d",lens,lens_tray);
     QMutexLocker temp_locker(&loader_mutext);
@@ -157,7 +157,7 @@ void LutModule::run(bool has_material)
                 qInfo("LUT Module is not waiting lens");
                 QMutexLocker temp_locker(&loader_mutext);
                 states.setLutHasLens(false);
-                emit sendLensRequst(true,states.lutNgLensID(),states.lutNgTrayID());
+                emit sendLoadLensRequst(true,states.lutNgLensID(),states.lutNgTrayID());
                 states.setWaitLens(true);
             }
             QThread::msleep(1000);

@@ -12,6 +12,7 @@
 
 class SensorLoaderModule:public ThreadWorkerBase
 {
+    Q_OBJECT
 public:
     SensorLoaderModule();
     void Init(SensorPickArm* pick_arm,MaterialTray *tray,
@@ -19,18 +20,21 @@ public:
               VisionLocation *sut_sensor_vision,VisionLocation *sut_product_vision);
     bool loadJsonConfig();
     void saveJsonConfig();
+    void resetLogic();
+    void openServer(int port);
+signals:
+    void sendMessageToClient(QString destAddress, QString message);
     // ThreadWorkerBase interface
 public slots:
     void startWork(bool reset_logic, int run_mode);
     void stopWork(bool wait_finish);
     void performHandlingOperation(int cmd);
-public:
-    void resetLogic();
+    void receiveRequestMessage(QString message, QString client_ip);
 private:
     void run(bool has_material);
 
     bool moveToNextTrayPos(int tray_index);
-    bool moveToSUTPRPos(bool check_softlanding = false);
+    bool moveToSUTPRPos(bool is_local = true,bool check_softlanding = false);
 
     bool performSensorPR();
     bool performVacancyPR();
@@ -40,8 +44,8 @@ private:
 
     bool moveToWorkPos(bool check_softlanding = false);
     bool moveToWorkPos2(bool check_softlanding = false);
-    bool picker1SearchZ(double z,bool is_open = true,bool check_softlanding = false);
-    bool picker2SearchZ(double z,bool is_open = true,bool check_softlanding = false);
+    bool picker1SearchZ(double z,bool is_open = true,int time_out = 5000);
+    bool picker2SearchZ(double z,bool is_open = true,int time_out = 5000);
     bool pickTraySensor(bool check_softlanding = false);
     bool placeSensorToSUT(bool check_softlanding = false);
     bool pickSUTSensor(bool check_softlanding = false);
@@ -55,10 +59,15 @@ private:
     bool moveToTrayPos(int tray_index);
     bool moveToStartPos(int tray_index);
     bool moveToTray1EndPos();
+
+
+    void sendEvent(const QString event);
+    void sendCmd(QString serving_ip,const QString cmd);
 public:
     SensorLoaderParameter parameters;
     SensorLoaderState states;
-    Position sut_pr_position;
+    Position sut1_pr_position;
+    Position sut2_pr_position;
     Position picker1_offset;
     Position picker2_offset;
 private:
@@ -82,6 +91,8 @@ private:
     int sut_raw_material;
     int sut_used_material;
     int picked_material;
+    QString servingIP = "";
+    bool isLocalHost = false;
 };
 
 #endif // SENSORLOADERMODULE_H

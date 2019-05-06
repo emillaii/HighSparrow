@@ -72,7 +72,7 @@ SOURCES += \
     lutclient.cpp \
     sensorpickarm.cpp \
     sensorloadermodule.cpp \
-    sutcilent.cpp
+    sutclient.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -197,7 +197,7 @@ HEADERS += \
     sensorpickarmparameter.h \
     sensorloadermodule.h \
     sensorloaderparameter.h \
-    sutcilent.h
+    sutclient.h
 
 DISTFILES += \
     icons/index.theme

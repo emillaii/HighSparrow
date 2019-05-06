@@ -47,7 +47,7 @@ public:
     Position3D aa2_mushroom_position;
 signals:
     void sendMessageToClient(QString destAddress, QString message);
-    void sendLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
+    void sendLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
 public slots:
     //ThreadWorkerBase
     void startWork(bool reset_logic, int run_mode) override;
@@ -55,8 +55,8 @@ public slots:
     void performHandlingOperation(int cmd) override;
     //End of ThreadWorkerBase
     void saveJsonConfig();
-    void receiveRequestMessage(QString string, QString client_ip);
-    void receiveLensRequstFinish(int lens,int lens_tray);
+    void receiveRequestMessage(QString message, QString client_ip);
+    void receiveLoadLensRequstFinish(int lens,int lens_tray);
     LUTState getLUTState();
 private:
     MaterialCarrier* carrier;

@@ -57,10 +57,10 @@ public:
     void saveJsonConfig();
     void performHandling(int cmd);
 signals:
-    void sendChangeTray();
-    void sendLensRequstFinish(int lens,int lens_tray);
+    void sendChangeTrayRequst();
+    void sendLoadLensRequstFinish(int lens,int lens_tray);
 public slots:
-    void receiveLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
+    void receiveLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
     void receiveChangeTrayFinish();
 private:
     void run(bool has_material);

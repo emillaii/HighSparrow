@@ -71,6 +71,7 @@
         <file>CalibrationPrLENSLutLookView.qml</file>
         <file>TrayLoaderModuleView.qml</file>
         <file>AlarmDialog.qml</file>
+        <file>ThreadManagerView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

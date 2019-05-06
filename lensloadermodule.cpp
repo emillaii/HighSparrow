@@ -64,7 +64,7 @@ void LensLoaderModule::performHandling(int cmd)
     qInfo("emit performHandling %d",cmd);
 }
 
-void LensLoaderModule::receiveLensRequst(bool need_lens,int ng_lens,int ng_len_tray)
+void LensLoaderModule::receiveLoadLensRequst(bool need_lens,int ng_lens,int ng_len_tray)
 {
     qInfo("receiveLensRequst need_lens %d ng_lens %d ng_len_tray %d",need_lens,ng_lens,ng_len_tray);
     QMutexLocker temp_locker(&lut_mutex);
@@ -292,7 +292,7 @@ void LensLoaderModule::run(bool has_material)
         if((!states.lutHasNgLens())&&(!states.needLoadLens()))
         {
             QMutexLocker temp_locker(&lut_mutex);
-            emit sendLensRequstFinish(states.lutLensID(),states.lutTrayID());
+            emit sendLoadLensRequstFinish(states.lutLensID(),states.lutTrayID());
             states.setLoadingLens(false);
         }
     }

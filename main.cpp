@@ -198,6 +198,12 @@ int main(int argc, char *argv[])
         }
     }
     engine.rootContext()->setContextProperty("logList",logList);
+
+//    QStringList vacuumNames = highSprrow.baseModuleManager->vacuums.keys();
+//    QStringList cylinderNames = highSprrow.baseModuleManager->cylinder.keys();
+//    engine.rootContext()->setContextProperty("vacuumNames",vacuumNames);
+//    engine.rootContext()->setContextProperty("cylinderNames",cylinderNames);
+
     //QImage Provider
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);
     engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);

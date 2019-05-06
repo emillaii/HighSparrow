@@ -1,4 +1,4 @@
-#include "trayloadermodule.h"
+﻿#include "trayloadermodule.h"
 
 #include <QDebug>
 #include <QObject>
@@ -22,15 +22,25 @@ void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
                             XtGeneralInput* _tray_entry_input,
                             XtGeneralInput*_tray_exit_input)
 {
+    parts.clear();
     this->motor_clip_in = _motor_clip_in;
+    parts.append(this->motor_clip_in);
     this->motor_in = _motor_in;
+    parts.append(this->motor_in);
     this->motor_work = _motor_work;
+    parts.append(this->motor_work);
     this->motor_out = _motor_out;
+    parts.append(this->motor_out);
     this->motor_clip_out = _motor_clip_out;
+    parts.append(this->motor_clip_out);
     this->cylinder_clip = _cylinder_clip;
+    parts.append(this->cylinder_clip);
     this->cylinder_ltk1 = _cylinder_ltk1;
+    parts.append(this->cylinder_ltk1);
     this->cylinder_ltk2 = _cylinder_ltk2;
+    parts.append(this->cylinder_ltk2);
     this->cylinder_tray = _cylinder_tray;
+    parts.append(this->cylinder_tray);
     this->tray_clip = trayClipIn;
     this->tray_clip_out = trayClipOut;
     this->tray_entry_input = _tray_entry_input;
@@ -68,7 +78,10 @@ void TrayLoaderModule::run(bool has_tray)
 bool TrayLoaderModule::moveToNextTrayPos()
 {
     if(!tray_entry_input->Value()){
-        qDebug()<<"入口处检测到有盘";
+        //qDebug()<<"入口处检测到有盘";
+        AppendError(u8"入口处检测到有盘,请把盘拿走");
+        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+        waitMessageReturn(is_run);
         return false;
     }
     double pos = tray_clip->getCurrentPosition();
@@ -197,6 +210,9 @@ bool TrayLoaderModule::moveToNextEmptyPos()
 {
     if(!tray_exit_input->Value()){
         qDebug()<<"出口处检测到有盘";
+        AppendError(QString(u8"出口处有盘，请把盘移走"));
+        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+        waitMessageReturn(is_run);
         return false;
     }
     double pos = tray_clip_out->getCurrentPosition();

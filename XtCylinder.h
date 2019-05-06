@@ -7,7 +7,7 @@
 #include <QString>
 #define CYLINDER_TIMEOUT 3000
 #define CYLINDER_INPUT_NULL_DELAY 500
-class XtCylinder:ErrorBase
+class XtCylinder:public ErrorBase
 {
 public:
     XtCylinder();

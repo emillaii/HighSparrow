@@ -7,10 +7,11 @@
 
 class SensorPickArmParameter: public PropertyBase
 {
+    Q_OBJECT
 public:
     SensorPickArmParameter():PropertyBase(){}
     Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
-    Q_PROPERTY(QString motorTrayName READ motorTrayName WRITE setMotorTrayName NOTIFY motorTrayNameChanged)
+//    Q_PROPERTY(QString motorTrayName READ motorTrayName WRITE setMotorTrayName NOTIFY motorTrayNameChanged)
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
     Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
     Q_PROPERTY(QString motorTName READ motorTName WRITE setMotorTName NOTIFY motorTNameChanged)
@@ -22,10 +23,10 @@ public:
     {
         return m_motorXName;
     }
-    QString motorTrayName() const
-    {
-        return m_motorTrayName;
-    }
+//    QString motorTrayName() const
+//    {
+//        return m_motorTrayName;
+//    }
 
     QString motorYName() const
     {
@@ -71,14 +72,14 @@ public slots:
         m_motorXName = motorXName;
         emit motorXNameChanged(m_motorXName);
     }
-    void setMotorTrayName(QString motorTrayName)
-    {
-        if (m_motorTrayName == motorTrayName)
-            return;
+//    void setMotorTrayName(QString motorTrayName)
+//    {
+//        if (m_motorTrayName == motorTrayName)
+//            return;
 
-        m_motorTrayName = motorTrayName;
-        emit motorTrayNameChanged(m_motorTrayName);
-    }
+//        m_motorTrayName = motorTrayName;
+//        emit motorTrayNameChanged(m_motorTrayName);
+//    }
 
     void setMotorYName(QString motorYName)
     {
@@ -145,7 +146,7 @@ public slots:
 
 signals:
     void motorXNameChanged(QString motorXName);
-    void motorTrayNameChanged(QString motorTrayName);
+//    void motorTrayNameChanged(QString motorTrayName);
 
     void motorYNameChanged(QString motorYName);
 
@@ -163,7 +164,7 @@ signals:
 
 private:
     QString m_motorXName = "";
-    QString m_motorTrayName = "";
+//    QString m_motorTrayName = "";
     QString m_motorYName = "";
     QString m_motorZName = "";
     QString m_motorTName = "";

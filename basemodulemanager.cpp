@@ -68,22 +68,22 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 
 BaseModuleManager::~BaseModuleManager()
 {
-//    QString temp;
-//    for (int i = 0; i < motors.size(); ++i) {
-//        temp = motors.keys()[i];
-//        if(temp == "SUT1_Z"||temp == "LUT_Z")
-//            delete  GetVcMotorByName(temp);
-//        else
-//            delete  GetMotorByName(temp);
-//    }
-//    for (int i = 0; i < output_ios.size(); ++i)
-//        delete  GetOutputIoByName(output_ios.keys()[i]);
-//    for (int i = 0; i < input_ios.size(); ++i)
-//        delete  GetInputIoByName(input_ios.keys()[i]);
-//    for (int i = 0; i < calibrations.size(); ++i)
-//        delete  calibrations[calibrations.keys()[i]];
-//    delete chart_calibration;
- }
+    //    QString temp;
+    //    for (int i = 0; i < motors.size(); ++i) {
+    //        temp = motors.keys()[i];
+    //        if(temp == "SUT1_Z"||temp == "LUT_Z")
+    //            delete  GetVcMotorByName(temp);
+    //        else
+    //            delete  GetMotorByName(temp);
+    //    }
+    //    for (int i = 0; i < output_ios.size(); ++i)
+    //        delete  GetOutputIoByName(output_ios.keys()[i]);
+    //    for (int i = 0; i < input_ios.size(); ++i)
+    //        delete  GetInputIoByName(input_ios.keys()[i]);
+    //    for (int i = 0; i < calibrations.size(); ++i)
+    //        delete  calibrations[calibrations.keys()[i]];
+    //    delete chart_calibration;
+}
 
 bool BaseModuleManager::loadParameters()
 {
@@ -551,7 +551,7 @@ bool BaseModuleManager::loadJsonArray(QString file_name,QJsonArray &array)
         return true;
     else
     {
-         qInfo("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        qInfo("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return false;
     }
 }
@@ -609,8 +609,8 @@ bool BaseModuleManager::InitStruct()
     }
     if (chart_calibration) {
         chart_calibration->Init(GetMotorByName(chart_calibration->parameters.motorXName()),
-                               GetMotorByName(chart_calibration->parameters.motorYName()),
-                               nullptr);
+                                GetMotorByName(chart_calibration->parameters.motorYName()),
+                                nullptr);
     }
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
@@ -637,20 +637,20 @@ bool BaseModuleManager::InitStruct()
     if(ServerMode())
     {
         sensor_picker1.Init(GetVcMotorByName(sensor_pickarm.parameters.motorZName()),
-                         GetMotorByName(sensor_pickarm.parameters.motorTName()),
-                         GetVacuumByName(sensor_pickarm.parameters.vacuumName()));
+                            GetMotorByName(sensor_pickarm.parameters.motorTName()),
+                            GetVacuumByName(sensor_pickarm.parameters.vacuumName()));
         sensor_picker2.Init(GetVcMotorByName(sensor_pickarm.parameters.motorZ2Name()),
-                         GetMotorByName(sensor_pickarm.parameters.motorT2Name()),
-                         GetVacuumByName(sensor_pickarm.parameters.vacuum2Name()));
-        sensor_pickarm.Init(GetMotorByName(lens_pick_arm.parameters.motorTrayName()),
-                           GetMotorByName(lens_pick_arm.parameters.motorXName()),
-                           &sensor_picker1,&sensor_picker2);
+                            GetMotorByName(sensor_pickarm.parameters.motorT2Name()),
+                            GetVacuumByName(sensor_pickarm.parameters.vacuum2Name()));
+        sensor_pickarm.Init(GetMotorByName(sensor_pickarm.parameters.motorXName()),
+                            GetMotorByName(sensor_pickarm.parameters.motorYName()),
+                            &sensor_picker1,&sensor_picker2);
         sensor_loader_module.Init(&sensor_pickarm,&material_tray,
-                                GetVisionLocationByName(sensor_loader_module.parameters.sensorLocationName()),
-                                GetVisionLocationByName(sensor_loader_module.parameters.vacancyLocationName()),
-                                GetVisionLocationByName(sensor_loader_module.parameters.sutLocationName()),
-                                GetVisionLocationByName(sensor_loader_module.parameters.sutSensorLocationName()),
-                                GetVisionLocationByName(sensor_loader_module.parameters.sutProductLocationName()));
+                                  GetVisionLocationByName(sensor_loader_module.parameters.sensorLocationName()),
+                                  GetVisionLocationByName(sensor_loader_module.parameters.vacancyLocationName()),
+                                  GetVisionLocationByName(sensor_loader_module.parameters.sutLocationName()),
+                                  GetVisionLocationByName(sensor_loader_module.parameters.sutSensorLocationName()),
+                                  GetVisionLocationByName(sensor_loader_module.parameters.sutProductLocationName()));
     }
     else
     {
@@ -779,9 +779,9 @@ void BaseModuleManager::DisableAllMotors()
 bool BaseModuleManager::allMotorsSeekOrigin()
 {
     if (ServerMode() == 0) {
-       return allMotorsSeekOriginal1();
+        return allMotorsSeekOriginal1();
     } else {
-       return allMotorsSeekOriginal2();
+        return allMotorsSeekOriginal2();
     }
 }
 
@@ -790,8 +790,8 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     bool result;
     GetVcMotorByName(this->lut_module.parameters.motorZName())->resetSoftLanding();
 
-   if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
-       return false;
+    if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
+        return false;
     GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
     GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
     GetMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
@@ -877,11 +877,24 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 bool BaseModuleManager::allMotorsSeekOriginal2()
 {
     qInfo("allMotorsSeekOriginal2 Start");
+    //推料氣缸復位
     bool result;
     GetMotorByName(sut_module.parameters.motorZName())->SeekOrigin();
+    GetMotorByName(sensor_pickarm.parameters.motorZName())->SeekOrigin();
+    GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->SeekOrigin();
     result = GetMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
     if(!result) return false;
     GetMotorByName(sut_module.parameters.motorYName())->SeekOrigin();
+
+    result = GetMotorByName(sensor_pickarm.parameters.motorZName())->WaitSeekDone();
+    result &= GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->WaitSeekDone();
+    if(!result) return false;
+    //KicK復位
+    GetMotorByName(this->sensor_pickarm.parameters.motorXName())->SeekOrigin();
+    GetMotorByName(this->sensor_pickarm.parameters.motorYName())->SeekOrigin();
+    GetMotorByName(this->sensor_pickarm.parameters.motorTName())->SeekOrigin();
+    GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->SeekOrigin();
+
     result &= GetMotorByName(sut_module.parameters.motorYName())->WaitSeekDone();
     GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();
 
@@ -894,16 +907,29 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
 
+    result &= GetMotorByName(this->sensor_pickarm.parameters.motorYName())->WaitSeekDone();
+    if(!result)return false;
+//    GetMotorByName(this->sensor_pickarm.parameters.motorTrayName())->SeekOrigin();
+
+
     result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
     result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->sensor_pickarm.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->sensor_pickarm.parameters.motorTName())->WaitSeekDone();
+    result &= GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_pickarm.parameters.motorTrayName())->WaitSeekDone();
 
-    qInfo("all motor seeked origin successed!");
-    setHomeState(true);
-    return  true;
+    if(result)
+    {
+        qInfo("all motor seeked origin successed!");
+        setHomeState(true);
+        return  true;
+    }
+    return false;
 }
 
 void BaseModuleManager::stopSeeking()
@@ -931,7 +957,7 @@ void BaseModuleManager::updateParams()
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
     SaveParameters();
-//    loadParameters();
+    //    loadParameters();
 }
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)

@@ -26,8 +26,6 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     parts.append(this->lpa_updownlook_up_vision);
     this->lpa_updownlook_down_vision = lpa_updownlook_down_vision;
     parts.append(this->lpa_updownlook_down_vision);
-    lens_tray->resetTrayState(0);
-    lens_tray->resetTrayState(1);
 }
 
 void LensLoaderModule::resetLogic()

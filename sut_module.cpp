@@ -14,7 +14,7 @@ void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocat
     this->vision_updownlook_up_location = updownlook_up_locationn;
     this->vacuum = vacuum;
     this->popgpin = popgpin;
-    loadParams();
+//    loadParams();
 }
 
 void SutModule::saveJsonConfig()

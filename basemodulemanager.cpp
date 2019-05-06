@@ -692,6 +692,10 @@ bool BaseModuleManager::InitStruct()
                             &trayClipIn,&trayClipOut,
                             GetInputIoByName(tray_loader_module.parameters.clipinInputName()),
                             GetInputIoByName(tray_loader_module.parameters.clipoutInputName()));
+
+    //todo
+    material_tray.resetTrayState(0);
+    material_tray.resetTrayState(1);
     profile_loaded = true;
 
     return true;

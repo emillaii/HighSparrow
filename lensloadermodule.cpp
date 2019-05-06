@@ -132,7 +132,7 @@ void LensLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
-            if(!placeLensToTray())
+            if((!placeLensToTray())&&has_material)
             {
                 AppendError("placeLensToTray fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
@@ -174,7 +174,7 @@ void LensLoaderModule::run(bool has_material)
                 break;
             }
 
-            if(!pickTrayLens())
+            if((!pickTrayLens())&&has_material)
             {
                 AppendError("pickTrayLens fial!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
@@ -213,7 +213,7 @@ void LensLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
-            if(!placeLensToLUT())
+            if((!placeLensToLUT())&&has_material)
             {
                 AppendError("placeLensToLUT fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
@@ -265,7 +265,7 @@ void LensLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
-            if(!pickLUTLens())
+            if((!pickLUTLens())&&has_material)
             {
                 AppendError("pickLUTLens fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
@@ -287,7 +287,7 @@ void LensLoaderModule::run(bool has_material)
             }
         }
         //判断是否完成
-        if((!states.lutHasNgLens())&&(!states.needLoadLens()))
+        if((!states.lutHasNgLens())&&(!states.needLoadLens())&&states.loadingLens())
         {
             QMutexLocker temp_locker(&lut_mutex);
             emit sendLoadLensRequstFinish(states.lutLensID(),states.lutTrayID());

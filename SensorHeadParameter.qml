@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 ColumnLayout {
     RowLayout{
+        id:row1
         Label{
             text:qsTr("力限制")
         }
@@ -31,8 +32,6 @@ ColumnLayout {
                 sensorLoaderParameter.setVcmWorkSpeed(text)
             }
         }
-    }
-    RowLayout{
         Label{
             text:qsTr("限力区间")
         }
@@ -47,6 +46,8 @@ ColumnLayout {
                 sensorLoaderParameter.setVcmMargin(text)
             }
         }
+    }
+    RowLayout{
         Label{
             text:qsTr("z_offset")
         }
@@ -59,6 +60,12 @@ ColumnLayout {
             }
             onEditingFinished: {
                 sensorLoaderParameter.setZOffset(text)
+            }
+        }
+        Button{
+            text: qsTr("测量")
+            onClicked: {
+
             }
         }
     }
@@ -97,6 +104,12 @@ ColumnLayout {
                 pick1_offset.setY(text)
             }
         }
+        Button{
+            text: qsTr("测量")
+            onClicked: {
+
+            }
+        }
     }
     RowLayout{
         Label{
@@ -130,6 +143,12 @@ ColumnLayout {
             }
             onEditingFinished: {
                 pick2_offset.setY(text)
+            }
+        }
+        Button{
+            text: qsTr("测量")
+            onClicked: {
+
             }
         }
     }

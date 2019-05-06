@@ -48,9 +48,16 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
-                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
+                        var x =0;
+                        var y=0;
+                        if (baseModuleManager.ServerMode == 0){
+                            x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                            y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
+                        }else{
 
+                            x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+                            y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                        }
                         tray_start_point1.setX(x);
                         tray_start_point1.setY(y);
                     }
@@ -106,11 +113,18 @@ ColumnLayout {
                     height: 40
 
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
-                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
+                        var x =0;
+                        var y=0;
+                        if (baseModuleManager.ServerMode == 0){
+                            x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                            y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
+                        }else{
 
-                        first_tray_end_position.setX(x);
-                        first_tray_end_position.setY(y);
+                            x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+                            y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                        }
+                        tray_start_point1.setX(x);
+                        tray_start_point1.setY(y);
                     }
                 }
             }
@@ -156,7 +170,7 @@ ColumnLayout {
 
             RowLayout{
                 Label{
-                    text: qsTr("物料高度")
+                    text: baseModuleManager.ServerMode==0?qsTr("物料高度"):qsTr("sensor高度")
                 }
                 TextField{
                     text:lensPickArmModuleParameter.pickLensZ
@@ -180,7 +194,7 @@ ColumnLayout {
                 }
 
                 Button{
-                    text:qsTr("lens视觉")
+                    text:baseModuleManager.ServerMode==0?qsTr("lens视觉"):qsTr("sensor视觉")
                     width: 40
                     height: 40
                     onClicked: {
@@ -189,7 +203,7 @@ ColumnLayout {
                 }
 
                 Button{
-                    text:qsTr("取lens")
+                    text:baseModuleManager.ServerMode==0?qsTr("取lens"):qsTr("取sensor")
                     width: 40
                     height: 40
                     onClicked: {
@@ -198,6 +212,7 @@ ColumnLayout {
                 }
             }
             RowLayout{
+                visible: baseModuleManager.ServerMode==0
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
                     text:qsTr("空位视觉")

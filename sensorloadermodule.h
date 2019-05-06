@@ -14,6 +14,7 @@ class SensorLoaderModule:public ThreadWorkerBase
 {
     Q_OBJECT
 public:
+
     SensorLoaderModule();
     void Init(SensorPickArm* pick_arm,MaterialTray *tray,
               VisionLocation * sensor_vision,VisionLocation * vacancy_vision,VisionLocation * sut_vision,
@@ -22,6 +23,11 @@ public:
     void saveJsonConfig();
     void resetLogic();
     void openServer(int port);
+    void performHandling(int cmd);
+    enum HandlePosition{
+        SENSOR_TRAY1 = 1,
+        SENSOR_TRAY2 = 2
+    };
 signals:
     void sendMessageToClient(QString destAddress, QString message);
     // ThreadWorkerBase interface

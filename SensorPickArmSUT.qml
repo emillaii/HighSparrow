@@ -2,6 +2,78 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 ColumnLayout {
+    RowLayout{
+        Label{
+            text:qsTr("sensor高度")
+        }
+        TextField{
+            text:sensorLoaderParameter.placeSensorZ
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 3
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPlaceSensorZ(text)
+            }
+        }
+        Button{
+            text:qsTr("测高")
+            width: 40
+            height: 40
+            onClicked: {
+                //logicManager.lensPickArmLUTMeasureHeight()
+            }
+        }
+    }
+    RowLayout{
+        Label{
+            text:qsTr("product高度")
+        }
+        TextField{
+            text:sensorLoaderParameter.pickProductZ
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 3
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPickProductZ(text)
+            }
+        }
+        Button{
+            text:qsTr("测高")
+            width: 40
+            height: 40
+            onClicked: {
+                //logicManager.lensPickArmLUTMeasureHeight()
+            }
+        }
+    }
+    RowLayout{
+        Label{
+            text:qsTr("NG sensor高度")
+        }
+        TextField{
+            text:sensorLoaderParameter.pickNgSensorZ
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 3
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPickNgSensorZ(text)
+            }
+        }
+        Button{
+            text:qsTr("测高")
+            width: 40
+            height: 40
+            onClicked: {
+                //logicManager.lensPickArmLUTMeasureHeight()
+            }
+        }
+    }
     GroupBox{
         title:"SUT位置1"
         ColumnLayout{
@@ -67,6 +139,22 @@ ColumnLayout {
                         //logicManager.lensPickArmMoveToPlaceLensToLut()
                     }
                 }
+                Button{
+                    text:qsTr("取成品")
+                    width:40
+                    height: 40
+                    onClicked: {
+
+                    }
+                }
+                Button{
+                    text:qsTr("取Ng Sensor")
+                    width:40
+                    height: 40
+                    onClicked: {
+
+                    }
+                }
             }
         }
     }
@@ -126,61 +214,29 @@ ColumnLayout {
             RowLayout{
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
-                    text:qsTr("取sensors")
+                    text:qsTr("放sensors")
                     width:40
                     height: 40
                     onClicked: {
                         //logicManager.lensPickArmMoveToPickLensFromLut()
                     }
                 }
-            }
-        }
-    }
-    RowLayout{
-        Label{
-            text:qsTr("sensor高度")
-        }
-        TextField{
-            text:sensorLoaderParameter.placeSensorZ
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 3
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                sensorLoaderParameter.setPlaceSensorZ(text)
-            }
-        }
-        Button{
-            text:qsTr("测高")
-            width: 40
-            height: 40
-            onClicked: {
-                //logicManager.lensPickArmLUTMeasureHeight()
-            }
-        }
-    }
-    RowLayout{
-        Label{
-            text:qsTr("product高度")
-        }
-        TextField{
-            text:sensorLoaderParameter.pickProductZ
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 3
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                sensorLoaderParameter.setPickProductZ(text)
-            }
-        }
-        Button{
-            text:qsTr("测高")
-            width: 40
-            height: 40
-            onClicked: {
-                //logicManager.lensPickArmLUTMeasureHeight()
+                Button{
+                    text:qsTr("取成品")
+                    width:40
+                    height: 40
+                    onClicked: {
+
+                    }
+                }
+                Button{
+                    text:qsTr("取Ng Sensor")
+                    width:40
+                    height: 40
+                    onClicked: {
+
+                    }
+                }
             }
         }
     }

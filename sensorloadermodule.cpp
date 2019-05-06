@@ -69,7 +69,20 @@ void SensorLoaderModule::stopWork(bool wait_finish)
 
 void SensorLoaderModule::performHandlingOperation(int cmd)
 {
+    qInfo("performHandling %d",cmd);
+    bool result;
+    if(cmd%10 == HandlePosition::SENSOR_TRAY1)
+        result = moveToTrayPos(0);
+    else if(cmd%10 == HandlePosition::SENSOR_TRAY2)
+        result = moveToTrayPos(1);
+    else
+        result =true;
+    if(!result){
+        qInfo("Move To Work Pos fail");
+        return;
+    }
 
+    return;
 }
 
 void SensorLoaderModule::receiveRequestMessage(QString message, QString client_ip)
@@ -99,6 +112,12 @@ void SensorLoaderModule::openServer(int port)
     server = new SparrowQServer(port);
     connect(server, &SparrowQServer::receiveRequestMessage, this, &SensorLoaderModule::receiveRequestMessage, Qt::DirectConnection);
     connect(this, &SensorLoaderModule::sendMessageToClient, this->server, &SparrowQServer::sendMessageToClient);
+}
+
+void SensorLoaderModule::performHandling(int cmd)
+{
+    emit sendHandlingOperation(cmd);
+    qInfo("emit performHandling %d",cmd);
 }
 
 void SensorLoaderModule::run(bool has_material)

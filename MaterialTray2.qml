@@ -47,11 +47,18 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
-                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
+                        var x =0;
+                        var y=0;
+                        if (baseModuleManager.ServerMode == 0){
+                            x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                            y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
+                        }else{
 
-                        tray_start_point2.setX(x);
-                        tray_start_point2.setY(y);
+                            x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+                            y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                        }
+                        tray_start_point1.setX(x);
+                        tray_start_point1.setY(y);
                     }
                 }
             }
@@ -94,10 +101,56 @@ ColumnLayout {
                     }
                 }
             }
+            RowLayout{
+                visible: baseModuleManager.ServerMode !=0
+                Label{
+                    text:qsTr("成品高度")
+                }
+                TextField{
+                    text: sensorLoaderParameter.placeProductZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator {
+                        decimals: 3
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorLoaderParameter.setPlaceProductZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("测高")
+                    onClicked: {
 
+                    }
+                }
+            }
+            RowLayout{
+                visible: baseModuleManager.ServerMode !=0
+                Label{
+                    text:qsTr("Ng Sensor高度")
+                }
+                TextField{
+                    text: sensorLoaderParameter.placeNgSensorZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator {
+                        decimals: 3
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorLoaderParameter.setPlaceNgSensorZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("测高")
+                    onClicked: {
+
+                    }
+                }
+            }
             RowLayout{
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
+                    visible: baseModuleManager.ServerMode==0
                     text:qsTr("lens视觉")
                     width: 40
                     height: 40
@@ -106,6 +159,7 @@ ColumnLayout {
                     }
                 }
                 Button{
+                    visible: baseModuleManager.ServerMode==0
                     text:qsTr("取lens")
                     width: 40
                     height: 40
@@ -123,11 +177,20 @@ ColumnLayout {
                 }
 
                 Button{
-                    text:qsTr("放lens")
+                    text:baseModuleManager.ServerMode==0?qsTr("放lens"):qsTr("放成品")
                     width: 40
                     height: 40
                     onClicked: {
                         logicManager.lensPickArmMoveToPlaceLensToTray2()
+                    }
+                }
+                Button{
+                    visible: baseModuleManager.ServerMode!=0
+                    text:qsTr("放ng Sensor")
+                    width:40
+                    height: 40
+                    onClicked: {
+
                     }
                 }
             }

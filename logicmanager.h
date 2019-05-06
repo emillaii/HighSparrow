@@ -106,6 +106,9 @@ public:
 
     Q_INVOKABLE void trayLoaderModuleLTKX1MoveToRelayPos();
 
+    Q_INVOKABLE void sensorPickArmMoveToTray1Pos();
+    Q_INVOKABLE void sensorPickArmMoveToTray2Pos();
+
     int currentMode() const
     {
         return m_currentMode;

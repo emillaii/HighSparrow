@@ -13,8 +13,8 @@ public:
     Q_PROPERTY(double vcmWorkForce READ vcmWorkForce WRITE setVcmWorkForce NOTIFY vcmWorkForceChanged)
     Q_PROPERTY(double vcmWorkSpeed READ vcmWorkSpeed WRITE setVcmWorkSpeed NOTIFY vcmWorkSpeedChanged)
     Q_PROPERTY(double vcmMargin READ vcmMargin WRITE setVcmMargin NOTIFY vcmMarginChanged)
-    Q_PROPERTY(double pickSensorZ READ pickLensZ WRITE setPickLensZ NOTIFY pickLensZChanged)
-    Q_PROPERTY(double placeSensorZ READ placeLensZ WRITE setPlaceLensZ NOTIFY placeLensZChanged)
+    Q_PROPERTY(double pickSensorZ READ pickSensorZ WRITE setPickSensorZ NOTIFY pickSensorZChanged)
+    Q_PROPERTY(double placeSensorZ READ placeSensorZ WRITE setPlaceSensorZ NOTIFY placeSensorZChanged)
     Q_PROPERTY(QString sensorLocationName READ sensorLocationName WRITE setSensorLocationName NOTIFY sensorLocationNameChanged)
     Q_PROPERTY(QString vacancyLocationName READ vacancyLocationName WRITE setVacancyLocationName NOTIFY vacancyLocationNameChanged)
     Q_PROPERTY(QString sutLocationName READ sutLocationName WRITE setSutLocationName NOTIFY sutLocationNameChanged)
@@ -23,6 +23,8 @@ public:
     Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
     Q_PROPERTY(double pickProductZ READ pickProductZ WRITE setPickProductZ NOTIFY pickProductZChanged)
     Q_PROPERTY(double placeProductZ READ placeProductZ WRITE setPlaceProductZ NOTIFY placeProductZChanged)
+    Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
+
     double vcmWorkForce() const
     {
         return m_vcmWorkForce;
@@ -35,16 +37,6 @@ public:
     double vcmMargin() const
     {
         return m_vcmMargin;
-    }
-
-    double pickLensZ() const
-    {
-        return m_pickSensorZ;
-    }
-
-    double placeLensZ() const
-    {
-        return m_placeSensorZ;
     }
 
     QString sensorLocationName() const
@@ -87,6 +79,21 @@ public:
         return m_placeProductZ;
     }
 
+    double pickSensorZ() const
+    {
+        return m_pickSensorZ;
+    }
+
+    double placeSensorZ() const
+    {
+        return m_placeSensorZ;
+    }
+
+    double zOffset() const
+    {
+        return m_zOffset;
+    }
+
 public slots:
     void setVcmWorkForce(double vcmWorkForce)
     {
@@ -117,25 +124,6 @@ public slots:
         emit vcmMarginChanged(m_vcmMargin);
     }
 
-    void setPickLensZ(double pickSensorZ)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_pickSensorZ, pickSensorZ))
-            return;
-
-        m_pickSensorZ = pickSensorZ;
-        emit pickLensZChanged(m_pickSensorZ);
-    }
-
-    void setPlaceLensZ(double placeSensorZ)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_placeSensorZ, placeSensorZ))
-            return;
-
-        m_placeSensorZ = placeSensorZ;
-        emit placeLensZChanged(m_placeSensorZ);
-    }
 
     void setSensorLocationName(QString sensorLocationName)
     {
@@ -210,15 +198,42 @@ public slots:
         emit placeProductZChanged(m_placeProductZ);
     }
 
+    void setPickSensorZ(double pickSensorZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickSensorZ, pickSensorZ))
+            return;
+
+        m_pickSensorZ = pickSensorZ;
+        emit pickSensorZChanged(m_pickSensorZ);
+    }
+
+    void setPlaceSensorZ(double placeSensorZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeSensorZ, placeSensorZ))
+            return;
+
+        m_placeSensorZ = placeSensorZ;
+        emit placeSensorZChanged(m_placeSensorZ);
+    }
+
+    void setZOffset(double zOffset)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zOffset, zOffset))
+            return;
+
+        m_zOffset = zOffset;
+        emit zOffsetChanged(m_zOffset);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
 
     void vcmMarginChanged(double vcmMargin);
 
-    void pickLensZChanged(double pickSensorZ);
-
-    void placeLensZChanged(double placeSensorZ);
 
     void sensorLocationNameChanged(QString sensorLocationName);
 
@@ -236,6 +251,12 @@ signals:
 
     void placeProductZChanged(double placeProductZ);
 
+    void pickSensorZChanged(double pickSensorZ);
+
+    void placeSensorZChanged(double placeSensorZ);
+
+    void zOffsetChanged(double zOffset);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -250,6 +271,7 @@ private:
     int m_finishDelay = 100;
     double m_pickProductZ = 0;
     double m_placeProductZ = 0;
+    double m_zOffset = 0;
 };
 class SensorLoaderState:public PropertyBase
 {

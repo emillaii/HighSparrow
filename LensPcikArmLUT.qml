@@ -166,7 +166,7 @@ ColumnLayout {
         }
     }
     GroupBox{
-        title:"camera位置"
+        title:"download camera位置"
         ColumnLayout{
             RowLayout{
                 Label{
@@ -220,7 +220,7 @@ ColumnLayout {
         }
     }
     GroupBox{
-        title:"picker位置"
+        title:"upload picker位置"
         ColumnLayout{
             RowLayout{
                 Label{

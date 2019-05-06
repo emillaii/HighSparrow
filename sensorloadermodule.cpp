@@ -633,19 +633,19 @@ bool SensorLoaderModule::picker2SearchZ(double z,bool is_open, int time_out)
 bool SensorLoaderModule::pickTraySensor(bool check_softlanding)
 {
     qInfo("pickTraySensor");
-    return picker1SearchZ(parameters.pickLensZ(),true,check_softlanding);
+    return picker1SearchZ(parameters.pickSensorZ(),true,check_softlanding);
 }
 
 bool SensorLoaderModule::placeSensorToSUT(bool check_softlanding)
 {
     qInfo("pickTrplaceSensorToSUTaySensor");
-    return picker1SearchZ(parameters.placeLensZ(),false,check_softlanding);
+    return picker1SearchZ(parameters.placeSensorZ(),false,check_softlanding);
 }
 
 bool SensorLoaderModule::pickSUTSensor(bool check_softlanding)
 {
     qInfo("pickSUTSensor");
-    return picker2SearchZ(parameters.placeLensZ(),true,check_softlanding);
+    return picker2SearchZ(parameters.placeSensorZ(),true,check_softlanding);
 }
 
 bool SensorLoaderModule::pickSUTProduct(bool check_softlanding)
@@ -657,7 +657,7 @@ bool SensorLoaderModule::pickSUTProduct(bool check_softlanding)
 bool SensorLoaderModule::placeSensorToTray(bool check_softlanding)
 {
     qInfo("placeSensorToTray");
-    return picker2SearchZ(parameters.pickLensZ(),false,check_softlanding);
+    return picker2SearchZ(parameters.pickSensorZ(),false,check_softlanding);
 }
 
 bool SensorLoaderModule::placeProductToTray(bool check_softlanding)
@@ -672,9 +672,9 @@ bool SensorLoaderModule::measureHight(bool is_tray)
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         if(is_tray)
-            parameters.setPickLensZ(pick_arm->GetSoftladngPosition());
+            parameters.setPickSensorZ(pick_arm->GetSoftladngPosition());
         else
-            parameters.setPlaceLensZ(pick_arm->GetSoftladngPosition());
+            parameters.setPlaceSensorZ(pick_arm->GetSoftladngPosition());
         return true;
     }
     return false;

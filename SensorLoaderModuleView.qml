@@ -37,6 +37,26 @@ ItemDelegate {
                     }
                 }
             }
+            GroupBox{
+                title:qsTr("sensor 头参数")
+                SensorHeadParameter{}
+            }
+            GroupBox{
+                title:qsTr("sensor 料盘1")
+                MaterialTray1{}
+            }
+            GroupBox{
+                title:qsTr("sensor 料盘2")
+                MaterialTray2{}
+            }
+            GroupBox{
+                title:qsTr("料盘规格")
+                TraySpecs{}
+            }
+            GroupBox{
+                title: qsTr("SUT")
+                SensorPickArmSUT{}
+            }
         }
     }
 }

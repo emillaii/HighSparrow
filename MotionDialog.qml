@@ -44,7 +44,7 @@ Popup {
                     text: qsTr("5")
                     font.pixelSize: 10
                     onCheckedChanged: {
-                        if (step001Button.checked)
+                        if (step5Button.checked)
                         {
                             selectedStepSize = 5
                         }
@@ -55,7 +55,7 @@ Popup {
                     text: qsTr("2")
                     font.pixelSize: 10
                     onCheckedChanged: {
-                        if (step001Button.checked)
+                        if (step2Button.checked)
                         {
                             selectedStepSize = 2
                         }
@@ -77,7 +77,7 @@ Popup {
                     text: qsTr("0.5")
                     font.pixelSize: 10
                     onCheckedChanged: {
-                        if (step001Button.checked)
+                        if (step05Button.checked)
                         {
                             selectedStepSize = 0.5
                         }
@@ -88,7 +88,7 @@ Popup {
                     text: qsTr("0.2")
                     font.pixelSize: 10
                     onCheckedChanged: {
-                        if (step001Button.checked)
+                        if (step02Button.checked)
                         {
                             selectedStepSize = 0.2
                         }
@@ -111,7 +111,7 @@ Popup {
                     text: qsTr("0.05")
                     font.pixelSize: 10
                     onCheckedChanged: {
-                        if (step001Button.checked)
+                        if (step005Button.checked)
                         {
                             selectedStepSize = 0.05
                         }
@@ -122,7 +122,7 @@ Popup {
                     text: qsTr("0.02")
                     font.pixelSize: 10
                     onCheckedChanged: {
-                        if (step001Button.checked)
+                        if (step002Button.checked)
                         {
                             selectedStepSize = 0.02
                         }

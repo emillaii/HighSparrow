@@ -151,6 +151,17 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lut_picker_position",
                                              &highSprrow.baseModuleManager->lens_loader_module.lut_picker_position);
 //*/
+    engine.rootContext()->setContextProperty("sensorPickArmParams",&highSprrow.baseModuleManager->sensor_pickarm.parameters);
+    engine.rootContext()->setContextProperty("sensorLoaderParameter",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.parameters);
+    engine.rootContext()->setContextProperty("sut_pr_position1",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.sut1_pr_position);
+    engine.rootContext()->setContextProperty("sut_pr_position2",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.sut2_pr_position);
+    engine.rootContext()->setContextProperty("pick1_offset",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.picker1_offset);
+    engine.rootContext()->setContextProperty("pick2_offset",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.picker2_offset);
     QStringList data = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames",data);
 

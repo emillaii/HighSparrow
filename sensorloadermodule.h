@@ -51,11 +51,13 @@ private:
     bool moveToWorkPos(bool check_softlanding = false);
     bool moveToWorkPos2(bool check_softlanding = false);
     bool picker1SearchZ(double z,bool is_open = true,int time_out = 5000);
+    bool picker1SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 5000);
     bool picker2SearchZ(double z,bool is_open = true,int time_out = 5000);
+    bool picker2SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 5000);
     bool pickTraySensor(bool check_softlanding = false);
-    bool placeSensorToSUT(bool check_softlanding = false);
-    bool pickSUTSensor(bool check_softlanding = false);
-    bool pickSUTProduct(bool check_softlanding = false);
+    bool placeSensorToSUT(QString dest,bool check_softlanding = false);
+    bool pickSUTSensor(QString dest,bool check_softlanding = false);
+    bool pickSUTProduct(QString dest, bool check_softlanding = false);
     bool placeSensorToTray(bool check_softlanding = false);
     bool placeProductToTray(bool check_softlanding = false);
     bool measureHight(bool is_tray);

@@ -1218,11 +1218,20 @@ void BaseModuleManager::sendLoadLens(bool has_ng)
 void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
 {
     if(has_product)
+    {
         emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::HAS_PRODUCT);
+        qInfo("sendSensrRequestToSut 2");
+    }
     else if(has_ng)
+    {
         emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::HAS_NG_SENSOR);
+        qInfo("sendSensrRequestToSut 1");
+    }
     else
+    {
         emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::NO_MATERIAL);
+        qInfo("sendSensrRequestToSut 0");
+    }
 }
 
 bool BaseModuleManager::initSensor()

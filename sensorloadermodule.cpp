@@ -64,7 +64,7 @@ void SensorLoaderModule::startWork(bool reset_logic, int run_mode)
 
 void SensorLoaderModule::stopWork(bool wait_finish)
 {
-
+    is_run = false;
 }
 
 void SensorLoaderModule::performHandlingOperation(int cmd)
@@ -87,7 +87,7 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
 
 void SensorLoaderModule::receiveRequestMessage(QString message, QString client_ip)
 {
-    qInfo("Lut Module receive command:%s from ip: %s", message.toStdString().c_str(), client_ip.toStdString().c_str());
+    qInfo("Sut Module receive command:%s from ip: %s", message.toStdString().c_str(), client_ip.toStdString().c_str());
     QJsonObject obj = getJsonObjectFromString(message);
     QString cmd = obj["cmd"].toString("");
     obj.insert("client_ip",client_ip);
@@ -317,7 +317,7 @@ void SensorLoaderModule::run(bool has_material)
                     is_run = false;
                     break;
                 }
-                if((!pickSUTProduct())&&has_material)
+                if((!pickSUTProduct(isLocalHost?"::1":"remote"))&&has_material)
                 {
                     sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                     if(waitMessageReturn(is_run))
@@ -366,7 +366,7 @@ void SensorLoaderModule::run(bool has_material)
                         is_run = false;
                         break;
                     }
-                    if((!pickSUTSensor())&&has_material)
+                    if((!pickSUTSensor(isLocalHost?"::1":"remote"))&&has_material)
                     {
                         AppendError("pickSUTSensor fail!");
                         sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
@@ -403,7 +403,7 @@ void SensorLoaderModule::run(bool has_material)
                     is_run = false;
                     break;
                 }
-                if((!placeSensorToSUT())&&has_material)
+                if((!placeSensorToSUT(isLocalHost?"::1":"remote"))&&has_material)
                 {
                     sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                     if(waitMessageReturn(is_run))
@@ -626,27 +626,37 @@ bool SensorLoaderModule::picker1SearchZ(double z,bool is_open, int time_out)
 {
     qInfo("picker1SearchZ");
     bool result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
-    if(is_open)
-        sendCmd("remot","vacuumOnReq");
-    else
-        sendCmd("remot","vacuumOffReq");
-    QThread::msleep(200);
     result &= pick_arm->ZSerchReturn(time_out);
     return result;
 }
 
+bool SensorLoaderModule::picker1SearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
+{
+    qInfo("picker1SearchZ %s",dest.toStdString().c_str());
+    bool result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
+
+    sendCmd(dest,cmd);
+    QThread::msleep(200);
+    result &= pick_arm->ZSerchReturn(time_out);
+    return result;
+}
 bool SensorLoaderModule::picker2SearchZ(double z,bool is_open, int time_out)
 {
     qInfo("picker2SearchZ");
     bool result = pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
-    if(is_open)
-        sendCmd("::1","vacuumOnReq");
-    else
-        sendCmd("::1","vacuumOffReq");
-    QThread::msleep(200);
     result &= pick_arm->ZSerchReturn2(time_out);
     return result;
 
+}
+
+bool SensorLoaderModule::picker2SearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
+{
+    qInfo("picker2SearchZ %s",dest.toStdString().c_str());
+    bool result = pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
+    sendCmd(dest,cmd);
+    QThread::msleep(200);
+    result &= pick_arm->ZSerchReturn2(time_out);
+    return result;
 }
 
 bool SensorLoaderModule::pickTraySensor(bool check_softlanding)
@@ -655,22 +665,22 @@ bool SensorLoaderModule::pickTraySensor(bool check_softlanding)
     return picker1SearchZ(parameters.pickSensorZ(),true,check_softlanding);
 }
 
-bool SensorLoaderModule::placeSensorToSUT(bool check_softlanding)
+bool SensorLoaderModule::placeSensorToSUT(QString dest,bool check_softlanding)
 {
     qInfo("pickTrplaceSensorToSUTaySensor");
-    return picker1SearchZ(parameters.placeSensorZ(),false,check_softlanding);
+    return picker1SearchSutZ(parameters.placeSensorZ(),dest,"vacuumOnReq",false,check_softlanding);
 }
 
-bool SensorLoaderModule::pickSUTSensor(bool check_softlanding)
+bool SensorLoaderModule::pickSUTSensor(QString dest,bool check_softlanding)
 {
     qInfo("pickSUTSensor");
-    return picker2SearchZ(parameters.pickNgSensorZ(),true,check_softlanding);
+    return picker1SearchSutZ(parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,check_softlanding);
 }
 
-bool SensorLoaderModule::pickSUTProduct(bool check_softlanding)
+bool SensorLoaderModule::pickSUTProduct(QString dest,bool check_softlanding)
 {
     qInfo("pickSUTProduct");
-    return picker2SearchZ(parameters.pickProductZ(),true,check_softlanding);
+    return picker1SearchSutZ(parameters.pickProductZ(),dest,"vacuumOffReq",true,check_softlanding);
 }
 
 bool SensorLoaderModule::placeSensorToTray(bool check_softlanding)

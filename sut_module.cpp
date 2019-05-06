@@ -62,6 +62,7 @@ bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check
 
 bool SutModule::moveToLoadPos(bool check_autochthonous)
 {
+    qInfo("moveToLoadPos");
     return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
 }
 
@@ -178,6 +179,7 @@ void SutModule::receiveLoadSensorRequst(int sut_state)
         states.setSutHasProduct(false);
     }
     states.setAllowLoadSensor(true);
+    qInfo("excute LoadSensorRequst");
 }
 
 void SutModule::run(bool has_material)
@@ -242,7 +244,7 @@ void SutModule::run(bool has_material)
 
 void SutModule::startWork(bool reset_logic, int run_mode)
 {
-    qInfo("Lut Module start work in run mode: %d", run_mode);
+    qInfo("sut Module start work in run mode: %d", run_mode);
 //    if(reset_logic)ResetLogic();
     is_run = true;
     if(run_mode == RunMode::Normal)
@@ -254,7 +256,7 @@ void SutModule::startWork(bool reset_logic, int run_mode)
 
 void SutModule::stopWork(bool wait_finish)
 {
-
+  is_run = false;
 }
 
 void SutModule::performHandlingOperation(int cmd)

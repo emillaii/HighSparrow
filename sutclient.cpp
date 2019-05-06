@@ -32,7 +32,7 @@ bool SutClient::sendLensRequest(bool has_product, bool has_ng_sensor)
         QThread::msleep(1000);
     }
     if (timeout == 0) {
-        qInfo("Lut Client send lens request timeout. current state = %d",be_comuniting);
+        qInfo("Sut Client send lens request timeout. current state = %d",be_comuniting);
         return false;
     }
     return true;
@@ -48,7 +48,7 @@ void SutClient::receiveMessage(QString message)
     bool isValid = false;
     if (event == "sensorResp") {
         isValid = true;
-        qInfo("AA Head need to pick lens");
+        qInfo("AA Head need to pick sensor");
         be_comuniting = true;
         if(has_product)
         {
@@ -60,7 +60,13 @@ void SutClient::receiveMessage(QString message)
             qInfo("pickarm take ng sensor");
             obj.insert("cmd", "unloadNgSensorReq");
         }
+        else
+        {
+            qInfo("pickarm place sensor");
+            obj.insert("cmd", "loadSensorReq");
+        }
     } else if (event == "unloadProductResp"||event == "unloadNgSensorResp") {
+        isValid = true;
         qInfo("pickarm place sensor");
         obj.insert("cmd", "loadSensorReq");
     }else if (event == "loadSensorResp") {

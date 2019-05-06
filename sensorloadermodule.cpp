@@ -56,7 +56,7 @@ void SensorLoaderModule::saveJsonConfig()
 
 void SensorLoaderModule::startWork(bool reset_logic, int run_mode)
 {
-    qInfo("SensorLoader start reset:%d run_mode :%d",reset_logic,run_mode);
+    qInfo("SensorLoader start reset:%d run_mode :%d in %d",reset_logic,run_mode,QThread::currentThreadId());
     if(reset_logic)resetLogic();
     if(run_mode == RunMode::Normal)run(true);
     else if(run_mode == RunMode::NoMaterial)run(false);
@@ -91,8 +91,8 @@ void SensorLoaderModule::receiveRequestMessage(QString message, QString client_i
     QJsonObject obj = getJsonObjectFromString(message);
     QString cmd = obj["cmd"].toString("");
     obj.insert("client_ip",client_ip);
-    if (cmd == "lensReq") {
-        qInfo("Enqueue the lens request command in request quene");
+    if (cmd == "sensorReq") {
+        qInfo("Enqueue the sensor request command in request quene");
         requestQueue.enqueue(obj);
     }
     else if (cmd.length() > 0)
@@ -667,7 +667,7 @@ bool SensorLoaderModule::pickTraySensor(bool check_softlanding)
 
 bool SensorLoaderModule::placeSensorToSUT(QString dest,bool check_softlanding)
 {
-    qInfo("pickTrplaceSensorToSUTaySensor");
+    qInfo("placeSensorToSUT");
     return picker1SearchSutZ(parameters.placeSensorZ(),dest,"vacuumOnReq",false,check_softlanding);
 }
 

@@ -157,7 +157,7 @@ bool SutModule::movetoRecordPos(bool check_autochthonous)
 
 void SutModule::receiveLoadSensorRequst(int sut_state)
 {
-    qInfo("receiveLoadSensorRequst %d",sut_state);
+    qInfo("receiveLoadSensorRequst %d in %d",sut_state,QThread::currentThreadId());
     if(states.allowLoadSensor())
         return;
     if(sut_state == SUT_STATE::NO_MATERIAL)
@@ -194,7 +194,7 @@ void SutModule::run(bool has_material)
         }
         if((!states.sutHasSensor()))
         {
-            if(moveToLoadPos())
+            if(!moveToLoadPos())
             {
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run =false;
@@ -244,14 +244,10 @@ void SutModule::run(bool has_material)
 
 void SutModule::startWork(bool reset_logic, int run_mode)
 {
-    qInfo("sut Module start work in run mode: %d", run_mode);
-//    if(reset_logic)ResetLogic();
-    is_run = true;
-    if(run_mode == RunMode::Normal)
-        has_material = true;
-    else if(run_mode == RunMode::NoMaterial)
-        has_material = false;;
-    return;
+    qInfo("sut Module start reset:%d run_mode :%d in %d",reset_logic,run_mode,QThread::currentThreadId());
+    if(run_mode == RunMode::Normal)run(true);
+    else if(run_mode == RunMode::NoMaterial)run(false);
+
 }
 
 void SutModule::stopWork(bool wait_finish)

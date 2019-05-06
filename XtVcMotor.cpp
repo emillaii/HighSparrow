@@ -357,6 +357,8 @@ double XtVcMotor::SearchPosByForceOnyDown(double speed, double force, int timeou
 
 void XtVcMotor::RestoreForce()
 {
+    if(!is_init)
+        return;
     SetCurrentLimit(vcm_id,10,-10);
 }
 
@@ -417,8 +419,11 @@ bool XtVcMotor::resetSoftLanding(int timeout)
     if(is_softlanded)
         ret = DoSoftLandingReturn()&WaitSoftLandingDone(timeout);
     RestoreForce();
-    int code = get_motor_error(vcm_id);
-    qInfo("VCM %d get_motor_error Return %d",vcm_id, code);
+    if(is_init)
+    {
+        int code = get_motor_error(vcm_id);
+        qInfo("VCM %d get_motor_error Return %d",vcm_id, code);
+    }
     return ret;
 
 }

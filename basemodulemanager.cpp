@@ -1220,17 +1220,17 @@ void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
     if(has_product)
     {
         emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::HAS_PRODUCT);
-        qInfo("sendSensrRequestToSut 2");
+        qInfo("sendSensrRequestToSut 2 in %d",QThread::currentThreadId());
     }
     else if(has_ng)
     {
         emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::HAS_NG_SENSOR);
-        qInfo("sendSensrRequestToSut 1");
+        qInfo("sendSensrRequestToSut 1 in %d",QThread::currentThreadId());
     }
     else
     {
         emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::NO_MATERIAL);
-        qInfo("sendSensrRequestToSut 0");
+        qInfo("sendSensrRequestToSut 0 in %d",QThread::currentThreadId());
     }
 }
 

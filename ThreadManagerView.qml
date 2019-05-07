@@ -33,6 +33,7 @@ ItemDelegate {
             }
             GroupBox
             {
+                visible: baseModuleManager.ServerMode
                 title: qsTr("Sensor")
                 RowLayout{
                     Button{
@@ -77,6 +78,7 @@ ItemDelegate {
 
             GroupBox
             {
+                visible: !baseModuleManager.ServerMode
                 title: qsTr("Lens")
                 RowLayout{
                     Button {

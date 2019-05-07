@@ -342,6 +342,10 @@ ErrorCodeStruct AACore::performTest(QString testItemName, QJsonValue properties)
         else if (testItemName.contains(AA_PIECE_REJECT))
         {
             qInfo("Performing Reject");
+            has_ng_lens = true;
+            has_ng_sensor = true;
+            has_sensor = false;
+            has_lens = false;
         }
         else if (testItemName.contains(AA_PIECE_JOIN))
         {
@@ -505,7 +509,10 @@ ErrorCodeStruct AACore::performAAPickLens()
         else
             aa_head->sendSensrRequest(SUT_STATE::NO_MATERIAL);
     }
-    if (!this->lut->sendLensRequest()){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"}; }
+    if(!has_lens)
+        if (this->lut->sendLensRequest(has_ng_lens))
+            has_lens = true;
+        else{ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"}; }
     if(!has_sensor)
     {
         bool is_run = true;

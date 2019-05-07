@@ -8,6 +8,21 @@ ItemDelegate {
     width: parent.width
     contentItem: ColumnLayout {
         spacing: 0
+        ListModel{
+            id:motorsModel
+            ListElement{
+                modelData:"SUT_X"
+            }
+            ListElement{
+                modelData:"SUT_Y"
+            }
+            ListElement{
+                modelData:"SUT_Z"
+            }
+        }
+        MotionPopup{
+            id:lut_model_motions
+        }
         RowLayout {
             ColumnLayout {
                 RowLayout {
@@ -27,6 +42,12 @@ ItemDelegate {
             RowLayout {
                 Label {
                     text: qsTr("")
+                }
+                Button{
+                    text:qsTr("手动操作")
+                    onClicked:{
+                        lut_model_motions.open()
+                    }
                 }
             }
             GroupBox{

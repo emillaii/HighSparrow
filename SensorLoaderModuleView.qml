@@ -9,6 +9,30 @@ ItemDelegate {
 
     contentItem: ColumnLayout{
         spacing: 0
+        ListModel{
+            id:motorsModel
+            ListElement{
+                modelData:"SPA_R2"
+            }
+            ListElement{
+                modelData:"SPA_R1"
+            }
+            ListElement{
+                modelData:"SPA_X"
+            }
+            ListElement{
+                modelData:"SPA_Y"
+            }
+            ListElement{
+                modelData:"SPA_Z2"
+            }
+            ListElement{
+                modelData:"SPA_Z1"
+            }
+        }
+        MotionPopup{
+            id:sensor_loader_module_motionss
+        }
         RowLayout {
             ColumnLayout {
                 RowLayout {
@@ -29,6 +53,12 @@ ItemDelegate {
             RowLayout {
                 Label {
                     text: qsTr("")
+                }
+                Button{
+                    text:qsTr("手动操作")
+                    onClicked:{
+                        sensor_loader_module_motionss.open()
+                    }
                 }
                 Button{
                     text: qsTr("load")

@@ -3,20 +3,19 @@ import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.11
 import QtQuick 2.11
-// 2，5，0.2 0.5 0.02 0.05
 Popup {
     property double selectedStepSize: 0.1
-
-    id: dialog
+    id:dialog
     visible: false
-    contentItem: Rectangle {
-        id: rectangle
+    contentItem: Rectangle{
+        id:rectangle
         color: "black"
         implicitWidth: 500
         implicitHeight: 800
 
-        RowLayout {
+        RowLayout{
             ColumnLayout {
+                Layout.alignment: Qt.AlignTop
                 RadioButton {
                     id: step20Button
                     text: qsTr("20")
@@ -39,7 +38,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step5Button
                     text: qsTr("5")
                     font.pixelSize: 10
@@ -50,7 +49,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step2Button
                     text: qsTr("2")
                     font.pixelSize: 10
@@ -72,7 +71,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step05Button
                     text: qsTr("0.5")
                     font.pixelSize: 10
@@ -83,7 +82,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step02Button
                     text: qsTr("0.2")
                     font.pixelSize: 10
@@ -106,7 +105,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step005Button
                     text: qsTr("0.05")
                     font.pixelSize: 10
@@ -117,7 +116,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step002Button
                     text: qsTr("0.02")
                     font.pixelSize: 10
@@ -140,109 +139,81 @@ Popup {
                     }
                 }
             }
-            ScrollView {
-                Timer {
-                    id:timer
-                    interval: 600; running: true; repeat: true
-                }
+            ScrollView{
 
                 implicitWidth:  400
                 implicitHeight: 600
                 clip: true
-                ColumnLayout {
-                    RowLayout {
-                        Text {
-                            text: " AA_A_Inter "
-                            color: "white"
+                ColumnLayout{
+                    Timer{
+                            id:timer
+                            interval: 600;
+                            running: true;
+                            repeat: true;
                         }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                highSprrow.aa_A_Inter(-selectedStepSize);
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                highSprrow.aa_A_Inter(selectedStepSize);
-                            }
-                        }
-                    }
-                    RowLayout {
-                        id:inter_layout_b
-                        Text {
-                            text: " AA_B_Inter "
-                            color: "white"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                highSprrow.aa_B_Inter(-selectedStepSize);
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                highSprrow.aa_B_Inter(selectedStepSize);
-                            }
-                        }
-                    }
-
                     ListView{
-                        //anchors.top:inter_layout_b.bottom
-                        id:list
-                        //anchors.top:  inter_layout_b.bottom
-                        height: 50*count
-                        model: motorsNames
-                        delegate: RowLayout{
-                            Rectangle{
-                                width: 65
-                                Text{
-                                   anchors.verticalCenter: parent.verticalCenter
-                                   text:modelData
-                                   wrapMode: width
-                                   color:"white"
+                            id:list
+                            height: 50*count
+                            model: motorsModel
+                            delegate: RowLayout{
+                                Rectangle{
+                                    width: 65
+                                    Text{
+                                       anchors.verticalCenter: parent.verticalCenter
+                                       text:modelData
+                                       wrapMode: width
+                                       color:"white"
+                                    }
                                 }
-                            }
-                            RoundButton {
-                                onClicked: {
-                                    baseModuleManager.motorSeekOrigin(modelData)
+                                RoundButton {
+                                    onClicked: {
+                                        baseModuleManager.motorSeekOrigin(modelData)
+                                    }
+                                    transformOrigin: Item.Center
+                                    display: Button.IconOnly
+                                    icon.source: "icons/home.png"
+                                    icon.color: "cyan"
                                 }
-                                transformOrigin: Item.Center
-                                display: Button.IconOnly
-                                icon.source: "icons/home.png"
-                                icon.color: "cyan"
-                            }
-                            RoundButton{
-                                text:"-"
-                                onClicked: {
-                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
-                                   console.log("result: "+res)
+                                RoundButton{
+                                    text:"-"
+                                    onClicked: {
+                                       var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
+                                       //console.log("result: "+res)
+                                    }
                                 }
-                            }
-                            RoundButton{
-                                text:"+"
-                                onClicked: {
-                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
-                                   console.log(motorsNames.length)
-                                   console.log("result: "+res)
+                                RoundButton{
+                                    text:"+"
+                                    onClicked: {
+                                       var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
+                                       //console.log(motorsNames.length)
+                                       //console.log("result: "+res)
+                                    }
                                 }
-                            }
-                            Label{
-                                id:lbl
-                                color:"lightskyblue"
-                                Connections{
-                                   target: timer
-                                   onTriggered:{
-                                       if(lbl.visible)
-                                        lbl.text = baseModuleManager.getMotorFeedbackPos(modelData)
-                                   }
+                                Label{
+                                    id:lbl
+                                    color:"lightskyblue"
+                                    Connections{
+                                       target: timer
+                                       onTriggered:{
+                                           if(lbl.visible)
+                                            lbl.text = baseModuleManager.getMotorFeedbackPos(modelData)
+                                       }
+                                    }
                                 }
                             }
                         }
-                    }
                 }
-            }
+
+                }
         }
-     }
+    }
 }
+
+
+
+
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

@@ -76,20 +76,16 @@ Page {
         }
     }
 
-    Button {
-        id: test
-        text: qsTr("test")
-        //                onClicked: {
-
-        //                }
-    }
-
     ScrollView {
         id: scrollView
-        x: 0
-        y: 339
-        width: 900
-        height: 272
+        anchors.left: parent.left
+        anchors.leftMargin: 18
+        anchors.top: parent.top
+        anchors.topMargin: 373
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
 
         ListView {
             id: listView

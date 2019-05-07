@@ -2,6 +2,7 @@
 #include "basemodulemanager.h"
 #include "xtvcmotorparameter.h"
 
+#include <QMessageBox>
 #include <qcoreapplication.h>
 #include <qdir.h>
 #include <qfileinfo.h>
@@ -63,7 +64,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     }
     material_tray.standards_parameters.setTrayCount(2);
     unitlog.setServerAddress(DataServerURL());
-
+    connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -83,6 +84,16 @@ BaseModuleManager::~BaseModuleManager()
     //    for (int i = 0; i < calibrations.size(); ++i)
     //        delete  calibrations[calibrations.keys()[i]];
     //    delete chart_calibration;
+}
+
+bool BaseModuleManager::sendMessageTest(QString title, QString content)
+{
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,"title","content",QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::Yes){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 bool BaseModuleManager::loadParameters()
@@ -651,6 +662,7 @@ bool BaseModuleManager::InitStruct()
                                   GetVisionLocationByName(sensor_loader_module.parameters.sutLocationName()),
                                   GetVisionLocationByName(sensor_loader_module.parameters.sutSensorLocationName()),
                                   GetVisionLocationByName(sensor_loader_module.parameters.sutProductLocationName()));
+        //connect(&sensor_loader_module,&SensorLoaderModule::sendMsgSignal,this,&BaseModuleManager::sendMessageTest);
     }
     else
     {
@@ -1100,6 +1112,9 @@ bool BaseModuleManager::performCalibration(QString calibration_name)
 
 bool BaseModuleManager::performLocation(QString location_name)
 {
+//    if(!emit sendMsgSignal("title","content")){
+//        return true;
+//    }
     VisionLocation* temp_location = GetVisionLocationByName(location_name);
     if(temp_location == nullptr)
     {
@@ -1127,7 +1142,12 @@ bool BaseModuleManager::performLocation(QString location_name)
         if(!temp_location->performPR(offset))return false;
     }
     if(temp_location->parameters.canMotion())
+    {
+        if(!emit sendMsgSignal(tr("无标题"),tr("x: %1,y:%2,theta:%3,是否移动").arg(offset.X).arg(offset.Y).arg(offset.Theta))){
+            return true;
+        }
         temp_caliration->performPRResult(offset);
+    }
     return true;
 }
 
@@ -1264,4 +1284,3 @@ void BaseModuleManager::loadSensorLoaderParameter()
     material_tray.loadJsonConfig();
     sensor_loader_module.loadJsonConfig();
 }
-

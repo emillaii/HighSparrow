@@ -1,48 +1,9 @@
 ﻿#include "sensorloadermodule.h"
 #include "commonutils.h"
-enum HandlePosition
-{
-    SENSOR_TRAY1 = 1,
-    SENSOR_TRAY2 = 2,
-    SUT_POS1 = 3,
-    SUT_POS2 = 4,
-    SENSOR_TRAY1_START_POS = 5,
-    SENSOR_TRAY2_START_POS = 6,
-    SENSOR_TRAY1_END_POS = 7,
-};
-enum HandlePR
-{
-    RESET_PR = 10,
-    SENSOR_PR = 20,
-    VACANCY_PR = 30,
-    SUT_PR = 40,
-    NG_SENSOR_PR = 50,
-    PRODUCT_PR = 60
-};
-enum HandleToWorkPos
-{
-    TO_PICK1 = 100,
-    TO_PICK2 = 200
-};
-enum handlePickerAction
-{
-    PICK_SENSOR_FROM_TRAY = 1000,
-    PLACE_SENSOR_TO_SUT1 = 2000,
-    PLACE_SENSOR_TO_SUT2 = 3000,
-    PICK_NG_SENSOR_FROM_SUT1 = 4000,
-    PICK_NG_SENSOR_FROM_SUT2 = 5000,
-    PLACE_NG_SENSOR_TO_TRAY = 6000,
-    PICK_PRODUCT_FROM_SUT1 = 7000,
-    PICK_PRODUCT_FROM_SUT2 = 8000,
-    PLACE_PRODUCT_TO_TRAY = 9000,
-    MEASURE_SENSOR_IN_TRAY = 10000,
-    MEASURE_NG_SENSOR_IN_TRAY = 11000,
-    MEASURE_PRODUCT_IN_TRAY = 12000,
-    MEASURE_SENSOR_IN_SUT1 = 13000,
-    MEASURE_NG_SENSOR_IN_SUT1 = 140000,
-    MEASURE_PRODUCT_IN_SUT1 = 15000,
-    MEASURE_Z_OFFSET = 16000
-};
+//#include "logicmanager.h"
+#include "basemodulemanager.h"
+#include <QMessageBox>
+
 SensorLoaderModule::SensorLoaderModule():ThreadWorkerBase ("SensorLoader")
 {
 
@@ -108,6 +69,9 @@ void SensorLoaderModule::stopWork(bool wait_finish)
 void SensorLoaderModule::performHandlingOperation(int cmd)
 {
     qInfo("performHandling %d",cmd);
+    if(!emit sendMsgSignal("title","content")){
+        return;
+    }
     bool result;
     int temp_value = 10;
     if(cmd%temp_value == HandlePosition::SUT_POS1)
@@ -702,6 +666,9 @@ bool SensorLoaderModule::moveToNextTrayPos(int tray_index)
 bool SensorLoaderModule::moveToSUTPRPos(bool is_local,bool check_softlanding)
 {
     qInfo("moveToSUTPRPos %d",is_local);
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     if(is_local)
         return  pick_arm->move_XY_Synic(sut2_pr_position.ToPointF(),check_softlanding);
     else
@@ -893,18 +860,27 @@ bool SensorLoaderModule::measureZOffset()
 bool SensorLoaderModule::moveToTrayPos(int index, int tray_index)
 {
     qInfo("moveToTrayPos");
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     return pick_arm->move_XY_Synic(tray->getPositionByIndex(index,tray_index));
 }
 
 bool SensorLoaderModule::moveToTrayPos(int tray_index)
 {
     qInfo("moveToTrayPos%d",tray_index);
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     return  pick_arm->move_XY_Synic(tray->getCurrentPosition(tray_index),true);
 }
 
 bool SensorLoaderModule::moveToStartPos(int tray_index)
 {
     qInfo("moveToStartPos%d",tray_index);
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     return pick_arm->move_XY_Synic(tray->getStartPosition(tray_index),true);
 }
 

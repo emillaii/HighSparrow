@@ -29,6 +29,7 @@ void setShowAlarmDialog(bool ShowAlarmDialog)
     m_ShowAlarmDialog = ShowAlarmDialog;
     emit paramsChanged(m_ShowAlarmDialog);
 }
+bool sendMessageTest(QString title,QString content);
 
 private:
     void showAlarm(const int sender_id,const int level, const QString error_message);

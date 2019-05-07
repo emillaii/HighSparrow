@@ -106,6 +106,8 @@ public:
 
     Q_INVOKABLE void trayLoaderModuleLTKX1MoveToRelayPos();
 
+
+
     int currentMode() const
     {
         return m_currentMode;
@@ -131,6 +133,7 @@ public slots:
 
 signals:
     void stateMessageChanged(QString stateMessage);
+    bool sendMsgSignal(QString,QString);
 
 private:
     BaseModuleManager * baseModuleManage;

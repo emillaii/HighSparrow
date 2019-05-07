@@ -104,8 +104,9 @@ signals:
 
     void paramsChanged();
 
+    bool sendMsgSignal(QString,QString);
 public slots:
-
+    bool sendMessageTest(QString title,QString content);
     void setLightPanelLighting(int lightPanelLighting)
     {
         if (m_lightPanelLighting == lightPanelLighting)

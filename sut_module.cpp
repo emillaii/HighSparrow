@@ -1,4 +1,4 @@
-#include "sut_module.h"
+﻿#include "sut_module.h"
 
 SutModule::SutModule()
 {
@@ -63,11 +63,17 @@ bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check
 bool SutModule::moveToLoadPos(bool check_autochthonous)
 {
     qInfo("moveToLoadPos");
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
 }
 
 bool SutModule::moveToDownlookPos(bool check_autochthonous)
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     return carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),downlook_position.Z(),check_autochthonous);
 }
 
@@ -116,16 +122,24 @@ bool SutModule::toolDownlookPR(bool close_lighting, bool motion)
 
 bool SutModule::moveToToolDownlookPos(bool check_autochthonous)
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_downlook_position.X(),tool_downlook_position.Y(),tool_downlook_position.Z(),check_autochthonous);
 }
 
 bool SutModule::moveToToolUplookPos(bool check_autochthonous)
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？")))
+        return true;
      return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_uplook_positon.X(),tool_uplook_positon.Y(),tool_uplook_positon.Z(),check_autochthonous);
 }
 
 bool SutModule::moveToMushroomPos(bool check_autochthonous)
 {
+    if(!emit sendMsgSignal(tr("标题"),tr("是否移动"))){
+        return true;
+    }
     return carrier->Move_SZ_SX_Y_X_Z_Sync(mushroom_positon.X(),mushroom_positon.Y(),mushroom_positon.Z(),check_autochthonous);
 }
 

@@ -1,6 +1,7 @@
 #include "logicmanager.h"
 #include <QtConcurrent/QtConcurrent>
 #include <QFuture>
+#include <QMessageBox>
 
 enum CommandType{
     IDLE,
@@ -432,3 +433,4 @@ void LogicManager::trayLoaderModuleLTKX1MoveToRelayPos()
 {
     baseModuleManage->tray_loader_module.moveToLtkx1RelayPos();
 }
+

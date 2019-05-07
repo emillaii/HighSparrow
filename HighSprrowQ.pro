@@ -198,7 +198,8 @@ HEADERS += \
     sensorpickarmparameter.h \
     sensorloadermodule.h \
     sensorloaderparameter.h \
-    sutclient.h
+    sutclient.h \
+    sendmessagetool.h
 
 DISTFILES += \
     icons/index.theme

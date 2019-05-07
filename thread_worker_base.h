@@ -46,6 +46,7 @@ signals:
     void sendErrorMessage(int alarm_id,int error_level,QString error_message);
     void sendHandlingOperation(int cmd);
     void NameChanged(QString Name);
+    bool sendMsgSignal(QString,QString);
 
 public slots:
     virtual void startWork(bool reset_logic = false,int run_mode = 0) = 0;

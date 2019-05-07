@@ -1,5 +1,7 @@
 #include "workers_manager.h"
 
+#include <QMessageBox>
+
 WorkersManager::WorkersManager(QObject *parent):QObject (parent)
 {
 
@@ -15,6 +17,7 @@ bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
         connect(worker,&ThreadWorkerBase::sendHandlingOperation,worker,&ThreadWorkerBase::performHandlingOperation);
         connect(worker,&ThreadWorkerBase::sendErrorMessage,this,&WorkersManager::receiveAlarm);
         connect(this,&WorkersManager::feedbackOperation,worker,&ThreadWorkerBase::receiveOperation,Qt::DirectConnection);
+        connect(worker,&ThreadWorkerBase::sendMsgSignal,this,&WorkersManager::sendMessageTest);
         worker->setAlarmId(workers.count());
         qInfo("registerWorker :%s",worker->Name().toStdString().c_str());
         return true;
@@ -31,6 +34,16 @@ void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message
     //三色灯
     qInfo("..Check Point.......");
     showAlarm(sender_id,level,error_message);
+}
+
+bool WorkersManager::sendMessageTest(QString title, QString content)
+{
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,title,content,QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::Yes){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 void WorkersManager::showAlarm(const int sender_id, const int level, const QString error_message)

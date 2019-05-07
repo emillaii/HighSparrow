@@ -140,6 +140,7 @@ ApplicationWindow {
                 icon.color: "deepskyblue"
                 onClicked: {
                     qmessageDialog.open()
+                    //logicManager.sendMessageTest()
                 }
             }
             ToolButton {

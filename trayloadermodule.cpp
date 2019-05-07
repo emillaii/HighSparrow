@@ -96,6 +96,9 @@ bool TrayLoaderModule::moveToNextTrayPos()
 
 bool TrayLoaderModule::ejectTray()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否弹出？"))){
+        return true;
+    }
     int res = cylinder_clip->Set(true,true);
     Sleep(2000);
     //cylinder_clip->Set(true);
@@ -107,12 +110,18 @@ bool TrayLoaderModule::ejectTray()
 
 bool TrayLoaderModule::motorInPress()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否压下？"))){
+        return true;
+    }
     int res = cylinder_ltk1->Set(true);
     return res;
 }
 
 bool TrayLoaderModule::moveToLtkx1GetPos()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     motor_in->MoveToPos(parameters.ltkx1PressPos());
     bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1PressPos());
     return result;
@@ -127,6 +136,9 @@ bool TrayLoaderModule::moveToLtkx1RelayPos()
 
 bool TrayLoaderModule::moveToLtkx1SetPos()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     motor_in->MoveToPos(parameters.ltkx1ReleasePos());
     bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
     return result;
@@ -134,6 +146,9 @@ bool TrayLoaderModule::moveToLtkx1SetPos()
 
 bool TrayLoaderModule::motorInRelease()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否松开？"))){
+        return true;
+    }
     cylinder_ltk1->Set(false);
     return 1;
 /*
@@ -148,6 +163,9 @@ bool TrayLoaderModule::motorInRelease()
 
 bool TrayLoaderModule::moveToLtlGetPos()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     motor_work->MoveToPos(parameters.ltlPressPos());
     bool result = motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
     return result;
@@ -155,6 +173,9 @@ bool TrayLoaderModule::moveToLtlGetPos()
 
 bool TrayLoaderModule::motorWorkPress()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否压下？"))){
+        return true;
+    }
     int res = cylinder_tray->Value();
     if(res){
         res = cylinder_tray->Set(false);
@@ -165,6 +186,9 @@ bool TrayLoaderModule::motorWorkPress()
 
 bool TrayLoaderModule::moveToLtlSetPos()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     motor_work->MoveToPos(parameters.ltlReleasePos());
     bool result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos(),10000);
     return result;
@@ -172,12 +196,18 @@ bool TrayLoaderModule::moveToLtlSetPos()
 
 bool TrayLoaderModule::motorWorkRelease()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否松开？"))){
+        return true;
+    }
     int res = cylinder_tray->Set(1);
     return true;
 }
 
 bool TrayLoaderModule::moveToLtkx2GetPos()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     motor_out->MoveToPos(parameters.ltkx2PressPos());
     bool result = motor_out->WaitArrivedTargetPos(parameters.ltkx2PressPos());
     return result;
@@ -185,12 +215,18 @@ bool TrayLoaderModule::moveToLtkx2GetPos()
 
 bool TrayLoaderModule::motorOutPress()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否压下？"))){
+        return true;
+    }
     int res = cylinder_ltk2->Set(true);
     return res;
 }
 
 bool TrayLoaderModule::moveToLtkx2SetPos()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     motor_out->MoveToPos(parameters.ltkx2ReleasePos());
     bool result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
     return result;
@@ -198,6 +234,9 @@ bool TrayLoaderModule::moveToLtkx2SetPos()
 
 bool TrayLoaderModule::motorOutRelease()
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否松开？"))){
+        return true;
+    }
     int res = cylinder_ltk2->Value();
     if(res){
         res = cylinder_ltk2->Set(false);
@@ -227,6 +266,9 @@ bool TrayLoaderModule::moveToNextEmptyPos()
 
 bool TrayLoaderModule::LTIEMovetoColumnIndex(int col)
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     if(col<tray_clip->standards_parameters.columnCount()){
         double pos = tray_clip->standards_parameters.firstTrayPos() + col*tray_clip->standards_parameters.columnDelta();
         motor_clip_in->MoveToPos(pos);
@@ -239,6 +281,9 @@ bool TrayLoaderModule::LTIEMovetoColumnIndex(int col)
 
 bool TrayLoaderModule::LTOEMovetoColumnIndex(int col)
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     if(col<tray_clip_out->standards_parameters.columnCount()){
         double pos = tray_clip_out->standards_parameters.firstTrayPos() + col*tray_clip_out->standards_parameters.columnDelta();
         motor_clip_out->MoveToPos(pos);

@@ -1,4 +1,4 @@
-#include "lut_module.h"
+﻿#include "lut_module.h"
 #include "commonutils.h"
 
 LutModule::LutModule(QString name, QObject *parent):ThreadWorkerBase (name)
@@ -302,6 +302,9 @@ bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting,bool che
 
 bool LutModule::moveToLoadPos(bool check_autochthonous)
 {
+    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
+        return true;
+    }
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
 }
 

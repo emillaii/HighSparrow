@@ -21,7 +21,7 @@ private:
     LutClientState state;
     SparrowClient * socketClient;
     AAHeadModule * aaHead;
-    bool has_ng_lens;
+    bool has_ng_lens = false;
 signals:
     void sendMessageToServer(QString message);
     void triggerAAGripper(bool isOn);

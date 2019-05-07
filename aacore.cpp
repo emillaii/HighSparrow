@@ -502,22 +502,35 @@ ErrorCodeStruct AACore::performAAPickLens()
     if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
     if(!has_sensor)
     {
+        qInfo("need sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
         if(has_product)
             aa_head->sendSensrRequest(SUT_STATE::HAS_PRODUCT);
-        else if(has_ng_lens)
+        else if(has_ng_sensor)
             aa_head->sendSensrRequest(SUT_STATE::HAS_NG_SENSOR);
         else
             aa_head->sendSensrRequest(SUT_STATE::NO_MATERIAL);
     }
     if(!has_lens)
+    {
+        qInfo("need lens has_ng_lens %d",has_ng_lens);
         if (this->lut->sendLensRequest(has_ng_lens))
+        {
+            qInfo("wait lens suceess");
             has_lens = true;
-        else{ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"}; }
+        }
+        else{
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"};
+        }
+    }
     if(!has_sensor)
     {
+        qInfo("wait sensor has_product %d has_ng_lens %d",has_product,has_ng_sensor);
         bool is_run = true;
         if(aa_head->waitForLoadSensor(is_run))
+        {
+            qInfo("wait sensor suceess");
             has_sensor = true;
+        }
         else
             { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"}; }
     }

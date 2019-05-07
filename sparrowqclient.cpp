@@ -60,5 +60,6 @@ int SparrowClient::commandQueueSize()
 
 void SparrowClient::sendMessage(QString message)
 {
+    qInfo("SparrowClient::sendMessage: %s",message.toStdString().c_str());
     m_webSocket.sendTextMessage(message);
 }

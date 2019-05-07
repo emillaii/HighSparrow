@@ -71,11 +71,13 @@ void LutClient::receiveMessage(QString message)
 
 bool LutClient::sendLensRequest(bool has_ng_lens)
 {
+    qInfo("sendLensRequest has_ng_lens %d",has_ng_lens);
     this->has_ng_lens = has_ng_lens;
     QJsonObject obj;
     obj.insert("cmd", "lensReq");
     QString jsonString = getStringFromJsonObject(obj);
     this->state = LutClientState::WAITING_LENS_PICK_EVENT;
+    qInfo("ready to sendMessageToServer");
     emit sendMessageToServer(jsonString);
     int timeout = 60;
     while (timeout>0 && this->state != LutClientState::LUT_CLIENT_IDLE)

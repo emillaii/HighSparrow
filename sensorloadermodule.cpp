@@ -666,9 +666,6 @@ bool SensorLoaderModule::moveToNextTrayPos(int tray_index)
 bool SensorLoaderModule::moveToSUTPRPos(bool is_local,bool check_softlanding)
 {
     qInfo("moveToSUTPRPos %d",is_local);
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     if(is_local)
         return  pick_arm->move_XY_Synic(sut2_pr_position.ToPointF(),check_softlanding);
     else
@@ -860,27 +857,18 @@ bool SensorLoaderModule::measureZOffset()
 bool SensorLoaderModule::moveToTrayPos(int index, int tray_index)
 {
     qInfo("moveToTrayPos");
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return pick_arm->move_XY_Synic(tray->getPositionByIndex(index,tray_index));
 }
 
 bool SensorLoaderModule::moveToTrayPos(int tray_index)
 {
     qInfo("moveToTrayPos%d",tray_index);
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return  pick_arm->move_XY_Synic(tray->getCurrentPosition(tray_index),true);
 }
 
 bool SensorLoaderModule::moveToStartPos(int tray_index)
 {
     qInfo("moveToStartPos%d",tray_index);
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return pick_arm->move_XY_Synic(tray->getStartPosition(tray_index),true);
 }
 

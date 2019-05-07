@@ -314,18 +314,12 @@ bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 {
     qInfo("moveToLUTPRPos1");
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return  pick_arm->move_XY_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),check_softlanding);
 }
 
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
     qInfo("moveToLUTPRPos2");
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return  pick_arm->move_XY_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),check_softlanding);
 }
 
@@ -426,54 +420,36 @@ bool LensLoaderModule::measureHight(bool is_tray)
 bool LensLoaderModule::moveToTrayPos(int index, int tray_index)
 {
     qInfo("moveToTrayPos");
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return pick_arm->move_XtXY_Synic(tray->getPositionByIndex(index,tray_index),parameters.visonPositionX());
 }
 
 bool LensLoaderModule::moveToTrayPos(int tray_index)
 {
     qInfo("moveToTrayPos %d",tray_index);
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),false);
 }
 
 bool LensLoaderModule::moveToStartPos(int tray_index)
 {
     qInfo("moveToStartPos%d",tray_index);
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return pick_arm->move_XtXY_Synic(tray->getStartPosition(tray_index),parameters.visonPositionX(),true);
 }
 
 bool LensLoaderModule::moveToTray1EndPos()
 {
     qInfo("moveToTray1EndPos");
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return pick_arm->move_XtXY_Synic(tray->getEndPosition(),parameters.visonPositionX(),true);
 }
 
 bool LensLoaderModule::moveToUpdownlookDownPos()
 {
     qInfo("moveToUpdownlookDownPos");
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return pick_arm->move_XY_Synic(lut_camera_position.X(),lut_camera_position.Y(),true);
 }
 
 bool LensLoaderModule::moveToUpdownlookUpPos()
 {
     qInfo("moveToUpdownlookUpPos");
-    if(!emit sendMsgSignal(tr("提示"),tr("是否移动？"))){
-        return true;
-    }
     return pick_arm->move_XY_Synic(lut_picker_position.X(),lut_picker_position.Y(),true);
 }
 

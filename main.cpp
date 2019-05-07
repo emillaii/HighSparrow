@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);
-    engine.rootContext()->setContextProperty("aaCoreParams", &highSprrow.logicManager->aaCore->parameters);
+    engine.rootContext()->setContextProperty("aaCoreParams", &highSprrow.baseModuleManager->aaCoreNew.parameters);
 
     engine.rootContext()->setContextProperty("sutParams", &highSprrow.baseModuleManager->sut_module.parameters);
     engine.rootContext()->setContextProperty("sutCarrierParams",  &highSprrow.baseModuleManager->sut_carrier.parameters);
@@ -202,8 +202,6 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("pickarmCameraImage"), highSprrow.baseModuleManager->pylonPickarmCamera);
     engine.addImageProvider(QLatin1String("preview1"), highSprrow.baseModuleManager->visionModule);
     engine.addImageProvider(QLatin1String("imageGrabberLiveImage"), highSprrow.baseModuleManager->imageGrabberThread->m_pImgProvider);
-    //engine.addImageProvider(QLatin1String("ocImage1"), highSprrow.logicManager->aaCore->ocImageProvider_1);
-    //engine.addImageProvider(QLatin1String("sfrImage"), highSprrow.logicManager->aaCore->sfrImageProvider);
     engine.addImageProvider(QLatin1String("ocImage1"), highSprrow.baseModuleManager->aaCoreNew.ocImageProvider_1);
     engine.addImageProvider(QLatin1String("sfrImage"), highSprrow.baseModuleManager->aaCoreNew.sfrImageProvider);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

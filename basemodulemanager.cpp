@@ -186,6 +186,7 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
         result &= manager->registerWorker(&sensor_loader_module);
     }
     result &= manager->registerWorker(&sut_module);
+    result &= manager->registerWorker(&aaCoreNew);
     return result;
 }
 

@@ -31,9 +31,9 @@ enum CommandType{
 LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     : QThread (parent), m_currentMode(CommandType::IDLE)
 {
-    aaCore = new AACore(&device_manager->aa_head_module,device_manager->lutClient,&device_manager->sut_module,
-                        device_manager->dothinkey, device_manager->chart_calibration,&device_manager->dispense_module,
-                        device_manager->imageGrabberThread);
+//    aaCore = new AACore(&device_manager->aa_head_module,device_manager->lutClient,&device_manager->sut_module,
+//                        device_manager->dothinkey, device_manager->chart_calibration,&device_manager->dispense_module,
+//                        device_manager->imageGrabberThread);
     baseModuleManage = device_manager;
 }
 

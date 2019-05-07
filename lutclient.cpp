@@ -69,7 +69,7 @@ void LutClient::receiveMessage(QString message)
     }
 }
 
-bool LutClient::sendLensRequest(bool has_ng_lens)
+bool LutClient::sendLensRequest(bool has_ng_lens,bool is_wait)
 {
     qInfo("sendLensRequest has_ng_lens %d",has_ng_lens);
     this->has_ng_lens = has_ng_lens;
@@ -79,6 +79,7 @@ bool LutClient::sendLensRequest(bool has_ng_lens)
     this->state = LutClientState::WAITING_LENS_PICK_EVENT;
     qInfo("ready to sendMessageToServer");
     emit sendMessageToServer(jsonString);
+    if(!is_wait)return true;
     int timeout = 60;
     while (timeout>0 && this->state != LutClientState::LUT_CLIENT_IDLE)
     {

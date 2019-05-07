@@ -91,13 +91,15 @@ ItemDelegate {
                     Button {
                         text: "放"
                         onClicked: {
-                            baseModuleManager.sendLoadLens(false)
+                            lutClient.sendLensRequest(false,false)
+//                            baseModuleManager.sendLoadLens(false)
                         }
                     }
                     Button {
                         text: "放 取ng"
                         onClicked: {
-                            baseModuleManager.sendLoadLens(true)
+                            lutClient.sendLensRequest(true,false)
+//                            baseModuleManager.sendLoadLens(true)
                         }
                     }
                     Button {

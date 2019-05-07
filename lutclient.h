@@ -16,7 +16,7 @@ class LutClient : public QObject
     Q_OBJECT
 public:
     explicit LutClient(AAHeadModule *aaHead, QString address, QObject *parent = nullptr);
-    bool sendLensRequest(bool has_ng_lens = false);
+   Q_INVOKABLE bool sendLensRequest(bool has_ng_lens = false,bool is_wait = true);
 private:
     LutClientState state;
     SparrowClient * socketClient;

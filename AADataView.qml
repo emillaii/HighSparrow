@@ -21,7 +21,7 @@ Grid {
             cache: false
             Connections {
                 target: aaCore
-                onCallQmlRefeshImg: {
+                onDisplayOCImageInUI: {
                     image1.source = ""
                     image1.source = "image://ocImage1"
                 }
@@ -165,7 +165,7 @@ Grid {
             cache: false
             Connections {
                 target: aaCore
-                onCallQmlRefeshSfrImg: {
+                onDisplaySfrImageInUI: {
                     image4.source = ""
                     image4.source = "image://sfrImage"
                 }

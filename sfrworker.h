@@ -8,7 +8,7 @@
 #include <opencv2/core/core.hpp>
 #include <sfr_entry.h>
 
-class AACore;
+class AACoreNew;
 
 class SfrWorker : public QObject
 {
@@ -25,7 +25,7 @@ class SfrWorkerController: public QObject
 {
     Q_OBJECT
 public:
-    SfrWorkerController(AACore *aaCore);
+    SfrWorkerController(AACoreNew *aaCore);
     ~SfrWorkerController();
 
 signals:
@@ -33,7 +33,7 @@ signals:
     void test();
 private:
     QThread workerThread;
-    AACore * aaCore_;
+    AACoreNew * aaCore_;
 };
 
 #endif // SFRWORKER_H

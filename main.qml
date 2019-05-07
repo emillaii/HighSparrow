@@ -48,9 +48,9 @@ ApplicationWindow {
             var command = "document.getElementById('flowchart_data').value ='" + result + "'";
             flowChartPage.webView.runJavaScript(command, function(result) {
                 console.log("Load flowchart success")
-                command = "document.getElementsByClassName('set_data')[0].click()";
-                flowChartPage.webView.runJavaScript(command);
-                logicManager.loadFlowchart(result)
+                command = "document.getElementsByClassName('set_data')[0].click()"
+                flowChartPage.webView.runJavaScript(command)
+                baseModuleManager.loadFlowchart(result)
             })
         }
     }

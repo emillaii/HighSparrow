@@ -56,6 +56,11 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
     connect(&aa_head_module,&AAHeadModule::sendSensrRequestToSut,&sut_module,&SutModule::receiveLoadSensorRequst,Qt::DirectConnection);
 
+    connect(&aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &BaseModuleManager::receiveImageFromAACore);
+
+    connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
+    connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
+
     if(!QDir(".//notopencamera").exists())
     {
         if(pylonUplookCamera) pylonUplookCamera->start();
@@ -707,6 +712,9 @@ bool BaseModuleManager::InitStruct()
                             GetInputIoByName(tray_loader_module.parameters.clipinInputName()),
                             GetInputIoByName(tray_loader_module.parameters.clipoutInputName()));
 
+    sfrWorkerController = new SfrWorkerController(&aaCoreNew);
+    aaCoreNew.setSfrWorkerController(sfrWorkerController);
+    aaCoreNew.Init(&aa_head_module, lutClient, &sut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog);
     //todo
     material_tray.resetTrayState(0);
     material_tray.resetTrayState(1);
@@ -976,6 +984,12 @@ void BaseModuleManager::updateParams()
     PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
     SaveParameters();
     //    loadParameters();
+}
+
+void BaseModuleManager::loadFlowchart(QString json)
+{
+    qInfo("Load flowchart: %s", json.toStdString().c_str());
+    aaCoreNew.setFlowchartDocument(json);
 }
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)

@@ -51,11 +51,12 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("baseModuleManager", highSprrow.baseModuleManager);
     engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);
-    engine.rootContext()->setContextProperty("aaCore", highSprrow.logicManager->aaCore);
-    engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.logicManager->aaCore->aaData_1);
-    engine.rootContext()->setContextProperty("dataFromCpp2", &highSprrow.logicManager->aaCore->aaData_2);
-    engine.rootContext()->setContextProperty("dataFromCpp3", &highSprrow.logicManager->aaCore->mtf_log);
-
+    engine.rootContext()->setContextProperty("aaCore", highSprrow.baseModuleManager);
+    //engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.logicManager->aaCore->aaData_1);
+    //engine.rootContext()->setContextProperty("dataFromCpp2", &highSprrow.logicManager->aaCore->aaData_2);
+    //engine.rootContext()->setContextProperty("dataFromCpp3", &highSprrow.logicManager->aaCore->mtf_log);
+    engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.baseModuleManager->aaCoreNew.aaData_1);
+    engine.rootContext()->setContextProperty("dataFromCpp2", &highSprrow.baseModuleManager->aaCoreNew.aaData_2);
     //Module
     engine.rootContext()->setContextProperty("sutModule", &highSprrow.baseModuleManager->sut_module);
     engine.rootContext()->setContextProperty("lutModule", &highSprrow.baseModuleManager->lut_module);
@@ -112,17 +113,6 @@ int main(int argc, char *argv[])
     //qDebug()<<highSprrow.baseModuleManager->tray_loader_module.parameters.ltlPressPos();
     engine.rootContext()->setContextProperty("tray_loader_module_parameters",&highSprrow.baseModuleManager->tray_loader_module.parameters);
     engine.rootContext()->setContextProperty("tray_loader_module",&highSprrow.baseModuleManager->tray_loader_module);
-    //PR Params
-//    engine.rootContext()->setContextProperty("prSUTDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->parameters);
-//    engine.rootContext()->setContextProperty("prAA1LUTUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_LUT_UPLOOK]->parameters);
-//    engine.rootContext()->setContextProperty("prAA1MushroomParams",  &highSprrow.baseModuleManager->vision_locations[PR_AA1_MUSHROOMHEAD]->parameters);
-//    engine.rootContext()->setContextProperty("prAA1ToolDownlookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_TOOL_DOWNLOOK]->parameters);
-//    engine.rootContext()->setContextProperty("prAA1ToolUplookParams", &highSprrow.baseModuleManager->vision_locations[PR_AA1_TOOL_UPLOOK]->parameters);
-
-//    engine.rootContext()->setContextProperty("prLENSLpaLook",&highSprrow.baseModuleManager->vision_locations[PR_LENS_LPALOOK]->parameters);
-//    engine.rootContext()->setContextProperty("prVACANCYLpaLook",&highSprrow.baseModuleManager->vision_locations[PR_VACANCY_LPALOOK]->parameters);
-//    engine.rootContext()->setContextProperty("prLENSLutLook",&highSprrow.baseModuleManager->vision_locations[PR_LENS_LUTLOOK]->parameters);
-
 
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);
@@ -212,10 +202,10 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("pickarmCameraImage"), highSprrow.baseModuleManager->pylonPickarmCamera);
     engine.addImageProvider(QLatin1String("preview1"), highSprrow.baseModuleManager->visionModule);
     engine.addImageProvider(QLatin1String("imageGrabberLiveImage"), highSprrow.baseModuleManager->imageGrabberThread->m_pImgProvider);
-    engine.addImageProvider(QLatin1String("ocImage1"), highSprrow.logicManager->aaCore->ocImageProvider_1);
-    engine.addImageProvider(QLatin1String("sfrImage"), highSprrow.logicManager->aaCore->sfrImageProvider);
-
-
+    //engine.addImageProvider(QLatin1String("ocImage1"), highSprrow.logicManager->aaCore->ocImageProvider_1);
+    //engine.addImageProvider(QLatin1String("sfrImage"), highSprrow.logicManager->aaCore->sfrImageProvider);
+    engine.addImageProvider(QLatin1String("ocImage1"), highSprrow.baseModuleManager->aaCoreNew.ocImageProvider_1);
+    engine.addImageProvider(QLatin1String("sfrImage"), highSprrow.baseModuleManager->aaCoreNew.sfrImageProvider);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

@@ -34,14 +34,7 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     aaCore = new AACore(&device_manager->aa_head_module,device_manager->lutClient,&device_manager->sut_module,
                         device_manager->dothinkey, device_manager->chart_calibration,&device_manager->dispense_module,
                         device_manager->imageGrabberThread);
-    sfrWorkerController = new SfrWorkerController(aaCore);
-    aaCore->setSfrWorkerController(sfrWorkerController);
     baseModuleManage = device_manager;
-    //Connections
-    connect(aaCore, &AACore::pushDataToUnit, &device_manager->unitlog, &Unitlog::pushDataToUnit);
-    connect(aaCore, &AACore::postDataToELK, &device_manager->unitlog, &Unitlog::postDataToELK);
-    connect(aaCore, &AACore::postDataToELK, &device_manager->unitlog, &Unitlog::saveToCSV);
-    connect(aaCore, &AACore::postSfrDataToELK, &device_manager->unitlog, &Unitlog::postSfrDataToELK);
 }
 
 void LogicManager::updateParams()
@@ -56,8 +49,8 @@ void LogicManager::run() {
         baseModuleManage->stopSeeking();
     }
     else if (m_currentMode == CommandType::MODE_AUTO_RUN) {
-        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_AUTO_MODE, uuid);
-        aaCore->wait();
+//        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_AUTO_MODE, uuid);
+//        aaCore->wait();
     }
     else if (m_currentMode == CommandType::PERFORM_LOOP_TEST) {
         aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE, uuid);

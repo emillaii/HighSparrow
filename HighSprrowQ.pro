@@ -73,7 +73,8 @@ SOURCES += \
     lutclient.cpp \
     sensorpickarm.cpp \
     sensorloadermodule.cpp \
-    sutclient.cpp
+    sutclient.cpp \
+    aacorenew.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -199,6 +200,7 @@ HEADERS += \
     sensorloadermodule.h \
     sensorloaderparameter.h \
     sutclient.h \
+    aacorenew.h \
     sendmessagetool.h
 
 DISTFILES += \

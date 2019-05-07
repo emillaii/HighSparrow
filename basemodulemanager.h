@@ -32,6 +32,7 @@
 #include "trayloadermodule.h"
 #include "unitlog.h"
 #include "sensorloadermodule.h"
+#include "aacorenew.h"
 class BaseModuleManager : public PropertyBase
 {
     Q_OBJECT
@@ -80,6 +81,9 @@ public:
     Dispenser dispenser;
     LensLoaderModule lens_loader_module;
     SensorLoaderModule sensor_loader_module;
+    SfrWorkerController * sfrWorkerController;
+    AACoreNew aaCoreNew;
+    SensorLoaderModule sensor_loader_module1;
     TrayLoaderModule tray_loader_module;
 
     TrayClip trayClipIn;
@@ -98,6 +102,8 @@ public:
     }
 
 signals:
+    void displaySfrImageInUI();
+    void displayOCImageInUI();
     void lightingValueChanged(int downlookLighting);
 
     void lightPanelValueChanged(int lightPanelLighting);
@@ -106,6 +112,11 @@ signals:
 
     bool sendMsgSignal(QString,QString);
 public slots:
+    void receiveImageFromAACore(int type) {
+        qInfo("Display SFR image in UI: %d", type);
+        if (type == 0) emit displaySfrImageInUI();
+        else if (type == 1) emit displayOCImageInUI();
+    };
     bool sendMessageTest(QString title,QString content);
     void setLightPanelLighting(int lightPanelLighting)
     {
@@ -228,6 +239,7 @@ public:
     Q_INVOKABLE QString getMotorsName(int);
 
     Q_INVOKABLE void updateParams();
+    Q_INVOKABLE void loadFlowchart(QString);
 
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);

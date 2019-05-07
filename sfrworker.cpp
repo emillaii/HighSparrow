@@ -2,7 +2,7 @@
 #include <visionavadaptor.h>
 //#include "sparrow.h"
 //#include "imagegrabbingworkerthread.h"
-#include <aacore.h>
+#include "aacorenew.h"
 #include <QElapsedTimer>
 #include <QImage>
 #include "imagegrabbingworkerthread.h"
@@ -221,7 +221,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     lrMat.release();
 }
 
-SfrWorkerController::SfrWorkerController(AACore *a)
+SfrWorkerController::SfrWorkerController(AACoreNew *a)
 {
    std::vector<Sfr_entry> sfr_v;
    aaCore_ = a;
@@ -229,9 +229,9 @@ SfrWorkerController::SfrWorkerController(AACore *a)
    worker->moveToThread(&workerThread);
    connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
    connect(this, &SfrWorkerController::calculate, worker, &SfrWorker::doWork);
-   connect(worker, &SfrWorker::imageReady, aaCore_, &AACore::sfrImageReady);
-   connect(worker, &SfrWorker::sfrResultsReady, aaCore_, &AACore::sfrResultsReady);
-   connect(worker, &SfrWorker::sfrResultsDetectFinished, aaCore_, &AACore::sfrResultsDetectFinished);
+   connect(worker, &SfrWorker::imageReady, aaCore_, &AACoreNew::sfrImageReady, Qt::DirectConnection);
+   connect(worker, &SfrWorker::sfrResultsReady, aaCore_, &AACoreNew::sfrResultsReady, Qt::DirectConnection);
+   connect(worker, &SfrWorker::sfrResultsDetectFinished, aaCore_, &AACoreNew::sfrResultsDetectFinished, Qt::DirectConnection);
    workerThread.start();
 }
 

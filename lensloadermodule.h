@@ -49,7 +49,7 @@ class LensLoaderModule:public ThreadWorkerBase
     Q_OBJECT
 public:
     LensLoaderModule(QString name = "LensPickArmModule");
-    void Init(LensPickArm *pick_arm,MaterialTray *tray,MaterialCarrier *lut_carrier,
+    void Init(LensPickArm *pick_arm,MaterialTray *tray,MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision,
               VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision);
     void resetLogic();
@@ -109,6 +109,8 @@ private:
     LensPickArm *pick_arm = Q_NULLPTR;
     MaterialTray *tray = Q_NULLPTR;
     MaterialCarrier *lut_carrier = Q_NULLPTR;
+    XtVacuum* load_vacuum = Q_NULLPTR;
+    XtVacuum* unload_vacuum = Q_NULLPTR;
     VisionLocation * lens_vision = Q_NULLPTR;
     VisionLocation * vacancy_vision = Q_NULLPTR;
     VisionLocation * lut_vision = Q_NULLPTR;

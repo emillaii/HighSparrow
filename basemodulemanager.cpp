@@ -672,6 +672,8 @@ bool BaseModuleManager::InitStruct()
                            GetMotorByName(lens_pick_arm.parameters.motorYName()),
                            &lens_picker);
         lens_loader_module.Init(&lens_pick_arm,&material_tray,&lut_carrier,
+                                GetVacuumByName(lut_module.parameters.vacuum1Name()),
+                                GetVacuumByName(lut_module.parameters.vacuum2Name()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lensLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.vacancyLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lutLocationName()),

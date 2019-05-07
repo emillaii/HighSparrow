@@ -5,7 +5,7 @@ LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 
 }
 
-void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision)
+void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision)
 {
     parts.clear();
     this->pick_arm = pick_arm;
@@ -14,6 +14,10 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     parts.append(this->tray);
     this->lut_carrier = lut_carrier;
     parts.append(this->lut_carrier);
+    this->load_vacuum = load_vacuum;
+    parts.append(this->load_vacuum);
+    this->unload_vacuum = unload_vacuum;
+    parts.append(this->unload_vacuum);
     this->lens_vision = lens_vision;
     parts.append(this->lens_vision);
     this->vacancy_vision = vacancy_vision;

@@ -44,11 +44,12 @@ public:
     void SetAAPosion(mPoint6D point);
     void MotoAAPosition();
     mPoint6D GetFeedBack();
-
+    void sendSensrRequest(int sut_state);
+    bool waitForLoadSensor(bool &is_run,int time_out = 60000);
 signals:
     void sendSensrRequestToSut(int sut_state);
 public slots:
-    void receiveSensorFromSut(double offset_x,double offset_y,double offset_z);
+    void receiveSensorFromSut(double offset_x,double offset_y,double offset_theta);
 private:
     bool moveToDiffrentZSync(double z);
     bool moveToSync(double x, double y, double z, double a, double b, double c);
@@ -61,6 +62,10 @@ public:
     double uplook_x;
     double uplook_y;
     double uplook_theta;
+    bool waiting_sensor;
+    double offset_x;
+    double offset_y;
+    double offset_theta;
 private:
     XtMotor* motor_x = Q_NULLPTR;
     XtMotor* motor_y = Q_NULLPTR;

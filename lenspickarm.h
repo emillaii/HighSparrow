@@ -23,13 +23,13 @@ public:
     double GetSoftladngPosition(bool get_current = false);
     bool pickarmVaccum(bool isOn);
 private:
+    double softlanding_position = 0;
+public:
+    LensPickArmParameter parameters;
     XtMotor *motor_x_tray = Q_NULLPTR;
     XtMotor *motor_x = Q_NULLPTR;
     XtMotor *motor_y = Q_NULLPTR;
     MaterialPicker * picker = Q_NULLPTR;
-    double softlanding_position = 0;
-public:
-    LensPickArmParameter parameters;
     // ErrorBase interface
 public:
     QString GetCurrentError();

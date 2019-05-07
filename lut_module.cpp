@@ -134,14 +134,13 @@ void LutModule::run(bool has_material)
                 if(action_result)
                 {
                     sendEvent("lutLeaveResp");
-                    this->moveToLoadPos();
                     state = NO_LENS;
                 }
             }
         }
         else  if (state == NO_LENS)
         {
-            if(states.waitLens())
+            if(states.waitLens()&&is_run)
             {
                 qInfo("LUT Module is waiting lens");
                 QMutexLocker temp_locker(&loader_mutext);
@@ -154,6 +153,13 @@ void LutModule::run(bool has_material)
             }
             else
             {
+                if(!moveToLoadPos(true))
+                {
+                    AppendError("move to load pos fail");
+                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                    is_run = false;
+                    break;
+                }
                 qInfo("LUT Module is not waiting lens");
                 QMutexLocker temp_locker(&loader_mutext);
                 states.setLutHasLens(false);

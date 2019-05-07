@@ -98,6 +98,11 @@ private:
     double cmosPixelToMM_X = 0,cmosPixelToMM_Y = 0;
     int currentChartDisplayChannel = 0;
     int currentOCDisplayChannel = 0;
+    bool has_product = false;
+    bool has_ng_lens = false;
+    bool has_ng_sensor = false;
+    bool has_sensor = false;
+    bool has_lens = false;
     void sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
                              double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak, double &dev);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,

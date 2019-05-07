@@ -179,9 +179,37 @@ mPoint6D AAHeadModule::GetFeedBack()
     return mPoint6D(motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos(),motor_a->GetFeedbackPos(),motor_b->GetFeedbackPos(),motor_c->GetFeedbackPos());
 }
 
-void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double offset_z)
+void AAHeadModule::sendSensrRequest(int sut_state)
 {
-    qInfo("receiveSensorFromSut %f %f %f",offset_x,offset_y,offset_z);
+    waiting_sensor = true;
+    offset_x = 0;
+    offset_y = 0;
+    offset_theta = 0;
+    emit sendSensrRequestToSut(sut_state);
+}
+
+bool AAHeadModule::waitForLoadSensor(bool &is_run,int time_out)
+{
+    while (time_out > 0) {
+        if(!is_run)
+            return false;
+        if(waiting_sensor)
+        {
+            return stepMove_XYC_Sync(offset_x,offset_y,offset_theta);
+        }
+        QThread::msleep(100);
+        time_out-=100;
+    }
+    return false;
+}
+
+void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double offset_theta)
+{
+    qInfo("receiveSensorFromSut %f %f %f",offset_x,offset_y,offset_theta);
+    this->offset_x = offset_x;
+    this->offset_y = offset_y;
+    this->offset_theta = offset_theta;
+    waiting_sensor = false;
 }
 
 bool AAHeadModule::moveToDiffrentZSync(double z)

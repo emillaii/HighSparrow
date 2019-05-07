@@ -496,7 +496,24 @@ ErrorCodeStruct AACore::performAAPickLens()
 {
     if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
     if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
+    if(!has_sensor)
+    {
+        if(has_product)
+            aa_head->sendSensrRequest(SUT_STATE::HAS_PRODUCT);
+        else if(has_ng_lens)
+            aa_head->sendSensrRequest(SUT_STATE::HAS_NG_SENSOR);
+        else
+            aa_head->sendSensrRequest(SUT_STATE::NO_MATERIAL);
+    }
     if (!this->lut->sendLensRequest()){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"}; }
+    if(!has_sensor)
+    {
+        bool is_run = true;
+        if(aa_head->waitForLoadSensor(is_run))
+            has_sensor = true;
+        else
+            { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"}; }
+    }
     qInfo("Done Pick Lens");
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }

@@ -23,7 +23,7 @@ SparrowClient::SparrowClient(const QUrl &url, bool debug, QObject *parent) :
 void SparrowClient::onConnected()
 {
     if (m_debug)
-        qDebug() << "WebSocket connected";
+        qDebug() << "WebSocket connected" << m_url;
     connect(&m_webSocket, &QWebSocket::textMessageReceived,
             this, &SparrowClient::onTextMessageReceived);
 }
@@ -31,7 +31,7 @@ void SparrowClient::onConnected()
 
 void SparrowClient::onClosed()
 {
-    qInfo("sparrow client disconnect..Going to retry the connection");
+    qInfo("sparrow client disconnect..Going to retry the connection :%s", m_url.url().toStdString().c_str());
     QThread::msleep(1000);
     m_webSocket.open(QUrl(m_url));
 }

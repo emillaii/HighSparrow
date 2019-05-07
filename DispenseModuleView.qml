@@ -8,6 +8,7 @@ import QtQuick.Dialogs 1.2
 ItemDelegate {
     width: parent.width
     contentItem: ColumnLayout {
+
         RowLayout {
             ColumnLayout {
                 RowLayout {

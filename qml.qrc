@@ -75,6 +75,7 @@
         <file>SensorLoaderModuleView.qml</file>
         <file>SensorHeadParameter.qml</file>
         <file>SensorPickArmSUT.qml</file>
+        <file>MotionPopup.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

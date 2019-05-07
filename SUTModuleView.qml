@@ -8,6 +8,22 @@ import QtQuick.Dialogs 1.2
 ItemDelegate {
     width: parent.width
     contentItem: ColumnLayout {
+        ListModel{
+            id:motorsModel
+            ListElement{
+                modelData:"LUT_X"
+            }
+            ListElement{
+                modelData:"LUT_Y"
+            }
+            ListElement{
+                modelData:"LUT_Z"
+            }
+        }
+        MotionPopup{
+            id:sut_model_motions
+        }
+
         RowLayout {
             ColumnLayout {
                 RowLayout {
@@ -27,6 +43,12 @@ ItemDelegate {
             RowLayout {
                 Label {
                     text: qsTr("")
+                }
+                Button{
+                    text:qsTr("手动操作")
+                    onClicked:{
+                        sut_model_motions.open()
+                    }
                 }
             }
             GroupBox{

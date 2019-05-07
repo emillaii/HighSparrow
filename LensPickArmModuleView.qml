@@ -9,6 +9,27 @@ ItemDelegate {
 
     contentItem: ColumnLayout{
         spacing: 0
+        ListModel{
+            id:motorsModel
+            ListElement{
+                modelData:"LTL_X"
+            }
+            ListElement{
+                modelData:"LPA_X"
+            }
+            ListElement{
+                modelData:"LPA_Y"
+            }
+            ListElement{
+                modelData:"LPA_Z"
+            }
+            ListElement{
+                modelData:"LPA_R"
+            }
+        }
+        MotionPopup{
+            id:lens_pickup_module_motions
+        }
         RowLayout {
             ColumnLayout {
                 RowLayout {
@@ -29,6 +50,12 @@ ItemDelegate {
             RowLayout {
                 Label {
                     text: qsTr("")
+                }
+                Button{
+                    text:qsTr("手动操作")
+                    onClicked:{
+                        lens_pickup_module_motions.open()
+                    }
                 }
             }
 

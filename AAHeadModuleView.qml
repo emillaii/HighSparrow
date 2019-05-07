@@ -8,6 +8,30 @@ ItemDelegate {
     width: parent.width
     contentItem: ColumnLayout {
         spacing: 0
+        ListModel{
+            id:motorsModel
+            ListElement{
+                modelData:"AA_X"
+            }
+            ListElement{
+                modelData:"AA_Y"
+            }
+            ListElement{
+                modelData:"AA_Z"
+            }
+            ListElement{
+                modelData:"AA_A"
+            }
+            ListElement{
+                modelData:"AA_B"
+            }
+            ListElement{
+                modelData:"AA_C"
+            }
+        }
+        MotionPopup{
+            id:aa_head_motions
+        }
         RowLayout {
             ColumnLayout {
                 RowLayout {
@@ -27,6 +51,12 @@ ItemDelegate {
             RowLayout {
                 Label {
                     text: qsTr("")
+                }
+                Button{
+                    text:qsTr("手动操作")
+                    onClicked:{
+                        aa_head_motions.open()
+                    }
                 }
             }
             GroupBox{

@@ -9,6 +9,27 @@ ItemDelegate {
     visible: true
     contentItem: ColumnLayout{
         spacing: 0
+        ListModel{
+            id:motorsModel
+            ListElement{
+                modelData:"LTIE"
+            }
+            ListElement{
+                modelData:"LTK_X1"
+            }
+            ListElement{
+                modelData:"LTK_X2"
+            }
+            ListElement{
+                modelData:"LTL_X"
+            }
+            ListElement{
+                modelData:"LTOE"
+            }
+        }
+        MotionPopup{
+            id:tray_loader_module_motions
+        }
         RowLayout {
             ColumnLayout {
                 RowLayout {
@@ -29,6 +50,12 @@ ItemDelegate {
             RowLayout {
                 Label {
                     text: qsTr("")
+                }
+                Button{
+                    text:qsTr("手动操作")
+                    onClicked:{
+                        tray_loader_module_motions.open()
+                    }
                 }
             }
             GroupBox{

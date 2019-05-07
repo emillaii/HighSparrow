@@ -403,6 +403,7 @@ bool LensLoaderModule::measureHight(bool is_tray)
     qInfo("measureHight speed: %f force: %f", parameters.vcmWorkSpeed(), parameters.vcmWorkForce());
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
+        QThread::msleep(100);
         if(is_tray)
             parameters.setPickLensZ(pick_arm->GetSoftladngPosition());
         else

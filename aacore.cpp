@@ -31,7 +31,7 @@ AACore::AACore(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey* dk
     loadParams();
     connect(this, &AACore::sfrResultsReady, this, &AACore::storeSfrResults);
     connect(this, &AACore::sfrResultsDetectFinished, this, &AACore::stopZScan);
-    connect(lut, &LutClient::triggerAAGripper, this, &AACore::triggerGripperOn);
+//    connect(lut, &LutClient::triggerAAGripper, this, &AACore::triggerGripperOn);
 }
 
 AACore::~AACore()

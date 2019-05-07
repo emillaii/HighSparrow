@@ -22,7 +22,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                //logicManager.lensPickArmLUTMeasureHeight()
+                sensorLoaderModule.performHandling(13000)
             }
         }
     }
@@ -46,7 +46,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                //logicManager.lensPickArmLUTMeasureHeight()
+                sensorLoaderModule.performHandling(15000)
             }
         }
     }
@@ -70,7 +70,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                //logicManager.lensPickArmLUTMeasureHeight()
+                sensorLoaderModule.performHandling(140000)
             }
         }
     }
@@ -111,7 +111,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        //logicManager.lensPickArmMoveToLutPos1()
+                        sensorLoaderModule.performHandling(3)
                     }
                 }
                 Button{
@@ -136,7 +136,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        //logicManager.lensPickArmMoveToPlaceLensToLut()
+                        sensorLoaderModule.performHandling(2110)
                     }
                 }
                 Button{
@@ -144,7 +144,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-
+                        sensorLoaderModule.performHandling(263)
                     }
                 }
 
@@ -153,7 +153,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-
+                        sensorLoaderModule.performHandling(7263)
                     }
                 }
                 Button{
@@ -161,7 +161,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-
+                        sensorLoaderModule.performHandling(253)
                     }
                 }
                 Button{
@@ -169,7 +169,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-
+                        sensorLoaderModule.performHandling(4253)
                     }
                 }
 
@@ -213,7 +213,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        //logicManager.lensPickArmMoveToLutPos2()
+                        sensorLoaderModule.performHandling(4)
                     }
                 }
                 Button{
@@ -236,7 +236,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        //logicManager.lensPickArmMoveToPickLensFromLut()
+                        sensorLoaderModule.performHandling(2114)
                     }
                 }
                 Button{
@@ -244,7 +244,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-
+                        sensorLoaderModule.performHandling(264)
                     }
                 }
 
@@ -254,7 +254,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-
+                        sensorLoaderModule.performHandling(7264)
                     }
                 }
                 Button{
@@ -262,7 +262,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-
+                        sensorLoaderModule.performHandling(254)
                     }
                 }
                 Button{
@@ -270,7 +270,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-
+                        sensorLoaderModule.performHandling(4254)
                     }
                 }
             }

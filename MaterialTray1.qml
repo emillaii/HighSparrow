@@ -40,7 +40,11 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
+                        if (baseModuleManager.ServerMode == 0){
                         logicManager.lensPickArmMoveToTray1StartPos()
+                        }else{
+                            sensorLoaderModule.performHandling(5)
+                        }
                     }
                 }
                 Button{
@@ -103,8 +107,11 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
-                        logicManager.lensPickArmMoveToTray1EndPos()
+                        if (baseModuleManager.ServerMode == 0){
+                            logicManager.lensPickArmMoveToTray1EndPos()
+                        }else{
+                            sensorLoaderModule.performHandling(7)
+                        }
                     }
                 }
                 Button{
@@ -163,7 +170,12 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                        logicManager.lensPickArmMoveToTray1Pos()
+
+                        if (baseModuleManager.ServerMode == 0){
+                            logicManager.lensPickArmMoveToTray1Pos()
+                        }else{
+                            sensorLoaderModule.performHandling(1)
+                        }
                     }
                 }
             }
@@ -189,7 +201,12 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmLensMeasureHeight()
+
+                        if (baseModuleManager.ServerMode == 0){
+                            logicManager.lensPickArmLensMeasureHeight()
+                        }else{
+                            sensorLoaderModule.performHandling(10000)
+                        }
                     }
                 }
 
@@ -198,7 +215,11 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmLensPR()
+                        if (baseModuleManager.ServerMode == 0){
+                            logicManager.lensPickArmLensPR()
+                        }else{
+                            sensorLoaderModule.performHandling(120)
+                        }
                     }
                 }
 
@@ -207,7 +228,12 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmMoveToPickLensFromTray1()
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                        if (baseModuleManager.ServerMode == 0){
+                            logicManager.lensPickArmMoveToPickLensFromTray1()
+                        }else{
+                            sensorLoaderModule.performHandling(1121)
+                        }
                     }
                 }
             }
@@ -227,6 +253,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
                         logicManager.lensPickArmMoveToPlaceLensToTray1()
                     }
                 }

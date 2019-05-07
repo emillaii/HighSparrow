@@ -39,7 +39,11 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmMoveToTray2StartPos()
+                        if (baseModuleManager.ServerMode == 0){
+                            logicManager.lensPickArmMoveToTray2StartPos()
+                        }else{
+                            sensorLoaderModule.performHandling(6)
+                        }
                     }
                 }
                 Button{
@@ -97,7 +101,12 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                        logicManager.lensPickArmMoveToTray2Pos()
+
+                        if (baseModuleManager.ServerMode == 0){
+                            logicManager.lensPickArmMoveToTray2Pos()
+                        }else{
+                            sensorLoaderModule.performHandling(2)
+                        }
                     }
                 }
             }
@@ -120,7 +129,7 @@ ColumnLayout {
                 Button{
                     text:qsTr("测高")
                     onClicked: {
-
+                        sensorLoaderModule.performHandling(12000)
                     }
                 }
             }
@@ -143,7 +152,7 @@ ColumnLayout {
                 Button{
                     text:qsTr("测高")
                     onClicked: {
-
+                        sensorLoaderModule.performHandling(11000)
                     }
                 }
             }
@@ -172,7 +181,13 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmVacancyTrayPR()
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+
+                        if (baseModuleManager.ServerMode == 0){
+                            logicManager.lensPickArmVacancyTrayPR()
+                        }else{
+                            sensorLoaderModule.performHandling(232)
+                        }
                     }
                 }
 
@@ -181,7 +196,13 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmMoveToPlaceLensToTray2()
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+
+                        if (baseModuleManager.ServerMode == 0){
+                            logicManager.lensPickArmMoveToPlaceLensToTray2()
+                        }else{
+                            sensorLoaderModule.performHandling(9232)
+                        }
                     }
                 }
                 Button{
@@ -190,7 +211,8 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        sensorLoaderModule.performHandling(6232)
                     }
                 }
             }

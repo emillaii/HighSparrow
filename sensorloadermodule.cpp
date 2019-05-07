@@ -1,6 +1,48 @@
 ﻿#include "sensorloadermodule.h"
 #include "commonutils.h"
-
+enum HandlePosition
+{
+    SENSOR_TRAY1 = 1,
+    SENSOR_TRAY2 = 2,
+    SUT_POS1 = 3,
+    SUT_POS2 = 4,
+    SENSOR_TRAY1_START_POS = 5,
+    SENSOR_TRAY2_START_POS = 6,
+    SENSOR_TRAY1_END_POS = 7,
+};
+enum HandlePR
+{
+    RESET_PR = 10,
+    SENSOR_PR = 20,
+    VACANCY_PR = 30,
+    SUT_PR = 40,
+    NG_SENSOR_PR = 50,
+    PRODUCT_PR = 60
+};
+enum HandleToWorkPos
+{
+    TO_PICK1 = 100,
+    TO_PICK2 = 200
+};
+enum handlePickerAction
+{
+    PICK_SENSOR_FROM_TRAY = 1000,
+    PLACE_SENSOR_TO_SUT1 = 2000,
+    PLACE_SENSOR_TO_SUT2 = 3000,
+    PICK_NG_SENSOR_FROM_SUT1 = 4000,
+    PICK_NG_SENSOR_FROM_SUT2 = 5000,
+    PLACE_NG_SENSOR_TO_TRAY = 6000,
+    PICK_PRODUCT_FROM_SUT1 = 7000,
+    PICK_PRODUCT_FROM_SUT2 = 8000,
+    PLACE_PRODUCT_TO_TRAY = 9000,
+    MEASURE_SENSOR_IN_TRAY = 10000,
+    MEASURE_NG_SENSOR_IN_TRAY = 11000,
+    MEASURE_PRODUCT_IN_TRAY = 12000,
+    MEASURE_SENSOR_IN_SUT1 = 13000,
+    MEASURE_NG_SENSOR_IN_SUT1 = 140000,
+    MEASURE_PRODUCT_IN_SUT1 = 15000,
+    MEASURE_Z_OFFSET = 16000
+};
 SensorLoaderModule::SensorLoaderModule():ThreadWorkerBase ("SensorLoader")
 {
 
@@ -25,10 +67,6 @@ void SensorLoaderModule::Init(SensorPickArm *pick_arm, MaterialTray *sensor_tray
     parts.append(this->sut_sensor_vision);
     this->sut_product_vision = sut_product_vision;
     parts.append(this->sut_product_vision);
-    this->spa_updownlook_up_vision = spa_updownlook_up_vision;
-    parts.append(this->spa_updownlook_up_vision);
-    this->spa_updownlook_down_vision = spa_updownlook_down_vision;
-    parts.append(this->spa_updownlook_down_vision);
 }
 
 bool SensorLoaderModule::loadJsonConfig()
@@ -71,18 +109,104 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
 {
     qInfo("performHandling %d",cmd);
     bool result;
-    if(cmd%10 == HandlePosition::SENSOR_TRAY1)
+    int temp_value = 10;
+    if(cmd%temp_value == HandlePosition::SUT_POS1)
+        result = moveToSUTPRPos(false,true);
+    else if(cmd%temp_value == HandlePosition::SUT_POS2)
+        result = moveToSUTPRPos(true,true);
+    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1)
         result = moveToTrayPos(0);
-    else if(cmd%10 == HandlePosition::SENSOR_TRAY2)
+    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2)
         result = moveToTrayPos(1);
+    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_START_POS)
+        result = moveToStartPos(0);
+    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2_START_POS)
+        result = moveToStartPos(1);
+    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_END_POS)
+        result = moveToTray1EndPos();
     else
         result =true;
-    if(!result){
+    cmd =cmd/temp_value*temp_value;
+    if(!result)
+    {
+        //        finished_type = FinishedType::Alarm;
+        return;
+    }
+    temp_value = 100;
+    if(cmd%temp_value == HandlePR::RESET_PR)
+        pr_offset.ReSet();
+    else if(cmd%temp_value == HandlePR::SENSOR_PR)
+        result = performSensorPR();
+    else if(cmd%temp_value == HandlePR::VACANCY_PR)
+        result = performVacancyPR();
+    else if(cmd%temp_value == HandlePR::SUT_PR)
+        result = performSUTPR();
+    else if(cmd%temp_value == HandlePR::NG_SENSOR_PR)
+        result = performSUTSensorPR();
+    else if(cmd%temp_value == HandlePR::PRODUCT_PR)
+        result = performSUTProductPR();
+    else
+        result = true;
+    if(!result)
+    {
+        //        finished_type = FinishedType::Alarm;
+        return;
+    }
+    cmd =cmd/temp_value*temp_value;
+    temp_value = 1000;
+    if(cmd%temp_value == HandleToWorkPos::TO_PICK1)
+        result = moveToWorkPos();
+    else if(cmd%temp_value == HandleToWorkPos::TO_PICK2)
+        result = moveToWorkPos2();
+    if(!result)
+    {
+        //        finished_type = FinishedType::Alarm;
         qInfo("Move To Work Pos fail");
         return;
     }
-
+    cmd =cmd/temp_value*temp_value;
+    temp_value = 100000;
+    qInfo("cmd : %d", cmd);
+    if(cmd%temp_value == handlePickerAction::PICK_SENSOR_FROM_TRAY)
+        result = pickTraySensor();
+    else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT1)
+        result = placeSensorToSUT("remote",true);
+    else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT2)
+        result = placeSensorToSUT("::1",true);
+    else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT1)
+        result = pickSUTSensor("remote",true);
+    else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT2)
+        result = pickSUTSensor("::1",true);
+    else if(cmd%temp_value == handlePickerAction::PLACE_NG_SENSOR_TO_TRAY)
+        result = placeSensorToTray(true);
+    else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT1)
+        result = pickSUTProduct("remote",true);
+    else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT2)
+        result = pickSUTProduct("::1",true);
+    else if(cmd%temp_value == handlePickerAction::PLACE_PRODUCT_TO_TRAY)
+        result = placeProductToTray(true);
+    else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_TRAY)
+        result = picker1MeasureHight(true);
+    else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_SUT1)
+        result = picker1MeasureHight(false);
+    else if(cmd%temp_value == handlePickerAction::MEASURE_NG_SENSOR_IN_SUT1)
+        result = picker2MeasureHight(false,false);
+    else if(cmd%temp_value == handlePickerAction::MEASURE_NG_SENSOR_IN_TRAY)
+        result = picker2MeasureHight(true,false);
+    else if(cmd%temp_value == handlePickerAction::MEASURE_PRODUCT_IN_SUT1)
+        result = picker2MeasureHight(false,true);
+    else if(cmd%temp_value == handlePickerAction::MEASURE_PRODUCT_IN_TRAY)
+        result = picker2MeasureHight(true,true);
+    else if(cmd%temp_value == handlePickerAction::MEASURE_Z_OFFSET)
+        result = measureZOffset();
+    else
+        result = true;
+    if(!result)
+    {
+        //        finished_type = FinishedType::Alarm;
     return;
+}
+    //    finished_type = FinishedType::Success;
 }
 
 void SensorLoaderModule::receiveRequestMessage(QString message, QString client_ip)
@@ -248,7 +372,7 @@ void SensorLoaderModule::run(bool has_material)
             if(!is_run)break;
         }
         //等待位置
-        if(!moveToSUTPRPos())
+        if(!moveToSUTPRPos(states.beExchangeMaterial()?isLocalHost:(!isLocalHost)))
         {
             sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
             is_run = false;
@@ -597,6 +721,12 @@ bool SensorLoaderModule::performVacancyPR()
 
 }
 
+bool SensorLoaderModule::performSUTPR()
+{
+    qInfo("performSUTPR");
+    return  sut_vision->performPR(pr_offset);
+}
+
 bool SensorLoaderModule::performSUTSensorPR()
 {
     qInfo("performSUTSensorPR");
@@ -702,11 +832,12 @@ bool SensorLoaderModule::placeProductToTray(bool check_softlanding)
     return picker2SearchZ(parameters.placeProductZ(),false,check_softlanding);
 }
 
-bool SensorLoaderModule::measureHight(bool is_tray)
+bool SensorLoaderModule::picker1MeasureHight(bool is_tray)
 {
-    qInfo("measureHight");
+    qInfo("picker1MeasureHight");
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
+        QThread::msleep(100);
         if(is_tray)
             parameters.setPickSensorZ(pick_arm->GetSoftladngPosition());
         else
@@ -714,6 +845,49 @@ bool SensorLoaderModule::measureHight(bool is_tray)
         return true;
     }
     return false;
+}
+
+bool SensorLoaderModule::picker2MeasureHight(bool is_tray, bool is_product)
+{
+    qInfo("picker2MeasureHight");
+    if(pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
+    {
+        QThread::msleep(100);
+        if(is_tray)
+        {
+            if(is_product)
+                parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition2());
+            else
+                parameters.setPlaceNgSensorZ(pick_arm->GetSoftladngPosition2());
+        }
+        else
+        {
+            if(is_product)
+                parameters.setPickProductZ(pick_arm->GetSoftladngPosition2());
+            else
+                parameters.setPickNgSensorZ(pick_arm->GetSoftladngPosition2());
+        }
+        return true;
+    }
+    return false;
+}
+
+bool SensorLoaderModule::measureZOffset()
+{
+    QPointF temp_point(sut1_pr_position.X()+picker1_offset.X(),sut2_pr_position.Y()+picker1_offset.Y());
+    double sut1_height = 0;
+    if(!pick_arm->move_XY_Synic(temp_point,true))
+        return false;
+    if(!pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
+        return false;
+    sut1_height = pick_arm->GetSoftladngPosition();
+    temp_point.setX(sut2_pr_position.X()+picker1_offset.X());
+    temp_point.setY(sut2_pr_position.Y()+picker1_offset.Y());
+    if(!pick_arm->move_XY_Synic(temp_point,true))
+        return false;
+    if(!pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
+        return false;
+    parameters.setZOffset(pick_arm->GetSoftladngPosition() - sut1_height);
 }
 
 bool SensorLoaderModule::moveToTrayPos(int index, int tray_index)

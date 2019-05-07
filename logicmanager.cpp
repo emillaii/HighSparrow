@@ -432,13 +432,3 @@ void LogicManager::trayLoaderModuleLTKX1MoveToRelayPos()
 {
     baseModuleManage->tray_loader_module.moveToLtkx1RelayPos();
 }
-
-void LogicManager::sensorPickArmMoveToTray1Pos()
-{
-    baseModuleManage->sensor_loader_module.performHandling(SensorLoaderModule::HandlePosition::SENSOR_TRAY1);
-}
-
-void LogicManager::sensorPickArmMoveToTray2Pos()
-{
-    baseModuleManage->sensor_loader_module.performHandling(SensorLoaderModule::HandlePosition::SENSOR_TRAY2);
-}

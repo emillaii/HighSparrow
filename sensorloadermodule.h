@@ -23,11 +23,7 @@ public:
     void saveJsonConfig();
     void resetLogic();
     void openServer(int port);
-    void performHandling(int cmd);
-    enum HandlePosition{
-        SENSOR_TRAY1 = 1,
-        SENSOR_TRAY2 = 2
-    };
+    Q_INVOKABLE void performHandling(int cmd);
 signals:
     void sendMessageToClient(QString destAddress, QString message);
     // ThreadWorkerBase interface
@@ -44,6 +40,7 @@ private:
 
     bool performSensorPR();
     bool performVacancyPR();
+    bool performSUTPR();
     bool performSUTSensorPR();
     bool performSUTProductPR();
     void resetPR();
@@ -60,7 +57,9 @@ private:
     bool pickSUTProduct(QString dest, bool check_softlanding = false);
     bool placeSensorToTray(bool check_softlanding = false);
     bool placeProductToTray(bool check_softlanding = false);
-    bool measureHight(bool is_tray);
+    bool picker1MeasureHight(bool is_tray);
+    bool picker2MeasureHight(bool is_tray,bool is_product);
+    bool measureZOffset();
 
 
     bool moveToTrayPos(int index,int tray_index);
@@ -86,8 +85,6 @@ private:
     VisionLocation * sut_vision = Q_NULLPTR;
     VisionLocation *sut_sensor_vision = Q_NULLPTR;
     VisionLocation *sut_product_vision = Q_NULLPTR;
-    VisionLocation *spa_updownlook_up_vision = Q_NULLPTR;
-    VisionLocation *spa_updownlook_down_vision = Q_NULLPTR;
 
     SparrowQServer * server;
     QQueue<QJsonObject> requestQueue;

@@ -49,7 +49,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     } else {
         qInfo("This sparrow is in Slave mode");
         this->sensor_loader_module.openServer(19999);
-        lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
+//        lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
         sut_clitent = new SutClient("ws://localhost:19999");
     }
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);

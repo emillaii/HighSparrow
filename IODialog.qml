@@ -32,7 +32,7 @@ Popup {
                             target: timer
                             onTriggered: {
                                 if (dialog.visible) {
-                                    if(special_ouput.checked !== baseModuleManager.getOutput("POGOPIN下"))
+                                    if(special_ouput.checked != baseModuleManager.getOutput("POGOPIN下"))
                                         special_ouput.toggle()
                                     //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                 }
@@ -54,7 +54,7 @@ Popup {
                                 target: timer
                                 onTriggered: {
                                     if (dialog.visible) {
-                                        if(output_switch_id.checked !== baseModuleManager.getOutput(modelData)){
+                                        if(output_switch_id.checked != baseModuleManager.getOutput(modelData)){
                                             output_switch_id.toggle()
                                             console.log("22"+modelData+output_switch_id.checked)
                                         }
@@ -87,7 +87,7 @@ Popup {
                             target: timer
                             onTriggered: {
                                 if (dialog.visible) {
-                                    if(input_swich_id.checked !== baseModuleManager.getInput(modelData))
+                                    if(input_swich_id.checked != baseModuleManager.getInput(modelData))
                                         input_swich_id.toggle()
                                     //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                 }
@@ -142,7 +142,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(break_io_switch.checked !== baseModuleManager.getOutput(breakIoName)){
+                                            if(break_io_switch.checked != baseModuleManager.getOutput(breakIoName)){
                                                 break_io_switch.toggle()
                                                 console.log("22"+breakIoName+break_io_switch.checked)
                                             }
@@ -163,7 +163,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(in_io_switch.checked !== baseModuleManager.getInput(inIoName)){
+                                            if(in_io_switch.checked != baseModuleManager.getInput(inIoName)){
                                                 in_io_switch.toggle()
                                                 console.log("22"+inIoName+in_io_switch.checked)
                                             }
@@ -180,7 +180,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(out_io_switch.checked !== baseModuleManager.getOutput(outIoName)){
+                                            if(out_io_switch.checked != baseModuleManager.getOutput(outIoName)){
                                                 out_io_switch.toggle()
                                                 console.log("22"+outIoName+out_io_switch.checked)
                                             }
@@ -249,7 +249,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(one_in.checked !== baseModuleManager.getInput(oneInName)){
+                                            if(one_in.checked != baseModuleManager.getInput(oneInName)){
                                                 one_in.toggle()
                                                 console.log("22"+oneInName+one_in.checked)
                                             }
@@ -266,7 +266,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(one_out.checked !== baseModuleManager.getOutput(oneOutName)){
+                                            if(one_out.checked != baseModuleManager.getOutput(oneOutName)){
                                                 one_out.toggle()
                                                 console.log("22"+oneOutName+one_out.checked)
                                             }
@@ -286,7 +286,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(zero_in.checked !== baseModuleManager.getInput(zeroInName)){
+                                            if(zero_in.checked != baseModuleManager.getInput(zeroInName)){
                                                 zero_in.toggle()
                                                 console.log("22"+zeroInName+zero_in.checked)
                                             }
@@ -303,7 +303,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(zero_out.checked !== baseModuleManager.getOutput(zeroOutName)){
+                                            if(zero_out.checked != baseModuleManager.getOutput(zeroOutName)){
                                                 zero_out.toggle()
                                                 console.log("22"+zeroOutName+zero_out.checked)
                                             }

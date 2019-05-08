@@ -113,6 +113,11 @@ bool TrayLoaderModule::motorInPress()
 
 bool TrayLoaderModule::moveToLtkx1GetPos()
 {
+    if(!cylinder_tray->Value()){
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"检测到tray盘升起状态，是否继续操作？"))){
+            return true;
+        }
+    }
     motor_in->MoveToPos(parameters.ltkx1PressPos());
     bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1PressPos());
     return result;
@@ -120,6 +125,11 @@ bool TrayLoaderModule::moveToLtkx1GetPos()
 
 bool TrayLoaderModule::moveToLtkx1RelayPos()
 {
+    if(!cylinder_tray->Value()){
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"检测到tray盘升起状态，是否继续操作？"))){
+            return true;
+        }
+    }
     motor_in->MoveToPos(parameters.ltkx1RelayPos());
     bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1RelayPos());
     return result;

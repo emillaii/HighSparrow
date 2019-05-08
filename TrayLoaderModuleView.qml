@@ -172,7 +172,7 @@ ItemDelegate {
                             }
                         }
                         Button{
-                            text:qsTr("移动")
+                            text:title_move_to
                             onClicked: {
                                 logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in.text-1)
                             }

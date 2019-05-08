@@ -1,4 +1,5 @@
-#include "dispense_module.h"
+﻿#include "dispense_module.h"
+#include <QMessageBox>
 #include <config.h>
 #define PI 3.1415926535898
 DispenseModule::DispenseModule():QObject ()
@@ -81,9 +82,14 @@ void DispenseModule::moveToDispenseDot(bool record_z)
         else
             qInfo("dispense_io is null");
         Sleep(parameters.openTime());
-        if(record_z)
+        if(record_z){
+            double zValue = carrier->GetFeedBackPos().Z;
+            QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否应用此高度:%1").arg(zValue),QMessageBox::Yes|QMessageBox::No);
+            if(rb==QMessageBox::No){
+                return;
+            }
             parameters.setDispenseZPos(carrier->GetFeedBackPos().Z);
-
+        }
         if(dispense_io != nullptr)
             dispense_io->Set(false);
         carrier->ZSerchReturn();

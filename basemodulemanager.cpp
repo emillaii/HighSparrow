@@ -69,7 +69,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     }
     material_tray.standards_parameters.setTrayCount(2);
     unitlog.setServerAddress(DataServerURL());
-    connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest);
+    connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
 }
 
 BaseModuleManager::~BaseModuleManager()

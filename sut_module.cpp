@@ -117,12 +117,20 @@ bool SutModule::toolDownlookPR(bool close_lighting, bool motion)
 
 bool SutModule::moveToToolDownlookPos(bool check_autochthonous)
 {
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_downlook_position.X(),tool_downlook_position.Y(),tool_downlook_position.Z(),check_autochthonous);
+    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_downlook_position.X(),tool_downlook_position.Y(),tool_downlook_position.Z(),check_autochthonous);
+    }else{
+        return true;
+    }
 }
 
 bool SutModule::moveToToolUplookPos(bool check_autochthonous)
 {
-     return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_uplook_positon.X(),tool_uplook_positon.Y(),tool_uplook_positon.Z(),check_autochthonous);
+    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_uplook_positon.X(),tool_uplook_positon.Y(),tool_uplook_positon.Z(),check_autochthonous);
+    }else{
+        return true;
+    }
 }
 
 bool SutModule::moveToMushroomPos(bool check_autochthonous)

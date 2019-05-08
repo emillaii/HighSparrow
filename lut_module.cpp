@@ -363,11 +363,14 @@ bool LutModule::moveToLoadUplookPos(bool check_autochthonous)
 
 bool LutModule::moveToLoadUplookPR(bool check_autochthonous)
 {
-    load_location->OpenLight();
-    if(moveToLoadUplookPos(check_autochthonous))
-        //        return  load_location->performPR();
-        return true;
-    return false;
+    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        load_location->OpenLight();
+        if(moveToLoadUplookPos(check_autochthonous))
+            //        return  load_location->performPR();
+            return true;
+        return false;
+    }
+    return true;
 }
 
 double LutModule::getLoadUplookPRX()
@@ -409,7 +412,11 @@ bool LutModule::vcmReturn()
 
 bool LutModule::moveToAA1PickLensPos(bool check_autochthonous)
 {
-    return carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
+    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        return carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
+    }else{
+        return true;
+    }
 }
 
 bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
@@ -431,6 +438,9 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
 
 bool LutModule::moveToAA2PickLensPos(bool check_autochthonous)
 {
+    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        return true;
+    }
     return carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
 }
 

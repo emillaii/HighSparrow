@@ -11,13 +11,13 @@ ItemDelegate {
         ListModel{
             id:motorsModel
             ListElement{
-                modelData:"SUT_X"
+                modelData:"LUT_X"
             }
             ListElement{
-                modelData:"SUT_Y"
+                modelData:"LUT_Y"
             }
             ListElement{
-                modelData:"SUT_Z"
+                modelData:"LUT_Z"
             }
         }
         MotionPopup{

@@ -411,6 +411,9 @@ bool LensLoaderModule::measureHight(bool is_tray)
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         QThread::msleep(100);
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度？"))){
+            return true;
+        }
         if(is_tray)
             parameters.setPickLensZ(pick_arm->GetSoftladngPosition());
         else
@@ -482,24 +485,51 @@ void LensLoaderModule::performHandlingOperation(int cmd)
 {
     qInfo("performHandling %d",cmd);
     bool result;
-    if(cmd%10 == HandlePosition::LUT_POS1)
-        result = moveToLUTPRPos1(true);
-    else if(cmd%10 == HandlePosition::LUT_POS2)
-        result = moveToLUTPRPos2(true);
-    else if(cmd%10 == HandlePosition::LENS_TRAY1)
-        result = moveToTrayPos(0);
-    else if(cmd%10 == HandlePosition::LENS_TRAY2)
-        result = moveToTrayPos(1);
-    else if(cmd%10 == HandlePosition::LENS_TRAY1_START_POS)
-        result = moveToStartPos(0);
-    else if(cmd%10 == HandlePosition::LENS_TRAY2_START_POS)
-        result = moveToStartPos(1);
-    else if(cmd%10 == HandlePosition::LENS_TRAY1_END_POS)
-        result = moveToTray1EndPos();
-    else if(cmd%10 == HandlePosition::UPDOWNLOOK_DOWN_POS)
-        result = moveToUpdownlookDownPos();
-    else if(cmd%10 == HandlePosition::UPDOWNLOOK_UP_POS)
-        result = moveToUpdownlookUpPos();
+    if(cmd%10 == HandlePosition::LUT_POS1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            result = moveToLUTPRPos1(true);
+        }
+    }
+    else if(cmd%10 == HandlePosition::LUT_POS2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            result = moveToLUTPRPos2(true);
+        }
+    }
+    else if(cmd%10 == HandlePosition::LENS_TRAY1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            result = moveToTrayPos(0);
+        }
+    }
+    else if(cmd%10 == HandlePosition::LENS_TRAY2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            result = moveToTrayPos(1);
+        }
+    }
+    else if(cmd%10 == HandlePosition::LENS_TRAY1_START_POS){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            result = moveToStartPos(0);
+        }
+    }
+    else if(cmd%10 == HandlePosition::LENS_TRAY2_START_POS){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            result = moveToStartPos(1);
+        }
+    }
+    else if(cmd%10 == HandlePosition::LENS_TRAY1_END_POS){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            result = moveToTray1EndPos();
+        }
+    }
+    else if(cmd%10 == HandlePosition::UPDOWNLOOK_DOWN_POS){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            result = moveToUpdownlookDownPos();
+        }
+    }
+    else if(cmd%10 == HandlePosition::UPDOWNLOOK_UP_POS){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            result = moveToUpdownlookUpPos();
+        }
+    }
     else
         result = true;
     cmd =cmd/10*10;
@@ -508,18 +538,36 @@ void LensLoaderModule::performHandlingOperation(int cmd)
 //        finished_type = FinishedType::Alarm;
         return;
     }
-    if(cmd%100 == HandlePR::RESET_PR)
-        pr_offset.ReSet();
-    else if(cmd%100 == HandlePR::LENS_PR)
-        result = performLensPR();
-    else if(cmd%100 == HandlePR::VACANCY_PR)
-        result = performVacancyPR();
-    else if(cmd%100 == HandlePR::LUT_PR)
-        result = performLUTPR();
-    else if(cmd%100 == HandlePR::UPDOWNLOOK_DOWN_PR)
-        result = performUpDownlookDownPR();
-    else if(cmd%100 == HandlePR::UPDOWNLOOK_UP_PR)
-        result = performUpdowlookUpPR();
+    if(cmd%100 == HandlePR::RESET_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+            pr_offset.ReSet();
+        }
+    }
+    else if(cmd%100 == HandlePR::LENS_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+            result = performLensPR();
+        }
+    }
+    else if(cmd%100 == HandlePR::VACANCY_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+            result = performVacancyPR();
+        }
+    }
+    else if(cmd%100 == HandlePR::LUT_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+            result = performLUTPR();
+        }
+    }
+    else if(cmd%100 == HandlePR::UPDOWNLOOK_DOWN_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+            result = performUpDownlookDownPR();
+        }
+    }
+    else if(cmd%100 == HandlePR::UPDOWNLOOK_UP_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+            result = performUpdowlookUpPR();
+        }
+    }
     else
         result = true;
     if(!result)
@@ -528,8 +576,11 @@ void LensLoaderModule::performHandlingOperation(int cmd)
         return;
     }
     cmd =cmd/100*100;
-    if(cmd%1000 == HandleToWorkPos::ToWork)
-        result = moveToWorkPos();
+    if(cmd%1000 == HandleToWorkPos::ToWork){
+        if(emit sendMsgSignal(tr(u8""),tr(u8"是否移动？"))){
+            result = moveToWorkPos();
+        }
+    }
     if(!result)
     {
 //        finished_type = FinishedType::Alarm;
@@ -538,14 +589,26 @@ void LensLoaderModule::performHandlingOperation(int cmd)
     }
     cmd =cmd/1000*1000;
     qInfo("cmd : %d", cmd);
-    if(cmd%10000 == handlePickerAction::PICK_LENS_FROM_TRAY)
-        result = pickTrayLens(true);
-    else if(cmd%10000 == handlePickerAction::PLACE_LENS_TO_LUT)
-        result = placeLensToLUT(true);
-    else if(cmd%10000 == handlePickerAction::PICK_NG_LENS_FROM_LUT)
-        result = pickLUTLens(true);
-    else if(cmd%10000 == handlePickerAction::PLACE_NG_LENS_TO_TRAY)
-        result = placeLensToTray();
+    if(cmd%10000 == handlePickerAction::PICK_LENS_FROM_TRAY){
+        if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
+            result = pickTrayLens(true);
+        }
+    }
+    else if(cmd%10000 == handlePickerAction::PLACE_LENS_TO_LUT){
+        if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
+            result = placeLensToLUT(true);
+        }
+    }
+    else if(cmd%10000 == handlePickerAction::PICK_NG_LENS_FROM_LUT){
+        if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
+            result = pickLUTLens(true);
+        }
+    }
+    else if(cmd%10000 == handlePickerAction::PLACE_NG_LENS_TO_TRAY){
+        if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
+            result = placeLensToTray();
+        }
+    }
     else if(cmd%10000 == handlePickerAction::MeasureLensInLUT)
         result = measureHight(false);
     else if(cmd%10000 == handlePickerAction::MeasureLensInTray)

@@ -69,25 +69,43 @@ void SensorLoaderModule::stopWork(bool wait_finish)
 void SensorLoaderModule::performHandlingOperation(int cmd)
 {
     qInfo("performHandling %d",cmd);
-    if(!emit sendMsgSignal("title","content")){
-        return;
-    }
-    bool result;
+    bool result = false;
     int temp_value = 10;
-    if(cmd%temp_value == HandlePosition::SUT_POS1)
-        result = moveToSUTPRPos(false,true);
-    else if(cmd%temp_value == HandlePosition::SUT_POS2)
-        result = moveToSUTPRPos(true,true);
-    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1)
-        result = moveToTrayPos(0);
-    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2)
-        result = moveToTrayPos(1);
-    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_START_POS)
-        result = moveToStartPos(0);
-    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2_START_POS)
-        result = moveToStartPos(1);
-    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_END_POS)
-        result = moveToTray1EndPos();
+    if(cmd%temp_value == HandlePosition::SUT_POS1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+            result = moveToSUTPRPos(false,true);
+        }
+    }
+    else if(cmd%temp_value == HandlePosition::SUT_POS2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+            result = moveToSUTPRPos(true,true);
+        }
+    }
+    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+            result = moveToTrayPos(0);
+        }
+    }
+    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+            result = moveToTrayPos(1);
+        }
+    }
+    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_START_POS){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+            result = moveToStartPos(0);
+        }
+    }
+    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2_START_POS){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+            result = moveToStartPos(1);
+        }
+    }
+    else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_END_POS){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+            result = moveToTray1EndPos();
+        }
+    }
     else
         result =true;
     cmd =cmd/temp_value*temp_value;
@@ -97,18 +115,36 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
         return;
     }
     temp_value = 100;
-    if(cmd%temp_value == HandlePR::RESET_PR)
-        pr_offset.ReSet();
-    else if(cmd%temp_value == HandlePR::SENSOR_PR)
-        result = performSensorPR();
-    else if(cmd%temp_value == HandlePR::VACANCY_PR)
-        result = performVacancyPR();
-    else if(cmd%temp_value == HandlePR::SUT_PR)
-        result = performSUTPR();
-    else if(cmd%temp_value == HandlePR::NG_SENSOR_PR)
-        result = performSUTSensorPR();
-    else if(cmd%temp_value == HandlePR::PRODUCT_PR)
-        result = performSUTProductPR();
+    if(cmd%temp_value == HandlePR::RESET_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            pr_offset.ReSet();
+        }
+    }
+    else if(cmd%temp_value == HandlePR::SENSOR_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = performSensorPR();
+        }
+    }
+    else if(cmd%temp_value == HandlePR::VACANCY_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = performVacancyPR();
+        }
+    }
+    else if(cmd%temp_value == HandlePR::SUT_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = performSUTPR();
+        }
+    }
+    else if(cmd%temp_value == HandlePR::NG_SENSOR_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = performSUTSensorPR();
+        }
+    }
+    else if(cmd%temp_value == HandlePR::PRODUCT_PR){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = performSUTProductPR();
+        }
+    }
     else
         result = true;
     if(!result)
@@ -118,10 +154,16 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     }
     cmd =cmd/temp_value*temp_value;
     temp_value = 1000;
-    if(cmd%temp_value == HandleToWorkPos::TO_PICK1)
-        result = moveToWorkPos();
-    else if(cmd%temp_value == HandleToWorkPos::TO_PICK2)
-        result = moveToWorkPos2();
+    if(cmd%temp_value == HandleToWorkPos::TO_PICK1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+            result = moveToWorkPos();
+        }
+    }
+    else if(cmd%temp_value == HandleToWorkPos::TO_PICK2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+            result = moveToWorkPos2();
+        }
+    }
     if(!result)
     {
         //        finished_type = FinishedType::Alarm;
@@ -131,36 +173,81 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     cmd =cmd/temp_value*temp_value;
     temp_value = 100000;
     qInfo("cmd : %d", cmd);
-    if(cmd%temp_value == handlePickerAction::PICK_SENSOR_FROM_TRAY)
-        result = pickTraySensor();
-    else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT1)
-        result = placeSensorToSUT("remote",true);
-    else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT2)
-        result = placeSensorToSUT("::1",true);
-    else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT1)
-        result = pickSUTSensor("remote",true);
-    else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT2)
-        result = pickSUTSensor("::1",true);
-    else if(cmd%temp_value == handlePickerAction::PLACE_NG_SENSOR_TO_TRAY)
-        result = placeSensorToTray(true);
-    else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT1)
-        result = pickSUTProduct("remote",true);
-    else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT2)
-        result = pickSUTProduct("::1",true);
-    else if(cmd%temp_value == handlePickerAction::PLACE_PRODUCT_TO_TRAY)
-        result = placeProductToTray(true);
-    else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_TRAY)
-        result = picker1MeasureHight(true);
-    else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_SUT1)
-        result = picker1MeasureHight(false);
-    else if(cmd%temp_value == handlePickerAction::MEASURE_NG_SENSOR_IN_SUT1)
-        result = picker2MeasureHight(false,false);
-    else if(cmd%temp_value == handlePickerAction::MEASURE_NG_SENSOR_IN_TRAY)
-        result = picker2MeasureHight(true,false);
-    else if(cmd%temp_value == handlePickerAction::MEASURE_PRODUCT_IN_SUT1)
-        result = picker2MeasureHight(false,true);
-    else if(cmd%temp_value == handlePickerAction::MEASURE_PRODUCT_IN_TRAY)
-        result = picker2MeasureHight(true,true);
+    if(cmd%temp_value == handlePickerAction::PICK_SENSOR_FROM_TRAY){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = pickTraySensor();
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = placeSensorToSUT("remote",true);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = placeSensorToSUT("::1",true);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = pickSUTSensor("remote",true);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = pickSUTSensor("::1",true);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::PLACE_NG_SENSOR_TO_TRAY){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = placeSensorToTray(true);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = pickSUTProduct("remote",true);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = pickSUTProduct("::1",true);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::PLACE_PRODUCT_TO_TRAY){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = placeProductToTray(true);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_TRAY){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = picker1MeasureHight(true);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_SUT1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = picker1MeasureHight(false);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::MEASURE_NG_SENSOR_IN_SUT1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = picker2MeasureHight(false,false);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::MEASURE_NG_SENSOR_IN_TRAY){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = picker2MeasureHight(true,false);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::MEASURE_PRODUCT_IN_SUT1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = picker2MeasureHight(false,true);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::MEASURE_PRODUCT_IN_TRAY){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = picker2MeasureHight(true,true);
+        }
+    }
     else if(cmd%temp_value == handlePickerAction::MEASURE_Z_OFFSET)
         result = measureZOffset();
     else
@@ -851,7 +938,12 @@ bool SensorLoaderModule::measureZOffset()
         return false;
     if(!pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
         return false;
+    double zOffset = pick_arm->GetSoftladngPosition()-sut1_height;
+    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此数值:%1").arg(zOffset))){
+        return true;
+    }
     parameters.setZOffset(pick_arm->GetSoftladngPosition() - sut1_height);
+    return true;
 }
 
 bool SensorLoaderModule::moveToTrayPos(int index, int tray_index)

@@ -193,7 +193,7 @@ bool AAHeadModule::waitForLoadSensor(bool &is_run,int time_out)
     while (time_out > 0) {
         if(!is_run)
             return false;
-        if(waiting_sensor)
+        if(!waiting_sensor)
         {
             return stepMove_XYC_Sync(offset_x,offset_y,offset_theta);
         }

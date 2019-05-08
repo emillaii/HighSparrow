@@ -49,15 +49,11 @@ void LogicManager::run() {
         baseModuleManage->stopSeeking();
     }
     else if (m_currentMode == CommandType::MODE_AUTO_RUN) {
-//        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_AUTO_MODE, uuid);
-//        aaCore->wait();
     }
     else if (m_currentMode == CommandType::PERFORM_LOOP_TEST) {
-        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE, uuid);
         return;
     }
     else if (m_currentMode == CommandType::PERFORM_OC) {
-        aaCore->performOC(true, true);
     }
     else if (m_currentMode == CommandType::MOTION_HOME) {
         baseModuleManage->allMotorsSeekOrigin();
@@ -131,7 +127,6 @@ void LogicManager::run() {
 void LogicManager::moveToCmd(int cmd) {
     if (cmd == CommandType::STOP)
     {
-        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_IDLE_MODE, "");
         m_currentMode = CommandType::IDLE;
         return;
     }
@@ -148,7 +143,6 @@ void LogicManager::moveToCmd(int cmd) {
 
 void LogicManager::loadFlowchart(QString json)
 {
-    aaCore->setFlowchartDocument(json);
 }
 
 void LogicManager::home(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_HOME);}
@@ -195,7 +189,6 @@ void LogicManager::performLocation(QString location_name)
 
 
 void LogicManager::autoRun(QString json){
-    aaCore->setFlowchartDocument(json);
     setStateMessage(__FUNCTION__);moveToCmd(CommandType::MODE_AUTO_RUN);
 }
 

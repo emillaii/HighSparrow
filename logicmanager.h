@@ -19,7 +19,6 @@ public:
 
     Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString);
-    AACore * aaCore = Q_NULLPTR;
 
     void performMotionThread();
 

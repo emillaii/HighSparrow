@@ -29,6 +29,7 @@ void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Doth
     this->chartCalibration = chartCalibration;
     this->dispense = dispense;
     this->imageThread = imageThread;
+    this->sut = sut;
     this->unitlog = unitlog;
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();

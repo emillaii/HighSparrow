@@ -1154,7 +1154,7 @@ bool BaseModuleManager::performLocation(QString location_name)
     }
     if(temp_location->parameters.canMotion())
     {
-        if(!emit sendMsgSignal(tr("无标题"),tr("x: %1,y:%2,theta:%3,是否移动").arg(offset.X).arg(offset.Y).arg(offset.Theta))){
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"x: %1,y:%2,theta:%3,是否移动").arg(offset.X).arg(offset.Y).arg(offset.Theta))){
             return true;
         }
         temp_caliration->performPRResult(offset);

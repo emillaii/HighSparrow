@@ -14,7 +14,7 @@ Window {
 
     flags:  Qt.Window | Qt.WindowSystemMenuHint
             | Qt.WindowTitleHint | Qt.WindowMinimizeButtonHint
-            | Qt.WindowMaximizeButtonHint | Qt.WindowStaysOnTopHint
+            | Qt.WindowMaximizeButtonHint| Qt.WindowStaysOnTopHint
 
     modality: Qt.NonModal // no need for this as it is the default value
     Timer {
@@ -24,10 +24,12 @@ Window {
                 count++;
                 stateLabel.text = logicManager.stateMessage
                 timerLabel.text = Math.floor(count*0.5) + " s"
-                busyDialog.visible = true
+                busyDialog.show()
+                //busyDialog.visible = true
             } else {
                 count = -1;
-                busyDialog.visible = false
+                busyDialog.close()
+                //busyDialog.visible = false
             }
 
         }

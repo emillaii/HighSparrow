@@ -39,7 +39,7 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
 
 void LogicManager::updateParams()
 {
-    aaCore->updateParams();
+    //aaCore->updateParams();
 }
 
 void LogicManager::run() {

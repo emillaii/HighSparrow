@@ -115,7 +115,6 @@ bool BaseModuleManager::loadParameters()
     trayClipIn.standards_parameters.loadJsonConfig(TRAY_CLIPIN_PATH,TRAY_CLIPIN_PARAMETER);
     trayClipOut.standards_parameters.loadJsonConfig(TRAY_CLIPOUT_PATH,TRAY_CLIPOUT_PARAMETER);
 
-    material_tray.loadJsonConfig();
     if(ServerMode())
     {
         sensor_loader_module.loadJsonConfig();
@@ -149,9 +148,6 @@ bool BaseModuleManager::SaveParameters()
     dispenser.parameters.saveJsonConfig(DISPENSER_PARAMETER_PATH,DISPENSER_PARAMETER);
     dispense_module.parameters.saveJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
     material_tray.saveJsonConfig();
-    lens_loader_module.saveJsonConfig();
-    lens_pick_arm.parameters.saveJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
-    lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
     sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
     if(ServerMode())
     {

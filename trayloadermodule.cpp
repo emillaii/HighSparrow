@@ -157,7 +157,7 @@ bool TrayLoaderModule::motorWorkPress()
 {
     int res = cylinder_tray->Value();
     if(res){
-        res = cylinder_tray->Set(false);
+        res = cylinder_tray->Set(false,true,1000);
         return res;
     }
     return 1;
@@ -208,7 +208,7 @@ bool TrayLoaderModule::motorOutRelease()
 
 bool TrayLoaderModule::moveToNextEmptyPos()
 {
-    if(!tray_exit_input->Value()){
+    if(tray_exit_input->Value()){
         qDebug()<<"出口处检测到有盘";
         AppendError(QString(u8"出口处有盘，请把盘移走"));
         sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());

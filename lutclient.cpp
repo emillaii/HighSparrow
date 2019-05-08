@@ -38,6 +38,7 @@ void LutClient::receiveMessage(QString message)
         obj.insert("cmd", "pickLensReq");
     }else if (event == "pickLensResp") {
         isValid = true;
+        aaHead->moveToMushroomPosition();
         qInfo("LUT move to load lens position");
         qInfo("perform pickedLens pr");
         obj.insert("cmd", "prReq");

@@ -291,11 +291,14 @@ void LensLoaderModule::run(bool has_material)
             }
         }
         //判断是否完成
-        if((!states.lutHasNgLens())&&(!states.needLoadLens())&&states.loadingLens())
+        if((!states.lutHasNgLens())&&(!states.needLoadLens()))
         {
-            QMutexLocker temp_locker(&lut_mutex);
-            emit sendLoadLensRequstFinish(states.lutLensID(),states.lutTrayID());
-            states.setLoadingLens(false);
+            if(states.loadingLens())
+            {
+                QMutexLocker temp_locker(&lut_mutex);
+                emit sendLoadLensRequstFinish(states.lutLensID(),states.lutTrayID());
+                states.setLoadingLens(false);
+            }
         }
     }
     qInfo("LensLoader stoped");

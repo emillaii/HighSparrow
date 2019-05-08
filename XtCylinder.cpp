@@ -16,7 +16,7 @@ void XtCylinder::Init(XtGeneralOutput *output_io,
     in_unfold = input_unfold_io;
     setName(parameters.cylinderName());
 }
-bool XtCylinder::Set(bool new_state, bool wait_done, int timeout,int input_null_delay)
+bool XtCylinder::Set(bool new_state, bool wait_done,int finish_delay, int timeout,int input_null_delay)
 {
     if(out_zero != nullptr)
     {
@@ -47,7 +47,7 @@ void XtCylinder::SET(int thread, bool new_state)
     out->Set(new_state, thread);
 }
 
-bool XtCylinder::Wait(bool target_state, int timeout,int input_null_delay)
+bool XtCylinder::Wait(bool target_state,int finish_delay, int timeout,int input_null_delay)
 {
     qDebug()<<"52.do Wait Done";
     if(is_debug)return true;
@@ -69,6 +69,8 @@ bool XtCylinder::Wait(bool target_state, int timeout,int input_null_delay)
         {
             if((in_fold == nullptr&&state_fold)||(in_unfold == nullptr&&state_unfold))
                 QThread::msleep(input_null_delay);
+            if(finish_delay)
+                QThread::msleep(finish_delay);
             return true;
         }
         count-=10;
@@ -81,6 +83,7 @@ bool XtCylinder::Wait(bool target_state, int timeout,int input_null_delay)
           in_unfold==nullptr?"none":in_unfold->Name().toStdString().c_str(),
           in_unfold==nullptr?0:in_unfold->Value(),
           state_unfold);
+
     return false;
 }
 

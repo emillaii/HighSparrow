@@ -1246,6 +1246,7 @@ void BaseModuleManager::setLightingBrightness(QString location_name)
 
 void BaseModuleManager::sendLoadLens(bool has_ng)
 {
+    aa_head_module.moveToPickLensPosition();
     if(has_ng)
         emit lut_module.sendLoadLensRequst(true,0,0);
     else

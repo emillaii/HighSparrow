@@ -95,48 +95,93 @@ void LutModule::run(bool has_material)
             }
         }
         else if (actionQueue.size()>0 && state == BUSY) {
-            QJsonObject obj = actionQueue.dequeue();
-            qInfo("Start to consume action request: %s", getStringFromJsonObject(obj).toStdString().c_str());
-            QString client_ip = obj["client_ip"].toString("");
-            QString cmd = obj["cmd"].toString("");
 
-            if(cmd == "unpickNgLensReq")
+            while(state == BUSY)
+            {
+                if(actionQueue.size()<=0)
+                {
+                    QThread::msleep(100);
+                    if(is_run)
+                        continue;
+                    else
+                        break;
+                }
+                if(states.cmd() == "")
+                {
+                    QJsonObject obj = actionQueue.dequeue();
+                    qInfo("Start to consume action request: %s", getStringFromJsonObject(obj).toStdString().c_str());
+                    QString client_ip = obj["client_ip"].toString("");
+                    states.setCmd(obj["cmd"].toString(""));
+                }
+            if(states.cmd() == "unpickNgLensReq")
             {
                 bool action_result;
                 isLocalHost ?action_result = moveToAA1UnPickLens() : action_result = moveToAA2UnPickLens();
-                if(action_result)
+                if((!action_result)&&has_material)
+                {
+                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                    is_run = false;
+                    break;
+                }
+                else
                 {
                     sendEvent("unpickNgLensResp");
+                    states.setCmd("");
                     states.setLutLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
                     states.setLutTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
                 }
             }
-            else if (cmd == "picklensReq") {
+            else if (states.cmd() == "pickLensReq") {
                 bool action_result;
                 isLocalHost ?action_result = moveToAA1PickLens() : action_result = moveToAA2PickLens();
-                if(action_result)
+                if((!action_result)&&has_material)
                 {
-                    sendEvent("picklensResp");
+                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                    is_run = false;
+                    break;
+                }
+                else
+                {
+                    sendEvent("pickLensResp");
+                    states.setCmd("");
                     isLocalHost?states.setAa1LensID(states.lutLensID()):states.setAa2LensID(states.lutLensID());
                     isLocalHost?states.setAa1TrayID(states.lutTrayID()):states.setAa2TrayID(states.lutTrayID());
                 }
             }
-            else if (cmd == "prReq") {
+            else if (states.cmd() == "prReq") {
                 qInfo("perform PR start");
                 bool action_result;
                 PrOffset pr_offset;
                 action_result = uplook_location->performPR(pr_offset);
-                if(action_result)
+                if((!action_result)&&has_material)
+                {
+                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                    is_run = false;
+                    break;
+                }
+                else
+                {
                     sendPrEvent(pr_offset);
-            } else if (cmd == "lutLeaveReq") {
+                    states.setCmd("");
+                }
+            } else if (states.cmd() == "lutLeaveReq") {
                 bool action_result;
                 action_result = moveToUnloadPos();
-                if(action_result)
+                if((!action_result)&&has_material)
+                {
+                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                    is_run = false;
+                    break;
+                }
+                else
                 {
                     sendEvent("lutLeaveResp");
+                    states.setCmd("");
                     state = NO_LENS;
                 }
             }
+            }
+
         }
         else  if (state == NO_LENS)
         {

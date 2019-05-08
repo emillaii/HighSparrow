@@ -208,7 +208,7 @@ void SutModule::run(bool has_material)
                 continue;
             }
             QThread::msleep(100);
-            if(! sut_cilent->sendLensRequest(states.sutHasProduct(),states.sutHasNgSensor()))
+            if(! sut_cilent->sendSensorRequest(states.sutHasProduct(),states.sutHasNgSensor()))
             {
                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                waitMessageReturn(is_run);

@@ -12,7 +12,7 @@ class SutClient: public QObject
 public:
     explicit SutClient(QString address, QObject *parent = nullptr);
     void Init(XtVacuum *sut_vacuum);
-    bool sendLensRequest(bool has_product,bool has_ng_sensor);
+    bool sendSensorRequest(bool has_product,bool has_ng_sensor);
 private:
     bool be_comuniting = false;
     SparrowClient * socketClient = Q_NULLPTR;

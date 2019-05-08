@@ -430,6 +430,7 @@ bool XtVcMotor::resetSoftLanding(int timeout)
 
 bool XtVcMotor::WaitSoftLandingDone(int timeout)
 {
+    if(is_debug)return true;
     if(!is_init)
         return false;
     while(timeout>0)

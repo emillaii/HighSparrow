@@ -15,7 +15,7 @@ void SutClient::Init(XtVacuum *sut_vacuum)
     this->sut_vacuum = sut_vacuum;
 }
 
-bool SutClient::sendLensRequest(bool has_product, bool has_ng_sensor)
+bool SutClient::sendSensorRequest(bool has_product, bool has_ng_sensor)
 {
     this->has_product = has_product;
     this->has_ng_sennsor = has_ng_sensor;

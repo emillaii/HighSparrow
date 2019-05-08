@@ -33,11 +33,13 @@ void LutClient::receiveMessage(QString message)
             obj.insert("cmd", "pickLensReq");
         }
     } else if (event == "unpickNgLensResp") {
+        isValid = true;
         qInfo("aa pick lens");
         obj.insert("cmd", "pickLensReq");
-    }else if (event == "picklensResp") {
+    }else if (event == "pickLensResp") {
+        isValid = true;
         qInfo("LUT move to load lens position");
-        qInfo("perform pickedlens pr");
+        qInfo("perform pickedLens pr");
         obj.insert("cmd", "prReq");
     }else if (event == "prResp") {
         isValid = true;
@@ -54,12 +56,12 @@ void LutClient::receiveMessage(QString message)
         return;
     }
     if (cmd == "gripperOnReq") {
-        isValid = true;
+//        isValid = true;
         qInfo("AA Gripper On Request");
         aaHead->openGripper();
         QThread::msleep(200);
     } else if (cmd == "gripperOffReq") {
-        isValid = true;
+//        isValid = true;
         qInfo("AA Gripper Of Request");
         aaHead->closeGripper();
     }

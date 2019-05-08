@@ -186,6 +186,7 @@ class LutState:public PropertyBase
     Q_PROPERTY(QString servingIP READ servingIP WRITE setServingIP NOTIFY servingIPChanged)
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool pickingLens READ pickingLens WRITE setPickingLens NOTIFY pickingLensChanged)
+    Q_PROPERTY(QString cmd READ cmd WRITE setCmd NOTIFY cmdChanged)
 public:
     int lutTrayID() const
     {
@@ -245,6 +246,11 @@ public:
     bool pickingLens() const
     {
         return m_pickingLens;
+    }
+
+    QString cmd() const
+    {
+        return m_cmd;
     }
 
 public slots:
@@ -356,6 +362,15 @@ public slots:
         emit pickingLensChanged(m_pickingLens);
     }
 
+    void setCmd(QString cmd)
+    {
+        if (m_cmd == cmd)
+            return;
+
+        m_cmd = cmd;
+        emit cmdChanged(m_cmd);
+    }
+
 signals:
     void lutTrayIDChanged(int lutTrayID);
 
@@ -381,6 +396,9 @@ signals:
 
     void pickingLensChanged(bool pickingLens);
 
+
+    void cmdChanged(QString cmd);
+
 private:
     int m_lutTrayID = -1;
     int m_lutLensID = -1;
@@ -394,6 +412,7 @@ private:
     QString m_serviceIP = "";
     bool m_lutHasLens = false;
     bool m_pickingLens = false;
+    QString m_cmd;
 };
 
 #endif // LUT_PARAMERTER_H

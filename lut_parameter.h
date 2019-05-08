@@ -399,6 +399,7 @@ signals:
 
     void cmdChanged(QString cmd);
 
+
 private:
     int m_lutTrayID = -1;
     int m_lutLensID = -1;
@@ -412,7 +413,7 @@ private:
     QString m_serviceIP = "";
     bool m_lutHasLens = false;
     bool m_pickingLens = false;
-    QString m_cmd;
+    QString m_cmd = "";
 };
 
 #endif // LUT_PARAMERTER_H

@@ -48,12 +48,11 @@ void LutModule::receiveLoadLensRequstFinish(int lens, int lens_tray)
     }
     states.setLutHasLens(true);
     qInfo("LutModule set has lens");
-    if(lens>-1 && lens_tray>-1)
-    {
-        states.setLutLensID(lens);
-        states.setLutTrayID(lens_tray);
-        qInfo("LutModule current tray id lens: %d tray: %d", lens, lens_tray);
-    }
+    states.setLutLensID(lens);
+    states.setLutTrayID(lens_tray);
+    states.setLutNgLensID(-1);
+    states.setLutNgTrayID(-1);
+    qInfo("LutModule current tray id lens: %d tray: %d", lens, lens_tray);
     states.setPickingLens(true);
     qInfo("LutModule set picking lens is true");
     qInfo("receiveLensRequstFinish take effect");
@@ -128,8 +127,8 @@ void LutModule::run(bool has_material)
                     {
                         sendEvent("unpickNgLensResp");
                         states.setCmd("");
-                        states.setLutLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
-                        states.setLutTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
+                        states.setLutNgLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
+                        states.setLutNgTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
                     }
                 }
                 else if (states.cmd() == "pickLensReq") {
@@ -153,7 +152,7 @@ void LutModule::run(bool has_material)
                     qInfo("perform PR start");
                     bool action_result;
                     PrOffset pr_offset;
-                    action_result = moveToAA1UplookPR(pr_offset);
+                    isLocalHost ?action_result = moveToAA1UplookPR(pr_offset): action_result = moveToAA2UplookPR(pr_offset);
                     if((!action_result)&&has_material)
                     {
                         sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -194,6 +193,7 @@ void LutModule::run(bool has_material)
                 {
                     qInfo("LUT Module has lens");
                     states.setWaitLens(false);
+                    states.setPickingLens(false);
                     state = HAS_LENS;
                 }
             }

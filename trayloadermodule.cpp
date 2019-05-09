@@ -69,8 +69,56 @@ bool TrayLoaderModule::startUp()
 
 void TrayLoaderModule::run(bool has_tray)
 {
-    if(is_run){
-        startUp();
+    while(is_run){
+        if(!states.hasTrayReady()){
+            ejectTray();
+            motorInRelease();
+            motor_in->MoveToPos(parameters.ltkx1PressPos());
+            motor_in->WaitArrivedTargetPos(parameters.ltkx1PressPos());
+            motorInPress();
+            motor_in->MoveToPos(parameters.ltkx1ReleasePos());
+            motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
+            motorInRelease();
+            motor_in->MoveToPos(parameters.ltkx1RelayPos());
+            motor_in->WaitArrivedTargetPos(parameters.ltkx1RelayPos());
+            motorInPress();
+            moveToNextTrayPos();
+            states.setHasTrayReady(true);
+            if(!is_run)break;
+        }
+        if(states.hasTrayUsed()){
+            motorOutRelease();
+            motor_out->MoveToPos(parameters.ltkx2PressPos());
+            motor_work->MoveToPos(parameters.ltlReleasePos());
+            bool result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
+            result &= motor_out->WaitArrivedTargetPos(parameters.ltkx2PressPos());
+            if(!result){
+            }
+            if(!motorWorkRelease()){
+            }
+            if(!motorOutPress()){
+            }
+            motor_out->MoveToPos(parameters.ltkx2ReleasePos());
+            motor_in->MoveToPos(parameters.ltkx1ReleasePos());
+            motor_work->MoveToPos(parameters.ltlPressPos());
+            result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
+            if(!result){
+            }
+            motorInRelease();
+            result = motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
+            if(!result){
+            }
+            motorWorkPress();
+            result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
+            motorOutRelease();
+            motor_work->MoveToPos(parameters.ltlReleasePos());
+            result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
+            if(!result){
+            }
+            emit trayReady();
+            states.setHasTrayReady(false);
+            states.setHasTrayUsed(false);
+        }
     }
 
 }
@@ -372,6 +420,7 @@ void TrayLoaderModule::onNextEmptyPos()
 void TrayLoaderModule::onTestTrayUsed()
 {
     //LTL_X 与 LTK_X2 会合
+/*
     motorOutRelease();
     motor_work->MoveToPos(parameters.ltlReleasePos());
     motor_out->MoveToPos(parameters.ltkx2PressPos());
@@ -414,6 +463,8 @@ void TrayLoaderModule::onTestTrayUsed()
     }
     emit parameters.trayReady();
     emit onReset();
+//*/
+    states.setHasTrayUsed(true);
 }
 
 void TrayLoaderModule::onReset(){

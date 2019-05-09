@@ -19,6 +19,7 @@ public:
     TrayClip* tray_clip = Q_NULLPTR;
     TrayClip* tray_clip_out = Q_NULLPTR;
     TrayLoaderModuleParameter parameters;
+    TrayLoaderState states;
     bool startUp();
 
     bool moveToNextTrayPos();

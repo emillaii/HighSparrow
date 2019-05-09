@@ -336,4 +336,62 @@ void clipinInputNameChanged(QString clipinInputName);
 void clipoutInputNameChanged(QString clipoutInputName);
 };
 
+class TrayLoaderState : public PropertyBase{
+    Q_OBJECT
+    int m_runMode=0;
+    bool m_hasTrayReady=false;
+    bool m_hasTrayUsed=false;
+
+public:
+    TrayLoaderState():PropertyBase(){}
+    Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
+    Q_PROPERTY(bool hasTrayReady READ hasTrayReady WRITE setHasTrayReady NOTIFY hasTrayReadyChanged)
+    Q_PROPERTY(bool hasTrayUsed READ hasTrayUsed WRITE setHasTrayUsed NOTIFY hasTrayUsedChanged)
+    int runMode() const
+    {
+        return m_runMode;
+    }
+    bool hasTrayReady() const
+    {
+        return m_hasTrayReady;
+    }
+    bool hasTrayUsed() const
+    {
+        return m_hasTrayUsed;
+    }
+
+public slots:
+    void setRunMode(int runMode)
+    {
+        if (m_runMode == runMode)
+            return;
+
+        m_runMode = runMode;
+        emit runModeChanged(m_runMode);
+    }
+    void setHasTrayReady(bool hasTrayReady)
+    {
+        if (m_hasTrayReady == hasTrayReady)
+            return;
+
+        m_hasTrayReady = hasTrayReady;
+        emit hasTrayReadyChanged(m_hasTrayReady);
+    }
+
+    void setHasTrayUsed(bool hasTrayUsed)
+    {
+        if (m_hasTrayUsed == hasTrayUsed)
+            return;
+
+        m_hasTrayUsed = hasTrayUsed;
+        emit hasTrayUsedChanged(m_hasTrayUsed);
+    }
+
+signals:
+    void runModeChanged(int runMode);
+    void hasTrayOnEntryChanged(bool hasTrayOnEntry);
+    void hasTrayReadyChanged(bool hasTrayReady);
+    void hasTrayUsedChanged(bool hasTrayUsed);
+};
+
 #endif // TRAYLOADERPARAMETER_H

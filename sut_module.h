@@ -11,6 +11,7 @@
 #include "vision_location.h"
 #include "visionmodule.h"
 #include "wordoplight.h"
+
 enum SUT_STATE
 {
     NO_MATERIAL = 0,
@@ -77,6 +78,7 @@ private:
     int sut_state = 0;
     bool has_raw_sensor = false;
     bool loading_sensor = false;
+    Qt::HANDLE gui_thread_id;
 };
 
 #endif // SUT_MODULE_H

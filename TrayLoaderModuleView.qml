@@ -514,9 +514,11 @@ ItemDelegate {
                                 if(logicManager.trayLoaderModuleCheckLTLXGetPos(text)){
                                     tray_loader_module_parameters.setLtlPressPos(text)
                                     tray_loader_module_parameters.setLtkx1ReleasePos(text+166.7538)
+                                    tray_loader_module_parameters.setLtkx1RelayPos(text+166.7538-310)
                                 }else{
-                                    tray_loader_module_parameters.setLtlPressPos(0)
-                                    tray_loader_module_parameters.setLtkx1ReleasePos(166.7538)
+                                    tray_loader_module_parameters.setLtlPressPos(310-166.7538)
+                                    tray_loader_module_parameters.setLtkx1ReleasePos(310)
+                                    tray_loader_module_parameters.setLtkx1RelayPos(0);
                                 }
                             }
                         }
@@ -533,9 +535,11 @@ ItemDelegate {
                                 if(logicManager.trayLoaderModuleCheckLTLXGetPos(x)){
                                     tray_loader_module_parameters.setLtlPressPos(x)
                                     tray_loader_module_parameters.setLtkx1ReleasePos(x+166.758)
+                                    tray_loader_module_parameters.setLtkx1RelayPos(text+166.7538-310)
                                 }else{
-                                    tray_loader_module_parameters.setLtlPressPos(0)
-                                    tray_loader_module_parameters.setLtkx1ReleasePos(166.7538)
+                                    tray_loader_module_parameters.setLtlPressPos(310-166.7538)
+                                    tray_loader_module_parameters.setLtkx1ReleasePos(310)
+                                    tray_loader_module_parameters.setLtkx1RelayPos(0);
                                 }
 
 

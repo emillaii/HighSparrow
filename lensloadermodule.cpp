@@ -46,6 +46,7 @@ void LensLoaderModule::loadJsonConfig()
     temp_map.insert("LUT_PR_POSITION2", &lut_pr_position2);
     temp_map.insert("LUT_CAMERA_POSITION1", &lut_camera_position);
     temp_map.insert("LUT_PICKE_POSITION1", &lut_picker_position);
+    temp_map.insert("LENS_UPDNLOOK_OFFSET", &lens_updnlook_offset);
     PropertyBase::loadJsonConfig("config//lensLoaderModule.json", temp_map);
 }
 
@@ -57,6 +58,7 @@ void LensLoaderModule::saveJsonConfig()
     temp_map.insert("LUT_PR_POSITION2", &lut_pr_position2);
     temp_map.insert("LUT_CAMERA_POSITION1", &lut_camera_position);
     temp_map.insert("LUT_PICKE_POSITION1", &lut_picker_position);
+    temp_map.insert("LENS_UPDNLOOK_OFFSET", &lens_updnlook_offset);
     PropertyBase::saveJsonConfig("config//lensLoaderModule.json", temp_map);
 }
 
@@ -346,16 +348,16 @@ bool LensLoaderModule::performLUTPR()
     return lut_vision->performPR(pr_offset);
 }
 
-bool LensLoaderModule::performUpDownlookDownPR()
+bool LensLoaderModule::performUpDownlookDownPR(PrOffset &offset)
 {
     qInfo("performUpDownlookDownPR");
-    return lpa_updownlook_down_vision->performPR(pr_offset);
+    return lpa_updownlook_down_vision->performPR(offset, false);
 }
 
-bool LensLoaderModule::performUpdowlookUpPR()
+bool LensLoaderModule::performUpdowlookUpPR(PrOffset &offset)
 {
     qInfo("performUpdowlookUpPR");
-    return lpa_updownlook_up_vision->performPR(pr_offset);
+    return lpa_updownlook_up_vision->performPR(offset, false);
 }
 bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
 {
@@ -560,12 +562,14 @@ void LensLoaderModule::performHandlingOperation(int cmd)
     }
     else if(cmd%100 == HandlePR::UPDOWNLOOK_DOWN_PR){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
-            result = performUpDownlookDownPR();
+            PrOffset offset;
+            result = performUpDownlookDownPR(offset);
         }
     }
     else if(cmd%100 == HandlePR::UPDOWNLOOK_UP_PR){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
-            result = performUpdowlookUpPR();
+            PrOffset offset;
+            result = performUpdowlookUpPR(offset);
         }
     }
     else

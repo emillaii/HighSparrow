@@ -1153,6 +1153,26 @@ bool BaseModuleManager::performUpDnLookCalibration()
     }
     return true;
 }
+bool BaseModuleManager::performLensUpDnLookCalibration()
+{
+    //ToDo: This is the calibration glass width and height in mm
+    double realWidth = 100, realHeight = 100;
+    PrOffset offset1, offset2;
+    this->lens_loader_module.performUpdowlookUpPR(offset1);
+    offset1.X /= offset1.W/realWidth;
+    offset1.Y /= offset1.H/realHeight;
+    qInfo("Lens loader UpDnlook up PR: %f %f %f %f %f", offset1.X, offset1.Y, offset1.Theta, offset1.W, offset1.H);
+    this->lens_loader_module.performUpDownlookDownPR(offset2);
+    offset2.X /= offset2.W/realWidth;
+    offset2.Y /= offset2.H/realHeight;
+    qInfo("Lens loader UpDnlook down PR: %f %f %f %f %f", offset2.X, offset2.Y, offset2.Theta, offset2.W, offset2.H);
+    double offsetX = offset1.X - offset2.X;
+    double offsetY = offset1.Y - offset2.Y;
+    this->lens_loader_module.lens_updnlook_offset.setX(offsetX);
+    this->lens_loader_module.lens_updnlook_offset.setY(offsetY);
+    qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", offsetX,offsetY);
+    return true;
+}
 
 bool BaseModuleManager::performLocation(QString location_name)
 {

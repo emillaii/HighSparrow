@@ -48,6 +48,9 @@ public:
     Q_INVOKABLE void performChartCalibration();
     Q_INVOKABLE void performCalibration(QString calibration_name);
     Q_INVOKABLE void performUpDnLookCalibration();
+    Q_INVOKABLE void performLensUpDnLookCalibration();
+    Q_INVOKABLE void performSensorPickheadCalibration();
+
     Q_INVOKABLE void performLocation(QString location_name);
 
     Q_INVOKABLE void performOC();

@@ -185,6 +185,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             prResult.x = point2D2.Get().x;
             prResult.y = point2D2.Get().y;
             prResult.theta = real1;
+            prResult.width = object2D1.Get().Match().Width();
+            prResult.height = object2D1.Get().Match().Height();
             prResult.imageName = imageName;
         }
         else

@@ -211,6 +211,7 @@ public:
     Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
     bool performCalibration(QString calibration_name);
     bool performUpDnLookCalibration();
+    bool performLensUpDnLookCalibration();
     bool performLocation(QString location_name);
     Q_INVOKABLE QString getCalibrationParam(QString calibration_name);
     Q_INVOKABLE void setOutput(QString name, bool on);

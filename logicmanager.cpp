@@ -24,6 +24,8 @@ enum CommandType{
     LUT_PICK_LENS_TO_AA1_CMD,
     PERFORM_CALIBRATION,
     PERFORM_UPDNLOOK_CALIBRATION,
+    PERFORM_LENS_UPDNLOOK_CALIBRATION,
+    PERFORM_SENSOR_PICKHEAD_CALIBRATION,
     PERFORM_LOCATION,
     PERFORM_OC,
     PERFORM_LOOP_TEST
@@ -112,6 +114,15 @@ void LogicManager::run() {
         baseModuleManage->performUpDnLookCalibration();
         qInfo("UpDnlook Calibration End");
     }
+    else if (m_currentMode == CommandType::PERFORM_LENS_UPDNLOOK_CALIBRATION)
+    {
+        baseModuleManage->performLensUpDnLookCalibration();
+        qInfo("Lens UpDnlook Calibration End");
+    }
+    else if (m_currentMode == CommandType::PERFORM_SENSOR_PICKHEAD_CALIBRATION)
+    {
+        qInfo("Sensor Pickhead calibration End");
+    }
     else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA1_CMD)
     {
         baseModuleManage->lut_module.moveToAA1PickLens(false,true);
@@ -190,6 +201,18 @@ void LogicManager::performUpDnLookCalibration()
 {
     setStateMessage(__FUNCTION__);
     moveToCmd(CommandType::PERFORM_UPDNLOOK_CALIBRATION);
+}
+
+void LogicManager::performLensUpDnLookCalibration()
+{
+    setStateMessage(__FUNCTION__);
+    moveToCmd(CommandType::PERFORM_LENS_UPDNLOOK_CALIBRATION);
+}
+
+void LogicManager::performSensorPickheadCalibration()
+{
+    setStateMessage(__FUNCTION__);
+    moveToCmd(CommandType::PERFORM_SENSOR_PICKHEAD_CALIBRATION);
 }
 
 void LogicManager::performLocation(QString location_name)

@@ -1,4 +1,5 @@
 #include "vision_location.h"
+#include <QThread>
 VisionLocation::VisionLocation():ErrorBase ()
 {
 }
@@ -137,9 +138,11 @@ QPointF VisionLocation::getCurrentOffset()
 void VisionLocation::OpenLight()
 {
     lighting->setBrightness(parameters.lightChannel(),parameters.lightBrightness());
+    QThread::msleep(30);
 }
 
 void VisionLocation::CloseLight()
 {
     lighting->setBrightness(parameters.lightChannel(),0);
+    QThread::msleep(30);
 }

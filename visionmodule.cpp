@@ -210,6 +210,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::SaveImageToJpeg( image6 , imageName.toStdString().c_str(), atl::NIL, false );
         displayPRResult(camera_name, prResult);
     } catch(const atl::Error& error) {
+        qInfo("PR Error: %s", error.Message());
         qWarning(error.Message());
         return error_code;
     }

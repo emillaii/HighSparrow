@@ -38,8 +38,8 @@ void SparrowClient::onClosed()
 //! [onTextMessageReceived]
 void SparrowClient::onTextMessageReceived(QString message)
 {
-    if (m_debug)
-       qInfo("Client Socket Message received: %s",message.toStdString().c_str());
+//    if (m_debug)
+//       qInfo("Client Socket Message received: %s",message.toStdString().c_str());
     //m_webSocket.close();
     emit receiveMessage(message);
 }

@@ -677,7 +677,7 @@ bool BaseModuleManager::InitStruct()
                         GetVisionLocationByName(lut_module.parameters.mushroomLocationName()),
                         GetVacuumByName(lut_module.parameters.vacuum1Name()),
                         GetVacuumByName(lut_module.parameters.vacuum1Name()),
-                        GetOutputIoByName(aa_head_module.parameters.gripperName()));
+                        GetOutputIoByName(aa_head_module.parameters.gripperName()), &sut_module);
         lens_picker.Init(GetVcMotorByName(lens_pick_arm.parameters.motorZName()),
                          GetMotorByName(lens_pick_arm.parameters.motorTName()),
                          GetVacuumByName(lens_pick_arm.parameters.vacuumName()));
@@ -1125,13 +1125,7 @@ bool BaseModuleManager::performUpDnLookCalibration()
 {
     qInfo("performUpDnLookCalibration");
     //ToDo: Move the lut movement in LUT Client.
-    if (ServerMode() == 0) {
-        if (!this->lut_module.moveToUnloadPos())
-        {
-            qInfo("LUT Cannot move to load pos");
-            return false;
-        }
-    }
+    lutClient->sendLUTMoveToPos(0); //Unload Pos
     PrOffset offset1, offset2;
     sut_module.moveToToolDownlookPos(true);
     if (!sut_module.toolDownlookPR(offset1,true,false)) {
@@ -1141,16 +1135,16 @@ bool BaseModuleManager::performUpDnLookCalibration()
     qInfo("UpDnlook Down PR: %f %f %f", offset1.X, offset1.Y, offset1.Theta);
     sut_module.moveToToolUplookPos(true);
     if (ServerMode() == 0) {
-        this->lut_module.moveToAA1UplookPos();
-        sut_module.toolUplookPR(offset2, true, false);
+        lutClient->sendLUTMoveToPos(1); //AA 1 Pos
+        lutClient->requestToolUpPRResult(offset2); //Do uplook PR
+    } else {
+        lutClient->sendLUTMoveToPos(2); //AA 2 Pos
     }
     double offsetT = offset1.Theta - offset2.Theta;
     qInfo("UpDnlook Up PR: %f %f %f", offset2.X, offset2.Y, offset2.Theta);
     qInfo("UpDnlook Camera Offset downlook - uplook = %f", offsetT);
     sut_module.parameters.setCameraTheta(offsetT);
-    if (ServerMode() == 0) {
-        this->lut_module.moveToUnloadPos();
-    }
+    lutClient->sendLUTMoveToPos(0); //AA 1 Pos
     return true;
 }
 bool BaseModuleManager::performLensUpDnLookCalibration()

@@ -32,6 +32,32 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
         qInfo("Enqueue the lens request command in request quene");
         requestQueue.enqueue(obj);
     }
+    else if (cmd == "moveToUnloadPosReq") {
+        servingIP = client_ip;
+        this->moveToUnloadPos();
+        sendEvent("moveToUnloadPosResp");
+    }
+    else if (cmd == "moveToAA1UplookPosReq") {
+        servingIP = client_ip;
+        this->moveToAA1UplookPos();
+        sendEvent("moveToAA1UplookPosResp");
+    }
+    else if (cmd == "moveToAA2UplookPosReq") {
+        servingIP = client_ip;
+        this->moveToAA2UplookPos();
+        sendEvent("moveToAA2UplookPosResp");
+    }
+    else if (cmd == "tooluplookPRReq") {
+        servingIP = client_ip;
+        PrOffset pr_offset;
+        this->receiveToolUpPRRequest(pr_offset);
+        QJsonObject result;
+        result.insert("prOffsetX", pr_offset.X);
+        result.insert("prOffsetY", pr_offset.Y);
+        result.insert("prOffsetT", pr_offset.Theta);
+        result.insert("event", "tooluplookPRResp");
+        emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
+    }
     else if (cmd.length() > 0) {
         qInfo("Enqueue the %s in action queue", cmd.toStdString().c_str());
         actionQueue.enqueue(obj);
@@ -264,7 +290,7 @@ void LutModule::performHandlingOperation(int cmd)
     return;
 }
 
-void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper)
+void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper, SutModule *sut)
 {
     this->carrier = carrier;
     this->uplook_location = uplook_location;
@@ -272,6 +298,7 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuum;
     this->mushroom_location = mushroom_location;
+    this->sut = sut;
 }
 
 void LutModule::saveJsonConfig()
@@ -494,5 +521,10 @@ bool LutModule::moveToAA2MushroomLens(bool check_autochthonous)
 bool LutModule::stepMove_XY_Sync(double x, double y)
 {
     return carrier->StepMove_XY_Sync(x,y);
+}
+
+void LutModule::receiveToolUpPRRequest(PrOffset &offset)
+{
+    sut->toolUplookPR(offset, true, false);
 }
 

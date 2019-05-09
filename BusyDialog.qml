@@ -14,7 +14,7 @@ Window {
 
     flags:  Qt.Window | Qt.WindowSystemMenuHint
             | Qt.WindowTitleHint | Qt.WindowMinimizeButtonHint
-            | Qt.WindowMaximizeButtonHint| Qt.WindowStaysOnTopHint
+            | Qt.WindowMaximizeButtonHint//| Qt.WindowStaysOnTopHint
 
     modality: Qt.NonModal // no need for this as it is the default value
     Timer {

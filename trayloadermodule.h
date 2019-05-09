@@ -77,6 +77,8 @@ signals:
     void trayReady();
     void testTrayUsed();
 
+    void testLTLXPickUpTray();
+    void testLTLXPutDownTray();
     void reset();
 
 public slots:
@@ -92,7 +94,8 @@ public slots:
     void onNextEmptyPos();
 
     void onTestTrayUsed();
-
+    void onTestLTLXPickUpTray();
+    void onTestLTLXPutDownTray();
     void onReset();
 
 

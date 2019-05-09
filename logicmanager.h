@@ -112,6 +112,9 @@ public:
     Q_INVOKABLE bool trayLoaderModuleCheckLTLXGetPos(double);
     Q_INVOKABLE bool trayLoaderModuleCheckLTLXSetPos(double);
 
+    Q_INVOKABLE void trayLoaderModuleLTLXPickUpTray();
+    Q_INVOKABLE void trayLoaderModuleLTLXPutDownTray();
+
 
 
     int currentMode() const

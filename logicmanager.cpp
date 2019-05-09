@@ -570,3 +570,13 @@ bool LogicManager::trayLoaderModuleCheckLTLXSetPos(double x)
     return true;
 }
 
+void LogicManager::trayLoaderModuleLTLXPickUpTray()
+{
+    baseModuleManage->tray_loader_module.onTestLTLXPickUpTray();
+}
+
+void LogicManager::trayLoaderModuleLTLXPutDownTray()
+{
+    baseModuleManage->tray_loader_module.onTestLTLXPutDownTray();
+}
+

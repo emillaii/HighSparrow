@@ -469,6 +469,52 @@ void TrayLoaderModule::onTestTrayUsed()
     states.setHasTrayUsed(true);
 }
 
+void TrayLoaderModule::onTestLTLXPickUpTray()
+{
+    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"测试前先将轨道上tray盘拿走，是否开始测试？"))){
+        return;
+    }
+    motorInRelease();
+    motorWorkRelease();
+    ejectTray();
+    moveToNextTrayPos();
+    motor_in->MoveToPos(parameters.ltkx1PressPos());
+    motor_in->WaitArrivedTargetPos(parameters.ltkx1PressPos());
+    motorInPress();
+    motor_in->MoveToPos(parameters.ltkx1ReleasePos());
+    motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
+    motorInRelease();
+    motor_in->MoveToPos(parameters.ltkx1RelayPos());
+    motor_in->WaitArrivedTargetPos(parameters.ltkx1RelayPos());
+    motorInPress();
+    motor_in->MoveToPos(parameters.ltkx1ReleasePos());
+    motor_work->MoveToPos(parameters.ltlPressPos());
+    int result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
+    result &= motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
+    if(result){
+        motorInRelease();
+        motorWorkPress();
+    }
+}
+void TrayLoaderModule::onTestLTLXPutDownTray()
+{
+    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"测试前先将轨道上多余tray盘拿走，是否开始测试？"))){
+        return;
+    }
+    motorOutRelease();
+    motor_work->MoveToPos(parameters.ltlReleasePos());
+    motor_out->MoveToPos(parameters.ltkx2PressPos());
+    int result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
+    result &= motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
+    if(result){
+        motorWorkRelease();
+        motorOutPress();
+    }
+    motor_out->MoveToPos(parameters.ltkx2ReleasePos());
+    result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
+    moveToNextEmptyPos();
+}
+
 void TrayLoaderModule::onReset(){
     onNextTrayPos();
     onNextEmptyPos();

@@ -600,7 +600,7 @@ ItemDelegate {
                         Button{
                             text:qsTr("松开")
                             onClicked:{
-                                logicManager.trayLoaderModuleLTLXCylinderOff();
+                                logicManager.trayLoaderModuleLTLXCylinderOff()
                             }
                         }
                     }
@@ -608,13 +608,13 @@ ItemDelegate {
                         Button{
                             text:qsTr("接盘过程测试")
                             onClicked: {
-
+                                logicManager.trayLoaderModuleLTLXPickUpTray()
                             }
                         }
                         Button{
                             text:qsTr("放盘过程测试")
                             onClicked: {
-
+                                logicManager.trayLoaderModuleLTLXPutDownTray()
                             }
                         }
                     }

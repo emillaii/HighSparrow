@@ -68,7 +68,7 @@ void SparrowQServer::socketDisconnected()
 
 void SparrowQServer::sendMessageToClient(QString dest, QString message)
 {
-    qInfo("send Message to client dest: %s message: %s", dest.toStdString().c_str(), message.toStdString().c_str());
+    qInfo("send Message to client dest: %s message: %s size of m_client: %d", dest.toStdString().c_str(), message.toStdString().c_str(), m_clients.size());
     for(int i = 0; i < m_clients.size(); i++)
     {
         QString temp_ip = m_clients[i]->peerAddress().toString();

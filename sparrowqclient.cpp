@@ -15,6 +15,7 @@ SparrowClient::SparrowClient(const QUrl &url, bool debug, QObject *parent) :
         qDebug() << "WebSocket server:" << url;
     connect(&m_webSocket, &QWebSocket::connected, this, &SparrowClient::onConnected);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &SparrowClient::onClosed);
+    connect(&m_webSocket, &QWebSocket::textMessageReceived, this, &SparrowClient::onTextMessageReceived);
     m_webSocket.open(QUrl(url));
 }
 //! [constructor]
@@ -24,8 +25,6 @@ void SparrowClient::onConnected()
 {
     if (m_debug)
         qDebug() << "WebSocket connected" << m_url;
-    connect(&m_webSocket, &QWebSocket::textMessageReceived,
-            this, &SparrowClient::onTextMessageReceived);
 }
 //! [onConnected]
 

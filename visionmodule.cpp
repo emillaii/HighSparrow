@@ -253,6 +253,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
     avl::Image image1;
     atl::Conditional< avl::EdgeModel > edgeModel1;
     atl::Conditional< atl::Array< avl::Path > > pathArray1;
+    atl::Conditional< avl::Point2D > point2D1;
     atl::Array< avl::Path > pathArray2;
     atl::Conditional< avl::Path > path1;
     atl::Conditional< atl::String > string1;
@@ -265,6 +266,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
     avl::Image image3;
     atl::Array< atl::Conditional< atl::String > > stringArray2;
     avl::Image image4;
+    avl::Image image5;
     atl::Conditional< avl::Rectangle2D > rectangle2D1;
 
     try {
@@ -293,8 +295,9 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
                     rectangle2D1.AssignNonNil();
                     string1.AssignNonNil();
                     string2.AssignNonNil();
+                    point2D1.AssignNonNil();
 
-                    avl::PathBoundingRectangle( path1.Get(), avl::BoundingRectangleFeature::MinimalArea, 90.0f, avl::RectangleOrientation::Horizontal, rectangle2D1.Get(), atl::NIL, atl::NIL, atl::NIL );
+                    avl::PathBoundingRectangle( path1.Get(), avl::BoundingRectangleFeature::MinimalArea, 90.0f, avl::RectangleOrientation::Horizontal, rectangle2D1.Get(), point2D1.Get(), atl::NIL, atl::NIL );
                     real1 = rectangle2D1.Get().Angle();
                     avl::RealToString( real1, string3 );
 
@@ -334,8 +337,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
             error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
             return error_code;
         }
-        prResult.x = rectangle2D1.Get().Origin().X();
-        prResult.y = rectangle2D1.Get().Origin().Y();
+        prResult.x = point2D1.Get().X();
+        prResult.y = point2D1.Get().Y();
         prResult.theta = rectangle2D1.Get().Angle();
         prResult.width = rectangle2D1.Get().Width();
         prResult.height = rectangle2D1.Get().Height();
@@ -346,7 +349,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
         stringArray2.Resize(1);
         stringArray2[0] = string2;
         avs::DrawStrings_SingleColor( image3, stringArray2, g_constData9, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), 32.0f, 0.0f, true, atl::NIL, image4 );
-        avl::SaveImageToJpeg( image4 , imageName.toStdString().c_str(), atl::NIL, false );
+        avs::DrawPoints_SingleColor( image4, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image5 );
+        avl::SaveImageToJpeg( image5 , imageName.toStdString().c_str(), atl::NIL, false );
     } catch(const atl::Error& error) {
         error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
         qWarning(error.Message());

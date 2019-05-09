@@ -1121,6 +1121,39 @@ bool BaseModuleManager::performCalibration(QString calibration_name)
     return  temp_caliration->performCalibration();
 }
 
+bool BaseModuleManager::performUpDnLookCalibration()
+{
+    qInfo("performUpDnLookCalibration");
+    //ToDo: Move the lut movement in LUT Client.
+    if (ServerMode() == 0) {
+        if (!this->lut_module.moveToUnloadPos())
+        {
+            qInfo("LUT Cannot move to load pos");
+            return false;
+        }
+    }
+    PrOffset offset1, offset2;
+    sut_module.moveToToolDownlookPos(true);
+    if (!sut_module.toolDownlookPR(offset1,true,false)) {
+        qInfo("SUT Cannot do the tool downlook PR");
+        return false;
+    }
+    qInfo("UpDnlook Down PR: %f %f %f", offset1.X, offset1.Y, offset1.Theta);
+    sut_module.moveToToolUplookPos(true);
+    if (ServerMode() == 0) {
+        this->lut_module.moveToAA1UplookPos();
+        sut_module.toolUplookPR(offset2, true, false);
+    }
+    double offsetT = offset1.Theta - offset2.Theta;
+    qInfo("UpDnlook Up PR: %f %f %f", offset2.X, offset2.Y, offset2.Theta);
+    qInfo("UpDnlook Camera Offset downlook - uplook = %f", offsetT);
+    sut_module.parameters.setCameraTheta(offsetT);
+    if (ServerMode() == 0) {
+        this->lut_module.moveToUnloadPos();
+    }
+    return true;
+}
+
 bool BaseModuleManager::performLocation(QString location_name)
 {
 //    if(!emit sendMsgSignal("title","content")){

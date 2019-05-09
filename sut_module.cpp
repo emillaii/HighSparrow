@@ -94,7 +94,7 @@ bool SutModule::toolDownlookPR(PrOffset &offset, bool close_lighting, bool motio
         vision_updownlook_down_location->CloseLight();
     if(motion)
         carrier->StepMove_XY_Sync(-offset.X,-offset.Y);
-    return false;
+    return true;
 }
 
 bool SutModule::toolUplookPR(PrOffset &offset, bool close_lighting, bool motion)
@@ -106,7 +106,7 @@ bool SutModule::toolUplookPR(PrOffset &offset, bool close_lighting, bool motion)
         vision_updownlook_up_location->CloseLight();
     if(motion)
         carrier->StepMove_XY_Sync(-offset.X,-offset.Y);
-    return false;
+    return true;
 }
 
 bool SutModule::toolDownlookPR(bool close_lighting, bool motion)
@@ -117,20 +117,20 @@ bool SutModule::toolDownlookPR(bool close_lighting, bool motion)
 
 bool SutModule::moveToToolDownlookPos(bool check_autochthonous)
 {
-    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    //if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
         return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_downlook_position.X(),tool_downlook_position.Y(),tool_downlook_position.Z(),check_autochthonous);
-    }else{
-        return true;
-    }
+    //}else{
+     //   return true;
+    //}
 }
 
 bool SutModule::moveToToolUplookPos(bool check_autochthonous)
 {
-    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    //if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
         return carrier->Move_SZ_SX_Y_X_Z_Sync(tool_uplook_positon.X(),tool_uplook_positon.Y(),tool_uplook_positon.Z(),check_autochthonous);
-    }else{
-        return true;
-    }
+    //}else{
+    //    return true;
+    //}
 }
 
 bool SutModule::moveToMushroomPos(bool check_autochthonous)

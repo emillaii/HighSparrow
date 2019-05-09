@@ -111,6 +111,7 @@ void TrayLoaderModule::run(bool has_tray)
             motorWorkPress();
             result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
             motorOutRelease();
+            moveToNextEmptyPos();
             motor_work->MoveToPos(parameters.ltlReleasePos());
             result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
             if(!result){
@@ -118,6 +119,7 @@ void TrayLoaderModule::run(bool has_tray)
             emit trayReady();
             states.setHasTrayReady(false);
             states.setHasTrayUsed(false);
+            if(!is_run)break;
         }
     }
 

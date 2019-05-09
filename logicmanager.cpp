@@ -514,3 +514,23 @@ void LogicManager::trayLoaderModuleLTKX1MoveToRelayPos()
     baseModuleManage->tray_loader_module.moveToLtkx1RelayPos();
 }
 
+bool LogicManager::trayLoaderModuleCheckLTLXGetPos(double x)
+{
+    double max_range = baseModuleManage->GetMotorByName(baseModuleManage->tray_loader_module.parameters.motorLTKX1Name())->GetPostiveRange();
+    if(x+166.7538>max_range){
+        QMessageBox::warning(nullptr,tr(u8"提示"),tr(u8"LTK_X1无法移动到此位置，请重新选择"),QMessageBox::Ok);
+        return false;
+    }
+    return true;
+}
+
+bool LogicManager::trayLoaderModuleCheckLTLXSetPos(double x)
+{
+    double min_range = baseModuleManage->GetMotorByName(baseModuleManage->tray_loader_module.parameters.motorLTKX2Name())->GetNegativeRange();
+    if(x-653<min_range){
+        QMessageBox::warning(nullptr,tr(u8"提示"),tr(u8"LTK_X2无法移动到此位置，请重新选择"),QMessageBox::Ok);
+        return false;
+    }
+    return true;
+}
+

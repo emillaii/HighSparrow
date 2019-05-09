@@ -105,6 +105,9 @@ public:
 
     Q_INVOKABLE void trayLoaderModuleLTKX1MoveToRelayPos();
 
+    Q_INVOKABLE bool trayLoaderModuleCheckLTLXGetPos(double);
+    Q_INVOKABLE bool trayLoaderModuleCheckLTLXSetPos(double);
+
 
 
     int currentMode() const

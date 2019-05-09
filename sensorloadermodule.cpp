@@ -889,6 +889,9 @@ bool SensorLoaderModule::picker1MeasureHight(bool is_tray)
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         QThread::msleep(100);
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetSoftladngPosition()))){
+            return true;
+        }
         if(is_tray)
             parameters.setPickSensorZ(pick_arm->GetSoftladngPosition());
         else
@@ -904,6 +907,9 @@ bool SensorLoaderModule::picker2MeasureHight(bool is_tray, bool is_product)
     if(pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         QThread::msleep(100);
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetSoftladngPosition2()))){
+            return true;
+        }
         if(is_tray)
         {
             if(is_product)

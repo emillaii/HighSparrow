@@ -220,6 +220,20 @@ ColumnLayout {
         }
     }
     GroupBox{
+        title:"Updownlook Lens Calibration"
+        ColumnLayout{
+            RowLayout{
+                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
+                Button{
+                    text: qsTr("Start Calibratio")
+                    onClicked: {
+                        logicManager.performLensUpDnLookCalibration()
+                    }
+                }
+            }
+        }
+    }
+    GroupBox{
         title:"upload picker位置"
         ColumnLayout{
             RowLayout{

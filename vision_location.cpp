@@ -1,4 +1,5 @@
 #include "vision_location.h"
+#include <QThread>
 VisionLocation::VisionLocation():ErrorBase ()
 {
 }
@@ -21,7 +22,7 @@ void VisionLocation::saveParam()
     PropertyBase::saveJsonConfig(PR_PARAMETER_FILE_PATH,PR_AA1_TOOL_UPLOOK,&parameters);
 }
 
-bool VisionLocation::performPR(PrOffset &offset)
+bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
 {
     offset.ReSet();
     current_offset.ReSet();
@@ -32,6 +33,14 @@ bool VisionLocation::performPR(PrOffset &offset)
         QPointF mech;
         PrOffset temp_offset;
         qInfo("Perform PR Success. PR_Result: %f %f %f", pr_result.x, pr_result.y, pr_result.theta);
+        if (!need_conversion) {
+            offset.X = pr_result.x;
+            offset.Y = pr_result.y;
+            offset.Theta = pr_result.theta;
+            offset.W = pr_result.width;
+            offset.H = pr_result.height;
+            return true;
+        }
         if(mapping->CalcMechDistance(QPointF(pr_result.x,pr_result.y),mech))
         {
            temp_offset.X = mech.x();
@@ -129,9 +138,11 @@ QPointF VisionLocation::getCurrentOffset()
 void VisionLocation::OpenLight()
 {
     lighting->setBrightness(parameters.lightChannel(),parameters.lightBrightness());
+    QThread::msleep(30);
 }
 
 void VisionLocation::CloseLight()
 {
     lighting->setBrightness(parameters.lightChannel(),0);
+    QThread::msleep(30);
 }

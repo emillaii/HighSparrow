@@ -21,8 +21,8 @@ AACore::AACore(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey* dk
 {
     this->aa_head = aa_head;
     this->lut = lut;
-    this->sut = sut;
     this->dk = dk;
+    this->sut = sut;
     this->chartCalibration = chartCalibration;
     this->dispense = dispense;
     this->imageThread = imageThread;
@@ -531,8 +531,9 @@ ErrorCodeStruct AACore::performAAPickLens()
             qInfo("wait sensor suceess");
             has_sensor = true;
         }
-        else
-            { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"}; }
+        else {
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"};
+        }
     }
     qInfo("Done Pick Lens");
     return ErrorCodeStruct {ErrorCode::OK, ""};

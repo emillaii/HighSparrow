@@ -11,13 +11,13 @@ ItemDelegate {
         ListModel{
             id:motorsModel
             ListElement{
-                modelData:"SUT_X"
+                modelData:"LUT_X"
             }
             ListElement{
-                modelData:"SUT_Y"
+                modelData:"LUT_Y"
             }
             ListElement{
-                modelData:"SUT_Z"
+                modelData:"LUT_Z"
             }
         }
         MotionPopup{
@@ -79,11 +79,11 @@ ItemDelegate {
                 LUTAA1PickLensPosition {
                 }
             }
-//            GroupBox{
-//                title: qsTr("AA_1 UnPick Lens Position")
-//                LUTAA1UnpickLensPosition {
-//                }
-//            }
+            GroupBox{
+                title: qsTr("AA_1 UnPick Lens Position")
+                LUTAA1UnpickLensPosition {
+                }
+            }
 //            GroupBox{
 //                title: qsTr("AA_1 UpDownlook Position")
 //                LUTAA1UpDownlookPosition {
@@ -101,11 +101,11 @@ ItemDelegate {
                 LUTAA2PickLensPosition {
                 }
             }
-//            GroupBox{
-//                title: qsTr("AA_2 UnPick Lens Position")
-//                LUTAA2UnPickLensPosition {
-//                }
-//            }
+            GroupBox{
+                title: qsTr("AA_2 UnPick Lens Position")
+                LUTAA2UnPickLensPosition {
+                }
+            }
 //            GroupBox{
 //                title: qsTr("AA_2 UpDownlook Position")
 //                LUTAA2UpDownlookPosition {

@@ -19,6 +19,7 @@ public:
     TrayClip* tray_clip = Q_NULLPTR;
     TrayClip* tray_clip_out = Q_NULLPTR;
     TrayLoaderModuleParameter parameters;
+    TrayLoaderState states;
     bool startUp();
 
     bool moveToNextTrayPos();
@@ -76,6 +77,8 @@ signals:
     void trayReady();
     void testTrayUsed();
 
+    void testLTLXPickUpTray();
+    void testLTLXPutDownTray();
     void reset();
 
 public slots:
@@ -91,7 +94,8 @@ public slots:
     void onNextEmptyPos();
 
     void onTestTrayUsed();
-
+    void onTestLTLXPickUpTray();
+    void onTestLTLXPutDownTray();
     void onReset();
 
 

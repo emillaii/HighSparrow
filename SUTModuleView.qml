@@ -11,13 +11,13 @@ ItemDelegate {
         ListModel{
             id:motorsModel
             ListElement{
-                modelData:"LUT_X"
+                modelData:"SUT_X"
             }
             ListElement{
-                modelData:"LUT_Y"
+                modelData:"SUT_Y"
             }
             ListElement{
-                modelData:"LUT_Z"
+                modelData:"SUT_Z"
             }
         }
         MotionPopup{
@@ -51,6 +51,36 @@ ItemDelegate {
                     }
                 }
             }
+            RowLayout {
+                GroupBox{
+                    title: qsTr("Updownlook Camera Offset")
+                    ColumnLayout {
+                        RowLayout {
+                            Button{
+                                text:qsTr("UpDn Calib")
+                                onClicked: {
+                                    logicManager.performUpDnLookCalibration()
+                                }
+                            }
+                            Label {
+                                text: qsTr("Camera Offset")
+                            }
+                            TextField {
+                                text: sutParams.cameraTheta
+                                horizontalAlignment: TextInput.AlignHCenter
+                                validator: DoubleValidator {
+                                    decimals: 3
+                                    notation: DoubleValidator.StandardNotation
+                                }
+                                onEditingFinished: {
+                                    sutParams.setCameraTheta(text)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             GroupBox{
                 title: qsTr("Mushroom Position")
                 SUTMushroomPosition {}

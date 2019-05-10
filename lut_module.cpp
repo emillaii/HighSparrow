@@ -32,6 +32,32 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
         qInfo("Enqueue the lens request command in request quene");
         requestQueue.enqueue(obj);
     }
+    else if (cmd == "moveToUnloadPosReq") {
+        servingIP = client_ip;
+        this->moveToUnloadPos();
+        sendEvent("moveToUnloadPosResp");
+    }
+    else if (cmd == "moveToAA1UplookPosReq") {
+        servingIP = client_ip;
+        this->moveToAA1UplookPos();
+        sendEvent("moveToAA1UplookPosResp");
+    }
+    else if (cmd == "moveToAA2UplookPosReq") {
+        servingIP = client_ip;
+        this->moveToAA2UplookPos();
+        sendEvent("moveToAA2UplookPosResp");
+    }
+    else if (cmd == "tooluplookPRReq") {
+        servingIP = client_ip;
+        PrOffset pr_offset;
+        this->receiveToolUpPRRequest(pr_offset);
+        QJsonObject result;
+        result.insert("prOffsetX", pr_offset.X);
+        result.insert("prOffsetY", pr_offset.Y);
+        result.insert("prOffsetT", pr_offset.Theta);
+        result.insert("event", "tooluplookPRResp");
+        emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
+    }
     else if (cmd.length() > 0) {
         qInfo("Enqueue the %s in action queue", cmd.toStdString().c_str());
         actionQueue.enqueue(obj);
@@ -48,12 +74,11 @@ void LutModule::receiveLoadLensRequstFinish(int lens, int lens_tray)
     }
     states.setLutHasLens(true);
     qInfo("LutModule set has lens");
-    if(lens>-1 && lens_tray>-1)
-    {
-        states.setLutLensID(lens);
-        states.setLutTrayID(lens_tray);
-        qInfo("LutModule current tray id lens: %d tray: %d", lens, lens_tray);
-    }
+    states.setLutLensID(lens);
+    states.setLutTrayID(lens_tray);
+    states.setLutNgLensID(-1);
+    states.setLutNgTrayID(-1);
+    qInfo("LutModule current tray id lens: %d tray: %d", lens, lens_tray);
     states.setPickingLens(true);
     qInfo("LutModule set picking lens is true");
     qInfo("receiveLensRequstFinish take effect");
@@ -113,73 +138,74 @@ void LutModule::run(bool has_material)
                     QString client_ip = obj["client_ip"].toString("");
                     states.setCmd(obj["cmd"].toString(""));
                 }
-            if(states.cmd() == "unpickNgLensReq")
-            {
-                bool action_result;
-                isLocalHost ?action_result = moveToAA1UnPickLens() : action_result = moveToAA2UnPickLens();
-                if((!action_result)&&has_material)
+
+                if(states.cmd() == "unpickNgLensReq")
                 {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
+                    bool action_result;
+                    isLocalHost ?action_result = moveToAA1UnPickLens() : action_result = moveToAA2UnPickLens();
+                    if((!action_result)&&has_material)
+                    {
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                        is_run = false;
+                        break;
+                    }
+                    else
+                    {
+                        sendEvent("unpickNgLensResp");
+                        states.setCmd("");
+                        states.setLutNgLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
+                        states.setLutNgTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
+                    }
                 }
-                else
-                {
-                    sendEvent("unpickNgLensResp");
-                    states.setCmd("");
-                    states.setLutLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
-                    states.setLutTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
+                else if (states.cmd() == "pickLensReq") {
+                    bool action_result;
+                    isLocalHost ?action_result = moveToAA1PickLens() : action_result = moveToAA2PickLens();
+                    if((!action_result)&&has_material)
+                    {
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                        is_run = false;
+                        break;
+                    }
+                    else
+                    {
+                        sendEvent("pickLensResp");
+                        states.setCmd("");
+                        isLocalHost?states.setAa1LensID(states.lutLensID()):states.setAa2LensID(states.lutLensID());
+                        isLocalHost?states.setAa1TrayID(states.lutTrayID()):states.setAa2TrayID(states.lutTrayID());
+                    }
                 }
-            }
-            else if (states.cmd() == "pickLensReq") {
-                bool action_result;
-                isLocalHost ?action_result = moveToAA1PickLens() : action_result = moveToAA2PickLens();
-                if((!action_result)&&has_material)
-                {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
+                else if (states.cmd() == "prReq") {
+                    qInfo("perform PR start");
+                    bool action_result;
+                    PrOffset pr_offset;
+                    isLocalHost ?action_result = moveToAA1UplookPR(pr_offset): action_result = moveToAA2UplookPR(pr_offset);
+                    if((!action_result)&&has_material)
+                    {
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                        is_run = false;
+                        break;
+                    }
+                    else
+                    {
+                        sendPrEvent(pr_offset);
+                        states.setCmd("");
+                    }
+                } else if (states.cmd() == "lutLeaveReq") {
+                    bool action_result;
+                    action_result = moveToUnloadPos();
+                    if((!action_result)&&has_material)
+                    {
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                        is_run = false;
+                        break;
+                    }
+                    else
+                    {
+                        sendEvent("lutLeaveResp");
+                        states.setCmd("");
+                        state = NO_LENS;
+                    }
                 }
-                else
-                {
-                    sendEvent("pickLensResp");
-                    states.setCmd("");
-                    isLocalHost?states.setAa1LensID(states.lutLensID()):states.setAa2LensID(states.lutLensID());
-                    isLocalHost?states.setAa1TrayID(states.lutTrayID()):states.setAa2TrayID(states.lutTrayID());
-                }
-            }
-            else if (states.cmd() == "prReq") {
-                qInfo("perform PR start");
-                bool action_result;
-                PrOffset pr_offset;
-                action_result = uplook_location->performPR(pr_offset);
-                if((!action_result)&&has_material)
-                {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
-                }
-                else
-                {
-                    sendPrEvent(pr_offset);
-                    states.setCmd("");
-                }
-            } else if (states.cmd() == "lutLeaveReq") {
-                bool action_result;
-                action_result = moveToUnloadPos();
-                if((!action_result)&&has_material)
-                {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
-                }
-                else
-                {
-                    sendEvent("lutLeaveResp");
-                    states.setCmd("");
-                    state = NO_LENS;
-                }
-            }
             }
 
         }
@@ -193,6 +219,7 @@ void LutModule::run(bool has_material)
                 {
                     qInfo("LUT Module has lens");
                     states.setWaitLens(false);
+                    states.setPickingLens(false);
                     state = HAS_LENS;
                 }
             }
@@ -263,7 +290,7 @@ void LutModule::performHandlingOperation(int cmd)
     return;
 }
 
-void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper)
+void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper, SutModule *sut)
 {
     this->carrier = carrier;
     this->uplook_location = uplook_location;
@@ -271,6 +298,7 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuum;
     this->mushroom_location = mushroom_location;
+    this->sut = sut;
 }
 
 void LutModule::saveJsonConfig()
@@ -320,7 +348,7 @@ bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting,bool che
     bool result = moveToAA1UplookPos(check_autochthonous);
     if(result)
     {
-      result = uplook_location->performPR(offset);
+        result = uplook_location->performPR(offset);
     }
     if(close_lighting)
         uplook_location->CloseLight();
@@ -338,7 +366,7 @@ bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting,bool che
     bool result = moveToAA2UplookPos(check_autochthonous);
     if(result)
     {
-      uplook_location->performPR(offset);
+        uplook_location->performPR(offset);
     }
     if(close_lighting)
         uplook_location->CloseLight();
@@ -362,11 +390,14 @@ bool LutModule::moveToLoadUplookPos(bool check_autochthonous)
 
 bool LutModule::moveToLoadUplookPR(bool check_autochthonous)
 {
-    load_location->OpenLight();
-    if(moveToLoadUplookPos(check_autochthonous))
-//        return  load_location->performPR();
-        return true;
-    return false;
+    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        load_location->OpenLight();
+        if(moveToLoadUplookPos(check_autochthonous))
+            //        return  load_location->performPR();
+            return true;
+        return false;
+    }
+    return true;
 }
 
 double LutModule::getLoadUplookPRX()
@@ -390,8 +421,8 @@ bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
         if(result)
         {
             sendCmd("::1","gripperOffReq");
-//            gripper->Set(false);
-//            Sleep(180);
+            //            gripper->Set(false);
+            //            Sleep(180);
             load_vacuum->Set(false);
             Sleep(500);
         }
@@ -408,7 +439,11 @@ bool LutModule::vcmReturn()
 
 bool LutModule::moveToAA1PickLensPos(bool check_autochthonous)
 {
-    return carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
+    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        return carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
+    }else{
+        return true;
+    }
 }
 
 bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
@@ -430,7 +465,10 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
 
 bool LutModule::moveToAA2PickLensPos(bool check_autochthonous)
 {
-     return carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
+    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        return true;
+    }
+    return carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
 }
 
 bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
@@ -443,7 +481,7 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
         if (result) {
             sendCmd("remote","gripperOffReq");
-//            emit sendMessageToClient("remote", getStringFromJsonObject(gripperOffMessage));
+            //            emit sendMessageToClient("remote", getStringFromJsonObject(gripperOffMessage));
             this->load_vacuum->Set(false);
             Sleep(500);  //ToDo: Put that in UI
         }
@@ -472,16 +510,21 @@ bool LutModule::moveToAA2UnPickLens(bool check_autochthonous)
 
 bool LutModule::moveToAA1MushroomLens(bool check_autochthonous)
 {
-     return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_mushroom_position.X(),aa1_mushroom_position.Y(),aa1_mushroom_position.Z(),check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_mushroom_position.X(),aa1_mushroom_position.Y(),aa1_mushroom_position.Z(),check_autochthonous);
 }
 
 bool LutModule::moveToAA2MushroomLens(bool check_autochthonous)
 {
-     return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_mushroom_position.X(),aa2_mushroom_position.Y(),aa2_mushroom_position.Z(),check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_mushroom_position.X(),aa2_mushroom_position.Y(),aa2_mushroom_position.Z(),check_autochthonous);
 }
 
 bool LutModule::stepMove_XY_Sync(double x, double y)
 {
     return carrier->StepMove_XY_Sync(x,y);
+}
+
+void LutModule::receiveToolUpPRRequest(PrOffset &offset)
+{
+    sut->toolUplookPR(offset, true, false);
 }
 

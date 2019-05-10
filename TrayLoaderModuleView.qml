@@ -172,7 +172,7 @@ ItemDelegate {
                             }
                         }
                         Button{
-                            text:qsTr("移动")
+                            text:title_move_to
                             onClicked: {
                                 logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in.text-1)
                             }
@@ -311,6 +311,7 @@ ItemDelegate {
             GroupBox{
                 title:qsTr("tray轨道")
                 ColumnLayout{
+//*
                     RowLayout{
                         Label{
                             text:qsTr("LTK_X1 接盘位置")
@@ -340,6 +341,8 @@ ItemDelegate {
                             }
                         }
                     }
+//*/
+/*
                     RowLayout{
                         Label{
                             text:qsTr("LTK_X1 中继位置")
@@ -369,6 +372,8 @@ ItemDelegate {
                             }
                         }
                     }
+//*/
+/*
                     RowLayout{
                         Label{
                             text:qsTr("LTK_X1 放盘位置")
@@ -398,6 +403,8 @@ ItemDelegate {
                             }
                         }
                     }
+//*/
+
                     RowLayout{
                         Layout.alignment: Qt.AlignRight
                         Button{
@@ -413,6 +420,7 @@ ItemDelegate {
                             }
                         }
                     }
+/*
                     RowLayout{
                         Label{
                             text:qsTr("LTK_X2 接盘位置")
@@ -442,6 +450,8 @@ ItemDelegate {
                             }
                         }
                     }
+//*/
+/*
                     RowLayout{
                         Label{
                             text:qsTr("LTK_X2 放盘位置")
@@ -471,6 +481,8 @@ ItemDelegate {
                             }
                         }
                     }
+//*/
+/*
                     RowLayout{
                         Layout.alignment: Qt.AlignRight
                         Button{
@@ -486,6 +498,7 @@ ItemDelegate {
                             }
                         }
                     }
+//*/
                     RowLayout{
                         Label{
                             text:qsTr("LTL 接盘位置")
@@ -498,7 +511,15 @@ ItemDelegate {
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtlPressPos(text)
+                                if(logicManager.trayLoaderModuleCheckLTLXGetPos(text)){
+                                    tray_loader_module_parameters.setLtlPressPos(text)
+                                    tray_loader_module_parameters.setLtkx1ReleasePos(text+166.7538)
+                                    tray_loader_module_parameters.setLtkx1RelayPos(text+166.7538-310)
+                                }else{
+                                    tray_loader_module_parameters.setLtlPressPos(310-166.7538)
+                                    tray_loader_module_parameters.setLtkx1ReleasePos(310)
+                                    tray_loader_module_parameters.setLtkx1RelayPos(0);
+                                }
                             }
                         }
                         Button{
@@ -511,7 +532,17 @@ ItemDelegate {
                             text:title_read_encoder
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTLXName)
-                                tray_loader_module_parameters.setLtlPressPos(x)
+                                if(logicManager.trayLoaderModuleCheckLTLXGetPos(x)){
+                                    tray_loader_module_parameters.setLtlPressPos(x)
+                                    tray_loader_module_parameters.setLtkx1ReleasePos(x+166.758)
+                                    tray_loader_module_parameters.setLtkx1RelayPos(text+166.7538-310)
+                                }else{
+                                    tray_loader_module_parameters.setLtlPressPos(310-166.7538)
+                                    tray_loader_module_parameters.setLtkx1ReleasePos(310)
+                                    tray_loader_module_parameters.setLtkx1RelayPos(0);
+                                }
+
+
                             }
                         }
                     }
@@ -527,7 +558,15 @@ ItemDelegate {
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtlReleasePos(text)
+                                if(logicManager.trayLoaderModuleCheckLTLXSetPos(text)){
+                                    tray_loader_module_parameters.setLtlReleasePos(text)
+                                    tray_loader_module_parameters.setLtkx2PressPos(text-653)
+                                }else{
+                                    tray_loader_module_parameters.setLtlReleasePos(653)
+                                    tray_loader_module_parameters.setLtkx2PressPos(0)
+                                }
+
+
                             }
                         }
                         Button{
@@ -540,7 +579,13 @@ ItemDelegate {
                             text:title_read_encoder
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTLXName)
-                                tray_loader_module_parameters.setLtlReleasePos(x)
+                                if(logicManager.trayLoaderModuleCheckLTLXSetPos(x)){
+                                    tray_loader_module_parameters.setLtlReleasePos(x)
+                                    tray_loader_module_parameters.setLtkx2PressPos(x-653)
+                                }else{
+                                    tray_loader_module_parameters.setLtlReleasePos(653)
+                                    tray_loader_module_parameters.setLtkx2PressPos(0)
+                                }
                             }
                         }
                     }
@@ -555,10 +600,25 @@ ItemDelegate {
                         Button{
                             text:qsTr("松开")
                             onClicked:{
-                                logicManager.trayLoaderModuleLTLXCylinderOff();
+                                logicManager.trayLoaderModuleLTLXCylinderOff()
                             }
                         }
                     }
+                    RowLayout{
+                        Button{
+                            text:qsTr("接盘过程测试")
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTLXPickUpTray()
+                            }
+                        }
+                        Button{
+                            text:qsTr("放盘过程测试")
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTLXPutDownTray()
+                            }
+                        }
+                    }
+
                     RowLayout{
                         GroupBox{
                             title:qsTr("流程测试")

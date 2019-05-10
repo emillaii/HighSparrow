@@ -12,7 +12,7 @@ HighSprrow::HighSprrow()
     baseModuleManager->LoadProfile();
     logicManager = new LogicManager(baseModuleManager);
     baseModuleManager->registerWorkers(worker_manager);
-    connect(logicManager,&LogicManager::sendMsgSignal,worker_manager,&WorkersManager::sendMessageTest);
+    connect(logicManager,&LogicManager::sendMsgSignal,worker_manager,&WorkersManager::sendMessageTest,Qt::BlockingQueuedConnection);
 }
 
 HighSprrow::~HighSprrow()

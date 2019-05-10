@@ -19,7 +19,6 @@ public:
 
     Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString);
-    AACore * aaCore = Q_NULLPTR;
 
     void performMotionThread();
 
@@ -48,6 +47,10 @@ public:
 
     Q_INVOKABLE void performChartCalibration();
     Q_INVOKABLE void performCalibration(QString calibration_name);
+    Q_INVOKABLE void performUpDnLookCalibration();
+    Q_INVOKABLE void performLensUpDnLookCalibration();
+    Q_INVOKABLE void performSensorPickheadCalibration();
+
     Q_INVOKABLE void performLocation(QString location_name);
 
     Q_INVOKABLE void performOC();
@@ -105,6 +108,12 @@ public:
     Q_INVOKABLE void trayLoaderModuleEmitTestTrayUsed();
 
     Q_INVOKABLE void trayLoaderModuleLTKX1MoveToRelayPos();
+
+    Q_INVOKABLE bool trayLoaderModuleCheckLTLXGetPos(double);
+    Q_INVOKABLE bool trayLoaderModuleCheckLTLXSetPos(double);
+
+    Q_INVOKABLE void trayLoaderModuleLTLXPickUpTray();
+    Q_INVOKABLE void trayLoaderModuleLTLXPutDownTray();
 
 
 

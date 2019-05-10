@@ -56,6 +56,8 @@ public:
     void loadJsonConfig();
     void saveJsonConfig();
     void performHandling(int cmd);
+    bool performUpDownlookDownPR(PrOffset &offset);
+    bool performUpdowlookUpPR(PrOffset &offset);
 signals:
     void sendChangeTrayRequst();
     void sendLoadLensRequstFinish(int lens,int lens_tray);
@@ -72,8 +74,6 @@ private:
     bool performLensPR();
     bool performVacancyPR();
     bool performLUTPR();
-    bool performUpDownlookDownPR();
-    bool performUpdowlookUpPR();
 
     bool moveToWorkPos(bool check_softlanding = false);
     bool vcmSearchZ(double z,bool is_open = true,bool check_softlanding = false);
@@ -105,6 +105,7 @@ public:
     Position lut_pr_position2;
     Position lut_camera_position;
     Position lut_picker_position;
+    Position lens_updnlook_offset;
 private:
     LensPickArm *pick_arm = Q_NULLPTR;
     MaterialTray *tray = Q_NULLPTR;

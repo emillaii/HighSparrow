@@ -13,7 +13,7 @@ public:
     void Init(VisionModule* vison,Pixel2Mech* mapping,WordopLight* lighting);
     void loadParam();
     void saveParam();
-    bool performPR(PrOffset &offset);
+    bool performPR(PrOffset &offset, bool need_conversion = true);
     bool performPR();
     bool performPR(PRResultStruct &pr_result);
     Q_INVOKABLE QPointF getCurrentOffset();

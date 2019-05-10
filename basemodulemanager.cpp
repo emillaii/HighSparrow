@@ -69,7 +69,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     }
     material_tray.standards_parameters.setTrayCount(2);
     unitlog.setServerAddress(DataServerURL());
-    connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest);
+    connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -115,7 +115,6 @@ bool BaseModuleManager::loadParameters()
     trayClipIn.standards_parameters.loadJsonConfig(TRAY_CLIPIN_PATH,TRAY_CLIPIN_PARAMETER);
     trayClipOut.standards_parameters.loadJsonConfig(TRAY_CLIPOUT_PATH,TRAY_CLIPOUT_PARAMETER);
 
-    material_tray.loadJsonConfig();
     if(ServerMode())
     {
         sensor_loader_module.loadJsonConfig();
@@ -149,9 +148,6 @@ bool BaseModuleManager::SaveParameters()
     dispenser.parameters.saveJsonConfig(DISPENSER_PARAMETER_PATH,DISPENSER_PARAMETER);
     dispense_module.parameters.saveJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
     material_tray.saveJsonConfig();
-    lens_loader_module.saveJsonConfig();
-    lens_pick_arm.parameters.saveJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
-    lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
     sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
     if(ServerMode())
     {
@@ -681,7 +677,7 @@ bool BaseModuleManager::InitStruct()
                         GetVisionLocationByName(lut_module.parameters.mushroomLocationName()),
                         GetVacuumByName(lut_module.parameters.vacuum1Name()),
                         GetVacuumByName(lut_module.parameters.vacuum1Name()),
-                        GetOutputIoByName(aa_head_module.parameters.gripperName()));
+                        GetOutputIoByName(aa_head_module.parameters.gripperName()), &sut_module);
         lens_picker.Init(GetVcMotorByName(lens_pick_arm.parameters.motorZName()),
                          GetMotorByName(lens_pick_arm.parameters.motorTName()),
                          GetVacuumByName(lens_pick_arm.parameters.vacuumName()));
@@ -1125,6 +1121,53 @@ bool BaseModuleManager::performCalibration(QString calibration_name)
     return  temp_caliration->performCalibration();
 }
 
+bool BaseModuleManager::performUpDnLookCalibration()
+{
+    qInfo("performUpDnLookCalibration");
+    //ToDo: Move the lut movement in LUT Client.
+    lutClient->sendLUTMoveToPos(0); //Unload Pos
+    PrOffset offset1, offset2;
+    sut_module.moveToToolDownlookPos(true);
+    if (!sut_module.toolDownlookPR(offset1,true,false)) {
+        qInfo("SUT Cannot do the tool downlook PR");
+        return false;
+    }
+    qInfo("UpDnlook Down PR: %f %f %f", offset1.X, offset1.Y, offset1.Theta);
+    sut_module.moveToToolUplookPos(true);
+    if (ServerMode() == 0) {
+        lutClient->sendLUTMoveToPos(1); //AA 1 Pos
+        lutClient->requestToolUpPRResult(offset2); //Do uplook PR
+    } else {
+        lutClient->sendLUTMoveToPos(2); //AA 2 Pos
+    }
+    double offsetT = offset1.Theta - offset2.Theta;
+    qInfo("UpDnlook Up PR: %f %f %f", offset2.X, offset2.Y, offset2.Theta);
+    qInfo("UpDnlook Camera Offset downlook - uplook = %f", offsetT);
+    sut_module.parameters.setCameraTheta(offsetT);
+    lutClient->sendLUTMoveToPos(0); //AA 1 Pos
+    return true;
+}
+bool BaseModuleManager::performLensUpDnLookCalibration()
+{
+    //ToDo: This is the calibration glass width and height in mm
+    double realWidth = 100, realHeight = 100;
+    PrOffset offset1, offset2;
+    this->lens_loader_module.performUpdowlookUpPR(offset1);
+    offset1.X /= offset1.W/realWidth;
+    offset1.Y /= offset1.H/realHeight;
+    qInfo("Lens loader UpDnlook up PR: %f %f %f %f %f", offset1.X, offset1.Y, offset1.Theta, offset1.W, offset1.H);
+    this->lens_loader_module.performUpDownlookDownPR(offset2);
+    offset2.X /= offset2.W/realWidth;
+    offset2.Y /= offset2.H/realHeight;
+    qInfo("Lens loader UpDnlook down PR: %f %f %f %f %f", offset2.X, offset2.Y, offset2.Theta, offset2.W, offset2.H);
+    double offsetX = offset1.X - offset2.X;
+    double offsetY = offset1.Y - offset2.Y;
+    this->lens_loader_module.lens_updnlook_offset.setX(offsetX);
+    this->lens_loader_module.lens_updnlook_offset.setY(offsetY);
+    qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", offsetX,offsetY);
+    return true;
+}
+
 bool BaseModuleManager::performLocation(QString location_name)
 {
 //    if(!emit sendMsgSignal("title","content")){
@@ -1158,7 +1201,7 @@ bool BaseModuleManager::performLocation(QString location_name)
     }
     if(temp_location->parameters.canMotion())
     {
-        if(!emit sendMsgSignal(tr("无标题"),tr("x: %1,y:%2,theta:%3,是否移动").arg(offset.X).arg(offset.Y).arg(offset.Theta))){
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"x: %1,y:%2,theta:%3,是否移动").arg(offset.X).arg(offset.Y).arg(offset.Theta))){
             return true;
         }
         temp_caliration->performPRResult(offset);

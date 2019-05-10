@@ -12,6 +12,7 @@
 #include <QObject>
 #include <QQueue>
 #include "thread_worker_base.h"
+#include "sut_module.h"
 
 enum LUTState
 {
@@ -27,7 +28,7 @@ public:
     explicit LutModule(QString name = "LUTModule", QObject * parent = nullptr);
     void Init(MaterialCarrier* carrier,
               VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location,
-              XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper);
+              XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper, SutModule* sut);
     void loadParams();
     void openServer(int port);
     LutParameter parameters;
@@ -57,8 +58,10 @@ public slots:
     void saveJsonConfig();
     void receiveRequestMessage(QString message, QString client_ip);
     void receiveLoadLensRequstFinish(int lens,int lens_tray);
+    void receiveToolUpPRRequest(PrOffset &offset);
     LUTState getLUTState();
 private:
+    SutModule* sut;
     MaterialCarrier* carrier;
     VisionLocation* uplook_location;
     VisionLocation* load_location;

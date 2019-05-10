@@ -1,4 +1,4 @@
-#include "logicmanager.h"
+﻿#include "logicmanager.h"
 #include <QtConcurrent/QtConcurrent>
 #include <QFuture>
 #include <QMessageBox>
@@ -23,6 +23,9 @@ enum CommandType{
     LUT_PICK_LENS_TO_AA2_CMD,
     LUT_PICK_LENS_TO_AA1_CMD,
     PERFORM_CALIBRATION,
+    PERFORM_UPDNLOOK_CALIBRATION,
+    PERFORM_LENS_UPDNLOOK_CALIBRATION,
+    PERFORM_SENSOR_PICKHEAD_CALIBRATION,
     PERFORM_LOCATION,
     PERFORM_OC,
     PERFORM_LOOP_TEST
@@ -39,7 +42,7 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
 
 void LogicManager::updateParams()
 {
-    aaCore->updateParams();
+    //aaCore->updateParams();
 }
 
 void LogicManager::run() {
@@ -49,15 +52,11 @@ void LogicManager::run() {
         baseModuleManage->stopSeeking();
     }
     else if (m_currentMode == CommandType::MODE_AUTO_RUN) {
-//        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_AUTO_MODE, uuid);
-//        aaCore->wait();
     }
     else if (m_currentMode == CommandType::PERFORM_LOOP_TEST) {
-        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE, uuid);
         return;
     }
     else if (m_currentMode == CommandType::PERFORM_OC) {
-        aaCore->performOC(true, true);
     }
     else if (m_currentMode == CommandType::MOTION_HOME) {
         baseModuleManage->allMotorsSeekOrigin();
@@ -66,19 +65,29 @@ void LogicManager::run() {
     }
     else if (m_currentMode == CommandType::AA_MOVETO_MUSHROOM_CMD)
     {
-        baseModuleManage->aa_head_module.moveToMushroomPosition();
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            baseModuleManage->aa_head_module.moveToMushroomPosition();
+        }
     } else if (m_currentMode == CommandType::AA_MOVETO_PICK_LENS_CMD)
     {
-        baseModuleManage->aa_head_module.moveToPickLensPosition();
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            baseModuleManage->aa_head_module.moveToPickLensPosition();
+        }
     } else if (m_currentMode == CommandType::AA_MOVETO_OC_CMD)
     {
-        baseModuleManage->aa_head_module.moveToOCPosition();
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            baseModuleManage->aa_head_module.moveToOCPosition();
+        }
     } else if (m_currentMode == CommandType::SUT_MOVETO_PR_CMD)
     {
-        baseModuleManage->sut_module.moveToDownlookPos();
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            baseModuleManage->sut_module.moveToDownlookPos();
+        }
     } else if (m_currentMode == CommandType::SUT_MOVETO_MUSHROOM_CMD)
     {
-        baseModuleManage->sut_module.moveToMushroomPos();
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+            baseModuleManage->sut_module.moveToMushroomPos();
+        }
     } else if (m_currentMode == CommandType::LUT_MOVETO_LOAD_CMD)
     {
         baseModuleManage->lut_module.moveToLoadPos();
@@ -99,6 +108,20 @@ void LogicManager::run() {
     {
         baseModuleManage->performCalibration(calibration_name);
         qInfo("calibration End");
+    }
+    else if (m_currentMode == CommandType::PERFORM_UPDNLOOK_CALIBRATION)
+    {
+        baseModuleManage->performUpDnLookCalibration();
+        qInfo("UpDnlook Calibration End");
+    }
+    else if (m_currentMode == CommandType::PERFORM_LENS_UPDNLOOK_CALIBRATION)
+    {
+        baseModuleManage->performLensUpDnLookCalibration();
+        qInfo("Lens UpDnlook Calibration End");
+    }
+    else if (m_currentMode == CommandType::PERFORM_SENSOR_PICKHEAD_CALIBRATION)
+    {
+        qInfo("Sensor Pickhead calibration End");
     }
     else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA1_CMD)
     {
@@ -121,7 +144,6 @@ void LogicManager::run() {
 void LogicManager::moveToCmd(int cmd) {
     if (cmd == CommandType::STOP)
     {
-        aaCore->performLoopTest(AA_DIGNOSTICS_MODE::AA_IDLE_MODE, "");
         m_currentMode = CommandType::IDLE;
         return;
     }
@@ -138,7 +160,6 @@ void LogicManager::moveToCmd(int cmd) {
 
 void LogicManager::loadFlowchart(QString json)
 {
-    aaCore->setFlowchartDocument(json);
 }
 
 void LogicManager::home(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_HOME);}
@@ -176,6 +197,24 @@ void LogicManager::performCalibration(QString calibration_name)
     moveToCmd(CommandType::PERFORM_CALIBRATION);
 }
 
+void LogicManager::performUpDnLookCalibration()
+{
+    setStateMessage(__FUNCTION__);
+    moveToCmd(CommandType::PERFORM_UPDNLOOK_CALIBRATION);
+}
+
+void LogicManager::performLensUpDnLookCalibration()
+{
+    setStateMessage(__FUNCTION__);
+    moveToCmd(CommandType::PERFORM_LENS_UPDNLOOK_CALIBRATION);
+}
+
+void LogicManager::performSensorPickheadCalibration()
+{
+    setStateMessage(__FUNCTION__);
+    moveToCmd(CommandType::PERFORM_SENSOR_PICKHEAD_CALIBRATION);
+}
+
 void LogicManager::performLocation(QString location_name)
 {
     setStateMessage(__FUNCTION__);
@@ -185,7 +224,6 @@ void LogicManager::performLocation(QString location_name)
 
 
 void LogicManager::autoRun(QString json){
-    aaCore->setFlowchartDocument(json);
     setStateMessage(__FUNCTION__);moveToCmd(CommandType::MODE_AUTO_RUN);
 }
 
@@ -316,103 +354,183 @@ void LogicManager::lensPickArmMoveToUpdownlookUpPos()
 
 void LogicManager::trayLoaderModuleLTIEMovetoFirstPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.LTIEMovetoColumnIndex(0);
 }
 
 void LogicManager::trayLoaderModuleLTIEMovetoLastPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     int col = baseModuleManage->tray_loader_module.tray_clip->standards_parameters.columnCount()-1;
     baseModuleManage->tray_loader_module.LTIEMovetoColumnIndex(col);
 }
 
 void LogicManager::trayLoaderModuleLTOEMovetoFirstPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.LTOEMovetoColumnIndex(0);
 }
 
 void LogicManager::trayLoaderModuleLTOEMovetoLastPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     int col = baseModuleManage->tray_loader_module.tray_clip->standards_parameters.columnCount()-1;
     baseModuleManage->tray_loader_module.LTOEMovetoColumnIndex(col);
 }
 
 void LogicManager::trayLoaderModuleLTKX1MovetoGetPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.moveToLtkx1GetPos();
 }
 
 void LogicManager::trayLoaderModuleLTKX1MovetoSetPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.moveToLtkx1SetPos();
 }
 
 void LogicManager::trayLoaderModuleLTKX2MovetoGetPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.moveToLtkx2GetPos();
 }
 
 void LogicManager::trayLoaderModuleLTKX2MovetoSetPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.moveToLtkx2SetPos();
 }
 
 void LogicManager::trayLoaderModuleLTLMovetoGetPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.moveToLtlGetPos();
 }
 
 void LogicManager::trayLoaderModuleLTLMovetoSetPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.moveToLtlSetPos();
 }
 
 void LogicManager::trayLoaderModuleLTIEMovetoColumnIndex(int idx)
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.LTIEMovetoColumnIndex(idx);
 }
 
 void LogicManager::trayLoaderModuleLTOEMovetoColumnIndex(int idx)
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.LTOEMovetoColumnIndex(idx);
 }
 
 void LogicManager::trayLoaderModuleEjectTray()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.ejectTray();
 }
 
 void LogicManager::trayLoaderModuleLTKX1CylinderOn()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.motorInPress();
 }
 
 void LogicManager::trayLoaderModuleLTKX1CylinderOff()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.motorInRelease();
 }
 
 void LogicManager::trayLoaderModuleLTKX2CylinderOn()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.motorOutPress();
 }
 
 void LogicManager::trayLoaderModuleLTKX2CylinderOff()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.motorOutRelease();
 }
 
 void LogicManager::trayLoaderModuleLTLXCylinderOn()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.motorWorkPress();
 }
 
 void LogicManager::trayLoaderModuleLTLXCylinderOff()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.motorWorkRelease();
 }
 
 void LogicManager::trayLoaderModuleStartup()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.startUp();
     emit baseModuleManage->tray_loader_module.parameters.trayReady();
     //emit baseModuleManage->tray_loader_module.parameters.trayReady();
@@ -424,6 +542,41 @@ void LogicManager::trayLoaderModuleEmitTestTrayUsed(){
 
 void LogicManager::trayLoaderModuleLTKX1MoveToRelayPos()
 {
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
     baseModuleManage->tray_loader_module.moveToLtkx1RelayPos();
+}
+
+bool LogicManager::trayLoaderModuleCheckLTLXGetPos(double x)
+{
+    double max_range = baseModuleManage->GetMotorByName(baseModuleManage->tray_loader_module.parameters.motorLTKX1Name())->GetPostiveRange();
+    double min_range = baseModuleManage->GetMotorByName(baseModuleManage->tray_loader_module.parameters.motorLTKX1Name())->GetNegativeRange();
+    if(x+166.7538>max_range||x+166.7538-310<min_range){
+        QMessageBox::warning(nullptr,tr(u8"提示"),tr(u8"LTK_X1无法移动到此位置，请重新选择"),QMessageBox::Ok);
+        return false;
+    }
+    return true;
+}
+
+bool LogicManager::trayLoaderModuleCheckLTLXSetPos(double x)
+{
+    double min_range = baseModuleManage->GetMotorByName(baseModuleManage->tray_loader_module.parameters.motorLTKX2Name())->GetNegativeRange();
+    if(x-653<min_range){
+        QMessageBox::warning(nullptr,tr(u8"提示"),tr(u8"LTK_X2无法移动到此位置，请重新选择"),QMessageBox::Ok);
+        return false;
+    }
+    return true;
+}
+
+void LogicManager::trayLoaderModuleLTLXPickUpTray()
+{
+    baseModuleManage->tray_loader_module.onTestLTLXPickUpTray();
+}
+
+void LogicManager::trayLoaderModuleLTLXPutDownTray()
+{
+    baseModuleManage->tray_loader_module.onTestLTLXPutDownTray();
 }
 

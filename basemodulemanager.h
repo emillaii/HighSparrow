@@ -33,6 +33,8 @@
 #include "unitlog.h"
 #include "sensorloadermodule.h"
 #include "aacorenew.h"
+#include "sensorclip.h"
+#include "sensortrayloadermodule.h"
 class BaseModuleManager : public PropertyBase
 {
     Q_OBJECT
@@ -83,7 +85,6 @@ public:
     SensorLoaderModule sensor_loader_module;
     SfrWorkerController * sfrWorkerController;
     AACoreNew aaCoreNew;
-    SensorLoaderModule sensor_loader_module1;
     TrayLoaderModule tray_loader_module;
 
     TrayClip trayClipIn;
@@ -93,6 +94,10 @@ public:
     SparrowClient * sparrowQClient;
     LutClient * lutClient;
     SutClient * sut_clitent;
+    SensorClip entrance_clip;
+    SensorClip exit_clip;
+    SensorClipStandParameter sensor_clip_stand;
+    SensorTrayLoaderModule sensor_tray_loder_module;
 
     Unitlog unitlog;
 
@@ -226,6 +231,7 @@ public:
     Q_INVOKABLE void setLightingBrightness(QString location_name);
     Q_INVOKABLE void sendLoadLens(bool has_ng);
     Q_INVOKABLE void sendLoadSensor(bool has_product,bool has_ng);
+    Q_INVOKABLE void sendChangeSensorTray();
 
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();
@@ -242,6 +248,7 @@ public:
 
     Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString);
+    Q_INVOKABLE void loadSensorTrayLoaderMuduleParameter();
 
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);

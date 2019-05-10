@@ -74,7 +74,9 @@ SOURCES += \
     sensorpickarm.cpp \
     sensorloadermodule.cpp \
     sutclient.cpp \
-    aacorenew.cpp
+    aacorenew.cpp \
+    sensortrayloadermodule.cpp \
+    sensorclip.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -201,7 +203,11 @@ HEADERS += \
     sensorloaderparameter.h \
     sutclient.h \
     aacorenew.h \
-    sendmessagetool.h
+    sendmessagetool.h \
+    sensortrayloadermodule.h \
+    sensortrayloaderparameter.h \
+    sensorclip.h \
+    sensorclipparameter.h
 
 DISTFILES += \
     icons/index.theme

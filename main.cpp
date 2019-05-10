@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
     engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
+    engine.rootContext()->setContextProperty("`", &highSprrow.baseModuleManager->sensor_tray_loder_module);
 
     //Position
     engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);

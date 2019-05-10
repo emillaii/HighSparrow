@@ -61,6 +61,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
 
+    connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTray,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);
+    connect(&sensor_tray_loder_module,&SensorTrayLoaderModule::sendChangeTrayFinish,&sensor_loader_module,&SensorLoaderModule::receiveChangeTrayFInish,Qt::DirectConnection);
     if(!QDir(".//notopencamera").exists())
     {
         if(pylonUplookCamera) pylonUplookCamera->start();
@@ -119,6 +121,13 @@ bool BaseModuleManager::loadParameters()
     {
         sensor_loader_module.loadJsonConfig();
         sensor_pickarm.parameters.loadJsonConfig(SENSOR_PICKARM_FILE_NAME,"sensor_pickarm");
+
+        QMap<QString,PropertyBase*> temp_map;
+        temp_map.insert("sensor_tray_loader", &sensor_tray_loder_module.parameters);
+        temp_map.insert("sensor_clip_stand", &sensor_clip_stand);
+        temp_map.insert("entance_clip", &entrance_clip.parameters);
+        temp_map.insert("exit_clip", &exit_clip.parameters);
+        PropertyBase::loadJsonConfig(SENSOR_TRAY_LOADER_FILE_NAME, temp_map);
     }
     else
     {
@@ -153,6 +162,13 @@ bool BaseModuleManager::SaveParameters()
     {
         sensor_loader_module.saveJsonConfig();
         sensor_pickarm.parameters.saveJsonConfig(SENSOR_PICKARM_FILE_NAME,"sensor_pickarm");
+
+        QMap<QString,PropertyBase*> temp_map;
+        temp_map.insert("sensor_tray_loader", &sensor_tray_loder_module.parameters);
+        temp_map.insert("sensor_clip_stand", &sensor_clip_stand);
+        temp_map.insert("entance_clip", &entrance_clip.parameters);
+        temp_map.insert("exit_clip", &exit_clip.parameters);
+        PropertyBase::saveJsonConfig(SENSOR_TRAY_LOADER_FILE_NAME, temp_map);
     }
     else
     {
@@ -180,6 +196,7 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
     }
     else {
         result &= manager->registerWorker(&sensor_loader_module);
+        result &= manager->registerWorker(&sensor_tray_loder_module);
     }
     result &= manager->registerWorker(&sut_module);
     result &= manager->registerWorker(&aaCoreNew);
@@ -712,6 +729,22 @@ bool BaseModuleManager::InitStruct()
     sfrWorkerController = new SfrWorkerController(&aaCoreNew);
     aaCoreNew.setSfrWorkerController(sfrWorkerController);
     aaCoreNew.Init(&aa_head_module, lutClient, &sut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog);
+    entrance_clip.Init(u8"Sensor进料盘弹夹",&sensor_clip_stand);
+    exit_clip.Init(u8"Sensor出料盘弹夹",&sensor_clip_stand);
+    sensor_tray_loder_module.Init(GetMotorByName(sensor_tray_loder_module.parameters.motorTrayName()),
+                                  GetMotorByName(sensor_tray_loder_module.parameters.motorSTKName()),
+                                  GetMotorByName(sensor_tray_loder_module.parameters.motorSTIEName()),
+                                  GetMotorByName(sensor_tray_loder_module.parameters.motorSTOEName()),
+                                  GetMotorByName(sensor_tray_loder_module.parameters.motorSPOName()),
+                                  GetCylinderByName(sensor_tray_loder_module.parameters.cylinderSTK1Name()),
+                                  GetCylinderByName(sensor_tray_loder_module.parameters.cylinderSTK2Name()),
+                                  GetCylinderByName(sensor_tray_loder_module.parameters.cylinderHoldTrayName()),
+                                  GetCylinderByName(sensor_tray_loder_module.parameters.cylinderVacancyTrayName()),
+                                  GetCylinderByName(sensor_tray_loder_module.parameters.cylinderEntanceClipPushName()),
+                                  GetCylinderByName(sensor_tray_loder_module.parameters.cylinderExitClipPushName()),
+                                  GetCylinderByName(sensor_tray_loder_module.parameters.cylinderGripperName()),
+                                  &entrance_clip,&exit_clip);
+
     //todo
     material_tray.resetTrayState(0);
     material_tray.resetTrayState(1);
@@ -987,6 +1020,16 @@ void BaseModuleManager::loadFlowchart(QString json)
 {
     qInfo("Load flowchart: %s", json.toStdString().c_str());
     aaCoreNew.setFlowchartDocument(json);
+}
+
+void BaseModuleManager::loadSensorTrayLoaderMuduleParameter()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("sensor_tray_loader", &sensor_tray_loder_module.parameters);
+    temp_map.insert("sensor_clip_stand", &sensor_clip_stand);
+    temp_map.insert("entance_clip", &entrance_clip.parameters);
+    temp_map.insert("exit_clip", &exit_clip.parameters);
+    PropertyBase::loadJsonConfig(SENSOR_TRAY_LOADER_FILE_NAME, temp_map);
 }
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)
@@ -1313,6 +1356,11 @@ void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
         emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::NO_MATERIAL);
         qInfo("sendSensrRequestToSut 0 in %d",QThread::currentThreadId());
     }
+}
+
+void BaseModuleManager::sendChangeSensorTray()
+{
+   emit sensor_loader_module.sendChangeTray();
 }
 
 bool BaseModuleManager::initSensor()

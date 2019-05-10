@@ -126,7 +126,6 @@ private:
     bool debug = false;
     ErrorLevel error_level;
     PrOffset pr_offset;
-
 };
 
 #endif // LENSPICKARMMODULE_H

@@ -277,6 +277,12 @@ void SensorLoaderModule::receiveRequestMessage(QString message, QString client_i
     }
 }
 
+void SensorLoaderModule::receiveChangeTrayFInish()
+{
+
+}
+
+
 void SensorLoaderModule::resetLogic()
 {
 

@@ -110,6 +110,36 @@ ItemDelegate {
                     }
                 }
             }
+            GroupBox{
+                visible: baseModuleManager.ServerMode
+                title: qsTr("SensorTryLoader")
+                RowLayout{
+                    Button {
+                        text: "Load"
+                        onClicked: {
+                            baseModuleManager.loadSensorTrayLoaderMuduleParameter()
+                        }
+                    }
+                    Button {
+                        text: "开始"
+                        onClicked: {
+                            workersManager.startWorker("SensorTrayLoaderModule",true,2)
+                        }
+                    }
+                    Button {
+                        text: "换盘"
+                        onClicked: {
+                            baseModuleManager.sendChangeSensorTray()
+                        }
+                    }
+                    Button {
+                        text: "停止"
+                        onClicked: {
+                            workersManager.stopWorkers()
+                        }
+                    }
+                }
+            }
         }
     }
 }

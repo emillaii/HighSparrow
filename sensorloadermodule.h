@@ -69,12 +69,14 @@ public:
     Q_INVOKABLE void performHandling(int cmd);
 signals:
     void sendMessageToClient(QString destAddress, QString message);
+    void sendChangeTray();
     // ThreadWorkerBase interface
 public slots:
     void startWork(bool reset_logic, int run_mode);
     void stopWork(bool wait_finish);
     void performHandlingOperation(int cmd);
     void receiveRequestMessage(QString message, QString client_ip);
+    void receiveChangeTrayFInish();
 private:
     void run(bool has_material);
 

@@ -30,6 +30,7 @@
 #define LUT_CARRIER_FILE_NAME        "config//lutCarrierConfig.json"
 #define LENS_PICKARM_FILE_NAME        "config//lensPickArmConfig.json"
 #define SENSOR_PICKARM_FILE_NAME        "config//sensorPickArmConfig.json"
+#define SENSOR_TRAY_LOADER_FILE_NAME        "config//sensorTrayLoaderConfig.json"
 #define SUT_CARRIER_FILE_NAME        "config//sutCarrierConfig.json"
 #define VCM_PARAMETER_FILENAME       "config//vcm_parameter.json"
 #define CYLINDER_PARAMETER_FILENAME  "config//cylinder_parameter.json"

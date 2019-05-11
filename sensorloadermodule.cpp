@@ -308,33 +308,62 @@ void SensorLoaderModule::cameraTipOffsetCalibration(int pickhead)
 {
     qInfo("Start camera tip offset calibration: %d", pickhead);
     moveToStartPos(1);
+    QThread::msleep(1000);
     PrOffset offset;
     this->sensor_pickarm_calibration_glass_vision->performPR(offset);
-    this->pick_arm->stepMove_XYT1_Synic(-offset.X,-offset.Y, 0);
     std::vector<cv::Point2d> points;
-    for (int i = 0; i < 5; i++)
+    if (pickhead == 1)
     {
-        PrOffset offset;
-        QThread::msleep(1000);
-        this->sensor_pickarm_calibration_glass_vision->performPR(offset);
-        qInfo("PR offset: %f %f", offset.X, offset.Y);
-        points.push_back(cv::Point2d(offset.X, offset.Y));
-        this->pick_arm->stepMove_XYT1_Synic(picker1_offset.X(), picker1_offset.Y(), 0);
-        bool result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),true,true,30000);
-        QThread::msleep(1000);
-        result &= pick_arm->ZSerchReturn(30000);
-        this->pick_arm->stepMove_XYT1_Synic(0, 0, 10);
-        result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),false,true,30000);
-        QThread::msleep(1000);
-        result &= pick_arm->ZSerchReturn(30000);
-        this->pick_arm->stepMove_XYT1_Synic(-picker1_offset.X(), -picker1_offset.Y(), 0);
+        this->pick_arm->stepMove_XYT1_Synic(-offset.X,-offset.Y, -50);
+        for (int i = 0; i < 5; i++)
+        {
+            PrOffset offset;
+            QThread::msleep(1000);
+            this->sensor_pickarm_calibration_glass_vision->performPR(offset);
+            qInfo("PR offset: %f %f", offset.X, offset.Y);
+            points.push_back(cv::Point2d(offset.X, offset.Y));
+            this->pick_arm->stepMove_XYT1_Synic(picker1_offset.X(), picker1_offset.Y(), 0);
+            bool result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),true,true,30000);
+            QThread::msleep(1000);
+            result &= pick_arm->ZSerchReturn(30000);
+            this->pick_arm->stepMove_XYT1_Synic(0, 0, 20);
+            result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),false,true,30000);
+            QThread::msleep(1000);
+            result &= pick_arm->ZSerchReturn(30000);
+            this->pick_arm->stepMove_XYT1_Synic(-picker1_offset.X(), -picker1_offset.Y(), 0);
+        }
+        this->pick_arm->stepMove_XYT1_Synic(0,0, -100);
+        cv::Point2d center; double radius;
+        fitCircle(points, center, radius);
+        qInfo("Fit cicle: x: %f y: %f r:%f", center.x, center.y, radius);
+        this->picker1_offset.setX(picker1_offset.X() + center.x);
+        this->picker1_offset.setY(picker1_offset.Y() + center.y);
+    } else {
+        this->pick_arm->stepMove_XYT2_Synic(-offset.X,-offset.Y, -50);
+        for (int i = 0; i < 5; i++)
+        {
+            PrOffset offset;
+            QThread::msleep(1000);
+            this->sensor_pickarm_calibration_glass_vision->performPR(offset);
+            qInfo("PR offset: %f %f", offset.X, offset.Y);
+            points.push_back(cv::Point2d(offset.X, offset.Y));
+            this->pick_arm->stepMove_XYT2_Synic(picker2_offset.X(), picker2_offset.Y(), 0);
+            bool result = pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),true,true,30000);
+            QThread::msleep(1000);
+            result &= pick_arm->ZSerchReturn2(30000);
+            this->pick_arm->stepMove_XYT2_Synic(0, 0, 20);
+            result = pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),false,true,30000);
+            QThread::msleep(1000);
+            result &= pick_arm->ZSerchReturn2(30000);
+            this->pick_arm->stepMove_XYT2_Synic(-picker2_offset.X(), -picker2_offset.Y(), 0);
+        }
+        this->pick_arm->stepMove_XYT2_Synic(0,0, -100);
+        cv::Point2d center; double radius;
+        fitCircle(points, center, radius);
+        qInfo("Fit cicle: x: %f y: %f r:%f", center.x, center.y, radius);
+        this->picker2_offset.setX(picker2_offset.X() + center.x);
+        this->picker2_offset.setY(picker2_offset.Y() + center.y);
     }
-    this->pick_arm->stepMove_XYT1_Synic(0,0, -50);
-    cv::Point2d center; double radius;
-    fitCircle(points, center, radius);
-    qInfo("Fit cicle: x: %f y: %f r:%f", center.x, center.y, radius);
-    this->picker1_offset.setX(picker1_offset.X() + center.x);
-    this->picker1_offset.setY(picker1_offset.Y() + center.y);
 }
 
 void SensorLoaderModule::run(bool has_material)

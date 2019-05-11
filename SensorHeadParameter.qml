@@ -148,7 +148,7 @@ ColumnLayout {
         Button{
             text: qsTr("测量")
             onClicked: {
-
+                 sensorLoaderModule.cameraTipOffsetCalibration(2)
             }
         }
     }

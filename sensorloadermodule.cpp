@@ -3,6 +3,7 @@
 //#include "logicmanager.h"
 #include "basemodulemanager.h"
 #include <QMessageBox>
+#include "commonutils.h"
 
 SensorLoaderModule::SensorLoaderModule():ThreadWorkerBase ("SensorLoader")
 {
@@ -12,7 +13,7 @@ SensorLoaderModule::SensorLoaderModule():ThreadWorkerBase ("SensorLoader")
 void SensorLoaderModule::Init(SensorPickArm *pick_arm, MaterialTray *sensor_tray,
                               VisionLocation *sensor_vision, VisionLocation *vacancy_vision,
                               VisionLocation *sut_vision, VisionLocation *sut_sensor_vision,
-                              VisionLocation *sut_product_vision)
+                              VisionLocation *sut_product_vision, VisionLocation *sensor_pickarm_calibration_glass_vision)
 {
     this->pick_arm = pick_arm;
     parts.append(this->pick_arm);
@@ -28,6 +29,8 @@ void SensorLoaderModule::Init(SensorPickArm *pick_arm, MaterialTray *sensor_tray
     parts.append(this->sut_sensor_vision);
     this->sut_product_vision = sut_product_vision;
     parts.append(this->sut_product_vision);
+    this->sensor_pickarm_calibration_glass_vision = sensor_pickarm_calibration_glass_vision;
+    parts.append(this->sensor_pickarm_calibration_glass_vision);
 }
 
 bool SensorLoaderModule::loadJsonConfig()
@@ -299,6 +302,39 @@ void SensorLoaderModule::performHandling(int cmd)
 {
     emit sendHandlingOperation(cmd);
     qInfo("emit performHandling %d",cmd);
+}
+
+void SensorLoaderModule::cameraTipOffsetCalibration(int pickhead)
+{
+    qInfo("Start camera tip offset calibration: %d", pickhead);
+    moveToStartPos(1);
+    PrOffset offset;
+    this->sensor_pickarm_calibration_glass_vision->performPR(offset);
+    this->pick_arm->stepMove_XYT1_Synic(-offset.X,-offset.Y, 0);
+    std::vector<cv::Point2d> points;
+    for (int i = 0; i < 5; i++)
+    {
+        PrOffset offset;
+        QThread::msleep(1000);
+        this->sensor_pickarm_calibration_glass_vision->performPR(offset);
+        qInfo("PR offset: %f %f", offset.X, offset.Y);
+        points.push_back(cv::Point2d(offset.X, offset.Y));
+        this->pick_arm->stepMove_XYT1_Synic(picker1_offset.X(), picker1_offset.Y(), 0);
+        bool result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),true,true,30000);
+        QThread::msleep(1000);
+        result &= pick_arm->ZSerchReturn(30000);
+        this->pick_arm->stepMove_XYT1_Synic(0, 0, 10);
+        result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),false,true,30000);
+        QThread::msleep(1000);
+        result &= pick_arm->ZSerchReturn(30000);
+        this->pick_arm->stepMove_XYT1_Synic(-picker1_offset.X(), -picker1_offset.Y(), 0);
+    }
+    this->pick_arm->stepMove_XYT1_Synic(0,0, -50);
+    cv::Point2d center; double radius;
+    fitCircle(points, center, radius);
+    qInfo("Fit cicle: x: %f y: %f r:%f", center.x, center.y, radius);
+    this->picker1_offset.setX(picker1_offset.X() + center.x);
+    this->picker1_offset.setY(picker1_offset.Y() + center.y);
 }
 
 void SensorLoaderModule::run(bool has_material)
@@ -775,7 +811,6 @@ bool SensorLoaderModule::performVacancyPR()
 {
     qInfo("performSensorPR");
     return  vacancy_vision->performPR(pr_offset);
-
 }
 
 bool SensorLoaderModule::performSUTPR()

@@ -17,6 +17,7 @@ public:
     Q_PROPERTY(double placeSensorZ READ placeSensorZ WRITE setPlaceSensorZ NOTIFY placeSensorZChanged)
     Q_PROPERTY(QString sensorLocationName READ sensorLocationName WRITE setSensorLocationName NOTIFY sensorLocationNameChanged)
     Q_PROPERTY(QString vacancyLocationName READ vacancyLocationName WRITE setVacancyLocationName NOTIFY vacancyLocationNameChanged)
+    Q_PROPERTY(QString calibrationGlassLocationName READ calibrationGlassLocationName WRITE setCalibrationGlassLocationName NOTIFY calibrationGlassLocationNameChanged)
     Q_PROPERTY(QString sutLocationName READ sutLocationName WRITE setSutLocationName NOTIFY sutLocationNameChanged)
     Q_PROPERTY(QString sutSensorLocationName READ sutSensorLocationName WRITE setSutSensorLocationName NOTIFY sutSensorLocationNameChanged)
     Q_PROPERTY(QString sutProductLocationName READ sutProductLocationName WRITE setSutProductLocationName NOTIFY sutProductLocationNameChanged)
@@ -104,6 +105,11 @@ public:
     double placeNgSensorZ() const
     {
         return m_placeNgSensorZ;
+    }
+
+    QString calibrationGlassLocationName() const
+    {
+        return m_calibrationGlassLocationName;
     }
 
 public slots:
@@ -260,6 +266,15 @@ public slots:
         emit placeNgSensorZChanged(m_placeNgSensorZ);
     }
 
+    void setCalibrationGlassLocationName(QString calibrationGlassLocationName)
+    {
+        if (m_calibrationGlassLocationName == calibrationGlassLocationName)
+            return;
+
+        m_calibrationGlassLocationName = calibrationGlassLocationName;
+        emit calibrationGlassLocationNameChanged(m_calibrationGlassLocationName);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -293,6 +308,8 @@ signals:
 
     void placeNgSensorZChanged(double placeNgSensorZ);
 
+    void calibrationGlassLocationNameChanged(QString calibrationGlassLocationName);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -310,6 +327,7 @@ private:
     double m_zOffset = 0;
     double m_pickNgSensorZ = 0;
     double m_placeNgSensorZ = 0;
+    QString m_calibrationGlassLocationName;
 };
 class SensorLoaderState:public PropertyBase
 {

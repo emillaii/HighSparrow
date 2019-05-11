@@ -680,7 +680,8 @@ bool BaseModuleManager::InitStruct()
                                   GetVisionLocationByName(sensor_loader_module.parameters.vacancyLocationName()),
                                   GetVisionLocationByName(sensor_loader_module.parameters.sutLocationName()),
                                   GetVisionLocationByName(sensor_loader_module.parameters.sutSensorLocationName()),
-                                  GetVisionLocationByName(sensor_loader_module.parameters.sutProductLocationName()));
+                                  GetVisionLocationByName(sensor_loader_module.parameters.sutProductLocationName()),
+                                  GetVisionLocationByName(sensor_loader_module.parameters.calibrationGlassLocationName()));
         //connect(&sensor_loader_module,&SensorLoaderModule::sendMsgSignal,this,&BaseModuleManager::sendMessageTest);
     }
     else

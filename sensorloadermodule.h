@@ -61,12 +61,13 @@ public:
     SensorLoaderModule();
     void Init(SensorPickArm* pick_arm,MaterialTray *tray,
               VisionLocation * sensor_vision,VisionLocation * vacancy_vision,VisionLocation * sut_vision,
-              VisionLocation *sut_sensor_vision,VisionLocation *sut_product_vision);
+              VisionLocation *sut_sensor_vision,VisionLocation *sut_product_vision, VisionLocation *sensor_pickarm_calibration_glass_vision);
     bool loadJsonConfig();
     void saveJsonConfig();
     void resetLogic();
     void openServer(int port);
     Q_INVOKABLE void performHandling(int cmd);
+    Q_INVOKABLE void cameraTipOffsetCalibration(int pickhead);
 signals:
     void sendMessageToClient(QString destAddress, QString message);
     void sendChangeTray();
@@ -130,6 +131,7 @@ private:
     VisionLocation * sut_vision = Q_NULLPTR;
     VisionLocation *sut_sensor_vision = Q_NULLPTR;
     VisionLocation *sut_product_vision = Q_NULLPTR;
+    VisionLocation * sensor_pickarm_calibration_glass_vision = Q_NULLPTR;
 
     SparrowQServer * server;
     QQueue<QJsonObject> requestQueue;

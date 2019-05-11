@@ -62,6 +62,13 @@ void SensorLoaderModule::startWork(bool reset_logic, int run_mode)
     if(reset_logic)resetLogic();
     if(run_mode == RunMode::Normal)run(true);
     else if(run_mode == RunMode::NoMaterial)run(false);
+    else if (run_mode == RunMode::VibrationTest) {
+        is_run = true;
+        while(is_run) {
+            moveToSUTPRPos(false,true);
+            moveToSUTPRPos(true,true);
+        }
+    }
 }
 
 void SensorLoaderModule::stopWork(bool wait_finish)

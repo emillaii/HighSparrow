@@ -17,6 +17,7 @@ enum RunMode
     Normal = 0,
     ChangeType = 1,
     NoMaterial = 2,
+    VibrationTest = 3
 };
 enum FinishedType
 {

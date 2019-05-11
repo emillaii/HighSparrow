@@ -5,24 +5,30 @@ import QtQuick.Layouts 1.11
 
 Grid {
     id: grid
-    columns: 2
     width: 800
     height: 800
 
     Frame {
         id: frame
-        width: grid.width/2
-        height: grid.height/2
+        width: grid.width
+        height: grid.height
 
         ColumnLayout {
             id: columnLayout
             anchors.fill: parent
             RowLayout {
                 Button {
-                    text: qsTr("MTF Loop Test")
+                    text: qsTr("MTF Loop Test")  //Vibration Test
                     onClicked: {
-                        logicManager.performLoopTest(4)
+                        workersManager.startWorker("AACoreNew",true,3)
+                        if (sensorLoderCheckBox.checked)
+                            workersManager.startWorker("SensorLoader",true,3)
                     }
+                }
+                CheckBox {
+                    id: sensorLoderCheckBox
+                    checked: false
+                    text: qsTr("Sensor Loader")
                 }
             }
             RowLayout {

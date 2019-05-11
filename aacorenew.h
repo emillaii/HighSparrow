@@ -45,7 +45,7 @@ public:
                    bool is_debug = false, sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER,
                    double estimated_fov_slope = -16, double zOffset=0);
     ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
-    ErrorCodeStruct performMTF();
+    ErrorCodeStruct performMTF(bool write_log = false);
     ErrorCodeStruct performZOffset(double zOffset);
     ErrorCodeStruct performDelay(int);
     ErrorCodeStruct performCameraUnload();

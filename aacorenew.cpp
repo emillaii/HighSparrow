@@ -76,6 +76,15 @@ void AACoreNew::startWork(bool reset_logic, int run_mode)
     if (run_mode == RunMode::Normal) run(true);
     else if (run_mode == RunMode::NoMaterial) {
         run(false);
+    } else if (run_mode == RunMode::VibrationTest) {
+        is_run = true;
+        mtf_log.clear();
+        loopTestResult = "";
+        loopTestResult.append("CC, UL,UR,LL,LR,\n");
+        while (is_run) {
+            performMTF(true);
+        }
+        writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
     }
 }
 
@@ -773,7 +782,7 @@ void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, doubl
     qInfo("End of sfrFitCurve");
 }
 
-ErrorCodeStruct AACoreNew::performMTF()
+ErrorCodeStruct AACoreNew::performMTF(bool write_log)
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
@@ -855,19 +864,19 @@ ErrorCodeStruct AACoreNew::performMTF()
     map.insert("timeElapsed", timer.elapsed());
     clustered_sfr_map.clear();
     emit pushDataToUnit(this->runningUnit, "MTF", map);
-//    if (currentAAMode == AA_DIGNOSTICS_MODE::AA_MTF_TEST_MODE) {
-//        this->loopTestResult.append(QString::number(sfr_entry[ccROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[ulROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[urROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[llROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[lrROIIndex].sfr))
-//                            .append(",\n");
-//        this->mtf_log.incrementData(sfr_entry[ccROIIndex].sfr, sfr_entry[ulROIIndex].sfr, sfr_entry[urROIIndex].sfr, sfr_entry[llROIIndex].sfr,sfr_entry[lrROIIndex].sfr);
-//    }
+    if (write_log) {
+        this->loopTestResult.append(QString::number(sfr_entry[ccROIIndex].sfr))
+                            .append(",")
+                            .append(QString::number(sfr_entry[ulROIIndex].sfr))
+                            .append(",")
+                            .append(QString::number(sfr_entry[urROIIndex].sfr))
+                            .append(",")
+                            .append(QString::number(sfr_entry[llROIIndex].sfr))
+                            .append(",")
+                            .append(QString::number(sfr_entry[lrROIIndex].sfr))
+                            .append(",\n");
+        this->mtf_log.incrementData(sfr_entry[ccROIIndex].sfr, sfr_entry[ulROIIndex].sfr, sfr_entry[urROIIndex].sfr, sfr_entry[llROIIndex].sfr,sfr_entry[lrROIIndex].sfr);
+    }
     qInfo("MTF done");
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }

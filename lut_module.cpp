@@ -179,6 +179,7 @@ void LutModule::run(bool has_material)
                     bool action_result;
                     PrOffset pr_offset;
                     isLocalHost ?action_result = moveToAA1UplookPR(pr_offset): action_result = moveToAA2UplookPR(pr_offset);
+                    qInfo("prReq Uplook PR Result %d", action_result);
                     if((!action_result)&&has_material)
                     {
                         sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());

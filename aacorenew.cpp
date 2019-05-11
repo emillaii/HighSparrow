@@ -153,6 +153,11 @@ bool AACoreNew::runFlowchartTest()
                        break;
                    } else if (currentPointer.contains("Reject")) {
                        qInfo("Performing Reject");
+                       imageThread->stop();
+                       Sleep(100);
+                       imageThread->exit();
+                       dk->DothinkeyClose();
+
                        has_ng_lens = true;
                        has_ng_sensor = true;
                        has_sensor = false;

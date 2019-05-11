@@ -125,7 +125,8 @@ bool VisionLocation::performPR()
 bool VisionLocation::performPR(PRResultStruct &pr_result)
 {
     ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result);
-    qInfo("PR_Result: %f %f %f", pr_result.x, pr_result.y, pr_result.theta);
+    qInfo("CameraName: %s prFilename: %s PR_Result: %f %f %f",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str(),
+          pr_result.x, pr_result.y, pr_result.theta);
 //    qInfo("camera %s perform PR result:%d name:%s",parameters.cameraName().toStdString().c_str(),temp.code,parameters.prFileName().toStdString().c_str());
     return  ErrorCode::OK == temp.code;
 }

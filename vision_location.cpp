@@ -24,6 +24,8 @@ void VisionLocation::saveParam()
 
 bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
 {
+//    offset.X = 0; offset.Y = 0; offset.Theta = 0;
+//    return true;
     offset.ReSet();
     current_offset.ReSet();
     PRResultStruct pr_result;

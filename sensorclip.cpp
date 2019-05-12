@@ -31,7 +31,10 @@ void SensorClip::setCurrentIndex(int index)
 
 double SensorClip::getCurrentPosition()
 {
-    return parameters.startPosition() + stand_parameter->delta()*parameters.currentIndex();
+    if(parameters.invertOrder())
+        return parameters.endPosition() - stand_parameter->delta()*parameters.currentIndex();
+    else
+        return parameters.startPosition() + stand_parameter->delta()*parameters.currentIndex();
 }
 
 double SensorClip::getNextPosition()
@@ -43,18 +46,9 @@ double SensorClip::getNextPosition()
     }
     if(parameters.finishCurrent())
     {
-        if(parameters.invertOrder())
-        {
-            parameters.setCurrentIndex(parameters.currentIndex() - 1);
-            if(parameters.currentIndex() <= 0)
-                parameters.setNeedChange(true);
-        }
-        else
-        {
-            parameters.setCurrentIndex(parameters.currentIndex() + 1);
-            if(parameters.currentIndex() >= stand_parameter->count() - 1)
-                parameters.setNeedChange(true);
-        }
+        parameters.setCurrentIndex(parameters.currentIndex() + 1);
+        if(parameters.currentIndex() >= stand_parameter->count() - 1)
+            parameters.setNeedChange(true);
     }
     return getCurrentPosition();
 }
@@ -72,8 +66,5 @@ void SensorClip::finishCurrentPosition()
 void SensorClip::resetClip()
 {
     parameters.setNeedChange(false);
-    if(parameters.invertOrder())
-        parameters.setCurrentIndex(stand_parameter->count() - 1);
-    else
-        parameters.setCurrentIndex(0);
+    parameters.setCurrentIndex(0);
 }

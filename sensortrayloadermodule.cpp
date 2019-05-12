@@ -139,12 +139,10 @@ void SensorTrayLoaderModule::run(bool has_material)
                 else
                 {
                     states.setHasGetedTray(true);
-                    states.setEntranceClipReay(false);
                 }
             }
             else {
                 states.setHasGetedTray(true);
-                states.setEntranceClipReay(false);
             }
         }
         //推出Kick盘(需要返回)
@@ -163,12 +161,14 @@ void SensorTrayLoaderModule::run(bool has_material)
                 {
                     states.setHasKickTray(false);
                     states.setExitClipReady(false);
+                    states.setEntranceClipReay(false);
                 }
             }
             else
             {
                 states.setHasKickTray(false);
                 states.setExitClipReady(false);
+                states.setEntranceClipReay(false);
             }
         }
 
@@ -240,16 +240,18 @@ void SensorTrayLoaderModule::resetLogic()
 
 bool SensorTrayLoaderModule:: moveToStartKick()
 {
+    qInfo("moveToStartKick");
     bool kick_result = kick1->Set(false);
     kick_result &= kick2->Set(false);
-    kick_result &= hold_vacancy->Set(true);
+    //kick_result &= hold_vacancy->Set(true);
+    hold_vacancy->Set(true);
     if(kick_result)
         motor_kick->MoveToPos(parameters.startKickTrayPosition());
 
     bool result = motor_tray->MoveToPosSync(parameters.downTrayPosition());
     if(result)
     {
-        result &= hold_tray->Set(false);
+        result &= hold_tray->Set(true);
         if(result)
             motor_tray->MoveToPos(parameters.getTrayPosition());
     }
@@ -265,16 +267,18 @@ bool SensorTrayLoaderModule:: moveToStartKick()
 
 bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpSensorTray()
 {
+    qInfo("moveToChangeVacancyTrayAndUpSensorTray");
     bool kick_result = kick1->Set(true);
     kick_result &= kick2->Set(true);
-    kick_result &= hold_vacancy->Set(true);
+//    kick_result &= hold_vacancy->Set(true);
+     hold_vacancy->Set(true);
     if(kick_result)
         motor_kick->MoveToPos(parameters.vacancyTrayPosition());
     bool result = motor_tray->MoveToPosSync(parameters.getTrayPosition());
     if(result)
     {
-       result &= hold_tray->Set(true);
-       result &= gripper->Set(true);
+       result &= hold_tray->Set(false);
+       result &= gripper->Set(false);
     }
     if(motor_kick->WaitArrivedTargetPos(parameters.vacancyTrayPosition()))
     {
@@ -287,18 +291,18 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpSensorTray()
 
 bool SensorTrayLoaderModule::moveToGetTray()
 {
+    qInfo("moveToGetTray");
     bool kick_result = kick1->Set(false);
     if(kick_result)
         motor_kick->MoveToPos(parameters.finishKickTrayPosition());
     bool result = motor_push->MoveToPosSync(parameters.pushoutPosition());
     if(result)
-    {
-       result &= gripper->Set(false,false);
-       result &= motor_push->MoveToPosSync(0);
-       result &= gripper->Wait(false);
-    }
+        result &= gripper->Set(true,false);
+    result &= motor_push->MoveToPosSync(0);
+    if(result)
+        result &= gripper->Wait(true);
     if(kick_result)
-        kick_result &= motor_kick->WaitArrivedTargetPos(parameters.vacancyTrayPosition());
+        kick_result &= motor_kick->WaitArrivedTargetPos(parameters.finishKickTrayPosition());
     if(kick_result)
         motor_kick->MoveToPos(parameters.finishKickTrayPosition() - parameters.backDistance());
     return result&&kick_result;
@@ -306,23 +310,27 @@ bool SensorTrayLoaderModule::moveToGetTray()
 
 bool SensorTrayLoaderModule::moveToPushKickTrayAndPutSensorTray()
 {
+    qInfo("moveToPushKickTrayAndPutSensorTray");
     motor_tray->MoveToPos(parameters.putTrayPosition());
     bool kick_result = motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
     bool result = motor_tray->WaitArrivedTargetPos(parameters.putTrayPosition());
     if(result)
-       result &= gripper->Set(true);
+       result &= gripper->Set(false);
     return result&&kick_result;
 }
 
 bool SensorTrayLoaderModule::moveToWorkPos()
 {
+    qInfo("moveToWorkPos");
     return motor_tray->MoveToPosSync(parameters.trayWorkPosition());
 }
 
 bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
 {
+    qInfo("moveToEntranceClipNextPos");
     if(motor_push->GetFeedbackPos() > parameters.pushMotorSafePosition())
     {
+        qInfo("motor_push %f",motor_push->GetFeedbackPos());
         AppendError(u8"推出sendor盘的轴不在安全位置");
         return false;
     }
@@ -339,6 +347,7 @@ bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
 
 bool SensorTrayLoaderModule::moveToExitClipNextPos()
 {
+    qInfo("moveToExitClipNextPos");
     bool result;
     if(states.useSpareExitClip())
        result = exit_clip_push->Set(true);

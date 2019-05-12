@@ -38,7 +38,7 @@ bool XtCylinder::Set(bool new_state, bool wait_done,int finish_delay, int timeou
     }
     if(!wait_done)
         return true;
-    return Wait(new_state);
+    return Wait(new_state,finish_delay,timeout);
 
 }
 

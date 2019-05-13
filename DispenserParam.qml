@@ -63,10 +63,7 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                sutModule.recordCurrentPos();
-//                sutModule.moveToDownlookPR()
-                dispenseModule.performDispense()
-                sutModule.movetoRecordPos();
+                aaNewCore.performHandlingOperation(1)
             }
         }
     }

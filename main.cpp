@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("baseModuleManager", highSprrow.baseModuleManager);
     engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);
-    engine.rootContext()->setContextProperty("aaCore", highSprrow.baseModuleManager);
+    engine.rootContext()->setContextProperty("aaNewCore", &highSprrow.baseModuleManager->aaCoreNew);
     //engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.logicManager->aaCore->aaData_1);
     //engine.rootContext()->setContextProperty("dataFromCpp2", &highSprrow.logicManager->aaCore->aaData_2);
     engine.rootContext()->setContextProperty("dataFromCpp3", &highSprrow.baseModuleManager->aaCoreNew.mtf_log);
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
     engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
-    engine.rootContext()->setContextProperty("`", &highSprrow.baseModuleManager->sensor_tray_loder_module);
+    engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
 
     //Position
     engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);

@@ -244,21 +244,21 @@ void SensorTrayLoaderModule::run(bool has_material)
                 else
                 {
                     states.setHasKickTray(false);
-                    states.setExitClipReady(false);
                     if(states.hasVacancyTray())
-                        states.setEntranceClipReay(false);
+                        states.setExitClipReady(false);
                     else
                         states.setHasVacancyTray(true);
+                    states.setEntranceClipReady(false);
                 }
             }
             else
             {
                 states.setHasKickTray(false);
-                states.setExitClipReady(false);
                 if(states.hasVacancyTray())
-                    states.setEntranceClipReay(false);
+                    states.setExitClipReady(false);
                 else
                     states.setHasVacancyTray(true);
+                states.setEntranceClipReady(false);
             }
         }
 

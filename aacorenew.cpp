@@ -98,6 +98,10 @@ void AACoreNew::stopWork(bool wait_finish)
 void AACoreNew::performHandlingOperation(int cmd)
 {
     qInfo("AACore perform command: %d", cmd);
+    if(cmd == 1)
+    {
+        performDispense();
+    }
     return;
 }
 
@@ -626,6 +630,11 @@ void AACoreNew::performAAOffline()
     qInfo("time elapsed: %d", timer.elapsed());
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "AAOffline", map);
+}
+
+void AACoreNew::performHandling(int cmd)
+{
+    emit sendHandlingOperation(cmd);
 }
 
 void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,

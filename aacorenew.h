@@ -36,6 +36,7 @@ public:
               ChartCalibration * chartCalibration,DispenseModule* dispense,
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
     void performAAOffline();
+    Q_INVOKABLE void performHandling(int cmd);
     ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond();
     ErrorCodeStruct performAAPickLens();

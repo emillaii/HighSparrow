@@ -47,9 +47,11 @@ public:
 private:
     bool is_run = false;
     bool moveToStartKick();
+    bool moveToGetUpSensorTray();
     bool moveToChangeVacancyTrayAndUpSensorTray();
     bool moveToGetTray();
-    bool moveToPushKickTrayAndPutSensorTray();
+    bool moveToGetTrayAndKickOutTray();
+    bool moveToBackKickAndPutSensorTray();
     bool moveToWorkPos();
     bool moveToEntranceClipNextPos();
     bool moveToExitClipNextPos();

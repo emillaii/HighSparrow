@@ -438,6 +438,8 @@ public:
     Q_PROPERTY(bool needChangeExitClip READ needChangeExitClip WRITE setNeedChangeExitClip NOTIFY needChangeExitClipChanged)
     Q_PROPERTY(bool useSpareEntanceClip READ useSpareEntanceClip WRITE setUseSpareEntanceClip NOTIFY useSpareEntanceClipChanged)
     Q_PROPERTY(bool useSpareExitClip READ useSpareExitClip WRITE setUseSpareExitClip NOTIFY useSpareExitClipChanged)
+    Q_PROPERTY(bool holdVacancyTray READ holdVacancyTray WRITE setHoldVacancyTray NOTIFY holdVacancyTrayChanged)
+    Q_PROPERTY(bool getedVacancyTray READ getedVacancyTray WRITE setGetedVacancyTray NOTIFY getedVacancyTrayChanged)
     bool hasTrayToGet() const
     {
         return m_hasTrayToGet;
@@ -515,6 +517,16 @@ public:
     bool useSpareExitClip() const
     {
         return m_useSpareExitClip;
+    }
+
+    bool holdVacancyTray() const
+    {
+        return m_holdVacancyTray;
+    }
+
+    bool getedVacancyTray() const
+    {
+        return m_getedVacancyTray;
     }
 
 public slots:
@@ -661,6 +673,24 @@ public slots:
         emit useSpareExitClipChanged(m_useSpareExitClip);
     }
 
+    void setHoldVacancyTray(bool holdVacancyTray)
+    {
+        if (m_holdVacancyTray == holdVacancyTray)
+            return;
+
+        m_holdVacancyTray = holdVacancyTray;
+        emit holdVacancyTrayChanged(m_holdVacancyTray);
+    }
+
+    void setGetedVacancyTray(bool getedVacancyTray)
+    {
+        if (m_getedVacancyTray == getedVacancyTray)
+            return;
+
+        m_getedVacancyTray = getedVacancyTray;
+        emit getedVacancyTrayChanged(m_getedVacancyTray);
+    }
+
 signals:
     void hasTrayToGetChanged(bool hasTrayToGet);
     void hasVacancyTrayChanged(bool hasVacancyTray);
@@ -693,6 +723,10 @@ signals:
 
     void useSpareExitClipChanged(bool useSpareExitClip);
 
+    void holdVacancyTrayChanged(bool holdVacancyTray);
+
+    void getedVacancyTrayChanged(bool getedVacancyTray);
+
 private:
     bool m_hasTrayToGet = false;
     bool m_hasVacancyTray = false;
@@ -706,9 +740,11 @@ private:
     bool m_hasWorkTray = false;
     bool m_hasKickTray = false;
     bool m_hasChangeVacancyTray = false;
-    bool m_needChangeEntranceClip = 0;
-    bool m_needChangeExitClip = 0;
-    bool m_useSpareEntanceClip = 0;
-    bool m_useSpareExitClip = 0;
+    bool m_needChangeEntranceClip = false;
+    bool m_needChangeExitClip = false;
+    bool m_useSpareEntanceClip  = false;
+    bool m_useSpareExitClip  = false;
+    bool m_holdVacancyTray  = false;
+    bool m_getedVacancyTray = false;
 };
 #endif // SENSORTRAYLOADERPARAMETER_H

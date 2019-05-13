@@ -76,8 +76,90 @@ void SensorTrayLoaderModule::run(bool has_material)
     while (is_run)
     {
         QThread::msleep(100);
-        //送入空盘
-//        if(states.needChangeTray()&&(!states.hasVacancyTray()))
+        //送入空盤
+        if(states.needChangeTray()&&(!states.hasVacancyTray())&&(!states.getedVacancyTray()))
+        {
+            if((!moveToGetUpSensorTray())&&has_material)
+            {
+                AppendError(u8"去拿空盘位置失败！");
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    continue;
+                }
+            }
+            if((!moveToGetTray())&&has_material)
+            {
+                AppendError(u8"去拿空盘失败！");
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    continue;
+                }
+            }
+            if((!moveToDownsensorTray())&&has_material)
+            {
+                AppendError(u8"去放空盘失败！");
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    continue;
+                }
+                else
+                {
+                    states.setGetedVacancyTray(true);
+                    states.setEntranceClipReay(false);
+                }
+            }
+            else
+            {
+                states.setGetedVacancyTray(true);
+                states.setEntranceClipReay(false);
+            }
+        }
+        //拿起空盘，拖出第一个料盘
+        if(states.needChangeTray()&&(!states.hasVacancyTray())&&states.getedVacancyTray())
+        {
+            if((!moveToGetUpSensorTray())&&has_material)
+            {
+                AppendError(u8"去拿第一个料盘位置失败！");
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    continue;
+                }
+            }
+            if((!moveToGetTray())&&has_material)
+            {
+                AppendError(u8"去拿第一个料盘失败！");
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    continue;
+                }
+            }
+            if((!moveToStartKick())&&has_material)
+            {
+                AppendError(u8"！");
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    continue;
+                }
+                else
+                {
+                    states.setGetedVacancyTray(true);
+                    states.setEntranceClipReay(false);
+                }
+            }
+            else
+            {
+                states.setGetedVacancyTray(true);
+                states.setEntranceClipReay(false);
+            }
+        }
+
+
 
         //去Kick位置
         //去放工作盘
@@ -128,7 +210,7 @@ void SensorTrayLoaderModule::run(bool has_material)
         //夹盘
         if(states.needChangeTray()&&(!states.hasWorkTray())&&(!states.hasGetedTray())&&states.entranceClipReady())
         {
-            if((!moveToGetTray())&&has_material)
+            if((!moveToGetTrayAndKickOutTray())&&has_material)
             {
                 AppendError(u8"取盘失败！");
                 sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
@@ -149,7 +231,7 @@ void SensorTrayLoaderModule::run(bool has_material)
         // 去放盘
         if(states.needChangeTray()&&states.hasKickTray()&&(!states.needChangeVacancyTray())&&states.exitClipReay())
         {
-            if((!moveToPushKickTrayAndPutSensorTray())&&has_material)
+            if((!moveToBackKickAndPutSensorTray())&&has_material)
             {
                 AppendError(u8"推出Kick盘失败！");
                 sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
@@ -289,7 +371,44 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpSensorTray()
     return result&&kick_result;
 }
 
+bool SensorTrayLoaderModule::moveToGetUpSensorTray()
+{
+    bool result = motor_tray->MoveToPosSync(parameters.getTrayPosition());
+    if(result)
+    {
+       result &= hold_tray->Set(false);
+       result &= gripper->Set(false);
+    }
+    return result;
+}
+
 bool SensorTrayLoaderModule::moveToGetTray()
+{
+    bool result = motor_push->MoveToPosSync(parameters.pushoutPosition());
+    if(result)
+        result &= gripper->Set(true,false);
+    result &= motor_push->MoveToPosSync(0);
+    if(result)
+        result &= gripper->Wait(true);
+    return result;
+}
+
+bool SensorTrayLoaderModule::moveToDownsensorTray()
+{
+    bool result = motor_push->MoveToPosSync(parameters.pushoutPosition());
+    if(result)
+    {
+        result &= gripper->Set(false);
+        QThread::sleep(300);
+    }
+    if(result)
+        result &= motor_push->MoveToPosSync(parameters.pushoutPosition()+ parameters.backDistance());
+    if(result)
+        result &= hold_tray->Set(true);
+    return result;
+}
+
+bool SensorTrayLoaderModule::moveToGetTrayAndKickOutTray()
 {
     qInfo("moveToGetTray");
     bool kick_result = kick1->Set(false);
@@ -308,7 +427,7 @@ bool SensorTrayLoaderModule::moveToGetTray()
     return result&&kick_result;
 }
 
-bool SensorTrayLoaderModule::moveToPushKickTrayAndPutSensorTray()
+bool SensorTrayLoaderModule::moveToBackKickAndPutSensorTray()
 {
     qInfo("moveToPushKickTrayAndPutSensorTray");
     motor_tray->MoveToPos(parameters.putTrayPosition());

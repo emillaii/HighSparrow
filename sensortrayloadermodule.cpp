@@ -108,13 +108,13 @@ void SensorTrayLoaderModule::run(bool has_material)
                 else
                 {
                     states.setGetedVacancyTray(true);
-                    states.setEntranceClipReay(false);
+                    states.setEntranceClipReady(false);
                 }
             }
             else
             {
                 states.setGetedVacancyTray(true);
-                states.setEntranceClipReay(false);
+                states.setEntranceClipReady(false);
             }
         }
         //拿起空盘，拖出第一个料盘
@@ -149,14 +149,14 @@ void SensorTrayLoaderModule::run(bool has_material)
                 else
                 {
                     states.setGetedVacancyTray(false);
-                    states.setEntranceClipReay(false);
+                    states.setEntranceClipReady(false);
                     states.setHasWorkTray(true);
                 }
             }
             else
             {
                 states.setGetedVacancyTray(false);
-                states.setEntranceClipReay(false);
+                states.setEntranceClipReady(false);
                 states.setHasWorkTray(true);
             }
         }
@@ -290,12 +290,12 @@ void SensorTrayLoaderModule::run(bool has_material)
                 }
                 else
                 {
-                    states.setEntranceClipReay(true);
+                    states.setEntranceClipReady(true);
                 }
             }
             else
             {
-                states.setEntranceClipReay(true);
+                states.setEntranceClipReady(true);
             }
         }
         //出盘弹夹到位

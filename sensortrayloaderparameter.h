@@ -428,7 +428,7 @@ public:
     Q_PROPERTY(bool firstTrayIsVacancy READ firstTrayIsVacancy WRITE setFirstTrayIsVacancy NOTIFY firstTrayIsVacancyChanged)
     Q_PROPERTY(bool needChangeTray READ needChangeTray WRITE setNeedChangeTray NOTIFY needChangeTrayChanged)
     Q_PROPERTY(bool changingTray READ changingTray WRITE setChangingTray NOTIFY changingTrayChanged)
-    Q_PROPERTY(bool entranceClipReady READ entranceClipReady WRITE setEntranceClipReay NOTIFY entranceClipReayChanged)
+    Q_PROPERTY(bool entranceClipReady READ entranceClipReady WRITE setEntranceClipReady NOTIFY entranceClipReadyChanged)
     Q_PROPERTY(bool exitClipReay READ exitClipReay WRITE setExitClipReady NOTIFY exitClipReadyChanged)
     Q_PROPERTY(bool hasGetedTray READ hasGetedTray WRITE setHasGetedTray NOTIFY hasGetedTrayChanged)
     Q_PROPERTY(bool hasWorkTray READ hasWorkTray WRITE setHasWorkTray NOTIFY hasWorkTrayChanged)
@@ -583,13 +583,13 @@ public slots:
         emit changingTrayChanged(m_changingTray);
     }
 
-    void setEntranceClipReay(bool hasEntranceClip)
+    void setEntranceClipReady(bool hasEntranceClip)
     {
         if (m_entranceClipReady == hasEntranceClip)
             return;
 
         m_entranceClipReady = hasEntranceClip;
-        emit entranceClipReayChanged(m_entranceClipReady);
+        emit entranceClipReadyChanged(m_entranceClipReady);
     }
 
     void setExitClipReady(bool hasExitClip)
@@ -703,7 +703,7 @@ signals:
 
     void changingTrayChanged(bool changingTray);
 
-    void entranceClipReayChanged(bool entranceClipReady);
+    void entranceClipReadyChanged(bool entranceClipReady);
 
     void exitClipReadyChanged(bool exitClipReay);
 

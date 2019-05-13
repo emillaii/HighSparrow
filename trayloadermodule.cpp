@@ -49,7 +49,7 @@ void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
 
 void TrayLoaderModule::ResetLogic()
 {
-
+    states.setHasTrayReady(false);
 }
 
 void TrayLoaderModule::performHandling(int cmd)
@@ -70,6 +70,8 @@ bool TrayLoaderModule::startUp()
 void TrayLoaderModule::run(bool has_tray)
 {
     while(is_run){
+        QThread::msleep(100);
+
         if(!states.hasTrayReady()){
             ejectTray();
             motorInRelease();

@@ -57,6 +57,8 @@ private:
     bool moveToWorkPos();
     bool moveToEntranceClipNextPos();
     bool moveToExitClipNextPos();
+
+    bool moveToDownsensorTray();
 };
 
 #endif // SENSORTRAYLOADERMODULE_H

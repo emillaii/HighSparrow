@@ -28,7 +28,7 @@ ListView {
                     if (baseModuleManager.ServerMode == 0)
                         return "TrayLoaderModuleView.qml"
                     else
-                        return "TrayLoaderModuleView.qml"
+                        return "SensorTrayLoaderViewModule.qml"
                 case 11: return "ThreadManagerView.qml"
             }
         }

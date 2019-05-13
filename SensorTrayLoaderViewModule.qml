@@ -28,7 +28,7 @@ ItemDelegate {
             }
         }
         MotionPopup{
-            id:tray_loader_module_motions
+            id:sensor_tray_loader_module_motions
         }
         RowLayout {
             ColumnLayout {
@@ -41,12 +41,12 @@ ItemDelegate {
                 }
             }
             Switch {
-                id: trayLoaderModuleViewSwitch
+                id: sensortrayLoaderModuleViewSwitch
             }
         }
 
         ColumnLayout{
-            visible:  trayLoaderModuleViewSwitch.checked
+            visible:  sensortrayLoaderModuleViewSwitch.checked
             RowLayout {
                 Label {
                     text: qsTr("")
@@ -54,7 +54,7 @@ ItemDelegate {
                 Button{
                     text:qsTr("手动操作")
                     onClicked:{
-                        tray_loader_module_motions.open()
+                        sensor_tray_loader_module_motions.open()
                     }
                 }
             }
@@ -66,27 +66,27 @@ ItemDelegate {
                             text:qsTr("起始位置")
                         }
                         TextField{
-                            text:tray_clipin_parameter.firstTrayPos
+                            text:sensor_entrance_clip_parameter.startPosition
                             horizontalAlignment:TextInput.AlignHCenter
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                tray_clipin_parameter.setFirstTrayPos(text);
+                                sensor_entrance_clip_parameter.setStartPosition(text)
                             }
                         }
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTIEMovetoFirstPos()
+                                //logicManager.trayLoaderModuleLTIEMovetoFirstPos()
                             }
                         }
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTIEName)
-                                tray_clipin_parameter.setFirstTrayPos(x)
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTIEName)
+                                sensor_entrance_clip_parameter.setStartPosition(x)
                             }
                         }
                     }
@@ -95,14 +95,14 @@ ItemDelegate {
                             text:qsTr("结束位置")
                         }
                         TextField{
-                            text:tray_clipin_parameter.lastTrayPos
+                            text:sensor_entrance_clip_parameter.endPosition
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                tray_clipin_parameter.setLastTrayPos(text)
+                                sensor_entrance_clip_parameter.setEndPosition(text)
                             }
                         }
                         Button{
@@ -114,8 +114,8 @@ ItemDelegate {
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTIEName)
-                                tray_clipin_parameter.setLastTrayPos(x)
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTOEName)
+                                sensor_entrance_clip_parameter.setEndPosition(x)
                             }
                         }
                     }
@@ -124,7 +124,7 @@ ItemDelegate {
                             text:qsTr("列数")
                         }
                         TextField{
-                            text:tray_clipin_parameter.columnCount
+                            text:sensor_clip_standard_parameter.count
                             validator: IntValidator{
                                 bottom: 2
                             }
@@ -137,7 +137,7 @@ ItemDelegate {
                             text:qsTr("列距")
                         }
                         TextField{
-                            text:tray_clipin_parameter.columnDelta
+                            text:sensor_clip_standard_parameter.delta
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
@@ -148,9 +148,9 @@ ItemDelegate {
                             visible: false
                             text:qsTr("计算")
                             onClicked: {
-                                var y1 = tray_clipin_parameter.firstTrayPos;
-                                var y2 = tray_clipin_parameter.lastTrayPos;
-                                var delta = (y2-y1)/(tray_clipin_parameter.columnCount-1);
+                                var y1 = sensor_entrance_clip_parameter.startPosition;
+                                var y2 = sensor_entrance_clip_parameter.startPosition;
+                                var delta = (y2-y1)/(sensor_clip_standard_parameter.count-1);
                                 tray_clipin_parameter.setColumnDelta(delta);
                             }
                         }
@@ -161,26 +161,26 @@ ItemDelegate {
                         }
                         TextField{
                             id:col_in
-                            text:tray_clipin_parameter.currentIndex+1
+                            text:sensor_entrance_clip_parameter.currentIndex+1
                             validator: IntValidator{
                                 bottom: 1
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
                                 var idx = text-1
-                                tray_clipin_parameter.setCurrentIndex(idx)
+                                sensor_entrance_clip_parameter.setCurrentIndex(idx)
                             }
                         }
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in.text-1)
+                                //logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in.text-1)
                             }
                         }
                         Button{
                             text:qsTr("弹出")
                             onClicked: {
-                                logicManager.trayLoaderModuleEjectTray()
+                                //logicManager.trayLoaderModuleEjectTray()
                             }
                         }
                     }
@@ -194,27 +194,27 @@ ItemDelegate {
                             text:qsTr("起始位置")
                         }
                         TextField{
-                            text:tray_clipout_parameter.firstTrayPos
+                            text:sensor_exit_clip_parameter.startPosition
                             horizontalAlignment:TextInput.AlignHCenter
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                tray_clipout_parameter.setFirstTrayPos(text);
+                                sensor_exit_clip_parameter.setStartPosition(text)
                             }
                         }
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTOEMovetoFirstPos()
+                                //logicManager.trayLoaderModuleLTOEMovetoFirstPos()
                             }
                         }
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTOEName)
-                                tray_clipout_parameter.setFirstTrayPos(x)
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTOEName)
+                                sensor_exit_clip_parameter.setStartPosition(x)
                             }
                         }
                     }
@@ -223,27 +223,27 @@ ItemDelegate {
                             text:qsTr("结束位置")
                         }
                         TextField{
-                            text:tray_clipout_parameter.lastTrayPos
+                            text:sensor_exit_clip_parameter.endPosition
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                tray_clipout_parameter.setLastTrayPos(text);
+                                sensor_exit_clip_parameter.setEndPosition(text)
                             }
                         }
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTOEMovetoLastPos()
+                                //logicManager.trayLoaderModuleLTOEMovetoLastPos()
                             }
                         }
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTOEName)
-                                tray_clipout_parameter.setLastTrayPos(x)
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTOEName)
+                                sensor_exit_clip_parameter.setEndPosition(x)
                             }
                         }
                     }
@@ -252,20 +252,20 @@ ItemDelegate {
                             text:qsTr("列数")
                         }
                         TextField{
-                            text:tray_clipout_parameter.columnCount
+                            text:sensor_clip_standard_parameter.count
                             validator: IntValidator{
                                 bottom: 2
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_clipout_parameter.setColumnCount(text)
+                                sensor_clip_standard_parameter.setCount()
                             }
                         }
                         Label{
                             text:qsTr("列距")
                         }
                         TextField{
-                            text:tray_clipout_parameter.columnDelta
+                            text:sensor_clip_standard_parameter.delta
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
@@ -276,10 +276,10 @@ ItemDelegate {
                             visible: false
                             text:qsTr("计算")
                             onClicked: {
-                                var y1 = tray_clipin_parameter.firstTrayPos;
-                                var y2 = tray_clipin_parameter.lastTrayPos;
-                                var delta = (y2-y1)/(tray_clipin_parameter.columnCount-1);
-                                tray_clipout_parameter.setColumnDelta(delta);
+                                var y1 = sensor_exit_clip_parameter.startPosition;
+                                var y2 = sensor_exit_clip_parameter.endPosition;
+                                var delta = (y2-y1)/(sensor_clip_standard_parameter.count-1);
+                                sensor_clip_standard_parameter.setDelta(delta)
                             }
                         }
                     }
@@ -289,20 +289,20 @@ ItemDelegate {
                         }
                         TextField{
                             id:col_out
-                            text:tray_clipout_parameter.currentIndex+1
+                            text:sensor_exit_clip_parameter.currentIndex+1
                             validator: IntValidator{
                                 bottom: 1
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
                                 var idx = text-1
-                                tray_clipout_parameter.setCurrentIndex(idx)
+                                sensor_exit_clip_parameter.setCurrentIndex(idx)
                             }
                         }
                         Button{
                             text:qsTr("移动")
                             onClicked: {
-                                logicManager.trayLoaderModuleLTOEMovetoColumnIndex(col_out.text-1)
+                                //logicManager.trayLoaderModuleLTOEMovetoColumnIndex(col_out.text-1)
                             }
                         }
                     }
@@ -314,61 +314,61 @@ ItemDelegate {
 //*
                     RowLayout{
                         Label{
-                            text:qsTr("LTK_X1 接盘位置")
+                            text:qsTr("pushMotorSafePosotion")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltkx1PressPos
+                            text:sensor_tray_loader_module_parameter.pushMotorSafePosition
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtkx1PressPos(text)
+                                sensor_tray_loader_module_parameter.setPushMotorSafePosition(text)
                             }
                         }
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTKX1MovetoGetPos()
+                                //logicManager.trayLoaderModuleLTKX1MovetoGetPos()
                             }
                         }
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX1Name)
-                                tray_loader_module_parameters.setLtkx1PressPos(x)
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorTrayName)
+                                sensor_tray_loader_module_parameter.setPushMotorSafePosition(x)
                             }
                         }
                     }
 //*/
-/*
+//*
                     RowLayout{
                         Label{
-                            text:qsTr("LTK_X1 中继位置")
+                            text:qsTr("downTrayPosition")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltkx1RelayPos
+                            text:sensor_tray_loader_module_parameter.downTrayPosition
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtkx1RelayPos(text)
+                                sensor_tray_loader_module_parameter.setDownTrayPosition(text)
                             }
                         }
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTKX1MoveToRelayPos()
+                                //logicManager.trayLoaderModuleLTKX1MoveToRelayPos()
                             }
                         }
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX1Name)
-                                tray_loader_module_parameters.setLtkx1RelayPos(x)
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorTrayName)
+                                sensor_tray_loader_module_parameter.setDownTrayPosition(x)
                             }
                         }
                     }
@@ -404,80 +404,64 @@ ItemDelegate {
                         }
                     }
 //*/
-
-                    RowLayout{
-                        Layout.alignment: Qt.AlignRight
-                        Button{
-                            text: qsTr("夹紧")
-                            onClicked: {
-                                logicManager.trayLoaderModuleLTKX1CylinderOn()
-                            }
-                        }
-                        Button{
-                            text:qsTr("松开")
-                            onClicked:{
-                                logicManager.trayLoaderModuleLTKX1CylinderOff();
-                            }
-                        }
-                    }
-/*
+//*
                     RowLayout{
                         Label{
-                            text:qsTr("LTK_X2 接盘位置")
+                            text:qsTr("getTrayPosition")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltkx2PressPos
+                            text:sensor_tray_loader_module_parameter.getTrayPosition
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtkx2PressPos(text)
+                                sensor_tray_loader_module_parameter.setGetTrayPosition(text)
                             }
                         }
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTKX2MovetoGetPos()
+                                //logicManager.trayLoaderModuleLTKX2MovetoGetPos()
                             }
                         }
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX2Name)
-                                tray_loader_module_parameters.setLtkx2PressPos(x)
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorTrayName)
+                                sensor_tray_loader_module_parameter.setGetTrayPosition(x)
                             }
                         }
                     }
 //*/
-/*
+//*
                     RowLayout{
                         Label{
-                            text:qsTr("LTK_X2 放盘位置")
+                            text:qsTr("finishKickTrayPosition")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltkx2ReleasePos
+                            text:sensor_tray_loader_module_parameter.finishKickTrayPosition
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                tray_loader_module_parameters.setLtkx2ReleasePos(text)
+                                sensor_tray_loader_module_parameter.setFinishKickTrayPosition(text)
                             }
                         }
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTKX2MovetoSetPos()
+                                //logicManager.trayLoaderModuleLTKX2MovetoSetPos()
                             }
                         }
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX2Name)
-                                tray_loader_module_parameters.setLtkx2ReleasePos(x)
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTKName)
+                                sensor_tray_loader_module_parameter.setFinishKickTrayPosition(x)
                             }
                         }
                     }
@@ -501,160 +485,177 @@ ItemDelegate {
 //*/
                     RowLayout{
                         Label{
-                            text:qsTr("LTL 接盘位置")
+                            text:qsTr("pushoutPosition")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltlPressPos
+                            text:sensor_tray_loader_module_parameter.pushoutPosition
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                if(logicManager.trayLoaderModuleCheckLTLXGetPos(text)){
-                                    tray_loader_module_parameters.setLtlPressPos(text)
-                                    tray_loader_module_parameters.setLtkx1ReleasePos(text+166.7538)
-                                    tray_loader_module_parameters.setLtkx1RelayPos(text+166.7538-310)
-                                }else{
-                                    tray_loader_module_parameters.setLtlPressPos(310-166.7538)
-                                    tray_loader_module_parameters.setLtkx1ReleasePos(310)
-                                    tray_loader_module_parameters.setLtkx1RelayPos(0);
-                                }
+                                sensor_tray_loader_module_parameter.setPushoutPosition(text)
                             }
                         }
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTLMovetoGetPos()
+                                //logicManager.trayLoaderModuleLTKX2MovetoSetPos()
                             }
                         }
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTLXName)
-                                if(logicManager.trayLoaderModuleCheckLTLXGetPos(x)){
-                                    tray_loader_module_parameters.setLtlPressPos(x)
-                                    tray_loader_module_parameters.setLtkx1ReleasePos(x+166.758)
-                                    tray_loader_module_parameters.setLtkx1RelayPos(text+166.7538-310)
-                                }else{
-                                    tray_loader_module_parameters.setLtlPressPos(310-166.7538)
-                                    tray_loader_module_parameters.setLtkx1ReleasePos(310)
-                                    tray_loader_module_parameters.setLtkx1RelayPos(0);
-                                }
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSPOName)
+                                sensor_tray_loader_module_parameter.setPushoutPosition(x)
                             }
                         }
                     }
                     RowLayout{
                         Label{
-                            text:qsTr("LTL 放盘位置")
+                            text:qsTr("putTrayPosition")
                         }
                         TextField{
-                            text:tray_loader_module_parameters.ltlReleasePos
+                            text:sensor_tray_loader_module_parameter.putTrayPosition
                             validator: DoubleValidator{
                                 decimals: 3
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
                             onEditingFinished: {
-                                if(logicManager.trayLoaderModuleCheckLTLXSetPos(text)){
-                                    tray_loader_module_parameters.setLtlReleasePos(text)
-                                    tray_loader_module_parameters.setLtkx2PressPos(text-653)
-                                }else{
-                                    tray_loader_module_parameters.setLtlReleasePos(653)
-                                    tray_loader_module_parameters.setLtkx2PressPos(0)
-                                }
-
-
+                                sensor_tray_loader_module_parameter.setPutTrayPosition(text)
                             }
                         }
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTLMovetoSetPos()
+                                //logicManager.trayLoaderModuleLTLMovetoSetPos()
                             }
                         }
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTLXName)
-                                if(logicManager.trayLoaderModuleCheckLTLXSetPos(x)){
-                                    tray_loader_module_parameters.setLtlReleasePos(x)
-                                    tray_loader_module_parameters.setLtkx2PressPos(x-653)
-                                }else{
-                                    tray_loader_module_parameters.setLtlReleasePos(653)
-                                    tray_loader_module_parameters.setLtkx2PressPos(0)
-                                }
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorTrayName)
+                                sensor_tray_loader_module_parameter.setPutTrayPosition(text)
                             }
                         }
                     }
                     RowLayout{
-                        Layout.alignment: Qt.AlignRight
-                        Button{
-                            text: qsTr("夹紧")
-                            onClicked: {
-                                logicManager.trayLoaderModuleLTLXCylinderOn()
+                        Label{
+                            text:qsTr("pushoutPosition")
+                        }
+                        TextField{
+                            text:sensor_tray_loader_module_parameter.pushoutPosition
+                            validator: DoubleValidator{
+                                decimals: 3
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                sensor_tray_loader_module_parameter.setPushoutPosition(text)
                             }
                         }
                         Button{
-                            text:qsTr("松开")
-                            onClicked:{
-                                logicManager.trayLoaderModuleLTLXCylinderOff()
-                            }
-                        }
-                    }
-                    RowLayout{
-                        Button{
-                            text:qsTr("接盘过程测试")
+                            text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTLXPickUpTray()
+                                //logicManager.trayLoaderModuleLTKX2MovetoSetPos()
                             }
                         }
                         Button{
-                            text:qsTr("放盘过程测试")
+                            text:title_read_encoder
                             onClicked: {
-                                logicManager.trayLoaderModuleLTLXPutDownTray()
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSPOName)
+                                sensor_tray_loader_module_parameter.setPushoutPosition(x)
                             }
                         }
                     }
 
                     RowLayout{
-                        GroupBox{
-                            title:qsTr("流程测试")
-                            ColumnLayout{
-                                RowLayout{
-                                    Label{
-                                        text:qsTr("状态")
-                                    }
-                                    Label{
-                                        id:state_id
-                                        text:qsTr("空闲")
-                                    }
-                                }
+                        Label{
+                            text:qsTr("startKickTrayPosition")
+                        }
+                        TextField{
+                            text:sensor_tray_loader_module_parameter.startKickTrayPosition
+                            validator: DoubleValidator{
+                                decimals: 3
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                sensor_tray_loader_module_parameter.setStartKickTrayPosition(text)
+                            }
+                        }
+                        Button{
+                            text:title_move_to
+                            onClicked: {
+                                //logicManager.trayLoaderModuleLTLMovetoSetPos()
+                            }
+                        }
+                        Button{
+                            text:title_read_encoder
+                            onClicked: {
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTKName)
+                                sensor_tray_loader_module_parameter.setStartKickTrayPosition(x)
+                            }
+                        }
+                    }
+                    RowLayout{
+                        Label{
+                            text:qsTr("trayWorkPosition")
+                        }
+                        TextField{
+                            text:sensor_tray_loader_module_parameter.trayWorkPosition
+                            validator: DoubleValidator{
+                                decimals: 3
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                sensor_tray_loader_module_parameter.setTrayWorkPosition(text)
+                            }
+                        }
+                        Button{
+                            text:title_move_to
+                            onClicked: {
+                                //logicManager.trayLoaderModuleLTLMovetoSetPos()
+                            }
+                        }
+                        Button{
+                            text:title_read_encoder
+                            onClicked: {
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorTrayName)
+                                sensor_tray_loader_module_parameter.setTrayWorkPosition(x)
+                            }
+                        }
+                    }
 
-                                RowLayout{
-                                    Button{
-                                        text:qsTr("Start up")
-                                        onClicked: {
-                                            logicManager.trayLoaderModuleStartup()
-                                        }
-                                    }
-                                    Button{
-                                        id:emit_sinal_trayused
-                                        enabled: false
-                                        text:qsTr("发射空闲信号")
-                                        onClicked: {
-                                            logicManager.trayLoaderModuleEmitTestTrayUsed()
-                                        }
-                                    }
-                                    Connections{
-                                        target:tray_loader_module_parameters
-                                        onTrayReady:{
-                                            state_id.text = "工作中..."
-                                            emit_sinal_trayused.enabled = true
-                                        }
-                                    }
-
-                                }
+                    RowLayout{
+                        Label{
+                            text:qsTr("vacancyTrayPosition")
+                        }
+                        TextField{
+                            text:sensor_tray_loader_module_parameter.vacancyTrayPosition
+                            validator: DoubleValidator{
+                                decimals: 3
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                sensor_tray_loader_module_parameter.setVacancyTrayPosition(text)
+                            }
+                        }
+                        Button{
+                            text:title_move_to
+                            onClicked: {
+                                //logicManager.trayLoaderModuleLTLMovetoSetPos()
+                            }
+                        }
+                        Button{
+                            text:title_read_encoder
+                            onClicked: {
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTKName)
+                                sensor_tray_loader_module_parameter.setVacancyTrayPosition(x)
                             }
                         }
                     }

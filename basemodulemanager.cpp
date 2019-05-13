@@ -193,6 +193,7 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
     {
         result &= manager->registerWorker(&lens_loader_module);
         result &= manager->registerWorker(&lut_module);
+        result &= manager->registerWorker(&tray_loader_module);
     }
     else {
         result &= manager->registerWorker(&sensor_loader_module);

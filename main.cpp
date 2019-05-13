@@ -192,6 +192,16 @@ int main(int argc, char *argv[])
     }
     engine.rootContext()->setContextProperty("logList",logList);
 
+    engine.rootContext()->setContextProperty("sensor_clip_standard_parameter",
+                                             &highSprrow.baseModuleManager->sensor_clip_stand);
+    engine.rootContext()->setContextProperty("sensor_exit_clip_parameter",
+                                             &highSprrow.baseModuleManager->sensor_tray_loder_module.exit_clip->parameters);
+    engine.rootContext()->setContextProperty("sensor_entrance_clip_parameter",
+                                             &highSprrow.baseModuleManager->sensor_tray_loder_module.entrance_clip->parameters);
+    engine.rootContext()->setContextProperty("sensor_tray_loader_module_parameter",
+                                             &highSprrow.baseModuleManager->sensor_tray_loder_module.parameters);
+
+
 //    QStringList vacuumNames = highSprrow.baseModuleManager->vacuums.keys();
 //    QStringList cylinderNames = highSprrow.baseModuleManager->cylinder.keys();
 //    engine.rootContext()->setContextProperty("vacuumNames",vacuumNames);

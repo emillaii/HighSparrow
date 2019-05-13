@@ -140,6 +140,30 @@ ItemDelegate {
                     }
                 }
             }
+            GroupBox{
+                visible: !baseModuleManager.ServerMode
+                title:qsTr("TrayLoader")
+                RowLayout{
+                    Button{
+                        text:qsTr("开始")
+                        onClicked:{
+                            workersManager.startWorker("TrayLoaderModule",true,2);
+                        }
+                    }
+                    Button{
+                        text:qsTr("换盘")
+                        onClicked:{
+                            logicManager.trayLoaderModuleEmitTestTrayUsed()
+                        }
+                    }
+                    Button{
+                        text:qsTr("结束")
+                        onClicked: {
+                            workersManager.stopWorkers();
+                        }
+                    }
+                }
+            }
         }
     }
 }

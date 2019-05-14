@@ -275,7 +275,7 @@ bool BaseModuleManager::LoadVcmFile(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-        saveVcmfile(file_name);
+//        saveVcmfile(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -310,21 +310,22 @@ bool BaseModuleManager::saveVcmfile(QString file_name)
     }
     if(array.size() > 0)
         return  saveJsonArray(file_name,array);
-    else
-    {
-        VcMotorParameter temp_param;
-        QString motor_name = temp_param.motorName();
-        QJsonArray json;
-        for (int i = 0; i < 4; ++i) {
-            QJsonObject temp_object;
-            QString temp_name = motor_name;
-            temp_name.append(QString::number(i));
-            temp_param.setMotorName(temp_name);
-            temp_param.write(temp_object);
-            json.append(temp_object);
-        }
-        return  saveJsonArray(file_name,json);
-    }
+//    else
+//    {
+//        VcMotorParameter temp_param;
+//        QString motor_name = temp_param.motorName();
+//        QJsonArray json;
+//        for (int i = 0; i < 4; ++i) {
+//            QJsonObject temp_object;
+//            QString temp_name = motor_name;
+//            temp_name.append(QString::number(i));
+//            temp_param.setMotorName(temp_name);
+//            temp_param.write(temp_object);
+//            json.append(temp_object);
+//        }
+//        return  saveJsonArray(file_name,json);
+//    }
+    return  false;
 }
 
 bool BaseModuleManager::loadVacuumFiles(QString file_name)
@@ -332,7 +333,7 @@ bool BaseModuleManager::loadVacuumFiles(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-        saveVacuumFiles(file_name);
+//        saveVacuumFiles(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -366,21 +367,22 @@ bool BaseModuleManager::saveVacuumFiles(QString file_name)
     }
     if(array.size() > 0)
         return  saveJsonArray(file_name,array);
-    else
-    {
-        XtVacuumParameter temp_param;
-        QString vcauum_name = temp_param.vacuumName();
-        QJsonArray json;
-        for (int i = 0; i < 6; ++i) {
-            QJsonObject temp_object;
-            QString temp_name = vcauum_name;
-            temp_name.append(QString::number(i));
-            temp_param.setVacuumName(temp_name);
-            temp_param.write(temp_object);
-            json.append(temp_object);
-        }
-        return  saveJsonArray(file_name,json);
-    }
+//    else
+//    {
+//        XtVacuumParameter temp_param;
+//        QString vcauum_name = temp_param.vacuumName();
+//        QJsonArray json;
+//        for (int i = 0; i < 6; ++i) {
+//            QJsonObject temp_object;
+//            QString temp_name = vcauum_name;
+//            temp_name.append(QString::number(i));
+//            temp_param.setVacuumName(temp_name);
+//            temp_param.write(temp_object);
+//            json.append(temp_object);
+//        }
+//        return  saveJsonArray(file_name,json);
+//    }
+    return  false;
 }
 
 bool BaseModuleManager::loadCylinderFiles(QString file_name)
@@ -388,7 +390,7 @@ bool BaseModuleManager::loadCylinderFiles(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-        saveCylinderFiles(file_name);
+//        saveCylinderFiles(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -422,21 +424,22 @@ bool BaseModuleManager::saveCylinderFiles(QString file_name)
     }
     if(array.size() > 0)
         return  saveJsonArray(file_name,array);
-    else
-    {
-        XtCylinderParameter temp_param;
-        QString vcauum_name = temp_param.cylinderName();
-        QJsonArray json;
-        for (int i = 0; i < 6; ++i) {
-            QJsonObject temp_object;
-            QString temp_name = vcauum_name;
-            temp_name.append(QString::number(i));
-            temp_param.setCylinderName(temp_name);
-            temp_param.write(temp_object);
-            json.append(temp_object);
-        }
-        return  saveJsonArray(file_name,json);
-    }
+//    else
+//    {
+//        XtCylinderParameter temp_param;
+//        QString vcauum_name = temp_param.cylinderName();
+//        QJsonArray json;
+//        for (int i = 0; i < 6; ++i) {
+//            QJsonObject temp_object;
+//            QString temp_name = vcauum_name;
+//            temp_name.append(QString::number(i));
+//            temp_param.setCylinderName(temp_name);
+//            temp_param.write(temp_object);
+//            json.append(temp_object);
+//        }
+//        return  saveJsonArray(file_name,json);
+//    }
+    return  false;
 }
 
 bool BaseModuleManager::loadVisionLoactionFiles(QString file_name)
@@ -444,7 +447,7 @@ bool BaseModuleManager::loadVisionLoactionFiles(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-        saveVisionLoactionFiles(file_name);
+//        saveVisionLoactionFiles(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -457,7 +460,7 @@ bool BaseModuleManager::loadVisionLoactionFiles(QString file_name)
             vision_locations.insert(temp_location->parameters.locationName(),temp_location);
         else
         {
-            qInfo("vcm motor param name(%s)repeat!",temp_location->parameters.locationName().toStdString().c_str());
+            qInfo("vision location param name(%s)repeat!",temp_location->parameters.locationName().toStdString().c_str());
             delete temp_location;
         }
     }
@@ -478,21 +481,22 @@ bool BaseModuleManager::saveVisionLoactionFiles(QString file_name)
     }
     if(array.size() > 0)
         return  saveJsonArray(file_name,array);
-    else
-    {
-        VisionLocationParameter temp_param;
-        QString location_name = temp_param.locationName();
-        QJsonArray json;
-        for (int i = 0; i < 6; ++i) {
-            QJsonObject temp_object;
-            QString temp_name = location_name;
-            temp_name.append(QString::number(i));
-            temp_param.setLocationName(temp_name);
-            temp_param.write(temp_object);
-            json.append(temp_object);
-        }
-        return  saveJsonArray(file_name,json);
-    }
+//    else
+//    {
+//        VisionLocationParameter temp_param;
+//        QString location_name = temp_param.locationName();
+//        QJsonArray json;
+//        for (int i = 0; i < 6; ++i) {
+//            QJsonObject temp_object;
+//            QString temp_name = location_name;
+//            temp_name.append(QString::number(i));
+//            temp_param.setLocationName(temp_name);
+//            temp_param.write(temp_object);
+//            json.append(temp_object);
+//        }
+//        return  saveJsonArray(file_name,json);
+//    }
+    return  false;
 }
 
 bool BaseModuleManager::loadCalibrationFiles(QString file_name)
@@ -500,7 +504,7 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-        saveCalibrationFiles(file_name);
+//        saveCalibrationFiles(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -542,21 +546,22 @@ bool BaseModuleManager::saveCalibrationFiles(QString file_name)
     }
     if(array.size() > 0)
         return  saveJsonArray(file_name,array);
-    else
-    {
-        CalibrationParameter temp_param;
-        QString caibration_name = temp_param.calibrationName();
-        QJsonArray json;
-        for (int i = 0; i < 6; ++i) {
-            QJsonObject temp_object;
-            QString temp_name = caibration_name;
-            temp_name.append(QString::number(i));
-            temp_param.setCalibrationName(temp_name);
-            temp_param.write(temp_object);
-            json.append(temp_object);
-        }
-        return  saveJsonArray(file_name,json);
-    }
+//    else
+//    {
+//        CalibrationParameter temp_param;
+//        QString caibration_name = temp_param.calibrationName();
+//        QJsonArray json;
+//        for (int i = 0; i < 6; ++i) {
+//            QJsonObject temp_object;
+//            QString temp_name = caibration_name;
+//            temp_name.append(QString::number(i));
+//            temp_param.setCalibrationName(temp_name);
+//            temp_param.write(temp_object);
+//            json.append(temp_object);
+//        }
+//        return  saveJsonArray(file_name,json);
+//    }
+    return  false;
 }
 
 bool BaseModuleManager::loadJsonArray(QString file_name,QJsonArray &array)

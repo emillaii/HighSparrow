@@ -53,17 +53,21 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         var x =0;
+                        var x1 =0;
                         var y=0;
                         if (baseModuleManager.ServerMode == 0){
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                            x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
+                            tray_start_point1.setX(x + lensPickArmModuleParameter.visonPositionX - x1);
+                            tray_start_point1.setY(y);
                         }else{
 
                             x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                            tray_start_point1.setX(x);
+                            tray_start_point1.setY(y);
                         }
-                        tray_start_point1.setX(x);
-                        tray_start_point1.setY(y);
                     }
                 }
             }
@@ -121,17 +125,21 @@ ColumnLayout {
 
                     onClicked: {
                         var x =0;
+                        var x1 =0;
                         var y=0;
                         if (baseModuleManager.ServerMode == 0){
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                            x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
+                            first_tray_end_position.setX(x + lensPickArmModuleParameter.visonPositionX - x1);
+                            first_tray_end_position.setY(y);
                         }else{
 
                             x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                            first_tray_end_position.setX(x);
+                            first_tray_end_position.setY(y);
                         }
-                        tray_start_point1.setX(x);
-                        tray_start_point1.setY(y);
                     }
                 }
             }

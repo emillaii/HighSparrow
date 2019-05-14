@@ -750,8 +750,8 @@ void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, doubl
         aaData_1.setWURPeakZ(round(ur_peak_z*1000));
         aaData_1.setWLLPeakZ(round(ll_peak_z*1000));
         aaData_1.setWLRPeakZ(round(lr_peak_z*1000));
-        aaData_1.setXTilt(round(xTilt*1000)/1000);
-        aaData_1.setYTilt(round(yTilt*1000)/1000);
+        aaData_1.setXTilt(round(xTilt*10000)/10000);
+        aaData_1.setYTilt(round(yTilt*10000)/10000);
 
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {
@@ -773,8 +773,8 @@ void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, doubl
         aaData_2.setWURPeakZ(round(ur_peak_z*1000));
         aaData_2.setWLLPeakZ(round(ll_peak_z*1000));
         aaData_2.setWLRPeakZ(round(lr_peak_z*1000));
-        aaData_2.setXTilt(round(xTilt*1000)/1000);
-        aaData_2.setYTilt(round(yTilt*1000)/1000);
+        aaData_2.setXTilt(round(xTilt*10000)/10000);
+        aaData_2.setYTilt(round(yTilt*10000)/10000);
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {
             for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
@@ -1137,10 +1137,10 @@ void AACoreNew::sfrImageReady(QImage img)
 {
     qInfo("Sfr Image Ready");
     sfrImageProvider->setImage(img);
-//    QString filename = "";
-//    filename.append(getMTFLogDir())
-//                    .append(getCurrentTimeString())
-//                    .append(".jpg");
-//    img.save(filename);
+    QString filename = "";
+    filename.append(getMTFLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".jpg");
+    img.save(filename);
     emit callQmlRefeshImg(0);
 }

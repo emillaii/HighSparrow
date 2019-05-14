@@ -166,7 +166,6 @@ Grid {
             Connections {
                 target: baseModuleManager
                 onDisplaySfrImageInUI: {
-                    console.log("........onDisplaySfrImageInUI")
                     image4.source = ""
                     image4.source = "image://sfrImage"
                 }

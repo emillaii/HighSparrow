@@ -46,6 +46,7 @@ QVector<QPoint> VisionModule::Read_Dispense_Path()
     }
     return results;
 }
+
 bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 {
     BaslerPylonCamera *camera = Q_NULLPTR;
@@ -61,6 +62,19 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
     avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
     image = image2;
     return true;
+}
+
+void VisionModule::diffenenceImage(QImage image1, QImage image2)
+{
+    QString imageName;
+    imageName.append(getVisionLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".jpg");
+    avl::Image output;
+    avl::Image in1(image1.width(), image1.height(), image1.bytesPerLine(), avl::PlainType::Type::UInt8, image1.depth() / 8, image1.bits());
+    avl::Image in2(image2.width(), image2.height(), image2.bytesPerLine(), avl::PlainType::Type::UInt8, image2.depth() / 8, image2.bits());
+    avl::DifferenceImage(in1, in2, atl::NIL, output);
+    avl::SaveImageToJpeg( output , imageName.toStdString().c_str(), atl::NIL, false );
 }
 
 void VisionModule::testVision()
@@ -208,7 +222,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avs::DrawPoints_SingleColor( image4, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image5 );
         avs::DrawRectangles_SingleColor( image5, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 2.0f, false, atl::NIL, 1.0f), true, image6 );
         avl::SaveImageToJpeg( image6 , imageName.toStdString().c_str(), atl::NIL, false );
-        displayPRResult(camera_name, prResult);
+        displayPRResult(camera_name, prResult); 
     } catch(const atl::Error& error) {
         qInfo("PR Error: %s", error.Message());
         qWarning(error.Message());

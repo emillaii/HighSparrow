@@ -5,7 +5,7 @@
 #include <errorcode.h>
 #include <QQuickImageProvider>
 #include <AVL.h>
-
+#include "imageprovider.h"
 class BaslerPylonCamera;
 
 struct PRResultStruct {
@@ -36,6 +36,7 @@ public:
     ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
+
     Q_INVOKABLE void saveImage(int channel);
     Q_INVOKABLE void testVision();
 private:
@@ -43,13 +44,17 @@ private:
     QString last_downlook_pr_result;
     QString last_pickarm_pr_result;
     void displayPRResult(const QString, const PRResultStruct);
-
+    void diffenenceImage(QImage image1, QImage image2);
     bool grabImageFromCamera(QString cameraName, avl::Image &image);
     BaslerPylonCamera * downlookCamera;
     BaslerPylonCamera * uplookCamera;
     BaslerPylonCamera * pickarmCamera;
+    ImageProvider downlookCameraPrResultImageProvider;
+    ImageProvider uplookCameraPrResultImageProvider;
+    ImageProvider pickarmCameraPrResultImageProvider;
+    ImageProvider glueInspectionResultImageProvider;
 signals :
-    void callQmlRefeshImg();  // Preview 1
+    void callQmlRefeshImg();
 public:
     bool is_debug = false;
 };

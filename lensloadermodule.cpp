@@ -182,7 +182,7 @@ void LensLoaderModule::run(bool has_material)
 
             if((!pickTrayLens())&&has_material)
             {
-                AppendError("pickTrayLens fial!");
+                AppendError("pickTrayLens fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(!waitMessageReturn(is_run))
                     states.setHasPickedLens(true);

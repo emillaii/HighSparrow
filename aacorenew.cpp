@@ -66,7 +66,6 @@ void AACoreNew::run(bool has_material)
         runFlowchartTest();
         emit postDataToELK(this->runningUnit);
         QThread::msleep(100);
-        //is_run = false;
     }
     qInfo("End of thread");
 }
@@ -85,6 +84,10 @@ void AACoreNew::startWork(bool reset_logic, int run_mode)
             performMTF(true);
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
+    } else if (run_mode == RunMode::AAFlowChartTest) {
+        runningUnit = this->unitlog->createUnit();
+        runFlowchartTest();
+        emit postDataToELK(this->runningUnit);
     }
 }
 
@@ -347,7 +350,8 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             //ret = performDispense();
         }
         else if (testItemName.contains(AA_PIECE_DELAY)) {
-            qInfo("Performing Delay");
+            int delay_in_ms = params["delay_in_ms"].toInt();
+            qInfo("Performing Delay : %d", delay_in_ms);
             performDelay(delay_in_ms);
         }
         else if (testItemName.contains(AA_PIECE_ACCEPT))
@@ -746,8 +750,8 @@ void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, doubl
         aaData_1.setWURPeakZ(round(ur_peak_z*1000));
         aaData_1.setWLLPeakZ(round(ll_peak_z*1000));
         aaData_1.setWLRPeakZ(round(lr_peak_z*1000));
-        aaData_1.setXTilt(xTilt);
-        aaData_1.setYTilt(yTilt);
+        aaData_1.setXTilt(round(xTilt*1000)/1000);
+        aaData_1.setYTilt(round(yTilt*1000)/1000);
 
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {
@@ -769,8 +773,8 @@ void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, doubl
         aaData_2.setWURPeakZ(round(ur_peak_z*1000));
         aaData_2.setWLLPeakZ(round(ll_peak_z*1000));
         aaData_2.setWLRPeakZ(round(lr_peak_z*1000));
-        aaData_2.setXTilt(xTilt);
-        aaData_2.setYTilt(yTilt);
+        aaData_2.setXTilt(round(xTilt*1000)/1000);
+        aaData_2.setYTilt(round(yTilt*1000)/1000);
         for (unsigned int i = 0; i < clustered_sfr.size(); i++)
         {
             for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
@@ -1131,11 +1135,12 @@ void AACoreNew::triggerGripperOn(bool isOn)
 
 void AACoreNew::sfrImageReady(QImage img)
 {
+    qInfo("Sfr Image Ready");
     sfrImageProvider->setImage(img);
-    QString filename = "";
-    filename.append(getMTFLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
-    img.save(filename);
+//    QString filename = "";
+//    filename.append(getMTFLogDir())
+//                    .append(getCurrentTimeString())
+//                    .append(".jpg");
+//    img.save(filename);
     emit callQmlRefeshImg(0);
 }

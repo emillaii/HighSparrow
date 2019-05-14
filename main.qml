@@ -245,7 +245,7 @@ ApplicationWindow {
                        command = "document.getElementById('flowchart_data').value";
                        flowChartPage.webView.runJavaScript(command, function(result) {
                             baseModuleManager.loadFlowchart(result)
-
+                            workersManager.startWorkers(true, 4)
                        })
                    })
                }

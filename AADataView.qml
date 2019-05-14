@@ -20,7 +20,7 @@ Grid {
             fillMode: Image.PreserveAspectFit
             cache: false
             Connections {
-                target: aaCore
+                target: baseModuleManager
                 onDisplayOCImageInUI: {
                     image1.source = ""
                     image1.source = "image://ocImage1"
@@ -164,8 +164,9 @@ Grid {
             fillMode: Image.PreserveAspectFit
             cache: false
             Connections {
-                target: aaCore
+                target: baseModuleManager
                 onDisplaySfrImageInUI: {
+                    console.log("........onDisplaySfrImageInUI")
                     image4.source = ""
                     image4.source = "image://sfrImage"
                 }

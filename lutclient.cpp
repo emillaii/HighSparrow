@@ -163,3 +163,8 @@ bool LutClient::requestToolUpPRResult(PrOffset &offset)
     offset = tempPrResult;
     return true;
 }
+
+bool LutClient::isLutClientConnected()
+{
+    return this->socketClient->isConnected();
+}

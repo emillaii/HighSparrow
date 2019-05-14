@@ -71,6 +71,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     }
     material_tray.standards_parameters.setTrayCount(2);
     unitlog.setServerAddress(DataServerURL());
+    setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
 }
 
@@ -1161,6 +1162,18 @@ bool BaseModuleManager::stepMove(int index, double step, bool isPositive)
         temp_motor->StepMove(-step);
     }
     return true;
+}
+
+void BaseModuleManager::setMotorParamByName(QString name, double vel, double acc, double jert)
+{
+    qInfo("setMotorParamByName %f, %f, %f",vel,acc,jert);
+  XtMotor* temp_motor = GetMotorByName(name);
+  if(temp_motor != nullptr)
+  {
+      temp_motor->SetVel(vel);
+      temp_motor->SetAcc(acc);
+      temp_motor->SetJerk(jert);
+  }
 }
 
 bool BaseModuleManager::performCalibration(QString calibration_name)

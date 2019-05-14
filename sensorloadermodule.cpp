@@ -66,7 +66,9 @@ void SensorLoaderModule::startWork(bool reset_logic, int run_mode)
         is_run = true;
         while(is_run) {
             moveToSUTPRPos(false,true);
+            QThread::msleep(2000);
             moveToSUTPRPos(true,true);
+            QThread::msleep(2000);
         }
     }
 }

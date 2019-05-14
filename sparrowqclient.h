@@ -11,7 +11,7 @@ public:
     QJsonObject commandDequeue();
     int commandQueueSize();
     void clearCommandQueue();
-
+    bool isConnected();
 Q_SIGNALS:
     void closed();
     void receiveMessage(QString);
@@ -27,6 +27,7 @@ private:
     QWebSocket m_webSocket;
     QUrl m_url;
     bool m_debug;
+    bool m_is_connected = false;
 };
 
 

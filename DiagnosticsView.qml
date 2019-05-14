@@ -30,6 +30,43 @@ Grid {
                     checked: false
                     text: qsTr("Sensor Loader")
                 }
+                Label
+                {
+                    text: qsTr("速度")
+                }
+                TextEdit {
+                    color: "white"
+                    width :100
+                    id: vel
+                    text: qsTr("400")
+                }
+                Label
+                {
+                    text: qsTr("加速度")
+                }
+                TextEdit {
+                    color: "white"
+                    width :100
+                    id: acc
+                    text: qsTr("8000")
+                }
+                Label
+                {
+                    text: qsTr("加加速度")
+                }
+                TextEdit {
+                    color: "white"
+                    width :100
+                    id: jert
+                    text: qsTr("80000")
+                }
+                Button
+                {
+                    text: qsTr("更新参数")  //Vibration Test
+                    onClicked: {
+                        baseModuleManager.setMotorParamByName(sensorPickArmParams.motorXName,vel.text,acc.text,jert.text);
+                    }
+                }
             }
             RowLayout {
                 ChartView {

@@ -173,7 +173,6 @@ bool AACoreNew::runFlowchartTest()
                        Sleep(100);
                        imageThread->exit();
                        dk->DothinkeyClose();
-
                        has_ng_lens = true;
                        has_ng_sensor = true;
                        has_sensor = false;

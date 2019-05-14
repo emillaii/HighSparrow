@@ -51,35 +51,7 @@ ItemDelegate {
                     }
                 }
             }
-            RowLayout {
-                GroupBox{
-                    title: qsTr("Updownlook Camera Offset")
-                    ColumnLayout {
-                        RowLayout {
-                            Button{
-                                text:qsTr("UpDn Calib")
-                                onClicked: {
-                                    logicManager.performUpDnLookCalibration()
-                                }
-                            }
-                            Label {
-                                text: qsTr("Camera Offset")
-                            }
-                            TextField {
-                                text: sutParams.cameraTheta
-                                horizontalAlignment: TextInput.AlignHCenter
-                                validator: DoubleValidator {
-                                    decimals: 3
-                                    notation: DoubleValidator.StandardNotation
-                                }
-                                onEditingFinished: {
-                                    sutParams.setCameraTheta(text)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+
 
             GroupBox{
                 title: qsTr("Mushroom Position")
@@ -104,6 +76,35 @@ ItemDelegate {
             GroupBox{
                 title: qsTr("Safety Position")
                 SUTSafetyPositionView {}
+            }
+            RowLayout {
+                GroupBox {
+                    title: qsTr("Updownlook Camera Offset")
+                    ColumnLayout {
+                        RowLayout {
+                            Button{
+                                text:qsTr("UpDn Calib")
+                                onClicked: {
+                                    logicManager.performUpDnLookCalibration()
+                                }
+                            }
+                            Label {
+                                text: qsTr("Camera Offset")
+                            }
+                            TextField {
+                                text: sutParams.cameraTheta
+                                horizontalAlignment: TextInput.AlignHCenter
+                                validator: DoubleValidator {
+                                    decimals: 6
+                                    notation: DoubleValidator.StandardNotation
+                                }
+                                onEditingFinished: {
+                                    sutParams.setCameraTheta(text)
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

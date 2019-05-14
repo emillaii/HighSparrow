@@ -13,7 +13,7 @@ ColumnLayout {
                     text:lut_pr_position1.X
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -27,7 +27,7 @@ ColumnLayout {
                     text:lut_pr_position1.Y
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -65,7 +65,7 @@ ColumnLayout {
                     text:lensPickArmModuleParameter.placeLensZ
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -102,7 +102,7 @@ ColumnLayout {
                     text:lut_pr_position2.X
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -116,7 +116,7 @@ ColumnLayout {
                     text:lut_pr_position2.Y
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -176,7 +176,7 @@ ColumnLayout {
                     text:lut_camera_position.X
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -190,7 +190,7 @@ ColumnLayout {
                     text:lut_camera_position.Y
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -244,7 +244,7 @@ ColumnLayout {
                     text:lut_picker_position.X
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -258,7 +258,7 @@ ColumnLayout {
                     text:lut_picker_position.Y
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {

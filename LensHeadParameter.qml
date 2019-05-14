@@ -10,7 +10,7 @@ ColumnLayout {
             text:lensPickArmModuleParameter.vcmWorkForce
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -24,7 +24,7 @@ ColumnLayout {
             text:lensPickArmModuleParameter.vcmWorkSpeed
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -40,7 +40,7 @@ ColumnLayout {
             text:lensPickArmModuleParameter.vcmMargin
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -55,7 +55,7 @@ ColumnLayout {
             text:lensPickArmModuleParameter.visonPositionX
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {

@@ -11,7 +11,7 @@ ColumnLayout {
             text: dispenseParams.testForce
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -26,7 +26,7 @@ ColumnLayout {
             text: dispenseParams.dispenseZOffset
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -44,7 +44,7 @@ ColumnLayout {
             text: dispenseParams.initTheta
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {

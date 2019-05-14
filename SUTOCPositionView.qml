@@ -11,7 +11,7 @@ ColumnLayout {
             text: sutParams.OCX
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onFocusChanged: {
@@ -25,7 +25,7 @@ ColumnLayout {
             text: sutParams.OCY
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onFocusChanged: {
@@ -39,7 +39,7 @@ ColumnLayout {
             text: sutParams.OCZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onFocusChanged: {

@@ -11,7 +11,7 @@ ColumnLayout {
             text: lutUnloadPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -25,7 +25,7 @@ ColumnLayout {
             text: lutUnloadPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -39,7 +39,7 @@ ColumnLayout {
             text: lutUnloadPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {

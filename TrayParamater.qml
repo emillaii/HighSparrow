@@ -11,7 +11,7 @@ ColumnLayout{
             text: tray_start_point1.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -25,7 +25,7 @@ ColumnLayout{
             text: tray_start_point1.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -55,7 +55,7 @@ ColumnLayout{
             text: tray_start_point2.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -69,7 +69,7 @@ ColumnLayout{
             text: tray_start_point2.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -99,7 +99,7 @@ ColumnLayout{
             text: first_tray_end_position.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -113,7 +113,7 @@ ColumnLayout{
             text: first_tray_end_position.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -168,7 +168,7 @@ ColumnLayout{
             text:tray_standard_parameter.columnDeta
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -182,7 +182,7 @@ ColumnLayout{
             text:tray_standard_parameter.rowDelta
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {

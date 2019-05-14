@@ -12,7 +12,7 @@ ColumnLayout {
             text: lutPickLensPositionAA2.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -26,7 +26,7 @@ ColumnLayout {
             text: lutPickLensPositionAA2.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -40,7 +40,7 @@ ColumnLayout {
             text: lutPickLensPositionAA2.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {

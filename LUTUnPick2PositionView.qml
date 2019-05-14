@@ -13,7 +13,7 @@ ColumnLayout {
             validator: DoubleValidator {
                 bottom: -100
                 top: 100
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -29,7 +29,7 @@ ColumnLayout {
             validator: DoubleValidator {
                 bottom: -100
                 top: 100
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -43,7 +43,7 @@ ColumnLayout {
             text: lutParams.UnPick2Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {

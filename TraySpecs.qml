@@ -40,7 +40,7 @@ ColumnLayout {
             text:tray_standard_parameter.columnDeta
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -54,7 +54,7 @@ ColumnLayout {
             text:tray_standard_parameter.rowDelta
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {

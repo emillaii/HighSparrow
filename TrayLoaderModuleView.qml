@@ -69,7 +69,7 @@ ItemDelegate {
                             text:tray_clipin_parameter.firstTrayPos
                             horizontalAlignment:TextInput.AlignHCenter
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
@@ -98,7 +98,7 @@ ItemDelegate {
                             text:tray_clipin_parameter.lastTrayPos
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
@@ -139,7 +139,7 @@ ItemDelegate {
                         TextField{
                             text:tray_clipin_parameter.columnDelta
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
@@ -197,7 +197,7 @@ ItemDelegate {
                             text:tray_clipout_parameter.firstTrayPos
                             horizontalAlignment:TextInput.AlignHCenter
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
@@ -226,7 +226,7 @@ ItemDelegate {
                             text:tray_clipout_parameter.lastTrayPos
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
@@ -267,7 +267,7 @@ ItemDelegate {
                         TextField{
                             text:tray_clipout_parameter.columnDelta
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
@@ -319,7 +319,7 @@ ItemDelegate {
                         TextField{
                             text:tray_loader_module_parameters.ltkx1PressPos
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
@@ -350,7 +350,7 @@ ItemDelegate {
                         TextField{
                             text:tray_loader_module_parameters.ltkx1RelayPos
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
@@ -381,7 +381,7 @@ ItemDelegate {
                         TextField{
                             text:tray_loader_module_parameters.ltkx1ReleasePos
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
@@ -428,7 +428,7 @@ ItemDelegate {
                         TextField{
                             text:tray_loader_module_parameters.ltkx2PressPos
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
@@ -459,7 +459,7 @@ ItemDelegate {
                         TextField{
                             text:tray_loader_module_parameters.ltkx2ReleasePos
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
@@ -506,7 +506,7 @@ ItemDelegate {
                         TextField{
                             text:tray_loader_module_parameters.ltlPressPos
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter
@@ -551,7 +551,7 @@ ItemDelegate {
                         TextField{
                             text:tray_loader_module_parameters.ltlReleasePos
                             validator: DoubleValidator{
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             horizontalAlignment: TextInput.AlignHCenter

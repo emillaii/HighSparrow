@@ -10,7 +10,7 @@ import QtQuick.Layouts 1.11
             TextField{
                 text:lut_pr_position1.X
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -23,7 +23,7 @@ import QtQuick.Layouts 1.11
             TextField{
                 text:lut_pr_position1.Y
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -54,7 +54,7 @@ import QtQuick.Layouts 1.11
             TextField{
                 text:lut_pr_position2.X
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -67,7 +67,7 @@ import QtQuick.Layouts 1.11
             TextField{
                 text:lut_pr_position2.Y
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -98,7 +98,7 @@ import QtQuick.Layouts 1.11
             TextField{
                 text:lut_camera_position.X
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -111,7 +111,7 @@ import QtQuick.Layouts 1.11
             TextField{
                 text:lut_camera_position.Y
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -142,7 +142,7 @@ import QtQuick.Layouts 1.11
             TextField{
                 text:lut_picker_position.X
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -155,7 +155,7 @@ import QtQuick.Layouts 1.11
             TextField{
                 text:lut_picker_position.Y
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {

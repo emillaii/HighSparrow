@@ -40,7 +40,7 @@ ItemDelegate {
                             text: aaCoreParams.EFL
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
@@ -54,7 +54,7 @@ ItemDelegate {
                             text: aaCoreParams.ROIRatio
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
@@ -70,7 +70,7 @@ ItemDelegate {
                             text: aaCoreParams.MaxIntensity
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
@@ -86,7 +86,7 @@ ItemDelegate {
                             text: aaCoreParams.MinArea
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
@@ -100,7 +100,7 @@ ItemDelegate {
                             text: aaCoreParams.MaxArea
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
@@ -116,7 +116,7 @@ ItemDelegate {
                             text: aaCoreParams.SensorXRatio
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
@@ -130,7 +130,7 @@ ItemDelegate {
                             text: aaCoreParams.SensorYRatio
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
-                                decimals: 3
+                                decimals: 6
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {

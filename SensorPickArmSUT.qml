@@ -10,7 +10,7 @@ ColumnLayout {
             text:sensorLoaderParameter.placeSensorZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -34,7 +34,7 @@ ColumnLayout {
             text:sensorLoaderParameter.pickProductZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -58,7 +58,7 @@ ColumnLayout {
             text:sensorLoaderParameter.pickNgSensorZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -85,7 +85,7 @@ ColumnLayout {
                     text:sut_pr_position1.X
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -99,7 +99,7 @@ ColumnLayout {
                     text:sut_pr_position1.Y
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -187,7 +187,7 @@ ColumnLayout {
                     text:sut_pr_position2.X
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
@@ -201,7 +201,7 @@ ColumnLayout {
                     text:sut_pr_position2.Y
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {

@@ -13,7 +13,7 @@ ColumnLayout {
             validator: DoubleValidator {
                 bottom: -100
                 top: 100
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onFocusChanged: {
@@ -29,7 +29,7 @@ ColumnLayout {
             validator: DoubleValidator {
                 bottom: -100
                 top: 100
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onFocusChanged: {
@@ -45,7 +45,7 @@ ColumnLayout {
             validator: DoubleValidator {
                 bottom: -100
                 top: 100
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onFocusChanged: {
@@ -64,7 +64,7 @@ ColumnLayout {
             validator: DoubleValidator {
                 bottom: -100
                 top: 100
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onFocusChanged: {
@@ -80,7 +80,7 @@ ColumnLayout {
             validator: DoubleValidator {
                 bottom: -100
                 top: 100
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onFocusChanged: {
@@ -96,7 +96,7 @@ ColumnLayout {
             validator: DoubleValidator {
                 bottom: -100
                 top: 100
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onFocusChanged: {

@@ -12,7 +12,7 @@ ColumnLayout {
             text: aaHeadParams.PickLensPositionZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {

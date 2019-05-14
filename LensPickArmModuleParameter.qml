@@ -23,7 +23,7 @@ import QtQuick.Layouts 1.11
                 text:lensPickArmModuleParameter.vcmWorkForce
                 horizontalAlignment: TextInput.AlignHCenter
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -37,7 +37,7 @@ import QtQuick.Layouts 1.11
                 text:lensPickArmModuleParameter.vcmWorkSpeed
                 horizontalAlignment: TextInput.AlignHCenter
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -51,7 +51,7 @@ import QtQuick.Layouts 1.11
                 text:lensPickArmModuleParameter.vcmMargin
                 horizontalAlignment: TextInput.AlignHCenter
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -67,7 +67,7 @@ import QtQuick.Layouts 1.11
                 text:lensPickArmModuleParameter.pickLensZ
                 horizontalAlignment: TextInput.AlignHCenter
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation:DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -96,7 +96,7 @@ import QtQuick.Layouts 1.11
                 text:lensPickArmModuleParameter.placeLensZ
                 horizontalAlignment: TextInput.AlignHCenter
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
@@ -124,7 +124,7 @@ import QtQuick.Layouts 1.11
                 text:lensPickArmModuleParameter.visonPositionX
                 horizontalAlignment: TextInput.AlignHCenter
                 validator: DoubleValidator{
-                    decimals: 3
+                    decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {

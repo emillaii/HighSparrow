@@ -11,7 +11,7 @@ ColumnLayout {
             text:sensorLoaderParameter.vcmWorkForce
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -25,7 +25,7 @@ ColumnLayout {
             text:sensorLoaderParameter.vcmWorkSpeed
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -39,7 +39,7 @@ ColumnLayout {
             text:sensorLoaderParameter.vcmMargin
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -55,7 +55,7 @@ ColumnLayout {
             text:sensorLoaderParameter.zOffset
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -83,7 +83,7 @@ ColumnLayout {
             text:pick1_offset.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -97,7 +97,7 @@ ColumnLayout {
             text:pick1_offset.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -124,7 +124,7 @@ ColumnLayout {
             text:pick2_offset.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
@@ -138,7 +138,7 @@ ColumnLayout {
             text:pick2_offset.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
-                decimals: 3
+                decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {

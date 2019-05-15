@@ -206,6 +206,7 @@ Popup {
                             }
                             RoundButton {
                                 onClicked: {
+                                    //console.log("move "+modelData);
                                     baseModuleManager.motorSeekOrigin(modelData)
                                 }
                                 transformOrigin: Item.Center
@@ -216,6 +217,7 @@ Popup {
                             RoundButton{
                                 text:"-"
                                 onClicked: {
+                                   //console.log("move "+modelData);
                                    var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
                                    console.log("result: "+res)
                                 }
@@ -223,6 +225,7 @@ Popup {
                             RoundButton{
                                 text:"+"
                                 onClicked: {
+                                   //console.log("move "+modelData);
                                    var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
                                    console.log(motorsNames.length)
                                    console.log("result: "+res)

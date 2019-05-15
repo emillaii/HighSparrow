@@ -79,7 +79,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTIEMovetoFirstPos()
+                                logicManager.sensorTrayLoaderModuleSTIEMovetoColumnIndex(0)
                             }
                         }
                         Button{
@@ -108,7 +108,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTIEMovetoLastPos()
+                                logicManager.sensorTrayLoaderModuleSTIEMovetoColumnIndex(sensor_clip_standard_parameter.count-1);
                             }
                         }
                         Button{
@@ -174,7 +174,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in.text-1)
+                                logicManager.sensorTrayLoaderModuleSTIEMovetoColumnIndex(col_in.text-1)
                             }
                         }
                         Button{
@@ -207,7 +207,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTOEMovetoFirstPos()
+                                logicManager.sensorTrayLoaderModuleSTOEMovetoColumnIndex(0)
                             }
                         }
                         Button{
@@ -236,7 +236,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTOEMovetoLastPos()
+                                logicManager.sensorTrayLoaderModuleSTOEMovetoColumnIndex(sensor_clip_standard_parameter.count-1)
                             }
                         }
                         Button{
@@ -302,7 +302,7 @@ ItemDelegate {
                         Button{
                             text:qsTr("移动")
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTOEMovetoColumnIndex(col_out.text-1)
+                                logicManager.sensorTrayLoaderModuleSTOEMovetoColumnIndex(col_out.text-1)
                             }
                         }
                     }
@@ -330,7 +330,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTKX1MovetoGetPos()
+                                logicManager.sensorTrayLoaderModuleMovetoPushMotorSafePosotion()
                             }
                         }
                         Button{
@@ -361,7 +361,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTKX1MoveToRelayPos()
+                                logicManager.sensorTrayLoaderModuleMovetoDownTrayPosition()
                             }
                         }
                         Button{
@@ -423,7 +423,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTKX2MovetoGetPos()
+                                logicManager.sensorTrayLoaderModuleMovetoGetTrayPosition()
                             }
                         }
                         Button{
@@ -454,7 +454,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTKX2MovetoSetPos()
+                                logicManager.sensorTrayLoaderModuleMovetoFinishKickTrayPosition()
                             }
                         }
                         Button{
@@ -501,7 +501,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTKX2MovetoSetPos()
+                                logicManager.sensorTrayLoaderModuleMovetoPushoutPosition()
                             }
                         }
                         Button{
@@ -530,7 +530,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTLMovetoSetPos()
+                                logicManager.sensorTrayLoaderModuleMovetoPutTrayPosition()
                             }
                         }
                         Button{
@@ -538,35 +538,6 @@ ItemDelegate {
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorTrayName)
                                 sensor_tray_loader_module_parameter.setPutTrayPosition(text)
-                            }
-                        }
-                    }
-                    RowLayout{
-                        Label{
-                            text:qsTr("pushoutPosition")
-                        }
-                        TextField{
-                            text:sensor_tray_loader_module_parameter.pushoutPosition
-                            validator: DoubleValidator{
-                                decimals: 6
-                                notation: DoubleValidator.StandardNotation
-                            }
-                            horizontalAlignment: TextInput.AlignHCenter
-                            onEditingFinished: {
-                                sensor_tray_loader_module_parameter.setPushoutPosition(text)
-                            }
-                        }
-                        Button{
-                            text:title_move_to
-                            onClicked: {
-                                //logicManager.trayLoaderModuleLTKX2MovetoSetPos()
-                            }
-                        }
-                        Button{
-                            text:title_read_encoder
-                            onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSPOName)
-                                sensor_tray_loader_module_parameter.setPushoutPosition(x)
                             }
                         }
                     }
@@ -589,7 +560,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTLMovetoSetPos()
+                                logicManager.sensorTrayLoaderModuleMovetoStartKickTrayPosition()
                             }
                         }
                         Button{
@@ -618,7 +589,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTLMovetoSetPos()
+                                logicManager.sensorTrayLoaderModuleMovetoTrayWorkPosition()
                             }
                         }
                         Button{
@@ -648,7 +619,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                //logicManager.trayLoaderModuleLTLMovetoSetPos()
+                                logicManager.sensorTrayLoaderModuleMovetoVacancyTrayPosition()
                             }
                         }
                         Button{

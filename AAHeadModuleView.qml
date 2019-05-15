@@ -11,22 +11,22 @@ ItemDelegate {
         ListModel{
             id:motorsModel
             ListElement{
-                modelData:"AA_X"
+                modelData:"AA1_X"
             }
             ListElement{
-                modelData:"AA_Y"
+                modelData:"AA1_Y"
             }
             ListElement{
-                modelData:"AA_Z"
+                modelData:"AA1_Z"
             }
             ListElement{
-                modelData:"AA_A"
+                modelData:"AA1_A"
             }
             ListElement{
-                modelData:"AA_B"
+                modelData:"AA1_B"
             }
             ListElement{
-                modelData:"AA_C"
+                modelData:"AA1_C"
             }
         }
         MotionPopup{

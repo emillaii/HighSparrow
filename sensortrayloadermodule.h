@@ -44,6 +44,16 @@ public:
     XtCylinder* gripper = Q_NULLPTR;
     SensorClip* entrance_clip;
     SensorClip* exit_clip;
+
+    bool movetoSTIEColumnIndex(int);
+    bool movetoSTOEColumnIndex(int);
+    bool movetoPushMotorSafePosotion();
+    bool movetoDownTrayPosition();
+    bool movetoGetTrayPosition();
+    bool movetoFinishKickTrayPosition();
+    bool movetoPushoutPosition();
+    bool movetoPutTrayPosition();
+
 private:
     bool is_run = false;
     bool moveToStartKick();

@@ -115,6 +115,15 @@ public:
     Q_INVOKABLE void trayLoaderModuleLTLXPickUpTray();
     Q_INVOKABLE void trayLoaderModuleLTLXPutDownTray();
 
+    Q_INVOKABLE void sensorTrayLoaderModuleSTIEMovetoColumnIndex(int);
+    Q_INVOKABLE void sensorTrayLoaderModuleSTOEMovetoColumnIndex(int);
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoPushMotorSafePosotion();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoDownTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoGetTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoFinishKickTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoPushoutPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoPutTrayPosition();
+
 
 
     int currentMode() const

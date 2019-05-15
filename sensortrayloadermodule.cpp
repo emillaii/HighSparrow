@@ -325,7 +325,61 @@ void SensorTrayLoaderModule::run(bool has_material)
 
 void SensorTrayLoaderModule::resetLogic()
 {
-//    states.setHasWorkTray(true);
+    //    states.setHasWorkTray(true);
+}
+
+bool SensorTrayLoaderModule::movetoSTIEColumnIndex(int n)
+{
+    entrance_clip->setCurrentIndex(n);
+    bool result = motor_stie->MoveToPosSync(entrance_clip->getCurrentPosition());
+    return result;
+}
+
+bool SensorTrayLoaderModule::movetoSTOEColumnIndex(int n)
+{
+    exit_clip->setCurrentIndex(n);
+    bool result = motor_stoe->MoveToPosSync(exit_clip->getCurrentPosition());
+    return result;
+}
+
+bool SensorTrayLoaderModule::movetoPushMotorSafePosotion()
+{
+    return motor_push->MoveToPosSync(parameters.pushMotorSafePosition());
+}
+
+bool SensorTrayLoaderModule::movetoDownTrayPosition()
+{
+    return motor_tray->MoveToPosSync(parameters.downTrayPosition());
+}
+
+bool SensorTrayLoaderModule::movetoGetTrayPosition()
+{
+    return motor_tray->MoveToPosSync(parameters.getTrayPosition());
+}
+
+bool SensorTrayLoaderModule::movetoFinishKickTrayPosition()
+{
+    return motor_kick->MoveToPosSync(parameters.finishKickTrayPosition());
+}
+
+bool SensorTrayLoaderModule::movetoPushoutPosition()
+{
+    return motor_push->MoveToPosSync(parameters.pushoutPosition());
+}
+
+bool SensorTrayLoaderModule::movetoPutTrayPosition()
+{
+    return motor_tray->MoveToPosSync(parameters.putTrayPosition());
+}
+
+bool SensorTrayLoaderModule::movetoStartKickTrayPosition()
+{
+    return motor_kick->MoveToPosSync(parameters.startKickTrayPosition());
+}
+
+bool SensorTrayLoaderModule::movetoTrayWorkPosition()
+{
+    return motor_tray->MoveToPosSync(parameters.trayWorkPosition());
 }
 
 bool SensorTrayLoaderModule:: moveToStartKick()

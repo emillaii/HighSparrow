@@ -580,3 +580,43 @@ void LogicManager::trayLoaderModuleLTLXPutDownTray()
     baseModuleManage->tray_loader_module.onTestLTLXPutDownTray();
 }
 
+void LogicManager::sensorTrayLoaderModuleSTIEMovetoColumnIndex(int n)
+{
+    baseModuleManage->sensor_tray_loder_module.movetoSTIEColumnIndex(n);
+}
+
+void LogicManager::sensorTrayLoaderModuleSTOEMovetoColumnIndex(int n)
+{
+    baseModuleManage->sensor_tray_loder_module.movetoSTOEColumnIndex(n);
+}
+
+void LogicManager::sensorTrayLoaderModuleMovetoPushMotorSafePosotion()
+{
+    baseModuleManage->sensor_tray_loder_module.movetoPushMotorSafePosotion();
+}
+
+void LogicManager::sensorTrayLoaderModuleMovetoDownTrayPosition()
+{
+    baseModuleManage->sensor_tray_loder_module.movetoDownTrayPosition();
+}
+
+void LogicManager::sensorTrayLoaderModuleMovetoGetTrayPosition()
+{
+    baseModuleManage->sensor_tray_loder_module.movetoGetTrayPosition();
+}
+
+void LogicManager::sensorTrayLoaderModuleMovetoFinishKickTrayPosition()
+{
+    baseModuleManage->sensor_tray_loder_module.movetoFinishKickTrayPosition();
+}
+
+void LogicManager::sensorTrayLoaderModuleMovetoPushoutPosition()
+{
+    baseModuleManage->sensor_tray_loder_module.movetoPushoutPosition();
+}
+
+void LogicManager::sensorTrayLoaderModuleMovetoPutTrayPosition()
+{
+    baseModuleManage->sensor_tray_loder_module.movetoPutTrayPosition();
+}
+

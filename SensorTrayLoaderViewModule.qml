@@ -12,19 +12,19 @@ ItemDelegate {
         ListModel{
             id:motorsModel
             ListElement{
-                modelData:"LTIE"
+                modelData:"STPO"
             }
             ListElement{
-                modelData:"LTK_X1"
+                modelData:"STIE"
             }
             ListElement{
-                modelData:"LTK_X2"
+                modelData:"STK"
             }
             ListElement{
-                modelData:"LTL_X"
+                modelData:"STOE"
             }
             ListElement{
-                modelData:"LTOE"
+                modelData:"STL"
             }
         }
         MotionPopup{

@@ -6,7 +6,152 @@ import QtQuick 2.11
 
 Popup {
     property double selectedStepSize: 0.1
+    ListModel{
+        id:aa1_vacuums
+        ListElement{
+            breakIoName:"null"
+            inIoName:"SUT1真空检测"
+            outIoName:"SUT1吸真空"
+            vacuumName:"SUT1真空"
+        }
+        ListElement{
+            breakIoName:"LUT破真空"
+            inIoName:"LUT真空检测"
+            outIoName:"LUT吸真空"
+            vacuumName:"LUT真空"
+        }
+        ListElement{
+            breakIoName:"LPA破真空"
+            inIoName:"LPA真空检测"
+            outIoName:"LPA吸真空"
+            vacuumName:"LPA真空"
+        }
+        ListElement{
+            breakIoName:"null"
+            inIoName:"null"
+            outIoName:"LUT2吸真空"
+            vacuumName:"LUT吸真空"
+        }
+    }
+    ListModel{
+        id:aa2_vacuums
+        ListElement{
+            breakIoName:"null"
+            inIoName:"SUT2真空检测"
+            outIoName:"SUT2吸真空"
+            vacuumName:"SUT2真空"
+        }
+        ListElement{
+            breakIoName:"SPA_Pick1破真空"
+            inIoName:"SPA_Pick1真空检测"
+            outIoName:"SPA_Pick1吸真空"
+            vacuumName:"SPA1真空"
+        }
+        ListElement{
+            breakIoName:"SPA_Pick2破真空"
+            inIoName:"SPA_Pick2真空检测"
+            outIoName:"SPA_Pick2吸真空"
+            vacuumName:"SPA2真空"
+        }
+    }
 
+    ListModel{
+        id:aa2_cylinders
+        ListElement{
+            cylinderName:"POGOPIN"
+            oneInName:"null"
+            oneOutName:"POGOPIN下"
+            zeroInName:"null"
+            zeroOutName:"POGOPIN上"
+        }
+        ListElement{
+            cylinderName:"STK1气缸"
+            oneInName:"STK1气缸下感应器"
+            oneOutName:"STK1气缸ON"
+            zeroInName:"STK1气缸上感应器"
+            zeroOutName:"null"
+        }
+        ListElement{
+            cylinderName:"STK2气缸"
+            oneInName:"STK2气缸下感应器"
+            oneOutName:"STK2气缸ON"
+            zeroInName:"STK2气缸上感应器"
+            zeroOutName:"null"
+        }
+        ListElement{
+            cylinderName:"STL_Tray气缸"
+            oneInName:"STL_Tray气缸外感应"
+            oneOutName:"STL_Tray气缸夹"
+            zeroInName:"STL_Tray气缸内感应"
+            zeroOutName:"null"
+        }
+        ListElement{
+            cylinderName:"CTL_Tray气缸"
+            oneInName:"CTL_Tray气缸外感应"
+            oneOutName:"CTL_Tray气缸夹"
+            zeroInName:"CTL_Tray气缸内感应"
+            zeroOutName:"null"
+        }
+        ListElement{
+            cylinderName:"STIE气阀"
+            oneInName:"STIE气缸伸出"
+            oneOutName:"STIE气阀伸出"
+            zeroInName:"STIE气缸退回"
+            zeroOutName:"STIE气阀退回"
+        }
+        ListElement{
+            cylinderName:"STOE气阀"
+            oneInName:"STOE气缸伸出"
+            oneOutName:"STOE气阀伸出"
+            zeroInName:"STOE气缸退回"
+            zeroOutName:"STOE气阀退回"
+        }
+        ListElement{
+            cylinderName:"Gripper气缸"
+            oneInName:"null"
+            oneOutName:"STL_Gripper气缸"
+            zeroInName:"null"
+            zeroOutName:"null"
+        }
+    }
+    ListModel{
+        id:aa1_cylinders
+        ListElement{
+            cylinderName:"POGOPIN"
+            oneInName:"null"
+            oneOutName:"POGOPIN下"
+            zeroInName:"null"
+            zeroOutName:"POGOPIN上"
+        }
+        ListElement{
+            cylinderName:"弹夹推料气缸"
+            oneInName:"弹夹推料气缸外感应器"
+            oneOutName:"弹夹推料气缸出"
+            zeroInName:"弹夹推料气缸内感应器"
+            zeroOutName:"null"
+        }
+        ListElement{
+            cylinderName:"LTK1气缸"
+            oneInName:"LTK1气缸上感应器"
+            oneOutName:"LTK1气缸ON"
+            zeroInName:"LTK1气缸下感应器"
+            zeroOutName:"null"
+        }
+        ListElement{
+            cylinderName:"LTK2气缸"
+            oneInName:"LTK2气缸上感应器"
+            oneOutName:"LTK2气缸ON"
+            zeroInName:"LTK2气缸下感应器"
+            zeroOutName:"null"
+        }
+        ListElement{
+            cylinderName:"LTL_Tray气缸"
+            oneInName:"LTL_Tray气缸外感应"
+            oneOutName:"LTL_Tray气缸夹"
+            zeroInName:"LTL_Tray气缸内感应"
+            zeroOutName:"null"
+        }
+    }
     id: dialog
     visible: false
     contentItem: Rectangle {
@@ -106,32 +251,7 @@ Popup {
                 clip: true
                 ListView{
                     id:vacuum_list
-                    model: ListModel{
-                        ListElement{
-                            breakIoName:"null"
-                            inIoName:"SUT1真空检测"
-                            outIoName:"SUT1吸真空"
-                            vacuumName:"SUT1真空"
-                        }
-                        ListElement{
-                            breakIoName:"LUT破真空"
-                            inIoName:"LUT真空检测"
-                            outIoName:"LUT吸真空"
-                            vacuumName:"LUT真空"
-                        }
-                        ListElement{
-                            breakIoName:"LPA破真空"
-                            inIoName:"LPA真空检测"
-                            outIoName:"LPA吸真空"
-                            vacuumName:"LPA真空"
-                        }
-                        ListElement{
-                            breakIoName:"null"
-                            inIoName:"null"
-                            outIoName:"LUT2吸真空"
-                            vacuumName:"LUT吸真空"
-                        }
-                    }
+                    model:baseModuleManager.ServerMode==0?aa1_vacuums:aa2_vacuums
                     delegate:GroupBox {
                         title:vacuumName
                         ColumnLayout{
@@ -142,7 +262,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(break_io_switch.checked != baseModuleManager.getOutput(breakIoName)){
+                                            if(break_io_switch.checked !== baseModuleManager.getOutput(breakIoName)){
                                                 break_io_switch.toggle()
                                                 console.log("22"+breakIoName+break_io_switch.checked)
                                             }
@@ -163,7 +283,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(in_io_switch.checked != baseModuleManager.getInput(inIoName)){
+                                            if(in_io_switch.checked !== baseModuleManager.getInput(inIoName)){
                                                 in_io_switch.toggle()
                                                 console.log("22"+inIoName+in_io_switch.checked)
                                             }
@@ -180,7 +300,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(out_io_switch.checked != baseModuleManager.getOutput(outIoName)){
+                                            if(out_io_switch.checked !== baseModuleManager.getOutput(outIoName)){
                                                 out_io_switch.toggle()
                                                 console.log("22"+outIoName+out_io_switch.checked)
                                             }
@@ -202,43 +322,7 @@ Popup {
                 clip: true
                 ListView{
                     id:cylinder_list
-                    model: ListModel{
-                        ListElement{
-                            cylinderName:"POGOPIN"
-                            oneInName:"null"
-                            oneOutName:"POGOPIN下"
-                            zeroInName:"null"
-                            zeroOutName:"POGOPIN上"
-                        }
-                        ListElement{
-                            cylinderName:"弹夹推料气缸"
-                            oneInName:"弹夹推料气缸外感应器"
-                            oneOutName:"弹夹推料气缸出"
-                            zeroInName:"弹夹推料气缸内感应器"
-                            zeroOutName:"null"
-                        }
-                        ListElement{
-                            cylinderName:"LTK1气缸"
-                            oneInName:"LTK1气缸上感应器"
-                            oneOutName:"LTK1气缸ON"
-                            zeroInName:"LTK1气缸下感应器"
-                            zeroOutName:"null"
-                        }
-                        ListElement{
-                            cylinderName:"LTK2气缸"
-                            oneInName:"LTK2气缸上感应器"
-                            oneOutName:"LTK2气缸ON"
-                            zeroInName:"LTK2气缸下感应器"
-                            zeroOutName:"null"
-                        }
-                        ListElement{
-                            cylinderName:"LTL_Tray气缸"
-                            oneInName:"LTL_Tray气缸外感应"
-                            oneOutName:"LTL_Tray气缸夹"
-                            zeroInName:"LTL_Tray气缸内感应"
-                            zeroOutName:"null"
-                        }
-                    }
+                    model: baseModuleManager.ServerMode==0?aa1_cylinders:aa2_cylinders
                     delegate:GroupBox {
                         title:cylinderName
                         ColumnLayout{
@@ -249,7 +333,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(one_in.checked != baseModuleManager.getInput(oneInName)){
+                                            if(one_in.checked !== baseModuleManager.getInput(oneInName)){
                                                 one_in.toggle()
                                                 console.log("22"+oneInName+one_in.checked)
                                             }
@@ -266,7 +350,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(one_out.checked != baseModuleManager.getOutput(oneOutName)){
+                                            if(one_out.checked !== baseModuleManager.getOutput(oneOutName)){
                                                 one_out.toggle()
                                                 console.log("22"+oneOutName+one_out.checked)
                                             }
@@ -286,7 +370,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(zero_in.checked != baseModuleManager.getInput(zeroInName)){
+                                            if(zero_in.checked !== baseModuleManager.getInput(zeroInName)){
                                                 zero_in.toggle()
                                                 console.log("22"+zeroInName+zero_in.checked)
                                             }
@@ -303,7 +387,7 @@ Popup {
                                     target: timer
                                     onTriggered:{
                                         if (dialog.visible) {
-                                            if(zero_out.checked != baseModuleManager.getOutput(zeroOutName)){
+                                            if(zero_out.checked !== baseModuleManager.getOutput(zeroOutName)){
                                                 zero_out.toggle()
                                                 console.log("22"+zeroOutName+zero_out.checked)
                                             }

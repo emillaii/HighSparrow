@@ -3,76 +3,82 @@
 
 #include "propertybase.h"
 
+#include <QVariantList>
+
 
 
 class MotorLimitParameter:public PropertyBase
 {
+    Q_OBJECT
 public:
     MotorLimitParameter():PropertyBase(){}
-    Q_PROPERTY(bool allowMove READ allowMove WRITE setAllowMove NOTIFY allowMoveChanged)
-    Q_PROPERTY(double startLimit READ startLimit WRITE setStartLimit NOTIFY startLimitChanged)
-    Q_PROPERTY(double endLimit READ endLimit WRITE setEndLimit NOTIFY endLimitChanged)
+    bool checkInLimitSpance(double start_position,double end_position)
+    {
+        double temp_start,temp_end;
+        if(start_position > end_position)
+        {
+            temp_start = end_position;
+            temp_end = start_position;
+        }
+        else
+        {
+            temp_start = start_position;
+            temp_end = end_position;
+        }
+        for (int i = 0; i < m_limitSpance.size()/2; ++i)
+        {
+           if(m_limitSpance[2*i].toDouble()<=temp_start&&temp_end<=m_limitSpance[2*i+1].toDouble())
+               return true;
+        }
+        return false;
+    }
+    bool hasInterferenceWithMoveSpance(double start_position,double end_position)
+    {
+        double temp_start,temp_end;
+        if(start_position > end_position)
+        {
+            temp_start = end_position;
+            temp_end = start_position;
+        }
+        else
+        {
+            temp_start = start_position;
+            temp_end = end_position;
+        }
+        for (int i = 0; i < m_moveSpance.size()/2; ++i)
+        {
+            if(m_moveSpance[2*i].toDouble()<=temp_end&&m_moveSpance[2*i+1].toDouble()>=temp_start)
+                return true;
+        }
+        return false;
+    }
+    Q_PROPERTY(QVariantList moveSpance READ moveSpance WRITE setMoveSpance NOTIFY moveSpanceChanged)
     Q_PROPERTY(QString motorName READ motorName WRITE setMotorName NOTIFY motorNameChanged)
-    Q_PROPERTY(double startPosition READ startPosition WRITE setStartPosition NOTIFY startPositionChanged)
-    Q_PROPERTY(double endPosition READ endPosition WRITE setEndPosition NOTIFY endPositionChanged)
-    bool allowMove() const
-    {
-        return m_allowMove;
-    }
-    double startLimit() const
-    {
-        return m_startLimit;
-    }
+    Q_PROPERTY(QVariantList limitSpance READ limitSpance WRITE setLimitSpance NOTIFY limitSpanceChanged)
 
-    double endLimit() const
+    QVariantList moveSpance() const
     {
-        return m_endLimit;
+        return m_moveSpance;
     }
-
     QString motorName() const
     {
         return m_motorName;
     }
 
-    double startPosition() const
+    QVariantList limitSpance() const
     {
-        return m_startPosition;
-    }
-
-    double endPosition() const
-    {
-        return m_endPosition;
+        return m_limitSpance;
     }
 
 public slots:
-    void setAllowMove(bool allowMove)
+    void setMoveSpance(QVariantList moveSpance)
     {
-        if (m_allowMove == allowMove)
+        if (m_moveSpance == moveSpance)
             return;
 
-        m_allowMove = allowMove;
-        emit allowMoveChanged(m_allowMove);
+        m_moveSpance = moveSpance;
+        emit moveSpanceChanged(m_moveSpance);
     }
-    void setStartLimit(double startLimit)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_startLimit, startLimit))
-            return;
-
-        m_startLimit = startLimit;
-        emit startLimitChanged(m_startLimit);
-    }
-
-    void setEndLimit(double endLimit)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_endLimit, endLimit))
-            return;
-
-        m_endLimit = endLimit;
-        emit endLimitChanged(m_endLimit);
-    }
-
     void setMotorName(QString motorName)
     {
         if (m_motorName == motorName)
@@ -82,45 +88,25 @@ public slots:
         emit motorNameChanged(m_motorName);
     }
 
-    void setStartPosition(double startPosition)
+    void setLimitSpance(QVariantList limitSpance)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_startPosition, startPosition))
+        if (m_limitSpance == limitSpance)
             return;
 
-        m_startPosition = startPosition;
-        emit startPositionChanged(m_startPosition);
-    }
-
-    void setEndPosition(double endPosition)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_endPosition, endPosition))
-            return;
-
-        m_endPosition = endPosition;
-        emit endPositionChanged(m_endPosition);
+        m_limitSpance = limitSpance;
+        emit limitSpanceChanged(m_limitSpance);
     }
 
 signals:
-    void allowMoveChanged(bool allowMove);
-    void startLimitChanged(double startLimit);
-
-    void endLimitChanged(double endLimit);
-
+    void moveSpanceChanged(QVariantList moveSpance);
     void motorNameChanged(QString motorName);
 
-    void startPositionChanged(double startPosition);
-
-    void endPositionChanged(double endPosition);
+    void limitSpanceChanged(QVariantList limitSpance);
 
 private:
-    bool m_allowMove = false;
-    double m_startLimit = 0;
-    double m_endLimit = 0;
-    QString m_motorName = "" ;
-    double m_startPosition = 0;
-    double m_endPosition = 0;
+    QVariantList m_moveSpance;
+    QString m_motorName = "";
+    QVariantList m_limitSpance;
 };
 
 #endif // MOTORLIMITPARAMETER_H

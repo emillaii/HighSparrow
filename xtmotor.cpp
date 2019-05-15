@@ -15,6 +15,9 @@ XtMotor::XtMotor()
     axis_id = -1;
     name = "";
     is_init = false;
+//    limit_parameters.append(new MotorLimitParameter());
+//    limit_parameters.append(new MotorLimitParameter());
+//    io_limit_parameters.append(new IOLimitParameter());
 }
 
 void XtMotor::WaitSync(int thread)
@@ -193,6 +196,11 @@ double XtMotor::GetFeedbackPos(int decimal_digit) const
     return round(GetOutpuPos()*pow(10,decimal_digit))/pow(10,decimal_digit);
 }
 
+double XtMotor::GetCurrentTragetPos()
+{
+    return current_target;
+}
+
 double XtMotor::GetCurVel() const
 {
     if(!is_init)
@@ -304,25 +312,73 @@ void XtMotor::Home(int thread)
     MoveToPos(0, thread);
 }
 
-void XtMotor::CheckLimit(double &pos)
+//void XtMotor::CheckLimit(double &pos)
+//{
+//    if(!qIsFinite(pos))
+//    {
+//        qInfo("target_position %f is illegal,change to %f",pos,min_range);
+//        pos = min_range;
+//    }
+
+//    if(pos>max_range)
+//    {
+//        qInfo("target_position %f to big,change to %f",pos,max_range);
+//        pos=max_range;
+//    }
+
+//    if(pos<min_range)
+//    {
+//        qInfo("target_position %f to small,change to %f",pos,min_range);
+//        pos = min_range;
+//    }
+//}
+bool XtMotor::CheckLimit(double pos)
 {
     if(!qIsFinite(pos))
     {
-        qInfo("target_position %f is illegal,change to %f",pos,min_range);
-        pos = min_range;
+        AppendError(QString( "target_position %1 is illegal").arg(pos));
+        return false;
     }
 
     if(pos>max_range)
     {
-        qInfo("target_position %f to big,change to %f",pos,max_range);
-        pos=max_range;
+        AppendError(QString( "target_position %1 is big").arg(pos));
+        return false;
     }
 
     if(pos<min_range)
     {
-        qInfo("target_position %f to small,change to %f",pos,min_range);
-        pos = min_range;
+        AppendError(QString( "target_position %1 is small").arg(pos));
+        return false;
     }
+    double current_pos = GetFeedbackPos();
+    for (int i = 0; i < limit_parameters.size(); ++i) {
+        MotorLimitParameter* temp_parameter = limit_parameters[i];
+        //与检测区间有干涉
+        if(temp_parameter->hasInterferenceWithMoveSpance(current_pos,pos))
+        {
+            //在限制区间
+            if(!temp_parameter->checkInLimitSpance(limit_motors[i]->GetFeedbackPos(),limit_motors[i]->GetCurrentTragetPos()))
+            {
+                AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->motorName()));
+                return false;
+            }
+        }
+    }
+    for (int i = 0; i < io_limit_parameters.size(); ++i) {
+        IOLimitParameter* temp_parameter =io_limit_parameters[i];
+        //与检测区间有干涉
+        if(temp_parameter->hasInterferenceWithMoveSpance(current_pos,pos))
+        {
+            //在限制区间
+            if(!temp_parameter->checkInLimitSpance(limit_ios[i]->Value()))
+            {
+                AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->inputIOName()));
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 void XtMotor::MoveToPos(double pos,int thread)
@@ -331,11 +387,12 @@ void XtMotor::MoveToPos(double pos,int thread)
         return;
     if(!is_enable)
         return;
-    CheckLimit(pos);
+    if(!CheckLimit(pos))return;
     if(thread==-1)
         thread = default_using_thread;
     XT_Controler::SGO(thread, axis_id, pos);
     XT_Controler::TILLSTOP(thread, axis_id);
+    current_target = pos;
 }
 
 void XtMotor::SlowMoveToPos(double pos, double vel_ratio, int thread)
@@ -344,7 +401,7 @@ void XtMotor::SlowMoveToPos(double pos, double vel_ratio, int thread)
         return;
     if(!is_enable)
         return;
-    CheckLimit(pos);
+    if(!CheckLimit(pos))return;
     if(thread==-1)
         thread = default_using_thread;
     if(vel_ratio > 1||vel_ratio <= POS_ERROR)
@@ -353,6 +410,7 @@ void XtMotor::SlowMoveToPos(double pos, double vel_ratio, int thread)
     XT_Controler::SGO(thread, axis_id, pos);
     XT_Controler::TILLSTOP(thread, axis_id);
     XT_Controler::SET_MAX_VEL(thread,axis_id,max_vel);
+    current_target = pos;
 }
 
 void XtMotor::SGO(double pos,int thread)
@@ -361,10 +419,11 @@ void XtMotor::SGO(double pos,int thread)
         return;
     if(!is_enable)
         return;
-    CheckLimit(pos);
+    if(!CheckLimit(pos))return;
     if(thread==-1)
         thread = default_using_thread;
     XT_Controler::SGO(thread, axis_id, pos);
+    current_target = pos;
 }
 void XtMotor::TILLSTOP(int thread)
 {
@@ -416,7 +475,7 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
         return false;
     if(!is_enable)
         return false;
-    CheckLimit(target_position);
+    if(!CheckLimit(target_position))return false;
     if(fabs(GetFeedbackPos() - target_position) < POS_ERROR)return true;
     while (timeout>0) {
 
@@ -430,6 +489,8 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
 
     }
     qInfo("wait target_position:%f time out, current_position:%f",target_position,GetFeedbackPos());
+
+    current_target = GetFeedbackPos();
     return false;
 }
 
@@ -452,9 +513,11 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
         count-=10;
         if (count < 1) {
             qInfo("Motion Timeout.target pos:%f current pos:%f",pos,currPos);
+            current_target = currPos;
             return false;
         }
     }
+    current_target = currPos;
     return true;
 }
 
@@ -476,9 +539,11 @@ bool XtMotor::SlowMoveToPosSync(double pos, double vel_ratio, int thread)
         count-=10;
         if (count < 1) {
             qInfo("Motion Timeout.");
+            current_target = currPos;
             return false;
         }
     }
+    current_target = currPos;
     return true;
 }
 
@@ -494,6 +559,7 @@ void XtMotor::StepMove(double step, int thread)
         XT_Controler_Extend::SGO_INCREASE_LIMIT(thread, axis_id, step, max_range);
     else
         XT_Controler_Extend::SGO_INCREASE_LIMIT(thread, axis_id, step, min_range);
+    current_target = GetFeedbackPos() + step;
 }
 
 bool XtMotor::StepMoveSync(double step, int thread)
@@ -514,9 +580,11 @@ bool XtMotor::StepMoveSync(double step, int thread)
         count-=10;
         if (count == 0) {
             qInfo("Motion Timeout. id %d init %d,targetPos %f currPos %f",axis_sub_id,is_init,targetPos,currPos);
+            current_target = currPos;
             return false;
         }
     }
+    current_target = currPos;
     return true;
 }
 
@@ -580,6 +648,7 @@ bool XtMotor::WaitSeekDone(int thread,int timeout)
     }
     XT_Controler::ClearInsBuffer(thread);
     XT_Controler::STOP_S(thread, axis_id);
+    current_target = GetFeedbackPos();
     qInfo("axis %s seek origin fail！",name.toStdString().c_str());
     return false;
 }
@@ -603,6 +672,7 @@ bool XtMotor::WaitStop(int timeout)
         timeout-=10;
         QThread::msleep(10);
     }
+    current_target = GetFeedbackPos();
     return false;
 }
 
@@ -616,7 +686,7 @@ bool XtMotor::SearchPosByADC(double vel, double search_limit, double threshold, 
     int timeout = 100;
     double adc_value;
     int thread = default_using_thread;
-    CheckLimit(search_limit);
+    if(!CheckLimit(search_limit))return false;
     double old_vel = GetMaxVel();
     XT_Controler::SET_MAX_VEL(thread, axis_id, vel);
     XT_Controler::SGO(thread, axis_id, search_limit);
@@ -674,7 +744,7 @@ bool XtMotor::SearchPosByIO(double vel, double search_limit, bool search_rise, i
     double old_vel = GetMaxVel();
     qInfo("Tray Vel:%f",vel);
     SetVel(vel, thread);
-    CheckLimit(search_limit);
+    if(!CheckLimit(search_limit))return false;
     if(search_limit < currPos)
         negative = max_range;
 
@@ -748,6 +818,7 @@ void XtMotor::ChangeCurPos(double pos)
     if(!is_init)
         return;
     XT_Controler::SET_AXIS_ZEROS(0,axis_id,pos);
+    current_target = GetFeedbackPos();
     XT_Controler::WaitForAllInsFinish(0);
 }
 

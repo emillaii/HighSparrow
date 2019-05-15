@@ -204,9 +204,13 @@ public:
     bool saveVisionLoactionFiles(QString file_name);
     bool loadCalibrationFiles(QString file_name);
     bool saveCalibrationFiles(QString file_name);
+    bool loadMotorLimitFiles(QString file_name);
+    bool saveMotorLimitFiles(QString file_name);
 
     bool loadJsonArray(QString file_name, QJsonArray &array);
     bool saveJsonArray(QString file_name,QJsonArray &array);
+    bool loadJsonObject(QString file_name, QJsonObject &object);
+    bool saveJsonObject(QString file_name,QJsonObject &object);
     bool loadParameters();
     bool SaveParameters();
     bool registerWorkers(WorkersManager* manager);

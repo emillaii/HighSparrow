@@ -9,6 +9,8 @@
 #include "XtGeneralOutput.h"
 #include "PropertyBase.h"
 #include "errorcode.h"
+#include "motorlimitparameter.h"
+#include "iolimitparameter.h"
 
 class XtMotorExtendParameters : public PropertyBase
 {
@@ -46,6 +48,7 @@ public:
 //these are running state
     virtual double GetOutpuPos() const;
     virtual double GetFeedbackPos(int decimal_digit = 4) const;
+    double GetCurrentTragetPos();
     virtual double GetCurVel() const;
     virtual double GetCurAcc() const;
     virtual double GetCurADC() const;
@@ -125,6 +128,7 @@ protected:
 
     int encoder_id;
     double encoder_ratio;
+    double current_target;
 
     XtADCModule *adc;
 
@@ -138,9 +142,14 @@ protected:
     XtGeneralInput origin2;
 
     void ChangeCurPos(double pos);
-    void CheckLimit(double &pos);
+//    void CheckLimit(double &pos);
+    bool CheckLimit(double pos);
 public:
     static int axis_id_resource;
+    QList<MotorLimitParameter*> limit_parameters;
+    QList<XtMotor*> limit_motors;
+    QList<IOLimitParameter*> io_limit_parameters;
+    QList<XtGeneralInput*> limit_ios;
 };
 
 #endif // XTMOTER_H

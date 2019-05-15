@@ -143,6 +143,7 @@ bool BaseModuleManager::loadParameters()
     loadVacuumFiles(VACUUM_PARAMETER_FILENAME);
     loadVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
     loadCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
+    loadMotorLimitFiles(LIMIT_PARAMETER_FILENAME);
     if(!InitStruct())
         return false;
     return true;
@@ -184,6 +185,7 @@ bool BaseModuleManager::SaveParameters()
     aaCoreNew.updateParams();
     saveCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
     saveVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
+    saveMotorLimitFiles(LIMIT_PARAMETER_FILENAME);
     return true;
 }
 
@@ -564,6 +566,70 @@ bool BaseModuleManager::saveCalibrationFiles(QString file_name)
     return  false;
 }
 
+bool BaseModuleManager::loadMotorLimitFiles(QString file_name)
+{
+    QJsonObject param_object;
+    if(!loadJsonObject(file_name,param_object))
+        return false;
+    foreach (XtMotor* temp_motor, motors)
+    {
+        if(param_object.contains(temp_motor->Name()))
+        {
+           QJsonObject temp_object = param_object[temp_motor->Name()].toObject();
+           for (int i = 0; i < temp_object.size(); ++i)
+           {
+               QString temp_name = temp_object.keys()[i];
+               if(temp_name.contains("MotorLimit"))
+               {
+                   MotorLimitParameter* temp_param = new MotorLimitParameter();
+                   temp_param->read(temp_object[temp_name].toObject());
+                   temp_motor->limit_parameters.append(temp_param);
+                   continue;
+               }
+               if(temp_name.contains("IOLimit"))
+               {
+                   IOLimitParameter* temp_param = new IOLimitParameter();
+                   temp_param->read(temp_object[temp_name].toObject());
+                   temp_motor->io_limit_parameters.append(temp_param);
+                   continue;
+               }
+           }
+        }
+    }
+    return true;
+}
+
+bool BaseModuleManager::saveMotorLimitFiles(QString file_name)
+{
+    QJsonObject parameters_object;
+    foreach (QString temp_name, motors.keys())
+    {
+        XtMotor* temp_motor = GetMotorByName(temp_name);
+        if(temp_motor != nullptr)
+        {
+            QJsonObject temp_object;
+            int i = 0;
+            foreach(MotorLimitParameter* limit,temp_motor->limit_parameters)
+            {
+                i++;
+                QJsonObject object;
+                limit->write(object);
+                temp_object[QString("MotorLimit").append(QString::number(i))] = object;
+            }
+            i = 0;
+            foreach(IOLimitParameter* io_limit,temp_motor->io_limit_parameters)
+            {
+                i++;
+                QJsonObject object;
+                io_limit->write(object);
+                temp_object[QString("IOLimit").append(QString::number(i))] = object;
+            }
+            parameters_object[temp_name] = temp_object;
+        }
+    }
+   return saveJsonObject(file_name,parameters_object);
+}
+
 bool BaseModuleManager::loadJsonArray(QString file_name,QJsonArray &array)
 {
     QString val;
@@ -597,7 +663,7 @@ bool BaseModuleManager::saveJsonArray(QString file_name,QJsonArray &array)
 {
     QFile file;
     file.setFileName(file_name);
-    if(!file.open(QFile::ReadWrite)){
+    if(!file.open(QFile::WriteOnly)){
         qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return false;
     }
@@ -608,8 +674,61 @@ bool BaseModuleManager::saveJsonArray(QString file_name,QJsonArray &array)
     return true;
 }
 
+bool BaseModuleManager::loadJsonObject(QString file_name, QJsonObject &object)
+{
+    QString val;
+    QFile file;
+    file.setFileName(file_name);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qWarning("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return false;
+    }
+    val = file.readAll();
+    file.close();
+
+    QJsonParseError error;
+    QJsonDocument doucment = QJsonDocument::fromJson(val.toUtf8(), &error);
+    if (!doucment.isNull() && (error.error == QJsonParseError::NoError)) { //解析否出现错误
+        if (doucment.isObject()) { // 数组判断
+            object = doucment.object(); // 转数组
+            return true;
+        }
+    }
+    qInfo("load parameters to %s failed, load file error:%s.",file_name.toStdString().data(),error.errorString().toStdString().c_str());
+    return false;
+}
+
+bool BaseModuleManager::saveJsonObject(QString file_name, QJsonObject &object)
+{
+    QFile file;
+    file.setFileName(file_name);
+    if(!file.open(QFile::WriteOnly)){
+        qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return false;
+    }
+    QJsonDocument document;
+    document.setObject(object);
+    file.write(document.toJson());
+    file.close();
+    return true;
+}
+
 bool BaseModuleManager::InitStruct()
 {
+    foreach (XtMotor* temp_motor, motors)
+    {
+        for (int i = 0; i < temp_motor->limit_parameters.size(); ++i) {
+            XtMotor* limit_motor = GetMotorByName(temp_motor->limit_parameters[i]->motorName());
+            if(limit_motor != nullptr)
+                temp_motor->limit_motors.append(limit_motor);
+        }
+        for (int i = 0; i < temp_motor->io_limit_parameters.size(); ++i) {
+            XtGeneralInput* limit_io = GetInputIoByName(temp_motor->io_limit_parameters[i]->inputIOName());
+            if(limit_io != nullptr)
+                temp_motor->limit_ios.append(limit_io);
+        }
+    }
     foreach (XtVacuum* temp_vacuum, vacuums.values()) {
         temp_vacuum->Init(GetOutputIoByName(temp_vacuum->parameters.outIoName()),
                           GetInputIoByName(temp_vacuum->parameters.inIoName()),

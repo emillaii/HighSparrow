@@ -45,6 +45,7 @@ void Calibration::Init(XtMotor *motor_x, XtMotor *motor_y, VisionLocation *locat
 //}
 bool Calibration::performCalibration()
 {
+    qInfo("Performing chart calibration");
     if(nullptr == motor_x||nullptr == motor_y)
     {
         AppendLineError(u8"轴为空");

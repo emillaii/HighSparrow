@@ -1184,7 +1184,7 @@ void BaseModuleManager::setMotorParamByName(QString name, double vel, double acc
 bool BaseModuleManager::performCalibration(QString calibration_name)
 {
     if(calibration_name.contains("chart_calibration"))
-        return   chart_calibration->performCalibration();
+        return  chart_calibration->performCalibration();
     Calibration* temp_caliration = GetCalibrationByName(calibration_name);
     if(temp_caliration == nullptr)
     {
@@ -1223,7 +1223,7 @@ bool BaseModuleManager::performUpDnLookCalibration()
 bool BaseModuleManager::performLensUpDnLookCalibration()
 {
     //ToDo: This is the calibration glass width and height in mm
-    double realWidth = 100, realHeight = 100;
+    double realWidth = 7, realHeight = 7;
     PrOffset offset1, offset2;
     this->lens_loader_module.performUpdowlookUpPR(offset1);
     offset1.X /= offset1.W/realWidth;

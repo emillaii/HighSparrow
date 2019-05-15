@@ -440,11 +440,11 @@ bool LutModule::vcmReturn()
 
 bool LutModule::moveToAA1PickLensPos(bool check_autochthonous)
 {
-    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    //if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
         return carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
-    }else{
-        return true;
-    }
+    //}else{
+    //    return true;
+    //}
 }
 
 bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)

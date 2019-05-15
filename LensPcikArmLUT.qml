@@ -72,6 +72,20 @@ ColumnLayout {
                         lensPickArmModuleParameter.setPlaceLensZ(text)
                     }
                 }
+                Label{
+                    text:qsTr("Theta")
+                }
+                TextField{
+                    text:lensPickArmModuleParameter.placeTheta
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        lensPickArmModuleParameter.setPlaceTheta(text)
+                    }
+                }
                 Button{
                     text:qsTr("测高")
                     width: 40

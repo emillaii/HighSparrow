@@ -47,10 +47,18 @@ bool LensPickArm::stepMove_XYTp_Synic(PrOffset position,bool check_softlanding,i
     motor_x->StepMove(position.X);
     motor_y->StepMove(position.Y);
     picker->motor_t->StepMove(position.Theta);
-    bool resut = motor_x->WaitArrivedTargetPos(target_x,timeout);
-    resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
-    resut &= picker->motor_t->WaitArrivedTargetPos(target_t,timeout);
-    return resut;
+    bool result = motor_x->WaitArrivedTargetPos(target_x,timeout);
+    result &= motor_y->WaitArrivedTargetPos(target_y,timeout);
+    result &= picker->motor_t->WaitArrivedTargetPos(target_t,timeout);
+    return result;
+}
+
+bool LensPickArm::stepMove_T_Syncic(double t, int timeout)
+{
+     double target_t = t +  picker->motor_t->GetFeedbackPos();
+     picker->motor_t->StepMove(t);
+     bool result = picker->motor_t->WaitArrivedTargetPos(target_t,timeout);
+     return result;
 }
 
 bool LensPickArm::Move_SZ_Sync(double z,bool check_softlanding, int timeout)

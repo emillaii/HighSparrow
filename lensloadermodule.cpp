@@ -392,7 +392,10 @@ bool LensLoaderModule::pickTrayLens(bool check_softlanding)
 bool LensLoaderModule::placeLensToLUT(bool check_softlanding)
 {
     qInfo("placeLensToLUT");
-    return vcmSearchZ(parameters.placeLensZ(), false,check_softlanding);
+    bool result = pick_arm->stepMove_T_Syncic(parameters.placeTheta());
+    this->lut_carrier->vacuum->Set(true);
+    result &= vcmSearchZ(parameters.placeLensZ(), false,check_softlanding);
+    return result = pick_arm->stepMove_T_Syncic(-parameters.placeTheta());
 }
 
 bool LensLoaderModule::pickLUTLens(bool check_softlanding)

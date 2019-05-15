@@ -61,8 +61,8 @@ ColumnLayout {
                             x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
                         }
-                        tray_start_point1.setX(x);
-                        tray_start_point1.setY(y);
+                        tray_start_point2.setX(x);
+                        tray_start_point2.setY(y);
                     }
                 }
             }

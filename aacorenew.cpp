@@ -539,7 +539,8 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
     QThread::msleep(zSleepInMs);
     qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
     //aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
-    aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
+    //aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
+    aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
     qInfo("aa_head after :%f", aa_head->GetFeedBack().Z);
     sut->moveToZPos(zPeak);
     map.insert("X_TILT", xTilt);

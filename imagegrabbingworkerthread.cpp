@@ -69,7 +69,7 @@ void ImageGrabbingWorkerThread::run()
         m_pImgProvider->setImage(latestImage);
         emit callQmlRefeshImg();
         locker.unlock();
-        QThread::msleep(250); //Slow down the cpu cooldown
+        QThread::msleep(400); //Slow down the cpu cooldown
     }
 }
 

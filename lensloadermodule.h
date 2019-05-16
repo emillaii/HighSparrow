@@ -76,11 +76,11 @@ private:
     bool performLUTPR();
 
     bool moveToWorkPos(bool check_softlanding = false);
-    bool vcmSearchZ(double z,bool is_open = true,bool check_softlanding = false);
-    bool pickTrayLens(bool check_softlanding = false);
-    bool placeLensToLUT(bool check_softlanding = false);
-    bool pickLUTLens(bool check_softlanding = false);
-    bool placeLensToTray(bool check_softlanding = false);
+    bool vcmSearchZ(double z,bool is_open = true);
+    bool pickTrayLens();
+    bool placeLensToLUT();
+    bool pickLUTLens();
+    bool placeLensToTray();
     bool measureHight(bool is_tray);
 
 

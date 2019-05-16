@@ -103,6 +103,7 @@ private:
     bool has_ng_sensor = false;
     bool has_sensor = false;
     bool has_lens = false;
+    bool is_wait_sensor = false;
     void sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
                              double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak, double &dev);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,

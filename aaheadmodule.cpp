@@ -124,7 +124,7 @@ bool AAHeadModule::stepMove_XYC_Sync(double step_x, double step_y, double step_c
 {
     double x = step_x + motor_x->GetFeedbackPos();
     double y = step_y + motor_y->GetFeedbackPos();
-    double c = step_c + motor_y->GetFeedbackPos();
+    double c = step_c + motor_c->GetFeedbackPos();
     motor_x->MoveToPos(x);
     motor_y->MoveToPos(y);
     motor_c->MoveToPos(c);
@@ -181,6 +181,7 @@ mPoint6D AAHeadModule::GetFeedBack()
 
 void AAHeadModule::sendSensrRequest(int sut_state)
 {
+    qInfo("sendSensrRequest %d",sut_state);
     waiting_sensor = true;
     offset_x = 0;
     offset_y = 0;
@@ -192,14 +193,20 @@ bool AAHeadModule::waitForLoadSensor(bool &is_run,int time_out)
 {
     while (time_out > 0) {
         if(!is_run)
+        {
+            qInfo("is_run  is false wait For LoadSensor fail");
             return false;
+        }
         if(!waiting_sensor)
         {
-            return stepMove_XYC_Sync(offset_x,offset_y,offset_theta);
+            bool  result = stepMove_XYC_Sync(offset_x,offset_y,offset_theta);
+            qInfo("perform  sut pr result %d (%f,%f,%f)",result,offset_x,offset_y,offset_theta);
+            return result;
         }
         QThread::msleep(100);
-        time_out-=100;
+        time_out -= 100;
     }
+    qInfo("waitForLoadSensor fail");
     return false;
 }
 

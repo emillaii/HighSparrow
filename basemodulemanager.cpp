@@ -973,8 +973,8 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     bool result;
     GetVcMotorByName(this->lut_module.parameters.motorZName())->resetSoftLanding();
 
-    if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
-        return false;
+    //if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
+    //    return false;
     GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
     GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
     GetMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z

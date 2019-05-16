@@ -111,10 +111,11 @@ void AACoreNew::performHandlingOperation(int cmd)
 
 void AACoreNew::ResetLogic()
 {
-    has_ng_lens = true;
+    has_ng_lens = false;
     has_ng_sensor = false;
     has_sensor = false;
     has_lens = false;
+    is_wait_sensor = false;
 }
 
 bool AACoreNew::runFlowchartTest()
@@ -1023,7 +1024,7 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
 {
     if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
     if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
-    if(!has_sensor)
+    if((!has_sensor)&&(!is_wait_sensor))
     {
         qInfo("need sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
         if(has_product)
@@ -1032,6 +1033,7 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
             aa_head->sendSensrRequest(SUT_STATE::HAS_NG_SENSOR);
         else
             aa_head->sendSensrRequest(SUT_STATE::NO_MATERIAL);
+        is_wait_sensor = true;
     }
     if(!has_lens)
     {
@@ -1042,20 +1044,25 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
             has_lens = true;
         }
         else{
+            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"};
         }
     }
     if(!has_sensor)
     {
-        qInfo("wait sensor has_product %d has_ng_lens %d",has_product,has_ng_sensor);
+        qInfo("wait sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
         bool is_run = true;
         if(aa_head->waitForLoadSensor(is_run))
         {
             qInfo("wait sensor suceess");
             has_sensor = true;
+            is_wait_sensor = false;
         }
         else
-            { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"}; }
+        {
+            AppendError("wait sensor time_out");
+            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"}; }
     }
     qInfo("Done Pick Lens");
     return ErrorCodeStruct {ErrorCode::OK, ""};

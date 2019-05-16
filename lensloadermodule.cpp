@@ -156,7 +156,13 @@ void LensLoaderModule::run(bool has_material)
             if((!performLensPR())&&has_material)
             {
                 if(pr_times > 0)
+                {
+                    pr_times--;
+                    tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
+                    states.setPickedTrayID(states.currentTray());
+                    states.setPickedLensID(tray->getCurrentIndex(states.currentTray()));
                     continue;
+                }
                 else
                 {
                     pr_times = 5;
@@ -365,43 +371,43 @@ bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
     return  result;
 }
 
-bool LensLoaderModule::vcmSearchZ(double z,bool is_open,bool check_softlanding)
+bool LensLoaderModule::vcmSearchZ(double z,bool is_open)
 {
-    qInfo("vcmSearchZ limit: %f timeout: %d", z, parameters.finishDelay());
+    qInfo("vcmSearchZ limit: %f finishDelay: %d", z, parameters.finishDelay());
 
     return pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open);
 }
 
-bool LensLoaderModule::pickTrayLens(bool check_softlanding)
+bool LensLoaderModule::pickTrayLens()
 {
     qInfo("pickTrayLens");
 //    bool result = pick_arm->Move_SZ_Sync(parameters.pickLensZ());
 //    result = pick_arm->pickarmVaccum(true);
 //    Sleep(250);
 //    pick_arm->Move_SZ_Sync(parameters.placeLensZ())
-    bool result = vcmSearchZ(parameters.pickLensZ(),true,check_softlanding);
+    bool result = vcmSearchZ(parameters.pickLensZ(),true);
     return result;
 }
 
-bool LensLoaderModule::placeLensToLUT(bool check_softlanding)
+bool LensLoaderModule::placeLensToLUT()
 {
     qInfo("placeLensToLUT");
     bool result = pick_arm->stepMove_T_Syncic(parameters.placeTheta());
     this->lut_carrier->vacuum->Set(true);
-    result &= vcmSearchZ(parameters.placeLensZ(), false,check_softlanding);
+    result &= vcmSearchZ(parameters.placeLensZ(), false);
     return result = pick_arm->stepMove_T_Syncic(-parameters.placeTheta());
 }
 
-bool LensLoaderModule::pickLUTLens(bool check_softlanding)
+bool LensLoaderModule::pickLUTLens()
 {
     qInfo("pickLUTLens");
-    return vcmSearchZ(parameters.placeLensZ(),false,check_softlanding);
+    return vcmSearchZ(parameters.placeLensZ(),true);
 }
 
-bool LensLoaderModule::placeLensToTray(bool check_softlanding)
+bool LensLoaderModule::placeLensToTray()
 {
     qInfo("placeLensToTray");
-    return vcmSearchZ(parameters.pickLensZ(),check_softlanding);
+    return vcmSearchZ(parameters.pickLensZ(),false);
 }
 
 bool LensLoaderModule::measureHight(bool is_tray)
@@ -498,6 +504,8 @@ void LensLoaderModule::ResetLogic()
     states.setLutNgTrayID(-1);
     states.setLutNgLensID(-1);
     states.setLoadingLens(false);
+    tray->resetTrayState();
+    tray->resetTrayState(1);
 }
 
 void LensLoaderModule::performHandlingOperation(int cmd)
@@ -612,17 +620,17 @@ void LensLoaderModule::performHandlingOperation(int cmd)
     qInfo("cmd : %d", cmd);
     if(cmd%10000 == handlePickerAction::PICK_LENS_FROM_TRAY){
         if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
-            result = pickTrayLens(true);
+            result = pickTrayLens();
         }
     }
     else if(cmd%10000 == handlePickerAction::PLACE_LENS_TO_LUT){
         if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
-            result = placeLensToLUT(true);
+            result = placeLensToLUT();
         }
     }
     else if(cmd%10000 == handlePickerAction::PICK_NG_LENS_FROM_LUT){
         if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
-            result = pickLUTLens(true);
+            result = pickLUTLens();
         }
     }
     else if(cmd%10000 == handlePickerAction::PLACE_NG_LENS_TO_TRAY){

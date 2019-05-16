@@ -337,18 +337,21 @@ bool XtMotor::CheckLimit(double pos)
     if(!qIsFinite(pos))
     {
         AppendError(QString( "target_position %1 is illegal").arg(pos));
+        qInfo("target_position %f is illegal",pos);
         return false;
     }
 
     if(pos>max_range)
     {
         AppendError(QString( "target_position %1 is big").arg(pos));
+        qInfo("target_position %f is big",pos);
         return false;
     }
 
     if(pos<min_range)
     {
         AppendError(QString( "target_position %1 is small").arg(pos));
+        qInfo("target_position %f is small",pos);
         return false;
     }
     double current_pos = GetFeedbackPos();
@@ -361,6 +364,7 @@ bool XtMotor::CheckLimit(double pos)
             if(!temp_parameter->checkInLimitSpance(limit_motors[i]->GetFeedbackPos(),limit_motors[i]->GetCurrentTragetPos()))
             {
                 AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->motorName()));
+                qInfo("CheckLimit fail %f",pos);
                 return false;
             }
         }
@@ -374,6 +378,7 @@ bool XtMotor::CheckLimit(double pos)
             if(!temp_parameter->checkInLimitSpance(limit_ios[i]->Value()))
             {
                 AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->inputIOName()));
+                qInfo("CheckLimit fail %f",pos);
                 return false;
             }
         }
@@ -481,7 +486,7 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
 
         if(fabs(GetFeedbackPos() - target_position) < POS_ERROR)
         {
-            Sleep(10);//todo根据不同的轴到位等待时间
+            Sleep(200);//todo根据不同的轴到位等待时间
             return true;
         }
         Sleep(10);

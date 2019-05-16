@@ -48,7 +48,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
 
-                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                         var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
 
                         lut_pr_position1.setX(x);
@@ -150,7 +150,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                         var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
 
                         lut_pr_position2.setX(x);

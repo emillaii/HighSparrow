@@ -311,7 +311,7 @@ ItemDelegate {
             GroupBox{
                 title:qsTr("tray轨道")
                 ColumnLayout{
-//*
+/*
                     RowLayout{
                         Label{
                             text:qsTr("pushMotorSafePosotion")
@@ -345,7 +345,7 @@ ItemDelegate {
 //*
                     RowLayout{
                         Label{
-                            text:qsTr("downTrayPosition")
+                            text:qsTr("放空盘位置")
                         }
                         TextField{
                             text:sensor_tray_loader_module_parameter.downTrayPosition
@@ -407,7 +407,7 @@ ItemDelegate {
 //*
                     RowLayout{
                         Label{
-                            text:qsTr("getTrayPosition")
+                            text:qsTr("取盘位置")
                         }
                         TextField{
                             text:sensor_tray_loader_module_parameter.getTrayPosition
@@ -438,7 +438,7 @@ ItemDelegate {
 //*
                     RowLayout{
                         Label{
-                            text:qsTr("finishKickTrayPosition")
+                            text:qsTr("推盘结束位置")
                         }
                         TextField{
                             text:sensor_tray_loader_module_parameter.finishKickTrayPosition
@@ -485,7 +485,7 @@ ItemDelegate {
 //*/
                     RowLayout{
                         Label{
-                            text:qsTr("pushoutPosition")
+                            text:qsTr("弹夹推盘位置")
                         }
                         TextField{
                             text:sensor_tray_loader_module_parameter.pushoutPosition
@@ -514,7 +514,7 @@ ItemDelegate {
                     }
                     RowLayout{
                         Label{
-                            text:qsTr("putTrayPosition")
+                            text:qsTr("拉盘结束位置")
                         }
                         TextField{
                             text:sensor_tray_loader_module_parameter.putTrayPosition
@@ -544,7 +544,7 @@ ItemDelegate {
 
                     RowLayout{
                         Label{
-                            text:qsTr("startKickTrayPosition")
+                            text:qsTr("推盘开始位置")
                         }
                         TextField{
                             text:sensor_tray_loader_module_parameter.startKickTrayPosition
@@ -573,7 +573,7 @@ ItemDelegate {
                     }
                     RowLayout{
                         Label{
-                            text:qsTr("trayWorkPosition")
+                            text:qsTr("工作位置")
                         }
                         TextField{
                             text:sensor_tray_loader_module_parameter.trayWorkPosition
@@ -603,7 +603,7 @@ ItemDelegate {
 
                     RowLayout{
                         Label{
-                            text:qsTr("vacancyTrayPosition")
+                            text:qsTr("空盘位置")
                         }
                         TextField{
                             text:sensor_tray_loader_module_parameter.vacancyTrayPosition

@@ -123,6 +123,9 @@ public:
     Q_INVOKABLE void sensorTrayLoaderModuleMovetoFinishKickTrayPosition();
     Q_INVOKABLE void sensorTrayLoaderModuleMovetoPushoutPosition();
     Q_INVOKABLE void sensorTrayLoaderModuleMovetoPutTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoStartKickTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoTrayWorkPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoVacancyTrayPosition();
 
 
 

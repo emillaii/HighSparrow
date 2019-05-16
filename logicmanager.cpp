@@ -620,3 +620,18 @@ void LogicManager::sensorTrayLoaderModuleMovetoPutTrayPosition()
     baseModuleManage->sensor_tray_loder_module.movetoPutTrayPosition();
 }
 
+void LogicManager::sensorTrayLoaderModuleMovetoStartKickTrayPosition()
+{
+    baseModuleManage->sensor_tray_loder_module.movetoStartKickTrayPosition();
+}
+
+void LogicManager::sensorTrayLoaderModuleMovetoTrayWorkPosition()
+{
+    baseModuleManage->sensor_tray_loder_module.movetoTrayWorkPosition();
+}
+
+void LogicManager::sensorTrayLoaderModuleMovetoVacancyTrayPosition()
+{
+    baseModuleManage->sensor_tray_loder_module.movetoVacancyTrayPosition();
+}
+

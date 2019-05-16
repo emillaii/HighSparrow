@@ -382,6 +382,11 @@ bool SensorTrayLoaderModule::movetoTrayWorkPosition()
     return motor_tray->MoveToPosSync(parameters.trayWorkPosition());
 }
 
+bool SensorTrayLoaderModule::movetoVacancyTrayPosition()
+{
+    return motor_kick->MoveToPosSync(parameters.vacancyTrayPosition());
+}
+
 bool SensorTrayLoaderModule:: moveToStartKick()
 {
     qInfo("moveToStartKick");

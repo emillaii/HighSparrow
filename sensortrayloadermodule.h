@@ -53,6 +53,9 @@ public:
     bool movetoFinishKickTrayPosition();
     bool movetoPushoutPosition();
     bool movetoPutTrayPosition();
+    bool movetoStartKickTrayPosition();
+    bool movetoTrayWorkPosition();
+    bool movetoVacancyTrayPosition();
 
 private:
     bool is_run = false;

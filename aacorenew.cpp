@@ -72,6 +72,7 @@ void AACoreNew::run(bool has_material)
 
 void AACoreNew::startWork(bool reset_logic, int run_mode)
 {
+    if (reset_logic) ResetLogic();
     if (run_mode == RunMode::Normal) run(true);
     else if (run_mode == RunMode::NoMaterial) {
         run(false);
@@ -106,6 +107,14 @@ void AACoreNew::performHandlingOperation(int cmd)
         performDispense();
     }
     return;
+}
+
+void AACoreNew::ResetLogic()
+{
+    has_ng_lens = true;
+    has_ng_sensor = false;
+    has_sensor = false;
+    has_lens = false;
 }
 
 bool AACoreNew::runFlowchartTest()

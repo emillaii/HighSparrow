@@ -55,6 +55,7 @@ public slots:
     void stopWork(bool wait_finish) override;
     void performHandlingOperation(int cmd) override;
     //End of ThreadWorkerBase
+    void ResetLogic();
     void saveJsonConfig();
     void receiveRequestMessage(QString message, QString client_ip);
     void receiveLoadLensRequstFinish(int lens,int lens_tray);

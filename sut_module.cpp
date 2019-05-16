@@ -35,6 +35,22 @@ void SutModule::saveJsonConfig()
     PropertyBase::saveJsonConfig("config//sutConfig.json", temp_map);
 }
 
+void SutModule::resetLogic()
+{
+//    bool m_sutHasSensor = false;
+//    bool m_sutHasNgSensor = false;
+//    bool m_sutHasProduct = false;
+//    bool m_allowLoadSensor = false;
+//    bool m_loadingSensor = false;
+//    bool m_waitLoading = false;
+    states.setSutHasSensor(false);
+    states.setSutHasNgSensor(false);
+    states.setSutHasProduct(false);
+    states.setAllowLoadSensor(false);
+    states.setLoadingSensor(false);
+    states.setWaitLoading(false);
+}
+
 void SutModule::loadParams()
 {
     QMap<QString,PropertyBase*> temp_map;
@@ -273,6 +289,7 @@ void SutModule::run(bool has_material)
 void SutModule::startWork(bool reset_logic, int run_mode)
 {
     qInfo("sut Module start reset:%d run_mode :%d in %d",reset_logic,run_mode,QThread::currentThreadId());
+    if(reset_logic)resetLogic();
     if(run_mode == RunMode::Normal)run(true);
     else if(run_mode == RunMode::NoMaterial)run(false);
 

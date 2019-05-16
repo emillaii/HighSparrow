@@ -87,10 +87,10 @@ void LutModule::receiveLoadLensRequstFinish(int lens, int lens_tray)
 void LutModule::run(bool has_material)
 {
     qInfo("Start Lut Module Thread");
-    state = HAS_LENS;  //ToDo: How to detect whether this has lens or not ?
-    if (!has_material) {
-        state = NO_LENS;
-    }
+//    state = HAS_LENS;  //ToDo: How to detect whether this has lens or not ?
+//    if (!has_material) {
+//        state = NO_LENS;
+//    }
     is_run = true;
     bool isLocalHost = false;
     while(is_run){
@@ -272,7 +272,7 @@ void LutModule::sendPrEvent(const PrOffset pr_offset)
 void LutModule::startWork(bool reset_logic, int run_mode)
 {
     qInfo("Lut Module start work in run mode: %d", run_mode);
-    //if(reset_logic)ResetLogic();
+    if(reset_logic)ResetLogic();
     if(run_mode == RunMode::Normal)run(true);
     else if(run_mode == RunMode::NoMaterial)run(false);
     return;
@@ -289,6 +289,24 @@ void LutModule::performHandlingOperation(int cmd)
 {
     qInfo("Lut Module perform command: %d", cmd);
     return;
+}
+
+void LutModule::ResetLogic()
+{
+    state = LUTState::NO_LENS;
+    states.setLutTrayID(-1);
+    states.setLutLensID(-1);
+    states.setLutNgTrayID(-1);
+    states.setLutNgLensID(-1);
+    states.setAa1TrayID(-1);
+    states.setAa1LensID(-1);
+    states.setAa2TrayID(-1);
+    states.setAa2LensID(-1);
+    states.setWaitLens(false);
+    states.setServingIP("");
+    states.setLutHasLens(false);
+    states.setPickingLens(false);
+    states.setCmd("");
 }
 
 void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper, SutModule *sut)

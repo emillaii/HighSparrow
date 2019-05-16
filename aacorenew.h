@@ -104,6 +104,7 @@ public slots:
     void startWork(bool reset_logic, int run_mode) override;
     void stopWork(bool wait_finish) override;
     void performHandlingOperation(int cmd) override;
+    void ResetLogic();
     //End of ThreadWorkerBase
 signals:
     void sfrResultsReady(unsigned int, vector<Sfr_entry>, int);

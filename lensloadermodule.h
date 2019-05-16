@@ -52,9 +52,9 @@ public:
     void Init(LensPickArm *pick_arm,MaterialTray *tray,MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision,
               VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision);
-    void resetLogic();
     void loadJsonConfig();
     void saveJsonConfig();
+    void ResetLogic();
     void performHandling(int cmd);
     bool performUpDownlookDownPR(PrOffset &offset);
     bool performUpdowlookUpPR(PrOffset &offset);

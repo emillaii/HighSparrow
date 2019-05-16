@@ -28,6 +28,7 @@ public:
               XtVacuum *vacuum,XtCylinder* popgpin);
     void loadParams();
     void saveJsonConfig();
+    void resetLogic();
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPos(bool check_autochthonous = false);

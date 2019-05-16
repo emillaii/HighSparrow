@@ -32,12 +32,6 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     parts.append(this->lpa_updownlook_down_vision);
 }
 
-void LensLoaderModule::resetLogic()
-{
-    states.setLoadingLens(false);
-
-}
-
 void LensLoaderModule::loadJsonConfig()
 {
     QMap<QString,PropertyBase*> temp_map;
@@ -472,7 +466,7 @@ bool LensLoaderModule::isRunning()
 void LensLoaderModule::startWork(bool reset_logic, int run_mode)
 {
     qInfo("Lensloader start reset:%d run_mode :%d",reset_logic,run_mode);
-    if(reset_logic)resetLogic();
+    if(reset_logic) ResetLogic();
     if(run_mode == RunMode::Normal)run(true);
     else if(run_mode == RunMode::NoMaterial)run(false);
 }
@@ -484,6 +478,26 @@ void LensLoaderModule::stopWork(bool wait_finish)
 //        finish_stop = true;
 //    else
         is_run = false;
+}
+
+void LensLoaderModule::ResetLogic()
+{
+    states.setHasTray(true);
+    states.setLutHasLens(false);
+    states.setLutHasNgLens(false);
+    states.setNeedLoadLens(false);
+    states.setCurrentTray(false);
+    states.setNeedChangTray(false);
+    states.setAllowChangeTray(false);
+    states.setHasPickedLens(false);
+    states.setHasPickedNgLens(false);
+    states.setLutTrayID(-1);
+    states.setLutLensID(-1);
+    states.setPickedTrayID(-1);
+    states.setPickedLensID(-1);
+    states.setLutNgTrayID(-1);
+    states.setLutNgLensID(-1);
+    states.setLoadingLens(false);
 }
 
 void LensLoaderModule::performHandlingOperation(int cmd)

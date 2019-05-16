@@ -217,9 +217,22 @@ ColumnLayout {
                         }
                     }
                 }
+                Button{
+                    text:qsTr("执行视觉")
+                    width:40
+                    height:40
+                    onClicked: {
+                        if(baseModuleManager.ServerMode==0){
+                            logicManager.performLocation(lens_loader_parameter.lensLocationName);
+                        }else{
+                            logicManager.performLocation(sensorLoaderParameter.sensorLocationName);
+                        }
+                    }
+                }
 
                 Button{
-                    text:baseModuleManager.ServerMode==0?qsTr("lens视觉"):qsTr("sensor视觉")
+                    //text:baseModuleManager.ServerMode==0?qsTr("lens视觉"):qsTr("sensor视觉")
+                    text:qsTr("移动吸头")
                     width: 40
                     height: 40
                     onClicked: {
@@ -249,7 +262,16 @@ ColumnLayout {
                 visible: baseModuleManager.ServerMode==0
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
-                    text:qsTr("空位视觉")
+                    text:qsTr("执行空位视觉")
+                    width:40
+                    height:40
+                    onClicked: {
+                        logicManager.performLocation(lens_loader_parameter.vacancyLocationName)
+                    }
+                }
+
+                Button{
+                    text:qsTr("移动吸头")
                     width: 40
                     height: 40
                     onClicked: {

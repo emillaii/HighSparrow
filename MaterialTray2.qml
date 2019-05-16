@@ -180,6 +180,19 @@ ColumnLayout {
                     text:qsTr("空位视觉")
                     width:40
                     height: 40
+                    onClicked:{
+                        if(baseModuleManager.ServerMode==0){
+                            logicManager.performLocation(lens_loader_parameter.vacancyLocationName)
+                        }else{
+                            logicManager.performLocation(sensorLoaderParameter.vacancyLocationName)
+                        }
+                    }
+                }
+
+                Button{
+                    text:qsTr("移动吸头")
+                    width:40
+                    height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 

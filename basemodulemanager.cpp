@@ -96,7 +96,7 @@ BaseModuleManager::~BaseModuleManager()
 
 bool BaseModuleManager::sendMessageTest(QString title, QString content)
 {
-    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,"title","content",QMessageBox::Yes|QMessageBox::No);
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,title,content,QMessageBox::Yes|QMessageBox::No);
     if(rb==QMessageBox::Yes){
         return true;
     }else{

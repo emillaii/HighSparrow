@@ -59,8 +59,8 @@ public slots:
 private:
     QThread work_thread;
     QString m_Name;
-    int operation_type;
-    bool message_returned;
+    int operation_type = 0;
+    bool message_returned = false;
     int alarm_id = 0;
     QMutex message_mutex;
 };

@@ -65,6 +65,7 @@ int ThreadWorkerBase::waitMessageReturn(bool &interruput)
             if(message_returned)
             {
                 message_returned = false;
+                qInfo("waitMessageReturn %d",operation_type);
                 return  operation_type;
             }
         }

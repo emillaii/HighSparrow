@@ -308,6 +308,8 @@ void SensorLoaderModule::resetLogic()
     states.setHasPickedProduct(false);
     states.setHasPickedNgSensor(false);
     states.setBeExchangeMaterial(false);
+    tray->resetTrayState();
+    tray->resetTrayState(1);
 }
 
 void SensorLoaderModule::openServer(int port)
@@ -418,7 +420,7 @@ void SensorLoaderModule::run(bool has_material)
                 if(result)
                     continue;
             }
-            if(!moveToWorkPos())
+            if(!moveToWorkPos2())
             {
                 AppendError(u8"moveToWorkPos fail");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -455,7 +457,7 @@ void SensorLoaderModule::run(bool has_material)
                 if(result)
                     continue;
             }
-            if(!moveToWorkPos())
+            if(!moveToWorkPos2())
             {
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
@@ -484,10 +486,16 @@ void SensorLoaderModule::run(bool has_material)
             if((!performSensorPR())&&has_material)
             {
                 if(pr_times > 0)
+                    {
+                    pr_times--;
+                    tray->setCurrentMaterialState(MaterialState::IsEmpty,sensor_tray_index);
+                    picked_material = tray->getCurrentIndex(sensor_tray_index);
                     continue;
+                    }
                 else
                 {
                     pr_times = 5;
+                    AppendError(u8"pr连续失败五次");
                     sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                     waitMessageReturn(is_run);
                     if(is_run)break;
@@ -577,7 +585,7 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     if((!performSUTProductPR())&&has_material)
                     {
-                        AppendError(u8"NG视觉失败！");
+                        AppendError(u8"成品视觉失败！");
                         sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
                         int result = waitMessageReturn(is_run);
                         if(!result)is_run = false;
@@ -612,8 +620,8 @@ void SensorLoaderModule::run(bool has_material)
                 }
                 else if((states.cmd() == "unloadNgSensorReq")&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
                 {
-                    //取NGsenso
-                    if(!moveToSUTPRPos())
+                    //取NG sensor
+                    if(!moveToSUTPRPos(isLocalHost))
                     {
                         AppendError("moveToSUTPRPos fail!");
                         sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());

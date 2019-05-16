@@ -38,8 +38,8 @@ bool SensorPickArm::move_XeYe_Z1_XY(double z, double escape_x, double escape_y, 
     double y = motor_y->GetOutpuPos();
     motor_x->MoveToPos(x + escape_x);
     motor_y->MoveToPos(y + escape_y);
-    bool resut = motor_x->WaitArrivedTargetPos(x,timeout);
-    resut &= motor_y->WaitArrivedTargetPos(y,timeout);
+    bool resut = motor_x->WaitArrivedTargetPos(x + escape_x,timeout);
+    resut &= motor_y->WaitArrivedTargetPos(y + escape_y,timeout);
     if(!resut)
     {
         AppendError(u8"move to escape pos fail");

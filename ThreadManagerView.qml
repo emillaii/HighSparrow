@@ -145,21 +145,38 @@ ItemDelegate {
                 title:qsTr("TrayLoader")
                 RowLayout{
                     Button{
+                        enabled: true
+                        id:start_btn
                         text:qsTr("开始")
                         onClicked:{
-                            workersManager.startWorker("TrayLoaderModule",true,0);
+                            workersManager.startWorker("TrayLoaderModule",true,2)
+                            start_btn.enabled=false
+                            end_btn.enabled = true
                         }
                     }
                     Button{
+                        enabled: false
+                        id:change_tray
                         text:qsTr("换盘")
                         onClicked:{
                             logicManager.trayLoaderModuleEmitTestTrayUsed()
+                            change_tray.enabled = false
                         }
                     }
                     Button{
+                        enabled: fasle
+                        id:end_btn
                         text:qsTr("结束")
                         onClicked: {
-                            workersManager.stopWorkers();
+                            workersManager.stopWorkers()
+                            end_btn.enabled =false
+                            start_btn.enabled = true
+                        }
+                    }
+                    Connections{
+                        target:tray_loader_module_parameters
+                        onTrayReady:{
+                            change_tray.enabled = true
                         }
                     }
                 }

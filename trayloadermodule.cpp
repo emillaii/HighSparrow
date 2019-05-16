@@ -5,7 +5,7 @@
 
 TrayLoaderModule::TrayLoaderModule(QString name):ThreadWorkerBase(name)
 {
-    connect(this,SIGNAL(testTrayUsed()),this,SLOT(onTestTrayUsed()),Qt::QueuedConnection);
+    connect(this,SIGNAL(testTrayUsed()),this,SLOT(onTestTrayUsed()),Qt::DirectConnection);
 }
 
 void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
@@ -69,6 +69,7 @@ bool TrayLoaderModule::startUp()
 
 void TrayLoaderModule::run(bool has_tray)
 {
+    is_run = true;
     while(is_run){
         QThread::msleep(100);
 
@@ -118,7 +119,8 @@ void TrayLoaderModule::run(bool has_tray)
             result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
             if(!result){
             }
-            emit trayReady();
+            //emit trayReady();
+            emit parameters.trayReady();
             states.setHasTrayReady(false);
             states.setHasTrayUsed(false);
             if(!is_run)break;
@@ -129,13 +131,13 @@ void TrayLoaderModule::run(bool has_tray)
 
 bool TrayLoaderModule::moveToNextTrayPos()
 {
-    if(!tray_entry_input->Value()){
-        //qDebug()<<"入口处检测到有盘";
-        AppendError(u8"入口处检测到有盘,请把盘拿走");
-        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-        waitMessageReturn(is_run);
-        return false;
-    }
+//    if(!tray_entry_input->Value()){
+//        //qDebug()<<"入口处检测到有盘";
+//        AppendError(u8"入口处检测到有盘,请把盘拿走");
+//        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+//        waitMessageReturn(is_run);
+//        return false;
+//    }
     double pos = tray_clip->getCurrentPosition();
     motor_clip_in->MoveToPos(pos);
     bool result = motor_clip_in->WaitArrivedTargetPos(pos);

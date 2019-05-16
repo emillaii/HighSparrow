@@ -410,7 +410,7 @@ bool LensLoaderModule::measureHight(bool is_tray)
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         QThread::msleep(100);
-        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度？"))){
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1？").arg(pick_arm->GetSoftladngPosition()))){
             return true;
         }
         if(is_tray)

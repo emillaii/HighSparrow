@@ -65,7 +65,7 @@ ColumnLayout {
         Button{
             text: qsTr("测量")
             onClicked: {
-                sensorLoaderModule.performHandling(16000);
+                sensorLoaderModule.performHandling(sensorLoaderModule.MEASURE_Z_OFFSET);
             }
         }
     }

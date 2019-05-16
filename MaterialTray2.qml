@@ -42,7 +42,7 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                             logicManager.lensPickArmMoveToTray2StartPos()
                         }else{
-                            sensorLoaderModule.performHandling(6)
+                            sensorLoaderModule.performHandling(sensorLoaderModule.SENSOR_TRAY2_START_POS)
                         }
                     }
                 }
@@ -105,7 +105,7 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                             logicManager.lensPickArmMoveToTray2Pos()
                         }else{
-                            sensorLoaderModule.performHandling(2)
+                            sensorLoaderModule.performHandling(sensorLoaderModule.SENSOR_TRAY2)
                         }
                     }
                 }
@@ -129,7 +129,7 @@ ColumnLayout {
                 Button{
                     text:qsTr("测高")
                     onClicked: {
-                        sensorLoaderModule.performHandling(12000)
+                        sensorLoaderModule.performHandling(sensorLoaderModule.MEASURE_PRODUCT_IN_TRAY)
                     }
                 }
             }
@@ -152,7 +152,7 @@ ColumnLayout {
                 Button{
                     text:qsTr("测高")
                     onClicked: {
-                        sensorLoaderModule.performHandling(11000)
+                        sensorLoaderModule.performHandling(sensorLoaderModule.MEASURE_NG_SENSOR_IN_TRAY)
                     }
                 }
             }
@@ -199,7 +199,10 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                             logicManager.lensPickArmVacancyTrayPR()
                         }else{
-                            sensorLoaderModule.performHandling(232)
+                            //232
+                            sensorLoaderModule.performHandling(sensorLoaderModule.TO_PICK2
+                                                               +sensorLoaderModule.VACANCY_PR
+                                                               +sensorLoaderModule.SENSOR_TRAY2)
                         }
                     }
                 }
@@ -214,7 +217,11 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                             logicManager.lensPickArmMoveToPlaceLensToTray2()
                         }else{
-                            sensorLoaderModule.performHandling(9232)
+                            //9232
+                            sensorLoaderModule.performHandling(sensorLoaderModule.PLACE_PRODUCT_TO_TRAY
+                                                               +sensorLoaderModule.TO_PICK2
+                                                               +sensorLoaderModule.VACANCY_PR
+                                                               +sensorLoaderModule.SENSOR_TRAY2)
                         }
                     }
                 }
@@ -225,7 +232,11 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                        sensorLoaderModule.performHandling(6232)
+                        //6232
+                        sensorLoaderModule.performHandling(sensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY
+                                                           +sensorLoaderModule.TO_PICK2
+                                                           +sensorLoaderModule.VACANCY_PR
+                                                           +sensorLoaderModule.SENSOR_TRAY2)
                     }
                 }
             }

@@ -45,8 +45,8 @@ ItemDelegate {
                     Button {
                         text: "开始"
                         onClicked: {
-                            workersManager.startWorker("SutModule",true,2)
-                            workersManager.startWorker("SensorLoader",true,2)
+                            workersManager.startWorker("SutModule",true,0)
+                            workersManager.startWorker("SensorLoader",true,0)
                         }
                     }
                     Button {
@@ -123,7 +123,7 @@ ItemDelegate {
                     Button {
                         text: "开始"
                         onClicked: {
-                            workersManager.startWorker("SensorTrayLoaderModule",true,2)
+                            workersManager.startWorker("SensorTrayLoaderModule",true,0)
                         }
                     }
                     Button {
@@ -147,7 +147,7 @@ ItemDelegate {
                     Button{
                         text:qsTr("开始")
                         onClicked:{
-                            workersManager.startWorker("TrayLoaderModule",true,2);
+                            workersManager.startWorker("TrayLoaderModule",true,0);
                         }
                     }
                     Button{

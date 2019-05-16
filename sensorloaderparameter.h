@@ -27,7 +27,9 @@ public:
     Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
     Q_PROPERTY(double pickNgSensorZ READ pickNgSensorZ WRITE setPickNgSensorZ NOTIFY pickNgSensorZChanged)
     Q_PROPERTY(double placeNgSensorZ READ placeNgSensorZ WRITE setPlaceNgSensorZ NOTIFY placeNgSensorZChanged)
-
+    Q_PROPERTY(double escapeHeight READ escapeHeight WRITE setEscapeHeight NOTIFY escapeHeightChanged)
+    Q_PROPERTY(double escapeX READ escapeX WRITE setEscapeX NOTIFY escapeXChanged)
+    Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
     double vcmWorkForce() const
     {
         return m_vcmWorkForce;
@@ -110,6 +112,21 @@ public:
     QString calibrationGlassLocationName() const
     {
         return m_calibrationGlassLocationName;
+    }
+
+    double escapeHeight() const
+    {
+        return m_escapeHeight;
+    }
+
+    double escapeX() const
+    {
+        return m_escapeX;
+    }
+
+    double escapeY() const
+    {
+        return m_escapeY;
     }
 
 public slots:
@@ -275,6 +292,36 @@ public slots:
         emit calibrationGlassLocationNameChanged(m_calibrationGlassLocationName);
     }
 
+    void setEscapeHeight(double escapeHeight)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_escapeHeight, escapeHeight))
+            return;
+
+        m_escapeHeight = escapeHeight;
+        emit escapeHeightChanged(m_escapeHeight);
+    }
+
+    void setEscapeX(double escapeX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_escapeX, escapeX))
+            return;
+
+        m_escapeX = escapeX;
+        emit escapeXChanged(m_escapeX);
+    }
+
+    void setEscapeY(double escapeY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_escapeY, escapeY))
+            return;
+
+        m_escapeY = escapeY;
+        emit escapeYChanged(m_escapeY);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -310,6 +357,12 @@ signals:
 
     void calibrationGlassLocationNameChanged(QString calibrationGlassLocationName);
 
+    void escapeHeightChanged(double escapeHeight);
+
+    void escapeXChanged(double escapeX);
+
+    void escapeYChanged(double escapeY);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -328,6 +381,9 @@ private:
     double m_pickNgSensorZ = 0;
     double m_placeNgSensorZ = 0;
     QString m_calibrationGlassLocationName;
+    double m_escapeHeight = 3;
+    double m_escapeX = 5;
+    double m_escapeY = 0;
 };
 class SensorLoaderState:public PropertyBase
 {

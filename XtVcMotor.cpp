@@ -32,6 +32,7 @@ void XtVcMotor::ConfigVCM()
     double force[4]{100,1000,2000,3000};
     MapCurrent2Force(vcm_id,current,force,4);
     is_init = true;
+    error_code = get_motor_error(vcm_id);
 }
 
 void XtVcMotor::ChangeDiretion(bool befor_seek)
@@ -332,7 +333,7 @@ bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int
 {
     if(is_debug)return true;
     if(!is_init)
-        return 0.0;
+        return false;
     double start_pos = GetOutpuPos();
     SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.1);
     bool res;
@@ -419,11 +420,6 @@ bool XtVcMotor::resetSoftLanding(int timeout)
     if(is_softlanded)
         ret = DoSoftLandingReturn()&WaitSoftLandingDone(timeout);
     RestoreForce();
-    if(is_init)
-    {
-        int code = get_motor_error(vcm_id);
-        qInfo("VCM %d get_motor_error Return %d",vcm_id, code);
-    }
     return ret;
 
 }
@@ -433,11 +429,14 @@ bool XtVcMotor::WaitSoftLandingDone(int timeout)
     if(is_debug)return true;
     if(!is_init)
         return false;
-    while(timeout>0)
+    while(timeout > 0)
     {
         int res = CheckPosReady(vcm_id);
         if (res == 1)
         {
+            is_softlanded = is_softlanding;
+            is_softlanding = false;
+            is_returning = false;
             return true;
         }
         timeout-=10;
@@ -446,12 +445,17 @@ bool XtVcMotor::WaitSoftLandingDone(int timeout)
     is_softlanded = is_softlanding;
     is_softlanding = false;
     is_returning = false;
-    qInfo("WaitSoftLandingDone fail");
     if(is_init)
     {
-        int code = get_motor_error(vcm_id);
-        qInfo("VCM %d get_motor_error Return %d",vcm_id, code);
+        if(error_code == get_motor_error(vcm_id))
+        {
+            qInfo("CheckPosReady fail but action success %d",timeout);
+            return true;
+        }
+        error_code = get_motor_error(vcm_id);
+        qInfo("VCM %d get_motor_error Return %d",vcm_id, error_code);
     }
+    qInfo("WaitSoftLandingDone fail");
     return false;
 }
 

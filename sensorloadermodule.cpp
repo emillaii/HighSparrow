@@ -192,42 +192,42 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = placeSensorToSUT("remote",true);
+            result = placeSensorToSUT("remote");
         }
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT2){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = placeSensorToSUT("::1",true);
+            result = placeSensorToSUT("::1");
         }
     }
     else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = pickSUTSensor("remote",true);
+            result = pickSUTSensor("remote");
         }
     }
     else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT2){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = pickSUTSensor("::1",true);
+            result = pickSUTSensor("::1");
         }
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_NG_SENSOR_TO_TRAY){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = placeSensorToTray(true);
+            result = placeSensorToTray();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = pickSUTProduct("remote",true);
+            result = pickSUTProduct("remote");
         }
     }
     else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT2){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = pickSUTProduct("::1",true);
+            result = pickSUTProduct("::1");
         }
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_PRODUCT_TO_TRAY){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = placeProductToTray(true);
+            result = placeProductToTray();
         }
     }
     else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_TRAY){
@@ -297,7 +297,17 @@ void SensorLoaderModule::receiveChangeTrayFInish()
 
 void SensorLoaderModule::resetLogic()
 {
-
+    states.setHasTray(true);
+    states.setSutHasSensor(false);
+    states.setSutHasNgSensor(false);
+    states.setSutHasProduct(false);
+    states.setNeedLoadSensor(false);
+    states.setNeedChangTray(false);
+    states.setAllowChangeTray(false);
+    states.setHasPickedSensor(false);
+    states.setHasPickedProduct(false);
+    states.setHasPickedNgSensor(false);
+    states.setBeExchangeMaterial(false);
 }
 
 void SensorLoaderModule::openServer(int port)
@@ -832,7 +842,7 @@ bool SensorLoaderModule::moveToNextTrayPos(int tray_index)
 
 bool SensorLoaderModule::moveToSUTPRPos(bool is_local,bool check_softlanding)
 {
-    qInfo("moveToSUTPRPos %d",is_local);
+//    qInfo("moveToSUTPRPos %d",is_local);
     if(is_local)
         return  pick_arm->move_XY_Synic(sut2_pr_position.ToPointF(),check_softlanding);
     else
@@ -891,7 +901,7 @@ bool SensorLoaderModule::moveToWorkPos2(bool check_softlanding)
 
 bool SensorLoaderModule::picker1SearchZ(double z,bool is_open, int time_out)
 {
-    qInfo("picker1SearchZ");
+    qInfo("picker1SearchZ %d",time_out);
     bool result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
     result &= pick_arm->ZSerchReturn(time_out);
     return result;
@@ -900,11 +910,16 @@ bool SensorLoaderModule::picker1SearchZ(double z,bool is_open, int time_out)
 bool SensorLoaderModule::picker1SearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
 {
     qInfo("picker1SearchZ %s",dest.toStdString().c_str());
-    bool result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
-
-    sendCmd(dest,cmd);
-    QThread::msleep(200);
-    result &= pick_arm->ZSerchReturn(time_out);
+    bool result = pick_arm->move_XeYe_Z1_XY(z - parameters.escapeHeight(),parameters.escapeX(),parameters.escapeY());
+    if(result)
+    {
+        result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
+        if(!result)return false;
+        sendCmd(dest,cmd);
+        QThread::msleep(200);
+        result &= pick_arm->ZSerchReturn(time_out);
+    }
+    result &= pick_arm->picker1->motor_z->MoveToPosSync(0);
     return result;
 }
 bool SensorLoaderModule::picker2SearchZ(double z,bool is_open, int time_out)
@@ -919,47 +934,53 @@ bool SensorLoaderModule::picker2SearchZ(double z,bool is_open, int time_out)
 bool SensorLoaderModule::picker2SearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
 {
     qInfo("picker2SearchZ %s",dest.toStdString().c_str());
-    bool result = pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
-    sendCmd(dest,cmd);
-    QThread::msleep(200);
-    result &= pick_arm->ZSerchReturn2(time_out);
+    bool result = pick_arm->picker2->motor_z->MoveToPosSync(z - parameters.escapeHeight());
+    if(result)
+    {
+        result = pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
+        if(!result)return false;
+        sendCmd(dest,cmd);
+        QThread::msleep(200);
+        result &= pick_arm->ZSerchReturn2(time_out);
+    }
+    result &= pick_arm->move_XeYe_Z2(0,parameters.escapeX(),parameters.escapeY());
     return result;
 }
 
-bool SensorLoaderModule::pickTraySensor(bool check_softlanding)
+bool SensorLoaderModule::pickTraySensor(int time_out)
 {
     qInfo("pickTraySensor");
-    return picker1SearchZ(parameters.pickSensorZ(),true,check_softlanding);
+    return picker1SearchZ(parameters.pickSensorZ(),true,time_out);
 }
 
-bool SensorLoaderModule::placeSensorToSUT(QString dest,bool check_softlanding)
+bool SensorLoaderModule::placeSensorToSUT(QString dest,int time_out)
 {
-    qInfo("placeSensorToSUT");
-    return picker1SearchSutZ(parameters.placeSensorZ(),dest,"vacuumOnReq",false,check_softlanding);
+    qInfo("placeSensorToSUT time_out %d",time_out);
+    return picker1SearchSutZ(parameters.placeSensorZ(),dest,"vacuumOnReq",false,time_out);
 }
 
-bool SensorLoaderModule::pickSUTSensor(QString dest,bool check_softlanding)
+bool SensorLoaderModule::pickSUTSensor(QString dest,int time_out)
 {
     qInfo("pickSUTSensor");
-    return picker2SearchSutZ(parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,check_softlanding);
+    return picker2SearchSutZ(parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,time_out);
 }
 
-bool SensorLoaderModule::pickSUTProduct(QString dest,bool check_softlanding)
+bool SensorLoaderModule::pickSUTProduct(QString dest,int time_out)
 {
     qInfo("pickSUTProduct");
-    return picker2SearchSutZ(parameters.pickProductZ(),dest,"vacuumOffReq",true,check_softlanding);
+    return picker2SearchSutZ(parameters.pickProductZ(),dest,"vacuumOffReq",true,time_out);
 }
 
-bool SensorLoaderModule::placeSensorToTray(bool check_softlanding)
+bool SensorLoaderModule::placeSensorToTray(int time_out)
 {
     qInfo("placeSensorToTray");
-    return picker2SearchZ(parameters.placeNgSensorZ(),false,check_softlanding);
+    return picker2SearchZ(parameters.placeNgSensorZ(),false,time_out);
 }
 
-bool SensorLoaderModule::placeProductToTray(bool check_softlanding)
+bool SensorLoaderModule::placeProductToTray(int time_out)
 {
     qInfo("placeProductToTray");
-    return picker2SearchZ(parameters.placeProductZ(),false,check_softlanding);
+    return picker2SearchZ(parameters.placeProductZ(),false,time_out);
 }
 
 bool SensorLoaderModule::picker1MeasureHight(bool is_tray)

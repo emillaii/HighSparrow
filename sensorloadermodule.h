@@ -58,7 +58,7 @@ public:
         MEASURE_NG_SENSOR_IN_TRAY = 11000,
         MEASURE_PRODUCT_IN_TRAY = 12000,
         MEASURE_SENSOR_IN_SUT1 = 13000,
-        MEASURE_NG_SENSOR_IN_SUT1 = 140000,
+        MEASURE_NG_SENSOR_IN_SUT1 = 14000,
         MEASURE_PRODUCT_IN_SUT1 = 15000,
         MEASURE_Z_OFFSET = 16000
     };
@@ -98,16 +98,16 @@ private:
 
     bool moveToWorkPos(bool check_softlanding = false);
     bool moveToWorkPos2(bool check_softlanding = false);
-    bool picker1SearchZ(double z,bool is_open = true,int time_out = 5000);
-    bool picker1SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 5000);
-    bool picker2SearchZ(double z,bool is_open = true,int time_out = 5000);
-    bool picker2SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 5000);
-    bool pickTraySensor(bool check_softlanding = false);
-    bool placeSensorToSUT(QString dest,bool check_softlanding = false);
-    bool pickSUTSensor(QString dest,bool check_softlanding = false);
-    bool pickSUTProduct(QString dest, bool check_softlanding = false);
-    bool placeSensorToTray(bool check_softlanding = false);
-    bool placeProductToTray(bool check_softlanding = false);
+    bool picker1SearchZ(double z,bool is_open = true,int time_out = 10000);
+    bool picker1SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
+    bool picker2SearchZ(double z,bool is_open = true,int time_out = 10000);
+    bool picker2SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
+    bool pickTraySensor(int time_out = 10000);
+    bool placeSensorToSUT(QString dest,int time_out = 10000);
+    bool pickSUTSensor(QString dest,int time_out = 10000);
+    bool pickSUTProduct(QString dest, int time_out = 10000);
+    bool placeSensorToTray(int time_out = 10000);
+    bool placeProductToTray(int time_out = 10000);
     bool picker1MeasureHight(bool is_tray);
     bool picker2MeasureHight(bool is_tray,bool is_product);
     bool measureZOffset();

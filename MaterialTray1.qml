@@ -43,7 +43,7 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                         logicManager.lensPickArmMoveToTray1StartPos()
                         }else{
-                            sensorLoaderModule.performHandling(5)
+                            sensorLoaderModule.performHandling(sensorLoaderModule.SENSOR_TRAY1_START_POS)
                         }
                     }
                 }
@@ -114,7 +114,7 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                             logicManager.lensPickArmMoveToTray1EndPos()
                         }else{
-                            sensorLoaderModule.performHandling(7)
+                            sensorLoaderModule.performHandling(sensorLoaderModule.SENSOR_TRAY1_END_POS)
                         }
                     }
                 }
@@ -182,7 +182,7 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                             logicManager.lensPickArmMoveToTray1Pos()
                         }else{
-                            sensorLoaderModule.performHandling(1)
+                            sensorLoaderModule.performHandling(sensorLoaderModule.SENSOR_TRAY1)
                         }
                     }
                 }

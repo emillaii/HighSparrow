@@ -13,6 +13,11 @@
 class SensorLoaderModule:public ThreadWorkerBase
 {
     Q_OBJECT
+    Q_ENUMS(HandlePosition)
+    Q_ENUMS(HandlePR)
+    Q_ENUMS(HandleToWorkPos)
+    Q_ENUMS(handlePickerAction)
+
 public:
     enum HandlePosition
     {

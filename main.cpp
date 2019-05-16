@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
     qRegisterMetaType<cv::Mat>("cv::Mat");
     qRegisterMetaType<std::vector<Sfr_entry>>("std::vector<Sfr_entry>");
     qRegisterMetaType<std::vector<std::vector<Sfr_entry>>>("vector<vector<Sfr_entry>>");
@@ -63,9 +64,12 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("aaHeadModule", &highSprrow.baseModuleManager->aa_head_module);
     engine.rootContext()->setContextProperty("dispenseModule", &highSprrow.baseModuleManager->dispense_module);
     engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
+    qmlRegisterType<SensorLoaderModule>("SomeLib",1,0,"SensorLoaderModule");
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
     engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
     engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
+
+
 
     //Position
     engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);

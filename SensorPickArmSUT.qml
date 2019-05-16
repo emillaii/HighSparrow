@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import SomeLib 1.0
 ColumnLayout {
     RowLayout{
         Label{
@@ -22,7 +23,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                sensorLoaderModule.performHandling(sensorLoaderModule.MEASURE_SENSOR_IN_SUT1)
+                sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_SENSOR_IN_SUT1)
             }
         }
     }
@@ -46,7 +47,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                sensorLoaderModule.performHandling(sensorLoaderModule.MEASURE_PRODUCT_IN_SUT1)
+                sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_PRODUCT_IN_SUT1)
             }
         }
     }
@@ -70,7 +71,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                sensorLoaderModule.performHandling(sensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT1)
+                sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT1)
             }
         }
     }
@@ -111,7 +112,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        sensorLoaderModule.performHandling(sensorLoaderModule.SUT_POS1)
+                        //console.log(SensorLoaderModule.SUT_POS1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1)
                     }
                 }
                 Button{
@@ -137,9 +139,9 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //2110
-                        sensorLoaderModule.performHandling(sensorLoaderModule.PLACE_SENSOR_TO_SUT1
-                                                           +sensorLoaderModule.TO_PICK1
-                                                           +sensorLoaderModule.RESET_PR)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_SENSOR_TO_SUT1
+                                                           +SensorLoaderModule.TO_PICK1
+                                                           +SensorLoaderModule.RESET_PR)
                     }
                 }
                 Button{
@@ -157,10 +159,10 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //7263
-                        sensorLoaderModule.performHandling(sensorLoaderModule.PICK_PRODUCT_FROM_SUT1
-                                                           +sensorLoaderModule.TO_PICK2
-                                                           +sensorLoaderModule.PRODUCT_PR
-                                                           +sensorLoaderModule.SUT_POS1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
+                                                           +SensorLoaderModule.TO_PICK2
+                                                           +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_POS1)
                     }
                 }
                 Button{
@@ -169,9 +171,9 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //253
-                        sensorLoaderModule.performHandling(sensorLoaderModule.TO_PICK2
-                                                           +sensorLoaderModule.NG_SENSOR_PR
-                                                           +sensorLoaderModule.SUT_POS1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK2
+                                                           +SensorLoaderModule.NG_SENSOR_PR
+                                                           +SensorLoaderModule.SUT_POS1)
                     }
                 }
                 Button{
@@ -180,10 +182,10 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //4253
-                        sensorLoaderModule.performHandling(sensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1
-                                                           +sensorLoaderModule.TO_PICK2
-                                                           +sensorLoaderModule.NG_SENSOR_PR
-                                                           +sensorLoaderModule.SUT_POS1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1
+                                                           +SensorLoaderModule.TO_PICK2
+                                                           +SensorLoaderModule.NG_SENSOR_PR
+                                                           +SensorLoaderModule.SUT_POS1)
                     }
                 }
 
@@ -227,7 +229,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        sensorLoaderModule.performHandling(sensorLoaderModule.SUT_POS2)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS2)
                     }
                 }
                 Button{
@@ -251,10 +253,10 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //2114
-                        sensorLoaderModule.performHandling(sensorLoaderModule.PLACE_SENSOR_TO_SUT1
-                                                           +sensorLoaderModule.TO_PICK1
-                                                           +sensorLoaderModule.RESET_PR
-                                                           +sensorLoaderModule.SUT_POS2)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_SENSOR_TO_SUT1
+                                                           +SensorLoaderModule.TO_PICK1
+                                                           +SensorLoaderModule.RESET_PR
+                                                           +SensorLoaderModule.SUT_POS2)
                     }
                 }
                 Button{
@@ -263,9 +265,9 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //264
-                        sensorLoaderModule.performHandling(sensorLoaderModule.TO_PICK2
-                                                           +sensorLoaderModule.PRODUCT_PR
-                                                           +sensorLoaderModule.SUT_POS2)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK2
+                                                           +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_POS2)
                     }
                 }
 
@@ -276,10 +278,10 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //7264
-                        sensorLoaderModule.performHandling(sensorLoaderModule.PICK_PRODUCT_FROM_SUT1
-                                                           +sensorLoaderModule.TO_PICK2
-                                                           +sensorLoaderModule.PRODUCT_PR
-                                                           +sensorLoaderModule.SUT_POS2)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
+                                                           +SensorLoaderModule.TO_PICK2
+                                                           +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_POS2)
                     }
                 }
                 Button{
@@ -288,9 +290,9 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //254
-                        sensorLoaderModule.performHandling(sensorLoaderModule.TO_PICK2
-                                                           +sensorLoaderModule.NG_SENSOR_PR
-                                                           +sensorLoaderModule.SUT_POS2)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK2
+                                                           +SensorLoaderModule.NG_SENSOR_PR
+                                                           +SensorLoaderModule.SUT_POS2)
                     }
                 }
                 Button{
@@ -299,10 +301,10 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //4254
-                        sensorLoaderModule.performHandling(sensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1
-                                                           +sensorLoaderModule.TO_PICK2
-                                                           +sensorLoaderModule.NG_SENSOR_PR
-                                                           +sensorLoaderModule.SUT_POS2)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1
+                                                           +SensorLoaderModule.TO_PICK2
+                                                           +SensorLoaderModule.NG_SENSOR_PR
+                                                           +SensorLoaderModule.SUT_POS2)
                     }
                 }
             }

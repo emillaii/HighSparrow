@@ -54,7 +54,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToAA1UnPickLens()
+                lutModule.moveToAA1PickLensPos()
+                //lutModule.moveToAA1UnPickLens()
             }
         }
         Button {
@@ -68,6 +69,16 @@ ColumnLayout {
                 lutUnPickLensPositionAA1.setX(x)
                 lutUnPickLensPositionAA1.setY(y)
                 lutUnPickLensPositionAA1.setZ(z)
+            }
+        }
+        Button {
+            text: qsTr("UnPick")
+            width: 40
+            height: 40
+            onClicked: {
+                //logicManager.lutPickLensToAA1()
+                lutModule.moveToAA1UnPickLens()
+//                lutModule.moveToAA1PickLens(false,true)
             }
         }
     }

@@ -43,7 +43,7 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                         logicManager.lensPickArmMoveToTray1StartPos()
                         }else{
-                            sensorLoaderModule.performHandling(sensorLoaderModule.SENSOR_TRAY1_START_POS)
+                            sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1_START_POS)
                         }
                     }
                 }
@@ -114,7 +114,7 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                             logicManager.lensPickArmMoveToTray1EndPos()
                         }else{
-                            sensorLoaderModule.performHandling(sensorLoaderModule.SENSOR_TRAY1_END_POS)
+                            sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1_END_POS)
                         }
                     }
                 }
@@ -182,7 +182,7 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                             logicManager.lensPickArmMoveToTray1Pos()
                         }else{
-                            sensorLoaderModule.performHandling(sensorLoaderModule.SENSOR_TRAY1)
+                            sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1)
                         }
                     }
                 }
@@ -217,7 +217,7 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                             logicManager.lensPickArmLensMeasureHeight()
                         }else{
-                            sensorLoaderModule.performHandling(sensorLoaderModule.MEASURE_SENSOR_IN_TRAY)
+                            sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_SENSOR_IN_TRAY)
                         }
                     }
                 }
@@ -243,7 +243,7 @@ ColumnLayout {
                         if (baseModuleManager.ServerMode == 0){
                             logicManager.lensPickArmLensPR()
                         }else{
-                            sensorLoaderModule.performHandling(sensorLoaderModule.TO_PICK1+sensorLoaderModule.SENSOR_PR)
+                            sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK1+SensorLoaderModule.SENSOR_PR)
                         }
                     }
                 }
@@ -258,10 +258,10 @@ ColumnLayout {
                             logicManager.lensPickArmMoveToPickLensFromTray1()
                         }else{
                             //1121
-                            sensorLoaderModule.performHandling(sensorLoaderModule.PICK_SENSOR_FROM_TRAY
-                                                               +sensorLoaderModule.TO_PICK1
-                                                               +sensorLoaderModule.SENSOR_PR
-                                                               +sensorLoaderModule.SENSOR_TRAY1)
+                            sensorLoaderModule.performHandling(SensorLoaderModule.PICK_SENSOR_FROM_TRAY
+                                                               +SensorLoaderModule.TO_PICK1
+                                                               +SensorLoaderModule.SENSOR_PR
+                                                               +SensorLoaderModule.SENSOR_TRAY1)
                         }
                     }
                 }

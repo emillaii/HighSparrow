@@ -184,7 +184,6 @@ Popup {
                             }
                         }
                         onCheckedChanged:{
-
                             baseModuleManager.setOutput("POGOPIN下", checked)
                             baseModuleManager.setOutput("POGOPIN上", !checked)
                         }

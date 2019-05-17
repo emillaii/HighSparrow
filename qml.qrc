@@ -77,6 +77,8 @@
         <file>SensorPickArmSUT.qml</file>
         <file>MotionPopup.qml</file>
         <file>SensorTrayLoaderViewModule.qml</file>
+        <file>CommonUsedView.qml</file>
+        <file>CommonControl.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

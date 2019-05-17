@@ -47,6 +47,9 @@ ListModel {
         label:"Thread Manager"
         index:11
     }
-
+    ListElement{
+        label:"常用操作"
+        index:12
+    }
 }
 

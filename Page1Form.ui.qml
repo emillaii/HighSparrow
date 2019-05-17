@@ -6,7 +6,7 @@ import QtQuick.Window 2.0
 
 Page {
     id: page1
-    width: 1280
+    width: 1580
     height: 720
     property alias featureButton: featureButton
     property alias navigationFeatureButton: navigationFeatureButton
@@ -63,6 +63,7 @@ Page {
         }
 
         MachineConfigListView {
+            id: machineConfigListView
             anchors.right: parent.right
             anchors.rightMargin: 627
             anchors.bottom: parent.bottom
@@ -89,3 +90,8 @@ Page {
         }
     }
 }
+
+/*##^## Designer {
+    D{i:11;anchors_width:240;anchors_x:400}
+}
+ ##^##*/

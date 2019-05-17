@@ -30,6 +30,7 @@ ListView {
                     else
                         return "SensorTrayLoaderViewModule.qml"
                 case 11: return "ThreadManagerView.qml"
+                case 12:return "CommonControl.qml"
             }
         }
     }

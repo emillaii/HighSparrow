@@ -74,6 +74,8 @@ void TrayLoaderModule::run(bool has_tray)
         QThread::msleep(100);
 
         if(!states.hasTrayReady()){
+            motorOutRelease();
+            motor_work->MoveToPosSync(parameters.ltlReleasePos());
             ejectTray();
             motorInRelease();
             motor_in->MoveToPos(parameters.ltkx1PressPos());
@@ -198,8 +200,8 @@ bool TrayLoaderModule::moveToLtkx1SetPos()
 
 bool TrayLoaderModule::motorInRelease()
 {
-    cylinder_ltk1->Set(false);
-    return 1;
+    int res =cylinder_ltk1->Set(false);
+    return res;
 /*
     int res = cylinder_ltk1->Value();
     if(res){
@@ -262,12 +264,8 @@ bool TrayLoaderModule::moveToLtkx2SetPos()
 
 bool TrayLoaderModule::motorOutRelease()
 {
-    int res = cylinder_ltk2->Value();
-    if(res){
-        res = cylinder_ltk2->Set(false);
-        return res;
-    }
-    return 1;
+    int res = cylinder_ltk2->Set(false);
+    return res;
 }
 
 bool TrayLoaderModule::moveToNextEmptyPos()

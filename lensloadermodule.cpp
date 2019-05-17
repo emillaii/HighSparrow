@@ -311,7 +311,8 @@ bool LensLoaderModule::moveToNextTrayPos(int tray_index)
     qInfo("moveToNextTrayPos:%d",tray_index);
     if(tray->findNextPositionOfInitState(tray_index))
     {
-        return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX());
+//        return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX());
+        return  pick_arm->move_XtXYT_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),parameters.pickTheta());
     }
     return  false;
 }
@@ -319,13 +320,16 @@ bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 {
     qInfo("moveToLUTPRPos1");
-    return  pick_arm->move_XY_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),check_softlanding);
+//    return  pick_arm->move_XY_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),check_softlanding);
+    return  pick_arm->move_XYT_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),parameters.placeTheta(),check_softlanding);
+
 }
 
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
     qInfo("moveToLUTPRPos2");
-    return  pick_arm->move_XY_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),check_softlanding);
+//    return  pick_arm->move_XY_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),check_softlanding);
+    return  pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),parameters.placeTheta(),check_softlanding);
 }
 
 bool LensLoaderModule::performLensPR()
@@ -392,10 +396,11 @@ bool LensLoaderModule::pickTrayLens()
 bool LensLoaderModule::placeLensToLUT()
 {
     qInfo("placeLensToLUT");
-    bool result = pick_arm->stepMove_T_Syncic(parameters.placeTheta());
+//    bool result = pick_arm->stepMove_T_Syncic(parameters.placeTheta());
     this->lut_carrier->vacuum->Set(true);
-    result &= vcmSearchZ(parameters.placeLensZ(), false);
-    return result = pick_arm->stepMove_T_Syncic(-parameters.placeTheta());
+    bool result = vcmSearchZ(parameters.placeLensZ(), false);
+//    return result = pick_arm->stepMove_T_Syncic(-parameters.placeTheta());
+    return result;
 }
 
 bool LensLoaderModule::pickLUTLens()
@@ -431,13 +436,15 @@ bool LensLoaderModule::measureHight(bool is_tray)
 bool LensLoaderModule::moveToTrayPos(int index, int tray_index)
 {
     qInfo("moveToTrayPos");
-    return pick_arm->move_XtXY_Synic(tray->getPositionByIndex(index,tray_index),parameters.visonPositionX());
+//    return pick_arm->move_XtXY_Synic(tray->getPositionByIndex(index,tray_index),parameters.visonPositionX());
+    return pick_arm->move_XtXYT_Synic(tray->getPositionByIndex(index,tray_index),parameters.visonPositionX(),parameters.pickTheta());
 }
 
 bool LensLoaderModule::moveToTrayPos(int tray_index)
 {
     qInfo("moveToTrayPos %d",tray_index);
-    return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),false);
+//    return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),false);
+    return  pick_arm->move_XtXYT_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),parameters.pickTheta(),false);
 }
 
 bool LensLoaderModule::moveToStartPos(int tray_index)

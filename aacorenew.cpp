@@ -1070,7 +1070,8 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
             }
             is_run = false;
-            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"}; }
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"};
+        }
     }
     qInfo("Done Pick Lens");
     return ErrorCodeStruct {ErrorCode::OK, ""};

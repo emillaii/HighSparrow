@@ -26,6 +26,21 @@ bool LensPickArm::move_XtXY_Synic(QPointF position,double x,bool check_softlandi
     return resut;
 }
 
+bool LensPickArm::move_XtXYT_Synic(QPointF position, double x, double t, bool check_softlanding, int timeout)
+{
+    qInfo("move to (%f,%f,%f,%f)",position.x(),position.y(),x,t);
+    if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
+    motor_x_tray->MoveToPos(position.x());
+    motor_y->MoveToPos(position.y());
+    motor_x->MoveToPos(x);
+    picker->motor_t->MoveToPos(t);
+    bool resut = motor_x_tray->WaitArrivedTargetPos(position.x(),timeout);
+    resut &= motor_y->WaitArrivedTargetPos(position.y(),timeout);
+    resut &= motor_x->WaitArrivedTargetPos(x,timeout);
+    resut &= picker->motor_t->WaitArrivedTargetPos(t,timeout);
+    return resut;
+}
+
 
 bool LensPickArm::move_XY_Synic(double x, double y, bool check_softlanding, int timeout)
 {
@@ -35,6 +50,19 @@ bool LensPickArm::move_XY_Synic(double x, double y, bool check_softlanding, int 
     motor_y->MoveToPos(y);
     bool resut = motor_x->WaitArrivedTargetPos(x,timeout);
     resut &= motor_y->WaitArrivedTargetPos(y,timeout);
+    return resut;
+}
+
+bool LensPickArm::move_XYT_Synic(double x, double y, double t, bool check_softlanding, int timeout)
+{
+    qInfo("move to (%f,%f,%f)",x,y,t);
+    if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
+    motor_x->MoveToPos(x);
+    motor_y->MoveToPos(y);
+    picker->motor_t->MoveToPos(t);
+    bool resut = motor_x->WaitArrivedTargetPos(x,timeout);
+    resut &= motor_y->WaitArrivedTargetPos(y,timeout);
+    resut &= picker->motor_t->WaitArrivedTargetPos(t,timeout);
     return resut;
 }
 

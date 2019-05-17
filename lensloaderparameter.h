@@ -16,6 +16,7 @@ public:
     Q_PROPERTY(double vcmMargin READ vcmMargin WRITE setVcmMargin NOTIFY vcmMarginChanged)
     Q_PROPERTY(double pickLensZ READ pickLensZ WRITE setPickLensZ NOTIFY pickLensZChanged)
     Q_PROPERTY(double placeLensZ READ placeLensZ WRITE setPlaceLensZ NOTIFY placeLensZChanged)
+    Q_PROPERTY(double pickTheta READ pickTheta WRITE setPickTheta NOTIFY pickThetaChanged)
     Q_PROPERTY(double placeTheta READ placeTheta WRITE setPlaceTheta NOTIFY placeThetaChanged)
     Q_PROPERTY(double visonPositionX READ visonPositionX WRITE setVisonPositionX NOTIFY visonPositionXChanged)
     Q_PROPERTY(QString lensLocationName READ lensLocationName WRITE setLensLocationName NOTIFY lensLocationNameChanged)
@@ -95,6 +96,11 @@ public:
     double placeTheta() const
     {
         return m_placeTheta;
+    }
+
+    double pickTheta() const
+    {
+        return m_pickTheta;
     }
 
 public slots:
@@ -239,6 +245,16 @@ public slots:
         emit placeThetaChanged(m_placeTheta);
     }
 
+    void setPickTheta(double pickTheta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickTheta, pickTheta))
+            return;
+
+        m_pickTheta = pickTheta;
+        emit pickThetaChanged(m_pickTheta);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -268,6 +284,8 @@ signals:
 
     void placeThetaChanged(double placeTheta);
 
+    void pickThetaChanged(double pickTheta);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -283,7 +301,8 @@ private:
     QString m_uplookPickLocation = "";
     QString m_uplookCameraLocaation = "";
     int m_finishDelay = 100;
-    double m_placeTheta;
+    double m_placeTheta = 0;
+    double m_pickTheta = 0;
 };
 
 class LensPickArmModuleState:public PropertyBase

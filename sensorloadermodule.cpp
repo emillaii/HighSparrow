@@ -922,9 +922,11 @@ bool SensorLoaderModule::picker1SearchSutZ(double z, QString dest, QString cmd, 
     if(result)
     {
         result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
-        if(!result)return false;
-        sendCmd(dest,cmd);
-        QThread::msleep(200);
+        if(result)
+        {
+            sendCmd(dest,cmd);
+            QThread::msleep(200);
+        }
         result &= pick_arm->ZSerchReturn(time_out);
     }
     result &= pick_arm->picker1->motor_z->MoveToPosSync(0);
@@ -946,9 +948,11 @@ bool SensorLoaderModule::picker2SearchSutZ(double z, QString dest, QString cmd, 
     if(result)
     {
         result = pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
-        if(!result)return false;
-        sendCmd(dest,cmd);
-        QThread::msleep(200);
+        if(result)
+        {
+            sendCmd(dest,cmd);
+            QThread::msleep(200);
+        }
         result &= pick_arm->ZSerchReturn2(time_out);
     }
     result &= pick_arm->move_XeYe_Z2(0,parameters.escapeX(),parameters.escapeY());

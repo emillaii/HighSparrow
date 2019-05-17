@@ -513,8 +513,9 @@ ErrorCodeStruct AACore::performAAPickLens()
     }
     if(!has_lens)
     {
+        bool is_run =true;
         qInfo("need lens has_ng_lens %d",has_ng_lens);
-        if (this->lut->sendLensRequest(has_ng_lens))
+        if (this->lut->sendLensRequest(is_run,has_ng_lens))
         {
             qInfo("wait lens suceess");
             has_lens = true;

@@ -1038,20 +1038,24 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
     if(!has_lens)
     {
         qInfo("need lens has_ng_lens %d",has_ng_lens);
-        if (this->lut->sendLensRequest(has_ng_lens))
+        if (this->lut->sendLensRequest(is_run,has_ng_lens))
         {
             qInfo("wait lens suceess");
             has_lens = true;
         }
         else{
-            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+            if(is_run)
+            {
+                AppendError("wait sensor time_out");
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+            }
+            is_run = false;
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"};
         }
     }
     if(!has_sensor)
     {
         qInfo("wait sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
-        bool is_run = true;
         if(aa_head->waitForLoadSensor(is_run))
         {
             qInfo("wait sensor suceess");
@@ -1060,8 +1064,12 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
         }
         else
         {
-            AppendError("wait sensor time_out");
-            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+            if(is_run)
+            {
+                AppendError("wait sensor time_out");
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+            }
+            is_run = false;
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"}; }
     }
     qInfo("Done Pick Lens");

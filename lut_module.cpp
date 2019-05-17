@@ -87,10 +87,6 @@ void LutModule::receiveLoadLensRequstFinish(int lens, int lens_tray)
 void LutModule::run(bool has_material)
 {
     qInfo("Start Lut Module Thread");
-//    state = HAS_LENS;  //ToDo: How to detect whether this has lens or not ?
-//    if (!has_material) {
-//        state = NO_LENS;
-//    }
     is_run = true;
     bool isLocalHost = false;
     while(is_run){
@@ -293,6 +289,8 @@ void LutModule::performHandlingOperation(int cmd)
 
 void LutModule::ResetLogic()
 {
+    actionQueue.clear();
+    requestQueue.clear();
     state = LUTState::NO_LENS;
     states.setLutTrayID(-1);
     states.setLutLensID(-1);

@@ -1302,6 +1302,7 @@ void BaseModuleManager::setMotorParamByName(QString name, double vel, double acc
 
 bool BaseModuleManager::performCalibration(QString calibration_name)
 {
+    qInfo("perform %s",calibration_name.toStdString().c_str());
     if(calibration_name.contains("chart_calibration"))
         return  chart_calibration->performCalibration();
     Calibration* temp_caliration = GetCalibrationByName(calibration_name);
@@ -1365,6 +1366,7 @@ bool BaseModuleManager::performLocation(QString location_name)
 //    if(!emit sendMsgSignal("title","content")){
 //        return true;
 //    }
+    qInfo("perform %s",location_name.toStdString().c_str());
     VisionLocation* temp_location = GetVisionLocationByName(location_name);
     if(temp_location == nullptr)
     {

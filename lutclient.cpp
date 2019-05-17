@@ -87,7 +87,7 @@ void LutClient::receiveMessage(QString message)
     }
 }
 
-bool LutClient::sendLensRequest(bool has_ng_lens,bool is_wait)
+bool LutClient::sendLensRequest(bool &is_run,bool has_ng_lens,bool is_wait)
 {
     qInfo("sendLensRequest has_ng_lens %d",has_ng_lens);
     this->has_ng_lens = has_ng_lens;
@@ -101,6 +101,8 @@ bool LutClient::sendLensRequest(bool has_ng_lens,bool is_wait)
     int timeout = 60;
     while (timeout>0 && this->state != LutClientState::LUT_CLIENT_IDLE)
     {
+        if(!is_run)
+            return false;
         timeout--;
         //qInfo("Waiting LUT ....");
         QThread::msleep(1000);

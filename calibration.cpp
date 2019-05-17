@@ -136,6 +136,11 @@ bool Calibration::performCalibration()
 
 bool Calibration::performPRResult(PrOffset offset)
 {
+    if(motor_x == nullptr || motor_y == nullptr)
+    {
+        qInfo("motor is null");
+        return false;
+    }
     double cur_x = motor_x->GetFeedbackPos();
     double cur_y = motor_y->GetFeedbackPos();
     motor_x->StepMove(-offset.X);

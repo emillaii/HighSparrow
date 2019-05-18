@@ -30,9 +30,6 @@ void setShowAlarmDialog(bool ShowAlarmDialog)
     emit paramsChanged(m_ShowAlarmDialog);
 }
 bool sendMessageTest(QString title,QString content);
-
-private:
-    void showAlarm(const int sender_id,const int level, const QString error_message);
 public:
     Q_INVOKABLE void startWorkers(bool reset = false,int run_mode = 0);
     Q_INVOKABLE void stopWorkers(bool wait_finish = true);
@@ -47,6 +44,10 @@ public:
         return m_ShowAlarmDialog;
     }
 
+private:
+    void showAlarm(const int sender_id,const int level, const QString error_message);
+public:
+//    WorkersManagerParameter parameters;
 private:
     QMap<QString,ThreadWorkerBase*> workers;
     QString current_name = "";

@@ -9,8 +9,9 @@
 #include "XtGeneralOutput.h"
 #include "PropertyBase.h"
 #include "errorcode.h"
-#include "motorlimitparameter.h"
+#include "verticallimitparameter.h"
 #include "iolimitparameter.h"
+#include "parallellimitparameter.h"
 
 class XtMotorExtendParameters : public PropertyBase
 {
@@ -146,8 +147,10 @@ protected:
     bool CheckLimit(double pos);
 public:
     static int axis_id_resource;
-    QList<MotorLimitParameter*> limit_parameters;
-    QList<XtMotor*> limit_motors;
+    QList<VerticalLimitParameter*> vertical_limit_parameters;
+    QList<ParallelLimitParameter*> parallel_limit_parameters;
+    QList<XtMotor*> vertical_limit_motors;
+    QList<XtMotor*> parallel_limit_motors;
     QList<IOLimitParameter*> io_limit_parameters;
     QList<XtGeneralInput*> limit_ios;
 };

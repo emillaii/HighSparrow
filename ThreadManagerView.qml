@@ -27,6 +27,13 @@ ItemDelegate {
         ColumnLayout{
             visible:  sensorLoaderModuleViewSwitch.checked
             RowLayout {
+                Button{
+                    text: qsTr("生成参数")
+                    onClicked: {
+                        baseModuleManager.generatefileConfigs()
+                    }
+                }
+
                 Label {
                     text: qsTr("")
                 }

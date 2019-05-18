@@ -7,11 +7,11 @@
 
 
 
-class MotorLimitParameter:public PropertyBase
+class VerticalLimitParameter:public PropertyBase
 {
     Q_OBJECT
 public:
-    MotorLimitParameter():PropertyBase(){}
+    VerticalLimitParameter():PropertyBase(){}
     bool checkInLimitSpance(double start_position,double end_position)
     {
         double temp_start,temp_end;

@@ -208,8 +208,9 @@ HEADERS += \
     sensortrayloaderparameter.h \
     sensorclip.h \
     sensorclipparameter.h \
-    motorlimitparameter.h \
-    iolimitparameter.h
+    iolimitparameter.h \
+    parallellimitparameter.h \
+    verticallimitparameter.h
 
 DISTFILES += \
     icons/index.theme

@@ -216,6 +216,7 @@ public:
     bool registerWorkers(WorkersManager* manager);
 
     Q_INVOKABLE bool initialDevice();
+    Q_INVOKABLE bool generatefileConfigs();
     Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);
     Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
     Q_INVOKABLE void setMotorParamByName(QString name,double vel,double acc,double jert);

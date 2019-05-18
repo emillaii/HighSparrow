@@ -579,11 +579,18 @@ bool BaseModuleManager::loadMotorLimitFiles(QString file_name)
            for (int i = 0; i < temp_object.size(); ++i)
            {
                QString temp_name = temp_object.keys()[i];
-               if(temp_name.contains("MotorLimit"))
+               if(temp_name.contains("VerticalMotorLimit"))
                {
-                   MotorLimitParameter* temp_param = new MotorLimitParameter();
+                   VerticalLimitParameter* temp_param = new VerticalLimitParameter();
                    temp_param->read(temp_object[temp_name].toObject());
-                   temp_motor->limit_parameters.append(temp_param);
+                   temp_motor-> vertical_limit_parameters.append(temp_param);
+                   continue;
+               }
+               if(temp_name.contains("ParallelMotorLimit"))
+               {
+                   ParallelLimitParameter* temp_param = new ParallelLimitParameter();
+                   temp_param->read(temp_object[temp_name].toObject());
+                   temp_motor->parallel_limit_parameters.append(temp_param);
                    continue;
                }
                if(temp_name.contains("IOLimit"))
@@ -609,12 +616,20 @@ bool BaseModuleManager::saveMotorLimitFiles(QString file_name)
         {
             QJsonObject temp_object;
             int i = 0;
-            foreach(MotorLimitParameter* limit,temp_motor->limit_parameters)
+            foreach(VerticalLimitParameter* limit,temp_motor->vertical_limit_parameters)
             {
                 i++;
                 QJsonObject object;
                 limit->write(object);
-                temp_object[QString("MotorLimit").append(QString::number(i))] = object;
+                temp_object[QString("VerticalMotorLimit").append(QString::number(i))] = object;
+            }
+            i = 0;
+            foreach(ParallelLimitParameter* limit,temp_motor->parallel_limit_parameters)
+            {
+                i++;
+                QJsonObject object;
+                limit->write(object);
+                temp_object[QString("ParallelMotorLimit").append(QString::number(i))] = object;
             }
             i = 0;
             foreach(IOLimitParameter* io_limit,temp_motor->io_limit_parameters)
@@ -624,7 +639,8 @@ bool BaseModuleManager::saveMotorLimitFiles(QString file_name)
                 io_limit->write(object);
                 temp_object[QString("IOLimit").append(QString::number(i))] = object;
             }
-            parameters_object[temp_name] = temp_object;
+            if(temp_object.count()>0)
+                parameters_object[temp_name] = temp_object;
         }
     }
    return saveJsonObject(file_name,parameters_object);
@@ -718,15 +734,21 @@ bool BaseModuleManager::InitStruct()
 {
     foreach (XtMotor* temp_motor, motors)
     {
-        for (int i = 0; i < temp_motor->limit_parameters.size(); ++i) {
-            XtMotor* limit_motor = GetMotorByName(temp_motor->limit_parameters[i]->motorName());
-            if(limit_motor != nullptr)
-                temp_motor->limit_motors.append(limit_motor);
+        for (int i = 0; i < temp_motor->vertical_limit_parameters.size(); ++i) {
+            XtMotor* limit_motor = GetMotorByName(temp_motor->vertical_limit_parameters[i]->motorName());
+            temp_motor->vertical_limit_motors.append(limit_motor);
+        }
+        for (int i = 0; i < temp_motor->parallel_limit_parameters.size(); ++i) {
+            XtMotor* limit_motor = GetMotorByName(temp_motor->parallel_limit_parameters[i]->motorName());
+            temp_motor->parallel_limit_motors.append(limit_motor);
+            limit_motor = GetMotorByName(temp_motor->parallel_limit_parameters[i]->effectMotorXName());
+            temp_motor->parallel_limit_motors.append(limit_motor);
+            limit_motor = GetMotorByName(temp_motor->parallel_limit_parameters[i]->effectMotorYName());
+            temp_motor->parallel_limit_motors.append(limit_motor);
         }
         for (int i = 0; i < temp_motor->io_limit_parameters.size(); ++i) {
             XtGeneralInput* limit_io = GetInputIoByName(temp_motor->io_limit_parameters[i]->inputIOName());
-            if(limit_io != nullptr)
-                temp_motor->limit_ios.append(limit_io);
+            temp_motor->limit_ios.append(limit_io);
         }
     }
     foreach (XtVacuum* temp_vacuum, vacuums.values()) {
@@ -939,6 +961,20 @@ bool BaseModuleManager::initialDevice()
     }
     EnableMotors();
     return true;
+}
+
+bool BaseModuleManager::generatefileConfigs()
+{
+    foreach (XtMotor* temp_motor, motors) {
+        temp_motor->parallel_limit_parameters.append(new ParallelLimitParameter());
+        temp_motor->vertical_limit_parameters.append(new VerticalLimitParameter());
+        QVariantList temp_space;temp_space.append(0);temp_space.append(1);
+        temp_motor->vertical_limit_parameters[0]->setMoveSpance(temp_space);
+        temp_motor->vertical_limit_parameters[0]->setLimitSpance(temp_space);
+        temp_motor->io_limit_parameters.append(new IOLimitParameter());
+        temp_motor->io_limit_parameters[0]->setMoveSpance(temp_space);
+    }
+    return saveMotorLimitFiles(LIMIT_PARAMETER_MODE_FILENAME);
 }
 
 void BaseModuleManager::EnableMotors()

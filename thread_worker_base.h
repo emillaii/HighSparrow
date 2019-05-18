@@ -55,6 +55,7 @@ public slots:
     virtual void stopWork(bool wait_finish = true) = 0;
     void receiveOperation(const int sender_id,const int operation_type);
     virtual void performHandlingOperation(int cmd) = 0;
+public:
     void setName(QString Name);
 private:
     QThread work_thread;

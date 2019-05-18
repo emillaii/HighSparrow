@@ -355,16 +355,40 @@ bool XtMotor::CheckLimit(double pos)
         return false;
     }
     double current_pos = GetFeedbackPos();
-    for (int i = 0; i < limit_parameters.size(); ++i) {
-        MotorLimitParameter* temp_parameter = limit_parameters[i];
+    for (int i = 0; i < vertical_limit_parameters.size(); ++i) {
+        VerticalLimitParameter* temp_parameter = vertical_limit_parameters[i];
         //与检测区间有干涉
         if(temp_parameter->hasInterferenceWithMoveSpance(current_pos,pos))
         {
             //在限制区间
-            if(!temp_parameter->checkInLimitSpance(limit_motors[i]->GetFeedbackPos(),limit_motors[i]->GetCurrentTragetPos()))
+            if(!temp_parameter->checkInLimitSpance(vertical_limit_motors[i]->GetFeedbackPos(),vertical_limit_motors[i]->GetCurrentTragetPos()))
             {
                 AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->motorName()));
                 qInfo("CheckLimit fail %f",pos);
+                return false;
+            }
+        }
+    }
+    for (int i = 0; i < parallel_limit_parameters.size(); ++i) {
+        ParallelLimitParameter * temp_parameter = parallel_limit_parameters[i];
+        //与检测区间有干涉
+        double start_x = 0,end_x = 0,start_y = 0,end_y = 0;
+        if(parallel_limit_parameters[i]->effectMotorXName()!="")
+        {
+            start_x = parallel_limit_motors[3*i+1]->GetFeedbackPos();
+            end_x = parallel_limit_motors[3*i+1]->GetCurrentTragetPos();
+        }
+        if(parallel_limit_parameters[i]->effectMotorYName()!="")
+        {
+            start_y = parallel_limit_motors[3*i+2]->GetFeedbackPos();
+            end_y = parallel_limit_motors[3*i+2]->GetCurrentTragetPos();
+        }
+        if(temp_parameter->hasInInterferenceSpance(start_x,end_x,start_y,end_y));
+        {
+            //检测在安全距离
+            if(!temp_parameter->checkInSafeDistance(current_pos,pos,parallel_limit_motors[3*i]->GetFeedbackPos(),parallel_limit_motors[3*i]->GetCurrentTragetPos()));
+            {
+                AppendError(QString( u8"%1从%2到%3的过程与%4的安全距离不够").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->motorName()));
                 return false;
             }
         }

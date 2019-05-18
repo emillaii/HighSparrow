@@ -340,13 +340,21 @@ class TrayLoaderState : public PropertyBase{
     Q_OBJECT
     int m_runMode=0;
     bool m_hasTrayReady=false;
-    bool m_hasTrayUsed=true;
+    bool m_hasTrayUsed=true;    
+    bool m_hasPrevTrayEjected=false;
+    bool m_hasEntranceTrayPulledAway=true;
+    bool m_hasTrayReadyPosClear=false;
+    bool m_hasLTKX1ReadytoPull = false;
 
 public:
     TrayLoaderState():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(bool hasTrayReady READ hasTrayReady WRITE setHasTrayReady NOTIFY hasTrayReadyChanged)
     Q_PROPERTY(bool hasTrayUsed READ hasTrayUsed WRITE setHasTrayUsed NOTIFY hasTrayUsedChanged)
+    Q_PROPERTY(bool hasPrevTrayEjected READ hasPrevTrayEjected WRITE setHasPrevTrayEjected NOTIFY hasPrevTrayEjectedChanged)
+    Q_PROPERTY(bool hasEntranceTrayPulledAway READ hasEntranceTrayPulledAway WRITE setHasEntranceTrayPulledAway NOTIFY hasEntranceTrayPulledAwayChanged)
+    Q_PROPERTY(bool hasTrayReadyPosClear READ hasTrayReadyPosClear WRITE setHasTrayReadyPosClear NOTIFY hasTrayReadyPosClearChanged)
+    Q_PROPERTY(bool hasLTKX1ReadytoPull READ hasLTKX1ReadytoPull WRITE setHasLTKX1ReadytoPull NOTIFY hasLTKX1ReadytoPullChanged)
     int runMode() const
     {
         return m_runMode;
@@ -358,6 +366,26 @@ public:
     bool hasTrayUsed() const
     {
         return m_hasTrayUsed;
+    }
+
+    bool hasPrevTrayEjected() const
+    {
+        return m_hasPrevTrayEjected;
+    }
+
+    bool hasEntranceTrayPulledAway() const
+    {
+        return m_hasEntranceTrayPulledAway;
+    }
+
+    bool hasTrayReadyPosClear() const
+    {
+        return m_hasTrayReadyPosClear;
+    }
+
+    bool hasLTKX1ReadytoPull() const
+    {
+        return m_hasLTKX1ReadytoPull;
     }
 
 public slots:
@@ -387,11 +415,51 @@ public slots:
         emit hasTrayUsedChanged(m_hasTrayUsed);
     }
 
+    void setHasPrevTrayEjected(bool hasPrevTrayEjected)
+    {
+        if (m_hasPrevTrayEjected == hasPrevTrayEjected)
+            return;
+
+        m_hasPrevTrayEjected = hasPrevTrayEjected;
+        emit hasPrevTrayEjectedChanged(m_hasPrevTrayEjected);
+    }
+
+    void setHasEntranceTrayPulledAway(bool hasEntranceTrayPulledAway)
+    {
+        if (m_hasEntranceTrayPulledAway == hasEntranceTrayPulledAway)
+            return;
+
+        m_hasEntranceTrayPulledAway = hasEntranceTrayPulledAway;
+        emit hasEntranceTrayPulledAwayChanged(m_hasEntranceTrayPulledAway);
+    }
+
+    void setHasTrayReadyPosClear(bool hasTrayReadyPosClear)
+    {
+        if (m_hasTrayReadyPosClear == hasTrayReadyPosClear)
+            return;
+
+        m_hasTrayReadyPosClear = hasTrayReadyPosClear;
+        emit hasTrayReadyPosClearChanged(m_hasTrayReadyPosClear);
+    }
+
+    void setHasLTKX1ReadytoPull(bool hasLTKX1ReadytoPull)
+    {
+        if (m_hasLTKX1ReadytoPull == hasLTKX1ReadytoPull)
+            return;
+
+        m_hasLTKX1ReadytoPull = hasLTKX1ReadytoPull;
+        emit hasLTKX1ReadytoPullChanged(m_hasLTKX1ReadytoPull);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayOnEntryChanged(bool hasTrayOnEntry);
     void hasTrayReadyChanged(bool hasTrayReady);
     void hasTrayUsedChanged(bool hasTrayUsed);
+    void hasPrevTrayEjectedChanged(bool hasPrevTrayEjected);
+    void hasEntranceTrayPulledAwayChanged(bool hasEntranceTrayPulledAway);
+    void hasTrayReadyPosClearChanged(bool hasTrayReadyPosClear);
+    void hasLTKX1ReadytoPullChanged(bool hasLTKX1ReadytoPull);
 };
 
 #endif // TRAYLOADERPARAMETER_H

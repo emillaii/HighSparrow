@@ -73,56 +73,143 @@ void TrayLoaderModule::run(bool has_tray)
     while(is_run){
         QThread::msleep(100);
 
+        bool result = false;
         if(!states.hasTrayReady()){
-            motorOutRelease();
-            motor_work->MoveToPosSync(parameters.ltlReleasePos());
-            ejectTray();
-            motorInRelease();
-            motor_in->MoveToPos(parameters.ltkx1PressPos());
-            motor_in->WaitArrivedTargetPos(parameters.ltkx1PressPos());
-            motorInPress();
-            motor_in->MoveToPos(parameters.ltkx1ReleasePos());
-            motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
-            motorInRelease();
-            motor_in->MoveToPos(parameters.ltkx1RelayPos());
-            motor_in->WaitArrivedTargetPos(parameters.ltkx1RelayPos());
-            motorInPress();
-            moveToNextTrayPos();
-            states.setHasTrayReady(true);
+            result = motorOutRelease();
+            if(!result){
+                AppendError(tr(u8"LTK_X2释放失败,是否继续移动LTLX"));
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                result = waitMessageReturn(is_run);
+                if(!result){
+                    is_run = false;
+                    continue;
+                }
+            }
+            result = motor_work->MoveToPosSync(parameters.ltlPressPos()+200);
+            if(!result){
+                AppendError(tr(u8"LTL_X未移动到工作位置，是否出盘"));
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                result = waitMessageReturn(is_run);
+                if(result){
+                    states.setHasTrayReadyPosClear(true);
+                }else{
+                    continue;
+                }
+            }else{
+                states.setHasTrayReadyPosClear(true);
+            }
+            result = ejectTray();
+            if(!result){
+                AppendError(tr(u8"发射tray盘失败，是否继续"));
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                result = waitMessageReturn(is_run);
+                if(result){
+                    states.setHasPrevTrayEjected(true);
+                    states.setHasEntranceTrayPulledAway(false);
+                }else{
+                    continue;
+                }
+            }else{
+                states.setHasPrevTrayEjected(true);
+                states.setHasEntranceTrayPulledAway(false);
+            }
+            if(states.hasTrayReadyPosClear()){
+                result = motorInRelease();
+                motor_in->MoveToPos(parameters.ltkx1PressPos());
+                result &= motor_in->WaitArrivedTargetPos(parameters.ltkx1PressPos());
+                result &= motorInPress();
+                if(!result){
+                    AppendError(tr(u8"LTK_X1拉tray盘就位失败，是否继续"));
+                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                    result = waitMessageReturn(is_run);
+                    if(result){
+                        states.setHasLTKX1ReadytoPull(true);
+                    }else{
+                        continue;
+                    }
+                }else{
+                    states.setHasLTKX1ReadytoPull(true);
+                }
+                if(states.hasLTKX1ReadytoPull()){
+                    motor_in->MoveToPos(parameters.ltkx1ReleasePos());
+                    result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
+                    result &= motorInRelease();
+                    motor_in->MoveToPos(parameters.ltkx1RelayPos());
+                    result &= motor_in->WaitArrivedTargetPos(parameters.ltkx1RelayPos());
+                    result &= motorInPress();
+                    if(!result){
+                        AppendError(tr(u8"tray盘到准备位置失败，是否继续"));
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                        result = waitMessageReturn(is_run);
+                        if(result){
+                            states.setHasTrayReady(true);
+                            states.setHasLTKX1ReadytoPull(false);
+                            states.setHasEntranceTrayPulledAway(true);
+                        }else{
+                            continue;
+                        }
+                    }else{
+                        states.setHasTrayReady(true);
+                        states.setHasLTKX1ReadytoPull(false);
+                        states.setHasEntranceTrayPulledAway(true);
+                    }
+                }
+                //moveToNextTrayPos();
+            }
             if(!is_run)break;
         }
         if(states.hasTrayUsed()){
-            motorOutRelease();
+            result = motorOutRelease();
+            if(!result){
+                AppendError(tr("LTK_X2释放失败，是否继续？"));
+                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                if(!waitMessageReturn(is_run)){
+                    is_run = false;
+                    continue;
+                }
+            }
             motor_out->MoveToPos(parameters.ltkx2PressPos());
             motor_work->MoveToPos(parameters.ltlReleasePos());
-            bool result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
+            result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
             result &= motor_out->WaitArrivedTargetPos(parameters.ltkx2PressPos());
-            if(!result){
-            }
+
             if(!motorWorkRelease()){
+                AppendError(tr("LTL_X释放失败，是否继续？"));
+                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                if(!waitMessageReturn(is_run)){
+                    is_run = false;
+                    continue;
+                }
             }
-            if(!motorOutPress()){
-            }
+            result = motorOutPress();
             motor_out->MoveToPos(parameters.ltkx2ReleasePos());
             motor_in->MoveToPos(parameters.ltkx1ReleasePos());
             motor_work->MoveToPos(parameters.ltlPressPos());
-            result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
-            if(!result){
+            result &= motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
+            if(!motorInRelease()){
+                AppendError(tr(u8"LTK_X1释放失败，是否继续？"));
+                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                if(!waitMessageReturn(is_run)){
+                    is_run = false;
+                    continue;
+                }
             }
-            motorInRelease();
-            result = motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
-            if(!result){
-            }
+            result &= motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
             motorWorkPress();
             result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
             motorOutRelease();
-            moveToNextEmptyPos();
+            //
             motor_work->MoveToPos(parameters.ltlReleasePos());
             result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
             if(!result){
             }
             //emit trayReady();
             emit parameters.trayReady();
+            if(states.hasPrevTrayEjected()&&states.hasEntranceTrayPulledAway()){
+                moveToNextTrayPos();
+                states.setHasPrevTrayEjected(false);
+            }
+            moveToNextEmptyPos();
             states.setHasTrayReady(false);
             states.setHasTrayUsed(false);
             if(!is_run)break;
@@ -152,10 +239,14 @@ bool TrayLoaderModule::moveToNextTrayPos()
 
 bool TrayLoaderModule::ejectTray()
 {
-    int res = cylinder_clip->Set(true,true);
+    bool res = cylinder_clip->Set(true,true);
+    if(!res){
+        qDebug()<<"弹出失败";
+    }
     Sleep(2000);
     //cylinder_clip->Set(true);
-    if(!cylinder_clip->Set(false,true)){
+    res &= cylinder_clip->Set(false,true);
+    if(!res){
         qDebug()<<"retraction failed";
     }
     return res;

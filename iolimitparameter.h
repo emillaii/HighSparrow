@@ -15,7 +15,11 @@ public:
     bool checkInLimitSpance(bool io_state)
     {
         if(io_state == m_inputIOState)
+        {
+            qInfo("check In Limit Spance");
             return true;
+        }
+        qInfo("check not In Limit Spance");
         return false;
     }
     bool hasInterferenceWithMoveSpance(double start_position,double end_position)
@@ -34,7 +38,11 @@ public:
         for (int i = 0; i < m_moveSpance.size()/2; ++i)
         {
             if(m_moveSpance[2*i].toDouble()<=temp_end&&m_moveSpance[2*i+1].toDouble()>=temp_start)
+            {
+                qInfo("check pos (%f,%f) has Interference With(%f,%f)",temp_start,temp_end,m_moveSpance[2*i].toDouble(),m_moveSpance[2*i+1].toDouble());
                 return true;
+            }
+            qInfo("check pos (%f,%f)  has no Interference With (%f,%f)",temp_start,temp_end,m_moveSpance[2*i].toDouble(),m_moveSpance[2*i+1].toDouble());
         }
         return false;
     }

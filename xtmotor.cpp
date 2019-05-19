@@ -354,6 +354,7 @@ bool XtMotor::CheckLimit(double pos)
         qInfo("target_position %f is small",pos);
         return false;
     }
+    qInfo("%s CheckLimit %d,%d,%d",name.toStdString().c_str(),vertical_limit_parameters.size(),parallel_limit_parameters.size(),io_limit_parameters.size());
     double current_pos = GetFeedbackPos();
     for (int i = 0; i < vertical_limit_parameters.size(); ++i) {
         VerticalLimitParameter* temp_parameter = vertical_limit_parameters[i];
@@ -383,10 +384,10 @@ bool XtMotor::CheckLimit(double pos)
             start_y = parallel_limit_motors[3*i+2]->GetFeedbackPos();
             end_y = parallel_limit_motors[3*i+2]->GetCurrentTragetPos();
         }
-        if(temp_parameter->hasInInterferenceSpance(start_x,end_x,start_y,end_y));
+        if(temp_parameter->hasInInterferenceSpance(start_x,end_x,start_y,end_y))
         {
             //检测在安全距离
-            if(!temp_parameter->checkInSafeDistance(current_pos,pos,parallel_limit_motors[3*i]->GetFeedbackPos(),parallel_limit_motors[3*i]->GetCurrentTragetPos()));
+            if(!temp_parameter->checkInSafeDistance(current_pos,pos,parallel_limit_motors[3*i]->GetFeedbackPos(),parallel_limit_motors[3*i]->GetCurrentTragetPos()))
             {
                 AppendError(QString( u8"%1从%2到%3的过程与%4的安全距离不够").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->motorName()));
                 return false;
@@ -669,7 +670,8 @@ bool XtMotor::WaitSeekDone(int thread,int timeout)
         {
             SetFeedbackZero(GetOutpuPos());
             SetVel(max_vel);
-            qInfo("axis %s seek origin success",name.toStdString().c_str());
+            current_target = GetOutpuPos();
+            qInfo("axis %s seek origin %f success",name.toStdString().c_str(),GetOutpuPos());
             return true;
         }
         timeout-=10;
@@ -677,7 +679,7 @@ bool XtMotor::WaitSeekDone(int thread,int timeout)
     }
     XT_Controler::ClearInsBuffer(thread);
     XT_Controler::STOP_S(thread, axis_id);
-    current_target = GetFeedbackPos();
+    current_target = GetOutpuPos();
     qInfo("axis %s seek origin fail！",name.toStdString().c_str());
     return false;
 }

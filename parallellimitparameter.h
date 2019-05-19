@@ -32,7 +32,13 @@ public:
         else
             for (int i = 0; i < m_effectXSpance.size()/2; ++i)
                 if(m_effectXSpance[2*i].toDouble()<=temp_end&&m_effectXSpance[2*i+1].toDouble()>=temp_start)
+                {
+                    qInfo("check pos (%f,%f) has Interference With X(%f,%f)",temp_start,temp_end,m_effectXSpance[2*i].toDouble(),m_effectXSpance[2*i+1].toDouble());
                     result = true;
+                }
+                else {
+                    qInfo("check pos (%f,%f) has no Interference With X(%f,%f)",temp_start,temp_end,m_effectXSpance[2*i].toDouble(),m_effectXSpance[2*i+1].toDouble());
+                }
         if(!result)
             return false;
         if(start_y > end_y)
@@ -46,12 +52,19 @@ public:
             temp_end = end_y;
         }
         result = false;
-        if(m_effectXSpance.size()<2)
+        if(m_effectYSpance.size()<2)
             result = true;
         else
             for (int i = 0; i < m_effectYSpance.size()/2; ++i)
                 if(m_effectYSpance[2*i].toDouble()<=temp_end&&m_effectYSpance[2*i+1].toDouble()>=temp_start)
+                {
+                    qInfo("check pos (%f,%f) has Interference With Y(%f,%f)",temp_start,temp_end,m_effectYSpance[2*i].toDouble(),m_effectYSpance[2*i+1].toDouble());
                     result = true;
+                }
+                else
+                {
+                    qInfo("check pos (%f,%f) has no Interference With Y(%f,%f)",temp_start,temp_end,m_effectYSpance[2*i].toDouble(),m_effectYSpance[2*i+1].toDouble());
+                }
         return result;
     }
     bool checkInSafeDistance(const double start_position,const double end_position,const double other_start,const double other_end)
@@ -66,8 +79,11 @@ public:
         else
             max_position = start_position > end_position?-end_position:-start_position;
         if(other_min - max_position > LimitDistance())
+        {
+            qInfo("check pos (%f,%f)with (%f,%f) distance %f  has Safe Distance %f ",start_position,end_position,other_start,other_end,other_min - max_position,LimitDistance());
             return true;
-        else
+        }
+        qInfo("check pos (%f,%f)with (%f,%f) distance %f not has Safe Distance %f ",start_position,end_position,other_start,other_end,other_min - max_position,LimitDistance());
             return false;
     }
     Q_PROPERTY(double LimitDistance READ LimitDistance WRITE setLimitDistance NOTIFY LimitDistanceChanged)

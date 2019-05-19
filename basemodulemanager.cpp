@@ -185,7 +185,7 @@ bool BaseModuleManager::SaveParameters()
     aaCoreNew.updateParams();
     saveCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
     saveVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
-    saveMotorLimitFiles(LIMIT_PARAMETER_FILENAME);
+//    saveMotorLimitFiles(LIMIT_PARAMETER_FILENAME);
     return true;
 }
 

@@ -28,7 +28,11 @@ public:
         for (int i = 0; i < m_limitSpance.size()/2; ++i)
         {
            if(m_limitSpance[2*i].toDouble()<=temp_start&&temp_end<=m_limitSpance[2*i+1].toDouble())
+           {
+               qInfo("check pos (%f,%f) In Limit (%f,%f)",temp_start,temp_end,m_limitSpance[2*i].toDouble(),m_limitSpance[2*i+1].toDouble());
                return true;
+           }
+           qInfo("check pos (%f,%f) not in Limit (%f,%f)",temp_start,temp_end,m_limitSpance[2*i].toDouble(),m_limitSpance[2*i+1].toDouble());
         }
         return false;
     }
@@ -48,7 +52,12 @@ public:
         for (int i = 0; i < m_moveSpance.size()/2; ++i)
         {
             if(m_moveSpance[2*i].toDouble()<=temp_end&&m_moveSpance[2*i+1].toDouble()>=temp_start)
+            {
+                qInfo("check pos (%f,%f) has Interference With (%f,%f)",temp_start,temp_end,m_moveSpance[2*i].toDouble(),m_moveSpance[2*i+1].toDouble());
                 return true;
+            }
+
+            qInfo("check pos (%f,%f) has no Interference With (%f,%f)",temp_start,temp_end,m_moveSpance[2*i].toDouble(),m_moveSpance[2*i+1].toDouble());
         }
         return false;
     }

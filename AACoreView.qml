@@ -137,6 +137,20 @@ ItemDelegate {
                                 aaCoreParams.setSensorYRatio(text)
                             }
                         }
+
+                    }
+                    RowLayout {
+                        Label {
+                            id: chartCalibrationTheta
+                            text: qsTr("")
+                        }
+
+                        Button {
+                            text: qsTr("Show Chart Theta")
+                            onClicked: {
+                                chartCalibrationTheta.text = baseModuleManager.showChartCalibrationRotation()
+                            }
+                        }
                     }
                 }
             }

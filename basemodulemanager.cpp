@@ -1578,3 +1578,8 @@ void BaseModuleManager::loadSensorLoaderParameter()
     material_tray.loadJsonConfig();
     sensor_loader_module.loadJsonConfig();
 }
+
+double BaseModuleManager::showChartCalibrationRotation()
+{
+    return chart_calibration->getRotationAngle();
+}

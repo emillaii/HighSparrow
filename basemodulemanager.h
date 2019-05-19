@@ -242,6 +242,7 @@ public:
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();
     Q_INVOKABLE void loadSensorLoaderParameter();
+    Q_INVOKABLE double showChartCalibrationRotation();
     void EnableMotors();
     void DisableAllMotors();
     Q_INVOKABLE bool allMotorsSeekOrigin();

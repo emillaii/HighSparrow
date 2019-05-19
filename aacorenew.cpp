@@ -433,7 +433,7 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
            sut->moveToZPos(start+(i*step_size));
            QThread::msleep(zSleepInMs);
            double realZ = sut->carrier->GetFeedBackPos().Z;
-           qInfo("Z scan start from %f to %f, real: %f", start_pos.Z, realZ);
+           qInfo("Z scan start from %f, real: %f", start+(i*step_size), realZ);
            cv::Mat img = dk->DothinkeyGrabImageCV(0);
            imageWidth = img.cols; imageHeight = img.rows;
            QString imageName;
@@ -549,8 +549,8 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
     QThread::msleep(zSleepInMs);
     qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
     //aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
-    //aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
-    aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
+    aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
+    //aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
     qInfo("aa_head after :%f", aa_head->GetFeedBack().Z);
     sut->moveToZPos(zPeak);
     map.insert("X_TILT", xTilt);
@@ -669,6 +669,7 @@ void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, doubl
     int cc_curve_index = 0;
     double g_x_min = 99999;
     double g_x_max = -99999;
+    qInfo("X Ratio: %d Y Ratio: %d PCX : %d PCY : %d", parameters.SensorXRatio(), parameters.SensorYRatio(), principle_center_x, principle_center_y);
     sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, parameters.SensorXRatio(), parameters.SensorYRatio());
     double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
     unsigned int ccROIIndex = 0, ulROIIndex = 0, urROIIndex = 0, llROIIndex = 0, lrROIIndex = 0;
@@ -885,6 +886,7 @@ ErrorCodeStruct AACoreNew::performMTF(bool write_log)
     map.insert("LL_SFR", sfr_entry[llROIIndex].sfr);
     map.insert("DFOV", fov);
     map.insert("timeElapsed", timer.elapsed());
+    qInfo("CC_X :%f CC_Y: %f", sfr_entry[ccROIIndex].px, sfr_entry[ccROIIndex].py);
     clustered_sfr_map.clear();
     emit pushDataToUnit(this->runningUnit, "MTF", map);
     if (write_log) {

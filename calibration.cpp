@@ -26,6 +26,7 @@ void Calibration::Init(XtMotor *motor_x, XtMotor *motor_y, VisionLocation *locat
                                     parameters.deltaY()),
                             image_center);
     mOriginB = mA2BMapping.pixel2MechPoint(image_center);
+    mRotationB = caculateRotationAngle();
 }
 
 //void Calibration::loadJsonConfig()

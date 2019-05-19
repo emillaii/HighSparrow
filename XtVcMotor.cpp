@@ -166,7 +166,7 @@ double XtVcMotor::GetFeedbackPos(int decimal_digit) const
             if(res==1)
                 break;
             Sleep(1);
-            qInfo("VCM GetNowPos failed! %d",times);
+            qInfo("%s VCM GetNowPos failed! %d", this->Name().toStdString().c_str(), times);
         }
         while(--times>0);
         if(direction_is_opposite)

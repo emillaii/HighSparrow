@@ -2,7 +2,6 @@
 
 #include <QtCore/QDebug>
 #include <QJsonObject>
-#include <QThread>
 QT_USE_NAMESPACE
 
 //! [constructor]
@@ -33,7 +32,6 @@ void SparrowClient::onClosed()
 {
     m_is_connected = false;
     qInfo("sparrow client disconnect..Going to retry the connection :%s", m_url.url().toStdString().c_str());
-    QThread::msleep(1000);
     m_webSocket.open(QUrl(m_url));
 }
 

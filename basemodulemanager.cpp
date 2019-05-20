@@ -778,7 +778,8 @@ bool BaseModuleManager::InitStruct()
                         GetOutputIoByName(aa_head_module.parameters.uv2Name()),
                         GetOutputIoByName(aa_head_module.parameters.uv3Name()),
                         GetOutputIoByName(aa_head_module.parameters.uv4Name()),
-                        XtMotor::GetThreadResource());
+                        XtMotor::GetThreadResource(),
+                        &sut_carrier);
 
     foreach (Calibration* temp_calibraion, calibrations) {
         temp_calibraion->Init(GetMotorByName(temp_calibraion->parameters.motorXName()),
@@ -804,13 +805,13 @@ bool BaseModuleManager::InitStruct()
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorXName()));
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorYName()));
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorZName()));
-//    dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,
-//                   GetOutputIoByName(dispenser.parameters.dispenseIo()));
-//    dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",
-//                         GetCalibrationByName(GetVisionLocationByName(sut_module.parameters.downlookLocationName())->parameters.calibrationName()),
-//                         &dispenser,visionModule,&sut_carrier,
-//                         GetOutputIoByName(dispenser.parameters.dispenseIo()));
-//    dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
+    dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,
+                   GetOutputIoByName(dispenser.parameters.dispenseIo()));
+    dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",
+                         GetCalibrationByName(GetVisionLocationByName(sut_module.parameters.downlookLocationName())->parameters.calibrationName()),
+                         &dispenser,visionModule,&sut_carrier,
+                         GetOutputIoByName(dispenser.parameters.dispenseIo()));
+    dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
     if(ServerMode())
     {
@@ -1115,19 +1116,20 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->SeekOrigin();
 
     result &= GetMotorByName(sut_module.parameters.motorYName())->WaitSeekDone();
-    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();
-
-    result &= GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
-    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();
-    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();
+//    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();
+
+//    result &= GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
+//    if(!result)return false;
+//    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();
+//    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
-    //    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
+//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
 //    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
-//    if(!result)return false;
+    if(!result)return false;
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->SeekOrigin();
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();
 
@@ -1138,8 +1140,8 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->SeekOrigin();
 
 
-    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
-    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
+//    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
+//    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();

@@ -33,6 +33,13 @@ ItemDelegate {
                         baseModuleManager.generatefileConfigs()
                     }
                 }
+                Button{
+                    text: qsTr("显示界面")
+                    onClicked:
+                    {
+
+                    }
+                }
 
                 Label {
                     text: qsTr("")

@@ -19,6 +19,11 @@ signals:
     void imageReady(QImage img);
     void sfrResultsReady(unsigned int index, std::vector<Sfr_entry> res, int timeElapsed);
     void sfrResultsDetectFinished();
+public:
+    int max_intensity = 50;
+    int min_area = 10000;
+    int max_area = 90000;
+    double roi_ratio = 1.4;
 };
 
 class SfrWorkerController: public QObject

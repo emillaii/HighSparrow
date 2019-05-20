@@ -25,6 +25,16 @@ Grid {
                             workersManager.startWorker("SensorLoader",true,3)
                     }
                 }
+                Button {
+                    text: qsTr("Clear Data")  //Vibration Test
+                    onClicked: {
+                        ccSeries.clear()
+                        ulSeries.clear()
+                        urSeries.clear()
+                        llSeries.clear()
+                        lrSeries.clear()
+                    }
+                }
                 CheckBox {
                     id: sensorLoderCheckBox
                     checked: false

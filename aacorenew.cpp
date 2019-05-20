@@ -83,6 +83,7 @@ void AACoreNew::startWork(bool reset_logic, int run_mode)
         loopTestResult.append("CC, UL,UR,LL,LR,\n");
         while (is_run) {
             performMTF(true);
+            QThread::msleep(100);
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
     } else if (run_mode == RunMode::AAFlowChartTest) {
@@ -549,8 +550,9 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
     QThread::msleep(zSleepInMs);
     qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
     //aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
-    aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
-    //aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
+    //aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
+    aa_head->stepInterpolation_AB_Sync(-yTilt, xTilt);
+
     qInfo("aa_head after :%f", aa_head->GetFeedBack().Z);
     sut->moveToZPos(zPeak);
     map.insert("X_TILT", xTilt);
@@ -863,6 +865,7 @@ ErrorCodeStruct AACoreNew::performMTF(bool write_log)
             lrROIIndex = i;
         }
     }
+    qInfo("Read the aahead and sut carrier feedback");
     mPoint6D motorsPosition = this->aa_head->GetFeedBack();
     mPoint3D sutPosition = this->sut->carrier->GetFeedBackPos();
     map.insert("AA_X", motorsPosition.X);
@@ -1164,10 +1167,10 @@ void AACoreNew::sfrImageReady(QImage img)
 {
     qInfo("Sfr Image Ready");
     sfrImageProvider->setImage(img);
-    QString filename = "";
-    filename.append(getMTFLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
-    img.save(filename);
+//    QString filename = "";
+//    filename.append(getMTFLogDir())
+//                    .append(getCurrentTimeString())
+//                    .append(".jpg");
+//    img.save(filename);
     emit callQmlRefeshImg(0);
 }

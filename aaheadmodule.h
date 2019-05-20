@@ -3,6 +3,7 @@
 
 #include "XtCylinder.h"
 #include "XtVacuum.h"
+#include "material_carrier.h"
 #include "position_define.h"
 #include "xtmotor.h"
 
@@ -24,7 +25,8 @@ public:
               XtGeneralOutput * uv2,
               XtGeneralOutput * uv3,
               XtGeneralOutput * uv4,
-              int thread_id);
+              int thread_id,
+              MaterialCarrier* sut_carrier);
     void saveJsonConfig();
     void loadJsonConfig();
     Q_INVOKABLE bool moveToMushroomPosition(bool moveXYC = true);

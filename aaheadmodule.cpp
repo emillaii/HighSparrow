@@ -29,11 +29,15 @@ void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMoto
                         XtGeneralOutput * uv2,
                         XtGeneralOutput * uv3,
                         XtGeneralOutput * uv4,
-                        int thread_id)
+                        int thread_id,
+                        MaterialCarrier* sut_carrier)
 {
-    this->motor_x = motor_x;
-    this->motor_y = motor_y;
-    this->motor_z = motor_z;
+//    this->motor_x = motor_x;
+//    this->motor_y = motor_y;
+//    this->motor_z = motor_z;
+    this->motor_x = sut_carrier->motor_x;
+    this->motor_y = sut_carrier->motor_y;
+    this->motor_z = sut_carrier->motor_z;
     this->motor_a = motor_a;
     this->motor_b = motor_b;
     this->motor_c = motor_c;
@@ -153,12 +157,18 @@ bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)
     new_z = qCos(qDegreesToRadians(step_b))*new_z;
     double dz = new_z - parameters.rotateZOffset();
 
+    if(motor_x->Name().contains("SUT"))
+        dx =-dx;
+    if(motor_y->Name().contains("SUT"))
+        dy =-dy;
+    if(motor_z->Name().contains("SUT"))
+        dz =-dz;
+
     double x = -dx + motor_x->GetFeedbackPos();
     double y = dy + motor_y->GetFeedbackPos();
     double z = -dz + motor_z->GetFeedbackPos();
     double a = step_a + motor_a->GetFeedbackPos();
     double b = step_b + motor_b->GetFeedbackPos();
-
     return XYZAB_Interpolation(x,y,z,a,b);
 }
 
@@ -226,16 +236,16 @@ bool AAHeadModule::moveToDiffrentZSync(double z)
 
 bool AAHeadModule::moveToSync(double x, double y, double z, double a, double b, double c)
 {
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
-    motor_z->MoveToPos(z);
+    //motor_x->MoveToPos(x);
+    //motor_y->MoveToPos(y);
+    //motor_z->MoveToPos(z);
     motor_a->MoveToPos(a);
     motor_b->MoveToPos(b);
     motor_c->MoveToPos(c);
-    bool result = motor_x->WaitArrivedTargetPos(x);
-    result &= motor_y->WaitArrivedTargetPos(y);
-    result &= motor_z->WaitArrivedTargetPos(z);
-    result &= motor_a->WaitArrivedTargetPos(a);
+    //bool result = motor_x->WaitArrivedTargetPos(x);
+    //result &= motor_y->WaitArrivedTargetPos(y);
+    //result &= motor_z->WaitArrivedTargetPos(z);
+    bool result = motor_a->WaitArrivedTargetPos(a);
     result &= motor_b->WaitArrivedTargetPos(b);
     result &= motor_c->WaitArrivedTargetPos(c);
     return result;

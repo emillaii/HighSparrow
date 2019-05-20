@@ -18,7 +18,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     cv::Mat image = img.clone();
     QImage outImage;
     unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
-    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AA_Search_MTF_Pattern(img, outImage, true, ccIndex, ulIndex, urIndex, lrIndex, llIndex, 50, 10000, 90000);
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AA_Search_MTF_Pattern(img, outImage, true, ccIndex, ulIndex, urIndex, lrIndex, llIndex, this->max_intensity, this->min_area, this->max_area);
     //Add protection here
     std::vector<Sfr_entry> sfr_v;
     if (patterns.size() < 5) {
@@ -29,7 +29,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     }
     cv::Rect roi;
     double area = patterns[0].area;
-    roi.width = sqrt(area)*1.45;
+    roi.width = sqrt(area)*this->roi_ratio;
     roi.height = roi.width;
 
     cv::Mat ccMat, ulMat, urMat, llMat, lrMat;
@@ -226,6 +226,11 @@ SfrWorkerController::SfrWorkerController(AACoreNew *a)
    std::vector<Sfr_entry> sfr_v;
    aaCore_ = a;
    SfrWorker * worker = new SfrWorker;
+   worker->max_intensity = a->parameters.MaxIntensity();
+   worker->min_area = a->parameters.MinArea();
+   worker->max_area = a->parameters.MaxArea();
+   worker->roi_ratio = a->parameters.ROIRatio();
+   qInfo("Min Area: %d Max Area: %d Max I: %d Roi Ratio: %f", a->parameters.MinArea(), a->parameters.MaxArea(), a->parameters.MaxIntensity(), a->parameters.ROIRatio());
    worker->moveToThread(&workerThread);
    connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
    connect(this, &SfrWorkerController::calculate, worker, &SfrWorker::doWork);

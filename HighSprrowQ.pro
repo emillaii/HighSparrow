@@ -34,7 +34,6 @@ SOURCES += \
     XtGeneralOutput.cpp \
     XtGeneralInput.cpp \
     sfrworker.cpp \
-    aacore.cpp \
     wordoplight.cpp \
     logicmanager.cpp \
     filecontent.cpp \
@@ -139,7 +138,6 @@ HEADERS += \
     XtGeneralOutput.h \
     XtGeneralInput.h \
     sfrworker.h \
-    aacore.h \
     aaheadparameters.h \
     wordoplight.h \
     logicmanager.h \

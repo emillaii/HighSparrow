@@ -158,10 +158,6 @@ void LogicManager::moveToCmd(int cmd) {
     }
 }
 
-void LogicManager::loadFlowchart(QString json)
-{
-}
-
 void LogicManager::home(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_HOME);}
 void LogicManager::init(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_INIT);}
 void LogicManager::stopHome(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_STOP_HOME);}

@@ -4,7 +4,6 @@
 #include "basemodulemanager.h"
 
 #include <QThread>
-#include <aacore.h>
 #include <unitlog.h>
 
 class LogicManager : public QThread
@@ -18,8 +17,6 @@ public:
     Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage NOTIFY stateMessageChanged)
 
     Q_INVOKABLE void updateParams();
-    Q_INVOKABLE void loadFlowchart(QString);
-
     void performMotionThread();
 
     Q_INVOKABLE void init();

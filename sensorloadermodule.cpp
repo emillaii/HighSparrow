@@ -84,97 +84,118 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     bool result = false;
     int temp_value = 10;
     if(cmd%temp_value == HandlePosition::SUT_POS1){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+        qInfo(u8"移动SPA到SUT1位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
             result = moveToSUTPRPos(false,true);
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePosition::SUT_POS2){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+        qInfo(u8"移动SPA到SUT2位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
             result = moveToSUTPRPos(true,true);
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+        qInfo(u8"移动SPA到sensor料盘当前位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
             result = moveToTrayPos(0);
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+        qInfo(u8"移动SPA到成品料盘当前位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
             result = moveToTrayPos(1);
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_START_POS){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+        qInfo(u8"移动SPA到sensor料盘起始位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
             result = moveToStartPos(0);
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2_START_POS){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+        qInfo(u8"移动SPA到成品料盘起始位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
             result = moveToStartPos(1);
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_END_POS){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+        qInfo(u8"移动SPA到sensor料盘起始位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
             result = moveToTray1EndPos();
-        }
+//        }
     }
     else
         result =true;
     cmd =cmd/temp_value*temp_value;
     if(!result)
     {
-        //        finished_type = FinishedType::Alarm;
+        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
         return;
     }
     temp_value = 100;
     if(cmd%temp_value == HandlePR::RESET_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+        qInfo(u8"重置PR结果");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             pr_offset.ReSet();
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePR::SENSOR_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+        qInfo(u8"执行sensorPR");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = performSensorPR();
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePR::VACANCY_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+        qInfo(u8"执行料盘空位PR");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = performVacancyPR();
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePR::SUT_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+        qInfo(u8"执行SUT定位PR");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = performSUTPR();
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePR::NG_SENSOR_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+        qInfo(u8"执行NG sensor PR");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = performSUTSensorPR();
-        }
+//        }
     }
     else if(cmd%temp_value == HandlePR::PRODUCT_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+        qInfo(u8"执行成品PR");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = performSUTProductPR();
-        }
+//        }
     }
     else
         result = true;
     if(!result)
     {
-        //        finished_type = FinishedType::Alarm;
+        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
         return;
     }
     cmd =cmd/temp_value*temp_value;
     temp_value = 1000;
     if(cmd%temp_value == HandleToWorkPos::TO_PICK1){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+        qInfo(u8"移动吸头1到视觉位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
             result = moveToWorkPos();
-        }
+//        }
     }
     else if(cmd%temp_value == HandleToWorkPos::TO_PICK2){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+        qInfo(u8"移动吸头2到视觉位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
             result = moveToWorkPos2();
-        }
+//        }
+    }
+    else if(cmd%temp_value == HandleToWorkPos::TO_PR_OFFSET){
+        qInfo(u8"移动LPA到当前视觉结果位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
+            result = moveToWorkPos2();
+//        }
     }
     if(!result)
     {
@@ -850,16 +871,19 @@ bool SensorLoaderModule::moveToNextTrayPos(int tray_index)
 
 bool SensorLoaderModule::moveToSUTPRPos(bool is_local,bool check_softlanding)
 {
-//    qInfo("moveToSUTPRPos %d",is_local);
+    qInfo(u8"移动SPA到SUT位置%d",is_local);
+    bool result;
     if(is_local)
-        return  pick_arm->move_XY_Synic(sut2_pr_position.ToPointF(),check_softlanding);
+        result =  pick_arm->move_XY_Synic(sut2_pr_position.ToPointF(),check_softlanding);
     else
-        return  pick_arm->move_XY_Synic(sut1_pr_position.ToPointF(),check_softlanding);
+        result =  pick_arm->move_XY_Synic(sut1_pr_position.ToPointF(),check_softlanding);
+    if(!result)
+        AppendError(QString("移动SPA到SUT位置失败%1").arg(is_local));
+    return result;
 }
 
 bool SensorLoaderModule::performSensorPR()
 {
-    qInfo("performSensorPR");
     return  sensor_vision->performPR(pr_offset);
 }
 
@@ -893,7 +917,7 @@ bool SensorLoaderModule::moveToWorkPos(bool check_softlanding)
     PrOffset temp(picker1_offset.X() - pr_offset.X,picker1_offset.Y() - pr_offset.Y,pr_offset.Theta);
     qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
     bool result = pick_arm->stepMove_XYT1_Synic(temp.X,temp.Y,temp.Theta,check_softlanding);
-    pr_offset.ReSet();
+//    pr_offset.ReSet();
     return  result;
 }
 
@@ -903,7 +927,17 @@ bool SensorLoaderModule::moveToWorkPos2(bool check_softlanding)
     PrOffset temp(picker2_offset.X() - pr_offset.X,picker2_offset.Y() - pr_offset.Y,pr_offset.Theta);
     qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
     bool result = pick_arm->stepMove_XYT1_Synic(temp.X,temp.Y,temp.Theta,check_softlanding);
-    pr_offset.ReSet();
+//    pr_offset.ReSet();
+    return  result;
+}
+
+bool SensorLoaderModule::moveToPRResultPos(bool check_softlanding)
+{
+    qInfo("moveToWorkPos2");
+    PrOffset temp(picker2_offset.X() - pr_offset.X,picker2_offset.Y() - pr_offset.Y,pr_offset.Theta);
+    qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
+    bool result = pick_arm->stepMove_XYT1_Synic(temp.X,temp.Y,temp.Theta,check_softlanding);
+//    pr_offset.ReSet();
     return  result;
 }
 

@@ -12,6 +12,7 @@
 #include "verticallimitparameter.h"
 #include "iolimitparameter.h"
 #include "parallellimitparameter.h"
+#include "xtmotorparameter.h"
 
 class XtMotorExtendParameters : public PropertyBase
 {
@@ -54,6 +55,8 @@ public:
     virtual double GetCurAcc() const;
     virtual double GetCurADC() const;
     virtual bool IsRunning() const;
+    virtual bool checkAlarm();
+    virtual bool getAlarmState();
 //these are run parameter
     virtual double GetPostiveRange() const;
     virtual double GetNegativeRange() const;
@@ -70,22 +73,22 @@ public:
     virtual void SetNegativeRange(double range);
     virtual void Home(int thread = -1);
 
-    void SGO(double pos, int thread = -1);
+    bool SGO(double pos, int thread = -1);
     void TILLSTOP(int thread = -1);
     void TILLTIME(int ms, int thread = -1);
-    virtual void MoveToPos(double pos,int thread = -1);
-    virtual void SlowMoveToPos(double pos,double vel_ratio = 0.2, int thread = -1);
-    virtual bool WaitMoveStop(int timeout=30000);
+    virtual bool MoveToPos(double pos,int thread = -1);
+    virtual bool SlowMoveToPos(double pos,double vel_ratio = 0.2, int thread = -1);
+    virtual bool WaitMoveStop(int timeout = 30000);
     bool WaitArrivedTargetPos(double target_position,int timeout=10000);
     virtual bool MoveToPosSync(double pos,int thread = -1,int time_out = 30000);
     virtual bool SlowMoveToPosSync(double pos,double vel_ratio =0.2,int thread = -1);
-    virtual void StepMove(double step,int thread = -1);
+    virtual bool StepMove(double step,int thread = -1);
     virtual bool StepMoveSync(double step, int thread = -1);
     virtual bool StepMoveSync(double step, bool dir, int thread = -1);
 
     //void SeekOrigin(int originDirection, double originRange, double originOffset);
-    virtual void SeekOrigin(int thread = -1);
-    void StopSeeking(int thread = -1);
+    virtual bool SeekOrigin(int thread = -1);
+    bool StopSeeking(int thread = -1);
     virtual bool WaitSeekDone(int thread = -1, int timeout = 100000);
     virtual bool WaitStop(int timeout = 10000);
 
@@ -100,7 +103,9 @@ public:
     void ClearAxisDelay();
     
     virtual void GetMasterAxisID();
-
+public:
+    XtMotorParameter parameters;
+    XtMotorState states;
 protected:
     bool is_init;
     static int curve_resource;
@@ -144,7 +149,9 @@ protected:
 
     void ChangeCurPos(double pos);
 //    void CheckLimit(double &pos);
-    bool CheckLimit(double pos);
+    bool checkState(bool check_seeked_origin = true);
+    bool checkLimit(const double pos);
+    bool checkInterface(const double pos);
 public:
     static int axis_id_resource;
     QList<VerticalLimitParameter*> vertical_limit_parameters;

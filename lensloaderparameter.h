@@ -26,6 +26,7 @@ public:
     Q_PROPERTY(QString lpaUpdownlookUpLocationName READ lpaUpdownlookUpLocationName WRITE setLpaUpdownlookUpLocation NOTIFY lpaUpdownlookUpkLocationChanged)
     Q_PROPERTY(QString lpaUpdownlookDownLocationName READ lpaUpdownlookDownLocationName WRITE setLpaupdownlookDownLocationName NOTIFY lpaUpdownlookDownLocaationNameChanged)
     Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
+    Q_PROPERTY(QString lpaUplookPickerLocationName READ lpaUplookPickerLocationName WRITE setLpaUplookPickerLocationName NOTIFY lpaUplookPickerLocationNameChanged)
     int runMode() const
     {
         return m_runMode;
@@ -101,6 +102,11 @@ public:
     double pickTheta() const
     {
         return m_pickTheta;
+    }
+
+    QString lpaUplookPickerLocationName() const
+    {
+        return m_lpaUplookPickerLocationName;
     }
 
 public slots:
@@ -255,6 +261,15 @@ public slots:
         emit pickThetaChanged(m_pickTheta);
     }
 
+    void setLpaUplookPickerLocationName(QString lpaUplookPickerLocationName)
+    {
+        if (m_lpaUplookPickerLocationName == lpaUplookPickerLocationName)
+            return;
+
+        m_lpaUplookPickerLocationName = lpaUplookPickerLocationName;
+        emit lpaUplookPickerLocationNameChanged(m_lpaUplookPickerLocationName);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -286,6 +301,8 @@ signals:
 
     void pickThetaChanged(double pickTheta);
 
+    void lpaUplookPickerLocationNameChanged(QString lpaUplookPickerLocationName);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -303,6 +320,7 @@ private:
     int m_finishDelay = 100;
     double m_placeTheta = 0;
     double m_pickTheta = 0;
+    QString m_lpaUplookPickerLocationName = "";
 };
 
 class LensPickArmModuleState:public PropertyBase

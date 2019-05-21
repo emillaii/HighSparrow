@@ -5,7 +5,7 @@ LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 
 }
 
-void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision)
+void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision)
 {
     parts.clear();
     this->pick_arm = pick_arm;
@@ -26,6 +26,8 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     parts.append(this->lut_vision);
     this->lut_lens_vision = lut_lens_vision;
     parts.append(this->lut_lens_vision);
+    this->lpa_picker_vision = lpa_picker_vision;
+    parts.append(this->lpa_picker_vision);
     this->lpa_updownlook_up_vision = lpa_updownlook_up_vision;
     parts.append(this->lpa_updownlook_up_vision);
     this->lpa_updownlook_down_vision = lpa_updownlook_down_vision;
@@ -41,6 +43,7 @@ void LensLoaderModule::loadJsonConfig()
     temp_map.insert("LUT_CAMERA_POSITION1", &lut_camera_position);
     temp_map.insert("LUT_PICKE_POSITION1", &lut_picker_position);
     temp_map.insert("LENS_UPDNLOOK_OFFSET", &lens_updnlook_offset);
+    temp_map.insert("CAMERA_TO_PICKER_OFFSET", &camera_to_picker_offset);
     PropertyBase::loadJsonConfig("config//lensLoaderModule.json", temp_map);
 }
 
@@ -53,15 +56,9 @@ void LensLoaderModule::saveJsonConfig()
     temp_map.insert("LUT_CAMERA_POSITION1", &lut_camera_position);
     temp_map.insert("LUT_PICKE_POSITION1", &lut_picker_position);
     temp_map.insert("LENS_UPDNLOOK_OFFSET", &lens_updnlook_offset);
+    temp_map.insert("CAMERA_TO_PICKER_OFFSET", &camera_to_picker_offset);
     PropertyBase::saveJsonConfig("config//lensLoaderModule.json", temp_map);
 }
-
-void LensLoaderModule::performHandling(int cmd)
-{
-    emit sendHandlingOperation(cmd);
-    qInfo("emit performHandling %d",cmd);
-}
-
 void LensLoaderModule::receiveLoadLensRequst(bool need_lens,int ng_lens,int ng_len_tray)
 {
     qInfo("receiveLensRequst need_lens %d ng_lens %d ng_len_tray %d",need_lens,ng_lens,ng_len_tray);
@@ -319,16 +316,12 @@ bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 
 bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 {
-    qInfo("moveToLUTPRPos1");
-//    return  pick_arm->move_XY_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),check_softlanding);
     return  pick_arm->move_XYT_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),parameters.placeTheta(),check_softlanding);
 
 }
 
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
-    qInfo("moveToLUTPRPos2");
-//    return  pick_arm->move_XY_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),check_softlanding);
     return  pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),parameters.placeTheta(),check_softlanding);
 }
 
@@ -341,44 +334,50 @@ bool LensLoaderModule::performLensPR()
 
 bool LensLoaderModule::performVacancyPR()
 {
-    qInfo("performVacancyPR:%d");
-    Sleep(500); //Position settling
     return  vacancy_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performLUTPR()
 {
-    qInfo("performLUTPR");
     return lut_vision->performPR(pr_offset);
+}
+
+bool LensLoaderModule::performPickerPR()
+{
+    return lpa_picker_vision->performPR(pr_offset);
 }
 
 bool LensLoaderModule::performUpDownlookDownPR(PrOffset &offset)
 {
-    qInfo("performUpDownlookDownPR");
     return lpa_updownlook_down_vision->performPR(offset, false);
 }
 
 bool LensLoaderModule::performUpdowlookUpPR(PrOffset &offset)
 {
-    qInfo("performUpdowlookUpPR");
     return lpa_updownlook_up_vision->performPR(offset, false);
+}
+//camera_to_picker_offset = lut_picker_position - (lut_camera_position + lens_updnlook_offset)
+void LensLoaderModule::calculateCameraToPickerOffset()
+{
+    camera_to_picker_offset.setX(lut_picker_position.X() - lut_camera_position.X() - lens_updnlook_offset.X());
+    camera_to_picker_offset.setY(lut_picker_position.Y() - lut_camera_position.Y() - lens_updnlook_offset.Y());
 }
 bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
 {
-    qInfo("moveToWorkPos");
-    PrOffset temp(lut_picker_position.X() - lut_camera_position.X() - pr_offset.X,
-                    lut_picker_position.Y() - lut_camera_position.Y() - pr_offset.Y,pr_offset.Theta);
-    qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
+    PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,pr_offset.Theta);
     bool result = pick_arm->stepMove_XYTp_Synic(temp,check_softlanding);
-    qInfo("Step move finished");
-    pr_offset.ReSet();
+    return  result;
+}
+
+bool LensLoaderModule::moveToPrOffset(bool check_softlanding)
+{
+    PrOffset temp(- pr_offset.X, - pr_offset.Y,pr_offset.Theta);
+    bool result = pick_arm->stepMove_XYTp_Synic(temp,check_softlanding);
     return  result;
 }
 
 bool LensLoaderModule::vcmSearchZ(double z,bool is_open)
 {
-    qInfo("vcmSearchZ limit: %f finishDelay: %d", z, parameters.finishDelay());
-
     return pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open);
 }
 
@@ -519,90 +518,98 @@ void LensLoaderModule::performHandlingOperation(int cmd)
 {
     qInfo("performHandling %d",cmd);
     bool result;
+//    int curren
     if(cmd%10 == HandlePosition::LUT_POS1){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        qInfo(u8"移动LPA到LUT上放Lens位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
             result = moveToLUTPRPos1(true);
-        }
+//        }
     }
     else if(cmd%10 == HandlePosition::LUT_POS2){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        qInfo(u8"移动LPA到LUT上取NG Lens位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
             result = moveToLUTPRPos2(true);
-        }
+//        }
     }
     else if(cmd%10 == HandlePosition::LENS_TRAY1){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        qInfo(u8"移动LPA到1号Lens料盘当前lens位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
             result = moveToTrayPos(0);
-        }
+//        }
     }
     else if(cmd%10 == HandlePosition::LENS_TRAY2){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        qInfo(u8"移动LPA到2号Lens料盘当前lens位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
             result = moveToTrayPos(1);
-        }
+//        }
     }
     else if(cmd%10 == HandlePosition::LENS_TRAY1_START_POS){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        qInfo(u8"移动LPA到1号Lens料盘起始位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
             result = moveToStartPos(0);
-        }
+//        }
     }
     else if(cmd%10 == HandlePosition::LENS_TRAY2_START_POS){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        qInfo(u8"移动LPA到2号Lens料盘起始位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
             result = moveToStartPos(1);
-        }
+//        }
     }
     else if(cmd%10 == HandlePosition::LENS_TRAY1_END_POS){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        qInfo(u8"移动LPA到1号Lens料盘终点位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
             result = moveToTray1EndPos();
-        }
+//        }
     }
     else if(cmd%10 == HandlePosition::UPDOWNLOOK_DOWN_POS){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        qInfo(u8"移动LPA到updownlook位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
             result = moveToUpdownlookDownPos();
-        }
+//        }
     }
     else if(cmd%10 == HandlePosition::UPDOWNLOOK_UP_POS){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+        qInfo(u8"移动LPA到吸头视觉位置");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
             result = moveToUpdownlookUpPos();
-        }
+//        }
     }
     else
         result = true;
     cmd =cmd/10*10;
     if(!result)
     {
-//        finished_type = FinishedType::Alarm;
+        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
         return;
     }
     if(cmd%100 == HandlePR::RESET_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+        qInfo(u8"PR偏差置零");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
             pr_offset.ReSet();
-        }
+//        }
     }
     else if(cmd%100 == HandlePR::LENS_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+        qInfo(u8"执行Lens视觉");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
             result = performLensPR();
-        }
+//        }
     }
     else if(cmd%100 == HandlePR::VACANCY_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+        qInfo(u8"执行料盘空位视觉");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
             result = performVacancyPR();
-        }
+//        }
     }
     else if(cmd%100 == HandlePR::LUT_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+        qInfo(u8"执行LUT定位视觉");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
             result = performLUTPR();
-        }
+//        }
     }
-    else if(cmd%100 == HandlePR::UPDOWNLOOK_DOWN_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
-            PrOffset offset;
-            result = performUpDownlookDownPR(offset);
-        }
-    }
-    else if(cmd%100 == HandlePR::UPDOWNLOOK_UP_PR){
-        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
-            PrOffset offset;
-            result = performUpdowlookUpPR(offset);
-        }
+    else if(cmd%100 == HandlePR::PICKER_PR){
+        qInfo(u8"执行吸头视觉");
+//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+            result = performPickerPR();
+//        }
     }
     else
         result = true;
@@ -617,6 +624,7 @@ void LensLoaderModule::performHandlingOperation(int cmd)
             result = moveToWorkPos();
         }
     }
+    else if(cmd%1000)
     if(!result)
     {
 //        finished_type = FinishedType::Alarm;

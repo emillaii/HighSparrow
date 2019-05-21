@@ -14,7 +14,8 @@ wchar_t BaseModuleManager::profile_path1[] = L".\\config\\xt_motion_config.csv";
 wchar_t BaseModuleManager::profile_path2[] = L"..\\config\\xt_motion_config.csv";
 
 BaseModuleManager::BaseModuleManager(QObject *parent)
-    : PropertyBase (parent)
+    : PropertyBase (parent),
+    ErrorBase ("BaseModuleManager")
 {
     this->moveToThread(&work_thread);
     this->work_thread.start();
@@ -75,6 +76,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     unitlog.setServerAddress(DataServerURL());
     setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
+    connect(&timer, &QTimer::timeout, this, &BaseModuleManager::alarmChecking);
     connect(this,&BaseModuleManager::sendHandlingOperation,this,&BaseModuleManager::performHandlingOperation);
 }
 
@@ -82,6 +84,24 @@ BaseModuleManager::~BaseModuleManager()
 {
     this->work_thread.quit();
     this->work_thread.wait();
+}
+
+void BaseModuleManager::alarmChecking()
+{
+    bool checked_alarm = false;
+    foreach (XtMotor* temp_motor, motors)
+    {
+        if(temp_motor->states.seekedOrigin()&&temp_motor->checkAlarm())
+        {
+            checked_alarm = true;
+            AppendError(temp_motor->GetCurrentError());
+            temp_motor->states.setSeekedOrigin(false);
+            states.setSeekedOrigin(false);
+            setHomeState(false);
+        }
+    }
+    if(checked_alarm)
+        emit sendAlarm(0,ErrorLevel::ErrorMustStop,GetCurrentError());
 }
 
 bool BaseModuleManager::sendMessageTest(QString title, QString content)
@@ -261,6 +281,7 @@ bool BaseModuleManager::LoadProfile()
             }
             XtMotor* motor = new XtMotor();
             motor->Init(temp_name);
+
             motors.insert(temp_name,motor);
         }
         if(loadParameters())return false;
@@ -858,6 +879,7 @@ bool BaseModuleManager::InitStruct()
                                 GetVisionLocationByName(lens_loader_module.parameters.vacancyLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lutLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lutLensLocationName()),
+                                GetVisionLocationByName(lens_loader_module.parameters.lpaUplookPickerLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookUpLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()));
 
@@ -908,7 +930,7 @@ bool BaseModuleManager::initialDevice()
         return true;
     if(!profile_loaded)
         return false;
-
+    timer.stop();
     qInfo("Init module manager");
     LPWSTR pTarget = ip;
     XT_Controler::InitDevice_PC_Local_Controler(0);
@@ -960,6 +982,7 @@ bool BaseModuleManager::initialDevice()
         m->GetMasterAxisID();
     }
     EnableMotors();
+    timer.start(1000);
     return true;
 }
 

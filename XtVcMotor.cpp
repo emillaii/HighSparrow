@@ -10,7 +10,6 @@ XtVcMotor::XtVcMotor()
     axis_id = -1;
     name = "";
     is_init = false;
-    origin_result = false;
     direction_is_opposite = false;
     vcm_id = vcm_count+1;
     vcm_count+=1;
@@ -32,6 +31,7 @@ void XtVcMotor::ConfigVCM()
     double force[4]{100,1000,2000,3000};
     MapCurrent2Force(vcm_id,current,force,4);
     is_init = true;
+    is_enable = true;
     error_code = get_motor_error(vcm_id);
 }
 
@@ -195,6 +195,17 @@ bool XtVcMotor::IsRunning() const
     return be_run == 1;
 }
 
+bool XtVcMotor::getAlarmState()
+{
+    if(error_code == get_motor_error(vcm_id))
+    {
+        if(states.seekedOrigin())
+            states.setSeekedOrigin(false);
+        return true;
+    }
+    return false;
+}
+
 double XtVcMotor::GetPostiveRange() const
 {
     return max_range;
@@ -263,12 +274,9 @@ void XtVcMotor::Home(int thread)
     MoveToPos(0, thread);
 }
 
-void XtVcMotor::SeekOrigin(int thread)
+bool XtVcMotor::SeekOrigin(int thread)
 {
-    if(!is_init)
-        return;
-    if(!is_enable)
-        return;
+    if(checkState(false))return false;
     int result;
     ChangeDiretion(true);
     if(parameters.findOriginCurrent() > 0)
@@ -280,26 +288,25 @@ void XtVcMotor::SeekOrigin(int thread)
     }
     if(result == 1)
     {
-        origin_result = true;
+        states.setSeekedOrigin(true);
         qInfo("axis %s seek origin succees!",name.toStdString().c_str());
     }
     else
     {
-        origin_result = false;
+        states.setSeekedOrigin(false);
+        AppendError(QString(u8"%1回零失败").arg(name));
         qInfo("axis %s seek origin fail!",name.toStdString().c_str());
     }
     ChangeDiretion();
+    return states.seekedOrigin();
 }
 
 
 
 bool XtVcMotor::WaitSeekDone(int thread,int timeout)
 {
-    if(!is_init)
-        return false;
-    if(!is_enable)
-        return false;
-    return origin_result;
+    if(!checkState(false))return false;
+    return states.seekedOrigin();
 }
 
 void XtVcMotor::GetMasterAxisID()
@@ -317,28 +324,35 @@ bool XtVcMotor::SearchPosByADC(double vel, double search_limit, double threshold
 bool XtVcMotor::SearchPosByForce(const double speed,const double force,const double limit,const double margin,const int timeout)
 {
     if(is_debug)return true;
-    if(!is_init)
-        return false;
+    if(!(checkState()&&checkLimit(limit)&&checkInterface(limit)))return false;
     double start_pos = GetOutpuPos();
     qInfo("start_pos: %f,force:%f,search_limit:%f speed:%f margin:%f",start_pos,force,limit,speed,margin);
-    SetSoftLanding(speed, speed*10, force, start_pos, limit, margin);
+    SetSoftLanding(speed, max_acc, force, start_pos, limit, margin);
     bool res;
     res = DoSoftLanding();
     res &= WaitSoftLandingDone(timeout);
-    if(res)qInfo("sooftlanding pos:%f",GetFeedbackPos());
+    if(res)
+        qInfo("sooftlanding pos:%f",GetFeedbackPos());
+    else
+        AppendError(QString(u8"搜索位置失败 开始位置 %1 力 %2 目标位置 %3 速度 %4 到位区间 %5").arg(start_pos).arg(force).arg(limit).arg(speed).arg(margin));
     return res;
 }
 
 bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int timeout)
 {
     if(is_debug)return true;
-    if(!is_init)
-        return false;
+    if(!(checkState()&&checkLimit(max_range)&&checkInterface(max_range)))return false;
     double start_pos = GetOutpuPos();
+    double limit = start_pos + (max_range - start_pos)/2;
+    double margin = abs(max_range - start_pos)/2.1;
     SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.1);
     bool res;
     res = DoSoftLanding();
     res &= WaitSoftLandingDone(timeout);
+    if(res)
+        qInfo("sooftlanding pos:%f",GetFeedbackPos());
+    else
+        AppendError(QString(u8"搜索位置失败 开始位置 %1 力 %2 目标位置 %3 速度 %4 到位区间 %5").arg(start_pos).arg(force).arg(limit).arg(speed).arg(margin));
     return res;
 }
 
@@ -394,7 +408,8 @@ bool XtVcMotor::DoSoftLanding()
     int res = Do_SoftDown(vcm_id);
     if(res==0)
         return true;
-    qInfo("VCM %d DoSoftLanding Failed! code: %d",vcm_id,res);
+    AppendError(QString(u8"%1 软着陆伸出失败 错误码 %2").arg(name).arg(res));
+//    qInfo("VCM %d DoSoftLanding Failed! code: %d",vcm_id,res);
     return false;
 }
 
@@ -407,7 +422,8 @@ bool XtVcMotor::DoSoftLandingReturn()
     int res = Do_SoftUp(vcm_id);
     if(res==0)
         return true;
-    qInfo("VCM %d DoSoftLandingReturn Failed! code: %d",vcm_id,res);
+    AppendError(QString(u8"%1 软着陆返回失败 错误码 %2").arg(name).arg(res));
+//    qInfo("VCM %d DoSoftLandingReturn Failed! code: %d",vcm_id,res);
     return false;
 }
 
@@ -420,15 +436,15 @@ bool XtVcMotor::resetSoftLanding(int timeout)
     if(is_softlanded)
         ret = DoSoftLandingReturn()&WaitSoftLandingDone(timeout);
     RestoreForce();
+    if(!ret)
+        AppendError(QString(u8"%1 软着陆复位失败").arg(name));
     return ret;
-
 }
 
 bool XtVcMotor::WaitSoftLandingDone(int timeout)
 {
     if(is_debug)return true;
-    if(!is_init)
-        return false;
+    if(checkState(false))return false;
     while(timeout > 0)
     {
         int res = CheckPosReady(vcm_id);
@@ -445,17 +461,15 @@ bool XtVcMotor::WaitSoftLandingDone(int timeout)
     is_softlanded = is_softlanding;
     is_softlanding = false;
     is_returning = false;
-    if(is_init)
+    LONG64 temp_code = get_motor_error(vcm_id);
+    if(error_code == temp_code)
     {
-        if(error_code == get_motor_error(vcm_id))
-        {
-            qInfo("CheckPosReady fail but action success %d",timeout);
-            return true;
-        }
-        error_code = get_motor_error(vcm_id);
-        qInfo("VCM %d get_motor_error Return %d",vcm_id, error_code);
+        qInfo("CheckPosReady fail but action success outtime %d",timeout);
+        return true;
     }
-    qInfo("WaitSoftLandingDone fail");
+    AppendError(QString(u8"%1 等待软着陆伸出/软着陆返回完成超时 错误码 %2 - %3").arg(name).arg(temp_code).arg(error_code));
+    error_code = temp_code;
+//    qInfo("WaitSoftLandingDone fail");
     return false;
 }
 

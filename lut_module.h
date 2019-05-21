@@ -34,8 +34,10 @@ public:
     LutParameter parameters;
     LutState states;
     Position3D load_uplook_position;
+    Position lpa_updownlook_offset;
     Position3D load_position;
-    Position3D unload_position;
+    Position3D lpa_downlook_load_position;
+    Position3D lpa_downlook_unload_position;
     Position3D aa1_updownlook_position;
     Position3D aa1_picklens_position;
     Position3D aa1_unpicklens_position;
@@ -82,12 +84,14 @@ private:
     void sendPrEvent(const PrOffset pr_offset);
 public:
     Q_INVOKABLE int getConnectedClient();
+    void calculcateRelativePosition();
     Q_INVOKABLE bool moveToAA1UplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
-    Q_INVOKABLE bool moveToUnloadPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToLpaDownlookloadPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToLpaDownLookUnloadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadUplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadUplookPR(bool check_autochthonous = false);
     Q_INVOKABLE double getLoadUplookPRX();

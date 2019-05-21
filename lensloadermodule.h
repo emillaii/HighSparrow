@@ -26,11 +26,12 @@ enum HandlePR
         VACANCY_PR = 30,
         LUT_PR = 40,
         UPDOWNLOOK_DOWN_PR = 50,
-        UPDOWNLOOK_UP_PR = 60
+        PICKER_PR = 60
     };
 enum HandleToWorkPos
 {
-    ToWork = 100
+    ToWork = 100,
+    ToPrOffset = 200,
 };
 
 enum handlePickerAction
@@ -43,7 +44,6 @@ enum handlePickerAction
     MeasureLensInLUT = 6000
 };
 
-//}
 class LensLoaderModule:public ThreadWorkerBase
 {
     Q_OBJECT
@@ -51,13 +51,13 @@ public:
     LensLoaderModule(QString name = "LensPickArmModule");
     void Init(LensPickArm *pick_arm,MaterialTray *tray,MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision,
-              VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision);
+              VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision);
     void loadJsonConfig();
     void saveJsonConfig();
     void ResetLogic();
-    void performHandling(int cmd);
     bool performUpDownlookDownPR(PrOffset &offset);
     bool performUpdowlookUpPR(PrOffset &offset);
+    void calculateCameraToPickerOffset();
 signals:
     void sendChangeTrayRequst();
     void sendLoadLensRequstFinish(int lens,int lens_tray);
@@ -74,8 +74,10 @@ private:
     bool performLensPR();
     bool performVacancyPR();
     bool performLUTPR();
+    bool performPickerPR();
 
     bool moveToWorkPos(bool check_softlanding = false);
+    bool moveToPrOffset(bool check_softlanding = false);
     bool vcmSearchZ(double z,bool is_open = true);
     bool pickTrayLens();
     bool placeLensToLUT();
@@ -106,6 +108,7 @@ public:
     Position lut_camera_position;
     Position lut_picker_position;
     Position lens_updnlook_offset;
+    Position camera_to_picker_offset;
 private:
     LensPickArm *pick_arm = Q_NULLPTR;
     MaterialTray *tray = Q_NULLPTR;
@@ -116,6 +119,7 @@ private:
     VisionLocation * vacancy_vision = Q_NULLPTR;
     VisionLocation * lut_vision = Q_NULLPTR;
     VisionLocation * lut_lens_vision = Q_NULLPTR;
+    VisionLocation * lpa_picker_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_up_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_down_vision = Q_NULLPTR;
     QMutex lut_mutex;

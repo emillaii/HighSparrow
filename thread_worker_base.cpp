@@ -73,6 +73,11 @@ int ThreadWorkerBase::waitMessageReturn(bool &interruput)
     return 0;
 }
 
+void ThreadWorkerBase::performHandling(int cmd)
+{
+    emit sendHandlingOperation(cmd);
+}
+
 void ThreadWorkerBase::setName(QString Name)
 {
     if (m_Name == Name)

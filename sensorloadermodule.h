@@ -41,7 +41,8 @@ public:
     enum HandleToWorkPos
     {
         TO_PICK1 = 100,
-        TO_PICK2 = 200
+        TO_PICK2 = 200,
+        TO_PR_OFFSET = 300
     };
     enum handlePickerAction
     {
@@ -98,6 +99,8 @@ private:
 
     bool moveToWorkPos(bool check_softlanding = false);
     bool moveToWorkPos2(bool check_softlanding = false);
+    bool moveToPRResultPos(bool check_softlanding = false);
+
     bool picker1SearchZ(double z,bool is_open = true,int time_out = 10000);
     bool picker1SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
     bool picker2SearchZ(double z,bool is_open = true,int time_out = 10000);

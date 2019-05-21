@@ -40,7 +40,7 @@ SOURCES += \
     basemodulemanager.cpp \
     LontryLight.cpp \
     XtCylinder.cpp \
-    xtmotor.cpp \
+    XtMotor.cpp \
     XtVcMotor.cpp \
     XtVacuum.cpp \
     lut_module.cpp \
@@ -208,7 +208,9 @@ HEADERS += \
     sensorclipparameter.h \
     iolimitparameter.h \
     parallellimitparameter.h \
-    verticallimitparameter.h
+    verticallimitparameter.h \
+    modulemanagerparameter.h \
+    xtmotorparameter.h
 
 DISTFILES += \
     icons/index.theme

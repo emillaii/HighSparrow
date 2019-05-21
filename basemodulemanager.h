@@ -35,15 +35,14 @@
 #include "aacorenew.h"
 #include "sensorclip.h"
 #include "sensortrayloadermodule.h"
-class BaseModuleManager : public PropertyBase
+#include "modulemanagerparameter.h"
+class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
     int m_lightPanelLighting;
-
 public:
     explicit BaseModuleManager(QObject *parent = nullptr);
     ~BaseModuleManager();
-
     Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged)
     Q_PROPERTY(int ServerMode READ ServerMode WRITE setServerMode NOTIFY paramsChanged)
     Q_PROPERTY(int ServerPort READ ServerPort WRITE setServerPort NOTIFY paramsChanged)
@@ -117,9 +116,11 @@ signals:
     void paramsChanged();
 
     bool sendMsgSignal(QString,QString);
+    void sendAlarm(int sender_id,int level, QString error_message);
 public slots:
+    void alarmChecking();
     void performHandlingOperation(int cmd);
-    Q_INVOKABLE void receiveImageFromAACore(int type) {
+	void receiveImageFromAACore(int type) {
         qInfo("Display SFR image in UI: %d", type);
         if (type == 0) emit displaySfrImageInUI();
         else if (type == 1) emit displayOCImageInUI();
@@ -172,7 +173,10 @@ public slots:
             return;
         m_DataServerURL = DataServerURL;
     }
-
+public:
+    ModuleManangerConfig configs;
+    ModuleManagerParameter paramers;
+    ModuleManagerState states;
 private:
     bool is_init;
     bool profile_loaded;
@@ -191,6 +195,7 @@ private:
     int m_ServerMode = 0;
 
     bool m_HomeState = false;
+    QTimer timer;
     QString m_DataServerURL;
     QThread work_thread;
 

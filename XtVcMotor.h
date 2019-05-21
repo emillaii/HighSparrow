@@ -44,6 +44,7 @@ public:
     double GetFeedbackPos(int decimal_digit = 4) const override;
     double GetCurADC() const override;
     bool IsRunning() const override;
+    bool getAlarmState() override;
     //these are run parameter
     double GetPostiveRange() const override;
     double GetNegativeRange() const override;
@@ -67,7 +68,7 @@ public:
 //    bool MoveToPosSync(double pos,int thread = -1) override;
 
     //void SeekOrigin(int originDirection, double originRange, double originOffset) override;
-    void SeekOrigin(int thread = -1) override;
+    bool SeekOrigin(int thread = -1) override;
 
     bool WaitSeekDone(int thread = -1, int timeout = 10000) override;
 
@@ -91,13 +92,12 @@ public:
     VcMotorParameter parameters;
 private:
     bool direction_is_opposite;
-    bool origin_result = true;
 
     int vcm_id;
     bool is_softlanding = false;
     bool is_softlanded = false;
     bool is_returning = false;
-    INT64 error_code;
+    LONG64 error_code;
 public:
     VCM_Resource_struct vcm_resource;
     static int vcm_count;

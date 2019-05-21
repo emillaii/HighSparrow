@@ -44,6 +44,7 @@ public:
     int getAlarmId();
     void sendAlarmMessage(int error_level,QString error_message);
     int waitMessageReturn(bool &interruput);
+    void performHandling(int cmd);
 signals:
     void sendErrorMessage(int alarm_id,int error_level,QString error_message);
     void sendHandlingOperation(int cmd);

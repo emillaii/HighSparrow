@@ -72,9 +72,9 @@ bool LensPickArm::stepMove_XYTp_Synic(PrOffset position,bool check_softlanding,i
     double target_x = position.X + motor_x->GetFeedbackPos();
     double target_y = position.Y +  motor_y->GetFeedbackPos();
     double target_t = position.Theta +  picker->motor_t->GetFeedbackPos();
-    motor_x->StepMove(position.X);
-    motor_y->StepMove(position.Y);
-    picker->motor_t->StepMove(position.Theta);
+    motor_x->MoveToPos(target_x);
+    motor_y->MoveToPos(target_y);
+    picker->motor_t->MoveToPos(target_t);
     bool result = motor_x->WaitArrivedTargetPos(target_x,timeout);
     result &= motor_y->WaitArrivedTargetPos(target_y,timeout);
     result &= picker->motor_t->WaitArrivedTargetPos(target_t,timeout);

@@ -16,6 +16,8 @@ wchar_t BaseModuleManager::profile_path2[] = L"..\\config\\xt_motion_config.csv"
 BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent)
 {
+    this->moveToThread(&work_thread);
+    this->work_thread.start();
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
@@ -56,7 +58,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
     connect(&aa_head_module,&AAHeadModule::sendSensrRequestToSut,&sut_module,&SutModule::receiveLoadSensorRequst,Qt::DirectConnection);
 
-    connect(&aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &BaseModuleManager::receiveImageFromAACore);
+    //connect(&aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &BaseModuleManager::receiveImageFromAACore);
 
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
@@ -73,25 +75,13 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     unitlog.setServerAddress(DataServerURL());
     setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
+    connect(this,&BaseModuleManager::sendHandlingOperation,this,&BaseModuleManager::performHandlingOperation);
 }
 
 BaseModuleManager::~BaseModuleManager()
 {
-    //    QString temp;
-    //    for (int i = 0; i < motors.size(); ++i) {
-    //        temp = motors.keys()[i];
-    //        if(temp == "SUT1_Z"||temp == "LUT_Z")
-    //            delete  GetVcMotorByName(temp);
-    //        else
-    //            delete  GetMotorByName(temp);
-    //    }
-    //    for (int i = 0; i < output_ios.size(); ++i)
-    //        delete  GetOutputIoByName(output_ios.keys()[i]);
-    //    for (int i = 0; i < input_ios.size(); ++i)
-    //        delete  GetInputIoByName(input_ios.keys()[i]);
-    //    for (int i = 0; i < calibrations.size(); ++i)
-    //        delete  calibrations[calibrations.keys()[i]];
-    //    delete chart_calibration;
+    this->work_thread.quit();
+    this->work_thread.wait();
 }
 
 bool BaseModuleManager::sendMessageTest(QString title, QString content)
@@ -106,7 +96,6 @@ bool BaseModuleManager::sendMessageTest(QString title, QString content)
 
 bool BaseModuleManager::loadParameters()
 {
-
     material_tray.loadJsonConfig();
     aa_head_module.loadJsonConfig();
     sut_module.loadParams();
@@ -205,6 +194,16 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
     result &= manager->registerWorker(&sut_module);
     result &= manager->registerWorker(&aaCoreNew);
     return result;
+}
+
+void BaseModuleManager::performHandling(int cmd)
+{
+    emit sendHandlingOperation(cmd);
+}
+
+void BaseModuleManager::performHandlingOperation(int cmd)
+{
+    qInfo("performHandlingOperation cmd: ", cmd);
 }
 
 bool BaseModuleManager::LoadProfile()

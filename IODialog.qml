@@ -250,7 +250,7 @@ Popup {
                 clip: true
                 ListView{
                     id:vacuum_list
-                    model:baseModuleManager.ServerMode==0?aa1_vacuums:aa2_vacuums
+                    model:baseModuleManager.getServerMode()==0?aa1_vacuums:aa2_vacuums
                     delegate:GroupBox {
                         title:vacuumName
                         ColumnLayout{
@@ -321,7 +321,7 @@ Popup {
                 clip: true
                 ListView{
                     id:cylinder_list
-                    model: baseModuleManager.ServerMode==0?aa1_cylinders:aa2_cylinders
+                    model: baseModuleManager.getServerMode()==0?aa1_cylinders:aa2_cylinders
                     delegate:GroupBox {
                         title:cylinderName
                         ColumnLayout{

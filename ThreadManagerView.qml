@@ -47,7 +47,7 @@ ItemDelegate {
             }
             GroupBox
             {
-                visible: baseModuleManager.ServerMode
+                visible: baseModuleManager.getServerMode()
                 title: qsTr("Sensor")
                 RowLayout{
                     Button{
@@ -92,7 +92,7 @@ ItemDelegate {
 
             GroupBox
             {
-                visible: !baseModuleManager.ServerMode
+                visible: !baseModuleManager.getServerMode()
                 title: qsTr("Lens")
                 RowLayout{
                     Button {
@@ -125,7 +125,7 @@ ItemDelegate {
                 }
             }
             GroupBox{
-                visible: baseModuleManager.ServerMode
+                visible: baseModuleManager.getServerMode()
                 title: qsTr("SensorTryLoader")
                 RowLayout{
                     Button {
@@ -155,7 +155,9 @@ ItemDelegate {
                 }
             }
             GroupBox{
-                visible: !baseModuleManager.ServerMode
+                visible: {
+                    return !baseModuleManager.getServerMode()
+                }
                 title:qsTr("TrayLoader")
                 RowLayout{
                     Button{
@@ -178,7 +180,7 @@ ItemDelegate {
                         }
                     }
                     Button{
-                        enabled: fasle
+                        enabled: false
                         id:end_btn
                         text:qsTr("结束")
                         onClicked: {

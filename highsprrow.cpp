@@ -8,16 +8,16 @@ HighSprrow::HighSprrow()
     if (!QDir(CONFIG_DIR).exists()) {QDir().mkdir(CONFIG_DIR);}
     if (!QDir(PR_CONFIG_DIR).exists()) {QDir().mkdir(PR_CONFIG_DIR);}
     worker_manager = new WorkersManager(this);
-    baseModuleManager = new BaseModuleManager(this);
+    baseModuleManager = new BaseModuleManager();
     baseModuleManager->LoadProfile();
     logicManager = new LogicManager(baseModuleManager);
     baseModuleManager->registerWorkers(worker_manager);
     connect(logicManager,&LogicManager::sendMsgSignal,worker_manager,&WorkersManager::sendMessageTest,Qt::BlockingQueuedConnection);
+    connect(&baseModuleManager->aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &HighSprrow::receiveImageFromAACore);
 }
 
 HighSprrow::~HighSprrow()
 {
-
 }
 
 ErrorCodeStruct HighSprrow::InitComponent()

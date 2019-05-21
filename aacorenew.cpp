@@ -139,7 +139,7 @@ bool AACoreNew::runFlowchartTest()
                    currentPointer = value["toOperator"].toString();
                    if (links.size() == 1) {
                        QJsonValue op = operators[currentPointer.toStdString().c_str()];
-                       performTest(currentPointer.toStdString().c_str(), op["properties"]);
+                       ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
                    }
                    end = false;
                    break;
@@ -180,14 +180,7 @@ bool AACoreNew::runFlowchartTest()
                        break;
                    } else if (currentPointer.contains("Reject")) {
                        qInfo("Performing Reject");
-                       imageThread->stop();
-                       Sleep(100);
-                       imageThread->exit();
-                       dk->DothinkeyClose();
-                       has_ng_lens = true;
-                       has_ng_sensor = true;
-                       has_sensor = false;
-                       has_lens = false;
+                       performReject();
                        end = true;
                        break;
                    }

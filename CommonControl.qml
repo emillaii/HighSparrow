@@ -36,7 +36,7 @@ ItemDelegate {
                 title:qsTr("常用操作")
                 ColumnLayout{
                     GroupBox{
-                        visible: baseModuleManager.ServerMode==0
+                        visible: baseModuleManager.getServerMode()===0
                         title: qsTr("Lens抓放")
                         ColumnLayout{
                             RowLayout{
@@ -341,7 +341,7 @@ ItemDelegate {
                             RowLayout{
                                 Switch {
                                     id:sut_vacuum
-                                    text: baseModuleManager.ServerMode==0?qsTr("SUT1吸真空"):qsTr("SUT2吸真空")
+                                    text: baseModuleManager.getServerMode()==0?qsTr("SUT1吸真空"):qsTr("SUT2吸真空")
                                     Connections{
                                         target: timer
                                         onTriggered: {
@@ -360,7 +360,7 @@ ItemDelegate {
                         }
                     }
                     GroupBox{
-                        visible: baseModuleManager.ServerMode==1
+                        visible: baseModuleManager.getServerMode()==1
                         title:qsTr("SPA")
                         ColumnLayout{
                             RowLayout{

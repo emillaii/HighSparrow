@@ -107,6 +107,7 @@ public:
     }
 
 signals:
+    void sendHandlingOperation(int cmd);
     void displaySfrImageInUI();
     void displayOCImageInUI();
     void lightingValueChanged(int downlookLighting);
@@ -117,7 +118,8 @@ signals:
 
     bool sendMsgSignal(QString,QString);
 public slots:
-    void receiveImageFromAACore(int type) {
+    void performHandlingOperation(int cmd);
+    Q_INVOKABLE void receiveImageFromAACore(int type) {
         qInfo("Display SFR image in UI: %d", type);
         if (type == 0) emit displaySfrImageInUI();
         else if (type == 1) emit displayOCImageInUI();
@@ -189,8 +191,8 @@ private:
     int m_ServerMode = 0;
 
     bool m_HomeState = false;
-
     QString m_DataServerURL;
+    QThread work_thread;
 
 public:
     bool LoadProfile();
@@ -214,6 +216,8 @@ public:
     bool loadParameters();
     bool SaveParameters();
     bool registerWorkers(WorkersManager* manager);
+
+    Q_INVOKABLE void performHandling(int cmd);
 
     Q_INVOKABLE bool initialDevice();
     Q_INVOKABLE bool generatefileConfigs();
@@ -256,6 +260,8 @@ public:
     Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString);
     Q_INVOKABLE void loadSensorTrayLoaderMuduleParameter();
+
+    Q_INVOKABLE int getServerMode() { return m_ServerMode; }
 
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);

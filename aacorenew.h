@@ -51,6 +51,7 @@ public:
     ErrorCodeStruct performDelay(int);
     ErrorCodeStruct performCameraUnload();
     ErrorCodeStruct performUV(int uv_time);
+    ErrorCodeStruct performReject();
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);

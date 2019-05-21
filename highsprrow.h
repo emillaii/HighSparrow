@@ -22,6 +22,7 @@ public:
     BaseModuleManager * baseModuleManager = Q_NULLPTR;
     LogicManager * logicManager = Q_NULLPTR;
 public:
+
     Q_INVOKABLE void performLUTMushroomPR();
     Q_INVOKABLE void performSUTDownlookPR();
     Q_INVOKABLE void performOnlySUTDownlookPR();
@@ -35,9 +36,16 @@ public:
     Q_INVOKABLE void aa_A_Inter(double step);
     Q_INVOKABLE void aa_B_Inter(double step);
 
+signals:
+    void displaySfrImageInUI();
+    void displayOCImageInUI();
 public slots:
     void homeAllMotors();
-
+    Q_INVOKABLE void receiveImageFromAACore(int type) {
+        qInfo("Display SFR image in UI: %d", type);
+        if (type == 0) emit displaySfrImageInUI();
+        else if (type == 1) emit displayOCImageInUI();
+    };
 };
 
 #endif // HIGHSPRROW_H

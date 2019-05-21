@@ -40,7 +40,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                         logicManager.lensPickArmMoveToTray1StartPos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1_START_POS)
@@ -55,7 +55,7 @@ ColumnLayout {
                         var x =0;
                         var x1 =0;
                         var y=0;
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
                             x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
@@ -111,7 +111,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmMoveToTray1EndPos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1_END_POS)
@@ -127,7 +127,7 @@ ColumnLayout {
                         var x =0;
                         var x1 =0;
                         var y=0;
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
                             x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
@@ -179,7 +179,7 @@ ColumnLayout {
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
 
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmMoveToTray1Pos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1)
@@ -190,17 +190,17 @@ ColumnLayout {
 
             RowLayout{
                 Label{
-                    text: baseModuleManager.ServerMode==0?qsTr("物料高度"):qsTr("sensor高度")
+                    text: baseModuleManager.getServerMode()==0?qsTr("物料高度"):qsTr("sensor高度")
                 }
                 TextField{
-                    text: baseModuleManager.ServerMode==0 ?lensPickArmModuleParameter.pickLensZ:sensorLoaderParameter.pickSensorZ
+                    text: baseModuleManager.getServerMode()==0 ?lensPickArmModuleParameter.pickLensZ:sensorLoaderParameter.pickSensorZ
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        if (baseModuleManager.ServerMode==0)
+                        if (baseModuleManager.getServerMode()==0)
                             lensPickArmModuleParameter.setPickLensZ(text)
                         else {
                             sensorLoaderParameter.setPickSensorZ(text)
@@ -214,7 +214,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
 
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmLensMeasureHeight()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_SENSOR_IN_TRAY)
@@ -226,7 +226,7 @@ ColumnLayout {
                     width:40
                     height:40
                     onClicked: {
-                        if(baseModuleManager.ServerMode==0){
+                        if(baseModuleManager.getServerMode()==0){
                             logicManager.performLocation(lens_loader_parameter.lensLocationName);
                         }else{
                             logicManager.performLocation(sensorLoaderParameter.sensorLocationName);
@@ -235,12 +235,12 @@ ColumnLayout {
                 }
 
                 Button{
-                    //text:baseModuleManager.ServerMode==0?qsTr("lens视觉"):qsTr("sensor视觉")
+                    //text:baseModuleManager.getServerMode()==0?qsTr("lens视觉"):qsTr("sensor视觉")
                     text:qsTr("移动吸头")
                     width: 40
                     height: 40
                     onClicked: {
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmLensPR()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK1+SensorLoaderModule.SENSOR_PR)
@@ -249,12 +249,12 @@ ColumnLayout {
                 }
 
                 Button{
-                    text:baseModuleManager.ServerMode==0?qsTr("取lens"):qsTr("取sensor")
+                    text:baseModuleManager.getServerMode()==0?qsTr("取lens"):qsTr("取sensor")
                     width: 40
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmMoveToPickLensFromTray1()
                         }else{
                             //1121
@@ -267,7 +267,7 @@ ColumnLayout {
                 }
             }
             RowLayout{
-                visible: baseModuleManager.ServerMode==0
+                visible: baseModuleManager.getServerMode()==0
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
                     text:qsTr("执行空位视觉")

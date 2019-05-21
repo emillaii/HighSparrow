@@ -31,10 +31,10 @@ ListModel {
         label: "AA Core 配置"
         index: 7
     }
-    ListElement {
-        label: "System 配置"
-        index: 8
-    }
+//    ListElement {
+//        label: "System 配置"
+//        index: 8
+//    }
     ListElement{
         label:"MaterialLoder 配置"
         index: 9

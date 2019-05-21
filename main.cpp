@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
     }
 
     engine.rootContext()->setContextProperty("workerNameList",workerNameList);
-
     engine.rootContext()->setContextProperty("baseModuleManager", highSprrow.baseModuleManager);
+
     engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);
     engine.rootContext()->setContextProperty("aaNewCore", &highSprrow.baseModuleManager->aaCoreNew);
     //engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.logicManager->aaCore->aaData_1);

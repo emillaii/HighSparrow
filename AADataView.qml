@@ -20,7 +20,7 @@ Grid {
             fillMode: Image.PreserveAspectFit
             cache: false
             Connections {
-                target: baseModuleManager
+                target: highSprrow
                 onDisplayOCImageInUI: {
                     image1.source = ""
                     image1.source = "image://ocImage1"
@@ -164,7 +164,7 @@ Grid {
             fillMode: Image.PreserveAspectFit
             cache: false
             Connections {
-                target: baseModuleManager
+                target: highSprrow
                 onDisplaySfrImageInUI: {
                     image4.source = ""
                     image4.source = "image://sfrImage"

@@ -39,7 +39,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmMoveToTray2StartPos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2_START_POS)
@@ -53,7 +53,7 @@ ColumnLayout {
                     onClicked: {
                         var x =0;
                         var y=0;
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
                         }else{
@@ -102,7 +102,7 @@ ColumnLayout {
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmMoveToTray2Pos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2)
@@ -111,7 +111,7 @@ ColumnLayout {
                 }
             }
             RowLayout{
-                visible: baseModuleManager.ServerMode !=0
+                visible: baseModuleManager.getServerMode() !=0
                 Label{
                     text:qsTr("成品高度")
                 }
@@ -134,7 +134,7 @@ ColumnLayout {
                 }
             }
             RowLayout{
-                visible: baseModuleManager.ServerMode !=0
+                visible: baseModuleManager.getServerMode() !=0
                 Label{
                     text:qsTr("Ng Sensor高度")
                 }
@@ -159,7 +159,7 @@ ColumnLayout {
             RowLayout{
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
-                    visible: baseModuleManager.ServerMode==0
+                    visible: baseModuleManager.getServerMode()==0
                     text:qsTr("lens视觉")
                     width: 40
                     height: 40
@@ -168,7 +168,7 @@ ColumnLayout {
                     }
                 }
                 Button{
-                    visible: baseModuleManager.ServerMode==0
+                    visible: baseModuleManager.getServerMode()==0
                     text:qsTr("取lens")
                     width: 40
                     height: 40
@@ -181,7 +181,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked:{
-                        if(baseModuleManager.ServerMode==0){
+                        if(baseModuleManager.getServerMode()==0){
                             logicManager.performLocation(lens_loader_parameter.vacancyLocationName)
                         }else{
                             logicManager.performLocation(sensorLoaderParameter.vacancyLocationName)
@@ -196,7 +196,7 @@ ColumnLayout {
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmVacancyTrayPR()
                         }else{
                             //232
@@ -208,13 +208,13 @@ ColumnLayout {
                 }
 
                 Button{
-                    text:baseModuleManager.ServerMode==0?qsTr("放lens"):qsTr("放成品")
+                    text:baseModuleManager.getServerMode()==0?qsTr("放lens"):qsTr("放成品")
                     width: 40
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
-                        if (baseModuleManager.ServerMode == 0){
+                        if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmMoveToPlaceLensToTray2()
                         }else{
                             //9232
@@ -226,7 +226,7 @@ ColumnLayout {
                     }
                 }
                 Button{
-                    visible: baseModuleManager.ServerMode!=0
+                    visible: baseModuleManager.getServerMode()!=0
                     text:qsTr("放ng Sensor")
                     width:40
                     height: 40

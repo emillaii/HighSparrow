@@ -66,10 +66,11 @@ void ImageGrabbingWorkerThread::run()
         QImage* newImage =  dk->DothinkeyGrabImage(0);
         latestImage = newImage->copy();
         delete newImage;
+        latestImage = latestImage.scaled(720,480);
         m_pImgProvider->setImage(latestImage);
         emit callQmlRefeshImg();
         locker.unlock();
-        QThread::msleep(400); //Slow down the cpu cooldown
+        QThread::msleep(200); //Slow down the cpu cooldown
     }
 }
 

@@ -912,6 +912,19 @@ ErrorCodeStruct AACoreNew::performUV(int uv_time)
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
+ErrorCodeStruct AACoreNew::performReject()
+{
+    imageThread->stop();
+    Sleep(100);
+    imageThread->exit();
+    dk->DothinkeyClose();
+    has_ng_lens = true;
+    has_ng_sensor = true;
+    has_sensor = false;
+    has_lens = false;
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
 ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
 {
     ErrorCodeStruct ret = { ErrorCode::OK, "" };

@@ -124,7 +124,7 @@ public slots:
         qInfo("Display SFR image in UI: %d", type);
         if (type == 0) emit displaySfrImageInUI();
         else if (type == 1) emit displayOCImageInUI();
-    };
+    }
     bool sendMessageTest(QString title,QString content);
     void setLightPanelLighting(int lightPanelLighting)
     {
@@ -204,7 +204,6 @@ public:
     bool loadStructConfig(QString file_dir);
     bool loadMachineConfig(QString file_paths);
     Q_INVOKABLE bool generateConfigFiles();
-
     Q_INVOKABLE bool loadParameters();
     Q_INVOKABLE bool saveParameters();
     bool loadVcmFile(QString file_name);

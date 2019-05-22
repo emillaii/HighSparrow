@@ -246,6 +246,7 @@ bool BaseModuleManager::loadStructConfig(QString file_dir)
    bool result = loadMachineConfig(QString(file_dir).append(MACHINE_PARAM_FILE));
    if(!result)return false;
    //todo将和打料的型号无关的参数移入该函数
+//   configs.loadJsonConfig()
     return true;
 }
 

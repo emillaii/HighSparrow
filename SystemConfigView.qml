@@ -46,9 +46,9 @@ ItemDelegate {
                             text: qsTr("数据服务器地址")
                         }
                         TextField {
-                            text: systerm_param.materialType
+                            text: ""
                             onEditingFinished: {
-                                systerm_param.setMaterialType(text)
+
                             }
                         }
                     }

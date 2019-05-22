@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->sensor_loader_module.picker1_offset);
     engine.rootContext()->setContextProperty("pick2_offset",
                                              &highSprrow.baseModuleManager->sensor_loader_module.picker2_offset);
-//    engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramers);
+    engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramers);
 
     QStringList data = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames",data);

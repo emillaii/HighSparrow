@@ -52,7 +52,7 @@ class ModuleManagerParameter:public PropertyBase
 {
     Q_OBJECT
 public:
-    ModuleManagerParameter(){}
+    ModuleManagerParameter():PropertyBase (){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(QString materialType READ materialType WRITE setMaterialType NOTIFY materialTypeChanged)
     Q_PROPERTY(QString machineType READ machineType WRITE setMachineType NOTIFY machineTypeChanged)
@@ -112,7 +112,7 @@ class ModuleManagerState:public PropertyBase
 {
     Q_OBJECT
 public:
-    ModuleManagerState(){}
+    ModuleManagerState():PropertyBase(){}
     Q_PROPERTY(bool seekedOrigin READ seekedOrigin WRITE setSeekedOrigin NOTIFY seekedOriginChanged)
     Q_PROPERTY(bool isAutoRun READ isAutoRun WRITE setIsAutoRun NOTIFY isAutoRunChanged)
     Q_PROPERTY(bool isInit READ isInit WRITE setIsInit NOTIFY isInitChanged)

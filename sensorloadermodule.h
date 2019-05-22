@@ -68,8 +68,8 @@ public:
     void Init(SensorPickArm* pick_arm,MaterialTray *tray,
               VisionLocation * sensor_vision,VisionLocation * vacancy_vision,VisionLocation * sut_vision,
               VisionLocation *sut_sensor_vision,VisionLocation *sut_product_vision, VisionLocation *sensor_pickarm_calibration_glass_vision);
-    bool loadJsonConfig();
-    void saveJsonConfig();
+    bool loadJsonConfig(QString file_name);
+    void saveJsonConfig(QString file_name);
     void resetLogic();
     void openServer(int port);
     Q_INVOKABLE void performHandling(int cmd);

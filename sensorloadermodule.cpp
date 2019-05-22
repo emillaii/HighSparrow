@@ -33,7 +33,7 @@ void SensorLoaderModule::Init(SensorPickArm *pick_arm, MaterialTray *sensor_tray
     parts.append(this->sensor_pickarm_calibration_glass_vision);
 }
 
-bool SensorLoaderModule::loadJsonConfig()
+bool SensorLoaderModule::loadJsonConfig(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("parameters", &parameters);
@@ -41,11 +41,11 @@ bool SensorLoaderModule::loadJsonConfig()
     temp_map.insert("sut2_pr_position", &sut2_pr_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
-    PropertyBase::loadJsonConfig("config//SensorLoaderModule.json", temp_map);
+    PropertyBase::loadJsonConfig(file_name, temp_map);
     return true;
 }
 
-void SensorLoaderModule::saveJsonConfig()
+void SensorLoaderModule::saveJsonConfig(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("parameters", &parameters);
@@ -53,7 +53,7 @@ void SensorLoaderModule::saveJsonConfig()
     temp_map.insert("sut2_pr_position", &sut2_pr_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
-    PropertyBase::saveJsonConfig("config//SensorLoaderModule.json", temp_map);
+    PropertyBase::saveJsonConfig(file_name, temp_map);
 }
 
 void SensorLoaderModule::startWork(bool reset_logic, int run_mode)

@@ -29,7 +29,8 @@ public:
     void Init(MaterialCarrier* carrier,
               VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location,
               XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper, SutModule* sut);
-    void loadParams();
+    void loadJsonConfig(QString file_name);
+    void saveJsonConfig(QString file_name);
     void openServer(int port);
     LutParameter parameters;
     LutState states;
@@ -58,7 +59,6 @@ public slots:
     void performHandlingOperation(int cmd) override;
     //End of ThreadWorkerBase
     void ResetLogic();
-    void saveJsonConfig();
     void receiveRequestMessage(QString message, QString client_ip);
     void receiveLoadLensRequstFinish(int lens,int lens_tray);
     void receiveToolUpPRRequest(PrOffset &offset);

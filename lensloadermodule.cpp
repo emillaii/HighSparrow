@@ -34,7 +34,7 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     parts.append(this->lpa_updownlook_down_vision);
 }
 
-void LensLoaderModule::loadJsonConfig()
+void LensLoaderModule::loadJsonConfig(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LENS_PICKARM_PARAMS", &parameters);
@@ -44,10 +44,10 @@ void LensLoaderModule::loadJsonConfig()
     temp_map.insert("LUT_PICKE_POSITION1", &lut_picker_position);
     temp_map.insert("LENS_UPDNLOOK_OFFSET", &lens_updnlook_offset);
     temp_map.insert("CAMERA_TO_PICKER_OFFSET", &camera_to_picker_offset);
-    PropertyBase::loadJsonConfig("config//lensLoaderModule.json", temp_map);
+    PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
-void LensLoaderModule::saveJsonConfig()
+void LensLoaderModule::saveJsonConfig(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LENS_PICKARM_PARAMS", &parameters);
@@ -57,7 +57,7 @@ void LensLoaderModule::saveJsonConfig()
     temp_map.insert("LUT_PICKE_POSITION1", &lut_picker_position);
     temp_map.insert("LENS_UPDNLOOK_OFFSET", &lens_updnlook_offset);
     temp_map.insert("CAMERA_TO_PICKER_OFFSET", &camera_to_picker_offset);
-    PropertyBase::saveJsonConfig("config//lensLoaderModule.json", temp_map);
+    PropertyBase::saveJsonConfig(file_name, temp_map);
 }
 void LensLoaderModule::receiveLoadLensRequst(bool need_lens,int ng_lens,int ng_len_tray)
 {

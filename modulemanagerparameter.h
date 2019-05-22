@@ -6,11 +6,16 @@ class ModuleManangerConfig:public PropertyBase
 {
     Q_OBJECT
     Q_PROPERTY(int serverMode READ serverMode WRITE setServerMode NOTIFY serverModeChanged)
-
+    Q_PROPERTY(QString dataServerURL READ dataServerURL WRITE setDataServerURL NOTIFY dataServerURLChanged)
 public:
     int serverMode() const
     {
         return m_serverMode;
+    }
+
+    QString dataServerURL() const
+    {
+        return m_dataServerURL;
     }
 
 public slots:
@@ -23,11 +28,23 @@ public slots:
         emit serverModeChanged(m_serverMode);
     }
 
+    void setDataServerURL(QString dataServerURL)
+    {
+        if (m_dataServerURL == dataServerURL)
+            return;
+
+        m_dataServerURL = dataServerURL;
+        emit dataServerURLChanged(m_dataServerURL);
+    }
+
 signals:
     void serverModeChanged(int serverMode);
 
+    void dataServerURLChanged(QString dataServerURL);
+
 private:
     int m_serverMode = 0;
+    QString m_dataServerURL;
 };
 
 
@@ -36,32 +53,24 @@ class ModuleManagerParameter:public PropertyBase
     Q_OBJECT
 public:
     ModuleManagerParameter(){}
-    Q_PROPERTY(int serverMode READ serverMode WRITE setServerMode NOTIFY serverModeChanged)
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(QString materialType READ materialType WRITE setMaterialType NOTIFY materialTypeChanged)
-    int serverMode() const
-    {
-        return m_serverMode;
-    }
+    Q_PROPERTY(QString machineType READ machineType WRITE setMachineType NOTIFY machineTypeChanged)
     int runMode() const
     {
         return m_runMode;
     }
-
     QString materialType() const
     {
         return m_materialType;
     }
 
-public slots:
-    void setServerMode(int serverMode)
+    QString machineType() const
     {
-        if (m_serverMode == serverMode)
-            return;
-
-        m_serverMode = serverMode;
-        emit serverModeChanged(m_serverMode);
+        return m_machineType;
     }
+
+public slots:
     void setRunMode(int runMode)
     {
         if (m_runMode == runMode)
@@ -70,7 +79,6 @@ public slots:
         m_runMode = runMode;
         emit runModeChanged(m_runMode);
     }
-
     void setMaterialType(QString materialType)
     {
         if (m_materialType == materialType)
@@ -80,16 +88,25 @@ public slots:
         emit materialTypeChanged(m_materialType);
     }
 
-signals:
-    void serverModeChanged(int serverMode);
-    void runModeChanged(int runMode);
+    void setMachineType(QString machineType)
+    {
+        if (m_machineType == machineType)
+            return;
 
+        m_machineType = machineType;
+        emit machineTypeChanged(m_machineType);
+    }
+
+signals:
+    void runModeChanged(int runMode);
     void materialTypeChanged(QString materialType);
 
+    void machineTypeChanged(QString machineType);
+
 private:
-    int m_serverMode = 0;
     int m_runMode = 0;
-    QString m_materialType = "04b";
+    QString m_materialType = "TESTTYPE";
+    QString m_machineType = "DAA_001";
 };
 class ModuleManagerState:public PropertyBase
 {

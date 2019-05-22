@@ -11,7 +11,7 @@ bool Dothinkey::CameraChannel::CloseCameraChannel()
 
 Dothinkey::Dothinkey(QObject *parent) : PropertyBase(parent)
 {
-    loadParams();
+//    loadParams();
 }
 
 Dothinkey::~Dothinkey()
@@ -19,18 +19,18 @@ Dothinkey::~Dothinkey()
     //Clear things here
 }
 
-void Dothinkey::saveJsonConfig()
+void Dothinkey::saveJsonConfig(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("DOTHINKEY_PARAMS", this);
-    PropertyBase::saveJsonConfig("config//dothinkeyConfig.json", temp_map);
+    PropertyBase::saveJsonConfig(file_name, temp_map);
 }
 
-void Dothinkey::loadParams()
+void Dothinkey::loadParams(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("DOTHINKEY_PARAMS", this);
-    PropertyBase::loadJsonConfig("config//dothinkeyConfig.json", temp_map);
+    PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
 void Dothinkey::DothinkeySetConfigFile(std::string filename)

@@ -20,7 +20,7 @@ void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocat
 //    loadParams();
 }
 
-void SutModule::saveJsonConfig()
+void SutModule::saveJsonConfig(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("SUT_PARAMS", &this->parameters);
@@ -32,7 +32,7 @@ void SutModule::saveJsonConfig()
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
 //    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
 //    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
-    PropertyBase::saveJsonConfig("config//sutConfig.json", temp_map);
+    PropertyBase::saveJsonConfig(file_name, temp_map);
 }
 
 void SutModule::resetLogic()
@@ -51,7 +51,7 @@ void SutModule::resetLogic()
     states.setWaitLoading(false);
 }
 
-void SutModule::loadParams()
+void SutModule::loadParams(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("SUT_PARAMS", &parameters);
@@ -63,7 +63,7 @@ void SutModule::loadParams()
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
 //    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
 //    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
-    PropertyBase::loadJsonConfig("config//sutConfig.json", temp_map);
+    PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
 bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check_autochthonous)

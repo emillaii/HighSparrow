@@ -33,23 +33,22 @@ void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Doth
     this->unitlog = unitlog;
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();
-    loadParams();
     connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
 }
 
-void AACoreNew::loadParams()
+void AACoreNew::loadJsonConfig(QString file_name)
 {
     QMap<QString, PropertyBase*> temp_map;
     temp_map.insert("AA_CORE_PARAMS", &parameters);
-    PropertyBase::loadJsonConfig(AA_CORE_MODULE_JSON, temp_map);
+    PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
-void AACoreNew::updateParams()
+void AACoreNew::saveJsonConfig(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("AA_CORE_PARAMS", &this->parameters);
-    PropertyBase::saveJsonConfig(AA_CORE_MODULE_JSON,temp_map);
+    PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
 void AACoreNew::setSfrWorkerController(SfrWorkerController * sfrWorkerController){

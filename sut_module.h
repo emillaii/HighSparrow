@@ -26,8 +26,8 @@ public:
     void Init(MaterialCarrier* carrier,SutClient* sut_cilent,
               VisionLocation* vision_downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn,
               XtVacuum *vacuum,XtCylinder* popgpin);
-    void loadParams();
-    void saveJsonConfig();
+    void loadParams(QString file_name);
+    void saveJsonConfig(QString file_name);
     void resetLogic();
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);

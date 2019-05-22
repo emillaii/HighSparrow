@@ -335,7 +335,7 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     this->sut = sut;
 }
 
-void LutModule::saveJsonConfig()
+void LutModule::saveJsonConfig(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LUT_PARAMS", &parameters);
@@ -351,10 +351,10 @@ void LutModule::saveJsonConfig()
     temp_map.insert("AA2_PICKLENS_POSITION", &aa2_picklens_position);
     temp_map.insert("AA2_UNPICKLENS_POSITION", &aa2_unpicklens_position);
     temp_map.insert("AA2_UPLOOK_POSITION", &aa2_uplook_position);
-    PropertyBase::saveJsonConfig("config//lutConfig.json", temp_map);
+    PropertyBase::saveJsonConfig(file_name, temp_map);
 }
 
-void LutModule::loadParams()
+void LutModule::loadJsonConfig(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LUT_PARAMS", &parameters);
@@ -370,7 +370,7 @@ void LutModule::loadParams()
     temp_map.insert("AA2_PICKLENS_POSITION", &aa2_picklens_position);
     temp_map.insert("AA2_UNPICKLENS_POSITION", &aa2_unpicklens_position);
     temp_map.insert("AA2_UPLOOK_POSITION", &aa2_uplook_position);
-    PropertyBase::loadJsonConfig("config//lutConfig.json", temp_map);
+    PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
 bool LutModule::moveToAA1UplookPos(bool check_autochthonous)

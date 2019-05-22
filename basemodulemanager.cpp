@@ -10,7 +10,7 @@
 #include <qjsondocument.h>
 
 wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
-wchar_t BaseModuleManager::profile_path1[] = L".\\config\\xt_motion_config.csv";
+wchar_t BaseModuleManager::profile_path1[] = L".\\config\\";
 wchar_t BaseModuleManager::profile_path2[] = L"..\\config\\xt_motion_config.csv";
 
 BaseModuleManager::BaseModuleManager(QObject *parent)
@@ -73,7 +73,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonPickarmCamera) pylonPickarmCamera->start();
     }
     material_tray.standards_parameters.setTrayCount(2);
-    unitlog.setServerAddress(DataServerURL());
+    unitlog.setServerAddress(configs.dataServerURL());
     setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
     connect(&timer, &QTimer::timeout, this, &BaseModuleManager::alarmChecking);
@@ -116,85 +116,86 @@ bool BaseModuleManager::sendMessageTest(QString title, QString content)
 
 bool BaseModuleManager::loadParameters()
 {
-    material_tray.loadJsonConfig();
-    aa_head_module.loadJsonConfig();
-    sut_module.loadParams();
-    dothinkey->loadParams();
-    dispenser.parameters.loadJsonConfig(DISPENSER_PARAMETER_PATH,DISPENSER_PARAMETER);
-    dispense_module.parameters.loadJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
+    configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
+    if(!this->paramers.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))return false;
 
-    tray_loader_module.parameters.loadJsonConfig(TRAY_LOADER_PATH,TRAY_LOADER_PARAMETER);
-    trayClipIn.standards_parameters.loadJsonConfig(TRAY_CLIPIN_PATH,TRAY_CLIPIN_PARAMETER);
-    trayClipOut.standards_parameters.loadJsonConfig(TRAY_CLIPOUT_PATH,TRAY_CLIPOUT_PARAMETER);
-
+    material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
+    aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_MODULE_JSON));
+    sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
+    dothinkey->loadParams(getCurrentParameterDir().append(DOTHINGKEY_FILE));
+    dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
+    dispense_module.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
+    sut_carrier.parameters.loadJsonConfig(getCurrentParameterDir().append(SUT_CARRIER_FILE),"sut");
     if(ServerMode())
     {
-        sensor_loader_module.loadJsonConfig();
-        sensor_pickarm.parameters.loadJsonConfig(SENSOR_PICKARM_FILE_NAME,"sensor_pickarm");
+        sensor_loader_module.loadJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
+        sensor_pickarm.parameters.loadJsonConfig(getCurrentParameterDir().append(SENSOR_PICKARM_FILE),SENSOR_PICKARM_PARAMETER);
 
         QMap<QString,PropertyBase*> temp_map;
         temp_map.insert("sensor_tray_loader", &sensor_tray_loder_module.parameters);
         temp_map.insert("sensor_clip_stand", &sensor_clip_stand);
         temp_map.insert("entance_clip", &entrance_clip.parameters);
         temp_map.insert("exit_clip", &exit_clip.parameters);
-        PropertyBase::loadJsonConfig(SENSOR_TRAY_LOADER_FILE_NAME, temp_map);
+        PropertyBase::loadJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE), temp_map);
     }
     else
     {
-        lut_module.loadParams();
-        lut_carrier.parameters.loadJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
-        lens_loader_module.loadJsonConfig();
-        lens_pick_arm.parameters.loadJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
-    }
-    sut_carrier.parameters.loadJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
-    LoadVcmFile(VCM_PARAMETER_FILENAME);
-    loadCylinderFiles(CYLINDER_PARAMETER_FILENAME);
-    loadVacuumFiles(VACUUM_PARAMETER_FILENAME);
-    loadVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
-    loadCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
-    loadMotorLimitFiles(LIMIT_PARAMETER_FILENAME);
-    if(!InitStruct())
-        return false;
+        lut_module.loadJsonConfig(getCurrentParameterDir().append(LUT_FILE));
+        lut_carrier.parameters.loadJsonConfig(getCurrentParameterDir().append(LUT_CARRIER_FILE),LUT_CARRIER_PARAMETER);
+        lens_loader_module.loadJsonConfig(getCurrentParameterDir().append(LENS_LOADER_MODULE_FILE));
+        lens_pick_arm.parameters.loadJsonConfig(getCurrentParameterDir().append(LENS_PICKARM_FILE),LENS_PICKARM_PARAMETER);
+        tray_loader_module.parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_LOADER_FILE),TRAY_LOADER_PARAMETER);
+        trayClipIn.standards_parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_CLIPIN_FILE),TRAY_CLIPIN_PARAMETER);
+        trayClipOut.standards_parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_CLIPOUT_FILE),TRAY_CLIPOUT_PARAMETER);
+     }
+    aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
+    loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
+    loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
+    loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
+    loadCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
+    loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
+    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
     return true;
 }
 
-bool BaseModuleManager::SaveParameters()
+bool BaseModuleManager::saveParameters()
 {
-    material_tray.saveJsonConfig();
-    aa_head_module.saveJsonConfig();
-    sut_module.saveJsonConfig();
-    lut_module.saveJsonConfig();
-    dothinkey->saveJsonConfig();
-    dispenser.parameters.saveJsonConfig(DISPENSER_PARAMETER_PATH,DISPENSER_PARAMETER);
-    dispense_module.parameters.saveJsonConfig(DISPENSE_MODULE_PARAMETER_PATH,DISPENSER_MODULE_PARAMETER);
-    material_tray.saveJsonConfig();
-    sut_carrier.parameters.saveJsonConfig(SUT_CARRIER_FILE_NAME,"sut");
+    //pr文件拷贝
+    this->paramers.saveJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER);
+    material_tray.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
+    aa_head_module.saveJsonConfig(getCurrentParameterDir().append(AA_HEAD_MODULE_JSON));
+    sut_module.saveJsonConfig(getCurrentParameterDir().append(SUT_FILE));
+    dothinkey->saveJsonConfig(getCurrentParameterDir().append(DOTHINGKEY_FILE));
+    dispenser.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
+    dispense_module.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
+    sut_carrier.parameters.saveJsonConfig(getCurrentParameterDir().append(SUT_CARRIER_FILE),"sut");
     if(ServerMode())
     {
-        sensor_loader_module.saveJsonConfig();
-        sensor_pickarm.parameters.saveJsonConfig(SENSOR_PICKARM_FILE_NAME,"sensor_pickarm");
+        sensor_loader_module.saveJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
+        sensor_pickarm.parameters.saveJsonConfig(getCurrentParameterDir().append(SENSOR_PICKARM_FILE),SENSOR_PICKARM_PARAMETER);
 
         QMap<QString,PropertyBase*> temp_map;
         temp_map.insert("sensor_tray_loader", &sensor_tray_loder_module.parameters);
         temp_map.insert("sensor_clip_stand", &sensor_clip_stand);
         temp_map.insert("entance_clip", &entrance_clip.parameters);
         temp_map.insert("exit_clip", &exit_clip.parameters);
-        PropertyBase::saveJsonConfig(SENSOR_TRAY_LOADER_FILE_NAME, temp_map);
+        PropertyBase::saveJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE), temp_map);
     }
     else
     {
-        lut_module.saveJsonConfig();
-        lut_carrier.parameters.saveJsonConfig(LUT_CARRIER_FILE_NAME,"lut");
-        lens_loader_module.saveJsonConfig();
-        lens_pick_arm.parameters.saveJsonConfig(LENS_PICKARM_FILE_NAME,"lens_pickarm");
+        lut_module.saveJsonConfig(getCurrentParameterDir().append(LUT_FILE));
+        lut_carrier.parameters.saveJsonConfig(getCurrentParameterDir().append(LUT_CARRIER_FILE),LUT_CARRIER_PARAMETER);
+        lens_loader_module.saveJsonConfig(getCurrentParameterDir().append(LENS_LOADER_MODULE_FILE));
+        lens_pick_arm.parameters.saveJsonConfig(getCurrentParameterDir().append(LENS_PICKARM_FILE),LENS_PICKARM_PARAMETER);
+        tray_loader_module.parameters.saveJsonConfig(getCurrentParameterDir().append(TRAY_LOADER_FILE),TRAY_LOADER_PARAMETER);
+        trayClipIn.standards_parameters.saveJsonConfig(getCurrentParameterDir().append(TRAY_CLIPIN_FILE),TRAY_CLIPIN_PARAMETER);
+        trayClipOut.standards_parameters.saveJsonConfig(getCurrentParameterDir().append(TRAY_CLIPOUT_FILE),TRAY_CLIPOUT_PARAMETER);
     }
-    tray_loader_module.parameters.saveJsonConfig(TRAY_LOADER_PATH,TRAY_LOADER_PARAMETER);
-    trayClipIn.standards_parameters.saveJsonConfig(TRAY_CLIPIN_PATH,TRAY_CLIPIN_PARAMETER);
-    trayClipOut.standards_parameters.saveJsonConfig(TRAY_CLIPOUT_PATH,TRAY_CLIPOUT_PARAMETER);
-    aaCoreNew.updateParams();
-    saveCalibrationFiles(CALIBRATION_PARAMETER_FILENAME);
-    saveVisionLoactionFiles(VISION_LOCATION_PARAMETER_FILENAME);
-//    saveMotorLimitFiles(LIMIT_PARAMETER_FILENAME);
+    aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
+    saveMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
+    saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
     return true;
 }
 
@@ -226,23 +227,33 @@ void BaseModuleManager::performHandlingOperation(int cmd)
     qInfo("performHandlingOperation cmd: ", cmd);
 }
 
-bool BaseModuleManager::LoadProfile()
+bool BaseModuleManager::loadProfile()
 {
     if(profile_loaded)
         return true;
     profile_loaded = false;
-    int res;
-    QString temp = QCoreApplication::applicationDirPath();
-    if(temp == QDir::currentPath())
-    {
-        LPWSTR path = profile_path1;
-        res = XT_Controler_Extend::Profile_Load(path);
-    }
-    else
-    {
-        LPWSTR path = profile_path2;
-        res = XT_Controler_Extend::Profile_Load(path);
-    }
+    if(loadStructConfig(SYSTERM_PARAM_DIR))
+        if(loadParameters())
+        {
+            InitStruct();
+            profile_loaded = true;
+        }
+    return false;
+}
+
+bool BaseModuleManager::loadStructConfig(QString file_dir)
+{
+   bool result = loadMachineConfig(QString(file_dir).append(MACHINE_PARAM_FILE));
+   if(!result)return false;
+   //todo将和打料的型号无关的参数移入该函数
+    return true;
+}
+
+bool BaseModuleManager::loadMachineConfig(QString file_path)
+{
+    if(QCoreApplication::applicationDirPath()!=QDir::currentPath())
+        file_path = QString("..//").append(file_path);
+    int res = XT_Controler_Extend::Profile_Load((LPWSTR)file_path.toStdWString().c_str());
     if(res!=0)
     {
         QString temp_name;
@@ -284,22 +295,14 @@ bool BaseModuleManager::LoadProfile()
 
             motors.insert(temp_name,motor);
         }
-        if(loadParameters())return false;
-        profile_loaded = true;
         return true;
     }
-    InitStruct();
-    return false;
 }
 
-bool BaseModuleManager::LoadVcmFile(QString file_name)
+bool BaseModuleManager::loadVcmFile(QString file_name)
 {
     QJsonArray array;
-    if(!loadJsonArray(file_name,array))
-    {
-//        saveVcmfile(file_name);
-        return false;
-    }
+    if(!loadJsonArray(file_name,array))return false;
     for (int i = 0; i < array.count(); i++)
     {
         XtVcMotor* temp_motor = new XtVcMotor();
@@ -332,22 +335,29 @@ bool BaseModuleManager::saveVcmfile(QString file_name)
     }
     if(array.size() > 0)
         return  saveJsonArray(file_name,array);
-//    else
-//    {
-//        VcMotorParameter temp_param;
-//        QString motor_name = temp_param.motorName();
-//        QJsonArray json;
-//        for (int i = 0; i < 4; ++i) {
-//            QJsonObject temp_object;
-//            QString temp_name = motor_name;
-//            temp_name.append(QString::number(i));
-//            temp_param.setMotorName(temp_name);
-//            temp_param.write(temp_object);
-//            json.append(temp_object);
-//        }
-//        return  saveJsonArray(file_name,json);
-//    }
     return  false;
+}
+
+bool BaseModuleManager::loadMotorFile(QString file_name)
+{
+    QJsonObject param_object;
+    if(!loadJsonObject(file_name,param_object))return false;
+    foreach (XtMotor* temp_motor, motors)
+        if(param_object.contains(temp_motor->Name()))
+                temp_motor->parameters.read(param_object[temp_motor->Name()].toObject());
+    return true;
+}
+
+bool BaseModuleManager::saveMotorFile(QString file_name)
+{
+    QJsonObject param_object;
+    foreach (XtMotor* temp_motor, motors)
+    {
+        QJsonObject temp_object;
+        temp_motor->parameters.write(temp_object);
+        param_object[temp_motor->Name()] = temp_object;
+    }
+    return saveJsonObject(file_name,param_object);
 }
 
 bool BaseModuleManager::loadVacuumFiles(QString file_name)
@@ -673,6 +683,7 @@ bool BaseModuleManager::loadJsonArray(QString file_name,QJsonArray &array)
     file.setFileName(file_name);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
+        AppendError(QString(u8"加载参数文件失败，文件名 %1").arg(file_name));
         qWarning("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return false;
     }
@@ -690,6 +701,7 @@ bool BaseModuleManager::loadJsonArray(QString file_name,QJsonArray &array)
         return true;
     else
     {
+        AppendError(QString(u8"解析参数文件失败，文件名 %1").arg(file_name));
         qInfo("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return false;
     }
@@ -700,6 +712,7 @@ bool BaseModuleManager::saveJsonArray(QString file_name,QJsonArray &array)
     QFile file;
     file.setFileName(file_name);
     if(!file.open(QFile::WriteOnly)){
+        AppendError(QString(u8"保存参数文件失败，文件名 %1").arg(file_name));
         qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return false;
     }
@@ -748,6 +761,14 @@ bool BaseModuleManager::saveJsonObject(QString file_name, QJsonObject &object)
     file.write(document.toJson());
     file.close();
     return true;
+}
+
+QString BaseModuleManager::getCurrentParameterDir()
+{
+    QString dir = QString(CONFIG_DIR).append(paramers.materialType()).append("//");
+    if(!QDir(dir).exists())
+        QDir().mkdir(dir);
+    return dir;
 }
 
 bool BaseModuleManager::InitStruct()
@@ -919,8 +940,6 @@ bool BaseModuleManager::InitStruct()
     //todo
     material_tray.resetTrayState(0);
     material_tray.resetTrayState(1);
-    profile_loaded = true;
-
     return true;
 }
 
@@ -986,7 +1005,7 @@ bool BaseModuleManager::initialDevice()
     return true;
 }
 
-bool BaseModuleManager::generatefileConfigs()
+bool BaseModuleManager::generateConfigFiles()
 {
     foreach (XtMotor* temp_motor, motors) {
         temp_motor->parallel_limit_parameters.append(new ParallelLimitParameter());
@@ -997,7 +1016,9 @@ bool BaseModuleManager::generatefileConfigs()
         temp_motor->io_limit_parameters.append(new IOLimitParameter());
         temp_motor->io_limit_parameters[0]->setMoveSpance(temp_space);
     }
-    return saveMotorLimitFiles(LIMIT_PARAMETER_MODE_FILENAME);
+    bool result = saveMotorLimitFiles(LIMIT_PARAMETER_MODE_FILENAME);
+
+    return result;
 }
 
 void BaseModuleManager::EnableMotors()
@@ -1209,7 +1230,7 @@ void BaseModuleManager::updateParams()
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
-    SaveParameters();
+    saveParameters();
     //    loadParameters();
 }
 
@@ -1599,8 +1620,8 @@ bool BaseModuleManager::closeSensor()
 
 void BaseModuleManager::loadSensorLoaderParameter()
 {
-    material_tray.loadJsonConfig();
-    sensor_loader_module.loadJsonConfig();
+    material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
+    sensor_loader_module.loadJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
 }
 
 double BaseModuleManager::showChartCalibrationRotation()

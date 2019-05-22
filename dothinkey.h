@@ -25,7 +25,7 @@ public:
     ~Dothinkey();
     Q_PROPERTY(QString IniFilename READ IniFilename WRITE setIniFilename NOTIFY paramsChanged)
     Q_INVOKABLE bool initSensor();
-    void loadParams();
+    void loadParams(QString file_name);
     BOOL DothinkeyEnum();   //Enumerate the dothinkey devices
     BOOL DothinkeyOpen();   //Open Camera Devices
     BOOL DothinkeyClose();  //Close Camera Devices
@@ -71,7 +71,7 @@ public:
     }
 
 public slots:
-    void saveJsonConfig();
+    void saveJsonConfig(QString file_name);
     void setIniFilename(QString IniFilename)
     {
         if (m_IniFilename == IniFilename)

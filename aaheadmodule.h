@@ -27,8 +27,8 @@ public:
               XtGeneralOutput * uv4,
               int thread_id,
               MaterialCarrier* sut_carrier);
-    void saveJsonConfig();
-    void loadJsonConfig();
+    void saveJsonConfig(QString file_name);
+    void loadJsonConfig(QString file_name);
     Q_INVOKABLE bool moveToMushroomPosition(bool moveXYC = true);
     Q_INVOKABLE bool moveToPickLensPosition();
     Q_INVOKABLE bool moveToOCPosition();

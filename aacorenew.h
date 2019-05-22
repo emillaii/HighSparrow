@@ -59,8 +59,8 @@ public:
     ErrorCodeStruct performTest(QString testItemName, QJsonValue properties);
     ErrorCodeStruct performDispense();
     AACoreParameters parameters;
-    void loadParams();
-    void updateParams();
+    void loadJsonConfig(QString file_name);
+    void saveJsonConfig(QString file_name);
     AAData aaData_1;  // For Display Channel 1
     AAData aaData_2;  // For Display Channel 2
     AAData mtf_log;   // For Display MTF Log

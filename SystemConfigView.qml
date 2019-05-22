@@ -30,66 +30,25 @@ ItemDelegate {
                 }
             }
             GroupBox{
+                title:qsTr("配置参数")
                 ColumnLayout {
                     RowLayout {
                         Label {
-                            text: qsTr("Data Server Address ")
+                            text: qsTr("物料型号")
                         }
                         TextField {
-                            text: baseModuleManager.DataServerURL
-                            width: 300
-                            Layout.preferredWidth: 300
+                            text: systerm_param.materialType
                             onEditingFinished: {
-                                baseModuleManager.setDataServerURL()
+                                systerm_param.setMaterialType(text)
                             }
                         }
-                    }
-
-                    RowLayout {
                         Label {
-                            text: qsTr("Server Mode ")
-                        }
-                        ComboBox {
-                            id: selectedMode
-                            width: 200
-                            model: [ "Master", "Slave"]
-                        }
-                    }
-                    RowLayout {
-                        visible: {
-                            return selectedMode.currentIndex == 0
-                        }
-                        Label {
-                            text: qsTr("Server Port ")
+                            text: qsTr("数据服务器地址")
                         }
                         TextField {
-                            text: baseModuleManager.ServerPort
-                            validator: IntValidator {
-                            }
+                            text: systerm_param.materialType
                             onEditingFinished: {
-                                baseModuleManager.setServerPort()
-                            }
-                        }
-                    }
-                    RowLayout {
-                        visible: {
-                            return selectedMode.currentIndex != 0
-                        }
-                        Label {
-                            text: qsTr("Server URL ")
-                        }
-                        TextField {
-                            text: baseModuleManager.ServerURL
-                            width: 300
-                            Layout.preferredWidth: 300
-                            onEditingFinished: {
-                                baseModuleManager.setServerURL()
-                            }
-                        }
-                        Button {
-                            text: qsTr("Connect")
-                            onClicked: {
-                                console.log("connecting...")
+                                systerm_param.setMaterialType(text)
                             }
                         }
                     }

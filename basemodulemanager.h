@@ -200,9 +200,17 @@ private:
     QThread work_thread;
 
 public:
-    bool LoadProfile();
-    bool LoadVcmFile(QString file_name);
+    bool loadProfile();
+    bool loadStructConfig(QString file_dir);
+    bool loadMachineConfig(QString file_paths);
+    Q_INVOKABLE bool generateConfigFiles();
+
+    Q_INVOKABLE bool loadParameters();
+    Q_INVOKABLE bool saveParameters();
+    bool loadVcmFile(QString file_name);
     bool saveVcmfile(QString file_name);
+    bool loadMotorFile(QString file_name);
+    bool saveMotorFile(QString file_name);
     bool loadVacuumFiles(QString file_name);
     bool saveVacuumFiles(QString file_name);
     bool loadCylinderFiles(QString file_name);
@@ -218,14 +226,13 @@ public:
     bool saveJsonArray(QString file_name,QJsonArray &array);
     bool loadJsonObject(QString file_name, QJsonObject &object);
     bool saveJsonObject(QString file_name,QJsonObject &object);
-    bool loadParameters();
-    bool SaveParameters();
+    QString getCurrentParameterDir();
+
     bool registerWorkers(WorkersManager* manager);
 
     Q_INVOKABLE void performHandling(int cmd);
 
     Q_INVOKABLE bool initialDevice();
-    Q_INVOKABLE bool generatefileConfigs();
     Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);
     Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
     Q_INVOKABLE void setMotorParamByName(QString name,double vel,double acc,double jert);

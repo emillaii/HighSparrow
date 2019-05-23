@@ -446,6 +446,7 @@ bool SensorTrayLoaderModule::moveToUpSensorTray()
        result &= hold_tray->Set(false);
        result &= gripper->Set(false);
     }
+
     return result;
 }
 

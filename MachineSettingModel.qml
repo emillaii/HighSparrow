@@ -51,5 +51,9 @@ ListModel {
         label:"常用操作"
         index:12
     }
+    ListElement{
+        label:"校正过程"
+        index:13
+    }
 }
 

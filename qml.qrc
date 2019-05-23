@@ -79,6 +79,7 @@
         <file>SensorTrayLoaderViewModule.qml</file>
         <file>CommonUsedView.qml</file>
         <file>CommonControl.qml</file>
+        <file>CheckProcess.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

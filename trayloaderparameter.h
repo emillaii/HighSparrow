@@ -346,6 +346,8 @@ class TrayLoaderState : public PropertyBase{
     bool m_hasTrayReadyPosClear=false;
     bool m_hasLTKX1ReadytoPull = false;
 
+    bool m_hasTrayOutHandOverReady=false;
+
 public:
     TrayLoaderState():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
@@ -355,6 +357,7 @@ public:
     Q_PROPERTY(bool hasEntranceTrayPulledAway READ hasEntranceTrayPulledAway WRITE setHasEntranceTrayPulledAway NOTIFY hasEntranceTrayPulledAwayChanged)
     Q_PROPERTY(bool hasTrayReadyPosClear READ hasTrayReadyPosClear WRITE setHasTrayReadyPosClear NOTIFY hasTrayReadyPosClearChanged)
     Q_PROPERTY(bool hasLTKX1ReadytoPull READ hasLTKX1ReadytoPull WRITE setHasLTKX1ReadytoPull NOTIFY hasLTKX1ReadytoPullChanged)
+    Q_PROPERTY(bool hasTrayOutHandOverReady READ hasTrayOutHandOverReady WRITE setHasTrayOutHandOverReady NOTIFY hasTrayOutHandOverReadyChanged)
     int runMode() const
     {
         return m_runMode;
@@ -386,6 +389,11 @@ public:
     bool hasLTKX1ReadytoPull() const
     {
         return m_hasLTKX1ReadytoPull;
+    }
+
+    bool hasTrayOutHandOverReady() const
+    {
+        return m_hasTrayOutHandOverReady;
     }
 
 public slots:
@@ -451,6 +459,15 @@ public slots:
         emit hasLTKX1ReadytoPullChanged(m_hasLTKX1ReadytoPull);
     }
 
+    void setHasTrayOutHandOverReady(bool hasTrayOutHandOverReady)
+    {
+        if (m_hasTrayOutHandOverReady == hasTrayOutHandOverReady)
+            return;
+
+        m_hasTrayOutHandOverReady = hasTrayOutHandOverReady;
+        emit hasTrayOutHandOverReadyChanged(m_hasTrayOutHandOverReady);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayOnEntryChanged(bool hasTrayOnEntry);
@@ -460,6 +477,7 @@ signals:
     void hasEntranceTrayPulledAwayChanged(bool hasEntranceTrayPulledAway);
     void hasTrayReadyPosClearChanged(bool hasTrayReadyPosClear);
     void hasLTKX1ReadytoPullChanged(bool hasLTKX1ReadytoPull);
+    void hasTrayOutHandOverReadyChanged(bool hasTrayOutHandOverReady);
 };
 
 #endif // TRAYLOADERPARAMETER_H

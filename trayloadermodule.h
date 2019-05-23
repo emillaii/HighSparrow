@@ -26,15 +26,21 @@ public:
     bool ejectTray();
 
     bool motorInPress();
+    bool moveToReadyFirstKick();
+    bool moveToFirstKick();
+    bool moveToReadySecondKick();
     bool moveToLtkx1GetPos();
     bool moveToLtkx1RelayPos();
     bool moveToLtkx1SetPos();
     bool motorInRelease();
 
     bool moveToLtlGetPos();
+    bool moveToSafePos();
     bool motorWorkPress();
     bool moveToLtlSetPos();
     bool motorWorkRelease();
+    bool moveToTrayOutHandOverPos();
+    bool moveToTrayInHandOverPos();
 
     bool moveToLtkx2GetPos();
     bool motorOutPress();

@@ -75,7 +75,9 @@ SOURCES += \
     sutclient.cpp \
     aacorenew.cpp \
     sensortrayloadermodule.cpp \
-    sensorclip.cpp
+    sensorclip.cpp \
+    checkprocessitem.cpp \
+    checkprocessmodel.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -210,7 +212,9 @@ HEADERS += \
     parallellimitparameter.h \
     verticallimitparameter.h \
     modulemanagerparameter.h \
-    xtmotorparameter.h
+    xtmotorparameter.h \
+    checkprocessitem.h \
+    checkprocessmodel.h
 
 DISTFILES += \
     icons/index.theme

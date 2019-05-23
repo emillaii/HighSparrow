@@ -11,6 +11,7 @@
 #include <QDebug>
 
 #include "aadata.h"
+#include "checkprocessmodel.h"
 int main(int argc, char *argv[])
 {
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -211,6 +212,8 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->sensor_tray_loder_module.parameters);
 
 
+    CheckProcessModel checkProcessModel;
+    engine.rootContext()->setContextProperty("checkProcessModel",&checkProcessModel);
 //    QStringList vacuumNames = highSprrow.baseModuleManager->vacuums.keys();
 //    QStringList cylinderNames = highSprrow.baseModuleManager->cylinder.keys();
 //    engine.rootContext()->setContextProperty("vacuumNames",vacuumNames);

@@ -325,11 +325,11 @@ ItemDelegate {
                                     Connections{
                                         target: timer
                                         onTriggered: {
-//                                            if (dialog.visible) {
-//                                                if(special_ouput.checked !== baseModuleManager.getOutput("POGOPIN下"))
-//                                                    special_ouput.toggle()
-//                                                //if(index%2==0&&!swich_id.checked)swich_id.toggle()
-//                                            }
+                                            if (commonControlViewSwitch.checked) {
+                                                if(special_ouput.checked !== baseModuleManager.getOutput("POGOPIN下"))
+                                                    special_ouput.toggle()
+                                                //if(index%2==0&&!swich_id.checked)swich_id.toggle()
+                                            }
                                         }
                                     }
                                     onCheckedChanged:{
@@ -345,11 +345,12 @@ ItemDelegate {
                                     Connections{
                                         target: timer
                                         onTriggered: {
-//                                            if (dialog.visible) {
-//                                                if(sut_vacuum.checked !== baseModuleManager.getOutput(text))
-//                                                    sut_vacuum.toggle()
-//                                                //if(index%2==0&&!swich_id.checked)swich_id.toggle()
-//                                            }
+                                            //console.log(text)
+                                            if (commonControlViewSwitch.checked) {
+                                                if(sut_vacuum.checked !== baseModuleManager.getOutput(text))
+                                                    sut_vacuum.toggle()
+                                                //if(index%2==0&&!swich_id.checked)swich_id.toggle()
+                                            }
                                         }
                                     }
                                     onCheckedChanged:{

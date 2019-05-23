@@ -340,7 +340,7 @@ class TrayLoaderState : public PropertyBase{
     Q_OBJECT
     int m_runMode=0;
     bool m_hasTrayReady=false;
-    bool m_hasTrayUsed=true;    
+    bool m_hasTrayUsed=false;
     bool m_hasPrevTrayEjected=false;
     bool m_hasEntranceTrayPulledAway=true;
     bool m_hasTrayReadyPosClear=false;

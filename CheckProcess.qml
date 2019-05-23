@@ -27,6 +27,10 @@ ItemDelegate {
 
         ColumnLayout {
             visible: checkProcessViewSwitch.checked
+            Timer {
+                id:timer
+                interval: 500; running: true; repeat: true
+            }
             RowLayout {
                 Label {
                     text: qsTr("")
@@ -58,13 +62,13 @@ ItemDelegate {
                                         Button{
                                             text:qsTr("校正")
                                             onClicked: {
-
+                                                logicManager.performCalibration("aa1_upLook_calibration")
                                             }
                                         }
                                         Button{
                                             text:qsTr("执行PR")
                                             onClicked: {
-
+                                                logicManager.performLocation("aa1_upLook_location")
                                             }
                                         }
                                     }
@@ -76,7 +80,7 @@ ItemDelegate {
                                     Button{
                                         text:qsTr("执行PR")
                                         onClicked: {
-
+                                            logicManager.performLocation("aa2_upLook_location")
                                         }
                                     }
                                 }
@@ -290,7 +294,7 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("执行PR")
                                     onClicked: {
-
+                                        sutModule.moveToDownlookPR()
                                     }
                                 }
                             }
@@ -331,7 +335,7 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("校正SUT UpdownlookDownCalibration")
                                     onClicked: {
-                                        logicManager.performCalibration("aa1_updownLook_down_calibration")
+                                        //logicManager.performCalibration("aa1_updownLook_down_calibration")
                                     }
                                 }
 
@@ -340,13 +344,13 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("校正SUT UpdownLookUpCailration")
                                     onClicked: {
-                                        logicManager.performCalibration("aa1_updownLook_up_calibration")
+                                        //logicManager.performCalibration("aa1_updownLook_up_calibration")
                                     }
                                 }
                                 Button{
                                     text:qsTr("执行SUT UpDownlookPR")
                                     onClicked: {
-
+                                        sutModule.toolUplookPR()
                                     }
                                 }
                             }
@@ -548,20 +552,21 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("校正lpa_updownlook_up_calibration")
                                     onClicked: {
-
+                                        logicManager.performCalibration("lpa_updownlook_up_calibration")
                                     }
                                 }
                                 Button{
                                     text:qsTr("校正lpa_updownlook_down_calibration")
                                     onClicked: {
-
+                                        logicManager.performCalibration("lpa_updownlook_down_calibration")
                                     }
                                 }
                             }
                             Button{
                                 text:qsTr("执行lpa_updownlook_pr")
                                 onClicked: {
-
+                                    logicManager.performLocation("lpa_updownlook_up_location")
+                                    logicManager.performLocation("lpa_updownlook_down_location")
                                 }
                             }
 

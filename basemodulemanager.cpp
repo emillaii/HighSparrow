@@ -46,7 +46,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         qInfo("This sparrow is in Master mode");
         this->lut_module.openServer(19998);
         lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
-        sut_clitent = new SutClient("ws://192.168.0.251:19999");
+        //sut_clitent = new SutClient("ws://192.168.0.251:19999");
         connect(&lut_module,&LutModule::sendLoadLensRequst,&lens_loader_module,&LensLoaderModule::receiveLoadLensRequst,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendLoadLensRequstFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
 
@@ -54,7 +54,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         qInfo("This sparrow is in Slave mode");
         this->sensor_loader_module.openServer(19999);
         lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
-        sut_clitent = new SutClient("ws://localhost:19999");
+//        sut_clitent = new SutClient("ws://localhost:19999");
     }
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
     connect(&aa_head_module,&AAHeadModule::sendSensrRequestToSut,&sut_module,&SutModule::receiveLoadSensorRequst,Qt::DirectConnection);
@@ -836,7 +836,7 @@ bool BaseModuleManager::InitStruct()
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
     }
-    sut_clitent->Init(GetVacuumByName(sut_module.parameters.vacuumName()));
+//    sut_clitent->Init(GetVacuumByName(sut_module.parameters.vacuumName()));
     sut_module.Init(&sut_carrier,sut_clitent,
                     GetVisionLocationByName(sut_module.parameters.downlookLocationName()),
                     GetVisionLocationByName(sut_module.parameters.updownlookDownLocationName()),

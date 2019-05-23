@@ -69,9 +69,8 @@ void AACoreNew::run(bool has_material)
     qInfo("End of thread");
 }
 
-void AACoreNew::startWork(bool reset_logic, int run_mode)
+void AACoreNew::startWork( int run_mode)
 {
-    if (reset_logic) ResetLogic();
     if (run_mode == RunMode::Normal) run(true);
     else if (run_mode == RunMode::NoMaterial) {
         run(false);
@@ -89,6 +88,14 @@ void AACoreNew::startWork(bool reset_logic, int run_mode)
         runningUnit = this->unitlog->createUnit();
         runFlowchartTest();
         emit postDataToELK(this->runningUnit);
+    }
+    else if(run_mode == RunMode::OnllyLeftAA&&aa_head->parameters.moduleName().contains("1"))
+    {
+        run(true);
+    }
+    else if(run_mode == RunMode::OnlyRightAA&&aa_head->parameters.moduleName().contains("2"))
+    {
+        run(true);
     }
 }
 
@@ -109,8 +116,9 @@ void AACoreNew::performHandlingOperation(int cmd)
     return;
 }
 
-void AACoreNew::ResetLogic()
+void AACoreNew::resetLogic()
 {
+    if(is_run)return;
     has_ng_lens = false;
     has_ng_sensor = false;
     has_sensor = false;

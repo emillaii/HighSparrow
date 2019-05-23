@@ -90,6 +90,22 @@ bool SensorPickArm::move_XeYe_Z2(double z, double escape_x, double escape_y, con
     return resut;
 }
 
+bool SensorPickArm::stepMove_XY_Synic(const double step_x, const double step_y, const bool check_softlanding, int timeout)
+{
+    if(check_softlanding)
+    {
+        if(!picker1->motor_z->resetSoftLanding(timeout))return false;
+        if(!picker2->motor_z->resetSoftLanding(timeout))return false;
+    }
+    double target_x = motor_x->GetFeedbackPos() + step_x;
+    double target_y = motor_y->GetFeedbackPos() + step_y;
+    motor_x->StepMove(step_x);
+    motor_y->StepMove(step_y);
+    bool resut = motor_x->WaitArrivedTargetPos(target_x);
+    resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
+    return resut;
+}
+
 bool SensorPickArm::stepMove_XYT1_Synic(const double step_x, const double step_y, const double step_t1, const bool check_softlanding, int timeout)
 {
     if(check_softlanding)

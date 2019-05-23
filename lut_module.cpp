@@ -282,13 +282,13 @@ void LutModule::sendPrEvent(const PrOffset pr_offset)
     result.insert("event", "prResp");
     emit sendMessageToClient(servingIP, getStringFromJsonObject(result));
 }
-void LutModule::startWork(bool reset_logic, int run_mode)
+void LutModule::startWork(int run_mode)
 {
     qInfo("Lut Module start work in run mode: %d", run_mode);
-    if(reset_logic)ResetLogic();
-    if(run_mode == RunMode::Normal)run(true);
-    else if(run_mode == RunMode::NoMaterial)run(false);
-    return;
+    if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)
+        run(true);
+    else if(run_mode == RunMode::NoMaterial)
+        run(false);
 }
 
 void LutModule::stopWork(bool wait_finish)
@@ -304,8 +304,9 @@ void LutModule::performHandlingOperation(int cmd)
     return;
 }
 
-void LutModule::ResetLogic()
+void LutModule::resetLogic()
 {
+    if(is_run)return;
     actionQueue.clear();
     requestQueue.clear();
     state = LUTState::NO_LENS;

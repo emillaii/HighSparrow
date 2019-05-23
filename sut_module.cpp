@@ -17,7 +17,7 @@ void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocat
     this->vision_updownlook_up_location = updownlook_up_locationn;
     this->vacuum = vacuum;
     this->popgpin = popgpin;
-//    loadParams();
+    setName(parameters.moduleName());
 }
 
 void SutModule::saveJsonConfig(QString file_name)
@@ -37,12 +37,7 @@ void SutModule::saveJsonConfig(QString file_name)
 
 void SutModule::resetLogic()
 {
-//    bool m_sutHasSensor = false;
-//    bool m_sutHasNgSensor = false;
-//    bool m_sutHasProduct = false;
-//    bool m_allowLoadSensor = false;
-//    bool m_loadingSensor = false;
-//    bool m_waitLoading = false;
+    if(is_run)return;
     states.setSutHasSensor(false);
     states.setSutHasNgSensor(false);
     states.setSutHasProduct(false);
@@ -279,18 +274,22 @@ void SutModule::run(bool has_material)
             }
             else
             {
-                emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta+parameters.cameraTheta());
+                emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta + parameters.cameraTheta());
                 states.setAllowLoadSensor(false);
             }
         }
     }
 }
 
-void SutModule::startWork(bool reset_logic, int run_mode)
+void SutModule::startWork(int run_mode)
 {
-    qInfo("sut Module start reset:%d run_mode :%d in %d",reset_logic,run_mode,QThread::currentThreadId());
-    if(reset_logic)resetLogic();
-    if(run_mode == RunMode::Normal)run(true);
+    qInfo("sut Module start run_mode :%d in %d",run_mode,QThread::currentThreadId());
+    if(run_mode == RunMode::Normal)
+        run(true);
+    else if(Name().contains("1")&&run_mode == RunMode::OnllyLeftAA)
+        run(true);
+    else if(Name().contains("2")&&run_mode == RunMode::OnlyRightAA)
+        run(true);
     else if(run_mode == RunMode::NoMaterial)run(false);
 
 }

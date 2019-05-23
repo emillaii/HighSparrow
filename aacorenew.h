@@ -103,10 +103,10 @@ private:
                                                                unsigned int & lrROIIndex);
 public slots:
     //ThreadWorkerBase
-    void startWork(bool reset_logic, int run_mode) override;
-    void stopWork(bool wait_finish) override;
-    void performHandlingOperation(int cmd) override;
-    void ResetLogic();
+    void startWork(int run_mode);
+    void stopWork(bool wait_finish);
+    void resetLogic();
+    void performHandlingOperation(int cmd);
     //End of ThreadWorkerBase
 signals:
     void sfrResultsReady(unsigned int, vector<Sfr_entry>, int);

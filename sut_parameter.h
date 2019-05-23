@@ -17,6 +17,7 @@ public:
     Q_PROPERTY(QString updownlookUpLocationName READ updownlookUpLocationName WRITE setUpdownlookUpLocationName NOTIFY updownlookUpLocationNameChanged)
     Q_PROPERTY(QString updownlookDownLocationName READ updownlookDownLocationName WRITE setUpdownlookDownLocationName NOTIFY updownlookDownLocationNameChanged)
     Q_PROPERTY(double cameraTheta READ cameraTheta WRITE setCameraTheta NOTIFY cameraThetaChanged)
+    Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
     double Force() const
     {
         return m_Force;
@@ -64,6 +65,11 @@ public:
     double cameraTheta() const
     {
         return m_cameraTheta;
+    }
+
+    QString moduleName() const
+    {
+        return m_moduleName;
     }
 
 public slots:
@@ -158,6 +164,15 @@ public slots:
         emit cameraThetaChanged(m_cameraTheta);
     }
 
+    void setModuleName(QString moduleName)
+    {
+        if (m_moduleName == moduleName)
+            return;
+
+        m_moduleName = moduleName;
+        emit moduleNameChanged(m_moduleName);
+    }
+
 signals:
     void paramsChanged(double Force);
 
@@ -181,6 +196,8 @@ signals:
 
     void cameraThetaChanged(double cameraTheta);
 
+    void moduleNameChanged(QString moduleName);
+
 private:
     double m_Force = 0;
     QString m_motorXName = "SUT_X";
@@ -192,6 +209,7 @@ private:
     QString m_updownlookUpLocationName;
     QString m_updownlookDownLocationName;
     double m_cameraTheta = 0;
+    QString m_moduleName = "SUT1Module";
 };
 
 class SutState:public PropertyBase

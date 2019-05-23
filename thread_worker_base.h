@@ -18,7 +18,9 @@ enum RunMode
     ChangeType = 1,
     NoMaterial = 2,
     VibrationTest = 3,
-    AAFlowChartTest = 4
+    AAFlowChartTest = 4,
+    OnllyLeftAA = 5,
+    OnlyRightAA =6
 };
 enum FinishedType
 {
@@ -52,10 +54,11 @@ signals:
     bool sendMsgSignal(QString,QString);
 
 public slots:
-    virtual void startWork(bool reset_logic = false,int run_mode = 0) = 0;
+    virtual void startWork(int run_mode) = 0;
     virtual void stopWork(bool wait_finish = true) = 0;
-    void receiveOperation(const int sender_id,const int operation_type);
+    virtual void resetLogic() = 0;
     virtual void performHandlingOperation(int cmd) = 0;
+    void receiveOperation(const int sender_id,const int operation_type);
 public:
     void setName(QString Name);
 private:

@@ -70,7 +70,6 @@ public:
               VisionLocation *sut_sensor_vision,VisionLocation *sut_product_vision, VisionLocation *sensor_pickarm_calibration_glass_vision);
     bool loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
-    void resetLogic();
     void openServer(int port);
     Q_INVOKABLE void performHandling(int cmd);
     Q_INVOKABLE void cameraTipOffsetCalibration(int pickhead);
@@ -79,8 +78,9 @@ signals:
     void sendChangeTray();
     // ThreadWorkerBase interface
 public slots:
-    void startWork(bool reset_logic, int run_mode);
+    void startWork(int run_mode);
     void stopWork(bool wait_finish);
+    void resetLogic();
     void performHandlingOperation(int cmd);
     void receiveRequestMessage(QString message, QString client_ip);
     void receiveChangeTrayFInish();

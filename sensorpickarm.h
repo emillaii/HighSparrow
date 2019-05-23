@@ -15,6 +15,7 @@ public:
     bool move_XY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
     bool move_XeYe_Z1_XY(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
     bool move_XeYe_Z2(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
+    bool stepMove_XY_Synic(const double step_x,const double step_y,const bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XYT1_Synic(const double step_x,const double step_y,const double step_t1,const bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XYT2_Synic(const double step_x,const double step_y,const double step_t2,const bool check_softlanding = false,int timeout = 10000);
 

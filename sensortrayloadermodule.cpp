@@ -37,12 +37,13 @@ void SensorTrayLoaderModule::Init(XtMotor *motor_tray, XtMotor *motor_kick, XtMo
     parts.append(this->exit_clip);
 }
 
-void SensorTrayLoaderModule::startWork(bool reset_logic, int run_mode)
+void SensorTrayLoaderModule::startWork(int run_mode)
 {
-    qInfo("SensorLoader start reset:%d run_mode :%d in %d",reset_logic,run_mode,QThread::currentThreadId());
-    if(reset_logic)resetLogic();
-    if(run_mode == RunMode::Normal)run(true);
-    else if(run_mode == RunMode::NoMaterial)run(false);
+    qInfo("SensorLoader start run_mode :%d in %d",run_mode,QThread::currentThreadId());
+    if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)
+        run(true);
+    else if(run_mode == RunMode::NoMaterial)
+        run(false);
 }
 
 void SensorTrayLoaderModule::stopWork(bool wait_finish)
@@ -70,7 +71,7 @@ void SensorTrayLoaderModule::receiveChangeTray()
     states.setChangingTray(true);
 }
 
-void SensorTrayLoaderModule::run(bool has_material)
+void SensorTrayLoaderModule:: run(bool has_material)
 {
     bool is_run = true;
     while (is_run)
@@ -79,13 +80,33 @@ void SensorTrayLoaderModule::run(bool has_material)
         //送入空盤
         if(states.needChangeTray()&&(!states.hasVacancyTray())&&(!states.hasWorkTray())&&states.entranceClipReady()&&(!states.getedVacancyTray()))
         {
-            if((!moveToUpSensorTray())&&has_material)
+            if(parameters.handleVacancyTray())
             {
-                AppendError(u8"去拿空盘位置失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                if((!moveToWaitVacancyTray())&&has_material)
                 {
-                    continue;
+                    AppendError(u8"去等手动放入空盘位置失败！");
+                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                    if(waitMessageReturn(is_run))
+                    {
+                        continue;
+                    }
+                }
+                else {
+                    sendAlarmMessage(ErrorLevel::TipNonblock,u8"请放入正确空盘!");
+                    waitMessageReturn(is_run);
+                    if(!is_run)break;
+                }
+            }
+            else
+            {
+                if((!moveToUpSensorTray())&&has_material)
+                {
+                    AppendError(u8"去拿空盘位置失败！");
+                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                    if(waitMessageReturn(is_run))
+                    {
+                        continue;
+                    }
                 }
             }
             if((!moveToGetTray())&&has_material)
@@ -325,7 +346,25 @@ void SensorTrayLoaderModule::run(bool has_material)
 
 void SensorTrayLoaderModule::resetLogic()
 {
-    //    states.setHasWorkTray(true);
+    if(is_run)return;
+    states.setHasTrayToGet(false);
+    states.setHasVacancyTray(false);
+    states.setHandlePutVacancyTray(false);
+    states.setFirstTrayIsVacancy(false);
+    states.setNeedChangeTray(false);
+    states.setChangingTray(false);
+    states.setEntranceClipReady(false);
+    states.setExitClipReady(false);
+    states.setHasGetedTray(false);
+    states.setHasWorkTray(false);
+    states.setHasKickTray(false);
+    states.setNeedChangeVacancyTray(false);
+    states.setNeedChangeEntranceClip(false);
+    states.setNeedChangeExitClip(false);
+    states.setUseSpareEntanceClip(false);
+    states.setUseSpareExitClip(false);
+    states.setHoldVacancyTray(false);
+    states.setGetedVacancyTray(false);
 }
 
 bool SensorTrayLoaderModule::movetoSTIEColumnIndex(int n)
@@ -447,6 +486,17 @@ bool SensorTrayLoaderModule::moveToUpSensorTray()
        result &= gripper->Set(false);
     }
 
+    return result;
+}
+
+bool SensorTrayLoaderModule::moveToWaitVacancyTray()
+{
+    bool result = motor_tray->MoveToPosSync(parameters.waitVacancyTrayPosition());
+    if(result)
+    {
+       result &= hold_tray->Set(false);
+       result &= gripper->Set(false);
+    }
     return result;
 }
 

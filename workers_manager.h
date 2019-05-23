@@ -12,10 +12,12 @@ public:
     WorkersManager(QObject *parent = nullptr);
     bool registerWorker(ThreadWorkerBase* worker);
 signals:
-    void startWorkersSignal(bool reset = false,int run_mode = 0);
+    void startWorkersSignal(int run_mode);
     void stopWorkersSignal(bool wait_finish = true);
-    void startWorkerSignal(bool reset = false,int run_mode = 0);
+    void resetLogicsSignal();
+    void startWorkerSignal(int run_mode);
     void stopWorkerSignal(bool wait_finish = true);
+    void resetLogicSignal();
     void paramsChanged(bool ShowAlarmDialog);
     void feedbackOperation(const int sender_id,const int operation_type);
 public slots:
@@ -31,10 +33,12 @@ void setShowAlarmDialog(bool ShowAlarmDialog)
 }
 bool sendMessageTest(QString title,QString content);
 public:
-    Q_INVOKABLE void startWorkers(bool reset = false,int run_mode = 0);
+    Q_INVOKABLE void startWorkers(int run_mode = 0);
     Q_INVOKABLE void stopWorkers(bool wait_finish = true);
-    Q_INVOKABLE void startWorker(QString name,bool reset = false,int run_mode = 0);
+    Q_INVOKABLE void resetLogics();
+    Q_INVOKABLE void startWorker(QString name,int run_mode = 0);
     Q_INVOKABLE void stopWorker(QString name,bool wait_finish = true);
+    Q_INVOKABLE void resetLogic(QString name);
     Q_INVOKABLE QList<QString> getWorkersNames();
     Q_INVOKABLE QString getAlarmMessage(QString workerName);
     Q_INVOKABLE int getAlarmState(QString workerName);

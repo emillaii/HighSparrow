@@ -22,9 +22,9 @@ Grid {
                     onClicked: {
                         workersManager.stopWorkers(true)
                         logicManager.stop()
-                        workersManager.startWorker("AACoreNew",true,3)
+                        workersManager.startWorker("AACoreNew",3)
                         if (sensorLoderCheckBox.checked)
-                            workersManager.startWorker("SensorLoader",true,3)
+                            workersManager.startWorker("SensorLoader",3)
                     }
                 }
                 Button {

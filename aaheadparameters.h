@@ -24,7 +24,7 @@ public:
     Q_PROPERTY(QString uv2Name READ uv2Name WRITE setUv2Name NOTIFY uv2NameChanged)
     Q_PROPERTY(QString uv3Name READ uv3Name WRITE setUv3Name NOTIFY uv3NameChanged)
     Q_PROPERTY(QString uv4Name READ uv4Name WRITE setUv4Name NOTIFY uv4NameChanged)
-
+    Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
 
 double PickLensPositionZ() const
 {
@@ -94,6 +94,11 @@ QString uv3Name() const
 QString uv4Name() const
 {
     return m_uv4Name;
+}
+
+QString moduleName() const
+{
+    return m_moduleName;
 }
 
 public slots:
@@ -217,6 +222,15 @@ void setUv4Name(QString uv4Name)
     emit uv4NameChanged(m_uv4Name);
 }
 
+void setModuleName(QString moduleName)
+{
+    if (m_moduleName == moduleName)
+        return;
+
+    m_moduleName = moduleName;
+    emit moduleNameChanged(m_moduleName);
+}
+
 signals:
 void paramsChanged();
 void rotateZOffsetChanged(double rotateZOffset);
@@ -243,6 +257,8 @@ void uv3NameChanged(QString uv3Name);
 
 void uv4NameChanged(QString uv4Name);
 
+void moduleNameChanged(QString moduleName);
+
 private:
 double m_PickLensPositionZ = 0;
 double m_OCPositionZ = 0;
@@ -258,6 +274,7 @@ QString m_uv1Name = "AA_UV1";
 QString m_uv2Name = "AA_UV2";
 QString m_uv3Name = "AA_UV3";
 QString m_uv4Name = "AA_UV4";
+QString m_moduleName = "AA1Head";
 };
 
 #endif // AAHEADPARAMETERS_H

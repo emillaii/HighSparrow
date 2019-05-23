@@ -32,6 +32,8 @@ public:
     Q_PROPERTY(double downTrayPosition READ downTrayPosition WRITE setDownTrayPosition NOTIFY downTrayPositionChanged)
     Q_PROPERTY(double backDistance READ backDistance WRITE setBackDistance NOTIFY backDistanceChanged)
     Q_PROPERTY(double pushMotorSafePosition READ pushMotorSafePosition WRITE setPushMotorSafePosition NOTIFY pushMotorSafePositionChanged)
+    Q_PROPERTY(bool handleVacancyTray READ handleVacancyTray WRITE setHandleVacancyTray NOTIFY handleVacancyTrayChanged)
+    Q_PROPERTY(double waitVacancyTrayPosition READ waitVacancyTrayPosition WRITE setWaitVacancyTrayPosition NOTIFY waitVacancyTrayPositionChanged)
     QString motorTrayName() const
     {
         return m_motorTrayName;
@@ -139,6 +141,16 @@ public:
     QString cylinderGripperName() const
     {
         return m_cylinderGripper;
+    }
+
+    bool handleVacancyTray() const
+    {
+        return m_handleVacancyTray;
+    }
+
+    double waitVacancyTrayPosition() const
+    {
+        return m_waitVacancyTrayPosition;
     }
 
 public slots:
@@ -349,6 +361,25 @@ public slots:
         emit cylinderGripperNameChanged(m_cylinderGripper);
     }
 
+    void setHandleVacancyTray(bool handleVacancyTray)
+    {
+        if (m_handleVacancyTray == handleVacancyTray)
+            return;
+
+        m_handleVacancyTray = handleVacancyTray;
+        emit handleVacancyTrayChanged(m_handleVacancyTray);
+    }
+
+    void setWaitVacancyTrayPosition(double waitVacancyTrayPosition)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_waitVacancyTrayPosition, waitVacancyTrayPosition))
+            return;
+
+        m_waitVacancyTrayPosition = waitVacancyTrayPosition;
+        emit waitVacancyTrayPositionChanged(m_waitVacancyTrayPosition);
+    }
+
 signals:
     void motorTrayNameChanged(QString motorTrayName);
     void motorSTIENameChanged(QString motorSTIEName);
@@ -393,6 +424,10 @@ signals:
 
     void cylinderGripperNameChanged(QString cylinderGripperName);
 
+    void handleVacancyTrayChanged(bool handleVacancyTray);
+
+    void waitVacancyTrayPositionChanged(double waitVacancyTrayPosition);
+
 private:
     QString m_motorTrayName = "";
     QString m_motorSTIEName = "";
@@ -416,6 +451,8 @@ private:
     QString m_cylinderEntanceClip = "";
     QString m_cylinderExitClip = "";
     QString m_cylinderGripper = "";
+    bool m_handleVacancyTray = false;
+    double m_waitVacancyTrayPosition = 0;
 };
 class SensorTrayLoaderState:public PropertyBase
 {
@@ -496,7 +533,7 @@ public:
 
     bool needChangeVacancyTray() const
     {
-        return m_hasChangeVacancyTray;
+        return m_needChangeVacancyTray;
     }
 
     bool needChangeEntranceClip() const
@@ -630,11 +667,11 @@ public slots:
 
     void setNeedChangeVacancyTray(bool hasChangeVacancyTray)
     {
-        if (m_hasChangeVacancyTray == hasChangeVacancyTray)
+        if (m_needChangeVacancyTray == hasChangeVacancyTray)
             return;
 
-        m_hasChangeVacancyTray = hasChangeVacancyTray;
-        emit needdChangeVacancyTrayChanged(m_hasChangeVacancyTray);
+        m_needChangeVacancyTray = hasChangeVacancyTray;
+        emit needdChangeVacancyTrayChanged(m_needChangeVacancyTray);
     }
 
     void setNeedChangeEntranceClip(bool needChangeEntranceClip)
@@ -739,7 +776,7 @@ private:
     bool m_hasGetedTray = false;
     bool m_hasWorkTray = false;
     bool m_hasKickTray = false;
-    bool m_hasChangeVacancyTray = false;
+    bool m_needChangeVacancyTray = false;
     bool m_needChangeEntranceClip = false;
     bool m_needChangeExitClip = false;
     bool m_useSpareEntanceClip  = false;

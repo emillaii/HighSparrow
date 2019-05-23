@@ -54,11 +54,11 @@ signals:
     void sendLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
 public slots:
     //ThreadWorkerBase
-    void startWork(bool reset_logic, int run_mode) override;
-    void stopWork(bool wait_finish) override;
-    void performHandlingOperation(int cmd) override;
+    void startWork(int run_mode);
+    void stopWork(bool wait_finish);
+    void resetLogic();
+    void performHandlingOperation(int cmd);
     //End of ThreadWorkerBase
-    void ResetLogic();
     void receiveRequestMessage(QString message, QString client_ip);
     void receiveLoadLensRequstFinish(int lens,int lens_tray);
     void receiveToolUpPRRequest(PrOffset &offset);

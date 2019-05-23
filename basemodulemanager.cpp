@@ -210,7 +210,7 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
     }
     else {
         result &= manager->registerWorker(&sensor_loader_module);
-//        result &= manager->registerWorker(&sensor_tray_loder_module);
+        result &= manager->registerWorker(&sensor_tray_loder_module);
     }
     result &= manager->registerWorker(&sut_module);
     result &= manager->registerWorker(&aaCoreNew);

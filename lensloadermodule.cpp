@@ -475,11 +475,10 @@ bool LensLoaderModule::isRunning()
     return is_run;
 }
 
-void LensLoaderModule::startWork(bool reset_logic, int run_mode)
+void LensLoaderModule::startWork(int run_mode)
 {
-    qInfo("Lensloader start reset:%d run_mode :%d",reset_logic,run_mode);
-    if(reset_logic) ResetLogic();
-    if(run_mode == RunMode::Normal)run(true);
+    qInfo("Lensloader start run_mode :%d",run_mode);
+    if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)run(true);
     else if(run_mode == RunMode::NoMaterial)run(false);
 }
 
@@ -492,8 +491,9 @@ void LensLoaderModule::stopWork(bool wait_finish)
         is_run = false;
 }
 
-void LensLoaderModule::ResetLogic()
+void LensLoaderModule::resetLogic()
 {
+    if(is_run)return;
     states.setHasTray(true);
     states.setLutHasLens(false);
     states.setLutHasNgLens(false);

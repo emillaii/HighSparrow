@@ -56,10 +56,9 @@ void SensorLoaderModule::saveJsonConfig(QString file_name)
     PropertyBase::saveJsonConfig(file_name, temp_map);
 }
 
-void SensorLoaderModule::startWork(bool reset_logic, int run_mode)
+void SensorLoaderModule::startWork(int run_mode)
 {
-    qInfo("SensorLoader start reset:%d run_mode :%d in %d",reset_logic,run_mode,QThread::currentThreadId());
-    if(reset_logic)resetLogic();
+    qInfo("SensorLoader start run_mode :%d in %d",run_mode,QThread::currentThreadId());
     if(run_mode == RunMode::Normal)run(true);
     else if(run_mode == RunMode::NoMaterial)run(false);
     else if (run_mode == RunMode::VibrationTest) {
@@ -318,7 +317,8 @@ void SensorLoaderModule::receiveChangeTrayFInish()
 
 void SensorLoaderModule::resetLogic()
 {
-    states.setHasTray(true);
+    if(is_run)return;
+    states.setHasTray(false);
     states.setSutHasSensor(false);
     states.setSutHasNgSensor(false);
     states.setSutHasProduct(false);
@@ -861,17 +861,18 @@ void SensorLoaderModule::run(bool has_material)
 
 bool SensorLoaderModule::moveToNextTrayPos(int tray_index)
 {
-    qInfo("moveToNextTrayPos:%d",tray_index);
-    if(tray->findNextPositionOfInitState(tray_index))
-    {
-        return  pick_arm->move_XY_Synic(tray->getCurrentPosition(tray_index));
-    }
-    return  false;
+    qInfo("moveToNextTrayPos tray_index %d",tray_index);
+    bool result = tray->findNextPositionOfInitState(tray_index);
+    if(result)
+        result &=  pick_arm->move_XY_Synic(tray->getCurrentPosition(tray_index));
+    if(!result)
+        AppendError(QString(u8"移动到%1盘下一个位置失败").arg(tray_index == 0?"sensor":"成品"));
+    return result;
 }
 
 bool SensorLoaderModule::moveToSUTPRPos(bool is_local,bool check_softlanding)
 {
-    qInfo(u8"移动SPA到SUT位置%d",is_local);
+    qInfo("moveToSUTPRPos is_local %d",is_local);
     bool result;
     if(is_local)
         result =  pick_arm->move_XY_Synic(sut2_pr_position.ToPointF(),check_softlanding);
@@ -884,66 +885,82 @@ bool SensorLoaderModule::moveToSUTPRPos(bool is_local,bool check_softlanding)
 
 bool SensorLoaderModule::performSensorPR()
 {
-    return  sensor_vision->performPR(pr_offset);
+    qInfo("performSensorPR");
+    bool result = sensor_vision->performPR(pr_offset);
+    if(result)
+        AppendError(QString(u8"执行料盘sensor视觉失败!"));
+    return  result;
 }
 
 bool SensorLoaderModule::performVacancyPR()
 {
-    qInfo("performSensorPR");
-    return  vacancy_vision->performPR(pr_offset);
+    qInfo("performVacancyPR");
+    bool result = vacancy_vision->performPR(pr_offset);
+    if(result)
+        AppendError(QString(u8"执行料盘空位视觉失败!"));
+    return  result;
 }
 
 bool SensorLoaderModule::performSUTPR()
 {
     qInfo("performSUTPR");
-    return  sut_vision->performPR(pr_offset);
+    bool result = sut_vision->performPR(pr_offset);
+    if(result)
+        AppendError(QString(u8"执行SUT视觉失败!"));
+    return  result;
 }
 
 bool SensorLoaderModule::performSUTSensorPR()
 {
     qInfo("performSUTSensorPR");
-    return  sut_sensor_vision->performPR(pr_offset);
+    bool result = sut_sensor_vision->performPR(pr_offset);
+    if(result)
+        AppendError(QString(u8"执行SUT上的sensor视觉失败!"));
+    return  result;
 }
 
 bool SensorLoaderModule::performSUTProductPR()
 {
     qInfo("performSUTProductPR");
-    return  sut_product_vision->performPR(pr_offset);
+    bool result =  sut_product_vision->performPR(pr_offset);
+    if(result)
+        AppendError(QString(u8"执行SUT视觉失败!"));
+    return  result;
 }
 
 bool SensorLoaderModule::moveToWorkPos(bool check_softlanding)
 {
-    qInfo("moveToWorkPos");
     PrOffset temp(picker1_offset.X() - pr_offset.X,picker1_offset.Y() - pr_offset.Y,pr_offset.Theta);
-    qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
+    qInfo("moveToWorkPos offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
     bool result = pick_arm->stepMove_XYT1_Synic(temp.X,temp.Y,temp.Theta,check_softlanding);
-//    pr_offset.ReSet();
+    if(result)
+        AppendError(QString(u8"去1号吸头工作位置(step x %1,y %2,t %3)失败!").arg(temp.X).arg(temp.Y).arg(temp.Theta));
     return  result;
 }
 
 bool SensorLoaderModule::moveToWorkPos2(bool check_softlanding)
 {
-    qInfo("moveToWorkPos2");
     PrOffset temp(picker2_offset.X() - pr_offset.X,picker2_offset.Y() - pr_offset.Y,pr_offset.Theta);
-    qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
-    bool result = pick_arm->stepMove_XYT1_Synic(temp.X,temp.Y,temp.Theta,check_softlanding);
-//    pr_offset.ReSet();
+    qInfo("moveToWorkPos2 offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
+    bool result = pick_arm->stepMove_XYT2_Synic(temp.X,temp.Y,temp.Theta,check_softlanding);
+    if(result)
+        AppendError(QString(u8"去2号吸头工作作位置(step x %1,y %2,t %3)失败!").arg(temp.X).arg(temp.Y).arg(temp.Theta));
     return  result;
 }
 
 bool SensorLoaderModule::moveToPRResultPos(bool check_softlanding)
 {
-    qInfo("moveToWorkPos2");
     PrOffset temp(picker2_offset.X() - pr_offset.X,picker2_offset.Y() - pr_offset.Y,pr_offset.Theta);
-    qInfo("offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
-    bool result = pick_arm->stepMove_XYT1_Synic(temp.X,temp.Y,temp.Theta,check_softlanding);
-//    pr_offset.ReSet();
+    qInfo("moveToPRResultPos offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
+    bool result = pick_arm->stepMove_XY_Synic(temp.X,temp.Y,check_softlanding);
+    if(result)
+        AppendError(QString(u8"去视觉结果位置(step x %1,y %2,t %3)失败!").arg(temp.X).arg(temp.Y).arg(temp.Theta));
     return  result;
 }
 
 bool SensorLoaderModule::picker1SearchZ(double z,bool is_open, int time_out)
 {
-    qInfo("picker1SearchZ %d",time_out);
+    qInfo("picker1SearchZ z %f is_open %d timeout %d",z,is_open,time_out);
     bool result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
     result &= pick_arm->ZSerchReturn(time_out);
     return result;
@@ -951,7 +968,7 @@ bool SensorLoaderModule::picker1SearchZ(double z,bool is_open, int time_out)
 
 bool SensorLoaderModule::picker1SearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
 {
-    qInfo("picker1SearchZ %s",dest.toStdString().c_str());
+    qInfo("picker1SearchSutZ z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
     bool result = pick_arm->move_XeYe_Z1_XY(z - parameters.escapeHeight(),parameters.escapeX(),parameters.escapeY());
     if(result)
     {
@@ -968,11 +985,10 @@ bool SensorLoaderModule::picker1SearchSutZ(double z, QString dest, QString cmd, 
 }
 bool SensorLoaderModule::picker2SearchZ(double z,bool is_open, int time_out)
 {
-    qInfo("picker2SearchZ");
+    qInfo("picker2SearchZ z %f is_open %d time_out %d",z,is_open,time_out);
     bool result = pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
     result &= pick_arm->ZSerchReturn2(time_out);
     return result;
-
 }
 
 bool SensorLoaderModule::picker2SearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
@@ -995,43 +1011,61 @@ bool SensorLoaderModule::picker2SearchSutZ(double z, QString dest, QString cmd, 
 
 bool SensorLoaderModule::pickTraySensor(int time_out)
 {
-    qInfo("pickTraySensor");
-    return picker1SearchZ(parameters.pickSensorZ(),true,time_out);
+    qInfo("pickTraySensor time_out %d",time_out);
+    bool result = picker1SearchZ(parameters.pickSensorZ(),true,time_out);
+    if(!result)
+        AppendError(QString(u8"从sensor盘取sensor失败"));
+    return result;
 }
 
 bool SensorLoaderModule::placeSensorToSUT(QString dest,int time_out)
 {
-    qInfo("placeSensorToSUT time_out %d",time_out);
-    return picker1SearchSutZ(parameters.placeSensorZ(),dest,"vacuumOnReq",false,time_out);
+    qInfo("placeSensorToSUT dest %s time_out %d",dest.toStdString().c_str(),time_out);
+   bool result = picker1SearchSutZ(parameters.placeSensorZ(),dest,"vacuumOnReq",false,time_out);
+    if(!result)
+        AppendError(QString(u8"放sensor到SUT%1失败").arg(dest=="remote"?1:2));
+    return result;
 }
 
 bool SensorLoaderModule::pickSUTSensor(QString dest,int time_out)
 {
-    qInfo("pickSUTSensor");
-    return picker2SearchSutZ(parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,time_out);
+    qInfo("pickSUTSensor dest %s time_out %d",dest.toStdString().c_str(),time_out);
+    bool result = picker2SearchSutZ(parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,time_out);
+    if(!result)
+        AppendError(QString(u8"从SUT%1取NGsenor失败").arg(dest=="remote"?1:2));
+    return result;
 }
 
 bool SensorLoaderModule::pickSUTProduct(QString dest,int time_out)
 {
-    qInfo("pickSUTProduct");
-    return picker2SearchSutZ(parameters.pickProductZ(),dest,"vacuumOffReq",true,time_out);
+    qInfo("pickSUTProduct dest %s time_out %d",dest.toStdString().c_str(),time_out);
+    bool result = picker2SearchSutZ(parameters.pickProductZ(),dest,"vacuumOffReq",true,time_out);
+    if(!result)
+        AppendError(QString(u8"从SUT%1取成品失败").arg(dest=="remote"?1:2));
+    return result;
 }
 
 bool SensorLoaderModule::placeSensorToTray(int time_out)
 {
-    qInfo("placeSensorToTray");
-    return picker2SearchZ(parameters.placeNgSensorZ(),false,time_out);
+    qInfo("placeSensorToTray time_out %d",time_out);
+    bool result = picker2SearchZ(parameters.placeNgSensorZ(),false,time_out);
+    if(!result)
+        AppendError(QString(u8"将Ngsensor放入NG盘失败"));
+    return result;
 }
 
 bool SensorLoaderModule::placeProductToTray(int time_out)
 {
-    qInfo("placeProductToTray");
-    return picker2SearchZ(parameters.placeProductZ(),false,time_out);
+    qInfo("placeProductToTray time_out %d",time_out);
+    bool result = picker2SearchZ(parameters.placeProductZ(),false,time_out);
+    if(!result)
+        AppendError(QString(u8"将成品放入成品盘失败"));
+    return result;
 }
 
 bool SensorLoaderModule::picker1MeasureHight(bool is_tray)
 {
-    qInfo("picker1MeasureHight");
+    qInfo("picker1MeasureHight is_tray %d",is_tray);
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         QThread::msleep(100);
@@ -1044,12 +1078,13 @@ bool SensorLoaderModule::picker1MeasureHight(bool is_tray)
             parameters.setPlaceSensorZ(pick_arm->GetSoftladngPosition());
         return true;
     }
+    AppendError(QString(u8"1号吸头测高失败"));
     return false;
 }
 
 bool SensorLoaderModule::picker2MeasureHight(bool is_tray, bool is_product)
 {
-    qInfo("picker2MeasureHight");
+    qInfo("picker2MeasureHight is_tray %d is_product %d",is_tray,is_product);
     if(pick_arm->ZSerchByForce2(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         QThread::msleep(100);
@@ -1072,6 +1107,7 @@ bool SensorLoaderModule::picker2MeasureHight(bool is_tray, bool is_product)
         }
         return true;
     }
+    AppendError(QString(u8"2号吸头测高失败"));
     return false;
 }
 
@@ -1080,16 +1116,29 @@ bool SensorLoaderModule::measureZOffset()
     QPointF temp_point(sut1_pr_position.X()+picker1_offset.X(),sut2_pr_position.Y()+picker1_offset.Y());
     double sut1_height = 0;
     if(!pick_arm->move_XY_Synic(temp_point,true))
+    {
+        AppendError(QString(u8"测量SUT台高度差失败"));
         return false;
+    }
     if(!pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
+    {
+        AppendError(QString(u8"测量SUT台高度差失败"));
         return false;
+    }
     sut1_height = pick_arm->GetSoftladngPosition();
     temp_point.setX(sut2_pr_position.X()+picker1_offset.X());
     temp_point.setY(sut2_pr_position.Y()+picker1_offset.Y());
     if(!pick_arm->move_XY_Synic(temp_point,true))
+    {
+        AppendError(QString(u8"测量SUT台高度差失败"));
         return false;
+    }
     if(!pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
+
+    {
+        AppendError(QString(u8"测量SUT台高度差失败"));
         return false;
+    }
     double zOffset = pick_arm->GetSoftladngPosition()-sut1_height;
     if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此数值:%1").arg(zOffset))){
         return true;
@@ -1100,26 +1149,38 @@ bool SensorLoaderModule::measureZOffset()
 
 bool SensorLoaderModule::moveToTrayPos(int index, int tray_index)
 {
-    qInfo("moveToTrayPos");
-    return pick_arm->move_XY_Synic(tray->getPositionByIndex(index,tray_index));
+    qInfo("moveToTrayPos index %d tray_index %d",index,tray_index);
+    bool result = pick_arm->move_XY_Synic(tray->getPositionByIndex(index,tray_index));
+    if(!result)
+        AppendError(QString(u8"移动到%1盘%1号位置失败").arg(tray_index == 0?"sensor":"成品").arg(index));
+    return result;
 }
 
 bool SensorLoaderModule::moveToTrayPos(int tray_index)
 {
-    qInfo("moveToTrayPos%d",tray_index);
-    return  pick_arm->move_XY_Synic(tray->getCurrentPosition(tray_index),true);
+    qInfo("moveToTrayPos tray_index %d",tray_index);
+    bool result = pick_arm->move_XY_Synic(tray->getCurrentPosition(tray_index),true);
+    if(!result)
+        AppendError(QString(u8"移动到%1盘当前位置失败").arg(tray_index == 0?"sensor":"成品"));
+    return result;
 }
 
 bool SensorLoaderModule::moveToStartPos(int tray_index)
 {
     qInfo("moveToStartPos%d",tray_index);
-    return pick_arm->move_XY_Synic(tray->getStartPosition(tray_index),true);
+    bool result = pick_arm->move_XY_Synic(tray->getStartPosition(tray_index),true);
+    if(!result)
+        AppendError(QString(u8"移动到%1盘起始位置失败").arg(tray_index == 0?"sensor":"成品"));
+    return result;
 }
 
 bool SensorLoaderModule::moveToTray1EndPos()
 {
     qInfo("moveToTray1EndPos");
-    return pick_arm->move_XY_Synic(tray->getEndPosition(),true);
+    bool result = pick_arm->move_XY_Synic(tray->getEndPosition(),true);
+    if(!result)
+        AppendError(QString(u8"移动到sensor盘结束位置失败"));
+    return result;
 }
 
 void SensorLoaderModule::sendEvent(const QString event)

@@ -20,7 +20,7 @@ signals:
     void sendChangeTrayFinish();
     // ThreadWorkerBase interface
 public slots:
-    void startWork(bool reset_logic, int run_mode);
+    void startWork(int run_mode);
     void stopWork(bool wait_finish);
     void performHandlingOperation(int cmd);
     void receiveChangeTray();
@@ -61,6 +61,7 @@ private:
     bool is_run = false;
     bool moveToStartKick();
     bool moveToUpSensorTray();
+    bool moveToWaitVacancyTray();
     bool moveToChangeVacancyTrayAndUpSensorTray();
     bool moveToGetTray();
     bool moveToGetTrayAndKickOutTray(bool has_vacancy_tray = true);

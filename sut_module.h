@@ -28,7 +28,6 @@ public:
               XtVacuum *vacuum,XtCylinder* popgpin);
     void loadParams(QString file_name);
     void saveJsonConfig(QString file_name);
-    void resetLogic();
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPos(bool check_autochthonous = false);
@@ -52,8 +51,9 @@ private:
     void run(bool has_material);
     // ThreadWorkerBase interface
 public slots:
-    void startWork(bool reset_logic, int run_mode);
+    void startWork(int run_mode);
     void stopWork(bool wait_finish);
+    void resetLogic();
     void performHandlingOperation(int cmd);
 public:
     SutParameter parameters;

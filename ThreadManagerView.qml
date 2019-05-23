@@ -59,8 +59,8 @@ ItemDelegate {
                     Button {
                         text: "开始"
                         onClicked: {
-                            workersManager.startWorker("SutModule",true,0)
-                            workersManager.startWorker("SensorLoader",true,0)
+                            workersManager.startWorker("SutModule",0)
+                            workersManager.startWorker("SensorLoader",0)
                         }
                     }
                     Button {
@@ -98,8 +98,8 @@ ItemDelegate {
                     Button {
                         text: "开始"
                         onClicked: {
-                            workersManager.startWorker("LensPickArmModule",true,0)
-                            workersManager.startWorker("LUTModule",true,0)
+                            workersManager.startWorker("LensPickArmModule",0)
+                            workersManager.startWorker("LUTModule",0)
                         }
                     }
                     Button {
@@ -137,7 +137,7 @@ ItemDelegate {
                     Button {
                         text: "开始"
                         onClicked: {
-                            workersManager.startWorker("SensorTrayLoaderModule",true,0)
+                            workersManager.startWorker("SensorTrayLoaderModule",0)
                         }
                     }
                     Button {
@@ -165,7 +165,7 @@ ItemDelegate {
                         id:start_btn
                         text:qsTr("开始")
                         onClicked:{
-                            workersManager.startWorker("TrayLoaderModule",true,2)
+                            workersManager.startWorker("TrayLoaderModule",2)
                             start_btn.enabled=false
                             end_btn.enabled = true
                         }

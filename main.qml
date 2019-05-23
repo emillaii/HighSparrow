@@ -245,7 +245,7 @@ ApplicationWindow {
                        command = "document.getElementById('flowchart_data').value";
                        flowChartPage.webView.runJavaScript(command, function(result) {
                             baseModuleManager.loadFlowchart(result)
-                            workersManager.startWorkers(true, 4)
+                            workersManager.startWorkers(4)
                        })
                    })
                }
@@ -264,7 +264,7 @@ ApplicationWindow {
                        command = "document.getElementById('flowchart_data').value";
                        flowChartPage.webView.runJavaScript(command, function(result) {
                            baseModuleManager.loadFlowchart(result)
-                           workersManager.startWorkers(true, 0)
+                           workersManager.startWorkers(systerm_param.runMode)
                        })
                    })
                }

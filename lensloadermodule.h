@@ -54,7 +54,6 @@ public:
               VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision);
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
-    void ResetLogic();
     bool performUpDownlookDownPR(PrOffset &offset);
     bool performUpdowlookUpPR(PrOffset &offset);
     void calculateCameraToPickerOffset();
@@ -97,8 +96,9 @@ private:
     bool isRunning();
     // ThreadWorkerBase interface
 public slots:
-    void startWork(bool reset_logic, int run_mode);
+    void startWork(int run_mode);
     void stopWork(bool wait_finish);
+    void resetLogic();
     void performHandlingOperation(int cmd);
 public:
     LensLoaderModuleParameter parameters;

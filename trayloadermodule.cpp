@@ -47,8 +47,9 @@ void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
     this->tray_exit_input = _tray_exit_input;
 }
 
-void TrayLoaderModule::ResetLogic()
+void TrayLoaderModule::resetLogic()
 {
+    if(is_run)return;
     states.setHasTrayReady(false);
 }
 
@@ -476,9 +477,8 @@ bool TrayLoaderModule::LTOEMovetoColumnIndex(int col)
     }
 }
 
-void TrayLoaderModule::startWork(bool reset_logic, int run_mode)
+void TrayLoaderModule::startWork(int run_mode)
 {
-    if(reset_logic)ResetLogic();
     if(run_mode&RunMode::Normal)run(true);
     else if(run_mode&RunMode::NoMaterial)run(false);
 }

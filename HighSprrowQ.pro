@@ -77,7 +77,9 @@ SOURCES += \
     sensortrayloadermodule.cpp \
     sensorclip.cpp \
     checkprocessitem.cpp \
-    checkprocessmodel.cpp
+    checkprocessmodel.cpp \
+    machinestatemonitor.cpp \
+    machinestatemonitorcontroller.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -214,7 +216,9 @@ HEADERS += \
     modulemanagerparameter.h \
     xtmotorparameter.h \
     checkprocessitem.h \
-    checkprocessmodel.h
+    checkprocessmodel.h \
+    machinestatemonitor.h \
+    machinestatemonitorcontroller.h
 
 DISTFILES += \
     icons/index.theme

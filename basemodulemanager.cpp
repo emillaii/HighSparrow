@@ -120,7 +120,7 @@ bool BaseModuleManager::loadParameters()
     if(!this->paramers.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))return false;
 
     material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
-    aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_MODULE_JSON));
+    aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
     dothinkey->loadParams(getCurrentParameterDir().append(DOTHINGKEY_FILE));
     dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
@@ -164,7 +164,7 @@ bool BaseModuleManager::saveParameters()
     //pr文件拷贝
     this->paramers.saveJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER);
     material_tray.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
-    aa_head_module.saveJsonConfig(getCurrentParameterDir().append(AA_HEAD_MODULE_JSON));
+    aa_head_module.saveJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     sut_module.saveJsonConfig(getCurrentParameterDir().append(SUT_FILE));
     dothinkey->saveJsonConfig(getCurrentParameterDir().append(DOTHINGKEY_FILE));
     dispenser.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);

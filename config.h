@@ -63,7 +63,7 @@
 #define MATERIAL_LOADING_CONFIG_JSON "config//materialLoadingConfig.json"
 #define AA_CALIBRATION_CONFIG_JSON   "config//aaCalibrationConfig.json"
 #define PR_CONFIG_JSON               "config//prConfig.json"
-#define AA_HEAD_MODULE_JSON          "config//aaHeadConfig.json""config//sutConfig.json"
+#define AA_HEAD_MODULE_JSON          "config//aaHeadConfig.json"
 #define AA_CORE_MODULE_JSON          "config//aaCoreConfig.json"
 #define SUT_MODULE_JSON              "config//sutConfig.json"
 #define LUT_MODULE_JSON              "config//lutConfig.json"

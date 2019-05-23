@@ -83,7 +83,8 @@ Grid {
             RowLayout {
                 ChartView {
                     id: spline1
-                    anchors.fill: parent
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
                     title: "MTF"
                     antialiasing: true
                     theme: ChartView.ChartThemeDark

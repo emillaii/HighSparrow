@@ -11,7 +11,7 @@ ListView {
                 case 2 :
                     return "SUTModuleView.qml"
                 case 3 :
-                    if (baseModuleManager.getServerMode() == 0)
+                    if (baseModuleManager.getServerMode() === 0)
                         return "LUTModuleView.qml"
                     return "";
                 case 4 : return "DispenseModuleView.qml"
@@ -20,12 +20,12 @@ ListView {
                 case 7 : return "AACoreView.qml"
                 case 8 : return "SystemConfigView.qml"
                 case 9 :
-                    if (baseModuleManager.getServerMode() == 0)
+                    if (baseModuleManager.getServerMode() === 0)
                         return "LensPickArmModuleView.qml"
                     else
                         return "SensorLoaderModuleView.qml"
                 case 10:
-                    if (baseModuleManager.getServerMode() == 0)
+                    if (baseModuleManager.getServerMode() === 0)
                         return "TrayLoaderModuleView.qml"
                     else
                         return "SensorTrayLoaderViewModule.qml"

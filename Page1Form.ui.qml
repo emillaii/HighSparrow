@@ -90,8 +90,3 @@ Page {
         }
     }
 }
-
-/*##^## Designer {
-    D{i:11;anchors_width:240;anchors_x:400}
-}
- ##^##*/

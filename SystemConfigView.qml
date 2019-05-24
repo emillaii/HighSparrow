@@ -53,6 +53,19 @@ ItemDelegate {
                         }
                     }
                 }
+                GroupBox{
+                    title:qsTr("系统操作")
+                    ColumnLayout {
+                        RowLayout {
+                            Button{
+                                text: qsTr("重置逻辑")
+                                onClicked:{
+                                    workersManager.resetLogics()
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

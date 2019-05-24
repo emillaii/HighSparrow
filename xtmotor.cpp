@@ -765,16 +765,19 @@ bool XtMotor::checkState(bool check_seeked_origin)
 {
     if(!is_init)
     {
+        qInfo(u8"%s轴未初始化",name.toStdString().c_str());
         AppendError(QString(u8"%1轴未初始化").arg(name.toStdString().c_str()));
         return false;
     }
     if(!is_enable)
     {
+        qInfo(u8"%s轴未使能",name.toStdString().c_str());
         AppendError(QString(u8"%1轴未使能").arg(name.toStdString().c_str()));
         return false;
     }
     if(check_seeked_origin&&(!states.seekedOrigin()))
     {
+        qInfo(u8"%s轴未未回零",name.toStdString().c_str());
         AppendError(QString(u8"%1轴未回零").arg(name.toStdString().c_str()));
         return false;
     }

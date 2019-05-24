@@ -44,7 +44,7 @@ private:
 protected:
     QList<ErrorBase*> parts;
 public:
-    bool is_debug = true;
+    bool is_debug = false;
 public:
     void setName(QString name);
     void AppendError(QString error);

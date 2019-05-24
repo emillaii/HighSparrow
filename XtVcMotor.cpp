@@ -276,8 +276,9 @@ void XtVcMotor::Home(int thread)
 
 bool XtVcMotor::SeekOrigin(int thread)
 {
-    if(checkState(false))return false;
+    if(!checkState(false))return false;
     int result;
+    qInfo("sadas");
     ChangeDiretion(true);
     if(parameters.findOriginCurrent() > 0)
         result = Touch_Go_Zero(vcm_id,parameters.findOriginCurrent(),parameters.touchDistance());
@@ -306,6 +307,7 @@ bool XtVcMotor::SeekOrigin(int thread)
 bool XtVcMotor::WaitSeekDone(int thread,int timeout)
 {
     if(!checkState(false))return false;
+    qInfo("WaitSeekDone %d",states.seekedOrigin());
     return states.seekedOrigin();
 }
 
@@ -444,7 +446,7 @@ bool XtVcMotor::resetSoftLanding(int timeout)
 bool XtVcMotor::WaitSoftLandingDone(int timeout)
 {
     if(is_debug)return true;
-    if(checkState(false))return false;
+    if(!checkState(false))return false;
     while(timeout > 0)
     {
         int res = CheckPosReady(vcm_id);

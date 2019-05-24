@@ -46,7 +46,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         qInfo("This sparrow is in Master mode");
         this->lut_module.openServer(19998);
         lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
-        //sut_clitent = new SutClient("ws://192.168.0.251:19999");
+        sut_clitent = new SutClient("ws://192.168.0.251:19999");
         connect(&lut_module,&LutModule::sendLoadLensRequst,&lens_loader_module,&LensLoaderModule::receiveLoadLensRequst,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendLoadLensFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendChangeTrayRequst,&tray_loader_module,&TrayLoaderModule::onTestTrayUsed,Qt::DirectConnection);
@@ -55,12 +55,12 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         qInfo("This sparrow is in Slave mode");
         this->sensor_loader_module.openServer(19999);
         lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
-//        sut_clitent = new SutClient("ws://localhost:19999");
+        sut_clitent = new SutClient("ws://localhost:19999");
     }
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
     connect(&aa_head_module,&AAHeadModule::sendSensrRequestToSut,&sut_module,&SutModule::receiveLoadSensorRequst,Qt::DirectConnection);
 
-    //connect(&aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &BaseModuleManager::receiveImageFromAACore);
+    connect(&aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &BaseModuleManager::receiveImageFromAACore);
 
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
@@ -837,7 +837,7 @@ bool BaseModuleManager::InitStruct()
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
     }
-//    sut_clitent->Init(GetVacuumByName(sut_module.parameters.vacuumName()));
+    sut_clitent->Init(GetVacuumByName(sut_module.parameters.vacuumName()));
     sut_module.Init(&sut_carrier,sut_clitent,
                     GetVisionLocationByName(sut_module.parameters.downlookLocationName()),
                     GetVisionLocationByName(sut_module.parameters.updownlookDownLocationName()),
@@ -1003,7 +1003,7 @@ bool BaseModuleManager::initialDevice()
         m->GetMasterAxisID();
     }
     EnableMotors();
-    timer.start(1000);
+//    timer.start(1000);
     return true;
 }
 
@@ -1058,27 +1058,26 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     //if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
     //    return false;
     GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
-    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
-    GetMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
-    GetMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
+//    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
+    GetVcMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
+    GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
 
-    result = GetMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
+    result = GetVcMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
     if (!result) return false;
-
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();//SUT_X
     GetMotorByName(this->sut_module.parameters.motorYName())->SeekOrigin();//SUT_Y
 
-    result = GetMotorByName(this->lens_pick_arm.parameters.motorZName())->WaitSeekDone();
+    result = GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->WaitSeekDone();
     if(!result)return false;
 
-    GetMotorByName(this->lens_pick_arm.parameters.motorXName())->SeekOrigin();//LPA_X
+    GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->SeekOrigin();//LPA_X
     GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
 
     result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
 
-    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();//AA_X
-    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();//AA_Z
+//    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();//AA_X
+//    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();//AA_Z
     GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();//AA_A
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();//AA_B
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();//AA_C
@@ -1112,11 +1111,11 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->sut_module.parameters.motorYName())->WaitSeekDone();
 
-    result &= GetMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
+    result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
 
 
-    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
-    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
+//    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
+//    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();

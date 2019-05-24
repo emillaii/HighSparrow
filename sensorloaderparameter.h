@@ -30,7 +30,7 @@ public:
     Q_PROPERTY(double escapeHeight READ escapeHeight WRITE setEscapeHeight NOTIFY escapeHeightChanged)
     Q_PROPERTY(double escapeX READ escapeX WRITE setEscapeX NOTIFY escapeXChanged)
     Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
-    Q_PROPERTY(bool changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
+    Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
     double vcmWorkForce() const
     {
         return m_vcmWorkForce;
@@ -131,7 +131,7 @@ public:
     }
 
 
-    bool changeTrayTimeOut() const
+    int changeTrayTimeOut() const
     {
         return m_changeTrayTimeOut;
     }
@@ -329,7 +329,7 @@ public slots:
         emit escapeYChanged(m_escapeY);
     }
 
-    void setChangeTrayTimeOut(bool changeTrayTimeOut)
+    void setChangeTrayTimeOut(int changeTrayTimeOut)
     {
         if (m_changeTrayTimeOut == changeTrayTimeOut)
             return;
@@ -380,7 +380,7 @@ signals:
     void escapeYChanged(double escapeY);
 
 
-    void changeTrayTimeOutChanged(bool changeTrayTimeOut);
+    void changeTrayTimeOutChanged(int changeTrayTimeOut);
 
 private:
     double m_vcmWorkForce = 0;
@@ -403,7 +403,7 @@ private:
     double m_escapeHeight = 3;
     double m_escapeX = 5;
     double m_escapeY = 0;
-    bool m_changeTrayTimeOut = 180000;
+    int m_changeTrayTimeOut = 180000;
 };
 class SensorLoaderState:public PropertyBase
 {

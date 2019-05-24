@@ -583,6 +583,7 @@ bool XtMotor::WaitSeekDone(int thread,int timeout)
             SetFeedbackZero(GetOutpuPos());
             current_target = GetOutpuPos();
             qInfo("axis %s seek origin %f success",name.toStdString().c_str(),GetOutpuPos());
+            states.setSeekedOrigin(true);
             return true;
         }
         timeout-=10;

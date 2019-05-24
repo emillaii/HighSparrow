@@ -99,6 +99,8 @@ void TrayLoaderModule::run(bool has_tray)
             }else{
                 states.setHasTrayReadyPosClear(true);
             }
+            if(!is_run)continue;
+
             result = ejectTray();
             if(!result){
                 AppendError(tr(u8"发射tray盘失败，是否继续"));
@@ -114,6 +116,8 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setHasPrevTrayEjected(true);
                 states.setHasEntranceTrayPulledAway(false);
             }
+            if(!is_run)continue;
+
             if(states.hasTrayReadyPosClear()){
                 if(!motorInRelease()){
                     AppendError(tr(u8"LTK_X1释放失败,是否继续移动LTk_X1"));
@@ -136,6 +140,8 @@ void TrayLoaderModule::run(bool has_tray)
                 }else{
                     states.setHasLTKX1ReadytoPull(true);
                 }
+                if(!is_run)continue;
+
                 if(states.hasLTKX1ReadytoPull()){
                     result = moveToFirstKick();
                     if(!motorInRelease()){
@@ -165,6 +171,7 @@ void TrayLoaderModule::run(bool has_tray)
                         states.setHasEntranceTrayPulledAway(true);
                     }
                 }
+                if(!is_run)continue;
                 //moveToNextTrayPos();
             }
             if(!is_run)break;
@@ -191,6 +198,7 @@ void TrayLoaderModule::run(bool has_tray)
             }else{
                 states.setHasTrayOutHandOverReady(true);
             }
+            if(!is_run)continue;
             if(states.hasTrayOutHandOverReady()){
                 if(!motorWorkRelease()){
                     AppendError(tr("LTL_X释放失败，是否继续？"));
@@ -210,6 +218,7 @@ void TrayLoaderModule::run(bool has_tray)
                 }
                 states.setHasTrayOutHandOverReady(false);
             }
+            if(!is_run)continue;
             result = moveToTrayInHandOverPos();
             if(!motorInRelease()){
                 AppendError(tr(u8"LTK_X1释放失败，是否继续？"));
@@ -237,14 +246,14 @@ void TrayLoaderModule::run(bool has_tray)
             result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
             motorOutRelease();
 
-            if(states.hasPrevTrayEjected()&&states.hasEntranceTrayPulledAway()){
-                moveToNextTrayPos();
-                states.setHasPrevTrayEjected(false);
-            }
             moveToNextEmptyPos();
             states.setHasTrayReady(false);
             states.setHasTrayUsed(false);
             if(!is_run)break;
+        }
+        if(states.hasPrevTrayEjected()&&states.hasEntranceTrayPulledAway()){
+            moveToNextTrayPos();
+            states.setHasPrevTrayEjected(false);
         }
     }
 
@@ -265,6 +274,12 @@ bool TrayLoaderModule::moveToNextTrayPos()
     if(result){
         if(tray_clip->standards_parameters.currentIndex()+1<tray_clip->standards_parameters.columnCount())
             tray_clip->standards_parameters.setCurrentIndex(tray_clip->standards_parameters.currentIndex()+1);
+        else{
+            AppendError(tr(u8"进盘弹夹已用完，请更换弹夹后继续下一步操作"));
+            sendAlarmMessage(Continue,tr(u8"更换完毕后点击继续"));
+            waitMessageReturn(is_run);
+            tray_clip->standards_parameters.setCurrentIndex(0);
+        }
     }
     return result;
 }
@@ -449,6 +464,12 @@ bool TrayLoaderModule::moveToNextEmptyPos()
     if(result){
         if(tray_clip_out->standards_parameters.currentIndex()+1<tray_clip_out->standards_parameters.columnCount())
             tray_clip_out->standards_parameters.setCurrentIndex(tray_clip_out->standards_parameters.currentIndex()+1);
+        else{
+            AppendError(tr(u8"出盘弹夹已装满，请更换弹夹后继续下一步操作"));
+            sendAlarmMessage(Continue,tr(u8"更换完毕后点击继续"));
+            waitMessageReturn(is_run);
+            tray_clip_out->standards_parameters.setCurrentIndex(0);
+        }
     }
     return result;
 }

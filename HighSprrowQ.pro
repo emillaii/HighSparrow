@@ -79,7 +79,9 @@ SOURCES += \
     checkprocessitem.cpp \
     checkprocessmodel.cpp \
     machinestatemonitor.cpp \
-    machinestatemonitorcontroller.cpp
+    machinestatemonitorcontroller.cpp \
+    singleheadmachinematerialpickarm.cpp \
+    singleheadmachinematerialloadermodule.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -218,7 +220,11 @@ HEADERS += \
     checkprocessitem.h \
     checkprocessmodel.h \
     machinestatemonitor.h \
-    machinestatemonitorcontroller.h
+    machinestatemonitorcontroller.h \
+    singleheadmachinematerialpickarm.h \
+    singleheadmachinematerialpickarmparameter.h \
+    singleheadmachinematerialloadermodule.h \
+    singleheadmachinematerialloadermoduleparameter.h
 
 DISTFILES += \
     icons/index.theme

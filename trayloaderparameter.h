@@ -348,6 +348,10 @@ class TrayLoaderState : public PropertyBase{
 
     bool m_hasTrayOutHandOverReady=false;
 
+    bool m_isExchangeTray;  
+    bool m_hasEntranceClipEmpty=false;
+    bool m_hasExitClipFull=false;
+
 public:
     TrayLoaderState():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
@@ -358,6 +362,9 @@ public:
     Q_PROPERTY(bool hasTrayReadyPosClear READ hasTrayReadyPosClear WRITE setHasTrayReadyPosClear NOTIFY hasTrayReadyPosClearChanged)
     Q_PROPERTY(bool hasLTKX1ReadytoPull READ hasLTKX1ReadytoPull WRITE setHasLTKX1ReadytoPull NOTIFY hasLTKX1ReadytoPullChanged)
     Q_PROPERTY(bool hasTrayOutHandOverReady READ hasTrayOutHandOverReady WRITE setHasTrayOutHandOverReady NOTIFY hasTrayOutHandOverReadyChanged)
+    Q_PROPERTY(bool isExchangeTray READ isExchangeTray WRITE setIsExchangeTray NOTIFY isExchangeTrayChanged)
+    Q_PROPERTY(bool hasEntranceClipEmpty READ hasEntranceClipEmpty WRITE setHasEntranceClipEmpty NOTIFY hasEntranceClipEmptyChanged)
+    Q_PROPERTY(bool hasExitClipFull READ hasExitClipFull WRITE setHasExitClipFull NOTIFY hasExitClipFullChanged)
     int runMode() const
     {
         return m_runMode;
@@ -394,6 +401,21 @@ public:
     bool hasTrayOutHandOverReady() const
     {
         return m_hasTrayOutHandOverReady;
+    }
+
+    bool isExchangeTray() const
+    {
+        return m_isExchangeTray;
+    }
+
+    bool hasEntranceClipEmpty() const
+    {
+        return m_hasEntranceClipEmpty;
+    }
+
+    bool hasExitClipFull() const
+    {
+        return m_hasExitClipFull;
     }
 
 public slots:
@@ -468,6 +490,33 @@ public slots:
         emit hasTrayOutHandOverReadyChanged(m_hasTrayOutHandOverReady);
     }
 
+    void setIsExchangeTray(bool isExchangeTray)
+    {
+        if (m_isExchangeTray == isExchangeTray)
+            return;
+
+        m_isExchangeTray = isExchangeTray;
+        emit isExchangeTrayChanged(m_isExchangeTray);
+    }
+
+    void setHasEntranceClipEmpty(bool hasEntranceClipEmpty)
+    {
+        if (m_hasEntranceClipEmpty == hasEntranceClipEmpty)
+            return;
+
+        m_hasEntranceClipEmpty = hasEntranceClipEmpty;
+        emit hasEntranceClipEmptyChanged(m_hasEntranceClipEmpty);
+    }
+
+    void setHasExitClipFull(bool hasExitClipFull)
+    {
+        if (m_hasExitClipFull == hasExitClipFull)
+            return;
+
+        m_hasExitClipFull = hasExitClipFull;
+        emit hasExitClipFullChanged(m_hasExitClipFull);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayOnEntryChanged(bool hasTrayOnEntry);
@@ -478,6 +527,9 @@ signals:
     void hasTrayReadyPosClearChanged(bool hasTrayReadyPosClear);
     void hasLTKX1ReadytoPullChanged(bool hasLTKX1ReadytoPull);
     void hasTrayOutHandOverReadyChanged(bool hasTrayOutHandOverReady);
+    void isExchangeTrayChanged(bool isExchangeTray);
+    void hasEntranceClipEmptyChanged(bool hasEntranceClipEmpty);
+    void hasExitClipFullChanged(bool hasExitClipFull);
 };
 
 #endif // TRAYLOADERPARAMETER_H

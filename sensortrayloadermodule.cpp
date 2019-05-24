@@ -66,7 +66,6 @@ void SensorTrayLoaderModule::receiveChangeTray()
     if(states.changingTray())
         return;
     states.setNeedChangeTray(true);
-//    if(states.hasVacancyTray())
     states.setNeedChangeVacancyTray(true);
     states.setChangingTray(true);
 }

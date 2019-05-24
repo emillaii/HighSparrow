@@ -75,7 +75,7 @@ public:
     Q_INVOKABLE void cameraTipOffsetCalibration(int pickhead);
 signals:
     void sendMessageToClient(QString destAddress, QString message);
-    void sendChangeTray();
+    void sendChangeTrayRequst();
     // ThreadWorkerBase interface
 public slots:
     void startWork(int run_mode);
@@ -83,10 +83,11 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
     void receiveRequestMessage(QString message, QString client_ip);
-    void receiveChangeTrayFInish();
+    void receiveChangeTrayFinish();
 private:
     void run(bool has_material);
 
+    bool checkTrayNeedChange();
     bool moveToNextTrayPos(int tray_index);
     bool moveToSUTPRPos(bool is_local = true,bool check_softlanding = false);
 
@@ -147,6 +148,7 @@ private:
 
     bool is_run = false;
     bool finish_stop = false;
+    QMutex tray_mutex;
     PrOffset pr_offset;
     int sut_raw_material;
     int sut_used_material;

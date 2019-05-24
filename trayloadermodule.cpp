@@ -231,8 +231,8 @@ void TrayLoaderModule::run(bool has_tray)
                     continue;
                 }
             }
-            //emit trayReady();
-            emit parameters.trayReady();
+            emit trayReady();
+            //emit parameters.trayReady();
 
             result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
             motorOutRelease();

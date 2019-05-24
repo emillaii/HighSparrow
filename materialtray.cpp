@@ -52,21 +52,38 @@ QPointF MaterialTray::getPositionByIndex(int index, int tray_index)
     getColumnAndRowIndex(getMaterialIndex(index),column,row);
     return  getOffsetPositon(column,row) + parameters[getTrayIndex(tray_index)]->tray_start_position.ToPointF();
 }
-
+//todo move to fail的处理，不能一直加
 bool MaterialTray::findNextPositionOfInitState(int tray_index)
 {
     int max_index = standards_parameters.columnCount()*standards_parameters.rowCount() - 1;
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
-    while (true) {
+    while (true)
+    {
         if(current_tray->tray_material_state[current_tray->currentIndex()]==current_tray->initState())
+        {
+            if(current_tray->currentIndex()==max_index)
+                current_tray->setNeedChange(true);
             return true;
+        }
         if(current_tray->currentIndex()>=max_index)
         {
             current_tray->setNeedChange(true);
             return false;
         }
         current_tray->setCurrentIndex(current_tray->currentIndex() + 1);
+    }
+}
 
+bool MaterialTray::findLastPositionOfState(int state, int tray_index)
+{
+    int min_index = 0;
+    TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
+    while (true) {
+        if(current_tray->tray_material_state[current_tray->currentIndex()] == state)
+            return true;
+        if(current_tray->currentIndex()>=min_index)
+            return false;
+        current_tray->setCurrentIndex(current_tray->currentIndex() - 1);
     }
 }
 
@@ -104,6 +121,13 @@ void MaterialTray::setCurrentMaterialState(int state, int tray_index)
 int MaterialTray::getMaterialState(int column_index, int row_index,int tray_index)
 {
     return parameters[getTrayIndex(tray_index)]->tray_material_state[getMaterialIndex(getColumnIndex(column_index),getRowIndex(row_index))];
+}
+
+int MaterialTray::getMaterialState(int index, int tray_index)
+{
+    int column_index,row_index;
+    getColumnAndRowIndex(index,column_index,row_index);
+    return parameters[getTrayIndex(tray_index)]->tray_material_state[getMaterialIndex(column_index,row_index)];
 }
 
 void MaterialTray::setMaterialState(int column_index, int row_index, int state,int tray_index)

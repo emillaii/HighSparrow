@@ -59,7 +59,7 @@ public:
     void calculateCameraToPickerOffset();
 signals:
     void sendChangeTrayRequst();
-    void sendLoadLensRequstFinish(int lens,int lens_tray);
+    void sendLoadLensFinish(int lens,int lens_tray);
 public slots:
     void receiveLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
     void receiveChangeTrayFinish();
@@ -69,6 +69,8 @@ private:
     bool moveToNextTrayPos(int tray_index);
     bool moveToLUTPRPos1(bool check_softlanding = false);
     bool moveToLUTPRPos2(bool check_softlanding = false);
+
+    bool checkNeedChangeTray();
 
     bool performLensPR();
     bool performVacancyPR();
@@ -84,7 +86,7 @@ private:
     bool placeLensToTray();
     bool measureHight(bool is_tray);
 
-
+    bool moveToTrayEmptyPos(int index,int tray_index);
     bool moveToTrayPos(int index,int tray_index);
     bool moveToTrayPos(int tray_index);
     bool moveToStartPos(int tray_index);

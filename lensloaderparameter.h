@@ -27,6 +27,7 @@ public:
     Q_PROPERTY(QString lpaUpdownlookDownLocationName READ lpaUpdownlookDownLocationName WRITE setLpaupdownlookDownLocationName NOTIFY lpaUpdownlookDownLocaationNameChanged)
     Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
     Q_PROPERTY(QString lpaUplookPickerLocationName READ lpaUplookPickerLocationName WRITE setLpaUplookPickerLocationName NOTIFY lpaUplookPickerLocationNameChanged)
+    Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
     int runMode() const
     {
         return m_runMode;
@@ -107,6 +108,11 @@ public:
     QString lpaUplookPickerLocationName() const
     {
         return m_lpaUplookPickerLocationName;
+    }
+
+    int changeTrayTimeOut() const
+    {
+        return m_changeTrayTimeOut;
     }
 
 public slots:
@@ -270,6 +276,15 @@ public slots:
         emit lpaUplookPickerLocationNameChanged(m_lpaUplookPickerLocationName);
     }
 
+    void setChangeTrayTimeOut(int changeTrayTimeOut)
+    {
+        if (m_changeTrayTimeOut == changeTrayTimeOut)
+            return;
+
+        m_changeTrayTimeOut = changeTrayTimeOut;
+        emit changeTrayTimeOutChanged(m_changeTrayTimeOut);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -303,6 +318,8 @@ signals:
 
     void lpaUplookPickerLocationNameChanged(QString lpaUplookPickerLocationName);
 
+    void changeTrayTimeOutChanged(int changeTrayTimeOut);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -321,6 +338,7 @@ private:
     double m_placeTheta = 0;
     double m_pickTheta = 0;
     QString m_lpaUplookPickerLocationName = "";
+    int m_changeTrayTimeOut = 180000;
 };
 
 class LensPickArmModuleState:public PropertyBase
@@ -344,6 +362,8 @@ public:
     Q_PROPERTY(int lutNgTrayID READ lutNgTrayID WRITE setLutNgTrayID NOTIFY lutNgTrayIDChanged)
     Q_PROPERTY(int lutNgLensID READ lutNgLensID WRITE setLutNgLensID NOTIFY lutNgLensIDChanged)
     Q_PROPERTY(bool loadingLens READ loadingLens WRITE setLoadingLens NOTIFY loadingLensChanged)
+    Q_PROPERTY(bool waitingChangeTray READ waitingChangeTray WRITE setWaitingChangeTray NOTIFY waitingChangeTrayChanged)
+    Q_PROPERTY(bool finishChangeTray READ finishChangeTray WRITE setFinishChangeTray NOTIFY finishChangeTrayChanged)
 public:
     bool hasTray() const
     {
@@ -423,6 +443,16 @@ public:
     bool loadingLens() const
     {
         return m_loadingLens;
+    }
+
+    bool waitingChangeTray() const
+    {
+        return m_waitingChangeTray;
+    }
+
+    bool finishChangeTray() const
+    {
+        return m_finishChangeTray;
     }
 
 public slots:
@@ -570,6 +600,24 @@ public slots:
         emit loadingLensChanged(m_loadingLens);
     }
 
+    void setWaitingChangeTray(bool waitingChangeTray)
+    {
+        if (m_waitingChangeTray == waitingChangeTray)
+            return;
+
+        m_waitingChangeTray = waitingChangeTray;
+        emit waitingChangeTrayChanged(m_waitingChangeTray);
+    }
+
+    void setFinishChangeTray(bool finishChangeTray)
+    {
+        if (m_finishChangeTray == finishChangeTray)
+            return;
+
+        m_finishChangeTray = finishChangeTray;
+        emit finishChangeTrayChanged(m_finishChangeTray);
+    }
+
 signals:
     void hasTrayChanged(bool hasTray);
 
@@ -603,6 +651,10 @@ signals:
 
     void loadingLensChanged(bool loadingLens);
 
+    void waitingChangeTrayChanged(bool waitingChangeTray);
+
+    void finishChangeTrayChanged(bool finishChangeTray);
+
 private:
     bool m_hasTray = true;
     bool m_lutHasLens = false;
@@ -620,6 +672,8 @@ private:
     int m_lutNgTrayID = -1;
     int m_lutNgLensID = -1;
     bool m_loadingLens;
+    bool m_waitingChangeTray = false;
+    bool m_finishChangeTray = false;
 };
 
 #endif // LENSPICKARMMODULEPARAMETER_H

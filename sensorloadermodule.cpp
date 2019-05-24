@@ -309,9 +309,18 @@ void SensorLoaderModule::receiveRequestMessage(QString message, QString client_i
     }
 }
 
-void SensorLoaderModule::receiveChangeTrayFInish()
+void SensorLoaderModule::receiveChangeTrayFinish()
 {
-
+    qInfo("SensorLoaderModule receiveChangeTrayFInish");
+    QMutexLocker temp_locker(&tray_mutex);
+    if(states.waitingChangeTray())
+    {
+        states.setFinishChangeTray(true);
+    }
+    else
+    {
+        qInfo("SensorLoaderModule receiveChangeTrayFInish but not effective");
+    }
 }
 
 
@@ -329,6 +338,11 @@ void SensorLoaderModule::resetLogic()
     states.setHasPickedProduct(false);
     states.setHasPickedNgSensor(false);
     states.setBeExchangeMaterial(false);
+    states.setCmd("");
+    states.setWaitingChangeTray(false);
+    states.setFinishChangeTray(false);
+    requestQueue.clear();
+    actionQueue.clear();
     tray->resetTrayState();
     tray->resetTrayState(1);
 }
@@ -410,18 +424,29 @@ void SensorLoaderModule::cameraTipOffsetCalibration(int pickhead)
 
 void SensorLoaderModule::run(bool has_material)
 {
+    //逻辑状态与实际状态检测
+
     int sensor_tray_index = 0;
     int product_tray_index = 1;
     is_run = true;
     int pr_times = 5;
     bool has_task = true;
+    int change_tray_time_out = parameters.changeTrayTimeOut();
+
+    bool waiting_change_tray = false;
+    bool finish_change_tray = false;
     while (is_run)
     {
-//        if(!has_task)
+        {
+            QMutexLocker temp_locker(&tray_mutex);
+            waiting_change_tray = states.waitingChangeTray();
+            finish_change_tray = states.finishChangeTray();
+        }
+        if(!has_task)
             QThread::msleep(1000);
         has_task = false;
         //放成品
-        if(states.hasPickedProduct())
+        if((!states.allowChangeTray())&&states.hasTray()&&states.hasPickedProduct())
         {
             has_task = true;
             if(!moveToNextTrayPos(product_tray_index))
@@ -459,7 +484,7 @@ void SensorLoaderModule::run(bool has_material)
             if(!is_run)break;
         }
         //放NGSensor
-        if(states.hasPickedNgSensor())
+        if((!states.allowChangeTray())&&states.hasTray()&&states.hasPickedNgSensor())
         {
             has_task = true;
             if(!moveToNextTrayPos(product_tray_index))
@@ -495,7 +520,7 @@ void SensorLoaderModule::run(bool has_material)
             if(!is_run)break;
         }
         //取料
-        if((!finish_stop)&&(!states.hasPickedSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgSensor()))
+        if((!finish_stop)&&(!states.allowChangeTray())&&states.hasTray()&&(!states.hasPickedSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgSensor()))
         {
             has_task = true;
             if(!moveToNextTrayPos(sensor_tray_index))
@@ -541,6 +566,12 @@ void SensorLoaderModule::run(bool has_material)
             picked_material = tray->getCurrentIndex(sensor_tray_index);
             if(!is_run)break;
         }
+        //检测是否需要换盘
+        if((!states.allowChangeTray()))
+        {
+            if((!states.hasTray())||checkTrayNeedChange())
+                states.setAllowChangeTray(true);
+        }
         //等待位置
         if(!moveToSUTPRPos(states.beExchangeMaterial()?isLocalHost:(!isLocalHost)))
         {
@@ -548,6 +579,54 @@ void SensorLoaderModule::run(bool has_material)
             is_run = false;
             break;
         }
+        //执行换盘
+        if(states.allowChangeTray())
+        {
+            if(waiting_change_tray)
+            {
+                if(finish_change_tray)
+                {
+                    {
+                        QMutexLocker temp_locker(&tray_mutex);
+                        states.setFinishChangeTray(false);
+                        states.setWaitingChangeTray(false);
+                    }
+                    tray->resetTrayState(0);
+                    tray->resetTrayState(1);
+                    states.setNeedChangTray(false);
+                    states.setAllowChangeTray(false);
+                    qInfo("finishChangeTray");
+                }
+                else
+                {
+                    if(!has_task)
+                        QThread::msleep(1000);
+                    qInfo("waitingChangeTray");
+                    change_tray_time_out -=1000;
+                    if(change_tray_time_out<=0)
+                    {
+                        AppendError(QString(u8"等待换盘超时，超时时间%d,请选择是继续等待或者重新换盘").arg(parameters.changeTrayTimeOut()));
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                        if(waitMessageReturn(is_run))
+                            states.setWaitingChangeTray(false);
+                        else
+                            change_tray_time_out = parameters.changeTrayTimeOut();
+                    }
+                }
+            }
+            else
+            {
+                {
+                    QMutexLocker temp_locker(&tray_mutex);
+                    states.setFinishChangeTray(false);
+                    emit sendChangeTrayRequst();
+                    states.setWaitingChangeTray(true);
+                }
+                change_tray_time_out = parameters.changeTrayTimeOut();
+                qInfo("sendChangeTray");
+            }
+        }
+        //sut操作
         if (requestQueue.size()>0 && (!states.beExchangeMaterial())&&states.hasPickedSensor()&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
         {
             has_task = true;
@@ -598,6 +677,7 @@ void SensorLoaderModule::run(bool has_material)
 
                 if((states.cmd() == "unloadProductReq")&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
                 {
+
                     if(!moveToSUTPRPos(isLocalHost))
                     {
                         sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -728,9 +808,15 @@ void SensorLoaderModule::run(bool has_material)
                         states.setBeExchangeMaterial(false);
                     }
                 }
+                else if((((states.cmd() == "unloadProductReq")||(states.cmd() == "unloadNgSensorReq"))&&(states.hasPickedNgSensor()||states.hasPickedProduct()))
+                        ||((states.cmd() == "loadSensorReq")&&(!states.hasPickedSensor())))
+                {
+                    break;
+                }
             }
             }
-//        //放料到SUT
+
+        //        //放料到SUT
 //        if(states.needLoadSensor()&&states.hasPickedSensor())
 //        {
 //            has_task = true;
@@ -857,6 +943,13 @@ void SensorLoaderModule::run(bool has_material)
 //        }
     }
     qInfo("LensLoader stoped");
+}
+
+bool SensorLoaderModule::checkTrayNeedChange()
+{
+    if(tray->isTrayNeedChange(0)||tray->isTrayNeedChange(1))
+        return true;
+    return false;
 }
 
 bool SensorLoaderModule::moveToNextTrayPos(int tray_index)

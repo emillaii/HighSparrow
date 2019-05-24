@@ -48,8 +48,9 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
         //sut_clitent = new SutClient("ws://192.168.0.251:19999");
         connect(&lut_module,&LutModule::sendLoadLensRequst,&lens_loader_module,&LensLoaderModule::receiveLoadLensRequst,Qt::DirectConnection);
-        connect(&lens_loader_module,&LensLoaderModule::sendLoadLensRequstFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
-
+        connect(&lens_loader_module,&LensLoaderModule::sendLoadLensFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
+        connect(&lens_loader_module,&LensLoaderModule::sendChangeTrayRequst,&tray_loader_module,&TrayLoaderModule::onTestTrayUsed,Qt::DirectConnection);
+        connect(&tray_loader_module,&TrayLoaderModule::trayReady,&lens_loader_module,&LensLoaderModule::receiveChangeTrayFinish,Qt::DirectConnection);
     } else {
         qInfo("This sparrow is in Slave mode");
         this->sensor_loader_module.openServer(19999);
@@ -64,8 +65,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
 
-    connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTray,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);
-    connect(&sensor_tray_loder_module,&SensorTrayLoaderModule::sendChangeTrayFinish,&sensor_loader_module,&SensorLoaderModule::receiveChangeTrayFInish,Qt::DirectConnection);
+    connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTrayRequst,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);
+    connect(&sensor_tray_loder_module,&SensorTrayLoaderModule::sendChangeTrayFinish,&sensor_loader_module,&SensorLoaderModule::receiveChangeTrayFinish,Qt::DirectConnection);
     if(!QDir(".//notopencamera").exists())
     {
         if(pylonUplookCamera) pylonUplookCamera->start();
@@ -1593,7 +1594,7 @@ void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
 
 void BaseModuleManager::sendChangeSensorTray()
 {
-   emit sensor_loader_module.sendChangeTray();
+   emit sensor_loader_module.sendChangeTrayRequst();
 }
 
 bool BaseModuleManager::initSensor()

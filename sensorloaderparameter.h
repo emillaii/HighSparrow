@@ -30,6 +30,7 @@ public:
     Q_PROPERTY(double escapeHeight READ escapeHeight WRITE setEscapeHeight NOTIFY escapeHeightChanged)
     Q_PROPERTY(double escapeX READ escapeX WRITE setEscapeX NOTIFY escapeXChanged)
     Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
+    Q_PROPERTY(bool changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
     double vcmWorkForce() const
     {
         return m_vcmWorkForce;
@@ -127,6 +128,12 @@ public:
     double escapeY() const
     {
         return m_escapeY;
+    }
+
+
+    bool changeTrayTimeOut() const
+    {
+        return m_changeTrayTimeOut;
     }
 
 public slots:
@@ -322,6 +329,15 @@ public slots:
         emit escapeYChanged(m_escapeY);
     }
 
+    void setChangeTrayTimeOut(bool changeTrayTimeOut)
+    {
+        if (m_changeTrayTimeOut == changeTrayTimeOut)
+            return;
+
+        m_changeTrayTimeOut = changeTrayTimeOut;
+        emit changeTrayTimeOutChanged(m_changeTrayTimeOut);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -363,6 +379,9 @@ signals:
 
     void escapeYChanged(double escapeY);
 
+
+    void changeTrayTimeOutChanged(bool changeTrayTimeOut);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -384,6 +403,7 @@ private:
     double m_escapeHeight = 3;
     double m_escapeX = 5;
     double m_escapeY = 0;
+    bool m_changeTrayTimeOut = 180000;
 };
 class SensorLoaderState:public PropertyBase
 {
@@ -403,6 +423,8 @@ public:
     Q_PROPERTY(bool hasPickedNgSensor READ hasPickedNgSensor WRITE setHasPickedNgSensor NOTIFY hasPickedNgSensorChanged)
     Q_PROPERTY(bool beExchangeMaterial READ beExchangeMaterial WRITE setBeExchangeMaterial NOTIFY beExchangeMaterialChanged)
     Q_PROPERTY(QString cmd READ cmd WRITE setCmd NOTIFY cmdChanged)
+    Q_PROPERTY(bool waitingChangeTray READ waitingChangeTray WRITE setWaitingChangeTray NOTIFY waitingChangeTrayChanged)
+    Q_PROPERTY(bool finishChangeTray READ finishChangeTray WRITE setFinishChangeTray NOTIFY finishChangeTrayChanged)
     int runMode() const
     {
         return m_runMode;
@@ -465,6 +487,16 @@ public:
     QString cmd() const
     {
         return m_cmd;
+    }
+
+    bool waitingChangeTray() const
+    {
+        return m_waitingChangeTray;
+    }
+
+    bool finishChangeTray() const
+    {
+        return m_finishChangeTray;
     }
 
 public slots:
@@ -584,6 +616,24 @@ public slots:
         emit cmdChanged(m_cmd);
     }
 
+    void setWaitingChangeTray(bool waitingChangeTray)
+    {
+        if (m_waitingChangeTray == waitingChangeTray)
+            return;
+
+        m_waitingChangeTray = waitingChangeTray;
+        emit waitingChangeTrayChanged(m_waitingChangeTray);
+    }
+
+    void setFinishChangeTray(bool finishChangeTray)
+    {
+        if (m_finishChangeTray == finishChangeTray)
+            return;
+
+        m_finishChangeTray = finishChangeTray;
+        emit finishChangeTrayChanged(m_finishChangeTray);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayChanged(bool hasTray);
@@ -610,6 +660,10 @@ signals:
 
     void cmdChanged(QString cmd);
 
+    void waitingChangeTrayChanged(bool waitingChangeTray);
+
+    void finishChangeTrayChanged(bool finishChangeTray);
+
 private:
     int m_runMode = 0;
     bool m_hasTray = false;
@@ -624,6 +678,8 @@ private:
     bool m_hasPickedNgSensor = false;
     bool m_beExchangeMaterial = false;
     QString m_cmd = "";
+    bool m_waitingChangeTray = false;
+    bool m_finishChangeTray = false;
 };
 
 #endif // SENSORLOADERPARAMETER_H

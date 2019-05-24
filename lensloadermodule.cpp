@@ -79,9 +79,16 @@ void LensLoaderModule::receiveLoadLensRequst(bool need_lens,int ng_lens,int ng_l
 
 void LensLoaderModule::receiveChangeTrayFinish()
 {
-    qInfo("receiveChangeTrayFinish");
+    qInfo("LensLoaderModule receiveChangeTrayFinish");
     QMutexLocker temp_locker(&tray_mutex);
-    states.setHasTray(true);
+    if(states.waitingChangeTray())
+    {
+        states.setFinishChangeTray(true);
+    }
+    else
+    {
+        qInfo("LensLoaderModule receiveChangeTrayFinish but not effect");
+    }
 }
 
 void LensLoaderModule::run(bool has_material)
@@ -91,56 +98,28 @@ void LensLoaderModule::run(bool has_material)
     bool has_task = true;
     bool need_load_lens;
     bool lut_has_ng_lens;
+
+    bool waiting_change_tray = false;
+    bool finish_change_tray = false;
+    int change_tray_time_out = parameters.changeTrayTimeOut();
     while (is_run)
     {
-        if(!has_task)
-            QThread::msleep(1000);
         has_task = false;
         {
             QMutexLocker temp_locker(&lut_mutex);
             need_load_lens = states.needLoadLens();
             lut_has_ng_lens = states.lutHasNgLens();
         }
-        //放NGLens
-        if(states.hasPickedNgLens())
+
         {
-            has_task = true;
-            if(!moveToTrayPos(states.pickedLensID(),states.pickedTrayID()))
-            {
-                AppendError("moveToTrayPos fial!");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
-            }
-            if((!performVacancyPR())&&has_material)
-            {
-                AppendError(u8"空盘视觉失败！");
-                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-                int result = waitMessageReturn(is_run);
-                if(!result)is_run = false;
-                if(!is_run)break;
-                if(result)
-                    continue;
-            }
-            if(!moveToWorkPos())
-            {
-                AppendError("moveToWorkPos fail!");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
-            }
-            if((!placeLensToTray())&&has_material)
-            {
-                AppendError("placeLensToTray fail!");
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
-                waitMessageReturn(is_run);
-            }
-            tray->setCurrentMaterialState(MaterialState::IsNg,states.currentTray());
-            states.setHasPickedNgLens(false);
-            if(!is_run)break;
+            QMutexLocker temp_locker(&tray_mutex);
+            waiting_change_tray = states.waitingChangeTray();
+            finish_change_tray = states.finishChangeTray();
         }
+        if(!has_task)
+            QThread::msleep(1000);
         //取料
-        if((!finish_stop)&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
+        if((!finish_stop)&&states.hasTray()&&(!states.allowChangeTray())&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
         {
             has_task = true;
             if(!moveToNextTrayPos(states.currentTray()))
@@ -191,12 +170,105 @@ void LensLoaderModule::run(bool has_material)
             states.setPickedLensID(tray->getCurrentIndex(states.currentTray()));
             if(!is_run)break;
         }
+        //放NGLens
+        if(states.hasTray()&&(!states.allowChangeTray())&&states.hasPickedNgLens())
+        {
+            has_task = true;
+            if(!moveToTrayEmptyPos(states.pickedLensID(),states.pickedTrayID()))
+            {
+                AppendError("去放NG Lens位置失败，请手动拿走LPA 上的NG Lens!");
+                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                waitMessageReturn(is_run);
+                //todo加物料检测
+                states.setHasPickedNgLens(false);
+                continue;
+            }
+            if((!performVacancyPR())&&has_material)
+            {
+                AppendError(u8"空盘视觉失败！");
+                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                int result = waitMessageReturn(is_run);
+                if(!result)is_run = false;
+                if(!is_run)break;
+                if(result)
+                    continue;
+            }
+            if(!moveToWorkPos())
+            {
+                AppendError("moveToWorkPos fail!");
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            if((!placeLensToTray())&&has_material)
+            {
+                AppendError("placeLensToTray fail!");
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                waitMessageReturn(is_run);
+            }
+            tray->setCurrentMaterialState(MaterialState::IsNg,states.currentTray());
+            states.setHasPickedNgLens(false);
+            if(!is_run)break;
+        }
+        //检测是否需要换盘
+        if((!states.allowChangeTray()))
+        {
+            if((!states.hasTray())||checkNeedChangeTray())
+                states.setAllowChangeTray(true);
+        }
         //等待位置
         if(!moveToLUTPRPos1())
         {
             sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
             is_run = false;
             break;
+        }
+        //执行换盘
+        if(states.allowChangeTray())
+        {
+            if(waiting_change_tray)
+            {
+                if(finish_change_tray)
+                {
+                    {
+                        QMutexLocker temp_locker(&tray_mutex);
+                        states.setFinishChangeTray(false);
+                        states.setWaitingChangeTray(false);
+                    }
+                    tray->resetTrayState(0);
+                    tray->resetTrayState(1);
+                    states.setNeedChangTray(false);
+                    states.setAllowChangeTray(false);
+                    qInfo("finishChangeTray");
+                }
+                else
+                {
+                    if(!has_task)
+                        QThread::msleep(1000);
+                    qInfo("waitingChangeTray");
+                    change_tray_time_out -=1000;
+                    if(change_tray_time_out<=0)
+                    {
+                        AppendError(QString(u8"等待换盘超时，超时时间%d,请选择是继续等待或者重新换盘").arg(parameters.changeTrayTimeOut()));
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                        if(waitMessageReturn(is_run))
+                            states.setWaitingChangeTray(false);
+                        else
+                            change_tray_time_out = parameters.changeTrayTimeOut();
+                    }
+                }
+            }
+            else
+            {
+                {
+                    QMutexLocker temp_locker(&tray_mutex);
+                    states.setFinishChangeTray(false);
+                    emit sendChangeTrayRequst();
+                    states.setWaitingChangeTray(true);
+                }
+                change_tray_time_out = parameters.changeTrayTimeOut();
+                qInfo("sendChangeTray");
+            }
         }
         //放料到LUT
         if(need_load_lens&&states.hasPickedLens())
@@ -295,7 +367,7 @@ void LensLoaderModule::run(bool has_material)
             if(states.loadingLens())
             {
                 QMutexLocker temp_locker(&lut_mutex);
-                emit sendLoadLensRequstFinish(states.lutLensID(),states.lutTrayID());
+                emit sendLoadLensFinish(states.lutLensID(),states.lutTrayID());
                 states.setLoadingLens(false);
             }
         }
@@ -323,6 +395,13 @@ bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
     return  pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),parameters.placeTheta(),check_softlanding);
+}
+
+bool LensLoaderModule::checkNeedChangeTray()
+{
+    if(tray->isTrayNeedChange(0)&&tray->isTrayNeedChange(1))
+        return true;
+    return false;
 }
 
 bool LensLoaderModule::performLensPR()
@@ -429,6 +508,17 @@ bool LensLoaderModule::measureHight(bool is_tray)
             parameters.setPlaceLensZ(pick_arm->GetSoftladngPosition());
         return true;
     }
+    return false;
+}
+
+bool LensLoaderModule::moveToTrayEmptyPos(int index, int tray_index)
+{
+    if(index >= 0 && tray_index >= 0 && tray->getMaterialState(index,tray_index) == MaterialState::IsEmpty)
+        return moveToTrayPos(index,tray_index);
+    if(tray->findLastPositionOfState(MaterialState::IsEmpty,tray_index))
+        return moveToTrayPos(tray_index);
+    if(tray_index == 0&&tray->findLastPositionOfState(MaterialState::IsEmpty,1))
+        return moveToTrayPos(1);
     return false;
 }
 

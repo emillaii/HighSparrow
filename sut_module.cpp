@@ -30,6 +30,7 @@ void SutModule::saveJsonConfig(QString file_name)
     temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
     temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
+    temp_map.insert("UP_DOWNLOOK_POSITION", &this->up_downlook_offset);
 //    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
 //    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
     PropertyBase::saveJsonConfig(file_name, temp_map);
@@ -56,6 +57,7 @@ void SutModule::loadParams(QString file_name)
     temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
     temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
+    temp_map.insert("UP_DOWNLOOK_POSITION", &this->up_downlook_offset);
 //    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
 //    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
     PropertyBase::loadJsonConfig(file_name, temp_map);
@@ -274,7 +276,7 @@ void SutModule::run(bool has_material)
             }
             else
             {
-                emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta + parameters.cameraTheta());
+                emit sendLoadSensorFinish(-offset.X,-offset.Y,offset.Theta);
                 states.setAllowLoadSensor(false);
             }
         }

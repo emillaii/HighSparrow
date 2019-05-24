@@ -48,9 +48,11 @@ public:
     mPoint6D GetFeedBack();
     void sendSensrRequest(int sut_state);
     bool waitForLoadSensor(bool &is_run,int time_out = 60000);
+    bool moveToSync(double x, double y, double z,double c);
 signals:
     void sendSensrRequestToSut(int sut_state);
 public slots:
+    void receiveLensFromLut(double offset_x,double offset_y,double offset_theta);
     void receiveSensorFromSut(double offset_x,double offset_y,double offset_theta);
 private:
     bool moveToDiffrentZSync(double z);
@@ -61,6 +63,7 @@ private:
 public:
     AAHeadParameters parameters;
     Position6D mushroom_position;
+    bool waiting_lens;
     double uplook_x;
     double uplook_y;
     double uplook_theta;

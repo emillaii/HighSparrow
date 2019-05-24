@@ -1021,18 +1021,24 @@ ErrorCodeStruct AACoreNew::performPRToBond()
     //if (!this->lut->moveToUnloadPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT cannot move to unload Pos"};}
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
-    PrOffset offset;
-    if (sut->moveToDownlookPR(offset, false,true))
-    {
-       sut->stepMove_XY_Sync(-offset.X, -offset.Y);
-       map.insert("prOffsetX_in_mm", offset.X);
-       map.insert("prOffsetY_in_mm", offset.Y);
-    }
+//    PrOffset offset;
+//    if (sut->moveToDownlookPR(offset, false,true))
+//    {
+//       sut->stepMove_XY_Sync(-offset.X, -offset.Y);
+//       map.insert("prOffsetX_in_mm", offset.X);
+//       map.insert("prOffsetY_in_mm", offset.Y);
+//    }
     map.insert("moveToDownlookPR", stepTimer.elapsed()); stepTimer.restart();
     if (!this->aa_head->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
-    if (!this->sut->moveToMushroomPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to mushroom Pos"};}
-    map.insert("sut_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
+
+    double x = sut->downlook_position.X() + sut->up_downlook_offset.X() + aa_head->uplook_x + aa_head->offset_x;
+    double y = sut->downlook_position.Y() + sut->up_downlook_offset.Y() + aa_head->uplook_y + aa_head->offset_y;
+    double z = sut->mushroom_positon.Z();
+    double theta = sut->up_downlook_offset.Theta() + aa_head->uplook_theta + aa_head->offset_theta;
+   if (!this->aa_head->moveToSync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
+//    if (!this->sut->moveToMushroomPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to mushroom Pos"};}
+//    map.insert("sut_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "PrToBond", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};
@@ -1056,7 +1062,7 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
     if(!has_lens)
     {
         qInfo("need lens has_ng_lens %d",has_ng_lens);
-        if (this->lut->sendLensRequest(is_run,has_ng_lens))
+        if (this->lut->sendLensRequest(is_run,has_ng_lens,true))
         {
             qInfo("wait lens suceess");
             has_lens = true;

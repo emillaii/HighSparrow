@@ -49,7 +49,7 @@ void LutClient::receiveMessage(QString message)
         double prOffsetX = json["prOffsetX"].toDouble(0);
         double prOffsetY = json["prOffsetY"].toDouble(0);
         qInfo("PR Result...offsetX %f offsetY %f offsetT %f", prOffsetX, prOffsetY, prOffsetT);
-        aaHead->stepMove_XYC_Sync(-prOffsetX, -prOffsetY, -prOffsetT);
+        aaHead->receiveLensFromLut(prOffsetX, prOffsetY, -prOffsetT);
         this->state = LutClientState::WAITING_LUT_LEAVE_EVENT;
     } else if (event == "lutLeaveResp") {
         qInfo("LUT move to load lens position");
@@ -112,6 +112,12 @@ bool LutClient::sendLensRequest(bool &is_run,bool has_ng_lens,bool is_wait)
         return false;
     }
     return true;
+}
+
+bool LutClient::sendLensRequest(bool has_ng_lens, bool is_wait)
+{
+    bool is_run = true;
+    return  sendLensRequest(is_run,has_ng_lens,is_wait);
 }
 
 //Used for manual operation or calibration, not for auto run

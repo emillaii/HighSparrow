@@ -209,15 +209,38 @@ bool AAHeadModule::waitForLoadSensor(bool &is_run,int time_out)
         }
         if(!waiting_sensor)
         {
-            bool  result = stepMove_XYC_Sync(offset_x,offset_y,offset_theta);
-            qInfo("perform  sut pr result %d (%f,%f,%f)",result,offset_x,offset_y,offset_theta);
-            return result;
+            return  true;
+//            bool  result = stepMove_XYC_Sync(offset_x,offset_y,offset_theta);
+//            qInfo("perform  sut pr result %d (%f,%f,%f)",result,offset_x,offset_y,offset_theta);
+//            return result;
         }
         QThread::msleep(100);
         time_out -= 100;
     }
     qInfo("waitForLoadSensor fail");
     return false;
+}
+
+bool AAHeadModule::moveToSync(double x, double y, double z, double c)
+{
+    motor_x->MoveToPos(x);
+    motor_y->MoveToPos(y);
+    motor_z->MoveToPos(z);
+    motor_c->MoveToPos(c);
+    bool result = motor_x->WaitArrivedTargetPos(x);
+    result &= motor_y->WaitArrivedTargetPos(y);
+    result &= motor_z->WaitArrivedTargetPos(z);
+    result &= motor_c->WaitArrivedTargetPos(c);
+    return result;
+}
+
+void AAHeadModule::receiveLensFromLut(double offset_x, double offset_y, double offset_theta)
+{
+    qInfo("receiveSensorFromSut %f %f %f",offset_x,offset_y,offset_theta);
+    this->uplook_x = offset_x;
+    this->uplook_y = offset_y;
+    this->uplook_theta = offset_theta;
+    waiting_lens = false;
 }
 
 void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double offset_theta)

@@ -45,6 +45,30 @@ ItemDelegate {
                     text: qsTr("")
                 }
             }
+
+            GroupBox{
+                title:qsTr("系统操作")
+                ColumnLayout {
+                    RowLayout {
+                        Label {
+                            text: qsTr("运行模式")
+                        }
+                        TextField {
+                            text: systerm_param.runMode
+                            onEditingFinished: {
+                                systerm_param.setRunMode(text);
+                            }
+                        }
+                        Button{
+                            text: qsTr("重置逻辑")
+                            onClicked:{
+                                workersManager.resetLogics()
+                            }
+                        }
+                    }
+                }
+
+            }
             GroupBox
             {
                 visible: baseModuleManager.getServerMode()
@@ -98,8 +122,8 @@ ItemDelegate {
                     Button {
                         text: "开始"
                         onClicked: {
-                            workersManager.startWorker("LensPickArmModule",0)
-                            workersManager.startWorker("LUTModule",0)
+                            workersManager.startWorker("LensPickArmModule",systerm_param.runMode)
+                            workersManager.startWorker("LUTModule",systerm_param.runMode)
                         }
                     }
                     Button {

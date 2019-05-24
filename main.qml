@@ -192,6 +192,19 @@ ApplicationWindow {
               }
            }
            ToolButton {
+                id: loadParamsButton
+                text: qsTr("加载参数")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/flowchart.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    baseModuleManager.loadconfig()
+                }
+           }
+           ToolButton {
                id: saveParams
                text: qsTr("保存参数")
                transformOrigin: Item.Center

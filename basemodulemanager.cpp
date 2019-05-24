@@ -58,6 +58,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         sut_clitent = new SutClient("ws://localhost:19999");
     }
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
+
     connect(&aa_head_module,&AAHeadModule::sendSensrRequestToSut,&sut_module,&SutModule::receiveLoadSensorRequst,Qt::DirectConnection);
 
     connect(&aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &BaseModuleManager::receiveImageFromAACore);
@@ -156,6 +157,12 @@ bool BaseModuleManager::loadParameters()
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
+    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    return true;
+}
+
+bool BaseModuleManager::loadconfig()
+{
     loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
     return true;
 }
@@ -605,6 +612,9 @@ bool BaseModuleManager::loadMotorLimitFiles(QString file_name)
         return false;
     foreach (XtMotor* temp_motor, motors)
     {
+        temp_motor->vertical_limit_parameters.clear();
+        temp_motor->parallel_limit_parameters.clear();
+        temp_motor->io_limit_parameters.clear();
         if(param_object.contains(temp_motor->Name()))
         {
            QJsonObject temp_object = param_object[temp_motor->Name()].toObject();
@@ -634,6 +644,7 @@ bool BaseModuleManager::loadMotorLimitFiles(QString file_name)
                }
            }
         }
+        qInfo("%s loadmotorlimit motors %d limit %d",temp_motor->Name().toStdString().c_str(),temp_motor->parallel_limit_motors.count(),temp_motor->parallel_limit_parameters.count());
     }
     return true;
 }
@@ -1072,6 +1083,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 
     GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->SeekOrigin();//LPA_X
     GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
+    GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
 
     result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
@@ -1112,6 +1124,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     result &= GetMotorByName(this->sut_module.parameters.motorYName())->WaitSeekDone();
 
     result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
 
 
 //    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
@@ -1418,6 +1431,10 @@ bool BaseModuleManager::performUpDnLookCalibration()
     double offsetT = offset1.Theta - offset2.Theta;
     qInfo("UpDnlook Up PR: %f %f %f", offset2.X, offset2.Y, offset2.Theta);
     qInfo("UpDnlook Camera Offset downlook - uplook = %f", offsetT);
+    sut_module.up_downlook_offset.setX(sut_module.tool_uplook_positon.X() - offset2.X - sut_module.tool_downlook_position.X() + offset1.X);
+    sut_module.up_downlook_offset.setY(sut_module.tool_uplook_positon.Y() - offset2.Y - sut_module.tool_downlook_position.Y() + offset1.Y);
+    sut_module.up_downlook_offset.setTheta(offset1.Theta - offset2.Theta);
+    qInfo("updownlook offset %f,%f,%f",sut_module.up_downlook_offset.X(),sut_module.up_downlook_offset.Y(),sut_module.up_downlook_offset.Theta());
     sut_module.parameters.setCameraTheta(offsetT);
     lutClient->sendLUTMoveToPos(0); //AA 1 Pos
     return true;
@@ -1477,9 +1494,9 @@ bool BaseModuleManager::performLocation(QString location_name)
     }
     if(temp_location->parameters.canMotion())
     {
-        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"x: %1,y:%2,theta:%3,是否移动").arg(offset.X).arg(offset.Y).arg(offset.Theta))){
-            return true;
-        }
+//        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"x: %1,y:%2,theta:%3,是否移动").arg(offset.X).arg(offset.Y).arg(offset.Theta))){
+//            return true;
+//        }
         temp_caliration->performPRResult(offset);
     }
     return true;

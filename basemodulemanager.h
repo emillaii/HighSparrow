@@ -205,6 +205,7 @@ public:
     bool loadMachineConfig(QString file_paths);
     Q_INVOKABLE bool generateConfigFiles();
     Q_INVOKABLE bool loadParameters();
+    Q_INVOKABLE bool loadconfig();
     Q_INVOKABLE bool saveParameters();
     bool loadVcmFile(QString file_name);
     bool saveVcmfile(QString file_name);

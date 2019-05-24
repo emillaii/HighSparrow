@@ -63,6 +63,7 @@ public:
     Position3D tool_downlook_position;
     Position3D mushroom_positon;
     Position3D tool_uplook_positon;
+    PositionT  up_downlook_offset;
     MaterialCarrier* carrier;
 private:
     VisionLocation* vision_downlook_location;

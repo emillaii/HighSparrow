@@ -432,14 +432,15 @@ bool LutModule::moveToLoadUplookPos(bool check_autochthonous)
 
 bool LutModule::moveToLoadUplookPR(bool check_autochthonous)
 {
-    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
-        load_location->OpenLight();
-        if(moveToLoadUplookPos(check_autochthonous))
-            //        return  load_location->performPR();
-            return true;
-        return false;
-    }
-    return true;
+    return moveToLoadUplookPos(check_autochthonous);
+//    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+//        load_location->OpenLight();
+//        if(moveToLoadUplookPos(check_autochthonous))
+//            //        return  load_location->performPR();
+//            return true;
+//        return false;
+//    }
+//    return true;
 }
 
 double LutModule::getLoadUplookPRX()
@@ -507,9 +508,9 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
 
 bool LutModule::moveToAA2PickLensPos(bool check_autochthonous)
 {
-    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
-        return true;
-    }
+//    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+//        return true;
+//    }
     return carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
 }
 

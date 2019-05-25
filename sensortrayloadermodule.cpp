@@ -537,7 +537,7 @@ bool SensorTrayLoaderModule::moveToPutVacancyTray()
     bool result = motor_tray->MoveToPosSync(parameters.putTrayPosition());
     if(result)
     {
-        result &= gripper->Set(false,true,300);
+        result &= gripper->Set(false);
     }
     if(result)
         result &= motor_tray->MoveToPosSync(parameters.putTrayPosition()+ parameters.backDistance());
@@ -551,7 +551,7 @@ bool SensorTrayLoaderModule::moveToPutSensorTray()
     bool result = motor_tray->MoveToPosSync(parameters.putTrayPosition());
     if(result)
     {
-        result &= gripper->Set(false,true,300);
+        result &= gripper->Set(false);
     }
     return result;
 }
@@ -563,7 +563,7 @@ bool SensorTrayLoaderModule::moveToBackKickAndPutSensorTray()
     bool kick_result = motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
     bool result = motor_tray->WaitArrivedTargetPos(parameters.putTrayPosition());
     if(result)
-       result &= gripper->Set(false,true,300);
+       result &= gripper->Set(false,true);
     return result&&kick_result;
 }
 

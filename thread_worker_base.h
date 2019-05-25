@@ -20,7 +20,8 @@ enum RunMode
     VibrationTest = 3,
     AAFlowChartTest = 4,
     OnllyLeftAA = 5,
-    OnlyRightAA =6
+    OnlyRightAA =6,
+    ChangeLensTrayHandle = 7
 };
 enum FinishedType
 {

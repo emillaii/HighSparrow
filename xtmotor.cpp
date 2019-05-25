@@ -358,6 +358,7 @@ void XtMotor::Home(int thread)
 
 bool XtMotor::MoveToPos(double pos,int thread)
 {
+    if(is_debug) return true;
     if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
     if(thread==-1)
         thread = default_using_thread;
@@ -369,6 +370,7 @@ bool XtMotor::MoveToPos(double pos,int thread)
 
 bool XtMotor::SlowMoveToPos(double pos, double vel_ratio, int thread)
 {
+    if(is_debug) return true;
     if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
     if(thread==-1)
         thread = default_using_thread;
@@ -384,6 +386,7 @@ bool XtMotor::SlowMoveToPos(double pos, double vel_ratio, int thread)
 
 bool XtMotor::SGO(double pos,int thread)
 {
+    if(is_debug) return true;
     if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
     if(thread==-1)
         thread = default_using_thread;

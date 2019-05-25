@@ -14,6 +14,8 @@ private:
     double m_lastTrayPos=0;
     int m_currentIndex=0;
 
+    bool m_needChangeClip = false;
+
 public:
     ClipStandardsParameter():PropertyBase (){
         connect(this,SIGNAL(columnCountChanged(int)),this,SLOT(calColumnDelta()));
@@ -26,6 +28,7 @@ public:
     Q_PROPERTY(double firstTrayPos READ firstTrayPos WRITE setFirstTrayPos NOTIFY firstTrayPosChanged)
     Q_PROPERTY(double lastTrayPos READ lastTrayPos WRITE setLastTrayPos NOTIFY lastTrayPosChanged)
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
+    Q_PROPERTY(bool needChangeClip READ needChangeClip WRITE setNeedChangeClip NOTIFY needChangeClipChanged)
 int columnCount() const
 {
     return m_columnCount;
@@ -53,6 +56,11 @@ double lastTrayPos() const
 int currentIndex() const
 {
     return m_currentIndex;
+}
+
+bool needChangeClip() const
+{
+    return m_needChangeClip;
 }
 
 public slots:
@@ -116,6 +124,15 @@ void setCurrentIndex(int currentIndex)
     emit currentIndexChanged(m_currentIndex);
 }
 
+void setNeedChangeClip(bool needChangeClip)
+{
+    if (m_needChangeClip == needChangeClip)
+        return;
+
+    m_needChangeClip = needChangeClip;
+    emit needChangeClipChanged(m_needChangeClip);
+}
+
 signals:
 void columnCountChanged(int columnCount);
 void fromTopChanged(bool fromTop);
@@ -123,6 +140,7 @@ void columnDeltaChanged(double columnDelta);
 void firstTrayPosChanged(double firstTrayPos);
 void lastTrayPosChanged(double lastTrayPos);
 void currentIndexChanged(int currentIndex);
+void needChangeClipChanged(bool needChangeClip);
 };
 
 #endif // TRAYCLIPSTANDARDSPARAMETER_H

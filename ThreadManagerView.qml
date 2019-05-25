@@ -189,7 +189,7 @@ ItemDelegate {
                         id:start_btn
                         text:qsTr("开始")
                         onClicked:{
-                            workersManager.startWorker("TrayLoaderModule",2)
+                            workersManager.startWorker("TrayLoaderModule",systerm_param.runMode)
                         }
                     }
                     Button{

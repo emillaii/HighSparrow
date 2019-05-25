@@ -15,6 +15,7 @@ public:
     double getPosition(int column_index);
     int getCurrentIndex();
     double getCurrentPosition();
+    bool updateCurrentIndex();
     ClipStandardsParameter standards_parameters;
 };
 

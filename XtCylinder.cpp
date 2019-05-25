@@ -16,29 +16,31 @@ void XtCylinder::Init(XtGeneralOutput *output_io,
     in_unfold = input_unfold_io;
     setName(parameters.cylinderName());
 }
-bool XtCylinder::Set(bool new_state, bool wait_done,int finish_delay, int timeout,int input_null_delay)
+bool XtCylinder::Set(bool new_state, bool wait_done, int timeout)
 {
+    if(Value() == new_state)
+        return true;
     if(out_zero != nullptr)
     {
         if(new_state)
         {
             out_zero->Set(false);
+            QThread::msleep(10);
             out->Set(true);
         }
         else
         {
             out->Set(false);
+            QThread::msleep(10);
             out_zero->Set(true);
         }
     }
     else{
-        qDebug()<<"out set new_state:";
-        qDebug()<<new_state;
         out->Set(new_state);
     }
     if(!wait_done)
         return true;
-    return Wait(new_state,finish_delay,timeout);
+    return Wait(new_state,timeout);
 
 }
 
@@ -47,9 +49,8 @@ void XtCylinder::SET(int thread, bool new_state)
     out->Set(new_state, thread);
 }
 
-bool XtCylinder::Wait(bool target_state,int finish_delay, int timeout,int input_null_delay)
+bool XtCylinder::Wait(bool target_state,int timeout)
 {
-    qDebug()<<"52.do Wait Done";
     if(is_debug)return true;
     int count = timeout;
     bool state_fold , state_unfold;
@@ -67,10 +68,16 @@ bool XtCylinder::Wait(bool target_state,int finish_delay, int timeout,int input_
     {
         if ((in_fold == nullptr||in_fold->Value() == state_fold)&&(in_unfold == nullptr||in_unfold->Value() == state_unfold))
         {
-            if((in_fold == nullptr&&state_fold)||(in_unfold == nullptr&&state_unfold))
-                QThread::msleep(input_null_delay);
-            if(finish_delay)
-                QThread::msleep(finish_delay);
+            if(target_state)
+            {
+                if(parameters.finishOneDelay()>0)
+                    QThread::msleep(parameters.finishOneDelay());
+            }
+            else
+            {
+                if(parameters.finishZeroDelay()>0)
+                    QThread::msleep(parameters.finishZeroDelay());
+            }
             return true;
         }
         count-=10;
@@ -83,7 +90,6 @@ bool XtCylinder::Wait(bool target_state,int finish_delay, int timeout,int input_
           in_unfold==nullptr?"none":in_unfold->Name().toStdString().c_str(),
           in_unfold==nullptr?0:in_unfold->Value(),
           state_unfold);
-
     return false;
 }
 

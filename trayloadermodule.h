@@ -12,7 +12,7 @@ class TrayLoaderModule : public ThreadWorkerBase{
 public:
     TrayLoaderModule(QString name="TrayLoaderModule");
     void Init(XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtCylinder*,XtCylinder*,XtCylinder*,XtCylinder*,TrayClip*,TrayClip*,
-              XtGeneralInput* trayinio=Q_NULLPTR,XtGeneralInput* trayoutio=Q_NULLPTR);
+              XtGeneralInput* trayinio,XtGeneralInput* trayoutio,XtGeneralInput*tray_check_io);
     void performHandling(int cmd);
 
     TrayClip* tray_clip = Q_NULLPTR;
@@ -50,11 +50,26 @@ public:
 
     bool LTIEMovetoColumnIndex(int);
     bool LTOEMovetoColumnIndex(int);
+
+    bool sendoutAndReayPushOutEmptyTray(bool check_tray);
+    bool moveToGetAndPushInNewTrayAndPushOutTray(bool check_tray);
+    bool moveToPushOutTray();
+    bool moveToWorkPosAndReayPullNewTray();
+    bool entranceClipMoveToNextPos();
+    bool moveToReayPullNewTray();
+    bool clipPushoutTray(bool check_tray);
+//    bool moveToReadyPushTray();
+    bool existClipMoveToNextPos();
+
+    bool moveToChangeChangeHandlly();
+    bool moveToWorkPos();
 private:
     void run(bool has_tray);
+    bool resumeState();
+    void runHandle();
 
-
-    bool is_run=false;
+    bool is_run = false;
+    QMutex tray_mutex;
     XtMotor* motor_clip_in = Q_NULLPTR;  //LTIE
     XtMotor* motor_in = Q_NULLPTR;       //LTK_X1
     XtMotor* motor_work = Q_NULLPTR;     //LTL_X

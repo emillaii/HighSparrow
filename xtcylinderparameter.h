@@ -15,6 +15,8 @@ public:
     Q_PROPERTY(QString zeroOutName READ zeroOutName WRITE setZeroOutName NOTIFY zeroOutNameChanged)
     Q_PROPERTY(QString oneInName READ oneInName WRITE setOneInName NOTIFY oneInNameChanged)
     Q_PROPERTY(QString zeroInName READ zeroInName WRITE setZeroInName NOTIFY zeroInNameChanged)
+    Q_PROPERTY(int finishOneDelay READ finishOneDelay WRITE setFinishOneDelay NOTIFY finishOneDelayChanged)
+    Q_PROPERTY(int finishZeroDelay READ finishZeroDelay WRITE setFinishZeroDelay NOTIFY finishZeroDelayChanged)
     QString cylinderName() const
     {
         return m_cylinderName;
@@ -38,6 +40,16 @@ public:
     QString zeroInName() const
     {
         return m_zeroInName;
+    }
+
+    int finishOneDelay() const
+    {
+        return m_finishOneDelay;
+    }
+
+    int finishZeroDelay() const
+    {
+        return m_finishZeroDelay;
     }
 
 public slots:
@@ -86,6 +98,24 @@ public slots:
         emit zeroInNameChanged(m_zeroInName);
     }
 
+    void setFinishOneDelay(int finishOneDelay)
+    {
+        if (m_finishOneDelay == finishOneDelay)
+            return;
+
+        m_finishOneDelay = finishOneDelay;
+        emit finishOneDelayChanged(m_finishOneDelay);
+    }
+
+    void setFinishZeroDelay(int finishZeroDelay)
+    {
+        if (m_finishZeroDelay == finishZeroDelay)
+            return;
+
+        m_finishZeroDelay = finishZeroDelay;
+        emit finishZeroDelayChanged(m_finishZeroDelay);
+    }
+
 signals:
     void cylinderNameChanged(QString cylinderName);
 
@@ -97,12 +127,18 @@ signals:
 
     void zeroInNameChanged(QString zeroInName);
 
+    void finishOneDelayChanged(int finishOneDelay);
+
+    void finishZeroDelayChanged(int finishZeroDelay);
+
 private:
     QString m_cylinderName = "Cylinder";
     QString m_oneOutName = "";
     QString m_zeroOutName = "";
     QString m_oneInName = "";
     QString m_zeroInName = "";
+    int m_finishOneDelay = 100;
+    int m_finishZeroDelay = 100;
 };
 
 #endif // CYLINDERPARAMETER_H

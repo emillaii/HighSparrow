@@ -929,7 +929,8 @@ bool BaseModuleManager::InitStruct()
                             GetCylinderByName(tray_loader_module.parameters.cylinderTrayName()),
                             &trayClipIn,&trayClipOut,
                             GetInputIoByName(tray_loader_module.parameters.clipinInputName()),
-                            GetInputIoByName(tray_loader_module.parameters.clipoutInputName()));
+                            GetInputIoByName(tray_loader_module.parameters.clipoutInputName()),
+                            GetInputIoByName(tray_loader_module.parameters.trayInputIoName()));
 
     sfrWorkerController = new SfrWorkerController(&aaCoreNew);
     aaCoreNew.setSfrWorkerController(sfrWorkerController);
@@ -1456,6 +1457,9 @@ bool BaseModuleManager::performLensUpDnLookCalibration()
     double offsetY = offset1.Y - offset2.Y;
     this->lens_loader_module.lens_updnlook_offset.setX(offsetX);
     this->lens_loader_module.lens_updnlook_offset.setY(offsetY);
+    this->lut_module.lpa_updownlook_offset.setX(-offsetX);
+    this->lut_module.lpa_updownlook_offset.setY(-offsetY);
+
     qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", offsetX,offsetY);
     return true;
 }

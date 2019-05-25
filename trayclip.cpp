@@ -33,3 +33,13 @@ double TrayClip::getCurrentPosition()
 {
     return standards_parameters.firstTrayPos() + standards_parameters.currentIndex()*standards_parameters.columnDelta();
 }
+
+bool TrayClip::updateCurrentIndex()
+{
+    standards_parameters.setCurrentIndex(standards_parameters.currentIndex() + 1);
+    if(standards_parameters.currentIndex() >= standards_parameters.columnCount())
+    {
+        standards_parameters.setCurrentIndex(0);
+        return false;
+    }
+}

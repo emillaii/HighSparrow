@@ -57,6 +57,7 @@ public:
     bool moveToWorkPosAndReayPullNewTray();
     bool entranceClipMoveToNextPos();
     bool moveToReayPullNewTray();
+    bool moveToPushNewTray();
     bool clipPushoutTray(bool check_tray);
 //    bool moveToReadyPushTray();
     bool existClipMoveToNextPos();

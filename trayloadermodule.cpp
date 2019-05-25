@@ -53,6 +53,21 @@ void TrayLoaderModule::resetLogic()
 {
     if(is_run)return;
     states.setHasTrayReady(false);
+
+    states.setHasWorkTray(false);
+    states.setIsFirstTray(true);
+    states.setHasReadyTray(false);
+    states.setHasPulledTray(false);
+    states.setIsExchangeTray(false);
+    states.setAllowChangeTray(false);
+    states.setHasExitClipFull(false);
+    tray_clip->reset();
+    states.setHasEntranceClipEmpty(false);
+    tray_clip_out->reset();
+    states.setEntanceClipReady(false);
+    states.setExitClipReady(false);
+    states.setReadyToPusReadyTray(false);
+    states.setReadyToPushEmptyTray(false);
 }
 
 void TrayLoaderModule::performHandling(int cmd)
@@ -505,7 +520,7 @@ bool TrayLoaderModule::sendoutAndReayPushOutEmptyTray(bool check_tray)
     if(!result)return false;
     result &= motor_work->MoveToPos(parameters.ltlReleasePos());
     result &= motor_out->MoveToPos(parameters.ltkx2PressPos());
-    result &= motor_work->WaitArrivedTargetPos(parameters.ltkx2PressPos());
+    result &= motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
     if(result)
         result &= cylinder_tray->Set(true);
     if(result&&check_tray)
@@ -514,7 +529,7 @@ bool TrayLoaderModule::sendoutAndReayPushOutEmptyTray(bool check_tray)
         if(!result)
             AppendError(u8"盘托上未检测到料盘！");
     }
-    result &= motor_out->WaitArrivedTargetPos(parameters.ltlReleasePos());
+    result &= motor_out->WaitArrivedTargetPos(parameters.ltkx2PressPos());
     if(!result)
         AppendError(QString(u8"放出空盘并准备推空盘失败"));
     if(parameters.openQinfo())
@@ -606,6 +621,20 @@ bool TrayLoaderModule::moveToReayPullNewTray()
         AppendError(QString(u8"去拉盘准备位置失败"));
     if(parameters.openQinfo())
         qInfo(u8"去拉盘准备位置 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveToPushNewTray()
+{
+    bool result = cylinder_ltk1->Set(true);
+    if(result)
+        result &= motor_in->MoveToPosSync(parameters.ltkx1ReleasePos());
+    if(result)
+        result &= cylinder_ltk1->Set(false);
+    if(!result)
+        AppendError(QString(u8"推备用盘失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"推备用盘失败 %d",result);
     return result;
 }
 

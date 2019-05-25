@@ -16,6 +16,7 @@ public:
     int getCurrentIndex();
     double getCurrentPosition();
     bool updateCurrentIndex();
+    void reset();
     ClipStandardsParameter standards_parameters;
 };
 

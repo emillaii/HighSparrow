@@ -202,6 +202,7 @@ bool BaseModuleManager::saveParameters()
     }
     aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
     saveMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    saveCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
     return true;
@@ -454,7 +455,7 @@ bool BaseModuleManager::loadCylinderFiles(QString file_name)
 bool BaseModuleManager::saveCylinderFiles(QString file_name)
 {
     QJsonArray array;
-    foreach (QString temp_name, vacuums.keys()) {
+    foreach (QString temp_name, cylinder.keys()) {
         XtCylinder* temp_cylinder = GetCylinderByName(temp_name);
         if(temp_cylinder != nullptr)
         {

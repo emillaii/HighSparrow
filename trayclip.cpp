@@ -43,3 +43,8 @@ bool TrayClip::updateCurrentIndex()
         return false;
     }
 }
+
+void TrayClip::reset()
+{
+    standards_parameters.setCurrentIndex(0);
+}

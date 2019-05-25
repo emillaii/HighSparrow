@@ -3,34 +3,6 @@
 #include <QFuture>
 #include <QMessageBox>
 
-enum CommandType{
-    IDLE,
-    STOP,
-    MOTION_INIT,
-    MOTION_HOME,
-    MOTION_STOP_HOME,     // Interrupt
-    MODE_AUTO_RUN,
-    AA_MOVETO_MUSHROOM_CMD,
-    AA_MOVETO_PICK_LENS_CMD,
-    AA_MOVETO_OC_CMD,
-    SUT_MOVETO_MUSHROOM_CMD,
-    SUT_MOVETO_PR_CMD,
-    LUT_MOVETO_LOAD_CMD,
-    LUT_MOVETO_UNLOAD_CMD,
-    LUT_MOVETO_LOAD_UPLOOK_CMD,
-    LUT_MOVETO_AA1_UPLOOK_CMD,
-    LUT_MOVETO_AA2_UPLOOK_CMD,
-    LUT_PICK_LENS_TO_AA2_CMD,
-    LUT_PICK_LENS_TO_AA1_CMD,
-    PERFORM_CALIBRATION,
-    PERFORM_UPDNLOOK_CALIBRATION,
-    PERFORM_LENS_UPDNLOOK_CALIBRATION,
-    PERFORM_SENSOR_PICKHEAD_CALIBRATION,
-    PERFORM_LOCATION,
-    PERFORM_OC,
-    PERFORM_LOOP_TEST
-};
-
 LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     : QThread (parent), m_currentMode(CommandType::IDLE)
 {
@@ -217,7 +189,6 @@ void LogicManager::performLocation(QString location_name)
     this->location_name = location_name;
     moveToCmd(CommandType::PERFORM_LOCATION);
 }
-
 
 void LogicManager::autoRun(QString json){
     setStateMessage(__FUNCTION__);moveToCmd(CommandType::MODE_AUTO_RUN);
@@ -631,3 +602,10 @@ void LogicManager::sensorTrayLoaderModuleMovetoVacancyTrayPosition()
     baseModuleManage->sensor_tray_loder_module.movetoVacancyTrayPosition();
 }
 
+void LogicManager::receiveCommand(int cmd)
+{
+    qInfo("receive command: %d", cmd);
+    if (cmd == CommandType::MOTION_INIT) {
+        init();
+    }
+}

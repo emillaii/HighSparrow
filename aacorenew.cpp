@@ -81,7 +81,7 @@ void AACoreNew::startWork( int run_mode)
         loopTestResult.append("CC, UL,UR,LL,LR,\n");
         while (is_run) {
             performMTF(true);
-            QThread::msleep(100);
+            QThread::msleep(200);
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
     } else if (run_mode == RunMode::AAFlowChartTest) {

@@ -6,12 +6,39 @@
 #include <QThread>
 #include <unitlog.h>
 
+enum CommandType{
+    IDLE,
+    STOP,
+    MOTION_INIT,
+    MOTION_HOME,
+    MOTION_STOP_HOME,     // Interrupt
+    MODE_AUTO_RUN,
+    AA_MOVETO_MUSHROOM_CMD,
+    AA_MOVETO_PICK_LENS_CMD,
+    AA_MOVETO_OC_CMD,
+    SUT_MOVETO_MUSHROOM_CMD,
+    SUT_MOVETO_PR_CMD,
+    LUT_MOVETO_LOAD_CMD,
+    LUT_MOVETO_UNLOAD_CMD,
+    LUT_MOVETO_LOAD_UPLOOK_CMD,
+    LUT_MOVETO_AA1_UPLOOK_CMD,
+    LUT_MOVETO_AA2_UPLOOK_CMD,
+    LUT_PICK_LENS_TO_AA2_CMD,
+    LUT_PICK_LENS_TO_AA1_CMD,
+    PERFORM_CALIBRATION,
+    PERFORM_UPDNLOOK_CALIBRATION,
+    PERFORM_LENS_UPDNLOOK_CALIBRATION,
+    PERFORM_SENSOR_PICKHEAD_CALIBRATION,
+    PERFORM_LOCATION,
+    PERFORM_OC,
+    PERFORM_LOOP_TEST
+};
+
 class LogicManager : public QThread
 {
     Q_OBJECT
 public:
     explicit LogicManager(BaseModuleManager* device_manager, QObject *parent = nullptr);
-
 
     Q_PROPERTY(int currentMode READ currentMode WRITE setCurrentMode)
     Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage NOTIFY stateMessageChanged)
@@ -124,8 +151,6 @@ public:
     Q_INVOKABLE void sensorTrayLoaderModuleMovetoTrayWorkPosition();
     Q_INVOKABLE void sensorTrayLoaderModuleMovetoVacancyTrayPosition();
 
-
-
     int currentMode() const
     {
         return m_currentMode;
@@ -146,13 +171,10 @@ public slots:
     {
         m_stateMessage = stateMessage;
     }
-
-
-
+    void receiveCommand(int cmd);
 signals:
     void stateMessageChanged(QString stateMessage);
     bool sendMsgSignal(QString,QString);
-
 private:
     BaseModuleManager * baseModuleManage;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;

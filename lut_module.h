@@ -37,8 +37,8 @@ public:
     Position3D load_uplook_position;
     Position lpa_camera_to_picker_offset;
     Position3D load_position;
-    Position3D lpa_downlook_load_position;
-    Position3D lpa_downlook_unload_position;
+    Position3D lut_downlook_load_position;
+    Position3D lut_downlook_unload_position;
     Position3D aa1_updownlook_position;
     Position3D aa1_picklens_position;
     Position3D aa1_unpicklens_position;
@@ -90,8 +90,8 @@ public:
     Q_INVOKABLE bool moveToAA2UplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
-    Q_INVOKABLE bool moveToLpaDownlookloadPos(bool check_autochthonous = false);
-    Q_INVOKABLE bool moveToLpaDownLookUnloadPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToLutDownlookloadPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToLutDownlookUnloadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadUplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadUplookPR(bool check_autochthonous = false);
     Q_INVOKABLE double getLoadUplookPRX();

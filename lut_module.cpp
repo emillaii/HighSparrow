@@ -51,7 +51,7 @@ void LutModule::receiveRequestMessage(QString message, QString client_ip)
     }
     else if (cmd == "moveToUnloadPosReq") {
         servingIP = client_ip;
-        this->moveToLpaDownLookUnloadPos();
+        this->moveToLutDownlookUnloadPos();
         sendEvent("moveToUnloadPosResp");
     }
     else if (cmd == "moveToAA1UplookPosReq") {
@@ -206,7 +206,7 @@ void LutModule::run(bool has_material)
                     }
                 } else if (states.cmd() == "lutLeaveReq") {
                     bool action_result;
-                    action_result = moveToLpaDownLookUnloadPos();
+                    action_result = moveToLutDownlookUnloadPos();
                     if((!action_result)&&has_material)
                     {
                         sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -417,12 +417,12 @@ bool LutModule::moveToLoadPos(bool check_autochthonous)
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToLpaDownlookloadPos(bool check_autochthonous)
+bool LutModule::moveToLutDownlookloadPos(bool check_autochthonous)
 {
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(lut_downlook_load_position.X(),lut_downlook_load_position.Y(),lut_downlook_load_position.Z(),check_autochthonous);
 }
 
-bool LutModule::moveToLpaDownLookUnloadPos(bool check_autochthonous)
+bool LutModule::moveToLutDownlookUnloadPos(bool check_autochthonous)
 {
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(lut_downlook_unload_position.X(),lut_downlook_unload_position.Y(),lut_downlook_unload_position.Z(),check_autochthonous);
 }

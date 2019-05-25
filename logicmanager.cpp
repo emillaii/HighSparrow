@@ -65,7 +65,7 @@ void LogicManager::run() {
         baseModuleManage->lut_module.moveToLoadPos();
     } else if (m_currentMode == CommandType::LUT_MOVETO_UNLOAD_CMD)
     {
-        baseModuleManage->lut_module.moveToLpaDownLookUnloadPos();
+        baseModuleManage->lut_module.moveToLutDownlookUnloadPos();
     } else if (m_currentMode == CommandType::LUT_MOVETO_LOAD_UPLOOK_CMD)
     {
         baseModuleManage->lut_module.moveToLoadUplookPos();

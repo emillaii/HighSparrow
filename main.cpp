@@ -84,6 +84,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lutLoadPosition", &highSprrow.baseModuleManager->lut_module.load_position);
     engine.rootContext()->setContextProperty("lutUnloadPosition", &highSprrow.baseModuleManager->lut_module.lut_downlook_unload_position);
     engine.rootContext()->setContextProperty("lutLoadUplookPosition", &highSprrow.baseModuleManager->lut_module.load_uplook_position);
+    engine.rootContext()->setContextProperty("lutDownlookLoadPosition", &highSprrow.baseModuleManager->lut_module.lut_downlook_load_position);
+    engine.rootContext()->setContextProperty("lutDownlookUnloadPosition", &highSprrow.baseModuleManager->lut_module.lut_downlook_unload_position);
 
     engine.rootContext()->setContextProperty("lutUpDownlookPositionAA1", &highSprrow.baseModuleManager->lut_module.aa1_updownlook_position);
     engine.rootContext()->setContextProperty("lutPickLensPositionAA1", &highSprrow.baseModuleManager->lut_module.aa1_picklens_position);

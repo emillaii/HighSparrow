@@ -80,6 +80,8 @@
         <file>CommonUsedView.qml</file>
         <file>CommonControl.qml</file>
         <file>CheckProcess.qml</file>
+        <file>LUTDownlookLoadPosition.qml</file>
+        <file>LUTDownlookUnloadPosition.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

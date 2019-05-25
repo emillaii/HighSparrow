@@ -69,6 +69,18 @@ ItemDelegate {
             }
 
             GroupBox{
+                title: qsTr("Downlook Load Position")
+                LUTDownlookLoadPosition {
+                }
+            }
+
+            GroupBox{
+                title: qsTr("Downlook Unload Position")
+                LUTDownlookUnloadPosition {
+                }
+            }
+
+            GroupBox{
                 title: qsTr("AA_1 Uplook Position")
                 LUTAA1UplookPosition {
                 }
@@ -84,12 +96,6 @@ ItemDelegate {
                 LUTAA1UnpickLensPosition {
                 }
             }
-//            GroupBox{
-//                title: qsTr("AA_1 UpDownlook Position")
-//                LUTAA1UpDownlookPosition {
-//                }
-//            }
-
             GroupBox{
                 title: qsTr("AA_2 Uplook Position")
                 LUTAA2UplookPosition {
@@ -106,11 +112,6 @@ ItemDelegate {
                 LUTAA2UnPickLensPosition {
                 }
             }
-//            GroupBox{
-//                title: qsTr("AA_2 UpDownlook Position")
-//                LUTAA2UpDownlookPosition {
-//                }
-//            }
             GroupBox{
                 title: qsTr("LUT Safety Position")
                 LUTSafetyPositionView{

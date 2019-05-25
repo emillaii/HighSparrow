@@ -1070,7 +1070,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     //if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
     //    return false;
     GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
-//    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
+    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
     GetVcMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
     GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
 
@@ -1089,8 +1089,8 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
 
-//    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();//AA_X
-//    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();//AA_Z
+    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();//AA_X
+    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();//AA_Z
     GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();//AA_A
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();//AA_B
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();//AA_C
@@ -1127,9 +1127,8 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
 
-
-//    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
-//    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
@@ -1455,12 +1454,13 @@ bool BaseModuleManager::performLensUpDnLookCalibration()
     qInfo("Lens loader UpDnlook down PR: %f %f %f %f %f", offset2.X, offset2.Y, offset2.Theta, offset2.W, offset2.H);
     double offsetX = offset1.X - offset2.X;
     double offsetY = offset1.Y - offset2.Y;
-    this->lens_loader_module.lens_updnlook_offset.setX(offsetX);
-    this->lens_loader_module.lens_updnlook_offset.setY(offsetY);
-    this->lut_module.lpa_updownlook_offset.setX(-offsetX);
-    this->lut_module.lpa_updownlook_offset.setY(-offsetY);
+    this->lens_loader_module.camera_to_picker_offset.setX(offsetX);
+    this->lens_loader_module.camera_to_picker_offset.setY(offsetY);
+    this->lut_module.lpa_camera_to_picker_offset.setX(-offsetX);
+    this->lut_module.lpa_camera_to_picker_offset.setY(-offsetY);
 
     qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", offsetX,offsetY);
+//    this->lens_loader_module.calculateCameraToPickerOffset();
     return true;
 }
 
@@ -1551,7 +1551,9 @@ bool BaseModuleManager::getInput(QString name)
 
 void BaseModuleManager::motorSeekOrigin(QString name)
 {
+    qInfo("motorSeekOrigin: %s", name.toStdString().c_str());
     if (motors.contains(name)) {
+        qInfo("Start motorSeekOrigin: %s", name.toStdString().c_str());
         motors[name]->SeekOrigin();
     }
 }

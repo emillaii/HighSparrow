@@ -435,12 +435,13 @@ bool LensLoaderModule::performUpdowlookUpPR(PrOffset &offset)
 {
     return lpa_updownlook_up_vision->performPR(offset, false);
 }
-//camera_to_picker_offset = lut_picker_position - (lut_camera_position + lens_updnlook_offset)
-void LensLoaderModule::calculateCameraToPickerOffset()
-{
-    camera_to_picker_offset.setX(lut_picker_position.X() - lut_camera_position.X() - lens_updnlook_offset.X());
-    camera_to_picker_offset.setY(lut_picker_position.Y() - lut_camera_position.Y() - lens_updnlook_offset.Y());
-}
+//lut_camera_position = lut_picker_position - camera_to_picker_offset
+//void LensLoaderModule::calculateCameraToPickerOffset()
+//{
+//    lut_camera_position.setX(lut_picker_position.X() - camera_to_picker_offset.X());
+//    lut_camera_position.setY(lut_picker_position.Y() - camera_to_picker_offset.Y());
+//    qInfo("Camera to picker offset x: %f y:%f", lut_camera_position.X(), lut_camera_position.Y());
+//}
 bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
 {
     PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,pr_offset.Theta);

@@ -56,7 +56,7 @@ public:
     void saveJsonConfig(QString file_name);
     bool performUpDownlookDownPR(PrOffset &offset);
     bool performUpdowlookUpPR(PrOffset &offset);
-    void calculateCameraToPickerOffset();
+//    void calculateCameraToPickerOffset();
 signals:
     void sendChangeTrayRequst();
     void sendLoadLensFinish(int lens,int lens_tray);

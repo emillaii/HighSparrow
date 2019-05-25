@@ -35,7 +35,7 @@ public:
     LutParameter parameters;
     LutState states;
     Position3D load_uplook_position;
-    Position lpa_updownlook_offset;
+    Position lpa_camera_to_picker_offset;
     Position3D load_position;
     Position3D lpa_downlook_load_position;
     Position3D lpa_downlook_unload_position;

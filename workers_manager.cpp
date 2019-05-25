@@ -33,7 +33,6 @@ void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message
         emit stopWorkers();
 
     //三色灯
-    qInfo("..Check Point.......");
     showAlarm(sender_id,level,error_message);
 }
 
@@ -144,4 +143,7 @@ void WorkersManager::sendOperation(QString workerName, int operation_type)
     qInfo("Workername: %s operationType: %d", workerName.toStdString().c_str(), operation_type);
     //ToDo: Send back to worker for handling the user response
     emit feedbackOperation(workers[workerName]->getAlarmId(),operation_type);
+    int sender_id = workers[workerName]->getAlarmId();
+    workersState.remove(sender_id);
+    workersError.remove(sender_id);
 }

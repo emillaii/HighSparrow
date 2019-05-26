@@ -1,4 +1,4 @@
-#ifndef TRAYLOADERMODULE_H
+ #ifndef TRAYLOADERMODULE_H
 #define TRAYLOADERMODULE_H
 
 #include "thread_worker_base.h"
@@ -53,11 +53,12 @@ public:
 
     bool sendoutAndReayPushOutEmptyTray(bool check_tray);
     bool moveToGetAndPushInNewTrayAndPushOutTray(bool check_tray);
+    bool moveToGetAndPushInNewTray(bool check_tray);
     bool moveToPushOutTray();
     bool moveToWorkPosAndReayPullNewTray();
     bool entranceClipMoveToNextPos();
     bool moveToReayPullNewTray();
-    bool moveToPushNewTray();
+    bool moveToPushReadyTray();
     bool clipPushoutTray(bool check_tray);
 //    bool moveToReadyPushTray();
     bool existClipMoveToNextPos();

@@ -443,6 +443,8 @@ class TrayLoaderState : public PropertyBase{
 
     bool m_isFirstTray = true;
 
+    bool m_isReadyTrayPushed = false;
+
 public:
     TrayLoaderState():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
@@ -466,6 +468,7 @@ public:
     Q_PROPERTY(bool entanceClipReady READ entanceClipReady WRITE setEntanceClipReady NOTIFY entanceClipReadyChanged)
     Q_PROPERTY(bool exitClipReady READ exitClipReady WRITE setExitClipReady NOTIFY exitClipReadyChanged)
     Q_PROPERTY(bool isFirstTray READ isFirstTray WRITE setIsFirstTray NOTIFY isFirstTrayChanged)
+    Q_PROPERTY(bool isReadyTrayPushed READ isReadyTrayPushed WRITE setIsReadyTrayPushed NOTIFY isReadyTrayPushedChanged)
     int runMode() const
     {
         return m_runMode;
@@ -562,6 +565,11 @@ public:
     bool isFirstTray() const
     {
         return m_isFirstTray;
+    }
+
+    bool isReadyTrayPushed() const
+    {
+        return m_isReadyTrayPushed;
     }
 
 public slots:
@@ -744,6 +752,15 @@ public slots:
         emit isFirstTrayChanged(m_isFirstTray);
     }
 
+    void setIsReadyTrayPushed(bool isReadyTrayPushed)
+    {
+        if (m_isReadyTrayPushed == isReadyTrayPushed)
+            return;
+
+        m_isReadyTrayPushed = isReadyTrayPushed;
+        emit isReadyTrayPushedChanged(m_isReadyTrayPushed);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayOnEntryChanged(bool hasTrayOnEntry);
@@ -766,6 +783,7 @@ signals:
     void exitClipReadyChanged(bool exitClipReady);
     void readyToPushReadyTrayChanged(bool readyToPushReadyTray);
     void isFirstTrayChanged(bool isFirstTray);
+    void isReadyTrayPushedChanged(bool isReadyTrayPushed);
 };
 
 #endif // TRAYLOADERPARAMETER_H

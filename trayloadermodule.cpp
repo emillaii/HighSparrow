@@ -565,6 +565,25 @@ bool TrayLoaderModule::moveToGetAndPushInNewTrayAndPushOutTray(bool check_tray)
     return result&&out_result&&in_result;
 }
 
+bool TrayLoaderModule::moveToGetAndPushInNewTray(bool check_tray)
+{
+    bool result = cylinder_tray->Set(true);
+    if(result)
+        result &= motor_work->MoveToPos(parameters.ltlPressPos());
+    bool in_result = cylinder_ltk1->Set(true);
+    if(in_result)
+        in_result &= motor_in->MoveToPos(parameters.ltkx1ReleasePos());
+    result &= motor_work->WaitArrivedTargetPos(parameters.ltkx2PressPos());
+    in_result &= motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
+    if(in_result)
+        in_result &= cylinder_ltk1->Set(false);
+    if(!result)
+        AppendError(QString(u8"去拿新盘并推入新盘失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"去拿新盘并推入新盘失败 %d",result&&in_result);
+    return result&&in_result;
+}
+
 bool TrayLoaderModule::moveToPushOutTray()
 {
     bool result = cylinder_ltk2->Set(true);
@@ -624,7 +643,7 @@ bool TrayLoaderModule::moveToReayPullNewTray()
     return result;
 }
 
-bool TrayLoaderModule::moveToPushNewTray()
+bool TrayLoaderModule::moveToPushReadyTray()
 {
     bool result = cylinder_ltk1->Set(true);
     if(result)
@@ -979,7 +998,7 @@ void TrayLoaderModule::run(bool has_tray)
         //去取盘
         //推入满盘
         //推出空盘
-        if(allow_change_tray&&states.hasReadyTray()&&(!states.hasWorkTray())&&states.readyToPushReadyTray()&&states.readyToPushEmptyTray()&&states.exitClipReady())
+        if(allow_change_tray&&states.hasReadyTray()&&(!states.isReadyTrayPushed())&&(!states.hasWorkTray())&&states.readyToPushReadyTray()&&states.readyToPushEmptyTray()&&states.exitClipReady())
         {
             has_task = true;
             if((!moveToGetAndPushInNewTrayAndPushOutTray(has_tray))&&has_tray)
@@ -990,6 +1009,7 @@ void TrayLoaderModule::run(bool has_tray)
                     states.setReadyToPusReadyTray(false);
                     states.setReadyToPushEmptyTray(false);
                     states.setExitClipReady(false);
+                    states.setIsReadyTrayPushed(true);
                 }
             }
             else
@@ -997,11 +1017,31 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setReadyToPusReadyTray(false);
                 states.setReadyToPushEmptyTray(false);
                 states.setExitClipReady(false);
+                states.setIsReadyTrayPushed(true);
+            }
+        }
+        //无空盘时推出满盘
+        if(allow_change_tray&&states.hasReadyTray()&&(!states.isReadyTrayPushed())&&(!states.hasWorkTray())&&states.readyToPushReadyTray())
+        {
+            has_task = true;
+            if(!moveToGetAndPushInNewTray(has_tray)&&has_tray)
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(!waitMessageReturn(is_run))
+                {
+                    states.setReadyToPusReadyTray(false);
+                    states.setIsReadyTrayPushed(true);
+                }
+            }
+            else
+            {
+                states.setReadyToPusReadyTray(false);
+                states.setIsReadyTrayPushed(true);
             }
         }
         //到工作位置
         //准备接备用盘
-        if(allow_change_tray&&states.hasReadyTray()&&(!states.hasWorkTray())&&(!states.readyToPushEmptyTray()))
+        if(allow_change_tray&&states.hasReadyTray()&&states.isReadyTrayPushed()&&(!states.hasWorkTray())&&(!states.readyToPushEmptyTray()))
         {
             has_task = true;
             if((!moveToWorkPosAndReayPullNewTray())&&has_tray)
@@ -1024,6 +1064,7 @@ void TrayLoaderModule::run(bool has_tray)
                     states.setHasReadyTray(false);
                     states.setHasWorkTray(true);
                     states.setReadyToPusReadyTray(true);
+                    states.setIsReadyTrayPushed(false);
                 }
             }
             else
@@ -1039,6 +1080,7 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setHasReadyTray(false);
                 states.setHasWorkTray(true);
                 states.setReadyToPusReadyTray(true);
+                states.setIsReadyTrayPushed(false);
             }
         }
         //无备用盘时推出空盘

@@ -24,8 +24,6 @@ void VisionLocation::saveParam()
 
 bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
 {
-//    offset.X = 0; offset.Y = 0; offset.Theta = 0;
-//    return true;
     offset.ReSet();
     current_offset.ReSet();
     PRResultStruct pr_result;
@@ -47,11 +45,12 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
         {
            temp_offset.X = mech.x();
            temp_offset.Y = mech.y();
-            if(abs(temp_offset.X)>parameters.maximumLength()||abs(temp_offset.Y)>parameters.maximumLength())
-            {
-                qInfo("pr result too big: %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta);
-                return false;
-            }
+           if(abs(temp_offset.X)>parameters.maximumLength()||abs(temp_offset.Y)>parameters.maximumLength())
+           {
+               qInfo("pr result too big: %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta);
+               offset = temp_offset;
+               return false;
+           }
            if(abs(pr_result.theta) < parameters.maximunAngle())
                temp_offset.Theta = pr_result.theta;
            else if(abs(pr_result.theta - 90) < parameters.maximunAngle())

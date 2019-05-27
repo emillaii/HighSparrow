@@ -51,12 +51,13 @@ public:
     LensLoaderModule(QString name = "LensPickArmModule");
     void Init(LensPickArm *pick_arm,MaterialTray *tray,MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision,
-              VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision);
+              VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision, VisionLocation *lpa_calibration_glass_vision);
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     bool performUpDownlookDownPR(PrOffset &offset);
     bool performUpdowlookUpPR(PrOffset &offset);
-//    void calculateCameraToPickerOffset();
+    bool performLpaCalibrationGlassPR(PrOffset &offset);
+    void calculateCameraToPickerOffset();
 signals:
     void sendChangeTrayRequst();
     void sendLoadLensFinish(int lens,int lens_tray);
@@ -124,6 +125,7 @@ private:
     VisionLocation * lpa_picker_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_up_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_down_vision = Q_NULLPTR;
+    VisionLocation * lpa_calibration_glass_vision = Q_NULLPTR;
     QMutex lut_mutex;
     QMutex tray_mutex;
     bool is_run = false;

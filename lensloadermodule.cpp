@@ -1,11 +1,13 @@
 ﻿#include "lensloadermodule.h"
-
+#include "opencv/cv.h"
+#include "commonutils.h"
 LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 {
 
 }
 
-void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision)
+void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,
+                            VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision, VisionLocation * lpa_calibration_glass_vision)
 {
     parts.clear();
     this->pick_arm = pick_arm;
@@ -32,6 +34,8 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     parts.append(this->lpa_updownlook_up_vision);
     this->lpa_updownlook_down_vision = lpa_updownlook_down_vision;
     parts.append(this->lpa_updownlook_down_vision);
+    this->lpa_calibration_glass_vision = lpa_calibration_glass_vision;
+    parts.append(this->lpa_calibration_glass_vision);
 }
 
 void LensLoaderModule::loadJsonConfig(QString file_name)
@@ -435,13 +439,48 @@ bool LensLoaderModule::performUpdowlookUpPR(PrOffset &offset)
 {
     return lpa_updownlook_up_vision->performPR(offset, false);
 }
-//lut_camera_position = lut_picker_position - camera_to_picker_offset
-//void LensLoaderModule::calculateCameraToPickerOffset()
-//{
+
+bool LensLoaderModule::performLpaCalibrationGlassPR(PrOffset &offset)
+{
+    return lpa_calibration_glass_vision->performPR(offset, true);
+}
+
+void LensLoaderModule::calculateCameraToPickerOffset()
+{
+    moveToTrayPos(0);
+    PrOffset pr_offset;
+    std::vector<cv::Point2d> points;
+    performLpaCalibrationGlassPR(pr_offset);
+    this->pick_arm->stepMove_XYT1_Synic(-pr_offset.X, -pr_offset.Y, -50);
+    for (int i = 0; i < 5; i++)
+    {
+        QThread::msleep(500);
+        performLpaCalibrationGlassPR(pr_offset);
+        qInfo("PR offset: %f %f", pr_offset.X, pr_offset.Y);
+        qInfo("Camera offset： %f %f", camera_to_picker_offset.X(), camera_to_picker_offset.Y());
+        points.push_back(cv::Point2d(pr_offset.X, pr_offset.Y));
+        this->pick_arm->stepMove_XYT1_Synic(camera_to_picker_offset.X(), camera_to_picker_offset.Y(), 0);
+        bool result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),true,true,30000);
+        QThread::msleep(500);
+        result &= pick_arm->ZSerchReturn(30000);
+        this->pick_arm->stepMove_XYT1_Synic(0, 0, 20);
+        result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),false,true,30000);
+        QThread::msleep(500);
+        result &= pick_arm->ZSerchReturn(30000);
+        this->pick_arm->stepMove_XYT1_Synic(-camera_to_picker_offset.X(), -camera_to_picker_offset.Y(), 0);
+    }
+    this->pick_arm->stepMove_XYT1_Synic(0,0, -100);
+    cv::Point2d center; double radius;
+    fitCircle(points, center, radius);
+    qInfo("Fit cicle: x: %f y: %f r:%f", center.x, center.y, radius);
+    this->camera_to_picker_offset.setX(camera_to_picker_offset.X() + center.x);
+    this->camera_to_picker_offset.setY(camera_to_picker_offset.Y() + center.y);
+
 //    lut_camera_position.setX(lut_picker_position.X() - camera_to_picker_offset.X());
 //    lut_camera_position.setY(lut_picker_position.Y() - camera_to_picker_offset.Y());
 //    qInfo("Camera to picker offset x: %f y:%f", lut_camera_position.X(), lut_camera_position.Y());
-//}
+}
+
 bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
 {
     PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,pr_offset.Theta);

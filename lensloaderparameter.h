@@ -25,6 +25,7 @@ public:
     Q_PROPERTY(QString lutLensLocationName READ lutLensLocationName WRITE setLutLensLocationName NOTIFY lutLensLocationNameChanged)
     Q_PROPERTY(QString lpaUpdownlookUpLocationName READ lpaUpdownlookUpLocationName WRITE setLpaUpdownlookUpLocation NOTIFY lpaUpdownlookUpkLocationChanged)
     Q_PROPERTY(QString lpaUpdownlookDownLocationName READ lpaUpdownlookDownLocationName WRITE setLpaupdownlookDownLocationName NOTIFY lpaUpdownlookDownLocaationNameChanged)
+    Q_PROPERTY(QString lpaCalibrationGlassLocationName READ lpaCalibrationGlassLocationName WRITE setpaCalibrationGlassLocationName NOTIFY lpaCalibrationGlassLocationNameChanged)
     Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
     Q_PROPERTY(QString lpaUplookPickerLocationName READ lpaUplookPickerLocationName WRITE setLpaUplookPickerLocationName NOTIFY lpaUplookPickerLocationNameChanged)
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
@@ -113,6 +114,11 @@ public:
     int changeTrayTimeOut() const
     {
         return m_changeTrayTimeOut;
+    }
+
+    QString lpaCalibrationGlassLocationName() const
+    {
+        return m_lpaCalibrationGlassLocationName;
     }
 
 public slots:
@@ -285,6 +291,15 @@ public slots:
         emit changeTrayTimeOutChanged(m_changeTrayTimeOut);
     }
 
+    void setpaCalibrationGlassLocationName(QString lpaCalibrationGlassLocationName)
+    {
+        if (m_lpaCalibrationGlassLocationName == lpaCalibrationGlassLocationName)
+            return;
+
+        m_lpaCalibrationGlassLocationName = lpaCalibrationGlassLocationName;
+        emit lpaCalibrationGlassLocationNameChanged(m_lpaCalibrationGlassLocationName);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -320,6 +335,8 @@ signals:
 
     void changeTrayTimeOutChanged(int changeTrayTimeOut);
 
+    void lpaCalibrationGlassLocationNameChanged(QString lpaCalibrationGlassLocationName);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -339,6 +356,7 @@ private:
     double m_pickTheta = 0;
     QString m_lpaUplookPickerLocationName = "";
     int m_changeTrayTimeOut = 180000;
+    QString m_lpaCalibrationGlassLocationName;
 };
 
 class LensPickArmModuleState:public PropertyBase

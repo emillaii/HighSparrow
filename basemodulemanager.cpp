@@ -916,7 +916,8 @@ bool BaseModuleManager::InitStruct()
                                 GetVisionLocationByName(lens_loader_module.parameters.lutLensLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUplookPickerLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookUpLocationName()),
-                                GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()));
+                                GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()),
+                                GetVisionLocationByName(lens_loader_module.parameters.lpaCalibrationGlassLocationName()));
 
     }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
@@ -1442,25 +1443,13 @@ bool BaseModuleManager::performUpDnLookCalibration()
 }
 bool BaseModuleManager::performLensUpDnLookCalibration()
 {
-    //ToDo: This is the calibration glass width and height in mm
-    double realWidth = 7, realHeight = 7;
-    PrOffset offset1, offset2;
-    this->lens_loader_module.performUpdowlookUpPR(offset1);
-    offset1.X /= offset1.W/realWidth;
-    offset1.Y /= offset1.H/realHeight;
-    qInfo("Lens loader UpDnlook up PR: %f %f %f %f %f", offset1.X, offset1.Y, offset1.Theta, offset1.W, offset1.H);
-    this->lens_loader_module.performUpDownlookDownPR(offset2);
-    offset2.X /= offset2.W/realWidth;
-    offset2.Y /= offset2.H/realHeight;
-    qInfo("Lens loader UpDnlook down PR: %f %f %f %f %f", offset2.X, offset2.Y, offset2.Theta, offset2.W, offset2.H);
-    double offsetX = offset1.X - offset2.X;
-    double offsetY = offset1.Y - offset2.Y;
-    this->lens_loader_module.camera_to_picker_offset.setX(offsetX);
-    this->lens_loader_module.camera_to_picker_offset.setY(offsetY);
-    this->lut_module.lpa_camera_to_picker_offset.setX(-offsetX);
-    this->lut_module.lpa_camera_to_picker_offset.setY(-offsetY);
+    this->lens_loader_module.calculateCameraToPickerOffset();
+    //this->lens_loader_module.camera_to_picker_offset.setX(offsetX);
+    //this->lens_loader_module.camera_to_picker_offset.setY(offsetY);
+    //this->lut_module.lpa_camera_to_picker_offset.setX(-offsetX);
+    //this->lut_module.lpa_camera_to_picker_offset.setY(-offsetY);
 
-    qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", offsetX,offsetY);
+//    qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", offsetX,offsetY);
 //    this->lens_loader_module.calculateCameraToPickerOffset();
     return true;
 }

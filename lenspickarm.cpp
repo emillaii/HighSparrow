@@ -89,6 +89,24 @@ bool LensPickArm::stepMove_T_Syncic(double t, int timeout)
      return result;
 }
 
+bool LensPickArm::stepMove_XYT1_Synic(const double step_x, const double step_y, const double step_t1, const bool check_softlanding, int timeout)
+{
+    if(check_softlanding)
+    {
+        if(!picker->motor_z->resetSoftLanding(timeout))return false;
+    }
+    double target_x = motor_x->GetFeedbackPos() + step_x;
+    double target_y = motor_y->GetFeedbackPos() + step_y;
+    double target_t = picker->motor_t->GetFeedbackPos() + step_t1;
+    motor_x->StepMove(step_x);
+    motor_y->StepMove(step_y);
+    picker->motor_t->StepMove(step_t1);
+    bool resut = motor_x->WaitArrivedTargetPos(target_x);
+    resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
+    resut &= picker->motor_t->WaitArrivedTargetPos(target_t,timeout);
+    return resut;
+}
+
 bool LensPickArm::Move_SZ_Sync(double z,bool check_softlanding, int timeout)
 {
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;

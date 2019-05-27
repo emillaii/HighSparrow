@@ -78,3 +78,4 @@ bool XtVacuum::IsVacuum()
         return result;
     }
 }
+

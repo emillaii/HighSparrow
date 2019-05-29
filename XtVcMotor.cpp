@@ -74,6 +74,7 @@ void XtVcMotor::Init()
 
 void XtVcMotor::InitAllVCM()
 {
+    qInfo("VCM num：%d", all_parameter.length());//我在这里加了句把长度
     VCMT_resource_alloc(all_parameter.data(),all_parameter.length());
     Soft_landing_dll_init(1);
 

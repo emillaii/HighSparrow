@@ -9,7 +9,7 @@
 #include <qjsonarray.h>
 #include <qjsondocument.h>
 
-wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
+wchar_t BaseModuleManager::ip[] =  L"192.168.0.251";
 wchar_t BaseModuleManager::profile_path1[] = L".\\config\\";
 wchar_t BaseModuleManager::profile_path2[] = L"..\\config\\xt_motion_config.csv";
 
@@ -151,6 +151,7 @@ bool BaseModuleManager::loadParameters()
         trayClipOut.standards_parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_CLIPOUT_FILE),TRAY_CLIPOUT_PARAMETER);
      }
     aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
+     qInfo("start  loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));");
     loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
     loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
@@ -246,7 +247,9 @@ bool BaseModuleManager::loadProfile()
         {
             InitStruct();
             profile_loaded = true;
+            return true;
         }
+    qInfo("loadStructConfig(SYSTERM_PARAM_DIR) failed！");
     return false;
 }
 
@@ -312,7 +315,9 @@ bool BaseModuleManager::loadMachineConfig(QString file_path)
 bool BaseModuleManager::loadVcmFile(QString file_name)
 {
     QJsonArray array;
+     qInfo("loadVcmFile：%s", file_name.toStdString().c_str());
     if(!loadJsonArray(file_name,array))return false;
+     qInfo("VCM num in json file：%d", array.count());
     for (int i = 0; i < array.count(); i++)
     {
         XtVcMotor* temp_motor = new XtVcMotor();
@@ -1220,6 +1225,11 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
         return  true;
     }
     return false;
+}
+
+bool BaseModuleManager::allMotorsSeekOriginal3()
+{
+    return true;
 }
 
 void BaseModuleManager::stopSeeking()

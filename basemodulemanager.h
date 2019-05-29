@@ -36,6 +36,7 @@
 #include "sensorclip.h"
 #include "sensortrayloadermodule.h"
 #include "modulemanagerparameter.h"
+#include "singleheadmachinematerialloadermodule.h"
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
@@ -85,6 +86,10 @@ public:
     SfrWorkerController * sfrWorkerController;
     AACoreNew aaCoreNew;
     TrayLoaderModule tray_loader_module;
+
+    SingleHeadMachineMaterialLoaderModule single_station_material_loader_module;
+    SingleHeadMachineMaterialPickArm single_station_material_pickarm;
+
 
     TrayClip trayClipIn;
     TrayClip trayClipOut;

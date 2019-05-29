@@ -26,7 +26,7 @@ void SingleHeadMachineMaterialLoaderModule::saveJsonConfig(QString file_name)
 bool SingleHeadMachineMaterialLoaderModule::ToPickCmosPosition()
 {
     //check pickarm at pick safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_cmos_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_cmos_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at pick safe height failed");
@@ -34,11 +34,11 @@ bool SingleHeadMachineMaterialLoaderModule::ToPickCmosPosition()
     }
 //    qInfo("pick cmos x:%f y:%f",pick_cmos_base_pos.x,pick_cmos_base_pos.y);
     double cmosx,cmosy,cmosc;
-    cmosx = pick_arm->pick_cmos_base_pos.x+pick_arm->cmos_to_pr_distance.x();
-    cmosy = pick_arm->pick_cmos_base_pos.y+pick_arm->cmos_to_pr_distance.y();
-    cmosc = pick_arm->pick_cmos_base_pos.th ;//todo退迴的料暫時未記錄角度誤差
+    cmosx = pick_arm->pick_cmos_base_position.x()+pick_arm->cmos_to_pr_distance_position.X();
+    cmosy = pick_arm->pick_cmos_base_position.y()+pick_arm->cmos_to_pr_distance_position.Y();
+    cmosc = pick_arm->pick_cmos_base_position.th() ;//todo退迴的料暫時未記錄角度誤差
     //z down to pick coms
-    res = pick_arm->motor_z->MoveToPosSync(pick_arm->pick_cmos_base_pos.z);
+    res = pick_arm->motor_z->MoveToPosSync(pick_arm->pick_cmos_base_position.z());
     if(!res)
     {
         qInfo("z down to pick cmos failed!");
@@ -57,7 +57,7 @@ bool SingleHeadMachineMaterialLoaderModule::ToPickCmosPosition()
 bool SingleHeadMachineMaterialLoaderModule::PickCMOS(double force)
 {
     //softlanding to pick cmos
-    double vcm2_pos=pick_arm->vcm2GetMotorPos(pick_arm->pick_cmos_base_pos.v,pick_arm->pick_cmos_base_pos.z);
+    double vcm2_pos=pick_arm->vcm2GetMotorPos(pick_arm->pick_cmos_base_position.v(),pick_arm->pick_cmos_base_position.z());
     bool res = pick_arm->vcm2SoftLanding(force,vcm2_pos);
     if(!res)
     {
@@ -82,18 +82,18 @@ bool SingleHeadMachineMaterialLoaderModule::PickCMOS(double force)
 bool SingleHeadMachineMaterialLoaderModule::ToPickLensPosition()
 {
     //check pickarm at pick safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_lens_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_lens_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at pick safe height failed");
         return false;
     }
     double lensx,lensy;
-    lensx = pick_arm->pick_lens_base_pos.x+pick_arm->lens_to_pr_distance.x();
-    lensy = pick_arm->pick_lens_base_pos.y+pick_arm->lens_to_pr_distance.y();
+    lensx = pick_arm->pick_lens_base_position.x()+pick_arm->lens_to_pr_distance_position.X();
+    lensy = pick_arm->pick_lens_base_position.y()+pick_arm->lens_to_pr_distance_position.Y();
 
     //go to pick coms
-    res = pick_arm->XYZC1SyncMove(lensx,lensy,pick_arm->pick_lens_base_pos.z,pick_arm->pick_lens_base_pos.th);////todo退迴的料暫時未記錄角度誤差
+    res = pick_arm->XYZC1SyncMove(lensx,lensy,pick_arm->pick_lens_base_position.z(),pick_arm->pick_lens_base_position.th());////todo退迴的料暫時未記錄角度誤差
     if(!res)
     {
         qInfo("go to pick cmos failed!");
@@ -105,7 +105,7 @@ bool SingleHeadMachineMaterialLoaderModule::ToPickLensPosition()
 bool SingleHeadMachineMaterialLoaderModule::PickLens(double force)
 {
     //softlanding to pick cmos
-    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->pick_lens_base_pos.v,pick_arm->pick_lens_base_pos.z);
+    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->pick_lens_base_position.v(),pick_arm->pick_lens_base_position.z());
     bool res = pick_arm->vcm1SoftLanding(force,vcm1_pos);
     if(!res)
     {
@@ -129,16 +129,16 @@ bool SingleHeadMachineMaterialLoaderModule::PickLens(double force)
 bool SingleHeadMachineMaterialLoaderModule::ToSUTPosition()
 {
     //check pickarm at place safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_cmos_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_cmos_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at place safe height failed");
         return false;
     }
     //to pos above place coms
-    double xpos = pick_arm->place_cmos_base_pos.x + pick_arm->cmos_to_pr_distance.x() + pick_arm->cmos_escape_offset.x;
-    double ypos = pick_arm->place_cmos_base_pos.y + pick_arm->cmos_to_pr_distance.y() + pick_arm->cmos_escape_offset.y;
-    double cpos = pick_arm->place_cmos_base_pos.th + pick_arm->cmos_escape_offset.th;
+    double xpos = pick_arm->place_cmos_base_position.x() + pick_arm->cmos_to_pr_distance_position.X() + pick_arm->cmos_escape_offset_position.x();
+    double ypos = pick_arm->place_cmos_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y() + pick_arm->cmos_escape_offset_position.y();
+    double cpos = pick_arm->place_cmos_base_position.th() + pick_arm->cmos_escape_offset_position.th();
     res = pick_arm->XYC2SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -157,11 +157,11 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceToSUT(double force)
 {
     //first check if xyzvc pos is right
     PickArmPos target_pos;
-    target_pos.x = pick_arm->place_cmos_base_pos.x + pick_arm->cmos_to_pr_distance.x() + pick_arm->cmos_escape_offset.x;
-    target_pos.y = pick_arm->place_cmos_base_pos.y + pick_arm->cmos_to_pr_distance.y() + pick_arm->cmos_escape_offset.y;
-    target_pos.z = pick_arm->place_cmos_base_pos.z;
+    target_pos.x = pick_arm->place_cmos_base_position.x() + pick_arm->cmos_to_pr_distance_position.X() + pick_arm->cmos_escape_offset_position.x();
+    target_pos.y = pick_arm->place_cmos_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y() + pick_arm->cmos_escape_offset_position.y();
+    target_pos.z = pick_arm->place_cmos_base_position.z();
     target_pos.v = parameters.vcm2BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->place_cmos_base_pos.th + pick_arm->cmos_escape_offset.th;
+    target_pos.th = pick_arm->place_cmos_base_position.th() + pick_arm->cmos_escape_offset_position.th();
     bool res = pick_arm->sucker2getCurrentPos().isAbovePos(target_pos);
     if(!res)
     {
@@ -169,8 +169,8 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceToSUT(double force)
         return false;
     }
     //down for feed
-    double vcm2_pos = pick_arm->vcm2GetMotorPos(pick_arm->place_cmos_base_pos.v + pick_arm->cmos_escape_offset.v,pick_arm->place_cmos_base_pos.z);
-    res = pick_arm->ZV2MoveSync(pick_arm->place_cmos_base_pos.z,vcm2_pos);
+    double vcm2_pos = pick_arm->vcm2GetMotorPos(pick_arm->place_cmos_base_position.v() + pick_arm->cmos_escape_offset_position.v(),pick_arm->place_cmos_base_position.z());
+    res = pick_arm->ZV2MoveSync(pick_arm->place_cmos_base_position.z(),vcm2_pos);
     if(!res)
     {
         qInfo("sucker2 down for feed failed!");
@@ -178,7 +178,7 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceToSUT(double force)
     }
 
     //feed in
-    res = pick_arm->XYC2SyncMove(pick_arm->place_cmos_base_pos.x + pick_arm->cmos_to_pr_distance.x(), pick_arm->place_cmos_base_pos.y + pick_arm->cmos_to_pr_distance.y(), pick_arm->place_cmos_base_pos.th);
+    res = pick_arm->XYC2SyncMove(pick_arm->place_cmos_base_position.x() + pick_arm->cmos_to_pr_distance_position.X(), pick_arm->place_cmos_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y(), pick_arm->place_cmos_base_position.th());
     if(!res)
     {
         qInfo("sucker2 feed in failed!");
@@ -186,7 +186,7 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceToSUT(double force)
     }
 
     //down to place
-    res = pick_arm->vcm2SoftLanding(force,vcm2_pos + pick_arm->cmos_escape_offset.v);
+    res = pick_arm->vcm2SoftLanding(force,vcm2_pos + pick_arm->cmos_escape_offset_position.v());
     if(!res)
     {
         qInfo("vcm2  soft landing  place coms failed!");
@@ -225,7 +225,7 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceToSUT(double force)
 bool SingleHeadMachineMaterialLoaderModule::ToLUTPosition()
 {
     //check pickarm at place safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_lens_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_lens_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at place safe height failed");
@@ -233,9 +233,9 @@ bool SingleHeadMachineMaterialLoaderModule::ToLUTPosition()
     }
 
     //to pos above place lens
-    double xpos = pick_arm->place_lens_base_pos.x;
-    double ypos = pick_arm->place_lens_base_pos.y;
-    double cpos = pick_arm->place_lens_base_pos.th;
+    double xpos = pick_arm->place_lens_base_position.x();
+    double ypos = pick_arm->place_lens_base_position.y();
+    double cpos = pick_arm->place_lens_base_position.th();
     res = pick_arm->XYC1SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -248,7 +248,7 @@ bool SingleHeadMachineMaterialLoaderModule::ToLUTPosition()
 bool SingleHeadMachineMaterialLoaderModule::picker1ToLUTPosition()
 {
     //check pickarm at place safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_lens_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_lens_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at place safe height failed");
@@ -256,9 +256,9 @@ bool SingleHeadMachineMaterialLoaderModule::picker1ToLUTPosition()
     }
 
     //to pos above place lens
-    double xpos = pick_arm->place_lens_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    double ypos = pick_arm->place_lens_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    double cpos = pick_arm->place_lens_base_pos.th;
+    double xpos = pick_arm->place_lens_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    double ypos = pick_arm->place_lens_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    double cpos = pick_arm->place_lens_base_position.th();
     res = pick_arm->XYC1SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -277,11 +277,11 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceToLUT(double force)
 {
     //first check if xyzvc pos is right
     PickArmPos target_pos;
-    target_pos.x = pick_arm->place_lens_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    target_pos.y = pick_arm->place_lens_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    target_pos.z = pick_arm->place_lens_base_pos.z;
+    target_pos.x = pick_arm->place_lens_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    target_pos.y = pick_arm->place_lens_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    target_pos.z = pick_arm->place_lens_base_position.z();
     target_pos.v = parameters.vcm1BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->place_lens_base_pos.th;
+    target_pos.th = pick_arm->place_lens_base_position.th();
     bool res = pick_arm->sucker1getCurrentPos().isAbovePos(target_pos);
     if(!res)
     {
@@ -290,13 +290,13 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceToLUT(double force)
     }
 
     //down to place lens
-    res = pick_arm->motor_z->MoveToPosSync(pick_arm->place_lens_base_pos.z);
+    res = pick_arm->motor_z->MoveToPosSync(pick_arm->place_lens_base_position.z());
     if(!res)
     {
         qInfo("z down to place lens failed!");
         return false;
     }
-    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->place_lens_base_pos.v ,pick_arm->place_lens_base_pos.z);
+    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->place_lens_base_position.v() ,pick_arm->place_lens_base_position.z());
     res = pick_arm->vcm1SoftLanding(force,vcm1_pos);
     if(!res)
     {
@@ -335,7 +335,7 @@ bool SingleHeadMachineMaterialLoaderModule::CheckVcm2NoWorkPeice()
 bool SingleHeadMachineMaterialLoaderModule::ToPickProductPosition()
 {
     //check pickarm at place safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_product_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_product_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at place safe height failed");
@@ -343,9 +343,9 @@ bool SingleHeadMachineMaterialLoaderModule::ToPickProductPosition()
     }
 
     //to pos above pick product
-    double xpos = pick_arm->pick_product_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    double ypos = pick_arm->pick_product_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    double cpos = pick_arm->pick_product_base_pos.th;
+    double xpos = pick_arm->pick_product_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    double ypos = pick_arm->pick_product_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    double cpos = pick_arm->pick_product_base_position.th();
     res = pick_arm->XYC1SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -359,11 +359,11 @@ bool SingleHeadMachineMaterialLoaderModule::PickProduct(double force)
 {
     //first check if xyzvc pos is right
     PickArmPos target_pos;
-    target_pos.x = pick_arm->pick_product_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    target_pos.y = pick_arm->pick_product_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    target_pos.z = pick_arm->pick_product_base_pos.z;
+    target_pos.x = pick_arm->pick_product_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    target_pos.y = pick_arm->pick_product_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    target_pos.z = pick_arm->pick_product_base_position.z();
     target_pos.v = parameters.vcm1BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->pick_product_base_pos.th;
+    target_pos.th = pick_arm->pick_product_base_position.th();
     bool res = pick_arm->sucker1getCurrentPos().isAbovePos(target_pos);
     if(!res)
     {
@@ -372,8 +372,8 @@ bool SingleHeadMachineMaterialLoaderModule::PickProduct(double force)
     }
 
     //down for pick product
-    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->pick_product_base_pos.v + pick_arm->cmos_escape_offset.v,pick_arm->pick_product_base_pos.z);
-    res = pick_arm->ZV1MoveSync(pick_arm->pick_product_base_pos.z,vcm1_pos);
+    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->pick_product_base_position.v() + pick_arm->cmos_escape_offset_position.v(),pick_arm->pick_product_base_position.z());
+    res = pick_arm->ZV1MoveSync(pick_arm->pick_product_base_position.z(),vcm1_pos);
     if(!res)
     {
         qInfo("sucker1 down for pick product failed!");
@@ -381,7 +381,7 @@ bool SingleHeadMachineMaterialLoaderModule::PickProduct(double force)
     }
 
     //vcm1 soft landing to pick product
-    res = pick_arm->vcm1SoftLanding(force,vcm1_pos + pick_arm->cmos_escape_offset.v);
+    res = pick_arm->vcm1SoftLanding(force,vcm1_pos + pick_arm->cmos_escape_offset_position.v());
     if(!res)
     {
         qInfo("vcm1 soft landing to pick product failed!");
@@ -409,9 +409,9 @@ bool SingleHeadMachineMaterialLoaderModule::PickProduct(double force)
     }
 
     //vcm1 avoid obstacle
-    double xpos = pick_arm->pick_product_base_pos.x+pick_arm->lens_to_pr_distance.x()+ pick_arm->cmos_escape_offset.x;
-    double ypos = pick_arm->pick_product_base_pos.y+pick_arm->lens_to_pr_distance.y()+ pick_arm->cmos_escape_offset.y;
-    double cpos = pick_arm->pick_product_base_pos.th + pick_arm->cmos_escape_offset.th;
+    double xpos = pick_arm->pick_product_base_position.x()+pick_arm->lens_to_pr_distance_position.X()+ pick_arm->cmos_escape_offset_position.x();
+    double ypos = pick_arm->pick_product_base_position.y()+pick_arm->lens_to_pr_distance_position.Y()+ pick_arm->cmos_escape_offset_position.y();
+    double cpos = pick_arm->pick_product_base_position.th() + pick_arm->cmos_escape_offset_position.th();
     res = pick_arm->XYC1SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -433,7 +433,7 @@ bool SingleHeadMachineMaterialLoaderModule::PickProduct(double force)
 bool SingleHeadMachineMaterialLoaderModule::picker1ToSUTPosition()
 {
     //check pickarm at place safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_cmos_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_cmos_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at place safe height failed");
@@ -446,9 +446,9 @@ bool SingleHeadMachineMaterialLoaderModule::picker1ToSUTPosition()
 //        return false;
 //    }
     //to pos above pick ng coms
-    double xpos = pick_arm->place_cmos_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    double ypos = pick_arm->place_cmos_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    double cpos = pick_arm->place_cmos_base_pos.th;
+    double xpos = pick_arm->place_cmos_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    double ypos = pick_arm->place_cmos_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    double cpos = pick_arm->place_cmos_base_position.th();
     res = pick_arm->XYC2SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -462,11 +462,11 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PickFromSUT(double force)
 {
     //first check if xyzvc pos is right
     PickArmPos target_pos;
-    target_pos.x = pick_arm->place_cmos_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    target_pos.y = pick_arm->place_cmos_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    target_pos.z = pick_arm->place_cmos_base_pos.z;
+    target_pos.x = pick_arm->place_cmos_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    target_pos.y = pick_arm->place_cmos_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    target_pos.z = pick_arm->place_cmos_base_position.z();
     target_pos.v = parameters.vcm1BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->place_cmos_base_pos.th;
+    target_pos.th = pick_arm->place_cmos_base_position.th();
     bool res = pick_arm->sucker1getCurrentPos().isAbovePos(target_pos);
     if(!res)
     {
@@ -475,8 +475,8 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PickFromSUT(double force)
     }
 
     //down for pick ng coms
-    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->place_cmos_base_pos.v + pick_arm->cmos_escape_offset.v,pick_arm->place_cmos_base_pos.z);
-    res = pick_arm->ZV1MoveSync(pick_arm->place_cmos_base_pos.z,vcm1_pos);
+    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->place_cmos_base_position.v() + pick_arm->cmos_escape_offset_position.v(),pick_arm->place_cmos_base_position.z());
+    res = pick_arm->ZV1MoveSync(pick_arm->place_cmos_base_position.z(),vcm1_pos);
     if(!res)
     {
         qInfo("sucker1 down for pick ng coms failed!");
@@ -484,7 +484,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PickFromSUT(double force)
     }
 
     //vcm1 soft landing to pick ng coms
-    res = pick_arm->vcm1SoftLanding(force, vcm1_pos + pick_arm->cmos_escape_offset.v);
+    res = pick_arm->vcm1SoftLanding(force, vcm1_pos + pick_arm->cmos_escape_offset_position.v());
     if(!res)
     {
         qInfo("vcm1 soft landing to pick ng coms failed!");
@@ -512,9 +512,9 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PickFromSUT(double force)
     }
 
     //vcm1 avoid obstacle
-    double xpos = pick_arm->place_cmos_base_pos.x + pick_arm->lens_to_pr_distance.x() + pick_arm->cmos_escape_offset.x;
-    double ypos = pick_arm->place_cmos_base_pos.y + pick_arm->lens_to_pr_distance.y() + pick_arm->cmos_escape_offset.y;
-    double cpos = pick_arm->place_cmos_base_pos.th + pick_arm->cmos_escape_offset.th;
+    double xpos = pick_arm->place_cmos_base_position.x() + pick_arm->lens_to_pr_distance_position.X() + pick_arm->cmos_escape_offset_position.x();
+    double ypos = pick_arm->place_cmos_base_position.y() + pick_arm->lens_to_pr_distance_position.Y() + pick_arm->cmos_escape_offset_position.y();
+    double cpos = pick_arm->place_cmos_base_position.th() + pick_arm->cmos_escape_offset_position.th();
     res = pick_arm->XYC1SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -536,16 +536,16 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PickFromSUT(double force)
 bool SingleHeadMachineMaterialLoaderModule::picker2ToLUTPosition()
 {
     //check pickarm at place safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_lens_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_lens_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at place safe height failed");
         return false;
     }
     //to pos above pick ng lens
-    double xpos = pick_arm->place_lens_base_pos.x + pick_arm->cmos_to_pr_distance.x();
-    double ypos = pick_arm->place_lens_base_pos.y + pick_arm->cmos_to_pr_distance.y();
-    double cpos = pick_arm->place_lens_base_pos.th;
+    double xpos = pick_arm->place_lens_base_position.x() + pick_arm->cmos_to_pr_distance_position.X();
+    double ypos = pick_arm->place_lens_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y();
+    double cpos = pick_arm->place_lens_base_position.th();
     res = pick_arm->XYC2SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -559,11 +559,11 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PickFromLUT(double force)
 {
     //first check if xyzvc pos is right
     PickArmPos target_pos;
-    target_pos.x = pick_arm->place_lens_base_pos.x + pick_arm->cmos_to_pr_distance.x();
-    target_pos.y = pick_arm->place_lens_base_pos.y + pick_arm->cmos_to_pr_distance.y();
-    target_pos.z = pick_arm->place_lens_base_pos.z;
+    target_pos.x = pick_arm->place_lens_base_position.x() + pick_arm->cmos_to_pr_distance_position.X();
+    target_pos.y = pick_arm->place_lens_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y();
+    target_pos.z = pick_arm->place_lens_base_position.z();
     target_pos.v = parameters.vcm2BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->place_lens_base_pos.th;
+    target_pos.th = pick_arm->place_lens_base_position.th();
     bool res = pick_arm->sucker2getCurrentPos().isAbovePos(target_pos);
     if(!res)
     {
@@ -572,14 +572,14 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PickFromLUT(double force)
     }
 
     //z down to pick ng lens
-    res = pick_arm->motor_z->MoveToPosSync(pick_arm->place_lens_base_pos.z);
+    res = pick_arm->motor_z->MoveToPosSync(pick_arm->place_lens_base_position.z());
     if(!res)
     {
         qInfo("z down to pick ng lens failed!");
         return false;
     }
     //vcm2 soft landing to pick ng lens
-    double vcm2_pos = pick_arm->vcm2GetMotorPos(pick_arm->place_lens_base_pos.v ,pick_arm->place_lens_base_pos.z);
+    double vcm2_pos = pick_arm->vcm2GetMotorPos(pick_arm->place_lens_base_position.v() ,pick_arm->place_lens_base_position.z());
     res = pick_arm->vcm2SoftLanding(force,vcm2_pos);
     if(!res)
     {
@@ -608,16 +608,16 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PickFromLUT(double force)
 bool SingleHeadMachineMaterialLoaderModule::ToPlaceProductPosition()
 {
     //check pickarm at place safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_product_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->place_product_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at pr height failed");
         return false;
     }
     //to pos above place product
-    double xpos = pick_arm->place_product_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    double ypos = pick_arm->place_product_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    double cpos = pick_arm->place_product_base_pos.th;
+    double xpos = pick_arm->place_product_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    double ypos = pick_arm->place_product_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    double cpos = pick_arm->place_product_base_position.th();
     res = pick_arm->XYC1SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -631,11 +631,11 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceProductToTray(double force)
 {
     //first check if xyzc pos is right
     PickArmPos target_pos;
-    target_pos.x = pick_arm->place_product_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    target_pos.y = pick_arm->place_product_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    target_pos.z = pick_arm->place_product_base_pos.z;
+    target_pos.x = pick_arm->place_product_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    target_pos.y = pick_arm->place_product_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    target_pos.z = pick_arm->place_product_base_position.z();
     target_pos.v = parameters.vcm1BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->place_product_base_pos.th;
+    target_pos.th = pick_arm->place_product_base_position.th();
     bool res = pick_arm->sucker1getCurrentPos().isAbovePos(target_pos);
     if(!res)
     {
@@ -643,13 +643,13 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceProductToTray(double force)
         return false;
     }
     //down to place ng cmos
-    res = pick_arm->motor_z->MoveToPosSync(pick_arm->place_product_base_pos.z);
+    res = pick_arm->motor_z->MoveToPosSync(pick_arm->place_product_base_position.z());
     if(!res)
     {
         qInfo("z down to place product failed!");
         return false;
     }
-    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->place_product_base_pos.v ,pick_arm->place_product_base_pos.z);
+    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->place_product_base_position.v() ,pick_arm->place_product_base_position.z());
     res = pick_arm->vcm1SoftLanding(force,vcm1_pos);
     if(!res)
     {
@@ -678,17 +678,17 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceProductToTray(double force)
 bool SingleHeadMachineMaterialLoaderModule::picker1ToCMOSPosition()
 {
     //check pickarm at pr safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_cmos_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_cmos_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at place safe height failed");
         return false;
     }
     //to pos above place ng coms
-    qInfo("place used cmos x:%f y:%f",pick_arm->pick_cmos_base_pos.x,pick_arm->pick_cmos_base_pos.y);
-    double xpos = pick_arm->pick_cmos_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    double ypos = pick_arm->pick_cmos_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    double cpos = pick_arm->pick_cmos_base_pos.th;
+    qInfo("place used cmos x:%f y:%f",pick_arm->pick_cmos_base_position.x(),pick_arm->pick_cmos_base_position.y());
+    double xpos = pick_arm->pick_cmos_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    double ypos = pick_arm->pick_cmos_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    double cpos = pick_arm->pick_cmos_base_position.th();
     res = pick_arm->XYC2SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -702,11 +702,11 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PlaceCMOSToTray(double force)
 {
     //first check if xyzvc pos is right
     PickArmPos target_pos;
-    target_pos.x = pick_arm->pick_cmos_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    target_pos.y = pick_arm->pick_cmos_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    target_pos.z = pick_arm->pick_cmos_base_pos.z;
+    target_pos.x = pick_arm->pick_cmos_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    target_pos.y = pick_arm->pick_cmos_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    target_pos.z = pick_arm->pick_cmos_base_position.z();
     target_pos.v = parameters.vcm1BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->pick_cmos_base_pos.th;
+    target_pos.th = pick_arm->pick_cmos_base_position.th();
     bool res = pick_arm->sucker1getCurrentPos().isAbovePos(target_pos);
     if(!res)
     {
@@ -715,13 +715,13 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PlaceCMOSToTray(double force)
     }
 
     //down to place ng cmos
-    res = pick_arm->motor_z->MoveToPosSync(pick_arm->pick_cmos_base_pos.z);
+    res = pick_arm->motor_z->MoveToPosSync(pick_arm->pick_cmos_base_position.z());
     if(!res)
     {
         qInfo("z down to place ng cmos failed!");
         return false;
     }
-    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->pick_cmos_base_pos.v ,pick_arm->pick_cmos_base_pos.z);
+    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->pick_cmos_base_position.v() ,pick_arm->pick_cmos_base_position.z());
     res = pick_arm->vcm1SoftLanding(force,vcm1_pos);
     if(!res)
     {
@@ -751,16 +751,16 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PlaceCMOSToTray(double force)
 bool SingleHeadMachineMaterialLoaderModule::picker2ToLensPosition()
 {
     //check pickarm at place pr height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_lens_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_lens_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at place safe height failed");
         return false;
     }
     //to pos above pick ng coms
-    double xpos = pick_arm->pick_lens_base_pos.x + pick_arm->cmos_to_pr_distance.x();
-    double ypos = pick_arm->pick_lens_base_pos.y + pick_arm->cmos_to_pr_distance.y();
-    double cpos = pick_arm->pick_lens_base_pos.th;
+    double xpos = pick_arm->pick_lens_base_position.x() + pick_arm->cmos_to_pr_distance_position.X();
+    double ypos = pick_arm->pick_lens_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y();
+    double cpos = pick_arm->pick_lens_base_position.th();
     res = pick_arm->XYC2SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -774,11 +774,11 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PlacelensToTray(double force)
 {
     //first check if xyzvc pos is right
     PickArmPos target_pos;
-    target_pos.x = pick_arm->pick_lens_base_pos.x + pick_arm->cmos_to_pr_distance.x();
-    target_pos.y = pick_arm->pick_lens_base_pos.y + pick_arm->cmos_to_pr_distance.y();
-    target_pos.z = pick_arm->pick_lens_base_pos.z;
+    target_pos.x = pick_arm->pick_lens_base_position.x() + pick_arm->cmos_to_pr_distance_position.X();
+    target_pos.y = pick_arm->pick_lens_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y();
+    target_pos.z = pick_arm->pick_lens_base_position.z();
     target_pos.v = parameters.vcm2BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->pick_lens_base_pos.th;
+    target_pos.th = pick_arm->pick_lens_base_position.th();
     bool res = pick_arm->sucker2getCurrentPos().isAbovePos(target_pos);
     if(!res)
     {
@@ -787,13 +787,13 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PlacelensToTray(double force)
     }
 
     //down to place ng cmos
-    res = pick_arm->motor_z->MoveToPosSync(pick_arm->pick_lens_base_pos.z);
+    res = pick_arm->motor_z->MoveToPosSync(pick_arm->pick_lens_base_position.z());
     if(!res)
     {
         qInfo("z down to place ng cmos failed!");
         return false;
     }
-    double vcm2_pos = pick_arm->vcm2GetMotorPos(pick_arm->pick_lens_base_pos.v ,pick_arm->pick_lens_base_pos.z);
+    double vcm2_pos = pick_arm->vcm2GetMotorPos(pick_arm->pick_lens_base_position.v() ,pick_arm->pick_lens_base_position.z());
     res = pick_arm->vcm2SoftLanding(force,vcm2_pos);
     if(!res)
     {
@@ -823,16 +823,16 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PlacelensToTray(double force)
 bool SingleHeadMachineMaterialLoaderModule::picker1ToLensPosition()
 {
     //check pickarm at pr safe height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_lens_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_lens_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at place safe height failed");
         return false;
     }
     //to pos above place ng coms
-    double xpos = pick_arm->pick_lens_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    double ypos = pick_arm->pick_lens_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    double cpos = pick_arm->pick_lens_base_pos.th;
+    double xpos = pick_arm->pick_lens_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    double ypos = pick_arm->pick_lens_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    double cpos = pick_arm->pick_lens_base_position.th();
     res = pick_arm->XYC2SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -846,11 +846,11 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PlaceLensToTray(double force)
 {
     //first check if xyzvc pos is right
     PickArmPos target_pos;
-    target_pos.x = pick_arm->pick_lens_base_pos.x + pick_arm->lens_to_pr_distance.x();
-    target_pos.y = pick_arm->pick_lens_base_pos.y + pick_arm->lens_to_pr_distance.y();
-    target_pos.z = pick_arm->pick_lens_base_pos.z;
+    target_pos.x = pick_arm->pick_lens_base_position.x() + pick_arm->lens_to_pr_distance_position.X();
+    target_pos.y = pick_arm->pick_lens_base_position.y() + pick_arm->lens_to_pr_distance_position.Y();
+    target_pos.z = pick_arm->pick_lens_base_position.z();
     target_pos.v = parameters.vcm1BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->pick_lens_base_pos.th;
+    target_pos.th = pick_arm->pick_lens_base_position.th();
     bool res = pick_arm->sucker1getCurrentPos().isAbovePos(target_pos);
     if(!res)
     {
@@ -859,13 +859,13 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PlaceLensToTray(double force)
     }
 
     //down to place ng cmos
-    res = pick_arm->motor_z->MoveToPosSync(pick_arm->pick_lens_base_pos.z);
+    res = pick_arm->motor_z->MoveToPosSync(pick_arm->pick_lens_base_position.z());
     if(!res)
     {
         qInfo("z down to place ng cmos failed!");
         return false;
     }
-    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->pick_lens_base_pos.v ,pick_arm->pick_lens_base_pos.z);
+    double vcm1_pos = pick_arm->vcm1GetMotorPos(pick_arm->pick_lens_base_position.v() ,pick_arm->pick_lens_base_position.z());
     res = pick_arm->vcm1SoftLanding(force,vcm1_pos);
     if(!res)
     {
@@ -896,16 +896,16 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PlaceLensToTray(double force)
 bool SingleHeadMachineMaterialLoaderModule::picker2ToCmosPosition()
 {
     //check pickarm at place pr height
-    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_cmos_base_pos.z);
+    bool res = pick_arm->CheckZV1V2AboveSafeHeight(pick_arm->pick_cmos_base_position.z());
     if(!res)
     {
         qInfo("check pickarm at place safe height failed");
         return false;
     }
     //to pos above pick ng coms
-    double xpos = pick_arm->pick_cmos_base_pos.x + pick_arm->cmos_to_pr_distance.x();
-    double ypos = pick_arm->pick_cmos_base_pos.y + pick_arm->cmos_to_pr_distance.y();
-    double cpos = pick_arm->pick_cmos_base_pos.th;
+    double xpos = pick_arm->pick_cmos_base_position.x() + pick_arm->cmos_to_pr_distance_position.X();
+    double ypos = pick_arm->pick_cmos_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y();
+    double cpos = pick_arm->pick_cmos_base_position.th();
     res = pick_arm->XYC2SyncMove(xpos,ypos,cpos);
     if(!res)
     {
@@ -919,11 +919,11 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PlaceCmosToTray(double force)
 {
     //first check if xyzvc pos is right
     PickArmPos target_pos;
-    target_pos.x = pick_arm->pick_cmos_base_pos.x + pick_arm->cmos_to_pr_distance.x();
-    target_pos.y = pick_arm->pick_cmos_base_pos.y + pick_arm->cmos_to_pr_distance.y();
-    target_pos.z = pick_arm->pick_cmos_base_pos.z;
+    target_pos.x = pick_arm->pick_cmos_base_position.x() + pick_arm->cmos_to_pr_distance_position.X();
+    target_pos.y = pick_arm->pick_cmos_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y();
+    target_pos.z = pick_arm->pick_cmos_base_position.z();
     target_pos.v = parameters.vcm2BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->pick_cmos_base_pos.th;
+    target_pos.th = pick_arm->pick_cmos_base_position.th();
     bool res = pick_arm->sucker2getCurrentPos().isAbovePos(target_pos);
     if(!res)
     {
@@ -932,13 +932,13 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PlaceCmosToTray(double force)
     }
 
     //down to place ng cmos
-    res = pick_arm->motor_z->MoveToPosSync(pick_arm->pick_cmos_base_pos.z);
+    res = pick_arm->motor_z->MoveToPosSync(pick_arm->pick_cmos_base_position.z());
     if(!res)
     {
         qInfo("z down to place ng cmos failed!");
         return false;
     }
-    double vcm2_pos = pick_arm->vcm2GetMotorPos(pick_arm->pick_cmos_base_pos.v ,pick_arm->pick_cmos_base_pos.z);
+    double vcm2_pos = pick_arm->vcm2GetMotorPos(pick_arm->pick_cmos_base_position.v() ,pick_arm->pick_cmos_base_position.z());
     res = pick_arm->vcm2SoftLanding(force,vcm2_pos);
     if(!res)
     {
@@ -970,9 +970,9 @@ bool SingleHeadMachineMaterialLoaderModule::MoveSensorPicker2Cam()
 {
     bool res = pick_arm->LiftToSafeHeight();
     if(!res) return false;
-    res = pick_arm->motor_x->StepMoveSync(pick_arm->cmos_to_pr_distance.x());
+    res = pick_arm->motor_x->StepMoveSync(pick_arm->cmos_to_pr_distance_position.X());
     if(!res) return false;
-    res = pick_arm->motor_y->StepMoveSync(pick_arm->cmos_to_pr_distance.y());
+    res = pick_arm->motor_y->StepMoveSync(pick_arm->cmos_to_pr_distance_position.Y());
     return res;
 }
 
@@ -980,9 +980,9 @@ bool SingleHeadMachineMaterialLoaderModule::MoveCam2SensorPicker()
 {
     bool res = pick_arm->LiftToSafeHeight();
     if(!res) return false;
-    res = pick_arm->motor_x->StepMoveSync(-pick_arm->cmos_to_pr_distance.x());
+    res = pick_arm->motor_x->StepMoveSync(-pick_arm->cmos_to_pr_distance_position.X());
     if(!res) return false;
-    res = pick_arm->motor_y->StepMoveSync(-pick_arm->cmos_to_pr_distance.y());
+    res = pick_arm->motor_y->StepMoveSync(-pick_arm->cmos_to_pr_distance_position.Y());
     return res;
 }
 
@@ -990,9 +990,9 @@ bool SingleHeadMachineMaterialLoaderModule::MoveLensPikcer2Cam()
 {
     bool res = pick_arm->LiftToSafeHeight();
     if(!res) return false;
-    res = pick_arm->motor_x->StepMoveSync(pick_arm->lens_to_pr_distance.x());
+    res = pick_arm->motor_x->StepMoveSync(pick_arm->lens_to_pr_distance_position.X());
     if(!res) return false;
-    res = pick_arm->motor_y->StepMoveSync(pick_arm->lens_to_pr_distance.y());
+    res = pick_arm->motor_y->StepMoveSync(pick_arm->lens_to_pr_distance_position.Y());
     return res;
 }
 
@@ -1000,9 +1000,9 @@ bool SingleHeadMachineMaterialLoaderModule::MoveCam2LensPicker()
 {
     bool res = pick_arm->LiftToSafeHeight();
     if(!res) return false;
-    res = pick_arm->motor_x->StepMoveSync(-pick_arm->lens_to_pr_distance.x());
+    res = pick_arm->motor_x->StepMoveSync(-pick_arm->lens_to_pr_distance_position.X());
     if(!res) return false;
-    res = pick_arm->motor_y->StepMoveSync(-pick_arm->lens_to_pr_distance.y());
+    res = pick_arm->motor_y->StepMoveSync(-pick_arm->lens_to_pr_distance_position.Y());
     return res;
 }
 

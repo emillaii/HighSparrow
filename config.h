@@ -44,6 +44,10 @@
 #define CALIBRATION_PARAMETER_FILE   "calibration_parameter.json"
 #define AA_CORE_MODULE_FILE          "aaCoreConfig.json"
 
+#define MATERIAL_PICKARM_FILE        "materialPickArmConfig.json"
+#define MATERIAL_LOADER_PARAMETER    "material_loader"
+#define MATERIAL_LOADER_FILE         "materialLoaderModule.json"
+
 
 #define VISION_CONFIG_DIR            "config//vision_config_1"
 #define AA_HELPER_DIR                "aa_helper_log//"

@@ -224,7 +224,8 @@ HEADERS += \
     singleheadmachinematerialpickarm.h \
     singleheadmachinematerialpickarmparameter.h \
     singleheadmachinematerialloadermodule.h \
-    singleheadmachinematerialloadermoduleparameter.h
+    singleheadmachinematerialloadermoduleparameter.h \
+    pickarmposition.h
 
 DISTFILES += \
     icons/index.theme

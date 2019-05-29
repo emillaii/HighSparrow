@@ -9,20 +9,20 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
 {
     Q_OBJECT
     int m_runMode = 0;
-    double m_saftyZHeight;
-    double m_vcm1BaseHeight;
-    double m_vcm2BaseHeight;
-    double m_vcmSafeHeight;
-    double m_vcm1Svel;
-    double m_vcm1Sacc;
-    double m_vcm1PickForce;
-    double m_vcm1Margin;
-    double m_vcm2Svel;
-    double m_vcm2Sacc;
-    double m_vcm2PickForce;
-    double m_vcm2Margin;
-    int m_vcm1FinishDelay;
-    int m_vcm2FinishDelay;
+    double m_saftyZHeight = 0;
+    double m_vcm1BaseHeight = 0;
+    double m_vcm2BaseHeight = 0;
+    double m_vcmSafeHeight = 0;
+    double m_vcm1Svel = 0;
+    double m_vcm1Sacc = 0;
+    double m_vcm1PickForce = 0;
+    double m_vcm1Margin = 0;
+    double m_vcm2Svel = 0;
+    double m_vcm2Sacc = 0;
+    double m_vcm2PickForce = 0;
+    double m_vcm2Margin = 0;
+    int m_vcm1FinishDelay = 0;
+    int m_vcm2FinishDelay = 0;
 
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}

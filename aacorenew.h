@@ -63,7 +63,7 @@ public:
     void saveJsonConfig(QString file_name);
     AAData aaData_1;  // For Display Channel 1
     AAData aaData_2;  // For Display Channel 2
-    AAData mtf_log;   // For Display MTF Log
+    AAData mtf_log;   // For Display MTF Log T
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
 private:

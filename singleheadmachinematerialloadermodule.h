@@ -59,6 +59,13 @@ public:
 
     bool ToSaftyHeight(double safty_height);
 
+    Position sut_pr_position;
+    Position lut_pr_position;
+    Position updownlook_up_position;
+    Position updownlook_down_position;
+    Position lens_suction_offset;
+    Position sensor_suction_offset;
+
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
@@ -77,6 +84,8 @@ private:
     VisionLocation* lens_vacancy_vision = Q_NULLPTR;
     VisionLocation* lut_vision = Q_NULLPTR;
     VisionLocation* lut_lens_vision = Q_NULLPTR;
+
+
 };
 
 #endif // SINGLEHEADMACHINEMATERIALLOADERMODULE_H

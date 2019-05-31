@@ -166,7 +166,16 @@ bool BaseModuleManager::loadParameters()
         temp_map.insert("lens_to_pr_distance_position",&single_station_material_pickarm.lens_to_pr_distance_position);
         temp_map.insert("cmos_to_pr_distance_position",&single_station_material_pickarm.cmos_to_pr_distance_position);
         PropertyBase::loadJsonConfig(getCurrentParameterDir().append(MATERIAL_PICKARM_FILE), temp_map);
-        single_station_material_loader_module.parameters.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),MATERIAL_LOADER_PARAMETER);
+        //single_station_material_loader_module.parameters.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),MATERIAL_LOADER_PARAMETER);
+        QMap<QString,PropertyBase*> map;
+        map.insert("material_loader",&single_station_material_loader_module.parameters);
+        map.insert("sut_pr_position",&single_station_material_loader_module.sut_pr_position);
+        map.insert("lut_pr_position",&single_station_material_loader_module.lut_pr_position);
+        map.insert("updownlook_up_position",&single_station_material_loader_module.updownlook_up_position);
+        map.insert("updownlook_down_position",&single_station_material_loader_module.updownlook_down_position);
+        map.insert("lens_suction_offset",&single_station_material_loader_module.lens_suction_offset);
+        map.insert("sensor_suction_offset",&single_station_material_loader_module.sensor_suction_offset);
+        PropertyBase::saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),map);
     }
     aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
      qInfo("start  loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));");
@@ -234,8 +243,16 @@ bool BaseModuleManager::saveParameters()
         temp_map.insert("lens_to_pr_distance_position",&single_station_material_pickarm.lens_to_pr_distance_position);
         temp_map.insert("cmos_to_pr_distance_position",&single_station_material_pickarm.cmos_to_pr_distance_position);
         PropertyBase::saveJsonConfig(getCurrentParameterDir().append(MATERIAL_PICKARM_FILE), temp_map);
-        single_station_material_loader_module.parameters.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),MATERIAL_LOADER_PARAMETER);
-
+        //single_station_material_loader_module.parameters.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),MATERIAL_LOADER_PARAMETER);
+        QMap<QString,PropertyBase*> map;
+        map.insert("material_loader",&single_station_material_loader_module.parameters);
+        map.insert("sut_pr_position",&single_station_material_loader_module.sut_pr_position);
+        map.insert("lut_pr_position",&single_station_material_loader_module.lut_pr_position);
+        map.insert("updownlook_up_position",&single_station_material_loader_module.updownlook_up_position);
+        map.insert("updownlook_down_position",&single_station_material_loader_module.updownlook_down_position);
+        map.insert("lens_suction_offset",&single_station_material_loader_module.lens_suction_offset);
+        map.insert("sensor_suction_offset",&single_station_material_loader_module.sensor_suction_offset);
+        PropertyBase::saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),map);
     }
     aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
     saveMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));

@@ -9,11 +9,11 @@ class SingleHeadMachineMaterialPickArmParameter:public PropertyBase{
 public:
     Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
-    Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
     Q_PROPERTY(QString motorTh1Name READ motorTh1Name WRITE setMotorTh1Name NOTIFY motorTh1NameChanged)
     Q_PROPERTY(QString motorTh2Name READ motorTh2Name WRITE setMotorTh2Name NOTIFY motorTh2NameChanged)
     Q_PROPERTY(QString motorVcm1Name READ motorVcm1Name WRITE setMotorVcm1Name NOTIFY motorVcm1NameChanged)
     Q_PROPERTY(QString motorVcm2Name READ motorVcm2Name WRITE setMotorVcm2Name NOTIFY motorVcm2NameChanged)
+    Q_PROPERTY(QString motorVcmXName READ motorVcmXName WRITE setMotorVcmXName NOTIFY motorVcmXNameChanged)
     Q_PROPERTY(QString vacuumLensSuctionName READ vacuumLensSuctionName WRITE setVacuumLensSuctionName NOTIFY vacuumLensSuctionNameChanged)
     Q_PROPERTY(QString vacuumSensorSuctionName READ vacuumSensorSuctionName WRITE setVacuumSensorSuctionName NOTIFY vacuumSensorSuctionNameChanged)
     Q_PROPERTY(QString vacuumLUTName READ vacuumLUTName WRITE setVacuumLUTName NOTIFY vacuumLUTNameChanged)
@@ -33,10 +33,10 @@ public:
         return m_motorYName;
     }
 
-    QString motorZName() const
-    {
-        return m_motorZName;
-    }
+//    QString motorZName() const
+//    {
+//        return m_motorZName;
+//    }
 
     QString motorTh1Name() const
     {
@@ -83,6 +83,11 @@ public:
         return m_cylinderName;
     }
 
+    QString motorVcmXName() const
+    {
+        return m_motorVcmXName;
+    }
+
 public slots:
     void setMotorXName(QString motorXName)
     {
@@ -102,14 +107,14 @@ public slots:
         emit motorYNameChanged(m_motorYName);
     }
 
-    void setMotorZName(QString motorZName)
-    {
-        if (m_motorZName == motorZName)
-            return;
+//    void setMotorZName(QString motorZName)
+//    {
+//        if (m_motorZName == motorZName)
+//            return;
 
-        m_motorZName = motorZName;
-        emit motorZNameChanged(m_motorZName);
-    }
+//        m_motorZName = motorZName;
+//        emit motorZNameChanged(m_motorZName);
+//    }
 
     void setMotorTh1Name(QString motorTh1Name)
     {
@@ -192,6 +197,15 @@ public slots:
         emit cylinderNameChanged(m_cylinderName);
     }
 
+    void setMotorVcmXName(QString motorVcmXName)
+    {
+        if (m_motorVcmXName == motorVcmXName)
+            return;
+
+        m_motorVcmXName = motorVcmXName;
+        emit motorVcmXNameChanged(m_motorVcmXName);
+    }
+
 signals:
     void motorXNameChanged(QString motorXName);
 
@@ -217,10 +231,12 @@ signals:
 
     void cylinderNameChanged(QString cylinderName);
 
+    void motorVcmXNameChanged(QString motorVcmXName);
+
 private:
     QString m_motorXName = "";
     QString m_motorYName = "";
-    QString m_motorZName = "";
+//    QString m_motorZName = "";
     QString m_motorTh1Name = "";
     QString m_motorTh2Name = "";
     QString m_motorVcm1Name = "";
@@ -230,6 +246,7 @@ private:
     QString m_vacuumLUTName = "";
     QString m_vacuumSUTName = "";
     QString m_cylinderName = "";
+    QString m_motorVcmXName = "";
 };
 
 #endif // SINGLEHEADMACHINEMATERIALPICKARMPARAMETER_H

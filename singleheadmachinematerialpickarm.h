@@ -29,9 +29,9 @@ public:
     SingleHeadMachineMaterialPickArmParameter parameters;
     SingleHeadMachineMaterialLoaderModule* parent = nullptr;
     SingleHeadMachineMaterialPickArm(QString name = "SingleHeadMachineMaterialPickArm");
-    void Init(XtMotor *motor_x,XtMotor *motor_y,XtMotor *motor_z,
+    void Init(XtMotor *motor_x,XtMotor *motor_y,
               XtMotor *motor_th1,XtMotor *motor_th2,
-              XtVcMotor *motor_vcm1,XtVcMotor *motor_vcm2,
+              XtVcMotor *motor_vcm1,XtVcMotor *motor_vcm2,XtVcMotor *motor_vcmx,
               XtVacuum *vacuum_lens_suction,XtVacuum *vacuum_sensor_suction,
               XtVacuum *vacuum_lut,XtVacuum *vacuum_sut,XtCylinder *pogopin);
 //    PickArmPos pick_lens_base_pos;//pick lens的基础位置，以相机中心为准，要加吸嘴偏移
@@ -62,6 +62,7 @@ public:
     XtMotor *motor_th2;
     XtVcMotor *motor_vcm1;
     XtVcMotor *motor_vcm2;
+    XtVcMotor *motor_vcmx;
     XtVacuum *vacuum_lens_suction;//lens吸嘴，右吸嘴
     XtVacuum *vacuum_sensor_suction;//cmos吸嘴，左吸嘴
     XtVacuum *vacuum_lut;//LUT真空

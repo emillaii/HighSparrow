@@ -963,6 +963,19 @@ bool BaseModuleManager::InitStruct()
     }
     else
     {
+        //single_station_material_pickarm.Init();
+        single_station_material_pickarm.Init(GetMotorByName(single_station_material_pickarm.parameters.motorXName()),
+                                             GetMotorByName(single_station_material_pickarm.parameters.motorYName()),
+                                             GetMotorByName(single_station_material_pickarm.parameters.motorTh1Name()),
+                                             GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name()),
+                                             GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name()),
+                                             GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name()),
+                                             GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName()),
+                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumLensSuctionName()),
+                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumSensorSuctionName()),
+                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumLUTName()),
+                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumSUTName()),
+                                             GetCylinderByName(single_station_material_pickarm.parameters.cylinderName()));
         single_station_material_loader_module.Init(&single_station_material_pickarm);
     }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
@@ -1275,10 +1288,10 @@ bool BaseModuleManager::allMotorsSeekOriginal3()
     bool result;
     GetMotorByName(single_station_material_pickarm.parameters.motorXName())->SeekOrigin();
     GetMotorByName(single_station_material_pickarm.parameters.motorYName())->SeekOrigin();
-    GetMotorByName(single_station_material_pickarm.parameters.motorZName())->SeekOrigin();
+    //GetMotorByName(single_station_material_pickarm.parameters.motorZName())->SeekOrigin();
     result = GetMotorByName(single_station_material_pickarm.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(single_station_material_pickarm.parameters.motorYName())->WaitSeekDone();
-    result &= GetMotorByName(single_station_material_pickarm.parameters.motorZName())->WaitSeekDone();
+    //result &= GetMotorByName(single_station_material_pickarm.parameters.motorZName())->WaitSeekDone();
 
     GetMotorByName(single_station_material_pickarm.parameters.motorTh1Name())->SeekOrigin();
     GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name())->SeekOrigin();

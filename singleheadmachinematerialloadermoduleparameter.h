@@ -24,6 +24,16 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     int m_vcm1FinishDelay = 0;
     int m_vcm2FinishDelay = 0;
 
+    QString m_sensorVisionName = "";
+    QString m_sensorVacancyVisionName = "";
+    QString m_sutVisionName = "";
+    QString m_sutSensorVisionName = "";
+    QString m_sutProductVisionName = "";
+    QString m_lensVisionName = "";
+    QString m_lensVancyVisionName = "";
+    QString m_lutVisionName = "";
+    QString m_lutLensVision = "";
+
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
@@ -41,6 +51,15 @@ public:
     Q_PROPERTY(double vcm2Margin READ vcm2Margin WRITE setVcm2Margin NOTIFY vcm2MarginChanged)
     Q_PROPERTY(int vcm1FinishDelay READ vcm1FinishDelay WRITE setVcm1FinishDelay NOTIFY vcm1FinishDelayChanged)
     Q_PROPERTY(int vcm2FinishDelay READ vcm2FinishDelay WRITE setVcm2FinishDelay NOTIFY vcm2FinishDelayChanged)
+    Q_PROPERTY(QString sensorVisionName READ sensorVisionName WRITE setSensorVisionName NOTIFY sensorVisionNameChanged)
+    Q_PROPERTY(QString sensorVacancyVisionName READ sensorVacancyVisionName WRITE setSensorVacancyVisionName NOTIFY sensorVacancyVisionNameChanged)
+    Q_PROPERTY(QString sutVisionName READ sutVisionName WRITE setSutVisionName NOTIFY sutVisionNameChanged)
+    Q_PROPERTY(QString sutSensorVisionName READ sutSensorVisionName WRITE setSutSensorVisionName NOTIFY sutSensorVisionNameChanged)
+    Q_PROPERTY(QString sutProductVisionName READ sutProductVisionName WRITE setSutProductVisionName NOTIFY sutProductVisionNameChanged)
+    Q_PROPERTY(QString lensVisionName READ lensVisionName WRITE setLensVisionName NOTIFY lensVisionNameChanged)
+    Q_PROPERTY(QString lensVacancyVisionName READ lensVacancyVisionName WRITE setLensVacancyVisionName NOTIFY lensVacancyVisionNameChanged)
+    Q_PROPERTY(QString lutVisionName READ lutVisionName WRITE setLutVisionName NOTIFY lutVisionNameChanged)
+    Q_PROPERTY(QString lutLensVision READ lutLensVision WRITE setLutLensVision NOTIFY lutLensVisionChanged)
 
 
     int runMode() const
@@ -115,6 +134,51 @@ public:
     int vcm2FinishDelay() const
     {
         return m_vcm2FinishDelay;
+    }
+
+    QString sensorVisionName() const
+    {
+        return m_sensorVisionName;
+    }
+
+    QString sensorVacancyVisionName() const
+    {
+        return m_sensorVacancyVisionName;
+    }
+
+    QString sutVisionName() const
+    {
+        return m_sutVisionName;
+    }
+
+    QString sutSensorVisionName() const
+    {
+        return m_sutSensorVisionName;
+    }
+
+    QString sutProductVisionName() const
+    {
+        return m_sutProductVisionName;
+    }
+
+    QString lensVisionName() const
+    {
+        return m_lensVisionName;
+    }
+
+    QString lensVacancyVisionName() const
+    {
+        return m_lensVancyVisionName;
+    }
+
+    QString lutVisionName() const
+    {
+        return m_lutVisionName;
+    }
+
+    QString lutLensVision() const
+    {
+        return m_lutLensVision;
     }
 
 public slots:
@@ -264,6 +328,87 @@ public slots:
         emit vcm2FinishDelayChanged(m_vcm2FinishDelay);
     }
 
+    void setSensorVisionName(QString sensorVisionName)
+    {
+        if (m_sensorVisionName == sensorVisionName)
+            return;
+
+        m_sensorVisionName = sensorVisionName;
+        emit sensorVisionNameChanged(m_sensorVisionName);
+    }
+
+    void setSensorVacancyVisionName(QString sensorVacancyVisionName)
+    {
+        if (m_sensorVacancyVisionName == sensorVacancyVisionName)
+            return;
+
+        m_sensorVacancyVisionName = sensorVacancyVisionName;
+        emit sensorVacancyVisionNameChanged(m_sensorVacancyVisionName);
+    }
+
+    void setSutVisionName(QString sutVisionName)
+    {
+        if (m_sutVisionName == sutVisionName)
+            return;
+
+        m_sutVisionName = sutVisionName;
+        emit sutVisionNameChanged(m_sutVisionName);
+    }
+
+    void setSutSensorVisionName(QString sutSensorVisionName)
+    {
+        if (m_sutSensorVisionName == sutSensorVisionName)
+            return;
+
+        m_sutSensorVisionName = sutSensorVisionName;
+        emit sutSensorVisionNameChanged(m_sutSensorVisionName);
+    }
+
+    void setSutProductVisionName(QString sutProductVisionName)
+    {
+        if (m_sutProductVisionName == sutProductVisionName)
+            return;
+
+        m_sutProductVisionName = sutProductVisionName;
+        emit sutProductVisionNameChanged(m_sutProductVisionName);
+    }
+
+    void setLensVisionName(QString lensVisionName)
+    {
+        if (m_lensVisionName == lensVisionName)
+            return;
+
+        m_lensVisionName = lensVisionName;
+        emit lensVisionNameChanged(m_lensVisionName);
+    }
+
+    void setLensVacancyVisionName(QString lensVancyVisionName)
+    {
+        if (m_lensVancyVisionName == lensVancyVisionName)
+            return;
+
+        m_lensVancyVisionName = lensVancyVisionName;
+        emit lensVacancyVisionNameChanged(m_lensVancyVisionName);
+    }
+
+    void setLutVisionName(QString lutVisionName)
+    {
+        if (m_lutVisionName == lutVisionName)
+            return;
+
+        m_lutVisionName = lutVisionName;
+        emit lutVisionNameChanged(m_lutVisionName);
+    }
+
+    void setLutLensVision(QString lutLensVision)
+    {
+        if (m_lutLensVision == lutLensVision)
+            return;
+
+        m_lutLensVision = lutLensVision;
+        emit lutLensVisionChanged(m_lutLensVision);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void saftyZHeightChanged(double saftyZHeight);
@@ -280,6 +425,15 @@ signals:
     void vcm2MarginChanged(double vcm2Margin);
     void vcm1FinishDelayChanged(int vcm1FinishDelay);
     void vcm2FinishDelayChanged(int vcm2FinishDelay);
+    void sensorVisionNameChanged(QString sensorVisionName);
+    void sensorVacancyVisionNameChanged(QString sensorVacancyVisionName);
+    void sutVisionNameChanged(QString sutVisionName);
+    void sutSensorVisionNameChanged(QString sutSensorVisionName);
+    void sutProductVisionNameChanged(QString sutProductVisionName);
+    void lensVisionNameChanged(QString lensVisionName);
+    void lensVacancyVisionNameChanged(QString lensVacancyVisionName);
+    void lutVisionNameChanged(QString lutVisionName);
+    void lutLensVisionChanged(QString lutLensVision);
 };
 
 #endif // SINGLEHEADMACHINEMATERIALLOADERMODULEPARAMETER_H

@@ -4,6 +4,7 @@
 #include "singleheadmachinematerialloadermoduleparameter.h"
 #include "singleheadmachinematerialpickarm.h"
 #include "thread_worker_base.h"
+#include "vision_location.h"
 #define DELAY_JET 1000
 
 
@@ -64,7 +65,18 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
 private:
-    SingleHeadMachineMaterialPickArm* pick_arm;
+    SingleHeadMachineMaterialPickArm* pick_arm = Q_NULLPTR;
+
+    VisionLocation* sensor_vision = Q_NULLPTR;
+    VisionLocation* sensor_vacancy_vision = Q_NULLPTR;
+    VisionLocation* sut_vision = Q_NULLPTR;
+    VisionLocation* sut_sensor_vision = Q_NULLPTR;
+    VisionLocation* sut_product_vision = Q_NULLPTR;
+
+    VisionLocation* lens_vision = Q_NULLPTR;
+    VisionLocation* lens_vacancy_vision = Q_NULLPTR;
+    VisionLocation* lut_vision = Q_NULLPTR;
+    VisionLocation* lut_lens_vision = Q_NULLPTR;
 };
 
 #endif // SINGLEHEADMACHINEMATERIALLOADERMODULE_H

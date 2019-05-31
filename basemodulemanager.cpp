@@ -955,6 +955,7 @@ bool BaseModuleManager::InitStruct()
         lut_module.Init(&lut_carrier,GetVisionLocationByName(lut_module.parameters.uplookLocationName()),
                         GetVisionLocationByName(lut_module.parameters.loadlookLocationName()),
                         GetVisionLocationByName(lut_module.parameters.mushroomLocationName()),
+                        GetVisionLocationByName(lut_module.parameters.lutGripperLocationName()),
                         GetVacuumByName(lut_module.parameters.vacuum1Name()),
                         GetVacuumByName(lut_module.parameters.vacuum1Name()),
                         GetOutputIoByName(aa_head_module.parameters.gripperName()), &sut_module);
@@ -1149,7 +1150,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     //if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
     //    return false;
     GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
-    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
+//    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
     GetVcMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
     GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
 
@@ -1165,11 +1166,11 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
     GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
 
-    result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
+    //result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
 
-    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();//AA_X
-    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();//AA_Z
+//    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();//AA_X
+//    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();//AA_Z
     GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();//AA_A
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();//AA_B
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();//AA_C
@@ -1206,8 +1207,8 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
 
-    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
-    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
+//    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
+//    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
@@ -1551,13 +1552,9 @@ bool BaseModuleManager::performUpDnLookCalibration()
 bool BaseModuleManager::performLensUpDnLookCalibration()
 {
     this->lens_loader_module.calculateCameraToPickerOffset();
-    //this->lens_loader_module.camera_to_picker_offset.setX(offsetX);
-    //this->lens_loader_module.camera_to_picker_offset.setY(offsetY);
-    //this->lut_module.lpa_camera_to_picker_offset.setX(-offsetX);
-    //this->lut_module.lpa_camera_to_picker_offset.setY(-offsetY);
-
-//    qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", offsetX,offsetY);
-//    this->lens_loader_module.calculateCameraToPickerOffset();
+    this->lut_module.lpa_camera_to_picker_offset.setX(-lens_loader_module.camera_to_picker_offset.X());
+    this->lut_module.lpa_camera_to_picker_offset.setY(-lens_loader_module.camera_to_picker_offset.Y());
+    qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", lens_loader_module.camera_to_picker_offset.X() ,lens_loader_module.camera_to_picker_offset.Y());
     return true;
 }
 

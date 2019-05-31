@@ -392,13 +392,17 @@ bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 
 bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 {
-    return  pick_arm->move_XYT_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),parameters.placeTheta(),check_softlanding);
-
+    double theta = pr_offset.Theta;
+    if (parameters.placeTheta() < 0) theta = -pr_offset.Theta;
+    pr_offset.Theta = 0; //Reset the last pr result
+    double target_t = pick_arm->picker->motor_t->GetFeedbackPos() + theta;
+    return  pick_arm->move_XYT_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),target_t,check_softlanding);
 }
 
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
-    return  pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),parameters.placeTheta(),check_softlanding);
+    double theta = pick_arm->picker->motor_t->GetFeedbackPos() + parameters.placeTheta();
+    return pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),theta,check_softlanding);
 }
 
 bool LensLoaderModule::checkNeedChangeTray()
@@ -475,15 +479,12 @@ void LensLoaderModule::calculateCameraToPickerOffset()
     qInfo("Fit cicle: x: %f y: %f r:%f", center.x, center.y, radius);
     this->camera_to_picker_offset.setX(camera_to_picker_offset.X() + center.x);
     this->camera_to_picker_offset.setY(camera_to_picker_offset.Y() + center.y);
-
-//    lut_camera_position.setX(lut_picker_position.X() - camera_to_picker_offset.X());
-//    lut_camera_position.setY(lut_picker_position.Y() - camera_to_picker_offset.Y());
-//    qInfo("Camera to picker offset x: %f y:%f", lut_camera_position.X(), lut_camera_position.Y());
 }
 
 bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
 {
-    PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,pr_offset.Theta);
+    //PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,pr_offset.Theta);
+    PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,0);
     bool result = pick_arm->stepMove_XYTp_Synic(temp,check_softlanding);
     return  result;
 }
@@ -514,10 +515,8 @@ bool LensLoaderModule::pickTrayLens()
 bool LensLoaderModule::placeLensToLUT()
 {
     qInfo("placeLensToLUT");
-//    bool result = pick_arm->stepMove_T_Syncic(parameters.placeTheta());
     this->lut_carrier->vacuum->Set(true);
     bool result = vcmSearchZ(parameters.placeLensZ(), false);
-//    return result = pick_arm->stepMove_T_Syncic(-parameters.placeTheta());
     return result;
 }
 

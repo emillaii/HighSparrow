@@ -103,9 +103,9 @@
 #define PREVIEW_7                   "preview7"
 
 //ToDo: Move to config file for the camera
-#define DOWNLOOK_VISION_CAMERA          "AA_DOWNLOOK"
-#define UPLOOK_VISION_CAMERA            "UT_UPLOOK"
-#define PICKARM_VISION_CAMERA           "PA_DOWNLOOK"
+#define DOWNLOOK_VISION_CAMERA          "AA_DLCamera1"
+#define UPLOOK_VISION_CAMERA            "LUT_ULCamera"
+#define PICKARM_VISION_CAMERA           "LPA_DLCamera"
 
 #define CAMERA_AA1_DL                    "AA_DLCamera1"
 #define CAMERA_AA2_DL                    "AA_DLCamera2"

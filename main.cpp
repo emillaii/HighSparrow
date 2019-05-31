@@ -150,6 +150,8 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->lens_loader_module.lut_camera_position);
     engine.rootContext()->setContextProperty("lut_picker_position",
                                              &highSprrow.baseModuleManager->lens_loader_module.lut_picker_position);
+    engine.rootContext()->setContextProperty("lpa_camera_tip_offset",
+                                             &highSprrow.baseModuleManager->lens_loader_module.camera_to_picker_offset);
 
     engine.rootContext()->setContextProperty("lens_loader_parameter",
                                              &highSprrow.baseModuleManager->lens_loader_module.parameters);

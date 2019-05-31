@@ -16,6 +16,7 @@ public:
     Q_PROPERTY(QString uplookLocationName READ uplookLocationName WRITE setUplookLocationName NOTIFY uplookLocationNameChanged)
     Q_PROPERTY(QString loadlookLocationName READ loadlookLocationName WRITE setLoadlookLocationName NOTIFY loadlookLocationNameChanged)
     Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
+    Q_PROPERTY(QString lutGripperLocationName READ lutGripperLocationName WRITE setLutGripperLocationName NOTIFY lutGripperLocationNameChanged)
     double pickForce() const
     {
         return m_PickForce;
@@ -59,6 +60,11 @@ public:
     QString mushroomLocationName() const
     {
         return m_mushroomLocationName;
+    }
+
+    QString lutGripperLocationName() const
+    {
+        return m_lutGripperLocationName;
     }
 
 public slots:
@@ -140,6 +146,15 @@ public slots:
         emit mushroomLocationNameChanged(m_mushroomLocationName);
     }
 
+    void setLutGripperLocationName(QString lutGripperLocationName)
+    {
+        if (m_lutGripperLocationName == lutGripperLocationName)
+            return;
+
+        m_lutGripperLocationName = lutGripperLocationName;
+        emit lutGripperLocationNameChanged(m_lutGripperLocationName);
+    }
+
 signals:
     void paramsChanged();
 
@@ -159,6 +174,8 @@ signals:
 
     void mushroomLocationNameChanged(QString mushroomLocationName);
 
+    void lutGripperLocationNameChanged(QString lutGripperLocationName);
+
 private:
     double m_PickForce = 0;
     QString m_motorXName = "LUT_X";
@@ -169,6 +186,7 @@ private:
     QString m_uplookLocationName = "";
     QString m_loadlookLocationName = "";
     QString m_mushroomLocationName = "";
+    QString m_lutGripperLocationName;
 };
 
 class LutState:public PropertyBase

@@ -27,7 +27,7 @@ class LutModule : public ThreadWorkerBase
 public:
     explicit LutModule(QString name = "LUTModule", QObject * parent = nullptr);
     void Init(MaterialCarrier* carrier,
-              VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location,
+              VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, VisionLocation* lut_gripper_location,
               XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper, SutModule* sut);
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
@@ -69,6 +69,7 @@ private:
     VisionLocation* uplook_location;
     VisionLocation* load_location;
     VisionLocation* mushroom_location;
+    VisionLocation* gripper_location;
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;
     QMutex loader_mutext;
@@ -105,6 +106,8 @@ public:
     Q_INVOKABLE bool moveToAA2UnPickLens(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1MushroomLens(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2MushroomLens(bool check_autochthonous = false);
+    Q_INVOKABLE bool aa1PrToBond();
+    Q_INVOKABLE bool aa2PrToBond();
     bool stepMove_XY_Sync(double x,double y);
 
 };

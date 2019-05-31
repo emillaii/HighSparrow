@@ -325,7 +325,7 @@ void LutModule::resetLogic()
     states.setCmd("");
 }
 
-void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper, SutModule *sut)
+void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, VisionLocation* gripper_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper, SutModule *sut)
 {
     this->carrier = carrier;
     this->uplook_location = uplook_location;
@@ -333,6 +333,7 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     this->load_vacuum = load_vacuum;
     this->unload_vacuum = unload_vacuum;
     this->mushroom_location = mushroom_location;
+    this->gripper_location = gripper_location;
     this->sut = sut;
 }
 
@@ -520,7 +521,8 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
 {
     qInfo("moveToAA2PickLens");
     sendCmd("remote","gripperOnReq");
-    bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
+    bool result = true;
+   // bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
     if(result)
     {
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
@@ -561,6 +563,23 @@ bool LutModule::moveToAA1MushroomLens(bool check_autochthonous)
 bool LutModule::moveToAA2MushroomLens(bool check_autochthonous)
 {
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_mushroom_position.X(),aa2_mushroom_position.Y(),aa2_mushroom_position.Z(),check_autochthonous);
+}
+
+bool LutModule::aa1PrToBond()
+{
+    double camera_x = load_uplook_position.X() + lpa_camera_to_picker_offset.X();
+    double camera_y = load_uplook_position.Y() + lpa_camera_to_picker_offset.Y();
+    return true;
+}
+
+bool LutModule::aa2PrToBond()
+{
+    this->moveToAA2UplookPos();
+    PrOffset prOffset;
+    gripper_location->performPR(prOffset);
+    this->carrier->StepMove_XY_Sync(prOffset.X + 0.2946, prOffset.Y + 33.597);
+
+    return true;
 }
 
 bool LutModule::stepMove_XY_Sync(double x, double y)

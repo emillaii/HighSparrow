@@ -97,6 +97,12 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lutUnPickLensPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_unpicklens_position);
     engine.rootContext()->setContextProperty("lutUplookPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_uplook_position);
 
+    engine.rootContext()->setContextProperty("sh_sut_pr_position",&highSprrow.baseModuleManager->single_station_material_loader_module.sut_pr_position);
+    engine.rootContext()->setContextProperty("sh_lut_pr_position",&highSprrow.baseModuleManager->single_station_material_loader_module.lut_pr_position);
+    engine.rootContext()->setContextProperty("sh_updownlook_up_position",&highSprrow.baseModuleManager->single_station_material_loader_module.updownlook_up_position);
+    engine.rootContext()->setContextProperty("sh_updownlook_down_position",&highSprrow.baseModuleManager->single_station_material_loader_module.updownlook_down_position);
+    engine.rootContext()->setContextProperty("sh_lens_suction_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.lens_suction_offset);
+    engine.rootContext()->setContextProperty("sh_sensor_suction_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.sensor_suction_offset);
     QString dirPath = app.applicationDirPath();
     dirPath += "/..";
     engine.rootContext()->setContextProperty("dirPath",dirPath);
@@ -167,6 +173,7 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->sensor_loader_module.picker1_offset);
     engine.rootContext()->setContextProperty("pick2_offset",
                                              &highSprrow.baseModuleManager->sensor_loader_module.picker2_offset);
+    engine.rootContext()->setContextProperty("materialPickArmParams",&highSprrow.baseModuleManager->single_station_material_pickarm.parameters);
     engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramers);
 
     QStringList data = highSprrow.baseModuleManager->motors.keys();

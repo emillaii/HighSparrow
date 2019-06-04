@@ -69,6 +69,10 @@ ItemDelegate {
                     }
                 }
             }
+            GroupBox{
+                title:qsTr("SUT & LUT")
+                MaterialLoaderModulueUTView{}
+            }
         }
     }
 }

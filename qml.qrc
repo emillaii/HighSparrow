@@ -83,6 +83,7 @@
         <file>LUTDownlookLoadPosition.qml</file>
         <file>LUTDownlookUnloadPosition.qml</file>
         <file>SingleStationMaterialLoaderModuleView.qml</file>
+        <file>MaterialLoaderModulueUTView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

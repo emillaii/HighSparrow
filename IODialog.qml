@@ -6,152 +6,6 @@ import QtQuick 2.11
 
 Popup {
     property double selectedStepSize: 0.1
-    ListModel{
-        id:aa1_vacuums
-        ListElement{
-            breakIoName:"null"
-            inIoName:"SUT1真空检测"
-            outIoName:"SUT1吸真空"
-            vacuumName:"SUT1真空"
-        }
-        ListElement{
-            breakIoName:"LUT破真空"
-            inIoName:"LUT真空检测"
-            outIoName:"LUT吸真空"
-            vacuumName:"LUT真空"
-        }
-        ListElement{
-            breakIoName:"LPA破真空"
-            inIoName:"LPA真空检测"
-            outIoName:"LPA吸真空"
-            vacuumName:"LPA真空"
-        }
-        ListElement{
-            breakIoName:"null"
-            inIoName:"null"
-            outIoName:"LUT2吸真空"
-            vacuumName:"LUT吸真空"
-        }
-    }
-    ListModel{
-        id:aa2_vacuums
-        ListElement{
-            breakIoName:"null"
-            inIoName:"SUT2真空检测"
-            outIoName:"SUT2吸真空"
-            vacuumName:"SUT2真空"
-        }
-        ListElement{
-            breakIoName:"SPA_Pick1破真空"
-            inIoName:"SPA_Pick1真空检测"
-            outIoName:"SPA_Pick1吸真空"
-            vacuumName:"SPA1真空"
-        }
-        ListElement{
-            breakIoName:"SPA_Pick2破真空"
-            inIoName:"SPA_Pick2真空检测"
-            outIoName:"SPA_Pick2吸真空"
-            vacuumName:"SPA2真空"
-        }
-    }
-
-    ListModel{
-        id:aa2_cylinders
-        ListElement{
-            cylinderName:"POGOPIN"
-            oneInName:"null"
-            oneOutName:"POGOPIN下"
-            zeroInName:"null"
-            zeroOutName:"POGOPIN上"
-        }
-        ListElement{
-            cylinderName:"STK1气缸"
-            oneInName:"STK1气缸下感应器"
-            oneOutName:"STK1气缸ON"
-            zeroInName:"STK1气缸上感应器"
-            zeroOutName:"null"
-        }
-        ListElement{
-            cylinderName:"STK2气缸"
-            oneInName:"STK2气缸下感应器"
-            oneOutName:"STK2气缸ON"
-            zeroInName:"STK2气缸上感应器"
-            zeroOutName:"null"
-        }
-        ListElement{
-            cylinderName:"STL_Tray气缸"
-            oneInName:"STL_Tray气缸外感应"
-            oneOutName:"STL_Tray气缸夹"
-            zeroInName:"STL_Tray气缸内感应"
-            zeroOutName:"null"
-        }
-        ListElement{
-            cylinderName:"CTL_Tray气缸"
-            oneInName:"CTL_Tray气缸外感应"
-            oneOutName:"CTL_Tray气缸夹"
-            zeroInName:"CTL_Tray气缸内感应"
-            zeroOutName:"null"
-        }
-        ListElement{
-            cylinderName:"STIE气阀"
-            oneInName:"STIE气缸伸出"
-            oneOutName:"STIE气阀伸出"
-            zeroInName:"STIE气缸退回"
-            zeroOutName:"STIE气阀退回"
-        }
-        ListElement{
-            cylinderName:"STOE气阀"
-            oneInName:"STOE气缸伸出"
-            oneOutName:"STOE气阀伸出"
-            zeroInName:"STOE气缸退回"
-            zeroOutName:"STOE气阀退回"
-        }
-        ListElement{
-            cylinderName:"Gripper气缸"
-            oneInName:"null"
-            oneOutName:"STL_Gripper气缸"
-            zeroInName:"null"
-            zeroOutName:"null"
-        }
-    }
-    ListModel{
-        id:aa1_cylinders
-        ListElement{
-            cylinderName:"POGOPIN"
-            oneInName:"null"
-            oneOutName:"POGOPIN下"
-            zeroInName:"null"
-            zeroOutName:"POGOPIN上"
-        }
-        ListElement{
-            cylinderName:"弹夹推料气缸"
-            oneInName:"弹夹推料气缸外感应器"
-            oneOutName:"弹夹推料气缸出"
-            zeroInName:"弹夹推料气缸内感应器"
-            zeroOutName:"null"
-        }
-        ListElement{
-            cylinderName:"LTK1气缸"
-            oneInName:"LTK1气缸上感应器"
-            oneOutName:"LTK1气缸ON"
-            zeroInName:"LTK1气缸下感应器"
-            zeroOutName:"null"
-        }
-        ListElement{
-            cylinderName:"LTK2气缸"
-            oneInName:"LTK2气缸上感应器"
-            oneOutName:"LTK2气缸ON"
-            zeroInName:"LTK2气缸下感应器"
-            zeroOutName:"null"
-        }
-        ListElement{
-            cylinderName:"LTL_Tray气缸"
-            oneInName:"LTL_Tray气缸外感应"
-            oneOutName:"LTL_Tray气缸夹"
-            zeroInName:"LTL_Tray气缸内感应"
-            zeroOutName:"null"
-        }
-    }
     id: dialog
     visible: false
     contentItem: Rectangle {
@@ -250,13 +104,13 @@ Popup {
                 clip: true
                 ListView{
                     id:vacuum_list
-                    model:baseModuleManager.getServerMode()==0?aa1_vacuums:aa2_vacuums
+                    model:vacuums_list
                     delegate:GroupBox {
                         title:vacuumName
                         ColumnLayout{
                             Switch{
                                 id:break_io_switch
-                                enabled: breakIoName!="null"
+                                enabled: breakIoName!=""
                                 Connections{
                                     target: timer
                                     onTriggered:{
@@ -272,12 +126,12 @@ Popup {
                                     baseModuleManager.setOutput(breakIoName,checked)
                                 }
 
-                                text:breakIoName!="null"?breakIoName:"无breakIO"
+                                text:breakIoName!=""?breakIoName:"无breakIO"
                             }
                             Switch{
                                 anchors.top: break_io_switch.bottom
                                 id:in_io_switch
-                                enabled: inIoName!="null"
+                                enabled: inIoName!=""
                                 Connections{
                                     target: timer
                                     onTriggered:{
@@ -289,12 +143,12 @@ Popup {
                                         }
                                     }
                                 }
-                                text:inIoName!="null"?inIoName:"无inIO"
+                                text:inIoName!=""?inIoName:"无inIO"
                             }
                             Switch{
                                 anchors.top: in_io_switch.bottom
                                 id:out_io_switch
-                                enabled: outIoName!="null"
+                                enabled: outIoName!=""
                                 Connections{
                                     target: timer
                                     onTriggered:{
@@ -309,7 +163,7 @@ Popup {
                                 onCheckedChanged: {
                                     baseModuleManager.setOutput(outIoName,checked)
                                 }
-                                text:outIoName!="null"?outIoName:"无outIO"
+                                text:outIoName!=""?outIoName:"无outIO"
                             }
                         }
                     }
@@ -321,13 +175,13 @@ Popup {
                 clip: true
                 ListView{
                     id:cylinder_list
-                    model: baseModuleManager.getServerMode()==0?aa1_cylinders:aa2_cylinders
+                    model: cylinders_list
                     delegate:GroupBox {
                         title:cylinderName
                         ColumnLayout{
                             Switch{
                                 id:one_in
-                                enabled: oneInName!="null"
+                                enabled: oneInName!=""
                                 Connections{
                                     target: timer
                                     onTriggered:{
@@ -339,12 +193,12 @@ Popup {
                                         }
                                     }
                                 }
-                                text:oneInName!="null"?oneInName:"无oneInIO"
+                                text:oneInName!=""?oneInName:"无oneInIO"
                             }
                             Switch{
                                 anchors.top: one_in.bottom
                                 id:one_out
-                                enabled: oneOutName!="null"
+                                enabled: oneOutName!=""
                                 Connections{
                                     target: timer
                                     onTriggered:{
@@ -356,7 +210,7 @@ Popup {
                                         }
                                     }
                                 }
-                                text:oneOutName!="null"?oneOutName:"无oneOutIO"
+                                text:oneOutName!=""?oneOutName:"无oneOutIO"
                                 onCheckedChanged: {
                                     baseModuleManager.setOutput(oneOutName,checked)
                                 }
@@ -364,7 +218,7 @@ Popup {
                             Switch{
                                 anchors.top: one_out.bottom
                                 id:zero_in
-                                enabled: zeroInName!="null"
+                                enabled: zeroInName!=""
                                 Connections{
                                     target: timer
                                     onTriggered:{
@@ -376,12 +230,12 @@ Popup {
                                         }
                                     }
                                 }
-                                text:zeroInName!="null"?zeroInName:"无outIO"
+                                text:zeroInName!=""?zeroInName:"无outIO"
                             }
                             Switch{
                                 anchors.top: zero_in.bottom
                                 id:zero_out
-                                enabled: zeroOutName!="null"
+                                enabled: zeroOutName!=""
                                 Connections{
                                     target: timer
                                     onTriggered:{
@@ -393,7 +247,7 @@ Popup {
                                         }
                                     }
                                 }
-                                text:zeroOutName!="null"?zeroOutName:"无oneOutIO"
+                                text:zeroOutName!=""?zeroOutName:"无oneOutIO"
                                 onCheckedChanged: {
                                     baseModuleManager.setOutput(zeroOutName,checked)
                                 }

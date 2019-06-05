@@ -126,6 +126,20 @@ int main(int argc, char *argv[])
     QList<QString> temp_names = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames", QVariant::fromValue(highSprrow.baseModuleManager->motors.keys()));
 
+    QStringList vacuums_name = highSprrow.baseModuleManager->vacuums.keys();
+    QList<QObject*> vacuums_list;
+    for(QString key:vacuums_name){
+        vacuums_list<<&(highSprrow.baseModuleManager->vacuums[key]->parameters);
+    }
+    engine.rootContext()->setContextProperty("vacuums_list",QVariant::fromValue(vacuums_list));
+
+    QStringList cylinders_name = highSprrow.baseModuleManager->cylinder.keys();
+    QList<QObject*> cylinders_list;
+    for(QString key:cylinders_name){
+        cylinders_list<<&(highSprrow.baseModuleManager->cylinder[key]->parameters);
+    }
+    engine.rootContext()->setContextProperty("cylinders_list",QVariant::fromValue(cylinders_list));
+
     QStringList vision_locations_list = highSprrow.baseModuleManager->vision_locations.keys();
     QList<QObject*> vl_parameter_list;
     for(QString key:vision_locations_list){

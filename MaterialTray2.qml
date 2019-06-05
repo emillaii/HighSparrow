@@ -39,7 +39,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmMoveToTray2StartPos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2_START_POS)
@@ -53,7 +53,7 @@ ColumnLayout {
                     onClicked: {
                         var x =0;
                         var y=0;
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
                         }else{
@@ -159,7 +159,7 @@ ColumnLayout {
             RowLayout{
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
-                    visible: baseModuleManager.getServerMode()==0
+                    visible: baseModuleManager.getServerMode()===0
                     text:qsTr("lens视觉")
                     width: 40
                     height: 40

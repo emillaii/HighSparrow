@@ -85,6 +85,7 @@
         <file>SingleStationMaterialLoaderModuleView.qml</file>
         <file>MaterialLoaderModulueUTView.qml</file>
         <file>SingleHeadLensTray.qml</file>
+        <file>SingleHeadSensorTray.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

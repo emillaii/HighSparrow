@@ -78,7 +78,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     }
     material_tray.standards_parameters.setTrayCount(2);
     lens_tray.standards_parameters.setTrayCount(2);
-    sensor_tray.standards_parameters.setTrayCount(1);
+    sensor_tray.standards_parameters.setTrayCount(2);
     unitlog.setServerAddress(configs.dataServerURL());
     setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);

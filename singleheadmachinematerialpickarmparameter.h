@@ -21,6 +21,15 @@ public:
     Q_PROPERTY(QString cylinderName READ cylinderName WRITE setCylinderName NOTIFY cylinderNameChanged)
     Q_PROPERTY(double pickLensZ READ pickLensZ WRITE setPickLensZ NOTIFY pickLensZChanged)
     Q_PROPERTY(double pickSensorZ READ pickSensorZ WRITE setPickSensorZ NOTIFY pickSensorZChanged)
+    Q_PROPERTY(double placeLensZ READ placeLensZ WRITE setPlaceLensZ NOTIFY placeLensZChanged)
+    Q_PROPERTY(double placeSensorZ READ placeSensorZ WRITE setPlaceSensorZ NOTIFY placeSensorZChanged)
+    Q_PROPERTY(double pickProductZ READ pickProductZ WRITE setPickProductZ NOTIFY pickProductZChanged)
+    Q_PROPERTY(double placeProductZ READ placeProductZ WRITE setPlaceProductZ NOTIFY placeProductZChanged)
+    Q_PROPERTY(double pickNgLensZ READ pickNgLensZ WRITE setPickNgLensZ NOTIFY pickNgLensZChanged)
+    Q_PROPERTY(double placeNgLensZ READ placeNgLensZ WRITE setPlaceNgLensZ NOTIFY placeNgLensZChanged)
+    Q_PROPERTY(double pickNgSensorZ READ pickNgSensorZ WRITE setPickNgSensorZ NOTIFY pickNgSensorZChanged)
+    Q_PROPERTY(double placeNgSensorZ READ placeNgSensorZ WRITE setPlaceNgSensorZ NOTIFY placeNgSensorZChanged)
+
 
 public:
     SingleHeadMachineMaterialPickArmParameter():PropertyBase(){}
@@ -97,6 +106,46 @@ public:
     double pickSensorZ() const
     {
         return m_pickSensorZ;
+    }
+
+    double placeLensZ() const
+    {
+        return m_placeLensZ;
+    }
+
+    double placeSensorZ() const
+    {
+        return m_placeSensorZ;
+    }
+
+    double pickProductZ() const
+    {
+        return m_pickProductZ;
+    }
+
+    double placeProductZ() const
+    {
+        return m_placeProductZ;
+    }
+
+    double pickNgLensZ() const
+    {
+        return m_pickNgLensZ;
+    }
+
+    double placeNgLensZ() const
+    {
+        return m_placeNgLensZ;
+    }
+
+    double pickNgSensorZ() const
+    {
+        return m_pickNgSensorZ;
+    }
+
+    double placeNgSensorZ() const
+    {
+        return m_placeNgSensorZ;
     }
 
 public slots:
@@ -237,6 +286,86 @@ public slots:
         emit pickSensorZChanged(m_pickSensorZ);
     }
 
+    void setPlaceLensZ(double placeLensZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeLensZ, placeLensZ))
+            return;
+
+        m_placeLensZ = placeLensZ;
+        emit placeLensZChanged(m_placeLensZ);
+    }
+
+    void setPlaceSensorZ(double placeSensorZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeSensorZ, placeSensorZ))
+            return;
+
+        m_placeSensorZ = placeSensorZ;
+        emit placeSensorZChanged(m_placeSensorZ);
+    }
+
+    void setPickProductZ(double pickProductZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickProductZ, pickProductZ))
+            return;
+
+        m_pickProductZ = pickProductZ;
+        emit pickProductZChanged(m_pickProductZ);
+    }
+
+    void setPlaceProductZ(double placeProductZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeProductZ, placeProductZ))
+            return;
+
+        m_placeProductZ = placeProductZ;
+        emit placeProductZChanged(m_placeProductZ);
+    }
+
+    void setPickNgLensZ(double pickNgLensZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickNgLensZ, pickNgLensZ))
+            return;
+
+        m_pickNgLensZ = pickNgLensZ;
+        emit pickNgLensZChanged(m_pickNgLensZ);
+    }
+
+    void setPlaceNgLensZ(double placeNgLensZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeNgLensZ, placeNgLensZ))
+            return;
+
+        m_placeNgLensZ = placeNgLensZ;
+        emit placeNgLensZChanged(m_placeNgLensZ);
+    }
+
+    void setPickNgSensorZ(double pickNgSensorZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickNgSensorZ, pickNgSensorZ))
+            return;
+
+        m_pickNgSensorZ = pickNgSensorZ;
+        emit pickNgSensorZChanged(m_pickNgSensorZ);
+    }
+
+    void setPlaceNgSensorZ(double placeNgSensorZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeNgSensorZ, placeNgSensorZ))
+            return;
+
+        m_placeNgSensorZ = placeNgSensorZ;
+        emit placeNgSensorZChanged(m_placeNgSensorZ);
+    }
+
 signals:
     void motorXNameChanged(QString motorXName);
 
@@ -268,6 +397,22 @@ signals:
 
     void pickSensorZChanged(double pickSensorZ);
 
+    void placeLensZChanged(double placeLensZ);
+
+    void placeSensorZChanged(double placeSensorZ);
+
+    void pickProductZChanged(double pickProductZ);
+
+    void placeProductZChanged(double placeProductZ);
+
+    void pickNgLensZChanged(double pickNgLensZ);
+
+    void placeNgLensZChanged(double placeNgLensZ);
+
+    void pickNgSensorZChanged(double pickNgSensorZ);
+
+    void placeNgSensorZChanged(double placeNgSensorZ);
+
 private:
     QString m_motorXName = "";
     QString m_motorYName = "";
@@ -284,6 +429,14 @@ private:
     QString m_motorVcmXName = "";
     double m_pickLensZ = 0;
     double m_pickSensorZ = 0;
+    double m_placeLensZ = 0;
+    double m_placeSensorZ = 0;
+    double m_pickProductZ = 0;
+    double m_placeProductZ = 0;
+    double m_pickNgLensZ = 0;
+    double m_placeNgLensZ = 0;
+    double m_pickNgSensorZ = 0;
+    double m_placeNgSensorZ = 0;
 };
 
 #endif // SINGLEHEADMACHINEMATERIALPICKARMPARAMETER_H

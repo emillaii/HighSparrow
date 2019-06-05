@@ -70,6 +70,15 @@ ItemDelegate {
                 }
             }
             GroupBox{
+                title:qsTr("lens盘")
+                SingleHeadLensTray{}
+            }
+            GroupBox{
+                title:qsTr("sensor盘")
+                SingleHeadSensorTray{}
+            }
+
+            GroupBox{
                 title:qsTr("SUT & LUT")
                 MaterialLoaderModulueUTView{}
             }

@@ -105,16 +105,16 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sh_sensor_suction_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.sensor_suction_offset);
 
     engine.rootContext()->setContextProperty("sh_sensor_tray",&highSprrow.baseModuleManager->sensor_tray);
-    engine.rootContext()->setContextProperty("sh_sensor_first_tray_end_position",&highSprrow.baseModuleManager->material_tray.first_tray_end_position);
-    engine.rootContext()->setContextProperty("sh_sensor_tray_start_point1",&highSprrow.baseModuleManager->material_tray.parameters[0]->tray_start_position);
+    engine.rootContext()->setContextProperty("sh_sensor_first_tray_end_position",&highSprrow.baseModuleManager->sensor_tray.first_tray_end_position);
+    engine.rootContext()->setContextProperty("sh_sensor_tray_start_point1",&highSprrow.baseModuleManager->sensor_tray.parameters[0]->tray_start_position);
     //engine.rootContext()->setContextProperty("tray_start_point2",&highSprrow.baseModuleManager->material_tray.parameters[1]->tray_start_position);
-    engine.rootContext()->setContextProperty("sh_sensor_tray_standard_parameter",&highSprrow.baseModuleManager->material_tray.standards_parameters);
+    engine.rootContext()->setContextProperty("sh_sensor_tray_standard_parameter",&highSprrow.baseModuleManager->sensor_tray.standards_parameters);
 
-    engine.rootContext()->setContextProperty("sh_lens_tray",&highSprrow.baseModuleManager->material_tray);
-    engine.rootContext()->setContextProperty("sh_lens_first_tray_end_position",&highSprrow.baseModuleManager->material_tray.first_tray_end_position);
-    engine.rootContext()->setContextProperty("sh_lens_tray_start_point1",&highSprrow.baseModuleManager->material_tray.parameters[0]->tray_start_position);
-    engine.rootContext()->setContextProperty("sh_lens_tray_start_point2",&highSprrow.baseModuleManager->material_tray.parameters[1]->tray_start_position);
-    engine.rootContext()->setContextProperty("sh_lens_tray_standard_parameter",&highSprrow.baseModuleManager->material_tray.standards_parameters);
+    engine.rootContext()->setContextProperty("sh_lens_tray",&highSprrow.baseModuleManager->lens_tray);
+    engine.rootContext()->setContextProperty("sh_lens_first_tray_end_position",&highSprrow.baseModuleManager->lens_tray.first_tray_end_position);
+    engine.rootContext()->setContextProperty("sh_lens_tray_start_point1",&highSprrow.baseModuleManager->lens_tray.parameters[0]->tray_start_position);
+    engine.rootContext()->setContextProperty("sh_lens_tray_start_point2",&highSprrow.baseModuleManager->lens_tray.parameters[1]->tray_start_position);
+    engine.rootContext()->setContextProperty("sh_lens_tray_standard_parameter",&highSprrow.baseModuleManager->lens_tray.standards_parameters);
 
     QString dirPath = app.applicationDirPath();
     dirPath += "/..";

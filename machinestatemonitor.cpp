@@ -15,10 +15,10 @@ MachineStateMonitor::MachineStateMonitor(BaseModuleManager* baseModuleManager, Q
 
     server = new SparrowQServer(20001);
     if (baseModuleManager->ServerMode() == 0) {
-        client = new SparrowClient(QUrl("ws://192.168.0.251:20001"));
+        client = new SparrowClient(QUrl("ws://192.168.8.251:20001"));
     }
     else {
-        //client = new SparrowClient(QUrl("ws://192.168.0.250:20001"));
+        //client = new SparrowClient(QUrl("ws://192.168.8.250:20001"));
         qInfo("connect to 20001");
         client = new SparrowClient(QUrl("ws://localhost:20001"), false);
     }

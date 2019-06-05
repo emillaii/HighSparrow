@@ -50,9 +50,8 @@ ColumnLayout {
                     onClicked: {
                         var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorVcmXName)
                         var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
-
-                        sut_pr_position1.setX(x);
-                        sut_pr_position1.setY(y);
+                        sh_sut_pr_position.setX(x);
+                        sh_sut_pr_position.setY(y);
                     }
                 }
             }
@@ -73,7 +72,7 @@ ColumnLayout {
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sh_lut_pr_position.setX()
+                        sh_lut_pr_position.setX(text)
                     }
                 }
                 Label{
@@ -87,7 +86,7 @@ ColumnLayout {
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sh_lut_pr_position.setY()
+                        sh_lut_pr_position.setY(text)
                     }
                 }
                 Button{
@@ -106,8 +105,8 @@ ColumnLayout {
                         var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorVcmXName)
                         var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
 
-                        sut_pr_position1.setX(x);
-                        sut_pr_position1.setY(y);
+                        sh_lut_pr_position.setX(x);
+                        sh_lut_pr_position.setY(y);
                     }
                 }
             }
@@ -130,7 +129,7 @@ ColumnLayout {
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sh_updownlook_down_position.setX(text)
+                        sh_updownlook_up_position.setX(text)
                     }
                 }
                 Label{
@@ -144,7 +143,7 @@ ColumnLayout {
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sh_updownlook_up_position.setY()
+                        sh_updownlook_up_position.setY(text)
                     }
                 }
                 Button{
@@ -163,8 +162,8 @@ ColumnLayout {
                         var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorVcmXName)
                         var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
 
-                        sut_pr_position1.setX(x);
-                        sut_pr_position1.setY(y);
+                        sh_updownlook_up_position.setX(x);
+                        sh_updownlook_up_position.setY(y);
                     }
                 }
             }

@@ -9,7 +9,7 @@
 #include <qjsonarray.h>
 #include <qjsondocument.h>
 
-wchar_t BaseModuleManager::ip[] =  L"192.168.0.251";
+wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
 wchar_t BaseModuleManager::profile_path1[] = L".\\config\\";
 wchar_t BaseModuleManager::profile_path2[] = L"..\\config\\xt_motion_config.csv";
 
@@ -48,7 +48,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         qInfo("This sparrow is in Master mode");
         this->lut_module.openServer(19998);
         lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
-        sut_clitent = new SutClient("ws://192.168.0.251:19999");
+        sut_clitent = new SutClient("ws://192.168.8.251:19999");
         connect(&lut_module,&LutModule::sendLoadLensRequst,&lens_loader_module,&LensLoaderModule::receiveLoadLensRequst,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendLoadLensFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendChangeTrayRequst,&tray_loader_module,&TrayLoaderModule::onTestTrayUsed,Qt::DirectConnection);
@@ -56,7 +56,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     } else {
         qInfo("This sparrow is in Slave mode");
         this->sensor_loader_module.openServer(19999);
-        lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
+        lutClient = new LutClient(&this->aa_head_module, "ws://192.168.8.250:19998");
         sut_clitent = new SutClient("ws://localhost:19999");
     }
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
@@ -181,7 +181,7 @@ bool BaseModuleManager::loadParameters()
         map.insert("updownlook_down_position",&single_station_material_loader_module.updownlook_down_position);
         map.insert("lens_suction_offset",&single_station_material_loader_module.lens_suction_offset);
         map.insert("sensor_suction_offset",&single_station_material_loader_module.sensor_suction_offset);
-        PropertyBase::saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),map);
+        PropertyBase::loadJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),map);
     }
     aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
      qInfo("start  loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));");

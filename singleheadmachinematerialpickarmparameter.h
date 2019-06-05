@@ -19,7 +19,8 @@ public:
     Q_PROPERTY(QString vacuumLUTName READ vacuumLUTName WRITE setVacuumLUTName NOTIFY vacuumLUTNameChanged)
     Q_PROPERTY(QString vacuumSUTName READ vacuumSUTName WRITE setVacuumSUTName NOTIFY vacuumSUTNameChanged)
     Q_PROPERTY(QString cylinderName READ cylinderName WRITE setCylinderName NOTIFY cylinderNameChanged)
-
+    Q_PROPERTY(double pickLensZ READ pickLensZ WRITE setPickLensZ NOTIFY pickLensZChanged)
+    Q_PROPERTY(double pickSensorZ READ pickSensorZ WRITE setPickSensorZ NOTIFY pickSensorZChanged)
 
 public:
     SingleHeadMachineMaterialPickArmParameter():PropertyBase(){}
@@ -86,6 +87,16 @@ public:
     QString motorVcmXName() const
     {
         return m_motorVcmXName;
+    }
+
+    double pickLensZ() const
+    {
+        return m_pickLensZ;
+    }
+
+    double pickSensorZ() const
+    {
+        return m_pickSensorZ;
     }
 
 public slots:
@@ -206,6 +217,26 @@ public slots:
         emit motorVcmXNameChanged(m_motorVcmXName);
     }
 
+    void setPickLensZ(double pickLensZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickLensZ, pickLensZ))
+            return;
+
+        m_pickLensZ = pickLensZ;
+        emit pickLensZChanged(m_pickLensZ);
+    }
+
+    void setPickSensorZ(double pickSensorZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickSensorZ, pickSensorZ))
+            return;
+
+        m_pickSensorZ = pickSensorZ;
+        emit pickSensorZChanged(m_pickSensorZ);
+    }
+
 signals:
     void motorXNameChanged(QString motorXName);
 
@@ -233,6 +264,10 @@ signals:
 
     void motorVcmXNameChanged(QString motorVcmXName);
 
+    void pickLensZChanged(double pickLensZ);
+
+    void pickSensorZChanged(double pickSensorZ);
+
 private:
     QString m_motorXName = "";
     QString m_motorYName = "";
@@ -247,6 +282,8 @@ private:
     QString m_vacuumSUTName = "";
     QString m_cylinderName = "";
     QString m_motorVcmXName = "";
+    double m_pickLensZ = 0;
+    double m_pickSensorZ = 0;
 };
 
 #endif // SINGLEHEADMACHINEMATERIALPICKARMPARAMETER_H

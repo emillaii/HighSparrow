@@ -10,6 +10,8 @@
 #define SYSTERM_PARAMETER            "systermParameter"
 #define MACHINE_PARAM_FILE           "xt_motion_config.csv"
 #define MATERIAL_TRAY_FILE           "materilTray.json"
+#define SH_SENSOR_TRAY_FILE          "sensorTray.json"
+#define SH_LENS_TRAY_FILE            "lensTray.json"
 #define AA_HEAD_FILE                 "aaHeadConfig.json"
 #define SUT_FILE                     "sutConfig.json"
 #define DOTHINGKEY_FILE              "dothinkeyConfig.json"

@@ -6,11 +6,14 @@ SingleHeadMachineMaterialLoaderModule::SingleHeadMachineMaterialLoaderModule(QSt
 
 }
 
-void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickArm *pick_arm)
+void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickArm *pick_arm,
+                                                 MaterialTray* _sensorTray,
+                                                 MaterialTray* _lensTray)
 {
     this->pick_arm = pick_arm;
     this->pick_arm->parent = this;
-
+    this->sensorTray = _sensorTray;
+    this->lensTray = _lensTray;
 }
 
 void SingleHeadMachineMaterialLoaderModule::loadJsonConfig(QString file_name)

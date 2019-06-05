@@ -77,6 +77,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonPickarmCamera) pylonPickarmCamera->start();
     }
     material_tray.standards_parameters.setTrayCount(2);
+    lens_tray.standards_parameters.setTrayCount(2);
+    sensor_tray.standards_parameters.setTrayCount(1);
     unitlog.setServerAddress(configs.dataServerURL());
     setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
@@ -124,6 +126,10 @@ bool BaseModuleManager::loadParameters()
     if(!this->paramers.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))return false;
 
     material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
+    if(ServerMode() ==2){
+        lens_tray.loadJsonConfig(getCurrentParameterDir().append(SH_LENS_TRAY_FILE));
+        sensor_tray.loadJsonConfig(getCurrentParameterDir().append(SH_SENSOR_TRAY_FILE));
+    }
     aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
     dothinkey->loadParams(getCurrentParameterDir().append(DOTHINGKEY_FILE));
@@ -200,6 +206,10 @@ bool BaseModuleManager::saveParameters()
     //pr文件拷贝
     this->paramers.saveJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER);
     material_tray.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
+    if(ServerMode() ==2){
+        lens_tray.saveJsonConfig(getCurrentParameterDir().append(SH_LENS_TRAY_FILE));
+        sensor_tray.saveJsonConfig(getCurrentParameterDir().append(SH_SENSOR_TRAY_FILE));
+    }
     aa_head_module.saveJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     sut_module.saveJsonConfig(getCurrentParameterDir().append(SUT_FILE));
     dothinkey->saveJsonConfig(getCurrentParameterDir().append(DOTHINGKEY_FILE));
@@ -994,7 +1004,11 @@ bool BaseModuleManager::InitStruct()
                                              GetVacuumByName(single_station_material_pickarm.parameters.vacuumLUTName()),
                                              GetVacuumByName(single_station_material_pickarm.parameters.vacuumSUTName()),
                                              GetCylinderByName(single_station_material_pickarm.parameters.cylinderName()));
-        single_station_material_loader_module.Init(&single_station_material_pickarm);
+        single_station_material_loader_module.Init(&single_station_material_pickarm,&sensor_tray,&lens_tray);
+        sensor_tray.resetTrayState(0);
+        sensor_tray.resetTrayState(1);
+        lens_tray.resetTrayState(0);
+        lens_tray.resetTrayState(1);
     }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
                             GetMotorByName(tray_loader_module.parameters.motorLTKX1Name()),

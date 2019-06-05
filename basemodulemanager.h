@@ -76,6 +76,8 @@ public:
     MaterialPicker sensor_picker2;
     SensorPickArm sensor_pickarm;
     MaterialTray material_tray;
+    MaterialTray sensor_tray;
+    MaterialTray lens_tray;
     AAHeadModule aa_head_module;
     LutModule lut_module;
     SutModule sut_module;

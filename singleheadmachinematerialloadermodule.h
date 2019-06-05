@@ -1,6 +1,7 @@
 #ifndef SINGLEHEADMACHINEMATERIALLOADERMODULE_H
 #define SINGLEHEADMACHINEMATERIALLOADERMODULE_H
 
+#include "materialtray.h"
 #include "singleheadmachinematerialloadermoduleparameter.h"
 #include "singleheadmachinematerialpickarm.h"
 #include "thread_worker_base.h"
@@ -12,7 +13,7 @@ class SingleHeadMachineMaterialLoaderModule:public ThreadWorkerBase
 {
 public:
     SingleHeadMachineMaterialLoaderModule(QString name = "SingleHeadMachineMaterialLoaderModule");
-    void Init(SingleHeadMachineMaterialPickArm* pick_arm);
+    void Init(SingleHeadMachineMaterialPickArm* pick_arm,MaterialTray*,MaterialTray*);
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     SingleHeadMachineMaterialLoaderModuleParameter parameters;
@@ -73,7 +74,8 @@ public slots:
     void performHandlingOperation(int cmd);
 private:
     SingleHeadMachineMaterialPickArm* pick_arm = Q_NULLPTR;
-
+    MaterialTray *sensorTray;
+    MaterialTray *lensTray;
     VisionLocation* sensor_vision = Q_NULLPTR;
     VisionLocation* sensor_vacancy_vision = Q_NULLPTR;
     VisionLocation* sut_vision = Q_NULLPTR;

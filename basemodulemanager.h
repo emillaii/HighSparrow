@@ -37,6 +37,7 @@
 #include "sensortrayloadermodule.h"
 #include "modulemanagerparameter.h"
 #include "singleheadmachinematerialloadermodule.h"
+#include "singlehead_lsut_module.h"
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
@@ -81,6 +82,7 @@ public:
     AAHeadModule aa_head_module;
     LutModule lut_module;
     SutModule sut_module;
+    SingleheadLSutModule sh_lsut_module;
     DispenseModule dispense_module;
     Dispenser dispenser;
     LensLoaderModule lens_loader_module;

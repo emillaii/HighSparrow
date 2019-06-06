@@ -90,6 +90,7 @@
 #define VISION_DISPENSE_PATH         "config//vision_dispense_path//resultImageWithPath.jpg"
 #define FLOWCHART_URL                "http://127.0.0.1:8000/flowchart.html"
 
+#define SH_LSUT_FILE                 "lsut_module.json"
 
 //Title naming
 #define MOTION_DIALOG_TITLE         u8"馬達"
@@ -114,6 +115,10 @@
 #define CAMERA_LPA_DL                    "LPA_DLCamera"
 #define CAMERA_LUT_DL                    "LUT_ULCamera"
 #define CAMERA_SPA_DL                    "SPA_DLCamera"
+
+#define CAMERA_SH_UT_UL                  "UT_ULCamera"
+#define CAMERA_SH_PA_DL                  "PA_DLCamera"
+#define CAMERA_SH_AA_DL                  "AA_DLCamera"
 
 #define LIGHTING_LUT_UL                 0
 #define LIGHTING_AA1_DL                 2

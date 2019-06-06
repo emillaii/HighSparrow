@@ -35,7 +35,9 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
             pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA2_DL);
             pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SPA_DL);
         }else{
-
+            pylonUplookCamera = new BaslerPylonCamera(CAMERA_SH_UT_UL);
+            pylonDownlookCamera = new BaslerPylonCamera(CAMERA_SH_AA_DL);
+            pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SH_PA_DL);
         }
     }
 
@@ -182,6 +184,9 @@ bool BaseModuleManager::loadParameters()
         map.insert("lens_suction_offset",&single_station_material_loader_module.lens_suction_offset);
         map.insert("sensor_suction_offset",&single_station_material_loader_module.sensor_suction_offset);
         PropertyBase::loadJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),map);
+        lut_carrier.parameters.loadJsonConfig(getCurrentParameterDir().append(LUT_CARRIER_FILE),LUT_CARRIER_PARAMETER);
+        sh_lsut_module.loadParams(getCurrentParameterDir().append(SH_LSUT_FILE));
+
     }
     aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
      qInfo("start  loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));");
@@ -263,6 +268,7 @@ bool BaseModuleManager::saveParameters()
         map.insert("lens_suction_offset",&single_station_material_loader_module.lens_suction_offset);
         map.insert("sensor_suction_offset",&single_station_material_loader_module.sensor_suction_offset);
         PropertyBase::saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),map);
+        sh_lsut_module.saveParams(getCurrentParameterDir().append(SH_LSUT_FILE));
     }
     aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
     saveMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
@@ -886,10 +892,17 @@ bool BaseModuleManager::InitStruct()
                             GetInputIoByName(temp_cylinder->parameters.zeroInName()),
                             GetOutputIoByName(temp_cylinder->parameters.zeroOutName()));
     }
-    sut_carrier.Init("sut_carrier",GetMotorByName(sut_module.parameters.motorXName()),
-                     GetMotorByName(sut_module.parameters.motorYName()),
-                     GetVcMotorByName(sut_module.parameters.motorZName()),
-                     GetVacuumByName(sut_module.parameters.vacuumName()));
+    if(ServerMode()==2){
+        sut_carrier.Init("sut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
+                         GetMotorByName(sh_lsut_module.parameters.motorYName()),
+                         GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
+                         GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()));
+    }else{
+        sut_carrier.Init("sut_carrier",GetMotorByName(sut_module.parameters.motorXName()),
+                         GetMotorByName(sut_module.parameters.motorYName()),
+                         GetVcMotorByName(sut_module.parameters.motorZName()),
+                         GetVacuumByName(sut_module.parameters.vacuumName()));
+    }
     aa_head_module.Init("AAHead",GetMotorByName(aa_head_module.parameters.motorXName()),
                         GetMotorByName(aa_head_module.parameters.motorYName()),
                         GetMotorByName(aa_head_module.parameters.motorZName()),
@@ -989,7 +1002,7 @@ bool BaseModuleManager::InitStruct()
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaCalibrationGlassLocationName()));
 
     }
-    else
+    else if(ServerMode()==1)
     {
         //single_station_material_pickarm.Init();
         single_station_material_pickarm.Init(GetMotorByName(single_station_material_pickarm.parameters.motorXName()),
@@ -1009,6 +1022,13 @@ bool BaseModuleManager::InitStruct()
         sensor_tray.resetTrayState(1);
         lens_tray.resetTrayState(0);
         lens_tray.resetTrayState(1);
+    }else
+    {
+        lut_carrier.Init("lut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
+                         GetMotorByName(sh_lsut_module.parameters.motorYName()),
+                         GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
+                         GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()));
+        sh_lsut_module.Init(&lut_carrier,&sut_carrier,GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
     }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
                             GetMotorByName(tray_loader_module.parameters.motorLTKX1Name()),

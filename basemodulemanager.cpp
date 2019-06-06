@@ -133,7 +133,9 @@ bool BaseModuleManager::loadParameters()
         sensor_tray.loadJsonConfig(getCurrentParameterDir().append(SH_SENSOR_TRAY_FILE));
     }
     aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
-    sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
+    if(ServerMode()!=2){
+        sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
+    }
     dothinkey->loadParams(getCurrentParameterDir().append(DOTHINGKEY_FILE));
     dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
     dispense_module.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
@@ -930,13 +932,15 @@ bool BaseModuleManager::InitStruct()
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
     }
-    sut_clitent->Init(GetVacuumByName(sut_module.parameters.vacuumName()));
-    sut_module.Init(&sut_carrier,sut_clitent,
-                    GetVisionLocationByName(sut_module.parameters.downlookLocationName()),
-                    GetVisionLocationByName(sut_module.parameters.updownlookDownLocationName()),
-                    GetVisionLocationByName(sut_module.parameters.updownlookUpLocationName()),
-                    GetVacuumByName(sut_module.parameters.vacuumName()),
-                    GetCylinderByName(sut_module.parameters.cylinderName()));
+    if(ServerMode()!=2){
+        sut_clitent->Init(GetVacuumByName(sut_module.parameters.vacuumName()));
+        sut_module.Init(&sut_carrier,sut_clitent,
+                        GetVisionLocationByName(sut_module.parameters.downlookLocationName()),
+                        GetVisionLocationByName(sut_module.parameters.updownlookDownLocationName()),
+                        GetVisionLocationByName(sut_module.parameters.updownlookUpLocationName()),
+                        GetVacuumByName(sut_module.parameters.vacuumName()),
+                        GetCylinderByName(sut_module.parameters.cylinderName()));
+    }
     QVector<XtMotor *> executive_motors;
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorXName()));
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorYName()));

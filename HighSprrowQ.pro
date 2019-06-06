@@ -81,7 +81,8 @@ SOURCES += \
     machinestatemonitor.cpp \
     machinestatemonitorcontroller.cpp \
     singleheadmachinematerialpickarm.cpp \
-    singleheadmachinematerialloadermodule.cpp
+    singleheadmachinematerialloadermodule.cpp \
+    singlehead_lsut_module.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -225,7 +226,9 @@ HEADERS += \
     singleheadmachinematerialpickarmparameter.h \
     singleheadmachinematerialloadermodule.h \
     singleheadmachinematerialloadermoduleparameter.h \
-    pickarmposition.h
+    pickarmposition.h \
+    singlehead_lsut_module.h \
+    singleheadlsutparameter.h
 
 DISTFILES += \
     icons/index.theme

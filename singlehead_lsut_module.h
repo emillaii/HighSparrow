@@ -39,6 +39,7 @@ public:
 
     SingleHeadLSutParameter parameters;
     void loadParams(QString file_name);
+    void saveParams(QString file_name);
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);

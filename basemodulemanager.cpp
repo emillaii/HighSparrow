@@ -947,10 +947,18 @@ bool BaseModuleManager::InitStruct()
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorZName()));
     dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,
                    GetOutputIoByName(dispenser.parameters.dispenseIo()));
-    dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",
-                         GetCalibrationByName(GetVisionLocationByName(sut_module.parameters.downlookLocationName())->parameters.calibrationName()),
-                         &dispenser,visionModule,&sut_carrier,
-                         GetOutputIoByName(dispenser.parameters.dispenseIo()));
+    if(ServerMode()==2){
+        dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",
+                             GetCalibrationByName(GetVisionLocationByName(sh_lsut_module.parameters.sutDownLookLocationName())->parameters.calibrationName()),
+                             &dispenser,visionModule,&sut_carrier,
+                             GetOutputIoByName(dispenser.parameters.dispenseIo()));
+    }else{
+        dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",
+                             GetCalibrationByName(GetVisionLocationByName(sut_module.parameters.downlookLocationName())->parameters.calibrationName()),
+                             &dispenser,visionModule,&sut_carrier,
+                             GetOutputIoByName(dispenser.parameters.dispenseIo()));
+    }
+
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
     if(ServerMode()==1)

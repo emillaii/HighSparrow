@@ -63,7 +63,7 @@ bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool ch
     {
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
         if(!result) return false;
-        if(abs(motor_x->GetFeedbackPos() - x) > 2)
+        if(abs(motor_x->GetFeedbackPos() - x) > 8)
             result = motor_y->MoveToPosSync(parameters.SafetyY());
         if(!result) return false;
     }

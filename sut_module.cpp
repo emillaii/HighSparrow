@@ -11,12 +11,19 @@ SutModule::SutModule()
 void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin)
 {
     this->carrier = carrier;
+    parts.append(carrier);
     this->sut_cilent = sut_cilent;
+//    parts.append(sut_cilent);
     this->vision_downlook_location = downlook_location;
+    parts.append(vision_downlook_location);
     this->vision_updownlook_down_location = updownlook_down_location;
+    parts.append(vision_updownlook_down_location);
     this->vision_updownlook_up_location = updownlook_up_locationn;
+    parts.append(vision_updownlook_up_location);
     this->vacuum = vacuum;
+    parts.append(vacuum);
     this->popgpin = popgpin;
+    parts.append(popgpin);
     setName(parameters.moduleName());
 }
 
@@ -34,6 +41,17 @@ void SutModule::saveJsonConfig(QString file_name)
 //    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
 //    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
     PropertyBase::saveJsonConfig(file_name, temp_map);
+}
+
+bool SutModule::checkSutSensorOrProduct(bool check_state)
+{
+    bool result = vacuum->checkHasMateriel();
+    if(result == check_state)
+        return true;
+    QString error = QString(u8"SUT上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
+    AppendError(error);
+    qInfo(error.toStdString().c_str());
+    return false;
 }
 
 void SutModule::resetLogic()
@@ -76,6 +94,18 @@ bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check
     return result;
 }
 
+bool SutModule::moveToDownlookPR(bool close_lighting, bool check_autochthonous)
+{
+    PrOffset offset;
+    if((moveToDownlookPR(offset,close_lighting,check_autochthonous)))
+    {
+        emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta);
+        return true;
+    }
+    AppendError(u8"执行downlook pr 失败");
+    return false;
+}
+
 bool SutModule::moveToLoadPos(bool check_autochthonous)
 {
     qInfo("moveToLoadPos");
@@ -86,6 +116,11 @@ bool SutModule::moveToDownlookPos(bool check_autochthonous)
 {
     qInfo("moveToDownlookPos");
     return carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),downlook_position.Z(),check_autochthonous);
+}
+
+bool SutModule::moveToReadyPos()
+{
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),0);
 }
 
 bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting,bool check_autochthonous)
@@ -248,8 +283,32 @@ void SutModule::run(bool has_material)
                 continue;
             }
             QThread::msleep(100);
-            if(! sut_cilent->sendSensorRequest(states.sutHasProduct(),states.sutHasNgSensor()))
+            if(states.sutHasProduct()||states.sutHasNgSensor())
             {
+                if(!checkSutSensorOrProduct(true))
+                {
+                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                    if(waitMessageReturn(is_run))
+                    {
+                        states.setSutHasProduct(false);
+                        states.setSutHasNgSensor(false);
+                        continue;
+                    }
+                    if(!is_run)break;
+                }
+            }
+            else
+            {
+                if(!checkSutSensorOrProduct(false))
+                {
+                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                    waitMessageReturn(is_run);
+                    if(!is_run)break;
+                }
+            }
+            if(! sut_cilent->sendSensorRequest(is_run,states.sutHasProduct(),states.sutHasNgSensor()))
+            {
+                AppendError(u8"等待sensor超时");
                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                waitMessageReturn(is_run);
                continue;
@@ -261,6 +320,17 @@ void SutModule::run(bool has_material)
         }
         if(states.sutHasSensor())
         {
+            if(!checkSutSensorOrProduct(true))
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    states.setSutHasSensor(false);
+                    continue;
+                }
+                if(!is_run)break;
+            }
+
             if(!popgpin->Set(true))
             {
                 sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
@@ -270,17 +340,22 @@ void SutModule::run(bool has_material)
             QThread::msleep(100);
             if((!moveToDownlookPR(offset))&&has_material)
             {
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    continue;
+                }
+                emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta);
+                states.setAllowLoadSensor(false);
             }
             else
             {
-                emit sendLoadSensorFinish(-offset.X,-offset.Y,offset.Theta);
+                emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta);
                 states.setAllowLoadSensor(false);
             }
         }
     }
+    qInfo("sut module end of thread");
 }
 
 void SutModule::startWork(int run_mode)
@@ -303,7 +378,9 @@ void SutModule::stopWork(bool wait_finish)
 
 void SutModule::performHandlingOperation(int cmd)
 {
-
+    if(cmd == 1)
+        if(!moveToDownlookPR(false,true))
+            sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
 }
 
 

@@ -1,7 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
-
+import SomeLib 1.1
 ColumnLayout {
     GroupBox{
         title:qsTr("料盘起点")
@@ -40,7 +40,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmMoveToTray1StartPos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1_START_POS)
@@ -55,7 +55,7 @@ ColumnLayout {
                         var x =0;
                         var x1 =0;
                         var y=0;
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
                             x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
@@ -214,7 +214,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
 
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmLensMeasureHeight()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_SENSOR_IN_TRAY)
@@ -229,7 +229,9 @@ ColumnLayout {
                         if(baseModuleManager.getServerMode()==0){
                             logicManager.performLocation(lens_loader_parameter.lensLocationName);
                         }else{
-                            logicManager.performLocation(sensorLoaderParameter.sensorLocationName);
+                            sensorLoaderModule.performHandling(SensorLoaderModule.TO_PR_OFFSET
+                                                               + SensorLoaderModule.SENSOR_PR
+                                                               + sensorLoaderModule.SENSOR_TRAY1)
                         }
                     }
                 }
@@ -243,7 +245,9 @@ ColumnLayout {
                         if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmLensPR()
                         }else{
-                            sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK1+SensorLoaderModule.SENSOR_PR)
+                            sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK_SENSOR_OFFSET
+                                                               + SensorLoaderModule.SENSOR_PR
+                                                               + sensorLoaderModule.SENSOR_TRAY1)
                         }
                     }
                 }
@@ -259,7 +263,7 @@ ColumnLayout {
                         }else{
                             //1121
                             sensorLoaderModule.performHandling(SensorLoaderModule.PICK_SENSOR_FROM_TRAY
-                                                               +SensorLoaderModule.TO_PICK1
+                                                               +SensorLoaderModule.TO_PICK_SENSOR_OFFSET
                                                                +SensorLoaderModule.SENSOR_PR
                                                                +SensorLoaderModule.SENSOR_TRAY1)
                         }

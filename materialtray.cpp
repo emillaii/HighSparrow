@@ -57,33 +57,46 @@ bool MaterialTray::findNextPositionOfInitState(int tray_index)
 {
     int max_index = standards_parameters.columnCount()*standards_parameters.rowCount() - 1;
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
+    int curren_index = current_tray->currentIndex();
     while (true)
     {
-        if(current_tray->tray_material_state[current_tray->currentIndex()]==current_tray->initState())
+        if(current_tray->tray_material_state[curren_index]==current_tray->initState())
         {
-            if(current_tray->currentIndex()==max_index)
+            if(curren_index == max_index)
                 current_tray->setNeedChange(true);
+            current_tray->setCurrentIndex(curren_index);
             return true;
         }
-        if(current_tray->currentIndex()>=max_index)
+        if(curren_index >= max_index)
         {
             current_tray->setNeedChange(true);
             return false;
         }
-        current_tray->setCurrentIndex(current_tray->currentIndex() + 1);
+        curren_index++;
     }
 }
 
 bool MaterialTray::findLastPositionOfState(int state, int tray_index)
 {
-    int min_index = 0;
+    int max_index = standards_parameters.columnCount()*standards_parameters.rowCount() - 1;
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
-    while (true) {
-        if(current_tray->tray_material_state[current_tray->currentIndex()] == state)
+    int curren_index = current_tray->currentIndex();
+    while (true)
+    {
+        if(current_tray->tray_material_state[curren_index]== state)
+        {
+            if(curren_index == max_index)
+                current_tray->setNeedChange(true);
+            current_tray->setCurrentIndex(curren_index);
+            qInfo("findLastPositionOfState find index %d tray %d",curren_index,tray_index);
             return true;
-        if(current_tray->currentIndex()>=min_index)
+        }
+        if(curren_index >= max_index)
+        {
+            current_tray->setNeedChange(true);
             return false;
-        current_tray->setCurrentIndex(current_tray->currentIndex() - 1);
+        }
+        curren_index++;
     }
 }
 
@@ -140,6 +153,11 @@ void MaterialTray::setTrayCurrent(const int column_index, const int row_index, c
     parameters[getTrayIndex(tray_index)]->setCurrentIndex(getMaterialIndex(getColumnIndex(column_index),getRowIndex(row_index)));
 }
 
+void MaterialTray::setTrayCurrent(const int index, const int tray_index)
+{
+    parameters[getTrayIndex(tray_index)]->setCurrentIndex(getMaterialIndex(index));
+}
+
 void MaterialTray::getTrayCurrent(int &column_index, int &row_index, const int tray_index)
 {
    int temp_index = parameters[getTrayIndex(tray_index)]->currentIndex();
@@ -154,6 +172,7 @@ void MaterialTray::resetTrayState(int tray_index)
         current_tray->tray_material_state[i] = current_tray->initState();
     }
     current_tray->setCurrentIndex(0);
+    current_tray->setNeedChange(false);
 }
 
 QPointF MaterialTray::getStartPosition(int tray_index)

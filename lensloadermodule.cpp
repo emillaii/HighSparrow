@@ -1,13 +1,11 @@
 ﻿#include "lensloadermodule.h"
-#include "opencv/cv.h"
-#include "commonutils.h"
+
 LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 {
 
 }
 
-void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,
-                            VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision, VisionLocation * lpa_calibration_glass_vision)
+void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision)
 {
     parts.clear();
     this->pick_arm = pick_arm;
@@ -34,8 +32,6 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     parts.append(this->lpa_updownlook_up_vision);
     this->lpa_updownlook_down_vision = lpa_updownlook_down_vision;
     parts.append(this->lpa_updownlook_down_vision);
-    this->lpa_calibration_glass_vision = lpa_calibration_glass_vision;
-    parts.append(this->lpa_calibration_glass_vision);
 }
 
 void LensLoaderModule::loadJsonConfig(QString file_name)
@@ -98,6 +94,7 @@ void LensLoaderModule::receiveChangeTrayFinish()
 void LensLoaderModule::run(bool has_material)
 {
     is_run = true;
+    finish_stop = false;
     int pr_times = 5;
     bool has_task = true;
     bool need_load_lens;
@@ -121,14 +118,86 @@ void LensLoaderModule::run(bool has_material)
             finish_change_tray = states.finishChangeTray();
         }
         if(!has_task)
-            QThread::msleep(1000);
+        {
+            QThread::msleep(100);
+            if(finish_stop)
+            {
+                is_run = false;
+                break;
+            }
+        }
+        //放NGLens
+        if(states.hasTray()&&(!states.allowChangeTray())&&states.hasPickedNgLens())
+        {
+            has_task = true;
+            vacancy_vision->OpenLight();
+            if(!moveToTrayEmptyPos(states.pickedLensID(),states.pickedTrayID()))
+            {
+                AppendError(" 请手动拿走LPA上的NG Lens后继续!");
+                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                waitMessageReturn(is_run);
+                //todo加物料检测
+                states.setHasPickedNgLens(false);
+                continue;
+            }
+            if((!performVacancyPR())&&has_material)
+            {
+                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                int result = waitMessageReturn(is_run);
+                if(!result)is_run = false;
+                if(!is_run)break;
+                if(result)
+                    continue;
+            }
+            vacancy_vision->CloseLight();
+            if(!moveToWorkPos(true))
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    states.setHasPickedNgLens(false);
+                    continue;
+                }
+                if(!is_run)break;
+            }
+            if((!placeLensToTray())&&has_material)
+            {
+                AppendError(u8" 如果NG Lens未放好请手动拿走！");
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    //todo检测料已拿走
+                }
+            }
+            tray->setCurrentMaterialState(MaterialState::IsNg,states.currentTray());
+            states.setHasPickedNgLens(false);
+            if(!is_run)break;
+        }
+        //检测是否需要换盘
+         if((!states.allowChangeTray())&&(!states.hasPickedLens())&&(!states.lutHasNgLens()))
+         {
+             if((!states.hasTray())||checkNeedChangeTray())
+                 states.setAllowChangeTray(true);
+         }
         //取料
         if((!finish_stop)&&states.hasTray()&&(!states.allowChangeTray())&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
         {
             has_task = true;
+            if(tray->isTrayNeedChange(states.currentTray()))
+            {
+                if(states.currentTray() == 0)
+                    states.setCurrentTray(1);
+                else
+                {
+                    AppendError(u8"逻辑错误，五可用lens");
+                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                    is_run = false;
+                    break;
+                }
+            }
+            lens_vision->OpenLight();
             if(!moveToNextTrayPos(states.currentTray()))
             {
-                AppendError("moveToTray Pos fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
@@ -146,23 +215,25 @@ void LensLoaderModule::run(bool has_material)
                 else
                 {
                     pr_times = 5;
-                    AppendError("performLensPR fial 5 times!");
+                    AppendError("执行lens视觉连续失败5次!");
                     sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                     waitMessageReturn(is_run);
-                    if(is_run)break;
+                    if(!is_run)break;
+                    continue;
                 }
             }
-            if(!moveToWorkPos())
+            lens_vision->CloseLight();
+            pr_times = 5;
+            if(!moveToWorkPos(false))
             {
-                AppendError("moveToWorkPos fail!");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
+                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                    continue;
+                if(!is_run)break;
             }
 
             if((!pickTrayLens())&&has_material)
             {
-                AppendError("pickTrayLens fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(!waitMessageReturn(is_run))
                     states.setHasPickedLens(true);
@@ -172,56 +243,12 @@ void LensLoaderModule::run(bool has_material)
             tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
             states.setPickedTrayID(states.currentTray());
             states.setPickedLensID(tray->getCurrentIndex(states.currentTray()));
+            qInfo("picked lens index %d, tray_index %d",states.pickedLensID(),states.pickedTrayID());
             if(!is_run)break;
         }
-        //放NGLens
-        if(states.hasTray()&&(!states.allowChangeTray())&&states.hasPickedNgLens())
-        {
-            has_task = true;
-            if(!moveToTrayEmptyPos(states.pickedLensID(),states.pickedTrayID()))
-            {
-                AppendError("去放NG Lens位置失败，请手动拿走LPA 上的NG Lens!");
-                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                waitMessageReturn(is_run);
-                //todo加物料检测
-                states.setHasPickedNgLens(false);
-                continue;
-            }
-            if((!performVacancyPR())&&has_material)
-            {
-                AppendError(u8"空盘视觉失败！");
-                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-                int result = waitMessageReturn(is_run);
-                if(!result)is_run = false;
-                if(!is_run)break;
-                if(result)
-                    continue;
-            }
-            if(!moveToWorkPos())
-            {
-                AppendError("moveToWorkPos fail!");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
-            }
-            if((!placeLensToTray())&&has_material)
-            {
-                AppendError("placeLensToTray fail!");
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
-                waitMessageReturn(is_run);
-            }
-            tray->setCurrentMaterialState(MaterialState::IsNg,states.currentTray());
-            states.setHasPickedNgLens(false);
-            if(!is_run)break;
-        }
-        //检测是否需要换盘
-        if((!states.allowChangeTray()))
-        {
-            if((!states.hasTray())||checkNeedChangeTray())
-                states.setAllowChangeTray(true);
-        }
+
         //等待位置
-        if(!moveToLUTPRPos1())
+        if(!movePickerToLUTPos1())
         {
             sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
             is_run = false;
@@ -230,6 +257,7 @@ void LensLoaderModule::run(bool has_material)
         //执行换盘
         if(states.allowChangeTray())
         {
+            has_task = true;
             if(waiting_change_tray)
             {
                 if(finish_change_tray)
@@ -239,6 +267,7 @@ void LensLoaderModule::run(bool has_material)
                         states.setFinishChangeTray(false);
                         states.setWaitingChangeTray(false);
                     }
+                    states.setHasTray(true);
                     tray->resetTrayState(0);
                     tray->resetTrayState(1);
                     states.setNeedChangTray(false);
@@ -247,9 +276,8 @@ void LensLoaderModule::run(bool has_material)
                 }
                 else
                 {
-                    if(!has_task)
-                        QThread::msleep(1000);
-                    qInfo("waitingChangeTray");
+                    QThread::msleep(1000);
+                    qInfo("waitingChangeTray %d",change_tray_time_out);
                     change_tray_time_out -=1000;
                     if(change_tray_time_out<=0)
                     {
@@ -278,23 +306,14 @@ void LensLoaderModule::run(bool has_material)
         if(need_load_lens&&states.hasPickedLens())
         {
             has_task = true;
-            if(!moveToLUTPRPos1())
+            if(!movePickerToLUTPos1())
             {
-                AppendError("moveToLUTPRPos1 fail!");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
-            }
-            if(!moveToWorkPos())
-            {
-                AppendError("moveToWorkPos fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
             }
             if((!placeLensToLUT())&&has_material)
             {
-                AppendError("placeLensToLUT fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
                     states.setHasPickedLens(false);
@@ -320,16 +339,15 @@ void LensLoaderModule::run(bool has_material)
         if(lut_has_ng_lens&&(!states.hasPickedLens())&&(!states.hasPickedNgLens()))
         {
             has_task = true;
+            lut_lens_vision->OpenLight();
             if(!moveToLUTPRPos2())
             {
-                AppendError("moveToLUTPRPos2 fail!");
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
                 break;
             }
-            if((!performLUTPR())&&has_material)
+            if((!performLUTLensPR())&&has_material)
             {
-                AppendError(u8"NG视觉失败！");
                 sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
                 int result = waitMessageReturn(is_run);
                 if(!result)is_run = false;
@@ -337,16 +355,16 @@ void LensLoaderModule::run(bool has_material)
                 if(result)
                     continue;
             }
-            if(!moveToWorkPos())
+            lut_lens_vision->CloseLight();
+            if(!moveToWorkPos(false))
             {
-                AppendError("moveToWorkPos fail!");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
+                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                    continue;
+                if(!is_run)break;
             }
             if((!pickLUTLens())&&has_material)
             {
-                AppendError("pickLUTLens fail!");
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
                     lut_has_ng_lens = false;
@@ -363,6 +381,7 @@ void LensLoaderModule::run(bool has_material)
                 states.setLutHasNgLens(lut_has_ng_lens);
                 states.setPickedTrayID(states.lutNgTrayID());
                 states.setPickedLensID(states.lutNgLensID());
+                qInfo("picked ng lens index %d, tray_id %d",states.pickedLensID(),states.pickedTrayID());
             }
         }
         //判断是否完成
@@ -370,39 +389,63 @@ void LensLoaderModule::run(bool has_material)
         {
             if(states.loadingLens())
             {
+                has_task = true;
                 QMutexLocker temp_locker(&lut_mutex);
                 emit sendLoadLensFinish(states.lutLensID(),states.lutTrayID());
+                qInfo("sendLoadLensFinish lutLensID %d lutTrayID %d",states.lutLensID(),states.lutTrayID());
                 states.setLoadingLens(false);
             }
         }
     }
-    qInfo("LensLoader stoped");
+    qInfo("Lens Loader module end of thread");
 }
 
 bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 {
     qInfo("moveToNextTrayPos:%d",tray_index);
+    bool result = false;
     if(tray->findNextPositionOfInitState(tray_index))
-    {
-//        return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX());
-        return  pick_arm->move_XtXYT_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),parameters.pickTheta());
-    }
-    return  false;
+        result = pick_arm->move_XtXYT_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),parameters.pickTheta());
+    if(!result)
+        AppendError(QString(u8"移动到%1号盘下一个位置失败").arg(tray_index));
+    qInfo(u8"移动到%d号盘下一个位置,返回值%d",tray_index,result);
+    return  result;
 }
 
 bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 {
-    double theta = pr_offset.Theta;
-    if (parameters.placeTheta() < 0) theta = -pr_offset.Theta;
-    pr_offset.Theta = 0; //Reset the last pr result
-    double target_t = pick_arm->picker->motor_t->GetFeedbackPos() + theta;
-    return  pick_arm->move_XYT_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),target_t,check_softlanding);
+    bool result =  pick_arm->move_XYT_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),parameters.placeTheta(),check_softlanding);
+    if(!result)
+        AppendError(QString(u8"移动相机到LUT放Lens位置失败"));
+    qInfo(u8"移动相机到LUT放Lens位置,返回值%d",result);
+    return result;
+}
+
+bool LensLoaderModule::movePickerToLUTPos1()
+{
+    bool result =  pick_arm->move_XYT_Synic(lut_pr_position1.X() + camera_to_picker_offset.X(),lut_pr_position1.Y() + camera_to_picker_offset.Y(),parameters.placeTheta());
+    if(!result)
+        AppendError(QString(u8"移动吸头到LUT放Lens位置失败"));
+    qInfo(u8"移动吸头到LUT放Lens位置,返回值%d",result);
+    return result;
 }
 
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
-    double theta = pick_arm->picker->motor_t->GetFeedbackPos() + parameters.placeTheta();
-    return pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),theta,check_softlanding);
+    bool result = pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),parameters.placeTheta(),check_softlanding);
+    if(!result)
+        AppendError(QString(u8"移动到相机LUT取NgLens位置失败"));
+    qInfo(u8"移动相机到LUT取NgLens位置,返回值%d",result);
+    return result;
+}
+
+bool LensLoaderModule::movePickerToLUTPos2()
+{
+    bool result = pick_arm->move_XYT_Synic(lut_pr_position2.X() + camera_to_picker_offset.X(),lut_pr_position2.Y()+ camera_to_picker_offset.Y(),parameters.placeTheta());
+    if(!result)
+        AppendError(QString(u8"移动吸头到LUT取NgLens位置失败"));
+    qInfo(u8"移动到吸头LUT取NgLens位置,返回值%d",result);
+    return result;
 }
 
 bool LensLoaderModule::checkNeedChangeTray()
@@ -414,85 +457,133 @@ bool LensLoaderModule::checkNeedChangeTray()
 
 bool LensLoaderModule::performLensPR()
 {
-    qInfo("performLensPR");
-    Sleep(500); //Position settling
-    return  lens_vision->performPR(pr_offset);
+    bool result = lens_vision->performPR(pr_offset);
+    if(!result)
+        AppendError(QString(u8"执行lens视觉失败"));
+    qInfo(u8"执行lens视觉,返回值%d",result);
+    return result;
 }
 
 bool LensLoaderModule::performVacancyPR()
 {
-    return  vacancy_vision->performPR(pr_offset);
+    bool result = vacancy_vision->performPR(pr_offset);
+    if(!result)
+        AppendError(QString(u8"执行lens料盘空位视觉失败"));
+    qInfo(u8"执行lens料盘空位视觉,返回值%d",result);
+    return result;
 }
 
 bool LensLoaderModule::performLUTPR()
 {
-    return lut_vision->performPR(pr_offset);
+    bool result = lut_vision->performPR(pr_offset);
+    if(!result)
+        AppendError(QString(u8"执行LUT空位视觉失败"));
+    qInfo(u8"执行LUT空位视觉,返回值%d",result);
+    return result;
+}
+
+bool LensLoaderModule::performLUTLensPR()
+{
+    bool result = lut_lens_vision->performPR(pr_offset);
+    if(!result)
+        AppendError(QString(u8"执行LUT上Lens视觉失败"));
+    qInfo(u8"执行LUT上Lens视觉,返回值%d",result);
+    return result;
 }
 
 bool LensLoaderModule::performPickerPR()
 {
-    return lpa_picker_vision->performPR(pr_offset);
+    bool result = lpa_picker_vision->performPR(pr_offset);
+    if(!result)
+        AppendError(QString(u8"执行吸头视觉失败"));
+    qInfo(u8"执行吸头视觉,返回值%d",result);
+    return result;
 }
 
 bool LensLoaderModule::performUpDownlookDownPR(PrOffset &offset)
 {
-    return lpa_updownlook_down_vision->performPR(offset, false);
+    bool result = lpa_updownlook_down_vision->performPR(offset, false);
+    if(!result)
+        AppendError(QString(u8"执行updn downlook视觉失败"));
+    qInfo(u8"执行updn downlook视觉,返回值%d",result);
+    return result;
 }
 
 bool LensLoaderModule::performUpdowlookUpPR(PrOffset &offset)
 {
-    return lpa_updownlook_up_vision->performPR(offset, false);
+    bool result = lpa_updownlook_up_vision->performPR(offset, false);
+    if(!result)
+        AppendError(QString(u8"执行updn uplook视觉失败"));
+    qInfo(u8"执行updn uplook视觉,返回值%d",result);
+    return result;
 }
 
-bool LensLoaderModule::performLpaCalibrationGlassPR(PrOffset &offset)
+bool LensLoaderModule::moveToWorkPos(bool check_state)
 {
-    return lpa_calibration_glass_vision->performPR(offset, true);
-}
-
-void LensLoaderModule::calculateCameraToPickerOffset()
-{
-    moveToTrayPos(0);
-    PrOffset pr_offset;
-    std::vector<cv::Point2d> points;
-    performLpaCalibrationGlassPR(pr_offset);
-    this->pick_arm->stepMove_XYT1_Synic(-pr_offset.X, -pr_offset.Y, -50);
-    for (int i = 0; i < 5; i++)
-    {
-        QThread::msleep(500);
-        performLpaCalibrationGlassPR(pr_offset);
-        qInfo("PR offset: %f %f", pr_offset.X, pr_offset.Y);
-        qInfo("Camera offset： %f %f", camera_to_picker_offset.X(), camera_to_picker_offset.Y());
-        points.push_back(cv::Point2d(pr_offset.X, pr_offset.Y));
-        this->pick_arm->stepMove_XYT1_Synic(camera_to_picker_offset.X(), camera_to_picker_offset.Y(), 0);
-        bool result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),true,true,30000);
-        QThread::msleep(500);
-        result &= pick_arm->ZSerchReturn(30000);
-        this->pick_arm->stepMove_XYT1_Synic(0, 0, 20);
-        result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),false,true,30000);
-        QThread::msleep(500);
-        result &= pick_arm->ZSerchReturn(30000);
-        this->pick_arm->stepMove_XYT1_Synic(-camera_to_picker_offset.X(), -camera_to_picker_offset.Y(), 0);
-    }
-    this->pick_arm->stepMove_XYT1_Synic(0,0, -100);
-    cv::Point2d center; double radius;
-    fitCircle(points, center, radius);
-    qInfo("Fit cicle: x: %f y: %f r:%f", center.x, center.y, radius);
-    this->camera_to_picker_offset.setX(camera_to_picker_offset.X() + center.x);
-    this->camera_to_picker_offset.setY(camera_to_picker_offset.Y() + center.y);
-}
-
-bool LensLoaderModule::moveToWorkPos(bool check_softlanding)
-{
-    //PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,pr_offset.Theta);
-    PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,0);
-    bool result = pick_arm->stepMove_XYTp_Synic(temp,check_softlanding);
+//    int error_value = 0,i = 1;
+    PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,-pr_offset.Theta);
+    bool result = pick_arm->stepMove_XYTp_Pos(temp,false);
+    bool check_result = checkPickedLensOrNg(check_state);
+//    if(!check_result)error_value += i<<1;
+    result &= pick_arm->waitStepMove_XYTp();
+    if(!result)
+        AppendError(QString(u8"移动吸头和视觉偏移失败"));
+    qInfo(u8"移动吸头和视觉偏移,返回值%d",result);
+    result &= check_result;
     return  result;
+}
+
+bool LensLoaderModule::moveToWorkPos()
+{
+    PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,-pr_offset.Theta);
+    bool result = pick_arm->stepMove_XYTp_Pos(temp,true);
+    result &= pick_arm->waitStepMove_XYTp();
+    if(!result)
+        AppendError(QString(u8"移动吸头和视觉偏移失败"));
+    qInfo(u8"移动吸头和视觉偏移,返回值%d",result);
+    return  result;
+}
+
+bool LensLoaderModule::checkPickedLensOrNg(bool check_state)
+{
+   bool result =pick_arm->picker->vacuum->checkHasMateriel();
+   if(result == check_state)
+       return true;
+   QString error = QString(u8"lens吸头上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
+   AppendError(error);
+   qInfo(error.toStdString().c_str());
+   return false;
+}
+
+bool LensLoaderModule::checkLutLens(bool check_state)
+{
+    bool result = load_vacuum->checkHasMateriel();
+    if(result == check_state)
+        return true;
+    QString error = QString(u8"LUT放Lens位置上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
+    AppendError(error);
+    qInfo(error.toStdString().c_str());
+    return false;
+}
+
+bool LensLoaderModule::checkLutNgLens(bool check_state)
+{
+    bool result = unload_vacuum->checkHasMateriel();
+    if(result == check_state)
+        return true;
+    QString error = QString(u8"LUT放NgLens位置逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
+    AppendError(error);
+    qInfo(error.toStdString().c_str());
+    return false;
 }
 
 bool LensLoaderModule::moveToPrOffset(bool check_softlanding)
 {
     PrOffset temp(- pr_offset.X, - pr_offset.Y,pr_offset.Theta);
     bool result = pick_arm->stepMove_XYTp_Synic(temp,check_softlanding);
+    if(!result)
+        AppendError(QString(u8"移动视觉偏移失败"));
+    qInfo(u8"移动视觉偏移,返回值%d",result);
     return  result;
 }
 
@@ -501,40 +592,63 @@ bool LensLoaderModule::vcmSearchZ(double z,bool is_open)
     return pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open);
 }
 
+bool LensLoaderModule::vcmSearchLUTZ(double z, bool is_open)
+{
+    return pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false);
+}
+
+bool LensLoaderModule::vcmSearchReturn()
+{
+    return pick_arm->picker->motor_z->resetSoftLanding();
+}
+
 bool LensLoaderModule::pickTrayLens()
 {
     qInfo("pickTrayLens");
-//    bool result = pick_arm->Move_SZ_Sync(parameters.pickLensZ());
-//    result = pick_arm->pickarmVaccum(true);
-//    Sleep(250);
-//    pick_arm->Move_SZ_Sync(parameters.placeLensZ())
     bool result = vcmSearchZ(parameters.pickLensZ(),true);
+    if(!result)
+        AppendError(QString(u8"从lens料盘当前位置取lens失败"));
+    qInfo(u8"从lens料盘当前位置取lens,返回值%d",result);
+    if(result)
+        result &= checkPickedLensOrNg(true);
     return result;
 }
 
 bool LensLoaderModule::placeLensToLUT()
 {
-    qInfo("placeLensToLUT");
-    this->lut_carrier->vacuum->Set(true);
-    bool result = vcmSearchZ(parameters.placeLensZ(), false);
+    bool result = vcmSearchLUTZ(parameters.placeLensZ(), false);
+    result &= load_vacuum->Set(true);
+    result &= vcmSearchReturn();
+    if(!result)
+        AppendError(QString(u8"从当前位置放lens到LUT失败"));
+    qInfo(u8"从当前位置放lens到LUT,返回值%d",result);
     return result;
 }
 
 bool LensLoaderModule::pickLUTLens()
 {
-    qInfo("pickLUTLens");
-    return vcmSearchZ(parameters.placeLensZ(),true);
+    bool result = vcmSearchLUTZ(parameters.placeLensZ(), true);
+    result &= unload_vacuum->Set(false);
+    result &= vcmSearchReturn();
+    if(!result)
+        AppendError(QString(u8"从LUT当前位置取NgLens失败"));
+    qInfo(u8"从LUT当前位置取NgLens,返回值%d",result);
+    if(result)
+        result &= checkPickedLensOrNg(true);
+    return result;
 }
 
 bool LensLoaderModule::placeLensToTray()
 {
-    qInfo("placeLensToTray");
-    return vcmSearchZ(parameters.pickLensZ(),false);
+    bool result =  vcmSearchZ(parameters.pickLensZ(),false);
+    if(!result)
+        AppendError(QString(u8"从当前位置放NgLens到Lens料盘失败"));
+    qInfo(u8"从当前位置放NgLens到Lens料盘,返回值%d",result);
+    return result;
 }
 
 bool LensLoaderModule::measureHight(bool is_tray)
 {
-    qInfo("measureHight speed: %f force: %f", parameters.vcmWorkSpeed(), parameters.vcmWorkForce());
     if(pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
     {
         QThread::msleep(100);
@@ -547,56 +661,86 @@ bool LensLoaderModule::measureHight(bool is_tray)
             parameters.setPlaceLensZ(pick_arm->GetSoftladngPosition());
         return true;
     }
+    AppendError(QString(u8"%1测高失败,测量速度:%2,测量力:%3").arg(is_tray?"Lens料盘":"LUT台").arg(parameters.vcmWorkSpeed()).arg(parameters.vcmWorkForce()));
+    qInfo("测高失败 料盘测高:%d 测量速度: %f 测量力: %f",is_tray, parameters.vcmWorkSpeed(), parameters.vcmWorkForce());
     return false;
 }
 
 bool LensLoaderModule::moveToTrayEmptyPos(int index, int tray_index)
 {
+    qInfo("moveToTrayEmptyPos index %d tray_index %d",index,tray_index);
+    if(index < 0 ||tray_index < 0)
+    {
+        return false;
+    }
+    bool result = false;
     if(index >= 0 && tray_index >= 0 && tray->getMaterialState(index,tray_index) == MaterialState::IsEmpty)
-        return moveToTrayPos(index,tray_index);
-    if(tray->findLastPositionOfState(MaterialState::IsEmpty,tray_index))
-        return moveToTrayPos(tray_index);
-    if(tray_index == 0&&tray->findLastPositionOfState(MaterialState::IsEmpty,1))
-        return moveToTrayPos(1);
-    return false;
+    {
+        tray->setTrayCurrent(index,tray_index);
+        result = moveToTrayPos(tray_index);
+    }
+    else if(tray->findLastPositionOfState(MaterialState::IsEmpty,tray_index))
+        result = moveToTrayPos(tray_index);
+    else if(tray->findLastPositionOfState(MaterialState::IsEmpty,tray_index == 0?1:0))
+        result = moveToTrayPos(tray_index == 0?1:0);
+    if(!result)
+        AppendError(QString(u8"移动到lens料盘空位失败,起始位置:%1,lens料盘:%2").arg(index).arg(tray_index));
+    qInfo(u8"移动到lens料盘空位,起始位置:%d,lens料盘:%d,返回值:%d",index,tray_index,result);
+    return result;
 }
 
 bool LensLoaderModule::moveToTrayPos(int index, int tray_index)
 {
-    qInfo("moveToTrayPos");
-//    return pick_arm->move_XtXY_Synic(tray->getPositionByIndex(index,tray_index),parameters.visonPositionX());
-    return pick_arm->move_XtXYT_Synic(tray->getPositionByIndex(index,tray_index),parameters.visonPositionX(),parameters.pickTheta());
+    bool result = pick_arm->move_XtXYT_Synic(tray->getPositionByIndex(index,tray_index),parameters.visonPositionX(),parameters.pickTheta());
+    if(!result)
+        AppendError(QString(u8"移动到Lens料盘位置失败,位置%1,盘%2").arg(index).arg(tray_index));
+    qInfo(u8"移动到lens料盘位置,位置%d,料盘%d,返回值:%d",index,tray_index,result);
+    return result;
 }
 
 bool LensLoaderModule::moveToTrayPos(int tray_index)
 {
-    qInfo("moveToTrayPos %d",tray_index);
-//    return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),false);
-    return  pick_arm->move_XtXYT_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),parameters.pickTheta(),false);
+    bool result = pick_arm->move_XtXYT_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),parameters.pickTheta(),false);
+    if(!result)
+        AppendError(QString(u8"移动到Lens料盘当前位置失败,盘%2").arg(tray_index));
+    qInfo(u8"移动到lens料盘当前位置,料盘:%d,返回值:%d",tray_index,result);
+    return result;
 }
 
 bool LensLoaderModule::moveToStartPos(int tray_index)
 {
-    qInfo("moveToStartPos%d",tray_index);
-    return pick_arm->move_XtXY_Synic(tray->getStartPosition(tray_index),parameters.visonPositionX(),true);
+    bool result = pick_arm->move_XtXY_Synic(tray->getStartPosition(tray_index),parameters.visonPositionX(),true);
+    if(!result)
+        AppendError(QString(u8"移动到Lens料盘起点位置失败,盘%2").arg(tray_index));
+    qInfo(u8"移动到lens料盘起点位置,料盘:%d,返回值:%d",tray_index,result);
+    return result;
 }
 
 bool LensLoaderModule::moveToTray1EndPos()
 {
-    qInfo("moveToTray1EndPos");
-    return pick_arm->move_XtXY_Synic(tray->getEndPosition(),parameters.visonPositionX(),true);
+    bool result = pick_arm->move_XtXY_Synic(tray->getEndPosition(),parameters.visonPositionX(),true);
+    if(!result)
+        AppendError(QString(u8"移动到1号Lens料盘终点位置失败"));
+    qInfo(u8"移动到1号lens料盘终点位置,返回值:%d",result);
+    return result;
 }
 
 bool LensLoaderModule::moveToUpdownlookDownPos()
 {
-    qInfo("moveToUpdownlookDownPos");
-    return pick_arm->move_XY_Synic(lut_camera_position.X(),lut_camera_position.Y(),true);
+    bool result = pick_arm->move_XY_Synic(lut_camera_position.X(),lut_camera_position.Y(),true);
+    if(!result)
+        AppendError(QString(u8"移动到UpDn Downlook位置失败"));
+    qInfo(u8"移动到UpDn Downlook位置,返回值:%d",result);
+    return result;
 }
 
 bool LensLoaderModule::moveToUpdownlookUpPos()
 {
-    qInfo("moveToUpdownlookUpPos");
-    return pick_arm->move_XY_Synic(lut_picker_position.X(),lut_picker_position.Y(),true);
+    bool result = pick_arm->move_XY_Synic(lut_picker_position.X(),lut_picker_position.Y(),true);
+    if(!result)
+        AppendError(QString(u8"移动到UpDn Uplook位置失败"));
+    qInfo(u8"移动到UpDn Uplook位置,返回值:%d",result);
+    return result;
 }
 
 bool LensLoaderModule::isRunning()
@@ -623,11 +767,13 @@ void LensLoaderModule::stopWork(bool wait_finish)
 void LensLoaderModule::resetLogic()
 {
     if(is_run)return;
-    states.setHasTray(true);
+    qInfo("LensLoaderModule reset logic");
+    states.setHasTray(false);//lens tray ready
+
     states.setLutHasLens(false);
     states.setLutHasNgLens(false);
     states.setNeedLoadLens(false);
-    states.setCurrentTray(false);
+    states.setCurrentTray(0);
     states.setNeedChangTray(false);
     states.setAllowChangeTray(false);
     states.setHasPickedLens(false);
@@ -647,151 +793,98 @@ void LensLoaderModule::performHandlingOperation(int cmd)
 {
     qInfo("performHandling %d",cmd);
     bool result;
-//    int curren
-    if(cmd%10 == HandlePosition::LUT_POS1){
-        qInfo(u8"移动LPA到LUT上放Lens位置");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    int temp_value = 10;
+    if(cmd%temp_value == HandlePosition::LUT_POS1)
             result = moveToLUTPRPos1(true);
-//        }
-    }
-    else if(cmd%10 == HandlePosition::LUT_POS2){
-        qInfo(u8"移动LPA到LUT上取NG Lens位置");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    else if(cmd%temp_value == HandlePosition::LUT_POS2)
             result = moveToLUTPRPos2(true);
-//        }
-    }
-    else if(cmd%10 == HandlePosition::LENS_TRAY1){
-        qInfo(u8"移动LPA到1号Lens料盘当前lens位置");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    else if(cmd%temp_value == HandlePosition::LENS_TRAY1)
             result = moveToTrayPos(0);
-//        }
-    }
-    else if(cmd%10 == HandlePosition::LENS_TRAY2){
-        qInfo(u8"移动LPA到2号Lens料盘当前lens位置");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    else if(cmd%temp_value == HandlePosition::LENS_TRAY2)
             result = moveToTrayPos(1);
-//        }
-    }
-    else if(cmd%10 == HandlePosition::LENS_TRAY1_START_POS){
-        qInfo(u8"移动LPA到1号Lens料盘起始位置");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    else if(cmd%temp_value == HandlePosition::LENS_TRAY1_START_POS)
             result = moveToStartPos(0);
-//        }
-    }
-    else if(cmd%10 == HandlePosition::LENS_TRAY2_START_POS){
-        qInfo(u8"移动LPA到2号Lens料盘起始位置");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    else if(cmd%temp_value == HandlePosition::LENS_TRAY2_START_POS)
             result = moveToStartPos(1);
-//        }
-    }
-    else if(cmd%10 == HandlePosition::LENS_TRAY1_END_POS){
-        qInfo(u8"移动LPA到1号Lens料盘终点位置");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    else if(cmd%temp_value == HandlePosition::LENS_TRAY1_END_POS)
             result = moveToTray1EndPos();
-//        }
-    }
-    else if(cmd%10 == HandlePosition::UPDOWNLOOK_DOWN_POS){
-        qInfo(u8"移动LPA到updownlook位置");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    else if(cmd%temp_value == HandlePosition::UPDOWNLOOK_DOWN_POS)
             result = moveToUpdownlookDownPos();
-//        }
-    }
-    else if(cmd%10 == HandlePosition::UPDOWNLOOK_UP_POS){
-        qInfo(u8"移动LPA到吸头视觉位置");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
+    else if(cmd%temp_value == HandlePosition::UPDOWNLOOK_UP_POS)
             result = moveToUpdownlookUpPos();
-//        }
-    }
     else
         result = true;
-    cmd =cmd/10*10;
+    cmd =cmd/temp_value*temp_value;
+    temp_value = 100;
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
         return;
     }
-    if(cmd%100 == HandlePR::RESET_PR){
-        qInfo(u8"PR偏差置零");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+    if(cmd%temp_value == HandlePR::RESET_PR)
             pr_offset.ReSet();
-//        }
-    }
-    else if(cmd%100 == HandlePR::LENS_PR){
-        qInfo(u8"执行Lens视觉");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+    else if(cmd%temp_value == HandlePR::LENS_PR)
             result = performLensPR();
-//        }
-    }
-    else if(cmd%100 == HandlePR::VACANCY_PR){
-        qInfo(u8"执行料盘空位视觉");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+    else if(cmd%temp_value == HandlePR::VACANCY_PR)
             result = performVacancyPR();
-//        }
-    }
-    else if(cmd%100 == HandlePR::LUT_PR){
-        qInfo(u8"执行LUT定位视觉");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+    else if(cmd%temp_value == HandlePR::LUT_PR)
             result = performLUTPR();
-//        }
-    }
-    else if(cmd%100 == HandlePR::PICKER_PR){
-        qInfo(u8"执行吸头视觉");
-//        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作？"))){
+    else if(cmd%temp_value == HandlePR::LUT_LENS_PR)
+            result = performLUTLensPR();
+    else if(cmd%temp_value == HandlePR::PICKER_PR)
             result = performPickerPR();
-//        }
-    }
     else
         result = true;
     if(!result)
     {
-//        finished_type = FinishedType::Alarm;
+        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
         return;
     }
-    cmd =cmd/100*100;
-    if(cmd%1000 == HandleToWorkPos::ToWork){
+    cmd =cmd/temp_value*temp_value;
+    temp_value = 1000;
+    if(cmd%temp_value == HandleToWorkPos::ToWork)
+        result = moveToWorkPos();
+    else if(cmd%temp_value == HandleToWorkPos::ToPrOffset){
         if(emit sendMsgSignal(tr(u8""),tr(u8"是否移动？"))){
-            result = moveToWorkPos();
+            result = moveToPrOffset(true);
         }
     }
-    else if(cmd%1000)
     if(!result)
     {
-//        finished_type = FinishedType::Alarm;
-        qInfo("Move To Work Pos fail");
+        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
         return;
     }
-    cmd =cmd/1000*1000;
-    qInfo("cmd : %d", cmd);
-    if(cmd%10000 == handlePickerAction::PICK_LENS_FROM_TRAY){
+    cmd =cmd/temp_value*temp_value;
+    temp_value = 10000;
+    if(cmd%temp_value == HandlePickerAction::PICK_LENS_FROM_TRAY){
         if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
             result = pickTrayLens();
         }
     }
-    else if(cmd%10000 == handlePickerAction::PLACE_LENS_TO_LUT){
+    else if(cmd%temp_value == HandlePickerAction::PLACE_LENS_TO_LUT){
         if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
             result = placeLensToLUT();
         }
     }
-    else if(cmd%10000 == handlePickerAction::PICK_NG_LENS_FROM_LUT){
+    else if(cmd%temp_value == HandlePickerAction::PICK_NG_LENS_FROM_LUT){
         if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
             result = pickLUTLens();
         }
     }
-    else if(cmd%10000 == handlePickerAction::PLACE_NG_LENS_TO_TRAY){
+    else if(cmd%temp_value == HandlePickerAction::PLACE_NG_LENS_TO_TRAY){
         if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
             result = placeLensToTray();
         }
     }
-    else if(cmd%10000 == handlePickerAction::MeasureLensInLUT)
+    else if(cmd%temp_value == HandlePickerAction::MeasureLensInLUT)
         result = measureHight(false);
-    else if(cmd%10000 == handlePickerAction::MeasureLensInTray)
+    else if(cmd%temp_value == HandlePickerAction::MeasureLensInTray)
         result = measureHight(true);
     else
         result = true;
     if(!result)
     {
-//        finished_type = FinishedType::Alarm;
+        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
         return;
     }
-//    finished_type = FinishedType::Success;
 }

@@ -223,52 +223,25 @@ ColumnLayout {
                 Button{
                     text:title_read_encoder
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
-                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
+                        var x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)-baseModuleManager.getPROffsetX(lensPickArmModuleParameter.lpaUpdownlookDownLocationName)
+                        var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)-baseModuleManager.getPROffsetY(lensPickArmModuleParameter.lpaUpdownlookDownLocationName)
                         lut_camera_position.setX(x)
                         lut_camera_position.setY(y)
+
                     }
                 }
             }
         }
     }
     GroupBox{
-        title:"Camera Tip Offset"
+        title:"Updownlook Lens Calibration"
         ColumnLayout{
             RowLayout{
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
-                    text: qsTr("校正")
+                    text: qsTr("Start Calibratio")
                     onClicked: {
                         logicManager.performLensUpDnLookCalibration()
-                    }
-                }
-                Label {
-                    text: qsTr("Offset X: ")
-                }
-                TextField{
-                    text: lpa_camera_tip_offset.X
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator{
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                    onEditingFinished: {
-                        lpa_camera_tip_offset.setX(text)
-                    }
-                }
-                Label {
-                    text: qsTr("Offset X: ")
-                }
-                TextField{
-                    text: lpa_camera_tip_offset.Y
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator{
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                    onEditingFinished: {
-                        lpa_camera_tip_offset.setY(text)
                     }
                 }
             }
@@ -322,16 +295,6 @@ ColumnLayout {
                         var y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
                         lut_picker_position.setX(x)
                         lut_picker_position.setY(y)
-                    }
-                }
-                Button{
-                    text: qsTr("Testing")
-                    onClicked: {
-                        var x = lut_picker_position.X - lpa_camera_tip_offset.X - lut_camera_position.X
-                        var y = lut_picker_position.Y - lpa_camera_tip_offset.Y - lut_camera_position.Y
-                         console.log("x: " + x + " y:" + y)
-                         lutModule.aa2PrToBond()
-
                     }
                 }
             }

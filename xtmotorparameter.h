@@ -10,6 +10,7 @@ public:
     XtMotorParameter():PropertyBase(){}
     Q_PROPERTY(int arrivedDelay READ arrivedDelay WRITE setarrivedDelay NOTIFY arrivedDelayChanged)
     Q_PROPERTY(bool useDelay READ useDelay WRITE setUseDelay NOTIFY useDelayChanged)
+    Q_PROPERTY(double positionError READ positionError WRITE setPositionError NOTIFY positionErrorChanged)
     int arrivedDelay() const
     {
         return m_arrivedDelay;
@@ -17,6 +18,11 @@ public:
     bool useDelay() const
     {
         return m_useDelay;
+    }
+
+    double positionError() const
+    {
+        return m_positionError;
     }
 
 public slots:
@@ -37,13 +43,26 @@ public slots:
         emit useDelayChanged(m_useDelay);
     }
 
+    void setPositionError(double positionError)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_positionError, positionError))
+            return;
+
+        m_positionError = positionError;
+        emit positionErrorChanged(m_positionError);
+    }
+
 signals:
     void arrivedDelayChanged(int arrivedDelay);
     void useDelayChanged(bool useDelay);
 
+    void positionErrorChanged(double positionError);
+
 private:
     int m_arrivedDelay = 100;
     bool m_useDelay = true;
+    double m_positionError = 0.01;
 };
 class XtMotorState:public PropertyBase
 {

@@ -1,11 +1,12 @@
 #ifndef XTGENERALINPUT_H
 #define XTGENERALINPUT_H
+#include "errorcode.h"
 #include <windows.h>
 #include <QObject>
 #include <QTime>
 #include <QString>
 
-class XtGeneralInput
+class XtGeneralInput:public ErrorBase
 {
 public:
     XtGeneralInput();
@@ -16,6 +17,7 @@ public:
     void Init(int id_in_profile);
     int ID();
     bool Value();
+    bool checkState(bool check_state);
     bool Wait(bool value,int timeout);
     QString Name();
 private:

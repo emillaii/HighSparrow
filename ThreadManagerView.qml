@@ -30,7 +30,7 @@ ItemDelegate {
                 Button{
                     text: qsTr("生成参数")
                     onClicked: {
-                        baseModuleManager.generatefileConfigs()
+                        baseModuleManager.generateConfigFiles()
                     }
                 }
                 Button{
@@ -83,8 +83,8 @@ ItemDelegate {
                     Button {
                         text: "开始"
                         onClicked: {
-                            workersManager.startWorker("SutModule",0)
-                            workersManager.startWorker("SensorLoader",0)
+                            workersManager.startWorker(sutParams.moduleName,systerm_param.runMode)
+                            workersManager.startWorker("SensorLoader",systerm_param.runMode)
                         }
                     }
                     Button {
@@ -153,7 +153,7 @@ ItemDelegate {
                 title: qsTr("SensorTryLoader")
                 RowLayout{
                     Button {
-                        text: "Load"
+                        text: "加载"
                         onClicked: {
                             baseModuleManager.loadSensorTrayLoaderMuduleParameter()
                         }
@@ -161,7 +161,7 @@ ItemDelegate {
                     Button {
                         text: "开始"
                         onClicked: {
-                            workersManager.startWorker("SensorTrayLoaderModule",0)
+                            workersManager.startWorker("SensorTrayLoaderModule",systerm_param.runMode)
                         }
                     }
                     Button {
@@ -184,6 +184,12 @@ ItemDelegate {
                 }
                 title:qsTr("TrayLoader")
                 RowLayout{
+                    Button{
+                        text: qsTr("加载")
+                        onClicked: {
+                            baseModuleManager.loadLensTrayLoaderParameter()
+                        }
+                    }
                     Button{
                         enabled: true
                         id:start_btn

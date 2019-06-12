@@ -36,7 +36,6 @@
 #include "sensorclip.h"
 #include "sensortrayloadermodule.h"
 #include "modulemanagerparameter.h"
-#include "singleheadmachinematerialloadermodule.h"
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
@@ -86,10 +85,6 @@ public:
     SfrWorkerController * sfrWorkerController;
     AACoreNew aaCoreNew;
     TrayLoaderModule tray_loader_module;
-
-    SingleHeadMachineMaterialLoaderModule single_station_material_loader_module;
-    SingleHeadMachineMaterialPickArm single_station_material_pickarm;
-
 
     TrayClip trayClipIn;
     TrayClip trayClipOut;
@@ -212,6 +207,7 @@ public:
     Q_INVOKABLE bool loadParameters();
     Q_INVOKABLE bool loadconfig();
     Q_INVOKABLE bool saveParameters();
+    Q_INVOKABLE bool loadDispenseParam();
     bool loadVcmFile(QString file_name);
     bool saveVcmfile(QString file_name);
     bool loadMotorFile(QString file_name);
@@ -263,13 +259,13 @@ public:
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();
     Q_INVOKABLE void loadSensorLoaderParameter();
+    Q_INVOKABLE void loadLensTrayLoaderParameter();
     Q_INVOKABLE double showChartCalibrationRotation();
     void EnableMotors();
     void DisableAllMotors();
     Q_INVOKABLE bool allMotorsSeekOrigin();
     bool allMotorsSeekOriginal1();
     bool allMotorsSeekOriginal2();
-    bool allMotorsSeekOriginal3();
     void stopSeeking();
 
     Q_INVOKABLE int getNumberOfMotors();

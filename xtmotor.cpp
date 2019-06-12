@@ -368,15 +368,15 @@ bool XtMotor::MoveToPos(double pos,int thread)
     return true;
 }
 
-bool XtMotor::SlowMoveToPos(double pos, double vel_ratio, int thread)
+bool XtMotor::SlowMoveToPos(double pos, double low_vel, int thread)
 {
     if(is_debug) return true;
     if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
     if(thread==-1)
         thread = default_using_thread;
-    if(vel_ratio > 1||vel_ratio <= POS_ERROR)
-        vel_ratio = 1;
-    XT_Controler::SET_MAX_VEL(thread,axis_id,max_vel*vel_ratio);
+    if(low_vel > max_vel)
+        low_vel = max_vel;
+    XT_Controler::SET_MAX_VEL(thread,axis_id,low_vel);
     XT_Controler::SGO(thread, axis_id, pos);
     XT_Controler::TILLSTOP(thread, axis_id);
     XT_Controler::SET_MAX_VEL(thread,axis_id,max_vel);
@@ -437,10 +437,10 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
 {
     if(is_debug)return true;
     if(!(checkState()))return false;
-    if(fabs(GetFeedbackPos() - target_position) < POS_ERROR)return true;
+    if(fabs(GetFeedbackPos() - target_position) < parameters.positionError())return true;
     while (timeout>0) {
 
-        if(fabs(GetFeedbackPos() - target_position) < POS_ERROR)
+        if(fabs(GetFeedbackPos() - target_position) < parameters.positionError())
         {
             if(parameters.useDelay())
                 Sleep(parameters.arrivedDelay());
@@ -456,6 +456,11 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
     return false;
 }
 
+bool XtMotor::WaitArrivedTargetPos(int timeout)
+{
+    return  WaitArrivedTargetPos(current_target,timeout);
+}
+
 
 bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
 {
@@ -465,7 +470,7 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
     double targetPos = pos;
     MoveToPos(pos,thread);
     int count = time_out;
-    while ( fabs(currPos - targetPos) >= POS_ERROR)
+    while ( fabs(currPos - targetPos) >= parameters.positionError())
     {
         Sleep(10);
         currPos = GetFeedbackPos();
@@ -480,15 +485,15 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
     return true;
 }
 
-bool XtMotor::SlowMoveToPosSync(double pos, double vel_ratio, int thread)
+bool XtMotor::SlowMoveToPosSync(double pos, double low_vel, int thread)
 {
     if(is_debug)return true;
     if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
     double currPos = GetFeedbackPos();
     double targetPos = pos;
-    SlowMoveToPos(pos,vel_ratio,thread);
+    SlowMoveToPos(pos,low_vel,thread);
     int count = 10000;
-    while ( fabs(currPos - targetPos) >= POS_ERROR)
+    while ( fabs(currPos - targetPos) >= parameters.positionError())
     {
         currPos = GetFeedbackPos();
         Sleep(10);
@@ -505,6 +510,7 @@ bool XtMotor::SlowMoveToPosSync(double pos, double vel_ratio, int thread)
 
 bool XtMotor::StepMove(double step, int thread)
 {
+    if(is_debug)return true;
     if(!checkState(false))return false;
     if(thread==-1)
         thread = default_using_thread;
@@ -861,11 +867,48 @@ bool XtMotor::checkInterface(const double pos)
         if(temp_parameter->hasInterferenceWithMoveSpance(current_pos,pos))
         {
             //在限制区间
-            if(!temp_parameter->checkInLimitSpance(limit_ios[i]->Value()))
+            if(temp_parameter->crashSpance())
             {
-                AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->inputIOName()));
-                qInfo("CheckLimit fail %f",pos);
-                return false;
+                bool result = true;
+                QString temp_name = "";
+                for(int i = 0; i < temp_parameter->input_io_indexs.size(); ++i)
+                {
+                    temp_name.append(temp_parameter->inputIOName()[i].toString());
+                    temp_name.append(" ");
+                    result &= temp_parameter->checkInputInLimitSpance(i,limit_in_ios[temp_parameter->input_io_indexs[i]]->Value());
+                }
+                for (int i = 0; i < temp_parameter->output_io_indexs.size(); ++i)
+                {
+                    temp_name.append(temp_parameter->outputIOName()[i].toString());
+                    temp_name.append(" ");
+                    result &= temp_parameter->checkOutputLimitSpance(i,limit_out_ios[temp_parameter->output_io_indexs[i]]->Value());
+                }
+                if(result)
+                {
+                    AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_name));
+                    return false;
+                }
+                result = true;
+
+            }
+            else
+            {
+                for(int i = 0; i < temp_parameter->input_io_indexs.size(); ++i)
+                {
+                    if(!temp_parameter->checkInputInLimitSpance(i,limit_in_ios[temp_parameter->input_io_indexs[i]]->Value()))
+                    {
+                        AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->inputIOName()[i].toString()));
+                        return false;
+                    }
+                }
+                for (int i = 0; i < temp_parameter->output_io_indexs.size(); ++i)
+                {
+                    if(!temp_parameter->checkOutputLimitSpance(i,limit_out_ios[temp_parameter->output_io_indexs[i]]->Value()))
+                    {
+                        AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->outputIOName()[i].toString()));
+                        return false;
+                    }
+                }
             }
         }
     }

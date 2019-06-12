@@ -17,6 +17,7 @@ public:
     Q_PROPERTY(QString zeroInName READ zeroInName WRITE setZeroInName NOTIFY zeroInNameChanged)
     Q_PROPERTY(int finishOneDelay READ finishOneDelay WRITE setFinishOneDelay NOTIFY finishOneDelayChanged)
     Q_PROPERTY(int finishZeroDelay READ finishZeroDelay WRITE setFinishZeroDelay NOTIFY finishZeroDelayChanged)
+    Q_PROPERTY(int outTime READ outTime WRITE setOutTime NOTIFY outTimeChanged)
     QString cylinderName() const
     {
         return m_cylinderName;
@@ -50,6 +51,11 @@ public:
     int finishZeroDelay() const
     {
         return m_finishZeroDelay;
+    }
+
+    int outTime() const
+    {
+        return m_outTime;
     }
 
 public slots:
@@ -116,6 +122,15 @@ public slots:
         emit finishZeroDelayChanged(m_finishZeroDelay);
     }
 
+    void setOutTime(int outTime)
+    {
+        if (m_outTime == outTime)
+            return;
+
+        m_outTime = outTime;
+        emit outTimeChanged(m_outTime);
+    }
+
 signals:
     void cylinderNameChanged(QString cylinderName);
 
@@ -131,6 +146,8 @@ signals:
 
     void finishZeroDelayChanged(int finishZeroDelay);
 
+    void outTimeChanged(int outTime);
+
 private:
     QString m_cylinderName = "Cylinder";
     QString m_oneOutName = "";
@@ -139,6 +156,7 @@ private:
     QString m_zeroInName = "";
     int m_finishOneDelay = 100;
     int m_finishZeroDelay = 100;
+    int m_outTime = 3000;
 };
 
 #endif // CYLINDERPARAMETER_H

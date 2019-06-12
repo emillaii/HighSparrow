@@ -102,5 +102,13 @@ ColumnLayout {
                 lutModule.vcmReturn()
             }
         }
+        Button {
+            text: qsTr("计算位置")
+            width: 40
+            height: 40
+            onClicked: {
+                lutModule.calculcateRelativePosition()
+            }
+        }
     }
 }

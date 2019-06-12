@@ -26,9 +26,9 @@ private:
     double m_ltkx2SetPos = 0;
     double m_ltkx1RelayPos = 0;
 
-    QString m_clipinInputName;
+    QString m_clipinInputName = "";
 
-    QString m_clipoutInputName;
+    QString m_clipoutInputName = "";
 
     double m_ltkx2SafeDistance = 5;
 
@@ -36,7 +36,23 @@ private:
 
     bool m_openQinfo = true;
 
-    QString m_trayInputIoName;
+    QString m_trayInputIoName = "";
+
+    bool m_isHandly = false;
+
+    double m_pushVelocity = 50;
+
+    QString m_entranceTrayCheckIoName = "";
+
+    QString m_exitTrayCheckIoName = "";
+
+    QString m_entranceClipCheckIoName = "";
+
+    QString m_exitClipCheckIoName = "";
+
+    QString m_readyTrayCheckIoName = "";
+
+    QString m_workTrayCheckIoName = "";
 
 signals:
     void testTrayTest();
@@ -65,6 +81,15 @@ public:
     Q_PROPERTY(QString clipoutInputName READ clipoutInputName WRITE setClipoutInputName NOTIFY clipoutInputNameChanged)
     Q_PROPERTY(bool openQinfo READ openQinfo WRITE setOpenQinfo NOTIFY openQinfoChanged)
     Q_PROPERTY(QString trayInputIoName READ trayInputIoName WRITE setTrayInputIoName NOTIFY trayInputIoNameChanged)
+    Q_PROPERTY(bool isHandly READ isHandly WRITE setIsHandly NOTIFY isHandlyChanged)
+    Q_PROPERTY(double pushVelocity READ pushVelocity WRITE setPushVelocity NOTIFY pushVelocityChanged)
+    Q_PROPERTY(QString entranceTrayCheckIoName READ entranceTrayCheckIoName WRITE setEntranceTrayCheckIoName NOTIFY entranceTrayCheckIoNameChanged)
+    Q_PROPERTY(QString exitTrayCheckIoName READ exitTrayCheckIoName WRITE setExitTrayCheckIoName NOTIFY exitTrayCheckIoNameChanged)
+    Q_PROPERTY(QString entranceClipCheckIoName READ entranceClipCheckIoName WRITE setEntranceClipCheckIoName NOTIFY entranceClipCheckIoNameChanged)
+    Q_PROPERTY(QString exitClipCheckIoName READ exitClipCheckIoName WRITE setExitClipCheckIoName NOTIFY exitClipCheckIoNameChanged)
+    Q_PROPERTY(QString readyTrayCheckIoName READ readyTrayCheckIoName WRITE setReadyTrayCheckIoName NOTIFY readyTrayCheckIoNameChanged)
+    Q_PROPERTY(QString workTrayCheckIoName READ workTrayCheckIoName WRITE setWorkTrayCheckIoName NOTIFY workTrayCheckIoNameChanged)
+
     QString motorLTIEName() const
     {
         return m_motorLTIEName;
@@ -173,6 +198,46 @@ public:
     QString trayInputIoName() const
     {
         return m_trayInputIoName;
+    }
+
+    bool isHandly() const
+    {
+        return m_isHandly;
+    }
+
+    double pushVelocity() const
+    {
+        return m_pushVelocity;
+    }
+
+    QString entranceTrayCheckIoName() const
+    {
+        return m_entranceTrayCheckIoName;
+    }
+
+    QString exitTrayCheckIoName() const
+    {
+        return m_exitTrayCheckIoName;
+    }
+
+    QString entranceClipCheckIoName() const
+    {
+        return m_entranceClipCheckIoName;
+    }
+
+    QString exitClipCheckIoName() const
+    {
+        return m_exitClipCheckIoName;
+    }
+
+    QString readyTrayCheckIoName() const
+    {
+        return m_readyTrayCheckIoName;
+    }
+
+    QString workTrayCheckIoName() const
+    {
+        return m_workTrayCheckIoName;
     }
 
 public slots:
@@ -384,6 +449,79 @@ public slots:
         emit trayInputIoNameChanged(m_trayInputIoName);
     }
 
+    void setIsHandly(bool isHandly)
+    {
+        if (m_isHandly == isHandly)
+            return;
+
+        m_isHandly = isHandly;
+        emit isHandlyChanged(m_isHandly);
+    }
+
+    void setPushVelocity(double pushVelocity)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pushVelocity, pushVelocity))
+            return;
+
+        m_pushVelocity = pushVelocity;
+        emit pushVelocityChanged(m_pushVelocity);
+    }
+
+    void setEntranceTrayCheckIoName(QString entranceTrayCheckIoName)
+    {
+        if (m_entranceTrayCheckIoName == entranceTrayCheckIoName)
+            return;
+
+        m_entranceTrayCheckIoName = entranceTrayCheckIoName;
+        emit entranceTrayCheckIoNameChanged(m_entranceTrayCheckIoName);
+    }
+
+    void setExitTrayCheckIoName(QString exitTrayCheckIoName)
+    {
+        if (m_exitTrayCheckIoName == exitTrayCheckIoName)
+            return;
+
+        m_exitTrayCheckIoName = exitTrayCheckIoName;
+        emit exitTrayCheckIoNameChanged(m_exitTrayCheckIoName);
+    }
+
+    void setEntranceClipCheckIoName(QString entranceClipCheckIoName)
+    {
+        if (m_entranceClipCheckIoName == entranceClipCheckIoName)
+            return;
+
+        m_entranceClipCheckIoName = entranceClipCheckIoName;
+        emit entranceClipCheckIoNameChanged(m_entranceClipCheckIoName);
+    }
+
+    void setExitClipCheckIoName(QString exitClipCheckIoName)
+    {
+        if (m_exitClipCheckIoName == exitClipCheckIoName)
+            return;
+
+        m_exitClipCheckIoName = exitClipCheckIoName;
+        emit exitClipCheckIoNameChanged(m_exitClipCheckIoName);
+    }
+
+    void setReadyTrayCheckIoName(QString readyTrayCheckIoName)
+    {
+        if (m_readyTrayCheckIoName == readyTrayCheckIoName)
+            return;
+
+        m_readyTrayCheckIoName = readyTrayCheckIoName;
+        emit readyTrayCheckIoNameChanged(m_readyTrayCheckIoName);
+    }
+
+    void setWorkTrayCheckIoName(QString workTrayCheckIoName)
+    {
+        if (m_workTrayCheckIoName == workTrayCheckIoName)
+            return;
+
+        m_workTrayCheckIoName = workTrayCheckIoName;
+        emit workTrayCheckIoNameChanged(m_workTrayCheckIoName);
+    }
+
 signals:
     void motorTLIENameChanged(QString motorLTIEName);
     void motorLTOENameChanged(QString motorLTOEName);
@@ -407,6 +545,14 @@ signals:
     void ltlWorkPosChanged(double ltlWorkPos);
     void openQinfoChanged(bool openQinfo);
     void trayInputIoNameChanged(QString trayInputIoName);
+    void isHandlyChanged(bool isHandly);
+    void pushVelocityChanged(double pushVelocity);
+    void entranceTrayCheckIoNameChanged(QString entranceTrayCheckIoName);
+    void exitTrayCheckIoNameChanged(QString exitTrayCheckIoName);
+    void entranceClipCheckIoNameChanged(QString entranceClipCheckIoName);
+    void exitClipCheckIoNameChanged(QString exitClipCheckIoName);
+    void readyTrayCheckIoNameChanged(QString readyTrayCheckIoName);
+    void workTrayCheckIoNameChanged(QString workTrayCheckIoName);
 };
 
 class TrayLoaderState : public PropertyBase{

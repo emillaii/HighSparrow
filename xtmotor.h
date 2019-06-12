@@ -77,11 +77,13 @@ public:
     void TILLSTOP(int thread = -1);
     void TILLTIME(int ms, int thread = -1);
     virtual bool MoveToPos(double pos,int thread = -1);
-    virtual bool SlowMoveToPos(double pos,double vel_ratio = 0.2, int thread = -1);
+    bool stepMoveToPos(double step);
+    virtual bool SlowMoveToPos(double pos,double low_vel, int thread = -1);
     virtual bool WaitMoveStop(int timeout = 30000);
     bool WaitArrivedTargetPos(double target_position,int timeout=10000);
+    bool WaitArrivedTargetPos(int timeout=10000);
     virtual bool MoveToPosSync(double pos,int thread = -1,int time_out = 30000);
-    virtual bool SlowMoveToPosSync(double pos,double vel_ratio =0.2,int thread = -1);
+    virtual bool SlowMoveToPosSync(double pos,double low_vel,int thread = -1);
     virtual bool StepMove(double step,int thread = -1);
     virtual bool StepMoveSync(double step, int thread = -1);
     virtual bool StepMoveSync(double step, bool dir, int thread = -1);
@@ -159,7 +161,8 @@ public:
     QList<XtMotor*> vertical_limit_motors;
     QList<XtMotor*> parallel_limit_motors;
     QList<IOLimitParameter*> io_limit_parameters;
-    QList<XtGeneralInput*> limit_ios;
+    QList<XtGeneralInput*> limit_in_ios;
+    QList<XtGeneralOutput*> limit_out_ios;
 };
 
 #endif // XTMOTER_H

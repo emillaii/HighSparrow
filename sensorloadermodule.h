@@ -40,9 +40,11 @@ public:
     };
     enum HandleToWorkPos
     {
-        TO_PICK1 = 100,
-        TO_PICK2 = 200,
-        TO_PR_OFFSET = 300
+        TO_PICK_SENSOR_OFFSET = 100,
+        TO_PLACE_SENSOR_OFFSET = 200,
+        TO_PICK_PRODUCT_OFFSET = 300,
+        TO_PLACE_PRODUCT_OFFSET = 400,
+        TO_PR_OFFSET = 500
     };
     enum handlePickerAction
     {
@@ -71,7 +73,6 @@ public:
     bool loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     void openServer(int port);
-    Q_INVOKABLE void performHandling(int cmd);
     Q_INVOKABLE void cameraTipOffsetCalibration(int pickhead);
 signals:
     void sendMessageToClient(QString destAddress, QString message);
@@ -88,8 +89,10 @@ private:
     void run(bool has_material);
 
     bool checkTrayNeedChange();
-    bool moveToNextTrayPos(int tray_index);
+    bool moveToSensorTrayNextPos();
+    bool moveToProductTrayNextPos();
     bool moveToSUTPRPos(bool is_local = true,bool check_softlanding = false);
+    bool movePicker1ToSUTPos(bool is_local = true);
 
     bool performSensorPR();
     bool performVacancyPR();
@@ -98,14 +101,18 @@ private:
     bool performSUTProductPR();
     void resetPR();
 
-    bool moveToWorkPos(bool check_softlanding = false);
-    bool moveToWorkPos2(bool check_softlanding = false);
+    bool moveToWorkPos(bool check_state,bool check_softlanding = false);
+    bool moveToWorkPos2(bool check_state,bool check_softlanding = false);
     bool moveToPRResultPos(bool check_softlanding = false);
 
     bool picker1SearchZ(double z,bool is_open = true,int time_out = 10000);
     bool picker1SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
     bool picker2SearchZ(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
+
+    bool checkPickedSensor(bool check_state);
+    bool checkPickedNgOrProduct(bool check_state);
+
     bool pickTraySensor(int time_out = 10000);
     bool placeSensorToSUT(QString dest,int time_out = 10000);
     bool pickSUTSensor(QString dest,int time_out = 10000);

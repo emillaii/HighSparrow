@@ -14,8 +14,11 @@ Calibration::Calibration(QString name,QString file_path, QObject *parent)
 void Calibration::Init(XtMotor *motor_x, XtMotor *motor_y, VisionLocation *location)
 {
     this->motor_x = motor_x;
+    parts.append(motor_x);
     this->motor_y = motor_y;
+    parts.append(motor_y);
     this->location =location;
+    parts.append(location);
 //    setName(parameters.calibrationName());
     QPointF image_center(parameters.imageWidth()/2,parameters.imageHeight()/2);
     mapping.ChangeParameter(QMatrix(parameters.matrix11(),

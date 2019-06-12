@@ -59,6 +59,14 @@ ColumnLayout {
             }
         }
         Button {
+            text: qsTr("加载")
+            width: 20
+            height: 40
+            onClicked: {
+                baseModuleManager.loadDispenseParam();
+            }
+        }
+        Button {
             text: qsTr("点胶")
             width: 20
             height: 40

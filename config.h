@@ -44,10 +44,6 @@
 #define CALIBRATION_PARAMETER_FILE   "calibration_parameter.json"
 #define AA_CORE_MODULE_FILE          "aaCoreConfig.json"
 
-#define MATERIAL_PICKARM_FILE        "materialPickArmConfig.json"
-#define MATERIAL_LOADER_PARAMETER    "material_loader"
-#define MATERIAL_LOADER_FILE         "materialLoaderModule.json"
-
 
 #define VISION_CONFIG_DIR            "config//vision_config_1"
 #define AA_HELPER_DIR                "aa_helper_log//"
@@ -258,6 +254,7 @@
 #define AA_PIECE_PICK_LENS "AA Pick Lens"
 #define AA_PIECE_UNLOAD_LENS "AA Unload Lens"
 #define AA_PIECE_Z_OFFSET "Z Offset"
+#define AA_PIECE_XY_OFFSET "XY Offset"
 #define AA_PIECE_AA "AA"
 #define AA_PIECE_OC "OC"
 #define AA_PIECE_MTF "MTF"

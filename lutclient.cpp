@@ -49,7 +49,7 @@ void LutClient::receiveMessage(QString message)
         double prOffsetX = json["prOffsetX"].toDouble(0);
         double prOffsetY = json["prOffsetY"].toDouble(0);
         qInfo("PR Result...offsetX %f offsetY %f offsetT %f", prOffsetX, prOffsetY, prOffsetT);
-        aaHead->receiveLensFromLut(prOffsetX, prOffsetY, -prOffsetT);
+        aaHead->receiveLensFromLut(prOffsetX, prOffsetY, prOffsetT);
         this->state = LutClientState::WAITING_LUT_LEAVE_EVENT;
     } else if (event == "lutLeaveResp") {
         qInfo("LUT move to load lens position");
@@ -98,20 +98,14 @@ bool LutClient::sendLensRequest(bool &is_run,bool has_ng_lens,bool is_wait)
     qInfo("ready to sendMessageToServer");
     emit sendMessageToServer(jsonString);
     if(!is_wait)return true;
-    int timeout = 60;
-    while (timeout>0 && this->state != LutClientState::LUT_CLIENT_IDLE)
+    while (this->state != LutClientState::LUT_CLIENT_IDLE)
     {
         if(!is_run)
             return false;
-        timeout--;
         //qInfo("Waiting LUT ....");
         QThread::msleep(1000);
     }
-    if (timeout == 0) {
-        qInfo("Lut Client send lens request timeout. current state = %d", this->state);
-        return false;
-    }
-    return true;
+    return this->state == LutClientState::LUT_CLIENT_IDLE;
 }
 
 bool LutClient::sendLensRequest(bool has_ng_lens, bool is_wait)

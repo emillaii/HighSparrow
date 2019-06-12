@@ -92,7 +92,7 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
     for(int i=0; i<dispense_path.length(); i++)
     {
         res = XT_Controler_Extend::Append_Line_Pos(curve_id, dem, axis.data(), dispense_path[i].p.data(),
-                                                   parameters.maximumSpeed(), parameters.endSpeed(), 0, nPoint_Index);
+                                                   getMaxSpeed(i), getEndSpeed(i), 0, nPoint_Index);
         qInfo("point %d : %f,%f",i, dispense_path[i].p.data()[0],dispense_path[i].p.data()[1]);
         if(1!=res)
         {
@@ -138,7 +138,7 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
         if((i==dispense_path.length()-1)&&(i>1))
         {
             res = XT_Controler_Extend::Append_Line_Pos(curve_id, dem, axis.data(), dispense_path[0].p.data(),
-                                                       parameters.maximumSpeed(), parameters.endSpeed(), 0, nPoint_Index);
+                                                       getMaxSpeed(i+1), getEndSpeed(i+1), 0, nPoint_Index);
             qInfo("point end0%d : %f,%f,%f",i, dispense_path[0].p.data()[0],dispense_path[0].p.data()[1],dispense_path[0].p.data()[2]);
             if(1!=res)
             {
@@ -147,7 +147,7 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
                 return false;
             }
             res = XT_Controler_Extend::Append_Line_Pos(curve_id, dem, axis.data(), dispense_path[1].p.data(),
-                                                       parameters.maximumSpeed(), parameters.endSpeed(), 0, nPoint_Index);
+                                                       getMaxSpeed(0),getEndSpeed(0), 0, nPoint_Index);
             qInfo("point end1%d : %f,%f,%f",i, dispense_path[1].p.data()[0],dispense_path[1].p.data()[1],dispense_path[1].p.data()[2]);
             if(1!=res)
             {
@@ -159,6 +159,7 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
             double half_len = first_line_len/2.0;
             if(parameters.closeOffset()>half_len)
             {
+
                 qInfo("%f Too BIG, set to %f",parameters.closeOffset(),half_len);
                 parameters.setCloseOffset(half_len);
 
@@ -182,13 +183,14 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
 
 
     }
+    XT_Controler::SGO(thread_curve,axis[2],0);
+    XT_Controler::TILLSTOP(thread_curve,axis[2]);
     XT_Controler::SGO(thread_curve,axis[0],dispense_path[0].p[0]);
     XT_Controler::SGO(thread_curve,axis[1],dispense_path[0].p[1]);
     XT_Controler::TILLSTOP(thread_curve,axis[0]);
     XT_Controler::TILLSTOP(thread_curve,axis[1]);
     XT_Controler::SGO(thread_curve,axis[2],dispense_path[0].p[2]);
     XT_Controler::TILLSTOP(thread_curve,axis[2]);
-    XT_Controler::TILLSTOP(thread_trig,axis[2]);
     res = XT_Controler_Extend::Exec_Curve(curve_id, thread_curve, thread_trig, 1);
     if(1!=res)
     {
@@ -228,6 +230,26 @@ DISPENSER_STATE Dispenser::GetState()
     if(res!=1)
         return DISPENSER_BUSY;
     return DISPENSER_IDLE;
+}
+
+double Dispenser::getMaxSpeed(int index)
+{
+    int i = index>0?2*(index - 1):0;
+
+    if(parameters.lineSpeeds().size()>i)
+        return parameters.lineSpeeds()[i].toDouble();
+    else
+        return parameters.maximumSpeed();
+}
+
+double Dispenser::getEndSpeed(int index)
+{
+    int i = index>0?2*(index - 1) + 1:1;
+
+    if(parameters.lineSpeeds().size()>i)
+        return parameters.lineSpeeds()[i].toDouble();
+    else
+        return parameters.endSpeed();
 }
 
 

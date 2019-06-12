@@ -63,6 +63,17 @@ bool XtGeneralInput::Value()
     return (state==1);
 }
 
+bool XtGeneralInput::checkState(bool check_state)
+{
+    if(input_id<0)
+        return false;
+    int state;
+    int res = XT_Controler_Extend::Get_IoIn_State(input_id, state);
+    if(res!=1)
+        return false;
+    return (state == check_state);
+}
+
 bool XtGeneralInput::Wait(bool value, int timeout)
 {
     if(input_id<0)

@@ -123,4 +123,41 @@ ColumnLayout {
             }
         }
     }
+    RowLayout
+    {
+        Button {
+            text: qsTr("AA1 uplook PR")
+            visible: baseModuleManager.getServerMode() === 0
+            width: 40
+            height: 40
+            onClicked: {
+                lutModule.performHandling(1);
+            }
+        }
+        Button {
+            text: qsTr("AA2 uplook PR")
+            visible: baseModuleManager.getServerMode() === 0
+            width: 40
+            height: 40
+            onClicked: {
+                lutModule.performHandling(2);
+            }
+        }
+        Button {
+            text: qsTr("downlook PR")
+            width: 40
+            height: 40
+            onClicked: {
+                sutModule.performHandling(1);
+            }
+        }
+        Button {
+            text: qsTr("PR To Bond")
+            width: 40
+            height: 40
+            onClicked: {
+                aaNewCore.performHandling(2);
+            }
+        }
+    }
 }

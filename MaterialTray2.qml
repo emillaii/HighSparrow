@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import SomeLib 1.1
 ColumnLayout {
     GroupBox{
         title:qsTr("料盘起点")
@@ -184,7 +185,9 @@ ColumnLayout {
                         if(baseModuleManager.getServerMode()==0){
                             logicManager.performLocation(lens_loader_parameter.vacancyLocationName)
                         }else{
-                            logicManager.performLocation(sensorLoaderParameter.vacancyLocationName)
+                            sensorLoaderModule.performHandling(SensorLoaderModule.TO_PR_OFFSET
+                                                               +SensorLoaderModule.VACANCY_PR
+                                                               +SensorLoaderModule.SENSOR_TRAY2)
                         }
                     }
                 }
@@ -200,7 +203,7 @@ ColumnLayout {
                             logicManager.lensPickArmVacancyTrayPR()
                         }else{
                             //232
-                            sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK2
+                            sensorLoaderModule.performHandling(SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
                                                                +SensorLoaderModule.VACANCY_PR
                                                                +SensorLoaderModule.SENSOR_TRAY2)
                         }
@@ -219,7 +222,7 @@ ColumnLayout {
                         }else{
                             //9232
                             sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_PRODUCT_TO_TRAY
-                                                               +SensorLoaderModule.TO_PICK2
+                                                               +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
                                                                +SensorLoaderModule.VACANCY_PR
                                                                +SensorLoaderModule.SENSOR_TRAY2)
                         }
@@ -234,7 +237,7 @@ ColumnLayout {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                         //6232
                         sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY
-                                                           +SensorLoaderModule.TO_PICK2
+                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
                                                            +SensorLoaderModule.VACANCY_PR
                                                            +SensorLoaderModule.SENSOR_TRAY2)
                     }

@@ -31,6 +31,8 @@ public:
     Q_PROPERTY(double escapeX READ escapeX WRITE setEscapeX NOTIFY escapeXChanged)
     Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
+    Q_PROPERTY(double picker1ThetaOffset READ picker1ThetaOffset WRITE setPicker1ThetaOffset NOTIFY picker1ThetaOffsetChanged)
+    Q_PROPERTY(double picker2ThetaOffset READ picker2ThetaOffset WRITE setPicker2ThetaOffset NOTIFY picker2ThetaOffsetChanged)
     double vcmWorkForce() const
     {
         return m_vcmWorkForce;
@@ -134,6 +136,16 @@ public:
     int changeTrayTimeOut() const
     {
         return m_changeTrayTimeOut;
+    }
+
+    double picker1ThetaOffset() const
+    {
+        return m_picker1ThetaOffset;
+    }
+
+    double picker2ThetaOffset() const
+    {
+        return m_picker2ThetaOffset;
     }
 
 public slots:
@@ -338,6 +350,26 @@ public slots:
         emit changeTrayTimeOutChanged(m_changeTrayTimeOut);
     }
 
+    void setPicker1ThetaOffset(double pick1ThetaOffset)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_picker1ThetaOffset, pick1ThetaOffset))
+            return;
+
+        m_picker1ThetaOffset = pick1ThetaOffset;
+        emit picker1ThetaOffsetChanged(m_picker1ThetaOffset);
+    }
+
+    void setPicker2ThetaOffset(double picker2ThetaOffset)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_picker2ThetaOffset, picker2ThetaOffset))
+            return;
+
+        m_picker2ThetaOffset = picker2ThetaOffset;
+        emit picker2ThetaOffsetChanged(m_picker2ThetaOffset);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -382,6 +414,10 @@ signals:
 
     void changeTrayTimeOutChanged(int changeTrayTimeOut);
 
+    void picker1ThetaOffsetChanged(double picker1ThetaOffset);
+
+    void picker2ThetaOffsetChanged(double picker2ThetaOffset);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -404,6 +440,8 @@ private:
     double m_escapeX = 5;
     double m_escapeY = 0;
     int m_changeTrayTimeOut = 180000;
+    double m_picker1ThetaOffset = 0;
+    double m_picker2ThetaOffset = 0;
 };
 class SensorLoaderState:public PropertyBase
 {
@@ -425,6 +463,10 @@ public:
     Q_PROPERTY(QString cmd READ cmd WRITE setCmd NOTIFY cmdChanged)
     Q_PROPERTY(bool waitingChangeTray READ waitingChangeTray WRITE setWaitingChangeTray NOTIFY waitingChangeTrayChanged)
     Q_PROPERTY(bool finishChangeTray READ finishChangeTray WRITE setFinishChangeTray NOTIFY finishChangeTrayChanged)
+    Q_PROPERTY(double picker1OffsetX READ picker1OffsetX WRITE setPicker1OffsetX NOTIFY picker1OffsetXChanged)
+    Q_PROPERTY(double picker1OffsetY READ picker1OffsetY WRITE setPicker1OffsetY NOTIFY picker1OffsetYChanged)
+    Q_PROPERTY(double picker2OffsetX READ picker2OffsetX WRITE setPicker2OffsetX NOTIFY picker2OffsetXChanged)
+    Q_PROPERTY(double picker2OffsetY READ picker2OffsetY WRITE setPicker2OffsetY NOTIFY picker2OffsetYChanged)
     int runMode() const
     {
         return m_runMode;
@@ -497,6 +539,26 @@ public:
     bool finishChangeTray() const
     {
         return m_finishChangeTray;
+    }
+
+    double picker1OffsetX() const
+    {
+        return m_picker1OffsetX;
+    }
+
+    double picker1OffsetY() const
+    {
+        return m_picker1OffsetY;
+    }
+
+    double picker2OffsetX() const
+    {
+        return m_picker2OffsetX;
+    }
+
+    double picker2OffsetY() const
+    {
+        return m_picker2OffsetY;
     }
 
 public slots:
@@ -634,6 +696,46 @@ public slots:
         emit finishChangeTrayChanged(m_finishChangeTray);
     }
 
+    void setPicker1OffsetX(double picker1OffsetX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_picker1OffsetX, picker1OffsetX))
+            return;
+
+        m_picker1OffsetX = picker1OffsetX;
+        emit picker1OffsetXChanged(m_picker1OffsetX);
+    }
+
+    void setPicker1OffsetY(double picker1OffsetY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_picker1OffsetY, picker1OffsetY))
+            return;
+
+        m_picker1OffsetY = picker1OffsetY;
+        emit picker1OffsetYChanged(m_picker1OffsetY);
+    }
+
+    void setPicker2OffsetX(double picker2OffsetX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_picker2OffsetX, picker2OffsetX))
+            return;
+
+        m_picker2OffsetX = picker2OffsetX;
+        emit picker2OffsetXChanged(m_picker2OffsetX);
+    }
+
+    void setPicker2OffsetY(double picker2OffsetY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_picker2OffsetY, picker2OffsetY))
+            return;
+
+        m_picker2OffsetY = picker2OffsetY;
+        emit picker2OffsetYChanged(m_picker2OffsetY);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayChanged(bool hasTray);
@@ -664,6 +766,14 @@ signals:
 
     void finishChangeTrayChanged(bool finishChangeTray);
 
+    void picker1OffsetXChanged(double picker1OffsetX);
+
+    void picker1OffsetYChanged(double picker1OffsetY);
+
+    void picker2OffsetXChanged(double picker2OffsetX);
+
+    void picker2OffsetYChanged(double picker2OffsetY);
+
 private:
     int m_runMode = 0;
     bool m_hasTray = false;
@@ -680,6 +790,10 @@ private:
     QString m_cmd = "";
     bool m_waitingChangeTray = false;
     bool m_finishChangeTray = false;
+    double m_picker1OffsetX = 0;
+    double m_picker1OffsetY = 0;
+    double m_picker2OffsetX = 0;
+    double m_picker2OffsetY = 0;
 };
 
 #endif // SENSORLOADERPARAMETER_H

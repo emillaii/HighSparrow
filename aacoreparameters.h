@@ -111,5 +111,70 @@ void setROIRatio(double ROIRatio)
 signals:
 void paramsChanged(int MaxIntensity);
 };
+class AACoreStates: public PropertyBase
+{
+    Q_OBJECT
+public:
+    explicit AACoreStates(){}
+    Q_PROPERTY(bool ngSensor READ ngSensor WRITE setNgSensor NOTIFY ngSensorChanged)
+    Q_PROPERTY(bool ngLens READ ngLens WRITE setNgLens NOTIFY ngLensChanged)
+    Q_PROPERTY(bool hasPrduct READ hasPrduct WRITE setHasPrduct NOTIFY hasPrductChanged)
+
+public:
+    bool ngSensor() const
+    {
+        return m_ngSensor;
+    }
+
+    bool ngLens() const
+    {
+        return m_ngLens;
+    }
+
+    bool hasPrduct() const
+    {
+        return m_hasPrduct;
+    }
+
+public slots:
+    void setNgSensor(bool ngSensor)
+    {
+        if (m_ngSensor == ngSensor)
+            return;
+
+        m_ngSensor = ngSensor;
+        emit ngSensorChanged(m_ngSensor);
+    }
+
+    void setNgLens(bool ngLens)
+    {
+        if (m_ngLens == ngLens)
+            return;
+
+        m_ngLens = ngLens;
+        emit ngLensChanged(m_ngLens);
+    }
+
+    void setHasPrduct(bool hasPrduct)
+    {
+        if (m_hasPrduct == hasPrduct)
+            return;
+
+        m_hasPrduct = hasPrduct;
+        emit hasPrductChanged(m_hasPrduct);
+    }
+
+signals:
+    void ngSensorChanged(bool ngSensor);
+
+    void ngLensChanged(bool ngLens);
+
+    void hasPrductChanged(bool hasPrduct);
+
+private:
+    bool m_ngSensor;
+    bool m_ngLens;
+    bool m_hasPrduct;
+};
 
 #endif // AACOREPARAMETERS_H

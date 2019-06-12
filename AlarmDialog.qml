@@ -1,4 +1,4 @@
-import QtQuick.Controls 2.4
+﻿import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.11
 import QtQuick 2.11
@@ -66,24 +66,27 @@ Window {
                                 errorMessage.text = workersManager.getAlarmMessage(modelData)
                                 if (alarmType === 0) {
                                     moduleRect.color = "lightGreen"
-                                    button1.text = "Ok"
-                                    button2.text = "Cancel"
+                                    button1.text = qsTr("确定")
+                                    button2.visible = false
                                 } else if (alarmType === 1) {
                                     moduleRect.color = "orange"
-                                    button1.text = "Ok"
-                                    button2.text = "Cancel"
+                                    button1.text = qsTr("确定")
+                                    button2.visible = false
                                 } else if (alarmType === 2) {
                                     moduleRect.color = "orange"
-                                    button1.text = "Continue"
-                                    button2.text = "Give Up"
+                                    button1.text = qsTr("继续")
+                                    button2.visible = true
+                                    button2.text = qsTr("放弃")
                                 } else if (alarmType === 3) {
                                     moduleRect.color = "orange"
-                                    button1.text = "Continue"
-                                    button2.text = "Retry"
+                                    button1.text = qsTr("继续")
+                                    button2.visible = true
+                                    button2.text = qsTr("重试")
                                 } else if (alarmType === 4) {
                                     lightState ? moduleRect.color = "pink" : moduleRect.color = "red"
-                                    button1.text = "Retry"
-                                    button2.text = "Stop"
+                                    button1.text = qsTr("重试")
+                                    button2.visible = true
+                                    button2.text = qsTr("停止")
                                 }
                                 else {
                                     moduleRect.color = "red"

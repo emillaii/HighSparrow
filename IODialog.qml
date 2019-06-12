@@ -191,7 +191,6 @@ Popup {
                     ListView{
                         model: outputList
                         height: 50*count
-                        //anchors.top: special_ouput.bottom
                         delegate: Switch{
                             id:output_switch_id
                             Connections{
@@ -200,17 +199,16 @@ Popup {
                                     if (dialog.visible) {
                                         if(output_switch_id.checked !== baseModuleManager.getOutput(modelData)){
                                             output_switch_id.toggle()
-                                            console.log("22"+modelData+output_switch_id.checked)
                                         }
-
-                                        //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                     }
                                 }
                             }
                             text:qsTr(modelData)
                             onCheckedChanged: {
-                                baseModuleManager.setOutput(modelData,checked);
-                                console.log(modelData+checked)
+                                if(output_switch_id.checked !== baseModuleManager.getOutput(modelData))
+                                {
+                                    baseModuleManager.setOutput(modelData,checked);
+                                }
                             }
                         }
                     }
@@ -250,7 +248,7 @@ Popup {
                 clip: true
                 ListView{
                     id:vacuum_list
-                    model:baseModuleManager.getServerMode()==0?aa1_vacuums:aa2_vacuums
+                    model:baseModuleManager.getServerMode()===0?aa1_vacuums:aa2_vacuums
                     delegate:GroupBox {
                         title:vacuumName
                         ColumnLayout{
@@ -275,7 +273,6 @@ Popup {
                                 text:breakIoName!="null"?breakIoName:"无breakIO"
                             }
                             Switch{
-                                anchors.top: break_io_switch.bottom
                                 id:in_io_switch
                                 enabled: inIoName!="null"
                                 Connections{
@@ -292,7 +289,6 @@ Popup {
                                 text:inIoName!="null"?inIoName:"无inIO"
                             }
                             Switch{
-                                anchors.top: in_io_switch.bottom
                                 id:out_io_switch
                                 enabled: outIoName!="null"
                                 Connections{
@@ -321,7 +317,7 @@ Popup {
                 clip: true
                 ListView{
                     id:cylinder_list
-                    model: baseModuleManager.getServerMode()==0?aa1_cylinders:aa2_cylinders
+                    model: baseModuleManager.getServerMode()===0?aa1_cylinders:aa2_cylinders
                     delegate:GroupBox {
                         title:cylinderName
                         ColumnLayout{
@@ -342,7 +338,6 @@ Popup {
                                 text:oneInName!="null"?oneInName:"无oneInIO"
                             }
                             Switch{
-                                anchors.top: one_in.bottom
                                 id:one_out
                                 enabled: oneOutName!="null"
                                 Connections{
@@ -362,7 +357,6 @@ Popup {
                                 }
                             }
                             Switch{
-                                anchors.top: one_out.bottom
                                 id:zero_in
                                 enabled: zeroInName!="null"
                                 Connections{
@@ -379,7 +373,6 @@ Popup {
                                 text:zeroInName!="null"?zeroInName:"无outIO"
                             }
                             Switch{
-                                anchors.top: zero_in.bottom
                                 id:zero_out
                                 enabled: zeroOutName!="null"
                                 Connections{

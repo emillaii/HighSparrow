@@ -149,7 +149,11 @@ bool PropertyBase::loadJsonConfig(QString file_name, QMap<QString, PropertyBase*
     QString val;
     QFile file;
     file.setFileName(file_name);
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))return false;
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qInfo("load parameter from %s fail",file_name.toStdString().c_str());
+        return false;
+    }
     val = file.readAll();
     file.close();
     QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());

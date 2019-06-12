@@ -15,7 +15,7 @@ void SutClient::Init(XtVacuum *sut_vacuum)
     this->sut_vacuum = sut_vacuum;
 }
 
-bool SutClient::sendSensorRequest(bool has_product, bool has_ng_sensor)
+bool SutClient::sendSensorRequest(bool &is_run,bool has_product, bool has_ng_sensor)
 {
     this->has_product = has_product;
     this->has_ng_sennsor = has_ng_sensor;
@@ -24,18 +24,13 @@ bool SutClient::sendSensorRequest(bool has_product, bool has_ng_sensor)
     QString jsonString = getStringFromJsonObject(obj);
     be_comuniting = true;
     emit sendMessageToServer(jsonString);
-    int timeout = 60;
-    while (timeout>0 && be_comuniting)
+    while (be_comuniting)
     {
-        timeout--;
-        //qInfo("Waiting LUT ....");
+        if(!is_run)
+            return false;
         QThread::msleep(1000);
     }
-    if (timeout == 0) {
-        qInfo("Sut Client send lens request timeout. current state = %d",be_comuniting);
-        return false;
-    }
-    return true;
+    return !be_comuniting;
 }
 
 void SutClient::receiveMessage(QString message)

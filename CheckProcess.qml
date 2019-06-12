@@ -327,6 +327,12 @@ ItemDelegate {
                         ColumnLayout{
                             RowLayout{
                                 Button{
+                                    text:qsTr("LUT 退到指定位置")
+                                    onClicked:{
+
+                                    }
+                                }
+                                Button{
                                     text:qsTr("校正SUT UpdownlookDownCalibration")
                                     onClicked: {
                                         //logicManager.performCalibration("aa1_updownLook_down_calibration")

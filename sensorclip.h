@@ -18,7 +18,7 @@ public:
     void setCurrentIndex(int index);
     double getCurrentPosition();
     double getNextPosition();
-    double getChangeState();
+    bool getChangeState();
     void finishCurrentPosition();
     void resetClip();
 public:

@@ -34,6 +34,16 @@ public:
     Q_PROPERTY(double pushMotorSafePosition READ pushMotorSafePosition WRITE setPushMotorSafePosition NOTIFY pushMotorSafePositionChanged)
     Q_PROPERTY(bool handleVacancyTray READ handleVacancyTray WRITE setHandleVacancyTray NOTIFY handleVacancyTrayChanged)
     Q_PROPERTY(double waitVacancyTrayPosition READ waitVacancyTrayPosition WRITE setWaitVacancyTrayPosition NOTIFY waitVacancyTrayPositionChanged)
+    Q_PROPERTY(double pushVelocity READ pushVelocity WRITE setPushVelocity NOTIFY pushVelocityChanged)
+    Q_PROPERTY(QString entranceClipCheckoName READ entranceClipCheckoName WRITE setEntranceClipCheckoName NOTIFY entranceClipCheckoNameChanged)
+    Q_PROPERTY(QString exitClipCheckIoName READ exitClipCheckIoName WRITE setExitClipCheckIoName NOTIFY exitClipCheckIoNameChanged)
+    Q_PROPERTY(QString readyTrayCheckIoName READ readyTrayCheckIoName WRITE setReadyTrayCheckIoName NOTIFY readyTrayCheckIoNameChanged)
+    Q_PROPERTY(QString kickTrayCheckIoName READ kickTrayCheckIoName WRITE setKickTrayCheckIoName NOTIFY kickTrayCheckIoNameChanged)
+    Q_PROPERTY(QString sensorTrayCheckIoName READ sensorTrayCheckIoName WRITE setSensorTrayCheckIoName NOTIFY sensorTrayCheckIoNameChanged)
+    Q_PROPERTY(QString vacancyTrayCheckIoName READ vacancyTrayCheckIoName WRITE setVacancyTrayCheckIoName NOTIFY vacancyTrayCheckIoNameChanged)
+    Q_PROPERTY(QString entanceTrayChcekIoName READ entanceTrayChcekIoName WRITE setEntanceTrayChcekIoName NOTIFY entanceTrayChcekIoNameChanged)
+    Q_PROPERTY(QString exitTrayCheckIoName READ exitTrayCheckIoName WRITE setExitTrayCheckIoName NOTIFY exitTrayCheckIoNameChanged)
+    Q_PROPERTY(bool isHandly READ isHandly WRITE setIsHandly NOTIFY isHandlyChanged)
     QString motorTrayName() const
     {
         return m_motorTrayName;
@@ -151,6 +161,56 @@ public:
     double waitVacancyTrayPosition() const
     {
         return m_waitVacancyTrayPosition;
+    }
+
+    double pushVelocity() const
+    {
+        return m_pushVelocity;
+    }
+
+    QString entranceClipCheckoName() const
+    {
+        return m_entranceClipCheckoName;
+    }
+
+    QString exitClipCheckIoName() const
+    {
+        return m_exitClipCheckIoName;
+    }
+
+    QString readyTrayCheckIoName() const
+    {
+        return m_readyTrayCheckIoName;
+    }
+
+    QString kickTrayCheckIoName() const
+    {
+        return m_kickTrayCheckIoName;
+    }
+
+    QString sensorTrayCheckIoName() const
+    {
+        return m_sensorTrayCheckIoName;
+    }
+
+    QString vacancyTrayCheckIoName() const
+    {
+        return m_vacancyTrayCheckIoName;
+    }
+
+    QString entanceTrayChcekIoName() const
+    {
+        return m_entanceTrayChcekIoName;
+    }
+
+    QString exitTrayCheckIoName() const
+    {
+        return m_exitTrayCheckIoName;
+    }
+
+    bool isHandly() const
+    {
+        return m_isHandly;
     }
 
 public slots:
@@ -380,6 +440,97 @@ public slots:
         emit waitVacancyTrayPositionChanged(m_waitVacancyTrayPosition);
     }
 
+    void setPushVelocity(double pushVelocity)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pushVelocity, pushVelocity))
+            return;
+
+        m_pushVelocity = pushVelocity;
+        emit pushVelocityChanged(m_pushVelocity);
+    }
+
+    void setEntranceClipCheckoName(QString entranceClipCheckoName)
+    {
+        if (m_entranceClipCheckoName == entranceClipCheckoName)
+            return;
+
+        m_entranceClipCheckoName = entranceClipCheckoName;
+        emit entranceClipCheckoNameChanged(m_entranceClipCheckoName);
+    }
+
+    void setExitClipCheckIoName(QString exitClipCheckIoName)
+    {
+        if (m_exitClipCheckIoName == exitClipCheckIoName)
+            return;
+
+        m_exitClipCheckIoName = exitClipCheckIoName;
+        emit exitClipCheckIoNameChanged(m_exitClipCheckIoName);
+    }
+
+    void setReadyTrayCheckIoName(QString readyTrayCheckIoName)
+    {
+        if (m_readyTrayCheckIoName == readyTrayCheckIoName)
+            return;
+
+        m_readyTrayCheckIoName = readyTrayCheckIoName;
+        emit readyTrayCheckIoNameChanged(m_readyTrayCheckIoName);
+    }
+
+    void setKickTrayCheckIoName(QString kickTrayCheckIoName)
+    {
+        if (m_kickTrayCheckIoName == kickTrayCheckIoName)
+            return;
+
+        m_kickTrayCheckIoName = kickTrayCheckIoName;
+        emit kickTrayCheckIoNameChanged(m_kickTrayCheckIoName);
+    }
+
+    void setSensorTrayCheckIoName(QString sensorTrayCheckIoName)
+    {
+        if (m_sensorTrayCheckIoName == sensorTrayCheckIoName)
+            return;
+
+        m_sensorTrayCheckIoName = sensorTrayCheckIoName;
+        emit sensorTrayCheckIoNameChanged(m_sensorTrayCheckIoName);
+    }
+
+    void setVacancyTrayCheckIoName(QString vacancyTrayCheckIoName)
+    {
+        if (m_vacancyTrayCheckIoName == vacancyTrayCheckIoName)
+            return;
+
+        m_vacancyTrayCheckIoName = vacancyTrayCheckIoName;
+        emit vacancyTrayCheckIoNameChanged(m_vacancyTrayCheckIoName);
+    }
+
+    void setEntanceTrayChcekIoName(QString entanceTrayChcekIoName)
+    {
+        if (m_entanceTrayChcekIoName == entanceTrayChcekIoName)
+            return;
+
+        m_entanceTrayChcekIoName = entanceTrayChcekIoName;
+        emit entanceTrayChcekIoNameChanged(m_entanceTrayChcekIoName);
+    }
+
+    void setExitTrayCheckIoName(QString exitTrayCheckIoName)
+    {
+        if (m_exitTrayCheckIoName == exitTrayCheckIoName)
+            return;
+
+        m_exitTrayCheckIoName = exitTrayCheckIoName;
+        emit exitTrayCheckIoNameChanged(m_exitTrayCheckIoName);
+    }
+
+    void setIsHandly(bool isHandly)
+    {
+        if (m_isHandly == isHandly)
+            return;
+
+        m_isHandly = isHandly;
+        emit isHandlyChanged(m_isHandly);
+    }
+
 signals:
     void motorTrayNameChanged(QString motorTrayName);
     void motorSTIENameChanged(QString motorSTIEName);
@@ -428,6 +579,26 @@ signals:
 
     void waitVacancyTrayPositionChanged(double waitVacancyTrayPosition);
 
+    void pushVelocityChanged(double pushVelocity);
+
+    void entranceClipCheckoNameChanged(QString entranceClipCheckoName);
+
+    void exitClipCheckIoNameChanged(QString exitClipCheckIoName);
+
+    void readyTrayCheckIoNameChanged(QString readyTrayCheckIoName);
+
+    void kickTrayCheckIoNameChanged(QString kickTrayCheckIoName);
+
+    void sensorTrayCheckIoNameChanged(QString sensorTrayCheckIoName);
+
+    void vacancyTrayCheckIoNameChanged(QString vacancyTrayCheckIoName);
+
+    void entanceTrayChcekIoNameChanged(QString entanceTrayChcekIoName);
+
+    void exitTrayCheckIoNameChanged(QString exitTrayCheckIoName);
+
+    void isHandlyChanged(bool isHandly);
+
 private:
     QString m_motorTrayName = "";
     QString m_motorSTIEName = "";
@@ -453,6 +624,16 @@ private:
     QString m_cylinderGripper = "";
     bool m_handleVacancyTray = false;
     double m_waitVacancyTrayPosition = 0;
+    double m_pushVelocity = 100;
+    QString m_entranceClipCheckoName = "";
+    QString m_exitClipCheckIoName = "";
+    QString m_readyTrayCheckIoName = "";
+    QString m_kickTrayCheckIoName = "";
+    QString m_sensorTrayCheckIoName = "";
+    QString m_vacancyTrayCheckIoName = "";
+    QString m_entanceTrayChcekIoName = "";
+    QString m_exitTrayCheckIoName = "";
+    bool m_isHandly = false;
 };
 class SensorTrayLoaderState:public PropertyBase
 {
@@ -477,6 +658,12 @@ public:
     Q_PROPERTY(bool useSpareExitClip READ useSpareExitClip WRITE setUseSpareExitClip NOTIFY useSpareExitClipChanged)
     Q_PROPERTY(bool holdVacancyTray READ holdVacancyTray WRITE setHoldVacancyTray NOTIFY holdVacancyTrayChanged)
     Q_PROPERTY(bool getedVacancyTray READ getedVacancyTray WRITE setGetedVacancyTray NOTIFY getedVacancyTrayChanged)
+    Q_PROPERTY(bool hasReadyTray READ hasReadyTray WRITE setHasReadyTray NOTIFY hasReadyTrayChanged)
+    Q_PROPERTY(bool hasProductTray READ hasProductTray WRITE setHasProductTray NOTIFY hasProductTrayChanged)
+    Q_PROPERTY(bool hasKickReady READ hasKickReady WRITE setHasKickReady NOTIFY hasKickReadyChanged)
+    Q_PROPERTY(bool isFirstTray READ isFirstTray WRITE setIsFirstTray NOTIFY isFirstTrayChanged)
+    Q_PROPERTY(bool hasCarrierReady READ hasCarrierReady WRITE setHasCarrierReady NOTIFY hasCarrierReadyChanged)
+    Q_PROPERTY(bool hasUpTray READ hasUpTray WRITE setHasUpTray NOTIFY hasUpTrayChanged)
     bool hasTrayToGet() const
     {
         return m_hasTrayToGet;
@@ -564,6 +751,36 @@ public:
     bool getedVacancyTray() const
     {
         return m_getedVacancyTray;
+    }
+
+    bool hasReadyTray() const
+    {
+        return m_hasReadyTray;
+    }
+
+    bool hasProductTray() const
+    {
+        return m_hasProductTray;
+    }
+
+    bool hasKickReady() const
+    {
+        return m_hasKickReady;
+    }
+
+    bool isFirstTray() const
+    {
+        return m_isFirstTray;
+    }
+
+    bool hasCarrierReady() const
+    {
+        return m_hasCarrierReady;
+    }
+
+    bool hasUpTray() const
+    {
+        return m_hasUpTray;
     }
 
 public slots:
@@ -728,6 +945,60 @@ public slots:
         emit getedVacancyTrayChanged(m_getedVacancyTray);
     }
 
+    void setHasReadyTray(bool hasReadyTray)
+    {
+        if (m_hasReadyTray == hasReadyTray)
+            return;
+
+        m_hasReadyTray = hasReadyTray;
+        emit hasReadyTrayChanged(m_hasReadyTray);
+    }
+
+    void setHasProductTray(bool hasProductTray)
+    {
+        if (m_hasProductTray == hasProductTray)
+            return;
+
+        m_hasProductTray = hasProductTray;
+        emit hasProductTrayChanged(m_hasProductTray);
+    }
+
+    void setHasKickReady(bool hasKickReady)
+    {
+        if (m_hasKickReady == hasKickReady)
+            return;
+
+        m_hasKickReady = hasKickReady;
+        emit hasKickReadyChanged(m_hasKickReady);
+    }
+
+    void setIsFirstTray(bool isFirstTray)
+    {
+        if (m_isFirstTray == isFirstTray)
+            return;
+
+        m_isFirstTray = isFirstTray;
+        emit isFirstTrayChanged(m_isFirstTray);
+    }
+
+    void setHasCarrierReady(bool hasCarrierReady)
+    {
+        if (m_hasCarrierReady == hasCarrierReady)
+            return;
+
+        m_hasCarrierReady = hasCarrierReady;
+        emit hasCarrierReadyChanged(m_hasCarrierReady);
+    }
+
+    void setHasUpTray(bool hasUpTray)
+    {
+        if (m_hasUpTray == hasUpTray)
+            return;
+
+        m_hasUpTray = hasUpTray;
+        emit hasUpTrayChanged(m_hasUpTray);
+    }
+
 signals:
     void hasTrayToGetChanged(bool hasTrayToGet);
     void hasVacancyTrayChanged(bool hasVacancyTray);
@@ -764,6 +1035,18 @@ signals:
 
     void getedVacancyTrayChanged(bool getedVacancyTray);
 
+    void hasReadyTrayChanged(bool hasReadyTray);
+
+    void hasProductTrayChanged(bool hasProductTray);
+
+    void hasKickReadyChanged(bool hasKickReady);
+
+    void isFirstTrayChanged(bool isFirstTray);
+
+    void hasCarrierReadyChanged(bool hasCarrierReady);
+
+    void hasUpTrayChanged(bool hasUpTray);
+
 private:
     bool m_hasTrayToGet = false;
     bool m_hasVacancyTray = false;
@@ -783,5 +1066,11 @@ private:
     bool m_useSpareExitClip  = false;
     bool m_holdVacancyTray  = false;
     bool m_getedVacancyTray = false;
+    bool m_hasReadyTray = false;
+    bool m_hasProductTray = false;
+    bool m_hasKickReady = false;
+    bool m_isFirstTray = true;
+    bool m_hasCarrierReady = false;
+    bool m_hasUpTray = false;
 };
 #endif // SENSORTRAYLOADERPARAMETER_H

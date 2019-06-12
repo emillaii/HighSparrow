@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("aaHeadModule", &highSprrow.baseModuleManager->aa_head_module);
     engine.rootContext()->setContextProperty("dispenseModule", &highSprrow.baseModuleManager->dispense_module);
     engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
-    qmlRegisterType<SensorLoaderModule>("SomeLib",1,0,"SensorLoaderModule");
+    qmlRegisterType<SensorLoaderModule>("SomeLib",1,1,"SensorLoaderModule");
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
     engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
     engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
@@ -150,8 +150,6 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->lens_loader_module.lut_camera_position);
     engine.rootContext()->setContextProperty("lut_picker_position",
                                              &highSprrow.baseModuleManager->lens_loader_module.lut_picker_position);
-    engine.rootContext()->setContextProperty("lpa_camera_tip_offset",
-                                             &highSprrow.baseModuleManager->lens_loader_module.camera_to_picker_offset);
 
     engine.rootContext()->setContextProperty("lens_loader_parameter",
                                              &highSprrow.baseModuleManager->lens_loader_module.parameters);

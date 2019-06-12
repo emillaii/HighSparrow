@@ -74,7 +74,6 @@ void XtVcMotor::Init()
 
 void XtVcMotor::InitAllVCM()
 {
-    qInfo("VCM num：%d", all_parameter.length());//我在这里加了句把长度
     VCMT_resource_alloc(all_parameter.data(),all_parameter.length());
     Soft_landing_dll_init(1);
 
@@ -281,8 +280,9 @@ bool XtVcMotor::SeekOrigin(int thread)
     int result;
     qInfo("sadas");
     ChangeDiretion(true);
-    if(parameters.findOriginCurrent() > 0)
+    if(parameters.findOriginCurrent() > 0) {
         result = Touch_Go_Zero(vcm_id,parameters.findOriginCurrent(),parameters.touchDistance());
+    }
     else {
 
         SetZeroPos(vcm_id,0);
@@ -347,8 +347,8 @@ bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int
     if(!(checkState()&&checkLimit(max_range)&&checkInterface(max_range)))return false;
     double start_pos = GetOutpuPos();
     double limit = start_pos + (max_range - start_pos)/2;
-    double margin = abs(max_range - start_pos)/2.1;
-    SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.1);
+    double margin = abs(max_range - start_pos)/2.01;
+    SetSoftLanding(speed,max_acc, force, start_pos,limit,margin);
     bool res;
     res = DoSoftLanding();
     res &= WaitSoftLandingDone(timeout);

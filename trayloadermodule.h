@@ -1,4 +1,4 @@
- #ifndef TRAYLOADERMODULE_H
+#ifndef TRAYLOADERMODULE_H
 #define TRAYLOADERMODULE_H
 
 #include "thread_worker_base.h"
@@ -12,7 +12,8 @@ class TrayLoaderModule : public ThreadWorkerBase{
 public:
     TrayLoaderModule(QString name="TrayLoaderModule");
     void Init(XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtCylinder*,XtCylinder*,XtCylinder*,XtCylinder*,TrayClip*,TrayClip*,
-              XtGeneralInput* trayinio,XtGeneralInput* trayoutio,XtGeneralInput*tray_check_io);
+              XtGeneralInput *work_tray_check_io,XtGeneralInput* entrance_tray_check_io,XtGeneralInput* exit_tray_check_io,
+              XtGeneralInput* entrance_clip_check_io,XtGeneralInput* exit_clip_check_io,XtGeneralInput* ready_tray_check_io);
     void performHandling(int cmd);
 
     TrayClip* tray_clip = Q_NULLPTR;
@@ -83,11 +84,12 @@ private:
     XtCylinder* cylinder_ltk2 = Q_NULLPTR; //LTK2气缸
     XtCylinder* cylinder_tray = Q_NULLPTR; //LTL_TRAY气缸
 
-    XtGeneralInput *tray_check_input = Q_NULLPTR;
-
-    XtGeneralInput* tray_entry_input = Q_NULLPTR;
-    XtGeneralInput* tray_exit_input = Q_NULLPTR;
-
+    XtGeneralInput* work_tray_check_io = Q_NULLPTR;
+    XtGeneralInput* entrance_tray_check_io = Q_NULLPTR;
+    XtGeneralInput* exit_tray_check_io = Q_NULLPTR;
+    XtGeneralInput* entrance_clip_check_io = Q_NULLPTR;
+    XtGeneralInput* exit_clip_check_io = Q_NULLPTR;
+    XtGeneralInput* ready_tray_check_io = Q_NULLPTR;
 
 signals:
     void nextTrayPos();

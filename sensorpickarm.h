@@ -13,11 +13,17 @@ public:
     SensorPickArm(QString name = "SensorPickArm");
     void Init(XtMotor* motor_x,XtMotor* motor_y,MaterialPicker * picker1,MaterialPicker * picker2);
     bool move_XY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
+    bool move_XYT1_Synic(const double x,const double y,const double t,const bool check_softlanding = false,int timeout = 10000);
+    bool move_XYT2_Synic(const double x,const double y,const double t,const bool check_softlanding = false,int timeout = 10000);
     bool move_XeYe_Z1_XY(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
     bool move_XeYe_Z2(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XY_Synic(const double step_x,const double step_y,const bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XYT1_Synic(const double step_x,const double step_y,const double step_t1,const bool check_softlanding = false,int timeout = 10000);
+    bool stepMove_XYT1_Pos(const double step_x,const double step_y,const double step_t1,const bool check_softlanding = false,int timeout = 10000);
+    bool waitStepMove_XYT1(int timeout = 10000);
     bool stepMove_XYT2_Synic(const double step_x,const double step_y,const double step_t2,const bool check_softlanding = false,int timeout = 10000);
+    bool stepMove_XYT2_Pos(const double step_x,const double step_y,const double step_t2,const bool check_softlanding = false,int timeout = 10000);
+    bool waitStepMove_XYT2(int timeout = 10000);
 
     bool ZSerchByForce(double speed,double force,bool check_softlanding = false,int timeout = 10000);
     bool ZSerchByForce(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);

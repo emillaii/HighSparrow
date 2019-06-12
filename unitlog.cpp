@@ -58,9 +58,9 @@ bool Unitlog::postDataToELK(QString uuid)
     {
          QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
          QJsonDocument doc(json);
-         //QUrl sfrlog_endpoint = QString("http://192.168.0.252:5044");
-         QString unitLogEndpoint = serverAddress;
-         unitLogEndpoint.append(":").append(QString::number(UNIT_LOG_PORT));
+         QUrl unitLogEndpoint = QString("http://192.168.0.250:5044");
+         // QString unitLogEndpoint = serverAddress;
+         //unitLogEndpoint.append(":").append(QString::number(UNIT_LOG_PORT));
          QNetworkRequest request(unitLogEndpoint);
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));
@@ -82,8 +82,8 @@ bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
      QJsonObject json = QJsonObject::fromVariantMap(data);
      QJsonDocument doc(json);
      qInfo("Sfr log: %s", doc.toJson().toStdString().c_str());
-     QString sfrLogEndpoint = serverAddress;
-     sfrLogEndpoint.append(":").append(QString::number(5045));
+     QString sfrLogEndpoint = QString("http://192.168.0.250:5045"); //= serverAddress;
+     //sfrLogEndpoint.append(":").append(QString::number(5045));
      qInfo(sfrLogEndpoint.toStdString().c_str());
      QNetworkRequest request(sfrLogEndpoint);
      request.setHeader(QNetworkRequest::ContentTypeHeader,

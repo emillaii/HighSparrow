@@ -9,7 +9,7 @@
 #include <qjsonarray.h>
 #include <qjsondocument.h>
 
-wchar_t BaseModuleManager::ip[] =  L"192.168.0.251";
+wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
 wchar_t BaseModuleManager::profile_path1[] = L".\\config\\";
 wchar_t BaseModuleManager::profile_path2[] = L"..\\config\\xt_motion_config.csv";
 
@@ -17,6 +17,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent),
     ErrorBase ("BaseModuleManager")
 {
+    qInfo("main thread id :%d",QThread::currentThreadId());
     this->moveToThread(&work_thread);
     this->work_thread.start();
     QMap<QString,PropertyBase*> temp_map;
@@ -31,11 +32,9 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
             pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
             pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
             pylonPickarmCamera = new BaslerPylonCamera(PICKARM_VISION_CAMERA);
-        } else if(ServerMode()==1){
+        } else{
             pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA2_DL);
             pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SPA_DL);
-        }else{
-
         }
     }
 
@@ -130,7 +129,7 @@ bool BaseModuleManager::loadParameters()
     dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
     dispense_module.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
     sut_carrier.parameters.loadJsonConfig(getCurrentParameterDir().append(SUT_CARRIER_FILE),"sut");
-    if(ServerMode()==1)
+    if(ServerMode())
     {
         sensor_loader_module.loadJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
         sensor_pickarm.parameters.loadJsonConfig(getCurrentParameterDir().append(SENSOR_PICKARM_FILE),SENSOR_PICKARM_PARAMETER);
@@ -142,7 +141,7 @@ bool BaseModuleManager::loadParameters()
         temp_map.insert("exit_clip", &exit_clip.parameters);
         PropertyBase::loadJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE), temp_map);
     }
-    else if(ServerMode()==0)
+    else
     {
         lut_module.loadJsonConfig(getCurrentParameterDir().append(LUT_FILE));
         lut_carrier.parameters.loadJsonConfig(getCurrentParameterDir().append(LUT_CARRIER_FILE),LUT_CARRIER_PARAMETER);
@@ -152,33 +151,7 @@ bool BaseModuleManager::loadParameters()
         trayClipIn.standards_parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_CLIPIN_FILE),TRAY_CLIPIN_PARAMETER);
         trayClipOut.standards_parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_CLIPOUT_FILE),TRAY_CLIPOUT_PARAMETER);
      }
-    else{
-        //single_station_material_pickarm.parameters.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_PICKARM_FILE),MATERIAL_PICKARM_PARAMETER);
-        QMap<QString,PropertyBase*> temp_map;
-        temp_map.insert("material_pickarm",&single_station_material_pickarm.parameters);
-        temp_map.insert("pick_lens_base_position",&single_station_material_pickarm.pick_lens_base_position);
-        temp_map.insert("pick_cmos_base_position",&single_station_material_pickarm.pick_cmos_base_position);
-        temp_map.insert("pick_product_base_position",&single_station_material_pickarm.pick_product_base_position);
-        temp_map.insert("place_lens_base_position",&single_station_material_pickarm.place_lens_base_position);
-        temp_map.insert("place_cmos_base_position",&single_station_material_pickarm.place_cmos_base_position);
-        temp_map.insert("place_product_base_position",&single_station_material_pickarm.place_product_base_position);
-        temp_map.insert("cmos_escape_offset_position",&single_station_material_pickarm.cmos_escape_offset_position);
-        temp_map.insert("lens_to_pr_distance_position",&single_station_material_pickarm.lens_to_pr_distance_position);
-        temp_map.insert("cmos_to_pr_distance_position",&single_station_material_pickarm.cmos_to_pr_distance_position);
-        PropertyBase::loadJsonConfig(getCurrentParameterDir().append(MATERIAL_PICKARM_FILE), temp_map);
-        //single_station_material_loader_module.parameters.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),MATERIAL_LOADER_PARAMETER);
-        QMap<QString,PropertyBase*> map;
-        map.insert("material_loader",&single_station_material_loader_module.parameters);
-        map.insert("sut_pr_position",&single_station_material_loader_module.sut_pr_position);
-        map.insert("lut_pr_position",&single_station_material_loader_module.lut_pr_position);
-        map.insert("updownlook_up_position",&single_station_material_loader_module.updownlook_up_position);
-        map.insert("updownlook_down_position",&single_station_material_loader_module.updownlook_down_position);
-        map.insert("lens_suction_offset",&single_station_material_loader_module.lens_suction_offset);
-        map.insert("sensor_suction_offset",&single_station_material_loader_module.sensor_suction_offset);
-        PropertyBase::saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),map);
-    }
     aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
-     qInfo("start  loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));");
     loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
     loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
@@ -192,6 +165,9 @@ bool BaseModuleManager::loadParameters()
 bool BaseModuleManager::loadconfig()
 {
     loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
+    loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
     return true;
 }
 
@@ -206,7 +182,7 @@ bool BaseModuleManager::saveParameters()
     dispenser.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
     dispense_module.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
     sut_carrier.parameters.saveJsonConfig(getCurrentParameterDir().append(SUT_CARRIER_FILE),"sut");
-    if(ServerMode()==1)
+    if(ServerMode())
     {
         sensor_loader_module.saveJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
         sensor_pickarm.parameters.saveJsonConfig(getCurrentParameterDir().append(SENSOR_PICKARM_FILE),SENSOR_PICKARM_PARAMETER);
@@ -218,7 +194,7 @@ bool BaseModuleManager::saveParameters()
         temp_map.insert("exit_clip", &exit_clip.parameters);
         PropertyBase::saveJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE), temp_map);
     }
-    else if(ServerMode()==0)
+    else
     {
         lut_module.saveJsonConfig(getCurrentParameterDir().append(LUT_FILE));
         lut_carrier.parameters.saveJsonConfig(getCurrentParameterDir().append(LUT_CARRIER_FILE),LUT_CARRIER_PARAMETER);
@@ -228,37 +204,17 @@ bool BaseModuleManager::saveParameters()
         trayClipIn.standards_parameters.saveJsonConfig(getCurrentParameterDir().append(TRAY_CLIPIN_FILE),TRAY_CLIPIN_PARAMETER);
         trayClipOut.standards_parameters.saveJsonConfig(getCurrentParameterDir().append(TRAY_CLIPOUT_FILE),TRAY_CLIPOUT_PARAMETER);
     }
-    else
-    {
-        //single_station_material_pickarm.parameters.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_PICKARM_FILE),MATERIAL_PICKARM_PARAMETER);
-        QMap<QString,PropertyBase*> temp_map;
-        temp_map.insert("material_pickarm",&single_station_material_pickarm.parameters);
-        temp_map.insert("pick_lens_base_position",&single_station_material_pickarm.pick_lens_base_position);
-        temp_map.insert("pick_cmos_base_position",&single_station_material_pickarm.pick_cmos_base_position);
-        temp_map.insert("pick_product_base_position",&single_station_material_pickarm.pick_product_base_position);
-        temp_map.insert("place_lens_base_position",&single_station_material_pickarm.place_lens_base_position);
-        temp_map.insert("place_cmos_base_position",&single_station_material_pickarm.place_cmos_base_position);
-        temp_map.insert("place_product_base_position",&single_station_material_pickarm.place_product_base_position);
-        temp_map.insert("cmos_escape_offset_position",&single_station_material_pickarm.cmos_escape_offset_position);
-        temp_map.insert("lens_to_pr_distance_position",&single_station_material_pickarm.lens_to_pr_distance_position);
-        temp_map.insert("cmos_to_pr_distance_position",&single_station_material_pickarm.cmos_to_pr_distance_position);
-        PropertyBase::saveJsonConfig(getCurrentParameterDir().append(MATERIAL_PICKARM_FILE), temp_map);
-        //single_station_material_loader_module.parameters.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),MATERIAL_LOADER_PARAMETER);
-        QMap<QString,PropertyBase*> map;
-        map.insert("material_loader",&single_station_material_loader_module.parameters);
-        map.insert("sut_pr_position",&single_station_material_loader_module.sut_pr_position);
-        map.insert("lut_pr_position",&single_station_material_loader_module.lut_pr_position);
-        map.insert("updownlook_up_position",&single_station_material_loader_module.updownlook_up_position);
-        map.insert("updownlook_down_position",&single_station_material_loader_module.updownlook_down_position);
-        map.insert("lens_suction_offset",&single_station_material_loader_module.lens_suction_offset);
-        map.insert("sensor_suction_offset",&single_station_material_loader_module.sensor_suction_offset);
-        PropertyBase::saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),map);
-    }
     aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
     saveMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     saveCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
+    return true;
+}
+
+bool BaseModuleManager::loadDispenseParam()
+{
+    dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
     return true;
 }
 
@@ -300,9 +256,7 @@ bool BaseModuleManager::loadProfile()
         {
             InitStruct();
             profile_loaded = true;
-            return true;
         }
-    qInfo("loadStructConfig(SYSTERM_PARAM_DIR) failed！");
     return false;
 }
 
@@ -368,9 +322,7 @@ bool BaseModuleManager::loadMachineConfig(QString file_path)
 bool BaseModuleManager::loadVcmFile(QString file_name)
 {
     QJsonArray array;
-     qInfo("loadVcmFile：%s", file_name.toStdString().c_str());
     if(!loadJsonArray(file_name,array))return false;
-     qInfo("VCM num in json file：%d", array.count());
     for (int i = 0; i < array.count(); i++)
     {
         XtVcMotor* temp_motor = new XtVcMotor();
@@ -503,7 +455,8 @@ bool BaseModuleManager::loadCylinderFiles(QString file_name)
             cylinder.insert(temp_cylinder->parameters.cylinderName(),temp_cylinder);
         else
         {
-            qInfo("vcm motor param name(%s)repeat!",temp_cylinder->parameters.cylinderName().toStdString().c_str());
+            cylinder[temp_cylinder->parameters.cylinderName()]->parameters.read(temp_object);
+//            qInfo("vcm motor param name(%s)repeat!",temp_cylinder->parameters.cylinderName().toStdString().c_str());
             delete temp_cylinder;
         }
     }
@@ -560,7 +513,8 @@ bool BaseModuleManager::loadVisionLoactionFiles(QString file_name)
             vision_locations.insert(temp_location->parameters.locationName(),temp_location);
         else
         {
-            qInfo("vision location param name(%s)repeat!",temp_location->parameters.locationName().toStdString().c_str());
+            vision_locations[temp_location->parameters.locationName()]->parameters.read(temp_object);
+//            qInfo("vision location param name(%s)repeat!",temp_location->parameters.locationName().toStdString().c_str());
             delete temp_location;
         }
     }
@@ -845,6 +799,7 @@ QString BaseModuleManager::getCurrentParameterDir()
 
 bool BaseModuleManager::InitStruct()
 {
+    bool result = true;
     foreach (XtMotor* temp_motor, motors)
     {
         for (int i = 0; i < temp_motor->vertical_limit_parameters.size(); ++i) {
@@ -859,9 +814,32 @@ bool BaseModuleManager::InitStruct()
             limit_motor = GetMotorByName(temp_motor->parallel_limit_parameters[i]->effectMotorYName());
             temp_motor->parallel_limit_motors.append(limit_motor);
         }
-        for (int i = 0; i < temp_motor->io_limit_parameters.size(); ++i) {
-            XtGeneralInput* limit_io = GetInputIoByName(temp_motor->io_limit_parameters[i]->inputIOName());
-            temp_motor->limit_ios.append(limit_io);
+        for (int i = 0; i < temp_motor->io_limit_parameters.size(); ++i)
+        {
+            temp_motor->io_limit_parameters[i]->input_io_indexs.clear();
+            for (int j = 0; j < temp_motor->io_limit_parameters[i]->inputIOName().size(); ++j)
+            {
+                XtGeneralInput* limit_io = GetInputIoByName(temp_motor->io_limit_parameters[i]->inputIOName()[j].toString());
+                if(limit_io  == nullptr)
+                    result = false;
+                else
+                {
+                    temp_motor->io_limit_parameters[i]->input_io_indexs.append(temp_motor->limit_in_ios.count());
+                    temp_motor->limit_in_ios.append(limit_io);
+                }
+            }
+            temp_motor->io_limit_parameters[i]->output_io_indexs.clear();
+            for (int j = 0; j < temp_motor->io_limit_parameters[i]->outputIOName().size(); ++j)
+            {
+                XtGeneralOutput* limit_io = GetOutputIoByName(temp_motor->io_limit_parameters[i]->outputIOName()[j].toString());
+                if(limit_io  == nullptr)
+                    result = false;
+                else
+                {
+                    temp_motor->io_limit_parameters[i]->output_io_indexs.append(temp_motor->limit_out_ios.count());
+                    temp_motor->limit_out_ios.append(limit_io);
+                }
+            }
         }
     }
     foreach (XtVacuum* temp_vacuum, vacuums.values()) {
@@ -926,7 +904,7 @@ bool BaseModuleManager::InitStruct()
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
-    if(ServerMode()==1)
+    if(ServerMode())
     {
         sensor_picker1.Init(GetVcMotorByName(sensor_pickarm.parameters.motorZName()),
                             GetMotorByName(sensor_pickarm.parameters.motorTName()),
@@ -946,7 +924,7 @@ bool BaseModuleManager::InitStruct()
                                   GetVisionLocationByName(sensor_loader_module.parameters.calibrationGlassLocationName()));
         //connect(&sensor_loader_module,&SensorLoaderModule::sendMsgSignal,this,&BaseModuleManager::sendMessageTest);
     }
-    else if(ServerMode()==0)
+    else
     {
         lut_carrier.Init("lut_carrier",GetMotorByName(lut_module.parameters.motorXName()),
                          GetMotorByName(lut_module.parameters.motorYName()),
@@ -955,9 +933,8 @@ bool BaseModuleManager::InitStruct()
         lut_module.Init(&lut_carrier,GetVisionLocationByName(lut_module.parameters.uplookLocationName()),
                         GetVisionLocationByName(lut_module.parameters.loadlookLocationName()),
                         GetVisionLocationByName(lut_module.parameters.mushroomLocationName()),
-                        GetVisionLocationByName(lut_module.parameters.lutGripperLocationName()),
                         GetVacuumByName(lut_module.parameters.vacuum1Name()),
-                        GetVacuumByName(lut_module.parameters.vacuum1Name()),
+                        GetVacuumByName(lut_module.parameters.vacuum2Name()),
                         GetOutputIoByName(aa_head_module.parameters.gripperName()), &sut_module);
         lens_picker.Init(GetVcMotorByName(lens_pick_arm.parameters.motorZName()),
                          GetMotorByName(lens_pick_arm.parameters.motorTName()),
@@ -975,26 +952,8 @@ bool BaseModuleManager::InitStruct()
                                 GetVisionLocationByName(lens_loader_module.parameters.lutLensLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUplookPickerLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookUpLocationName()),
-                                GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()),
-                                GetVisionLocationByName(lens_loader_module.parameters.lpaCalibrationGlassLocationName()));
+                                GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()));
 
-    }
-    else
-    {
-        //single_station_material_pickarm.Init();
-        single_station_material_pickarm.Init(GetMotorByName(single_station_material_pickarm.parameters.motorXName()),
-                                             GetMotorByName(single_station_material_pickarm.parameters.motorYName()),
-                                             GetMotorByName(single_station_material_pickarm.parameters.motorTh1Name()),
-                                             GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name()),
-                                             GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name()),
-                                             GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name()),
-                                             GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName()),
-                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumLensSuctionName()),
-                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumSensorSuctionName()),
-                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumLUTName()),
-                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumSUTName()),
-                                             GetCylinderByName(single_station_material_pickarm.parameters.cylinderName()));
-        single_station_material_loader_module.Init(&single_station_material_pickarm);
     }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
                             GetMotorByName(tray_loader_module.parameters.motorLTKX1Name()),
@@ -1006,9 +965,12 @@ bool BaseModuleManager::InitStruct()
                             GetCylinderByName(tray_loader_module.parameters.cylinderLTK2Name()),
                             GetCylinderByName(tray_loader_module.parameters.cylinderTrayName()),
                             &trayClipIn,&trayClipOut,
-                            GetInputIoByName(tray_loader_module.parameters.clipinInputName()),
-                            GetInputIoByName(tray_loader_module.parameters.clipoutInputName()),
-                            GetInputIoByName(tray_loader_module.parameters.trayInputIoName()));
+                            GetInputIoByName(tray_loader_module.parameters.workTrayCheckIoName()),
+                            GetInputIoByName(tray_loader_module.parameters.entranceTrayCheckIoName()),
+                            GetInputIoByName(tray_loader_module.parameters.exitTrayCheckIoName()),
+                            GetInputIoByName(tray_loader_module.parameters.entranceClipCheckIoName()),
+                            GetInputIoByName(tray_loader_module.parameters.exitClipCheckIoName()),
+                            GetInputIoByName(tray_loader_module.parameters.readyTrayCheckIoName()));
 
     sfrWorkerController = new SfrWorkerController(&aaCoreNew);
     aaCoreNew.setSfrWorkerController(sfrWorkerController);
@@ -1027,12 +989,19 @@ bool BaseModuleManager::InitStruct()
                                   GetCylinderByName(sensor_tray_loder_module.parameters.cylinderEntanceClipPushName()),
                                   GetCylinderByName(sensor_tray_loder_module.parameters.cylinderExitClipPushName()),
                                   GetCylinderByName(sensor_tray_loder_module.parameters.cylinderGripperName()),
-                                  &entrance_clip,&exit_clip);
-
+                                  &entrance_clip,&exit_clip,
+                                  GetInputIoByName(sensor_tray_loder_module.parameters.entranceClipCheckoName()),
+                                  GetInputIoByName(sensor_tray_loder_module.parameters.exitClipCheckIoName()),
+                                  GetInputIoByName(sensor_tray_loder_module.parameters.readyTrayCheckIoName()),
+                                  GetInputIoByName(sensor_tray_loder_module.parameters.kickTrayCheckIoName()),
+                                  GetInputIoByName(sensor_tray_loder_module.parameters.sensorTrayCheckIoName()),
+                                  GetInputIoByName(sensor_tray_loder_module.parameters.vacancyTrayCheckIoName()),
+                                  GetInputIoByName(sensor_tray_loder_module.parameters.entanceTrayChcekIoName()),
+                                  GetInputIoByName(sensor_tray_loder_module.parameters.exitTrayCheckIoName()));
     //todo
     material_tray.resetTrayState(0);
     material_tray.resetTrayState(1);
-    return true;
+    return result;
 }
 
 bool BaseModuleManager::initialDevice()
@@ -1135,10 +1104,8 @@ bool BaseModuleManager::allMotorsSeekOrigin()
 {
     if (ServerMode() == 0) {
         return allMotorsSeekOriginal1();
-    } else if(ServerMode()==1){
+    } else {
         return allMotorsSeekOriginal2();
-    }else{
-        return allMotorsSeekOriginal3();
     }
 }
 
@@ -1149,10 +1116,14 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 
     //if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
     //    return false;
-    GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
+    GetMotorByName(this->lut_module.parameters.motorZName())->SeekOrigin();//LUT_Z
 //    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
     GetVcMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
     GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
+
+    result = GetMotorByName(this->lut_module.parameters.motorZName())->WaitSeekDone();
+    if(!result)return false;
+    GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
 
     result = GetVcMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
     if (!result) return false;
@@ -1166,7 +1137,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
     GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
 
-    //result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
+    result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
 
 //    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();//AA_X
@@ -1175,6 +1146,10 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();//AA_B
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();//AA_C
 
+    result = GetMotorByName(this->lut_module.parameters.motorYName())->WaitSeekDone();
+    if(!result)return false;
+    GetMotorByName(this->lut_module.parameters.motorXName())->SeekOrigin();//LUT_X
+
     //缩回气缸
     GetCylinderByName(this->tray_loader_module.parameters.cylinderClipName())->Set(0);
 
@@ -1182,10 +1157,6 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 
     GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->SeekOrigin();//LTOE
 
-    result = GetMotorByName(this->lut_module.parameters.motorYName())->WaitSeekDone();
-    if(!result)return false;
-    GetMotorByName(this->lut_module.parameters.motorXName())->SeekOrigin();//LUT_X
-    GetMotorByName(this->lut_module.parameters.motorZName())->SeekOrigin();//LUT_Z
 
 
     result = GetMotorByName(this->lens_pick_arm.parameters.motorYName())->WaitSeekDone();
@@ -1207,13 +1178,13 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
 
+
 //    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
 //    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
 
-    result &= GetMotorByName(this->lut_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->lut_module.parameters.motorXName())->WaitSeekDone();
 
     result &= GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->WaitSeekDone();
@@ -1226,6 +1197,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     {
         qInfo("all motors seeked origin");
         setHomeState(true);
+        this->aa_head_module.moveToMushroomPosition(true);
         return true;
     }
     return false;
@@ -1264,8 +1236,8 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
-//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
-//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
+    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
+    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
     if(!result)return false;
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->SeekOrigin();
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();
@@ -1295,38 +1267,9 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     {
         qInfo("all motor seeked origin successed!");
         setHomeState(true);
+        this->aa_head_module.moveToMushroomPosition(true);
         return  true;
     }
-    return false;
-}
-
-bool BaseModuleManager::allMotorsSeekOriginal3()
-{
-    qInfo("allMotorsSeekOriginal3 Start");
-    bool result;
-    GetMotorByName(single_station_material_pickarm.parameters.motorXName())->SeekOrigin();
-    GetMotorByName(single_station_material_pickarm.parameters.motorYName())->SeekOrigin();
-    //GetMotorByName(single_station_material_pickarm.parameters.motorZName())->SeekOrigin();
-    result = GetMotorByName(single_station_material_pickarm.parameters.motorXName())->WaitSeekDone();
-    result &= GetMotorByName(single_station_material_pickarm.parameters.motorYName())->WaitSeekDone();
-    //result &= GetMotorByName(single_station_material_pickarm.parameters.motorZName())->WaitSeekDone();
-
-    GetMotorByName(single_station_material_pickarm.parameters.motorTh1Name())->SeekOrigin();
-    GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name())->SeekOrigin();
-    result &= GetMotorByName(single_station_material_pickarm.parameters.motorTh1Name())->WaitSeekDone();
-    result &= GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name())->WaitSeekDone();
-
-    GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->SeekOrigin();
-    GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->SeekOrigin();
-    result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->WaitSeekDone();
-    result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->WaitSeekDone();
-
-    if(result){
-        qInfo("all motor seeked origin successed!");
-        setHomeState(true);
-        return true;
-    }
-
     return false;
 }
 
@@ -1371,7 +1314,7 @@ void BaseModuleManager::loadSensorTrayLoaderMuduleParameter()
     temp_map.insert("sensor_clip_stand", &sensor_clip_stand);
     temp_map.insert("entance_clip", &entrance_clip.parameters);
     temp_map.insert("exit_clip", &exit_clip.parameters);
-    PropertyBase::loadJsonConfig(SENSOR_TRAY_LOADER_FILE_NAME, temp_map);
+    PropertyBase::loadJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE), temp_map);
 }
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)
@@ -1551,10 +1494,25 @@ bool BaseModuleManager::performUpDnLookCalibration()
 }
 bool BaseModuleManager::performLensUpDnLookCalibration()
 {
-    this->lens_loader_module.calculateCameraToPickerOffset();
-    this->lut_module.lpa_camera_to_picker_offset.setX(-lens_loader_module.camera_to_picker_offset.X());
-    this->lut_module.lpa_camera_to_picker_offset.setY(-lens_loader_module.camera_to_picker_offset.Y());
-    qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", lens_loader_module.camera_to_picker_offset.X() ,lens_loader_module.camera_to_picker_offset.Y());
+    //ToDo: This is the calibration glass width and height in mm
+    double realWidth = 7, realHeight = 7;
+    PrOffset offset1, offset2;
+    this->lens_loader_module.performUpdowlookUpPR(offset1);
+    offset1.X /= offset1.W/realWidth;
+    offset1.Y /= offset1.H/realHeight;
+    qInfo("Lens loader UpDnlook up PR: %f %f %f %f %f", offset1.X, offset1.Y, offset1.Theta, offset1.W, offset1.H);
+    this->lens_loader_module.performUpDownlookDownPR(offset2);
+    offset2.X /= offset2.W/realWidth;
+    offset2.Y /= offset2.H/realHeight;
+    qInfo("Lens loader UpDnlook down PR: %f %f %f %f %f", offset2.X, offset2.Y, offset2.Theta, offset2.W, offset2.H);
+    double offsetX = offset1.X - offset2.X;
+    double offsetY = offset1.Y - offset2.Y;
+    this->lens_loader_module.camera_to_picker_offset.setX(offsetX);
+    this->lens_loader_module.camera_to_picker_offset.setY(offsetY);
+    this->lut_module.lpa_camera_to_picker_offset.setX(-offsetX);
+    this->lut_module.lpa_camera_to_picker_offset.setY(-offsetY);
+
+    qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", offsetX,offsetY);
     return true;
 }
 
@@ -1645,7 +1603,6 @@ bool BaseModuleManager::getInput(QString name)
 
 void BaseModuleManager::motorSeekOrigin(QString name)
 {
-    qInfo("motorSeekOrigin: %s", name.toStdString().c_str());
     if (motors.contains(name)) {
         qInfo("Start motorSeekOrigin: %s", name.toStdString().c_str());
         motors[name]->SeekOrigin();
@@ -1740,6 +1697,14 @@ void BaseModuleManager::loadSensorLoaderParameter()
 {
     material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
     sensor_loader_module.loadJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
+}
+
+void BaseModuleManager::loadLensTrayLoaderParameter()
+{
+    material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
+    tray_loader_module.parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_LOADER_FILE),TRAY_LOADER_PARAMETER);
+    trayClipIn.standards_parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_CLIPIN_FILE),TRAY_CLIPIN_PARAMETER);
+    trayClipOut.standards_parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_CLIPOUT_FILE),TRAY_CLIPOUT_PARAMETER);
 }
 
 double BaseModuleManager::showChartCalibrationRotation()

@@ -3,6 +3,8 @@
 
 #include "PropertyBase.h"
 
+#include <QVariantList>
+
 class DispenserParameter:public PropertyBase
 {
     Q_OBJECT
@@ -11,6 +13,8 @@ public:
     Q_PROPERTY(double openOffset READ openOffset WRITE setOpenOffset NOTIFY openOffsetChanged)
     Q_PROPERTY(double closeOffset READ closeOffset WRITE setCloseOffset NOTIFY closeOffsetChanged)
     Q_PROPERTY(double maximumSpeed READ maximumSpeed WRITE setMaximumSpeed NOTIFY maximumSpeedChanged)
+    Q_PROPERTY(int speedCount READ speedCount WRITE setSpeedCount NOTIFY speedCountChanged)
+    Q_PROPERTY(QVariantList lineSpeeds READ lineSpeeds WRITE setLineSpeeds NOTIFY lineSpeedsChanged)
     Q_PROPERTY(double endSpeed READ endSpeed WRITE setEndSpeed NOTIFY endSpeedChanged)
     Q_PROPERTY(QString dispenseIo READ dispenseIo WRITE setDispenseIo NOTIFY DispenseIoChanged)
 //    Q_PROPERTY(double theta READ theta WRITE setTheta NOTIFY ThetaChanged)
@@ -41,6 +45,16 @@ public:
     QString dispenseIo() const
     {
         return m_dispenseIo;
+    }
+
+    QVariantList lineSpeeds() const
+    {
+        return m_lineSpeeds;
+    }
+
+    int speedCount() const
+    {
+        return m_speedCount;
     }
 
 public slots:
@@ -102,6 +116,37 @@ public slots:
         emit DispenseIoChanged(m_dispenseIo);
     }
 
+    void setLineSpeeds(QVariantList lineSpeeds)
+    {
+        if (m_lineSpeeds == lineSpeeds)
+            return;
+
+        m_lineSpeeds = lineSpeeds;
+        emit lineSpeedsChanged(m_lineSpeeds);
+    }
+
+    void setSpeedCount(int speedCount)
+    {
+        if (m_speedCount == speedCount)
+            return;
+
+        m_speedCount = speedCount;
+        int temp_count = 2*m_speedCount;
+        while(m_lineSpeeds.size()!= temp_count)
+        {
+            if(m_lineSpeeds.size() > temp_count)
+            {
+                m_lineSpeeds.removeLast();
+            }
+            else if (m_lineSpeeds.size() < temp_count)
+            {
+                m_lineSpeeds.append(m_maximumSpeed);
+                m_lineSpeeds.append(m_endSpeed);
+            }
+        }
+        emit speedCountChanged(m_speedCount);
+    }
+
 signals:
     void openOffsetChanged(double openOffset);
 
@@ -123,6 +168,10 @@ signals:
 
     void DispenseIoChanged(QString dispenseIo);
 
+    void lineSpeedsChanged(QVariantList lineSpeeds);
+
+    void speedCountChanged(int speedCount);
+
 private:
     double m_openOffset = 0;
     double m_closeOffset = 0;
@@ -130,6 +179,8 @@ private:
     double m_endSpeed = 0;
     //    double m_theta = 0;
     QString m_dispenseIo ="SUT_DISPENSE";
+    QVariantList m_lineSpeeds;
+    int m_speedCount = 0;
 };
 
 #endif // DISPENSER_PARAMETER_H

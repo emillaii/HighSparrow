@@ -8,9 +8,15 @@ LensPickArm::LensPickArm(QString name):ErrorBase (name)
 void LensPickArm::Init(XtMotor *motor_x_tray, XtMotor *motor_x, XtMotor *motor_y, MaterialPicker *picker)
 {
     this->motor_x_tray = motor_x_tray;
+    parts.append(motor_x_tray);
     this->motor_x = motor_x;
+    parts.append(motor_x);
     this->motor_y = motor_y;
+    parts.append(motor_y);
     this->picker = picker;
+    parts.append(picker->motor_z);
+    parts.append(picker->motor_t);
+    parts.append(picker->vacuum);
 }
 
 bool LensPickArm::move_XtXY_Synic(QPointF position,double x,bool check_softlanding,int timeout)
@@ -81,30 +87,32 @@ bool LensPickArm::stepMove_XYTp_Synic(PrOffset position,bool check_softlanding,i
     return result;
 }
 
+bool LensPickArm::stepMove_XYTp_Pos(PrOffset position, bool check_softlanding, int timeout)
+{
+    if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
+    double target_x = position.X + motor_x->GetFeedbackPos();
+    double target_y = position.Y +  motor_y->GetFeedbackPos();
+    double target_t = position.Theta +  picker->motor_t->GetFeedbackPos();
+    bool result = motor_x->MoveToPos(target_x);
+    result &= motor_y->MoveToPos(target_y);
+    result &= picker->motor_t->MoveToPos(target_t);
+    return result;
+}
+
+bool LensPickArm::waitStepMove_XYTp(int timeout)
+{
+    bool result = motor_x->WaitArrivedTargetPos(timeout);
+    result &= motor_y->WaitArrivedTargetPos(timeout);
+    result &= picker->motor_t->WaitArrivedTargetPos(timeout);
+    return result;
+}
+
 bool LensPickArm::stepMove_T_Syncic(double t, int timeout)
 {
      double target_t = t +  picker->motor_t->GetFeedbackPos();
      picker->motor_t->StepMove(t);
      bool result = picker->motor_t->WaitArrivedTargetPos(target_t,timeout);
      return result;
-}
-
-bool LensPickArm::stepMove_XYT1_Synic(const double step_x, const double step_y, const double step_t1, const bool check_softlanding, int timeout)
-{
-    if(check_softlanding)
-    {
-        if(!picker->motor_z->resetSoftLanding(timeout))return false;
-    }
-    double target_x = motor_x->GetFeedbackPos() + step_x;
-    double target_y = motor_y->GetFeedbackPos() + step_y;
-    double target_t = picker->motor_t->GetFeedbackPos() + step_t1;
-    motor_x->StepMove(step_x);
-    motor_y->StepMove(step_y);
-    picker->motor_t->StepMove(step_t1);
-    bool resut = motor_x->WaitArrivedTargetPos(target_x);
-    resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
-    resut &= picker->motor_t->WaitArrivedTargetPos(target_t,timeout);
-    return resut;
 }
 
 bool LensPickArm::Move_SZ_Sync(double z,bool check_softlanding, int timeout)
@@ -129,7 +137,7 @@ bool LensPickArm::ZSerchByForce(double speed, double force, double limit, double
 {
     bool result = picker->motor_z->SearchPosByForce(speed,force,limit,margin, timeout);
     if(result)
-        result &= picker->vacuum->Set(open_vacuum,true,finish_time);
+        result &= picker->vacuum->Set(open_vacuum);
     else {
         qInfo("SearchPosByForce fail");
     }

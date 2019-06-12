@@ -234,6 +234,23 @@ bool AAHeadModule::moveToSync(double x, double y, double z, double c)
     return result;
 }
 
+bool AAHeadModule::moveToSZ_XYC_Z_Sync(double x, double y, double z, double c)
+{
+    bool result = motor_z->MoveToPosSync(0);
+    if(result)
+    {
+        result &= motor_x->MoveToPos(x);
+        result &= motor_y->MoveToPos(y);
+        result &= motor_c->MoveToPos(c);
+        result &= motor_x->WaitArrivedTargetPos(x);
+        result &= motor_y->WaitArrivedTargetPos(y);
+        result &= motor_c->WaitArrivedTargetPos(c);
+    }
+    if(result)
+        result &= motor_z->MoveToPosSync(z);
+    return result;
+}
+
 void AAHeadModule::receiveLensFromLut(double offset_x, double offset_y, double offset_theta)
 {
     qInfo("receiveSensorFromSut %f %f %f",offset_x,offset_y,offset_theta);

@@ -47,8 +47,9 @@ public:
     void MotoAAPosition();
     mPoint6D GetFeedBack();
     void sendSensrRequest(int sut_state);
-    bool waitForLoadSensor(bool &is_run,int time_out = 60000);
+    bool waitForLoadSensor(bool &is_run,int time_out = 600000);
     bool moveToSync(double x, double y, double z,double c);
+    bool moveToSZ_XYC_Z_Sync(double x, double y, double z,double c);
 signals:
     void sendSensrRequestToSut(int sut_state);
 public slots:
@@ -64,13 +65,13 @@ public:
     AAHeadParameters parameters;
     Position6D mushroom_position;
     bool waiting_lens;
-    double uplook_x;
-    double uplook_y;
-    double uplook_theta;
+    double uplook_x = 0;
+    double uplook_y = 0;
+    double uplook_theta = 0;
     bool waiting_sensor;
-    double offset_x;
-    double offset_y;
-    double offset_theta;
+    double offset_x = 0;
+    double offset_y = 0;
+    double offset_theta = 0;
 private:
     XtMotor* motor_x = Q_NULLPTR;
     XtMotor* motor_y = Q_NULLPTR;

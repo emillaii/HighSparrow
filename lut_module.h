@@ -27,7 +27,7 @@ class LutModule : public ThreadWorkerBase
 public:
     explicit LutModule(QString name = "LUTModule", QObject * parent = nullptr);
     void Init(MaterialCarrier* carrier,
-              VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, VisionLocation* lut_gripper_location,
+              VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location,
               XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper, SutModule* sut);
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
@@ -43,10 +43,14 @@ public:
     Position3D aa1_picklens_position;
     Position3D aa1_unpicklens_position;
     Position3D aa1_uplook_position;
+    Position3D aa1_ready_position;
+
     Position3D aa2_updownlook_position;
     Position3D aa2_picklens_position;
     Position3D aa2_unpicklens_position;
     Position3D aa2_uplook_position;
+    Position3D aa2_ready_position;
+
     Position3D aa1_mushroom_position;
     Position3D aa2_mushroom_position;
 signals:
@@ -69,7 +73,6 @@ private:
     VisionLocation* uplook_location;
     VisionLocation* load_location;
     VisionLocation* mushroom_location;
-    VisionLocation* gripper_location;
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;
     QMutex loader_mutext;
@@ -85,11 +88,13 @@ private:
     void sendPrEvent(const PrOffset pr_offset);
 public:
     Q_INVOKABLE int getConnectedClient();
-    void calculcateRelativePosition();
+    Q_INVOKABLE void calculcateRelativePosition();
     Q_INVOKABLE bool moveToAA1UplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA1UplookPR(bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAA2UplookPR(bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLutDownlookloadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLutDownlookUnloadPos(bool check_autochthonous = false);
@@ -106,8 +111,13 @@ public:
     Q_INVOKABLE bool moveToAA2UnPickLens(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA1MushroomLens(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2MushroomLens(bool check_autochthonous = false);
-    Q_INVOKABLE bool aa1PrToBond();
-    Q_INVOKABLE bool aa2PrToBond();
+
+    bool moveToAA1readyPos(bool check_autochthonous = false);
+    bool moveToAA2readyPos(bool check_autochthonous = false);
+
+    bool checkLutLens(bool check_state);
+    bool checkLutNgLens(bool check_state);
+
     bool stepMove_XY_Sync(double x,double y);
 
 };

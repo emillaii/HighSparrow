@@ -462,7 +462,7 @@ ItemDelegate {
                                         material_tray.setTrayCurrent(tc_ncol.text-1,tc_nrow.text-1,1)
                                         //6232
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY
-                                                                           +SensorLoaderModule.TO_PICK2
+                                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
                                                                            +SensorLoaderModule.VACANCY_PR
                                                                            +SensorLoaderModule.SENSOR_TRAY2)
                                     }
@@ -472,7 +472,7 @@ ItemDelegate {
                                     onClicked:{
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_PRODUCT_TO_TRAY
-                                                                           +SensorLoaderModule.TO_PICK2
+                                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
                                                                            +SensorLoaderModule.VACANCY_PR
                                                                            +SensorLoaderModule.SENSOR_TRAY2)
                                     }
@@ -489,7 +489,7 @@ ItemDelegate {
                                     onClicked: {
                                         //2110
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_SENSOR_TO_SUT1
-                                                                           +SensorLoaderModule.TO_PICK1
+                                                                           +SensorLoaderModule.TO_PLACE_SENSOR_OFFSET
                                                                            +SensorLoaderModule.RESET_PR)
                                     }
                                 }
@@ -500,7 +500,7 @@ ItemDelegate {
                                     onClicked: {
                                         //7263
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
-                                                                           +SensorLoaderModule.TO_PICK2
+                                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
                                                                            +SensorLoaderModule.PRODUCT_PR
                                                                            +SensorLoaderModule.SUT_POS1)
                                     }
@@ -512,7 +512,7 @@ ItemDelegate {
                                     onClicked: {
                                         //4253
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1
-                                                                           +SensorLoaderModule.TO_PICK2
+                                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
                                                                            +SensorLoaderModule.NG_SENSOR_PR
                                                                            +SensorLoaderModule.SUT_POS1)
                                     }
@@ -529,7 +529,7 @@ ItemDelegate {
                                     onClicked: {
                                         //2114
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_SENSOR_TO_SUT1
-                                                                           +SensorLoaderModule.TO_PICK1
+                                                                           +SensorLoaderModule.TO_PLACE_SENSOR_OFFSET
                                                                            +SensorLoaderModule.RESET_PR
                                                                            +SensorLoaderModule.SUT_POS2)
                                     }
@@ -541,7 +541,7 @@ ItemDelegate {
                                     onClicked: {
                                         //7264
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
-                                                                           +SensorLoaderModule.TO_PICK2
+                                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
                                                                            +SensorLoaderModule.PRODUCT_PR
                                                                            +SensorLoaderModule.SUT_POS2)
                                     }
@@ -552,7 +552,7 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         //254
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK2
+                                        sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
                                                                            +SensorLoaderModule.NG_SENSOR_PR
                                                                            +SensorLoaderModule.SUT_POS2)
                                     }

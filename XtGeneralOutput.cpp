@@ -104,6 +104,17 @@ bool XtGeneralOutput::Value()
     return (state==1);
 }
 
+bool XtGeneralOutput::checkState(bool check_state)
+{
+    if(output_id<0)
+        return false;
+    int state;
+    int res = XT_Controler_Extend::Get_IoOut_State(output_id, state);
+    if(res!=1)
+        return false;
+    return (state == check_state);
+}
+
 QString XtGeneralOutput::Name()
 {
     return name;

@@ -28,9 +28,13 @@ public:
               XtVacuum *vacuum,XtCylinder* popgpin);
     void loadParams(QString file_name);
     void saveJsonConfig(QString file_name);
+    bool checkSutSensorOrProduct(bool check_state);
+
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    bool moveToDownlookPR(bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToReadyPos();
     Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool toolDownlookPR(PrOffset &offset,bool close_lighting = true,bool motion = false);
     Q_INVOKABLE bool toolUplookPR(PrOffset &offset,bool close_lighting = true,bool motion = false);

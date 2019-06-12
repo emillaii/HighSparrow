@@ -59,7 +59,7 @@ void ThreadWorkerBase::receiveOperation(const int sender_id,const int operation_
 int ThreadWorkerBase::waitMessageReturn(bool &interruput)
 {
     while (interruput) {
-        QThread::msleep(100);
+        QThread::msleep(1000);
         {
             QMutexLocker temp_locker(&message_mutex);
             if(message_returned)

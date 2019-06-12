@@ -109,7 +109,7 @@ QImage BaslerPylonCamera::getImage()
 {
     QMutexLocker locker(&mutex);
     QImage image_copy = latestImage.copy();
-    return image_copy;
+    return std::move(image_copy);
 }
 
 bool BaslerPylonCamera::isCameraGrabbing() { return isGrabbing; }

@@ -15,7 +15,15 @@ public:
     void Init(XtMotor* motor_tray,XtMotor* motor_kick,XtMotor* motor_stie,XtMotor* motor_stoe,XtMotor* motor_push,
               XtCylinder* kick1,XtCylinder* kick2,XtCylinder* hold_tray,XtCylinder* hold_vacancy,
               XtCylinder* entrance_clip_push,XtCylinder* exit_clip_push,XtCylinder* gripper,
-              SensorClip* entrance_clip,SensorClip* exit_clip);
+              SensorClip* entrance_clip,SensorClip* exit_clip,
+              XtGeneralInput* entrance_clip_check_io,
+              XtGeneralInput* exit_clip_check_io,
+              XtGeneralInput* ready_tray_check_io,
+              XtGeneralInput* kick_tray_check_io,
+              XtGeneralInput* sensor_tray_check_io,
+              XtGeneralInput* vacancy_tray_check_io,
+              XtGeneralInput* entrance_tray_check_io,
+              XtGeneralInput* exit_tray_check_io);
 signals:
     void sendChangeTrayFinish();
     // ThreadWorkerBase interface
@@ -26,6 +34,7 @@ public slots:
     void receiveChangeTray();
 private:
     void run(bool has_material);
+    void runHandly();
     void resetLogic();
 public:
     SensorTrayLoaderParameter parameters;
@@ -45,6 +54,15 @@ public:
     SensorClip* entrance_clip;
     SensorClip* exit_clip;
 
+    XtGeneralInput* entrance_clip_check_io = Q_NULLPTR;
+    XtGeneralInput* exit_clip_check_io = Q_NULLPTR;
+    XtGeneralInput* ready_tray_check_io = Q_NULLPTR;
+    XtGeneralInput* kick_tray_check_io = Q_NULLPTR;
+    XtGeneralInput* sensor_tray_check_io = Q_NULLPTR;
+    XtGeneralInput* vacancy_tray_check_io = Q_NULLPTR;
+    XtGeneralInput* entrance_tray_check_io = Q_NULLPTR;
+    XtGeneralInput* exit_tray_check_io = Q_NULLPTR;
+
     bool movetoSTIEColumnIndex(int);
     bool movetoSTOEColumnIndex(int);
     bool movetoPushMotorSafePosotion();
@@ -59,20 +77,26 @@ public:
 
 private:
     bool is_run = false;
-    bool moveToStartKick();
-    bool moveToUpSensorTray();
-    bool moveToWaitVacancyTray();
-    bool moveToChangeVacancyTrayAndUpSensorTray();
-    bool moveToGetTray();
-    bool moveToGetTrayAndKickOutTray(bool has_vacancy_tray = true);
-    bool moveToPutVacancyTray();
-    bool moveToPutSensorTray();
-    bool moveToBackKickAndPutSensorTray();
-    bool moveToWorkPos();
+    bool moveToDownTrayAndReadyToPush(bool need_check);
+    bool moveToUpReadyTray(bool has_tray,bool need_check);
+    bool moveToWaitHandleTray();
+    bool moveToChangeVacancyTrayAndUpReadyTray(bool has_vacancy_tray,bool need_check);
+    bool moveToPullNextTray(bool need_check);
+    bool moveToPullNextTrayAndPushOutTray(bool has_vacancy_tray,bool need_check);
+    bool moveToPutFirstTray();
+    bool moveToPutTray();
+    bool moveToWorkPos(bool need_check);
     bool moveToEntranceClipNextPos();
     bool moveToExitClipNextPos();
 
     bool moveToDownsensorTray();
+
+    bool checkEntanceTray(bool check_state);
+    bool checkSensorTray(bool check_state);
+    bool checkKickTray(bool check_state);
+    bool checkReadyTray(bool check_state);
+    bool checkVacancyTray(bool check_state);
+    bool checkExitTray(bool check_state);
 };
 
 #endif // SENSORTRAYLOADERMODULE_H

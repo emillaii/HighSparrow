@@ -48,7 +48,9 @@ public:
     void CleanUpCurve();
 
     DISPENSER_STATE GetState();
-
+private:
+    double getMaxSpeed(int index);
+    double getEndSpeed(int index);
 public:
     DispenserParameter parameters;
 private:

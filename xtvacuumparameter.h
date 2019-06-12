@@ -14,6 +14,8 @@ public:
     Q_PROPERTY(QString outIoName READ outIoName WRITE setOutIoName NOTIFY outIoNameChanged)
     Q_PROPERTY(QString inIoName READ inIoName WRITE setInIoName NOTIFY inIoNameChanged)
     Q_PROPERTY(QString breakIoName READ breakIoName WRITE setBreakIoName NOTIFY breakIoNameChanged)
+    Q_PROPERTY(int outTime READ outTime WRITE setOutTime NOTIFY outTimeChanged)
+    Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
     QString vacuumName() const
     {
         return m_vacuumName;
@@ -31,6 +33,16 @@ public:
     QString breakIoName() const
     {
         return m_breakIoName;
+    }
+
+    int outTime() const
+    {
+        return m_outTime;
+    }
+
+    int finishDelay() const
+    {
+        return m_finishDelay;
     }
 
 public slots:
@@ -69,6 +81,24 @@ public slots:
         emit breakIoNameChanged(m_breakIoName);
     }
 
+    void setOutTime(int outTime)
+    {
+        if (m_outTime == outTime)
+            return;
+
+        m_outTime = outTime;
+        emit outTimeChanged(m_outTime);
+    }
+
+    void setFinishDelay(int finishDelay)
+    {
+        if (m_finishDelay == finishDelay)
+            return;
+
+        m_finishDelay = finishDelay;
+        emit finishDelayChanged(m_finishDelay);
+    }
+
 signals:
     void vacuumNameChanged(QString vacuumName);
     void outIoNameChanged(QString outIoName);
@@ -77,11 +107,17 @@ signals:
 
     void breakIoNameChanged(QString breakIoName);
 
+    void outTimeChanged(int outTime);
+
+    void finishDelayChanged(int finishDelay);
+
 private:
     QString m_vacuumName = "Vcauum";
     QString m_outIoName = "";
     QString m_inIoName = "";
     QString m_breakIoName = "";
+    int m_outTime = 200;
+    int m_finishDelay = 0;
 };
 
 #endif // XTVACUUMPARAMETER_H

@@ -24,6 +24,7 @@ public:
     void SetOnTillTimeSpan(int time_span, int thread);
     void WaitForFInish(int thread);
     bool Value();
+    bool checkState(bool check_state);
     QString Name();
 private:
     QString name;

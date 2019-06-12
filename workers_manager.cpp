@@ -32,8 +32,13 @@ void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message
     if(level == ErrorLevel::ErrorMustStop)
         emit stopWorkers();
 
+    qInfo("show alarm %s",error_message.toStdString().c_str());
+
+    this->setShowAlarmDialog(true);
+    this->workersState.insert(sender_id, level);
+    this->workersError.insert(sender_id, error_message);
     //三色灯
-    showAlarm(sender_id,level,error_message);
+//    showAlarm(sender_id,level,error_message);
 }
 
 bool WorkersManager::sendMessageTest(QString title, QString content)
@@ -52,9 +57,6 @@ void WorkersManager::showAlarm(const int sender_id, const int level, const QStri
     this->setShowAlarmDialog(true);
     this->workersState.insert(sender_id, level);
     this->workersError.insert(sender_id, error_message);
-    if(level == ErrorLevel::TipNonblock||level == ErrorLevel::ErrorMustStop)
-        return;
-    //todo 显示错误窗口
 }
 
 void WorkersManager::startWorkers(int run_mode)

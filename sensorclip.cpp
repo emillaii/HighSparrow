@@ -53,7 +53,7 @@ double SensorClip::getNextPosition()
     return getCurrentPosition();
 }
 
-double SensorClip::getChangeState()
+bool SensorClip::getChangeState()
 {
     return parameters.needChange();
 }
@@ -66,5 +66,6 @@ void SensorClip::finishCurrentPosition()
 void SensorClip::resetClip()
 {
     parameters.setNeedChange(false);
+    parameters.setFinishCurrent(false);
     parameters.setCurrentIndex(0);
 }

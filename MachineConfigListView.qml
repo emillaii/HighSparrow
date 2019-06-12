@@ -22,10 +22,8 @@ ListView {
                 case 9 :
                     if (baseModuleManager.getServerMode() === 0)
                         return "LensPickArmModuleView.qml"
-                    else if(baseModuleManager.getServerMode()===1)
-                        return "SensorLoaderModuleView.qml"
                     else
-                        return "SingleStationMaterialLoaderModuleView.qml"
+                        return "SensorLoaderModuleView.qml"
                 case 10:
                     if (baseModuleManager.getServerMode() === 0)
                         return "TrayLoaderModuleView.qml"

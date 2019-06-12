@@ -53,6 +53,7 @@ void DispenseModule::updatePath()
             mechPoints.push_back(QPointF(-mechPoint.x(), -mechPoint.y()));
         }
     }
+     dispenser->parameters.setSpeedCount(mechPoints.size());
     qInfo("read point :%d",mechPoints.size());
 }
 

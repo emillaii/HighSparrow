@@ -46,12 +46,14 @@ public:
                    bool is_debug = false, sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER,
                    double estimated_fov_slope = -16, double zOffset=0);
     ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
-    ErrorCodeStruct performMTF(bool write_log = false);
+    ErrorCodeStruct performMTF(QJsonValue params, bool write_log = false);
     ErrorCodeStruct performZOffset(double zOffset);
+    ErrorCodeStruct performXYOffset(double xOffset, double yOffset);
     ErrorCodeStruct performDelay(int);
     ErrorCodeStruct performCameraUnload();
     ErrorCodeStruct performUV(int uv_time);
     ErrorCodeStruct performReject();
+    ErrorCodeStruct performAccept();
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
@@ -66,8 +68,11 @@ public:
     AAData mtf_log;   // For Display MTF Log
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
+
+    AACoreStates states;
 private:
     bool is_run = false;
+    QMutex lut_mutex;
     void run(bool has_material);
 private:
     QString loopTestResult;

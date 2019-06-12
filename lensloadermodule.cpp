@@ -607,7 +607,7 @@ bool LensLoaderModule::isRunning()
 void LensLoaderModule::startWork(int run_mode)
 {
     qInfo("Lensloader start run_mode :%d",run_mode);
-    if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)run(true);
+    if(run_mode == RunMode::Normal||run_mode == RunMode::OnlyLeftAA||run_mode == RunMode::OnlyRightAA)run(true);
     else if(run_mode == RunMode::NoMaterial)run(false);
 }
 

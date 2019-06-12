@@ -4,7 +4,6 @@ import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
 
-
 ItemDelegate {
     width: parent.width
     contentItem: ColumnLayout {
@@ -70,41 +69,8 @@ ItemDelegate {
                 SUTToollookPosition {}
             }
             GroupBox{
-                title: qsTr("UpDn UpLook Calibration Position")
-                SUTToolUplookPosition {}
-            }
-            GroupBox{
                 title: qsTr("Safety Position")
                 SUTSafetyPositionView {}
-            }
-            RowLayout {
-                GroupBox {
-                    title: qsTr("Updownlook Camera Offset")
-                    ColumnLayout {
-                        RowLayout {
-                            Button{
-                                text:qsTr("UpDn Calib")
-                                onClicked: {
-                                    logicManager.performUpDnLookCalibration()
-                                }
-                            }
-                            Label {
-                                text: qsTr("Camera Offset")
-                            }
-                            TextField {
-                                text: sutParams.cameraTheta
-                                horizontalAlignment: TextInput.AlignHCenter
-                                validator: DoubleValidator {
-                                    decimals: 6
-                                    notation: DoubleValidator.StandardNotation
-                                }
-                                onEditingFinished: {
-                                    sutParams.setCameraTheta(text)
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }

@@ -13,10 +13,10 @@
 class SingleheadLSutModule : public ThreadWorkerBase
 {
     Q_OBJECT
-    Q_ENUMS(HandleEnum)
+    Q_ENUMS(HandleMoveToPosition)
 
 public:
-    enum HandleMoveToPoaition
+    enum HandleMoveToPosition
     {
         MOVE_TO_MUSHROOM_POSITION = 1,
         MOVE_TO_LOAD_POSITION = 2,
@@ -27,33 +27,22 @@ public:
 public:
     SingleheadLSutModule(QString name = "LSutModule", QObject *parent = nullptr);
     void Init(MaterialCarrier* _sut_carrier,XtCylinder* _pogopin);
-    Q_INVOKABLE void performHandling(int cmd);
 
     MaterialCarrier* sut_carrier;
 
-    Position3D load_uplook_position;
-    Position lpa_camera_to_picker_offset;
-    Position3D lut_load_position;
-    Position3D lut_downlook_load_position;
-    Position3D lut_downlook_unload_position;
-    Position3D aa_updownlook_position;
-    Position3D aa_picklens_position;
-    Position3D aa_unpicklens_position;
-    Position3D aa_uplook_position;
-    Position3D aa_mushroom_position;
-
-    Position3D sut_load_position;
+    Position3D load_position;
     Position3D downlook_position;
-    Position3D tool_downlook_position;
+    Position3D calibration_position;
     Position3D mushroom_positon;
-    Position3D tool_uplook_positon;
-    PositionT  up_downlook_offset;
 
     SingleHeadLSutParameter parameters;
+
     //! Load LSUT parameters from config file
     void loadParams(QString file_name);
     //! Save LSUT parameters to config file
     void saveParams(QString file_name);
+
+    Q_INVOKABLE void performHandling(int cmd);
 
 public slots:
     void startWork(int run_mode);
@@ -61,14 +50,9 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
 private:
+    bool is_run = false;
     XtCylinder* pogopin = Q_NULLPTR;
     VisionLocation* vision_downlook_location = Q_NULLPTR;
-    VisionLocation* vision_updownlook_down_location = Q_NULLPTR;
-    VisionLocation* vision_updownlook_up_location = Q_NULLPTR;
-    VisionLocation* uplook_location = Q_NULLPTR;
-    VisionLocation* load_location = Q_NULLPTR;
-    VisionLocation* mushroom_location = Q_NULLPTR;
-    VisionLocation* gripper_location = Q_NULLPTR;
 };
 
 #endif // SINGLEHEAD_LSUT_MODULE_H

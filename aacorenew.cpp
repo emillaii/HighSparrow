@@ -69,7 +69,7 @@ void AACoreNew::run(bool has_material)
     qInfo("End of thread");
 }
 
-void AACoreNew::startWork( int run_mode)
+void AACoreNew::startWork(int run_mode)
 {
     if (run_mode == RunMode::Normal) run(true);
     else if (run_mode == RunMode::NoMaterial) {
@@ -89,7 +89,7 @@ void AACoreNew::startWork( int run_mode)
         runFlowchartTest();
         emit postDataToELK(this->runningUnit);
     }
-    else if(run_mode == RunMode::OnllyLeftAA&&aa_head->parameters.moduleName().contains("1"))
+    else if(run_mode == RunMode::OnlyLeftAA&&aa_head->parameters.moduleName().contains("1"))
     {
         run(true);
     }

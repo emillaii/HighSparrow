@@ -40,7 +40,7 @@ void SensorTrayLoaderModule::Init(XtMotor *motor_tray, XtMotor *motor_kick, XtMo
 void SensorTrayLoaderModule::startWork(int run_mode)
 {
     qInfo("SensorLoader start run_mode :%d in %d",run_mode,QThread::currentThreadId());
-    if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)
+    if(run_mode == RunMode::Normal||run_mode == RunMode::OnlyLeftAA||run_mode == RunMode::OnlyRightAA)
         run(true);
     else if(run_mode == RunMode::NoMaterial)
         run(false);

@@ -101,13 +101,10 @@ bool BaseModuleManager::loadParameters()
         sensor_tray.loadJsonConfig(getCurrentParameterDir().append(SH_SENSOR_TRAY_FILE));
     }
     aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
-    if(ServerMode()!=2){
-        sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
-    }
     dothinkey->loadParams(getCurrentParameterDir().append(DOTHINGKEY_FILE));
     dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
     dispense_module.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
-    sut_carrier.parameters.loadJsonConfig(getCurrentParameterDir().append(SUT_CARRIER_FILE),"sut");
+
     if(ServerMode()==1)
     {
         sensor_loader_module.loadJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
@@ -251,18 +248,8 @@ bool BaseModuleManager::saveParameters()
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)
 {
     bool result = true;
-    if (this->ServerMode() == 0)
-    {
-        result &= manager->registerWorker(&lens_loader_module);
-        result &= manager->registerWorker(&lut_module);
-        result &= manager->registerWorker(&tray_loader_module);
-    }
-    else {
-        result &= manager->registerWorker(&sensor_loader_module);
-        result &= manager->registerWorker(&sensor_tray_loder_module);
-    }
-    result &= manager->registerWorker(&sut_module);
-    result &= manager->registerWorker(&aaCoreNew);
+    result &= manager->registerWorker(&sh_lsut_module);
+   // result &= manager->registerWorker(&aaCoreNew);
     return result;
 }
 
@@ -909,7 +896,7 @@ bool BaseModuleManager::InitStruct()
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
-    sh_lsut_module.Init(&lut_carrier,&sut_carrier,GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
+    sh_lsut_module.Init(&sut_carrier,GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
 
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
                             GetMotorByName(tray_loader_module.parameters.motorLTKX1Name()),

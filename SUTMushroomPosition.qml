@@ -1,49 +1,50 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import SingleheadLSutModuleLib 1.0
 
 ColumnLayout {
     RowLayout {
         Label {
-            text: qsTr("SUT_X")
+            text: qsTr("LSUT_X")
         }
         TextField {
-            text: sutMushroomPosition.X
+            text: lsutMushroomPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutMushroomPosition.setX(text)
+                lsutMushroomPosition.setX(text)
             }
         }
         Label {
-            text: qsTr("SUT_Y")
+            text: qsTr("LSUT_Y")
         }
         TextField {
-            text: sutMushroomPosition.Y
+            text: lsutMushroomPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutMushroomPosition.setY(text)
+                lsutMushroomPosition.setY(text)
             }
         }
         Label {
-            text: qsTr("SUT_Z")
+            text: qsTr("LSUT_Z")
         }
         TextField {
-            text: sutMushroomPosition.Z
+            text: lsutMushroomPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutMushroomPosition.setZ(text)
+                lsutMushroomPosition.setZ(text)
             }
         }
     }
@@ -54,8 +55,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                console.log("sut move to mushroom pos")
-                logicManager.sutMoveToMushroomPos()
+                console.log("lsut move to mushroom pos")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.MOVE_TO_MUSHROOM_POSITION)
             }
         }
         Button {
@@ -63,12 +64,12 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(sutParams.motorXName)
-                var y = baseModuleManager.getMotorFeedbackPos(sutParams.motorYName)
-                var z = baseModuleManager.getMotorFeedbackPos(sutParams.motorZName)
-                sutMushroomPosition.setX(x)
-                sutMushroomPosition.setY(y)
-                sutMushroomPosition.setZ(z)
+                var x = baseModuleManager.getMotorFeedbackPos(lsutParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(lsutParams.motorYName)
+                var z = baseModuleManager.getMotorFeedbackPos(lsutParams.motorZName)
+                lsutMushroomPosition.setX(x)
+                lsutMushroomPosition.setY(y)
+                lsutMushroomPosition.setZ(z)
             }
         }
     }

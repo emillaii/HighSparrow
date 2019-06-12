@@ -288,7 +288,7 @@ void SutModule::startWork(int run_mode)
     qInfo("sut Module start run_mode :%d in %d",run_mode,QThread::currentThreadId());
     if(run_mode == RunMode::Normal)
         run(true);
-    else if(Name().contains("1")&&run_mode == RunMode::OnllyLeftAA)
+    else if(Name().contains("1")&&run_mode == RunMode::OnlyLeftAA)
         run(true);
     else if(Name().contains("2")&&run_mode == RunMode::OnlyRightAA)
         run(true);

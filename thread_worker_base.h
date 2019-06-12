@@ -19,7 +19,7 @@ enum RunMode
     NoMaterial = 2,
     VibrationTest = 3,
     AAFlowChartTest = 4,
-    OnllyLeftAA = 5,
+    OnlyLeftAA = 5,
     OnlyRightAA =6,
     ChangeLensTrayHandle = 7
 };

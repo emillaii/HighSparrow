@@ -2,48 +2,50 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 
+import SingleheadLSutModuleLib 1.0
+
 ColumnLayout {
     RowLayout {
         Label {
             text: qsTr("SUT_X")
         }
         TextField {
-            text: sutLoadPosition.X
+            text: lsutLoadPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutLoadPosition.setX(text)
+                lsutLoadPosition.setX(text)
             }
         }
         Label {
             text: qsTr("SUT_Y")
         }
         TextField {
-            text: sutLoadPosition.Y
+            text: lsutLoadPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutLoadPosition.setY(text)
+                lsutLoadPosition.setY(text)
             }
         }
         Label {
             text: qsTr("SUT_Z")
         }
         TextField {
-            text: sutLoadPosition.Z
+            text: lsutLoadPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutLoadPosition.setZ(text)
+                lsutLoadPosition.setZ(text)
             }
         }
     }
@@ -54,7 +56,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                sutModule.moveToLoadPos()
+                console.log("LSUT Move To Load Position")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.MOVE_TO_LOAD_POSITION)
             }
         }
         Button {
@@ -62,12 +65,12 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(sutParams.motorXName)
-                var y = baseModuleManager.getMotorFeedbackPos(sutParams.motorYName)
-                var z = baseModuleManager.getMotorFeedbackPos(sutParams.motorZName)
-                sutLoadPosition.setX(x)
-                sutLoadPosition.setY(y)
-                sutLoadPosition.setZ(z)
+                var x = baseModuleManager.getMotorFeedbackPos(lsutParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(lsutParams.motorYName)
+                var z = baseModuleManager.getMotorFeedbackPos(lsutParams.motorZName)
+                lsutLoadPosition.setX(x)
+                lsutLoadPosition.setY(y)
+                lsutLoadPosition.setZ(z)
             }
         }
     }

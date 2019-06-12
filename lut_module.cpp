@@ -285,7 +285,7 @@ void LutModule::sendPrEvent(const PrOffset pr_offset)
 void LutModule::startWork(int run_mode)
 {
     qInfo("Lut Module start work in run mode: %d", run_mode);
-    if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)
+    if(run_mode == RunMode::Normal||run_mode == RunMode::OnlyLeftAA||run_mode == RunMode::OnlyRightAA)
         run(true);
     else if(run_mode == RunMode::NoMaterial)
         run(false);

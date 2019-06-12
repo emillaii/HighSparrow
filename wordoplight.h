@@ -5,11 +5,6 @@
 #include <QObject>
 #include <qmutex.h>
 #include "config.h"
-typedef enum {
-    LIGHTING_UPLOOK,
-    LIGHTING_DOWNLOOK,
-    LIGHTING_PICKARM,
-} LIGHTING_CHANNEL;
 
 class WordopLight: public QObject
 {
@@ -42,7 +37,7 @@ class WordopLight: public QObject
     };
 
 public:
-    WordopLight(int mode);
+    WordopLight();
     ~WordopLight();
 
     bool Init(const QString &com_port);
@@ -101,11 +96,7 @@ void setDownlookLighting(int downlookLighting)
 
     m_downlookLighting = downlookLighting;
     emit paramsChanged(m_downlookLighting);
-    if (mode == 0)
-        setBrightness(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
-    else {
-        setBrightness(LIGHTING_AA2_DL, (uint8_t)downlookLighting);
-    }
+    setBrightness(LIGHTING_AA_DL, (uint8_t)downlookLighting);
 }
 
 void setUplookLighting(int uplookLighting)
@@ -116,7 +107,7 @@ void setUplookLighting(int uplookLighting)
 
     m_uplookLighting = uplookLighting;
     emit paramsChanged(m_uplookLighting);
-    setBrightness(LIGHTING_LUT_UL, (uint8_t)uplookLighting);
+    setBrightness(LIGHTING_SUT_UL, (uint8_t)uplookLighting);
 }
 
 void setPickarmLighting(int pickarmLighting)
@@ -127,11 +118,7 @@ void setPickarmLighting(int pickarmLighting)
 
     m_pickarmLighting = pickarmLighting;
     emit paramsChanged(m_pickarmLighting);
-    if (mode == 0)
-        setBrightness(LIGHTING_LPA_DL, (uint8_t)pickarmLighting);
-    else {
-        setBrightness(LIGHTING_SPA_DL, (uint8_t)pickarmLighting);
-    }
+    setBrightness(LIGHTING_PA_DL, (uint8_t)pickarmLighting);
 }
 
 private:

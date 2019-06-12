@@ -120,9 +120,9 @@
 #define CAMERA_SH_PA_DL                  "PA_DLCamera"
 #define CAMERA_SH_AA_DL                  "AA_DLCamera"
 
-#define LIGHTING_LUT_UL                 0
-#define LIGHTING_AA1_DL                 2
-#define LIGHTING_LPA_DL                 3
+#define LIGHTING_PA_DL                  0
+#define LIGHTING_AA_DL                  3
+#define LIGHTING_SUT_UL                 2
 
 #define LIGHTING_SPA_DL                 0
 #define LIGHTING_AA2_DL                 1

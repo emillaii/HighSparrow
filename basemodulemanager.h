@@ -271,8 +271,6 @@ public:
     void EnableMotors();
     void DisableAllMotors();
     Q_INVOKABLE bool allMotorsSeekOrigin();
-    bool allMotorsSeekOriginal1();
-    bool allMotorsSeekOriginal2();
     bool allMotorsSeekOriginal3();
     void stopSeeking();
 

@@ -90,6 +90,18 @@ public:
     bool XYC1SyncMove(double xpos,double ypos,double cpos);
     bool XYZC1SyncMove(double xpos,double ypos,double zpos,double cpos);
     bool XYZC2SyncMove(double xpos,double ypos,double zpos,double cpos);
+
+    bool ZSerchByForce(int index,double speed,double force,bool check_softlanding = false,int timeout = 10000);
+    bool ZSerchByForce(int index,double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);
+    bool ZSerchReturn(int index,int timeout = 10000);
+
+    bool move_XeYe_Z1_XY(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
+
+
+private:
+    double softlanding_position;
+    double softlanding_position2;
+
 };
 
 #endif // SINGLEHEADMACHINEMATERIALPICKARM_H

@@ -5,51 +5,6 @@ import QtQuick.Layouts 1.11
 ColumnLayout {
     RowLayout {
         Label {
-            text: qsTr("AA_X")
-        }
-        TextField {
-            text: aaHeadMushroomPosition.X
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator {
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                aaHeadMushroomPosition.setX(text)
-            }
-        }
-        Label {
-            text: qsTr("AA_Y")
-        }
-        TextField {
-            text: aaHeadMushroomPosition.Y
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator {
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                aaHeadMushroomPosition.setY(text)
-            }
-        }
-        Label {
-            text: qsTr("AA_Z")
-        }
-        TextField {
-            text: aaHeadMushroomPosition.Z
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator {
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                aaHeadMushroomPosition.setZ(text)
-            }
-        }
-    }
-
-    RowLayout {
-        Label {
             text: qsTr("AA_A")
         }
         TextField {
@@ -107,16 +62,9 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorXName)
-                var y = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorYName)
-                var z = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorZName)
                 var a = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorAName)
                 var b = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorBName)
                 var c = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorCName)
-
-                aaHeadMushroomPosition.setX(x)
-                aaHeadMushroomPosition.setY(y)
-                aaHeadMushroomPosition.setZ(z)
                 aaHeadMushroomPosition.setA(a)
                 aaHeadMushroomPosition.setB(b)
                 aaHeadMushroomPosition.setC(c)

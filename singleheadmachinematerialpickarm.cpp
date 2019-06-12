@@ -289,5 +289,75 @@ bool SingleHeadMachineMaterialPickArm::XYZC2SyncMove(double xpos, double ypos, d
     return res;
 }
 
+bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker_index,double speed, double force, bool check_softlanding, int timeout)
+{
+    XtVcMotor* vcm;
+    vcm = picker_index==0?motor_vcm1:motor_vcm2;
+    if(check_softlanding)if(!vcm->resetSoftLanding(timeout))return false;
+    bool result = vcm->SearchPosByForce(speed,force);
+    QThread::msleep(200);
+    softlanding_position = vcm->GetFeedbackPos();
+    result &= vcm->DoSoftLandingReturn();
+    result &= vcm->WaitSoftLandingDone(timeout);
+    return result;
+}
+
+bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker_index,double speed, double force, double limit, double margin, int finish_time, bool open_vacuum, bool need_return, int timeout)
+{
+    qInfo("SensorPickArm::ZSerchByForce timeout %d",timeout);
+    XtVcMotor* vcm;
+    XtVacuum* vacuum;
+    vcm = picker_index==0?motor_vcm1:motor_vcm2;
+    vacuum = picker_index==0?vacuum_lens_suction:vacuum_sensor_suction;
+    bool result = vcm->SearchPosByForce(speed,force,limit,margin,timeout);
+    if(result)
+        result &= vacuum->Set(open_vacuum,true,finish_time);
+    softlanding_position = vcm->GetFeedbackPos();
+    if(need_return)
+    {
+        result &= vcm->DoSoftLandingReturn();
+        result &= vcm->WaitSoftLandingDone(timeout);
+    }
+    return result;
+}
+
+bool SingleHeadMachineMaterialPickArm::ZSerchReturn(int index,int timeout)
+{
+    XtVcMotor* vcm = index==0?motor_vcm1:motor_vcm2;
+    return vcm->resetSoftLanding(timeout);
+}
+
+bool SingleHeadMachineMaterialPickArm::move_XeYe_Z1_XY(double z, double escape_x, double escape_y, const bool check_softlanding, int timeout)
+{
+    if(check_softlanding)
+    {
+        if(!motor_vcm1->resetSoftLanding(timeout))return false;
+        if(!motor_vcm2->resetSoftLanding(timeout))return false;
+    }
+    double x = motor_x->GetOutpuPos();
+    double y = motor_y->GetOutpuPos();
+    motor_x->MoveToPos(x + escape_x);
+    motor_y->MoveToPos(y + escape_y);
+    bool resut = motor_x->WaitArrivedTargetPos(x + escape_x,timeout);
+    resut &= motor_y->WaitArrivedTargetPos(y + escape_y,timeout);
+    if(!resut)
+    {
+        AppendError(u8"move to escape pos fail");
+        return false;
+    }
+    //resut &= picker1->motor_z->MoveToPosSync(z);
+    if(!resut)
+    {
+        AppendError(u8"move to escape z fail");
+        return false;
+    }
+    QThread::msleep(100);
+    motor_x->MoveToPos(x);
+    motor_y->MoveToPos(y);
+    resut &= motor_x->WaitArrivedTargetPos(x,timeout);
+    resut &= motor_y->WaitArrivedTargetPos(y,timeout);
+    return resut;
+}
+
 
 

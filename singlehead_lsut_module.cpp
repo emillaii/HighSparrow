@@ -7,6 +7,7 @@ SingleheadLSutModule::SingleheadLSutModule(QString name, QObject * parent):Threa
 
 void SingleheadLSutModule::Init(MaterialCarrier *_lut_carrier, MaterialCarrier *_sut_carrier, XtCylinder *_pogopin)
 {
+    qInfo("SingleheadLSutModule Init");
     this->lut_carrier = _lut_carrier;
     this->sut_carrier = _sut_carrier;
     this->pogopin = _pogopin;

@@ -11,22 +11,13 @@ ItemDelegate {
         ListModel{
             id:motorsModel
             ListElement{
-                modelData:"AA1_X"
+                modelData:"AA_A"
             }
             ListElement{
-                modelData:"AA1_Y"
+                modelData:"AA_B"
             }
             ListElement{
-                modelData:"AA1_Z"
-            }
-            ListElement{
-                modelData:"AA1_A"
-            }
-            ListElement{
-                modelData:"AA1_B"
-            }
-            ListElement{
-                modelData:"AA1_C"
+                modelData:"AA_C"
             }
         }
         MotionPopup{
@@ -62,16 +53,6 @@ ItemDelegate {
             GroupBox{
                 title: qsTr("Mushroom Position")
                 AAHeadMushroomPosition {}
-            }
-
-            GroupBox{
-                title: qsTr("Pick Lens Position")
-                AAHeadPickLensPosition {}
-            }
-
-            GroupBox{
-                title: qsTr("OC Position")
-                AAHeadOCPosition {}
             }
         }
     }

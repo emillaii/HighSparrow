@@ -19,12 +19,12 @@ public:
     SingleHeadMachineMaterialLoaderModuleParameter parameters;
 
     bool ToPickCmosPosition();
-    bool PickCMOS(double force);
+    bool PickCMOS(double force,int time_out = 10000);
     bool ToPickLensPosition();
     bool PickLens(double force);
     bool ToSUTPosition();
     bool CheckSUTExistCmos();
-    bool PlaceToSUT(double force);
+    bool PlaceToSUT(double force,QString dest,int time_out = 10000);
     bool ToLUTPosition();
     bool picker1ToLUTPosition();
     bool CheckLUTExistLens();
@@ -55,6 +55,9 @@ public:
     bool MoveLensPikcer2Cam();
     bool MoveCam2LensPicker();
     bool XYZSyncMove(double xpos,double ypos,double zpos);
+
+    bool picker1SearchZ(double z,bool is_open = true,int time_out = 10000);
+    bool picker2SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
 
 //    bool PickFromSUTPosition();
 

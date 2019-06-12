@@ -57,8 +57,10 @@ bool SingleHeadMachineMaterialLoaderModule::ToPickCmosPosition()
     return true;
 }
 
-bool SingleHeadMachineMaterialLoaderModule::PickCMOS(double force)
+bool SingleHeadMachineMaterialLoaderModule::PickCMOS(double force,int time_out)
 {
+    /*
+    //old code
     //softlanding to pick cmos
     double vcm2_pos=pick_arm->vcm2GetMotorPos(pick_arm->pick_cmos_base_position.v(),pick_arm->pick_cmos_base_position.z());
     bool res = pick_arm->vcm2SoftLanding(force,vcm2_pos);
@@ -80,6 +82,12 @@ bool SingleHeadMachineMaterialLoaderModule::PickCMOS(double force)
         return false;
     }
     return res&&res_v;
+    //*/
+    qInfo("pickTraySensor time_out %d",time_out);
+    bool result = picker1SearchZ(pick_arm->parameters.pickSensorZ(),true,time_out);
+    if(!result)
+        AppendError(QString(u8"从sensor盘取sensor失败"));
+    return result;
 }
 
 bool SingleHeadMachineMaterialLoaderModule::ToPickLensPosition()
@@ -156,9 +164,10 @@ bool SingleHeadMachineMaterialLoaderModule::CheckSUTExistCmos()
     return pick_arm->vacuum_sut->IsVacuum();
 }
 
-bool SingleHeadMachineMaterialLoaderModule::PlaceToSUT(double force)
+bool SingleHeadMachineMaterialLoaderModule::PlaceToSUT(double force,QString dest,int time_out)
 {
-    //first check if xyzvc pos is right
+    /*
+    //old code
     PickArmPos target_pos;
     target_pos.x = pick_arm->place_cmos_base_position.x() + pick_arm->cmos_to_pr_distance_position.X() + pick_arm->cmos_escape_offset_position.x();
     target_pos.y = pick_arm->place_cmos_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y() + pick_arm->cmos_escape_offset_position.y();
@@ -223,6 +232,14 @@ bool SingleHeadMachineMaterialLoaderModule::PlaceToSUT(double force)
         return false;
     }
     return res&&res_v;
+    //*/
+    //first check if xyzvc pos is right
+//    qInfo("placeSensorToSUT dest %s time_out %d",dest.toStdString().c_str(),time_out);
+//    bool result = picker1SearchSutZ(pick_arm->parameters.placeSensorZ(),dest,"vacuumOnReq",false,time_out);
+//    if(!result)
+//        AppendError(QString(u8"放sensor到SUT%1失败").arg(dest=="remote"?1:2));
+//    return result;
+    return 0;
 }
 
 bool SingleHeadMachineMaterialLoaderModule::ToLUTPosition()
@@ -1020,6 +1037,33 @@ bool SingleHeadMachineMaterialLoaderModule::XYZSyncMove(double xpos, double ypos
     res &= pick_arm->motor_y->WaitMoveStop();
     res &= pick_arm->motor_z->WaitMoveStop();
     return res;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::picker1SearchZ(double z, bool is_open, int time_out)
+{
+    qInfo("picker1SearchZ z %f is_open %d timeout %d",z,is_open,time_out);
+    bool result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+    result &= pick_arm->ZSerchReturn(0,time_out);
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
+{
+//    qInfo("picker1SearchSutZ z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
+//    bool result = pick_arm->move_XeYe_Z1_XY(z - parameters.escapeHeight(),parameters.escapeX(),parameters.escapeY());
+//    if(result)
+//    {
+//        result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
+//        if(result)
+//        {
+//            sendCmd(dest,cmd);
+//            QThread::msleep(200);
+//        }
+//        result &= pick_arm->ZSerchReturn(time_out);
+//    }
+//    result &= pick_arm->picker1->motor_z->MoveToPosSync(0);
+//    return result;
+    return 0;
 }
 
 bool SingleHeadMachineMaterialLoaderModule::ToSaftyHeight(double safty_height)

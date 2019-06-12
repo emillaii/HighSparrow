@@ -8,14 +8,27 @@
 #include "vision_location.h"
 
 
-
+//! This class is defined as LSUT module in single-head AA machine
+//! LSUT is named as LUT and SUT is combined in single-head AA machine
 class SingleheadLSutModule : public ThreadWorkerBase
 {
     Q_OBJECT
+    Q_ENUMS(HandleEnum)
+
 public:
-    SingleheadLSutModule(QString name = "LSutModule", QObject * parent = nullptr);
-    void Init(MaterialCarrier* _lut_carrier,MaterialCarrier* _sut_carrier,XtCylinder* _pogopin);
-    MaterialCarrier* lut_carrier;
+    enum HandleMoveToPoaition
+    {
+        MOVE_TO_MUSHROOM_POSITION = 1,
+        MOVE_TO_LOAD_POSITION = 2,
+        MOVE_TO_PR_POSITION = 3,
+        MOVE_TO_CALIBRATION_POSITION = 4,
+    };
+
+public:
+    SingleheadLSutModule(QString name = "LSutModule", QObject *parent = nullptr);
+    void Init(MaterialCarrier* _sut_carrier,XtCylinder* _pogopin);
+    Q_INVOKABLE void performHandling(int cmd);
+
     MaterialCarrier* sut_carrier;
 
     Position3D load_uplook_position;
@@ -36,10 +49,12 @@ public:
     Position3D tool_uplook_positon;
     PositionT  up_downlook_offset;
 
-
     SingleHeadLSutParameter parameters;
+    //! Load LSUT parameters from config file
     void loadParams(QString file_name);
+    //! Save LSUT parameters to config file
     void saveParams(QString file_name);
+
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);

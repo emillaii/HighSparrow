@@ -839,8 +839,8 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    //cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
+    cv::Mat img = dk->DothinkeyGrabImageCV(0);
     int imageWidth = img.cols;
     int imageHeight = img.rows;
     double fov = this->calculateDFOV(img);

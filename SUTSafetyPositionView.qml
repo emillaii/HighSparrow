@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import SingleheadLSutModuleLib 1.0
 
 ColumnLayout {
     RowLayout {
@@ -8,7 +9,7 @@ ColumnLayout {
             text: qsTr("SUT_X")
         }
         TextField {
-            text: sutCarrierParams.SafetyX
+            text: lsutSafetyPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 bottom: -100
@@ -17,14 +18,14 @@ ColumnLayout {
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutCarrierParams.setSafetyX(text)
+                lsutSafetyPosition.setX(text)
             }
         }
         Label {
             text: qsTr("SUT_Y")
         }
         TextField {
-            text: sutCarrierParams.SafetyY
+            text: lsutSafetyPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 bottom: -100
@@ -33,21 +34,21 @@ ColumnLayout {
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutCarrierParams.setSafetyY(text)
+                lsutSafetyPosition.setY(text)
             }
         }
         Label {
             text: qsTr("SUT_Z")
         }
         TextField {
-            text: sutCarrierParams.SafetyZ
+            text: lsutSafetyPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sutCarrierParams.setSafetyZ(text)
+                lsutSafetyPosition.setZ(text)
             }
         }
     }
@@ -58,6 +59,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
+                console.log("LSUT Move To Safety Position")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.MOVE_TO_SAFETY_POSITION)
             }
         }
         Button {
@@ -65,12 +68,12 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(sutParams.motorXName)
-                var y = baseModuleManager.getMotorFeedbackPos(sutParams.motorYName)
-                var z = baseModuleManager.getMotorFeedbackPos(sutParams.motorZName)
-                sutCarrierParams.setSafetyX(x)
-                sutCarrierParams.setSafetyY(y)
-                sutCarrierParams.setSafetyZ(z)
+                var x = baseModuleManager.getMotorFeedbackPos(lsutParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(lsutParams.motorYName)
+                var z = baseModuleManager.getMotorFeedbackPos(lsutParams.motorZName)
+                lsutSafetyPosition.setX(x)
+                lsutSafetyPosition.setY(y)
+                lsutSafetyPosition.setZ(z)
             }
         }
     }

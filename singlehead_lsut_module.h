@@ -22,6 +22,7 @@ public:
         MOVE_TO_LOAD_POSITION = 2,
         MOVE_TO_PR_POSITION = 3,
         MOVE_TO_CALIBRATION_POSITION = 4,
+        MOVE_TO_SAFETY_POSITION = 5,
     };
 
 public:
@@ -33,7 +34,8 @@ public:
     Position3D load_position;
     Position3D downlook_position;
     Position3D calibration_position;
-    Position3D mushroom_positon;
+    Position3D mushroom_position;
+    Position3D safety_position;
 
     SingleHeadLSutParameter parameters;
 
@@ -49,6 +51,13 @@ public slots:
     void stopWork(bool wait_finish);
     void resetLogic();
     void performHandlingOperation(int cmd);
+
+private:
+    bool moveToMushroomPosition(bool check_autochthonous);
+    bool moveToLoadPosition(bool check_autochthonous);
+    bool moveToPRPosition(bool check_autochthonous);
+    bool moveToCalibrationPosition(bool check_autochthonous);
+    bool moveToSafetyPosition(bool check_autochthonous);
 private:
     bool is_run = false;
     XtCylinder* pogopin = Q_NULLPTR;

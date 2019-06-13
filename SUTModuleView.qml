@@ -51,7 +51,6 @@ ItemDelegate {
                 }
             }
 
-
             GroupBox{
                 title: qsTr("Mushroom Position")
                 SUTMushroomPosition {}

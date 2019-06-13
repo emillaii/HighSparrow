@@ -33,6 +33,12 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     QString m_lensVancyVisionName = "";
     QString m_lutVisionName = "";
     QString m_lutLensVision = "";
+    double m_zOffset = 0;
+    double m_escapeHeight = 0;
+    double m_escapeX = 0;
+    double m_escapeY = 0;
+    QString m_sutVacuumName = "";
+    QString m_lutVacuumName = "";
 
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
@@ -60,7 +66,12 @@ public:
     Q_PROPERTY(QString lensVacancyVisionName READ lensVacancyVisionName WRITE setLensVacancyVisionName NOTIFY lensVacancyVisionNameChanged)
     Q_PROPERTY(QString lutVisionName READ lutVisionName WRITE setLutVisionName NOTIFY lutVisionNameChanged)
     Q_PROPERTY(QString lutLensVision READ lutLensVision WRITE setLutLensVision NOTIFY lutLensVisionChanged)
-
+    Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
+    Q_PROPERTY(double escapeHeight READ escapeHeight WRITE setEscapeHeight NOTIFY escapeHeightChanged)
+    Q_PROPERTY(double escapeX READ escapeX WRITE setEscapeX NOTIFY escapeXChanged)
+    Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
+    Q_PROPERTY(QString sutVacuumName READ sutVacuumName WRITE setSutVacuumName NOTIFY sutVacuumNameChanged)
+    Q_PROPERTY(QString lutVacuumName READ lutVacuumName WRITE setLutVacuumName NOTIFY lutVacuumNameChanged)
 
     int runMode() const
     {
@@ -179,6 +190,36 @@ public:
     QString lutLensVision() const
     {
         return m_lutLensVision;
+    }
+
+    double zOffset() const
+    {
+        return m_zOffset;
+    }
+
+    double escapeHeight() const
+    {
+        return m_escapeHeight;
+    }
+
+    double escapeX() const
+    {
+        return m_escapeX;
+    }
+
+    double escapeY() const
+    {
+        return m_escapeY;
+    }
+
+    QString sutVacuumName() const
+    {
+        return m_sutVacuumName;
+    }
+
+    QString lutVacuumName() const
+    {
+        return m_lutVacuumName;
     }
 
 public slots:
@@ -409,6 +450,64 @@ public slots:
         emit lutLensVisionChanged(m_lutLensVision);
     }
 
+    void setZOffset(double zOffset)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zOffset, zOffset))
+            return;
+
+        m_zOffset = zOffset;
+        emit zOffsetChanged(m_zOffset);
+    }
+
+    void setEscapeHeight(double escapeHeight)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_escapeHeight, escapeHeight))
+            return;
+
+        m_escapeHeight = escapeHeight;
+        emit escapeHeightChanged(m_escapeHeight);
+    }
+
+    void setEscapeX(double escapeX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_escapeX, escapeX))
+            return;
+
+        m_escapeX = escapeX;
+        emit escapeXChanged(m_escapeX);
+    }
+
+    void setEscapeY(double escapeY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_escapeY, escapeY))
+            return;
+
+        m_escapeY = escapeY;
+        emit escapeYChanged(m_escapeY);
+    }
+
+    void setSutVacuumName(QString sutVacuumName)
+    {
+        if (m_sutVacuumName == sutVacuumName)
+            return;
+
+        m_sutVacuumName = sutVacuumName;
+        emit sutVacuumNameChanged(m_sutVacuumName);
+    }
+
+    void setLutVacuumName(QString lutVacuumName)
+    {
+        if (m_lutVacuumName == lutVacuumName)
+            return;
+
+        m_lutVacuumName = lutVacuumName;
+        emit lutVacuumNameChanged(m_lutVacuumName);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void saftyZHeightChanged(double saftyZHeight);
@@ -434,6 +533,12 @@ signals:
     void lensVacancyVisionNameChanged(QString lensVacancyVisionName);
     void lutVisionNameChanged(QString lutVisionName);
     void lutLensVisionChanged(QString lutLensVision);
+    void zOffsetChanged(double zOffset);
+    void escapeHeightChanged(double escapeHeight);
+    void escapeXChanged(double escapeX);
+    void escapeYChanged(double escapeY);
+    void sutVacuumNameChanged(QString sutVacuumName);
+    void lutVacuumNameChanged(QString lutVacuumName);
 };
 
 #endif // SINGLEHEADMACHINEMATERIALLOADERMODULEPARAMETER_H

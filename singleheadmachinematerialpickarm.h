@@ -68,6 +68,7 @@ public:
     XtVacuum *vacuum_lut;//LUT真空
     XtVacuum *vacuum_sut;//SUT真空
     XtCylinder *pogopin;
+    //old motions
     bool CheckZV1V2AboveSafeHeight(double z_height,double error = POS_ERROR,int times = 10);
     bool ZV1V2ToSafeHeight(double z_height);
     bool vcm1SoftLanding(double force,double target_pos);
@@ -91,17 +92,16 @@ public:
     bool XYZC1SyncMove(double xpos,double ypos,double zpos,double cpos);
     bool XYZC2SyncMove(double xpos,double ypos,double zpos,double cpos);
 
-    bool ZSerchByForce(int index,double speed,double force,bool check_softlanding = false,int timeout = 10000);
-    bool ZSerchByForce(int index,double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);
-    bool ZSerchReturn(int index,int timeout = 10000);
-
+    //new motions
+    bool move_XY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
+    bool stepMove_XYT1_Synic(const double step_x,const double step_y,const double step_t1,const bool check_softlanding = false,int timeout = 10000);
+    bool ZSerchByForce(int picker,double speed,double force,bool check_softlanding = false,int timeout = 10000);
+    bool ZSerchByForce(int picker,double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);
+    bool ZSerchReturn(int picker,int timeout = 10000);
     bool move_XeYe_Z1_XY(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
-
-
+    double GetSoftladngPosition(bool get_current = false);
 private:
     double softlanding_position;
-    double softlanding_position2;
-
 };
 
 #endif // SINGLEHEADMACHINEMATERIALPICKARM_H

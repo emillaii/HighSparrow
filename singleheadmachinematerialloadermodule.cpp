@@ -6,14 +6,36 @@ SingleHeadMachineMaterialLoaderModule::SingleHeadMachineMaterialLoaderModule(QSt
 
 }
 
-void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickArm *pick_arm,
+void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickArm *_pick_arm,
                                                  MaterialTray* _sensorTray,
-                                                 MaterialTray* _lensTray)
+                                                 MaterialTray* _lensTray,
+                                                 VisionLocation* _sensor_vision,
+                                                 VisionLocation* _sensor_vacancy_vision,
+                                                 VisionLocation* _sut_vision,
+                                                 VisionLocation* _sut_sensor_vision,
+                                                 VisionLocation* _sut_product_vision,
+                                                 VisionLocation* _lens_vision,
+                                                 VisionLocation* _lens_vacancy_vision,
+                                                 VisionLocation* _lut_vision,
+                                                 VisionLocation* _lut_lens_vision,
+                                                 XtVacuum* _sutVacuum,
+                                                 XtVacuum* _lutVacuum)
 {
-    this->pick_arm = pick_arm;
+    this->pick_arm = _pick_arm;
     this->pick_arm->parent = this;
     this->sensorTray = _sensorTray;
     this->lensTray = _lensTray;
+    this->sensor_vision = _sensor_vision;
+    this->sensor_vacancy_vision = _sensor_vacancy_vision;
+    this->sut_vision = _sut_vision;
+    this->sut_sensor_vision = _sut_sensor_vision;
+    this->sut_product_vision = _sut_product_vision;
+    this->lens_vision = _lens_vision;
+    this->lens_vacancy_vision = _lens_vacancy_vision;
+    this->lut_vision = _lut_vision;
+    this->lut_lens_vision = _lut_lens_vision;
+    this->sut_vacuum = _sutVacuum;
+    this->lut_vacuum = _lutVacuum;
 }
 
 void SingleHeadMachineMaterialLoaderModule::loadJsonConfig(QString file_name)
@@ -22,6 +44,11 @@ void SingleHeadMachineMaterialLoaderModule::loadJsonConfig(QString file_name)
 }
 
 void SingleHeadMachineMaterialLoaderModule::saveJsonConfig(QString file_name)
+{
+
+}
+
+void SingleHeadMachineMaterialLoaderModule::performHandling(int cmd)
 {
 
 }
@@ -1073,6 +1100,211 @@ bool SingleHeadMachineMaterialLoaderModule::ToSaftyHeight(double safty_height)
     return pick_arm->ZV1V2ToSafeHeight(safty_height);
 }
 
+bool SingleHeadMachineMaterialLoaderModule::checkTrayNeedChange()
+{
+    if(sensorTray->isTrayNeedChange(0))
+        return true;
+    return false;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToNextSensorTrayPos(int tray_index)
+{
+    qInfo("moveToNextTrayPos tray_index %d",tray_index);
+    bool result = sensorTray->findNextPositionOfInitState(tray_index);
+    if(result)
+        result &=  pick_arm->move_XY_Synic(sensorTray->getCurrentPosition(tray_index));
+    if(!result)
+        AppendError(QString(u8"移动到%1盘下一个位置失败").arg(tray_index == 0?"sensor":"成品"));
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToSUTPRPos(bool is_local, bool check_softlanding)
+{
+    qInfo("moveToSUTPRPos is_local %d",is_local);
+    bool result;
+    result =  pick_arm->move_XY_Synic(sut_pr_position.ToPointF(),check_softlanding);
+    if(!result)
+        AppendError(QString("移动SPA到SUT位置失败%1").arg(is_local));
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::performSensorPR()
+{
+    qInfo("performSensorPR");
+    bool result = sensor_vision->performPR(pr_offset);
+    if(result)
+        AppendError(QString(u8"执行料盘sensor视觉失败!"));
+    return  result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::performSensorVacancyPR()
+{
+    qInfo("performVacancyPR");
+    bool result = sensor_vacancy_vision->performPR(pr_offset);
+    if(result)
+        AppendError(QString(u8"执行料盘空位视觉失败!"));
+    return  result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::performSUTPR()
+{
+    qInfo("performSUTPR");
+    bool result = sut_vision->performPR(pr_offset);
+    if(result)
+        AppendError(QString(u8"执行SUT视觉失败!"));
+    return  result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::performSUTSensorPR()
+{
+    qInfo("performSUTSensorPR");
+    bool result = sut_sensor_vision->performPR(pr_offset);
+    if(result)
+        AppendError(QString(u8"执行SUT上的sensor视觉失败!"));
+    return  result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::performSUTProductPR()
+{
+    qInfo("performSUTProductPR");
+    bool result =  sut_product_vision->performPR(pr_offset);
+    if(result)
+        AppendError(QString(u8"执行SUT视觉失败!"));
+    return  result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToSPAWorkPos(bool check_softlanding)
+{
+    PrOffset temp(sensor_suction_offset.X() - pr_offset.X,sensor_suction_offset.Y() - pr_offset.Y,pr_offset.Theta);
+    qInfo("moveToWorkPos offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
+    bool result = pick_arm->stepMove_XYT1_Synic(temp.X,temp.Y,temp.Theta,check_softlanding);
+    if(result)
+        AppendError(QString(u8"去1号吸头工作位置(step x %1,y %2,t %3)失败!").arg(temp.X).arg(temp.Y).arg(temp.Theta));
+    return  result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::sensorPickerSearchZ(double z, bool is_open, int time_out)
+{
+    qInfo("picker1SearchZ z %f is_open %d timeout %d",z,is_open,time_out);
+    bool result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+    result &= pick_arm->ZSerchReturn(0,time_out);
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::sensorPickerSearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
+{
+    qInfo("picker1SearchSutZ z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
+    bool result = pick_arm->move_XeYe_Z1_XY(z - parameters.escapeHeight(),parameters.escapeX(),parameters.escapeY());
+    if(result)
+    {
+        result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+
+        //sut_vacuum
+        sut_vacuum->Set(0);
+        QThread::msleep(200);
+        result &= pick_arm->ZSerchReturn(time_out);
+    }
+    result &= pick_arm->motor_vcm1->MoveToPosSync(0);
+    return result;
+}
+/*
+ * 捡起tray盘上sensor，调用前保证吸嘴对准sensor中心
+*/
+bool SingleHeadMachineMaterialLoaderModule::pickTraySensor(int time_out)
+{
+    qInfo("pickTraySensor time_out %d",time_out);
+    bool result = sensorPickerSearchZ(pick_arm->parameters.pickSensorZ(),true,time_out);
+    if(!result)
+        AppendError(QString(u8"从sensor盘取sensor失败"));
+    return result;
+}
+/*
+ * 放置sensor于SUT上，调用前保证吸嘴对准sut_vacuum中心
+*/
+bool SingleHeadMachineMaterialLoaderModule::placeSensorToSUT(QString dest, int time_out)
+{
+    qInfo("placeSensorToSUT dest %s time_out %d",dest.toStdString().c_str(),time_out);
+   bool result = sensorPickerSearchSutZ(pick_arm->parameters.placeSensorZ(),dest,"vacuumOnReq",false,time_out);
+    if(!result)
+        AppendError(QString(u8"放sensor到SUT%1失败").arg(dest=="remote"?1:2));
+    return result;
+}
+/*
+ * 从SUT捡起NG sensor，调用前吸嘴到位对准
+*/
+bool SingleHeadMachineMaterialLoaderModule::pickSUTSensor(QString dest, int time_out)
+{
+    qInfo("pickSUTSensor dest %s time_out %d",dest.toStdString().c_str(),time_out);
+    bool result = sensorPickerSearchSutZ(pick_arm->parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,time_out);
+    if(!result)
+        AppendError(QString(u8"从SUT%1取NGsenor失败").arg(dest=="remote"?1:2));
+    return result;
+}
+/*
+ * 从SUT捡起成品，调用前吸嘴到位对准
+*/
+bool SingleHeadMachineMaterialLoaderModule::pickSUTProduct(QString dest, int time_out)
+{
+    qInfo("pickSUTProduct dest %s time_out %d",dest.toStdString().c_str(),time_out);
+    bool result = sensorPickerSearchSutZ(pick_arm->parameters.pickProductZ(),dest,"vacuumOffReq",true,time_out);
+    if(!result)
+        AppendError(QString(u8"从SUT%1取成品失败").arg(dest=="remote"?1:2));
+    return result;
+}
+/*
+ * 放置NG sensor至tray盘上，调用前吸嘴到位对准
+*/
+bool SingleHeadMachineMaterialLoaderModule::placeSensorToTray(int time_out)
+{
+    qInfo("placeSensorToTray time_out %d",time_out);
+    bool result = sensorPickerSearchZ(pick_arm->parameters.placeNgSensorZ(),false,time_out);
+    if(!result)
+        AppendError(QString(u8"将Ngsensor放入NG盘失败"));
+    return result;
+}
+/*
+ * 放置成品至tray盘上，调用前吸嘴到位对准
+*/
+bool SingleHeadMachineMaterialLoaderModule::placeProductToTray(int time_out)
+{
+    qInfo("placeProductToTray time_out %d",time_out);
+    bool result = sensorPickerSearchZ(pick_arm->parameters.placeProductZ(),false,time_out);
+    if(!result)
+        AppendError(QString(u8"将成品放入成品盘失败"));
+    return result;
+}
+/*
+ * sensor吸嘴测高
+*/
+bool SingleHeadMachineMaterialLoaderModule::sensorPickerMeasureHight(bool is_tray, bool is_product)
+{
+    qInfo("picker2MeasureHight is_tray %d is_product %d",is_tray,is_product);
+    if(pick_arm->ZSerchByForce(parameters.vcm1Svel(),parameters.vcm1PickForce(),true))
+    {
+        QThread::msleep(100);
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetSoftladngPosition2()))){
+            return true;
+        }
+        if(is_tray)
+        {
+            if(is_product)
+                parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition2());
+            else
+                parameters.setPlaceNgSensorZ(pick_arm->GetSoftladngPosition2());
+        }
+        else
+        {
+            if(is_product)
+                parameters.setPickProductZ(pick_arm->GetSoftladngPosition2());
+            else
+                parameters.setPickNgSensorZ(pick_arm->GetSoftladngPosition2());
+        }
+        return true;
+    }
+    AppendError(QString(u8"2号吸头测高失败"));
+    return false;
+}
+
 void SingleHeadMachineMaterialLoaderModule::startWork(int run_mode)
 {
 
@@ -1092,3 +1324,4 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
 {
 
 }
+

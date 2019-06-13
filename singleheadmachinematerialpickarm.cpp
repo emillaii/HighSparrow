@@ -289,42 +289,72 @@ bool SingleHeadMachineMaterialPickArm::XYZC2SyncMove(double xpos, double ypos, d
     return res;
 }
 
-bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker_index,double speed, double force, bool check_softlanding, int timeout)
+bool SingleHeadMachineMaterialPickArm::move_XY_Synic(const QPointF position, const bool check_softlanding, int timeout)
 {
-    XtVcMotor* vcm;
-    vcm = picker_index==0?motor_vcm1:motor_vcm2;
-    if(check_softlanding)if(!vcm->resetSoftLanding(timeout))return false;
-    bool result = vcm->SearchPosByForce(speed,force);
-    QThread::msleep(200);
-    softlanding_position = vcm->GetFeedbackPos();
-    result &= vcm->DoSoftLandingReturn();
-    result &= vcm->WaitSoftLandingDone(timeout);
+    if(check_softlanding)
+    {
+        if(!motor_vcm1->resetSoftLanding(timeout))return false;
+        if(!motor_vcm2->resetSoftLanding(timeout))return false;
+    }
+    motor_x->MoveToPos(position.x());
+    motor_y->MoveToPos(position.y());
+    bool result = motor_x->WaitArrivedTargetPos(position.x(),timeout);
+    result &= motor_y->WaitArrivedTargetPos(position.y(),timeout);
     return result;
 }
 
-bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker_index,double speed, double force, double limit, double margin, int finish_time, bool open_vacuum, bool need_return, int timeout)
+bool SingleHeadMachineMaterialPickArm::stepMove_XYT1_Synic(const double step_x, const double step_y, const double step_t1, const bool check_softlanding, int timeout)
 {
+    if(check_softlanding)
+    {
+        if(!motor_vcm1->resetSoftLanding(timeout))return false;
+        if(!motor_vcm2->resetSoftLanding(timeout))return false;
+    }
+    double target_x = motor_x->GetFeedbackPos() + step_x;
+    double target_y = motor_y->GetFeedbackPos() + step_y;
+    double target_t = motor_th1->GetFeedbackPos() + step_t1;
+    motor_x->StepMove(step_x);
+    motor_y->StepMove(step_y);
+    motor_th1->StepMove(step_t1);
+    bool resut = motor_x->WaitArrivedTargetPos(target_x);
+    resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
+    resut &= motor_th1->WaitArrivedTargetPos(target_t,timeout);
+    return resut;
+}
+
+bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker, double speed, double force, bool check_softlanding, int timeout)
+{
+    XtVcMotor* motor_z = picker==0?motor_vcm1:motor_vcm2;
+    if(check_softlanding)if(!motor_z->resetSoftLanding(timeout))return false;
+    bool result = motor_z->SearchPosByForce(speed,force);
+    QThread::msleep(200);
+    softlanding_position = motor_z->GetFeedbackPos();
+    result &= motor_z->DoSoftLandingReturn();
+    result &= motor_z->WaitSoftLandingDone(timeout);
+    return result;
+}
+
+bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker, double speed, double force, double limit, double margin, int finish_time, bool open_vacuum, bool need_return, int timeout)
+{
+    XtVcMotor* motor_z = picker==0?motor_vcm1:motor_vcm2;
+    XtVacuum* vacuum = picker==0?vacuum_sensor_suction:vacuum_lens_suction;
     qInfo("SensorPickArm::ZSerchByForce timeout %d",timeout);
-    XtVcMotor* vcm;
-    XtVacuum* vacuum;
-    vcm = picker_index==0?motor_vcm1:motor_vcm2;
-    vacuum = picker_index==0?vacuum_lens_suction:vacuum_sensor_suction;
-    bool result = vcm->SearchPosByForce(speed,force,limit,margin,timeout);
+    bool result = motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
     if(result)
         result &= vacuum->Set(open_vacuum,true,finish_time);
-    softlanding_position = vcm->GetFeedbackPos();
+    softlanding_position = motor_z->GetFeedbackPos();
     if(need_return)
     {
-        result &= vcm->DoSoftLandingReturn();
-        result &= vcm->WaitSoftLandingDone(timeout);
+        result &= motor_z->DoSoftLandingReturn();
+        result &= motor_z->WaitSoftLandingDone(timeout);
     }
     return result;
 }
 
-bool SingleHeadMachineMaterialPickArm::ZSerchReturn(int index,int timeout)
+bool SingleHeadMachineMaterialPickArm::ZSerchReturn(int picker, int timeout)
 {
-    XtVcMotor* vcm = index==0?motor_vcm1:motor_vcm2;
-    return vcm->resetSoftLanding(timeout);
+    XtVcMotor* motor_z = picker==0?motor_vcm1:motor_vcm2;
+    return motor_z->resetSoftLanding(timeout);
 }
 
 bool SingleHeadMachineMaterialPickArm::move_XeYe_Z1_XY(double z, double escape_x, double escape_y, const bool check_softlanding, int timeout)
@@ -332,7 +362,7 @@ bool SingleHeadMachineMaterialPickArm::move_XeYe_Z1_XY(double z, double escape_x
     if(check_softlanding)
     {
         if(!motor_vcm1->resetSoftLanding(timeout))return false;
-        if(!motor_vcm2->resetSoftLanding(timeout))return false;
+        if(!motor_vcm1->resetSoftLanding(timeout))return false;
     }
     double x = motor_x->GetOutpuPos();
     double y = motor_y->GetOutpuPos();
@@ -345,7 +375,7 @@ bool SingleHeadMachineMaterialPickArm::move_XeYe_Z1_XY(double z, double escape_x
         AppendError(u8"move to escape pos fail");
         return false;
     }
-    //resut &= picker1->motor_z->MoveToPosSync(z);
+    resut &= motor_vcm1->MoveToPosSync(z);
     if(!resut)
     {
         AppendError(u8"move to escape z fail");

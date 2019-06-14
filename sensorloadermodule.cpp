@@ -41,6 +41,15 @@ bool SensorLoaderModule::loadJsonConfig(QString file_name)
     temp_map.insert("sut2_pr_position", &sut2_pr_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
+    temp_map.insert("sensor_uph",&sensor_uph);
+    temp_map.insert("left_sensor_uph",&left_sensor_uph);
+    temp_map.insert("right_sensor_uph",&right_sensor_uph);
+    temp_map.insert("right_sensor_uph",&product_uph);
+    temp_map.insert("left_product_uph",&left_product_uph);
+    temp_map.insert("right_product_uph",&right_product_uph);
+    temp_map.insert("comprehensive_uph",&comprehensive_uph);
+    temp_map.insert("left_comprehensive_uph",&left_comprehensive_uph);
+    temp_map.insert("right_comprehensive_uph",&right_comprehensive_uph);
     PropertyBase::loadJsonConfig(file_name, temp_map);
     return true;
 }
@@ -53,6 +62,15 @@ void SensorLoaderModule::saveJsonConfig(QString file_name)
     temp_map.insert("sut2_pr_position", &sut2_pr_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
+    temp_map.insert("sensor_uph",&sensor_uph);
+    temp_map.insert("left_sensor_uph",&left_sensor_uph);
+    temp_map.insert("right_sensor_uph",&right_sensor_uph);
+    temp_map.insert("right_sensor_uph",&product_uph);
+    temp_map.insert("left_product_uph",&left_product_uph);
+    temp_map.insert("right_product_uph",&right_product_uph);
+    temp_map.insert("comprehensive_uph",&comprehensive_uph);
+    temp_map.insert("left_comprehensive_uph",&left_comprehensive_uph);
+    temp_map.insert("right_comprehensive_uph",&right_comprehensive_uph);
     PropertyBase::saveJsonConfig(file_name, temp_map);
 }
 
@@ -456,6 +474,7 @@ void SensorLoaderModule::run(bool has_material)
 
     bool waiting_change_tray = false;
     bool finish_change_tray = false;
+    time_label = QTime::currentTime();
     while (is_run)
     {
         {
@@ -760,6 +779,21 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     sendEvent("unloadProductResp");
                     states.setCmd("");
+                    product_uph.addCurrentNumber(updateAccumulatedHour());
+                    product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    if(isLocalHost)
+                    {
+                        right_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        right_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                        right_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    }
+                    else
+                    {
+                        left_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        left_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                        left_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    }
                 }
                 else if((states.cmd() == "unloadNgSensorReq")&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
                 {
@@ -796,7 +830,10 @@ void SensorLoaderModule::run(bool has_material)
                         AppendError("pickSUTSensor fail!");
                         sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                         if(waitMessageReturn(is_run))
+                        {
                             states.setSutHasNgSensor(false);
+                            continue;
+                        }
                         else
                         {
                             states.setSutHasNgSensor(false);
@@ -810,6 +847,11 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     sendEvent("unloadNgSensorResp");
                     states.setCmd("");
+                    sensor_uph.addCurrentReslutNumber(updateAccumulatedHour());
+                    if(isLocalHost)
+                        right_sensor_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    else
+                        left_sensor_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
                 }
                 else if ((states.cmd() == "loadSensorReq")&&states.hasPickedSensor())
                 {
@@ -828,23 +870,24 @@ void SensorLoaderModule::run(bool has_material)
                             states.setHasPickedSensor(false);
                             break;
                         }
-                        else
-                        {
-                            states.setNeedLoadSensor(false);
-                            states.setHasPickedSensor(false);
-                            sendEvent("loadSensorResp");
-                            states.setCmd("");
-                            states.setBeExchangeMaterial(false);
-                        }
+                    }
+                    states.setNeedLoadSensor(false);
+                    states.setHasPickedSensor(false);
+                    sendEvent("loadSensorResp");
+                    sensor_uph.addCurrentNumber(updateAccumulatedHour());
+                    comprehensive_uph.addCurrentNumber(updateAccumulatedHour(false));
+                    if(isLocalHost)
+                    {
+                        right_sensor_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        right_comprehensive_uph.addCurrentNumber(updateAccumulatedHour(false));
                     }
                     else
                     {
-                        states.setNeedLoadSensor(false);
-                        states.setHasPickedSensor(false);
-                        sendEvent("loadSensorResp");
-                        states.setCmd("");
-                        states.setBeExchangeMaterial(false);
+                        left_sensor_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        left_comprehensive_uph.addCurrentNumber(updateAccumulatedHour(false));
                     }
+                    states.setCmd("");
+                    states.setBeExchangeMaterial(false);
                 }
                 else if((((states.cmd() == "unloadProductReq")||(states.cmd() == "unloadNgSensorReq"))&&(states.hasPickedNgSensor()||states.hasPickedProduct()))
                         ||((states.cmd() == "loadSensorReq")&&(!states.hasPickedSensor())))
@@ -1379,6 +1422,40 @@ bool SensorLoaderModule::moveToTray1EndPos()
     if(!result)
         AppendError(QString(u8"移动到sensor盘结束位置失败"));
     return result;
+}
+
+double SensorLoaderModule::updateAccumulatedHour(bool calculate)
+{
+    if(calculate)
+    {
+        parameters.setAccumulatedHour(parameters.accumulatedHour() + getHourSpace(time_label));
+        time_label = QTime::currentTime();
+    }
+    return parameters.accumulatedHour();
+}
+
+double SensorLoaderModule::getHourSpace(QTime time_label)
+{
+    int temp_minute = QTime::currentTime().minute() - time_label.minute();
+    if(temp_minute < 0)temp_minute = 60 - temp_minute;
+    double space = temp_minute/60.0;
+    int temp_second =   QTime::currentTime().second() - time_label.second();
+    space += temp_second/3600.0;
+    return space;
+}
+
+void SensorLoaderModule::clearNumber()
+{
+    sensor_uph.clearNumber();
+    product_uph.clearNumber();
+    comprehensive_uph.clearNumber();
+    left_sensor_uph.clearNumber();
+    left_product_uph.clearNumber();
+    left_comprehensive_uph.clearNumber();
+    right_sensor_uph.clearNumber();
+    right_product_uph.clearNumber();
+    right_comprehensive_uph.clearNumber();
+    parameters.setAccumulatedHour(0);
 }
 
 void SensorLoaderModule::sendEvent(const QString event)

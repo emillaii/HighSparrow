@@ -216,6 +216,7 @@ ItemDelegate {
                     }
                 }
             }
+        UPHView{}
         }
     }
 }

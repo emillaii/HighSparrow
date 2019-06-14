@@ -426,7 +426,7 @@ bool LensLoaderModule::movePickerToLUTPos1()
     bool result =  pick_arm->move_XYT_Synic(lut_pr_position1.X() + camera_to_picker_offset.X(),lut_pr_position1.Y() + camera_to_picker_offset.Y(),parameters.placeTheta());
     if(!result)
         AppendError(QString(u8"移动吸头到LUT放Lens位置失败"));
-    qInfo(u8"移动吸头到LUT放Lens位置,返回值%d",result);
+//    qInfo(u8"移动吸头到LUT放Lens位置,返回值%d",result);
     return result;
 }
 
@@ -741,6 +741,51 @@ bool LensLoaderModule::moveToUpdownlookUpPos()
         AppendError(QString(u8"移动到UpDn Uplook位置失败"));
     qInfo(u8"移动到UpDn Uplook位置,返回值:%d",result);
     return result;
+}
+
+void LensLoaderModule::addCurrentNumber()
+{
+    parameters.setCurrentNumber(parameters.currentNumber() + 1);
+    parameters.setLensYield((parameters.currentNumber() - parameters.currentNgNumber())/parameters.currentNumber());
+    parameters.setAccumulatredHour(parameters.accumulatredHour() + getHourSpace(time_label));
+
+}
+
+void LensLoaderModule::addCurrentNgNumber()
+{
+    parameters.setCurrentNgNumber(parameters.currentNgNumber() + 1);
+}
+
+void LensLoaderModule::clearNumber()
+{
+    parameters.setCurrentNumber(0);
+    parameters.setCurrentNgNumber(0);
+    parameters.setAccumulatredHour(0);
+    parameters.setLensYield(0);
+    parameters.setLensUPH(0);
+}
+
+void LensLoaderModule::updateNumber()
+{
+    double lens_yield = parameters.currentNumber() - parameters.currentNgNumber();
+    lens_yield /= parameters.currentNumber();
+    lens_yield = round(lens_yield*1000)/1000;
+    parameters.setLensYield(lens_yield);
+    parameters.setAccumulatredHour(parameters.accumulatredHour() + getHourSpace(time_label));
+    int uph = 0;
+    if(parameters.accumulatredHour()>0)
+        uph = qRound(parameters.currentNumber()/parameters.accumulatredHour());
+    parameters.setLensUPH(uph);
+}
+
+double LensLoaderModule::getHourSpace(QTime time_label)
+{
+    int temp_minute = QTime::currentTime().minute() - time_label.minute();
+    if(temp_minute < 0)temp_minute = 60 - temp_minute;
+    double space = temp_minute/60.0;
+    int temp_second =   QTime::currentTime().second() - time_label.second();
+    space += temp_second/3600.0;
+    return space;
 }
 
 bool LensLoaderModule::isRunning()

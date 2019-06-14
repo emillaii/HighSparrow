@@ -7,9 +7,13 @@ MaterialCarrier::MaterialCarrier():ErrorBase ()
 void MaterialCarrier::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtVcMotor *motor_z, XtVacuum *vacuum)
 {
     this->motor_x = motor_x;
+    parts.append(motor_x);
     this->motor_y = motor_y;
+    parts.append(motor_y);
     this->motor_z = motor_z;
+    parts.append(motor_z);
     this->vacuum = vacuum;
+    parts.append(vacuum);
     setName(name);
 }
 

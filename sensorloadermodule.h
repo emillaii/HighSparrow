@@ -6,6 +6,7 @@
 #include "sensorpickarm.h"
 #include "sparrowqserver.h"
 #include "thread_worker_base.h"
+#include "uphhelper.h"
 #include "vision_location.h"
 
 
@@ -74,6 +75,7 @@ public:
     void saveJsonConfig(QString file_name);
     void openServer(int port);
     Q_INVOKABLE void cameraTipOffsetCalibration(int pickhead);
+    Q_INVOKABLE void clearNumber();
 signals:
     void sendMessageToClient(QString destAddress, QString message);
     void sendChangeTrayRequst();
@@ -129,6 +131,8 @@ private:
     bool moveToStartPos(int tray_index);
     bool moveToTray1EndPos();
 
+    double updateAccumulatedHour(bool calculate = true);
+    double getHourSpace(QTime time_label);
 
     void sendEvent(const QString event);
     void sendCmd(QString serving_ip,const QString cmd);
@@ -139,6 +143,19 @@ public:
     Position sut2_pr_position;
     Position picker1_offset;
     Position picker2_offset;
+
+    UPHHelper sensor_uph;
+    UPHHelper product_uph;
+    UPHHelper comprehensive_uph;
+
+    UPHHelper left_sensor_uph;
+    UPHHelper left_product_uph;
+    UPHHelper left_comprehensive_uph;
+
+    UPHHelper right_sensor_uph;
+    UPHHelper right_product_uph;
+    UPHHelper right_comprehensive_uph;
+
 private:
     SensorPickArm* pick_arm = Q_NULLPTR;
     MaterialTray *tray = Q_NULLPTR;
@@ -162,6 +179,7 @@ private:
     int picked_material;
     QString servingIP = "";
     bool isLocalHost = false;
+    QTime time_label;
 };
 
 #endif // SENSORLOADERMODULE_H

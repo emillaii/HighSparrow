@@ -82,6 +82,7 @@
         <file>CheckProcess.qml</file>
         <file>LUTDownlookLoadPosition.qml</file>
         <file>LUTDownlookUnloadPosition.qml</file>
+        <file>UPHView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

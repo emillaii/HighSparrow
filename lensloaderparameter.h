@@ -28,6 +28,13 @@ public:
     Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
     Q_PROPERTY(QString lpaUplookPickerLocationName READ lpaUplookPickerLocationName WRITE setLpaUplookPickerLocationName NOTIFY lpaUplookPickerLocationNameChanged)
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
+    Q_PROPERTY(bool usePlan READ usePlan WRITE setUsePlan NOTIFY usePlanChanged)
+    Q_PROPERTY(int planNumber READ planNumber WRITE setPlanNumber NOTIFY planNumberChanged)
+    Q_PROPERTY(int currentNumber READ currentNumber WRITE setCurrentNumber NOTIFY currentNumberChanged)
+    Q_PROPERTY(int currentNgNumber READ currentNgNumber WRITE setCurrentNgNumber NOTIFY currentNgNumberChanged)
+    Q_PROPERTY(double lensYield READ lensYield WRITE setLensYield NOTIFY lensYieldChanged)
+    Q_PROPERTY(double accumulatredHour READ accumulatredHour WRITE setAccumulatredHour NOTIFY accumulatredHourChanged)
+    Q_PROPERTY(int lensUPH READ lensUPH WRITE setLensUPH NOTIFY lensUPHChanged)
     int runMode() const
     {
         return m_runMode;
@@ -113,6 +120,41 @@ public:
     int changeTrayTimeOut() const
     {
         return m_changeTrayTimeOut;
+    }
+
+    int planNumber() const
+    {
+        return m_PlanNumber;
+    }
+
+    bool usePlan() const
+    {
+        return m_usePlan;
+    }
+
+    int currentNumber() const
+    {
+        return m_currentNumber;
+    }
+
+    int currentNgNumber() const
+    {
+        return m_currentNgNumber;
+    }
+
+    double lensYield() const
+    {
+        return m_lensYield;
+    }
+
+    double accumulatredHour() const
+    {
+        return m_accumulatredHour;
+    }
+
+    int lensUPH() const
+    {
+        return m_lensUPH;
     }
 
 public slots:
@@ -285,6 +327,71 @@ public slots:
         emit changeTrayTimeOutChanged(m_changeTrayTimeOut);
     }
 
+    void setPlanNumber(int PlanNumber)
+    {
+        if (m_PlanNumber == PlanNumber)
+            return;
+
+        m_PlanNumber = PlanNumber;
+        emit planNumberChanged(m_PlanNumber);
+    }
+
+    void setUsePlan(bool usePlan)
+    {
+        if (m_usePlan == usePlan)
+            return;
+
+        m_usePlan = usePlan;
+        emit usePlanChanged(m_usePlan);
+    }
+
+    void setCurrentNumber(int currentNumber)
+    {
+        if (m_currentNumber == currentNumber)
+            return;
+
+        m_currentNumber = currentNumber;
+        emit currentNumberChanged(m_currentNumber);
+    }
+
+    void setCurrentNgNumber(int currentNgNumber)
+    {
+        if (m_currentNgNumber == currentNgNumber)
+            return;
+
+        m_currentNgNumber = currentNgNumber;
+        emit currentNgNumberChanged(m_currentNgNumber);
+    }
+
+    void setLensYield(double lensYield)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_lensYield, lensYield))
+            return;
+
+        m_lensYield = lensYield;
+        emit lensYieldChanged(m_lensYield);
+    }
+
+    void setAccumulatredHour(double accumulatredHour)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_accumulatredHour, accumulatredHour))
+            return;
+
+        m_accumulatredHour = accumulatredHour;
+        emit accumulatredHourChanged(m_accumulatredHour);
+    }
+
+    void setLensUPH(int lensUPH)
+    {
+        if (m_lensUPH == lensUPH)
+            return;
+
+        m_lensUPH = lensUPH;
+        emit lensUPHChanged(m_lensUPH);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -320,6 +427,20 @@ signals:
 
     void changeTrayTimeOutChanged(int changeTrayTimeOut);
 
+    void planNumberChanged(int planNumber);
+
+    void usePlanChanged(bool usePlan);
+
+    void currentNumberChanged(int currentNumber);
+
+    void currentNgNumberChanged(int currentNgNumber);
+
+    void lensYieldChanged(double lensYield);
+
+    void accumulatredHourChanged(double accumulatredHour);
+
+    void lensUPHChanged(int lensUPH);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -339,6 +460,14 @@ private:
     double m_pickTheta = 0;
     QString m_lpaUplookPickerLocationName = "";
     int m_changeTrayTimeOut = 180000;
+    int m_PlanNumber = 10;
+    bool m_usePlan = false;
+    int m_planNumber = 0;
+    int m_currentNumber = 0;
+    int m_currentNgNumber = 0;
+    double m_lensYield = 0;
+    double m_accumulatredHour = 0;
+    int m_lensUPH = 0;
 };
 
 class LensPickArmModuleState:public PropertyBase

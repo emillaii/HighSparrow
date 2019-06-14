@@ -56,7 +56,7 @@ bool AAHeadModule::moveToMushroomPosition(bool moveXYC)
         return moveToDiffrentZSync(mushroom_position.Z());
     else {
         mPoint6D point = this->GetFeedBack();
-        moveToSync(point.X,point.Y,mushroom_position.Z(),mushroom_position.A(),mushroom_position.B(),point.C);
+        return moveToSync(point.X,point.Y,mushroom_position.Z(),mushroom_position.A(),mushroom_position.B(),point.C);
     }
 }
 
@@ -258,6 +258,7 @@ void AAHeadModule::receiveLensFromLut(double offset_x, double offset_y, double o
     this->uplook_y = offset_y;
     this->uplook_theta = offset_theta;
     waiting_lens = false;
+    receive_lens = true;
 }
 
 void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double offset_theta)
@@ -267,6 +268,7 @@ void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double
     this->offset_y = offset_y;
     this->offset_theta = offset_theta;
     waiting_sensor = false;
+    receive_sensor = true;
 }
 
 bool AAHeadModule::moveToDiffrentZSync(double z)

@@ -943,8 +943,8 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     }
 
     qInfo("Read the aahead and sut carrier feedback");
-    mPoint6D motorsPosition; //= this->aa_head->GetFeedBack();
-    mPoint3D sutPosition; // = this->sut->carrier->GetFeedBackPos();
+    mPoint6D motorsPosition = this->aa_head->GetFeedBack();
+    mPoint3D sutPosition = this->sut->carrier->GetFeedBackPos();
     qInfo("inset data to map ccROIIndex %d urROIIndex %d ulROIInde %dx lrROIIndex %d llROIIndex %d size %d",ccROIIndex,urROIIndex,ulROIIndex,lrROIIndex,llROIIndex,sfr_entry.size());
     map.insert("AA_X", motorsPosition.X);
     map.insert("AA_Y", motorsPosition.Y);
@@ -971,7 +971,6 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     qInfo("CC_X :%f CC_Y: %f", sfr_entry[ccROIIndex].px, sfr_entry[ccROIIndex].py);
     clustered_sfr_map.clear();
     emit pushDataToUnit(this->runningUnit, "MTF", map);
-
     if (write_log) {
         this->loopTestResult.append(QString::number(sfr_entry[ccROIIndex].sfr))
                             .append(",")
@@ -1012,8 +1011,10 @@ ErrorCodeStruct AACoreNew::performReject()
     dk->DothinkeyClose();
     if(!has_product)
     {
-        has_ng_lens = true;
-        has_ng_sensor = true;
+        if(has_lens)
+            has_ng_lens = true;
+        if(has_sensor)
+            has_ng_sensor = true;
     }
     has_sensor = false;
     has_lens = false;
@@ -1164,6 +1165,14 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
 {
     if (!this->sut->moveToReadyPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to ready Pos"};}
     if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
+    if(aa_head->receive_sensor)
+    {
+        qInfo("wait sensor suceess");
+        has_sensor = true;
+        has_ng_sensor = false;
+        is_wait_sensor = false;
+        aa_head->receive_sensor = false;
+    }
     if((!has_sensor)&&(!is_wait_sensor))
     {
         qInfo("need sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
@@ -1175,14 +1184,22 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
             aa_head->sendSensrRequest(SUT_STATE::NO_MATERIAL);
         is_wait_sensor = true;
     }
+    if(aa_head->receive_lens)
+    {
+        has_lens = true;
+        has_ng_lens = false;
+        aa_head->receive_lens = false;
+    }
     if(!has_lens)
     {
         qInfo("need lens has_ng_lens %d",has_ng_lens);
-        if (this->lut->sendLensRequest(is_run,has_ng_lens,true))
+        this->lut->sendLensRequest(is_run,has_ng_lens,true);
+        if (aa_head->receive_lens)
         {
             qInfo("wait lens suceess");
             has_lens = true;
             has_ng_lens = false;
+            aa_head->receive_lens = false;
         }
         else{
             if(is_run)
@@ -1194,15 +1211,17 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"};
         }
     }
-    if(!has_sensor)
+    if(is_wait_sensor)
     {
         qInfo("wait sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
-        if(aa_head->waitForLoadSensor(is_run))
+        aa_head->waitForLoadSensor(is_run);
+        if(aa_head->receive_sensor)
         {
             qInfo("wait sensor suceess");
             has_sensor = true;
             has_ng_sensor = false;
             is_wait_sensor = false;
+            aa_head->receive_sensor = false;
         }
         else
         {

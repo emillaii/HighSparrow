@@ -209,6 +209,7 @@ bool BaseModuleManager::saveParameters()
     saveCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
+    saveVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     return true;
 }
 

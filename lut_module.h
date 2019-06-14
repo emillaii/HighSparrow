@@ -13,6 +13,7 @@
 #include <QQueue>
 #include "thread_worker_base.h"
 #include "sut_module.h"
+#include "uphhelper.h"
 
 enum LUTState
 {
@@ -53,6 +54,10 @@ public:
 
     Position3D aa1_mushroom_position;
     Position3D aa2_mushroom_position;
+
+    UPHHelper lens_uph;
+    UPHHelper left_lens_uph;
+    UPHHelper right_lens_uph;
 signals:
     void sendMessageToClient(QString destAddress, QString message);
     void sendLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
@@ -81,6 +86,9 @@ private:
     QQueue<QJsonObject> actionQueue;
     LUTState state = NO_LENS;
     bool is_run = false;
+    bool isLocalHost = false;
+    QTime time_label;
+
     void run(bool has_material);
     QString servingIP = "";
     void sendEvent(const QString event);
@@ -119,6 +127,12 @@ public:
     bool checkLutNgLens(bool check_state);
 
     bool stepMove_XY_Sync(double x,double y);
+
+
+
+    double updateAccumulatedHour(bool calculate = true);
+    double getHourSpace(QTime time_label);
+    Q_INVOKABLE void clearNumber();
 
 };
 

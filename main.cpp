@@ -165,6 +165,19 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->sensor_loader_module.picker1_offset);
     engine.rootContext()->setContextProperty("pick2_offset",
                                              &highSprrow.baseModuleManager->sensor_loader_module.picker2_offset);
+    engine.rootContext()->setContextProperty("sensor_uph",&highSprrow.baseModuleManager->sensor_loader_module.sensor_uph);
+    engine.rootContext()->setContextProperty("left_sensor_uph",&highSprrow.baseModuleManager->sensor_loader_module.left_sensor_uph);
+    engine.rootContext()->setContextProperty("right_sensor_uph",&highSprrow.baseModuleManager->sensor_loader_module.right_sensor_uph);
+    engine.rootContext()->setContextProperty("product_uph",&highSprrow.baseModuleManager->sensor_loader_module.product_uph);
+    engine.rootContext()->setContextProperty("left_product_uph",&highSprrow.baseModuleManager->sensor_loader_module.left_product_uph);
+    engine.rootContext()->setContextProperty("right_product_uph",&highSprrow.baseModuleManager->sensor_loader_module.right_product_uph);
+    engine.rootContext()->setContextProperty("comprehensive_uph",&highSprrow.baseModuleManager->sensor_loader_module.comprehensive_uph);
+    engine.rootContext()->setContextProperty("left_comprehensive_uph",&highSprrow.baseModuleManager->sensor_loader_module.left_comprehensive_uph);
+    engine.rootContext()->setContextProperty("right_comprehensive_uph",&highSprrow.baseModuleManager->sensor_loader_module.right_comprehensive_uph);
+    engine.rootContext()->setContextProperty("lens_uph",&highSprrow.baseModuleManager->lut_module.lens_uph);
+    engine.rootContext()->setContextProperty("left_lens_uph",&highSprrow.baseModuleManager->lut_module.left_lens_uph);
+    engine.rootContext()->setContextProperty("right_lens_uph",&highSprrow.baseModuleManager->lut_module.right_lens_uph);
+
     engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramers);
 
     QStringList data = highSprrow.baseModuleManager->motors.keys();

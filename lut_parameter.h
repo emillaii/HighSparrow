@@ -16,6 +16,7 @@ public:
     Q_PROPERTY(QString uplookLocationName READ uplookLocationName WRITE setUplookLocationName NOTIFY uplookLocationNameChanged)
     Q_PROPERTY(QString loadlookLocationName READ loadlookLocationName WRITE setLoadlookLocationName NOTIFY loadlookLocationNameChanged)
     Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
+    Q_PROPERTY(double accumulatedHour READ accumulatedHour WRITE setAccumulatedHour NOTIFY accumulatedHourChanged)
     double pickForce() const
     {
         return m_PickForce;
@@ -59,6 +60,11 @@ public:
     QString mushroomLocationName() const
     {
         return m_mushroomLocationName;
+    }
+
+    double accumulatedHour() const
+    {
+        return m_accumulatedHour;
     }
 
 public slots:
@@ -140,6 +146,16 @@ public slots:
         emit mushroomLocationNameChanged(m_mushroomLocationName);
     }
 
+    void setAccumulatedHour(double accumulatedHour)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_accumulatedHour, accumulatedHour))
+            return;
+
+        m_accumulatedHour = accumulatedHour;
+        emit accumulatedHourChanged(m_accumulatedHour);
+    }
+
 signals:
     void paramsChanged();
 
@@ -159,6 +175,8 @@ signals:
 
     void mushroomLocationNameChanged(QString mushroomLocationName);
 
+    void accumulatedHourChanged(double accumulatedHour);
+
 private:
     double m_PickForce = 0;
     QString m_motorXName = "LUT_X";
@@ -169,6 +187,7 @@ private:
     QString m_uplookLocationName = "";
     QString m_loadlookLocationName = "";
     QString m_mushroomLocationName = "";
+    double m_accumulatedHour = 0;
 };
 
 class LutState:public PropertyBase
@@ -187,6 +206,8 @@ class LutState:public PropertyBase
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool pickingLens READ pickingLens WRITE setPickingLens NOTIFY pickingLensChanged)
     Q_PROPERTY(QString cmd READ cmd WRITE setCmd NOTIFY cmdChanged)
+    Q_PROPERTY(bool pickedLens READ pickedLens WRITE setPickedLens NOTIFY pickedLensChanged)
+    Q_PROPERTY(bool unpickedNgLens READ unpickedNgLens WRITE setUnpickedNgLens NOTIFY unpickedNgLensChanged)
 public:
     int lutTrayID() const
     {
@@ -251,6 +272,16 @@ public:
     QString cmd() const
     {
         return m_cmd;
+    }
+
+    bool pickedLens() const
+    {
+        return m_pickedLens;
+    }
+
+    bool unpickedNgLens() const
+    {
+        return m_unpickedNgLens;
     }
 
 public slots:
@@ -371,6 +402,24 @@ public slots:
         emit cmdChanged(m_cmd);
     }
 
+    void setPickedLens(bool pickedLens)
+    {
+        if (m_pickedLens == pickedLens)
+            return;
+
+        m_pickedLens = pickedLens;
+        emit pickedLensChanged(m_pickedLens);
+    }
+
+    void setUnpickedNgLens(bool unpickedNgLens)
+    {
+        if (m_unpickedNgLens == unpickedNgLens)
+            return;
+
+        m_unpickedNgLens = unpickedNgLens;
+        emit unpickedNgLensChanged(m_unpickedNgLens);
+    }
+
 signals:
     void lutTrayIDChanged(int lutTrayID);
 
@@ -400,6 +449,10 @@ signals:
     void cmdChanged(QString cmd);
 
 
+    void pickedLensChanged(bool pickedLens);
+
+    void unpickedNgLensChanged(bool unpickedNgLens);
+
 private:
     int m_lutTrayID = -1;
     int m_lutLensID = -1;
@@ -414,6 +467,8 @@ private:
     bool m_lutHasLens = false;
     bool m_pickingLens = false;
     QString m_cmd = "";
+    bool m_pickedLens = false;
+    bool m_unpickedNgLens = false;
 };
 
 #endif // LUT_PARAMERTER_H

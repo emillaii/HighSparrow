@@ -109,18 +109,19 @@ bool SutModule::moveToDownlookPR(bool close_lighting, bool check_autochthonous)
 bool SutModule::moveToLoadPos(bool check_autochthonous)
 {
     qInfo("moveToLoadPos");
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),1,check_autochthonous);
 }
 
 bool SutModule::moveToDownlookPos(bool check_autochthonous)
 {
     qInfo("moveToDownlookPos");
+    popgpin->Set(true);
     return carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),downlook_position.Z(),check_autochthonous);
 }
 
 bool SutModule::moveToReadyPos()
 {
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),0);
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),1,true);
 }
 
 bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting,bool check_autochthonous)
@@ -168,6 +169,7 @@ bool SutModule::toolDownlookPR(bool close_lighting, bool motion)
 
 bool SutModule::moveToToolDownlookPos(bool check_autochthonous)
 {
+    popgpin->Set(true);
     if(QThread::currentThreadId()==gui_thread_id){
         QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"提示"),tr(u8"是否移动"),QMessageBox::Yes|QMessageBox::No);
         if(rb == QMessageBox::Yes){
@@ -185,6 +187,7 @@ bool SutModule::moveToToolDownlookPos(bool check_autochthonous)
 
 bool SutModule::moveToToolUplookPos(bool check_autochthonous)
 {
+    popgpin->Set(true);
     if(QThread::currentThreadId()==gui_thread_id){
         QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"提示"),tr(u8"是否移动"),QMessageBox::Yes|QMessageBox::No);
         if(rb == QMessageBox::Yes){
@@ -268,9 +271,9 @@ void SutModule::run(bool has_material)
             QThread::msleep(1000);
             continue;
         }
-        if((!states.sutHasSensor()))
+        if((!states.sutHasSensor())&&(!states.loadingSensor()))
         {
-            if(!moveToLoadPos())
+            if(!moveToLoadPos(true))
             {
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run =false;
@@ -282,7 +285,10 @@ void SutModule::run(bool has_material)
                 waitMessageReturn(is_run);
                 continue;
             }
-            QThread::msleep(100);
+            states.setLoadingSensor(true);
+        }
+        if((!states.sutHasSensor())&&states.loadingSensor())
+        {
             if(states.sutHasProduct()||states.sutHasNgSensor())
             {
                 if(!checkSutSensorOrProduct(true))
@@ -308,7 +314,7 @@ void SutModule::run(bool has_material)
             }
             if(! sut_cilent->sendSensorRequest(is_run,states.sutHasProduct(),states.sutHasNgSensor()))
             {
-                AppendError(u8"等待sensor超时");
+               AppendError(u8"等待sensor超时");
                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                waitMessageReturn(is_run);
                continue;
@@ -316,6 +322,7 @@ void SutModule::run(bool has_material)
            else
            {
                states.setSutHasSensor(true);
+               states.setLoadingSensor(false);
            }
         }
         if(states.sutHasSensor())

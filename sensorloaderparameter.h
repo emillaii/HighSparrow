@@ -33,6 +33,11 @@ public:
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
     Q_PROPERTY(double picker1ThetaOffset READ picker1ThetaOffset WRITE setPicker1ThetaOffset NOTIFY picker1ThetaOffsetChanged)
     Q_PROPERTY(double picker2ThetaOffset READ picker2ThetaOffset WRITE setPicker2ThetaOffset NOTIFY picker2ThetaOffsetChanged)
+
+
+    Q_PROPERTY(bool usePlan READ usePlan WRITE setUsePlan NOTIFY usePlanChanged)
+    Q_PROPERTY(int planNumber READ planNumber WRITE setPlanNumber NOTIFY planNumberChanged)
+    Q_PROPERTY(double accumulatedHour READ accumulatedHour WRITE setAccumulatedHour NOTIFY accumulatedHourChanged)
     double vcmWorkForce() const
     {
         return m_vcmWorkForce;
@@ -146,6 +151,20 @@ public:
     double picker2ThetaOffset() const
     {
         return m_picker2ThetaOffset;
+    }
+
+    bool usePlan() const
+    {
+        return m_usePlan;
+    }
+
+    int planNumber() const
+    {
+        return m_planNumber;
+    }
+    double accumulatedHour() const
+    {
+        return m_accumulatedHour;
     }
 
 public slots:
@@ -370,6 +389,34 @@ public slots:
         emit picker2ThetaOffsetChanged(m_picker2ThetaOffset);
     }
 
+    void setUsePlan(bool usePlan)
+    {
+        if (m_usePlan == usePlan)
+            return;
+
+        m_usePlan = usePlan;
+        emit usePlanChanged(m_usePlan);
+    }
+
+    void setPlanNumber(int planNumber)
+    {
+        if (m_planNumber == planNumber)
+            return;
+
+        m_planNumber = planNumber;
+        emit planNumberChanged(m_planNumber);
+    }
+
+    void setAccumulatedHour(double accumulatedHour)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_accumulatedHour, accumulatedHour))
+            return;
+
+        m_accumulatedHour = accumulatedHour;
+        emit accumulatedHourChanged(m_accumulatedHour);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -418,6 +465,12 @@ signals:
 
     void picker2ThetaOffsetChanged(double picker2ThetaOffset);
 
+    void usePlanChanged(bool usePlan);
+
+    void planNumberChanged(int planNumber);
+
+    void accumulatedHourChanged(double accumulatedHour);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -442,6 +495,9 @@ private:
     int m_changeTrayTimeOut = 180000;
     double m_picker1ThetaOffset = 0;
     double m_picker2ThetaOffset = 0;
+    bool m_usePlan = false;
+    int m_planNumber = 0;
+    double m_accumulatedHour = 0;
 };
 class SensorLoaderState:public PropertyBase
 {

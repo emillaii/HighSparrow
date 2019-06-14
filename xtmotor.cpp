@@ -512,6 +512,7 @@ bool XtMotor::StepMove(double step, int thread)
 {
     if(is_debug)return true;
     if(!checkState(false))return false;
+    if(!checkLimit(GetFeedbackPos() + step))return false;
     if(thread==-1)
         thread = default_using_thread;
     if(step>0)
@@ -821,7 +822,7 @@ bool XtMotor::checkLimit(const double pos)
 
 bool XtMotor::checkInterface(const double pos)
 {
-    qInfo("%s CheckLimit %d,%d,%d",name.toStdString().c_str(),vertical_limit_parameters.size(),parallel_limit_parameters.size(),io_limit_parameters.size());
+//    qInfo("%s CheckLimit %d,%d,%d",name.toStdString().c_str(),vertical_limit_parameters.size(),parallel_limit_parameters.size(),io_limit_parameters.size());
     double current_pos = GetFeedbackPos();
     for (int i = 0; i < vertical_limit_parameters.size(); ++i) {
         VerticalLimitParameter* temp_parameter = vertical_limit_parameters[i];

@@ -156,9 +156,7 @@ double XtVcMotor::GetFeedbackPos(int decimal_digit) const
         return 0;
 
     {
-//        static int time = 0;
-//        qInfo("spance:%d", QTime::currentTime().msec()-time);
-//        time = QTime::currentTime().msec();
+//        return GetOutpuPos();
         double val;
         int times = 10;
         do{
@@ -280,9 +278,8 @@ bool XtVcMotor::SeekOrigin(int thread)
     int result;
     qInfo("sadas");
     ChangeDiretion(true);
-    if(parameters.findOriginCurrent() > 0) {
+    if(parameters.findOriginCurrent() > 0)
         result = Touch_Go_Zero(vcm_id,parameters.findOriginCurrent(),parameters.touchDistance());
-    }
     else {
 
         SetZeroPos(vcm_id,0);

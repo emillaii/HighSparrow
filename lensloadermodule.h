@@ -108,6 +108,12 @@ private:
     bool moveToUpdownlookDownPos();
     bool moveToUpdownlookUpPos();
 
+    void addCurrentNumber();
+    void addCurrentNgNumber();
+    Q_INVOKABLE void clearNumber();
+    void updateNumber();
+    double getHourSpace(QTime time_label);
+
     bool isRunning();
     // ThreadWorkerBase interface
 public slots:
@@ -145,6 +151,7 @@ private:
     bool debug = false;
     ErrorLevel error_level;
     PrOffset pr_offset;
+    QTime time_label;
 };
 
 #endif // LENSPICKARMMODULE_H

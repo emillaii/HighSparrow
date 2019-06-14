@@ -36,7 +36,7 @@ bool SutClient::sendSensorRequest(bool &is_run,bool has_product, bool has_ng_sen
 void SutClient::receiveMessage(QString message)
 {
     QJsonObject json = getJsonObjectFromString(message);
-    qInfo("Lut Client receive message: %s", message.toStdString().c_str());
+    qInfo("Sut Client receive message: %s", message.toStdString().c_str());
     QString event = json["event"].toString("");
     QString cmd = json["cmd"].toString("");
     QJsonObject obj;

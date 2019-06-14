@@ -81,7 +81,8 @@ SOURCES += \
     machinestatemonitor.cpp \
     machinestatemonitorcontroller.cpp \
     singleheadmachinematerialpickarm.cpp \
-    singleheadmachinematerialloadermodule.cpp
+    singleheadmachinematerialloadermodule.cpp \
+    uphhelper.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -224,7 +225,8 @@ HEADERS += \
     singleheadmachinematerialpickarm.h \
     singleheadmachinematerialpickarmparameter.h \
     singleheadmachinematerialloadermodule.h \
-    singleheadmachinematerialloadermoduleparameter.h
+    singleheadmachinematerialloadermoduleparameter.h \
+    uphhelper.h
 
 DISTFILES += \
     icons/index.theme

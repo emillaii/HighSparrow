@@ -51,6 +51,14 @@ ColumnLayout {
     }
     RowLayout {
         Button {
+            text: qsTr("视觉")
+            width: 20
+            height: 40
+            onClicked: {
+                highSprrow.performSUTDownlookPR()
+            }
+        }
+        Button {
             text: qsTr("去喷胶")
             width: 20
             height: 40

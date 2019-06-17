@@ -111,7 +111,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmMoveToTray1EndPos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1_END_POS)

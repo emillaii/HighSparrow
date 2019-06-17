@@ -27,6 +27,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     profile_loaded = false;
     if(!QDir(".//notopencamera").exists())
     {
+        qInfo("Init BaslerPylonCamera--------------------------------------");
         pylonUplookCamera = new BaslerPylonCamera(CAMERA_SH_UT_UL);
         pylonDownlookCamera = new BaslerPylonCamera(CAMERA_SH_AA_DL);
         pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SH_PA_DL);

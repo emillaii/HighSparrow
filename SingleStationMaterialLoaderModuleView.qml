@@ -74,6 +74,11 @@ ItemDelegate {
                 SingleHeadLensTray{}
             }
             GroupBox{
+                title:qsTr("sensor盘规格")
+                SensorTraySpecs{}
+            }
+
+            GroupBox{
                 title:qsTr("sensor盘")
                 SingleHeadSensorTray{}
             }

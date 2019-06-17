@@ -267,7 +267,7 @@ ColumnLayout {
                         }
                     }
                     Button{
-                        visible: baseModuleManager.getServerMode()!=0
+                        visible: baseModuleManager.getServerMode()!==0
                         text:qsTr("放ng Sensor")
                         width:40
                         height: 40

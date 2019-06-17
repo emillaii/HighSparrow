@@ -2,6 +2,8 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 
+import SingleHeadMaterialLoaderLib 1.0
+
 ColumnLayout {
     GroupBox{
         title:qsTr("Lens盘1起点")
@@ -40,7 +42,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1_START_POS)
                     }
                 }
                 Button{
@@ -95,7 +97,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1_END_POS)
                     }
                 }
                 Button{
@@ -147,6 +149,7 @@ ColumnLayout {
                     onClicked: {
                         sh_lens_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
                         //todo moveto
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1)
                     }
                 }
             }
@@ -172,7 +175,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_LENS_IN_TRAY)
                     }
                 }
                 Button{
@@ -180,7 +183,7 @@ ColumnLayout {
                     width:40
                     height:40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_PR)
                     }
                 }
 
@@ -189,7 +192,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LPA_TO_WORK|
+                                                                MaterialLoaderModule.LENS_PR)
                     }
                 }
 
@@ -199,6 +203,10 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sh_lens_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1|
+                                                                MaterialLoaderModule.LENS_PR|
+                                                                MaterialLoaderModule.LPA_TO_WORK|
+                                                                MaterialLoaderModule.PICK_LENS_FROM_TRAY)
                     }
                 }
             }
@@ -209,7 +217,7 @@ ColumnLayout {
                     width:40
                     height:40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_VACANCY_PR)
                     }
                 }
 
@@ -218,7 +226,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LPA_TO_WORK|
+                                                                MaterialLoaderModule.LENS_VACANCY_PR)
                     }
                 }
                 Button{
@@ -227,6 +236,10 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sh_lens_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1|
+                                                                MaterialLoaderModule.LENS_VACANCY_PR|
+                                                                MaterialLoaderModule.LPA_TO_WORK|
+                                                                MaterialLoaderModule.PLACE_NG_LENS_TO_TRAY)
                     }
                 }
             }
@@ -270,7 +283,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2_START_POS)
                     }
                 }
                 Button{
@@ -320,6 +333,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2)
                     }
                 }
             }
@@ -330,7 +344,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_PR)
                     }
                 }
                 Button{
@@ -338,7 +352,10 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2|
+                                                                MaterialLoaderModule.LENS_PR|
+                                                                MaterialLoaderModule.LPA_TO_WORK|
+                                                                MaterialLoaderModule.PICK_LENS_FROM_TRAY)
                     }
                 }
                 Button{
@@ -346,7 +363,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked:{
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_VACANCY_PR)
                     }
                 }
 
@@ -356,6 +373,8 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_VACANCY_PR|
+                                                                MaterialLoaderModule.LPA_TO_WORK)
                     }
                 }
 
@@ -365,6 +384,10 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2|
+                                                                MaterialLoaderModule.LENS_VACANCY_PR|
+                                                                MaterialLoaderModule.LPA_TO_WORK|
+                                                                MaterialLoaderModule.PLACE_NG_LENS_TO_TRAY)
                     }
                 }
             }

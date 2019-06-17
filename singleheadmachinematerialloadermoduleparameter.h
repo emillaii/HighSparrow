@@ -39,6 +39,7 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     double m_escapeY = 0;
     QString m_sutVacuumName = "";
     QString m_lutVacuumName = "";
+    double m_visionPositionX = 0;
 
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
@@ -72,6 +73,7 @@ public:
     Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
     Q_PROPERTY(QString sutVacuumName READ sutVacuumName WRITE setSutVacuumName NOTIFY sutVacuumNameChanged)
     Q_PROPERTY(QString lutVacuumName READ lutVacuumName WRITE setLutVacuumName NOTIFY lutVacuumNameChanged)
+    Q_PROPERTY(double visionPositionX READ visionPositionX WRITE setVisionPositionX NOTIFY visionPositionXChanged)
 
     int runMode() const
     {
@@ -220,6 +222,11 @@ public:
     QString lutVacuumName() const
     {
         return m_lutVacuumName;
+    }
+
+    double visionPositionX() const
+    {
+        return m_visionPositionX;
     }
 
 public slots:
@@ -508,6 +515,16 @@ public slots:
         emit lutVacuumNameChanged(m_lutVacuumName);
     }
 
+    void setVisionPositionX(double visionPositionX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_visionPositionX, visionPositionX))
+            return;
+
+        m_visionPositionX = visionPositionX;
+        emit visionPositionXChanged(m_visionPositionX);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void saftyZHeightChanged(double saftyZHeight);
@@ -539,6 +556,7 @@ signals:
     void escapeYChanged(double escapeY);
     void sutVacuumNameChanged(QString sutVacuumName);
     void lutVacuumNameChanged(QString lutVacuumName);
+    void visionPositionXChanged(double visionPositionX);
 };
 
 #endif // SINGLEHEADMACHINEMATERIALLOADERMODULEPARAMETER_H

@@ -249,6 +249,7 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
 {
     bool result = true;
     result &= manager->registerWorker(&sh_lsut_module);
+    result &= manager->registerWorker(&single_station_material_loader_module);
    // result &= manager->registerWorker(&aaCoreNew);
     return result;
 }
@@ -897,9 +898,7 @@ bool BaseModuleManager::InitStruct()
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
     sh_lsut_module.Init(&sut_carrier,GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
-
-    }
-    else if(ServerMode()==1)
+    if(ServerMode()==2)
     {
         //single_station_material_pickarm.Init();
         single_station_material_pickarm.Init(GetMotorByName(single_station_material_pickarm.parameters.motorXName()),
@@ -936,7 +935,6 @@ bool BaseModuleManager::InitStruct()
                          GetMotorByName(sh_lsut_module.parameters.motorYName()),
                          GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
                          GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()));
-        sh_lsut_module.Init(&lut_carrier,&sut_carrier,GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
     }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
                             GetMotorByName(tray_loader_module.parameters.motorLTKX1Name()),

@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import SingleHeadMaterialLoaderLib 1.0
 
 ColumnLayout {
     GroupBox{
@@ -40,7 +41,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TRAY_START_POS)
                     }
                 }
                 Button{
@@ -94,7 +95,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TRAY_END_POS)
                     }
                 }
                 Button{
@@ -146,6 +147,7 @@ ColumnLayout {
                         height: 40
                         onClicked: {
                             sh_sensor_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TRAY)
                         }
                     }
                 }
@@ -171,7 +173,7 @@ ColumnLayout {
                         width: 40
                         height: 40
                         onClicked: {
-
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_SENSOR_IN_TRAY)
                         }
                     }
                     Button{
@@ -179,7 +181,7 @@ ColumnLayout {
                         width:40
                         height:40
                         onClicked: {
-
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_PR)
                         }
                     }
 
@@ -189,7 +191,8 @@ ColumnLayout {
                         width: 40
                         height: 40
                         onClicked: {
-
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_PR|
+                                                                    MaterialLoaderModule.SENSOR_TO_PICK)
                         }
                     }
 
@@ -199,6 +202,10 @@ ColumnLayout {
                         height: 40
                         onClicked: {
                             sh_sensor_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TRAY|
+                                                                    MaterialLoaderModule.SENSOR_PR|
+                                                                    MaterialLoaderModule.SENSOR_TO_PICK|
+                                                                    MaterialLoaderModule.PICK_SENSOR_FROM_TRAY)
                         }
                     }
                 }
@@ -220,7 +227,7 @@ ColumnLayout {
                     Button{
                         text:qsTr("测高")
                         onClicked: {
-
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_NG_SENSOR_IN_TRAY)
                         }
                     }
                 }
@@ -231,7 +238,7 @@ ColumnLayout {
                         width:40
                         height: 40
                         onClicked:{
-
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_VACANCY_PR)
                         }
                     }
 
@@ -241,6 +248,9 @@ ColumnLayout {
                         height: 40
                         onClicked: {
                             sh_sensor_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TRAY|
+                                                                    MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                    MaterialLoaderModule.SENSOR_TO_PICK)
                         }
                     }
 
@@ -250,6 +260,10 @@ ColumnLayout {
                         height: 40
                         onClicked: {
                             sh_sensor_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TRAY|
+                                                                    MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                    MaterialLoaderModule.SENSOR_TO_PICK|
+                                                                    MaterialLoaderModule.PLACE_PRODUCT_TO_TRAY)
                         }
                     }
                     Button{
@@ -259,6 +273,10 @@ ColumnLayout {
                         height: 40
                         onClicked: {
                             sh_sensor_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TRAY|
+                                                                    MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                    MaterialLoaderModule.SENSOR_TO_PICK|
+                                                                    MaterialLoaderModule.PLACE_NG_SENSOR_TO_TRAY)
                         }
                     }
                 }

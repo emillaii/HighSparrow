@@ -29,7 +29,8 @@ public:
     Q_PROPERTY(double placeNgLensZ READ placeNgLensZ WRITE setPlaceNgLensZ NOTIFY placeNgLensZChanged)
     Q_PROPERTY(double pickNgSensorZ READ pickNgSensorZ WRITE setPickNgSensorZ NOTIFY pickNgSensorZChanged)
     Q_PROPERTY(double placeNgSensorZ READ placeNgSensorZ WRITE setPlaceNgSensorZ NOTIFY placeNgSensorZChanged)
-
+    Q_PROPERTY(double pickLensTheta READ pickLensTheta WRITE setPickLensTheta NOTIFY pickLensThetaChanged)
+    Q_PROPERTY(double placeLensTheta READ placeLensTheta WRITE setPlaceLensTheta NOTIFY placeLensThetaChanged)
 
 public:
     SingleHeadMachineMaterialPickArmParameter():PropertyBase(){}
@@ -146,6 +147,16 @@ public:
     double placeNgSensorZ() const
     {
         return m_placeNgSensorZ;
+    }
+
+    double pickLensTheta() const
+    {
+        return m_pickLensTheta;
+    }
+
+    double placeLensTheta() const
+    {
+        return m_placeLensTheta;
     }
 
 public slots:
@@ -366,6 +377,26 @@ public slots:
         emit placeNgSensorZChanged(m_placeNgSensorZ);
     }
 
+    void setPickLensTheta(double pickLensTheta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickLensTheta, pickLensTheta))
+            return;
+
+        m_pickLensTheta = pickLensTheta;
+        emit pickLensThetaChanged(m_pickLensTheta);
+    }
+
+    void setPlaceLensTheta(double placeLensTheta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeLensTheta, placeLensTheta))
+            return;
+
+        m_placeLensTheta = placeLensTheta;
+        emit placeLensThetaChanged(m_placeLensTheta);
+    }
+
 signals:
     void motorXNameChanged(QString motorXName);
 
@@ -413,6 +444,10 @@ signals:
 
     void placeNgSensorZChanged(double placeNgSensorZ);
 
+    void pickLensThetaChanged(double pickLensTheta);
+
+    void placeLensThetaChanged(double placeLensTheta);
+
 private:
     QString m_motorXName = "";
     QString m_motorYName = "";
@@ -437,6 +472,8 @@ private:
     double m_placeNgLensZ = 0;
     double m_pickNgSensorZ = 0;
     double m_placeNgSensorZ = 0;
+    double m_pickLensTheta = 0;
+    double m_placeLensTheta = 0;
 };
 
 #endif // SINGLEHEADMACHINEMATERIALPICKARMPARAMETER_H

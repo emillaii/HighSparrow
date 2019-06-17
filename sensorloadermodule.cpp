@@ -1206,7 +1206,7 @@ bool SensorLoaderModule::picker2MeasureHight(bool is_tray, bool is_product)
 
 bool SensorLoaderModule::measureZOffset()
 {
-    QPointF temp_point(sut1_pr_position.X()+picker1_offset.X(),sut2_pr_position.Y()+picker1_offset.Y());
+    QPointF temp_point(sut1_pr_position.X()+picker1_offset.X(),sut1_pr_position.Y()+picker1_offset.Y());
     double sut1_height = 0;
     if(!pick_arm->move_XY_Synic(temp_point,true))
     {

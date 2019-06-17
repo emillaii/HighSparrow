@@ -362,7 +362,7 @@ bool SingleHeadMachineMaterialPickArm::move_XeYe_Z1_XY(double z, double escape_x
     if(check_softlanding)
     {
         if(!motor_vcm1->resetSoftLanding(timeout))return false;
-        if(!motor_vcm1->resetSoftLanding(timeout))return false;
+        if(!motor_vcm2->resetSoftLanding(timeout))return false;
     }
     double x = motor_x->GetOutpuPos();
     double y = motor_y->GetOutpuPos();
@@ -386,6 +386,102 @@ bool SingleHeadMachineMaterialPickArm::move_XeYe_Z1_XY(double z, double escape_x
     motor_y->MoveToPos(y);
     resut &= motor_x->WaitArrivedTargetPos(x,timeout);
     resut &= motor_y->WaitArrivedTargetPos(y,timeout);
+    return resut;
+}
+
+bool SingleHeadMachineMaterialPickArm::move_XeYe_Z2_XY(double z, double escape_x, double escape_y, const bool check_softlanding, int timeout)
+{
+    if(check_softlanding)
+    {
+        if(!motor_vcm1->resetSoftLanding(timeout))return false;
+        if(!motor_vcm2->resetSoftLanding(timeout))return false;
+    }
+    double x = motor_x->GetOutpuPos();
+    double y = motor_y->GetOutpuPos();
+    motor_x->MoveToPos(x + escape_x);
+    motor_y->MoveToPos(y + escape_y);
+    bool resut = motor_x->WaitArrivedTargetPos(x + escape_x,timeout);
+    resut &= motor_y->WaitArrivedTargetPos(y + escape_y,timeout);
+    if(!resut)
+    {
+        AppendError(u8"move to escape pos fail");
+        return false;
+    }
+    resut &= motor_vcm2->MoveToPosSync(z);
+    if(!resut)
+    {
+        AppendError(u8"move to escape z fail");
+        return false;
+    }
+    QThread::msleep(100);
+    motor_x->MoveToPos(x);
+    motor_y->MoveToPos(y);
+    resut &= motor_x->WaitArrivedTargetPos(x,timeout);
+    resut &= motor_y->WaitArrivedTargetPos(y,timeout);
+    return resut;
+}
+
+double SingleHeadMachineMaterialPickArm::GetSoftladngPosition(bool get_current,int index)
+{
+    XtVcMotor* motor_z = index==0?motor_vcm1:motor_vcm2;
+    if(get_current)
+        return motor_z->GetFeedbackPos();
+    return softlanding_position;
+}
+
+bool SingleHeadMachineMaterialPickArm::move_XtXYT2_Synic(QPointF position, double x, double t, bool check_softlanding, int timeout)
+{
+    qInfo("move to (%f,%f,%f,%f)",position.x(),position.y(),x,t);
+    if(check_softlanding)if(!motor_vcm2->resetSoftLanding(timeout))return false;
+    motor_x->MoveToPos(position.x());
+    motor_y->MoveToPos(position.y());
+    motor_vcmx->MoveToPos(x);
+    motor_th2->MoveToPos(t);
+    bool resut = motor_x->WaitArrivedTargetPos(position.x(),timeout);
+    resut &= motor_y->WaitArrivedTargetPos(position.y(),timeout);
+    resut &= motor_x->WaitArrivedTargetPos(x,timeout);
+    resut &= motor_th2->WaitArrivedTargetPos(t,timeout);
+    return resut;
+}
+
+bool SingleHeadMachineMaterialPickArm::move_XYT2_Synic(double x, double y, double t, bool check_softlanding, int timeout)
+{
+    qInfo("move to (%f,%f,%f)",x,y,t);
+    if(check_softlanding)if(!motor_vcm2->resetSoftLanding(timeout))return false;
+    motor_vcmx->MoveToPos(x);
+    motor_y->MoveToPos(y);
+    motor_th2->MoveToPos(t);
+    bool resut = motor_vcmx->WaitArrivedTargetPos(x,timeout);
+    resut &= motor_y->WaitArrivedTargetPos(y,timeout);
+    resut &= motor_th2->WaitArrivedTargetPos(t,timeout);
+    return resut;
+}
+
+bool SingleHeadMachineMaterialPickArm::stepMove_XYT2_Synic(PrOffset position, bool check_softlanding, int timeout)
+{
+    if(check_softlanding)if(!motor_vcm2->resetSoftLanding(timeout))return false;
+    double target_x = position.X + motor_vcmx->GetFeedbackPos();
+    double target_y = position.Y +  motor_y->GetFeedbackPos();
+    double target_t = position.Theta +  motor_th2->GetFeedbackPos();
+    motor_vcmx->MoveToPos(target_x);
+    motor_y->MoveToPos(target_y);
+    motor_th2->MoveToPos(target_t);
+    bool result = motor_vcmx->WaitArrivedTargetPos(target_x,timeout);
+    result &= motor_y->WaitArrivedTargetPos(target_y,timeout);
+    result &= motor_th2->WaitArrivedTargetPos(target_t,timeout);
+    return result;
+}
+
+bool SingleHeadMachineMaterialPickArm::move_XtXY_Synic(QPointF position, double x, bool check_softlanding, int timeout)
+{
+    qInfo("move to (%f,%f,%f)",position.x(),position.y(),x);
+    if(check_softlanding)if(!motor_vcm2->resetSoftLanding(timeout))return false;
+    motor_x->MoveToPos(position.x());
+    motor_y->MoveToPos(position.y());
+    motor_vcmx->MoveToPos(x);
+    bool resut = motor_x->WaitArrivedTargetPos(position.x(),timeout);
+    resut &= motor_y->WaitArrivedTargetPos(position.y(),timeout);
+    resut &= motor_vcmx->WaitArrivedTargetPos(x,timeout);
     return resut;
 }
 

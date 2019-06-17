@@ -9,6 +9,7 @@
 #include "position_define.h"
 #include "singleheadmachinematerialpickarmparameter.h"
 #include "xtmotor.h"
+#include "vision_location.h"
 
 # define POS_ERROR 0.001
 class SingleHeadMachineMaterialLoaderModule;
@@ -99,7 +100,13 @@ public:
     bool ZSerchByForce(int picker,double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);
     bool ZSerchReturn(int picker,int timeout = 10000);
     bool move_XeYe_Z1_XY(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
-    double GetSoftladngPosition(bool get_current = false);
+    bool move_XeYe_Z2_XY(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
+    double GetSoftladngPosition(bool get_current = false,int index=0);
+
+    bool move_XtXYT2_Synic(QPointF position,double x,double t,bool check_softlanding = false,int timeout = 30000);
+    bool move_XYT2_Synic(double x,double y,double t,bool check_softlanding = false,int timeout = 10000);
+    bool stepMove_XYT2_Synic(PrOffset position,bool check_softlanding = false,int timeout = 10000);
+    bool move_XtXY_Synic(QPointF position,double x,bool check_softlanding = false,int timeout = 30000);
 private:
     double softlanding_position;
 };

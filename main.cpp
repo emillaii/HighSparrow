@@ -66,11 +66,12 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
     engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
     engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
-
+    engine.rootContext()->setContextProperty("sh_materialLoaderModule",&highSprrow.baseModuleManager->single_station_material_loader_module);
 
     //Register QML - C++ ENUM
     qmlRegisterType<SensorLoaderModule>("SomeLib",1,0,"SensorLoaderModule");
     qmlRegisterType<SingleheadLSutModule>("SingleheadLSutModuleLib",1,0,"SingleheadLSutModule");
+    qmlRegisterType<SingleHeadMachineMaterialLoaderModule>("SingleHeadMaterialLoaderLib",1,0,"MaterialLoaderModule");
 
     //AA Head Position
     engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);

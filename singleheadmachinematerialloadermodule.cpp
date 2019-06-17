@@ -50,7 +50,8 @@ void SingleHeadMachineMaterialLoaderModule::saveJsonConfig(QString file_name)
 
 void SingleHeadMachineMaterialLoaderModule::performHandling(int cmd)
 {
-
+    emit sendHandlingOperation(cmd);
+    qInfo("emit performHandling %d",cmd);
 }
 
 bool SingleHeadMachineMaterialLoaderModule::ToPickCmosPosition()
@@ -82,39 +83,6 @@ bool SingleHeadMachineMaterialLoaderModule::ToPickCmosPosition()
         return false;
     }
     return true;
-}
-
-bool SingleHeadMachineMaterialLoaderModule::PickCMOS(double force,int time_out)
-{
-    /*
-    //old code
-    //softlanding to pick cmos
-    double vcm2_pos=pick_arm->vcm2GetMotorPos(pick_arm->pick_cmos_base_position.v(),pick_arm->pick_cmos_base_position.z());
-    bool res = pick_arm->vcm2SoftLanding(force,vcm2_pos);
-    if(!res)
-    {
-        qInfo("softlanding to pick cmos failed!");
-        return false;
-    }
-    bool res_v = pick_arm->vacuum_sensor_suction->Set(true);
-    if(!res_v)
-        qInfo("vacuum2 set true fail");
-//    v2->Set(true);
-//    QThread::msleep(200);
-    //pick cmos softlanding reutrn
-    res = pick_arm->vcm2SoftLandingReturn();
-    if(!res)
-    {
-        qInfo("pick cmos softlanding reutrn failed!");
-        return false;
-    }
-    return res&&res_v;
-    //*/
-    qInfo("pickTraySensor time_out %d",time_out);
-    bool result = picker1SearchZ(pick_arm->parameters.pickSensorZ(),true,time_out);
-    if(!result)
-        AppendError(QString(u8"从sensor盘取sensor失败"));
-    return result;
 }
 
 bool SingleHeadMachineMaterialLoaderModule::ToPickLensPosition()
@@ -189,84 +157,6 @@ bool SingleHeadMachineMaterialLoaderModule::ToSUTPosition()
 bool SingleHeadMachineMaterialLoaderModule::CheckSUTExistCmos()
 {
     return pick_arm->vacuum_sut->IsVacuum();
-}
-
-bool SingleHeadMachineMaterialLoaderModule::PlaceToSUT(double force,QString dest,int time_out)
-{
-    /*
-    //old code
-    PickArmPos target_pos;
-    target_pos.x = pick_arm->place_cmos_base_position.x() + pick_arm->cmos_to_pr_distance_position.X() + pick_arm->cmos_escape_offset_position.x();
-    target_pos.y = pick_arm->place_cmos_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y() + pick_arm->cmos_escape_offset_position.y();
-    target_pos.z = pick_arm->place_cmos_base_position.z();
-    target_pos.v = parameters.vcm2BaseHeight() - parameters.vcmSafeHeight();
-    target_pos.th = pick_arm->place_cmos_base_position.th() + pick_arm->cmos_escape_offset_position.th();
-    bool res = pick_arm->sucker2getCurrentPos().isAbovePos(target_pos);
-    if(!res)
-    {
-        qInfo("sucker2当前电机位置不在目标位置（%f,%f,%f,%f,%f）上方",target_pos.x,target_pos.y,target_pos.z,target_pos.v,target_pos.th);
-        return false;
-    }
-    //down for feed
-    double vcm2_pos = pick_arm->vcm2GetMotorPos(pick_arm->place_cmos_base_position.v() + pick_arm->cmos_escape_offset_position.v(),pick_arm->place_cmos_base_position.z());
-    res = pick_arm->ZV2MoveSync(pick_arm->place_cmos_base_position.z(),vcm2_pos);
-    if(!res)
-    {
-        qInfo("sucker2 down for feed failed!");
-        return false;
-    }
-
-    //feed in
-    res = pick_arm->XYC2SyncMove(pick_arm->place_cmos_base_position.x() + pick_arm->cmos_to_pr_distance_position.X(), pick_arm->place_cmos_base_position.y() + pick_arm->cmos_to_pr_distance_position.Y(), pick_arm->place_cmos_base_position.th());
-    if(!res)
-    {
-        qInfo("sucker2 feed in failed!");
-        return false;
-    }
-
-    //down to place
-    res = pick_arm->vcm2SoftLanding(force,vcm2_pos + pick_arm->cmos_escape_offset_position.v());
-    if(!res)
-    {
-        qInfo("vcm2  soft landing  place coms failed!");
-        return false;
-    }
-
-    //place
-    bool res_v = pick_arm->pogopin->Set(true,false);
-    res_v &= pick_arm->vacuum_sut->Set(true,false);
-    res_v &= pick_arm->vacuum_sensor_suction->Set(false);
-    res_v &= pick_arm->pogopin->Wait(true,3000);
-    res_v &= pick_arm->vacuum_sut->Wait(true);
-    if(!res_v)
-        qInfo("vacuum2 sut vacuum or pogopin failed!");
-//    XtMotion::xtout_cmos_vacuum = true;
-//    XtMotion::xtout_pogopin = true;
-//    v2->Set(false);
-//    QThread::msleep(500);
-
-    //leave
-    res = pick_arm->vcm2SoftLandingReturn();
-    if(!res)
-    {
-        qInfo("vcm2 soft landing return failed!");
-        return false;
-    }
-    res = pick_arm->motor_vcm2->MoveToPosSync(parameters.vcm2BaseHeight() - parameters.vcmSafeHeight());
-    if(!res)
-    {
-        qInfo("leave place coms failed!");
-        return false;
-    }
-    return res&&res_v;
-    //*/
-    //first check if xyzvc pos is right
-//    qInfo("placeSensorToSUT dest %s time_out %d",dest.toStdString().c_str(),time_out);
-//    bool result = picker1SearchSutZ(pick_arm->parameters.placeSensorZ(),dest,"vacuumOnReq",false,time_out);
-//    if(!result)
-//        AppendError(QString(u8"放sensor到SUT%1失败").arg(dest=="remote"?1:2));
-//    return result;
-    return 0;
 }
 
 bool SingleHeadMachineMaterialLoaderModule::ToLUTPosition()
@@ -1066,33 +956,6 @@ bool SingleHeadMachineMaterialLoaderModule::XYZSyncMove(double xpos, double ypos
     return res;
 }
 
-bool SingleHeadMachineMaterialLoaderModule::picker1SearchZ(double z, bool is_open, int time_out)
-{
-    qInfo("picker1SearchZ z %f is_open %d timeout %d",z,is_open,time_out);
-    bool result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
-    result &= pick_arm->ZSerchReturn(0,time_out);
-    return result;
-}
-
-bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
-{
-//    qInfo("picker1SearchSutZ z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
-//    bool result = pick_arm->move_XeYe_Z1_XY(z - parameters.escapeHeight(),parameters.escapeX(),parameters.escapeY());
-//    if(result)
-//    {
-//        result = pick_arm->ZSerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
-//        if(result)
-//        {
-//            sendCmd(dest,cmd);
-//            QThread::msleep(200);
-//        }
-//        result &= pick_arm->ZSerchReturn(time_out);
-//    }
-//    result &= pick_arm->picker1->motor_z->MoveToPosSync(0);
-//    return result;
-    return 0;
-}
-
 bool SingleHeadMachineMaterialLoaderModule::ToSaftyHeight(double safty_height)
 {
     if(pick_arm->CheckZV1V2AboveSafeHeight(safty_height))
@@ -1183,10 +1046,10 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSPAWorkPos(bool check_softland
     return  result;
 }
 
-bool SingleHeadMachineMaterialLoaderModule::sensorPickerSearchZ(double z, bool is_open, int time_out)
+bool SingleHeadMachineMaterialLoaderModule::sensorPickerSearchZ(double z, bool is_open, int time_out,int picker)
 {
     qInfo("picker1SearchZ z %f is_open %d timeout %d",z,is_open,time_out);
-    bool result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+    bool result = pick_arm->ZSerchByForce(picker,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
     result &= pick_arm->ZSerchReturn(0,time_out);
     return result;
 }
@@ -1198,6 +1061,23 @@ bool SingleHeadMachineMaterialLoaderModule::sensorPickerSearchSutZ(double z, QSt
     if(result)
     {
         result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+
+        //sut_vacuum
+        sut_vacuum->Set(0);
+        QThread::msleep(200);
+        result &= pick_arm->ZSerchReturn(time_out);
+    }
+    result &= pick_arm->motor_vcm1->MoveToPosSync(0);
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::lensPickerSearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
+{
+    qInfo("picker1SearchSutZ z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
+    bool result = pick_arm->move_XeYe_Z2_XY(z - parameters.escapeHeight(),parameters.escapeX(),parameters.escapeY());
+    if(result)
+    {
+        result = pick_arm->ZSerchByForce(1,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
 
         //sut_vacuum
         sut_vacuum->Set(0);
@@ -1246,7 +1126,7 @@ bool SingleHeadMachineMaterialLoaderModule::pickSUTSensor(QString dest, int time
 bool SingleHeadMachineMaterialLoaderModule::pickSUTProduct(QString dest, int time_out)
 {
     qInfo("pickSUTProduct dest %s time_out %d",dest.toStdString().c_str(),time_out);
-    bool result = sensorPickerSearchSutZ(pick_arm->parameters.pickProductZ(),dest,"vacuumOffReq",true,time_out);
+    bool result = lensPickerSearchSutZ(pick_arm->parameters.pickProductZ(),dest,"vacuumOffReq",true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取成品失败").arg(dest=="remote"?1:2));
     return result;
@@ -1268,7 +1148,7 @@ bool SingleHeadMachineMaterialLoaderModule::placeSensorToTray(int time_out)
 bool SingleHeadMachineMaterialLoaderModule::placeProductToTray(int time_out)
 {
     qInfo("placeProductToTray time_out %d",time_out);
-    bool result = sensorPickerSearchZ(pick_arm->parameters.placeProductZ(),false,time_out);
+    bool result = sensorPickerSearchZ(pick_arm->parameters.placeProductZ(),false,time_out,1);
     if(!result)
         AppendError(QString(u8"将成品放入成品盘失败"));
     return result;
@@ -1279,30 +1159,216 @@ bool SingleHeadMachineMaterialLoaderModule::placeProductToTray(int time_out)
 bool SingleHeadMachineMaterialLoaderModule::sensorPickerMeasureHight(bool is_tray, bool is_product)
 {
     qInfo("picker2MeasureHight is_tray %d is_product %d",is_tray,is_product);
-    if(pick_arm->ZSerchByForce(parameters.vcm1Svel(),parameters.vcm1PickForce(),true))
+    if(pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),true))
     {
         QThread::msleep(100);
-        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetSoftladngPosition2()))){
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetSoftladngPosition()))){
             return true;
         }
         if(is_tray)
         {
             if(is_product)
-                parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition2());
+                pick_arm->parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition());
             else
-                parameters.setPlaceNgSensorZ(pick_arm->GetSoftladngPosition2());
+                pick_arm->parameters.setPlaceNgSensorZ(pick_arm->GetSoftladngPosition());
         }
         else
         {
             if(is_product)
-                parameters.setPickProductZ(pick_arm->GetSoftladngPosition2());
+                pick_arm->parameters.setPickProductZ(pick_arm->GetSoftladngPosition());
             else
-                parameters.setPickNgSensorZ(pick_arm->GetSoftladngPosition2());
+                pick_arm->parameters.setPickNgSensorZ(pick_arm->GetSoftladngPosition());
         }
         return true;
     }
     AppendError(QString(u8"2号吸头测高失败"));
     return false;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayPos(int index, int tray_index)
+{
+    qInfo("moveToTrayPos index %d tray_index %d",index,tray_index);
+    bool result = pick_arm->move_XY_Synic(sensorTray->getPositionByIndex(index,tray_index));
+    if(!result)
+        AppendError(QString(u8"移动到%1盘%1号位置失败").arg(tray_index == 0?"sensor":"成品").arg(index));
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayPos(int tray_index)
+{
+    qInfo("moveToTrayPos tray_index %d",tray_index);
+    bool result = pick_arm->move_XY_Synic(sensorTray->getCurrentPosition(tray_index),true);
+    if(!result)
+        AppendError(QString(u8"移动到%1盘当前位置失败").arg(tray_index == 0?"sensor":"成品"));
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToSensorStartPos(int tray_index)
+{
+    qInfo("moveToStartPos%d",tray_index);
+    bool result = pick_arm->move_XY_Synic(sensorTray->getStartPosition(tray_index),true);
+    if(!result)
+        AppendError(QString(u8"移动到%1盘起始位置失败").arg(tray_index == 0?"sensor":"成品"));
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToSensorTray1EndPos()
+{
+    qInfo("moveToTray1EndPos");
+    bool result = pick_arm->move_XY_Synic(sensorTray->getEndPosition(),true);
+    if(!result)
+        AppendError(QString(u8"移动到sensor盘结束位置失败"));
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToNextLensTrayPos(int tray_index)
+{
+    qInfo("moveToNextTrayPos:%d",tray_index);
+    if(lensTray->findNextPositionOfInitState(tray_index))
+    {
+//        return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX());
+        return  pick_arm->move_XtXYT2_Synic(lensTray->getCurrentPosition(tray_index),parameters.visionPositionX(),pick_arm->parameters.pickLensTheta());
+    }
+    return  false;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToLUTPRPos(bool check_softlanding)
+{
+    double theta = pr_offset.Theta;
+    if (pick_arm->parameters.placeLensTheta() < 0) theta = -pr_offset.Theta;
+    pr_offset.Theta = 0; //Reset the last pr result
+    double target_t = pick_arm->motor_th2->GetFeedbackPos() + theta;
+    return  pick_arm->move_XYT2_Synic(lut_pr_position.X(),lut_pr_position.Y(),target_t,check_softlanding);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::checkNeedChangeTray()
+{
+    if(lensTray->isTrayNeedChange(0)&&lensTray->isTrayNeedChange(1))
+        return true;
+    return false;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::performLensPR()
+{
+    qInfo("performLensPR");
+    Sleep(500); //Position settling
+    return  lens_vision->performPR(pr_offset);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::performLensVacancyPR()
+{
+    return  lens_vacancy_vision->performPR(pr_offset);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::performLUTPR()
+{
+    return lut_vision->performPR(pr_offset);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::performLensPickerPR()
+{
+    return lpa_picker_vision->performPR(pr_offset);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToLPAWorkPos(bool check_softlanding)
+{
+    PrOffset temp(lens_suction_offset.X() - pr_offset.X,lens_suction_offset.Y() - pr_offset.Y,0);
+    bool result = pick_arm->stepMove_XYT2_Synic(temp,check_softlanding);
+    return  result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToLPAPrOffset(bool check_softlanding)
+{
+    PrOffset temp(- pr_offset.X, - pr_offset.Y,pr_offset.Theta);
+    bool result = pick_arm->stepMove_XYT2_Synic(temp,check_softlanding);
+    return  result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::vcm2SearchZ(double z, bool is_open)
+{
+    return pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::pickTrayLens()
+{
+    qInfo("pickTrayLens");
+    bool result = vcm2SearchZ(pick_arm->parameters.pickLensZ(),true);
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::placeLensToLUT()
+{
+    qInfo("placeLensToLUT");
+    this->lut_vacuum->Set(true);
+    bool result = vcm2SearchZ(pick_arm->parameters.placeLensZ(), false);
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::pickLUTLens()
+{
+    qInfo("pickLUTLens");
+    return vcm2SearchZ(pick_arm->parameters.placeLensZ(),true);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::placeLensToTray()
+{
+    qInfo("placeLensToTray");
+    return vcm2SearchZ(pick_arm->parameters.pickLensZ(),false);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::lensPickerMeasureHight(bool is_tray)
+{
+    qInfo("measureHight speed: %f force: %f", parameters.vcm2Svel(), parameters.vcm2PickForce());
+    if(pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),true))
+    {
+        QThread::msleep(100);
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1？").arg(pick_arm->GetSoftladngPosition()))){
+            return true;
+        }
+        if(is_tray)
+            pick_arm->parameters.setPickLensZ(pick_arm->GetSoftladngPosition(false,1));
+        else
+            pick_arm->parameters.setPlaceLensZ(pick_arm->GetSoftladngPosition(false,1));
+        return true;
+    }
+    return false;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayEmptyPos(int index, int tray_index)
+{
+    if(index >= 0 && tray_index >= 0 && lensTray->getMaterialState(index,tray_index) == MaterialState::IsEmpty)
+        return moveToLensTrayPos(index,tray_index);
+    if(lensTray->findLastPositionOfState(MaterialState::IsEmpty,tray_index))
+        return moveToLensTrayPos(tray_index);
+    if(tray_index == 0&&lensTray->findLastPositionOfState(MaterialState::IsEmpty,1))
+        return moveToLensTrayPos(1);
+    return false;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayPos(int index, int tray_index)
+{
+    qInfo("moveToTrayPos");
+//    return pick_arm->move_XtXY_Synic(tray->getPositionByIndex(index,tray_index),parameters.visonPositionX());
+    return pick_arm->move_XtXYT2_Synic(lensTray->getPositionByIndex(index,tray_index),parameters.visionPositionX(),pick_arm->parameters.pickLensTheta());
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayPos(int tray_index)
+{
+    qInfo("moveToTrayPos %d",tray_index);
+//    return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),false);
+    return  pick_arm->move_XtXYT2_Synic(lensTray->getCurrentPosition(tray_index),parameters.visionPositionX(),pick_arm->parameters.pickLensTheta(),false);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToLensStartPos(int tray_index)
+{
+    qInfo("moveToStartPos%d",tray_index);
+    return pick_arm->move_XtXY_Synic(lensTray->getStartPosition(tray_index),parameters.visionPositionX(),true);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToLensTray1EndPos()
+{
+    qInfo("moveToTray1EndPos");
+    return pick_arm->move_XtXY_Synic(lensTray->getEndPosition(),parameters.visionPositionX(),true);
 }
 
 void SingleHeadMachineMaterialLoaderModule::startWork(int run_mode)
@@ -1322,6 +1388,316 @@ void SingleHeadMachineMaterialLoaderModule::resetLogic()
 
 void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
 {
+    qInfo("performHandling %d",cmd);
+    bool result;
+//    int curren
+    int handlePosition = cmd&HANDLE_POSITION;
+    switch (handlePosition){
+    case LENS_TRAY1:
+    {
+        qInfo("lpa move to lensTray1's current position, cmd: %d",LENS_TRAY1);
+        result = moveToLensTrayPos(0);
+    }
+        break;
+    case LENS_TRAY2:
+    {
+        qInfo("lpa move to lensTray2's current position, cmd: %d",LENS_TRAY2);
+        result = moveToLensTrayPos(1);
+    }
+        break;
+    case LUT_POS:
+    {
+        qInfo("lpa move to LUT position,cmd: %d",LUT_POS);
+        result = moveToLUTPRPos();
+    }
+        break;
+    case LENS_TRAY1_START_POS:
+    {
+        qInfo("lpa move to tray1 start position,cmd: %d",LENS_TRAY1_START_POS);
+        result = moveToLensStartPos(0);
+    }
+        break;
+    case LENS_TRAY2_START_POS:
+    {
+        qInfo("lpa move to tray2 start position,cmd: %d",LENS_TRAY2_START_POS);
+        result = moveToLensStartPos(1);
+    }
+        break;
+    case LENS_TRAY1_END_POS:
+    {
+        qInfo("lpa move to tray1 end position,cmd: %d",LENS_TRAY1_END_POS);
+        result = moveToLensTray1EndPos();
+    }
+        break;
+    case UPDOWNLOOK_DOWN_POS:
+    {
+        qInfo("UPDOWNLOOK_DOWN_POS");
+        result = true;
+    }
+        break;
+    case UPDOWNLOOK_UP_POS:
+    {
+        qInfo("UNPDOWNLOOK_UP_POS");
+        result = true;
+    }
+        break;
+    case SENSOR_TRAY:
+    {
+        qInfo("spa move to sensor tray current position,cmd: %d",SENSOR_TRAY);
+        result = moveToSensorTrayPos(0);
+    }
+        break;
+    case SUT_POS:
+    {
+        qInfo("spa move to sut position,cmd: %d",SUT_POS);
+        result = moveToSUTPRPos();
+    }
+        break;
+    case SENSOR_TRAY_START_POS:
+    {
+        qInfo("spa move to sensor tray start position,cmd: %d",SENSOR_TRAY_START_POS);
+        result = moveToSensorStartPos(0);
+    }
+        break;
+    case SENSOR_TRAY_END_POS:
+    {
+        qInfo("spa move to snesor tray end position,cmd: %d",SENSOR_TRAY_END_POS);
+        result = moveToSensorTray1EndPos();
+    }
+        break;
+    default:
+        result = true;
+        break;
+    }
+    if(!result)
+    {
+        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        return;
+    }
+    int handlePR = cmd&HANDLE_PR;
+    switch (handlePR) {
+    case RESET_PR:
+    {
+        qInfo("reset PR result,cmd: %d",RESET_PR);
+        pr_offset.ReSet();
+    }
+        break;
+    case SENSOR_PR:
+    {
+        qInfo("perform sensor PR,cmd: %d",SENSOR_PR);
+        result = performSensorPR();
+    }
+        break;
+    case SENSOR_VACANCY_PR:
+    {
+        qInfo("perform sensor tray vacancy PR, cmd: %d",SENSOR_VACANCY_PR);
+        result = performSensorVacancyPR();
+    }
+        break;
+    case SUT_PR:
+    {
+        qInfo("perform SUT vacancy PR,cmd: %d",SUT_PR);
+        result = performSUTPR();
+    }
+        break;
+    case NG_SENSOR_PR:
+    {
+        qInfo("perform SUT Ng Sensor PR,cmd: %d",NG_SENSOR_PR);
+        result = performSUTSensorPR();
+    }
+        break;
+    case PRODUCT_PR:
+    {
+        qInfo("perform SUT product PR,cmd: %d",PRODUCT_PR);
+        result = performSUTProductPR();
+    }
+        break;
+    case LENS_PR:
+    {
+        qInfo("perform lens PR,cmd: %d",LENS_PR);
+        result = performLensPR();
+    }
+        break;
+    case LENS_VACANCY_PR:
+    {
+        qInfo("perform lens tray vacancy PR,cmd: %d",LENS_VACANCY_PR);
+        result = performLensVacancyPR();
+    }
+        break;
+    case LUT_PR:
+    {
+        qInfo("perform LUT vacancy PR,cmd: %d",LUT_PR);
+        result = performLUTPR();
+    }
+        break;
+    case UPDOWNLOOK_DOWN_PR:
+    {
+        qInfo("UPDOWNLOOK_DOWN_PR");
+    }
+        break;
+    case LENS_PICKER_PR:
+    {
+        qInfo("perform lens suction PR");
+    }
+        break;
+    default:
+        result = true;
+        break;
+    }
+    if(!result)
+    {
+        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        return;
+    }
+    int handleToWorkPos = cmd&HANDLE_TO_WORKPOS;
+    switch (handleToWorkPos) {
+    case LPA_TO_WORK:
+    {
+        qInfo("lens suction move offset,cmd: %d",LPA_TO_WORK);
+        result = moveToLPAWorkPos();
+    }
+        break;
+    case LPA_TO_PROFFSET:
+    {
+        qInfo("LPA_TO_PROFFSET");
+    }
+        break;
+    case SENSOR_TO_PICK:
+    {
+        qInfo("sensor suction move offset,cmd: %d",SENSOR_TO_PICK);
+        result = moveToSPAWorkPos();
+    }
+        break;
+    case SENSOR_TO_PR_OFFSET:
+    {
+        qInfo("SENSOR_TO_PR_OFFSET");
+    }
+        break;
+    default:
+        result = true;
+        break;
+    }
+    if(!result)
+    {
+        //        finished_type = FinishedType::Alarm;
+        qInfo("Move To Work Pos fail");
+        return;
+    }
+    int handlePickerAction = cmd&HANDLE_PICKER_ACTION;
+    switch (handlePickerAction) {
+    case PICK_SENSOR_FROM_TRAY:
+    {
+        qInfo("move to pick sensor from tray,cmd: %d",PICK_SENSOR_FROM_TRAY);
+        result = pickTraySensor();
+    }
+        break;
+    case PLACE_SENSOR_TO_SUT:
+    {
+        qInfo("move to place sensor to SUT,cmd: %d",PLACE_SENSOR_TO_SUT);
+        result = placeSensorToSUT("remote");
+    }
+        break;
+    case PICK_NG_SENSOR_FROM_SUT:
+    {
+        qInfo("move to pick ngSensor from SUT,cmd: %d",PICK_NG_SENSOR_FROM_SUT);
+        result = pickSUTSensor("remote");
+    }
+        break;
+    case PLACE_NG_SENSOR_TO_TRAY:
+    {
+        qInfo("move to place sensor to tray,cmd: %d",PLACE_NG_SENSOR_TO_TRAY);
+        result = placeSensorToTray();
+    }
+        break;
+    case PICK_PRODUCT_FROM_SUT:
+    {
+        qInfo("move to pick product form sut,cmd: %d",PICK_PRODUCT_FROM_SUT);
+        result = pickSUTProduct("remote");
+    }
+        break;
+    case PLACE_PRODUCT_TO_TRAY:
+    {
+        qInfo("move to place product to tray,cmd: %d",PLACE_PRODUCT_TO_TRAY);
+        result = placeProductToTray();
+    }
+        break;
+    case MEASURE_SENSOR_IN_TRAY:
+    {
+        qInfo("mesure pick senso from tray height, cmd: %d",MEASURE_SENSOR_IN_TRAY);
+        result = sensorPickerMeasureHight(true,false);
 
+    }
+        break;
+    case MEASURE_NG_SENSOR_IN_TRAY:
+    {
+        qInfo("measure place ng sensor to tray height, cmd: %d",MEASURE_NG_SENSOR_IN_TRAY);
+        result = sensorPickerMeasureHight(true,false);
+    }
+        break;
+    case MEASURE_PRODUCT_IN_TRAY:
+    {
+        qInfo("measure place product to tray height, cmd: %d ",MEASURE_PRODUCT_IN_TRAY);
+        result = lensPickerMeasureHight(true);
+    }
+        break;
+    case MEASURE_SENSOR_IN_SUT:
+    {
+        qInfo("measure place sensor to SUT,cmd: %d",MEASURE_SENSOR_IN_SUT);
+        result = sensorPickerMeasureHight(false,false);
+    }
+        break;
+    case MEASURE_NG_SENSOR_IN_SUT:
+    {
+        qInfo("measure pick ng sensor from SUT, cmd: %d",MEASURE_NG_SENSOR_IN_SUT);
+        result = sensorPickerMeasureHight(false,false);
+    }
+        break;
+    case MEASURE_PRODUCT_IN_SUT:
+    {
+        qInfo("measure pick product form SUT, cmd: %d",MEASURE_PRODUCT_IN_SUT);
+        result = lensPickerMeasureHight(false);
+    }
+        break;
+    case PICK_LENS_FROM_TRAY:
+    {
+        qInfo("pick lens form tray, cmd: %d",PICK_LENS_FROM_TRAY);
+        result = pickTrayLens();
+    }
+        break;
+    case PLACE_LENS_TO_LUT:
+    {
+        qInfo("place lens to SUT,cmd: %d",PLACE_LENS_TO_LUT);
+        result = placeLensToLUT();
+    }
+        break;
+    case PICK_NG_LENS_FROM_LUT:
+    {
+        qInfo("pick ng lens from LUT,cmd: %d",PICK_NG_LENS_FROM_LUT);
+        result = pickLUTLens();
+    }
+        break;
+    case PLACE_NG_LENS_TO_TRAY:
+    {
+        qInfo("place ng lens to tray,cmd: %d",PLACE_NG_LENS_TO_TRAY);
+        result = placeLensToTray();
+    }
+        break;
+    case MEASURE_LENS_IN_TRAY:
+    {
+        qInfo("measure pick lens from tray height,cmd: %d",MEASURE_LENS_IN_TRAY);
+        result = lensPickerMeasureHight(true);
+    }
+        break;
+    case MEASURE_LENS_IN_LUT:
+    {
+        qInfo("measuer place lens to LUT height,cmd: %d",MEASURE_LENS_IN_LUT);
+        result = lensPickerMeasureHight(false);
+    }
+        break;
+    default:
+        result = true;
+        break;
+    }
+    return;
 }
 

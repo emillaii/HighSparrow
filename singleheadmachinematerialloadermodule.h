@@ -15,19 +15,70 @@ class SingleHeadMachineMaterialLoaderModule:public ThreadWorkerBase
     Q_ENUMS(HandlePosition)
     Q_ENUMS(HandlePR)
     Q_ENUMS(HandleToWorkPos)
-    Q_ENUMS(handlePickerAction)
+    Q_ENUMS(HandlePickerAction)
 public:
     enum HandlePosition{
+        LENS_TRAY1 = 1,
+        LENS_TRAY2 = 2,
+        LUT_POS = 3,
+        LENS_TRAY1_START_POS = 5,
+        LENS_TRAY2_START_POS = 6,
+        LENS_TRAY1_END_POS = 7,
+        UPDOWNLOOK_DOWN_POS = 8,
+        UPDOWNLOOK_UP_POS =9,
+        SENSOR_TRAY = 10,
+        SUT_POS = 11,
+        SENSOR_TRAY_START_POS = 12,
+        SENSOR_TRAY_END_POS = 13,
 
+        HANDLE_POSITION = (1<<6)-1
     };
     enum HandlePR{
+        RESET_PR = 1<<6,
+        SENSOR_PR = 2<<6,
+        SENSOR_VACANCY_PR = 3<<6,
+        SUT_PR = 4<<6,
+        NG_SENSOR_PR = 5<<6,
+        PRODUCT_PR = 6<<6,
+        LENS_PR = 7<<6,
+        LENS_VACANCY_PR = 8<<6,
+        LUT_PR = 9<<6,
+        UPDOWNLOOK_DOWN_PR = 10<<6,
+        LENS_PICKER_PR = 11<<6,
 
+        HANDLE_PR = (1<<11) - (1<<6)
     };
     enum HandleToWorkPos{
+        LPA_TO_WORK = 1<<11,
+        LPA_TO_PROFFSET = 2<<11,
 
+        SENSOR_TO_PICK = 3<<11,
+        SENSOR_TO_PR_OFFSET = 4<<11,
+
+        HANDLE_TO_WORKPOS = (1<<16)-(1<<11)
     };
     enum HandlePickerAction{
+        PICK_SENSOR_FROM_TRAY = 1<<16,
+        PLACE_SENSOR_TO_SUT = 2<<16,
+        PICK_NG_SENSOR_FROM_SUT = 3<<16,
+        PLACE_NG_SENSOR_TO_TRAY = 4<<16,
+        PICK_PRODUCT_FROM_SUT = 5<<16,
+        PLACE_PRODUCT_TO_TRAY = 6<<16,
+        MEASURE_SENSOR_IN_TRAY = 7<<16,
+        MEASURE_NG_SENSOR_IN_TRAY = 8<<16,
+        MEASURE_PRODUCT_IN_TRAY = 9<<16,
+        MEASURE_SENSOR_IN_SUT = 10<<16,
+        MEASURE_NG_SENSOR_IN_SUT = 11<<16,
+        MEASURE_PRODUCT_IN_SUT = 12<<16,
 
+        PICK_LENS_FROM_TRAY = 13<<16,
+        PLACE_LENS_TO_LUT = 14<<16,
+        PICK_NG_LENS_FROM_LUT = 15<<16,
+        PLACE_NG_LENS_TO_TRAY = 16<<16,
+        MEASURE_LENS_IN_TRAY = 17<<16,
+        MEASURE_LENS_IN_LUT = 18<<16,
+
+        HANDLE_PICKER_ACTION = (1<<23)-(1<<16)
     };
 
     SingleHeadMachineMaterialLoaderModule(QString name = "SingleHeadMachineMaterialLoaderModule");
@@ -48,7 +99,7 @@ public:
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     SingleHeadMachineMaterialLoaderModuleParameter parameters;
-    void performHandling(int cmd);
+    Q_INVOKABLE void performHandling(int cmd);
 
 //old motions
     bool ToPickCmosPosition();
@@ -93,8 +144,10 @@ public:
 
     Position sut_pr_position;
     Position lut_pr_position;
+
     Position updownlook_up_position;
     Position updownlook_down_position;
+
     Position lens_suction_offset;
     Position sensor_suction_offset;
 //new motions
@@ -113,8 +166,9 @@ private:
 
     bool moveToSPAWorkPos(bool check_softlanding = false);
 
-    bool sensorPickerSearchZ(double z,bool is_open = true,int time_out = 10000);
+    bool sensorPickerSearchZ(double z,bool is_open = true,int time_out = 10000,int picker = 0);
     bool sensorPickerSearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
+    bool lensPickerSearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
     bool pickTraySensor(int time_out = 10000);
     bool placeSensorToSUT(QString dest,int time_out = 10000);
     bool pickSUTSensor(QString dest,int time_out = 10000);
@@ -123,17 +177,42 @@ private:
     bool placeProductToTray(int time_out = 10000);
     bool sensorPickerMeasureHight(bool is_tray,bool is_product);
 
-    bool measureZOffset();
+
+    bool moveToSensorTrayPos(int index,int tray_index);
+    bool moveToSensorTrayPos(int tray_index);
+    bool moveToSensorStartPos(int tray_index);
+    bool moveToSensorTray1EndPos();
 
 
-    bool moveToTrayPos(int index,int tray_index);
-    bool moveToTrayPos(int tray_index);
-    bool moveToStartPos(int tray_index);
-    bool moveToTray1EndPos();
+    bool moveToNextLensTrayPos(int tray_index);
+    bool moveToLUTPRPos(bool check_softlanding = false);
 
+    bool checkNeedChangeTray();
 
-    bool PickFromSUTPosition();
+    bool performLensPR();
+    bool performLensVacancyPR();
+    bool performLUTPR();
+    bool performLensPickerPR();
 
+    bool moveToLPAWorkPos(bool check_softlanding = false);
+    bool moveToLPAPrOffset(bool check_softlanding = false);
+    bool vcm2SearchZ(double z,bool is_open = true);
+    bool pickTrayLens();
+    bool placeLensToLUT();
+    bool pickLUTLens();
+    bool placeLensToTray();
+    bool lensPickerMeasureHight(bool is_tray);
+
+    bool moveToLensTrayEmptyPos(int index,int tray_index);
+    bool moveToLensTrayPos(int index,int tray_index);
+    bool moveToLensTrayPos(int tray_index);
+    bool moveToLensStartPos(int tray_index);
+    bool moveToLensTray1EndPos();
+
+    bool moveToUpdownlookDownPos();
+    bool moveToUpdownlookUpPos();
+
+    bool isRunning();
 
 
 public slots:
@@ -159,6 +238,8 @@ private:
     VisionLocation* lens_vacancy_vision = Q_NULLPTR;
     VisionLocation* lut_vision = Q_NULLPTR;
     VisionLocation* lut_lens_vision = Q_NULLPTR;
+
+    VisionLocation * lpa_picker_vision = Q_NULLPTR;
 
     PrOffset pr_offset;
 };

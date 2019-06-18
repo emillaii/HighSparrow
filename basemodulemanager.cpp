@@ -936,6 +936,7 @@ bool BaseModuleManager::InitStruct()
                          GetMotorByName(sh_lsut_module.parameters.motorYName()),
                          GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
                          GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()));
+        sh_lsut_module.Init(&sut_carrier,GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
     }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
                             GetMotorByName(tray_loader_module.parameters.motorLTKX1Name()),

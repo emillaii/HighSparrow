@@ -9,42 +9,42 @@ ColumnLayout {
             text: qsTr("SUT_X")
         }
         TextField {
-            text: lsutCalibrationPosition.X
+            text: lsutUpDnDownlookCalibrationPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lsutCalibrationPosition.setX(text)
+                lsutUpDnDownlookCalibrationPosition.setX(text)
             }
         }
         Label {
             text: qsTr("SUT_Y")
         }
         TextField {
-            text: lsutCalibrationPosition.Y
+            text: lsutUpDnDownlookCalibrationPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lsutCalibrationPosition.setY(text)
+                lsutUpDnDownlookCalibrationPosition.setY(text)
             }
         }
         Label {
             text: qsTr("SUT_Z")
         }
         TextField {
-            text: lsutCalibrationPosition.Z
+            text: lsutUpDnDownlookCalibrationPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lsutCalibrationPosition.setZ(text)
+                lsutUpDnDownlookCalibrationPosition.setZ(text)
             }
         }
     }
@@ -55,7 +55,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                sh_lsut_Module.performHandling(SingleheadLSutModule.MOVE_TO_CALIBRATION_POSITION)
+                sh_lsut_Module.performHandling(SingleheadLSutModule.MOVE_TO_UPDN_DOWNLOOK_CALIBRATION_POSITION)
             }
         }
         Button {
@@ -66,9 +66,9 @@ ColumnLayout {
                 var x = baseModuleManager.getMotorFeedbackPos(sutParams.motorXName)
                 var y = baseModuleManager.getMotorFeedbackPos(sutParams.motorYName)
                 var z = baseModuleManager.getMotorFeedbackPos(sutParams.motorZName)
-                lsutCalibrationPosition.setX(x)
-                lsutCalibrationPosition.setY(y)
-                lsutCalibrationPosition.setZ(z)
+                lsutUpDnDownlookCalibrationPosition.setX(x)
+                lsutUpDnDownlookCalibrationPosition.setY(y)
+                lsutUpDnDownlookCalibrationPosition.setZ(z)
             }
         }
     }

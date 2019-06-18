@@ -21,8 +21,9 @@ public:
         MOVE_TO_MUSHROOM_POSITION = 1,
         MOVE_TO_LOAD_POSITION = 2,
         MOVE_TO_PR_POSITION = 3,
-        MOVE_TO_CALIBRATION_POSITION = 4,
-        MOVE_TO_SAFETY_POSITION = 5,
+        MOVE_TO_UPDN_DOWNLOOK_CALIBRATION_POSITION = 4,
+        MOVE_TO_UPDN_UPLOOK_CALIBRATION_POSITION = 5,
+        MOVE_TO_SAFETY_POSITION = 6,
     };
 
 public:
@@ -31,10 +32,11 @@ public:
 
     MaterialCarrier* sut_carrier;
 
+    Position3D mushroom_position;
     Position3D load_position;
     Position3D downlook_position;
-    Position3D calibration_position;
-    Position3D mushroom_position;
+    Position3D updn_downlook_calibration_position;
+    Position3D updn_uplook_calibration_position;
     Position3D safety_position;
 
     SingleHeadLSutParameter parameters;
@@ -51,17 +53,21 @@ public slots:
     void stopWork(bool wait_finish);
     void resetLogic();
     void performHandlingOperation(int cmd);
+    void run(bool isProduct);
 
 private:
     bool moveToMushroomPosition(bool check_autochthonous);
     bool moveToLoadPosition(bool check_autochthonous);
     bool moveToPRPosition(bool check_autochthonous);
-    bool moveToCalibrationPosition(bool check_autochthonous);
+    bool moveToUpDnDownlookCalibrationPosition(bool check_autochthonous);
+    bool moveToUpDnUplookCalibrationPosition(bool check_autochthonous);
     bool moveToSafetyPosition(bool check_autochthonous);
+    bool moveToAAPickLens(bool check_autochthonous);
 private:
     bool is_run = false;
     XtCylinder* pogopin = Q_NULLPTR;
     VisionLocation* vision_downlook_location = Q_NULLPTR;
+    PrOffset offset;
 };
 
 #endif // SINGLEHEAD_LSUT_MODULE_H

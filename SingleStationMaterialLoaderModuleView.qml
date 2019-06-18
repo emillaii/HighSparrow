@@ -70,6 +70,15 @@ ItemDelegate {
                 }
             }
             GroupBox{
+                title:qsTr("头参数")
+                MPAHeadParameter{}
+            }
+            GroupBox{
+                title:qsTr("lens盘规格")
+                LensTraySpecs{}
+            }
+
+            GroupBox{
                 title:qsTr("lens盘")
                 SingleHeadLensTray{}
             }

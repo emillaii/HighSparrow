@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
     engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
     engine.rootContext()->setContextProperty("sh_materialLoaderModule",&highSprrow.baseModuleManager->single_station_material_loader_module);
-
+    engine.rootContext()->setContextProperty("materialLoaderParameter",&highSprrow.baseModuleManager->single_station_material_loader_module.parameters);
     //Register QML - C++ ENUM
     qmlRegisterType<SensorLoaderModule>("SomeLib",1,0,"SensorLoaderModule");
     qmlRegisterType<SingleheadLSutModule>("SingleheadLSutModuleLib",1,0,"SingleheadLSutModule");
@@ -186,6 +186,11 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->sensor_loader_module.picker2_offset);
     engine.rootContext()->setContextProperty("materialPickArmParams",&highSprrow.baseModuleManager->single_station_material_pickarm.parameters);
     engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramers);
+
+    engine.rootContext()->setContextProperty("sensor_picker_offset",
+                                             &highSprrow.baseModuleManager->single_station_material_loader_module.sensor_suction_offset);
+    engine.rootContext()->setContextProperty("lens_picker_offset",
+                                             &highSprrow.baseModuleManager->single_station_material_loader_module.lens_suction_offset);
 
     QStringList data = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames",data);

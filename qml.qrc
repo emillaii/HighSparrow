@@ -87,6 +87,8 @@
         <file>SingleHeadLensTray.qml</file>
         <file>SingleHeadSensorTray.qml</file>
         <file>SensorTraySpecs.qml</file>
+        <file>MPAHeadParameter.qml</file>
+        <file>LensTraySpecs.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

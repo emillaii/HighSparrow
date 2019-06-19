@@ -7,7 +7,7 @@
 class SingleHeadLSutParameter : public PropertyBase{
     Q_OBJECT
 private:
-    double m_ZOffset = 0;
+    double  m_ZOffset = 0;
     QString m_motorXName;
     QString m_motorYName;
     QString m_motorZName;

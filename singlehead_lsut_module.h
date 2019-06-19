@@ -7,16 +7,17 @@
 #include "thread_worker_base.h"
 #include "vision_location.h"
 
-
 //! This class is defined as LSUT module in single-head AA machine
 //! LSUT is named as LUT and SUT is combined in single-head AA machine
 class SingleheadLSutModule : public ThreadWorkerBase
 {
     Q_OBJECT
-    Q_ENUMS(HandleMoveToPosition)
+    Q_ENUMS(HandlePosition)
+    Q_ENUMS(HandlePR)
+    Q_ENUMS(HandleToWorkPos)
 
 public:
-    enum HandleMoveToPosition
+    enum HandlePosition
     {
         MOVE_TO_MUSHROOM_POSITION = 1,
         MOVE_TO_LOAD_POSITION = 2,
@@ -26,9 +27,30 @@ public:
         MOVE_TO_SAFETY_POSITION = 6,
     };
 
+    enum HandlePR
+    {
+        RESET_PR = 10,
+        DOWNLOOK_SENSOR_PR = 20,    // Move sensor to downlook camera and do PR
+        UPLOOK_LENS_PR = 30         // lens in gripper, do PR with uplook camera
+    };
+
+    enum HandleToWorkPos
+    {
+        SENSOR_TO_BOND = 100,
+        LENS_TO_BOND = 200
+    };
+
 public:
     SingleheadLSutModule(QString name = "LSutModule", QObject *parent = nullptr);
-    void Init(MaterialCarrier* _sut_carrier,XtCylinder* _pogopin);
+    void Init(MaterialCarrier *_sut_carrier,
+              VisionLocation *_downlook_location,
+              VisionLocation *_updownlook_down_location,
+              VisionLocation *_updownlook_up_location,
+              VisionLocation *_mushroom_location,
+              VisionLocation * _gripper_location,
+              XtVacuum* _sutVacuum,
+              XtVacuum* _lutVacuum,
+              XtCylinder *_pogopin);
 
     MaterialCarrier* sut_carrier;
 
@@ -38,6 +60,8 @@ public:
     Position3D updn_downlook_calibration_position;
     Position3D updn_uplook_calibration_position;
     Position3D safety_position;
+    Position3D pick_lens_position;
+    Position3D unpick_lens_position;
 
     SingleHeadLSutParameter parameters;
 
@@ -53,21 +77,32 @@ public slots:
     void stopWork(bool wait_finish);
     void resetLogic();
     void performHandlingOperation(int cmd);
-    void run(bool isProduct);
 
 private:
+    void run(bool isProduct);
+
     bool moveToMushroomPosition(bool check_autochthonous);
     bool moveToLoadPosition(bool check_autochthonous);
     bool moveToPRPosition(bool check_autochthonous);
     bool moveToUpDnDownlookCalibrationPosition(bool check_autochthonous);
     bool moveToUpDnUplookCalibrationPosition(bool check_autochthonous);
     bool moveToSafetyPosition(bool check_autochthonous);
-    bool moveToAAPickLens(bool check_autochthonous);
+    bool moveToPickLensPosition(bool check_autochthonous);
+    bool moveToUnpickLensPosition(bool check_autochthonous);
+
+    bool performSensorPR();
+    bool performLensPR();
 private:
     bool is_run = false;
     XtCylinder* pogopin = Q_NULLPTR;
     VisionLocation* vision_downlook_location = Q_NULLPTR;
-    PrOffset offset;
+    VisionLocation* vision_updownlook_down_location = Q_NULLPTR;
+    VisionLocation* vision_updownlook_up_location = Q_NULLPTR;
+    VisionLocation* vision_mushroom_location = Q_NULLPTR;
+    VisionLocation* vision_gripper_location = Q_NULLPTR;   //Is this vision location for lens in gripper?
+    XtVacuum *vacuum_lut;
+    XtVacuum *vacuum_sut;
+    PrOffset pr_offset;
 };
 
 #endif // SINGLEHEAD_LSUT_MODULE_H

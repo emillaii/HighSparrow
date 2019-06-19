@@ -898,7 +898,6 @@ bool BaseModuleManager::InitStruct()
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
-    sh_lsut_module.Init(&sut_carrier,GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
     if(ServerMode()==2)
     {
         //single_station_material_pickarm.Init();
@@ -930,13 +929,23 @@ bool BaseModuleManager::InitStruct()
         sensor_tray.resetTrayState(1);
         lens_tray.resetTrayState(0);
         lens_tray.resetTrayState(1);
+
+        sh_lsut_module.Init(&sut_carrier,
+                            GetVisionLocationByName(sh_lsut_module.parameters.sutDownLookLocationName()),
+                            GetVisionLocationByName(sh_lsut_module.parameters.updownlookDownLocationName()),
+                            GetVisionLocationByName(sh_lsut_module.parameters.updownlookUpLocationName()),
+                            GetVisionLocationByName(sh_lsut_module.parameters.mushroomLocationName()),
+                            GetVisionLocationByName(sh_lsut_module.parameters.lutGripperLoactionName()),
+                            GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()),
+                            GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()),
+                            GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
+
     }else
     {
         lut_carrier.Init("lut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
                          GetMotorByName(sh_lsut_module.parameters.motorYName()),
                          GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
                          GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()));
-        sh_lsut_module.Init(&sut_carrier,GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
     }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
                             GetMotorByName(tray_loader_module.parameters.motorLTKX1Name()),

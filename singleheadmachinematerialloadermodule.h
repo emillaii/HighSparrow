@@ -201,7 +201,7 @@ private:
     bool placeLensToLUT();
     bool pickLUTLens();
     bool placeLensToTray();
-    bool lensPickerMeasureHight(bool is_tray);
+    bool lensPickerMeasureHight(bool is_tray,bool is_product = false);
 
     bool moveToLensTrayEmptyPos(int index,int tray_index);
     bool moveToLensTrayPos(int index,int tray_index);

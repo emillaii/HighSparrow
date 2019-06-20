@@ -175,7 +175,7 @@ private:
     bool pickSUTProduct(QString dest, int time_out = 10000);
     bool placeSensorToTray(int time_out = 10000);
     bool placeProductToTray(int time_out = 10000);
-    bool sensorPickerMeasureHight(bool is_tray,bool is_product);
+    bool sensorPickerMeasureHight(bool is_tray,bool is_product,bool is_ng_material = true);
 
 
     bool moveToSensorTrayPos(int index,int tray_index);

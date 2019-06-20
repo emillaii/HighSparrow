@@ -1156,7 +1156,7 @@ bool SingleHeadMachineMaterialLoaderModule::placeProductToTray(int time_out)
 /*
  * sensor吸嘴测高
 */
-bool SingleHeadMachineMaterialLoaderModule::sensorPickerMeasureHight(bool is_tray, bool is_product)
+bool SingleHeadMachineMaterialLoaderModule::sensorPickerMeasureHight(bool is_tray, bool is_product,bool is_ng)
 {
     qInfo("picker2MeasureHight is_tray %d is_product %d",is_tray,is_product);
     if(pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),true))
@@ -1169,15 +1169,27 @@ bool SingleHeadMachineMaterialLoaderModule::sensorPickerMeasureHight(bool is_tra
         {
             if(is_product)
                 pick_arm->parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition());
-            else
-                pick_arm->parameters.setPlaceNgSensorZ(pick_arm->GetSoftladngPosition());
+            else{
+                if(is_ng){
+                    pick_arm->parameters.setPlaceNgSensorZ(pick_arm->GetSoftladngPosition());
+                }
+                else{
+                    pick_arm->parameters.setPickSensorZ(pick_arm->GetSoftladngPosition());
+                }
+            }
         }
         else
         {
             if(is_product)
                 pick_arm->parameters.setPickProductZ(pick_arm->GetSoftladngPosition());
             else
-                pick_arm->parameters.setPickNgSensorZ(pick_arm->GetSoftladngPosition());
+            {
+                if(is_ng)
+                    pick_arm->parameters.setPickNgSensorZ(pick_arm->GetSoftladngPosition());
+                else
+                    pick_arm->parameters.setPlaceSensorZ(pick_arm->GetSoftladngPosition());
+            }
+
         }
         return true;
     }
@@ -1316,7 +1328,7 @@ bool SingleHeadMachineMaterialLoaderModule::placeLensToTray()
     return vcm2SearchZ(pick_arm->parameters.pickLensZ(),false);
 }
 
-bool SingleHeadMachineMaterialLoaderModule::lensPickerMeasureHight(bool is_tray)
+bool SingleHeadMachineMaterialLoaderModule::lensPickerMeasureHight(bool is_tray,bool is_product)
 {
     qInfo("measureHight speed: %f force: %f", parameters.vcm2Svel(), parameters.vcm2PickForce());
     if(pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),true))
@@ -1325,10 +1337,17 @@ bool SingleHeadMachineMaterialLoaderModule::lensPickerMeasureHight(bool is_tray)
         if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1？").arg(pick_arm->GetSoftladngPosition()))){
             return true;
         }
-        if(is_tray)
-            pick_arm->parameters.setPickLensZ(pick_arm->GetSoftladngPosition(false,1));
-        else
-            pick_arm->parameters.setPlaceLensZ(pick_arm->GetSoftladngPosition(false,1));
+        if(is_product){
+            if(is_tray)
+                pick_arm->parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition(false,1));
+            else
+                pick_arm->parameters.setPickProductZ(pick_arm->GetSoftladngPosition(false,1));
+        }else{
+            if(is_tray)
+                pick_arm->parameters.setPickLensZ(pick_arm->GetSoftladngPosition(false,1));
+            else
+                pick_arm->parameters.setPlaceLensZ(pick_arm->GetSoftladngPosition(false,1));
+        }
         return true;
     }
     return false;
@@ -1624,7 +1643,7 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
     case MEASURE_SENSOR_IN_TRAY:
     {
         qInfo("mesure pick senso from tray height, cmd: %d",MEASURE_SENSOR_IN_TRAY);
-        result = sensorPickerMeasureHight(true,false);
+        result = sensorPickerMeasureHight(true,false,false);
 
     }
         break;
@@ -1637,13 +1656,13 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
     case MEASURE_PRODUCT_IN_TRAY:
     {
         qInfo("measure place product to tray height, cmd: %d ",MEASURE_PRODUCT_IN_TRAY);
-        result = lensPickerMeasureHight(true);
+        result = lensPickerMeasureHight(true,true);
     }
         break;
     case MEASURE_SENSOR_IN_SUT:
     {
         qInfo("measure place sensor to SUT,cmd: %d",MEASURE_SENSOR_IN_SUT);
-        result = sensorPickerMeasureHight(false,false);
+        result = sensorPickerMeasureHight(false,false,false);
     }
         break;
     case MEASURE_NG_SENSOR_IN_SUT:
@@ -1655,7 +1674,7 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
     case MEASURE_PRODUCT_IN_SUT:
     {
         qInfo("measure pick product form SUT, cmd: %d",MEASURE_PRODUCT_IN_SUT);
-        result = lensPickerMeasureHight(false);
+        result = lensPickerMeasureHight(false,true);
     }
         break;
     case PICK_LENS_FROM_TRAY:

@@ -289,6 +289,11 @@ bool SingleHeadMachineMaterialPickArm::XYZC2SyncMove(double xpos, double ypos, d
     return res;
 }
 
+bool SingleHeadMachineMaterialPickArm::move_Xm_Origin()
+{
+    return motor_vcmx->MoveToPosSync(0);
+}
+
 bool SingleHeadMachineMaterialPickArm::move_XY_Synic(const QPointF position, const bool check_softlanding, int timeout)
 {
     if(check_softlanding)
@@ -324,13 +329,13 @@ bool SingleHeadMachineMaterialPickArm::stepMove_XYT1_Synic(const double step_x, 
         if(!motor_vcm1->resetSoftLanding(timeout))return false;
         if(!motor_vcm2->resetSoftLanding(timeout))return false;
     }
-    double target_x = motor_x->GetFeedbackPos() + step_x;
+    double target_x = motor_vcmx->GetFeedbackPos() + step_x;
     double target_y = motor_y->GetFeedbackPos() + step_y;
     double target_t = motor_th1->GetFeedbackPos() + step_t1;
-    motor_x->StepMove(step_x);
+    motor_vcmx->StepMove(step_x);
     motor_y->StepMove(step_y);
     motor_th1->StepMove(step_t1);
-    bool resut = motor_x->WaitArrivedTargetPos(target_x);
+    bool resut = motor_vcmx->WaitArrivedTargetPos(target_x);
     resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
     resut &= motor_th1->WaitArrivedTargetPos(target_t,timeout);
     return resut;
@@ -396,9 +401,9 @@ bool SingleHeadMachineMaterialPickArm::move_XeYe_Z1_XY(double z, double escape_x
         return false;
     }
     QThread::msleep(100);
-    motor_x->MoveToPos(x);
+    motor_vcmx->MoveToPos(x);
     motor_y->MoveToPos(y);
-    resut &= motor_x->WaitArrivedTargetPos(x,timeout);
+    resut &= motor_vcmx->WaitArrivedTargetPos(x,timeout);
     resut &= motor_y->WaitArrivedTargetPos(y,timeout);
     return resut;
 }

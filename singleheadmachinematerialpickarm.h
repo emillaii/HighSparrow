@@ -94,6 +94,7 @@ public:
     bool XYZC2SyncMove(double xpos,double ypos,double zpos,double cpos);
 
     //new motions
+    bool move_Xm_Origin();
     bool move_XY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
     bool move_XmY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XYT1_Synic(const double step_x,const double step_y,const double step_t1,const bool check_softlanding = false,int timeout = 10000);

@@ -1209,7 +1209,8 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayPos(int index, int t
 bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayPos(int tray_index)
 {
     qInfo("moveToTrayPos tray_index %d",tray_index);
-    bool result = pick_arm->move_XY_Synic(sensorTray->getCurrentPosition(tray_index),true);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= pick_arm->move_XY_Synic(sensorTray->getCurrentPosition(tray_index),true);
     if(!result)
         AppendError(QString(u8"移动到%1盘当前位置失败").arg(tray_index == 0?"sensor":"成品"));
     return result;
@@ -1218,7 +1219,8 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayPos(int tray_index)
 bool SingleHeadMachineMaterialLoaderModule::moveToSensorStartPos(int tray_index)
 {
     qInfo("moveToStartPos%d",tray_index);
-    bool result = pick_arm->move_XY_Synic(sensorTray->getStartPosition(tray_index),true);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= pick_arm->move_XY_Synic(sensorTray->getStartPosition(tray_index),true);
     if(!result)
         AppendError(QString(u8"移动到%1盘起始位置失败").arg(tray_index == 0?"sensor":"成品"));
     return result;
@@ -1227,7 +1229,8 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSensorStartPos(int tray_index)
 bool SingleHeadMachineMaterialLoaderModule::moveToSensorTray1EndPos()
 {
     qInfo("moveToTray1EndPos");
-    bool result = pick_arm->move_XY_Synic(sensorTray->getEndPosition(),true);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= pick_arm->move_XY_Synic(sensorTray->getEndPosition(),true);
     if(!result)
         AppendError(QString(u8"移动到sensor盘结束位置失败"));
     return result;
@@ -1380,19 +1383,25 @@ bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayPos(int tray_index)
 {
     qInfo("moveToTrayPos %d",tray_index);
 //    return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),false);
-    return  pick_arm->move_XtXYT2_Synic(lensTray->getCurrentPosition(tray_index),parameters.visionPositionX(),pick_arm->parameters.pickLensTheta(),false);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= pick_arm->move_XtXYT2_Synic(lensTray->getCurrentPosition(tray_index),parameters.visionPositionX(),pick_arm->parameters.pickLensTheta(),false);
+    return result;
 }
 
 bool SingleHeadMachineMaterialLoaderModule::moveToLensStartPos(int tray_index)
 {
     qInfo("moveToStartPos%d",tray_index);
-    return pick_arm->move_XtXY_Synic(lensTray->getStartPosition(tray_index),parameters.visionPositionX(),true);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= pick_arm->move_XtXY_Synic(lensTray->getStartPosition(tray_index),parameters.visionPositionX(),true);
+    return result;
 }
 
 bool SingleHeadMachineMaterialLoaderModule::moveToLensTray1EndPos()
 {
     qInfo("moveToTray1EndPos");
-    return pick_arm->move_XtXY_Synic(lensTray->getEndPosition(),parameters.visionPositionX(),true);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= pick_arm->move_XtXY_Synic(lensTray->getEndPosition(),parameters.visionPositionX(),true);
+    return result;
 }
 
 void SingleHeadMachineMaterialLoaderModule::startWork(int run_mode)

@@ -41,7 +41,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
 //                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1)
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_POS);
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_POS);
                     }
                 }
                 Button{
@@ -61,7 +61,7 @@ ColumnLayout {
                     text:qsTr("ng sensor高度")
                 }
                 TextField{
-                    text:materialPickArmParams.placeSensorZ//sensorLoaderParameter.placeSensorZ
+                    text:materialPickArmParams.pickNgSensorZ//sensorLoaderParameter.placeSensorZ
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
@@ -69,7 +69,7 @@ ColumnLayout {
                     }
                     onEditingFinished: {
                         //sensorLoaderParameter.setPlaceSensorZ(text)
-                        materialPickArmParams.setPlaceSensorZ(text)
+                        materialPickArmParams.setPickNgSensorZ(text)
                     }
                 }
                 Button{
@@ -96,6 +96,17 @@ ColumnLayout {
                     height:40
                     onClicked: {
                         sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TO_PICK)
+                    }
+                }
+                Button{
+                    text:qsTr("取NG Sensor")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_POS|
+                                                                MaterialLoaderModule.NG_SENSOR_PR|
+                                                                MaterialLoaderModule.SENSOR_TO_PICK|
+                                                                MaterialLoaderModule.PICK_NG_SENSOR_FROM_SUT)
                     }
                 }
             }
@@ -141,20 +152,31 @@ ColumnLayout {
                         MaterialLoaderModule.performHandling(MaterialLoaderModule.LPA_TO_WORK)
                     }
                 }
+                Button{
+                    text:qsTr("取Product")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_POS|
+                                                                MaterialLoaderModule.PRODUCT_PR|
+                                                                MaterialLoaderModule.LPA_TO_WORK|
+                                                                MaterialLoaderModule.PICK_PRODUCT_FROM_SUT)
+                    }
+                }
             }
             RowLayout{
                 Label{
                     text:qsTr("sut高度")
                 }
                 TextField{
-                    text:materialPickArmParams.pickNgSensorZ
+                    text:materialPickArmParams.placeSensorZ
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        materialPickArmParams.setPickNgSensorZ(text)
+                        materialPickArmParams.setPlaceSensorZ(text)
                     }
                 }
                 Button{
@@ -182,6 +204,17 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TO_PICK)
+                    }
+                }
+                Button{
+                    text:qsTr("放Sensor")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_POS|
+                                                                MaterialLoaderModule.SUT_PR|
+                                                                MaterialLoaderModule.SENSOR_TO_PICK|
+                                                                MaterialLoaderModule.PLACE_SENSOR_TO_SUT)
                     }
                 }
             }
@@ -296,6 +329,28 @@ ColumnLayout {
                     }
                     onEditingFinished: {
                         materialPickArmParams.setPlaceLensTheta(text)
+                    }
+                }
+                Button{
+                    text:qsTr("取NG Lens")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_POS|
+                                                                MaterialLoaderModule.NG_LENS_PR|
+                                                                MaterialLoaderModule.LPA_TO_WORK|
+                                                                MaterialLoaderModule.PICK_NG_LENS_FROM_LUT)
+                    }
+                }
+                Button{
+                    text:qsTr("放Lens")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_POS|
+                                                                MaterialLoaderModule.NG_LENS_PR|
+                                                                MaterialLoaderModule.LPA_TO_WORK|
+                                                                MaterialLoaderModule.PLACE_LENS_TO_LUT)
                     }
                 }
             }

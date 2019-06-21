@@ -214,13 +214,13 @@ bool SingleheadLSutModule::moveToUnpickLensPosition(bool check_autochthonous)
     return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(unpick_lens_position.X(),unpick_lens_position.Y(),unpick_lens_position.Z(),check_autochthonous);
 }
 
-bool SingleheadLSutModule::performSensorPR()
+bool SingleheadLSutModule::performDownlookSensorPR()
 {
     return vision_downlook_location->performPR(pr_offset);
 }
 
 // Do PR when LENS in gripper, so it should be in gripper vision location?
-bool SingleheadLSutModule::performLensPR()
+bool SingleheadLSutModule::performUplookLensPR()
 {
     return vision_gripper_location->performPR(pr_offset);
 }
@@ -230,4 +230,34 @@ void SingleheadLSutModule::run(bool isProduct)
 {
 
 
+}
+
+bool SingleheadLSutModule::stepMove_XY_Sync(double x,double y)
+{
+    qInfo("Move to target position, X: %f, Y: %f", x, y);
+    return sut_carrier->StepMove_XY_Sync(x,y);
+}
+
+bool SingleheadLSutModule::stepMove_Z_Sync(double step_z)
+{
+    qInfo("Target Z position: %f", step_z);
+    return sut_carrier->StepMove_Z(step_z);
+}
+
+bool SingleheadLSutModule::moveToZPos(double z)
+{
+    qInfo("Targert : %f",z);
+    return sut_carrier->Move_Z_Sync(z);
+}
+
+void SingleheadLSutModule::recordCurrentPos()
+{
+    qInfo("Record current position");
+    record_position = sut_carrier->GetFeedBackPos();
+}
+
+bool SingleheadLSutModule::movetoRecordPos(bool check_autochthonous)
+{
+    qInfo("Move to record position X: %f, Y: %f, Z: %f", record_position.X, record_position.Y, record_position.Z);
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(record_position.X,record_position.Y,record_position.Z,check_autochthonous);
 }

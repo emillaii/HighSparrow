@@ -89,9 +89,15 @@ private:
     bool moveToSafetyPosition(bool check_autochthonous);
     bool moveToPickLensPosition(bool check_autochthonous);
     bool moveToUnpickLensPosition(bool check_autochthonous);
+    bool stepMove_XY_Sync(double x,double y);
+    bool stepMove_Z_Sync(double step_z);
+    bool moveToZPos(double z);
+    void recordCurrentPos();
+    bool movetoRecordPos(bool check_autochthonous = false);
 
-    bool performSensorPR();
-    bool performLensPR();
+    bool performDownlookSensorPR();
+    bool performUplookLensPR();
+
 private:
     bool is_run = false;
     XtCylinder* pogopin = Q_NULLPTR;
@@ -103,6 +109,7 @@ private:
     XtVacuum *vacuum_lut;
     XtVacuum *vacuum_sut;
     PrOffset pr_offset;
+    mPoint3D record_position;
 };
 
 #endif // SINGLEHEAD_LSUT_MODULE_H

@@ -439,7 +439,7 @@ bool SingleHeadMachineMaterialPickArm::move_XtXYT2_Synic(QPointF position, doubl
     motor_th2->MoveToPos(t);
     bool resut = motor_x->WaitArrivedTargetPos(position.x(),timeout);
     resut &= motor_y->WaitArrivedTargetPos(position.y(),timeout);
-    resut &= motor_x->WaitArrivedTargetPos(x,timeout);
+    resut &= motor_vcmx->WaitArrivedTargetPos(x,timeout);
     resut &= motor_th2->WaitArrivedTargetPos(t,timeout);
     return resut;
 }

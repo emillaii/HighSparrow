@@ -3,13 +3,13 @@ $(document).ready(function () {
   var data = {};
   var init_aa_params = {
     mode: 1, start_pos: 0, stop_pos: 0,
-    offset_in_um: 100, delay_Z_in_ms: 200, step_size: 10,
+    offset_in_um: -40, delay_Z_in_ms: 200, step_size: 10,
     wait_tilt: 1, edge_filter: 0, is_debug: 0, estimated_aa_fov: 70, estimated_fov_slope: -16
   };
-  var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 0, retry: 0 };
+  var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_uv_params = { time: 3000 };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
-  var init_basic_params = { retry: 0, delay_in_ms: 0 };
+  var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_z_offset = { type: 0, z_offset_in_um: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0 };
   var init_dispense_params = {enable_save_image:1,lighting:195, retry: 0, delay_in_ms: 0 };
@@ -36,7 +36,7 @@ $(document).ready(function () {
   var $linkColor = $('#link_color');
 
   //Init the table 
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">Select AA mode: <select id=\"aa_mode\"><option value=1>DOV_Search</option><option value=0>ZScan</option></select></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\">Select AA mode: <select id=\"aa_mode\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option></select></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Start Position: <input type=\"number\" id=\"aa_start_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Stop Position: <input type=\"number\" id=\"aa_stop_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Step Size in um: <input type=\"number\" id=\"aa_step_size\"></div>");
@@ -59,6 +59,9 @@ $(document).ready(function () {
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Debug: <select id=\"oc_is_debug\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"oc_retry\"></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"oc_delay_in_ms\"></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">OC Check: <select id=\"oc_is_check\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">X limit in um: <input type=\"number\" id=\"oc_x_limit_in_um\"></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">Y limit in um: <input type=\"number\" id=\"oc_y_limit_in_um\"></div>");
   
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Enable Save Image: <select id=\"dispense_enable_save_image\"><option value=0>False</option><option value=1>True</option></select></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Lighting: <input type=\"number\" id=\"dispense_lighting\"></div>");
@@ -133,6 +136,10 @@ $(document).ready(function () {
         $('#oc_delay_in_ms').val(params["delay_in_ms"]);
         $('#oc_is_debug').val(params["is_debug"]);
         $('#oc_retry').val(params["retry"]);
+		$('#oc_is_check').val(params["is_check"]);
+		$('#oc_x_limit_in_um').val(params["x_limit_in_um"]);
+		$('#oc_y_limit_in_um').val(params["y_limit_in_um"]);
+		
       } else if (operatorId.includes("Save Image")) {
 		$save_image_operator_properties.show();
 		$save_image_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -540,7 +547,9 @@ function addMultipleOperationWidget(name) {
       var params = {
         enable_motion: Number($('#oc_enable_motion').val()),
         fast_mode: Number($('#oc_fast_mode').val()), debug: Number($('#oc_is_debug').val()),
-        delay_in_ms: Number($('#oc_delay_in_ms').val()), retry: Number($('#oc_retry').val())
+        delay_in_ms: Number($('#oc_delay_in_ms').val()), retry: Number($('#oc_retry').val()),
+		is_check: Number($('#oc_is_check').val()), x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
+		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
       };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Z Offset")) {

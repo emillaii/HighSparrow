@@ -259,7 +259,6 @@ void AAHeadModule::receiveLensFromLut(double offset_x, double offset_y, double o
     this->uplook_theta = offset_theta;
     receive_lens = true;
     waiting_lens = false;
-    receive_lens = true;
 }
 
 void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double offset_theta)
@@ -270,7 +269,6 @@ void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double
     this->offset_theta = offset_theta;
     receive_sensor = true;
     waiting_sensor = false;
-    receive_sensor = true;
 }
 
 bool AAHeadModule::moveToDiffrentZSync(double z)

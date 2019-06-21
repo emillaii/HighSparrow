@@ -99,7 +99,7 @@ private:
     bool placeLensToTray();
     bool measureHight(bool is_tray);
 
-    bool moveToTrayEmptyPos(int index,int tray_index);
+    bool moveToTrayEmptyPos(int index,int tray_index,int& result_tray);
     bool moveToTrayPos(int index,int tray_index);
     bool moveToTrayPos(int tray_index);
     bool moveToStartPos(int tray_index);
@@ -151,7 +151,10 @@ private:
     bool debug = false;
     ErrorLevel error_level;
     PrOffset pr_offset;
+
     QTime time_label;
+
+    bool has_material = true;
 };
 
 #endif // LENSPICKARMMODULE_H

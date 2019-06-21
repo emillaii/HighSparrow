@@ -103,6 +103,7 @@ void LensLoaderModule::run(bool has_material)
     bool waiting_change_tray = false;
     bool finish_change_tray = false;
     int change_tray_time_out = parameters.changeTrayTimeOut();
+    time_label = QTime::currentTime();
     while (is_run)
     {
         has_task = false;
@@ -131,7 +132,8 @@ void LensLoaderModule::run(bool has_material)
         {
             has_task = true;
             vacancy_vision->OpenLight();
-            if(!moveToTrayEmptyPos(states.pickedLensID(),states.pickedTrayID()))
+            int result_tray = 0;
+            if(!moveToTrayEmptyPos(states.pickedLensID(),states.pickedTrayID(),result_tray))
             {
                 AppendError(" 请手动拿走LPA上的NG Lens后继续!");
                 sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
@@ -140,14 +142,15 @@ void LensLoaderModule::run(bool has_material)
                 states.setHasPickedNgLens(false);
                 continue;
             }
-            if((!performVacancyPR())&&has_material)
+            if(has_material&&(!performVacancyPR()))
             {
                 sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
                 int result = waitMessageReturn(is_run);
-                if(!result)is_run = false;
-                if(!is_run)break;
                 if(result)
+                    is_run = false;
+                else
                     continue;
+                if(!is_run)break;
             }
             vacancy_vision->CloseLight();
             if(!moveToWorkPos(true))
@@ -169,7 +172,7 @@ void LensLoaderModule::run(bool has_material)
                     //todo检测料已拿走
                 }
             }
-            tray->setCurrentMaterialState(MaterialState::IsNg,states.currentTray());
+            tray->setCurrentMaterialState(MaterialState::IsNg,result_tray);
             states.setHasPickedNgLens(false);
             if(!is_run)break;
         }
@@ -180,7 +183,7 @@ void LensLoaderModule::run(bool has_material)
                  states.setAllowChangeTray(true);
          }
         //取料
-        if((!finish_stop)&&states.hasTray()&&(!states.allowChangeTray())&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
+        if((!finish_stop)&&states.hasTray()&&(!states.allowChangeTray())&&(!states.lutHasNgLens())&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
         {
             has_task = true;
             if(tray->isTrayNeedChange(states.currentTray()))
@@ -202,7 +205,7 @@ void LensLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
-            if((!performLensPR())&&has_material)
+            if(has_material&&(!performLensPR()))
             {
                 if(pr_times > 0)
                 {
@@ -210,17 +213,24 @@ void LensLoaderModule::run(bool has_material)
                     tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
                     states.setPickedTrayID(states.currentTray());
                     states.setPickedLensID(tray->getCurrentIndex(states.currentTray()));
+
+                    AppendError(u8"自动重试.");
+                    sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
                     continue;
                 }
                 else
                 {
                     pr_times = 5;
-                    AppendError("执行lens视觉连续失败5次!");
+                    AppendError(u8"执行lens视觉连续失败5次!");
                     sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                     waitMessageReturn(is_run);
                     if(!is_run)break;
                     continue;
                 }
+            }
+            else
+            {
+                sendAlarmMessage(ErrorLevel::TipNonblock,"");
             }
             lens_vision->CloseLight();
             pr_times = 5;
@@ -240,6 +250,7 @@ void LensLoaderModule::run(bool has_material)
             }
             else
                 states.setHasPickedLens(true);
+            addCurrentNumber();
             tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
             states.setPickedTrayID(states.currentTray());
             states.setPickedLensID(tray->getCurrentIndex(states.currentTray()));
@@ -338,6 +349,7 @@ void LensLoaderModule::run(bool has_material)
         //取NGlens
         if(lut_has_ng_lens&&(!states.hasPickedLens())&&(!states.hasPickedNgLens()))
         {
+            addCurrentNgNumber();
             has_task = true;
             lut_lens_vision->OpenLight();
             if(!moveToLUTPRPos2())
@@ -346,14 +358,15 @@ void LensLoaderModule::run(bool has_material)
                 is_run = false;
                 break;
             }
-            if((!performLUTLensPR())&&has_material)
+            if(has_material&&(!performLUTLensPR()))
             {
                 sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
                 int result = waitMessageReturn(is_run);
-                if(!result)is_run = false;
-                if(!is_run)break;
                 if(result)
+                    is_run = false;
+                else
                     continue;
+                if(!is_run)break;
             }
             lut_lens_vision->CloseLight();
             if(!moveToWorkPos(false))
@@ -546,6 +559,8 @@ bool LensLoaderModule::moveToWorkPos()
 
 bool LensLoaderModule::checkPickedLensOrNg(bool check_state)
 {
+    if(!has_material)
+        return true;
    bool result =pick_arm->picker->vacuum->checkHasMateriel();
    if(result == check_state)
        return true;
@@ -557,6 +572,8 @@ bool LensLoaderModule::checkPickedLensOrNg(bool check_state)
 
 bool LensLoaderModule::checkLutLens(bool check_state)
 {
+    if(!has_material)
+        return true;
     bool result = load_vacuum->checkHasMateriel();
     if(result == check_state)
         return true;
@@ -568,6 +585,8 @@ bool LensLoaderModule::checkLutLens(bool check_state)
 
 bool LensLoaderModule::checkLutNgLens(bool check_state)
 {
+    if(!has_material)
+        return true;
     bool result = unload_vacuum->checkHasMateriel();
     if(result == check_state)
         return true;
@@ -666,9 +685,10 @@ bool LensLoaderModule::measureHight(bool is_tray)
     return false;
 }
 
-bool LensLoaderModule::moveToTrayEmptyPos(int index, int tray_index)
+bool LensLoaderModule::moveToTrayEmptyPos(int index, int tray_index,int& result_tray)
 {
     qInfo("moveToTrayEmptyPos index %d tray_index %d",index,tray_index);
+    result_tray = tray_index;
     if(index < 0 ||tray_index < 0)
     {
         return false;
@@ -682,7 +702,10 @@ bool LensLoaderModule::moveToTrayEmptyPos(int index, int tray_index)
     else if(tray->findLastPositionOfState(MaterialState::IsEmpty,tray_index))
         result = moveToTrayPos(tray_index);
     else if(tray->findLastPositionOfState(MaterialState::IsEmpty,tray_index == 0?1:0))
-        result = moveToTrayPos(tray_index == 0?1:0);
+    {
+        result_tray = tray_index == 0?1:0;
+        result = moveToTrayPos(result_tray);
+    }
     if(!result)
         AppendError(QString(u8"移动到lens料盘空位失败,起始位置:%1,lens料盘:%2").arg(index).arg(tray_index));
     qInfo(u8"移动到lens料盘空位,起始位置:%d,lens料盘:%d,返回值:%d",index,tray_index,result);
@@ -795,9 +818,14 @@ bool LensLoaderModule::isRunning()
 
 void LensLoaderModule::startWork(int run_mode)
 {
+    has_material = true;
     qInfo("Lensloader start run_mode :%d",run_mode);
     if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)run(true);
-    else if(run_mode == RunMode::NoMaterial)run(false);
+    else if(run_mode == RunMode::NoMaterial)
+    {
+        has_material = false;
+        run(false);
+    }
 }
 
 void LensLoaderModule::stopWork(bool wait_finish)
@@ -830,6 +858,7 @@ void LensLoaderModule::resetLogic()
     states.setLutNgTrayID(-1);
     states.setLutNgLensID(-1);
     states.setLoadingLens(false);
+    states.setWaitingChangeTray(false);
     tray->resetTrayState();
     tray->resetTrayState(1);
 }

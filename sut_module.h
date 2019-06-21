@@ -16,7 +16,8 @@ enum SUT_STATE
 {
     NO_MATERIAL = 0,
     HAS_NG_SENSOR = 1,
-    HAS_PRODUCT = 2
+    HAS_PRODUCT = 2,
+    HAS_NG_PRODUCT = 3
 };
 class SutModule : public ThreadWorkerBase
 {

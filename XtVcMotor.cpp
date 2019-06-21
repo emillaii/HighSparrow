@@ -5,6 +5,8 @@
 #include <QElapsedTimer>
 int XtVcMotor::vcm_count = 0;
 QVector<VCM_Resource_struct> XtVcMotor::all_parameter;
+QMutex XtVcMotor::g_mutex;
+QMutex XtVcMotor::setSoftLanding_mutex;
 XtVcMotor::XtVcMotor()
 {
     axis_id = -1;
@@ -77,12 +79,15 @@ void XtVcMotor::InitAllVCM()
     VCMT_resource_alloc(all_parameter.data(),all_parameter.length());
     Soft_landing_dll_init(1);
 
+
+
     int timeout = 30000;
     while(timeout>0)
     {
         int res = Get_Init_Ready();
         if(res == 1)
         {
+//            SetDebugLog(0);
             return;
         }
         if(res == -1)
@@ -159,16 +164,35 @@ double XtVcMotor::GetFeedbackPos(int decimal_digit) const
 //        return GetOutpuPos();
         double val;
         int times = 10;
-        do{
-            int res = GetNowPos(vcm_id,val);
+        while(times > 0){
+            int res = 0;
+            bool lockres = g_mutex.tryLock(10);
+            if(lockres)
+            {
+                res = GetNowPos(vcm_id,val);
+                g_mutex.unlock();
+            }
+            else
+            {
+                qInfo("%s VCM GetNowPos tryLock failed!", this->Name().toStdString().c_str());
+            }
             if(res==1)
+            {
+//                qInfo("%s VCM GetNowPos success! %d", this->Name().toStdString().c_str(), times);
                 break;
-            Sleep(1);
-            qInfo("%s VCM GetNowPos failed! %d", this->Name().toStdString().c_str(), times);
+            }
+            QThread::msleep(20);
+            //qInfo("%s VCM GetNowPos failed! %d", this->Name().toStdString().c_str(), times);
+            times--;
+            //qInfo("%s VCM GetNowPos failed CP1! %d", this->Name().toStdString().c_str(), times);
         }
-        while(--times>0);
+        if (times == 0) {
+            qInfo("%s GetFeedbackPos timed out",this->Name().toStdString().c_str());
+            return GetOutpuPos();
+        }
         if(direction_is_opposite)
             val = -val;
+        //qInfo("%s GetFeedbackPos val :%f",this->Name().toStdString().c_str(), val);
         return round(val*pow(10,decimal_digit))/pow(10,decimal_digit);
     }
     return 0;
@@ -347,8 +371,13 @@ bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int
     double margin = abs(max_range - start_pos)/2.01;
     SetSoftLanding(speed,max_acc, force, start_pos,limit,margin);
     bool res;
+    qInfo("Finish SetSoftLanding");
     res = DoSoftLanding();
+
+    qInfo("Finish DoSoftLanding");
     res &= WaitSoftLandingDone(timeout);
+
+    qInfo("Finish WaitSoftLandingDone");
     if(res)
         qInfo("sooftlanding pos:%f",GetFeedbackPos());
     else
@@ -389,6 +418,7 @@ void XtVcMotor::SetSoftLanding(double slow_speed, double slow_acc, double force,
     if(!is_init)
         return;
     qInfo("slow_speed:%f start_pos: %f,force:%f,target_pos:%f,margin:%f",slow_speed,start_pos,force,target_pos,margin);
+    QMutexLocker l(&setSoftLanding_mutex);
     SetFastSpeed(vcm_id,max_vel);
     SetFastAcc(vcm_id, max_acc);
     SetSlowSpeed(vcm_id, slow_speed);
@@ -443,11 +473,14 @@ bool XtVcMotor::resetSoftLanding(int timeout)
 
 bool XtVcMotor::WaitSoftLandingDone(int timeout)
 {
+    qInfo("WaitSoftLandingDone Start");
     if(is_debug)return true;
     if(!checkState(false))return false;
     while(timeout > 0)
     {
+        //qInfo("CheckPosReady Start vcm_id: %d %s", vcm_id, this->parameters.motorName().toStdString().c_str());
         int res = CheckPosReady(vcm_id);
+        //qInfo("CheckPosReady Finish vcm_id: %d %s", vcm_id, this->parameters.motorName().toStdString().c_str());
         if (res == 1)
         {
             is_softlanded = is_softlanding;
@@ -458,10 +491,16 @@ bool XtVcMotor::WaitSoftLandingDone(int timeout)
         timeout-=10;
         QThread::msleep(10);
     }
+
+    qInfo("WaitSoftLandingDone While loop finish");
     is_softlanded = is_softlanding;
     is_softlanding = false;
     is_returning = false;
+
+    //qInfo("get_motor_error Start");
     LONG64 temp_code = get_motor_error(vcm_id);
+
+    //qInfo("get_motor_error Finish");
     if(error_code == temp_code)
     {
         qInfo("CheckPosReady fail but action success outtime %d",timeout);

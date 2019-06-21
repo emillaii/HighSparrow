@@ -24,6 +24,7 @@ public:
     Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
     Q_PROPERTY(double pickProductZ READ pickProductZ WRITE setPickProductZ NOTIFY pickProductZChanged)
     Q_PROPERTY(double placeProductZ READ placeProductZ WRITE setPlaceProductZ NOTIFY placeProductZChanged)
+    Q_PROPERTY(double placeNgProductZ READ placeNgProductZ WRITE setPlaceNgProductZ NOTIFY placeNgProductZChanged)
     Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
     Q_PROPERTY(double pickNgSensorZ READ pickNgSensorZ WRITE setPickNgSensorZ NOTIFY pickNgSensorZChanged)
     Q_PROPERTY(double placeNgSensorZ READ placeNgSensorZ WRITE setPlaceNgSensorZ NOTIFY placeNgSensorZChanged)
@@ -165,6 +166,11 @@ public:
     double accumulatedHour() const
     {
         return m_accumulatedHour;
+    }
+
+    double placeNgProductZ() const
+    {
+        return m_placeNgProductZ;
     }
 
 public slots:
@@ -417,6 +423,16 @@ public slots:
         emit accumulatedHourChanged(m_accumulatedHour);
     }
 
+    void setPlaceNgProductZ(double placeNgProductZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeNgProductZ, placeNgProductZ))
+            return;
+
+        m_placeNgProductZ = placeNgProductZ;
+        emit placeNgProductZChanged(m_placeNgProductZ);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -471,6 +487,8 @@ signals:
 
     void accumulatedHourChanged(double accumulatedHour);
 
+    void placeNgProductZChanged(double placeNgProductZ);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -498,6 +516,7 @@ private:
     bool m_usePlan = false;
     int m_planNumber = 0;
     double m_accumulatedHour = 0;
+    double m_placeNgProductZ = 0;
 };
 class SensorLoaderState:public PropertyBase
 {
@@ -509,12 +528,14 @@ public:
     Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
     Q_PROPERTY(bool sutHasProduct READ sutHasProduct WRITE setSutHasProduct NOTIFY sutHasProductChanged)
+    Q_PROPERTY(bool sutHasNgProduct READ sutHasNgProduct WRITE setSutHasNgProduct NOTIFY sutHasNgProductChanged)
     Q_PROPERTY(bool needLoadSensor READ needLoadSensor WRITE setNeedLoadSensor NOTIFY needLoadSensorChanged)
     Q_PROPERTY(bool needChangTray READ needChangTray WRITE setNeedChangTray NOTIFY needChangTrayChanged)
     Q_PROPERTY(bool allowChangeTray READ allowChangeTray WRITE setAllowChangeTray NOTIFY allowChangeTrayChanged)
     Q_PROPERTY(bool hasPickedSensor READ hasPickedSensor WRITE setHasPickedSensor NOTIFY hasPickedSensorChanged)
     Q_PROPERTY(bool hasPickedProduct READ hasPickedProduct WRITE setHasPickedProduct NOTIFY hasPickedProductChanged)
     Q_PROPERTY(bool hasPickedNgSensor READ hasPickedNgSensor WRITE setHasPickedNgSensor NOTIFY hasPickedNgSensorChanged)
+    Q_PROPERTY(bool hasPickedNgProduct READ hasPickedNgProduct WRITE setHasPickedNgProduct NOTIFY hasPickedNgProductChanged)
     Q_PROPERTY(bool beExchangeMaterial READ beExchangeMaterial WRITE setBeExchangeMaterial NOTIFY beExchangeMaterialChanged)
     Q_PROPERTY(QString cmd READ cmd WRITE setCmd NOTIFY cmdChanged)
     Q_PROPERTY(bool waitingChangeTray READ waitingChangeTray WRITE setWaitingChangeTray NOTIFY waitingChangeTrayChanged)
@@ -523,6 +544,10 @@ public:
     Q_PROPERTY(double picker1OffsetY READ picker1OffsetY WRITE setPicker1OffsetY NOTIFY picker1OffsetYChanged)
     Q_PROPERTY(double picker2OffsetX READ picker2OffsetX WRITE setPicker2OffsetX NOTIFY picker2OffsetXChanged)
     Q_PROPERTY(double picker2OffsetY READ picker2OffsetY WRITE setPicker2OffsetY NOTIFY picker2OffsetYChanged)
+
+    Q_PROPERTY(bool hasUnpickedNgProduct READ hasUnpickedNgProduct WRITE setHasUnpickedNgProduct NOTIFY hasUnpickedNgProductChanged)
+    Q_PROPERTY(bool hasUnpickedProduct READ hasUnpickedProduct WRITE setHasUnpickedProduct NOTIFY hasUnpickedProductChanged)
+    Q_PROPERTY(bool hasUpickedNgSensor READ hasUpickedNgSensor WRITE setHasUnpickedNgSensor NOTIFY hasUnpickedNgSensorChanged)
     int runMode() const
     {
         return m_runMode;
@@ -615,6 +640,31 @@ public:
     double picker2OffsetY() const
     {
         return m_picker2OffsetY;
+    }
+
+    bool hasUnpickedNgProduct() const
+    {
+        return m_hasUnpickedSensor;
+    }
+
+    bool hasUnpickedProduct() const
+    {
+        return m_hasUnpickedProduct;
+    }
+
+    bool hasUpickedNgSensor() const
+    {
+        return m_hasUnpickedNgSensor;
+    }
+
+    bool hasPickedNgProduct() const
+    {
+        return m_hasPickedNgProduct;
+    }
+
+    bool sutHasNgProduct() const
+    {
+        return m_sutHasNgProduct;
     }
 
 public slots:
@@ -792,6 +842,51 @@ public slots:
         emit picker2OffsetYChanged(m_picker2OffsetY);
     }
 
+    void setHasUnpickedNgProduct(bool hasUnpickedSensor)
+    {
+        if (m_hasUnpickedSensor == hasUnpickedSensor)
+            return;
+
+        m_hasUnpickedSensor = hasUnpickedSensor;
+        emit hasUnpickedNgProductChanged(m_hasUnpickedSensor);
+    }
+
+    void setHasUnpickedProduct(bool hasUnpickedProduct)
+    {
+        if (m_hasUnpickedProduct == hasUnpickedProduct)
+            return;
+
+        m_hasUnpickedProduct = hasUnpickedProduct;
+        emit hasUnpickedProductChanged(m_hasUnpickedProduct);
+    }
+
+    void setHasUnpickedNgSensor(bool hasUnpickedNgSensor)
+    {
+        if (m_hasUnpickedNgSensor == hasUnpickedNgSensor)
+            return;
+
+        m_hasUnpickedNgSensor = hasUnpickedNgSensor;
+        emit hasUnpickedNgSensorChanged(m_hasUnpickedNgSensor);
+    }
+
+    void setHasPickedNgProduct(bool hasPickedNgProduct)
+    {
+        if (m_hasPickedNgProduct == hasPickedNgProduct)
+            return;
+
+        m_hasPickedNgProduct = hasPickedNgProduct;
+        emit hasPickedNgProductChanged(m_hasPickedNgProduct);
+    }
+
+    void setSutHasNgProduct(bool sutHasNgProduct)
+    {
+        if (m_sutHasNgProduct == sutHasNgProduct)
+            return;
+
+        m_sutHasNgProduct = sutHasNgProduct;
+        emit sutHasNgProductChanged(m_sutHasNgProduct);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayChanged(bool hasTray);
@@ -830,6 +925,16 @@ signals:
 
     void picker2OffsetYChanged(double picker2OffsetY);
 
+    void hasUnpickedNgProductChanged(bool hasUnpickedNgProduct);
+
+    void hasUnpickedProductChanged(bool hasUnpickedProduct);
+
+    void hasUnpickedNgSensorChanged(bool hasUpickedNgSensor);
+
+    void hasPickedNgProductChanged(bool hasPickedNgProduct);
+
+    void sutHasNgProductChanged(bool sutHasNgProduct);
+
 private:
     int m_runMode = 0;
     bool m_hasTray = false;
@@ -850,6 +955,11 @@ private:
     double m_picker1OffsetY = 0;
     double m_picker2OffsetX = 0;
     double m_picker2OffsetY = 0;
+    bool m_hasUnpickedSensor = false;
+    bool m_hasUnpickedProduct = false;
+    bool m_hasUnpickedNgSensor = false;
+    bool m_hasPickedNgProduct = false;
+    bool m_sutHasNgProduct = false;
 };
 
 #endif // SENSORLOADERPARAMETER_H

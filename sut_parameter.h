@@ -218,6 +218,7 @@ class SutState:public PropertyBase
     Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
     Q_PROPERTY(bool sutHasProduct READ sutHasProduct WRITE setSutHasProduct NOTIFY sutHasProductChanged)
+    Q_PROPERTY(bool sutHasNgProduct READ sutHasNgProduct WRITE setSutHasNgProduct NOTIFY sutHasNgProductChanged)
     Q_PROPERTY(bool allowLoadSensor READ allowLoadSensor WRITE setAllowLoadSensor NOTIFY allowLoadSensorChanged)
     Q_PROPERTY(bool loadingSensor READ loadingSensor WRITE setLoadingSensor NOTIFY loadingSensorChanged)
     Q_PROPERTY(bool waitLoading READ waitLoading WRITE setWaitLoading NOTIFY waitLoadingChanged)
@@ -251,6 +252,11 @@ public:
     bool waitLoading() const
     {
         return m_waitLoading;
+    }
+
+    bool sutHasNgProduct() const
+    {
+        return m_sutHasNgProduct;
     }
 
 public slots:
@@ -308,6 +314,15 @@ public slots:
         emit waitLoadingChanged(m_waitLoading);
     }
 
+    void setSutHasNgProduct(bool sutHasNgProduct)
+    {
+        if (m_sutHasNgProduct == sutHasNgProduct)
+            return;
+
+        m_sutHasNgProduct = sutHasNgProduct;
+        emit sutHasNgProductChanged(m_sutHasNgProduct);
+    }
+
 signals:
     void sutHasSensorChanged(bool sutHasSensor);
 
@@ -321,6 +336,8 @@ signals:
 
     void waitLoadingChanged(bool waitLoading);
 
+    void sutHasNgProductChanged(bool sutHasNgProduct);
+
 private:
     bool m_sutHasSensor = false;
     bool m_sutHasNgSensor = false;
@@ -328,6 +345,7 @@ private:
     bool m_allowLoadSensor = false;
     bool m_loadingSensor = false;
     bool m_waitLoading = false;
+    bool m_sutHasNgProduct = false;
 };
 
 #endif // SUT_PARAMETER_H

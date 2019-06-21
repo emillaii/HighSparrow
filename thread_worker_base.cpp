@@ -40,7 +40,7 @@ int ThreadWorkerBase::getAlarmId()
 
 void ThreadWorkerBase::sendAlarmMessage(int error_level, QString error_message)
 {
-//    qInfo("send alarm error_level %d error_message %s",error_level,error_message.toStdString().c_str());
+   qInfo("send alarm error_level %d error_message %s",error_level,error_message.toStdString().c_str());
     message_returned = false;
     emit sendErrorMessage(alarm_id,error_level,error_message);
 }

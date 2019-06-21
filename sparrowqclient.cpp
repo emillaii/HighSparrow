@@ -59,8 +59,12 @@ int SparrowClient::commandQueueSize()
 
 void SparrowClient::sendMessage(QString message)
 {
-    qInfo("SparrowClient::sendMessage: %s",message.toStdString().c_str());
-    m_webSocket.sendTextMessage(message);
+    if(m_is_connected) {
+        qInfo("SparrowClient::sendMessage: %s",message.toStdString().c_str());
+        m_webSocket.sendTextMessage(message);
+    } else {
+        qInfo("SparrowClient::sendMessage fail due to socket is ot connected");
+    }
 }
 
 bool SparrowClient::isConnected()

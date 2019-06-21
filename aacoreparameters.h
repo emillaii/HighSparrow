@@ -22,6 +22,10 @@ class AACoreParameters : public PropertyBase
 
     double m_ROIRatio = 1.45;
 
+    bool m_firstRejectSensor = false;
+
+    int m_rejectTimes = 3;
+
 public:
     explicit AACoreParameters(){}
     Q_PROPERTY(double EFL READ EFL WRITE setEFL NOTIFY paramsChanged)
@@ -31,6 +35,9 @@ public:
     Q_PROPERTY(int SensorXRatio READ SensorXRatio WRITE setSensorXRatio NOTIFY paramsChanged)
     Q_PROPERTY(int SensorYRatio READ SensorYRatio WRITE setSensorYRatio NOTIFY paramsChanged)
     Q_PROPERTY(double ROIRatio READ ROIRatio WRITE setROIRatio NOTIFY paramsChanged)
+    Q_PROPERTY(bool firstRejectSensor READ firstRejectSensor WRITE setFirstRejectSensor NOTIFY firstRejectSensorChanged)
+    Q_PROPERTY(int rejectTimes READ rejectTimes WRITE setRejectTimes NOTIFY rejectTimesChanged)
+
 double EFL() const
 {
     return m_EFL;
@@ -63,6 +70,16 @@ int SensorYRatio() const
 double ROIRatio() const
 {
     return m_ROIRatio;
+}
+
+bool firstRejectSensor() const
+{
+    return m_firstRejectSensor;
+}
+
+int rejectTimes() const
+{
+    return m_rejectTimes;
 }
 
 public slots:
@@ -108,8 +125,28 @@ void setROIRatio(double ROIRatio)
     emit paramsChanged(m_ROIRatio);
 }
 
+void setFirstRejectSensor(bool firstRejectSensor)
+{
+    if (m_firstRejectSensor == firstRejectSensor)
+        return;
+
+    m_firstRejectSensor = firstRejectSensor;
+    emit firstRejectSensorChanged(m_firstRejectSensor);
+}
+
+void setRejectTimes(int rejectTimes)
+{
+    if (m_rejectTimes == rejectTimes)
+        return;
+
+    m_rejectTimes = rejectTimes;
+    emit rejectTimesChanged(m_rejectTimes);
+}
+
 signals:
 void paramsChanged(int MaxIntensity);
+void firstRejectSensorChanged(bool firstRejectSensor);
+void rejectTimesChanged(int rejectTimes);
 };
 class AACoreStates: public PropertyBase
 {

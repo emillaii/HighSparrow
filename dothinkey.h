@@ -23,6 +23,7 @@ class Dothinkey : public PropertyBase
 public:
     explicit Dothinkey(QObject *parent = 0);
     ~Dothinkey();
+    Q_PROPERTY(QString currentSensorID READ currentSensorID WRITE setCurrentSensorID NOTIFY paramsChanged)
     Q_PROPERTY(QString IniFilename READ IniFilename WRITE setIniFilename NOTIFY paramsChanged)
     Q_INVOKABLE bool initSensor();
     void loadParams(QString file_name);
@@ -34,7 +35,7 @@ public:
     QImage* DothinkeyGrabImage(int channel);
     cv::Mat DothinkeyGrabImageCV(int channel);
     void DothinkeySetConfigFile(std::string filename);
-
+    QString readSensorID();
     struct CameraChannel
     {
         CameraChannel()
@@ -70,6 +71,11 @@ public:
         return m_IniFilename;
     }
 
+    QString currentSensorID() const
+    {
+        return m_currentSensorID;
+    }
+
 public slots:
     void saveJsonConfig(QString file_name);
     void setIniFilename(QString IniFilename)
@@ -79,6 +85,15 @@ public slots:
 
         m_IniFilename = IniFilename;
         emit paramsChanged(m_IniFilename);
+    }
+
+    void setCurrentSensorID(QString currentSensorID)
+    {
+        if (m_currentSensorID == currentSensorID)
+            return;
+
+        m_currentSensorID = currentSensorID;
+        emit paramsChanged(m_currentSensorID);
     }
 
 signals:
@@ -95,6 +110,7 @@ private:
     std::string iniFilename;
 
     QString m_IniFilename;
+    QString m_currentSensorID = "";
 };
 
 #endif // DOTHINKEY_H

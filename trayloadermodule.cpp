@@ -219,7 +219,7 @@ bool TrayLoaderModule::startUp()
 //            if(!result){
 //                AppendError(tr("LTK_X2释放失败，是否继续？"));
 //                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-//                if(!waitMessageReturn(is_run)){
+//                if(waitMessageReturn(is_run)){
 //                    is_run = false;
 //                    continue;
 //                }
@@ -241,7 +241,7 @@ bool TrayLoaderModule::startUp()
 //                if(!motorWorkRelease()){
 //                    AppendError(tr("LTL_X释放失败，是否继续？"));
 //                    sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-//                    if(!waitMessageReturn(is_run)){
+//                    if(waitMessageReturn(is_run)){
 //                        is_run = false;
 //                        continue;
 //                    }
@@ -249,7 +249,7 @@ bool TrayLoaderModule::startUp()
 //                if(!motorOutPress()){
 //                    AppendError(tr("LTk_X2下压失败，是否继续？"));
 //                    sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-//                    if(!waitMessageReturn(is_run)){
+//                    if(waitMessageReturn(is_run)){
 //                        is_run = false;
 //                        continue;
 //                    }
@@ -261,7 +261,7 @@ bool TrayLoaderModule::startUp()
 //            if(!motorInRelease()){
 //                AppendError(tr(u8"LTK_X1释放失败，是否继续？"));
 //                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-//                if(!waitMessageReturn(is_run)){
+//                if(waitMessageReturn(is_run)){
 //                    is_run = false;
 //                    continue;
 //                }
@@ -273,7 +273,7 @@ bool TrayLoaderModule::startUp()
 //            if(!result){
 //                AppendError(tr(u8"换盘失败，是否继续？"));
 //                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-//                if(!waitMessageReturn(is_run)){
+//                if(waitMessageReturn(is_run)){
 //                    is_run = false;
 //                    continue;
 //                }

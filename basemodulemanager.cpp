@@ -75,7 +75,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonDownlookCamera) pylonDownlookCamera->start();
         if(pylonPickarmCamera) pylonPickarmCamera->start();
     }
-    material_tray.standards_parameters.setTrayCount(2);
+    material_tray.standards_parameters.setTrayCount(3);
     unitlog.setServerAddress(configs.dataServerURL());
     setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
@@ -658,7 +658,7 @@ bool BaseModuleManager::loadMotorLimitFiles(QString file_name)
                }
            }
         }
-        qInfo("%s loadmotorlimit motors %d limit %d",temp_motor->Name().toStdString().c_str(),temp_motor->parallel_limit_motors.count(),temp_motor->parallel_limit_parameters.count());
+        qInfo("%s loadmotorlimit motors limit %d %d %d",temp_motor->Name().toStdString().c_str(),temp_motor->parallel_limit_motors.count(),temp_motor->parallel_limit_parameters.count(),temp_motor->io_limit_parameters.count());
     }
     return true;
 }

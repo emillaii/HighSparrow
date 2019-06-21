@@ -904,6 +904,7 @@ bool XtMotor::checkInterface(const double pos)
                 }
                 for (int i = 0; i < temp_parameter->output_io_indexs.size(); ++i)
                 {
+                    qInfo("checkOutputLimitSpance %s %d ",limit_out_ios[temp_parameter->output_io_indexs[i]]->Name().toStdString().c_str(),limit_out_ios[temp_parameter->output_io_indexs[i]]->Value());
                     if(!temp_parameter->checkOutputLimitSpance(i,limit_out_ios[temp_parameter->output_io_indexs[i]]->Value()))
                     {
                         AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->outputIOName()[i].toString()));

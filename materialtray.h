@@ -11,7 +11,8 @@ enum MaterialState
     IsEmpty = 0,
     IsRaw = 1,
     IsNg = 2,
-    IsProduct = 3
+    IsProduct = 3,
+    IsNgProduct = 4
 };
 
 

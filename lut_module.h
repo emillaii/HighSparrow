@@ -82,14 +82,17 @@ private:
     XtVacuum* unload_vacuum;
     QMutex loader_mutext;
     SparrowQServer * server;
+    QMutex tcp_mutex;
     QQueue<QJsonObject> requestQueue;
     QQueue<QJsonObject> actionQueue;
     LUTState state = NO_LENS;
     bool is_run = false;
     bool isLocalHost = false;
     QTime time_label;
+    bool has_material = true;
 
     void run(bool has_material);
+    bool isActionEmpty();
     QString servingIP = "";
     void sendEvent(const QString event);
     void sendCmd(QString serving_ip,const QString cmd);
@@ -120,8 +123,10 @@ public:
     Q_INVOKABLE bool moveToAA1MushroomLens(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2MushroomLens(bool check_autochthonous = false);
 
-    bool moveToAA1readyPos(bool check_autochthonous = false);
-    bool moveToAA2readyPos(bool check_autochthonous = false);
+    bool moveToAA1ReturnPos(bool check_autochthonous = false);
+    bool moveToAA2ReturnPos(bool check_autochthonous = false);
+    bool moveToAA1ReadyPos(bool check_autochthonous = false);
+    bool moveToAA2ReadyPos(bool check_autochthonous = false);
 
     bool checkLutLens(bool check_state);
     bool checkLutNgLens(bool check_state);

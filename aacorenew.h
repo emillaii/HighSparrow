@@ -60,7 +60,6 @@ public:
     bool runFlowchartTest();
     ErrorCodeStruct performTest(QString testItemName, QJsonValue properties);
     ErrorCodeStruct performDispense();
-    AACoreParameters parameters;
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     AAData aaData_1;  // For Display Channel 1
@@ -69,11 +68,13 @@ public:
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
 
+    AACoreParameters parameters;
     AACoreStates states;
 private:
     bool is_run = false;
     QMutex lut_mutex;
     void run(bool has_material);
+    void LogicNg(int & ng_time);
 private:
     QString loopTestResult;
     int currentAAMode;
@@ -93,11 +94,18 @@ private:
     int currentChartDisplayChannel = 0;
     int currentOCDisplayChannel = 0;
     bool has_product = false;
+    bool has_ng_product = false;
     bool has_ng_lens = false;
     bool has_ng_sensor = false;
     bool has_sensor = false;
     bool has_lens = false;
-    bool is_wait_sensor = false;
+
+    int current_aa_ng_time = 0;
+    int current_oc_ng_time = 0;
+    int current_mtf_ng_time = 0;
+
+
+
     void sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
                              double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak, double &dev);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,

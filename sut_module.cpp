@@ -60,9 +60,11 @@ void SutModule::resetLogic()
     states.setSutHasSensor(false);
     states.setSutHasNgSensor(false);
     states.setSutHasProduct(false);
+    states.setSutHasNgProduct(false);
     states.setAllowLoadSensor(false);
     states.setLoadingSensor(false);
     states.setWaitLoading(false);
+    qInfo("resetLogic");
 }
 
 void SutModule::loadParams(QString file_name)
@@ -87,6 +89,7 @@ bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check
     bool result = moveToDownlookPos(check_autochthonous);
     if(result)
     {
+        if(has_material)
         result = vision_downlook_location->performPR(offset);
     }
     if(close_lighting)
@@ -109,6 +112,7 @@ bool SutModule::moveToDownlookPR(bool close_lighting, bool check_autochthonous)
 bool SutModule::moveToLoadPos(bool check_autochthonous)
 {
     qInfo("moveToLoadPos");
+//    popgpin->Set(true);
     return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),1,check_autochthonous);
 }
 
@@ -244,19 +248,30 @@ void SutModule::receiveLoadSensorRequst(int sut_state)
         states.setSutHasSensor(false);
         states.setSutHasNgSensor(false);
         states.setSutHasProduct(false);
-    }
-    else if(sut_state == SUT_STATE::HAS_PRODUCT)
-    {
-        states.setSutHasSensor(false);
-        states.setSutHasNgSensor(false);
-        states.setSutHasProduct(true);
+        states.setSutHasNgProduct(false);
     }
     else if(sut_state == SUT_STATE::HAS_NG_SENSOR)
     {
         states.setSutHasSensor(false);
         states.setSutHasNgSensor(true);
         states.setSutHasProduct(false);
+        states.setSutHasNgProduct(false);
     }
+    else if(sut_state == SUT_STATE::HAS_PRODUCT)
+    {
+        states.setSutHasSensor(false);
+        states.setSutHasNgSensor(false);
+        states.setSutHasProduct(true);
+        states.setSutHasNgProduct(false);
+    }
+    else if(sut_state == SUT_STATE::HAS_NG_PRODUCT)
+    {
+        states.setSutHasSensor(false);
+        states.setSutHasNgSensor(false);
+        states.setSutHasProduct(false);
+        states.setSutHasNgProduct(true);
+    }
+    this->sut_state = sut_state;
     states.setAllowLoadSensor(true);
     qInfo("excute LoadSensorRequst");
 }
@@ -289,7 +304,7 @@ void SutModule::run(bool has_material)
         }
         if((!states.sutHasSensor())&&states.loadingSensor())
         {
-            if(states.sutHasProduct()||states.sutHasNgSensor())
+            if(states.sutHasProduct()||states.sutHasNgSensor()||states.sutHasNgProduct())
             {
                 if(!checkSutSensorOrProduct(true))
                 {
@@ -298,6 +313,7 @@ void SutModule::run(bool has_material)
                     {
                         states.setSutHasProduct(false);
                         states.setSutHasNgSensor(false);
+                        states.setSutHasNgProduct(false);
                         continue;
                     }
                     if(!is_run)break;
@@ -312,7 +328,7 @@ void SutModule::run(bool has_material)
                     if(!is_run)break;
                 }
             }
-            if(! sut_cilent->sendSensorRequest(is_run,states.sutHasProduct(),states.sutHasNgSensor()))
+            if(! sut_cilent->sendSensorRequest(is_run,sut_state))
             {
                AppendError(u8"等待sensor超时");
                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
@@ -367,6 +383,7 @@ void SutModule::run(bool has_material)
 
 void SutModule::startWork(int run_mode)
 {
+    has_material = true;
     qInfo("sut Module start run_mode :%d in %d",run_mode,QThread::currentThreadId());
     if(run_mode == RunMode::Normal)
         run(true);
@@ -374,7 +391,11 @@ void SutModule::startWork(int run_mode)
         run(true);
     else if(Name().contains("2")&&run_mode == RunMode::OnlyRightAA)
         run(true);
-    else if(run_mode == RunMode::NoMaterial)run(false);
+    else if(run_mode == RunMode::NoMaterial)
+    {
+        has_material = false;
+        run(false);
+    }
 
 }
 

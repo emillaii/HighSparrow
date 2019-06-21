@@ -148,5 +148,5 @@ void WorkersManager::sendOperation(QString workerName, int operation_type)
     int sender_id = workers[workerName]->getAlarmId();
     workersState.remove(sender_id);
     workersError.remove(sender_id);
-    this->setShowAlarmDialog(false);
+    //this->setShowAlarmDialog(false);
 }

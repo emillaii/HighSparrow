@@ -15,10 +15,10 @@ void SutClient::Init(XtVacuum *sut_vacuum)
     this->sut_vacuum = sut_vacuum;
 }
 
-bool SutClient::sendSensorRequest(bool &is_run,bool has_product, bool has_ng_sensor)
+bool SutClient::sendSensorRequest(bool &is_run,int material_type)
 {
-    this->has_product = has_product;
-    this->has_ng_sennsor = has_ng_sensor;
+    this->curren_type = material_type;
+    qInfo("curren_type %d",curren_type);
     QJsonObject obj;
     obj.insert("cmd", "sensorReq");
     QString jsonString = getStringFromJsonObject(obj);
@@ -45,12 +45,17 @@ void SutClient::receiveMessage(QString message)
         isValid = true;
         qInfo("AA Head need to pick sensor");
         be_comuniting = true;
-        if(has_product)
+        if(curren_type == MaterialType::GOOD_PRODUCT)
         {
             qInfo("pickarm unload prooduct");
             obj.insert("cmd", "unloadProductReq");
         }
-        else if(has_ng_sennsor)
+        else if(curren_type == MaterialType::NG_PRODUCT)
+        {
+            qInfo("pickarm unload ng prooduct");
+            obj.insert("cmd", "unloadNgProductReq");
+        }
+        else if(curren_type == MaterialType::NG_SENSOR)
         {
             qInfo("pickarm take ng sensor");
             obj.insert("cmd", "unloadNgSensorReq");
@@ -60,7 +65,7 @@ void SutClient::receiveMessage(QString message)
             qInfo("pickarm place sensor");
             obj.insert("cmd", "loadSensorReq");
         }
-    } else if (event == "unloadProductResp"||event == "unloadNgSensorResp") {
+    } else if (event == "unloadNgProductResp"||event == "unloadProductResp"||event == "unloadNgSensorResp") {
         isValid = true;
         qInfo("pickarm place sensor");
         obj.insert("cmd", "loadSensorReq");

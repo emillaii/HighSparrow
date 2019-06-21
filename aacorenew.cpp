@@ -69,6 +69,41 @@ void AACoreNew::run(bool has_material)
     qInfo("End of thread");
 }
 
+void AACoreNew::LogicNg(int &ng_time)
+{
+    if(has_product)
+    {
+        has_ng_product = true;
+        has_product = false;
+        return;
+    }
+    if(parameters.firstRejectSensor())
+    {
+        if(ng_time >= parameters.rejectTimes())
+        {
+            ng_time = 0;
+            has_ng_lens = true;
+        }
+        else
+        {
+            has_ng_sensor = true;
+            ng_time++;
+        }
+    }
+    else
+    {
+        if(ng_time >= parameters.rejectTimes())
+        {
+            ng_time = 0;
+            has_ng_sensor = true;
+        }
+        else
+        {
+            has_ng_lens = true;
+            ng_time++;
+        }
+    }
+}
 void AACoreNew::startWork( int run_mode)
 {
     if (run_mode == RunMode::Normal) run(true);
@@ -80,7 +115,7 @@ void AACoreNew::startWork( int run_mode)
         loopTestResult = "";
         loopTestResult.append("CC, UL,UR,LL,LR,\n");
         while (is_run) {
-            performMTF(true);
+            performMTF(true,true);
             QThread::msleep(200);
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
@@ -126,11 +161,18 @@ void AACoreNew::resetLogic()
 {
     if(is_run)return;
     has_product = false;
+    has_ng_product = false;
     has_ng_lens = false;
     has_ng_sensor = false;
     has_sensor = false;
     has_lens = false;
-    is_wait_sensor = false;
+    aa_head->receive_sensor = false;
+    aa_head->waiting_sensor = false;
+    aa_head->receive_lens = false;
+    aa_head->waiting_lens = false;
+    current_aa_ng_time = 0;
+    current_oc_ng_time = 0;
+    current_mtf_ng_time = 0;
 }
 
 bool AACoreNew::runFlowchartTest()
@@ -406,7 +448,7 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
 ErrorCodeStruct AACoreNew::performDispense()
 {
     qInfo("Performing Dispense");
-    has_product = true;
+    has_ng_product = true;
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     sut->recordCurrentPos();
@@ -420,6 +462,8 @@ ErrorCodeStruct AACoreNew::performDispense()
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
     qInfo("Finish Dispense");
+    has_product = true;
+    has_ng_product = false;
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
@@ -431,8 +475,6 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
                                    double estimated_fov_slope, double zOffset)
 {
     qInfo("Performing AA");
-    has_ng_lens = true;
-    has_ng_sensor = true;
     QVariantMap map, dfovMap;
     QElapsedTimer timer; timer.start();
     qInfo("start: %f stop: %f step_size: %f", start, stop, step_size);
@@ -487,6 +529,7 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
         dfovMap.insert("-1", dfov);
         if (dfov <= -1) {
             qInfo("Cannot find the target FOV!");
+            LogicNg(current_aa_ng_time);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
         }
         double estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
@@ -494,10 +537,12 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
         qInfo("The estimated target z is: %f dfov is%f", target_z, dfov);
         if (target_z >= stop) {
             qInfo("The estimated target is too large. value: %f", target_z);
+            LogicNg(current_aa_ng_time);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};;
         }
         if (target_z <= start-1) {
             qInfo("The estimated target is too small. value: %f", target_z);
+            LogicNg(current_aa_ng_time);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
         }
         sut->moveToZPos(target_z);
@@ -530,6 +575,7 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
 
             if (dfov <= -1) {
                 qInfo("Cannot find the target FOV!");
+                LogicNg(current_aa_ng_time);
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
             }
             xsum=xsum+currPos.Z;                        //calculate sigma(xi)
@@ -555,12 +601,14 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
     if (timeout <= 0) {
         qInfo("Error in performing AA: %d", timeout);
         clustered_sfr_map.clear();
+        LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
     }
 
     if (zScanCount < 6) {
         qInfo("Error in performing AA due to insufficient.");
         clustered_sfr_map.clear();
+        LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
     }
 
@@ -571,7 +619,7 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
     sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak, dev);
     clustered_sfr_map.clear();
     qInfo("xTilt: %f yTilt: %f zPeak: %f", xTilt, yTilt, zPeak);
-    QThread::msleep(zSleepInMs);
+//    QThread::msleep(zSleepInMs);
     qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
     //aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
     //aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
@@ -592,8 +640,7 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
     map.insert("timeElapsed", timer.elapsed());
     map.insert("DFOV", dfovMap);
     emit pushDataToUnit(runningUnit, "AA", map);
-    has_ng_lens = false;
-    has_ng_sensor = false;
+
     qInfo("Finish AA");
     return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
@@ -847,6 +894,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     map.insert("DFOV", fov);
     if (fov == -1) {
         qInfo("Error in calculating fov");
+        LogicNg(current_mtf_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     } else {
         qInfo("DFOV :%f", fov);
@@ -859,6 +907,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     }
     if (timeout <= 0) {
         qInfo("Error in performing MTF: %d", timeout);
+        LogicNg(current_mtf_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     vector<Sfr_entry> sfr_entry = clustered_sfr_map.at(0);
@@ -900,41 +949,64 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     double lr_min_sfr = params["LR"].toDouble(-1);
     double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
 
-    map.insert("CC_C", cc_min_sfr);
-    map.insert("UR_C", ul_min_sfr);
-    map.insert("UL_C", ur_min_sfr);
-    map.insert("LR_C", lr_min_sfr);
-    map.insert("LL_C", ll_min_sfr);
+    map.insert("CC_CHECK", cc_min_sfr);
+    map.insert("UR_CHECK", ul_min_sfr);
+    map.insert("UL_CHECK", ur_min_sfr);
+    map.insert("LR_CHECK", lr_min_sfr);
+    map.insert("LL_CHECK", ll_min_sfr);
     map.insert("SFR_MAX_TOL", sfr_dev_tol);
 
     bool sfr_check = true;
-    if (sfr_entry[ccROIIndex].sfr < cc_min_sfr) {
+    if (sfr_entry[ccROIIndex].t_sfr < cc_min_sfr ||
+        sfr_entry[ccROIIndex].r_sfr < cc_min_sfr ||
+        sfr_entry[ccROIIndex].b_sfr < cc_min_sfr ||
+        sfr_entry[ccROIIndex].l_sfr < cc_min_sfr) {
        qInfo("cc cannot pass");
        sfr_check = false;
     }
-    if (sfr_entry[urROIIndex].sfr < ur_min_sfr) {
+    if (sfr_entry[urROIIndex].t_sfr < ur_min_sfr ||
+        sfr_entry[urROIIndex].r_sfr < ur_min_sfr ||
+        sfr_entry[urROIIndex].b_sfr < ur_min_sfr ||
+        sfr_entry[urROIIndex].l_sfr < ur_min_sfr) {
        qInfo("ur cannot pass");
        sfr_check = false;
     }
-    if (sfr_entry[ulROIIndex].sfr < ul_min_sfr) {
+    if (sfr_entry[ulROIIndex].t_sfr < ul_min_sfr ||
+        sfr_entry[ulROIIndex].r_sfr < ul_min_sfr ||
+        sfr_entry[ulROIIndex].b_sfr < ul_min_sfr ||
+        sfr_entry[ulROIIndex].l_sfr < ul_min_sfr) {
        qInfo("ul cannot pass");
        sfr_check = false;
     }
-    if (sfr_entry[lrROIIndex].sfr < lr_min_sfr) {
+    if (sfr_entry[lrROIIndex].t_sfr < lr_min_sfr ||
+        sfr_entry[lrROIIndex].r_sfr < lr_min_sfr ||
+        sfr_entry[lrROIIndex].b_sfr < lr_min_sfr ||
+        sfr_entry[lrROIIndex].l_sfr < lr_min_sfr) {
        qInfo("lr cannot pass");
        sfr_check = false;
     }
-    if (sfr_entry[llROIIndex].sfr < ll_min_sfr) {
+    if (sfr_entry[llROIIndex].t_sfr < ll_min_sfr ||
+        sfr_entry[llROIIndex].r_sfr < ll_min_sfr ||
+        sfr_entry[llROIIndex].b_sfr < ll_min_sfr ||
+        sfr_entry[llROIIndex].l_sfr < ll_min_sfr) {
        qInfo("ll cannot pass");
        sfr_check = false;
     }
 
     std::vector<double> sfr_v;
-    sfr_v.push_back(sfr_entry[ccROIIndex].sfr);
-    sfr_v.push_back(sfr_entry[urROIIndex].sfr);
-    sfr_v.push_back(sfr_entry[ulROIIndex].sfr);
-    sfr_v.push_back(sfr_entry[lrROIIndex].sfr);
-    sfr_v.push_back(sfr_entry[llROIIndex].sfr);
+    for (int i = 0; i < 4; i++) {
+        unsigned int index = 0;
+        if (i == 0) index = urROIIndex;
+        if (i == 1) index = ulROIIndex;
+        if (i == 2) index = lrROIIndex;
+        if (i == 3) index = llROIIndex;
+        sfr_v.push_back(sfr_entry[index].sfr);
+        sfr_v.push_back(sfr_entry[index].sfr);
+        sfr_v.push_back(sfr_entry[index].sfr);
+        sfr_v.push_back(sfr_entry[index].sfr);
+        sfr_v.push_back(sfr_entry[index].sfr);
+    }
+
     std::sort(sfr_v.begin(), sfr_v.end());
     double max_sfr_deviation = fabs(sfr_v[0] - sfr_v[sfr_v.size()-1]);
     if (max_sfr_deviation >= sfr_dev_tol) {
@@ -960,11 +1032,38 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     map.insert("SUT_Z", sutPosition.Z);
     map.insert("OC_X", sfr_entry[ccROIIndex].px - imageWidth/2);
     map.insert("OC_Y", sfr_entry[ccROIIndex].py - imageHeight/2);
+
     map.insert("CC_SFR", sfr_entry[ccROIIndex].sfr);
+    map.insert("CC_SFR_1", sfr_entry[ccROIIndex].t_sfr);
+    map.insert("CC_SFR_2", sfr_entry[ccROIIndex].r_sfr);
+    map.insert("CC_SFR_3", sfr_entry[ccROIIndex].b_sfr);
+    map.insert("CC_SFR_4", sfr_entry[ccROIIndex].l_sfr);
+
     map.insert("UR_SFR", sfr_entry[urROIIndex].sfr);
+    map.insert("UR_SFR_1", sfr_entry[urROIIndex].t_sfr);
+    map.insert("UR_SFR_2", sfr_entry[urROIIndex].r_sfr);
+    map.insert("UR_SFR_3", sfr_entry[urROIIndex].b_sfr);
+    map.insert("UR_SFR_4", sfr_entry[urROIIndex].l_sfr);
+
     map.insert("UL_SFR", sfr_entry[ulROIIndex].sfr);
+    map.insert("UL_SFR_1", sfr_entry[ulROIIndex].t_sfr);
+    map.insert("UL_SFR_2", sfr_entry[ulROIIndex].r_sfr);
+    map.insert("UL_SFR_3", sfr_entry[ulROIIndex].b_sfr);
+    map.insert("UL_SFR_4", sfr_entry[ulROIIndex].l_sfr);
+
     map.insert("LR_SFR", sfr_entry[lrROIIndex].sfr);
+    map.insert("LR_SFR_1", sfr_entry[lrROIIndex].t_sfr);
+    map.insert("LR_SFR_2", sfr_entry[lrROIIndex].r_sfr);
+    map.insert("LR_SFR_3", sfr_entry[lrROIIndex].b_sfr);
+    map.insert("LR_SFR_4", sfr_entry[lrROIIndex].l_sfr);
+
     map.insert("LL_SFR", sfr_entry[llROIIndex].sfr);
+    map.insert("LL_SFR_1", sfr_entry[llROIIndex].t_sfr);
+    map.insert("LL_SFR_2", sfr_entry[llROIIndex].r_sfr);
+    map.insert("LL_SFR_3", sfr_entry[llROIIndex].b_sfr);
+    map.insert("LL_SFR_4", sfr_entry[llROIIndex].l_sfr);
+
+    map.insert("Sensor_ID", dk->readSensorID());
     map.insert("SFR_CHECK", sfr_check);
     map.insert("DFOV", fov);
     map.insert("timeElapsed", timer.elapsed());
@@ -988,6 +1087,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     if (sfr_check) {
         return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
+        LogicNg(current_mtf_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
@@ -1033,11 +1133,9 @@ ErrorCodeStruct AACoreNew::performAccept()
     Sleep(100);
     imageThread->exit();
     dk->DothinkeyClose();
-    has_product = true;
-    has_ng_lens = false;
-    has_ng_sensor = false;
-    has_sensor = false;
-    has_lens = false;
+    current_aa_ng_time = 0;
+    current_oc_ng_time = 0;
+    current_mtf_ng_time = 0;
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -1067,7 +1165,11 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
                                                                         llIndex, lrIndex);
         ocImageProvider_1->setImage(outImage);
         emit callQmlRefeshImg(1);
-        if( vector.size()<1 || ccIndex > 9 ) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
+        if( vector.size()<1 || ccIndex > 9 )
+        {
+            LogicNg(current_oc_ng_time);
+            return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
+        }
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
         offsetY = vector[ccIndex].center.y() - (vector[ccIndex].height/2);
         qInfo("OC OffsetX: %f %f", offsetX, offsetY);
@@ -1075,7 +1177,11 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
         map.insert("OC_OFFSET_Y_IN_PIXEL", offsetY);
     } else {
         QImage outImage; QPointF center;
-        if (!AA_Helper::calculateOC(img, center, outImage)) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
+        if (!AA_Helper::calculateOC(img, center, outImage))
+        {
+            LogicNg(current_oc_ng_time);
+            return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
+        }
         ocImageProvider_1->setImage(outImage);
         emit callQmlRefeshImg(1);
         offsetX = center.x() - img.cols/2;
@@ -1095,6 +1201,7 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
             qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
+            LogicNg(current_oc_ng_time);
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
         }
         this->sut->stepMove_XY_Sync(-stepX, -stepY);
@@ -1116,15 +1223,19 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     const int channel = 0;
     bool res = dk->DothinkeyEnum();
     if (!res) { qCritical("Cannot find dothinkey"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
-    dk->DothinkeyOpen();
+    res = dk->DothinkeyOpen();
     map.insert("dothinkeyOpen", stepTimer.elapsed()); stepTimer.restart();
     if (!res) { qCritical("Cannot open dothinkey"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
-    dk->DothinkeyLoadIniFile(channel);
+    res = dk->DothinkeyLoadIniFile(channel);
     map.insert("dothinkeyLoadIniFile", stepTimer.elapsed()); stepTimer.restart();
     if (!res) { qCritical("Cannot load dothinkey ini file"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
-    dk->DothinkeyStartCamera(channel);
+    res = dk->DothinkeyStartCamera(channel);
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
     if (!res) { qCritical("Cannot start camera"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+
+    QString sensorID = dk->readSensorID();
+    qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());
+    map.insert("sensorID", sensorID);
     if (!imageThread->isRunning())
         imageThread->start();
     map.insert("timeElapsed", timer.elapsed());
@@ -1163,17 +1274,18 @@ ErrorCodeStruct AACoreNew::performPRToBond()
 
 ErrorCodeStruct AACoreNew::performAAPickLens()
 {
+    QElapsedTimer timer; timer.start();
+    QVariantMap map;
     if (!this->sut->moveToReadyPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to ready Pos"};}
     if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
     if(aa_head->receive_sensor)
     {
-        qInfo("wait sensor suceess");
+        qInfo("has wait sensor suceess");
         has_sensor = true;
         has_ng_sensor = false;
-        is_wait_sensor = false;
         aa_head->receive_sensor = false;
     }
-    if((!has_sensor)&&(!is_wait_sensor))
+    if((!has_sensor))
     {
         qInfo("need sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
         if(has_product)
@@ -1182,10 +1294,10 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
             aa_head->sendSensrRequest(SUT_STATE::HAS_NG_SENSOR);
         else
             aa_head->sendSensrRequest(SUT_STATE::NO_MATERIAL);
-        is_wait_sensor = true;
     }
     if(aa_head->receive_lens)
     {
+        qInfo("has wait lens suceess");
         has_lens = true;
         has_ng_lens = false;
         aa_head->receive_lens = false;
@@ -1220,7 +1332,7 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
             qInfo("wait sensor suceess");
             has_sensor = true;
             has_ng_sensor = false;
-            is_wait_sensor = false;
+            aa_head->receive_sensor = false;
             aa_head->receive_sensor = false;
         }
         else
@@ -1235,6 +1347,8 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
         }
     }
     has_product = false;
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(this->runningUnit, "AA_Load_Material", map);
     qInfo("Done Pick Lens");
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }

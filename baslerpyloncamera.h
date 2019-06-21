@@ -1,4 +1,4 @@
-#ifndef BASLERCAMERA_H
+﻿#ifndef BASLERCAMERA_H
 #define BASLERCAMERA_H
 
 #include <QObject>
@@ -28,12 +28,20 @@ public:
     void switchCameraChannel();
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 
+    QImage getNewImage();
+
+    bool is_triged = false;
+    bool got_new = false;
+    bool need_triged = false;
+
+
 protected:
     void run() override;
     void OnImageGrabbed(CInstantCamera&, const CGrabResultPtr&) override;
 private:
     CInstantCamera camera;
     QMutex mutex;
+    QMutex trig_mutex;
     bool isGrabbing;
     bool isReady;
     QString cameraChannelName;

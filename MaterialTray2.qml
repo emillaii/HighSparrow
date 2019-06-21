@@ -101,7 +101,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
 
                         if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmMoveToTray2Pos()
@@ -197,7 +197,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
 
                         if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmVacancyTrayPR()
@@ -215,7 +215,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
 
                         if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmMoveToPlaceLensToTray2()
@@ -234,7 +234,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
                         //6232
                         sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY
                                                            +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET

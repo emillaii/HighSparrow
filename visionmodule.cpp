@@ -64,7 +64,8 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
         qInfo("camera grabbing fail %s", cameraName.toStdString().c_str());
         return false;
     }
-    QPixmap p = QPixmap::fromImage(camera->getImage());
+    //QPixmap p = QPixmap::fromImage(camera->getImage());
+    QPixmap p = QPixmap::fromImage(camera->getNewImage());
     QImage q2 = p.toImage();
     q2 = q2.convertToFormat(QImage::Format_RGB888);
     avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
@@ -187,7 +188,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             if(!this->grabImageFromCamera(camera_name, image1)) {
                 qInfo("grabImageFromCamera fail %s", camera_name.toStdString().c_str());
                 qInfo("Retry PR");
-                Sleep(100);
+                QThread::msleep(250);
             } else {
                 qInfo("PR OK");
                 avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );

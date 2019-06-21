@@ -8,7 +8,7 @@
 #include "xtmotor.h"
 #include "VCM_init_Struct.h"
 #include "xtvcmotorparameter.h"
-
+#include <QMutex>
 struct VCM_Parameter_struct
 {
     double MaxVel;
@@ -22,6 +22,8 @@ struct VCM_Parameter_struct
 };
 
 Q_DECLARE_TYPEINFO(VCM_Resource_struct, Q_PRIMITIVE_TYPE);
+
+
 
 class XtVcMotor : public XtMotor
 {
@@ -88,11 +90,14 @@ public:
 
     static QVector<VCM_Resource_struct> all_parameter;
     static void InitAllVCM();
+
+    static QMutex g_mutex;
+    static QMutex setSoftLanding_mutex;
+
 public:
     VcMotorParameter parameters;
 private:
     bool direction_is_opposite;
-
     int vcm_id;
     bool is_softlanding = false;
     bool is_softlanded = false;

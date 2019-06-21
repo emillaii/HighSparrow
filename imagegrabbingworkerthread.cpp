@@ -93,7 +93,9 @@ void ImageGrabbingWorkerThread::saveImage()
     QString imageName;
     imageName.append(getGrabberLogDir())
                     .append(getCurrentTimeString())
-                    .append(".jpg");
+                    .append(".bmp");
+    QImage* newImage =  dk->DothinkeyGrabImage(0);
+    newImage->save(imageName);
     locker.unlock();
     this->latestImage.save(imageName);
 }

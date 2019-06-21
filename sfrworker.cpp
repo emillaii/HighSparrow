@@ -157,21 +157,21 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     if (!isURIndexFound) {
         qInfo("Cannot find UR Index");
         Sfr_entry sfr_entry(patterns[urIndex].center.x(), patterns[urIndex].center.y(),
-                            z, 0, patterns[urIndex].area);
+                            z, 0, patterns[urIndex].area,0,0,0,0);
         sfr_v.push_back(sfr_entry);
     }
     if (!isULIndexFound) {
 
         qInfo("Cannot find UL Index");
         Sfr_entry sfr_entry(patterns[ulIndex].center.x(), patterns[ulIndex].center.y(),
-                            z, 0, patterns[ulIndex].area);
+                            z, 0, patterns[ulIndex].area,0,0,0,0);
         sfr_v.push_back(sfr_entry);
     }
     if (!isLRIndexFound) {
 
         qInfo("Cannot find LR Index sfr_v size: %d", sfr_v.size());
         Sfr_entry sfr_entry(patterns[lrIndex].center.x(), patterns[lrIndex].center.y(),
-                            z, 0, patterns[lrIndex].area);
+                            z, 0, patterns[lrIndex].area,0,0,0,0);
         sfr_v.push_back(sfr_entry);
 
         qInfo("Cannot find LR Index sfr_v size: %d", sfr_v.size());
@@ -180,7 +180,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
 
         qInfo("Cannot find LL Index");
         Sfr_entry sfr_entry(patterns[llIndex].center.x(), patterns[llIndex].center.y(),
-                            z, 0, patterns[llIndex].area);
+                            z, 0, patterns[llIndex].area,0,0,0,0);
         sfr_v.push_back(sfr_entry);
     }
 
@@ -198,7 +198,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     {
          int radius = 2;
          CvFont font;
-         cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 2, 2, 5, 3);
+         cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 5, 5, 5, 8);
          for (unsigned int i = 0; i < sfr_v.size(); i++){
             double x = sfr_v[i].px;
             double y = sfr_v[i].py;
@@ -208,7 +208,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
             QString score_str = QString::number(sfr_v[i].sfr);
             if (score_str.size() > 5)
                 score_str = score_str.remove(5, score_str.size());
-            cv::putText(image, score_str.toStdString(), centroid_shift, cv::FONT_HERSHEY_SIMPLEX, 2.5, cv::Scalar(255, 0,255), 3);
+            cv::putText(image, score_str.toStdString(), centroid_shift, cv::FONT_HERSHEY_SIMPLEX, 6, cv::Scalar(255, 0,255), 8);
          }
         QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(image);
         emit imageReady(std::move(qImage));
@@ -232,7 +232,7 @@ SfrWorkerController::SfrWorkerController(AACoreNew *a)
    worker->roi_ratio = a->parameters.ROIRatio();
    qInfo("Min Area: %d Max Area: %d Max I: %d Roi Ratio: %f", a->parameters.MinArea(), a->parameters.MaxArea(), a->parameters.MaxIntensity(), a->parameters.ROIRatio());
    worker->moveToThread(&workerThread);
-   connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
+//   connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
    connect(this, &SfrWorkerController::calculate, worker, &SfrWorker::doWork);
    connect(worker, &SfrWorker::imageReady, aaCore_, &AACoreNew::sfrImageReady, Qt::DirectConnection);
    connect(worker, &SfrWorker::sfrResultsReady, aaCore_, &AACoreNew::sfrResultsReady, Qt::DirectConnection);

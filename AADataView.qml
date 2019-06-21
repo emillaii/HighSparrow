@@ -39,6 +39,13 @@ Grid {
             source: "icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
+            Label {
+                id: sensorIDLabel
+                text: qsTr("SensorID: ") + dothinkey.currentSensorID
+                background: Rectangle {
+                    color: "black"
+                }
+            }
         }
         Connections {
             target: imageGrabberThread

@@ -257,6 +257,7 @@ void AAHeadModule::receiveLensFromLut(double offset_x, double offset_y, double o
     this->uplook_x = offset_x;
     this->uplook_y = offset_y;
     this->uplook_theta = offset_theta;
+    receive_lens = true;
     waiting_lens = false;
     receive_lens = true;
 }
@@ -267,6 +268,7 @@ void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double
     this->offset_x = offset_x;
     this->offset_y = offset_y;
     this->offset_theta = offset_theta;
+    receive_sensor = true;
     waiting_sensor = false;
     receive_sensor = true;
 }

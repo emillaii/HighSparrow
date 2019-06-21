@@ -53,6 +53,7 @@ void writeFile(QString data, QString dir, QString filename)
 QJsonObject getJsonObjectFromString(const QString jsonString){
     QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonString.toLocal8Bit().data());
     if( jsonDocument.isNull() ){
+        qInfo("please check the string");
         qDebug()<< "===> please check the string "<< jsonString.toLocal8Bit().data();
     }
     QJsonObject jsonObject = jsonDocument.object();

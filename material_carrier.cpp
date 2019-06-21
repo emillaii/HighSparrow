@@ -51,7 +51,7 @@ bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool ch
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-    Sleep(300);
+    QThread::msleep(300);
     return result;
 }
 
@@ -76,7 +76,7 @@ bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool ch
     result = motor_y->MoveToPosSync(y);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-    Sleep(300);
+//    QThread::msleep(300);
     return result;
 }
 
@@ -138,12 +138,17 @@ void MaterialCarrier::Move_XY_ToPos(double x, double y)
 
 bool MaterialCarrier::ZSerchByForce(const double speed,const double force,const double search_limit,const int vacuum_state,XtVacuum* excute_vacuum)
 {
+    qInfo("ZSerchByForce Start");
     if(nullptr != excute_vacuum)vacuum = excute_vacuum;
+    qInfo("CP 1");
     bool result  = motor_z->SearchPosByForce(speed,force);
+        qInfo("CP 2");
     if(!result)
     {
         motor_z->resetSoftLanding();
+            qInfo("CP 3");
         motor_z->RestoreForce();
+            qInfo("CP 4");
     }
 //    if(result && vacuum_state > -1&&vacuum != nullptr)
 //        result &= vacuum->Set(vacuum_state > 0);

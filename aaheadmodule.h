@@ -66,13 +66,11 @@ public:
     Position6D mushroom_position;
     bool waiting_lens = false;
     bool receive_lens = false;
-    bool receive_lens;
     double uplook_x = 0;
     double uplook_y = 0;
     double uplook_theta = 0;
     bool waiting_sensor = false;
     bool receive_sensor = false;
-    bool receive_sensor;
     double offset_x = 0;
     double offset_y = 0;
     double offset_theta = 0;

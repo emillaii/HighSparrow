@@ -1323,7 +1323,7 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"};
         }
     }
-    if(is_wait_sensor)
+    if(!has_sensor)
     {
         qInfo("wait sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
         aa_head->waitForLoadSensor(is_run);
@@ -1332,7 +1332,6 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
             qInfo("wait sensor suceess");
             has_sensor = true;
             has_ng_sensor = false;
-            aa_head->receive_sensor = false;
             aa_head->receive_sensor = false;
         }
         else

@@ -95,6 +95,7 @@ public:
 
     //new motions
     bool move_XY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
+    bool move_XmY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XYT1_Synic(const double step_x,const double step_y,const double step_t1,const bool check_softlanding = false,int timeout = 10000);
     bool ZSerchByForce(int picker,double speed,double force,bool check_softlanding = false,int timeout = 10000);
     bool ZSerchByForce(int picker,double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);

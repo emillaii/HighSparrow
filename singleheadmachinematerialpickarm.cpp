@@ -303,6 +303,20 @@ bool SingleHeadMachineMaterialPickArm::move_XY_Synic(const QPointF position, con
     return result;
 }
 
+bool SingleHeadMachineMaterialPickArm::move_XmY_Synic(const QPointF position, const bool check_softlanding, int timeout)
+{
+    if(check_softlanding)
+    {
+        if(!motor_vcm1->resetSoftLanding(timeout))return false;
+        if(!motor_vcm2->resetSoftLanding(timeout))return false;
+    }
+    motor_vcmx->MoveToPos(position.x());
+    motor_y->MoveToPos(position.y());
+    bool result = motor_vcmx->WaitArrivedTargetPos(position.x(),timeout);
+    result &= motor_y->WaitArrivedTargetPos(position.y(),timeout);
+    return result;
+}
+
 bool SingleHeadMachineMaterialPickArm::stepMove_XYT1_Synic(const double step_x, const double step_y, const double step_t1, const bool check_softlanding, int timeout)
 {
     if(check_softlanding)

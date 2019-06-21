@@ -985,7 +985,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSUTPRPos(bool is_local, bool c
 {
     qInfo("moveToSUTPRPos is_local %d",is_local);
     bool result;
-    result =  pick_arm->move_XY_Synic(sut_pr_position.ToPointF(),check_softlanding);
+    result =  pick_arm->move_XmY_Synic(sut_pr_position.ToPointF(),check_softlanding);
     if(!result)
         AppendError(QString("移动SPA到SUT位置失败%1").arg(is_local));
     return result;

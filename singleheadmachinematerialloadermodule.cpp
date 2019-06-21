@@ -1282,6 +1282,11 @@ bool SingleHeadMachineMaterialLoaderModule::performLensPickerPR()
     return lpa_picker_vision->performPR(pr_offset);
 }
 
+bool SingleHeadMachineMaterialLoaderModule::performNGLensPR()
+{
+    return lut_lens_vision->performPR(pr_offset);
+}
+
 bool SingleHeadMachineMaterialLoaderModule::moveToLPAWorkPos(bool check_softlanding)
 {
     PrOffset temp(lens_suction_offset.X() - pr_offset.X,lens_suction_offset.Y() - pr_offset.Y,0);
@@ -1537,6 +1542,11 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
         result = performLensPR();
     }
         break;
+    case NG_LENS_PR:
+    {
+        qInfo("perform ng lens PR, cmd: %d",NG_LENS_PR);
+        result = performNGLensPR();
+    }
     case LENS_VACANCY_PR:
     {
         qInfo("perform lens tray vacancy PR,cmd: %d",LENS_VACANCY_PR);

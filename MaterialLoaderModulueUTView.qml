@@ -1,7 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
-import SomeLib 1.0
+import SingleHeadMaterialLoaderLib 1.0
 ColumnLayout {
     GroupBox{
         title:qsTr("sut_pr_position")
@@ -41,6 +41,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
 //                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_POS);
                     }
                 }
                 Button{
@@ -52,6 +53,135 @@ ColumnLayout {
                         var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
                         sh_sut_pr_position.setX(x);
                         sh_sut_pr_position.setY(y);
+                    }
+                }
+            }
+            RowLayout{
+                Label{
+                    text:qsTr("ng sensor高度")
+                }
+                TextField{
+                    text:materialPickArmParams.placeSensorZ//sensorLoaderParameter.placeSensorZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        //sensorLoaderParameter.setPlaceSensorZ(text)
+                        materialPickArmParams.setPlaceSensorZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("NG Sensor视觉")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.NG_SENSOR_PR)
+                    }
+                }
+            }
+            RowLayout{
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_NG_SENSOR_IN_SUT)
+                    }
+                }
+                Button{
+                    text:qsTr("移动吸头")
+                    width:40
+                    height:40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TO_PICK)
+                    }
+                }
+            }
+            RowLayout{
+                Label{
+                    text:qsTr("product高度")
+                }
+                TextField{
+                    text:materialPickArmParams.pickProductZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialPickArmParams.setPickProductZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("Product视觉")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PRODUCT_PR)
+                    }
+                }
+            }
+            RowLayout{
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        //sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_PRODUCT_IN_SUT1)
+                        MaterialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_PRODUCT_IN_SUT)
+                    }
+                }
+                Button{
+                    text:qsTr("移动吸头")
+                    width:40
+                    height:40
+                    onClicked: {
+                        MaterialLoaderModule.performHandling(MaterialLoaderModule.LPA_TO_WORK)
+                    }
+                }
+            }
+            RowLayout{
+                Label{
+                    text:qsTr("sut高度")
+                }
+                TextField{
+                    text:materialPickArmParams.pickNgSensorZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialPickArmParams.setPickNgSensorZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("SUT视觉")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR)
+                    }
+                }
+            }
+            RowLayout{
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        //sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT1)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_SENSOR_IN_SUT)
+                    }
+                }
+                Button{
+                    text:qsTr("移动吸头")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TO_PICK)
                     }
                 }
             }
@@ -95,6 +225,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
 //                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_POS);
                     }
                 }
                 Button{
@@ -110,8 +241,64 @@ ColumnLayout {
                     }
                 }
             }
+            RowLayout{
+                Label{
+                    text:qsTr("放Lens高度")
+                }
+                TextField{
+                    text:materialPickArmParams.placeLensZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialPickArmParams.setPlaceLensZ()
+                    }
+                }
+                Button{
+                    text:qsTr("LUT 视觉")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_PR)
+                    }
+                }
+                Button{
+                    text:qsTr("NG LENS 视觉")
+                    width:40
+                    height:40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.NG_LENS_PR)
+                    }
+                }
 
-
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        //sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT1)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_LENS_IN_LUT)
+                    }
+                }
+            }
+            RowLayout{
+                Label{
+                    text:qsTr("Lens 角度")
+                }
+                TextField{
+                    text:materialPickArmParams.placeLensTheta
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialPickArmParams.setPlaceLensTheta(text)
+                    }
+                }
+            }
         }
     }
     GroupBox{

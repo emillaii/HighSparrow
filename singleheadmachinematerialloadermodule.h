@@ -45,6 +45,7 @@ public:
         LUT_PR = 9<<6,
         UPDOWNLOOK_DOWN_PR = 10<<6,
         LENS_PICKER_PR = 11<<6,
+        NG_LENS_PR = 12<<6,
 
         HANDLE_PR = (1<<11) - (1<<6)
     };
@@ -193,6 +194,7 @@ private:
     bool performLensVacancyPR();
     bool performLUTPR();
     bool performLensPickerPR();
+    bool performNGLensPR();
 
     bool moveToLPAWorkPos(bool check_softlanding = false);
     bool moveToLPAPrOffset(bool check_softlanding = false);

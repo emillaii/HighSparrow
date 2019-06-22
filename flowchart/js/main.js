@@ -204,6 +204,11 @@ $(document).ready(function () {
 	  $mtf_table.hide();
       return true;
     },
+	onOperatorCreate: function (operatorId, operatorData, fullElement) {
+		console.log(operatorId);
+		operatorI++;
+		return true;
+	},
     onLinkSelect: function (linkId) {
       return true;
     },
@@ -267,7 +272,6 @@ $(document).ready(function () {
         }
       }
     };
-    operatorI++;
     console.log("Create operator");
     $flowchart.flowchart('createOperator', operatorId, operatorData);
     if (operatorId.includes("AA_")) {
@@ -312,7 +316,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     console.log("Create operator");
     $flowchart.flowchart('createOperator', operatorId, operatorData);
     if (operatorId.includes("AA_")) {
@@ -357,7 +360,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
   
@@ -383,7 +385,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
   
@@ -409,7 +410,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
 
@@ -437,7 +437,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
 
@@ -455,7 +454,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
 
@@ -474,7 +472,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
 

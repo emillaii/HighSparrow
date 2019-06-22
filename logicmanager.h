@@ -1,4 +1,4 @@
-#ifndef LOGICMANAGER_H
+﻿#ifndef LOGICMANAGER_H
 #define LOGICMANAGER_H
 
 #include "basemodulemanager.h"

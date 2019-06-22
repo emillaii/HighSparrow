@@ -62,7 +62,6 @@ SOURCES += \
     workers_manager.cpp \
     thread_worker_base.cpp \
     materialtray.cpp \
-    unitlog.cpp \
     sparrowqserver.cpp \
     sparrowqclient.cpp \
     lenspickarm.cpp \
@@ -183,7 +182,6 @@ HEADERS += \
     workers_manager.h \
     thread_worker_base.h \
     materialtray.h \
-    unitlog.h \
     material_picker.h \
     traystandardsparameter.h \
     trayparameter.h \

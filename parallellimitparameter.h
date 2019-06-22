@@ -1,4 +1,4 @@
-#ifndef PARALLELLIMITPARAMETER_H
+﻿#ifndef PARALLELLIMITPARAMETER_H
 #define PARALLELLIMITPARAMETER_H
 
 #include "propertybase.h"

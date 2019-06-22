@@ -1,4 +1,4 @@
-#include "basemodulemanager.h"
+﻿#include "basemodulemanager.h"
 #include "machinestatemonitor.h"
 #include "commonutils.h"
 #include <QUuid>

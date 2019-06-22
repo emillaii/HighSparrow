@@ -1,4 +1,4 @@
-#include "workers_manager.h"
+﻿#include "workers_manager.h"
 
 #include <QMessageBox>
 

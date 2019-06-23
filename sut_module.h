@@ -80,7 +80,7 @@ private:
     mPoint3D record_position;
     PrOffset offset;
     bool is_run;
-    bool has_material;
+    bool has_material = true;
 
     int sut_state = 0;
     bool has_raw_sensor = false;

@@ -71,6 +71,16 @@ ColumnLayout {
                 lutPickLensPositionAA2.setZ(z)
             }
         }
+    }
+    RowLayout {
+        Button {
+            text: qsTr("去测高")
+            width: 40
+            height: 40
+            onClicked: {
+                lutModule.moveToAAMeasurePickHeight(false,true)
+            }
+        }
         Button {
             text: qsTr("Pick")
             width: 40

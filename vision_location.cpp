@@ -34,7 +34,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
         QPointF mech;
         QPointF mech_o;
         PrOffset temp_offset;
-        qInfo("Perform PR Success. PR_Result: %f %f %f", pr_result.x, pr_result.y, pr_result.theta);
+        qInfo("Perform PR Success. PR_Result: %f %f %f %f %f", pr_result.x, pr_result.y, pr_result.theta,pr_result.ori_x,pr_result.ori_y);
         if (!need_conversion) {
             offset.X = pr_result.x;
             offset.Y = pr_result.y;

@@ -34,7 +34,10 @@ public:
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
     Q_PROPERTY(double picker1ThetaOffset READ picker1ThetaOffset WRITE setPicker1ThetaOffset NOTIFY picker1ThetaOffsetChanged)
     Q_PROPERTY(double picker2ThetaOffset READ picker2ThetaOffset WRITE setPicker2ThetaOffset NOTIFY picker2ThetaOffsetChanged)
-
+    Q_PROPERTY(double pickProductForce READ pickProductForce WRITE setPickProductForce NOTIFY pickProductForceChanged)
+    Q_PROPERTY(bool useSensorOffset READ useSensorOffset WRITE setUseSensorOffset NOTIFY useSensorOffsetChanged)
+    Q_PROPERTY(double sensorOffsetX READ sensorOffsetX WRITE setSensorOffsetX NOTIFY sensorOffsetXChanged)
+    Q_PROPERTY(double sensorOffsetY READ sensorOffsetY WRITE setSensorOffsetY NOTIFY sensorOffsetYChanged)
 
     Q_PROPERTY(bool usePlan READ usePlan WRITE setUsePlan NOTIFY usePlanChanged)
     Q_PROPERTY(int planNumber READ planNumber WRITE setPlanNumber NOTIFY planNumberChanged)
@@ -171,6 +174,26 @@ public:
     double placeNgProductZ() const
     {
         return m_placeNgProductZ;
+    }
+
+    double pickProductForce() const
+    {
+        return m_pickProductForce;
+    }
+
+    bool useSensorOffset() const
+    {
+        return m_useSensorOffset;
+    }
+
+    double sensorOffsetX() const
+    {
+        return m_sensorOffsetX;
+    }
+
+    double sensorOffsetY() const
+    {
+        return m_sensorOffsetY;
     }
 
 public slots:
@@ -433,6 +456,45 @@ public slots:
         emit placeNgProductZChanged(m_placeNgProductZ);
     }
 
+    void setPickProductForce(double pickProductForce)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickProductForce, pickProductForce))
+            return;
+
+        m_pickProductForce = pickProductForce;
+        emit pickProductForceChanged(m_pickProductForce);
+    }
+
+    void setUseSensorOffset(bool useSensorOffset)
+    {
+        if (m_useSensorOffset == useSensorOffset)
+            return;
+
+        m_useSensorOffset = useSensorOffset;
+        emit useSensorOffsetChanged(m_useSensorOffset);
+    }
+
+    void setSensorOffsetX(double sensorOffsetX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_sensorOffsetX, sensorOffsetX))
+            return;
+
+        m_sensorOffsetX = sensorOffsetX;
+        emit sensorOffsetXChanged(m_sensorOffsetX);
+    }
+
+    void setSensorOffsetY(double sensorOffsetY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_sensorOffsetY, sensorOffsetY))
+            return;
+
+        m_sensorOffsetY = sensorOffsetY;
+        emit sensorOffsetYChanged(m_sensorOffsetY);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -489,6 +551,14 @@ signals:
 
     void placeNgProductZChanged(double placeNgProductZ);
 
+    void pickProductForceChanged(double pickProductForce);
+
+    void useSensorOffsetChanged(bool useSensorOffset);
+
+    void sensorOffsetXChanged(double sensorOffsetX);
+
+    void sensorOffsetYChanged(double sensorOffsetY);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -517,6 +587,10 @@ private:
     int m_planNumber = 0;
     double m_accumulatedHour = 0;
     double m_placeNgProductZ = 0;
+    double m_pickProductForce = 100;
+    bool m_useSensorOffset = false;
+    double m_sensorOffsetX = 4.8;
+    double m_sensorOffsetY = 0;
 };
 class SensorLoaderState:public PropertyBase
 {

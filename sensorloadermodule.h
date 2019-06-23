@@ -110,8 +110,8 @@ private:
 
     bool picker1SearchZ(double z,bool is_open = true,int time_out = 10000);
     bool picker1SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
-    bool picker2SearchZ(double z,bool is_open = true,int time_out = 10000);
-    bool picker2SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
+    bool picker2SearchZ(double z,double force,bool is_open = true,int time_out = 10000);
+    bool picker2SearchSutZ(double z,double force,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
 
     bool checkPickedSensor(bool check_state);
     bool checkPickedNgOrProduct(bool check_state);
@@ -137,6 +137,9 @@ private:
 
     void sendEvent(const QString event);
     void sendCmd(QString serving_ip,const QString cmd);
+
+    void getPicker1SensorOffset();
+    void getPicker2SensorOffset();
 public:
     SensorLoaderParameter parameters;
     SensorLoaderState states;
@@ -181,6 +184,7 @@ private:
     QString servingIP = "";
     bool isLocalHost = false;
     QTime time_label;
+    QMutex tcp_mutex;
 };
 
 #endif // SENSORLOADERMODULE_H

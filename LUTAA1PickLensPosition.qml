@@ -72,6 +72,20 @@ ColumnLayout {
         }
 
         Label {
+            text: qsTr("PickSpeed")
+        }
+        TextField {
+            text: lutParams.pickSpeed
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                lutParams.setPickSpeed(text)
+            }
+        }
+        Label {
             text: qsTr("PickForce")
         }
         TextField {
@@ -85,13 +99,52 @@ ColumnLayout {
                 lutParams.setPickForce(text)
             }
         }
+    }
+    RowLayout {
+        Label {
+            text: qsTr("Lens高度")
+        }
+        TextField {
+            text: lutParams.lensHeight
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                lutParams.setLensHeight(text)
+            }
+        }
+        Label {
+            text: qsTr("关爪时间")
+        }
+        TextField {
+            text: lutParams.gripperDelay
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                lutParams.setGripperDelay(text)
+            }
+        }
+    }
+    RowLayout {
+        Button {
+            text: qsTr("去测高")
+            width: 40
+            height: 40
+            onClicked: {
+                lutModule.moveToAAMeasurePickHeight(true,true)
+            }
+        }
         Button {
             text: qsTr("Pick")
             width: 40
             height: 40
             onClicked: {
                 logicManager.lutPickLensToAA1()
-//                lutModule.moveToAA1PickLens(false,true)
             }
         }
         Button {

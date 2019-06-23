@@ -79,20 +79,20 @@ void DispenseModule::moveToDispenseDot(bool record_z)
     if(carrier->ZSerchByForce(10,parameters.testForce()))
     {
         if(dispense_io != nullptr)
-        dispense_io->Set(true);
+            dispense_io->Set(true);
         else
             qInfo("dispense_io is null");
         Sleep(parameters.openTime());
+        if(dispense_io != nullptr)
+            dispense_io->Set(false);
         if(record_z){
             double zValue = carrier->GetFeedBackPos().Z;
             QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否应用此高度:%1").arg(zValue),QMessageBox::Yes|QMessageBox::No);
-            if(rb==QMessageBox::No){
-                return;
+            if(rb==QMessageBox::Yes)
+            {
+                parameters.setDispenseZPos(carrier->GetFeedBackPos().Z);
             }
-            parameters.setDispenseZPos(carrier->GetFeedBackPos().Z);
         }
-        if(dispense_io != nullptr)
-            dispense_io->Set(false);
         carrier->ZSerchReturn();
     }
     carrier->Move_SZ_XY_Z_Sync(start_pos.X,start_pos.Y,start_pos.Z);
@@ -114,9 +114,11 @@ QVector<mPoint3D> DispenseModule::getDispensePath()
     QVector<mPoint3D> dispense_path = QVector<mPoint3D>();
     double temp_theta = (pr_theta - parameters.initTheta())*PI/180;
     for (int i = 0; i < mechPoints.size(); ++i) {
-        double x = mechPoints[i].x() + pr_x;
-        double y = mechPoints[i].y() + pr_y;
-        dispense_path.push_back(mPoint3D(x*cos(temp_theta) + y*sin(temp_theta) + pos_x + parameters.dispenseXOffset(),y*cos(temp_theta)- x*sin(temp_theta) + pos_y + parameters.dispenseYOffset(),parameters.dispenseZPos() - parameters.dispenseZOffset()));
+        double x = mechPoints[i].x();
+        double y = mechPoints[i].y();
+        dispense_path.push_back(mPoint3D(x*cos(temp_theta) + y*sin(temp_theta) + pos_x + pr_x + parameters.dispenseXOffset(),
+                                         y*cos(temp_theta)- x*sin(temp_theta) + pos_y + pr_y + parameters.dispenseYOffset(),
+                                         parameters.dispenseZPos() - parameters.dispenseZOffset()));
     }
     return dispense_path;
 }

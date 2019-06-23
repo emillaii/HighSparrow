@@ -55,6 +55,12 @@ ItemDelegate {
                     text: qsTr("")
                 }
                 Button{
+                    text:qsTr("音圈设置窗口")
+                    onClicked:{
+                        baseModuleManager.showSettingDialog()
+                    }
+                }
+                Button{
                     text:qsTr("手动操作")
                     onClicked:{
                         sensor_loader_module_motionss.open()

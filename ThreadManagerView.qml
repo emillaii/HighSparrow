@@ -116,12 +116,13 @@ ItemDelegate {
 
             GroupBox
             {
-                visible: !baseModuleManager.getServerMode()
                 title: qsTr("Lens")
                 RowLayout{
                     Button {
+                        visible: !baseModuleManager.getServerMode()
                         text: "开始"
                         onClicked: {
+                            workersManager.startWorker("TrayLoaderModule",systerm_param.runMode)
                             workersManager.startWorker("LensPickArmModule",systerm_param.runMode)
                             workersManager.startWorker("LUTModule",systerm_param.runMode)
                         }
@@ -141,6 +142,7 @@ ItemDelegate {
                         }
                     }
                     Button {
+                        visible: !baseModuleManager.getServerMode()
                         text: "停止"
                         onClicked: {
                             workersManager.stopWorkers()

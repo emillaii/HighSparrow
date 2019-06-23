@@ -663,25 +663,25 @@ double LutModule::getLoadUplookPRY()
 bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
 {
     sendCmd("::1","gripperOnReq");
-    bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
-    if(result)
-    {
-        //todo one fuction
+    bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
+//    if(result)
+//    {
+//        //todo one fuction
 
-        qInfo("moveToAA1PickLens Start ZSerchByForce");
-        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
-        qInfo("moveToAA1PickLens Finish ZSerchByForce");
+//        qInfo("moveToAA1PickLens Start ZSerchByForce");
+//        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
+//        qInfo("moveToAA1PickLens Finish ZSerchByForce");
         if(result)
         {
             sendCmd("::1","gripperOffReq");
             //            gripper->Set(false);
             //            Sleep(180);
+            Sleep(parameters.gripperDelay());
             load_vacuum->Set(false);
-            Sleep(500);
         }
-        if(need_return)
-            result &= carrier->ZSerchReturn();
-    }
+//        if(need_return)
+//            result &= carrier->ZSerchReturn();
+//    }
     return result;
 }
 
@@ -693,10 +693,23 @@ bool LutModule::vcmReturn()
 bool LutModule::moveToAA1PickLensPos(bool check_autochthonous)
 {
     //if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
-        return carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z(),check_autochthonous);
+        return carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
     //}else{
     //    return true;
-    //}
+        //}
+}
+
+bool LutModule::moveToAAMeasurePickHeight(bool ishost, bool check_autochthonous)
+{
+    bool result = true;
+    if(ishost)
+        result &= carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),0,check_autochthonous);
+    else
+        result &=  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),0,check_autochthonous);
+
+    if(result)
+        result &= carrier->motor_z-> SearchPosByForce(parameters.pickSpeed(),parameters.pickForce());
+    return result;
 }
 
 bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
@@ -707,12 +720,12 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
         qInfo("moveToAA1UnPickLens Start ZSerchByForce");
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,1,unload_vacuum);
         qInfo("moveToAA1UnPickLens Start ZSerchByForce");
-        if(result)
-        {
+//        if(result)
+//        {
             sendCmd("::1","gripperOnReq");
             this->unload_vacuum->Set(true);
-            Sleep(500);
-        }
+            Sleep(parameters.gripperDelay());
+//        }
         result &= carrier->ZSerchReturn();
     }
     return result;
@@ -723,28 +736,29 @@ bool LutModule::moveToAA2PickLensPos(bool check_autochthonous)
 //    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
 //        return true;
 //    }
-    return carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
+    return carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
 }
 
 bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
 {
     qInfo("moveToAA2PickLens");
     sendCmd("remote","gripperOnReq");
-    bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z(),check_autochthonous);
-    if(result)
-    {
-        qInfo("moveToAA2PickLens Start ZSerchByForce");
-        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
-        qInfo("moveToAA2PickLens Start ZSerchByForce");
+    bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
+//    if(result)
+//    {
+//        qInfo("moveToAA2PickLens Start ZSerchByForce");
+//        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
+//        qInfo("moveToAA2PickLens Start ZSerchByForce");
         if (result) {
             sendCmd("remote","gripperOffReq");
             //            emit sendMessageToClient("remote", getStringFromJsonObject(gripperOffMessage));
+
+            Sleep(parameters.gripperDelay());
             this->load_vacuum->Set(false);
-            Sleep(500);  //ToDo: Put that in UI
         }
-        if(need_return)
-            result &= carrier->ZSerchReturn();
-    }
+//        if(need_return)
+//            result &= carrier->ZSerchReturn();
+//    }
     return result;
 }
 
@@ -757,13 +771,13 @@ bool LutModule::moveToAA2UnPickLens(bool check_autochthonous)
         qInfo("moveToAA2UnPickLens Start ZSerchByForce");
         result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);  
         qInfo("moveToAA2UnPickLens Finish ZSerchByForce");
-        if(result)
-        {
+//        if(result)
+//        {
             sendCmd("remote","gripperOnReq");
             this->unload_vacuum->Set(true);
-            Sleep(500);  //ToDo: Put that in UI
-        }
-        result &= carrier->ZSerchReturn();
+            Sleep(parameters.gripperDelay());
+//        }
+        result &= carrier->motor_z->resetSoftLanding();
     }
     return result;
 }

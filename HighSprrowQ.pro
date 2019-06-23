@@ -19,6 +19,7 @@ DEFINES += QT_MESSAGELOGCONTEXT
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    logmodel.cpp \
     main.cpp \
     baslerpyloncamera.cpp \
     highsprrow.cpp \
@@ -134,6 +135,7 @@ HEADERS += \
     highsprrow.h \
     errorcode.h \
     aaheadmodule.h \
+    logmodel.h \
     visionmodule.h \
     commonutils.h \
     logger.h \

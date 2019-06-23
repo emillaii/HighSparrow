@@ -1,4 +1,4 @@
-#include <QGuiApplication>
+﻿#include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QApplication>
 #include <QQmlContext>
@@ -12,6 +12,7 @@
 
 #include "aadata.h"
 #include "checkprocessmodel.h"
+#include "logmodel.h"
 
 #include <QtWidgets/QApplication>
 #include <windows.h>
@@ -67,8 +68,11 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("High Sparrow");
     app.setOrganizationName("Silicool");
     app.setOrganizationDomain("silicool.com");
-    //qInstallMessageHandler(sparrowLogOutput);
-    qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{type}] %{file}:%{line}(%{function}):%{message}");
+
+    // initialize logging system
+    initLoggingSystem();
+    qInstallMessageHandler(messageLogger);
+
     app.setWindowIcon(QIcon(ICON_SPARROW));
 
     HighSprrow highSprrow;
@@ -78,6 +82,7 @@ int main(int argc, char *argv[])
 
 
     //Object Property Definition
+    engine.rootContext()->setContextProperty("logModel", LogModel::instance());
     engine.rootContext()->setContextProperty("highSprrow", &highSprrow);
     engine.rootContext()->setContextProperty("visionModule", highSprrow.baseModuleManager->visionModule);
     engine.rootContext()->setContextProperty("uplookCamera", highSprrow.baseModuleManager->pylonUplookCamera);
@@ -241,21 +246,6 @@ int main(int argc, char *argv[])
         inputList<<input;
     }
     engine.rootContext()->setContextProperty("inputList",inputList);
-
-
-    QStringList logList;
-    QFile file("./log/system_log/log.txt");
-    if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
-        qDebug()<<"找不到log文件";
-    }else{
-        QTextStream in(&file);
-        QString line = in.readLine();
-        while(!line.isNull()){
-            logList<<line;
-            line = in.readLine();
-        }
-    }
-    engine.rootContext()->setContextProperty("logList",logList);
 
     engine.rootContext()->setContextProperty("sensor_clip_standard_parameter",
                                              &highSprrow.baseModuleManager->sensor_clip_stand);

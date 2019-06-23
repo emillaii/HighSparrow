@@ -1,4 +1,4 @@
-import QtQuick 2.9
+﻿import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtCharts 2.0
 import QtQuick.Layouts 1.12
@@ -76,27 +76,11 @@ Page {
         }
     }
 
-    ScrollView {
-        id: scrollView
-        anchors.left: parent.left
-        anchors.leftMargin: 18
-        anchors.top: parent.top
-        anchors.topMargin: 373
+    LogView {
+        id: logView
+        anchors.top: row.top
+        anchors.left: row.right
+        anchors.bottom: row.bottom
         anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-
-        ListView {
-            id: listView
-            x: 77
-            y: 77
-            width: 110
-            height: 160
-            model: logList
-            delegate: Text {
-                text: modelData
-            }
-        }
     }
 }

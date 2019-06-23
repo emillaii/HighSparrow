@@ -44,7 +44,7 @@ public:
                    bool enableMotion, int zSleepInMs, bool isWaitTiltMotion,
                    int zScanMode = 0, double estimated_aa_fov = 0,
                    bool is_debug = false, sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER,
-                   double estimated_fov_slope = -16, double zOffset=0);
+                   double estimated_fov_slope = -16, double zOffset=0,int no_tilt = 0);
     ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
     ErrorCodeStruct performMTF(QJsonValue params, bool write_log = false);
     ErrorCodeStruct performZOffset(double zOffset);
@@ -75,6 +75,9 @@ private:
     QMutex lut_mutex;
     void run(bool has_material);
     void LogicNg(int & ng_time);
+    void NgLens();
+    void NgSensor();
+    void NgProduct();
 private:
     QString loopTestResult;
     int currentAAMode;
@@ -89,6 +92,7 @@ private:
     Unitlog *unitlog;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
+    QVariantMap current_dfov;
     QJsonDocument flowchartDocument;
     bool isZScanNeedToStop = false;
     int currentChartDisplayChannel = 0;

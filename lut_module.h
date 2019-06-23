@@ -116,6 +116,8 @@ public:
     Q_INVOKABLE bool moveToAA1PickLens(bool need_return = true,bool check_autochthonous = false);
     Q_INVOKABLE bool vcmReturn();
     Q_INVOKABLE bool moveToAA1PickLensPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToAAMeasurePickHeight(bool ishost,bool check_autochthonous = false);
+
     Q_INVOKABLE bool moveToAA1UnPickLens(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2PickLensPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2PickLens(bool need_return = true,bool check_autochthonous = false);

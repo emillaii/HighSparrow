@@ -90,7 +90,7 @@ public:
 
     static QVector<VCM_Resource_struct> all_parameter;
     static void InitAllVCM();
-
+    static void showSettingDialog();
     static QMutex g_mutex;
     static QMutex setSoftLanding_mutex;
 

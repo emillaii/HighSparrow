@@ -24,7 +24,7 @@ Page {
             anchors.centerIn: parent
             width: parent.width
             height: parent.height
-            url: "http://localhost//flowchart/flowchart.html"
+            url: "http://192.168.0.251//flowchart/flowchart.html"
         }
     }
 }

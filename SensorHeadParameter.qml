@@ -19,17 +19,17 @@ ColumnLayout {
             }
         }
         Label{
-            text:qsTr("速度")
+            text:qsTr("成品力限制")
         }
         TextField{
-            text:sensorLoaderParameter.vcmWorkSpeed
+            text:sensorLoaderParameter.pickProductForce
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sensorLoaderParameter.setVcmWorkSpeed(text)
+                sensorLoaderParameter.setPickProductForce(text)
             }
         }
         Label{
@@ -48,6 +48,20 @@ ColumnLayout {
         }
     }
     RowLayout{
+        Label{
+            text:qsTr("速度")
+        }
+        TextField{
+            text:sensorLoaderParameter.vcmWorkSpeed
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setVcmWorkSpeed(text)
+            }
+        }
         Label{
             text:qsTr("z_offset")
         }

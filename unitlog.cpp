@@ -81,20 +81,118 @@ bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
      data.insert("device_id", uuid);
      QJsonObject json = QJsonObject::fromVariantMap(data);
      QJsonDocument doc(json);
-     qInfo("Sfr log: %s", doc.toJson().toStdString().c_str());
+     //qInfo("Sfr log: %s", doc.toJson().toStdString().c_str());
      QString sfrLogEndpoint = QString("http://192.168.0.250:5045"); //= serverAddress;
      //sfrLogEndpoint.append(":").append(QString::number(5045));
      qInfo(sfrLogEndpoint.toStdString().c_str());
      QNetworkRequest request(sfrLogEndpoint);
      request.setHeader(QNetworkRequest::ContentTypeHeader,
                        QVariant(QString("application/json")));
-     if (nam) {
+     if (nam)
+     {
          nam->post(request, doc.toJson());
          qInfo("Push sfr data to ELK success: %s", uuid.toStdString().c_str());
-     } else {
-         qInfo("Post sfr data to ELK fail");
+//     }
+//     else
+//     {
+         qInfo("save json to a txt");
+         QString filename = "";
+         filename.append(getMTFLogDir())
+                 .append("_")
+                 .append(data["SensorID"].toString())
+                 .append("_")
+                 .append(getCurrentTimeString())
+                 .append("_")
+                 .append(uuid)
+                 .append("_sfrlog.csv");
+         QFile file(filename);
+         QString data_content = "";
+         data_content.append("ll_peak,");
+         data_content.append("ul_peak,");
+         data_content.append("lr_peak,");
+         data_content.append("ur_peak,");
+         data_content.append("cc_peak,");
+         data_content.append("dev,");
+         data_content.append("xTilt,");
+         data_content.append("yTilt,");
+         data_content.append(" \r\n");
+         data_content.append(data["ll_peak"].toString());
+         data_content.append(",");
+         data_content.append(data["ul_peak"].toString());
+         data_content.append(",");
+         data_content.append(data["lr_peak"].toString());
+         data_content.append(",");
+         data_content.append(data["ur_peak"].toString());
+         data_content.append(",");
+         data_content.append(data["cc_peak"].toString());
+         data_content.append(",");
+         data_content.append(data["dev"].toString());
+         data_content.append(",");
+         data_content.append(data["xTilt"].toString());
+         data_content.append(",");
+         data_content.append(data["yTilt"].toString());
+         data_content.append(" \r\n");
+         data_content.append(getCSVString("CC",data["CC"].toMap()));
+         data_content.append(getCSVString("LL",data["LL"].toMap()));
+         data_content.append(getCSVString("LR",data["LR"].toMap()));
+         data_content.append(getCSVString("UL",data["UL"].toMap()));
+         data_content.append(getCSVString("UR",data["UR"].toMap()));
+         file.open(QIODevice::WriteOnly | QIODevice::Text);
+         file.write(data_content.toStdString().c_str());
+         file.close();
      }
      return true;
+}
+
+QString Unitlog::getCSVString(QString data_name,QVariantMap map)
+{
+    QString data_string = "";
+    data_string.append(" \r\n");
+    if(data_name == "CC")
+    {
+        data_string.append("DFOV");
+        data_string.append(" \r\n");
+        foreach (QString temp_name, map.keys()) {
+           QVariantMap temp_data = map[temp_name].toMap();
+           data_string.append(temp_data["dfov"].toString());
+           data_string.append(",");
+        }
+        data_string.append(" \r\n");
+    }
+    data_string.append(data_name);
+    data_string.append(" \r\n");
+    foreach (QString temp_name, map.keys()) {
+       QVariantMap temp_data = map[temp_name].toMap();
+       data_string.append(temp_data["t_sfr"].toString());
+       data_string.append(",");
+    }
+    data_string.append(" \r\n");
+    foreach (QString temp_name, map.keys()) {
+       QVariantMap temp_data = map[temp_name].toMap();
+       data_string.append(temp_data["b_sfr"].toString());
+       data_string.append(",");
+    }
+    data_string.append(" \r\n");
+    foreach (QString temp_name, map.keys()) {
+       QVariantMap temp_data = map[temp_name].toMap();
+       data_string.append(temp_data["l_sfr"].toString());
+       data_string.append(",");
+    }
+    data_string.append(" \r\n");
+    foreach (QString temp_name, map.keys()) {
+       QVariantMap temp_data = map[temp_name].toMap();
+       data_string.append(temp_data["r_sfr"].toString());
+       data_string.append(",");
+    }
+    data_string.append(" \r\n");
+    foreach (QString temp_name, map.keys()) {
+       QVariantMap temp_data = map[temp_name].toMap();
+       data_string.append(temp_data["pz"].toString());
+       data_string.append(",");
+    }
+    data_string.append(" \r\n");
+    qInfo("data_string: %s", data_string.toStdString().c_str());
+    return data_string;
 }
 
 bool Unitlog::saveToCSV(QString uuid)
@@ -104,7 +202,7 @@ bool Unitlog::saveToCSV(QString uuid)
     {
         QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
         QJsonDocument doc(json);
-        qInfo("Doc: %s", doc.toJson().toStdString().c_str());
+//        qInfo("Doc: %s", doc.toJson().toStdString().c_str());
 
         QString filename = "";
         filename.append(getMTFLogDir())

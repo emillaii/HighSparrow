@@ -66,6 +66,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
+    connect(&aaCoreNew, &AACoreNew::postSfrDataToELK, &unitlog, &Unitlog::postSfrDataToELK);
 
     connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTrayRequst,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);
     connect(&sensor_tray_loder_module,&SensorTrayLoaderModule::sendChangeTrayFinish,&sensor_loader_module,&SensorLoaderModule::receiveChangeTrayFinish,Qt::DirectConnection);
@@ -167,6 +168,7 @@ bool BaseModuleManager::loadconfig()
     loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
     loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
+    loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
     return true;
 }
@@ -217,6 +219,10 @@ bool BaseModuleManager::loadDispenseParam()
 {
     dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
     return true;
+}
+void BaseModuleManager::showSettingDialog()
+{
+    XtVcMotor::showSettingDialog();
 }
 
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)
@@ -399,7 +405,8 @@ bool BaseModuleManager::loadVacuumFiles(QString file_name)
             vacuums.insert(temp_vacuum->parameters.vacuumName(),temp_vacuum);
         else
         {
-            qInfo("vcm motor param name(%s)repeat!",temp_vacuum->parameters.vacuumName().toStdString().c_str());
+            vacuums[temp_vacuum->parameters.vacuumName()]->parameters.read(temp_object);
+//            qInfo("vcm motor param name(%s)repeat!",temp_vacuum->parameters.vacuumName().toStdString().c_str());
             delete temp_vacuum;
         }
     }

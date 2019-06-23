@@ -23,6 +23,7 @@ public:
     Q_PROPERTY(double touchDistance READ touchDistance WRITE setTouchDistance NOTIFY TouchDistanceChanged)
     Q_PROPERTY(int direntionAfterSeek READ direntionAfterSeek WRITE setDirentionAfterSeek NOTIFY direntionAfterSeekChanged)
     Q_PROPERTY(double originOffset READ originOffset WRITE setOriginOffset NOTIFY originOffsetChanged)
+    Q_PROPERTY(bool needMapForce READ needMapForce WRITE setNeedMapForce NOTIFY needMapForceChanged)
     QString motorName() const
     {
         return m_motorName;
@@ -85,6 +86,11 @@ public:
     double originOffset() const
     {
         return m_originOffset;
+    }
+
+    bool needMapForce() const
+    {
+        return m_needMapForce;
     }
 
 public slots:
@@ -214,6 +220,15 @@ public slots:
         emit originOffsetChanged(m_originOffset);
     }
 
+    void setNeedMapForce(bool needMapForce)
+    {
+        if (m_needMapForce == needMapForce)
+            return;
+
+        m_needMapForce = needMapForce;
+        emit needMapForceChanged(m_needMapForce);
+    }
+
 signals:
     void motorNameChanged(QString motorName);
     void canIdChanged(int canId);
@@ -241,6 +256,8 @@ signals:
 
     void originOffsetChanged(double originOffset);
 
+    void needMapForceChanged(bool needMapForce);
+
 private:
     QString m_motorName = "Unnaming";
     int m_canId = 0;
@@ -255,6 +272,7 @@ private:
     double m_TouchDistance = 0;
     int m_direntionAfterSeek = 1;
     double m_originOffset = 0;
+    bool m_needMapForce = true;
 };
 
 #endif // XTVCMOTORPARAMETER_H

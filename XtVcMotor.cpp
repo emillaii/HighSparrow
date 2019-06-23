@@ -31,7 +31,10 @@ void XtVcMotor::ConfigVCM()
     SetSoftlandingSlot(vcm_id,GetCurveResource());
     double current[4]{0.1,1,2,3};
     double force[4]{100,1000,2000,3000};
-    MapCurrent2Force(vcm_id,current,force,4);
+    if(parameters.needMapForce())
+    {
+        MapCurrent2Force(vcm_id,current,force,4);
+    }
     is_init = true;
     is_enable = true;
     error_code = get_motor_error(vcm_id);
@@ -87,7 +90,7 @@ void XtVcMotor::InitAllVCM()
         int res = Get_Init_Ready();
         if(res == 1)
         {
-//            SetDebugLog(0);
+            SetDebugLog(0);
             return;
         }
         if(res == -1)
@@ -99,6 +102,11 @@ void XtVcMotor::InitAllVCM()
         QThread::msleep(10);
     }
     qInfo("VCM Soft_landing_dll_init failed!");
+}
+
+void XtVcMotor::showSettingDialog()
+{
+    ShowSettingDlg();
 }
 
 void XtVcMotor::Init(const QString& motor_name)
@@ -439,7 +447,7 @@ bool XtVcMotor::DoSoftLanding()
     if(res==0)
         return true;
     AppendError(QString(u8"%1 软着陆伸出失败 错误码 %2").arg(name).arg(res));
-//    qInfo("VCM %d DoSoftLanding Failed! code: %d",vcm_id,res);
+    qInfo("VCM %d DoSoftLanding Failed! code: %d",vcm_id,res);
     return false;
 }
 

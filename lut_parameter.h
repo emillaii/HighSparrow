@@ -17,6 +17,9 @@ public:
     Q_PROPERTY(QString loadlookLocationName READ loadlookLocationName WRITE setLoadlookLocationName NOTIFY loadlookLocationNameChanged)
     Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
     Q_PROPERTY(double accumulatedHour READ accumulatedHour WRITE setAccumulatedHour NOTIFY accumulatedHourChanged)
+    Q_PROPERTY(double lensHeight READ lensHeight WRITE setLensHeight NOTIFY lensHeightChanged)
+    Q_PROPERTY(double pickSpeed READ pickSpeed WRITE setPickSpeed NOTIFY pickSpeedChanged)
+    Q_PROPERTY(int gripperDelay READ gripperDelay WRITE setGripperDelay NOTIFY gripperDelayChanged)
     double pickForce() const
     {
         return m_PickForce;
@@ -65,6 +68,21 @@ public:
     double accumulatedHour() const
     {
         return m_accumulatedHour;
+    }
+
+    double lensHeight() const
+    {
+        return m_lensHeight;
+    }
+
+    double pickSpeed() const
+    {
+        return m_pickSpeed;
+    }
+
+    int gripperDelay() const
+    {
+        return m_gripperDelay;
     }
 
 public slots:
@@ -156,6 +174,34 @@ public slots:
         emit accumulatedHourChanged(m_accumulatedHour);
     }
 
+    void setLensHeight(double lensHeight)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_lensHeight, lensHeight))
+            return;
+
+        m_lensHeight = lensHeight;
+        emit lensHeightChanged(m_lensHeight);
+    }
+
+    void setPickSpeed(double pickSpeed)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickSpeed, pickSpeed))
+            return;
+
+        m_pickSpeed = pickSpeed;
+        emit pickSpeedChanged(m_pickSpeed);
+    }
+    void setGripperDelay(int gripperDelay)
+    {
+        if (m_gripperDelay == gripperDelay)
+            return;
+
+        m_gripperDelay = gripperDelay;
+        emit gripperDelayChanged(m_gripperDelay);
+    }
+
 signals:
     void paramsChanged();
 
@@ -177,6 +223,13 @@ signals:
 
     void accumulatedHourChanged(double accumulatedHour);
 
+    void lensHeightChanged(double lensHeight);
+
+    void pickSpeedChanged(double pickSpeed);
+
+
+    void gripperDelayChanged(int gripperDelay);
+
 private:
     double m_PickForce = 0;
     QString m_motorXName = "LUT_X";
@@ -188,6 +241,9 @@ private:
     QString m_loadlookLocationName = "";
     QString m_mushroomLocationName = "";
     double m_accumulatedHour = 0;
+    double m_lensHeight = 1;
+    double m_pickSpeed = 10;
+    int m_gripperDelay = 500;
 };
 
 class LutState:public PropertyBase

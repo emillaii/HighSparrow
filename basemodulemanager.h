@@ -208,6 +208,7 @@ public:
     Q_INVOKABLE bool loadconfig();
     Q_INVOKABLE bool saveParameters();
     Q_INVOKABLE bool loadDispenseParam();
+    Q_INVOKABLE void showSettingDialog();
     bool loadVcmFile(QString file_name);
     bool saveVcmfile(QString file_name);
     bool loadMotorFile(QString file_name);

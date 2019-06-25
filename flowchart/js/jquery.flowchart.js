@@ -9,10 +9,10 @@ $(function () {
             data: {},
             distanceFromArrow: 3,
             defaultOperatorClass: 'flowchart-default-operator',
-            defaultLinkColor: '#3366ff',
+            defaultLinkColor: 'cyan',
             defaultSelectedLinkColor: 'black',
             linkWidth: 10,
-            grid: 20,
+            grid: 25,
             multipleLinksOnOutput: false,
             multipleLinksOnInput: false,
             linkVerticalDecal: 0,
@@ -37,6 +37,9 @@ $(function () {
             onOperatorCreate: function (operatorId, operatorData, fullElement) {
                 return true;
             },
+			onOperatorDoubleClicked: function (operatorId) {
+				return true;
+			},
             onLinkCreate: function (linkId, linkData) {
                 return true;
             },
@@ -136,7 +139,6 @@ $(function () {
                 self._click((e.pageX - offset.left) / self.positionRatio, (e.pageY - offset.top) / self.positionRatio, e);
             });
 
-
             this.objs.layers.operators.on('pointerdown mousedown touchstart', '.flowchart-operator', function (e) {
                 e.stopImmediatePropagation();
             });
@@ -144,6 +146,13 @@ $(function () {
             this.objs.layers.operators.on('click', '.flowchart-operator', function (e) {
                 if ($(e.target).closest('.flowchart-operator-connector').length == 0) {
                     self.selectOperator($(this).data('operator_id'));
+
+                }
+            });
+			
+			this.objs.layers.operators.on('dblclick', '.flowchart-operator', function (e) {
+                if ($(e.target).closest('.flowchart-operator-connector').length == 0) {
+                    self.doubleClickedOperator($(this).data('operator_id'));
                 }
             });
 
@@ -725,7 +734,7 @@ $(function () {
                 this.unselectLink();
             }
         },
-
+		
         _removeSelectedClassOperators: function () {
             this.objs.layers.operators.find('.flowchart-operator').removeClass('selected');
         },
@@ -754,6 +763,13 @@ $(function () {
             }
             return ret;
         },
+		
+		doubleClickedOperator: function (operatorId) {
+			console.log("double clicked Operator: " + this.data.operators[operatorId].properties.params);
+			 if (!this.callbackEvent('operatorDoubleClicked', [operatorId])) {
+				return;
+			}
+		},
 
         selectOperator: function (operatorId) {
             if (!this.callbackEvent('operatorSelect', [operatorId])) {

@@ -283,6 +283,7 @@ bool AACoreNew::runFlowchartTest()
                        && value["fromConnector"].toString() == "thread_1" ) {
                qInfo("Found Parallel Test Item");
                vector<QString> thread_1_test_list, thread_2_test_list;
+
                QString current_thread_1 = currentPointer, current_thread_2 = currentPointer;
                //Find the head first
                bool isFoundThread_1 = false, isFoundThread_2 = false;
@@ -767,8 +768,9 @@ void AACoreNew::performAAOffline()
     emit pushDataToUnit(runningUnit, "AAOffline", map);
 }
 
-void AACoreNew::performHandling(int cmd)
+void AACoreNew::performHandling(int cmd, QString params)
 {
+    qInfo("performHandling: %d %s", cmd, params.toStdString().c_str());
     emit sendHandlingOperation(cmd);
 }
 

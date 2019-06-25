@@ -18,76 +18,103 @@
     
     <script src="js/jquery.flowchart.js"></script>
     <script src="js/main.js"></script>
+	
+	<script src="js/jquery.modal.min.js"></script>
+	<link rel="stylesheet" href="css/jquery.modal.min.css" />
  
     <title>Flow chart</title>
   </head>
+  
+  <section >
+	  <nav>
+	  <h1>Silicool Process Diagram</h1>
+		<ul>
+			<button id="create_start" class="btn btn-primary test_button">Start</button>
+			<button id="create_init_camera" class="btn btn-primary test_button">Init Camera</button>
+			<button id="create_pr_to_bond" class="btn btn-primary test_button">PR To Bond</button>
+			<button id="create_initial_tilt" class="btn btn-primary test_button">Initial Tilt</button>
+		</ul>
+		<ul>
+			<button id="create_aa_pick_lens" class="btn btn-success test_button">AA Pick Lens</button>
+			<button id="create_aa_unload_lens" class="btn btn-success test_button">AA Unload Lens</button>
+			<button id="create_oc" class="btn btn-success test_button">OC</button>
+			<button id="create_aa" class="btn btn-success test_button">AA</button>
+			<button id="create_mtf" class="btn btn-success test_button">MTF</button>
+			<button id="create_uv" class="btn btn-success test_button">UV</button>
+			<button id="create_disp" class="btn btn-success test_button">Dispense</button>
+			<button id="create_aa_unload_camera" class="btn btn-success test_button">AA Unload Camera</button>
+		</ul>
+		<ul>
+			<button id="create_z_offset" class="btn btn-info test_button">Z Offset</button>
+			<button id="create_xy_offset" class="btn btn-info test_button">XY Offset</button>
+			<button id="create_delay" class="btn btn-info test_button">Delay</button>
+			<button id="create_accept" class="btn btn-info test_button">Accept</button>
+			<button id="create_reject" class="btn btn-info test_button">Reject</button>
+			<button id="create_terminate" class="btn btn-info test_button">Terminate</button>
+		</ul>
+		<ul>
+			<button id="create_thread" class="btn btn-danger test_button">Parallel Test</button>
+			<button id="create_join_thread" class="btn btn-danger test_button">End Parallel Test</button>
+		</ul>
+	  </nav>
+	  
+	  <article>
+		<p>Keyboard C - Duplicate operator</p>
+		<p>Keyboard E - Edit parameters in operator</p>
+		<p>Keyboard DELETE - Delete Link or operator</p>
+		<p>Double Click - Run operator</p>
+	    <div class="flowchart-example-container flowchart-container" id="example_7">
+		<svg class="flowchart-links-layer"></svg>
+		</div>
+	  </article>
+  </section>
 
   <div class="flowchart-example"  style="margin-left: 2%">
-
-    <h2>Silicool Process Diagram</h2>
-    <button class="btn btn-primary create_start">Start</button>
-	<button class="btn btn-primary create_load_camera">Load Camera</button>
-	<button class="btn btn-primary create_init_camera">Init Camera</button>
-	<button class="btn btn-primary create_pr_to_bond">PR To Bond</button>
-	<button class="btn btn-primary create_initial_tilt">Initial Tilt</button>
-	</br></br>
-	<button class="btn btn-success create_aa_pick_lens">AA Pick Lens</button>
-	<button class="btn btn-success create_aa_unload_lens">AA Unload Lens</button>
-    <button class="btn btn-success create_oc">OC</button>
-    <button class="btn btn-success create_aa">AA</button>
-	<button class="btn btn-success create_mtf">MTF</button>
-    <button class="btn btn-success create_uv">UV</button>
-    <button class="btn btn-success create_disp">Dispense</button>
-	<button class="btn btn-success create_save_image">Save Image</button>
-	<button class="btn btn-success create_aa_unload_camera">AA Unload Camera</button>
-	</br></br>
-	<button class="btn btn-info create_z_offset">Z Offset</button>
-	<button class="btn btn-info create_xy_offset">XY Offset</button>
-	<button class="btn btn-info create_delay">Delay</button>
-    <button class="btn btn-info create_accept">Accept</button>
-    <button class="btn btn-info create_reject">Reject</button>
-	<button class="btn btn-info create_terminate">Terminate</button>
-	<button class="btn btn-danger create_thread">Parallel Test</button>
-	<button class="btn btn-danger create_join_thread">End Parallel Test</button>
-    <div class="flowchart-example-container flowchart-container" id="example_7">
-      <svg class="flowchart-links-layer">
-      </svg>
-    </div>
-    <button class="delete_selected_button">Delete selected operator / link</button>
-    <button class="get_data">Get data</button>
-    <button class="set_data">Set data</button>
-    <div id="operator_properties">
-      <label for="operator_title">Operator's title: </label><input type="text" id="operator_title">
-    </div>
-    <div id="aa_operator_properties">
-      <label for="aa_operator_title">Operator's title: </label><input type="text" id="aa_operator_title">
-    </div>
-	  <div id="initial_tilt_properties">
-      <label for="initial_tilt_title">Operator's title: </label><input type="text" id="initial_tilt_operator_title">
-    </div>
-    <div id="oc_operator_properties">
-      <label for="oc_operator_title">Operator's title: </label><input type="text" id="oc_operator_title">
-    </div>
-	<div id="aa_z_offset_operator_properties">
-      <label for="aa_z_offset_operator_title">Operator's title: </label><input type="text" id="aa_z_offset_operator_title">
-    </div>
-    <div id="aa_xy_offset_operator_properties">
-      <label for="aa_xy_offset_operator_title">Operator's title: </label><input type="text" id="aa_xy_offset_operator_title">
-    </div>
-	<div id="save_image_operator_properties">
-      <label for="save_image_operator_title">Operator's title: </label><input type="text" id="save_image_operator_title">
-    </div>
-	<div id="dispense_operator_properties">
-      <label for="dispense_operator_title">Operator's title: </label><input type="text" id="dispense_operator_title">
-    </div>
-	<div id="mtf_table">
-		<label for="mtf_operator_title">Operator's title: </label><input type="text" id="mtf_operator_title">
-		<table id="mtf_table_form" style="width:50%">
-		</table>
+	
+	<!-- Modal HTML embedded directly into document -->
+	<div id="ex1" class="modal">
+		<div id="operator_properties">
+		  <label for="operator_title">Operator's title: </label><input type="text" id="operator_title">
+		</div>
+		<div id="aa_operator_properties">
+		  <label for="aa_operator_title">Operator's title: </label><input type="text" id="aa_operator_title">
+		</div>
+		  <div id="initial_tilt_properties">
+		  <label for="initial_tilt_title">Operator's title: </label><input type="text" id="initial_tilt_operator_title">
+		</div>
+		<div id="oc_operator_properties">
+		  <label for="oc_operator_title">Operator's title: </label><input type="text" id="oc_operator_title">
+		</div>
+		<div id="aa_z_offset_operator_properties">
+		  <label for="aa_z_offset_operator_title">Operator's title: </label><input type="text" id="aa_z_offset_operator_title">
+		</div>
+		<div id="aa_xy_offset_operator_properties">
+		  <label for="aa_xy_offset_operator_title">Operator's title: </label><input type="text" id="aa_xy_offset_operator_title">
+		</div>
+		<div id="save_image_operator_properties">
+		  <label for="save_image_operator_title">Operator's title: </label><input type="text" id="save_image_operator_title">
+		</div>
+		<div id="dispense_operator_properties">
+		  <label for="dispense_operator_title">Operator's title: </label><input type="text" id="dispense_operator_title">
+		</div>
+		<div id="mtf_table">
+			<label for="mtf_operator_title">Operator's title: </label><input type="text" id="mtf_operator_title">
+			<table id="mtf_table_form" style="width:50%">
+			</table>
+		</div>
+      <button id="update_data_button">Update data</button>
 	</div>
-    <button class="update_data">Update data</button>
   <div>
   <div>
     <textarea id="flowchart_data"></textarea>
   </div>
+  <div>
+    <textarea id="flowchart_running_cmd"></textarea>
+  </div>
+  
+  <button class="delete_selected_button">Delete selected operator / link</button>
+  <button id="get_data">Get data</button>
+  <button id="set_data">Set data</button>
+  <button class="update_data">Update data</button>
+  <p><a href="#ex1" rel="modal:open">Open Modal</a></p>
 </html>

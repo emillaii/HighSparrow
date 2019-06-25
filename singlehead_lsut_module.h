@@ -72,6 +72,8 @@ public:
 
     Q_INVOKABLE void performHandling(int cmd);
 
+    Q_INVOKABLE bool moveToCamPos(double pixel_x, double pixel_y, int upDownLook);
+
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);

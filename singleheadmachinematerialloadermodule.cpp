@@ -1739,3 +1739,24 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
     return;
 }
 
+bool SingleHeadMachineMaterialLoaderModule::stepMove_XY_Sync(double x,double y)
+{
+    qInfo("Move to target position relative distance, X: %f, Y: %f", x, y);
+    return pick_arm->StepMove_XY_Sync(x, y);
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToCamPos(double pixel_x, double pixel_y)
+{
+    bool ret;
+    qInfo("Move to camera view position offset pixel_x: %f, pixel_y: %f", pixel_x, pixel_y);
+
+    // Calculate mechanical position
+    QPointF meth;
+    ret = sensor_vision->mapping->CalcMechDistanceFromPixelCenter(pixel_x, pixel_y, meth);
+    qInfo("Move to camera position meth_x: %f, meth_y: %f", meth.x(), meth.y());
+
+    // Move motors
+    return stepMove_XY_Sync(meth.x(), meth.y());
+    //return true;
+}
+

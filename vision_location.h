@@ -20,11 +20,12 @@ public:
     void OpenLight();
     void CloseLight();
 
+    Pixel2Mech* mapping;
+
 public:
     VisionLocationParameter parameters;
 private:
     VisionModule* vison;
-    Pixel2Mech* mapping;
     WordopLight* lighting;
     PrOffset current_offset;
 };

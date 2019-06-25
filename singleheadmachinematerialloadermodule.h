@@ -101,6 +101,7 @@ public:
     void saveJsonConfig(QString file_name);
     SingleHeadMachineMaterialLoaderModuleParameter parameters;
     Q_INVOKABLE void performHandling(int cmd);
+    Q_INVOKABLE bool moveToCamPos(double pixel_x, double pixel_y);
 
 //old motions
     bool ToPickCmosPosition();
@@ -154,6 +155,8 @@ public:
 //new motions
 private:
     void run(bool has_material);
+
+    bool stepMove_XY_Sync(double x,double y);
 
     bool checkTrayNeedChange();
     bool moveToNextSensorTrayPos(int tray_index);

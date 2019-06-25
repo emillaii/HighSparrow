@@ -261,3 +261,28 @@ bool SingleheadLSutModule::movetoRecordPos(bool check_autochthonous)
     qInfo("Move to record position X: %f, Y: %f, Z: %f", record_position.X, record_position.Y, record_position.Z);
     return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(record_position.X,record_position.Y,record_position.Z,check_autochthonous);
 }
+
+bool SingleheadLSutModule::moveToCamPos(double pixel_x, double pixel_y, int upDownLook)
+{
+    bool ret;
+    qInfo("Move to camera view position offset pixel_x: %f, pixel_y: %f", pixel_x, pixel_y);
+
+    // Calculate mechanical position
+    QPointF meth;
+    if (upDownLook == 0)
+    {
+        vision_gripper_location->mapping->CalcMechDistance(QPointF(pixel_x, pixel_y), meth);
+    }
+    else if (upDownLook == 1)
+    {
+        vision_downlook_location->mapping->CalcMechDistance(QPointF(pixel_x, pixel_y), meth);
+    }
+    else
+    {
+        return false;
+    }
+    qInfo("Move to camera position meth_x: %f, meth_y: %f", meth.x(), meth.y());
+
+    // Move motors
+    return stepMove_XY_Sync(meth.x(), meth.y());
+}

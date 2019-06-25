@@ -29,9 +29,16 @@ public:
 //计算传入的像素点和相机中心的机械距离
     bool CalcMechDistance(const QPointF &pixel_point,QPointF &mech_point);
 
+    //! Calculate meth distance with offsetX and offsetY from pixel center
+    //! param [in] offsetX: X offset from pixel center
+    //! param [in] offsetY: Y offset from pixel center
+    //! param [out] mech_point: meth distance point
+    bool CalcMechDistanceFromPixelCenter(double offsetX, double offsetY, QPointF &mech_point);
+
     QPointF pixel2MechPoint(const QPointF &pixelPoint);
 
     QPointF getMechCenter() const;
+    QPointF getPixelCenter() const;
 
     bool hasCalibration();
 private:

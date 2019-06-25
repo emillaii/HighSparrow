@@ -48,6 +48,16 @@ bool Pixel2Mech::CalcMechDistance(const QPointF &pixel_point,QPointF &mech_point
     return true;
 }
 
+bool Pixel2Mech::CalcMechDistanceFromPixelCenter(double offsetX, double offsetY, QPointF &mech_point)
+{
+    if(!has_calibration)
+    {
+        qInfo("Missing calibration");
+        return false;
+    }
+    return CalcMechDistance(QPointF(center_of_pixel.x()+offsetX, center_of_pixel.y()+offsetY), mech_point);
+}
+
 QPointF Pixel2Mech::pixel2MechPoint(const QPointF &pixelPoint)
 {
     if(has_calibration!=true)
@@ -60,6 +70,13 @@ QPointF Pixel2Mech::getMechCenter() const
     if(has_calibration!=true)
         return QPointF(0.0,0.0);
     return center_of_mech;
+}
+
+QPointF Pixel2Mech::getPixelCenter() const
+{
+    if(has_calibration!=true)
+        return QPointF(0.0,0.0);
+    return center_of_pixel;
 }
 
 bool Pixel2Mech::hasCalibration()

@@ -45,7 +45,8 @@ Grid {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
+                cursorShape: "CrossCursor"
+                onDoubleClicked: {
                     var borderX = (image3.width - image3.paintedWidth) / 2
                     var borderY = (image3.height - image3.paintedHeight) / 2
                     if (mouseX < borderX || mouseX > image3.width - borderX ||
@@ -53,11 +54,11 @@ Grid {
                     {
                         return console.log("Image Click Out of range")
                     }
-
+                    console.log("image.sourceSize.width: " + image3.sourceSize.width + " image.sourceSize.height: " + image3.sourceSize.height)
                     var delta = calculateOffset(image3.width, image3.height, mouseX, mouseY,
                                                 image3.sourceSize.width/image3.paintedWidth,
                                                 image3.sourceSize.height/image3.paintedHeight)
-                    console.log("x: " + delta.x +  " y:" + delta.y)
+                    console.log("delta x: " + delta.x +  ", delta y:" + delta.y)
                 }
             }
             Text {
@@ -156,7 +157,8 @@ Grid {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
+                cursorShape: "CrossCursor"
+                onDoubleClicked: {
                     var borderX = (image.width - image.paintedWidth) / 2
                     var borderY = (image.height - image.paintedHeight) / 2
                     if (mouseX < borderX || mouseX > image.width - borderX ||
@@ -164,11 +166,13 @@ Grid {
                     {
                         return console.log("Image Click Out of range")
                     }
+                    console.log("width=" + image.width + ", hight=" + image.height + ", mouseX=" + mouseX + ", mouseY=" + mouseY)
+                    console.log("image.sourceSize.width: " + image.sourceSize.width + " image.sourceSize.height: " + image.sourceSize.height)
                     var delta = calculateOffset(image.width, image.height, mouseX, mouseY,
                                                 image.sourceSize.width/image.paintedWidth,
                                                 image.sourceSize.height/image.paintedHeight)
-                    console.log("x: " + delta.x +  " y:" + delta.y)
-                    console.log("image.sourceSize.width: " + image.sourceSize.width + "image.sourceSize.height" + image.sourceSize.height)
+                    console.log("delta x: " + delta.x +  ", delta y:" + delta.y)
+                    sh_lsut_Module.moveToCamPos(delta.x, delta.y, 0)
                 }
             }
             Text {
@@ -270,7 +274,8 @@ Grid {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
+                cursorShape: "CrossCursor"
+                onDoubleClicked: {
                     var borderX = (image1.width - image1.paintedWidth) / 2
                     var borderY = (image1.height - image1.paintedHeight) / 2
                     if (mouseX < borderX || mouseX > image1.width - borderX ||
@@ -278,10 +283,13 @@ Grid {
                     {
                         return console.log("Image Click Out of range")
                     }
+                    console.log("image.sourceSize.width: " + image1.sourceSize.width + " image.sourceSize.height: " + image1.sourceSize.height)
+                    console.log("width=" + image1.width + ", hight=" + image1.height + ", mouseX=" + mouseX + ", mouseY=" + mouseY)
                     var delta = calculateOffset(image1.width, image1.height, mouseX, mouseY,
                                                 image1.sourceSize.width/image1.paintedWidth,
                                                 image1.sourceSize.height/image1.paintedHeight)
-                    console.log("x: " + delta.x +  " y:" + delta.y)
+                    console.log("delta x: " + delta.x +  ", delta y:" + delta.y)
+                    sh_lsut_Module.moveToCamPos(delta.x, delta.y, 1)
                 }
             }
 
@@ -385,7 +393,8 @@ Grid {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
+                cursorShape: "CrossCursor"
+                onDoubleClicked: {
                     var borderX = (image2.width - image2.paintedWidth) / 2
                     var borderY = (image2.height - image2.paintedHeight) / 2
                     if (mouseX < borderX || mouseX > image2.width - borderX ||
@@ -393,10 +402,13 @@ Grid {
                     {
                         return console.log("Image Click Out of range")
                     }
+                    console.log("width=" + image2.width + ", hight=" + image2.height + ", mouseX=" + mouseX + ", mouseY=" + mouseY)
+                    console.log("image.sourceSize.width: " + image2.sourceSize.width + " image.sourceSize.height: " + image2.sourceSize.height)
                     var delta = calculateOffset(image2.width, image2.height, mouseX, mouseY,
                                                 image2.sourceSize.width/image2.paintedWidth,
                                                 image2.sourceSize.height/image2.paintedHeight)
-                    console.log("x: " + delta.x +  " y:" + delta.y)
+                    console.log("delta x: " + delta.x +  ", delta y:" + delta.y)
+                    sh_materialLoaderModule.moveToCamPos(delta.x, delta.y)
                 }
             }
             Text {

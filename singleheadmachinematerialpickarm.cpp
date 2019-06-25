@@ -341,6 +341,23 @@ bool SingleHeadMachineMaterialPickArm::stepMove_XYT1_Synic(const double step_x, 
     return resut;
 }
 
+bool SingleHeadMachineMaterialPickArm::StepMove_XY_Sync(double step_x, double step_y, int timeout)
+{
+    bool result;
+
+    // pickarm PR use VCMX, but distance limited.
+    double cur_x = motor_x->GetFeedbackPos();
+    double cur_y = motor_y->GetFeedbackPos();
+    double target_x = cur_x + step_x;
+    double target_y = cur_y + step_y;
+    motor_x->MoveToPos(target_x);
+    motor_y->MoveToPos(target_y);
+    result = motor_x->WaitArrivedTargetPos(target_x,timeout);
+    result = motor_y->WaitArrivedTargetPos(target_y,timeout);
+
+    return result;
+}
+
 bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker, double speed, double force, bool check_softlanding, int timeout)
 {
     XtVcMotor* motor_z = picker==0?motor_vcm1:motor_vcm2;

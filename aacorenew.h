@@ -30,13 +30,21 @@
 class AACoreNew : public ThreadWorkerBase
 {
     Q_OBJECT
+    Q_ENUMS(HandleTest)
 public:
+    enum HandleTest
+    {
+        Dispense = 1,
+        PR_To_Bond = 2,
+        OC = 3,
+        MTF = 4
+    };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
     void performAAOffline();
-    Q_INVOKABLE void performHandling(int cmd);
+    Q_INVOKABLE void performHandling(int cmd, QString params);
     ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond();
     ErrorCodeStruct performAAPickLens();

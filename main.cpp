@@ -110,6 +110,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dispenseModule", &highSprrow.baseModuleManager->dispense_module);
     engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
     qmlRegisterType<SensorLoaderModule>("SomeLib",1,1,"SensorLoaderModule");
+    qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
     engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
     engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);

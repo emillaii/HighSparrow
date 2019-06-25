@@ -291,7 +291,7 @@ bool SingleHeadMachineMaterialPickArm::XYZC2SyncMove(double xpos, double ypos, d
 
 bool SingleHeadMachineMaterialPickArm::move_Xm_Origin()
 {
-    return motor_vcmx->MoveToPosSync(0);
+    return motor_vcmx->MoveToPosSync(-4);
 }
 
 bool SingleHeadMachineMaterialPickArm::move_XY_Synic(const QPointF position, const bool check_softlanding, int timeout)

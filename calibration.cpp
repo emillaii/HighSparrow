@@ -112,6 +112,12 @@ bool Calibration::performCalibration()
             return false;
         }
     }
+    qInfo("---------------------------------------------------------------------");
+    for(int i =0;i<pixelPoints.size();i++){
+        qInfo("pixels[%d], x: %f, y: %f",i,pixelPoints[i].x(),pixelPoints[i].y());
+        qInfo("motors[%d], x: %f, y: %f",i,motorPoints[i].x(),motorPoints[i].y());
+    }
+    qInfo("---------------------------------------------------------------------");
     if(coordinateA2BMapping(pixelPoints,motorPoints))
     {
         parameters.setOriginX(mOriginB.x());

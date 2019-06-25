@@ -6,25 +6,10 @@ SingleheadLSutModule::SingleheadLSutModule(QString name, QObject * parent) : Thr
     connect(this,&SingleheadLSutModule::sendHandlingOperation,this,&SingleheadLSutModule::performHandlingOperation);
 }
 
-void SingleheadLSutModule::Init(MaterialCarrier *_sut_carrier,
-                                VisionLocation *_downlook_location,
-                                VisionLocation *_updownlook_down_location,
-                                VisionLocation *_updownlook_up_location,
-                                VisionLocation *_mushroom_location,
-                                VisionLocation * _gripper_location,
-                                XtVacuum *_sutVacuum,
-                                XtVacuum *_lutVacuum,
-                                XtCylinder *_pogopin)
+void SingleheadLSutModule::Init(MaterialCarrier *_sut_carrier, XtCylinder *_pogopin)
 {
     qInfo("SingleheadLSutModule Init");
     this->sut_carrier = _sut_carrier;
-    this->vision_downlook_location = _downlook_location;
-    this->vision_updownlook_down_location = _updownlook_down_location;
-    this->vision_updownlook_up_location = _updownlook_up_location;
-    this->vision_mushroom_location = _mushroom_location;
-    this->vision_gripper_location = _gripper_location;
-    this->vacuum_sut = _sutVacuum;
-    this->vacuum_lut = _lutVacuum;
     this->pogopin = _pogopin;
 }
 
@@ -35,11 +20,8 @@ void SingleheadLSutModule::loadParams(QString file_name)
     temp_map.insert("load_position",&load_position);
     temp_map.insert("downlook_position",&downlook_position);
     temp_map.insert("mushroom_position",&mushroom_position);
-    temp_map.insert("updn_downlook_calibration_position",&updn_downlook_calibration_position);
-    temp_map.insert("updn_uplook_calibration_position",&updn_uplook_calibration_position);
+    temp_map.insert("calibration_position",&calibration_position);
     temp_map.insert("safety_position", &safety_position);
-    temp_map.insert("pick_lens_position",&pick_lens_position);
-    temp_map.insert("unpick_lens_position",&unpick_lens_position);
     PropertyBase::loadJsonConfig(file_name,temp_map);
 }
 
@@ -50,11 +32,8 @@ void SingleheadLSutModule::saveParams(QString file_name)
     temp_map.insert("load_position",&load_position);
     temp_map.insert("downlook_position",&downlook_position);
     temp_map.insert("mushroom_position",&mushroom_position);
-    temp_map.insert("updn_downlook_calibration_position",&updn_downlook_calibration_position);
-    temp_map.insert("updn_uplook_calibration_position",&updn_uplook_calibration_position);
+    temp_map.insert("calibration_position",&calibration_position);
     temp_map.insert("safety_position",&safety_position);
-    temp_map.insert("pick_lens_position",&pick_lens_position);
-    temp_map.insert("unpick_lens_position",&unpick_lens_position);
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
@@ -75,11 +54,7 @@ void SingleheadLSutModule::stopWork(bool wait_finish)
 
 void SingleheadLSutModule::resetLogic()
 {
-    if(is_run)
-    {
-        return;
-    }
-    // TODO Reset state to false
+
 }
 
 void SingleheadLSutModule::performHandling(int cmd)
@@ -90,82 +65,27 @@ void SingleheadLSutModule::performHandling(int cmd)
 
 void SingleheadLSutModule::performHandlingOperation(int cmd)
 {
-    qInfo("Single head LSUT performHandling %d",cmd);
-    bool result;
-
+    if (cmd == MOVE_TO_MUSHROOM_POSITION) {
+        moveToMushroomPosition(true);
+    } else if (cmd == MOVE_TO_LOAD_POSITION) {
+        moveToLoadPosition(true);
+    }
     int temp_value = 10;
-    if(cmd % temp_value == HandlePosition::MOVE_TO_MUSHROOM_POSITION) {
-        qInfo("LSUT move to mushroom position, cmd: %d", MOVE_TO_MUSHROOM_POSITION);
-        result = moveToMushroomPosition(true);
+    if(cmd % temp_value == HandleMoveToPosition::MOVE_TO_MUSHROOM_POSITION) {
+        moveToMushroomPosition(true);
     }
-    else if (cmd % temp_value == HandlePosition::MOVE_TO_LOAD_POSITION) {
-        qInfo("LSUT move to load position, cmd: %d", MOVE_TO_LOAD_POSITION);
-        result = moveToLoadPosition(true);
+    else if (cmd % temp_value == HandleMoveToPosition::MOVE_TO_LOAD_POSITION) {
+        moveToLoadPosition(true);
     }
-    else if (cmd % temp_value == HandlePosition::MOVE_TO_UPDN_DOWNLOOK_CALIBRATION_POSITION) {
-        qInfo("LSUT move to updown downlook calibration position, cmd: %d", MOVE_TO_UPDN_DOWNLOOK_CALIBRATION_POSITION);
-        result = moveToUpDnDownlookCalibrationPosition(true);
+    else if (cmd % temp_value == HandleMoveToPosition::MOVE_TO_CALIBRATION_POSITION) {
+        moveToCalibrationPosition(true);
     }
-    else if (cmd % temp_value == HandlePosition::MOVE_TO_UPDN_UPLOOK_CALIBRATION_POSITION) {
-        qInfo("LSUT move to updown uplook calibration position, cmd: %d", MOVE_TO_UPDN_UPLOOK_CALIBRATION_POSITION);
-        result = moveToUpDnUplookCalibrationPosition(true);
+    else if (cmd % temp_value == HandleMoveToPosition::MOVE_TO_PR_POSITION) {
+        moveToPRPosition(true);
     }
-    else if (cmd % temp_value == HandlePosition::MOVE_TO_PR_POSITION) {
-        qInfo("LSUT move to sensor PR position, cmd: %d", MOVE_TO_PR_POSITION);
-        result = moveToPRPosition(true);
+    else if (cmd % temp_value == HandleMoveToPosition::MOVE_TO_SAFETY_POSITION) {
+        moveToSafetyPosition(true);
     }
-    else if (cmd % temp_value == HandlePosition::MOVE_TO_SAFETY_POSITION) {
-        qInfo("LSUT move to safety position, cmd: %d", MOVE_TO_SAFETY_POSITION);
-        result = moveToSafetyPosition(true);
-    }
-    else {
-        result = true;
-    }
-    if(!result)
-    {
-        sendAlarmMessage(ErrorLevel::TipNonblock, GetCurrentError());
-        return;
-    }
-    cmd =cmd/temp_value*temp_value;
-
-    temp_value = 100;
-    if(cmd % temp_value == HandlePR::RESET_PR) {
-        qInfo("Reset PR result,cmd: %d", RESET_PR);
-        pr_offset.ReSet();
-    }
-    else if (cmd % temp_value == HandlePR::DOWNLOOK_SENSOR_PR) {
-        qInfo("LSUT perform sensor PR, cmd: %d", DOWNLOOK_SENSOR_PR);
-        result = moveToLoadPosition(true);
-    }
-    else if (cmd % temp_value == HandlePR::UPLOOK_LENS_PR) {
-        qInfo("LSUT perform lens PR, cmd: %d", UPLOOK_LENS_PR);
-        result = moveToLoadPosition(true);
-    }
-    else {
-        result = true;
-    }
-    if(!result)
-    {
-        sendAlarmMessage(ErrorLevel::TipNonblock, GetCurrentError());
-        return;
-    }
-    cmd =cmd/temp_value*temp_value;
-
-    temp_value = 1000;
-    if(cmd % temp_value == HandleToWorkPos::SENSOR_TO_BOND) {
-        qInfo("Move to sensor to,cmd: %d", RESET_PR);
-        //MoveSenorToBond();
-    }
-    else {
-        result = true;
-    }
-    if(!result)
-    {
-        sendAlarmMessage(ErrorLevel::TipNonblock, GetCurrentError());
-        return;
-    }
-
-    return;
 }
 
 bool SingleheadLSutModule::moveToMushroomPosition(bool check_autochthonous)
@@ -186,16 +106,10 @@ bool SingleheadLSutModule::moveToPRPosition(bool check_autochthonous)
     return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),downlook_position.Z(),check_autochthonous);
 }
 
-bool SingleheadLSutModule::moveToUpDnDownlookCalibrationPosition(bool check_autochthonous)
+bool SingleheadLSutModule::moveToCalibrationPosition(bool check_autochthonous)
 {
     qInfo("SUT module moveToCalibrationPos");
-    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(updn_downlook_calibration_position.X(),updn_downlook_calibration_position.Y(),updn_downlook_calibration_position.Z(),check_autochthonous);
-}
-
-bool SingleheadLSutModule::moveToUpDnUplookCalibrationPosition(bool check_autochthonous)
-{
-    qInfo("SUT module moveToCalibrationPos");
-    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(updn_uplook_calibration_position.X(),updn_uplook_calibration_position.Y(),updn_uplook_calibration_position.Z(),check_autochthonous);
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(calibration_position.X(),calibration_position.Y(),calibration_position.Z(),check_autochthonous);
 }
 
 bool SingleheadLSutModule::moveToSafetyPosition(bool check_autochthonous)

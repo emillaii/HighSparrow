@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include "commonutils.h"
+#include <QElapsedTimer>
 QImage ImageGrabbingWorkerThread::cvMat2QImage(const cv::Mat& mat)
 {
     // 8-bits unsigned, NO. OF CHANNELS = 1
@@ -63,14 +64,16 @@ void ImageGrabbingWorkerThread::run()
     while(true) {
         if(this->forceStop) break;
         QMutexLocker locker(&mutex);
+        QElapsedTimer timer; timer.start();
         QImage* newImage =  dk->DothinkeyGrabImage(0);
+        qInfo("Grab Image time elapsed : %d", timer.elapsed());
         latestImage = newImage->copy();
         delete newImage;
         latestImage = latestImage.scaled(720,480);
         m_pImgProvider->setImage(latestImage);
         emit callQmlRefeshImg();
         locker.unlock();
-        QThread::msleep(200); //Slow down the cpu cooldown
+        QThread::msleep(100); //Slow down the cpu cooldown
     }
 }
 

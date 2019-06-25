@@ -1065,9 +1065,25 @@ bool SingleHeadMachineMaterialLoaderModule::sensorPickerSearchSutZ(double z, QSt
         //sut_vacuum
         sut_vacuum->Set(0);
         QThread::msleep(200);
-        result &= pick_arm->ZSerchReturn(time_out);
+        result &= pick_arm->ZSerchReturn(0,time_out);
     }
     result &= pick_arm->motor_vcm1->MoveToPosSync(0);
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::sensorPickerSearchSutZ2(double z, QString dest, QString cmd, bool is_open, int time_out)
+{
+    qInfo("picker1SearchSutZ2 z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
+    bool result = pick_arm->motor_vcm1->MoveToPosSync(z-parameters.escapeHeight());
+    if(result)
+    {
+        result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+        //sut_vacuum
+        sut_vacuum->Set(0);
+        QThread::msleep(200);
+        result &= pick_arm->ZSerchReturn(0,time_out);
+    }
+    result &= pick_arm->move_XeYe_Z1_XY(0,parameters.escapeX(),parameters.escapeY());
     return result;
 }
 
@@ -1082,7 +1098,7 @@ bool SingleHeadMachineMaterialLoaderModule::lensPickerSearchSutZ(double z, QStri
         //sut_vacuum
         sut_vacuum->Set(0);
         QThread::msleep(200);
-        result &= pick_arm->ZSerchReturn(time_out);
+        result &= pick_arm->ZSerchReturn(1,time_out);
     }
     result &= pick_arm->motor_vcm1->MoveToPosSync(0);
     return result;
@@ -1115,7 +1131,7 @@ bool SingleHeadMachineMaterialLoaderModule::placeSensorToSUT(QString dest, int t
 bool SingleHeadMachineMaterialLoaderModule::pickSUTSensor(QString dest, int time_out)
 {
     qInfo("pickSUTSensor dest %s time_out %d",dest.toStdString().c_str(),time_out);
-    bool result = sensorPickerSearchSutZ(pick_arm->parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,time_out);
+    bool result = sensorPickerSearchSutZ2(pick_arm->parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取NGsenor失败").arg(dest=="remote"?1:2));
     return result;
@@ -1383,7 +1399,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayPos(int tray_index)
 {
     qInfo("moveToTrayPos %d",tray_index);
 //    return  pick_arm->move_XtXY_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),false);
-    bool result = pick_arm->move_Xm_Origin();
+    bool result = pick_arm->move_Xm_Origin ();
     result &= pick_arm->move_XtXYT2_Synic(lensTray->getCurrentPosition(tray_index),parameters.visionPositionX(),pick_arm->parameters.pickLensTheta(),false);
     return result;
 }

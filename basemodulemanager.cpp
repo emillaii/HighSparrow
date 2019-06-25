@@ -898,6 +898,7 @@ bool BaseModuleManager::InitStruct()
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
+    sh_lsut_module.Init(&sut_carrier,GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
     if(ServerMode()==2)
     {
         //single_station_material_pickarm.Init();
@@ -929,17 +930,6 @@ bool BaseModuleManager::InitStruct()
         sensor_tray.resetTrayState(1);
         lens_tray.resetTrayState(0);
         lens_tray.resetTrayState(1);
-
-        sh_lsut_module.Init(&sut_carrier,
-                            GetVisionLocationByName(sh_lsut_module.parameters.sutDownLookLocationName()),
-                            GetVisionLocationByName(sh_lsut_module.parameters.updownlookDownLocationName()),
-                            GetVisionLocationByName(sh_lsut_module.parameters.updownlookUpLocationName()),
-                            GetVisionLocationByName(sh_lsut_module.parameters.mushroomLocationName()),
-                            GetVisionLocationByName(sh_lsut_module.parameters.lutGripperLoactionName()),
-                            GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()),
-                            GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()),
-                            GetCylinderByName(sh_lsut_module.parameters.cylinderName()));
-
     }else
     {
         lut_carrier.Init("lut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
@@ -1096,18 +1086,19 @@ bool BaseModuleManager::allMotorsSeekOriginal3()
     GetVcMotorByName(sh_lsut_module.parameters.motorZName())->SeekOrigin();
     result &= GetVcMotorByName(sh_lsut_module.parameters.motorZName())->WaitSeekDone();
 
+    GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->SeekOrigin();
     GetMotorByName(sh_lsut_module.parameters.motorXName())->SeekOrigin();
     GetMotorByName(sh_lsut_module.parameters.motorYName())->SeekOrigin();
 
-    GetMotorByName(aa_head_module.parameters.motorAName())->SeekOrigin();
-    GetMotorByName(aa_head_module.parameters.motorBName())->SeekOrigin();
-    GetMotorByName(aa_head_module.parameters.motorCName())->SeekOrigin();
+//    GetMotorByName(aa_head_module.parameters.motorAName())->SeekOrigin();
+//    GetMotorByName(aa_head_module.parameters.motorBName())->SeekOrigin();
+//    GetMotorByName(aa_head_module.parameters.motorCName())->SeekOrigin();
 
     GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->SeekOrigin();
     GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->SeekOrigin();
     result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->WaitSeekDone();
     result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->WaitSeekDone();
-
+    result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->WaitSeekDone();
     GetMotorByName(single_station_material_pickarm.parameters.motorXName())->SeekOrigin();
     GetMotorByName(single_station_material_pickarm.parameters.motorYName())->SeekOrigin();
     //GetMotorByName(single_station_material_pickarm.parameters.motorZName())->SeekOrigin();
@@ -1124,9 +1115,9 @@ bool BaseModuleManager::allMotorsSeekOriginal3()
     result &= GetMotorByName(sh_lsut_module.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(sh_lsut_module.parameters.motorYName())->WaitSeekDone();
 
-    result &= GetMotorByName(aa_head_module.parameters.motorAName())->WaitSeekDone();
-    result &= GetMotorByName(aa_head_module.parameters.motorBName())->WaitSeekDone();
-    result &= GetMotorByName(aa_head_module.parameters.motorCName())->WaitSeekDone();
+//    result &= GetMotorByName(aa_head_module.parameters.motorAName())->WaitSeekDone();
+//    result &= GetMotorByName(aa_head_module.parameters.motorBName())->WaitSeekDone();
+//    result &= GetMotorByName(aa_head_module.parameters.motorCName())->WaitSeekDone();
 
     if(result){
         qInfo("all motor seeked origin successed!");

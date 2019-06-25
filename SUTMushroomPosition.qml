@@ -6,7 +6,7 @@ import SingleheadLSutModuleLib 1.0
 ColumnLayout {
     RowLayout {
         Label {
-            text: qsTr("SUT_X")
+            text: qsTr("LSUT_X")
         }
         TextField {
             text: lsutMushroomPosition.X
@@ -20,7 +20,7 @@ ColumnLayout {
             }
         }
         Label {
-            text: qsTr("SUT_Y")
+            text: qsTr("LSUT_Y")
         }
         TextField {
             text: lsutMushroomPosition.Y
@@ -34,7 +34,7 @@ ColumnLayout {
             }
         }
         Label {
-            text: qsTr("SUT_Z")
+            text: qsTr("LSUT_Z")
         }
         TextField {
             text: lsutMushroomPosition.Z

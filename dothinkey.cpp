@@ -1,5 +1,5 @@
 #include "dothinkey.h"
-
+#include <QElapsedTimer>
 bool Dothinkey::CameraChannel::CloseCameraChannel()
 {
     if (this->m_iDevID>= 0) {
@@ -451,7 +451,9 @@ QImage* Dothinkey::DothinkeyGrabImage(int channel)
     {
         return false;
     }
-    memset(CameraBuffer, 0, nSize);
+    //memset(CameraBuffer, 0, nSize);
+
+    QElapsedTimer timer; timer.start();
     int ret = GrabFrame(CameraBuffer, grabSize, &retSize, &frameInfo, iDevID);
     if (ret == DT_ERROR_OK)
     {
@@ -463,6 +465,7 @@ QImage* Dothinkey::DothinkeyGrabImage(int channel)
     mSize.width = width;
     QImage * image = new QImage((const uchar*) bmpBuffer, width, height, QImage::Format_RGB888);
     delete(CameraBuffer);
+            qInfo("Time elapsed:%d", timer.elapsed());
     CameraBuffer = NULL;
     return image;
 }

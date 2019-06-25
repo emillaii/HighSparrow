@@ -7,7 +7,7 @@
 class SingleHeadLSutParameter : public PropertyBase{
     Q_OBJECT
 private:
-    double  m_ZOffset = 0;
+    double m_Force = 0;
     QString m_motorXName;
     QString m_motorYName;
     QString m_motorZName;
@@ -24,7 +24,7 @@ private:
 
 public:
     explicit SingleHeadLSutParameter(){}
-    Q_PROPERTY(double ZOffset READ ZOffset WRITE setZOffset NOTIFY ZOffsetChanged)
+    Q_PROPERTY(double Force READ Force WRITE setForce NOTIFY ForceChanged)
     Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
     Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
@@ -39,9 +39,9 @@ public:
     Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
     Q_PROPERTY(QString lutGripperLoactionName READ lutGripperLoactionName WRITE setLutGripperLoactionName NOTIFY lutGripperLoactionNameChanged)
 
-double ZOffset() const
+double Force() const
 {
-    return m_ZOffset;
+    return m_Force;
 }
 QString motorXName() const
 {
@@ -109,14 +109,14 @@ QString lutGripperLoactionName() const
 }
 
 public slots:
-void setZOffset(double ZOffset)
+void setForce(double Force)
 {
     qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_ZOffset, ZOffset))
+    if (qFuzzyCompare(m_Force, Force))
         return;
 
-    m_ZOffset = ZOffset;
-    emit ZOffsetChanged(m_ZOffset);
+    m_Force = Force;
+    emit ForceChanged(m_Force);
 }
 void setMotorXName(QString motorXName)
 {
@@ -236,7 +236,7 @@ void setLutGripperLoactionName(QString lutGripperLoactionName)
 }
 
 signals:
-void ZOffsetChanged(double ZOffset);
+void ForceChanged(double Force);
 void motorXNameChanged(QString motorXName);
 void motorYNameChanged(QString motorYName);
 void motorZNameChanged(QString motorZName);

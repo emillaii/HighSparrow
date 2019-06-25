@@ -172,6 +172,7 @@ private:
 
     bool sensorPickerSearchZ(double z,bool is_open = true,int time_out = 10000,int picker = 0);
     bool sensorPickerSearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
+    bool sensorPickerSearchSutZ2(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
     bool lensPickerSearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
     bool pickTraySensor(int time_out = 10000);
     bool placeSensorToSUT(QString dest,int time_out = 10000);

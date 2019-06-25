@@ -55,9 +55,9 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
     else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
     else if (cameraName.contains(CAMERA_AA2_DL)) { camera = downlookCamera; }
     else if (cameraName.contains(CAMERA_SPA_DL)) { camera = pickarmCamera; }
-    else if (cameraName.contains(CAMERA_SH_UT_UL)) {camera = uplookCamera;}
     else if (cameraName.contains(CAMERA_SH_PA_DL)) {camera = pickarmCamera;}
-    else if(cameraName.contains(CAMERA_SH_AA_DL)) {camera = downlookCamera;}
+    else if (cameraName.contains(CAMERA_SH_AA_DL)) {camera = downlookCamera;}
+    else if (cameraName.contains(CAMERA_SH_UT_UL)) {camera = uplookCamera;}
     if (camera == Q_NULLPTR || !camera->isCameraGrabbing()) return false;
     QPixmap p = QPixmap::fromImage(camera->getImage());
     QImage q2 = p.toImage();
@@ -166,7 +166,9 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         //avl::LoadImage( g_constData1, false, image1 );
 
         this->grabImageFromCamera(camera_name, image1);
-        avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false);
+        qInfo("---------camera name: %s--------------image1 exist?: %d",camera_name.toStdString().c_str(),&image1);
+        qInfo("-------------------- %s -----------------------------",rawImageName.toStdString().c_str());
+        avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
 
         //Testing use
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );

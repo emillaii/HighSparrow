@@ -1,7 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
-import SingleheadLSutModuleLib 1.0
 
 ColumnLayout {
     RowLayout {
@@ -9,42 +8,42 @@ ColumnLayout {
             text: qsTr("SUT_X")
         }
         TextField {
-            text: lsutUpDnDownlookCalibrationPosition.X
+            text: sutToolUplookPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lsutUpDnDownlookCalibrationPosition.setX(text)
+                sutToolUplookPosition.setX(text)
             }
         }
         Label {
             text: qsTr("SUT_Y")
         }
         TextField {
-            text: lsutUpDnDownlookCalibrationPosition.Y
+            text: sutToolUplookPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lsutUpDnDownlookCalibrationPosition.setY(text)
+                sutToolUplookPosition.setY(text)
             }
         }
         Label {
             text: qsTr("SUT_Z")
         }
         TextField {
-            text: lsutUpDnDownlookCalibrationPosition.Z
+            text: sutToolUplookPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lsutUpDnDownlookCalibrationPosition.setZ(text)
+                sutToolUplookPosition.setZ(text)
             }
         }
     }
@@ -55,7 +54,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                sh_lsut_Module.performHandling(SingleheadLSutModule.MOVE_TO_UPDN_DOWNLOOK_CALIBRATION_POSITION)
+                sutModule.moveToToolUplookPos()
             }
         }
         Button {
@@ -66,9 +65,9 @@ ColumnLayout {
                 var x = baseModuleManager.getMotorFeedbackPos(sutParams.motorXName)
                 var y = baseModuleManager.getMotorFeedbackPos(sutParams.motorYName)
                 var z = baseModuleManager.getMotorFeedbackPos(sutParams.motorZName)
-                lsutUpDnDownlookCalibrationPosition.setX(x)
-                lsutUpDnDownlookCalibrationPosition.setY(y)
-                lsutUpDnDownlookCalibrationPosition.setZ(z)
+                sutToolUplookPosition.setX(x)
+                sutToolUplookPosition.setY(y)
+                sutToolUplookPosition.setZ(z)
             }
         }
     }

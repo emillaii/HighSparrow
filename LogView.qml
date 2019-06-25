@@ -21,14 +21,10 @@ Item {
 
             model: logModel
 
-            delegate: Rectangle {
-                height: 25
+            delegate: Text {
+                text: logString
                 anchors.left: parent.left
                 anchors.right: parent.right
-
-                Text {
-                    text: logString
-                }
             }
 
             onCountChanged: {

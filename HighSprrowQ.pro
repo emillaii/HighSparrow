@@ -25,6 +25,7 @@ SOURCES += \
     highsprrow.cpp \
     errorcode.cpp \
     aaheadmodule.cpp \
+    traymapmodel.cpp \
     visionmodule.cpp \
     commonutils.cpp \
     logger.cpp \
@@ -136,6 +137,7 @@ HEADERS += \
     errorcode.h \
     aaheadmodule.h \
     logmodel.h \
+    traymapmodel.h \
     visionmodule.h \
     commonutils.h \
     logger.h \

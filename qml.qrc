@@ -84,6 +84,7 @@
         <file>LUTDownlookUnloadPosition.qml</file>
         <file>UPHView.qml</file>
         <file>LogView.qml</file>
+        <file>TrayMapView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

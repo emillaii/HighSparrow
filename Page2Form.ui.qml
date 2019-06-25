@@ -83,4 +83,12 @@ Page {
         anchors.bottom: row.bottom
         anchors.right: parent.right
     }
+
+    TrayMapView {
+        id: trayMapView
+        anchors.top: row.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+    }
 }

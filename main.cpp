@@ -13,6 +13,7 @@
 #include "aadata.h"
 #include "checkprocessmodel.h"
 #include "logmodel.h"
+#include "traymapmodel.h"
 
 #include <QtWidgets/QApplication>
 #include <windows.h>
@@ -80,8 +81,13 @@ int main(int argc, char *argv[])
     QtWebEngine::initialize();
     QQmlApplicationEngine engine;
 
+    qmlRegisterUncreatableType<TrayMapModel>("HighSprrow.Models", 1, 0, "TrayMapModel", "Tray map model should only be created in cpp code");
 
     //Object Property Definition
+    engine.rootContext()->setContextProperty("lensTrayModel", TrayMapModel::instance(TrayMapModel::LensTray));
+    engine.rootContext()->setContextProperty("sensorTrayModel", TrayMapModel::instance(TrayMapModel::SensorTray));
+    engine.rootContext()->setContextProperty("productTrayModel", TrayMapModel::instance(TrayMapModel::ProductTray));
+    engine.rootContext()->setContextProperty("rejectTrayModel", TrayMapModel::instance(TrayMapModel::RejectTray));
     engine.rootContext()->setContextProperty("logModel", LogModel::instance());
     engine.rootContext()->setContextProperty("highSprrow", &highSprrow);
     engine.rootContext()->setContextProperty("visionModule", highSprrow.baseModuleManager->visionModule);
@@ -275,6 +281,28 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
+
+
+    // test code just to demonstrate how to use these models
+    TrayMapModel* model = TrayMapModel::instance(TrayMapModel::LensTray);
+    model->resetModel(8, 5, TrayMapModel::StatusIdle);
+    model->setUnitStatus(1, TrayMapModel::StatusGood);
+    model->setUnitStatus(4, TrayMapModel::StatusNG);
+
+    model = TrayMapModel::instance(TrayMapModel::SensorTray);
+    model->resetModel(8, 5, TrayMapModel::StatusIdle);
+    model->setUnitStatus(2, TrayMapModel::StatusGood);
+    model->setUnitStatus(14, TrayMapModel::StatusNG);
+
+    model = TrayMapModel::instance(TrayMapModel::ProductTray);
+    model->resetModel(8, 5, TrayMapModel::StatusIdle);
+    model->setUnitStatus(9, TrayMapModel::StatusGood);
+    model->setUnitStatus(21, TrayMapModel::StatusNG);
+
+    model = TrayMapModel::instance(TrayMapModel::RejectTray);
+    model->resetModel(8, 5, TrayMapModel::StatusIdle);
+    model->setUnitStatus(27, TrayMapModel::StatusGood);
+    model->setUnitStatus(34, TrayMapModel::StatusNG);
 
     return app.exec();
 }

@@ -271,11 +271,13 @@ bool SingleheadLSutModule::moveToCamPos(double pixel_x, double pixel_y, int upDo
     QPointF meth;
     if (upDownLook == 0)
     {
-        vision_gripper_location->mapping->CalcMechDistance(QPointF(pixel_x, pixel_y), meth);
+        qInfo("Use uplook gripper vision location");
+        vision_gripper_location->mapping->CalcMechDistanceFromPixelCenter(pixel_x, -pixel_y, meth);
     }
     else if (upDownLook == 1)
     {
-        vision_downlook_location->mapping->CalcMechDistance(QPointF(pixel_x, pixel_y), meth);
+        qInfo("Use downlook vision location");
+        vision_downlook_location->mapping->CalcMechDistanceFromPixelCenter(pixel_x, pixel_y, meth);
     }
     else
     {

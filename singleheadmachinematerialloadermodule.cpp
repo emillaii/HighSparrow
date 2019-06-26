@@ -1768,7 +1768,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToCamPos(double pixel_x, double 
 
     // Calculate mechanical position
     QPointF meth;
-    ret = sensor_vision->mapping->CalcMechDistanceFromPixelCenter(pixel_x, pixel_y, meth);
+    ret = sensor_vision->mapping->CalcMechDistanceFromPixelCenter(pixel_x, -pixel_y, meth);
     qInfo("Move to camera position meth_x: %f, meth_y: %f", meth.x(), meth.y());
 
     // Move motors

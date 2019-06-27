@@ -1,4 +1,4 @@
-import QtQuick 2.9
+﻿import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import FileContentItem 1.0
@@ -30,23 +30,8 @@ ItemDelegate {
         MotionPopup{
             id:lens_pickup_module_motions
         }
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        id: itemLabel
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: lensPickArmModuleViewSwitch
-            }
-        }
 
         ColumnLayout{
-            visible:  lensPickArmModuleViewSwitch.checked
             RowLayout {
                 Label {
                     text: qsTr("")

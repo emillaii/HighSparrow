@@ -23,22 +23,7 @@ ItemDelegate {
         MotionPopup{
             id:lut_model_motions
         }
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        id: itemLabel
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: lutViewSwitch
-            }
-        }
         ColumnLayout {
-            visible: lutViewSwitch.checked
             RowLayout {
                 Label {
                     text: qsTr("")

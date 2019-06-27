@@ -9,30 +9,14 @@ ItemDelegate {
 
     contentItem: ColumnLayout{
         spacing: 0
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        id: itemLabel
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: commonControlViewSwitch
-            }
-        }
 
         ColumnLayout{
-            visible:  commonControlViewSwitch.checked
             RowLayout {
                 Label {
                     text: qsTr("")
                 }
             }
             GroupBox{
-                visible: commonControlViewSwitch.checked
                 title:qsTr("常用操作")
                 ColumnLayout{
                     GroupBox{
@@ -267,7 +251,7 @@ ItemDelegate {
                                     onClicked: {
                                         //logicManager.lutPickLensToAA1()
                                         lutModule.moveToAA1UnPickLens()
-                        //                lutModule.moveToAA1PickLens(false,true)
+                                        //lutModule.moveToAA1PickLens(false,true)
                                     }
                                 }
                             }
@@ -325,11 +309,9 @@ ItemDelegate {
                                     Connections{
                                         target: timer
                                         onTriggered: {
-                                            if (commonControlViewSwitch.checked) {
-                                                if(special_ouput.checked !== baseModuleManager.getOutput("POGOPIN下"))
-                                                    special_ouput.toggle()
-                                                //if(index%2==0&&!swich_id.checked)swich_id.toggle()
-                                            }
+                                            if(special_ouput.checked !== baseModuleManager.getOutput("POGOPIN下"))
+                                                special_ouput.toggle()
+                                            //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                         }
                                     }
                                     onCheckedChanged:{
@@ -346,11 +328,9 @@ ItemDelegate {
                                         target: timer
                                         onTriggered: {
                                             //console.log(text)
-                                            if (commonControlViewSwitch.checked) {
-                                                if(sut_vacuum.checked !== baseModuleManager.getOutput(text))
-                                                    sut_vacuum.toggle()
-                                                //if(index%2==0&&!swich_id.checked)swich_id.toggle()
-                                            }
+                                            if(sut_vacuum.checked !== baseModuleManager.getOutput(text))
+                                                sut_vacuum.toggle()
+                                            //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                         }
                                     }
                                     onCheckedChanged:{

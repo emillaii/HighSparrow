@@ -8,23 +8,7 @@ import QtQuick.Dialogs 1.2
 ItemDelegate {
     width: parent.width
     contentItem: ColumnLayout {
-
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        id: itemLabel
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: dispenseViewSwitch
-            }
-        }
         ColumnLayout {
-            visible: dispenseViewSwitch.checked
             RowLayout {
                 Label {
                     text: qsTr("")

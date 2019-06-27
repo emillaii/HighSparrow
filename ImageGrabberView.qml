@@ -8,23 +8,8 @@ ItemDelegate {
     width: parent.width
     contentItem: ColumnLayout {
         spacing: 0
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        id: itemLabel
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: imageGrabberViewSwitch
-            }
-        }
 
         ColumnLayout {
-            visible: imageGrabberViewSwitch.checked
             FileDialog {
                 id: loadfileDialog
                 title: qsTr("选择加载文件")

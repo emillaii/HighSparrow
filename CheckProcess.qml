@@ -10,23 +10,8 @@ ItemDelegate {
 
     contentItem: ColumnLayout{     
         spacing: 0
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        id: itemLabel
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: checkProcessViewSwitch
-            }
-        }
 
         ColumnLayout {
-            visible: checkProcessViewSwitch.checked
             Timer {
                 id:timer
                 interval: 500; running: true; repeat: true

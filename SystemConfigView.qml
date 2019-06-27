@@ -8,22 +8,8 @@ ItemDelegate {
     width: parent.width
     contentItem: ColumnLayout {
         spacing: 0
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: systemConfigViewSwitch
-            }
-        }
 
         ColumnLayout {
-            visible: systemConfigViewSwitch.checked
             RowLayout {
                 Label {
                     text: qsTr("")

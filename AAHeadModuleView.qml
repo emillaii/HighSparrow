@@ -23,22 +23,8 @@ ItemDelegate {
         MotionPopup{
             id:aa_head_motions
         }
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: aaViewSwitch
-            }
-        }
 
         ColumnLayout {
-            visible: aaViewSwitch.checked
             RowLayout {
                 Label {
                     text: qsTr("")

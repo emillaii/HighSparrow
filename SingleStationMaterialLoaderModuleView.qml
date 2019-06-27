@@ -36,22 +36,7 @@ ItemDelegate {
         MotionPopup{
             id:single_station_material_loader_motions
         }
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        id: itemLabel
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: singleStationMaterialLoaderModuleViewSwitch
-            }
-        }
         ColumnLayout{
-            visible: singleStationMaterialLoaderModuleViewSwitch.checked
             RowLayout {
                 Label {
                     text: qsTr("")

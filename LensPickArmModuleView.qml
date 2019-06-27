@@ -30,23 +30,7 @@ ItemDelegate {
         MotionPopup{
             id:lens_pickup_module_motions
         }
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        id: itemLabel
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: lensPickArmModuleViewSwitch
-            }
-        }
-
         ColumnLayout{
-            visible:  lensPickArmModuleViewSwitch.checked
             RowLayout {
                 Label {
                     text: qsTr("")

@@ -9,22 +9,7 @@ ItemDelegate {
     width: parent.width
     contentItem: ColumnLayout {
         spacing: 0
-        RowLayout {
-            ColumnLayout {
-                RowLayout {
-                    Label {
-                        id: itemLabel
-                        text: model.label
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Switch {
-                id: calibrationViewSwitch
-            }
-        }
         ColumnLayout {
-            visible: calibrationViewSwitch.checked
             Layout.alignment: Qt.AlignTop
             ListModel{
                 id: calibration_model

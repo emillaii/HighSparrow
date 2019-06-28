@@ -80,9 +80,11 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lsutMushroomPosition", &highSprrow.baseModuleManager->sh_lsut_module.mushroom_position);
     engine.rootContext()->setContextProperty("lsutLoadPosition", &highSprrow.baseModuleManager->sh_lsut_module.load_position);
     engine.rootContext()->setContextProperty("lsutPRPosition", &highSprrow.baseModuleManager->sh_lsut_module.downlook_position);
+    engine.rootContext()->setContextProperty("lsutGripperPosition", &highSprrow.baseModuleManager->sh_lsut_module.gripper_position);
     engine.rootContext()->setContextProperty("lsutUpDnDownlookCalibrationPosition", &highSprrow.baseModuleManager->sh_lsut_module.updn_downlook_calibration_position);
     engine.rootContext()->setContextProperty("lsutUpUplookCalibrationPosition", &highSprrow.baseModuleManager->sh_lsut_module.updn_uplook_calibration_position);
     engine.rootContext()->setContextProperty("lsutSafetyPosition", &highSprrow.baseModuleManager->sh_lsut_module.safety_position);
+    engine.rootContext()->setContextProperty("lsutParameter", &highSprrow.baseModuleManager->sh_lsut_module.parameters);
 
     //Material Loader Position
     engine.rootContext()->setContextProperty("sh_sut_pr_position",&highSprrow.baseModuleManager->single_station_material_loader_module.sut_pr_position);

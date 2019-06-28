@@ -40,6 +40,10 @@ ItemDelegate {
                 SUTMushroomPosition {}
             }
             GroupBox{
+                title: qsTr("Gripper Position")
+                SUTGripperPosition {}
+            }
+            GroupBox{
                 title: qsTr("Load Position")
                 SUTLoadPositionView {}
             }

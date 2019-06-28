@@ -35,6 +35,7 @@ void SingleheadLSutModule::loadParams(QString file_name)
     temp_map.insert("load_position",&load_position);
     temp_map.insert("downlook_position",&downlook_position);
     temp_map.insert("mushroom_position",&mushroom_position);
+    temp_map.insert("gripper_position",&gripper_position);
     temp_map.insert("updn_downlook_calibration_position",&updn_downlook_calibration_position);
     temp_map.insert("updn_uplook_calibration_position",&updn_uplook_calibration_position);
     temp_map.insert("safety_position", &safety_position);
@@ -50,6 +51,7 @@ void SingleheadLSutModule::saveParams(QString file_name)
     temp_map.insert("load_position",&load_position);
     temp_map.insert("downlook_position",&downlook_position);
     temp_map.insert("mushroom_position",&mushroom_position);
+    temp_map.insert("gripper_position",&gripper_position);
     temp_map.insert("updn_downlook_calibration_position",&updn_downlook_calibration_position);
     temp_map.insert("updn_uplook_calibration_position",&updn_uplook_calibration_position);
     temp_map.insert("safety_position",&safety_position);
@@ -97,6 +99,10 @@ void SingleheadLSutModule::performHandlingOperation(int cmd)
     if(cmd % temp_value == HandlePosition::MOVE_TO_MUSHROOM_POSITION) {
         qInfo("LSUT move to mushroom position, cmd: %d", MOVE_TO_MUSHROOM_POSITION);
         result = moveToMushroomPosition(true);
+    }
+    else if(cmd % temp_value == HandlePosition::MOVE_TO_GRIPPER_POSITION) {
+        qInfo("LSUT move to gripper position, cmd: %d", MOVE_TO_GRIPPER_POSITION);
+        result = moveToGripperPosition(true);
     }
     else if (cmd % temp_value == HandlePosition::MOVE_TO_LOAD_POSITION) {
         qInfo("LSUT move to load position, cmd: %d", MOVE_TO_LOAD_POSITION);
@@ -172,6 +178,12 @@ bool SingleheadLSutModule::moveToMushroomPosition(bool check_autochthonous)
 {
     qInfo("SUT module moveToMushroomPos");
     return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(mushroom_position.X(),mushroom_position.Y(),mushroom_position.Z(),check_autochthonous);
+}
+
+bool SingleheadLSutModule::moveToGripperPosition(bool check_autochthonous)
+{
+    qInfo("SUT module moveToGripperPosition");
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(gripper_position.X(),gripper_position.Y(),gripper_position.Z(),check_autochthonous);
 }
 
 bool SingleheadLSutModule::moveToLoadPosition(bool check_autochthonous)

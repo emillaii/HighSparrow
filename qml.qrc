@@ -89,6 +89,7 @@
         <file>SensorTraySpecs.qml</file>
         <file>MPAHeadParameter.qml</file>
         <file>LensTraySpecs.qml</file>
+        <file>SUTGripperPosition.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

@@ -31,7 +31,11 @@ public:
     bool Move_Z_Sync(double z,int timeout = 3000);
     bool ZSerchByForce(const double speed,const double force,const double search_limit = -1,const int vacuum_state = -1,XtVacuum* excute_vacuum = nullptr);
     bool ZSerchReturn();
+    bool ZSerchByForce(const double speed,const double force,bool check_softlanding, int timeout = 10000);
     mPoint3D GetFeedBackPos();
+
+    double GetSoftladngPosition(bool get_current = false);
+    double softlandingPosition;
 };
 
 #endif // MATERIAL_CARRIER_H

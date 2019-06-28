@@ -160,3 +160,20 @@ mPoint3D MaterialCarrier::GetFeedBackPos()
     return mPoint3D(motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos());
 }
 
+bool MaterialCarrier::ZSerchByForce(const double speed,const double force,bool check_softlanding, int timeout)
+{
+    qInfo("Z search by force with speed:%f, force:%f", speed, force);
+    if(check_softlanding)if(!motor_z->resetSoftLanding(timeout))return false;
+    bool result = motor_z->SearchPosByForce(speed,force);
+    QThread::msleep(200);
+    softlandingPosition = motor_z->GetFeedbackPos();
+    result &= motor_z->DoSoftLandingReturn();
+    result &= motor_z->WaitSoftLandingDone(timeout);
+}
+
+double MaterialCarrier::GetSoftladngPosition(bool get_current)
+{
+    if(get_current)
+        return motor_z->GetFeedbackPos();
+    return softlandingPosition;
+}

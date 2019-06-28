@@ -63,9 +63,9 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(sutParams.motorXName)
-                var y = baseModuleManager.getMotorFeedbackPos(sutParams.motorYName)
-                var z = baseModuleManager.getMotorFeedbackPos(sutParams.motorZName)
+                var x = baseModuleManager.getMotorFeedbackPos(lsutParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(lsutParams.motorYName)
+                var z = baseModuleManager.getMotorFeedbackPos(lsutParams.motorZName)
                 lsutUpDnDownlookCalibrationPosition.setX(x)
                 lsutUpDnDownlookCalibrationPosition.setY(y)
                 lsutUpDnDownlookCalibrationPosition.setZ(z)

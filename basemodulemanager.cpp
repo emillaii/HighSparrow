@@ -1523,6 +1523,9 @@ void BaseModuleManager::sendChangeSensorTray()
 
 bool BaseModuleManager::initSensor()
 {
+    // Make sure SUT sensor vaccum is on
+    GetVacuumByName(sh_lsut_module.parameters.sutVacuumName())->Set(true);
+
     const int channel = 0;
     bool res = dothinkey->DothinkeyEnum();
     if (!res) { qCritical("Cannot find dothinkey"); return false; }

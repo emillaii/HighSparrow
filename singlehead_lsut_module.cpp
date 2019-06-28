@@ -41,6 +41,8 @@ void SingleheadLSutModule::loadParams(QString file_name)
     temp_map.insert("safety_position", &safety_position);
     temp_map.insert("pick_lens_position",&pick_lens_position);
     temp_map.insert("unpick_lens_position",&unpick_lens_position);
+    temp_map.insert("lens_offset",&lens_offset);
+    temp_map.insert("sensor_offset",&sensor_offset);
     PropertyBase::loadJsonConfig(file_name,temp_map);
 }
 
@@ -57,6 +59,8 @@ void SingleheadLSutModule::saveParams(QString file_name)
     temp_map.insert("safety_position",&safety_position);
     temp_map.insert("pick_lens_position",&pick_lens_position);
     temp_map.insert("unpick_lens_position",&unpick_lens_position);
+    temp_map.insert("lens_offset",&lens_offset);
+    temp_map.insert("sensor_offset",&sensor_offset);
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
@@ -141,11 +145,15 @@ void SingleheadLSutModule::performHandlingOperation(int cmd)
     }
     else if (cmd % temp_value == HandlePR::DOWNLOOK_SENSOR_PR) {
         qInfo("LSUT perform sensor PR, cmd: %d", DOWNLOOK_SENSOR_PR);
-        result = moveToLoadPosition(true);
+        result = performDownlookSensorPR();
     }
     else if (cmd % temp_value == HandlePR::UPLOOK_LENS_PR) {
         qInfo("LSUT perform lens PR, cmd: %d", UPLOOK_LENS_PR);
-        result = moveToLoadPosition(true);
+        result = performUplookLensPR();
+    }
+    else if (cmd % temp_value == HandlePR::UPLOOK_GRIPPER_PR) {
+        qInfo("LSUT perform gripper PR, cmd: %d", UPLOOK_GRIPPER_PR);
+        result = performUplookGripperPR();
     }
     else {
         result = true;
@@ -159,9 +167,32 @@ void SingleheadLSutModule::performHandlingOperation(int cmd)
 
     temp_value = 1000;
     if(cmd % temp_value == HandleToWorkPos::SENSOR_TO_BOND) {
-        qInfo("Move to sensor to,cmd: %d", RESET_PR);
+        qInfo("Move sensor to bond, cmd: %d", SENSOR_TO_BOND);
         //MoveSenorToBond();
     }
+    else if (cmd % temp_value == HandleToWorkPos::LENS_TO_GRIPPER) {
+        qInfo("Move lens to gripper, cmd: %d", LENS_TO_GRIPPER);
+        result = moveLensToGripper();
+    }
+    else {
+        result = true;
+    }
+    if(!result)
+    {
+        sendAlarmMessage(ErrorLevel::TipNonblock, GetCurrentError());
+        return;
+    }
+    cmd =cmd/temp_value*temp_value;
+
+    temp_value = 10000;
+    if (cmd % temp_value == HandlePick::LENS_GRIPPER_MEASURE_HEIGHT) {
+        qInfo("Measure height from lens to gripper, cmd: %d", LENS_GRIPPER_MEASURE_HEIGHT);
+        result = lensGripperMeasureHight();
+    }
+//    else if (cmd % temp_value == HandlePick::GRAB_LENS_TO_GRIPPER) {
+//        qInfo("Grab lens to gripper, cmd: %d", GRAB_LENS_TO_GRIPPER);
+//        result = grabLensToGripper();
+//    }
     else {
         result = true;
     }
@@ -234,7 +265,22 @@ bool SingleheadLSutModule::performDownlookSensorPR()
 // Do PR when LENS in gripper, so it should be in gripper vision location?
 bool SingleheadLSutModule::performUplookLensPR()
 {
+    return vision_mushroom_location->performPR(pr_offset);
+}
+
+bool SingleheadLSutModule::performUplookGripperPR()
+{
     return vision_gripper_location->performPR(pr_offset);
+}
+
+bool SingleheadLSutModule::moveToLensWorkPos()
+{
+    return sut_carrier->StepMove_XY_Sync(lens_offset.X()-pr_offset.X, lens_offset.Y()-pr_offset.Y);
+}
+
+bool SingleheadLSutModule::moveToSensorWorkPos()
+{
+    return sut_carrier->StepMove_XY_Sync(sensor_offset.X()-pr_offset.X, sensor_offset.Y()-pr_offset.Y);
 }
 
 // TODO
@@ -276,7 +322,7 @@ bool SingleheadLSutModule::movetoRecordPos(bool check_autochthonous)
 
 bool SingleheadLSutModule::moveToCamPos(double pixel_x, double pixel_y, int upDownLook)
 {
-    bool ret;
+    bool ret = false;
     qInfo("Move to camera view position offset pixel_x: %f, pixel_y: %f", pixel_x, pixel_y);
 
     // Calculate mechanical position
@@ -284,12 +330,12 @@ bool SingleheadLSutModule::moveToCamPos(double pixel_x, double pixel_y, int upDo
     if (upDownLook == 0)
     {
         qInfo("Use uplook gripper vision location");
-        vision_gripper_location->mapping->CalcMechDistanceFromPixelCenter(pixel_x, -pixel_y, meth);
+        ret = vision_gripper_location->mapping->CalcMechDistanceFromPixelCenter(pixel_x, -pixel_y, meth);
     }
     else if (upDownLook == 1)
     {
         qInfo("Use downlook vision location");
-        vision_downlook_location->mapping->CalcMechDistanceFromPixelCenter(pixel_x, pixel_y, meth);
+        ret = vision_downlook_location->mapping->CalcMechDistanceFromPixelCenter(pixel_x, pixel_y, meth);
     }
     else
     {
@@ -298,5 +344,36 @@ bool SingleheadLSutModule::moveToCamPos(double pixel_x, double pixel_y, int upDo
     qInfo("Move to camera position meth_x: %f, meth_y: %f", meth.x(), meth.y());
 
     // Move motors
-    return stepMove_XY_Sync(meth.x(), meth.y());
+    ret = stepMove_XY_Sync(meth.x(), meth.y());
+    return ret;
+}
+
+bool SingleheadLSutModule::moveLensToGripper()
+{
+    qInfo("Move lens to gripper");
+    double offsetX = lens_offset.X() - pr_offset.X;
+    double offsetY = lens_offset.Y() - pr_offset.Y;
+    qInfo("moveLensToGripper offset:(%f, %f)", offsetX, offsetY);
+    bool result = sut_carrier->StepMove_XY_Sync(offsetX, offsetY);
+    if(result)
+        AppendError(QString(u8"移动Lens去Gripper位置(step x %1,y %2)失败!").arg(offsetX).arg(offsetY));
+    return  result;
+}
+
+bool SingleheadLSutModule::lensGripperMeasureHight()
+{
+    qInfo("Measure height from lens to gripper with low speed");
+    if (sut_carrier->ZSerchByForce(parameters.LensSoftlandingVel(), parameters.LensSoftlandingForce(), true))
+    {
+        QThread::msleep(100);
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(sut_carrier->GetSoftladngPosition()))){
+            return true;
+        }
+        parameters.setZOffset(sut_carrier->GetSoftladngPosition());
+    }
+    else
+    {
+        AppendError(QString(u8"Lens-Gripper测高失败"));
+        return false;
+    }
 }

@@ -7,7 +7,7 @@
 class SingleHeadLSutParameter : public PropertyBase{
     Q_OBJECT
 private:
-    double  m_ZOffset = 0;
+    double  m_ZOffset;
     double  m_LensSoftlandingVel;
     double  m_LensSoftlandingForce;
     QString m_motorXName;

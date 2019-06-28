@@ -15,6 +15,7 @@ class SingleheadLSutModule : public ThreadWorkerBase
     Q_ENUMS(HandlePosition)
     Q_ENUMS(HandlePR)
     Q_ENUMS(HandleToWorkPos)
+    Q_ENUMS(HandlePick)
 
 public:
     enum HandlePosition
@@ -32,13 +33,20 @@ public:
     {
         RESET_PR = 10,
         DOWNLOOK_SENSOR_PR = 20,    // Move sensor to downlook camera and do PR
-        UPLOOK_LENS_PR = 30         // lens in gripper, do PR with uplook camera
+        UPLOOK_LENS_PR = 30,         // lens in gripper, do PR with uplook camera
+        UPLOOK_GRIPPER_PR = 40
     };
 
     enum HandleToWorkPos
     {
         SENSOR_TO_BOND = 100,
-        LENS_TO_BOND = 200
+        LENS_TO_GRIPPER = 200,
+    };
+
+    enum HandlePick
+    {
+        LENS_GRIPPER_MEASURE_HEIGHT = 1000,
+        //GRAB_LENS_TO_GRIPPER = 2000
     };
 
 public:
@@ -76,6 +84,11 @@ public:
 
     Q_INVOKABLE bool moveToCamPos(double pixel_x, double pixel_y, int upDownLook);
 
+    // Distance offset between lens center to uplook camera center
+    Position lens_offset;
+    // Distance offset between sensor center to uplook camera center
+    Position sensor_offset;
+
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
@@ -102,6 +115,13 @@ private:
 
     bool performDownlookSensorPR();
     bool performUplookLensPR();
+    bool performUplookGripperPR();
+
+    bool moveToLensWorkPos();
+    bool moveToSensorWorkPos();
+
+    bool moveLensToGripper();
+    bool lensGripperMeasureHight();
 
 private:
     bool is_run = false;

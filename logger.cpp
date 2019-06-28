@@ -14,7 +14,7 @@ static QTextStream logStream;
 
 void initLoggingSystem()
 {
-    qSetMessagePattern("[%{category}] [%{type}] %{message} (%{function})%{file}:%{line} %{time yyyy-MM-dd hh:mm:ss.zzz}");
+    qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{category}] [%{type}]: %{message} (%{function})%{file}:%{line}");
 
     if (!QDir(BASE_LOG_DIR).exists())
     {

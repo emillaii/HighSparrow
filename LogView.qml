@@ -1,5 +1,5 @@
-﻿import QtQuick 2.4
-import QtQuick.Controls 1.2
+﻿import QtQuick 2.9
+import QtQuick.Controls 2.5
 
 Item {
     width: 400
@@ -18,6 +18,15 @@ Item {
             clip: true
             anchors.fill: parent
             anchors.margins: 5
+            contentWidth: 100
+
+            ScrollBar.vertical: ScrollBar{
+                contentItem: Rectangle {
+                    implicitWidth: 6
+                    radius: width / 2
+                    color: "gray"
+                }
+            }
 
             model: logModel
 
@@ -30,6 +39,7 @@ Item {
             onCountChanged: {
                 currentIndex = count-1
             }
+
         }
     }
 }

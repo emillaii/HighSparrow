@@ -8,6 +8,8 @@ class SingleHeadLSutParameter : public PropertyBase{
     Q_OBJECT
 private:
     double  m_ZOffset = 0;
+    double  m_LensSoftlandingVel;
+    double  m_LensSoftlandingForce;
     QString m_motorXName;
     QString m_motorYName;
     QString m_motorZName;
@@ -25,6 +27,8 @@ private:
 public:
     explicit SingleHeadLSutParameter(){}
     Q_PROPERTY(double ZOffset READ ZOffset WRITE setZOffset NOTIFY ZOffsetChanged)
+    Q_PROPERTY(double LensSoftlandingVel READ LensSoftlandingVel WRITE setLensSoftlandingVel NOTIFY LensSoftlandingVelChanged)
+    Q_PROPERTY(double LensSoftlandingForce READ LensSoftlandingForce WRITE setLensSoftlandingForce NOTIFY LensSoftlandingForceChanged)
     Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
     Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
@@ -43,6 +47,17 @@ double ZOffset() const
 {
     return m_ZOffset;
 }
+
+double LensSoftlandingVel() const
+{
+    return m_LensSoftlandingVel;
+}
+
+double LensSoftlandingForce() const
+{
+    return m_LensSoftlandingForce;
+}
+
 QString motorXName() const
 {
     return m_motorXName;
@@ -118,6 +133,27 @@ void setZOffset(double ZOffset)
     m_ZOffset = ZOffset;
     emit ZOffsetChanged(m_ZOffset);
 }
+
+void setLensSoftlandingVel(double LensSoftlandingVel)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_LensSoftlandingVel, LensSoftlandingVel))
+        return;
+
+    m_LensSoftlandingVel = LensSoftlandingVel;
+    emit LensSoftlandingVelChanged(m_LensSoftlandingVel);
+}
+
+void setLensSoftlandingForce(double LensSoftlandingForce)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_LensSoftlandingForce, LensSoftlandingForce))
+        return;
+
+    m_LensSoftlandingForce = LensSoftlandingForce;
+    emit LensSoftlandingForceChanged(m_LensSoftlandingForce);
+}
+
 void setMotorXName(QString motorXName)
 {
     if (m_motorXName == motorXName)
@@ -237,6 +273,8 @@ void setLutGripperLoactionName(QString lutGripperLoactionName)
 
 signals:
 void ZOffsetChanged(double ZOffset);
+void LensSoftlandingVelChanged(double ZOffset);
+void LensSoftlandingForceChanged(double ZOffset);
 void motorXNameChanged(QString motorXName);
 void motorYNameChanged(QString motorYName);
 void motorZNameChanged(QString motorZName);

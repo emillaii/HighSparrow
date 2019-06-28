@@ -1100,9 +1100,9 @@ bool BaseModuleManager::allMotorsSeekOriginal3()
     GetMotorByName(sh_lsut_module.parameters.motorXName())->SeekOrigin();
     GetMotorByName(sh_lsut_module.parameters.motorYName())->SeekOrigin();
 
-//    GetMotorByName(aa_head_module.parameters.motorAName())->SeekOrigin();
-//    GetMotorByName(aa_head_module.parameters.motorBName())->SeekOrigin();
-//    GetMotorByName(aa_head_module.parameters.motorCName())->SeekOrigin();
+    GetMotorByName(aa_head_module.parameters.motorAName())->SeekOrigin();
+    GetMotorByName(aa_head_module.parameters.motorBName())->SeekOrigin();
+    GetMotorByName(aa_head_module.parameters.motorCName())->SeekOrigin();
 
     GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->SeekOrigin();
     GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->SeekOrigin();

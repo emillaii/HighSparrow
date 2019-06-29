@@ -35,7 +35,7 @@
 			<button id="create_initial_tilt" class="btn btn-primary test_button">Initial Tilt</button>
 		</ul>
 		<ul>
-			<button id="create_aa_pick_lens" class="btn btn-success test_button">AA Pick Lens</button>
+			<button id="create_load_material" class="btn btn-success test_button">Load Material</button>
 			<button id="create_aa_unload_lens" class="btn btn-success test_button">AA Unload Lens</button>
 			<button id="create_oc" class="btn btn-success test_button">OC</button>
 			<button id="create_aa" class="btn btn-success test_button">AA</button>
@@ -50,6 +50,7 @@
 			<button id="create_delay" class="btn btn-info test_button">Delay</button>
 			<button id="create_accept" class="btn btn-info test_button">Accept</button>
 			<button id="create_reject" class="btn btn-info test_button">Reject</button>
+			<button id="create_grr" class="btn btn-info test_button">GRR</button>
 			<button id="create_terminate" class="btn btn-info test_button">Terminate</button>
 		</ul>
 		<ul>
@@ -59,10 +60,8 @@
 	  </nav>
 	  
 	  <article>
-		<p>Keyboard C - Duplicate operator</p>
-		<p>Keyboard E - Edit parameters in operator</p>
-		<p>Keyboard DELETE - Delete Link or operator</p>
-		<p>Double Click - Run operator</p>
+		<p>Keyboard C - Duplicate operator; E - Edit parameters in operator</p>
+		<p>Keyboard DELETE - Delete Link or operator; Double Click - Run operator</p>
 	    <div class="flowchart-example-container flowchart-container" id="example_7">
 		<svg class="flowchart-links-layer"></svg>
 		</div>
@@ -101,6 +100,9 @@
 			<label for="mtf_operator_title">Operator's title: </label><input type="text" id="mtf_operator_title">
 			<table id="mtf_table_form" style="width:50%">
 			</table>
+		</div>
+		<div id="grr_operator_properties">
+			<label for="grr_operator_title">Operator's title: </label><input type="text" id="grr_operator_title">
 		</div>
       <button id="update_data_button">Update data</button>
 	</div>

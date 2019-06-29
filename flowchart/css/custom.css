@@ -87,7 +87,7 @@ h4 {
 
 #operator_properties, #link_properties, #aa_operator_properties, #initial_tilt_properties,
 #oc_operator_properties, #save_image_operator_properties, #aa_xy_offset_operator_properties,
-#dispense_operator_properties,#aa_z_offset_operator_properties, #mtf_table {
+#dispense_operator_properties,#aa_z_offset_operator_properties, #mtf_table, #grr_operator_properties {
   display: none;
   margin-top: 20px;
   margin-bottom: 20px;

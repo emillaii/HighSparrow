@@ -1,7 +1,7 @@
 ﻿#include "logmodel.h"
 
 LogModel::LogModel(QObject *parent)
-    : QAbstractListModel(parent)
+    : QAbstractTableModel(parent)
     , m_logs()
 {
 }
@@ -14,9 +14,15 @@ LogModel* LogModel::instance()
 
 void LogModel::addLog(const QString &log)
 {
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_logs << log;
+    beginInsertRows(QModelIndex(), 0, 0);
+    m_logs.push_front(log);
     endInsertRows();
+}
+
+int LogModel::columnCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    return 1;
 }
 
 int LogModel::rowCount(const QModelIndex & parent) const

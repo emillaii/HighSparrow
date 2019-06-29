@@ -196,10 +196,9 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::MTF) {
         performMTF(true, true);
-        //performAAOffline();
     }
     else if (cmd == HandleTest::OC) {
-        performAAOffline();
+        performOC(true, false);
     }
     return;
 }

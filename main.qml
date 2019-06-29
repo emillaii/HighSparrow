@@ -389,6 +389,7 @@ ApplicationWindow {
         }
         Page4FormForm {}
         Page5Form {}
+        Page6Form {}
     }
 
     footer: TabBar {
@@ -408,7 +409,10 @@ ApplicationWindow {
             text: qsTr("AA Data")
         }
         TabButton {
-            text: qsTr("Dignostics")
+            text: qsTr("MTF")
+        }
+        TabButton {
+            text: qsTr("AA Core")
         }
     }
 }

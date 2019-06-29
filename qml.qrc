@@ -85,6 +85,8 @@
         <file>UPHView.qml</file>
         <file>LogView.qml</file>
         <file>TrayMapView.qml</file>
+        <file>Page6.qml</file>
+        <file>Page6Form.ui.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

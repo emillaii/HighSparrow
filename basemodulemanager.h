@@ -120,11 +120,6 @@ signals:
 public slots:
     void alarmChecking();
     void performHandlingOperation(int cmd);
-	void receiveImageFromAACore(int type) {
-        qInfo("Display SFR image in UI: %d", type);
-        if (type == 0) emit displaySfrImageInUI();
-        else if (type == 1) emit displayOCImageInUI();
-    }
     bool sendMessageTest(QString title,QString content);
     void setLightPanelLighting(int lightPanelLighting)
     {

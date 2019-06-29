@@ -75,7 +75,7 @@ public:
     AAData mtf_log;   // For Display MTF Log
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
-
+    ImageProvider * aaCoreTuningProvider;
     AACoreParameters parameters;
     AACoreStates states;
 private:
@@ -149,6 +149,7 @@ public slots:
         flowchartDocument = QJsonDocument::fromJson(json.toUtf8());
     }
     void sfrImageReady(QImage);
+    void aaCoreParametersChanged();
 };
 
 #endif // AACORENEW_H

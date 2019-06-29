@@ -12,12 +12,15 @@
 #include "aa_util.h"
 #include "commonutils.h"
 #define PI  3.14159265
+
 typedef enum {
     AA_ZSCAN_NORMAL
 } ZSCAN_MODE;
 
 AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 {
+    Q_UNUSED(name)
+    Q_UNUSED(parent)
 }
 
 void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Dothinkey *dk, ChartCalibration *chartCalibration,
@@ -33,8 +36,10 @@ void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Doth
     this->unitlog = unitlog;
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();
+    aaCoreTuningProvider = new ImageProvider();
     connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
+    connect(&this->parameters, &AACoreParameters::paramsChanged, this, &AACoreNew::aaCoreParametersChanged);
 }
 
 void AACoreNew::loadJsonConfig(QString file_name)
@@ -179,15 +184,22 @@ void AACoreNew::stopWork(bool wait_finish)
 void AACoreNew::performHandlingOperation(int cmd)
 {
     qInfo("AACore perform command: %d", cmd);
-    if(cmd == 1)
+    if (cmd == HandleTest::Dispense)
     {
         performDispense();
     }
-    else if(cmd == 2)
+    else if (cmd == HandleTest::PR_To_Bond)
     {
         has_sensor = true;
         has_lens = true;
         performPRToBond();
+    }
+    else if (cmd == HandleTest::MTF) {
+        performMTF(true, true);
+        //performAAOffline();
+    }
+    else if (cmd == HandleTest::OC) {
+        performAAOffline();
     }
     return;
 }
@@ -796,8 +808,8 @@ void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, doubl
     sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, parameters.SensorXRatio(), parameters.SensorYRatio());
     double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
     unsigned int ccROIIndex = 0, ulROIIndex = 0, urROIIndex = 0, llROIIndex = 0, lrROIIndex = 0;
-    if (points.size() == 5) {
-        for (unsigned int i = 0; i < 5; i++) {
+    if (points.size() >= 5) {
+        for (unsigned int i = 0; i < points.size(); i++) {
             double cc_d = sqrt(pow(points[i].x - imageWidth/2, 2) + pow(points[i].y - imageHeight/2, 2));
             double ul_d = sqrt(pow(points[i].x, 2) + pow(points[i].y, 2));
             double ur_d = sqrt(pow(points[i].x - imageWidth, 2) + pow(points[i].y, 2));
@@ -824,12 +836,12 @@ void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, doubl
                 lrROIIndex = i;
             }
         }
-    } else { qInfo("Insufficient curve point"); return; }
+    } else { qInfo("Insufficient curve point current point : %d", points.size()); return; }
     ul_peak_z = points[ulROIIndex].z;
     ur_peak_z = points[urROIIndex].z;
     ll_peak_z = points[llROIIndex].z;
     lr_peak_z = points[lrROIIndex].z;
-    for (int i = 0; i < 5; i++) {
+    for (unsigned int i = 0; i < points.size(); i++) {
         points[i].x /= parameters.SensorXRatio(); points[i].y /= parameters.SensorYRatio();
     }
     threeDPoint weighted_vector = planeFitting(points);
@@ -1491,8 +1503,9 @@ double AACoreNew::calculateDFOV(cv::Mat img)
 
 void AACoreNew::storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElapsed)
 {
-    qInfo("Received sfr result from index: %d timeElapsed: %d", index, timeElapsed);
     clustered_sfr_map[index] = std::move(sfrs);
+    qInfo("Received sfr result from index: %d timeElapsed: %d size: %d", index, timeElapsed, clustered_sfr_map.size());
+
 }
 
 void AACoreNew::stopZScan()
@@ -1518,4 +1531,27 @@ void AACoreNew::sfrImageReady(QImage img)
 //                    .append(".jpg");
 //    img.save(filename);
     emit callQmlRefeshImg(0);
+}
+
+void AACoreNew::aaCoreParametersChanged()
+{
+    qInfo("AA Core parameters changed");
+    cv::Mat image = cv::imread("zscan_7.bmp");
+    QImage outImage;
+    unsigned int ccIndex = 10000, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
+    std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(image, outImage, false,
+                                                                    ccIndex, ulIndex, urIndex,
+                                                                    llIndex, lrIndex);
+    qInfo("Found MTF Pattern number: %d", vector.size());
+    double imageCenterX = image.cols/2;
+    double imageCenterY = image.rows/2;
+    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
+    for (unsigned int i = 0; i < vector.size(); i++)
+    {
+        double radius = sqrt(pow(vector.at(i).center.x() - imageCenterX, 2) + pow(vector.at(i).center.y() - imageCenterY, 2));
+        double f = radius/r1;
+        qInfo("x: %f y: %f radius: %f field: %f", vector.at(i).center.x(), vector.at(i).center.y(), radius, f);
+    }
+    aaCoreTuningProvider->setImage(outImage);
+    emit callQmlRefeshImg(2);
 }

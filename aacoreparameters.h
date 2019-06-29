@@ -85,44 +85,43 @@ int rejectTimes() const
 public slots:
 void setEFL(double EFL)
 {
-    if (qFuzzyCompare(m_EFL, EFL))
-        return;
-
     m_EFL = EFL;
+    emit paramsChanged();
 }
 void setMaxIntensity(int MaxIntensity)
 {
     m_MaxIntensity = MaxIntensity;
+    emit paramsChanged();
 }
 
 void setMinArea(int MinArea)
 {
     m_MinArea = MinArea;
+    emit paramsChanged();
 }
 
 void setMaxArea(int MaxArea)
 {
     m_MaxArea = MaxArea;
+    emit paramsChanged();
 }
 
 void setSensorXRatio(int SensorXRatio)
 {
     m_SensorXRatio = SensorXRatio;
+    emit paramsChanged();
 }
 
 void setSensorYRatio(int SensorYRatio)
 {
     m_SensorYRatio = SensorYRatio;
+    emit paramsChanged();
 }
 
 void setROIRatio(double ROIRatio)
 {
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_ROIRatio, ROIRatio))
-        return;
-
     m_ROIRatio = ROIRatio;
-    emit paramsChanged(m_ROIRatio);
+    emit paramsChanged();
 }
 
 void setFirstRejectSensor(bool firstRejectSensor)
@@ -144,7 +143,7 @@ void setRejectTimes(int rejectTimes)
 }
 
 signals:
-void paramsChanged(int MaxIntensity);
+void paramsChanged();
 void firstRejectSensorChanged(bool firstRejectSensor);
 void rejectTimesChanged(int rejectTimes);
 };

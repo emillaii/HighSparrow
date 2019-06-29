@@ -39,12 +39,14 @@ public:
 signals:
     void displaySfrImageInUI();
     void displayOCImageInUI();
+    void displayAACoreTuningImageInUI();
 public slots:
     void homeAllMotors();
     Q_INVOKABLE void receiveImageFromAACore(int type) {
         qInfo("Display SFR image in UI: %d", type);
         if (type == 0) emit displaySfrImageInUI();
         else if (type == 1) emit displayOCImageInUI();
+        else if (type == 2) emit displayAACoreTuningImageInUI();
     };
 };
 

@@ -9,12 +9,7 @@ ItemDelegate {
     contentItem: ColumnLayout {
         spacing: 0
 
-        ColumnLayout {
-            RowLayout {
-                Label {
-                    text: qsTr("")
-                }
-            }
+        RowLayout {
             GroupBox{
                 title: qsTr("AA Core Parameters")
                 ColumnLayout {
@@ -136,6 +131,26 @@ ItemDelegate {
                             onClicked: {
                                 chartCalibrationTheta.text = baseModuleManager.showChartCalibrationRotation()
                             }
+                        }
+                    }
+                }
+            }
+            Frame {
+                id: frame
+                Layout.fillWidth: true
+                contentHeight: 720
+
+                Image {
+                    id: image1
+                    anchors.fill: parent
+                    source: "icons/sparrow.png"
+                    fillMode: Image.PreserveAspectFit
+                    cache: false
+                    Connections {
+                        target: highSprrow
+                        onDisplayAACoreTuningImageInUI: {
+                            image1.source = ""
+                            image1.source = "image://aaCoreTuningImage"
                         }
                     }
                 }

@@ -7,13 +7,13 @@ $(document).ready(function () {
     wait_tilt: 1, edge_filter: 0, is_debug: 0, estimated_aa_fov: 70, estimated_fov_slope: -16, no_tilt: 0
   };
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
-  var init_uv_params = { time: 3000 };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_z_offset = { type: 0, z_offset_in_um: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0 };
   var init_dispense_params = {enable_save_image:1,lighting:195, retry: 0, delay_in_ms: 0 };
   var init_save_image = { type: 0, lighting: 100 };
+  var init_grr ={ change_lens: 1, change_sensor: 0, repeat_time: 9};
   var latestCreatedLinkId;
   var $linkProperties = $('#link_properties');
   var $operatorTitle = $('#operator_title');
@@ -32,6 +32,8 @@ $(document).ready(function () {
   var $save_image_operator_title = $('#save_image_operator_title');
   var $dispense_operator_properties = $('#dispense_operator_properties');
   var $dispense_operator_title = $('#dispense_operator_title');
+  var $grr_operator_title = $('#grr_operator_title');
+  var $grr_operator_properties = $('#grr_operator_properties');
   var $mtf_table = $('#mtf_table');
   var $linkColor = $('#link_color');
 
@@ -78,6 +80,11 @@ $(document).ready(function () {
   
   $save_image_operator_properties.append("<div style=\"margin-top:20px\">Camera Type: <select id=\"save_image_type\"><option value=0>Downlook Camera</option><option value=1>Uplook Camera</option><option value=2>Pickarm Camera</option></select></div>");
   $save_image_operator_properties.append("<div style=\"margin-top:20px\">Lighting: <input type=\"number\" id=\"save_image_lighting\" value=100></div>");
+  
+  $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Lens: <select id=\"grr_change_lens\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Sensor: <select id=\"grr_change_sensor\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $grr_operator_properties.append("<div style=\"margin-top:20px\">Repeat Time: <input type=\"number\" id=\"grr_repeat_time\" value=10></div>");
+  
 
   // Apply the plugin on a standard, empty div...
   var $flowchart = $('#example_7');
@@ -98,6 +105,7 @@ $(document).ready(function () {
       $aa_xy_offset_operator_properties.hide();
 	  $save_image_operator_properties.hide();
 	  $dispense_operator_properties.hide();
+	  $grr_operator_properties.hide();
 	  $mtf_table.hide();
       if (operatorId.includes("AA_")) {
         $aa_operator_properties.show();
@@ -185,7 +193,13 @@ $(document).ready(function () {
 				cell3.appendChild(delete_btn);
 			}
 		})
-	  }
+	  }else if (operatorId.includes("GRR")) {
+		$grr_operator_properties.show();
+		$grr_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+		$('#grr_change_lens').val(params["change_lens"]);
+		$('#grr_change_sensor').val(params["change_sensor"]);
+        $('#grr_repeat_time').val(params["repeat_time"]);
+	  } 
 	  else {
         $operator_properties.show();
         $operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -203,6 +217,7 @@ $(document).ready(function () {
 	  $oc_operator_properties.hide();
 	  $dispense_operator_properties.hide();
 	  $save_image_operator_properties.hide();
+	  $grr_operator_properties.hide();
 	  $mtf_table.hide();
       return true;
     },
@@ -544,6 +559,12 @@ $(document).ready(function () {
       }
     };
     $flowchart.flowchart('createOperator', operatorId, operatorData);
+	if (operatorId.includes("GRR")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr);
+	}
+    else {
+      $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
+    }
   }
 
   $flowchart.siblings('.create_start').click(function () {
@@ -554,12 +575,10 @@ $(document).ready(function () {
     addOperationWidget("test");
   });
 
-  $flowchart.siblings('.create_load_camera').click(function () { addOperationWidget("Load Camera"); });
   $flowchart.siblings('.create_init_camera').click(function () { addOperationWidget("Init Camera"); });
   $flowchart.siblings('.create_pr_to_bond').click(function () { addOperationWidget("PR To Bond"); });
   $flowchart.siblings('.create_initial_tilt').click(function () { addOperationWidget("Initial Tilt"); });
-  $flowchart.siblings('.create_aa_pick_lens').click(function () { addOperationWidget("AA Pick Lens"); });
-  $flowchart.siblings('.create_aa_unload_lens').click(function () { addMultipleOperationWidget("AA Unload Lens"); });
+  $flowchart.siblings('.create_load_material').click(function () { addOperationWidget("Load Material"); });
   $flowchart.siblings('.create_aa_unload_camera').click(function () { addMultipleOperationWidget("AA Unload Camera"); });
 
   $flowchart.siblings('.create_aa').click(function () { addOperationWidget("AA"); });
@@ -576,6 +595,7 @@ $(document).ready(function () {
   $flowchart.siblings('.create_accept').click(function () { addEndWidget("Accept"); });
   $flowchart.siblings('.create_reject').click(function () { addEndWidget("Reject"); });
   $flowchart.siblings('.create_terminate').click(function () { addEndWidget("Terminate"); });
+  $flowchart.siblings('.create_grr').click(function () { addEndWidget("GRR"); });
 
   $flowchart.siblings('.create_thread').click(function () { addThreadWidget("Parallel"); });
   $flowchart.siblings('.create_join_thread').click(function () { addJoinThreadWidget("Join"); });
@@ -636,6 +656,11 @@ $(document).ready(function () {
 	  getTableData();
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#mtf_operator_title').val());
       var params = getTableData();
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	}else if (selectedOperatorId.includes("GRR")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#grr_operator_title').val());
+      var params = { change_lens: Number($('#grr_change_lens').val()), change_sensor: Number($('#grr_change_sensor').val()), repeat_time:  Number($('#grr_repeat_time').val())};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	}
     else {
@@ -746,6 +771,9 @@ $(document).ready(function () {
   $('#create_terminate').click(function () { addEndWidget("Terminate"); });
   $('#create_thread').click(function () { addThreadWidget("Parallel"); });
   $('#create_join_thread').click(function () { addJoinThreadWidget("Join"); });
+  $('#create_load_material').click(function () { addOperationWidget("Load Material"); });
+  $('#create_grr').click(function () { addEndWidget("GRR"); });
+
 
   $('#get_data').click(function () {
     var data = $flowchart.flowchart('getData');

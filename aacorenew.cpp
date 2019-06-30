@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QJsonObject>
+#include <QPainter>
 #include "aa_util.h"
 #include "commonutils.h"
 #define PI  3.14159265
@@ -1532,6 +1533,43 @@ void AACoreNew::sfrImageReady(QImage img)
     emit callQmlRefeshImg(0);
 }
 
+struct MTF_Pattern_Position {
+    double x;
+    double y;
+    double radius;
+    int layer = 0;
+    double field = 0;
+    MTF_Pattern_Position(double xx, double yy, double rr)
+        : x(xx), y(yy), radius(rr){
+    }
+
+};
+
+bool PositionComp(const MTF_Pattern_Position & p1, const MTF_Pattern_Position & p2)
+{
+    return p1.radius < p2.radius;
+}
+
+vector<int> classifyLayers(std::vector<MTF_Pattern_Position> & vec, double threshold = 0.1) {
+    std::sort(vec.begin(), vec.end(), PositionComp);
+    vector<int> levels;
+    if (vec.empty())
+        return levels;
+    int current = 0;
+    levels.push_back(current);
+    double field = 0;
+    for (unsigned int i = 1; i < vec.size(); ++i) {
+        if (vec[i].radius - vec[i - 1].radius > threshold) {
+            levels.push_back(i);
+            current++;
+            field = vec[i].radius;
+        }
+        vec[i].field = field;
+        vec[i].layer = current;
+    }
+    return levels;
+}
+
 void AACoreNew::aaCoreParametersChanged()
 {
     qInfo("AA Core parameters changed");
@@ -1541,16 +1579,52 @@ void AACoreNew::aaCoreParametersChanged()
     std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(image, outImage, false,
                                                                     ccIndex, ulIndex, urIndex,
                                                                     llIndex, lrIndex);
+    QPainter qPainter(&outImage);
+    qPainter.setBrush(Qt::NoBrush);
+    qPainter.setPen(QPen(Qt::red, 4.0));
     qInfo("Found MTF Pattern number: %d", vector.size());
+    double area = vector[0].area;
+    double roi_width = sqrt(area)*this->parameters.ROIRatio();
     double imageCenterX = image.cols/2;
     double imageCenterY = image.rows/2;
     double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
+    std::vector<MTF_Pattern_Position> vec;
     for (unsigned int i = 0; i < vector.size(); i++)
     {
         double radius = sqrt(pow(vector.at(i).center.x() - imageCenterX, 2) + pow(vector.at(i).center.y() - imageCenterY, 2));
         double f = radius/r1;
-        qInfo("x: %f y: %f radius: %f field: %f", vector.at(i).center.x(), vector.at(i).center.y(), radius, f);
+        vec.emplace_back(vector.at(i).center.x(), vector.at(i).center.y(), f);
+        qInfo("Pattern x: %f y: %f area: %f radius: %f field: %f", vector.at(i).center.x(), vector.at(i).center.y(), vector.at(i).area, radius, f);
+        qPainter.drawRect(QRectF(vector.at(i).center.x()-roi_width/2, vector.at(i).center.y()-roi_width/2, roi_width, roi_width));
     }
+    auto ret = classifyLayers(vec);
+    //Drawing
+    for (MTF_Pattern_Position pos : vec) {
+        qInfo("%lf %lf %lf %d %lf\n", pos.x, pos.y, pos.radius, pos.layer, pos.field);
+        if (pos.layer == 0) {
+            qPainter.setPen(QPen(Qt::red, 4.0));
+        }
+        else if (pos.layer == 1) {
+            qPainter.setPen(QPen(Qt::cyan, 4.0));
+        }
+        else if (pos.layer == 2) {
+            qPainter.setPen(QPen(Qt::blue, 4.0));
+        }
+        else if (pos.layer == 3) {
+            qPainter.setPen(QPen(Qt::yellow, 4.0));
+        }
+        qPainter.setFont(QFont("Times",50, QFont::Bold));
+        double w_t = parameters.WeightList()[0 + pos.layer*4].toDouble();
+        double w_r = parameters.WeightList()[1 + pos.layer*4].toDouble();
+        double w_b = parameters.WeightList()[2 + pos.layer*4].toDouble();
+        double w_l = parameters.WeightList()[3 + pos.layer*4].toDouble();
+        qPainter.drawText(pos.x - 50 , pos.y - roi_width/2, QString("w_t: ").append(QString::number(w_t)));
+        qPainter.drawText(pos.x - 50 + roi_width/2, pos.y,  QString("w_r: ").append(QString::number(w_r)));
+        qPainter.drawText(pos.x - 50, pos.y + roi_width/2,  QString("w_b: ").append(QString::number(w_b)));
+        qPainter.drawText(pos.x - roi_width/2 - 50, pos.y,  QString("w_l: ").append(QString::number(w_l)));
+        qPainter.drawEllipse(QPoint(imageCenterX, imageCenterY), (int)(pos.radius*r1), (int)(pos.radius*r1));
+    }
+    qPainter.end();
     aaCoreTuningProvider->setImage(outImage);
     emit callQmlRefeshImg(2);
 }

@@ -2,6 +2,7 @@
 #define AACOREPARAMETERS_H
 
 #include <QObject>
+#include <QVariant>
 #include <propertybase.h>
 #include "config.h"
 
@@ -26,8 +27,15 @@ class AACoreParameters : public PropertyBase
 
     int m_rejectTimes = 3;
 
+    QVariantList m_WeightList;
+
 public:
-    explicit AACoreParameters(){}
+    explicit AACoreParameters(){
+        for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
+        {
+            m_WeightList.push_back(QVariant(0.25));
+        }
+    }
     Q_PROPERTY(double EFL READ EFL WRITE setEFL NOTIFY paramsChanged)
     Q_PROPERTY(int MaxIntensity READ MaxIntensity WRITE setMaxIntensity NOTIFY paramsChanged)
     Q_PROPERTY(int MinArea READ MinArea WRITE setMinArea NOTIFY paramsChanged)
@@ -35,6 +43,7 @@ public:
     Q_PROPERTY(int SensorXRatio READ SensorXRatio WRITE setSensorXRatio NOTIFY paramsChanged)
     Q_PROPERTY(int SensorYRatio READ SensorYRatio WRITE setSensorYRatio NOTIFY paramsChanged)
     Q_PROPERTY(double ROIRatio READ ROIRatio WRITE setROIRatio NOTIFY paramsChanged)
+    Q_PROPERTY(QVariantList WeightList READ WeightList WRITE setWeightList NOTIFY paramsChanged)
     Q_PROPERTY(bool firstRejectSensor READ firstRejectSensor WRITE setFirstRejectSensor NOTIFY firstRejectSensorChanged)
     Q_PROPERTY(int rejectTimes READ rejectTimes WRITE setRejectTimes NOTIFY rejectTimesChanged)
 
@@ -80,6 +89,11 @@ bool firstRejectSensor() const
 int rejectTimes() const
 {
     return m_rejectTimes;
+}
+
+QVariantList WeightList() const
+{
+    return m_WeightList;
 }
 
 public slots:
@@ -140,6 +154,22 @@ void setRejectTimes(int rejectTimes)
 
     m_rejectTimes = rejectTimes;
     emit rejectTimesChanged(m_rejectTimes);
+}
+
+void setWeightValue(int index, double value)
+{
+    qInfo("Set Weight Value: %d %f", index, value);
+    m_WeightList[index].setValue(value);
+    emit paramsChanged();
+}
+
+void setWeightList(QVariantList WeightList)
+{
+    if (m_WeightList == WeightList)
+        return;
+
+    m_WeightList = WeightList;
+    emit paramsChanged();
 }
 
 signals:

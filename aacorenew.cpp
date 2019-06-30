@@ -1605,7 +1605,7 @@ void AACoreNew::aaCoreParametersChanged()
             qPainter.setPen(QPen(Qt::red, 4.0));
         }
         else if (pos.layer == 1) {
-            qPainter.setPen(QPen(Qt::cyan, 4.0));
+            qPainter.setPen(QPen(QColor(102, 0, 204), 4.0)); //Purple
         }
         else if (pos.layer == 2) {
             qPainter.setPen(QPen(Qt::blue, 4.0));

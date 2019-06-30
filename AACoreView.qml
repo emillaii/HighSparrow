@@ -193,7 +193,7 @@ ItemDelegate {
                     RowLayout {
                         Label {
                             text: qsTr("Layer 1 w_t")
-                            color: "cyan"
+                            color: "purple"
                         }
                         TextField {
                             text: aaCoreParams.WeightList[4]

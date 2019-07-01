@@ -64,9 +64,7 @@ void ImageGrabbingWorkerThread::run()
     while(true) {
         if(this->forceStop) break;
         QMutexLocker locker(&mutex);
-        QElapsedTimer timer; timer.start();
         QImage* newImage =  dk->DothinkeyGrabImage(0);
-        qInfo("Grab Image time elapsed : %d", timer.elapsed());
         latestImage = newImage->copy();
         delete newImage;
         latestImage = latestImage.scaled(720,480);
@@ -98,5 +96,6 @@ void ImageGrabbingWorkerThread::saveImage()
                     .append(getCurrentTimeString())
                     .append(".jpg");
     locker.unlock();
-    this->latestImage.save(imageName);
+    QImage* newImage =  dk->DothinkeyGrabImage(0);
+    newImage->save(imageName);
 }

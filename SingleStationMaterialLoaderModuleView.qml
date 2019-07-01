@@ -53,6 +53,15 @@ ItemDelegate {
                         baseModuleManager.loadSensorLoaderParameter()
                     }
                 }
+                Button{
+                    text:qsTr("音圈标定")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        //sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_SENSOR_IN_TRAY)
+                        baseModuleManager.showSetting()
+                    }
+                }
             }
             GroupBox{
                 title:qsTr("头参数")

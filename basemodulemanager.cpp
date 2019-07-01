@@ -246,12 +246,18 @@ bool BaseModuleManager::saveParameters()
     return true;
 }
 
+bool BaseModuleManager::showSetting()
+{
+    GetVcMotorByName("PA_Z1")->ShowSetting();
+    return true;
+}
+
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)
 {
     bool result = true;
     result &= manager->registerWorker(&sh_lsut_module);
     result &= manager->registerWorker(&single_station_material_loader_module);
-   // result &= manager->registerWorker(&aaCoreNew);
+    result &= manager->registerWorker(&aaCoreNew);
     return result;
 }
 
@@ -963,7 +969,7 @@ bool BaseModuleManager::InitStruct()
 
     sfrWorkerController = new SfrWorkerController(&aaCoreNew);
     aaCoreNew.setSfrWorkerController(sfrWorkerController);
-    aaCoreNew.Init(&aa_head_module, lutClient, &sut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog);
+    aaCoreNew.Init(&aa_head_module, lutClient, &sut_module, &sh_lsut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog);
     entrance_clip.Init(u8"Sensor进料盘弹夹",&sensor_clip_stand);
     exit_clip.Init(u8"Sensor出料盘弹夹",&sensor_clip_stand);
     sensor_tray_loder_module.Init(GetMotorByName(sensor_tray_loder_module.parameters.motorTrayName()),

@@ -29,7 +29,7 @@ void XtVcMotor::ConfigVCM()
     SetSoftlandingSlot(vcm_id,GetCurveResource());
     double current[4]{0.1,1,2,3};
     double force[4]{100,1000,2000,3000};
-    MapCurrent2Force(vcm_id,current,force,4);
+    //MapCurrent2Force(vcm_id,current,force,4);
     is_init = true;
     is_enable = true;
     error_code = get_motor_error(vcm_id);

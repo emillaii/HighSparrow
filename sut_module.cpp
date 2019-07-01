@@ -113,7 +113,7 @@ bool SutModule::moveToLoadPos(bool check_autochthonous)
 {
     qInfo("moveToLoadPos");
 //    popgpin->Set(true);
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),1,check_autochthonous);
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
 }
 
 bool SutModule::moveToDownlookPos(bool check_autochthonous)
@@ -125,7 +125,7 @@ bool SutModule::moveToDownlookPos(bool check_autochthonous)
 
 bool SutModule::moveToReadyPos()
 {
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),1,true);
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),true);
 }
 
 bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting,bool check_autochthonous)
@@ -209,7 +209,7 @@ bool SutModule::moveToToolUplookPos(bool check_autochthonous)
 
 bool SutModule::moveToMushroomPos(bool check_autochthonous)
 {
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(mushroom_positon.X(),mushroom_positon.Y(),mushroom_positon.Z(),check_autochthonous);
+    return carrier->Move_SZ_SX_YS_X_Z_Sync(mushroom_positon.X(),mushroom_positon.Y(),mushroom_positon.Z(),check_autochthonous);
 }
 
 bool SutModule::stepMove_XY_Sync(double x, double y)

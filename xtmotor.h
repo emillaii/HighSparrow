@@ -13,6 +13,7 @@
 #include "iolimitparameter.h"
 #include "parallellimitparameter.h"
 #include "xtmotorparameter.h"
+#include "motorstatesgeter.h"
 
 class XtMotorExtendParameters : public PropertyBase
 {
@@ -39,6 +40,7 @@ static int GetThreadResource();
 public:
     XtMotor();
     virtual void Init(const QString& motor_name);
+    void Init(MotorStatesGeter* geter);
     virtual void SetADC(int can_id,int data_ch);
     virtual void SetEncoderFeedback(int can_id, int data_ch, double ratio);
     virtual void SetFeedbackZero(double new_value = 0);
@@ -81,8 +83,12 @@ public:
     virtual bool SlowMoveToPos(double pos,double low_vel, int thread = -1);
     virtual bool WaitMoveStop(int timeout = 30000);
     bool WaitArrivedTargetPos(double target_position,int timeout=10000);
-    bool WaitArrivedTargetPos(int timeout=10000);
+    bool WaitArrivedTargetPos(int timeout = 10000);
     virtual bool MoveToPosSync(double pos,int thread = -1,int time_out = 30000);
+    bool MoveToPosSafty(double pos,int thread = -1);
+    bool CheckArrivedTargetPos(double target_position);
+    bool CheckArrivedTargetPos();
+    bool MoveToPosSaftySync(double pos,int thread = -1,int timeout = 10000);
     virtual bool SlowMoveToPosSync(double pos,double low_vel,int thread = -1);
     virtual bool StepMove(double step,int thread = -1);
     virtual bool StepMoveSync(double step, int thread = -1);
@@ -148,11 +154,13 @@ protected:
     XtGeneralInput rdy;
     XtGeneralInput origin;
     XtGeneralInput origin2;
+    MotorStatesGeter* geter;
 
     void ChangeCurPos(double pos);
 //    void CheckLimit(double &pos);
     bool checkState(bool check_seeked_origin = true);
     bool checkLimit(const double pos);
+    bool getInterfaceLimit(double target_pos,double& result_pos);
     bool checkInterface(const double pos);
 public:
     static int axis_id_resource;

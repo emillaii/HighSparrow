@@ -1,4 +1,4 @@
-#ifndef TCPMANAGERPARAMETER_H
+﻿#ifndef TCPMANAGERPARAMETER_H
 #define TCPMANAGERPARAMETER_H
 
 #include "propertybase.h"

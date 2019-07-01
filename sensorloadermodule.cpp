@@ -82,9 +82,9 @@ void SensorLoaderModule::startWork(int run_mode)
     else if (run_mode == RunMode::VibrationTest) {
         is_run = true;
         while(is_run) {
-            moveToSUTPRPos(false,true);
+            moveToSUTPRPos(false,true,true);
             QThread::msleep(2000);
-            moveToSUTPRPos(true,true);
+            moveToSUTPRPos(true,true,true);
             QThread::msleep(2000);
         }
     }
@@ -103,13 +103,13 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     if(cmd%temp_value == HandlePosition::SUT_POS1){
         qInfo(u8"移动SPA到SUT1位置");
 //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
-            result = moveToSUTPRPos(false,true);
+            result = moveToSUTPRPos(false,true,true);
 //        }
     }
     else if(cmd%temp_value == HandlePosition::SUT_POS2){
         qInfo(u8"移动SPA到SUT2位置");
 //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
-            result = moveToSUTPRPos(true,true);
+            result = moveToSUTPRPos(true,true,true);
 //        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1){
@@ -121,7 +121,7 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2){
         qInfo(u8"移动SPA到成品料盘当前位置");
 //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
-            result = moveToTrayPos(2);
+            result = moveToTrayPos(1);
 //        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_START_POS){
@@ -400,6 +400,7 @@ void SensorLoaderModule::resetLogic()
     states.setHasUnpickedProduct(false);
     states.setHasUnpickedNgProduct(false);
     states.setHasUnpickedNgSensor(false);
+    qInfo("resetLogic");
 }
 
 void SensorLoaderModule::openServer(int port)
@@ -690,7 +691,7 @@ void SensorLoaderModule::run(bool has_material)
             if(!is_run)break;
         }
         //等待位置
-        if(!moveToSUTPRPos(states.beExchangeMaterial()?isLocalHost:(!isLocalHost)))
+        if(!moveToSUTPRPos(states.beExchangeMaterial()?isLocalHost:(!isLocalHost),true))
         {
             sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
             is_run = false;
@@ -794,6 +795,7 @@ void SensorLoaderModule::run(bool has_material)
                     qInfo("Start to consume action request: %s", getStringFromJsonObject(obj).toStdString().c_str());
                     states.setCmd(obj["cmd"].toString(""));
                 }
+
                 if((states.cmd() == "unloadProductReq")&&states.hasUnpickedProduct())
                 {
                     sendEvent("unloadProductResp");
@@ -830,10 +832,10 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     if((!pickSUTProduct(isLocalHost?"::1":"remote"))&&has_material)
                     {
-                        sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
                         if(waitMessageReturn(is_run))
                         {
-                            states.setSutHasProduct(false);
+                            continue;
                         }
                         else
                         {
@@ -868,6 +870,7 @@ void SensorLoaderModule::run(bool has_material)
                 }
                 else if((states.cmd() == "unloadNgProductReq")&&states.hasUnpickedNgProduct())
                 {
+
                     sendEvent("unloadNgProductResp");
                     states.setCmd("");
                 }
@@ -902,10 +905,10 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     if((!pickSUTProduct(isLocalHost?"::1":"remote"))&&has_material)
                     {
-                        sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
                         if(waitMessageReturn(is_run))
                         {
-                            states.setSutHasNgProduct(false);
+                            continue;
                         }
                         else
                         {
@@ -976,10 +979,9 @@ void SensorLoaderModule::run(bool has_material)
                     if((!pickSUTSensor(isLocalHost?"::1":"remote"))&&has_material)
                     {
                         AppendError("pickSUTSensor fail!");
-                        sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
                         if(waitMessageReturn(is_run))
                         {
-                            states.setSutHasNgSensor(false);
                             continue;
                         }
                         else
@@ -1100,7 +1102,7 @@ void SensorLoaderModule::run(bool has_material)
 //                AppendError(u8"NG视觉失败！");
 //                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
 //                int result = waitMessageReturn(is_run);
-//                if(result)is_run = false;
+//                if(!result)is_run = false;
 //                if(!is_run)break;
 //                if(result)
 //                    continue;
@@ -1145,7 +1147,7 @@ void SensorLoaderModule::run(bool has_material)
 //                AppendError(u8"NG视觉失败！");
 //                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
 //                int result = waitMessageReturn(is_run);
-//                if(result)is_run = false;
+//                if(!result)is_run = false;
 //                if(!is_run)break;
 //                if(result)
 //                    continue;
@@ -1221,7 +1223,7 @@ bool SensorLoaderModule::moveToNgTrayNextPos()
     return result&&result_tray;
 }
 
-bool SensorLoaderModule::moveToSUTPRPos(bool is_local,bool check_softlanding)
+bool SensorLoaderModule::moveToSUTPRPos(bool is_local,bool check_arrived,bool check_softlanding)
 {
     qInfo("moveToSUTPRPos is_local %d",is_local);
     bool result;
@@ -1230,7 +1232,7 @@ bool SensorLoaderModule::moveToSUTPRPos(bool is_local,bool check_softlanding)
         temp_pos =  sut2_pr_position.ToPointF();
     else
         temp_pos =  sut1_pr_position.ToPointF();
-    result = pick_arm->move_XYT2_Synic(temp_pos.x(),temp_pos.y(),parameters.picker2ThetaOffset(),check_softlanding);
+    result = pick_arm->move_XYT2_Synic(temp_pos.x(),temp_pos.y(),parameters.picker2ThetaOffset(),check_arrived,check_softlanding);
     if(!result)
         AppendError(QString(u8"移动SPA相机SUT位置失败%1").arg(is_local));
     qInfo(u8"移动SPA相机到SUT%d位置,返回值%d",is_local,result);

@@ -56,6 +56,8 @@ public:
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(QString materialType READ materialType WRITE setMaterialType NOTIFY materialTypeChanged)
     Q_PROPERTY(QString machineType READ machineType WRITE setMachineType NOTIFY machineTypeChanged)
+    Q_PROPERTY(QStringList respMessagerNames READ respMessagerNames WRITE setRespMessagerNames NOTIFY respMessagerNamesChanged)
+    Q_PROPERTY(QString flowChartURL READ flowChartURL WRITE setFlowChartURL NOTIFY flowChartURLChanged)
     int runMode() const
     {
         return m_runMode;
@@ -68,6 +70,16 @@ public:
     QString machineType() const
     {
         return m_machineType;
+    }
+
+    QStringList respMessagerNames() const
+    {
+        return m_respMessagerNames;
+    }
+
+    QString flowChartURL() const
+    {
+        return m_flowChartURL;
     }
 
 public slots:
@@ -97,16 +109,40 @@ public slots:
         emit machineTypeChanged(m_machineType);
     }
 
+    void setRespMessagerNames(QStringList respMessagerNames)
+    {
+        if (m_respMessagerNames == respMessagerNames)
+            return;
+
+        m_respMessagerNames = respMessagerNames;
+        emit respMessagerNamesChanged(m_respMessagerNames);
+    }
+
+    void setFlowChartURL(QString flowChartURL)
+    {
+        if (m_flowChartURL == flowChartURL)
+            return;
+
+        m_flowChartURL = flowChartURL;
+        emit flowChartURLChanged(m_flowChartURL);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void materialTypeChanged(QString materialType);
 
     void machineTypeChanged(QString machineType);
 
+    void respMessagerNamesChanged(QStringList respMessagerNames);
+
+    void flowChartURLChanged(QString flowChartURL);
+
 private:
     int m_runMode = 0;
     QString m_materialType = "TESTTYPE";
     QString m_machineType = "DAA_001";
+    QStringList m_respMessagerNames;
+    QString m_flowChartURL = "http://192.168.0.251//flowchart/flowchart.html";
 };
 class ModuleManagerState:public PropertyBase
 {

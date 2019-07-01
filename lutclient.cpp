@@ -10,6 +10,18 @@ LutClient::LutClient(AAHeadModule * aaHead, QString address, QObject *parent) : 
     connect(this, &LutClient::sendMessageToServer, this->socketClient, &SparrowClient::sendMessage);
 }
 
+bool LutClient::waitLensRespond(bool &is_run)
+{
+    while (this->state != LutClientState::LUT_CLIENT_IDLE)
+    {
+        if(!is_run)
+            return false;
+        //qInfo("Waiting LUT ....");
+        QThread::msleep(1000);
+    }
+    return this->state == LutClientState::LUT_CLIENT_IDLE;
+}
+
 void LutClient::receiveMessage(QString message)
 {
     QJsonObject json = getJsonObjectFromString(message);
@@ -87,7 +99,7 @@ void LutClient::receiveMessage(QString message)
     }
 }
 
-bool LutClient::sendLensRequest(bool &is_run,bool has_ng_lens,bool is_wait)
+bool LutClient::sendLensRequest(bool has_ng_lens)
 {
     qInfo("sendLensRequest has_ng_lens %d",has_ng_lens);
     this->has_ng_lens = has_ng_lens;
@@ -97,21 +109,7 @@ bool LutClient::sendLensRequest(bool &is_run,bool has_ng_lens,bool is_wait)
     this->state = LutClientState::WAITING_LENS_PICK_EVENT;
     qInfo("ready to sendMessageToServer");
     emit sendMessageToServer(jsonString);
-    if(!is_wait)return true;
-    while (this->state != LutClientState::LUT_CLIENT_IDLE)
-    {
-        if(!is_run)
-            return false;
-        //qInfo("Waiting LUT ....");
-        QThread::msleep(1000);
-    }
-    return this->state == LutClientState::LUT_CLIENT_IDLE;
-}
-
-bool LutClient::sendLensRequest(bool has_ng_lens, bool is_wait)
-{
-    bool is_run = true;
-    return  sendLensRequest(is_run,has_ng_lens,is_wait);
+    return true;
 }
 
 //Used for manual operation or calibration, not for auto run

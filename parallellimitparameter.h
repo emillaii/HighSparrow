@@ -71,10 +71,36 @@ public:
             max_position = start_position > end_position?start_position:end_position;
         else
             max_position = start_position > end_position?-end_position:-start_position;
-        if(other_min - max_position > LimitDistance())
+        if(round((other_min - max_position)*1000)/1000 >= LimitDistance())
             return true;
-//        qInfo("check pos (%f,%f)with (%f,%f) distance %f not has Safe Distance %f ",start_position,end_position,other_start,other_end,other_min - max_position,LimitDistance());
+        qInfo("check pos (%f,%f)with (%f,%f) distance %f not has Safe Distance %f ",start_position,end_position,other_start,other_end,other_min - max_position,LimitDistance());
             return false;
+    }
+    double getSafePosition(double position,double other_position)
+    {
+        double max, other_min,limit;
+        if(isDistanceParallel())
+            other_min = other_position;
+        else
+            other_min = -other_position;
+        if(isDistanceAntiparallel())
+        {
+            max = position;
+            limit = other_min - LimitDistance();
+            if(max > limit)
+                return limit;
+            else
+                return max;
+        }
+        else
+        {
+            max = -position;
+            limit = other_min - LimitDistance();
+            if(max > limit)
+                return -limit;
+            else
+                return -max;
+        }
     }
     Q_PROPERTY(double LimitDistance READ LimitDistance WRITE setLimitDistance NOTIFY LimitDistanceChanged)
     Q_PROPERTY(bool isDistanceAntiparallel READ isDistanceAntiparallel WRITE setIsDistanceAntiparallel NOTIFY isDistanceAntiparallelChanged)

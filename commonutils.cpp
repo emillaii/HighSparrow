@@ -1,4 +1,4 @@
-#include <commonutils.h>
+﻿#include <commonutils.h>
 #include <QTime>
 #include <config.h>
 #include <QDir>

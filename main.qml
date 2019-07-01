@@ -3,7 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 import FileContentItem 1.0
 import QtQuick.Layouts 1.11
-import AACoreNew 1.1
+//import AACoreNew 1.1
 
 ApplicationWindow {
     visible: true

@@ -52,13 +52,19 @@ bool SensorPickArm::move_XYT1_Synic(const double x, const double y, const double
 
 }
 
-bool SensorPickArm::move_XYT2_Synic(const double x, const double y, const double t, const bool check_softlanding, int timeout)
+bool SensorPickArm::checkXYT2Arrived(const double x, const double y, const double t)
+{
+    return motor_x->CheckArrivedTargetPos(x)&&motor_y->CheckArrivedTargetPos(y)&&picker2->motor_t->CheckArrivedTargetPos(t);
+}
+
+bool SensorPickArm::move_XYT2_Synic(const double x, const double y, const double t,const bool check_arrived, const bool check_softlanding, int timeout)
 {
     if(check_softlanding)
     {
         if(!picker1->motor_z->resetSoftLanding(timeout))return false;
         if(!picker2->motor_z->resetSoftLanding(timeout))return false;
     }
+    if(check_arrived&&checkXYT2Arrived(x,y,t))return true;
     motor_x->MoveToPos(x);
     motor_y->MoveToPos(y);
     picker2->motor_t->MoveToPos(t);

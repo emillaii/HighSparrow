@@ -128,9 +128,13 @@ void TcpManager::onDelete()
 void TcpManager::onInit()
 {
     qDebug("onInit thread id:%d",QThread::currentThreadId());
-    m_WebSocketServer = new QWebSocketServer(QStringLiteral("Echo Server"),QWebSocketServer::NonSecureMode, this);
-    connect(m_WebSocketServer, &QWebSocketServer::newConnection,this, &TcpManager::onNewConnection);
-    m_WebSocketServer->listen(QHostAddress::Any,parameters.serverPort());
+    if(parameters.openServer())
+    {
+        qDebug("openServer port:%d",parameters.serverPort());
+        m_WebSocketServer = new QWebSocketServer(QStringLiteral("Echo Server"),QWebSocketServer::NonSecureMode, this);
+        connect(m_WebSocketServer, &QWebSocketServer::newConnection,this, &TcpManager::onNewConnection);
+        m_WebSocketServer->listen(QHostAddress::Any,parameters.serverPort());
+    }
     foreach (TcpClientMessager* messager, m_client_messagers)
         messager->Init();
 }

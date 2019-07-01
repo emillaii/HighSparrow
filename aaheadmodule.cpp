@@ -89,12 +89,12 @@ bool AAHeadModule::moveToUplookResultPosition()
 
 void AAHeadModule::openUVTillTime(int till_time)
 {
-    int mini_time = 30;
+//    int mini_time = 30;
     XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),1);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),1);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),1);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),1);
-    QThread::msleep(3000);
+    QThread::msleep(till_time);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),0);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),0);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),0);
@@ -189,7 +189,7 @@ mPoint6D AAHeadModule::GetFeedBack()
     return mPoint6D(motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos(),motor_a->GetFeedbackPos(),motor_b->GetFeedbackPos(),motor_c->GetFeedbackPos());
 }
 
-void AAHeadModule::sendSensrRequest(int sut_state)
+void AAHeadModule::sendSensorRequest(int sut_state)
 {
     qInfo("sendSensrRequest %d",sut_state);
     waiting_sensor = true;
@@ -199,25 +199,19 @@ void AAHeadModule::sendSensrRequest(int sut_state)
     emit sendSensrRequestToSut(sut_state);
 }
 
-bool AAHeadModule::waitForLoadSensor(bool &is_run,int time_out)
+bool AAHeadModule::waitForLoadSensor(bool &is_run)
 {
-    while (time_out > 0) {
-        if(!is_run)
-        {
-            qInfo("is_run  is false wait For LoadSensor fail");
-            return false;
-        }
+    int time_out = 0;
+    while (is_run) {
         if(!waiting_sensor)
         {
+            qInfo("wait For LoadSensor succeed.");
             return  true;
-//            bool  result = stepMove_XYC_Sync(offset_x,offset_y,offset_theta);
-//            qInfo("perform  sut pr result %d (%f,%f,%f)",result,offset_x,offset_y,offset_theta);
-//            return result;
         }
-        QThread::msleep(100);
-        time_out -= 100;
+        QThread::msleep(1);
+        time_out ++;
     }
-    qInfo("waitForLoadSensor fail");
+    qInfo("wait For LoadSensor interrupt.");
     return false;
 }
 
@@ -244,6 +238,22 @@ bool AAHeadModule::moveToSZ_XYC_Z_Sync(double x, double y, double z, double c)
         result &= motor_c->MoveToPos(c);
         result &= motor_x->WaitArrivedTargetPos(x);
         result &= motor_y->WaitArrivedTargetPos(y);
+        result &= motor_c->WaitArrivedTargetPos(c);
+    }
+    if(result)
+        result &= motor_z->MoveToPosSync(z);
+    return result;
+}
+
+bool AAHeadModule::moveToSZ_XYSC_Z_Sync(double x, double y, double z, double c)
+{
+    bool result = motor_z->MoveToPosSync(0);
+    if(result)
+    {
+        result &= motor_x->MoveToPos(x);
+        result &= motor_c->MoveToPos(c);
+        result &= motor_y->MoveToPosSaftySync(y);
+        result &= motor_x->WaitArrivedTargetPos(x);
         result &= motor_c->WaitArrivedTargetPos(c);
     }
     if(result)

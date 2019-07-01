@@ -1,4 +1,4 @@
-#ifndef TCPMESSAGER_H
+﻿#ifndef TCPMESSAGER_H
 #define TCPMESSAGER_H
 
 #include "tcpmessagerparameter.h"

@@ -18,8 +18,8 @@ class LutClient : public QObject
     Q_OBJECT
 public:
     explicit LutClient(AAHeadModule *aaHead, QString address, QObject *parent = nullptr);
-    bool sendLensRequest(bool &is_run,bool has_ng_lens,bool is_wait);
-    Q_INVOKABLE bool sendLensRequest(bool has_ng_lens,bool is_wait);
+    Q_INVOKABLE bool sendLensRequest(bool has_ng_lens);
+    bool waitLensRespond(bool &is_run);
     bool sendLUTMoveToPos(int type);
     bool requestToolUpPRResult(PrOffset &prOffset);
     bool isLutClientConnected();

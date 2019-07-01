@@ -36,6 +36,8 @@
 #include "sensorclip.h"
 #include "sensortrayloadermodule.h"
 #include "modulemanagerparameter.h"
+#include "tcpmanager.h"
+#include "motorstatesgeter.h"
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
@@ -57,6 +59,10 @@ public:
     QMap<QString,VisionLocation*> vision_locations;
     QMap<QString,XtVacuum*> vacuums;
     QMap<QString,XtCylinder*> cylinder;
+    TcpManager tcp_manager;
+    QMap<QString,TcpMessager*> messagers;//需要响应的连接；
+    MotorStatesGeter state_geter;
+
     ChartCalibration * chart_calibration = Q_NULLPTR;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
@@ -66,7 +72,6 @@ public:
     LontryLight * lightPanel = Q_NULLPTR;
     Dothinkey * dothinkey = Q_NULLPTR;
     ImageGrabbingWorkerThread * imageGrabberThread = Q_NULLPTR;
-
     MaterialCarrier lut_carrier;
     MaterialCarrier sut_carrier;
     MaterialPicker lens_picker;
@@ -118,6 +123,8 @@ signals:
     bool sendMsgSignal(QString,QString);
     void sendAlarm(int sender_id,int level, QString error_message);
 public slots:
+    void tcpResp(QString message);
+    QString deviceResp(QString message);
     void alarmChecking();
     void performHandlingOperation(int cmd);
     bool sendMessageTest(QString title,QString content);
@@ -224,6 +231,7 @@ public:
     bool loadJsonObject(QString file_name, QJsonObject &object);
     bool saveJsonObject(QString file_name,QJsonObject &object);
     QString getCurrentParameterDir();
+    QString getSystermParameterDir();
 
     bool registerWorkers(WorkersManager* manager);
 

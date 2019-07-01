@@ -111,7 +111,7 @@ QString TcpMessager::getStringFromJsonObject(const QJsonObject &json_object)
 bool TcpMessager::onSendTextMessage(QString message)
 {
     if (parameters.needQInfo())
-        qDebug("%s WebSocket send %s in thread %d",parameters.messagerName().toStdString().c_str(),message.toStdString().c_str(),QThread::currentThreadId());
+        qDebug("%s tcp WebSocket send %s in thread %d",parameters.messagerName().toStdString().c_str(),message.toStdString().c_str(),QThread::currentThreadId());
      qint64 result = m_webSocket->sendTextMessage(message);
      return result == message.size();
 }
@@ -119,7 +119,7 @@ bool TcpMessager::onSendTextMessage(QString message)
 void TcpMessager::onReceiveTextMessage(QString message)
 {
     if (parameters.needQInfo())
-        qDebug("%s WebSocket receive %s in thread %d",parameters.messagerName().toStdString().c_str(),message.toStdString().c_str(),QThread::currentThreadId());
+        qDebug("%s tcp WebSocket receive %s in thread %d",parameters.messagerName().toStdString().c_str(),message.toStdString().c_str(),QThread::currentThreadId());
     QMutexLocker locker(&message_mutex);
     is_waitting = false;
     received_message = message;

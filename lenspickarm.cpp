@@ -56,9 +56,15 @@ bool LensPickArm::move_XY_Synic(double x, double y, bool check_softlanding, int 
     return resut;
 }
 
-bool LensPickArm::move_XYT_Synic(double x, double y, double t, bool check_softlanding, int timeout)
+bool LensPickArm::checkXYTArrived(double x, double y, double t)
+{
+    return motor_x->CheckArrivedTargetPos(x)&&motor_y->CheckArrivedTargetPos(y)&&picker->motor_t->CheckArrivedTargetPos(t);
+}
+
+bool LensPickArm::move_XYT_Synic(double x, double y, double t,bool check_arrived, bool check_softlanding, int timeout)
 {
     if(check_softlanding)if(!picker->motor_z->resetSoftLanding(timeout))return false;
+    if(check_arrived&&checkXYTArrived(x,y,t))return true;
     motor_x->MoveToPos(x);
     motor_y->MoveToPos(y);
     picker->motor_t->MoveToPos(t);

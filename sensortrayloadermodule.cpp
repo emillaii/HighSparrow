@@ -346,6 +346,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
 
 void SensorTrayLoaderModule::runHandly()
 {
+    qInfo("runHandly");
     is_run = true;
     while (is_run) {
         QThread::msleep(1000);
@@ -358,16 +359,36 @@ void SensorTrayLoaderModule::runHandly()
                 is_run = false;
                 break;
             }
-            hold_tray->Set(true);
-            hold_vacancy->Set(true);
+           bool result = hold_tray->Set(true);
+            result &= hold_vacancy->Set(true);
+            if(!result)
+            {
+                AppendError(u8"放下料盘失败");
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    continue;
+                }
+                if(!is_run)break;
+            }
 
             sendAlarmMessage(ErrorLevel::TipNonblock,u8"请手动更换sensor料盘和空盘，谢谢配合!");
             waitMessageReturn(is_run);
             if(!is_run)break;
 
-            hold_tray->Set(false);
-            hold_vacancy->Set(false);
-
+            result = hold_tray->Set(false);
+            result &= hold_vacancy->Set(false);
+            result &= kick1->Set(true);
+            if(!result)
+            {
+                AppendError(u8"顶起料盘失败");
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    continue;
+                }
+                if(!is_run)break;
+            }
             if(!moveToWorkPos(true))
             {
                 AppendError(u8"去工作位置失败！");
@@ -621,10 +642,16 @@ bool SensorTrayLoaderModule::moveToPullNextTrayAndPushOutTray(bool has_vacancy_t
             if(kick_result)
                 kick_result &= motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
             if(kick_result)
+            {
+                kick_result &= kick1->Set(true);
                 kick_result &= kick2->Set(false);
+            }
         }
         else
+        {
             motor_kick->WaitArrivedTargetPos(parameters.finishKickTrayPosition() - parameters.backDistance());
+            kick_result &= kick1->Set(true);
+        }
     }
 
     if(result&&need_check)

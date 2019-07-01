@@ -18,7 +18,7 @@ void TcpClientMessager::Init()
 void TcpClientMessager::onConnected()
 {
     if (parameters.needQInfo())
-        qDebug() << "WebSocket connected" << parameters.address();
+        qDebug() << "tcp WebSocket connected" << parameters.address();
     m_is_connected = true;
 }
 
@@ -26,7 +26,7 @@ void TcpClientMessager::onConnected()
 void TcpClientMessager::onClosed()
 {
     if (parameters.needQInfo())
-        qDebug() << "WebSocket closed" << parameters.address();
+        qDebug() << "tcp WebSocket disconnect. Going to retry the connection" << parameters.address();
     m_is_connected = false;
     m_webSocket->open(QUrl(parameters.address()));
 }

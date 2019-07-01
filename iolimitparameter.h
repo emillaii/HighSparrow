@@ -51,12 +51,37 @@ public:
         }
         return false;
     }
+    bool hasInInterferenceeffectSpance(double start_x,double end_x)
+    {
+        double temp_start,temp_end;
+        if(start_x > end_x)
+        {
+            temp_start = end_x;
+            temp_end = start_x;
+        }
+        else
+        {
+            temp_start = start_x;
+            temp_end = end_x;
+        }
+        bool result = false;
+        if(m_effectXSpance.size()<2)
+            result = true;
+        else
+            for (int i = 0; i < m_effectXSpance.size()/2; ++i)
+                if(m_effectXSpance[2*i].toDouble()<=temp_end&&m_effectXSpance[2*i+1].toDouble()>=temp_start)
+                {
+                    result = true;
+                }
+        return result;
+    }
     Q_PROPERTY(QVariantList moveSpance READ moveSpance WRITE setMoveSpance NOTIFY moveSpanceChanged)
     Q_PROPERTY(QVariantList inputIOName READ inputIOName WRITE setInputIOName NOTIFY inputIONameChanged)
     Q_PROPERTY(QVariantList outputIOName READ outputIOName WRITE setOutputIOName NOTIFY outputIONameChanged)
     Q_PROPERTY(QVariantList inputIOState READ inputIOState WRITE setInputIOState NOTIFY inputIOStateChanged)
     Q_PROPERTY(QVariantList outputIOState READ outputIOState WRITE setOutputIOState NOTIFY outputIOStateChanged)
     Q_PROPERTY(bool crashSpance READ crashSpance WRITE setCrashSpance NOTIFY crashSpanceChanged)
+    Q_PROPERTY(QVariantList effectXSpance READ effectXSpance WRITE setEffectXSpance NOTIFY effectXSpanceChanged)
     QVariantList moveSpance() const
     {
         return m_moveSpance;
@@ -135,6 +160,15 @@ public slots:
         emit crashSpanceChanged(m_crashSpance);
     }
 
+    void setEffectXSpance(QVariantList effectXSpance)
+    {
+        if (m_effectXSpance == effectXSpance)
+            return;
+
+        m_effectXSpance = effectXSpance;
+        emit effectXSpanceChanged(m_effectXSpance);
+    }
+
 signals:
     void moveSpanceChanged(QVariantList moveSpance);
     void inputIONameChanged(QVariantList inputIOName);
@@ -146,12 +180,19 @@ signals:
     void outputIOStateChanged(QVariantList outputIOState);
     void crashSpanceChanged(bool crashSpance);
 
+    void effectXSpanceChanged(QVariantList effectXSpance);
+
 public:
     QList<int> input_io_indexs;
     QList<int> output_io_indexs;
     bool crashSpance() const
     {
         return m_crashSpance;
+    }
+
+    QVariantList effectXSpance() const
+    {
+        return m_effectXSpance;
     }
 
 private:
@@ -161,6 +202,7 @@ private:
     QVariantList m_inputIOState;
     QVariantList m_outputIOState;
     bool m_crashSpance = false;
+    QVariantList m_effectXSpance;
 };
 
 #endif // IOLIMITPARAMETER_H

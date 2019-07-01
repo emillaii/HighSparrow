@@ -44,6 +44,23 @@ ItemDelegate {
                                 systerm_param.setRunMode(text);
                             }
                         }
+                        CheckBox {
+                            visible: baseModuleManager.getServerMode() === 0
+                            text: qsTr("手动换Lens盘");
+                            checked: tray_loader_module_parameters.isHandly
+                            onClicked: {
+                                tray_loader_module_parameters.setIsHandly(checked)
+                            }
+                        }
+                        CheckBox {
+                            visible: baseModuleManager.getServerMode() !== 0
+                            text: qsTr("手动换Sensor盘");
+                            checked: sensor_tray_loader_module_parameter.isHandly
+                            onClicked: {
+                                sensor_tray_loader_module_parameter.setIsHandly(checked)
+                            }
+                        }
+
                         Button{
                             text: qsTr("重置逻辑")
                             onClicked:{

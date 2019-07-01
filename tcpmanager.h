@@ -1,4 +1,4 @@
-#ifndef TCPMANAGER_H
+﻿#ifndef TCPMANAGER_H
 #define TCPMANAGER_H
 
 #include "tcpclientmessager.h"

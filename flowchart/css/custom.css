@@ -1,7 +1,45 @@
+nav {
+  float: left;
+  width: 20%;
+  height: 1500px; /* only for demonstration, should be removed */
+  background: #ccc;
+  padding: 20px;
+}
+
+/* Style the list inside the menu */
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+article {
+  float: left;
+  padding: 20px;
+  width: 80%;
+  background-color: #f1f1f1;
+  height: 1500px; /* only for demonstration, should be removed */
+}
+
+/* Clear floats after the columns */
+section:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+selected {
+	background-color: #444
+}
+
+.test_button {
+  margin-top:10px;
+}
+
 .flowchart-example-container {
-  height: 60%;
+  height: 1200px;
   border: 1px solid #BBB;
   margin-bottom: 10px;
+  background: #545b62;
 }
 
 .flowchart-operator-connector-arrow {

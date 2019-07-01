@@ -3,17 +3,17 @@ $(document).ready(function () {
   var data = {};
   var init_aa_params = {
     mode: 1, start_pos: 0, stop_pos: 0,
-    offset_in_um: 100, delay_Z_in_ms: 200, step_size: 10,
-    wait_tilt: 1, edge_filter: 0, is_debug: 0, estimated_aa_fov: 70, estimated_fov_slope: -16
+    offset_in_um: -40, delay_Z_in_ms: 200, step_size: 10,
+    wait_tilt: 1, edge_filter: 0, is_debug: 0, estimated_aa_fov: 70, estimated_fov_slope: -16, no_tilt: 0
   };
-  var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 0, retry: 0 };
-  var init_uv_params = { time: 3000 };
+  var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
-  var init_basic_params = { retry: 0, delay_in_ms: 0 };
+  var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_z_offset = { type: 0, z_offset_in_um: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0 };
   var init_dispense_params = {enable_save_image:1,lighting:195, retry: 0, delay_in_ms: 0 };
   var init_save_image = { type: 0, lighting: 100 };
+  var init_grr ={ change_lens: 1, change_sensor: 0, repeat_time: 9};
   var latestCreatedLinkId;
   var $linkProperties = $('#link_properties');
   var $operatorTitle = $('#operator_title');
@@ -32,11 +32,13 @@ $(document).ready(function () {
   var $save_image_operator_title = $('#save_image_operator_title');
   var $dispense_operator_properties = $('#dispense_operator_properties');
   var $dispense_operator_title = $('#dispense_operator_title');
+  var $grr_operator_title = $('#grr_operator_title');
+  var $grr_operator_properties = $('#grr_operator_properties');
   var $mtf_table = $('#mtf_table');
   var $linkColor = $('#link_color');
 
   //Init the table 
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">Select AA mode: <select id=\"aa_mode\"><option value=1>DOV_Search</option><option value=0>ZScan</option></select></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\">Select AA mode: <select id=\"aa_mode\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option></select></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Start Position: <input type=\"number\" id=\"aa_start_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Stop Position: <input type=\"number\" id=\"aa_stop_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Step Size in um: <input type=\"number\" id=\"aa_step_size\"></div>");
@@ -46,6 +48,7 @@ $(document).ready(function () {
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Edge Filter: <select id=\"aa_edge_filter\"><option value=0>No Edge Filter</option><option value=1>Vertical Edge Filter</option><option value=2>Horizontal Edge Filter</option></select></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Estimated AA FOV: <input type=\"number\" id=\"aa_estimated_fov\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Estimated FOV slope: <input type=\"number\" id=\"aa_estimated_fov_slope\"></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\">No Tilt: <input type=\"number\" id=\"aa_no_tilt\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Debug: <select id=\"aa_is_debug\"><option value=0>False</option><option value=1>True</option></select></div>");
 
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Roll: <input type=\"number\" id=\"roll\"></div>");
@@ -59,6 +62,9 @@ $(document).ready(function () {
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Debug: <select id=\"oc_is_debug\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"oc_retry\"></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"oc_delay_in_ms\"></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">OC Check: <select id=\"oc_is_check\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">X limit in um: <input type=\"number\" id=\"oc_x_limit_in_um\"></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">Y limit in um: <input type=\"number\" id=\"oc_y_limit_in_um\"></div>");
   
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Enable Save Image: <select id=\"dispense_enable_save_image\"><option value=0>False</option><option value=1>True</option></select></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Lighting: <input type=\"number\" id=\"dispense_lighting\"></div>");
@@ -75,6 +81,10 @@ $(document).ready(function () {
   $save_image_operator_properties.append("<div style=\"margin-top:20px\">Camera Type: <select id=\"save_image_type\"><option value=0>Downlook Camera</option><option value=1>Uplook Camera</option><option value=2>Pickarm Camera</option></select></div>");
   $save_image_operator_properties.append("<div style=\"margin-top:20px\">Lighting: <input type=\"number\" id=\"save_image_lighting\" value=100></div>");
 
+  $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Lens: <select id=\"grr_change_lens\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Sensor: <select id=\"grr_change_sensor\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $grr_operator_properties.append("<div style=\"margin-top:20px\">Repeat Time: <input type=\"number\" id=\"grr_repeat_time\" value=10></div>");
+  
   // Apply the plugin on a standard, empty div...
   var $flowchart = $('#example_7');
   $mtf_table.hide();
@@ -94,6 +104,7 @@ $(document).ready(function () {
       $aa_xy_offset_operator_properties.hide();
 	  $save_image_operator_properties.hide();
 	  $dispense_operator_properties.hide();
+	  $grr_operator_properties.hide();
 	  $mtf_table.hide();
       if (operatorId.includes("AA_")) {
         $aa_operator_properties.show();
@@ -109,6 +120,7 @@ $(document).ready(function () {
         $('#aa_is_debug').val(params["is_debug"]);
         $('#aa_estimated_fov').val(params["estimated_aa_fov"]);
         $('#aa_estimated_fov_slope').val(params["estimated_fov_slope"]);
+        $('#aa_no_tilt').val(params["no_tilt"]);
       } else if (operatorId.includes("Initial Tilt")) {
         $initial_tilt_properties.show();
         $initial_tilt_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -133,6 +145,10 @@ $(document).ready(function () {
         $('#oc_delay_in_ms').val(params["delay_in_ms"]);
         $('#oc_is_debug').val(params["is_debug"]);
         $('#oc_retry').val(params["retry"]);
+		$('#oc_is_check').val(params["is_check"]);
+		$('#oc_x_limit_in_um').val(params["x_limit_in_um"]);
+		$('#oc_y_limit_in_um').val(params["y_limit_in_um"]);
+		
       } else if (operatorId.includes("Save Image")) {
 		$save_image_operator_properties.show();
 		$save_image_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -152,7 +168,7 @@ $(document).ready(function () {
 		$('#mtf_operator_title').val($flowchart.flowchart('getOperatorTitle', operatorId));
 		Object.keys(params).forEach(function(key) {
 			console.log('Key : ' + key + ', Value : ' + params[key])
-			if (key == "CC" || key == "UL" || key == "UR" || key == "LL" || key == "LR"){
+			if (key == "CC" || key == "UL" || key == "UR" || key == "LL" || key == "LR" || key == "SFR_DEV_TOL"){
 				var table = document.getElementById("mtf_table_form");
 				var row = table.insertRow(table.rows.length);
 				var row_number = table.rows.length;
@@ -161,7 +177,7 @@ $(document).ready(function () {
 				var cell3 = row.insertCell(2);
 				var select_position = document.createElement('select');
 				var sfr_score = document.createElement('input');
-				select_position.innerHTML = "<option value=CC>CC</option><option value=UL>UL</option><option value=UR>UR</option><option value=LL>LL</option><option value=LR>LR</option>";
+				select_position.innerHTML = "<option value=CC>CC</option><option value=UL>UL</option><option value=UR>UR</option><option value=LL>LL</option><option value=LR>LR</option><option value=SFR_DEV_TOL>SFR_DEV_TOL</option>";
 				select_position.value = key;
 				cell1.appendChild(select_position);
 				sfr_score.value = params[key]; sfr_score.type="number"; 
@@ -176,7 +192,13 @@ $(document).ready(function () {
 				cell3.appendChild(delete_btn);
 			}
 		})
-	  }
+	  }else if (operatorId.includes("GRR")) {
+		$grr_operator_properties.show();
+		$grr_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+		$('#grr_change_lens').val(params["change_lens"]);
+		$('#grr_change_sensor').val(params["change_sensor"]);
+        $('#grr_repeat_time').val(params["repeat_time"]);
+	  } 
 	  else {
         $operator_properties.show();
         $operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -194,9 +216,15 @@ $(document).ready(function () {
 	  $oc_operator_properties.hide();
 	  $dispense_operator_properties.hide();
 	  $save_image_operator_properties.hide();
+	  $grr_operator_properties.hide();
 	  $mtf_table.hide();
       return true;
     },
+	onOperatorCreate: function (operatorId, operatorData, fullElement) {
+		console.log(operatorId);
+		operatorI++;
+		return true;
+	},
     onLinkSelect: function (linkId) {
       return true;
     },
@@ -219,7 +247,14 @@ $(document).ready(function () {
         $flowchart.flowchart('redrawLinksLayer');
       }
       return true;
-    }
+    }, 
+	onOperatorDoubleClicked: function (operatorId) {
+		var params = $flowchart.flowchart('getOperatorParams', operatorId);
+		params["operatorId"] = operatorId;
+		console.log("onOperatorDoubleClicked: " + operatorId);
+		$('#flowchart_running_cmd').val(JSON.stringify(params, null, 2));
+		return true;
+	}
   });
 
   $operatorTitle.keyup(function () {
@@ -237,6 +272,67 @@ $(document).ready(function () {
   });
 
   var operatorI = 0;
+  function duplicateOperationWidget() {
+	var selectedOperatorId = $flowchart.flowchart('getSelectedOperatorId');
+	var nameIndex = selectedOperatorId.indexOf('_');
+	var name = selectedOperatorId.substring(0, nameIndex);
+	console.log("New operator: " + name);
+	var operatorId = name + '_' + operatorI;
+    var operatorData = {
+      top: 10,
+      left: 10,
+      properties: {
+        title: name,
+        inputs: {
+          input_1: {
+            label: 'In',
+            multiple: false
+          }
+        },
+        outputs: {
+          success: {
+            label: 'success',
+          },
+          fail: {
+            label: 'fail',
+          }
+        }
+      }
+    };
+    console.log("Create operator");
+    $flowchart.flowchart('createOperator', operatorId, operatorData);
+    if (selectedOperatorId.includes("AA_")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_operatorTitle.val());
+      var params = {
+        mode: Number($('#aa_mode').val()), start_pos: Number($('#aa_start_position').val()), stop_pos: Number($('#aa_stop_position').val()),
+        step_size: Number($('#aa_step_size').val()), offset_in_um: Number($('#aa_offset_in_um').val()), delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
+        estimated_aa_fov: Number($('#aa_estimated_fov').val()), estimated_fov_slope: Number($('#aa_estimated_fov_slope').val()),
+        no_tilt: Number($('#aa_no_tilt').val()),
+        wait_tilt: Number($('#aa_wait_tilt').val()), edge_filter: Number($('#aa_edge_filter').val()), is_debug: Number($('#aa_is_debug').val())
+      };
+	  $flowchart.flowchart('setOperatorParams', operatorId, params);
+    }else if (selectedOperatorId.includes("MTF")) {
+	  getTableData();
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#mtf_operator_title').val());
+      var params = getTableData();
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+	}else if (selectedOperatorId.includes("OC")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $oc_operatorTitle.val());
+      var params = {
+        enable_motion: Number($('#oc_enable_motion').val()),
+        fast_mode: Number($('#oc_fast_mode').val()), debug: Number($('#oc_is_debug').val()),
+        delay_in_ms: Number($('#oc_delay_in_ms').val()), retry: Number($('#oc_retry').val()),
+		is_check: Number($('#oc_is_check').val()), x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
+		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
+      };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+    } else {
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
+      var params = { retry: Number($('#basic_retry').val()), delay_in_ms: Number($('#basic_delay').val()) };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+    }
+  }
+  
   function addOperationWidget(name) {
     var operatorId = name + '_' + operatorI;
     var operatorData = {
@@ -260,7 +356,6 @@ $(document).ready(function () {
         }
       }
     };
-    operatorI++;
     console.log("Create operator");
     $flowchart.flowchart('createOperator', operatorId, operatorData);
     if (operatorId.includes("AA_")) {
@@ -282,7 +377,8 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
     }
   }
-function addMultipleOperationWidget(name) {
+  
+  function addMultipleOperationWidget(name) {
     var operatorId = name + '_' + operatorI;
     var operatorData = {
       top: 10,
@@ -305,7 +401,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     console.log("Create operator");
     $flowchart.flowchart('createOperator', operatorId, operatorData);
     if (operatorId.includes("AA_")) {
@@ -350,7 +445,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
   
@@ -376,7 +470,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
   
@@ -402,7 +495,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
 
@@ -430,7 +522,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
 
@@ -448,7 +539,6 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
   }
 
@@ -467,8 +557,13 @@ function addMultipleOperationWidget(name) {
         }
       }
     };
-    operatorI++;
     $flowchart.flowchart('createOperator', operatorId, operatorData);
+	if (operatorId.includes("GRR")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr);
+	}
+    else {
+      $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
+    }
   }
 
   $flowchart.siblings('.create_start').click(function () {
@@ -483,8 +578,7 @@ function addMultipleOperationWidget(name) {
   $flowchart.siblings('.create_init_camera').click(function () { addOperationWidget("Init Camera"); });
   $flowchart.siblings('.create_pr_to_bond').click(function () { addOperationWidget("PR To Bond"); });
   $flowchart.siblings('.create_initial_tilt').click(function () { addOperationWidget("Initial Tilt"); });
-  $flowchart.siblings('.create_aa_pick_lens').click(function () { addOperationWidget("AA Pick Lens"); });
-  $flowchart.siblings('.create_aa_unload_lens').click(function () { addMultipleOperationWidget("AA Unload Lens"); });
+  $flowchart.siblings('.create_load_material').click(function () { addOperationWidget("Load Material"); });
   $flowchart.siblings('.create_aa_unload_camera').click(function () { addMultipleOperationWidget("AA Unload Camera"); });
 
   $flowchart.siblings('.create_aa').click(function () { addOperationWidget("AA"); });
@@ -495,22 +589,18 @@ function addMultipleOperationWidget(name) {
 
   $flowchart.siblings('.create_save_image').click(function () { addOperationWidget("Save Image"); });
   $flowchart.siblings('.create_disp').click(function () { addOperationWidget("Dispense"); });
-  $flowchart.siblings('.create_uv').click(function () { addOperationWidget("UV"); });
+  $flowchart.siblings('.create_uv').click(function () { addMultipleOperationWidget("UV"); });
   $flowchart.siblings('.create_delay').click(function () { addOperationWidget("Delay"); });
 
   $flowchart.siblings('.create_accept').click(function () { addEndWidget("Accept"); });
   $flowchart.siblings('.create_reject').click(function () { addEndWidget("Reject"); });
   $flowchart.siblings('.create_terminate').click(function () { addEndWidget("Terminate"); });
+  $flowchart.siblings('.create_grr').click(function () { addEndWidget("GRR"); });
 
   $flowchart.siblings('.create_thread').click(function () { addThreadWidget("Parallel"); });
   $flowchart.siblings('.create_join_thread').click(function () { addJoinThreadWidget("Join"); });
 
   $flowchart.siblings('.delete_selected_button').click(function () { $flowchart.flowchart('deleteSelected'); });
-
-  $flowchart.siblings('.get_data').click(function () {
-    var data = $flowchart.flowchart('getData');
-    $('#flowchart_data').val(JSON.stringify(data, null, 2));
-  });
 
   $flowchart.siblings('.set_data').click(function () {
     var data = JSON.parse($('#flowchart_data').val());
@@ -527,6 +617,7 @@ function addMultipleOperationWidget(name) {
         mode: Number($('#aa_mode').val()), start_pos: Number($('#aa_start_position').val()), stop_pos: Number($('#aa_stop_position').val()),
         step_size: Number($('#aa_step_size').val()), offset_in_um: Number($('#aa_offset_in_um').val()), delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
         estimated_aa_fov: Number($('#aa_estimated_fov').val()), estimated_fov_slope: Number($('#aa_estimated_fov_slope').val()),
+        no_tilt: Number($('#aa_no_tilt').val()),
         wait_tilt: Number($('#aa_wait_tilt').val()), edge_filter: Number($('#aa_edge_filter').val()), is_debug: Number($('#aa_is_debug').val())
       };
 
@@ -540,7 +631,9 @@ function addMultipleOperationWidget(name) {
       var params = {
         enable_motion: Number($('#oc_enable_motion').val()),
         fast_mode: Number($('#oc_fast_mode').val()), debug: Number($('#oc_is_debug').val()),
-        delay_in_ms: Number($('#oc_delay_in_ms').val()), retry: Number($('#oc_retry').val())
+        delay_in_ms: Number($('#oc_delay_in_ms').val()), retry: Number($('#oc_retry').val()),
+		is_check: Number($('#oc_is_check').val()), x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
+		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
       };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Z Offset")) {
@@ -563,6 +656,11 @@ function addMultipleOperationWidget(name) {
 	  getTableData();
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#mtf_operator_title').val());
       var params = getTableData();
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	}else if (selectedOperatorId.includes("GRR")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#grr_operator_title').val());
+      var params = { change_lens: Number($('#grr_change_lens').val()), change_sensor: Number($('#grr_change_sensor').val()), repeat_time:  Number($('#grr_repeat_time').val())};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	}
     else {
@@ -623,7 +721,7 @@ function addMultipleOperationWidget(name) {
 		var cell1 = row.insertCell(0);
 		var cell2 = row.insertCell(1);
 		var cell3 = row.insertCell(2);
-		cell1.innerHTML = "<select><option value=CC>CC</option><option value=UL>UL</option><option value=UR>UR</option><option value=LL>LL</option><option value=LR>LR</option><option value=SFR_DEV_TOL>sfr_dev_tolerance</option></select>";
+		cell1.innerHTML = "<select><option value=CC>CC</option><option value=UL>UL</option><option value=UR>UR</option><option value=LL>LL</option><option value=LR>LR</option><option value=SFR_DEV_TOL>SFR_DEV_TOL</option></select>";
 		cell2.innerHTML = "<input value=50 type=\"number\" min=0 max=100>";
 		var delete_btn = document.createElement('button');
 		delete_btn.className = "btn-danger";
@@ -650,6 +748,117 @@ function addMultipleOperationWidget(name) {
 	return params;
   }
   
-  
+  $('#create_start').click(function(){ addStartWidget();});
+  $('#create_init_camera').click(function(){ addOperationWidget("Init Camera"); });
+  $('#create_load_camera').click(function () { addOperationWidget("Load Camera"); });
+  $('#create_init_camera').click(function () { addOperationWidget("Init Camera"); });
+  $('#create_pr_to_bond').click(function () { addOperationWidget("PR To Bond"); });
+  $('#create_initial_tilt').click(function () { addOperationWidget("Initial Tilt"); });
+  $('#create_aa_pick_lens').click(function () { addOperationWidget("AA Pick Lens"); });
+  $('#create_aa_unload_lens').click(function () { addMultipleOperationWidget("AA Unload Lens"); });
+  $('#create_aa_unload_camera').click(function () { addMultipleOperationWidget("AA Unload Camera"); });
+  $('#create_aa').click(function () { addOperationWidget("AA"); });
+  $('#create_oc').click(function () { addOperationWidget("OC"); });
+  $('#create_mtf').click(function () { addMultipleOperationWidget("MTF"); });
+  $('#create_z_offset').click(function () { addOperationWidget("Z Offset"); });
+  $('#create_xy_offset').click(function () { addOperationWidget("XY Offset"); });
+  $('#create_save_image').click(function () { addOperationWidget("Save Image"); });
+  $('#create_disp').click(function () { addOperationWidget("Dispense"); });
+  $('#create_uv').click(function () { addMultipleOperationWidget("UV"); });
+  $('#create_delay').click(function () { addOperationWidget("Delay"); });
+  $('#create_accept').click(function () { addEndWidget("Accept"); });
+  $('#create_reject').click(function () { addEndWidget("Reject"); });
+  $('#create_terminate').click(function () { addEndWidget("Terminate"); });
+  $('#create_thread').click(function () { addThreadWidget("Parallel"); });
+  $('#create_join_thread').click(function () { addJoinThreadWidget("Join"); });
+  $('#create_grr').click(function () { addEndWidget("GRR"); });
 
+  $('#get_data').click(function () {
+    var data = $flowchart.flowchart('getData');
+    $('#flowchart_data').val(JSON.stringify(data, null, 2));
+  });
+  
+  
+  $('#set_data').click(function () {
+    var data = JSON.parse($('#flowchart_data').val());
+    $flowchart.flowchart('setData', data);
+  });
+
+  $flowchart.siblings('.delete_selected_button').click(function () { $flowchart.flowchart('deleteSelected'); });
+  
+  $('#update_data_button').click(function(){
+       var selectedOperatorId = $flowchart.flowchart('getSelectedOperatorId');
+    if (selectedOperatorId == null) { return; }
+    console.log('update opeator: ' + selectedOperatorId);
+    if (selectedOperatorId.includes("AA_")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_operatorTitle.val());
+      var params = {
+        mode: Number($('#aa_mode').val()), start_pos: Number($('#aa_start_position').val()), stop_pos: Number($('#aa_stop_position').val()),
+        step_size: Number($('#aa_step_size').val()), offset_in_um: Number($('#aa_offset_in_um').val()), delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
+        estimated_aa_fov: Number($('#aa_estimated_fov').val()), estimated_fov_slope: Number($('#aa_estimated_fov_slope').val()),
+        no_tilt: Number($('#aa_no_tilt').val()),
+        wait_tilt: Number($('#aa_wait_tilt').val()), edge_filter: Number($('#aa_edge_filter').val()), is_debug: Number($('#aa_is_debug').val())
+      };
+
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    } else if (selectedOperatorId.includes("Initial Tilt")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $initial_tilt_operatorTitle.val());
+      var params = { roll: Number($('#roll').val()), pitch: Number($('#pitch').val()) };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    } else if (selectedOperatorId.includes("OC")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $oc_operatorTitle.val());
+      var params = {
+        enable_motion: Number($('#oc_enable_motion').val()),
+        fast_mode: Number($('#oc_fast_mode').val()), debug: Number($('#oc_is_debug').val()),
+        delay_in_ms: Number($('#oc_delay_in_ms').val()), retry: Number($('#oc_retry').val()),
+		is_check: Number($('#oc_is_check').val()), x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
+		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
+      };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    } else if (selectedOperatorId.includes("Z Offset")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_z_offset_operator_title.val());
+      var params = { type: Number($('#aa_z_offset_type').val()), z_offset_in_um: Number($('#aa_z_offset_in_um').val()) };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    } else if (selectedOperatorId.includes("XY Offset")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_xy_offset_operator_title.val());
+      var params = { type: Number($('#aa_xy_offset_type').val()), x_offset_in_um: Number($('#aa_x_offset_in_um').val()), y_offset_in_um: Number($('#aa_y_offset_in_um').val()) };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    } else if (selectedOperatorId.includes("Save Image")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $save_image_operator_title.val());
+      var params = { type: Number($('#save_image_type').val()), lighting: $('#save_image_lighting').val()};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("Dispense")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $dispense_operator_title.val());
+      var params = { enable_save_image: Number($('#dispense_enable_save_image').val()), lighting:  Number($('#dispense_lighting').val()), retry:  Number($('#dispense_retry').val()), delay_in_ms:  Number($('#dispense_delay_in_ms').val())};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("MTF")) {
+	  getTableData();
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#mtf_operator_title').val());
+      var params = getTableData();
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	}
+    else {
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
+      var params = { retry: Number($('#basic_retry').val()), delay_in_ms: Number($('#basic_delay').val()) };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    }
+    alert(selectedOperatorId + " Params is updated");
+  });
+  
+  window.onkeyup = function(event) {
+    let key = event.key.toUpperCase();
+	var selectedOperatorId = $flowchart.flowchart('getSelectedOperatorId');
+	console.log("Key up event: " + key + " selected OperatorId: " + selectedOperatorId);
+    if ( key == 'W' ) {
+        // 'W' key is pressed
+		updateData();
+    } else if ( key == 'E' ) {
+        $("a[rel='modal:open']").click();
+    } else if (key == 'DELETE') {
+		$flowchart.flowchart('deleteSelected');
+	} else if (key == 'C') {
+		duplicateOperationWidget();
+	}
+  }
+  
 });

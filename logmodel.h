@@ -20,6 +20,12 @@ public:
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
 
+signals:
+    void newLog(const QString& log);
+
+private slots:
+    void onNewLog(const QString& log);
+
 protected:
     QHash<int, QByteArray> roleNames() const override;
 

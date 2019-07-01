@@ -4,6 +4,7 @@ LogModel::LogModel(QObject *parent)
     : QAbstractTableModel(parent)
     , m_logs()
 {
+    connect(this, SIGNAL(newLog(const QString&)), this, SLOT(onNewLog(const QString&)), Qt::QueuedConnection);
 }
 
 LogModel* LogModel::instance()
@@ -14,9 +15,7 @@ LogModel* LogModel::instance()
 
 void LogModel::addLog(const QString &log)
 {
-    beginInsertRows(QModelIndex(), 0, 0);
-    m_logs.push_front(log);
-    endInsertRows();
+    emit newLog(log);
 }
 
 int LogModel::columnCount(const QModelIndex &parent) const
@@ -47,4 +46,11 @@ QHash<int, QByteArray> LogModel::roleNames() const
     QHash<int, QByteArray> roles;
     roles[Qt::DisplayRole] = "logString";
     return roles;
+}
+
+void LogModel::onNewLog(const QString& log)
+{
+    beginInsertRows(QModelIndex(), 0, 0);
+    m_logs.push_front(log);
+    endInsertRows();
 }

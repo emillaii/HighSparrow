@@ -6,11 +6,15 @@ import QtQuick.Dialogs 1.2
 
 ItemDelegate {
     width: parent.width
-    contentItem: ColumnLayout {
-        spacing: 0
 
-        RowLayout {
+    contentItem: RowLayout  {
+        spacing: 10
+
+        ColumnLayout{
+            Layout.alignment: Qt.AlignTop
+
             GroupBox{
+                id: coreParamGroupBox
                 title: qsTr("AA Core Parameters")
                 ColumnLayout {
                     RowLayout {
@@ -386,23 +390,31 @@ ItemDelegate {
                     }
                 }
             }
-            Frame {
-                id: frame
-                Layout.fillWidth: true
-                contentHeight: 720
 
-                Image {
-                    id: image1
-                    anchors.fill: parent
-                    source: "icons/sparrow.png"
-                    fillMode: Image.PreserveAspectFit
-                    cache: false
-                    Connections {
-                        target: highSprrow
-                        onDisplayAACoreTuningImageInUI: {
-                            image1.source = ""
-                            image1.source = "image://aaCoreTuningImage"
-                        }
+            LogView{
+                id: logView
+                width: coreParamGroupBox.width
+//                Layout.fillWidth: true
+                Layout.fillHeight: true
+            }
+        }
+
+        Frame {
+            id: frame
+            Layout.fillWidth: true
+            contentHeight: 720
+
+            Image {
+                id: image1
+                anchors.fill: parent
+                source: "icons/sparrow.png"
+                fillMode: Image.PreserveAspectFit
+                cache: false
+                Connections {
+                    target: highSprrow
+                    onDisplayAACoreTuningImageInUI: {
+                        image1.source = ""
+                        image1.source = "image://aaCoreTuningImage"
                     }
                 }
             }

@@ -34,10 +34,5 @@ Rectangle {
         delegate: Text {
             text: logString
         }
-
-        Component.onCompleted: {
-            positionViewAtRow(0, ListView.Contain)
-        }
     }
-
 }

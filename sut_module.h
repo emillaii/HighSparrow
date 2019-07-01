@@ -70,8 +70,8 @@ public:
     Position3D tool_uplook_positon;
     PositionT  up_downlook_offset;
     MaterialCarrier* carrier;
-private:
     VisionLocation* vision_downlook_location;
+private:
     VisionLocation* vision_updownlook_down_location;
     VisionLocation* vision_updownlook_up_location;
     XtVacuum* vacuum;
@@ -79,7 +79,7 @@ private:
     SutClient* sut_cilent;
     mPoint3D record_position;
     PrOffset offset;
-    bool is_run;
+    bool is_run = false;
     bool has_material = true;
 
     int sut_state = 0;

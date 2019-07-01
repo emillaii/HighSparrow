@@ -83,7 +83,12 @@ SOURCES += \
     machinestatemonitorcontroller.cpp \
     singleheadmachinematerialpickarm.cpp \
     singleheadmachinematerialloadermodule.cpp \
-    uphhelper.cpp
+    uphhelper.cpp \
+    tcpmessager.cpp \
+    tcpclientmessager.cpp \
+    tcpmanager.cpp \
+    tcpservermessager.cpp \
+    motorstatesgeter.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -228,7 +233,14 @@ HEADERS += \
     singleheadmachinematerialpickarmparameter.h \
     singleheadmachinematerialloadermodule.h \
     singleheadmachinematerialloadermoduleparameter.h \
-    uphhelper.h
+    uphhelper.h \
+    tcpmessager.h \
+    tcpmessagerparameter.h \
+    tcpmanager.h \
+    tcpmanagerparameter.h \
+    tcpclientmessager.h \
+    tcpservermessager.h \
+    motorstatesgeter.h
 
 DISTFILES += \
     icons/index.theme

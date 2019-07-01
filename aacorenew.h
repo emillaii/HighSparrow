@@ -44,10 +44,10 @@ public:
               ChartCalibration * chartCalibration,DispenseModule* dispense,
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
     void performAAOffline();
-    Q_INVOKABLE void performHandling(int cmd, QString params);
+    Q_INVOKABLE void performHandling(int cmd);
     ErrorCodeStruct performInitSensor();
-    ErrorCodeStruct performPRToBond();
-    ErrorCodeStruct performAAPickLens();
+    ErrorCodeStruct performPRToBond(int finish_delay);
+    ErrorCodeStruct performLoadMaterial();
     ErrorCodeStruct performAA(double start, double stop, double step_size,
                    bool enableMotion, int zSleepInMs, bool isWaitTiltMotion,
                    int zScanMode = 0, double estimated_aa_fov = 0,
@@ -62,6 +62,8 @@ public:
     ErrorCodeStruct performUV(int uv_time);
     ErrorCodeStruct performReject();
     ErrorCodeStruct performAccept();
+    ErrorCodeStruct performTerminate();
+    ErrorCodeStruct performGRR(bool change_lens,bool change_sensor,int repeat_time);
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
@@ -75,6 +77,7 @@ public:
     AAData mtf_log;   // For Display MTF Log
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
+    ImageProvider * dispenseImageProvider;
     ImageProvider * aaCoreTuningProvider;
     AACoreParameters parameters;
     AACoreStates states;
@@ -86,6 +89,9 @@ private:
     void NgLens();
     void NgSensor();
     void NgProduct();
+    void SetLens();
+    void SetSensor();
+    void SetProduct();
 private:
     QString loopTestResult;
     int currentAAMode;
@@ -110,11 +116,14 @@ private:
     bool has_ng_lens = false;
     bool has_ng_sensor = false;
     bool has_sensor = false;
+    bool send_lens_request = false;
+    bool send_sensor_request = false;
     bool has_lens = false;
 
     int current_aa_ng_time = 0;
     int current_oc_ng_time = 0;
     int current_mtf_ng_time = 0;
+    int current_grr = 0;
 
 
 

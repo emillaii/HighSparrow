@@ -29,6 +29,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
     PRResultStruct pr_result;
     QThread::msleep(parameters.waitImageDelay());
     ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result);
+    last_image_name = pr_result.imageName;
     if(ErrorCode::OK == temp.code)
     {
         QPointF mech;
@@ -92,6 +93,7 @@ bool VisionLocation::performPR()
     PRResultStruct pr_result;
     QThread::msleep(parameters.waitImageDelay());
     ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result);
+    last_image_name = pr_result.imageName;
     if(ErrorCode::OK == temp.code)
     {
         QPointF mech;
@@ -100,21 +102,21 @@ bool VisionLocation::performPR()
         {
            offset.X = mech.x();
            offset.Y = mech.y();
-            if(abs(offset.X)>parameters.maximumLength()||abs(offset.Y)>parameters.maximumLength())
+            if(fabs(offset.X)>parameters.maximumLength()||fabs(offset.Y)>parameters.maximumLength())
             {
                 AppendError(QString(u8" pr result too big"));
                 qInfo("pr result too big: %f %f %f", offset.X, offset.Y, offset.Theta);
                 return false;
             }
-           if(abs(pr_result.theta) < parameters.maximunAngle())
+           if(fabs(pr_result.theta) < parameters.maximunAngle())
                offset.Theta = pr_result.theta;
-           else if(abs(pr_result.theta - 90) < parameters.maximunAngle())
+           else if(fabs(pr_result.theta - 90) < parameters.maximunAngle())
                offset.Theta = pr_result.theta - 90;
-           else if(abs(pr_result.theta - 180) < parameters.maximunAngle())
+           else if(fabs(pr_result.theta - 180) < parameters.maximunAngle())
                offset.Theta = pr_result.theta - 180;
-           else if(abs(pr_result.theta - 270) < parameters.maximunAngle())
+           else if(fabs(pr_result.theta - 270) < parameters.maximunAngle())
                offset.Theta = pr_result.theta -270;
-           else if(abs(pr_result.theta - 360) < parameters.maximunAngle())
+           else if(fabs(pr_result.theta - 360) < parameters.maximunAngle())
                offset.Theta = pr_result.theta -360;
            else
            {
@@ -137,6 +139,7 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
 {
     QThread::msleep(parameters.waitImageDelay());
     ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result);
+    last_image_name = pr_result.imageName;
     qInfo("CameraName: %s prFilename: %s PR_Result: %f %f %f",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str(),
           pr_result.x, pr_result.y, pr_result.theta);
 //    qInfo("camera %s perform PR result:%d name:%s",parameters.cameraName().toStdString().c_str(),temp.code,parameters.prFileName().toStdString().c_str());
@@ -158,4 +161,9 @@ void VisionLocation::CloseLight()
 {
     lighting->setBrightness(parameters.lightChannel(),0);
     QThread::msleep(30);
+}
+
+QString VisionLocation::getLastImageName()
+{
+    return last_image_name;
 }

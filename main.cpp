@@ -73,6 +73,8 @@ int main(int argc, char *argv[])
     // initialize logging system
     initLoggingSystem();
     qInstallMessageHandler(messageLogger);
+	//qInstallMessageHandler(sparrowLogOutput);
+    qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{type}] %{file}:%{line}(%{function}):%{message}");
 
     app.setWindowIcon(QIcon(ICON_SPARROW));
 
@@ -254,6 +256,21 @@ int main(int argc, char *argv[])
     }
     engine.rootContext()->setContextProperty("inputList",inputList);
 
+
+    QStringList logList;
+    QFile file("./log/system_log/log.txt");
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
+        qDebug()<<"找不到log文件";
+    }else{
+        QTextStream in(&file);
+        QString line = in.readLine();
+        while(!line.isNull()){
+            logList<<line;
+            line = in.readLine();
+        }
+    }
+    engine.rootContext()->setContextProperty("logList",logList);
+
     engine.rootContext()->setContextProperty("sensor_clip_standard_parameter",
                                              &highSprrow.baseModuleManager->sensor_clip_stand);
     engine.rootContext()->setContextProperty("sensor_exit_clip_parameter",
@@ -279,6 +296,7 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("imageGrabberLiveImage"), highSprrow.baseModuleManager->imageGrabberThread->m_pImgProvider);
     engine.addImageProvider(QLatin1String("ocImage1"), highSprrow.baseModuleManager->aaCoreNew.ocImageProvider_1);
     engine.addImageProvider(QLatin1String("sfrImage"), highSprrow.baseModuleManager->aaCoreNew.sfrImageProvider);
+engine.addImageProvider(QLatin1String("dispenseImage"), highSprrow.baseModuleManager->aaCoreNew.dispenseImageProvider);
     engine.addImageProvider(QLatin1String("aaCoreTuningImage"), highSprrow.baseModuleManager->aaCoreNew.aaCoreTuningProvider);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())

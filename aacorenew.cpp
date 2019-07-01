@@ -37,6 +37,7 @@ void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Doth
     this->unitlog = unitlog;
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();
+    dispenseImageProvider = new ImageProvider();
     aaCoreTuningProvider = new ImageProvider();
     connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
@@ -145,6 +146,29 @@ void AACoreNew::NgProduct()
     has_product = false;
     has_ng_product = true;
 }
+
+void AACoreNew::SetLens()
+{
+    has_lens = true;
+    has_ng_lens = false;
+}
+
+void AACoreNew::SetSensor()
+{
+    has_sensor = true;
+    has_ng_sensor = false;
+    has_product = false;
+    has_ng_product = false;
+}
+
+void AACoreNew::SetProduct()
+{
+    has_sensor = false;
+    has_ng_sensor = false;
+    has_product = true;
+    has_ng_product = false;
+}
+
 void AACoreNew::startWork( int run_mode)
 {
     if (run_mode == RunMode::Normal) run(true);
@@ -191,9 +215,9 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::PR_To_Bond)
     {
-        has_sensor = true;
-        has_lens = true;
-        performPRToBond();
+        SetSensor();
+        SetLens();
+        performPRToBond(0);
     }
     else if (cmd == HandleTest::MTF) {
         performMTF(true, true);
@@ -213,6 +237,8 @@ void AACoreNew::resetLogic()
     has_ng_sensor = false;
     has_sensor = false;
     has_lens = false;
+    send_lens_request = false;
+    send_sensor_request = false;
     aa_head->receive_sensor = false;
     aa_head->waiting_sensor = false;
     aa_head->receive_lens = false;
@@ -220,6 +246,7 @@ void AACoreNew::resetLogic()
     current_aa_ng_time = 0;
     current_oc_ng_time = 0;
     current_mtf_ng_time = 0;
+    current_grr = 0;
 }
 
 bool AACoreNew::runFlowchartTest()
@@ -272,19 +299,19 @@ bool AACoreNew::runFlowchartTest()
                            //qInfo() << "Missing fail path, will put to reject test item";
                            // qInfo() << "Reject! -> To Reject Tray";
                            //qInfo() << "End of graph";
+                           qInfo("Finished With Auto Reject");
                            performReject();
                            end = true;
                            break;
                        }
                    }
-                   if (currentPointer.contains("Accept")) {
-                      // qInfo() << "Accept! -> To Good Tray";
-                      // qInfo() << "End of graph";
-                       end = true;
-                       break;
-                   } else if (currentPointer.contains("Reject")) {
-                       qInfo("Performing Reject");
-                       performReject();
+                   if (currentPointer.contains("Accept")
+                           ||currentPointer.contains("Reject")
+                           ||currentPointer.contains("Terminate")
+                           ||currentPointer.contains("GRR")) {
+                       QJsonValue op = operators[currentPointer.toStdString().c_str()];
+                       ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
+                       qInfo("Finished With %s",currentPointer.toStdString().c_str());
                        end = true;
                        break;
                    }
@@ -375,12 +402,13 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         else if (testItemName.contains(AA_PIECE_INIT_CAMERA)) {
             qInfo("Performing init camera");
             ret = performInitSensor();
-            qInfo("End of init camera");
+            qInfo("End of init camera %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_PR_TO_BOND)) {
-            qInfo("Performing PR To Bond");
-            ret = performPRToBond();
-            qInfo("End of perform PR To Bond");
+            int finish_delay = params["delay_in_ms"].toInt();
+            qInfo("Performing PR To Bond :%d",finish_delay);
+            ret = performPRToBond(finish_delay);
+            qInfo("End of perform PR To Bond %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_INITIAL_TILT)) {
             qInfo("Performing Initial Tilt");
@@ -405,10 +433,10 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             performXYOffset(x_offset_in_um, y_offset_in_um);
             qInfo("End of perform xy offset");
         }
-        else if (testItemName.contains(AA_PIECE_PICK_LENS)) {
-            qInfo("Performing AA pick lens");
-            ret = performAAPickLens();
-            qInfo("End of perform AA pick lens");
+        else if (testItemName.contains(AA_PIECE_LOAD_MATERIAL)) {
+            qInfo("Performing Load Material");
+            ret = performLoadMaterial();
+            qInfo("End of perform Load Material %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_UNLOAD_LENS)) {
             qInfo("Performing AA unload lens");
@@ -416,14 +444,14 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         else if (testItemName.contains(AA_UNLOAD_CAMERA)) {
             qInfo("AA Unload Camera");
             ret = performCameraUnload();
-            qInfo("End of perform unload camera");
+            qInfo("End of perform unload camera %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_OC)) {
             qInfo("Performing OC");
             bool enable_motion = params["enable_motion"].toInt();
             bool fast_mode = params["fast_mode"].toInt();
             ret = performOC(enable_motion, fast_mode);
-            qInfo("End of perform OC");
+            qInfo("End of perform OC %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_AA)) {
             qInfo("Performing AA");
@@ -447,38 +475,58 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             }
             ret = performAA(start_pos, stop_pos, step_size, true, delay_z_in_ms, wait_tilt, mode,
                             estimated_aa_fov, is_debug, edgeFilter, estimated_fov_slope, offset_in_um,no_tilt);
-            qInfo("End of perform AA");
+            qInfo("End of perform AA %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_MTF)) {
             qInfo("Performing MTF");
             ret = performMTF(params);
-            qInfo("End of perform MTF");
+            qInfo("End of perform MTF %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_UV)) {
             qInfo("Performing UV");
-            //int uv_time_input = params["delay_in_ms"].toInt();
-            int uv_time = 3000;
-            performUV(uv_time);
-            qInfo("End of perform UV");
+            int uv_time = params["delay_in_ms"].toInt();
+            ret = performUV(uv_time);
+            qInfo("End of perform UV %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_DISPENSE)) {
             qInfo("Performing Dispense");
             int enable_save_image = params["enable_save_image"].toInt();
             int lighting = params["lighting"].toInt();
             ret = performDispense();
+            qInfo("End of perform UV %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_DELAY)) {
             int delay_in_ms = params["delay_in_ms"].toInt();
             qInfo("Performing Delay : %d", delay_in_ms);
             performDelay(delay_in_ms);
+            qInfo("End of perform Delay");
         }
         else if (testItemName.contains(AA_PIECE_ACCEPT))
         {
             qInfo("Performing Accept");
+            performAccept();
+            qInfo("End of perform Accept");
         }
         else if (testItemName.contains(AA_PIECE_REJECT))
         {
             qInfo("Performing Reject");
+            performReject();
+            qInfo("End of perform Reject");
+        }
+        else if (testItemName.contains(AA_PIECE_TERMINATE))
+        {
+            qInfo("Performing Terminate");
+            performTerminate();
+            qInfo("End of perform Terminate");
+        }
+        else if (testItemName.contains(AA_PIECE_GRR))
+        {
+            qInfo("Performing GRR");
+            bool change_lens = params["change_lens"].toInt();
+            bool change_sensor = params["change_sensor"].toInt();
+            int repeat_time = params["repeat_time"].toInt();
+            performGRR(change_lens,change_sensor,repeat_time);
+            qInfo("End of perform GRR");
         }
         else if (testItemName.contains(AA_PIECE_JOIN))
         {
@@ -676,7 +724,7 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
     sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak, dev);
     clustered_sfr_map.clear();
     qInfo("xTilt: %f yTilt: %f zPeak: %f", xTilt, yTilt, zPeak);
-//    QThread::msleep(zSleepInMs);
+    QThread::msleep(zSleepInMs);
     qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
     //aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
     //aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
@@ -780,9 +828,8 @@ void AACoreNew::performAAOffline()
     emit pushDataToUnit(runningUnit, "AAOffline", map);
 }
 
-void AACoreNew::performHandling(int cmd, QString params)
+void AACoreNew::performHandling(int cmd)
 {
-    qInfo("performHandling: %d %s", cmd, params.toStdString().c_str());
     emit sendHandlingOperation(cmd);
 }
 
@@ -1175,6 +1222,8 @@ ErrorCodeStruct AACoreNew::performReject()
     Sleep(100);
     imageThread->exit();
     dk->DothinkeyClose();
+    NgLens();
+    NgSensor();
 //    if(!has_product)
 //    {
 //        if(has_lens)
@@ -1205,9 +1254,32 @@ ErrorCodeStruct AACoreNew::performAccept()
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
+ErrorCodeStruct AACoreNew::performTerminate()
+{
+    imageThread->stop();
+    Sleep(100);
+    imageThread->exit();
+    dk->DothinkeyClose();
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int repeat_time)
+{
+    performTerminate();
+   current_grr++;
+   if(current_grr >= repeat_time)
+   {
+       current_grr = 0;
+       if(change_lens)
+           NgLens();
+       if(change_sensor)
+           NgSensor();
+   }
+   return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
 ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
 {
-    qInfo("Perform OC");
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
     QVariantMap map;
     QElapsedTimer timer;
@@ -1311,7 +1383,7 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
-ErrorCodeStruct AACoreNew::performPRToBond()
+ErrorCodeStruct AACoreNew::performPRToBond(int finish_delay)
 {
     if((!has_sensor)||(!has_lens)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     //if (!this->lut->moveToUnloadPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT cannot move to unload Pos"};}
@@ -1331,93 +1403,92 @@ ErrorCodeStruct AACoreNew::performPRToBond()
     qInfo("downlook_offset(%f,%f)",aa_head->offset_x,aa_head->offset_y,aa_head->offset_theta);
     qInfo("uplook_offset(%f,%f,%f)",aa_head->uplook_x,aa_head->uplook_y,aa_head->uplook_theta);
     qInfo("up_downlook_offset(%f,%f,%f)",sut->up_downlook_offset.X(),sut->up_downlook_offset.Y(),sut->up_downlook_offset.Theta());
-    if (!this->aa_head->moveToSZ_XYC_Z_Sync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
-
+    if (!this->aa_head->moveToSZ_XYSC_Z_Sync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
+    QThread::msleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "PrToBond", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
-ErrorCodeStruct AACoreNew::performAAPickLens()
+ErrorCodeStruct AACoreNew::performLoadMaterial()
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    if (!this->sut->moveToReadyPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to ready Pos"};}
+    ErrorCodeStruct result = ErrorCodeStruct {ErrorCode::OK, ""};
+//    if (!this->sut->moveToReadyPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to ready Pos"};}
     if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
     if(aa_head->receive_sensor)
     {
         qInfo("has wait sensor suceess");
-        has_sensor = true;
-        has_ng_sensor = false;
+        SetSensor();
+        send_sensor_request = false;
         aa_head->receive_sensor = false;
     }
-    if((!has_sensor))
+    if((!has_sensor)&&(!send_sensor_request))
     {
         qInfo("need sensor has_product %d  has_ng_product %d has_ng_sensor %d",has_product,has_ng_product,has_ng_sensor);
         if(has_product)
-            aa_head->sendSensrRequest(SUT_STATE::HAS_PRODUCT);
+            aa_head->sendSensorRequest(SUT_STATE::HAS_PRODUCT);
         else if(has_ng_product)
-            aa_head->sendSensrRequest(SUT_STATE::HAS_NG_PRODUCT);
+            aa_head->sendSensorRequest(SUT_STATE::HAS_NG_PRODUCT);
         else if(has_ng_sensor)
-            aa_head->sendSensrRequest(SUT_STATE::HAS_NG_SENSOR);
+            aa_head->sendSensorRequest(SUT_STATE::HAS_NG_SENSOR);
         else
-            aa_head->sendSensrRequest(SUT_STATE::NO_MATERIAL);
+            aa_head->sendSensorRequest(SUT_STATE::NO_MATERIAL);
+        send_sensor_request = true;
     }
     if(aa_head->receive_lens)
     {
         qInfo("has wait lens suceess");
-        has_lens = true;
-        has_ng_lens = false;
+        SetLens();
+        send_lens_request = false;
         aa_head->receive_lens = false;
     }
-    if(!has_lens)
+
+    if((!has_lens)&&(!send_lens_request))
     {
         qInfo("need lens has_ng_lens %d",has_ng_lens);
-        this->lut->sendLensRequest(is_run,has_ng_lens,true);
+        this->lut->sendLensRequest(has_ng_lens);
+        send_lens_request = true;
+    }
+    if((!has_lens)&&send_lens_request)
+    {
+        lut->waitLensRespond(is_run);
         if (aa_head->receive_lens)
         {
             qInfo("wait lens suceess");
-            has_lens = true;
-            has_ng_lens = false;
+            SetLens();
+            send_lens_request = false;
+            aa_head->receive_lens = false;
             aa_head->receive_lens = false;
         }
-        else{
-            if(is_run)
-            {
-                AppendError("wait lens time_out");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-            }
-            is_run = false;
-            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"};
+        else
+        {
+            result.code = ErrorCode::GENERIC_ERROR;
+            result.errorMessage.append("lens request fail.");
         }
     }
-    if(!has_sensor)
+    if((!has_sensor)&&send_sensor_request)
     {
         qInfo("wait sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
         aa_head->waitForLoadSensor(is_run);
         if(aa_head->receive_sensor)
         {
             qInfo("wait sensor suceess");
-            has_sensor = true;
-            has_ng_sensor = false;
+            SetSensor();
+            send_sensor_request = false;
             aa_head->receive_sensor = false;
         }
         else
         {
-            if(is_run)
-            {
-                AppendError("wait sensor time_out");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-            }
-            is_run = false;
-            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"};
+            result.code = ErrorCode::GENERIC_ERROR;
+            result.errorMessage.append("sensor request fail.");
         }
     }
-    has_product = false;
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "AA_Load_Material", map);
-    qInfo("Done Pick Lens");
-    return ErrorCodeStruct {ErrorCode::OK, ""};
+    qInfo("Done Load Material");
+    return result;
 }
 
 ErrorCodeStruct AACoreNew::performDelay(int delay_in_ms)

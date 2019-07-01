@@ -19,10 +19,11 @@ public:
     Q_INVOKABLE QPointF getCurrentOffset();
     void OpenLight();
     void CloseLight();
-
+    QString getLastImageName();
 public:
     VisionLocationParameter parameters;
 private:
+    QString last_image_name = "";
     VisionModule* vison;
     Pixel2Mech* mapping;
     WordopLight* lighting;

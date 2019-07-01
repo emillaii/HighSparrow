@@ -16,7 +16,8 @@ public:
     bool move_XtXY_Synic(QPointF position,double x,bool check_softlanding = false,int timeout = 30000);
     bool move_XtXYT_Synic(QPointF position,double x,double t,bool check_softlanding = false,int timeout = 30000);
     bool move_XY_Synic(double x,double y,bool check_softlanding = false,int timeout = 10000);
-    bool move_XYT_Synic(double x,double y,double t,bool check_softlanding = false,int timeout = 10000);
+    bool checkXYTArrived(double x,double y,double t);
+    bool move_XYT_Synic(double x,double y,double t,bool check_arrived = false,bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XYTp_Synic(PrOffset position,bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XYTp_Pos(PrOffset position,bool check_softlanding = false,int timeout = 10000);
     bool waitStepMove_XYTp(int timeout = 10000);

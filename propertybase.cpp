@@ -65,6 +65,10 @@ void PropertyBase::write(QJsonObject &json) const
             const char *name = metaproperty.name();
             json[name] = QJsonArray::fromVariantList(this->property(name).toList());
         }
+        else if (temp_type == QVariant::Type::StringList) {
+            const char *name = metaproperty.name();
+            json[name] = QJsonArray::fromStringList(this->property(name).toStringList());
+        }
         else {
             qInfo("write parameter error,unrecognized type : %d : %s",temp_type,metaproperty.name());
         }
@@ -186,3 +190,91 @@ bool PropertyBase::loadJsonConfig(QString file_path, const QString name, Propert
     parameters->read(jsonObject.value(name).toObject());
     return true;
 }
+
+bool PropertyBase::loadJsonArray(QString file_name,QJsonArray &array)
+{
+    QString val;
+    QFile file;
+    file.setFileName(file_name);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+//        AppendError(QString(u8"加载参数文件失败，文件名 %1").arg(file_name));
+        qWarning("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return false;
+    }
+    val = file.readAll();
+    file.close();
+
+    QJsonParseError error;
+    QJsonDocument doucment = QJsonDocument::fromJson(val.toUtf8(), &error);
+    if (!doucment.isNull() && (error.error == QJsonParseError::NoError)) { //解析否出现错误
+        if (doucment.isArray()) { // 数组判断
+            array = doucment.array(); // 转数组
+        }
+    }
+    if(array.size()>0)
+        return true;
+    else
+    {
+//        AppendError(QString(u8"解析参数文件失败，文件名 %1").arg(file_name));
+        qInfo("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return false;
+    }
+}
+
+bool PropertyBase::saveJsonArray(QString file_name,QJsonArray &array)
+{
+    QFile file;
+    file.setFileName(file_name);
+    if(!file.open(QFile::WriteOnly)){
+//        AppendError(QString(u8"保存参数文件失败，文件名 %1").arg(file_name));
+        qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return false;
+    }
+    QJsonDocument document;
+    document.setArray(array);
+    file.write(document.toJson());
+    file.close();
+    return true;
+}
+
+bool PropertyBase::loadJsonObject(QString file_name, QJsonObject &object)
+{
+    QString val;
+    QFile file;
+    file.setFileName(file_name);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qWarning("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return false;
+    }
+    val = file.readAll();
+    file.close();
+
+    QJsonParseError error;
+    QJsonDocument doucment = QJsonDocument::fromJson(val.toUtf8(), &error);
+    if (!doucment.isNull() && (error.error == QJsonParseError::NoError)) { //解析否出现错误
+        if (doucment.isObject()) { // 数组判断
+            object = doucment.object(); // 转数组
+            return true;
+        }
+    }
+    qInfo("load parameters to %s failed, load file error:%s.",file_name.toStdString().data(),error.errorString().toStdString().c_str());
+    return false;
+}
+
+bool PropertyBase::saveJsonObject(QString file_name, QJsonObject &object)
+{
+    QFile file;
+    file.setFileName(file_name);
+    if(!file.open(QFile::WriteOnly)){
+        qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        return false;
+    }
+    QJsonDocument document;
+    document.setObject(object);
+    file.write(document.toJson());
+    file.close();
+    return true;
+}
+

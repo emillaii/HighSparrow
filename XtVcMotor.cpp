@@ -143,6 +143,7 @@ void XtVcMotor::Disable()
     if(!is_init)
         return;
     is_enable = false;
+    states.setSeekedOrigin(false);
 }
 
 
@@ -376,7 +377,7 @@ bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int
     if(!(checkState()&&checkLimit(max_range)&&checkInterface(max_range)))return false;
     double start_pos = GetOutpuPos();
     double limit = start_pos + (max_range - start_pos)/2;
-    double margin = abs(max_range - start_pos)/2.01;
+    double margin = fabs(max_range - start_pos)/2.01;
     SetSoftLanding(speed,max_acc, force, start_pos,limit,margin);
     bool res;
     qInfo("Finish SetSoftLanding");

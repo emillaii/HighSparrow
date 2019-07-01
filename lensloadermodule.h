@@ -70,9 +70,9 @@ private:
 
     bool moveToNextTrayPos(int tray_index);
     bool moveToLUTPRPos1(bool check_softlanding = false);
-    bool movePickerToLUTPos1();
+    bool movePickerToLUTPos1(bool check_arrived = false,bool check_softlanding = false);
     bool moveToLUTPRPos2(bool check_softlanding = false);
-    bool movePickerToLUTPos2();
+    bool movePickerToLUTPos2(bool check_arrived = false,bool check_softlanding = false);
 
     bool checkNeedChangeTray();
 

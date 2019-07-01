@@ -1,4 +1,4 @@
-#ifndef AADATA_H
+﻿#ifndef AADATA_H
 #define AADATA_H
 
 #include <QObject>

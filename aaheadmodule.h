@@ -46,10 +46,11 @@ public:
     void SetAAPosion(mPoint6D point);
     void MotoAAPosition();
     mPoint6D GetFeedBack();
-    void sendSensrRequest(int sut_state);
-    bool waitForLoadSensor(bool &is_run,int time_out = 600000);
+    void sendSensorRequest(int sut_state);
+    bool waitForLoadSensor(bool &is_run);
     bool moveToSync(double x, double y, double z,double c);
     bool moveToSZ_XYC_Z_Sync(double x, double y, double z,double c);
+    bool moveToSZ_XYSC_Z_Sync(double x, double y, double z,double c);
 signals:
     void sendSensrRequestToSut(int sut_state);
 public slots:

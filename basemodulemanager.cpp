@@ -8,6 +8,7 @@
 #include <qfileinfo.h>
 #include <qjsonarray.h>
 #include <qjsondocument.h>
+#include "commonutils.h"
 
 wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
 wchar_t BaseModuleManager::profile_path1[] = L".\\config\\";
@@ -42,7 +43,6 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
-
     if (ServerMode() == 0) {
         qInfo("This sparrow is in Master mode");
         this->lut_module.openServer(19998);
@@ -52,7 +52,9 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         connect(&lens_loader_module,&LensLoaderModule::sendLoadLensFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendChangeTrayRequst,&tray_loader_module,&TrayLoaderModule::onTestTrayUsed,Qt::DirectConnection);
         connect(&tray_loader_module,&TrayLoaderModule::trayReady,&lens_loader_module,&LensLoaderModule::receiveChangeTrayFinish,Qt::DirectConnection);
-    } else {
+    }
+    else
+    {
         qInfo("This sparrow is in Slave mode");
         this->sensor_loader_module.openServer(19999);
         lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
@@ -80,12 +82,88 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
     connect(&timer, &QTimer::timeout, this, &BaseModuleManager::alarmChecking);
     connect(this,&BaseModuleManager::sendHandlingOperation,this,&BaseModuleManager::performHandlingOperation);
+    connect(&state_geter,&MotorStatesGeter::sendGetMotorState,this,&BaseModuleManager::deviceResp,Qt::BlockingQueuedConnection);
 }
 
 BaseModuleManager::~BaseModuleManager()
 {
     this->work_thread.quit();
     this->work_thread.wait();
+}
+
+void BaseModuleManager::tcpResp(QString message)
+{
+    QJsonObject message_object = TcpMessager::getJsonObjectFromString(message);
+    if(message_object.contains("cmd"))
+    {
+        QString cmd = message_object["cmd"].toString();
+        if(cmd == "quareMotorPos")
+        {
+            QString motor_name = message_object["motorName"].toString();
+            qDebug()<<"qure motor pos :"<< motor_name<<"thread id:"<<QThread::currentThreadId();
+            QJsonObject result;
+            result["motorName"] = motor_name;
+            XtMotor* temp_motor = GetMotorByName(motor_name);
+            if(temp_motor == nullptr)
+                result["error"] =QString("can not find ").append(motor_name);
+            else {
+                result["motorPosition"] = temp_motor->GetFeedbackPos();
+                result["motorTargetPosition"] = temp_motor->GetCurrentTragetPos();
+                result["error"] = "";
+
+            }
+            messagers[message_object["sender"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+        }
+    }
+}
+
+QString BaseModuleManager::deviceResp(QString message)
+{
+    qInfo("deviceResp %s",message.toStdString().c_str());
+    QJsonObject message_object = getJsonObjectFromString(message);
+    if(message_object.contains("cmd"))
+    {
+        QString cmd = message_object["cmd"].toString();
+        if(cmd == "quareMotorPos")
+        {
+            QString motor_name = message_object["motorName"].toString();
+            qDebug()<<"qure motor pos :"<< motor_name<<"thread id:"<<QThread::currentThreadId();
+            QJsonObject result;
+            result["motorName"] = motor_name;
+            XtMotor* temp_motor = GetMotorByName(motor_name);
+            if(temp_motor == nullptr)
+            {
+                result["error"] = QString("can not find motor ").append(motor_name);
+                bool geted = false;
+                foreach (QString messger_name, messagers.keys())
+                {
+                  QString tcp_result =  messagers[messger_name]->quareMessage(message);
+                  QJsonObject result_json = getJsonObjectFromString(tcp_result);
+                  if(result_json.contains("error"))
+                  {
+                      if(result_json["error"] == "")
+                      {
+                            geted = true;
+                            result["motorPosition"] = result_json["motorPosition"];
+                            result["motorTargetPosition"] = result_json["motorTargetPosition"];
+                            result["error"] = "";
+                            break;
+                      }
+                  }
+                }
+                if(!geted)
+                    result["error"] = QString("tcp cannot find motor").append(motor_name);
+            }
+            else {
+                result["motorPosition"] = temp_motor->GetFeedbackPos();
+                result["motorTargetPosition"] = temp_motor->GetCurrentTragetPos();
+                result["error"] = "";
+
+            }
+            return getStringFromJsonObject(result);
+        }
+    }
+    return "";
 }
 
 void BaseModuleManager::alarmChecking()
@@ -121,6 +199,8 @@ bool BaseModuleManager::loadParameters()
     configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
     if(!this->paramers.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))return false;
 
+
+    tcp_manager.loadJsonConfig(getSystermParameterDir().append(TCP_CONFIG_FILE));
     material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
     aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
@@ -168,6 +248,7 @@ bool BaseModuleManager::loadconfig()
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
+    tcp_manager.loadJsonConfig(getSystermParameterDir().append(TCP_CONFIG_FILE));
     return true;
 }
 
@@ -803,11 +884,33 @@ QString BaseModuleManager::getCurrentParameterDir()
     return dir;
 }
 
+QString BaseModuleManager::getSystermParameterDir()
+{
+    QString dir = QString(SYSTERM_PARAM_DIR);
+    return dir;
+}
+
 bool BaseModuleManager::InitStruct()
 {
+    tcp_manager.Init();
+    foreach (QString messager_name, paramers.respMessagerNames()) {
+        TcpMessager* temp_messager = tcp_manager.GetTcpMessager(messager_name);
+        if(temp_messager!=nullptr)
+		{
+            messagers.insert(messager_name,temp_messager);
+            connect(temp_messager,&TcpMessager::receiveTextMessage,this,&BaseModuleManager::tcpResp);
+		 }
+        temp_messager = tcp_manager.GetPeerTcpMessager(messager_name);
+        if(temp_messager!=nullptr)
+		{
+            messagers.insert(messager_name,temp_messager);
+            connect(temp_messager,&TcpMessager::receiveTextMessage,this,&BaseModuleManager::tcpResp);
+		}
+    }
     bool result = true;
     foreach (XtMotor* temp_motor, motors)
     {
+        temp_motor->Init(&state_geter);
         for (int i = 0; i < temp_motor->vertical_limit_parameters.size(); ++i) {
             XtMotor* limit_motor = GetMotorByName(temp_motor->vertical_limit_parameters[i]->motorName());
             temp_motor->vertical_limit_motors.append(limit_motor);
@@ -1084,7 +1187,7 @@ bool BaseModuleManager::generateConfigFiles()
         temp_motor->io_limit_parameters[0]->setMoveSpance(temp_space);
     }
     bool result = saveMotorLimitFiles(LIMIT_PARAMETER_MODE_FILENAME);
-
+    tcp_manager.generateConfig(getSystermParameterDir().append(TCP_CONFIG_FILE));
     return result;
 }
 
@@ -1242,8 +1345,8 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
-    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
-    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
+//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
+//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
     if(!result)return false;
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->SeekOrigin();
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();

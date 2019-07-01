@@ -94,7 +94,7 @@ private:
     bool moveToSensorTrayNextPos();
     bool moveToProductTrayNextPos();
     bool moveToNgTrayNextPos();
-    bool moveToSUTPRPos(bool is_local = true,bool check_softlanding = false);
+    bool moveToSUTPRPos(bool is_local = true,bool check_arrived = false,bool check_softlanding = false);
     bool movePicker1ToSUTPos(bool is_local = true);
 
     bool performSensorPR();

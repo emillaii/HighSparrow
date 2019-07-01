@@ -1,4 +1,4 @@
-#ifndef AACOREPARAMETERS_H
+﻿#ifndef AACOREPARAMETERS_H
 #define AACOREPARAMETERS_H
 
 #include <QObject>
@@ -182,65 +182,153 @@ class AACoreStates: public PropertyBase
     Q_OBJECT
 public:
     explicit AACoreStates(){}
-    Q_PROPERTY(bool ngSensor READ ngSensor WRITE setNgSensor NOTIFY ngSensorChanged)
-    Q_PROPERTY(bool ngLens READ ngLens WRITE setNgLens NOTIFY ngLensChanged)
-    Q_PROPERTY(bool hasPrduct READ hasPrduct WRITE setHasPrduct NOTIFY hasPrductChanged)
+    bool needSendLensRequest(){return(!hasLens())&&(!isWaitingLens());}
+    bool needSendSensorRequest(){return (!hasSensor())&&(!isWaitingSensor());}
 
-public:
-    bool ngSensor() const
+    Q_PROPERTY(bool isWaitingLens READ isWaitingLens WRITE setIsWaitingLens NOTIFY isWaitingLensChanged)
+    Q_PROPERTY(bool isWaitingSensor READ isWaitingSensor WRITE setIsWaitingSensor NOTIFY isWaitingSensorChanged)
+    Q_PROPERTY(bool hasLens READ hasLens WRITE setHasLens NOTIFY hasLensChanged)
+    Q_PROPERTY(bool hasNgLens READ hasNgLens WRITE setHasNgLens NOTIFY hasNgLensChanged)
+    Q_PROPERTY(bool hasSensor READ hasSensor WRITE setHasSensor NOTIFY hasSensorChanged)
+    Q_PROPERTY(bool hasNgSensor READ hasNgSensor WRITE setHasNgSensor NOTIFY hasNgSensorChanged)
+    Q_PROPERTY(bool hasProduct READ hasProduct WRITE setHasProduct NOTIFY hasProductChanged)
+    Q_PROPERTY(bool hasNgProduct READ hasNgProduct WRITE setHasNgProduct NOTIFY hasNgProductChanged)
+    bool isWaitingLens() const
     {
-        return m_ngSensor;
+        return m_isWaitingLens;
+    }
+    bool isWaitingSensor() const
+    {
+        return m_isWaitingSensor;
     }
 
-    bool ngLens() const
+    bool hasLens() const
     {
-        return m_ngLens;
+        return m_hasLens;
     }
 
-    bool hasPrduct() const
+    bool hasNgLens() const
     {
-        return m_hasPrduct;
+        return m_hasNgLens;
+    }
+
+    bool hasSensor() const
+    {
+        return m_hasSensor;
+    }
+
+    bool hasNgSensor() const
+    {
+        return m_hasNgSensor;
+    }
+
+    bool hasProduct() const
+    {
+        return m_hasProduct;
+    }
+
+    bool hasNgProduct() const
+    {
+        return m_hasNgProduct;
     }
 
 public slots:
-    void setNgSensor(bool ngSensor)
+    void setIsWaitingLens(bool isWaitingLens)
     {
-        if (m_ngSensor == ngSensor)
+        if (m_isWaitingLens == isWaitingLens)
             return;
 
-        m_ngSensor = ngSensor;
-        emit ngSensorChanged(m_ngSensor);
+        m_isWaitingLens = isWaitingLens;
+        emit isWaitingLensChanged(m_isWaitingLens);
+    }
+    void setIsWaitingSensor(bool isWaitingSensor)
+    {
+        if (m_isWaitingSensor == isWaitingSensor)
+            return;
+
+        m_isWaitingSensor = isWaitingSensor;
+        emit isWaitingSensorChanged(m_isWaitingSensor);
     }
 
-    void setNgLens(bool ngLens)
+    void setHasLens(bool hasLens)
     {
-        if (m_ngLens == ngLens)
+        if (m_hasLens == hasLens)
             return;
 
-        m_ngLens = ngLens;
-        emit ngLensChanged(m_ngLens);
+        m_hasLens = hasLens;
+        emit hasLensChanged(m_hasLens);
     }
 
-    void setHasPrduct(bool hasPrduct)
+    void setHasNgLens(bool hasNgLens)
     {
-        if (m_hasPrduct == hasPrduct)
+        if (m_hasNgLens == hasNgLens)
             return;
 
-        m_hasPrduct = hasPrduct;
-        emit hasPrductChanged(m_hasPrduct);
+        m_hasNgLens = hasNgLens;
+        emit hasNgLensChanged(m_hasNgLens);
+    }
+
+    void setHasSensor(bool hasSensor)
+    {
+        if (m_hasSensor == hasSensor)
+            return;
+
+        m_hasSensor = hasSensor;
+        emit hasSensorChanged(m_hasSensor);
+    }
+
+    void setHasNgSensor(bool hasNgSensor)
+    {
+        if (m_hasNgSensor == hasNgSensor)
+            return;
+
+        m_hasNgSensor = hasNgSensor;
+        emit hasNgSensorChanged(m_hasNgSensor);
+    }
+
+    void setHasProduct(bool hasProduct)
+    {
+        if (m_hasProduct == hasProduct)
+            return;
+
+        m_hasProduct = hasProduct;
+        emit hasProductChanged(m_hasProduct);
+    }
+
+    void setHasNgProduct(bool hasNgProduct)
+    {
+        if (m_hasNgProduct == hasNgProduct)
+            return;
+
+        m_hasNgProduct = hasNgProduct;
+        emit hasNgProductChanged(m_hasNgProduct);
     }
 
 signals:
-    void ngSensorChanged(bool ngSensor);
+    void isWaitingLensChanged(bool isWaitingLens);
+    void isWaitingSensorChanged(bool isWaitingSensor);
 
-    void ngLensChanged(bool ngLens);
+    void hasLensChanged(bool hasLens);
 
-    void hasPrductChanged(bool hasPrduct);
+    void hasNgLensChanged(bool hasNgLens);
+
+    void hasSensorChanged(bool hasSensor);
+
+    void hasNgSensorChanged(bool hasNgSensor);
+
+    void hasProductChanged(bool hasProduct);
+
+    void hasNgProductChanged(bool hasNgProduct);
 
 private:
-    bool m_ngSensor;
-    bool m_ngLens;
-    bool m_hasPrduct;
+    bool m_isWaitingLens = false;
+    bool m_isWaitingSensor = false;
+    bool m_hasLens = false;
+    bool m_hasNgLens = false;
+    bool m_hasSensor = false;
+    bool m_hasNgSensor = false;
+    bool m_hasProduct = false;
+    bool m_hasNgProduct = false;
 };
 
 #endif // AACOREPARAMETERS_H

@@ -1,4 +1,4 @@
-#include "checkprocessitem.h"
+﻿#include "checkprocessitem.h"
 
 CheckProcessItem::CheckProcessItem()
 {

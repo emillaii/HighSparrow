@@ -427,16 +427,16 @@ bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 
 bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 {
-    bool result =  pick_arm->move_XYT_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),parameters.placeTheta(),check_softlanding);
+    bool result =  pick_arm->move_XYT_Synic(lut_pr_position1.X(),lut_pr_position1.Y(),parameters.placeTheta(),false,check_softlanding);
     if(!result)
         AppendError(QString(u8"移动相机到LUT放Lens位置失败"));
     qInfo(u8"移动相机到LUT放Lens位置,返回值%d",result);
     return result;
 }
 
-bool LensLoaderModule::movePickerToLUTPos1()
+bool LensLoaderModule::movePickerToLUTPos1(bool check_arrived,bool check_softlanding)
 {
-    bool result =  pick_arm->move_XYT_Synic(lut_pr_position1.X() + camera_to_picker_offset.X(),lut_pr_position1.Y() + camera_to_picker_offset.Y(),parameters.placeTheta());
+    bool result =  pick_arm->move_XYT_Synic(lut_pr_position1.X() + camera_to_picker_offset.X(),lut_pr_position1.Y() + camera_to_picker_offset.Y(),parameters.placeTheta(),check_arrived,check_softlanding);
     if(!result)
         AppendError(QString(u8"移动吸头到LUT放Lens位置失败"));
 //    qInfo(u8"移动吸头到LUT放Lens位置,返回值%d",result);
@@ -445,16 +445,16 @@ bool LensLoaderModule::movePickerToLUTPos1()
 
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
-    bool result = pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),parameters.placeTheta(),check_softlanding);
+    bool result = pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),parameters.placeTheta(),false,check_softlanding);
     if(!result)
         AppendError(QString(u8"移动到相机LUT取NgLens位置失败"));
     qInfo(u8"移动相机到LUT取NgLens位置,返回值%d",result);
     return result;
 }
 
-bool LensLoaderModule::movePickerToLUTPos2()
+bool LensLoaderModule::movePickerToLUTPos2(bool check_arrived,bool check_softlanding)
 {
-    bool result = pick_arm->move_XYT_Synic(lut_pr_position2.X() + camera_to_picker_offset.X(),lut_pr_position2.Y()+ camera_to_picker_offset.Y(),parameters.placeTheta());
+    bool result = pick_arm->move_XYT_Synic(lut_pr_position2.X() + camera_to_picker_offset.X(),lut_pr_position2.Y()+ camera_to_picker_offset.Y(),parameters.placeTheta(),check_arrived,check_softlanding);
     if(!result)
         AppendError(QString(u8"移动吸头到LUT取NgLens位置失败"));
     qInfo(u8"移动到吸头LUT取NgLens位置,返回值%d",result);

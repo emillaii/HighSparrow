@@ -118,6 +118,11 @@ void XtMotor::Init(const QString& moter_name)
 
 }
 
+void XtMotor::Init(MotorStatesGeter *geter)
+{
+    this->geter = geter;
+}
+
 
 void XtMotor::SetADC(int can_id, int data_ch)
 {
@@ -485,6 +490,59 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
     return true;
 }
 
+bool XtMotor::MoveToPosSafty(double pos,int thread)
+{
+    if(is_debug)return true;
+    double limit_pos;
+    if(!getInterfaceLimit(pos,limit_pos))
+        return false;
+    if(!(checkState()&&checkLimit(limit_pos)&&checkInterface(limit_pos)))
+        return false;
+    if(thread==-1)
+        thread = default_using_thread;
+    XT_Controler::SGO(thread, axis_id, limit_pos);
+    current_target = limit_pos;
+    return true;
+}
+
+bool XtMotor::CheckArrivedTargetPos(double target_position)
+{
+    if(is_debug)return true;
+    if(!(checkState()))return false;
+    if(fabs(GetFeedbackPos() - target_position) < parameters.positionError())
+        return true;
+    return false;
+}
+
+bool XtMotor::CheckArrivedTargetPos()
+{
+    if(is_debug)return true;
+    if(!(checkState()))return false;
+    if(fabs(GetFeedbackPos() - current_target) < parameters.positionError())
+        return true;
+    return false;
+}
+
+bool XtMotor::MoveToPosSaftySync(double pos,int thread,int timeout)
+{
+    if(is_debug)return true;
+    if(!(checkState()))return false;
+    if(CheckArrivedTargetPos(pos))
+        return true;
+    while (timeout > 0) {
+        if(CheckArrivedTargetPos(pos))
+            return true;
+        else
+            MoveToPosSafty(pos,thread);
+        Sleep(10);
+        timeout-=10;
+    }
+    qInfo("MoveTo Pos :%f Safty time out, current_position:%f",pos,GetFeedbackPos());
+    current_target = GetFeedbackPos();
+    return false;
+}
+
+
 bool XtMotor::SlowMoveToPosSync(double pos, double low_vel, int thread)
 {
     if(is_debug)return true;
@@ -817,6 +875,41 @@ bool XtMotor::checkLimit(const double pos)
         qInfo(u8"%s 目标位置 %f 超过轴下限位 %f",name.toStdString().c_str(),pos,min_range);
         return false;
     }
+    return true;
+}
+
+bool XtMotor::getInterfaceLimit(double target_pos,double& result_pos)
+{
+    if(parallel_limit_parameters.size()<=0)
+        return false;
+    result_pos = target_pos;
+    for (int i = 0; i < parallel_limit_parameters.size(); ++i) {
+        ParallelLimitParameter * temp_parameter = parallel_limit_parameters[i];
+        //与检测区间有干涉
+        double start_x = 0,end_x = 0,start_y = 0,end_y = 0;
+        if(parallel_limit_parameters[i]->effectMotorXName()!="")
+        {
+            start_x = parallel_limit_motors[3*i+1]->GetFeedbackPos();
+            end_x = parallel_limit_motors[3*i+1]->GetCurrentTragetPos();
+        }
+        if(parallel_limit_parameters[i]->effectMotorYName()!="")
+        {
+            start_y = parallel_limit_motors[3*i+2]->GetFeedbackPos();
+            end_y = parallel_limit_motors[3*i+2]->GetCurrentTragetPos();
+        }
+        if(temp_parameter->hasInInterferenceSpance(start_x,end_x,start_y,end_y))
+        {
+            MotorStatesGeter::motorState motor_state = geter->getMotorState(temp_parameter->motorName());
+            if(!motor_state.result)
+                return false;
+            double temp_pos = temp_parameter->getSafePosition(target_pos,motor_state.current_position);
+            if(fabs(temp_pos - target_pos)> fabs(result_pos - target_pos))
+            {
+                result_pos = temp_pos;
+            }
+        }
+    }
+    qInfo("getInterfaceLimit result_pos %f",result_pos);
     return true;
 }
 

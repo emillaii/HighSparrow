@@ -17,6 +17,7 @@
 #include "aaheadmodule.h"
 #include "lut_module.h"
 #include "sut_module.h"
+#include "singlehead_lsut_module.h"
 #include "dothinkey.h"
 #include "visionavadaptor.h"
 #include "imageprovider.h"
@@ -30,45 +31,61 @@
 class AACoreNew : public ThreadWorkerBase
 {
     Q_OBJECT
+    Q_ENUMS(HandleTest)
 public:
+    enum HandleTest
+    {
+        Dispense = 1,
+        PR_To_Bond = 2,
+        OC = 3,
+        MTF = 4,
+        AA = 5
+    };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
-    void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
+//    void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
+//              ChartCalibration * chartCalibration,DispenseModule* dispense,
+//              ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
+    void Init(AAHeadModule* aa_head, LutClient* lut,SutModule* sut, SingleheadLSutModule *lsut, Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
     void performAAOffline();
-    Q_INVOKABLE void performHandling(int cmd);
+    Q_INVOKABLE void performHandling(int cmd, QString params);
     ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond();
     ErrorCodeStruct performAAPickLens();
-    ErrorCodeStruct performAA(double start, double stop, double step_size,
-                   bool enableMotion, int zSleepInMs, bool isWaitTiltMotion,
-                   int zScanMode = 0, double estimated_aa_fov = 0,
-                   bool is_debug = false, sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER,
-                   double estimated_fov_slope = -16, double zOffset=0);
-    ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
-    ErrorCodeStruct performMTF(bool write_log = false);
+    ErrorCodeStruct performAA(QJsonValue params);
+    ErrorCodeStruct performOC(QJsonValue params);
+    ErrorCodeStruct performMTF(QJsonValue params, bool write_log = false);
     ErrorCodeStruct performZOffset(double zOffset);
+    ErrorCodeStruct performXYOffset(double xOffset, double yOffset);
     ErrorCodeStruct performDelay(int);
     ErrorCodeStruct performCameraUnload();
     ErrorCodeStruct performUV(int uv_time);
     ErrorCodeStruct performReject();
+    ErrorCodeStruct performAccept();
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
     bool runFlowchartTest();
     ErrorCodeStruct performTest(QString testItemName, QJsonValue properties);
     ErrorCodeStruct performDispense();
-    AACoreParameters parameters;
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     AAData aaData_1;  // For Display Channel 1
     AAData aaData_2;  // For Display Channel 2
-    AAData mtf_log;   // For Display MTF Log T
+    AAData mtf_log;   // For Display MTF Log
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
+
+    AACoreParameters parameters;
 private:
     bool is_run = false;
+    QMutex lut_mutex;
     void run(bool has_material);
+    void LogicNg(int & ng_time);
+    void NgLens();
+    void NgSensor();
+    void NgProduct();
 private:
     QString loopTestResult;
     int currentAAMode;
@@ -76,6 +93,7 @@ private:
     AAHeadModule* aa_head;
     LutClient* lut;
     SutModule* sut;
+    SingleheadLSutModule *lsut;
     Dothinkey* dk;
     ImageGrabbingWorkerThread* imageThread;
     ChartCalibration* chartCalibration;
@@ -83,16 +101,23 @@ private:
     Unitlog *unitlog;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
+    QVariantMap current_dfov;
     QJsonDocument flowchartDocument;
+    QJsonValue currentTestParams;
     bool isZScanNeedToStop = false;
     int currentChartDisplayChannel = 0;
     int currentOCDisplayChannel = 0;
     bool has_product = false;
+    bool has_ng_product = false;
     bool has_ng_lens = false;
     bool has_ng_sensor = false;
     bool has_sensor = false;
     bool has_lens = false;
-    bool is_wait_sensor = false;
+
+    int current_aa_ng_time = 0;
+    int current_oc_ng_time = 0;
+    int current_mtf_ng_time = 0;
+
     void sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
                              double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak, double &dev);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,

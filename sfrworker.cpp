@@ -18,7 +18,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     cv::Mat image = img.clone();
     QImage outImage;
     unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
-    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AA_Search_MTF_Pattern(img, outImage, true, ccIndex, ulIndex, urIndex, lrIndex, llIndex, this->max_intensity, this->min_area, this->max_area);
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AA_Search_MTF_Pattern(img, outImage, true, ccIndex, ulIndex, urIndex, llIndex, lrIndex, this->max_intensity, this->min_area, this->max_area);
     //Add protection here
     std::vector<Sfr_entry> sfr_v;
     if (patterns.size() < 5) {
@@ -52,49 +52,24 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
             if (k == urIndex) urMat = cropImage.clone();
             if (k == llIndex) llMat = cropImage.clone();
             if (k == lrIndex) lrMat = cropImage.clone();
-            //if (k == ccIndex) ccMat = cropImage.clone();
+            if (k == ccIndex) ccMat = cropImage.clone();
             //imwrite(QString::number(index).append(QString::number(k)).append(".bmp").toStdString().c_str(), cropImage);
             if (k == ccIndex)
             {
-                vector<Sfr_entry> sv = sfr::calculateSfr(z, cropImage, edgeFilter);
-                if (sv.size() == 1)
-                {
-                    sv[0].px = patterns[k].center.x();
-                    sv[0].py = patterns[k].center.y();
-                    sv[0].area = patterns[k].area;
-                    if (k == ccIndex) {
-                        if (sv[0].sfr + 10 < prev_cc_score) {
-                            is_cc_falling = true;
-                        }
-                        prev_cc_score = sv[0].sfr;
-                        qInfo("cc sfr: %f", sv[0].sfr);
-                    } else if (k == ulIndex) {
-                        if (sv[0].sfr + 10 < prev_ul_score) {
-                            is_ul_falling = true;
-                        }
-                        prev_ul_score = sv[0].sfr;
-                        qInfo("ul sfr: %f", sv[0].sfr);
-                    } else if (k == urIndex) {
-                        if (sv[0].sfr + 10 < prev_ur_score) {
-                            is_ur_falling = true;
-                        }
-                        prev_ur_score = sv[0].sfr;
-                        qInfo("ur sfr: %f", sv[0].sfr);
-                    } else if (k == llIndex) {
-                        if (sv[0].sfr + 10 < prev_ll_score) {
-                            is_ll_falling = true;
-                        }
-                        prev_ll_score = sv[0].sfr;
-                        qInfo("ll sfr: %f", sv[0].sfr);
-                    } else if (k == lrIndex) {
-                        if (sv[0].sfr + 10 < prev_lr_score) {
-                            is_lr_falling = true;
-                        }
-                        prev_lr_score = sv[0].sfr;
-                        qInfo("lr sfr: %f", sv[0].sfr);
-                    }
-                    sfr_v.push_back(sv[0]);
-                }
+               vector<Sfr_entry> sv = sfr::calculateSfr(z, ccMat, sfr::EdgeFilter::NO_FILTER);
+               qInfo("CC Calculation done : %d", sv.size());
+               if (sv.size() == 1)
+               {
+                   sv[0].px = patterns[k].center.x();
+                   sv[0].py = patterns[k].center.y();
+                   sv[0].area = patterns[k].area;
+                   if (sv[0].sfr + 10 < prev_cc_score) {
+                       is_cc_falling = true;
+                   }
+                   prev_cc_score = sv[0].sfr;
+                   qInfo("cc sfr: %f", sv[0].sfr);
+                   sfr_v.push_back(sv[0]);
+               }
             }
         }
     }
@@ -107,82 +82,56 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
     // QElapsedTimer timerTest;
     // timerTest.start();
     vector<Sfr_entry> sv = sfr::calculateSfr(z, ulMat, edgeFilter);
-    int tolerence = 70;
-    bool isULIndexFound = false;
-    bool isURIndexFound = false;
-    bool isLLIndexFound = false;
-    bool isLRIndexFound = false;
+
+    double ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
+    unsigned int ul_roi_index = 0, ur_roi_index = 0, ll_roi_index = 0, lr_roi_index = 0;
     for (unsigned int i = 0; i < sv.size(); i++) {
-        int roi_index;
-        double ul_d = sqrt(pow(sv[i].px - roi.width/2, 2) + pow(sv[i].py - roi.height/2, 2));
-        double ur_d = sqrt(pow(sv[i].px - roi.width/2*3, 2) + pow(sv[i].py - roi.height/2, 2));
-        double ll_d = sqrt(pow(sv[i].px - roi.width/2, 2) + pow(sv[i].py - roi.height/2*3, 2));
-        double lr_d = sqrt(pow(sv[i].px - roi.width/2*3, 2) + pow(sv[i].py - roi.height/2*3, 2));
-        if (ul_d < tolerence) {
-            roi_index = ulIndex;
-            if (sv[i].sfr + 10 < prev_ul_score) {
-                is_ul_falling = true;
-            }
-            prev_ul_score = sv[i].sfr;
-            isULIndexFound = true;
-        } else if (ur_d < tolerence) {
-            roi_index = urIndex;
-            if (sv[i].sfr + 10 < prev_ur_score) {
-                is_ur_falling = true;
-            }
-            prev_ur_score = sv[i].sfr;
-            isURIndexFound = true;
-        } else if (ll_d < tolerence) {
-            roi_index = llIndex;
-            if (sv[i].sfr + 10 < prev_ll_score) {
-                is_ll_falling = true;
-            }
-            prev_ll_score = sv[i].sfr;
-            isLLIndexFound = true;
-        } else if (lr_d < tolerence) {
-            roi_index = lrIndex;
-            if (sv[i].sfr + 10 < prev_lr_score) {
-                is_lr_falling = true;
-            }
-            prev_lr_score = sv[i].sfr;
-            isLRIndexFound = true;
+        double ul_d = sqrt(pow(sv[i].px, 2) + pow(sv[i].py, 2));
+        double ur_d = sqrt(pow(sv[i].px - image.cols, 2) + pow(sv[i].py, 2));
+        double ll_d = sqrt(pow(sv[i].px, 2) + pow(sv[i].py - image.rows, 2));
+        double lr_d = sqrt(pow(sv[i].px - image.cols, 2) + pow(sv[i].py - image.rows, 2));
+        if (ul_d < ul_min_d) {
+             ul_min_d = ul_d;
+             ul_roi_index = i;
         }
-        sv[i].px = patterns[roi_index].center.x();
-        sv[i].py = patterns[roi_index].center.y();
-        sv[i].area = patterns[roi_index].area;
-
-        sfr_v.push_back(sv[i]);
+        if (ur_d < ur_min_d) {
+             ur_min_d = ur_d;
+             ur_roi_index = i;
+        }
+        if (ll_d < ll_min_d) {
+             ll_min_d = ll_d;
+             ll_roi_index = i;
+        }
+        if (lr_d < lr_min_d) {
+            lr_min_d = lr_d;
+            lr_roi_index = i;
+        }
     }
+    sv[ul_roi_index].px = patterns[ulIndex].center.x();
+    sv[ul_roi_index].py = patterns[ulIndex].center.y();
+    sv[ul_roi_index].area = patterns[ulIndex].area;
+    sfr_v.push_back(sv[ul_roi_index]);
 
-    if (!isURIndexFound) {
-        qInfo("Cannot find UR Index");
-        Sfr_entry sfr_entry(patterns[urIndex].center.x(), patterns[urIndex].center.y(),
-                            z, 0, patterns[urIndex].area);
-        sfr_v.push_back(sfr_entry);
-    }
-    if (!isULIndexFound) {
+    sv[ur_roi_index].px = patterns[urIndex].center.x();
+    sv[ur_roi_index].py = patterns[urIndex].center.y();
+    sv[ur_roi_index].area = patterns[urIndex].area;
+    sfr_v.push_back(sv[ur_roi_index]);
 
-        qInfo("Cannot find UL Index");
-        Sfr_entry sfr_entry(patterns[ulIndex].center.x(), patterns[ulIndex].center.y(),
-                            z, 0, patterns[ulIndex].area);
-        sfr_v.push_back(sfr_entry);
-    }
-    if (!isLRIndexFound) {
+    sv[ll_roi_index].px = patterns[llIndex].center.x();
+    sv[ll_roi_index].py = patterns[llIndex].center.y();
+    sv[ll_roi_index].area = patterns[llIndex].area;
+    sfr_v.push_back(sv[ll_roi_index]);
 
-        qInfo("Cannot find LR Index sfr_v size: %d", sfr_v.size());
-        Sfr_entry sfr_entry(patterns[lrIndex].center.x(), patterns[lrIndex].center.y(),
-                            z, 0, patterns[lrIndex].area);
-        sfr_v.push_back(sfr_entry);
+    sv[lr_roi_index].px = patterns[lrIndex].center.x();
+    sv[lr_roi_index].py = patterns[lrIndex].center.y();
+    sv[lr_roi_index].area = patterns[lrIndex].area;
+    sfr_v.push_back(sv[lr_roi_index]);
 
-        qInfo("Cannot find LR Index sfr_v size: %d", sfr_v.size());
-    }
-    if (!isLLIndexFound) {
+    qInfo("UL px : %f py:%f sfr: %f", sv[ul_roi_index].px, sv[ul_roi_index].py, sv[ul_roi_index].sfr);
+    qInfo("UR px : %f py:%f sfr: %f", sv[ur_roi_index].px, sv[ur_roi_index].py, sv[ur_roi_index].sfr);
+    qInfo("LL px : %f py:%f sfr: %f", sv[ll_roi_index].px, sv[ll_roi_index].py, sv[ll_roi_index].sfr);
+    qInfo("LR px : %f py:%f sfr: %f", sv[lr_roi_index].px, sv[lr_roi_index].py, sv[lr_roi_index].sfr);
 
-        qInfo("Cannot find LL Index");
-        Sfr_entry sfr_entry(patterns[llIndex].center.x(), patterns[llIndex].center.y(),
-                            z, 0, patterns[llIndex].area);
-        sfr_v.push_back(sfr_entry);
-    }
 
     qInfo("sfr test elapsed: %d", timerTest.elapsed());
     if (is_cc_falling &&

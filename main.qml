@@ -3,7 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 import FileContentItem 1.0
 import QtQuick.Layouts 1.11
-
+import AACoreNew 1.1
 
 
 ApplicationWindow {
@@ -33,6 +33,8 @@ ApplicationWindow {
     readonly property string m_LPA_Y: "LPA_Y" //Y
     readonly property string m_LPA_Z: "LPA_Z" //物料高度
 
+    property string aaCoreTestItemName: ""
+    property string aaCoreTestParams: ""
 
     FileDialog {
         id: loadfileDialog
@@ -48,7 +50,7 @@ ApplicationWindow {
             var command = "document.getElementById('flowchart_data').value ='" + result + "'";
             flowChartPage.webView.runJavaScript(command, function(result) {
                 console.log("Load flowchart success")
-                command = "document.getElementsByClassName('set_data')[0].click()"
+                command = "document.getElementById('set_data').click()"
                 flowChartPage.webView.runJavaScript(command)
                 baseModuleManager.loadFlowchart(result)
             })
@@ -124,9 +126,34 @@ ApplicationWindow {
                 icon:StandardIcon.Question
                 onYes: {
                     console.log("home start!")
-                     logicManager.home()
+                    logicManager.home()
                 }
                 //Component.onCompleted: visible = true
+            }
+
+            MessageDialog {
+                id: aaCorePerformTestDialog
+                standardButtons: StandardButton.Yes|StandardButton.No
+                icon:StandardIcon.Question
+                onYes: {
+                    var obj = JSON.parse(aaCoreTestParams)
+                    if (aaCoreTestItemName.indexOf("MTF") !== -1) {
+                        console.log("Perform MTF")
+                        aaNewCore.performHandling(AACoreNew.MTF, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("OC") !== -1) {
+                        console.log("Perform OC")
+                        aaNewCore.performHandling(AACoreNew.OC, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("AA") !== -1) {
+                        console.log("Perform AA")
+                        aaNewCore.performHandling(AACoreNew.AA, aaCoreTestParams)
+                    }
+                    aaCoreTestParams = ""
+                    aaCoreTestItemName = ""
+                }
+                onNo: {
+                    aaCoreTestParams = ""
+                    aaCoreTestItemName = ""
+                }
             }
 
             ToolButton {
@@ -180,7 +207,7 @@ ApplicationWindow {
               icon.source: "icons/save.png"
               icon.color: "deepskyblue"
               onClicked: {
-                  var command = "document.getElementsByClassName('get_data')[0].click()";
+                  var command = "document.getElementById('get_data').click()";
                   flowChartPage.webView.runJavaScript(command, function(result) {
                       command = "document.getElementById('flowchart_data').value";
                       flowChartPage.webView.runJavaScript(command, function(result) {
@@ -308,6 +335,22 @@ ApplicationWindow {
                     if (baseModuleManager.ServerMode == 0 && lutModule.getConnectedClient() > 1) {
                         lutSignal.color = "green"
                     }
+                    //Used for consuming the flowchart double click command
+                    var command = "document.getElementById('flowchart_running_cmd').value";
+                    flowChartPage.webView.runJavaScript(command, function(result) {
+                         command = "document.getElementById('flowchart_running_cmd').value = ''";
+                         if (result.length > 0) {
+                             var obj = JSON.parse(result)
+                             var operatorId = obj["operatorId"]
+                             aaCoreTestItemName = operatorId
+                             aaCoreTestParams = result
+                             aaCorePerformTestDialog.text = "Perform " + operatorId + "?"
+                             aaCorePerformTestDialog.open()
+                             flowChartPage.webView.runJavaScript(command, function(result) {
+                                 //This is just reset the command in flowchart js
+                             })
+                         }
+                    })
                }
            }
 

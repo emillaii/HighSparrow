@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<SensorLoaderModule>("SomeLib",1,0,"SensorLoaderModule");
     qmlRegisterType<SingleheadLSutModule>("SingleheadLSutModuleLib",1,0,"SingleheadLSutModule");
     qmlRegisterType<SingleHeadMachineMaterialLoaderModule>("SingleHeadMaterialLoaderLib",1,0,"MaterialLoaderModule");
-
+    qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
     //AA Head Position
     engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);
 

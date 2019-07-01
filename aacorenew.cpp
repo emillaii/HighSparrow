@@ -20,7 +20,7 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 {
 }
 
-void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Dothinkey *dk, ChartCalibration *chartCalibration,
+void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, SingleheadLSutModule *lsut, Dothinkey *dk, ChartCalibration *chartCalibration,
                      DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog)
 {
     this->aa_head = aa_head;
@@ -30,6 +30,7 @@ void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Doth
     this->dispense = dispense;
     this->imageThread = imageThread;
     this->sut = sut;
+    this->lsut = lsut;
     this->unitlog = unitlog;
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();
@@ -109,9 +110,24 @@ void AACoreNew::stopWork(bool wait_finish)
 void AACoreNew::performHandlingOperation(int cmd)
 {
     qInfo("AACore perform command: %d", cmd);
-    if(cmd == 1)
+    if (cmd == HandleTest::Dispense)
     {
         performDispense();
+    }
+    else if (cmd == HandleTest::PR_To_Bond)
+    {
+        has_sensor = true;
+        has_lens = true;
+        performPRToBond();
+    }
+    else if (cmd == HandleTest::MTF) {
+        performMTF(true, true);
+    }
+    else if (cmd == HandleTest::OC) {
+        performOC(currentTestParams);
+    }
+    else if (cmd == HandleTest::AA) {
+        performAA(currentTestParams);
     }
     return;
 }
@@ -123,7 +139,6 @@ void AACoreNew::resetLogic()
     has_ng_sensor = false;
     has_sensor = false;
     has_lens = false;
-    is_wait_sensor = false;
 }
 
 bool AACoreNew::runFlowchartTest()
@@ -153,7 +168,7 @@ bool AACoreNew::runFlowchartTest()
                }
                else {
                    qInfo(QString("Do Test:" + currentPointer).toStdString().c_str());
-                   QJsonValue op = operators[currentPointer.toStdString().c_str()];\
+                   QJsonValue op = operators[currentPointer.toStdString().c_str()];
                    //Choose Path base on the result
                    ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
                    bool ret = true;
@@ -176,18 +191,19 @@ bool AACoreNew::runFlowchartTest()
                            //qInfo() << "Missing fail path, will put to reject test item";
                            // qInfo() << "Reject! -> To Reject Tray";
                            //qInfo() << "End of graph";
+                           qInfo("Finished With Auto Reject");
+                           performReject();
                            end = true;
                            break;
                        }
                    }
-                   if (currentPointer.contains("Accept")) {
-                      // qInfo() << "Accept! -> To Good Tray";
-                      // qInfo() << "End of graph";
-                       end = true;
-                       break;
-                   } else if (currentPointer.contains("Reject")) {
-                       qInfo("Performing Reject");
-                       performReject();
+                   if (currentPointer.contains("Accept")
+                           ||currentPointer.contains("Reject")
+                           ||currentPointer.contains("Terminate")
+                           ||currentPointer.contains("GRR")) {
+                       QJsonValue op = operators[currentPointer.toStdString().c_str()];
+                       ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
+                       qInfo("Finished With %s",currentPointer.toStdString().c_str());
                        end = true;
                        break;
                    }
@@ -313,37 +329,17 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         }
         else if (testItemName.contains(AA_PIECE_OC)) {
             qInfo("Performing OC");
-            bool enable_motion = params["enable_motion"].toInt();
-            bool fast_mode = params["fast_mode"].toInt();
-            ret = performOC(enable_motion, fast_mode);
+            ret = performOC(params);
             qInfo("End of perform OC");
         }
         else if (testItemName.contains(AA_PIECE_AA)) {
             qInfo("Performing AA");
-            int mode = params["mode"].toInt();
-            double start_pos = params["start_pos"].toDouble();
-            double stop_pos = params["stop_pos"].toDouble();
-            double offset_in_um = params["offset_in_um"].toDouble()/1000;
-            double step_size = params["step_size"].toDouble()/1000;
-            int delay_z_in_ms = params["delay_Z_in_ms"].toInt();
-            int wait_tilt = params["wait_tilt"].toInt();
-            int edge_filter_mode = params["edge_filter"].toInt();
-            int is_debug = params["is_debug"].toInt();
-            double estimated_aa_fov = params["estimated_aa_fov"].toDouble();
-            double estimated_fov_slope = params["estimated_fov_slope"].toDouble();
-            sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER;
-            if (edge_filter_mode == 1) {
-                edgeFilter = sfr::EdgeFilter::VERTICAL_ONLY;
-            } else if (edge_filter_mode == 2) {
-                edgeFilter = sfr::EdgeFilter::HORIZONTAL_ONLY;
-            }
-            ret = performAA(start_pos, stop_pos, step_size, true, delay_z_in_ms, wait_tilt, mode,
-                            estimated_aa_fov, is_debug, edgeFilter, estimated_fov_slope, offset_in_um);
+            ret = performAA(params);
             qInfo("End of perform AA");
         }
         else if (testItemName.contains(AA_PIECE_MTF)) {
             qInfo("Performing MTF");
-            ret = performMTF();
+            ret = performMTF(params);
             qInfo("End of perform MTF");
         }
         else if (testItemName.contains(AA_PIECE_UV)) {
@@ -403,12 +399,27 @@ ErrorCodeStruct AACoreNew::performDispense()
 }
 
 
-ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size,
-                                   bool enableMotion, int zSleepInMs, bool isWaitTiltMotion,
-                                   int zScanMode, double estimated_aa_fov,
-                                   bool is_debug, sfr::EdgeFilter edgeFilter,
-                                   double estimated_fov_slope, double zOffset)
+ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 {
+    int zScanMode = params["mode"].toInt();
+    double start = params["start_pos"].toDouble();
+    double stop = params["stop_pos"].toDouble();
+    double zOffset = params["offset_in_um"].toDouble()/1000;
+    double step_size = params["step_size"].toDouble()/1000;
+    int zSleepInMs = params["delay_Z_in_ms"].toInt();
+    int wait_tilt = params["wait_tilt"].toInt();
+    int edge_filter_mode = params["edge_filter"].toInt();
+    int is_debug = params["is_debug"].toInt();
+    double estimated_aa_fov = params["estimated_aa_fov"].toDouble();
+    double estimated_fov_slope = params["estimated_fov_slope"].toDouble();
+    int no_tilt = params["no_tilt"].toInt();
+    sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER;
+    if (edge_filter_mode == 1) {
+        edgeFilter = sfr::EdgeFilter::VERTICAL_ONLY;
+    } else if (edge_filter_mode == 2) {
+        edgeFilter = sfr::EdgeFilter::HORIZONTAL_ONLY;
+    }
+
     QVariantMap map, dfovMap;
     QElapsedTimer timer; timer.start();
     qInfo("start: %f stop: %f step_size: %f", start, stop, step_size);
@@ -417,8 +428,8 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
     unsigned int zScanCount = 0;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     vector<cv::Mat> images;
-    if (start > 0) sut->moveToZPos(start);
-    mPoint3D start_pos = sut->carrier->GetFeedBackPos();
+    if (start > 0) lsut->moveToZPos(start);
+    mPoint3D start_pos = lsut->sut_carrier->GetFeedBackPos();
     int count = 0;
     QPointF prev_point = {0, 0};
     double prev_fov_slope = 0;
@@ -431,24 +442,24 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
         }
         for (int i = 0; i < count; i++)
         {
-           sut->moveToZPos(start+(i*step_size));
+           lsut->moveToZPos(start+(i*step_size));
            QThread::msleep(zSleepInMs);
-           double realZ = sut->carrier->GetFeedBackPos().Z;
+           double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
            qInfo("Z scan start from %f, real: %f", start+(i*step_size), realZ);
            cv::Mat img = dk->DothinkeyGrabImageCV(0);
            imageWidth = img.cols; imageHeight = img.rows;
            QString imageName;
            imageName.append(getGrabberLogDir())
                            .append(getCurrentTimeString())
-                           .append(".jpg");
-           //cv::imwrite(imageName.toStdString().c_str(), img);
+                           .append(".bmp");
+           cv::imwrite(imageName.toStdString().c_str(), img);
            double dfov = calculateDFOV(img);
            dfovMap.insert(QString::number(i), dfov);
            xsum=xsum+realZ;
            ysum=ysum+dfov;
            x2sum=x2sum+pow(realZ,2);
            xysum=xysum+realZ*dfov;
-           qInfo("fov: %f  sut_z: %f", dfov,sut->carrier->GetFeedBackPos().Z);
+           qInfo("fov: %f  lsut_z: %f", dfov,lsut->sut_carrier->GetFeedBackPos().Z);
            imageWidth = img.cols;
            imageHeight = img.rows;
            images.push_back(std::move(img));
@@ -476,15 +487,15 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
             qInfo("The estimated target is too small. value: %f", target_z);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
         }
-        sut->moveToZPos(target_z);
+        lsut->moveToZPos(target_z);
         for (unsigned int i = 0; i < 10; i++) {
             if (isZScanNeedToStop) {
                 qInfo("z scan detected finished");
                 break;
             }
-            sut->moveToZPos(target_z+(i*step_size));
+            lsut->moveToZPos(target_z+(i*step_size));
             QThread::msleep(zSleepInMs);
-            mPoint3D currPos = sut->carrier->GetFeedBackPos();
+            mPoint3D currPos = lsut->sut_carrier->GetFeedBackPos();
             cv::Mat img = dk->DothinkeyGrabImageCV(0);
             double dfov = calculateDFOV(img);
             dfovMap.insert(QString::number(i), dfov);
@@ -551,10 +562,13 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
     qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
     //aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
     //aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
-    aa_head->stepInterpolation_AB_Sync(-yTilt, xTilt);
+    //aa_head->stepInterpolation_AB_Sync(-yTilt, xTilt);
+    if (no_tilt == 0) {
+        aa_head->stepInterpolation_AB_Sync(xTilt,-yTilt);
+    }
 
     qInfo("aa_head after :%f", aa_head->GetFeedBack().Z);
-    sut->moveToZPos(zPeak);
+    lsut->moveToZPos(zPeak);
     map.insert("X_TILT", xTilt);
     map.insert("Y_TILT", yTilt);
     map.insert("Z_PEAK_CC", zPeak);
@@ -648,8 +662,12 @@ void AACoreNew::performAAOffline()
     emit pushDataToUnit(runningUnit, "AAOffline", map);
 }
 
-void AACoreNew::performHandling(int cmd)
+void AACoreNew::performHandling(int cmd, QString params)
 {
+    qInfo("Receive perform handling event. cmd: %d", cmd);
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(params.toLocal8Bit().data());
+    QJsonValue json = jsonDocument.object();
+    currentTestParams = json;
     emit sendHandlingOperation(cmd);
 }
 
@@ -808,7 +826,7 @@ void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, doubl
     qInfo("End of sfrFitCurve");
 }
 
-ErrorCodeStruct AACoreNew::performMTF(bool write_log)
+ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
@@ -867,7 +885,7 @@ ErrorCodeStruct AACoreNew::performMTF(bool write_log)
     }
     qInfo("Read the aahead and sut carrier feedback");
     mPoint6D motorsPosition = this->aa_head->GetFeedBack();
-    mPoint3D sutPosition = this->sut->carrier->GetFeedBackPos();
+    mPoint3D sutPosition = this->lsut->sut_carrier->GetFeedBackPos();
     map.insert("AA_X", motorsPosition.X);
     map.insert("AA_Y", motorsPosition.Y);
     map.insert("AA_Z", motorsPosition.Z);
@@ -932,8 +950,12 @@ ErrorCodeStruct AACoreNew::performReject()
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
-ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
+ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
 {
+    bool enableMotion = params["enable_motion"].toInt();
+    bool fastMode = params["fast_mode"].toInt();
+
+    qInfo("enable_motion: %d fast_mode: %d", enableMotion, fastMode);
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
     QVariantMap map;
     QElapsedTimer timer;
@@ -950,7 +972,7 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
     int method = 1;  //1: Pattern ; else : Mass center
     if (method == 1)
     {
-        std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, false,
+        std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, fastMode,
                                                                         ccIndex, ulIndex, urIndex,
                                                                         llIndex, lrIndex);
         ocImageProvider_1->setImage(outImage);
@@ -985,7 +1007,7 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
             qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
         }
-        this->sut->stepMove_XY_Sync(-stepX, -stepY);
+        this->lsut->stepMove_XY_Sync(-stepX, -stepY);
     }
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "OC", map);

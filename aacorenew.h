@@ -42,10 +42,7 @@ public:
         AA = 5
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
-//    void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
-//              ChartCalibration * chartCalibration,DispenseModule* dispense,
-//              ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
-    void Init(AAHeadModule* aa_head, LutClient* lut,SutModule* sut, SingleheadLSutModule *lsut, Dothinkey *dk,
+    void Init(AAHeadModule* aa_head, SingleheadLSutModule *lsut, Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
     void performAAOffline();

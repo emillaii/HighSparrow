@@ -72,6 +72,7 @@ public:
     Position3D safety_position;
     Position3D pick_lens_position;
     Position3D unpick_lens_position;
+    PositionT  up_downlook_offset;
 
     SingleHeadLSutParameter parameters;
 
@@ -81,8 +82,13 @@ public:
     void saveParams(QString file_name);
 
     Q_INVOKABLE void performHandling(int cmd);
-
     Q_INVOKABLE bool moveToCamPos(double pixel_x, double pixel_y, int upDownLook);
+
+    bool moveToZPos(double z);
+    bool stepMove_XY_Sync(double x,double y);
+    bool stepMove_Z_Sync(double step_z);
+    void recordCurrentPos();
+    bool movetoRecordPos(bool check_autochthonous = false);
 
     // Distance offset between lens center to uplook camera center
     Position lens_offset;
@@ -107,11 +113,6 @@ private:
     bool moveToSafetyPosition(bool check_autochthonous);
     bool moveToPickLensPosition(bool check_autochthonous);
     bool moveToUnpickLensPosition(bool check_autochthonous);
-    bool stepMove_XY_Sync(double x,double y);
-    bool stepMove_Z_Sync(double step_z);
-    bool moveToZPos(double z);
-    void recordCurrentPos();
-    bool movetoRecordPos(bool check_autochthonous = false);
 
     bool performDownlookSensorPR();
     bool performUplookLensPR();

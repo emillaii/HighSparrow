@@ -20,7 +20,7 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 {
 }
 
-void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, SingleheadLSutModule *lsut, Dothinkey *dk, ChartCalibration *chartCalibration,
+void AACoreNew::Init(AAHeadModule *aa_head, SingleheadLSutModule *lsut, Dothinkey *dk, ChartCalibration *chartCalibration,
                      DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog)
 {
     this->aa_head = aa_head;
@@ -29,8 +29,6 @@ void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Sing
     this->chartCalibration = chartCalibration;
     this->dispense = dispense;
     this->imageThread = imageThread;
-    this->sut = sut;
-    this->lsut = lsut;
     this->unitlog = unitlog;
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();
@@ -386,13 +384,13 @@ ErrorCodeStruct AACoreNew::performDispense()
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    sut->recordCurrentPos();
+    lsut->recordCurrentPos();
     PrOffset offset;
-    dispense->setMapPosition(sut->downlook_position.X(),sut->downlook_position.Y());
+    dispense->setMapPosition(lsut->downlook_position.X(),lsut->downlook_position.Y());
     if(!sut->moveToDownlookPR(offset)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "downlook pr fail"};}
     dispense->setPRPosition(offset.X,offset.Y,offset.Theta);
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
-    if(!sut->movetoRecordPos()){return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
+    if(!lsut->movetoRecordPos()){return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};
@@ -1038,6 +1036,7 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
+// TO BE MODIFIED
 ErrorCodeStruct AACoreNew::performPRToBond()
 {
     //if (!this->lut->moveToUnloadPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT cannot move to unload Pos"};}
@@ -1054,10 +1053,10 @@ ErrorCodeStruct AACoreNew::performPRToBond()
     if (!this->aa_head->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
 
-    double x = sut->downlook_position.X() + sut->up_downlook_offset.X() + aa_head->uplook_x + aa_head->offset_x;
-    double y = sut->downlook_position.Y() + sut->up_downlook_offset.Y() + aa_head->uplook_y + aa_head->offset_y;
-    double z = sut->mushroom_positon.Z();
-    double theta = sut->up_downlook_offset.Theta() + aa_head->uplook_theta + aa_head->offset_theta;
+    double x = lsut->downlook_position.X() + lsut->up_downlook_offset.X() + aa_head->uplook_x + aa_head->offset_x;
+    double y = lsut->downlook_position.Y() + lsut->up_downlook_offset.Y() + aa_head->uplook_y + aa_head->offset_y;
+    double z = lsut->mushroom_position.Z();
+    double theta = lsut->up_downlook_offset.Theta() + aa_head->uplook_theta + aa_head->offset_theta;
    if (!this->aa_head->moveToSync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
 //    if (!this->sut->moveToMushroomPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to mushroom Pos"};}
 //    map.insert("sut_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
@@ -1066,59 +1065,60 @@ ErrorCodeStruct AACoreNew::performPRToBond()
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
+// TO BE MODIFIED
 ErrorCodeStruct AACoreNew::performAAPickLens()
 {
-    if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
-    if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
-    if((!has_sensor)&&(!is_wait_sensor))
-    {
-        qInfo("need sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
-        if(has_product)
-            aa_head->sendSensrRequest(SUT_STATE::HAS_PRODUCT);
-        else if(has_ng_sensor)
-            aa_head->sendSensrRequest(SUT_STATE::HAS_NG_SENSOR);
-        else
-            aa_head->sendSensrRequest(SUT_STATE::NO_MATERIAL);
-        is_wait_sensor = true;
-    }
-    if(!has_lens)
-    {
-        qInfo("need lens has_ng_lens %d",has_ng_lens);
-        if (this->lut->sendLensRequest(is_run,has_ng_lens,true))
-        {
-            qInfo("wait lens suceess");
-            has_lens = true;
-        }
-        else{
-            if(is_run)
-            {
-                AppendError("wait sensor time_out");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-            }
-            is_run = false;
-            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"};
-        }
-    }
-    if(!has_sensor)
-    {
-        qInfo("wait sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
-        if(aa_head->waitForLoadSensor(is_run))
-        {
-            qInfo("wait sensor suceess");
-            has_sensor = true;
-            is_wait_sensor = false;
-        }
-        else
-        {
-            if(is_run)
-            {
-                AppendError("wait sensor time_out");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-            }
-            is_run = false;
-            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"};
-        }
-    }
+//    if (!this->lsut->moveToPRPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
+//    if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
+//    if((!has_sensor)&&(!is_wait_sensor))
+//    {
+//        qInfo("need sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
+//        if(has_product)
+//            aa_head->sendSensrRequest(SUT_STATE::HAS_PRODUCT);
+//        else if(has_ng_sensor)
+//            aa_head->sendSensrRequest(SUT_STATE::HAS_NG_SENSOR);
+//        else
+//            aa_head->sendSensrRequest(SUT_STATE::NO_MATERIAL);
+//        is_wait_sensor = true;
+//    }
+//    if(!has_lens)
+//    {
+//        qInfo("need lens has_ng_lens %d",has_ng_lens);
+//        if (this->lsut->sendLensRequest(is_run,has_ng_lens,true))
+//        {
+//            qInfo("wait lens suceess");
+//            has_lens = true;
+//        }
+//        else{
+//            if(is_run)
+//            {
+//                AppendError("wait sensor time_out");
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//            }
+//            is_run = false;
+//            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"};
+//        }
+//    }
+//    if(!has_sensor)
+//    {
+//        qInfo("wait sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
+//        if(aa_head->waitForLoadSensor(is_run))
+//        {
+//            qInfo("wait sensor suceess");
+//            has_sensor = true;
+//            is_wait_sensor = false;
+//        }
+//        else
+//        {
+//            if(is_run)
+//            {
+//                AppendError("wait sensor time_out");
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//            }
+//            is_run = false;
+//            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"};
+//        }
+//    }
     qInfo("Done Pick Lens");
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
@@ -1147,11 +1147,11 @@ ErrorCodeStruct AACoreNew::performZOffset(double zOffset)
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    double curr_z = sut->carrier->GetFeedBackPos().Z;
-    double target_z = sut->carrier->GetFeedBackPos().Z + zOffset;
-    sut->moveToZPos(target_z);
+    double curr_z = lsut->sut_carrier->GetFeedBackPos().Z;
+    double target_z = lsut->sut_carrier->GetFeedBackPos().Z + zOffset;
+    lsut->moveToZPos(target_z);
     QThread::msleep(200);
-    double final_z = sut->carrier->GetFeedBackPos().Z;
+    double final_z = lsut->sut_carrier->GetFeedBackPos().Z;
     map.insert("zOffset", zOffset);
     map.insert("ori_z_pos", curr_z);
     map.insert("final_z_pos", final_z);

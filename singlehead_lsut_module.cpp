@@ -43,6 +43,7 @@ void SingleheadLSutModule::loadParams(QString file_name)
     temp_map.insert("unpick_lens_position",&unpick_lens_position);
     temp_map.insert("lens_offset",&lens_offset);
     temp_map.insert("sensor_offset",&sensor_offset);
+    temp_map.insert("up_downlook_offset", &up_downlook_offset);
     PropertyBase::loadJsonConfig(file_name,temp_map);
 }
 
@@ -61,6 +62,7 @@ void SingleheadLSutModule::saveParams(QString file_name)
     temp_map.insert("unpick_lens_position",&unpick_lens_position);
     temp_map.insert("lens_offset",&lens_offset);
     temp_map.insert("sensor_offset",&sensor_offset);
+    temp_map.insert("up_downlook_offset", &up_downlook_offset);
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 

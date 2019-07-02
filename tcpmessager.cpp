@@ -16,9 +16,11 @@ TcpMessager::~TcpMessager()
 
 bool TcpMessager::sendMessage(QString message)
 {
+    QJsonObject object = getJsonObjectFromString(message);
+    object["sender_name"] = parameters.messagerName();
     if(m_is_connected)
     {
-        bool result = emit sendTextMessage(message);
+        bool result = emit sendTextMessage(getStringFromJsonObject(object));
         if(result)
             return true;
     }
@@ -56,10 +58,10 @@ void TcpMessager::clearMessage(QString)
     received_message = "";
 }
 
-QString TcpMessager::quareMessage(QString message)
+QString TcpMessager::inquiryMessage(QString message)
 {
     if (parameters.needQInfo())
-        qDebug("%s quareMessage %s in thread %d",parameters.messagerName().toStdString().c_str(),message.toStdString().c_str(),QThread::currentThreadId());
+        qDebug("%s inquiryquareMessage %s in thread %d",parameters.messagerName().toStdString().c_str(),message.toStdString().c_str(),QThread::currentThreadId());
     bool result = qure_mutex.tryLock(parameters.outTime());
     QJsonObject result_message;
     if(result)
@@ -83,13 +85,18 @@ QString TcpMessager::quareMessage(QString message)
                 time_out -= parameters.waitIntervel();
                 QThread::msleep(parameters.waitIntervel());
             }
+            if(result_message.keys().count()<= 0)
+                result_message["error"] = "inquiry time out";
         }
+        else
+            result_message["error"] = "send inquiry message fail";
     }
+    else
+        result_message["error"] = "tryLock fail";
     is_waitting = false;
     qure_mutex.unlock();
 //    if(!result)
-    qDebug("QuareResult:%d in thread %d",result,QThread::currentThreadId());
-    result_message["QuareResult"] = result;
+    qDebug("inquiry Result:%d in thread %d",result,QThread::currentThreadId());
     return  getStringFromJsonObject(result_message);
 }
 

@@ -13,7 +13,7 @@
 #include "iolimitparameter.h"
 #include "parallellimitparameter.h"
 #include "xtmotorparameter.h"
-#include "motorstatesgeter.h"
+#include "devicestatesgeter.h"
 
 class XtMotorExtendParameters : public PropertyBase
 {
@@ -40,7 +40,7 @@ static int GetThreadResource();
 public:
     XtMotor();
     virtual void Init(const QString& motor_name);
-    void Init(MotorStatesGeter* geter);
+    void Init(DeviceStatesGeter* geter);
     virtual void SetADC(int can_id,int data_ch);
     virtual void SetEncoderFeedback(int can_id, int data_ch, double ratio);
     virtual void SetFeedbackZero(double new_value = 0);
@@ -154,7 +154,7 @@ protected:
     XtGeneralInput rdy;
     XtGeneralInput origin;
     XtGeneralInput origin2;
-    MotorStatesGeter* geter;
+    DeviceStatesGeter* geter;
 
     void ChangeCurPos(double pos);
 //    void CheckLimit(double &pos);
@@ -166,11 +166,7 @@ public:
     static int axis_id_resource;
     QList<VerticalLimitParameter*> vertical_limit_parameters;
     QList<ParallelLimitParameter*> parallel_limit_parameters;
-    QList<XtMotor*> vertical_limit_motors;
-    QList<XtMotor*> parallel_limit_motors;
     QList<IOLimitParameter*> io_limit_parameters;
-    QList<XtGeneralInput*> limit_in_ios;
-    QList<XtGeneralOutput*> limit_out_ios;
 };
 
 #endif // XTMOTER_H

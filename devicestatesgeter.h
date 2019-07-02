@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-class MotorStatesGeter : public QObject
+class DeviceStatesGeter : public QObject
 {
     Q_OBJECT
 public:
@@ -14,11 +14,18 @@ public:
         double current_position = 0;
         double target_position = 0;
     };
-    explicit MotorStatesGeter(QObject *parent = nullptr);
+    struct IoState
+    {
+        bool result = false;
+        bool current_state = false;
+    };
+    explicit DeviceStatesGeter(QObject *parent = nullptr);
 public:
     motorState getMotorState(QString motor_name);
+    IoState getInputIoState(QString input_io_name);
+    IoState getOutputIoState(QString output_io_name);
 signals:
-    QString sendGetMotorState(QString motor_name);
+    QString sendGetDeviceState(QString motor_name);
 public slots:
 };
 

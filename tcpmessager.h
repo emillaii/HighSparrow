@@ -20,7 +20,7 @@ public:
     bool waitMessage(QString message,bool& is_run);
     bool checkMessage(QString message);
     void clearMessage(QString);
-    QString quareMessage(QString message);
+    QString inquiryMessage(QString message);
     static QJsonObject getJsonObjectFromString(const QString json_string);
     static QString getStringFromJsonObject(const QJsonObject& jsonObject);
 private:

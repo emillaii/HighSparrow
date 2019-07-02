@@ -118,7 +118,7 @@ void XtMotor::Init(const QString& moter_name)
 
 }
 
-void XtMotor::Init(MotorStatesGeter *geter)
+void XtMotor::Init(DeviceStatesGeter *geter)
 {
     this->geter = geter;
 }
@@ -533,7 +533,8 @@ bool XtMotor::MoveToPosSaftySync(double pos,int thread,int timeout)
         if(CheckArrivedTargetPos(pos))
             return true;
         else
-            MoveToPosSafty(pos,thread);
+            if(!MoveToPosSafty(pos,thread))
+                return false;
         Sleep(10);
         timeout-=10;
     }
@@ -887,19 +888,29 @@ bool XtMotor::getInterfaceLimit(double target_pos,double& result_pos)
         ParallelLimitParameter * temp_parameter = parallel_limit_parameters[i];
         //与检测区间有干涉
         double start_x = 0,end_x = 0,start_y = 0,end_y = 0;
-        if(parallel_limit_parameters[i]->effectMotorXName()!="")
+        if(temp_parameter->effectMotorXName()!="")
         {
-            start_x = parallel_limit_motors[3*i+1]->GetFeedbackPos();
-            end_x = parallel_limit_motors[3*i+1]->GetCurrentTragetPos();
+            DeviceStatesGeter::motorState motor_state = geter->getMotorState(temp_parameter->effectMotorXName());
+            if(!motor_state.result)
+                return false;
+            start_x = motor_state.current_position;
+            end_x = motor_state.target_position;
+//            start_x = parallel_limit_motors[3*i+1]->GetFeedbackPos();
+//            end_x = parallel_limit_motors[3*i+1]->GetCurrentTragetPos();
         }
-        if(parallel_limit_parameters[i]->effectMotorYName()!="")
+        if(temp_parameter->effectMotorYName()!="")
         {
-            start_y = parallel_limit_motors[3*i+2]->GetFeedbackPos();
-            end_y = parallel_limit_motors[3*i+2]->GetCurrentTragetPos();
+            DeviceStatesGeter::motorState motor_state = geter->getMotorState(temp_parameter->effectMotorYName());
+            if(!motor_state.result)
+                return false;
+            start_y = motor_state.current_position;
+            end_y = motor_state.target_position;
+//            start_y = parallel_limit_motors[3*i+2]->GetFeedbackPos();
+//            end_y = parallel_limit_motors[3*i+2]->GetCurrentTragetPos();
         }
         if(temp_parameter->hasInInterferenceSpance(start_x,end_x,start_y,end_y))
         {
-            MotorStatesGeter::motorState motor_state = geter->getMotorState(temp_parameter->motorName());
+            DeviceStatesGeter::motorState motor_state = geter->getMotorState(temp_parameter->motorName());
             if(!motor_state.result)
                 return false;
             double temp_pos = temp_parameter->getSafePosition(target_pos,motor_state.current_position);
@@ -923,7 +934,10 @@ bool XtMotor::checkInterface(const double pos)
         if(temp_parameter->hasInterferenceWithMoveSpance(current_pos,pos))
         {
             //在限制区间
-            if(!temp_parameter->checkInLimitSpance(vertical_limit_motors[i]->GetFeedbackPos(),vertical_limit_motors[i]->GetCurrentTragetPos()))
+            DeviceStatesGeter::motorState motor_state = geter->getMotorState(temp_parameter->motorName());
+            if(!motor_state.result)
+                return false;
+            if(!temp_parameter->checkInLimitSpance(motor_state.current_position,motor_state.target_position))
             {
                 AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->motorName()));
                 qInfo("CheckLimit fail %f",pos);
@@ -935,20 +949,33 @@ bool XtMotor::checkInterface(const double pos)
         ParallelLimitParameter * temp_parameter = parallel_limit_parameters[i];
         //与检测区间有干涉
         double start_x = 0,end_x = 0,start_y = 0,end_y = 0;
-        if(parallel_limit_parameters[i]->effectMotorXName()!="")
+        if(temp_parameter->effectMotorXName()!="")
         {
-            start_x = parallel_limit_motors[3*i+1]->GetFeedbackPos();
-            end_x = parallel_limit_motors[3*i+1]->GetCurrentTragetPos();
+            DeviceStatesGeter::motorState motor_state = geter->getMotorState(temp_parameter->effectMotorXName());
+            if(!motor_state.result)
+                return false;
+            start_x = motor_state.current_position;
+            end_x = motor_state.target_position;
+//            start_x = parallel_limit_motors[3*i+1]->GetFeedbackPos();
+//            end_x = parallel_limit_motors[3*i+1]->GetCurrentTragetPos();
         }
-        if(parallel_limit_parameters[i]->effectMotorYName()!="")
+        if(temp_parameter->effectMotorYName()!="")
         {
-            start_y = parallel_limit_motors[3*i+2]->GetFeedbackPos();
-            end_y = parallel_limit_motors[3*i+2]->GetCurrentTragetPos();
+            DeviceStatesGeter::motorState motor_state = geter->getMotorState(temp_parameter->effectMotorYName());
+            if(!motor_state.result)
+                return false;
+            start_y = motor_state.current_position;
+            end_y = motor_state.target_position;
+//            start_y = parallel_limit_motors[3*i+2]->GetFeedbackPos();
+//            end_y = parallel_limit_motors[3*i+2]->GetCurrentTragetPos();
         }
         if(temp_parameter->hasInInterferenceSpance(start_x,end_x,start_y,end_y))
         {
             //检测在安全距离
-            if(!temp_parameter->checkInSafeDistance(current_pos,pos,parallel_limit_motors[3*i]->GetFeedbackPos(),parallel_limit_motors[3*i]->GetCurrentTragetPos()))
+            DeviceStatesGeter::motorState motor_state = geter->getMotorState(temp_parameter->motorName());
+            if(!motor_state.result)
+                return false;
+            if(!temp_parameter->checkInSafeDistance(current_pos,pos,motor_state.current_position,motor_state.target_position))
             {
                 AppendError(QString( u8"%1从%2到%3的过程与%4的安全距离不够").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->motorName()));
                 return false;
@@ -963,33 +990,52 @@ bool XtMotor::checkInterface(const double pos)
             //在限制区间
             if(temp_parameter->crashSpance())
             {
-                bool result = true;
-                QString temp_name = "";
+                bool result = true,temp_result;
+                QString temp_name = "",temp_io;
                 for(int i = 0; i < temp_parameter->input_io_indexs.size(); ++i)
                 {
-                    temp_name.append(temp_parameter->inputIOName()[i].toString());
-                    temp_name.append(" ");
-                    result &= temp_parameter->checkInputInLimitSpance(i,limit_in_ios[temp_parameter->input_io_indexs[i]]->Value());
+                    temp_io =  temp_parameter->inputIOName()[i].toString();
+                    DeviceStatesGeter::IoState io_state = geter->getInputIoState(temp_io);
+                    if(!io_state.result)
+                        return false;
+                    temp_result = temp_parameter->checkInputInLimitSpance(i,io_state.current_state);
+                    if(!temp_result)
+                    {
+                        temp_name.append(temp_io);
+                        temp_name.append(" ");
+                        result = false;
+                    }
                 }
                 for (int i = 0; i < temp_parameter->output_io_indexs.size(); ++i)
                 {
-                    temp_name.append(temp_parameter->outputIOName()[i].toString());
-                    temp_name.append(" ");
-                    result &= temp_parameter->checkOutputLimitSpance(i,limit_out_ios[temp_parameter->output_io_indexs[i]]->Value());
+                    temp_io =  temp_parameter->outputIOName()[i].toString();
+                    DeviceStatesGeter::IoState io_state = geter->getOutputIoState(temp_io);
+                    if(!io_state.result)
+                        return false;
+                    temp_result = temp_parameter->checkOutputLimitSpance(i,io_state.current_state);
+                    if(!temp_result)
+                    {
+                        temp_name.append(temp_io);
+                        temp_name.append(" ");
+                        result = false;
+                    }
                 }
                 if(result)
                 {
                     AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_name));
                     return false;
                 }
-                result = true;
-
             }
             else
             {
+                QString temp_io;
                 for(int i = 0; i < temp_parameter->input_io_indexs.size(); ++i)
                 {
-                    if(!temp_parameter->checkInputInLimitSpance(i,limit_in_ios[temp_parameter->input_io_indexs[i]]->Value()))
+                    temp_io = temp_parameter->inputIOName()[i].toString();
+                    DeviceStatesGeter::IoState io_state = geter->getInputIoState(temp_io);
+                    if(!io_state.result)
+                        return false;
+                    if(!temp_parameter->checkInputInLimitSpance(i,io_state.current_state))
                     {
                         AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->inputIOName()[i].toString()));
                         return false;
@@ -997,7 +1043,11 @@ bool XtMotor::checkInterface(const double pos)
                 }
                 for (int i = 0; i < temp_parameter->output_io_indexs.size(); ++i)
                 {
-                    if(!temp_parameter->checkOutputLimitSpance(i,limit_out_ios[temp_parameter->output_io_indexs[i]]->Value()))
+                    temp_io =  temp_parameter->outputIOName()[i].toString();
+                    DeviceStatesGeter::IoState io_state = geter->getOutputIoState(temp_io);
+                    if(!io_state.result)
+                        return false;
+                    if(!temp_parameter->checkOutputLimitSpance(i,io_state.current_state))
                     {
                         AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->outputIOName()[i].toString()));
                         return false;

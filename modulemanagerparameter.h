@@ -2,6 +2,8 @@
 #define BASEMODULEMANAGERPARAMETER_H
 
 #include "propertybase.h"
+
+#include <QVariantList>
 class ModuleManangerConfig:public PropertyBase
 {
     Q_OBJECT
@@ -56,7 +58,7 @@ public:
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(QString materialType READ materialType WRITE setMaterialType NOTIFY materialTypeChanged)
     Q_PROPERTY(QString machineType READ machineType WRITE setMachineType NOTIFY machineTypeChanged)
-    Q_PROPERTY(QStringList respMessagerNames READ respMessagerNames WRITE setRespMessagerNames NOTIFY respMessagerNamesChanged)
+    Q_PROPERTY(QVariantList respMessagerNames READ respMessagerNames WRITE setRespMessagerNames NOTIFY respMessagerNamesChanged)
     Q_PROPERTY(QString flowChartURL READ flowChartURL WRITE setFlowChartURL NOTIFY flowChartURLChanged)
     int runMode() const
     {
@@ -72,7 +74,7 @@ public:
         return m_machineType;
     }
 
-    QStringList respMessagerNames() const
+    QVariantList respMessagerNames() const
     {
         return m_respMessagerNames;
     }
@@ -109,7 +111,7 @@ public slots:
         emit machineTypeChanged(m_machineType);
     }
 
-    void setRespMessagerNames(QStringList respMessagerNames)
+    void setRespMessagerNames(QVariantList respMessagerNames)
     {
         if (m_respMessagerNames == respMessagerNames)
             return;
@@ -133,7 +135,7 @@ signals:
 
     void machineTypeChanged(QString machineType);
 
-    void respMessagerNamesChanged(QStringList respMessagerNames);
+    void respMessagerNamesChanged(QVariantList respMessagerNames);
 
     void flowChartURLChanged(QString flowChartURL);
 
@@ -141,7 +143,7 @@ private:
     int m_runMode = 0;
     QString m_materialType = "TESTTYPE";
     QString m_machineType = "DAA_001";
-    QStringList m_respMessagerNames;
+    QVariantList m_respMessagerNames;
     QString m_flowChartURL = "http://192.168.0.251//flowchart/flowchart.html";
 };
 class ModuleManagerState:public PropertyBase

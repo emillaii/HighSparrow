@@ -19,6 +19,7 @@ DEFINES += QT_MESSAGELOGCONTEXT
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    devicestatesgeter.cpp \
     logmodel.cpp \
     main.cpp \
     baslerpyloncamera.cpp \
@@ -87,8 +88,7 @@ SOURCES += \
     tcpmessager.cpp \
     tcpclientmessager.cpp \
     tcpmanager.cpp \
-    tcpservermessager.cpp \
-    motorstatesgeter.cpp
+    tcpservermessager.cpp
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -138,6 +138,7 @@ DEPENDPATH += $$PWD/../libs/DTCCM2_SDK/X64_Lib
 HEADERS += \
     baslerpyloncamera.h \
     config.h \
+    devicestatesgeter.h \
     highsprrow.h \
     errorcode.h \
     aaheadmodule.h \
@@ -239,8 +240,7 @@ HEADERS += \
     tcpmanager.h \
     tcpmanagerparameter.h \
     tcpclientmessager.h \
-    tcpservermessager.h \
-    motorstatesgeter.h
+    tcpservermessager.h
 
 DISTFILES += \
     icons/index.theme

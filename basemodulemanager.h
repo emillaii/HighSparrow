@@ -37,7 +37,7 @@
 #include "sensortrayloadermodule.h"
 #include "modulemanagerparameter.h"
 #include "tcpmanager.h"
-#include "motorstatesgeter.h"
+#include "devicestatesgeter.h"
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
@@ -61,7 +61,7 @@ public:
     QMap<QString,XtCylinder*> cylinder;
     TcpManager tcp_manager;
     QMap<QString,TcpMessager*> messagers;//需要响应的连接；
-    MotorStatesGeter state_geter;
+    DeviceStatesGeter state_geter;
 
     ChartCalibration * chart_calibration = Q_NULLPTR;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;

@@ -82,7 +82,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
     connect(&timer, &QTimer::timeout, this, &BaseModuleManager::alarmChecking);
     connect(this,&BaseModuleManager::sendHandlingOperation,this,&BaseModuleManager::performHandlingOperation);
-    connect(&state_geter,&MotorStatesGeter::sendGetMotorState,this,&BaseModuleManager::deviceResp,Qt::BlockingQueuedConnection);
+    connect(&state_geter,&DeviceStatesGeter::sendGetDeviceState,this,&BaseModuleManager::deviceResp,Qt::BlockingQueuedConnection);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -97,7 +97,7 @@ void BaseModuleManager::tcpResp(QString message)
     if(message_object.contains("cmd"))
     {
         QString cmd = message_object["cmd"].toString();
-        if(cmd == "quareMotorPos")
+        if(cmd == "inquiryMotorPos")
         {
             QString motor_name = message_object["motorName"].toString();
             qDebug()<<"qure motor pos :"<< motor_name<<"thread id:"<<QThread::currentThreadId();
@@ -112,7 +112,7 @@ void BaseModuleManager::tcpResp(QString message)
                 result["error"] = "";
 
             }
-            messagers[message_object["sender"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+            messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
         }
     }
 }
@@ -121,14 +121,20 @@ QString BaseModuleManager::deviceResp(QString message)
 {
     qInfo("deviceResp %s",message.toStdString().c_str());
     QJsonObject message_object = getJsonObjectFromString(message);
+    QJsonObject result;
     if(message_object.contains("cmd"))
     {
         QString cmd = message_object["cmd"].toString();
-        if(cmd == "quareMotorPos")
+        if(cmd == "inquiryMotorPos")
         {
             QString motor_name = message_object["motorName"].toString();
-            qDebug()<<"qure motor pos :"<< motor_name<<"thread id:"<<QThread::currentThreadId();
-            QJsonObject result;
+            qDebug()<<"inquiry motor pos :"<< motor_name<<"thread id:"<<QThread::currentThreadId();
+
+            if(motor_name == "")
+            {
+                result["error"] = "motor name is null";
+                return getStringFromJsonObject(result);
+            }
             result["motorName"] = motor_name;
             XtMotor* temp_motor = GetMotorByName(motor_name);
             if(temp_motor == nullptr)
@@ -137,11 +143,11 @@ QString BaseModuleManager::deviceResp(QString message)
                 bool geted = false;
                 foreach (QString messger_name, messagers.keys())
                 {
-                  QString tcp_result =  messagers[messger_name]->quareMessage(message);
+                  QString tcp_result =  messagers[messger_name]->inquiryMessage(message);
                   QJsonObject result_json = getJsonObjectFromString(tcp_result);
                   if(result_json.contains("error"))
                   {
-                      if(result_json["error"] == "")
+                      if(result_json["error"].toString() == "")
                       {
                             geted = true;
                             result["motorPosition"] = result_json["motorPosition"];
@@ -158,12 +164,48 @@ QString BaseModuleManager::deviceResp(QString message)
                 result["motorPosition"] = temp_motor->GetFeedbackPos();
                 result["motorTargetPosition"] = temp_motor->GetCurrentTragetPos();
                 result["error"] = "";
+            }
+            return getStringFromJsonObject(result);
+        }
+        else if(cmd == "inquiryInputIoState")
+        {
+            QString temp_name = message_object["inputIoName"].toString();
+            qDebug()<<"inquiry input io state :"<< temp_name<<"thread id:"<<QThread::currentThreadId();
+            QJsonObject result;
+            result["inputIoName"] = temp_name;
+            XtGeneralInput* temp_inptio = GetInputIoByName(temp_name);
+            if(temp_inptio == nullptr)
+            {
+                result["error"] = QString("can not find input io ").append(temp_name);
+                bool geted = false;
+                foreach (QString messger_name, messagers.keys())
+                {
+                  QString tcp_result =  messagers[messger_name]->inquiryMessage(message);
+                  QJsonObject result_json = getJsonObjectFromString(tcp_result);
+                  if(result_json.contains("error"))
+                  {
+                      if(result_json["error"].toString() == "")
+                      {
+                            geted = true;
+                            result["inputIoValue"] = result_json["inputIoValue"];
+                            result["error"] = "";
+                            break;
+                      }
+                  }
+                }
+                if(!geted)
+                    result["error"] = QString("tcp cannot find input io ").append(temp_name);
+            }
+            else {
+                result["inputIoValue"] = temp_inptio->Value();
+                result["error"] = "";
 
             }
             return getStringFromJsonObject(result);
         }
     }
-    return "";
+    result["error"] = "cmd error";
+    return getStringFromJsonObject(result);
 }
 
 void BaseModuleManager::alarmChecking()
@@ -197,8 +239,8 @@ bool BaseModuleManager::sendMessageTest(QString title, QString content)
 bool BaseModuleManager::loadParameters()
 {
     configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
-    if(!this->paramers.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))return false;
-
+    if(!this->paramers.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))
+        return false;
 
     tcp_manager.loadJsonConfig(getSystermParameterDir().append(TCP_CONFIG_FILE));
     material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
@@ -744,7 +786,7 @@ bool BaseModuleManager::loadMotorLimitFiles(QString file_name)
                }
            }
         }
-        qInfo("%s loadmotorlimit motors limit %d %d %d",temp_motor->Name().toStdString().c_str(),temp_motor->parallel_limit_motors.count(),temp_motor->parallel_limit_parameters.count(),temp_motor->io_limit_parameters.count());
+        qInfo("%s loadmotorlimit motors limit %d %d %d",temp_motor->Name().toStdString().c_str(),temp_motor->vertical_limit_parameters.count(),temp_motor->parallel_limit_parameters.count(),temp_motor->io_limit_parameters.count());
     }
     return true;
 }
@@ -893,64 +935,24 @@ QString BaseModuleManager::getSystermParameterDir()
 bool BaseModuleManager::InitStruct()
 {
     tcp_manager.Init();
-    foreach (QString messager_name, paramers.respMessagerNames()) {
-        TcpMessager* temp_messager = tcp_manager.GetTcpMessager(messager_name);
+    foreach (QVariant messager_name, paramers.respMessagerNames()) {
+        TcpMessager* temp_messager = tcp_manager.GetTcpMessager(messager_name.toString());
         if(temp_messager!=nullptr)
 		{
-            messagers.insert(messager_name,temp_messager);
+            messagers.insert(messager_name.toString(),temp_messager);
             connect(temp_messager,&TcpMessager::receiveTextMessage,this,&BaseModuleManager::tcpResp);
 		 }
-        temp_messager = tcp_manager.GetPeerTcpMessager(messager_name);
+        temp_messager = tcp_manager.GetPeerTcpMessager(messager_name.toString());
         if(temp_messager!=nullptr)
 		{
-            messagers.insert(messager_name,temp_messager);
+            messagers.insert(messager_name.toString(),temp_messager);
             connect(temp_messager,&TcpMessager::receiveTextMessage,this,&BaseModuleManager::tcpResp);
 		}
     }
     bool result = true;
     foreach (XtMotor* temp_motor, motors)
-    {
         temp_motor->Init(&state_geter);
-        for (int i = 0; i < temp_motor->vertical_limit_parameters.size(); ++i) {
-            XtMotor* limit_motor = GetMotorByName(temp_motor->vertical_limit_parameters[i]->motorName());
-            temp_motor->vertical_limit_motors.append(limit_motor);
-        }
-        for (int i = 0; i < temp_motor->parallel_limit_parameters.size(); ++i) {
-            XtMotor* limit_motor = GetMotorByName(temp_motor->parallel_limit_parameters[i]->motorName());
-            temp_motor->parallel_limit_motors.append(limit_motor);
-            limit_motor = GetMotorByName(temp_motor->parallel_limit_parameters[i]->effectMotorXName());
-            temp_motor->parallel_limit_motors.append(limit_motor);
-            limit_motor = GetMotorByName(temp_motor->parallel_limit_parameters[i]->effectMotorYName());
-            temp_motor->parallel_limit_motors.append(limit_motor);
-        }
-        for (int i = 0; i < temp_motor->io_limit_parameters.size(); ++i)
-        {
-            temp_motor->io_limit_parameters[i]->input_io_indexs.clear();
-            for (int j = 0; j < temp_motor->io_limit_parameters[i]->inputIOName().size(); ++j)
-            {
-                XtGeneralInput* limit_io = GetInputIoByName(temp_motor->io_limit_parameters[i]->inputIOName()[j].toString());
-                if(limit_io  == nullptr)
-                    result = false;
-                else
-                {
-                    temp_motor->io_limit_parameters[i]->input_io_indexs.append(temp_motor->limit_in_ios.count());
-                    temp_motor->limit_in_ios.append(limit_io);
-                }
-            }
-            temp_motor->io_limit_parameters[i]->output_io_indexs.clear();
-            for (int j = 0; j < temp_motor->io_limit_parameters[i]->outputIOName().size(); ++j)
-            {
-                XtGeneralOutput* limit_io = GetOutputIoByName(temp_motor->io_limit_parameters[i]->outputIOName()[j].toString());
-                if(limit_io  == nullptr)
-                    result = false;
-                else
-                {
-                    temp_motor->io_limit_parameters[i]->output_io_indexs.append(temp_motor->limit_out_ios.count());
-                    temp_motor->limit_out_ios.append(limit_io);
-                }
-            }
-        }
-    }
+
     foreach (XtVacuum* temp_vacuum, vacuums.values()) {
         temp_vacuum->Init(GetOutputIoByName(temp_vacuum->parameters.outIoName()),
                           GetInputIoByName(temp_vacuum->parameters.inIoName()),

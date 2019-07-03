@@ -22,6 +22,7 @@ public:
     bool generateConfig(QString filename);
     TcpMessager* GetTcpMessager(QString messager_name);
     TcpMessager *GetPeerTcpMessager(QString messager_name);
+    QList<TcpMessager *> GetAllTcpMessager();
 signals:
     void sendInit();
     void sendCreat(QString paramter);

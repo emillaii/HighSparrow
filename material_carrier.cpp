@@ -150,9 +150,10 @@ bool MaterialCarrier::StepMove_XY_Sync(double step_x, double step_y, int timeout
     double cur_y = motor_y->GetFeedbackPos();
     double target_x = cur_x + step_x;
     double target_y = cur_y + step_y;
-    motor_x->MoveToPos(target_x);
-    motor_y->MoveToPos(target_y);
-    return Wait_XY_ToPos(target_x,target_y,timeout);
+    bool result = motor_x->MoveToPos(target_x);
+    result &= motor_y->MoveToPos(target_y);
+    result &= Wait_XY_ToPos(target_x,target_y,timeout);
+    return result;
 }
 
 bool MaterialCarrier::StepMove_SZ_XY_Sync(double step_x, double step_y, int timeout)

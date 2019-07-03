@@ -47,6 +47,12 @@ ScrollView {
             visible: {calibrationViewSwitch.checked}
         }
 
+        Switch {id: aaCoreViewSwitch; text:"AACore 配置"}
+        AACoreView{
+            Layout.fillWidth: true
+            visible: {aaCoreViewSwitch.checked}
+        }
+
         Switch {id: systemViewSwitch; text:"System 配置"}
         SystemConfigView{
             Layout.fillWidth: true

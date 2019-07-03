@@ -16,18 +16,29 @@ DeviceStatesGeter::motorState DeviceStatesGeter::getMotorState(QString motor_nam
     motorState state;
 
     if((!result_json.contains("motorName"))||result_json["motorName"].toString() != motor_name)
+    {
+        qInfo("has no motorName key");
         return state;
-
+    }
     if(!result_json.contains("motorPosition"))
+    {
+        qInfo("has no motorPosition key");
         return state;
+    }
     state.current_position = result_json["motorPosition"].toDouble();
 
     if(!result_json.contains("motorTargetPosition"))
+    {
+        qInfo("has no motorTargetPosition key");
         return state;
+    }
     state.target_position = result_json["motorTargetPosition"].toDouble();
 
     if((!result_json.contains("error"))||result_json["error"].toString() != "")
+    {
+        qInfo("has no error key or has error");
         return state;
+    }
     state.result = true;
     return state;
 }

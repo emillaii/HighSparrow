@@ -1222,8 +1222,8 @@ ErrorCodeStruct AACoreNew::performReject()
     Sleep(100);
     imageThread->exit();
     dk->DothinkeyClose();
-    NgLens();
-    NgSensor();
+//    NgLens();
+//    NgSensor();
 //    if(!has_product)
 //    {
 //        if(has_lens)
@@ -1356,21 +1356,21 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
 
 ErrorCodeStruct AACoreNew::performInitSensor()
 {
-    if(!has_sensor) return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""};
+    if(!has_sensor) return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "has no sensor"};
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
     const int channel = 0;
     bool res = dk->DothinkeyEnum();
-    if (!res) { qCritical("Cannot find dothinkey");NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    if (!res) { qCritical("Cannot find dothinkey");NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "1"}; }
     res = dk->DothinkeyOpen();
     map.insert("dothinkeyOpen", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot open dothinkey"); NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    if (!res) { qCritical("Cannot open dothinkey"); NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "2"}; }
     res = dk->DothinkeyLoadIniFile(channel);
     map.insert("dothinkeyLoadIniFile", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot load dothinkey ini file");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    if (!res) { qCritical("Cannot load dothinkey ini file");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "3"}; }
     res = dk->DothinkeyStartCamera(channel);
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot start camera");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    if (!res) { qCritical("Cannot start camera");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "4"}; }
 
     QString sensorID = dk->readSensorID();
     qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());
@@ -1415,8 +1415,6 @@ ErrorCodeStruct AACoreNew::performLoadMaterial()
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     ErrorCodeStruct result = ErrorCodeStruct {ErrorCode::OK, ""};
-//    if (!this->sut->moveToReadyPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to ready Pos"};}
-    if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
     if(aa_head->receive_sensor)
     {
         qInfo("has wait sensor suceess");
@@ -1447,9 +1445,13 @@ ErrorCodeStruct AACoreNew::performLoadMaterial()
 
     if((!has_lens)&&(!send_lens_request))
     {
+        this->sut->moveToZPos(0);
+        if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
         qInfo("need lens has_ng_lens %d",has_ng_lens);
         this->lut->sendLensRequest(has_ng_lens);
         send_lens_request = true;
+        if(has_sensor)
+            if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
     }
     if((!has_lens)&&send_lens_request)
     {

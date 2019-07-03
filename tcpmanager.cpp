@@ -71,6 +71,16 @@ TcpMessager *TcpManager::GetPeerTcpMessager(QString messager_name)
     return nullptr;
 }
 
+QList<TcpMessager *> TcpManager::GetAllTcpMessager()
+{
+    QList<TcpMessager *> temp_list;
+    foreach (TcpMessager * temp_messager, m_server_messagers.values())
+        temp_list.append(temp_messager);
+    foreach (TcpMessager * temp_messager, m_client_messagers.values())
+        temp_list.append(temp_messager);
+    return temp_list;
+}
+
 void TcpManager::onCreat(QString paramter)
 {
     qDebug("onCreat thread id:%d",QThread::currentThreadId());

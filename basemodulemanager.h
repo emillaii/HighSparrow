@@ -61,6 +61,7 @@ public:
     QMap<QString,XtCylinder*> cylinder;
     TcpManager tcp_manager;
     QMap<QString,TcpMessager*> messagers;//需要响应的连接；
+    QMap<QString,TcpMessager*> all_messagers;
     DeviceStatesGeter state_geter;
 
     ChartCalibration * chart_calibration = Q_NULLPTR;

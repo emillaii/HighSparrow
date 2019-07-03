@@ -70,19 +70,20 @@ QString TcpMessager::inquiryMessage(QString message)
         result = sendMessage(message);
         if(result)
         {
-            int time_out = parameters.outTime();
+            int current_time = parameters.outTime();
             result = false;
-            while (time_out > 0)
+            while (current_time > 0)
             {
                 if(!is_waitting)
                 {
                     QMutexLocker locker(&message_mutex);
                     result_message = getJsonObjectFromString(received_message);
                     result = true;
-                    qDebug("wait time:%d in thread %d",(parameters.outTime() - time_out),QThread::currentThreadId());
+                    qDebug("wait time:%d in thread %d",(parameters.outTime() - current_time),QThread::currentThreadId());
                     break;
                 }
-                time_out -= parameters.waitIntervel();
+                current_time -= parameters.waitIntervel();
+                qInfo("current_time: %d",current_time);
                 QThread::msleep(parameters.waitIntervel());
             }
             if(result_message.keys().count()<= 0)

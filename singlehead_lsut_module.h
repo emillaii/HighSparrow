@@ -24,9 +24,8 @@ public:
         MOVE_TO_GRIPPER_POSITION = 2,
         MOVE_TO_LOAD_POSITION = 3,
         MOVE_TO_PR_POSITION = 4,
-        MOVE_TO_UPDN_DOWNLOOK_CALIBRATION_POSITION = 5,
-        MOVE_TO_UPDN_UPLOOK_CALIBRATION_POSITION = 6,
-        MOVE_TO_SAFETY_POSITION = 7,
+        MOVE_TO_CALIBRATION_POSITION = 5,
+        MOVE_TO_SAFETY_POSITION = 6,
     };
 
     enum HandlePR
@@ -67,8 +66,7 @@ public:
     Position3D load_position;
     Position3D downlook_position;
     Position3D gripper_position;
-    Position3D updn_downlook_calibration_position;
-    Position3D updn_uplook_calibration_position;
+    Position3D calibration_position;
     Position3D safety_position;
     Position3D pick_lens_position;
     Position3D unpick_lens_position;
@@ -108,8 +106,7 @@ private:
     bool moveToGripperPosition(bool check_autochthonous);
     bool moveToLoadPosition(bool check_autochthonous);
     bool moveToPRPosition(bool check_autochthonous);
-    bool moveToUpDnDownlookCalibrationPosition(bool check_autochthonous);
-    bool moveToUpDnUplookCalibrationPosition(bool check_autochthonous);
+    bool moveToCalibrationPosition(bool check_autochthonous);
     bool moveToSafetyPosition(bool check_autochthonous);
     bool moveToPickLensPosition(bool check_autochthonous);
     bool moveToUnpickLensPosition(bool check_autochthonous);

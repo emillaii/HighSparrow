@@ -1420,14 +1420,30 @@ bool SingleHeadMachineMaterialLoaderModule::moveToLensTray1EndPos()
     return result;
 }
 
+void SingleHeadMachineMaterialLoaderModule::run(bool has_material)
+{
+    qInfo("");
+    is_run = true;
+    while (is_run)
+    {
+        qInfo("i am running");
+        QThread::msleep(1000);
+    }
+}
+
 void SingleHeadMachineMaterialLoaderModule::startWork(int run_mode)
 {
-
+    qInfo("MaterailLoader start run_mode :%d in %d", run_mode, QThread::currentThreadId());
+    if(run_mode == RunMode::Normal)
+    {
+        run(true);
+    }
 }
 
 void SingleHeadMachineMaterialLoaderModule::stopWork(bool wait_finish)
 {
-
+    qInfo("MaterailLoader stop Work");
+    is_run = false;
 }
 
 void SingleHeadMachineMaterialLoaderModule::resetLogic()

@@ -250,14 +250,14 @@ void SutModule::run(bool has_material)
             QThread::msleep(100);
             if(! sut_cilent->sendSensorRequest(states.sutHasProduct(),states.sutHasNgSensor()))
             {
-               sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-               waitMessageReturn(is_run);
-               continue;
-           }
-           else
-           {
-               states.setSutHasSensor(true);
-           }
+                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                waitMessageReturn(is_run);
+                continue;
+            }
+            else
+            {
+                states.setSutHasSensor(true);
+            }
         }
         if(states.sutHasSensor())
         {

@@ -64,6 +64,13 @@ void SingleheadLSutModule::saveParams(QString file_name)
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
+// TODO
+void SingleheadLSutModule::run(bool isProduct)
+{
+
+
+}
+
 void SingleheadLSutModule::startWork(int run_mode)
 {
     is_run = true;
@@ -75,7 +82,7 @@ void SingleheadLSutModule::startWork(int run_mode)
 
 void SingleheadLSutModule::stopWork(bool wait_finish)
 {
-    qInfo("Stop Work");
+    qInfo("LSUT module stop Work");
     is_run = false;
 }
 
@@ -271,13 +278,6 @@ bool SingleheadLSutModule::moveToLensWorkPos()
 bool SingleheadLSutModule::moveToSensorWorkPos()
 {
     return sut_carrier->StepMove_XY_Sync(sensor_offset.X()-pr_offset.X, sensor_offset.Y()-pr_offset.Y);
-}
-
-// TODO
-void SingleheadLSutModule::run(bool isProduct)
-{
-
-
 }
 
 bool SingleheadLSutModule::stepMove_XY_Sync(double x,double y)

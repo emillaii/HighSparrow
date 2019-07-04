@@ -50,20 +50,36 @@ QVector<QPoint> VisionModule::Read_Dispense_Path()
 bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 {
     BaslerPylonCamera *camera = Q_NULLPTR;
-    if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
-    else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
-    else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
-    else if (cameraName.contains(CAMERA_AA2_DL)) { camera = downlookCamera; }
-    else if (cameraName.contains(CAMERA_SPA_DL)) { camera = pickarmCamera; }
-    else if (cameraName.contains(CAMERA_SH_PA_DL)) {camera = pickarmCamera;}
-    else if (cameraName.contains(CAMERA_SH_AA_DL)) {camera = downlookCamera;}
+    if (cameraName.contains(CAMERA_SH_AA_DL)) {camera = downlookCamera;}
     else if (cameraName.contains(CAMERA_SH_UT_UL)) {camera = uplookCamera;}
-    if (camera == Q_NULLPTR || !camera->isCameraGrabbing()) return false;
-    QPixmap p = QPixmap::fromImage(camera->getImage());
+    else if (cameraName.contains(CAMERA_SH_PA_DL)) {camera = pickarmCamera;}
+    if (camera == Q_NULLPTR) {
+        qInfo("Cannot find camera %s", cameraName.toStdString().c_str());
+        return false;
+    }
+    if (!camera->isCameraGrabbing())
+    {
+        qInfo("camera grabbing fail %s", cameraName.toStdString().c_str());
+        return false;
+    }
+    //QPixmap p = QPixmap::fromImage(camera->getImage());
+    QPixmap p = QPixmap::fromImage(camera->getNewImage());
     QImage q2 = p.toImage();
     q2 = q2.convertToFormat(QImage::Format_RGB888);
     avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
     image = image2;
+    return true;
+}
+
+bool VisionModule::saveImageAndCheck(avl::Image image1, QString imageName)
+{
+    try {
+         avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+    } catch(const atl::Error& error) {
+        qInfo("saveImageAndCheck: %s", error.Message());
+        qWarning(error.Message());
+        return false;
+    }
     return true;
 }
 
@@ -164,11 +180,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::Image image5;
         avl::Image image6;
         //avl::LoadImage( g_constData1, false, image1 );
-
-        this->grabImageFromCamera(camera_name, image1);
-        qInfo("---------camera name: %s--------------image1 exist?: %d",camera_name.toStdString().c_str(),&image1);
-        qInfo("-------------------- %s -----------------------------",rawImageName.toStdString().c_str());
-        avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
+        //this->grabImageFromCamera(camera_name, image1);
+        //avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
 
         //Testing use
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
@@ -201,6 +214,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
 
             // Function AvsFilter_MakeRectangle is intended for generated code only. Consider use of proper Rectangle2D constructor instead.
             avs::AvsFilter_MakeRectangle( point2D3, real1, real2, real3, rectangle2D1.Get() );
+            prResult.ori_x = point2D1.Get().x;
+            prResult.ori_y = point2D1.Get().y;
             prResult.x = point2D2.Get().x;
             prResult.y = point2D2.Get().y;
             prResult.theta = real1;
@@ -231,6 +246,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
     } catch(const atl::Error& error) {
         qInfo("PR Error: %s", error.Message());
         qWarning(error.Message());
+        error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
         return error_code;
     }
     return error_code;

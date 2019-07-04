@@ -17,6 +17,8 @@ struct PRResultStruct {
     {}
     double x;
     double y;
+    double ori_x;
+    double ori_y;
     double theta;
     double width;
     double height;
@@ -46,6 +48,7 @@ private:
     void displayPRResult(const QString, const PRResultStruct);
     void diffenenceImage(QImage image1, QImage image2);
     bool grabImageFromCamera(QString cameraName, avl::Image &image);
+    bool saveImageAndCheck(avl::Image image1, QString imageName);
     BaslerPylonCamera * downlookCamera;
     BaslerPylonCamera * uplookCamera;
     BaslerPylonCamera * pickarmCamera;

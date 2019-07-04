@@ -182,20 +182,6 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::Image image5;
         avl::Image image6;
         //avl::LoadImage( g_constData1, false, image1 );
-
-        for (int i = 0; i < 5; i++)
-        {
-            if(!this->grabImageFromCamera(camera_name, image1)) {
-                qInfo("grabImageFromCamera fail %s", camera_name.toStdString().c_str());
-                qInfo("Retry PR");
-                QThread::msleep(250);
-            } else {
-                qInfo("PR OK");
-                avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
-                i = 5; break;
-            }
-        }
-
         //this->grabImageFromCamera(camera_name, image1);
         //avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
 

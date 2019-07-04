@@ -18,6 +18,7 @@ public:
     Q_PROPERTY(QString calibrationName READ calibrationName WRITE setCalibrationName NOTIFY calibrationNameChanged)
     Q_PROPERTY(bool needCalibration READ needCalibration WRITE setNeedCalibration NOTIFY needCalibrationChanged)
     Q_PROPERTY(bool canMotion READ canMotion WRITE setCanMotion NOTIFY canMotionChanged)
+    Q_PROPERTY(double waitImageDelay READ waitImageDelay WRITE setWaitImageDelay NOTIFY waitImageDelayChanged)
 
     QString prFileName() const
     {
@@ -67,6 +68,11 @@ public:
     bool canMotion() const
     {
         return m_canMotion;
+    }
+
+    double waitImageDelay() const
+    {
+        return m_waitImageDelay;
     }
 
 public slots:
@@ -162,6 +168,16 @@ public slots:
         emit canMotionChanged(m_canMotion);
     }
 
+    void setWaitImageDelay(double waitImageDelay)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_waitImageDelay, waitImageDelay))
+            return;
+
+        m_waitImageDelay = waitImageDelay;
+        emit waitImageDelayChanged(m_waitImageDelay);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -183,6 +199,8 @@ signals:
 
     void canMotionChanged(bool canMotion);
 
+    void waitImageDelayChanged(double waitImageDelay);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -194,6 +212,7 @@ private:
     QString m_calibrationName = "Calibration";
     bool m_needCalibration = false;
     bool m_canMotion = true;
+    double m_waitImageDelay = 100;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

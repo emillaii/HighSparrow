@@ -15,6 +15,8 @@ public:
     double Theta;
     double W;
     double H;
+    double O_X;
+    double O_Y;
 };
 
 class Pixel2Mech

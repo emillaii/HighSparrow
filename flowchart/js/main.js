@@ -4,7 +4,7 @@ $(document).ready(function () {
   var init_aa_params = {
     mode: 1, start_pos: 0, stop_pos: 0,
     offset_in_um: -40, delay_Z_in_ms: 200, step_size: 10,
-    wait_tilt: 1, edge_filter: 0, is_debug: 0, estimated_aa_fov: 70, estimated_fov_slope: -16, no_tilt: 0
+    wait_tilt: 1, edge_filter: 0, is_debug: 0, estimated_aa_fov: 70, estimated_fov_slope: -16, enable_tilt: 0
   };
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
@@ -45,11 +45,9 @@ $(document).ready(function () {
   $aa_operator_properties.append("<div style=\"margin-top:20px\">AA Offset in um: <input type=\"number\" id=\"aa_offset_in_um\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Delay in ms: <input type=\"number\" id=\"aa_delay_Z_in_ms\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Wait tilt: <select id=\"aa_wait_tilt\"><option value=0>False</option><option value=1>True</option></select></div>");
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">Edge Filter: <select id=\"aa_edge_filter\"><option value=0>No Edge Filter</option><option value=1>Vertical Edge Filter</option><option value=2>Horizontal Edge Filter</option></select></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Estimated AA FOV: <input type=\"number\" id=\"aa_estimated_fov\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Estimated FOV slope: <input type=\"number\" id=\"aa_estimated_fov_slope\"></div>");
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">No Tilt: <input type=\"number\" id=\"aa_no_tilt\"></div>");
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">Debug: <select id=\"aa_is_debug\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\">Enable Tilt:  <select id=\"aa_enable_tilt\"><option value=0>False</option><option value=1>True</option></select></div>");
 
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Roll: <input type=\"number\" id=\"roll\"></div>");
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Pitch: <input type=\"number\" id=\"pitch\"></div>");
@@ -121,7 +119,7 @@ $(document).ready(function () {
         $('#aa_is_debug').val(params["is_debug"]);
         $('#aa_estimated_fov').val(params["estimated_aa_fov"]);
         $('#aa_estimated_fov_slope').val(params["estimated_fov_slope"]);
-        $('#aa_no_tilt').val(params["no_tilt"]);
+        $('#aa_enable_tilt').val(params["enable_tilt"]);
       } else if (operatorId.includes("Initial Tilt")) {
         $initial_tilt_properties.show();
         $initial_tilt_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -308,7 +306,7 @@ $(document).ready(function () {
         mode: Number($('#aa_mode').val()), start_pos: Number($('#aa_start_position').val()), stop_pos: Number($('#aa_stop_position').val()),
         step_size: Number($('#aa_step_size').val()), offset_in_um: Number($('#aa_offset_in_um').val()), delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
         estimated_aa_fov: Number($('#aa_estimated_fov').val()), estimated_fov_slope: Number($('#aa_estimated_fov_slope').val()),
-        no_tilt: Number($('#aa_no_tilt').val()),
+        enable_tilt: Number($('#aa_enable_tilt').val()),
         wait_tilt: Number($('#aa_wait_tilt').val()), edge_filter: Number($('#aa_edge_filter').val()), is_debug: Number($('#aa_is_debug').val())
       };
 	  $flowchart.flowchart('setOperatorParams', operatorId, params);
@@ -617,7 +615,7 @@ $(document).ready(function () {
         mode: Number($('#aa_mode').val()), start_pos: Number($('#aa_start_position').val()), stop_pos: Number($('#aa_stop_position').val()),
         step_size: Number($('#aa_step_size').val()), offset_in_um: Number($('#aa_offset_in_um').val()), delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
         estimated_aa_fov: Number($('#aa_estimated_fov').val()), estimated_fov_slope: Number($('#aa_estimated_fov_slope').val()),
-        no_tilt: Number($('#aa_no_tilt').val()),
+        enable_tilt: Number($('#aa_enable_tilt').val()),
         wait_tilt: Number($('#aa_wait_tilt').val()), edge_filter: Number($('#aa_edge_filter').val()), is_debug: Number($('#aa_is_debug').val())
       };
 
@@ -798,7 +796,7 @@ $(document).ready(function () {
         mode: Number($('#aa_mode').val()), start_pos: Number($('#aa_start_position').val()), stop_pos: Number($('#aa_stop_position').val()),
         step_size: Number($('#aa_step_size').val()), offset_in_um: Number($('#aa_offset_in_um').val()), delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
         estimated_aa_fov: Number($('#aa_estimated_fov').val()), estimated_fov_slope: Number($('#aa_estimated_fov_slope').val()),
-        no_tilt: Number($('#aa_no_tilt').val()),
+        enable_tilt: Number($('#aa_enable_tilt').val()),
         wait_tilt: Number($('#aa_wait_tilt').val()), edge_filter: Number($('#aa_edge_filter').val()), is_debug: Number($('#aa_is_debug').val())
       };
 
@@ -837,6 +835,12 @@ $(document).ready(function () {
 	  getTableData();
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#mtf_operator_title').val());
       var params = getTableData();
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("GRR")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $grr_operator_title.val());
+      var params = { change_lens: Number($('#grr_change_lens').val()),
+		change_sensor: Number($('#grr_change_sensor').val()),
+        repeat_time: Number($('#grr_repeat_time').val()) };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	}
     else {

@@ -20,6 +20,8 @@ public:
     Q_PROPERTY(double lensHeight READ lensHeight WRITE setLensHeight NOTIFY lensHeightChanged)
     Q_PROPERTY(double pickSpeed READ pickSpeed WRITE setPickSpeed NOTIFY pickSpeedChanged)
     Q_PROPERTY(int gripperDelay READ gripperDelay WRITE setGripperDelay NOTIFY gripperDelayChanged)
+    Q_PROPERTY(bool enablePickForce READ enablePickForce WRITE setEnablePickForce NOTIFY enablePickForceChanged)
+
     double pickForce() const
     {
         return m_PickForce;
@@ -83,6 +85,11 @@ public:
     int gripperDelay() const
     {
         return m_gripperDelay;
+    }
+
+    bool enablePickForce() const
+    {
+        return m_enablePickForce;
     }
 
 public slots:
@@ -202,6 +209,15 @@ public slots:
         emit gripperDelayChanged(m_gripperDelay);
     }
 
+    void setEnablePickForce(bool enablePickForce)
+    {
+        if (m_enablePickForce == enablePickForce)
+            return;
+
+        m_enablePickForce = enablePickForce;
+        emit enablePickForceChanged(m_enablePickForce);
+    }
+
 signals:
     void paramsChanged();
 
@@ -230,6 +246,8 @@ signals:
 
     void gripperDelayChanged(int gripperDelay);
 
+    void enablePickForceChanged(bool enablePickForce);
+
 private:
     double m_PickForce = 0;
     QString m_motorXName = "LUT_X";
@@ -244,6 +262,7 @@ private:
     double m_lensHeight = 1;
     double m_pickSpeed = 10;
     int m_gripperDelay = 500;
+    bool m_enablePickForce = true;
 };
 
 class LutState:public PropertyBase

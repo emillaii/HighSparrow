@@ -37,24 +37,22 @@ public:
         Dispense = 1,
         PR_To_Bond = 2,
         OC = 3,
-        MTF = 4
+        MTF = 4,
+        AA = 5
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
     void performAAOffline();
-    Q_INVOKABLE void performHandling(int cmd);
+    Q_INVOKABLE void performHandling(int cmd, QString params);
     ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond(int finish_delay);
     ErrorCodeStruct performLoadMaterial();
-    ErrorCodeStruct performAA(double start, double stop, double step_size,
-                   bool enableMotion, int zSleepInMs, bool isWaitTiltMotion,
-                   int zScanMode = 0, double estimated_aa_fov = 0,
-                   bool is_debug = false, sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER,
-                   double estimated_fov_slope = -16, double zOffset=0,int no_tilt = 0);
+    ErrorCodeStruct performAA(QJsonValue params);
     ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
     ErrorCodeStruct performMTF(QJsonValue params, bool write_log = false);
+    ErrorCodeStruct performMTFOffline();
     ErrorCodeStruct performZOffset(double zOffset);
     ErrorCodeStruct performXYOffset(double xOffset, double yOffset);
     ErrorCodeStruct performDelay(int);
@@ -124,11 +122,10 @@ private:
     int current_oc_ng_time = 0;
     int current_mtf_ng_time = 0;
     int current_grr = 0;
+    QString handlingParams = "";
 
 
-
-    void sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
-                             double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak, double &dev);
+    QVariantMap sfrFitCurve_Advance(int resize_factor);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,
                                                                unsigned int & ccROIIndex,
                                                                unsigned int & ulROIIndex,

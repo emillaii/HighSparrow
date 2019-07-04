@@ -3,7 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 import FileContentItem 1.0
 import QtQuick.Layouts 1.11
-//import AACoreNew 1.1
+import AACoreNew 1.1
 
 ApplicationWindow {
     visible: true
@@ -142,6 +142,9 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("OC") !== -1) {
                         console.log("Perform OC")
                         aaNewCore.performHandling(AACoreNew.MTF, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("AA") !== -1) {
+                        console.log("Perform AA")
+                        aaNewCore.performHandling(AACoreNew.AA, aaCoreTestParams)
                     }
                     aaCoreTestParams = ""
                     aaCoreTestItemName = ""

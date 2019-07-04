@@ -156,7 +156,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                aaNewCore.performHandling(2);
+                aaNewCore.performHandling(2, "");
             }
         }
     }

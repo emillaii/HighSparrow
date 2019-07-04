@@ -71,7 +71,7 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                aaNewCore.performHandlingOperation(1)
+                aaNewCore.performHandlingOperation(1,"")
             }
         }
     }

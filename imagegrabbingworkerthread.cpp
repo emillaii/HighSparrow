@@ -97,5 +97,4 @@ void ImageGrabbingWorkerThread::saveImage()
     QImage* newImage =  dk->DothinkeyGrabImage(0);
     newImage->save(imageName);
     locker.unlock();
-    this->latestImage.save(imageName);
 }

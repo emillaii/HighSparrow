@@ -26,6 +26,11 @@ class AAData : public QThread
     Q_PROPERTY(double wURPeakZ READ wURPeakZ WRITE setWURPeakZ)
     Q_PROPERTY(double wLLPeakZ READ wLLPeakZ WRITE setWLLPeakZ)
     Q_PROPERTY(double wLRPeakZ READ wLRPeakZ WRITE setWLRPeakZ)
+    Q_PROPERTY(QString layer0 READ layer0 WRITE setLayer0)
+    Q_PROPERTY(QString layer1 READ layer1 WRITE setLayer1)
+    Q_PROPERTY(QString layer2 READ layer2 WRITE setLayer2)
+    Q_PROPERTY(QString layer3 READ layer3 WRITE setLayer3)
+
     Q_PROPERTY(NOTIFY wValueClear)
     Q_PROPERTY(NOTIFY wValueChanged)
 
@@ -103,6 +108,26 @@ public:
         return m_yTilt;
     }
 
+    QString layer1() const
+    {
+        return m_layer1;
+    }
+
+    QString layer0() const
+    {
+        return m_layer0;
+    }
+
+    QString layer2() const
+    {
+        return m_layer2;
+    }
+
+    QString layer3() const
+    {
+        return m_layer3;
+    }
+
 public slots:
     void setDev(double dev)
     {
@@ -144,6 +169,26 @@ public slots:
         m_yTilt = yTilt;
     }
 
+    void setLayer1(QString layer1)
+    {
+        m_layer1 = layer1;
+    }
+
+    void setLayer0(QString layer0)
+    {
+        m_layer0 = layer0;
+    }
+
+    void setLayer2(QString layer2)
+    {
+        m_layer2 = layer2;
+    }
+
+    void setLayer3(QString layer3)
+    {
+        m_layer3 = layer3;
+    }
+
 signals:
     void wValueChanged();
     void wValueClear();
@@ -179,6 +224,14 @@ private:
     double m_xTilt;
 
     double m_yTilt;
+
+    QString m_layer1;
+
+    QString m_layer0;
+
+    QString m_layer2;
+
+    QString m_layer3;
 
 protected:
     void run();

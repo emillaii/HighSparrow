@@ -182,8 +182,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::Image image5;
         avl::Image image6;
         //avl::LoadImage( g_constData1, false, image1 );
-        //this->grabImageFromCamera(camera_name, image1);
-        //avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
+        this->grabImageFromCamera(camera_name, image1);
+        avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
 
         //Testing use
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );

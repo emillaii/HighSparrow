@@ -677,24 +677,20 @@ bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
 {
     sendCmd("::1","gripperOnReq");
     bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
-//    if(result)
-//    {
-//        //todo one fuction
-
-//        qInfo("moveToAA1PickLens Start ZSerchByForce");
-//        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
-//        qInfo("moveToAA1PickLens Finish ZSerchByForce");
-        if(result)
+    if(result)
+    {
+        if(parameters.enablePickForce())
         {
-            sendCmd("::1","gripperOffReq");
-            //            gripper->Set(false);
-            //            Sleep(180);
-            Sleep(parameters.gripperDelay());
-            load_vacuum->Set(false);
+            qInfo("moveToAA1PickLens Start ZSerchByForce");
+            result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,0,load_vacuum);
+            qInfo("moveToAA1PickLens Finish ZSerchByForce");
         }
-//        if(need_return)
-//            result &= carrier->ZSerchReturn();
-//    }
+        sendCmd("::1","gripperOffReq");
+        Sleep(parameters.gripperDelay());
+        load_vacuum->Set(false);
+        if(need_return)
+            result &= carrier->ZSerchReturn();
+    }
     return result;
 }
 
@@ -757,21 +753,20 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
     qInfo("moveToAA2PickLens");
     sendCmd("remote","gripperOnReq");
     bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
-//    if(result)
-//    {
-//        qInfo("moveToAA2PickLens Start ZSerchByForce");
-//        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
-//        qInfo("moveToAA2PickLens Start ZSerchByForce");
-        if (result) {
-            sendCmd("remote","gripperOffReq");
-            //            emit sendMessageToClient("remote", getStringFromJsonObject(gripperOffMessage));
-
-            Sleep(parameters.gripperDelay());
-            this->load_vacuum->Set(false);
+    if(result)
+    {
+        if(parameters.enablePickForce())
+        {
+            qInfo("moveToAA1PickLens Start ZSerchByForce");
+            result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,0,load_vacuum);
+            qInfo("moveToAA1PickLens Finish ZSerchByForce");
         }
-//        if(need_return)
-//            result &= carrier->ZSerchReturn();
-//    }
+        sendCmd("remote","gripperOffReq");
+        Sleep(parameters.gripperDelay());
+        load_vacuum->Set(false);
+        if(need_return)
+            result &= carrier->ZSerchReturn();
+    }
     return result;
 }
 

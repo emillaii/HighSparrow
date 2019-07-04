@@ -125,16 +125,28 @@ Grid {
                         color: "black"
                     }
                 }
+                Label {
+                    id: spline1Label3
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
+                Label {
+                    id: spline1Label4
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
             }
         }
 
         Connections {
             target: dataFromCpp
             onWValueChanged: {
-                spline1Label.text = "CC: " + dataFromCpp.wCCPeakZ + " UL: " + dataFromCpp.wULPeakZ +
-                        " UR: " + dataFromCpp.wURPeakZ + " LL: " + dataFromCpp.wLLPeakZ +
-                        " LR: " + dataFromCpp.wLRPeakZ + " DEV: " + dataFromCpp.dev
-                spline1Label2.text = "XTilt: " + dataFromCpp.xTilt + " YTilt: " + dataFromCpp.yTilt
+                spline1Label.text = dataFromCpp.layer0
+                spline1Label2.text = dataFromCpp.layer1
+                spline1Label3.text = dataFromCpp.layer2
+                spline1Label4.text = dataFromCpp.layer3
                 ccSeries.append(dataFromCpp.wCCValue.x, dataFromCpp.wCCValue.y)
                 ulSeries.append(dataFromCpp.wULValue.x, dataFromCpp.wULValue.y)
                 urSeries.append(dataFromCpp.wURValue.x, dataFromCpp.wURValue.y)
@@ -248,17 +260,28 @@ Grid {
                         color: "black"
                     }
                 }
+                Label {
+                    id: spline2Label3
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
+                Label {
+                    id: spline2Label4
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
             }
         }
 
         Connections {
             target: dataFromCpp2
             onWValueChanged: {
-                spline2Label.text = "CC: " + dataFromCpp2.wCCPeakZ + " UL: " + dataFromCpp2.wULPeakZ +
-                        " UR: " + dataFromCpp2.wURPeakZ + " LL: " + dataFromCpp2.wLLPeakZ +
-                        " LR: " + dataFromCpp2.wLRPeakZ + " DEV: " + dataFromCpp2.dev
-                spline2Label2.text = "XTilt: " + dataFromCpp2.xTilt + " YTilt: " + dataFromCpp2.yTilt
-                ccSeries2.name = "CC " + dataFromCpp2.wCCPeakZ
+                spline2Label.text = dataFromCpp2.layer0
+                spline2Label2.text = dataFromCpp2.layer1
+                spline2Label3.text = dataFromCpp2.layer2
+                spline2Label4.text = dataFromCpp2.layer3
                 ccSeries2.append(dataFromCpp2.wCCValue.x, dataFromCpp2.wCCValue.y)
                 ulSeries2.append(dataFromCpp2.wULValue.x, dataFromCpp2.wULValue.y)
                 urSeries2.append(dataFromCpp2.wURValue.x, dataFromCpp2.wURValue.y)

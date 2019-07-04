@@ -1,4 +1,4 @@
-#include "baslerpyloncamera.h"
+﻿#include "baslerpyloncamera.h"
 #include <QElapsedTimer>
 #include <QPixmap>
 BaslerPylonCamera::BaslerPylonCamera(QString name)
@@ -14,6 +14,10 @@ void BaslerPylonCamera::OnImageGrabbed( CInstantCamera&, const CGrabResultPtr& p
 {
    QMutexLocker locker(&mutex);
    CopyBufferToQImage(ptrGrabResult, latestImage);
+   trig_mutex.lock();
+   is_triged = false;
+   got_new = true;
+   trig_mutex.unlock();
    emit callQmlRefeshImg();
 }
 
@@ -79,20 +83,33 @@ bool BaslerPylonCamera::IsOpend()
 void BaslerPylonCamera::run(){
     if (camera.CanWaitForFrameTriggerReady())
     {
-        camera.StartGrabbing( GrabStrategy_OneByOne, GrabLoop_ProvidedByInstantCamera);
+        camera.StartGrabbing( GrabStrategy_LatestImageOnly, GrabLoop_ProvidedByInstantCamera);
         isReady = true;
+        isGrabbing = true;
         while(isReady&&GrabImage()) {
             {
-                isGrabbing = true;
-                QThread::msleep(100);
+                for (int cnt = 0;cnt<100;cnt++) {
+                 QThread::msleep(1);
+                 if(need_triged)
+                 {
+                     need_triged = false;
+                     break;
+                 }
+                }
             }
-            isGrabbing = false;
         }
+        isGrabbing = false;
     }
 }
 
 bool BaslerPylonCamera::GrabImage()
 {
+
+    trig_mutex.lock();
+    is_triged = true;
+    got_new = false;
+    trig_mutex.unlock();
+
     try {
         if ( camera.WaitForFrameTriggerReady( 500, TimeoutHandling_ThrowException))
         {
@@ -109,7 +126,7 @@ QImage BaslerPylonCamera::getImage()
 {
     QMutexLocker locker(&mutex);
     QImage image_copy = latestImage.copy();
-    return image_copy;
+    return std::move(image_copy);
 }
 
 bool BaslerPylonCamera::isCameraGrabbing() { return isGrabbing; }
@@ -140,5 +157,30 @@ void BaslerPylonCamera::CopyBufferToQImage(CGrabResultPtr pInBuffer, QImage& out
 
 QImage BaslerPylonCamera::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
+    return this->getImage();
+}
+
+QImage BaslerPylonCamera::getNewImage()
+{
+    bool already_trig,has_new_img;
+    trig_mutex.lock();
+    already_trig = is_triged;
+    trig_mutex.unlock();
+
+    if(!already_trig)
+        need_triged = true;
+    for(int tim = 0; tim<500; tim++)
+    {
+        trig_mutex.lock();
+        has_new_img = got_new;
+        trig_mutex.unlock();
+        if(has_new_img)
+        {
+            qInfo("getNewImage in %d", tim);
+            return this->getImage();
+        }
+        QThread::msleep(1);
+    }
+    qInfo("getNewImage timeout, got old one");
     return this->getImage();
 }

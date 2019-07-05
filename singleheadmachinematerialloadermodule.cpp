@@ -1048,36 +1048,36 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSPAWorkPos(bool check_softland
 
 bool SingleHeadMachineMaterialLoaderModule::sensorPickerSearchZ(double z, bool is_open, int time_out,int picker)
 {
-    qInfo("picker1SearchZ z %f is_open %d timeout %d",z,is_open,time_out);
-    bool result = pick_arm->ZSerchByForce(picker,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+    qInfo("picker2SearchZ z %f is_open %d timeout %d",z,is_open,time_out);
+    bool result = pick_arm->ZSerchByForce(picker,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open,false,time_out);
     result &= pick_arm->ZSerchReturn(0,time_out);
     return result;
 }
 
 bool SingleHeadMachineMaterialLoaderModule::sensorPickerSearchSutZ(double z, QString dest, QString cmd, bool is_open, int time_out)
 {
-    qInfo("picker1SearchSutZ z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
+    qInfo("picker2SearchSutZ z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
     bool result = pick_arm->move_XeYe_Z1_XY(z - parameters.escapeHeight(),parameters.escapeX(),parameters.escapeY());
     if(result)
     {
-        result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+        result = pick_arm->ZSerchByForce(0,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open,false,time_out);
 
         //sut_vacuum
         sut_vacuum->Set(0);
         QThread::msleep(200);
         result &= pick_arm->ZSerchReturn(0,time_out);
     }
-    result &= pick_arm->motor_vcm1->MoveToPosSync(0);
+    result &= pick_arm->motor_vcm2->MoveToPosSync(0);
     return result;
 }
 
 bool SingleHeadMachineMaterialLoaderModule::sensorPickerSearchSutZ2(double z, QString dest, QString cmd, bool is_open, int time_out)
 {
-    qInfo("picker1SearchSutZ2 z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
-    bool result = pick_arm->motor_vcm1->MoveToPosSync(z-parameters.escapeHeight());
+    qInfo("picker2SearchSutZ2 z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
+    bool result = pick_arm->motor_vcm2->MoveToPosSync(z-parameters.escapeHeight());
     if(result)
     {
-        result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+        result = pick_arm->ZSerchByForce(0,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open,false,time_out);
         //sut_vacuum
         sut_vacuum->Set(0);
         QThread::msleep(200);
@@ -1175,7 +1175,7 @@ bool SingleHeadMachineMaterialLoaderModule::placeProductToTray(int time_out)
 bool SingleHeadMachineMaterialLoaderModule::sensorPickerMeasureHight(bool is_tray, bool is_product,bool is_ng)
 {
     qInfo("picker2MeasureHight is_tray %d is_product %d",is_tray,is_product);
-    if(pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),true))
+    if(pick_arm->ZSerchByForce(0,parameters.vcm2Svel(),parameters.vcm2PickForce(),true))
     {
         QThread::msleep(100);
         if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetSoftladngPosition()))){
@@ -1354,8 +1354,8 @@ bool SingleHeadMachineMaterialLoaderModule::placeLensToTray()
 
 bool SingleHeadMachineMaterialLoaderModule::lensPickerMeasureHight(bool is_tray,bool is_product)
 {
-    qInfo("measureHight speed: %f force: %f", parameters.vcm2Svel(), parameters.vcm2PickForce());
-    if(pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),true))
+    qInfo("measureHight speed: %f force: %f", parameters.vcm1Svel(), parameters.vcm1PickForce());
+    if(pick_arm->ZSerchByForce(1,parameters.vcm1Svel(),parameters.vcm1PickForce(),true))
     {
         QThread::msleep(100);
         if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1？").arg(pick_arm->GetSoftladngPosition()))){

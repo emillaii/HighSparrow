@@ -12,7 +12,7 @@ public:
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
     Q_PROPERTY(int initState READ initState WRITE setInitState NOTIFY initStateChanged)
     Q_PROPERTY(bool needChange READ needChange WRITE setNeedChange NOTIFY needChangeChanged)
-    QList<int> tray_material_state;
+    QList<int> tray_material_state; // List of materail state in current tray whether it is sensor/lens/vacancy/ng, it is desgin for unit mapping to display
     Position tray_start_position;
     int currentIndex() const
     {

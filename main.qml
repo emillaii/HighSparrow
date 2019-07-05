@@ -332,9 +332,6 @@ ApplicationWindow {
                     else {
                         homeSignal.color = "red"
                     }
-                    if (baseModuleManager.ServerMode == 0 && lutModule.getConnectedClient() > 1) {
-                        lutSignal.color = "green"
-                    }
                     //Used for consuming the flowchart double click command
                     var command = "document.getElementById('flowchart_running_cmd').value";
                     flowChartPage.webView.runJavaScript(command, function(result) {
@@ -358,13 +355,6 @@ ApplicationWindow {
                text: qsTr("Home")
                background: Rectangle {
                    id: homeSignal
-                   color: "red"
-               }
-           }
-           RoundButton {
-               text: qsTr("LUT")
-               background: Rectangle {
-                   id: lutSignal
                    color: "red"
                }
            }

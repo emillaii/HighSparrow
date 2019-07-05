@@ -363,9 +363,8 @@ bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker, double speed, d
     XtVcMotor* motor_z = picker==0?motor_vcm1:motor_vcm2;
     if(check_softlanding)if(!motor_z->resetSoftLanding(timeout))return false;
     bool result = motor_z->SearchPosByForce(speed,force);
-    QThread::msleep(200);
+    QThread::msleep(5000);
     softlanding_position = motor_z->GetFeedbackPos();
-    QThread::msleep(2000);
     result &= motor_z->DoSoftLandingReturn();
     result &= motor_z->WaitSoftLandingDone(timeout);
     return result;

@@ -90,11 +90,8 @@ bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
                        QVariant(QString("application/json")));
      if (nam)
      {
-         nam->post(request, doc.toJson());
-         qInfo("Push sfr data to ELK success: %s", uuid.toStdString().c_str());
-//     }
-//     else
-//     {
+//         nam->post(request, doc.toJson());
+//         qInfo("Push sfr data to ELK success: %s", uuid.toStdString().c_str());
          qInfo("save json to a txt");
          QString filename = "";
          filename.append(getMTFLogDir())
@@ -107,36 +104,85 @@ bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
                  .append("_sfrlog.csv");
          QFile file(filename);
          QString data_content = "";
-         data_content.append("ll_peak,");
-         data_content.append("ul_peak,");
-         data_content.append("lr_peak,");
-         data_content.append("ur_peak,");
-         data_content.append("cc_peak,");
+         data_content.append("zPeak_1_UL,");
+         data_content.append("zPeak_1_UR,");
+         data_content.append("zPeak_1_LR,");
+         data_content.append("zPeak_1_LL,");
+         data_content.append("zPeak_2_UL,");
+         data_content.append("zPeak_2_UR,");
+         data_content.append("zPeak_2_LR,");
+         data_content.append("zPeak_2_LL,");
+         data_content.append("zPeak_3_UL,");
+         data_content.append("zPeak_3_UR,");
+         data_content.append("zPeak_3_LR,");
+         data_content.append("zPeak_3_LL,");
+         data_content.append("zPeak,");
          data_content.append("dev,");
-         data_content.append("xTilt,");
-         data_content.append("yTilt,");
+         data_content.append("xTilt_1,");
+         data_content.append("yTilt_1,");
+         data_content.append("xTilt_2,");
+         data_content.append("yTilt_2,");
+         data_content.append("xTilt_3,");
+         data_content.append("yTilt_3,");
+         data_content.append("fov_slope,");
          data_content.append(" \r\n");
-         data_content.append(data["ll_peak"].toString());
+         data_content.append(data["zPeak_1_UL"].toString());
          data_content.append(",");
-         data_content.append(data["ul_peak"].toString());
+         data_content.append(data["zPeak_1_UR"].toString());
          data_content.append(",");
-         data_content.append(data["lr_peak"].toString());
+         data_content.append(data["zPeak_1_LR"].toString());
          data_content.append(",");
-         data_content.append(data["ur_peak"].toString());
+         data_content.append(data["zPeak_1_LL"].toString());
          data_content.append(",");
-         data_content.append(data["cc_peak"].toString());
+         data_content.append(data["zPeak_2_UL"].toString());
+         data_content.append(",");
+         data_content.append(data["zPeak_2_UR"].toString());
+         data_content.append(",");
+         data_content.append(data["zPeak_2_LR"].toString());
+         data_content.append(",");
+         data_content.append(data["zPeak_2_LL"].toString());
+         data_content.append(",");
+         data_content.append(data["zPeak_3_UL"].toString());
+         data_content.append(",");
+         data_content.append(data["zPeak_3_UR"].toString());
+         data_content.append(",");
+         data_content.append(data["zPeak_3_LR"].toString());
+         data_content.append(",");
+         data_content.append(data["zPeak_3_LL"].toString());
+         data_content.append(",");
+         data_content.append(data["zPeak"].toString());
          data_content.append(",");
          data_content.append(data["dev"].toString());
          data_content.append(",");
-         data_content.append(data["xTilt"].toString());
+         data_content.append(data["xTilt_1"].toString());
          data_content.append(",");
-         data_content.append(data["yTilt"].toString());
+         data_content.append(data["yTilt_1"].toString());
+         data_content.append(",");
+         data_content.append(data["xTilt_2"].toString());
+         data_content.append(",");
+         data_content.append(data["yTilt_2"].toString());
+         data_content.append(",");
+         data_content.append(data["xTilt_3"].toString());
+         data_content.append(",");
+         data_content.append(data["yTilt_3"].toString());
+         data_content.append(",");
+         data_content.append(data["fov_slope"].toString());
          data_content.append(" \r\n");
          data_content.append(getCSVString("CC",data["CC"].toMap()));
-         data_content.append(getCSVString("LL",data["LL"].toMap()));
-         data_content.append(getCSVString("LR",data["LR"].toMap()));
-         data_content.append(getCSVString("UL",data["UL"].toMap()));
-         data_content.append(getCSVString("UR",data["UR"].toMap()));
+         data_content.append(getCSVString("LL_1",data["LL_1"].toMap()));
+         data_content.append(getCSVString("LR_1",data["LR_1"].toMap()));
+         data_content.append(getCSVString("UL_1",data["UL_1"].toMap()));
+         data_content.append(getCSVString("UR_1",data["UR_1"].toMap()));
+
+         data_content.append(getCSVString("LL_2",data["LL_2"].toMap()));
+         data_content.append(getCSVString("LR_2",data["LR_2"].toMap()));
+         data_content.append(getCSVString("UL_2",data["UL_2"].toMap()));
+         data_content.append(getCSVString("UR_2",data["UR_2"].toMap()));
+
+         data_content.append(getCSVString("LL_3",data["LL_3"].toMap()));
+         data_content.append(getCSVString("LR_3",data["LR_3"].toMap()));
+         data_content.append(getCSVString("UL_3",data["UL_3"].toMap()));
+         data_content.append(getCSVString("UR_3",data["UR_3"].toMap()));
          file.open(QIODevice::WriteOnly | QIODevice::Text);
          file.write(data_content.toStdString().c_str());
          file.close();
@@ -191,7 +237,7 @@ QString Unitlog::getCSVString(QString data_name,QVariantMap map)
        data_string.append(",");
     }
     data_string.append(" \r\n");
-    qInfo("data_string: %s", data_string.toStdString().c_str());
+    //qInfo("data_string: %s", data_string.toStdString().c_str());
     return data_string;
 }
 

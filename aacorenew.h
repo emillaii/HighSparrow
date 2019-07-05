@@ -46,6 +46,7 @@ public:
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
     void performAAOffline();
     Q_INVOKABLE void performHandling(int cmd, QString params);
+    Q_INVOKABLE void captureLiveImage();
     ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond(int finish_delay);
     ErrorCodeStruct performLoadMaterial();
@@ -105,6 +106,7 @@ private:
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QVariantMap current_dfov;
+    double current_fov_slope;
     QJsonDocument flowchartDocument;
     bool isZScanNeedToStop = false;
     int currentChartDisplayChannel = 0;

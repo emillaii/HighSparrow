@@ -408,6 +408,12 @@ ItemDelegate {
                             id: chartCalibrationTheta
                             text: qsTr("")
                         }
+                        RoundButton{
+                            text: qsTr("Take Photo")
+                            onClicked: {
+                                aaNewCore.captureLiveImage()
+                            }
+                        }
 
                         Button {
                             text: qsTr("Show Chart Theta")

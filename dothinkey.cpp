@@ -241,7 +241,7 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     qDebug("[DothinkeyStartCamera]InitDisplay(nullptr, pSensor->width, pSensor->height, pSensor->type, CHANNEL_A, NULL, iDevID) = %d",res);
     res = InitIsp(pSensor->width, pSensor->height, pSensor->type, CHANNEL_A, iDevID);
     qDebug("[DothinkeyStartCamera]InitIsp(pSensor->width, pSensor->height, pSensor->type, CHANNEL_A, iDevID) = %d",res);
-
+    isGrabbing = true;
     //TODO: Move that to test item or in dothinkey config file
     USHORT value_1 =0, value_2 =0, value_3 =0;
     WriteSensorReg(pSensor->SlaveID, 0x6028, 0x4000, pSensor->mode);
@@ -406,8 +406,9 @@ BOOL Dothinkey::SetVoltageMclk(SensorTab CurrentSensor, int iDevID, float Mclk, 
     return TRUE;
 }
 
-cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel)
+cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel, bool &grabRet)
 {
+    grabRet = true;
     SensorTab *pSensor = nullptr;
     ULONG retSize = 0;
     int iDevID = -1;
@@ -432,6 +433,7 @@ cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel)
     {
         qInfo("CameraBuffer is Null");
         cv::Mat img;
+        grabRet = false;
         return img;
     }
     memset(CameraBuffer, 0, nSize);
@@ -441,6 +443,8 @@ cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel)
         GetMipiCrcErrorCount(&crcCount, CHANNEL_A, iDevID);
     } else {
         qInfo("Camera Grab Frame Fail");
+        cv::Mat img;
+        grabRet = false;
     }
     ImageProcess(CameraBuffer, bmpBuffer, width, height, &frameInfo, iDevID);
     CvSize mSize;
@@ -557,4 +561,9 @@ bool Dothinkey::initSensor()
     if (!res) { qCritical("Cannot start camera"); return false; }
     //imageThread->start();
     return true;
+}
+
+BOOL Dothinkey::DothinkeyIsGrabbing()
+{
+    return isGrabbing;
 }

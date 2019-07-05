@@ -33,9 +33,10 @@ public:
     BOOL DothinkeyLoadIniFile(int channel);   // 0 is camera channel 0, 1 is camera channel 1
     BOOL DothinkeyStartCamera(int channel);
     QImage* DothinkeyGrabImage(int channel);
-    cv::Mat DothinkeyGrabImageCV(int channel);
+    cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
     void DothinkeySetConfigFile(std::string filename);
     QString readSensorID();
+    BOOL DothinkeyIsGrabbing();
     struct CameraChannel
     {
         CameraChannel()
@@ -111,6 +112,8 @@ private:
 
     QString m_IniFilename;
     QString m_currentSensorID = "";
+
+    bool isGrabbing = false;
 };
 
 #endif // DOTHINKEY_H

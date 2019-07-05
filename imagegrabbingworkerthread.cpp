@@ -89,6 +89,11 @@ void ImageGrabbingWorkerThread::toggleMTFLive(int count)
 
 void ImageGrabbingWorkerThread::saveImage()
 {
+    if (!this->isRunning())
+    {
+        qInfo("Image Grabber is OFF");
+        return;
+    }
     QMutexLocker locker(&mutex);
     QString imageName;
     imageName.append(getGrabberLogDir())

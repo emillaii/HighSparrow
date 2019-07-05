@@ -29,6 +29,10 @@ class AACoreParameters : public PropertyBase
 
     QVariantList m_WeightList;
 
+    double m_EstimatedFOVSlope = -15;
+
+    double m_EstimatedAAFOV = 70;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -46,6 +50,8 @@ public:
     Q_PROPERTY(QVariantList WeightList READ WeightList WRITE setWeightList NOTIFY paramsChanged)
     Q_PROPERTY(bool firstRejectSensor READ firstRejectSensor WRITE setFirstRejectSensor NOTIFY firstRejectSensorChanged)
     Q_PROPERTY(int rejectTimes READ rejectTimes WRITE setRejectTimes NOTIFY rejectTimesChanged)
+    Q_PROPERTY(double EstimatedFOVSlope READ EstimatedFOVSlope WRITE setEstimatedFOVSlope NOTIFY paramsChanged)
+    Q_PROPERTY(double EstimatedAAFOV READ EstimatedAAFOV WRITE setEstimatedAAFOV NOTIFY paramsChanged)
 
 double EFL() const
 {
@@ -94,6 +100,16 @@ int rejectTimes() const
 QVariantList WeightList() const
 {
     return m_WeightList;
+}
+
+double EstimatedFOVSlope() const
+{
+    return m_EstimatedFOVSlope;
+}
+
+double EstimatedAAFOV() const
+{
+    return m_EstimatedAAFOV;
 }
 
 public slots:
@@ -169,6 +185,18 @@ void setWeightList(QVariantList WeightList)
         return;
 
     m_WeightList = WeightList;
+    emit paramsChanged();
+}
+
+void setEstimatedFOVSlope(double EstimatedFOVSlope)
+{
+    m_EstimatedFOVSlope = EstimatedFOVSlope;
+    emit paramsChanged();
+}
+
+void setEstimatedAAFOV(double EstimatedAAFOV)
+{
+    m_EstimatedAAFOV = EstimatedAAFOV;
     emit paramsChanged();
 }
 

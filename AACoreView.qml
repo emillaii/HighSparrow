@@ -56,8 +56,6 @@ ItemDelegate {
                                 aaCoreParams.setROIRatio(text)
                             }
                         }
-                    }
-                    RowLayout {
                         Label {
                             text: qsTr("Max Intensity")
                         }
@@ -130,6 +128,36 @@ ItemDelegate {
                             }
                             onEditingFinished: {
                                 aaCoreParams.setSensorYRatio(text)
+                            }
+                        }
+                    }
+                    RowLayout {
+                        Label {
+                            text: qsTr("Estimated FOV Slope")
+                        }
+                        TextField {
+                            text: aaCoreParams.EstimatedFOVSlope
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setEstimatedFOVSlope(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Estimated AA FOV")
+                        }
+                        TextField {
+                            text: aaCoreParams.EstimatedAAFOV
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setEstimatedAAFOV(text)
                             }
                         }
                     }

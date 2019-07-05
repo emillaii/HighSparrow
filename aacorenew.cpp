@@ -92,7 +92,8 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
 
 typedef enum {
     AA_ZSCAN_NORMAL,
-    AA_DFOV_MODE
+    AA_DFOV_MODE,
+    AA_STATIONARY_SCAN_MODE
 } ZSCAN_MODE;
 
 AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
@@ -646,12 +647,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     double estimated_fov_slope = params["estimated_fov_slope"].toDouble();
     double offset_in_um = params["offset_in_um"].toDouble()/1000;
     int enableTilt = params["enable_tilt"].toInt();
+    qInfo("AA Mode : %d", zScanMode);
+    return ErrorCodeStruct{ ErrorCode::OK, ""};
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     qInfo("start : %f stop: %f enable_tile: %d", start, stop, enableTilt);
     unsigned int zScanCount = 0;
     int resize_factor = 2;
-    vector<double> fov_y;
-    vector<double> fov_x;
+    vector<double> fov_y; vector<double> fov_x;
     if(zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
         unsigned int count = (int)fabs((start - stop)/step_size);
         for (unsigned int i = 0; i < count; i++)
@@ -713,29 +715,44 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 dst.release();
                 zScanCount++;
            }
-      }
-      int timeout=1000;
-      while(this->clustered_sfr_map.size() != zScanCount && timeout >0) {
+    } else if (zScanMode == ZSCAN_MODE::AA_STATIONARY_SCAN_MODE){
+         double currentZ = sut->carrier->GetFeedBackPos().Z;
+         double target_z = currentZ + offset_in_um;
+         for (unsigned int i = 0; i < 6; i++) {
+             sut->moveToZPos(target_z+(i*step_size));
+             QThread::msleep(zSleepInMs);
+             cv::Mat img = dk->DothinkeyGrabImageCV(0);
+             cv::Mat dst;
+             cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
+             cv::resize(img, dst, size);
+             emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, resize_factor);
+             img.release();
+             dst.release();
+             zScanCount++;
+         }
+    }
+    int timeout=1000;
+    while(this->clustered_sfr_map.size() != zScanCount && timeout >0) {
           Sleep(10);
           timeout--;
-      }
-      double fov_slope     = (zScanCount*xysum-xsum*ysum)/(zScanCount*x2sum-xsum*xsum);       //calculate slope
-      double fov_intercept = (x2sum*ysum-xsum*xysum)/(x2sum*zScanCount-xsum*xsum);            //calculate intercept
-      qInfo("fov_slope: %f fov_intercept: %f", fov_slope, fov_intercept);
+    }
+    double fov_slope     = (zScanCount*xysum-xsum*ysum)/(zScanCount*x2sum-xsum*xsum);       //calculate slope
+    double fov_intercept = (x2sum*ysum-xsum*xysum)/(x2sum*zScanCount-xsum*xsum);            //calculate intercept
+    qInfo("fov_slope: %f fov_intercept: %f", fov_slope, fov_intercept);
 
-      QVariantMap aa_result = sfrFitCurve_Advance(resize_factor);
+    QVariantMap aa_result = sfrFitCurve_Advance(resize_factor);
 
-      qInfo("Layer 1 xTilt : %f yTilt: %f ", aa_result["xTilt_1"].toDouble(), aa_result["yTilt_1"].toDouble());
-      qInfo("Layer 2 xTilt : %f yTilt: %f ", aa_result["xTilt_2"].toDouble(), aa_result["yTilt_2"].toDouble());
-      qInfo("Layer 3 xTilt : %f yTilt: %f ", aa_result["xTilt_3"].toDouble(), aa_result["yTilt_3"].toDouble());
-      if (enableTilt == 0) {
-          qInfo("Disable tilt...");
-      } else {
-          qInfo("Enable tilt...");
-          aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt_3"].toDouble(), aa_result["xTilt_3"].toDouble());
-          sut->moveToZPos(aa_result["zPeak"].toDouble());
-      }
-      clustered_sfr_map.clear();
+    qInfo("Layer 1 xTilt : %f yTilt: %f ", aa_result["xTilt_1"].toDouble(), aa_result["yTilt_1"].toDouble());
+    qInfo("Layer 2 xTilt : %f yTilt: %f ", aa_result["xTilt_2"].toDouble(), aa_result["yTilt_2"].toDouble());
+    qInfo("Layer 3 xTilt : %f yTilt: %f ", aa_result["xTilt_3"].toDouble(), aa_result["yTilt_3"].toDouble());
+    if (enableTilt == 0) {
+        qInfo("Disable tilt...");
+    } else {
+        qInfo("Enable tilt...");
+        aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt_3"].toDouble(), aa_result["xTilt_3"].toDouble());
+        sut->moveToZPos(aa_result["zPeak"].toDouble());
+    }
+    clustered_sfr_map.clear();
 
 
 //    QVariantMap map, dfovMap;

@@ -1102,7 +1102,6 @@ bool BaseModuleManager::allMotorsSeekOriginal3()
     GetVcMotorByName(sh_lsut_module.parameters.motorZName())->SeekOrigin();
     result &= GetVcMotorByName(sh_lsut_module.parameters.motorZName())->WaitSeekDone();
 
-    GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->SeekOrigin();
     GetMotorByName(sh_lsut_module.parameters.motorXName())->SeekOrigin();
     GetMotorByName(sh_lsut_module.parameters.motorYName())->SeekOrigin();
 
@@ -1112,6 +1111,7 @@ bool BaseModuleManager::allMotorsSeekOriginal3()
 
     GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->SeekOrigin();
     GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->SeekOrigin();
+    GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->SeekOrigin();
     result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->WaitSeekDone();
     result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->WaitSeekDone();
     result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->WaitSeekDone();

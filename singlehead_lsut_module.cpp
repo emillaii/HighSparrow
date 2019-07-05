@@ -69,14 +69,12 @@ void SingleheadLSutModule::run(bool isProduct)
 {
 
 
-}
-
 void SingleheadLSutModule::startWork(int run_mode)
 {
+    qInfo("LSUT start work");
     is_run = true;
     while(is_run) {
-        qInfo("I am running ");
-        QThread::msleep(1000);
+        run(true);
     }
 }
 

@@ -101,6 +101,9 @@ public:
     void saveJsonConfig(QString file_name);
     SingleHeadMachineMaterialLoaderModuleParameter parameters;
     Q_INVOKABLE void performHandling(int cmd);
+    // Camera view and picker tips distance offset calibration
+    Q_INVOKABLE void cameraTipOffsetCalibration(int pickhead);
+    // Move to mouse position in camera view with double-click in UI, certain vision location is required
     Q_INVOKABLE bool moveToCamPos(double pixel_x, double pixel_y);
 
 //old motions

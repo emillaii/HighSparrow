@@ -1,4 +1,5 @@
 ﻿#include "singleheadmachinematerialloadermodule.h"
+#include <QMessageBox>
 
 SingleHeadMachineMaterialLoaderModule::SingleHeadMachineMaterialLoaderModule(QString name)
 :ThreadWorkerBase (name)
@@ -1175,35 +1176,35 @@ bool SingleHeadMachineMaterialLoaderModule::placeProductToTray(int time_out)
 bool SingleHeadMachineMaterialLoaderModule::sensorPickerMeasureHight(bool is_tray, bool is_product,bool is_ng)
 {
     qInfo("picker2MeasureHight is_tray %d is_product %d",is_tray,is_product);
-    if(pick_arm->ZSerchByForce(0,parameters.vcm2Svel(),parameters.vcm2PickForce(),true))
+    if(pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),true))
     {
         QThread::msleep(100);
-        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetSoftladngPosition()))){
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetSoftladngPosition(false, 1)))){
             return true;
         }
         if(is_tray)
         {
             if(is_product)
-                pick_arm->parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition());
+                pick_arm->parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition(false, 1));
             else{
                 if(is_ng){
-                    pick_arm->parameters.setPlaceNgSensorZ(pick_arm->GetSoftladngPosition());
+                    pick_arm->parameters.setPlaceNgSensorZ(pick_arm->GetSoftladngPosition(false, 1));
                 }
                 else{
-                    pick_arm->parameters.setPickSensorZ(pick_arm->GetSoftladngPosition());
+                    pick_arm->parameters.setPickSensorZ(pick_arm->GetSoftladngPosition(false, 1));
                 }
             }
         }
         else
         {
             if(is_product)
-                pick_arm->parameters.setPickProductZ(pick_arm->GetSoftladngPosition());
+                pick_arm->parameters.setPickProductZ(pick_arm->GetSoftladngPosition(false, 1));
             else
             {
                 if(is_ng)
-                    pick_arm->parameters.setPickNgSensorZ(pick_arm->GetSoftladngPosition());
+                    pick_arm->parameters.setPickNgSensorZ(pick_arm->GetSoftladngPosition(false, 1));
                 else
-                    pick_arm->parameters.setPlaceSensorZ(pick_arm->GetSoftladngPosition());
+                    pick_arm->parameters.setPlaceSensorZ(pick_arm->GetSoftladngPosition(false, 1));
             }
 
         }
@@ -1226,7 +1227,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayPos(int tray_index)
 {
     qInfo("moveToTrayPos tray_index %d",tray_index);
     bool result = pick_arm->move_Xm_Origin();
-    result &= pick_arm->move_XY_Synic(sensorTray->getCurrentPosition(tray_index),true);
+    result &= pick_arm->move_XY_Synic(sensorTray->getCurrentPosition(tray_index),false);
     if(!result)
         AppendError(QString(u8"移动到%1盘当前位置失败").arg(tray_index == 0?"sensor":"成品"));
     return result;
@@ -1236,7 +1237,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSensorStartPos(int tray_index)
 {
     qInfo("moveToStartPos%d",tray_index);
     bool result = pick_arm->move_Xm_Origin();
-    result &= pick_arm->move_XY_Synic(sensorTray->getStartPosition(tray_index),true);
+    result &= pick_arm->move_XY_Synic(sensorTray->getStartPosition(tray_index),false);
     if(!result)
         AppendError(QString(u8"移动到%1盘起始位置失败").arg(tray_index == 0?"sensor":"成品"));
     return result;
@@ -1246,7 +1247,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSensorTray1EndPos()
 {
     qInfo("moveToTray1EndPos");
     bool result = pick_arm->move_Xm_Origin();
-    result &= pick_arm->move_XY_Synic(sensorTray->getEndPosition(),true);
+    result &= pick_arm->move_XY_Synic(sensorTray->getEndPosition(),false);
     if(!result)
         AppendError(QString(u8"移动到sensor盘结束位置失败"));
     return result;
@@ -1355,7 +1356,7 @@ bool SingleHeadMachineMaterialLoaderModule::placeLensToTray()
 bool SingleHeadMachineMaterialLoaderModule::lensPickerMeasureHight(bool is_tray,bool is_product)
 {
     qInfo("measureHight speed: %f force: %f", parameters.vcm1Svel(), parameters.vcm1PickForce());
-    if(pick_arm->ZSerchByForce(1,parameters.vcm1Svel(),parameters.vcm1PickForce(),true))
+    if(pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),true))
     {
         QThread::msleep(100);
         if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1？").arg(pick_arm->GetSoftladngPosition()))){
@@ -1363,14 +1364,14 @@ bool SingleHeadMachineMaterialLoaderModule::lensPickerMeasureHight(bool is_tray,
         }
         if(is_product){
             if(is_tray)
-                pick_arm->parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition(false,1));
+                pick_arm->parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition());
             else
-                pick_arm->parameters.setPickProductZ(pick_arm->GetSoftladngPosition(false,1));
+                pick_arm->parameters.setPickProductZ(pick_arm->GetSoftladngPosition());
         }else{
             if(is_tray)
-                pick_arm->parameters.setPickLensZ(pick_arm->GetSoftladngPosition(false,1));
+                pick_arm->parameters.setPickLensZ(pick_arm->GetSoftladngPosition());
             else
-                pick_arm->parameters.setPlaceLensZ(pick_arm->GetSoftladngPosition(false,1));
+                pick_arm->parameters.setPlaceLensZ(pick_arm->GetSoftladngPosition());
         }
         return true;
     }
@@ -1424,17 +1425,14 @@ void SingleHeadMachineMaterialLoaderModule::run(bool has_material)
 {
     qInfo("");
     is_run = true;
-    while (is_run)
-    {
-        qInfo("i am running");
-        QThread::msleep(1000);
-    }
+    qInfo("i am running");
+    QThread::msleep(1000);
 }
 
 void SingleHeadMachineMaterialLoaderModule::startWork(int run_mode)
 {
     qInfo("MaterailLoader start run_mode :%d in %d", run_mode, QThread::currentThreadId());
-    if(run_mode == RunMode::Normal)
+    while (is_run)
     {
         run(true);
     }
@@ -1792,3 +1790,14 @@ bool SingleHeadMachineMaterialLoaderModule::moveToCamPos(double pixel_x, double 
     //return true;
 }
 
+//TO BE DONE
+void SingleHeadMachineMaterialLoaderModule::cameraTipOffsetCalibration(int pickhead)
+{
+    qInfo("pickhead number is %d", pickhead);
+    if (pickhead == 0) {
+        QMessageBox::warning(Q_NULLPTR, tr("warning"),tr("Oops, i don't know how to do that yet."),QMessageBox::Ok);
+    }
+    else {
+        QMessageBox::warning(Q_NULLPTR, tr("warning"),tr("Oops, i don't know how to do that yet."),QMessageBox::Ok);
+    }
+}

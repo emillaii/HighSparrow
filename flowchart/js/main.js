@@ -38,15 +38,15 @@ $(document).ready(function () {
   var $linkColor = $('#link_color');
 
   //Init the table 
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">Select AA mode: <select id=\"aa_mode\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option></select></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button></div></div></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Start Position: <input type=\"number\" id=\"aa_start_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Stop Position: <input type=\"number\" id=\"aa_stop_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Step Size in um: <input type=\"number\" id=\"aa_step_size\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">AA Offset in um: <input type=\"number\" id=\"aa_offset_in_um\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Delay in ms: <input type=\"number\" id=\"aa_delay_Z_in_ms\"></div>");
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">Position Checking: <select id=\"aa_position_checking\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\">Position Checking: <select id=\"aa_position_checking\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Image Count: <input type=\"number\" id=\"aa_image_count\"></div>");
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">Enable Tilt:  <select id=\"aa_enable_tilt\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px;\">Enable Tilt:  <select id=\"aa_enable_tilt\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
 
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Roll: <input type=\"number\" id=\"roll\"></div>");
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Pitch: <input type=\"number\" id=\"pitch\"></div>");
@@ -54,16 +54,16 @@ $(document).ready(function () {
   $operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"basic_retry\"></div>");
   $operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"basic_delay\"></div>");
 
-  $oc_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"oc_enable_motion\"><option value=0>False</option><option value=1>True</option></select></div>");
-  $oc_operator_properties.append("<div style=\"margin-top:20px\">Fast Mode: <select id=\"oc_fast_mode\"><option value=0>False</option><option value=1>True</option></select></div>");
-  $oc_operator_properties.append("<div style=\"margin-top:20px\">Debug: <select id=\"oc_is_debug\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"oc_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">Fast Mode: <select id=\"oc_fast_mode\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">Debug: <select id=\"oc_is_debug\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"oc_retry\"></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"oc_delay_in_ms\"></div>");
-  $oc_operator_properties.append("<div style=\"margin-top:20px\">OC Check: <select id=\"oc_is_check\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">OC Check: <select id=\"oc_is_check\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">X limit in um: <input type=\"number\" id=\"oc_x_limit_in_um\"></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Y limit in um: <input type=\"number\" id=\"oc_y_limit_in_um\"></div>");
   
-  $dispense_operator_properties.append("<div style=\"margin-top:20px\">Enable Save Image: <select id=\"dispense_enable_save_image\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $dispense_operator_properties.append("<div style=\"margin-top:20px\">Enable Save Image: <select id=\"dispense_enable_save_image\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Lighting: <input type=\"number\" id=\"dispense_lighting\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"dispense_retry\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"dispense_delay_in_ms\"></div>");
@@ -78,8 +78,8 @@ $(document).ready(function () {
   $save_image_operator_properties.append("<div style=\"margin-top:20px\">Camera Type: <select id=\"save_image_type\"><option value=0>Downlook Camera</option><option value=1>Uplook Camera</option><option value=2>Pickarm Camera</option></select></div>");
   $save_image_operator_properties.append("<div style=\"margin-top:20px\">Lighting: <input type=\"number\" id=\"save_image_lighting\" value=100></div>");
   
-  $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Lens: <select id=\"grr_change_lens\"><option value=0>False</option><option value=1>True</option></select></div>");
-  $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Sensor: <select id=\"grr_change_sensor\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Lens: <select id=\"grr_change_lens\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Sensor: <select id=\"grr_change_sensor\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $grr_operator_properties.append("<div style=\"margin-top:20px\">Repeat Time: <input type=\"number\" id=\"grr_repeat_time\" value=10></div>");
   
 
@@ -747,7 +747,6 @@ $(document).ready(function () {
   $('#create_start').click(function(){ addStartWidget();});
   $('#create_init_camera').click(function(){ addOperationWidget("Init Camera"); });
   $('#create_load_camera').click(function () { addOperationWidget("Load Camera"); });
-  $('#create_init_camera').click(function () { addOperationWidget("Init Camera"); });
   $('#create_pr_to_bond').click(function () { addOperationWidget("PR To Bond"); });
   $('#create_initial_tilt').click(function () { addOperationWidget("Initial Tilt"); });
   $('#create_aa_pick_lens').click(function () { addOperationWidget("AA Pick Lens"); });
@@ -781,7 +780,27 @@ $(document).ready(function () {
     var data = JSON.parse($('#flowchart_data').val());
     $flowchart.flowchart('setData', data);
   });
-
+  
+  $('#aa_select_mode').click(function() {
+	 console.log("Selecting aa mode");
+	 document.getElementById("myDropdown").classList.toggle("show");
+  });
+  
+  $('#select_zscan_mode').click(function(){
+	  console.log("Selecting aa zscan mode");
+	  $('#aa_mode').val(0);
+  });
+  
+  $('#select_dfov_mode').click(function(){
+	  console.log("Selecting aa dfov mode");
+	  $('#aa_mode').val(1);
+  });
+  
+  $('#select_stationary_scan_mode').click(function(){
+	  console.log("Selecting aa stationary scan mode");
+	  $('#aa_mode').val(2);
+  });
+  
   $flowchart.siblings('.delete_selected_button').click(function () { $flowchart.flowchart('deleteSelected'); });
   
   $('#update_data_button').click(function(){
@@ -864,5 +883,17 @@ $(document).ready(function () {
 		duplicateOperationWidget();
 	}
   }
+  window.onclick = function(event) {
+	if (!event.target.matches('.dropbtn')) {
+		var dropdowns = document.getElementsByClassName("dropdown-content");
+		var i;
+		for (i = 0; i < dropdowns.length; i++) {
+			var openDropdown = dropdowns[i];
+			if (openDropdown.classList.contains('show')) {
+				openDropdown.classList.remove('show');
+			}
+		}
+	}
+  }  
   
 });

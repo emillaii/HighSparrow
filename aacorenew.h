@@ -127,7 +127,7 @@ private:
     QString handlingParams = "";
 
 
-    QVariantMap sfrFitCurve_Advance(int resize_factor);
+    QVariantMap sfrFitCurve_Advance(int resize_factor, double start_pos);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,
                                                                unsigned int & ccROIIndex,
                                                                unsigned int & ulROIIndex,

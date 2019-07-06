@@ -19,6 +19,7 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
 
     double minX = 999999;
     double maxX = -999999;
+
     for (size_t i = 0; i < n; i++) {
         minX = min(minX, x[i]);
         maxX = max(maxX, x[i]);
@@ -805,7 +806,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     current_fov_slope = fov_slope;
     qInfo("fov_slope: %f fov_intercept: %f", fov_slope, fov_intercept);
 
-    QVariantMap aa_result = sfrFitCurve_Advance(resize_factor);
+    QVariantMap aa_result = sfrFitCurve_Advance(resize_factor, start);
 
     qInfo("Layer 1 xTilt : %f yTilt: %f ", aa_result["xTilt_1"].toDouble(), aa_result["yTilt_1"].toDouble());
     qInfo("Layer 2 xTilt : %f yTilt: %f ", aa_result["xTilt_2"].toDouble(), aa_result["yTilt_2"].toDouble());
@@ -1023,12 +1024,12 @@ void AACoreNew::performAAOffline()
     timer.start();
     int resize_factor = 2;
     int sfrCount = 0;
-    double step_size = 0.01, start = -0.5;
+    double step_size = 0.01, start = -20.5;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     double estimated_fov_slope = 15;
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
-    int inputImageCount = 17;
+    int inputImageCount = 10;
     for (int i = 0; i < inputImageCount; i++)
     {
         if (isZScanNeedToStop) {
@@ -1037,7 +1038,8 @@ void AACoreNew::performAAOffline()
         }
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
-        QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
+        //QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
+        QString filename = "1\\" + QString::number(i+1) + ".bmp";
         cv::Mat img = cv::imread(filename.toStdString());
 
         cv::Mat dst;
@@ -1065,7 +1067,7 @@ void AACoreNew::performAAOffline()
         sfrCount++;
     }
     int timeout=1000;
-    while(this->clustered_sfr_map.size() != sfrCount && timeout >0) {
+    while(this->clustered_sfr_map.size() != sfrCount && timeout > 0) {
         Sleep(10);
         timeout--;
     }
@@ -1073,14 +1075,10 @@ void AACoreNew::performAAOffline()
         qInfo("Error in performing AA Offline: %d", timeout);
         return;
     }
-    double fov_slope     = (20*xysum-xsum*ysum)/(20*x2sum-xsum*xsum);               //calculate slope
-    double fov_intercept = (x2sum*ysum-xsum*xysum)/(x2sum*20-xsum*xsum);            //calculate intercept
-
-    QVariantMap aa_result = sfrFitCurve_Advance(resize_factor);
+    qInfo("clustered sfr map pattern size: %d clustered_sfr_map size: %d", clustered_sfr_map[0].size(), clustered_sfr_map.size());
+    QVariantMap aa_result = sfrFitCurve_Advance(resize_factor, start);
     clustered_sfr_map.clear();
     qInfo("[PerformAAOffline] time elapsed: %d", timer.elapsed());
-    map.insert("timeElapsed", timer.elapsed());
-    emit pushDataToUnit(runningUnit, "AAOffline", map);
 }
 
 void AACoreNew::performHandling(int cmd, QString params)
@@ -1095,7 +1093,7 @@ bool zPeakComp(const threeDPoint & p1, const threeDPoint & p2)
     return p1.z < p2.z;
 }
 
-QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor)
+QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 {
     QVariantMap result, map;
     vector<vector<Sfr_entry>> sorted_sfr_map;
@@ -1123,7 +1121,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor)
         double ex = 0; double ey = 0;
         for (size_t ii=0; ii < sorted_sfr_map[i].size(); ii++) {
             sfr.push_back(sorted_sfr_map[i][ii].sfr);
-            z.push_back(sorted_sfr_map[i][ii].pz-22);
+            z.push_back(sorted_sfr_map[i][ii].pz-start_pos);
             ex += sorted_sfr_map[i][ii].px*resize_factor;
             ey += sorted_sfr_map[i][ii].py*resize_factor;
         }
@@ -1133,16 +1131,16 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor)
         double peak_sfr, peak_z;
         fitCurve(z, sfr, 6, peak_z, peak_sfr);
         if (i==0) {
-            point_0.x = ex; point_0.y = ey; point_0.z = peak_z + 22;
+            point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
         } else if ( i >= 1 && i <= 4) {
-            points_1.emplace_back(ex, ey, peak_z + 22);
-            points_11.emplace_back(ex, ey, peak_z + 22);
+            points_1.emplace_back(ex, ey, peak_z + start_pos);
+            points_11.emplace_back(ex, ey, peak_z + start_pos);
         } else if ( i >= 5 && i <= 8) {
-            points_2.emplace_back(ex, ey, peak_z + 22);
-            points_22.emplace_back(ex, ey, peak_z + 22);
+            points_2.emplace_back(ex, ey, peak_z + start_pos);
+            points_22.emplace_back(ex, ey, peak_z + start_pos);
         } else if ( i >= 9 && i <= 12) {
-            points_3.emplace_back(ex, ey, peak_z + 22);
-            points_33.emplace_back(ex, ey, peak_z + 22);
+            points_3.emplace_back(ex, ey, peak_z + start_pos);
+            points_33.emplace_back(ex, ey, peak_z + start_pos);
         }
     }
     sort(points_11.begin(), points_11.end(), zPeakComp);

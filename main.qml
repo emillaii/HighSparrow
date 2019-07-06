@@ -279,7 +279,7 @@ ApplicationWindow {
                icon.source: "icons/flowchart_1.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   var command = "document.getElementsByClassName('get_data')[0].click()";
+                   var command = "document.getElementById('get_data').click()";
                    flowChartPage.webView.runJavaScript(command, function(result) {
                        command = "document.getElementById('flowchart_data').value";
                        flowChartPage.webView.runJavaScript(command, function(result) {
@@ -298,7 +298,7 @@ ApplicationWindow {
                icon.source: "icons/auto-run.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   var command = "document.getElementsByClassName('get_data')[0].click()";
+                   var command = "document.getElementById('get_data').click()";
                    flowChartPage.webView.runJavaScript(command, function(result) {
                        command = "document.getElementById('flowchart_data').value";
                        flowChartPage.webView.runJavaScript(command, function(result) {

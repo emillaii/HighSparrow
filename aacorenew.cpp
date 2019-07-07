@@ -641,12 +641,6 @@ ErrorCodeStruct AACoreNew::performDispense()
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
-/*
-ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size,
-                                   bool enableMotion, int zSleepInMs, bool isWaitTiltMotion,
-                                   int zScanMode, double estimated_aa_fov,
-                                   bool is_debug, sfr::EdgeFilter edgeFilter,
-//                                   double estimated_fov_slope, double zOffset,int no_tilt*/
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 {
     clustered_sfr_map.clear();
@@ -662,7 +656,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     int imageCount = params["image_count"].toInt();
     int position_checking = params["position_checking"].toInt();
     double xsum=0,x2sum=0,ysum=0,xysum=0;
-    qInfo("start : %f stop: %f enable_tile: %d", start, stop, enableTilt);
+    qInfo("start : %f stop: %f enable_tilt: %d", start, stop, enableTilt);
     unsigned int zScanCount = 0;
     QElapsedTimer timer; timer.start();
     int resize_factor = 2;
@@ -682,11 +676,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                LogicNg(current_aa_ng_time);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
                LogicNg(current_aa_ng_time);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
            }
            cv::Mat dst;
            cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
@@ -719,11 +713,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                LogicNg(current_aa_ng_time);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
                LogicNg(current_aa_ng_time);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
            }
            double dfov = calculateDFOV(img);
            if (dfov <= -1) {
@@ -746,11 +740,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
                     LogicNg(current_aa_ng_time);
-                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
                 }
                 if (!blackScreenCheck(img)) {
                     LogicNg(current_aa_ng_time);
-                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
                 }
                 double realZ = sut->carrier->GetFeedBackPos().Z;
                 double dfov = calculateDFOV(img);
@@ -801,7 +795,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              }
              if (!blackScreenCheck(img)) {
                  LogicNg(current_aa_ng_time);
-                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
              }
              double realZ = sut->carrier->GetFeedBackPos().Z;
              double dfov = calculateDFOV(img);

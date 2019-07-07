@@ -125,6 +125,8 @@
 #define UPLOOK_VISION_CAMERA_WIDTH      659
 #define UPLOOK_VISION_CAMERA_HEIGHT     494
 
+#define CONSTANT_REFERENCE 2304
+
 //PR Execuatable for HMI
 #define SAVE_IMAGE_FROM_BASLER_EXEC     "SaveImage.avexe"
 #define LEARN_PR_DOWNLOOK_SENSOR_EXEC   "LearnPR_Downlook_Sensor.avexe"

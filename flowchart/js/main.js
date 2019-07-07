@@ -429,6 +429,9 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_save_image);
 	} else if (operatorId.includes("Y_Level")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
+	} else if (operatorId.includes("MTF")) {
+	  var params = { CC: 0, UL: 0, UR: 0, LR: 0, LL: 0, SFR_DEV_TOL: 100 }
+	  $flowchart.flowchart('setOperatorParams', operatorId, params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);

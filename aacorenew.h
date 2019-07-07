@@ -55,7 +55,7 @@ public:
     ErrorCodeStruct performAA(QJsonValue params);
     ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
     ErrorCodeStruct performMTF(QJsonValue params, bool write_log = false);
-    ErrorCodeStruct performMTFOffline();
+    ErrorCodeStruct performMTFOffline(QJsonValue params);
     ErrorCodeStruct performZOffset(double zOffset);
     ErrorCodeStruct performXYOffset(double xOffset, double yOffset);
     ErrorCodeStruct performDelay(int);

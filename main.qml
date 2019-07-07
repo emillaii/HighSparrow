@@ -28,7 +28,7 @@ ApplicationWindow {
     readonly property string m_LUT1_Z: "LUT_Z"
 
     readonly property string m_LTL_X: "LPA_X" //X
-    readonly property string m_LPA_X: "LPA_X"  //visonpositionX
+    readonly property string m_LPA_X: "LPA_X" //visonpositionX
     readonly property string m_LPA_Y: "LPA_Y" //Y
     readonly property string m_LPA_Z: "LPA_Z" //物料高度
 
@@ -145,7 +145,14 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("AA") !== -1) {
                         console.log("Perform AA")
                         aaNewCore.performHandling(AACoreNew.AA, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Init Camera") !== -1) {
+                        console.log("Perform Init Camera")
+                        aaNewCore.performHandling(AACoreNew.INIT_CAMERA, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Y_Level") !== -1) {
+                        console.log("Perform Y Level")
+                        aaNewCore.performHandling(AACoreNew.Y_LEVEL, aaCoreTestParams)
                     }
+
                     aaCoreTestParams = ""
                     aaCoreTestItemName = ""
                 }

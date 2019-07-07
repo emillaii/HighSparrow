@@ -18,6 +18,9 @@ class AAData : public QThread
     Q_PROPERTY(QPointF wLLValue READ wLLValue)
     Q_PROPERTY(QPointF wLRValue READ wLRValue)
 
+    Q_PROPERTY(double minValue READ minValue)
+    Q_PROPERTY(double maxValue READ maxValue)
+
     Q_PROPERTY(double dev READ dev WRITE setDev)
     Q_PROPERTY(double xTilt READ xTilt WRITE setXTilt)
     Q_PROPERTY(double yTilt READ yTilt WRITE setYTilt)
@@ -38,6 +41,7 @@ public:
     AAData(QObject *parent=Q_NULLPTR);
     void addData(int i, double x, double y);
     void incrementData(double y1, double y2, double y3, double y4, double y5);
+    void plotIntensityProfile(float minI, float maxI, std::vector<float> values);
     void clear();
     void plot();
     QPointF wValue() const{
@@ -128,6 +132,16 @@ public:
         return m_layer3;
     }
 
+    double minValue() const
+    {
+        return m_minValue;
+    }
+
+    double maxValue() const
+    {
+        return m_maxValue;
+    }
+
 public slots:
     void setDev(double dev)
     {
@@ -196,8 +210,10 @@ private slots:
     void wTimeout();
 private:
     int count = 0;
+    int plotProfile = 0;
     QTimer * m_wTimer;
     QPointF m_wValue;
+    QList<QPointF> m_PointsList;
     QList<QPointF> m_CCPointsList;
     QList<QPointF> m_ULPointsList;
     QList<QPointF> m_URPointsList;
@@ -232,6 +248,10 @@ private:
     QString m_layer2;
 
     QString m_layer3;
+
+    double m_minValue;
+
+    double m_maxValue;
 
 protected:
     void run();

@@ -38,7 +38,9 @@ public:
         PR_To_Bond = 2,
         OC = 3,
         MTF = 4,
-        AA = 5
+        AA = 5,
+        INIT_CAMERA = 6,
+        Y_LEVEL = 7
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
@@ -63,6 +65,7 @@ public:
     ErrorCodeStruct performAccept();
     ErrorCodeStruct performTerminate();
     ErrorCodeStruct performGRR(bool change_lens,bool change_sensor,int repeat_time);
+    ErrorCodeStruct performYLevelTest(QJsonValue params);
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
@@ -74,6 +77,7 @@ public:
     AAData aaData_1;  // For Display Channel 1
     AAData aaData_2;  // For Display Channel 2
     AAData mtf_log;   // For Display MTF Log
+    AAData intensity_profile; //For Display intensity profile
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
     ImageProvider * dispenseImageProvider;

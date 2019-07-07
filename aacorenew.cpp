@@ -12,6 +12,7 @@
 #include <QPainter>
 #include "aa_util.h"
 #include "commonutils.h"
+#include "visionmodule.h"
 #define PI  3.14159265
 
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY) {
@@ -300,8 +301,6 @@ void AACoreNew::performHandlingOperation(int cmd)
         performPRToBond(0);
     }
     else if (cmd == HandleTest::MTF) {
-        //performAAOffline();
-        //performMTFOffline();
         performMTF(true, true);
     }
     else if (cmd == HandleTest::OC) {
@@ -309,6 +308,12 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::AA) {
         performAA(params);
+    }
+    else if (cmd == HandleTest::INIT_CAMERA) {
+        performInitSensor();
+    }
+    else if (cmd == HandleTest::Y_LEVEL) {
+        performYLevelTest(params);
     }
     handlingParams = "";
     return;
@@ -538,6 +543,11 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             bool fast_mode = params["fast_mode"].toInt();
             ret = performOC(enable_motion, fast_mode);
             qInfo("End of perform OC %s",ret.errorMessage.toStdString().c_str());
+        }
+        else if (testItemName.contains(AA_PIECE_Y_LEVEL)) {
+            qInfo("Performing Y Level");
+            ret = performYLevelTest(params);
+            qInfo("End of perform Y Level %s", ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_AA)) {
             qInfo("Performing AA");
@@ -1030,7 +1040,7 @@ void AACoreNew::performAAOffline()
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
     int inputImageCount = 10;
-    for (int i = 0; i < inputImageCount; i++)
+    for (int i = 0; i < inputImageCount -1; i++)
     {
         if (isZScanNeedToStop) {
             qInfo("All peak passed, stop zscan");
@@ -1773,7 +1783,7 @@ ErrorCodeStruct AACoreNew::performTerminate()
 
 ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int repeat_time)
 {
-    performTerminate();
+   performTerminate();
    current_grr++;
    if(current_grr >= repeat_time)
    {
@@ -1784,6 +1794,37 @@ ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int re
            NgSensor();
    }
    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
+{
+    //cv::Mat inputImage = cv::imread("1/blackScreen.bmp");
+    bool grabRet;
+    cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        qInfo("Cannot grab image.");
+        NgSensor();
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Test Fail. Cannot grab image"};
+    }
+    float min_i = 0;
+    float max_i = 0;
+    vector<float> intensityProfile;
+    QElapsedTimer timer; timer.start();
+    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile);
+    if (ret) {
+        qInfo("performYLevelTest Success. Min I: %f Max I: %f size: %d", min_i, max_i, intensityProfile.size());
+        intensity_profile.clear();
+        this->intensity_profile.plotIntensityProfile(min_i, max_i, intensityProfile);
+        if (max_i < 10) {
+            qInfo("This is black screen.");
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Black screen detected"};
+        }
+        qInfo("Time elapsed: %d", timer.elapsed());
+        return ErrorCodeStruct{ErrorCode::OK, ""};
+    } else {
+        qInfo("performYLevelTest Fail");
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Cannot grab image"};
+    }
 }
 
 ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)

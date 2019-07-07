@@ -9,6 +9,7 @@ $(document).ready(function () {
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
+  var init_y_level_params = { enable_plot: 1, delay_in_ms: 200 };
   var init_z_offset = { type: 0, z_offset_in_um: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0 };
   var init_dispense_params = {enable_save_image:1,lighting:195, retry: 0, delay_in_ms: 0 };
@@ -34,6 +35,8 @@ $(document).ready(function () {
   var $dispense_operator_title = $('#dispense_operator_title');
   var $grr_operator_title = $('#grr_operator_title');
   var $grr_operator_properties = $('#grr_operator_properties');
+  var $y_level_operator_title = $('#y_level_operator_title');
+  var $y_level_operator_properties = $('#y_level_operator_properties');
   var $mtf_table = $('#mtf_table');
   var $linkColor = $('#link_color');
 
@@ -50,6 +53,8 @@ $(document).ready(function () {
 
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Roll: <input type=\"number\" id=\"roll\"></div>");
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Pitch: <input type=\"number\" id=\"pitch\"></div>");
+  
+  $y_level_operator_properties.append("<div style=\"margin-top:20px;\">Enable Plot:  <select id=\"y_level_enable_plot\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
 
   $operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"basic_retry\"></div>");
   $operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"basic_delay\"></div>");
@@ -104,6 +109,7 @@ $(document).ready(function () {
 	  $dispense_operator_properties.hide();
 	  $grr_operator_properties.hide();
 	  $mtf_table.hide();
+	  $y_level_operator_properties.hide();
       if (operatorId.includes("AA_")) {
         $aa_operator_properties.show();
         $aa_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -123,7 +129,11 @@ $(document).ready(function () {
         $initial_tilt_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
         $('#roll').val(params["roll"]);
         $('#pitch').val(params['pitch']);
-      } else if (operatorId.includes("Z Offset")) {
+      } else if (operatorId.includes("Y_Level")) {
+		$y_level_operator_properties.show();
+		$y_level_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+        $('#y_level_enable_plot').val(params["enable_plot"]);
+	  } else if (operatorId.includes("Z Offset")) {
         $aa_z_offset_operator_properties.show();
         $aa_z_offset_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
         $('#aa_z_offset_type').val(params["type"]);
@@ -215,6 +225,7 @@ $(document).ready(function () {
 	  $save_image_operator_properties.hide();
 	  $grr_operator_properties.hide();
 	  $mtf_table.hide();
+	  $y_level_operator_properties.hide();
       return true;
     },
 	onOperatorCreate: function (operatorId, operatorData, fullElement) {
@@ -369,6 +380,8 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', operatorId, init_xy_offset);
     } else if (operatorId.includes("Save Image")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_save_image);
+	} else if (operatorId.includes("Y_Level")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -414,6 +427,8 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', operatorId, init_xy_offset);
     } else if (operatorId.includes("Save Image")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_save_image);
+	} else if (operatorId.includes("Y_Level")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -563,41 +578,6 @@ $(document).ready(function () {
     }
   }
 
-  $flowchart.siblings('.create_start').click(function () {
-    addStartWidget();
-  });
-
-  $flowchart.siblings('.create_operator').click(function () {
-    addOperationWidget("test");
-  });
-
-  $flowchart.siblings('.create_init_camera').click(function () { addOperationWidget("Init Camera"); });
-  $flowchart.siblings('.create_pr_to_bond').click(function () { addOperationWidget("PR To Bond"); });
-  $flowchart.siblings('.create_initial_tilt').click(function () { addOperationWidget("Initial Tilt"); });
-  $flowchart.siblings('.create_load_material').click(function () { addOperationWidget("Load Material"); });
-  $flowchart.siblings('.create_aa_unload_camera').click(function () { addMultipleOperationWidget("AA Unload Camera"); });
-
-  $flowchart.siblings('.create_aa').click(function () { addOperationWidget("AA"); });
-  $flowchart.siblings('.create_oc').click(function () { addOperationWidget("OC"); });
-  $flowchart.siblings('.create_mtf').click(function () { addMultipleOperationWidget("MTF"); });
-  $flowchart.siblings('.create_z_offset').click(function () { addOperationWidget("Z Offset"); });
-  $flowchart.siblings('.create_xy_offset').click(function () { addOperationWidget("XY Offset"); });
-
-  $flowchart.siblings('.create_save_image').click(function () { addOperationWidget("Save Image"); });
-  $flowchart.siblings('.create_disp').click(function () { addOperationWidget("Dispense"); });
-  $flowchart.siblings('.create_uv').click(function () { addMultipleOperationWidget("UV"); });
-  $flowchart.siblings('.create_delay').click(function () { addOperationWidget("Delay"); });
-
-  $flowchart.siblings('.create_accept').click(function () { addEndWidget("Accept"); });
-  $flowchart.siblings('.create_reject').click(function () { addEndWidget("Reject"); });
-  $flowchart.siblings('.create_terminate').click(function () { addEndWidget("Terminate"); });
-  $flowchart.siblings('.create_grr').click(function () { addEndWidget("GRR"); });
-
-  $flowchart.siblings('.create_thread').click(function () { addThreadWidget("Parallel"); });
-  $flowchart.siblings('.create_join_thread').click(function () { addJoinThreadWidget("Join"); });
-
-  $flowchart.siblings('.delete_selected_button').click(function () { $flowchart.flowchart('deleteSelected'); });
-
   $flowchart.siblings('.set_data').click(function () {
     var data = JSON.parse($('#flowchart_data').val());
     $flowchart.flowchart('setData', data);
@@ -653,10 +633,13 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#mtf_operator_title').val());
       var params = getTableData();
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-	}else if (selectedOperatorId.includes("GRR")) {
+	} else if (selectedOperatorId.includes("GRR")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#grr_operator_title').val());
       var params = { change_lens: Number($('#grr_change_lens').val()), change_sensor: Number($('#grr_change_sensor').val()), repeat_time:  Number($('#grr_repeat_time').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("Y_Level")){
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#y_level_operator_title').val());
+	  var params = { enable_plot: Number($('#y_level_enable_plot').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	}
     else {
@@ -746,6 +729,7 @@ $(document).ready(function () {
   
   $('#create_start').click(function(){ addStartWidget();});
   $('#create_init_camera').click(function(){ addOperationWidget("Init Camera"); });
+  $('#create_y_level').click(function(){ addOperationWidget("Y_Level"); });
   $('#create_load_camera').click(function () { addOperationWidget("Load Camera"); });
   $('#create_pr_to_bond').click(function () { addOperationWidget("PR To Bond"); });
   $('#create_initial_tilt').click(function () { addOperationWidget("Initial Tilt"); });
@@ -859,7 +843,11 @@ $(document).ready(function () {
 		change_sensor: Number($('#grr_change_sensor').val()),
         repeat_time: Number($('#grr_repeat_time').val()) };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-	}
+	} else if (selectedOperatorId.includes("Y_Level")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $y_level_operator_title.val());
+      var params = { enable_plot: Number($('#y_level_enable_plot').val())};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    }
     else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()), delay_in_ms: Number($('#basic_delay').val()) };

@@ -64,10 +64,10 @@ Grid {
         ChartView {
             id: spline1
             anchors.fill: parent
-            title: "AA"
+            title: "AA "
             antialiasing: true
             theme: ChartView.ChartThemeDark
-
+            legend.alignment: Qt.AlignBottom
             ValueAxis {
                 id: axisY1
                 titleText: "SFR"
@@ -170,6 +170,54 @@ Grid {
         id: frame3
         width: grid.width/3
         height: grid.height/2
+        ChartView {
+            id: lineSeries
+            anchors.fill: parent
+            antialiasing: true
+            theme: ChartView.ChartThemeDark
+
+            ValueAxis {
+                id: axisY3
+                titleText: ""
+                min: 0
+                max: 255
+                gridVisible: true
+            }
+
+            ValueAxis {
+                titleText: "pixel location "
+                id: axisX3
+                gridVisible: true
+                min: 0
+                max: 2000
+            }
+
+            LineSeries {
+                name: "Intensity Profile "
+                id: iSeries
+                axisX: axisX3
+                axisY: axisY3
+            }
+            ColumnLayout {
+                Label {
+                    id: iSeriesLabel
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
+            }
+        }
+        Connections {
+            target: dataFromIntensityProfile
+            onWValueChanged: {
+                iSeriesLabel.text = "Min: " + dataFromIntensityProfile.minValue + " Max: " + dataFromIntensityProfile.maxValue
+                iSeries.append(dataFromIntensityProfile.wValue.x, dataFromIntensityProfile.wValue.y)
+            }
+            onWValueClear: {
+                console.log("Clear")
+                iSeries.clear()
+            }
+        }
     }
 
     Frame {
@@ -199,10 +247,10 @@ Grid {
         ChartView {
             id: spline2
             anchors.fill: parent
-            title: "AA"
+            title: "AA "
             antialiasing: true
             theme: ChartView.ChartThemeDark
-
+            legend.alignment: Qt.AlignBottom
             ValueAxis {
                 id: axisY2
                 titleText: "SFR"

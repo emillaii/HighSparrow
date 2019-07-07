@@ -649,6 +649,7 @@ ErrorCodeStruct AACoreNew::performAA(double start, double stop, double step_size
 //                                   double estimated_fov_slope, double zOffset,int no_tilt*/
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 {
+    clustered_sfr_map.clear();
     int zScanMode = params["mode"].toInt();
     double start = params["start_pos"].toDouble();
     double stop = params["stop_pos"].toDouble();
@@ -680,6 +681,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
+               LogicNg(current_aa_ng_time);
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+           }
+           if (!blackScreenCheck(img)) {
                LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
            }
@@ -716,6 +721,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
            }
+           if (!blackScreenCheck(img)) {
+               LogicNg(current_aa_ng_time);
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+           }
            double dfov = calculateDFOV(img);
            if (dfov <= -1) {
                qInfo("Cannot find the target FOV!");
@@ -736,6 +745,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
+                    LogicNg(current_aa_ng_time);
+                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+                }
+                if (!blackScreenCheck(img)) {
                     LogicNg(current_aa_ng_time);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
                 }
@@ -785,6 +798,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                  qInfo("AA Cannot grab image.");
                  LogicNg(current_aa_ng_time);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
+             }
+             if (!blackScreenCheck(img)) {
+                 LogicNg(current_aa_ng_time);
+                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
              }
              double realZ = sut->carrier->GetFeedBackPos().Z;
              double dfov = calculateDFOV(img);
@@ -1028,6 +1045,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 
 void AACoreNew::performAAOffline()
 {
+    clustered_sfr_map.clear();
     ErrorCodeStruct ret = { OK, ""};
     QVariantMap map, stepTimerMap, dFovMap, sfrTimeElapsedMap;
     QElapsedTimer timer;
@@ -1051,7 +1069,9 @@ void AACoreNew::performAAOffline()
         //QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
         QString filename = "1\\" + QString::number(i+1) + ".bmp";
         cv::Mat img = cv::imread(filename.toStdString());
-
+        if (!blackScreenCheck(img)) {
+            return;
+        }
         cv::Mat dst;
         cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
         cv::resize(img, dst, size);
@@ -1440,6 +1460,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 
 ErrorCodeStruct AACoreNew::performMTFOffline()
 {
+    clustered_sfr_map.clear();
     QJsonValue aaPrams;
     this->sfrWorkerController->setSfrWorkerParams(aaPrams);
     QElapsedTimer timer;
@@ -1478,6 +1499,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline()
 
 ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
 {
+    clustered_sfr_map.clear();
     QJsonValue aaPrams;
     this->sfrWorkerController->setSfrWorkerParams(aaPrams);
     QElapsedTimer timer;
@@ -1824,6 +1846,23 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     } else {
         qInfo("performYLevelTest Fail");
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Cannot grab image"};
+    }
+}
+
+bool AACoreNew::blackScreenCheck(cv::Mat inImage)
+{
+    vector<float> intensityProfile; float min_i = 0; float max_i = 0;
+    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile);
+    if (ret) {
+        qInfo("[blackScreenCheck] Checking intensity...min: %f max: %f", min_i, max_i);
+        if (max_i < 10) {
+            qInfo("Detect black screen");
+            return false;
+        }
+        return true;
+    } else {
+        qInfo("Check intensity fail");
+        return false;
     }
 }
 

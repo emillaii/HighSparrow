@@ -66,6 +66,7 @@ public:
     ErrorCodeStruct performTerminate();
     ErrorCodeStruct performGRR(bool change_lens,bool change_sensor,int repeat_time);
     ErrorCodeStruct performYLevelTest(QJsonValue params);
+    bool blackScreenCheck(cv::Mat inImage);
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);

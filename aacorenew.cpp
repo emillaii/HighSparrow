@@ -2036,6 +2036,7 @@ ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int re
 
 ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
 {
+    int enable_plot = params["enable_plot"].toInt();
     //cv::Mat inputImage = cv::imread("1/blackScreen.bmp");
     bool grabRet;
     cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);

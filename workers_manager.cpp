@@ -1,6 +1,7 @@
 ﻿#include "workers_manager.h"
 
 #include <QMessageBox>
+#include <QVariantMap>
 
 WorkersManager::WorkersManager(QObject *parent):QObject (parent)
 {
@@ -149,4 +150,20 @@ void WorkersManager::sendOperation(QString workerName, int operation_type)
     workersState.remove(sender_id);
     workersError.remove(sender_id);
     //this->setShowAlarmDialog(false);
+}
+
+void WorkersManager::sendModuleMessage(QVariantMap message)
+{
+    if(message.contains("TargetModle"))
+    {
+        QString target_module = message["TargetModle"].toString();
+        if(workers.contains(target_module))
+        {
+//            workers[target_module]->receiveModuleMessage(message);
+        }
+    }
+    else
+    {
+
+    }
 }

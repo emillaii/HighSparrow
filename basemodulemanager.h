@@ -266,12 +266,15 @@ public:
     Q_INVOKABLE void loadSensorLoaderParameter();
     Q_INVOKABLE void loadLensTrayLoaderParameter();
     Q_INVOKABLE double showChartCalibrationRotation();
+    Q_INVOKABLE void testPRTest();
     void EnableMotors();
     void DisableAllMotors();
     Q_INVOKABLE bool allMotorsSeekOrigin();
     bool allMotorsSeekOriginal1();
     bool allMotorsSeekOriginal2();
     void stopSeeking();
+
+
 
     Q_INVOKABLE int getNumberOfMotors();
     Q_INVOKABLE QString getMotorsName(int);

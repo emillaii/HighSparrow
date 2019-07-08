@@ -3,6 +3,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QFile>
+#include <qfileinfo.h>
 #include "config.h"
 #include "commonutils.h"
 Unitlog::Unitlog(QObject * parent) : QObject(parent)
@@ -239,6 +240,53 @@ QString Unitlog::getCSVString(QString data_name,QVariantMap map)
     data_string.append(" \r\n");
     //qInfo("data_string: %s", data_string.toStdString().c_str());
     return data_string;
+}
+
+void Unitlog::postCSVDataToUnit(QString uuid,QVariantMap data)
+{
+    if(!unit_log_list.contains(uuid))
+    {
+        unit_log_list.insert(uuid,QVariantMap());
+    }
+    foreach(QString temp_data, data.keys())
+        unit_log_list[uuid][temp_data] = data[temp_data];
+}
+
+void Unitlog::saveUnitDataToCSV(QString uuid)
+{
+    if(!unit_log_list.contains(uuid))
+        return;
+    QString file_name = "";
+    file_name.append(getPerformanceLogDir())
+                    .append(getCurrentDateString())
+                    .append(".csv");
+    QFile file(file_name);
+    QFileInfo fileInfo(file_name);
+    QString content = "";
+    if(!fileInfo.isFile())
+    {
+        foreach (QString temp_key, unit_log_list[uuid].keys())
+        {
+           content.append(temp_key);
+           content.append(",");
+        }
+        content.remove(content.lastIndexOf(","),1);
+        content.append("\n");
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        file.write(content.toStdString().c_str());
+        file.close();
+    }
+    content = "";
+    foreach (QString temp_key, unit_log_list[uuid].keys())
+    {
+       content.append(unit_log_list[uuid][temp_key].toString());
+       content.append(",");
+    }
+    content.remove(content.lastIndexOf(","),1);
+    content.append("\n");
+    file.open(QIODevice::Append | QIODevice::Text);
+    file.write(content.toStdString().c_str());
+    file.close();
 }
 
 bool Unitlog::saveToCSV(QString uuid)

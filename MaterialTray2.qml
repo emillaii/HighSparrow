@@ -40,7 +40,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmMoveToTray2StartPos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2_START_POS)
@@ -53,17 +53,20 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         var x =0;
-                        var y=0;
-                        if (baseModuleManager.getServerMode() == 0){
+                        var y =0;
+                        if (baseModuleManager.getServerMode() === 0){
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
+                            var x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
+                            tray_start_point2.setX(x + lensPickArmModuleParameter.visonPositionX - x1);
+                            tray_start_point2.setY(y);
                         }else{
 
                             x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                            tray_start_point2.setX(x);
+                            tray_start_point2.setY(y);
                         }
-                        tray_start_point2.setX(x);
-                        tray_start_point2.setY(y);
                     }
                 }
             }

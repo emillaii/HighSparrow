@@ -61,6 +61,7 @@ public:
 signals:
     void sendMessageToClient(QString destAddress, QString message);
     void sendLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
+    void postCSVDataToUnit(QString uuid,QVariantMap data);
 public slots:
     //ThreadWorkerBase
     void startWork(int run_mode);
@@ -90,13 +91,17 @@ private:
     bool isLocalHost = false;
     QTime time_label;
     bool has_material = true;
+    PrOffset pr_offset;
+    QString uuid = "";
 
     void run(bool has_material);
+    void runTest();
     bool isActionEmpty();
     QString servingIP = "";
     void sendEvent(const QString event);
     void sendCmd(QString serving_ip,const QString cmd);
     void sendPrEvent(const PrOffset pr_offset);
+
 public:
     Q_INVOKABLE int getConnectedClient();
     Q_INVOKABLE void calculcateRelativePosition();
@@ -140,6 +145,10 @@ public:
     double updateAccumulatedHour(bool calculate = true);
     double getHourSpace(QTime time_label);
     Q_INVOKABLE void clearNumber();
+private:
+    QString getUuid(bool is_right,int current_count, int current_time);
+public:
+    void recordAALensPr(QString uuid);
 
 };
 

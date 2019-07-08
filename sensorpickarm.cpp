@@ -180,9 +180,10 @@ bool SensorPickArm::stepMove_XYT1_Pos(const double step_x, const double step_y, 
         if(!picker1->motor_z->resetSoftLanding(timeout))return false;
         if(!picker2->motor_z->resetSoftLanding(timeout))return false;
     }
-    motor_x->StepMove(step_x);
-    motor_y->StepMove(step_y);
-    picker1->motor_t->StepMove(step_t1);
+    bool result = motor_x->StepMove(step_x);
+    result &= motor_y->StepMove(step_y);
+    result &= picker1->motor_t->StepMove(step_t1);
+    return result;
 }
 
 bool SensorPickArm::waitStepMove_XYT1(int timeout)

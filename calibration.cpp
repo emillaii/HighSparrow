@@ -277,7 +277,11 @@ bool Calibration::coordinateA2BMapping(const QVector<QPointF> &APoints, const QV
 
 double Calibration::caculateRotationAngle()
 {
-    return  qAcos(mA2BMatrix.m11()/qSqrt(mA2BMatrix.m11()*mA2BMatrix.m11()+mA2BMatrix.m12()*mA2BMatrix.m12()));
+    double sin2cos2 = qSqrt(parameters.matrix11()*parameters.matrix11()+parameters.matrix12()*parameters.matrix12());
+    double cos_a =  qAcos(parameters.matrix11()/sin2cos2)*180/3.14159265;
+    double sin_b =  qAsin(parameters.matrix12()/sin2cos2)*180/3.14159265;
+    //todo 判断象限
+    return cos_a;
 }
 
 bool Calibration::GetPixelPoint(double &x, double &y)

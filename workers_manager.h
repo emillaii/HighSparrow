@@ -1,6 +1,7 @@
 #ifndef WORKERS_MANAGER_H
 #define WORKERS_MANAGER_H
 
+#include "tcpmessager.h"
 #include "thread_worker_base.h"
 #include <qmap.h>
 
@@ -48,6 +49,7 @@ public:
         return m_ShowAlarmDialog;
     }
 
+    void sendModuleMessage(QVariantMap message);
 private:
     void showAlarm(const int sender_id,const int level, const QString error_message);
 public:
@@ -58,6 +60,7 @@ private:
     bool m_ShowAlarmDialog = false;
     QMap<int, QString> workersError;
     QMap<int, int> workersState;
+    QMap<QString,TcpMessager*> service_messagers;
 };
 
 #endif // WORKERS_MANAGER_H

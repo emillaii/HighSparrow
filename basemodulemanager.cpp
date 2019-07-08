@@ -67,6 +67,9 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
     connect(&aaCoreNew, &AACoreNew::postSfrDataToELK, &unitlog, &Unitlog::postSfrDataToELK);
+    connect(&lut_module, &LutModule::postCSVDataToUnit, &unitlog, &Unitlog::postCSVDataToUnit);
+    connect(&lens_loader_module, &LensLoaderModule::postCSVDataToUnit, &unitlog, &Unitlog::postCSVDataToUnit);
+    connect(&lens_loader_module, &LensLoaderModule::saveUnitDataToCSV, &unitlog, &Unitlog::saveUnitDataToCSV);
 
     connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTrayRequst,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);
     connect(&sensor_tray_loder_module,&SensorTrayLoaderModule::sendChangeTrayFinish,&sensor_loader_module,&SensorLoaderModule::receiveChangeTrayFinish,Qt::DirectConnection);
@@ -1235,7 +1238,8 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 {
     bool result;
     GetVcMotorByName(this->lut_module.parameters.motorZName())->resetSoftLanding();
-
+    if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
+        return false;
     //if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
     //    return false;
     GetMotorByName(this->lut_module.parameters.motorZName())->SeekOrigin();//LUT_Z
@@ -1832,4 +1836,28 @@ void BaseModuleManager::loadLensTrayLoaderParameter()
 double BaseModuleManager::showChartCalibrationRotation()
 {
     return chart_calibration->getRotationAngle();
+}
+
+void BaseModuleManager::testPRTest()
+{
+    for (int i = 0; i < 10; ++i) {
+
+        for (int j = 0; j < 10; ++j) {
+            QString uuid = QString("left_").append(QString::number(i)).append("_").append(QString::number(j));
+            lens_loader_module.recordTrayLensPr(uuid);
+            lens_loader_module.recordLutVacancyPr(uuid);
+            lens_loader_module.recordLutLensPr(uuid);
+            lut_module.recordAALensPr(uuid);
+            lens_loader_module.recordNgLensPr(uuid);
+            lens_loader_module.recordTrayVacancyPr(uuid);
+
+            uuid = QString("right_").append(QString::number(i)).append("_").append(QString::number(j));
+            lens_loader_module.recordTrayLensPr(uuid);
+            lens_loader_module.recordLutVacancyPr(uuid);
+            lens_loader_module.recordLutLensPr(uuid);
+            lut_module.recordAALensPr(uuid);
+            lens_loader_module.recordNgLensPr(uuid);
+            lens_loader_module.recordTrayVacancyPr(uuid);
+        }
+    }
 }

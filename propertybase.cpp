@@ -75,6 +75,30 @@ void PropertyBase::write(QJsonObject &json) const
     }
 }
 
+void PropertyBase::reset()
+{
+    const QMetaObject *metaobject = this->metaObject();
+    int p_count = metaobject->propertyCount();
+    for(int i = 0;i < p_count;i++)
+    {
+        QMetaProperty metaproperty = metaobject->property(i);
+        const char *name = metaproperty.name();
+        if(init_values.contains(name))
+            this->setProperty(name,init_values[name]);
+
+        if(metaproperty.type() == QVariant::Type::Double)
+            this->setProperty(name,0.0);
+        else if (metaproperty.type() == QVariant::Type::Int)
+            this->setProperty(name,0);
+        else if (metaproperty.type() == QVariant::Type::Bool)
+            this->setProperty(name,false);
+        else if (metaproperty.type() == QVariant::Type::String)
+            this->setProperty(name,"");
+        else
+            qInfo("reset parameter %s error,unrecognized type : %d : %s",metaproperty.name(),metaproperty.type());
+    }
+}
+
 bool PropertyBase::loadJsonConfig(QString file_name,QString param_name)
 {
     QString val;

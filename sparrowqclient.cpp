@@ -31,7 +31,7 @@ void SparrowClient::onConnected()
 void SparrowClient::onClosed()
 {
     m_is_connected = false;
-    //qInfo("sparrow client disconnect..Going to retry the connection :%s", m_url.url().toStdString().c_str());
+    qInfo("sparrow client disconnect..Going to retry the connection :%s", m_url.url().toStdString().c_str());
     m_webSocket.open(QUrl(m_url));
 }
 

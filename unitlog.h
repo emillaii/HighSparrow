@@ -29,6 +29,8 @@ public slots:
     bool postDataToELK(QString uuid);
     bool postSfrDataToELK(QString uuid, QVariantMap data);
     QString getCSVString(QString data_name,QVariantMap map);
+    void postCSVDataToUnit(QString uuid,QVariantMap data);
+    void saveUnitDataToCSV(QString uuid);
 };
 
 #endif // UNITLOGGER_H

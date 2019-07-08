@@ -20,8 +20,9 @@ enum RunMode
     VibrationTest = 3,
     AAFlowChartTest = 4,
     OnllyLeftAA = 5,
-    OnlyRightAA =6,
-    ChangeLensTrayHandle = 7
+    OnlyRightAA = 6,
+    MachineTest = 7,
+    DispensTest = 8
 };
 enum FinishedType
 {
@@ -62,6 +63,7 @@ public slots:
     void receiveOperation(const int sender_id,const int operation_type);
 public:
     void setName(QString Name);
+//    virtual void receiveModuleMessage(QVariantMap messsage) = 0;
 private:
     QThread work_thread;
     QString m_Name;

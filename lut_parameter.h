@@ -20,7 +20,10 @@ public:
     Q_PROPERTY(double lensHeight READ lensHeight WRITE setLensHeight NOTIFY lensHeightChanged)
     Q_PROPERTY(double pickSpeed READ pickSpeed WRITE setPickSpeed NOTIFY pickSpeedChanged)
     Q_PROPERTY(int gripperDelay READ gripperDelay WRITE setGripperDelay NOTIFY gripperDelayChanged)
+    Q_PROPERTY(int repeatTime READ repeatTime WRITE setRepeatTime NOTIFY repeatTimeChanged)
     Q_PROPERTY(bool enablePickForce READ enablePickForce WRITE setEnablePickForce NOTIFY enablePickForceChanged)
+    Q_PROPERTY(bool staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
+    Q_PROPERTY(int testLensCount READ testLensCount WRITE setTestLensCount NOTIFY testLensCountChanged)
 
     double pickForce() const
     {
@@ -87,9 +90,24 @@ public:
         return m_gripperDelay;
     }
 
+    int repeatTime() const
+    {
+        return m_repeatTime;
+    }
+
     bool enablePickForce() const
     {
         return m_enablePickForce;
+    }
+
+    bool staticTest() const
+    {
+        return m_staticTest;
+    }
+
+    int testLensCount() const
+    {
+        return m_testLensCount;
     }
 
 public slots:
@@ -209,6 +227,15 @@ public slots:
         emit gripperDelayChanged(m_gripperDelay);
     }
 
+    void setRepeatTime(int repeatTime)
+    {
+        if (m_repeatTime == repeatTime)
+            return;
+
+        m_repeatTime = repeatTime;
+        emit repeatTimeChanged(m_repeatTime);
+    }
+
     void setEnablePickForce(bool enablePickForce)
     {
         if (m_enablePickForce == enablePickForce)
@@ -216,6 +243,24 @@ public slots:
 
         m_enablePickForce = enablePickForce;
         emit enablePickForceChanged(m_enablePickForce);
+    }
+
+    void setStaticTest(bool staticTest)
+    {
+        if (m_staticTest == staticTest)
+            return;
+
+        m_staticTest = staticTest;
+        emit staticTestChanged(m_staticTest);
+    }
+
+    void setTestLensCount(int testLensCount)
+    {
+        if (m_testLensCount == testLensCount)
+            return;
+
+        m_testLensCount = testLensCount;
+        emit testLensCountChanged(m_testLensCount);
     }
 
 signals:
@@ -246,7 +291,13 @@ signals:
 
     void gripperDelayChanged(int gripperDelay);
 
+    void repeatTimeChanged(int repeatTime);
+
     void enablePickForceChanged(bool enablePickForce);
+
+    void staticTestChanged(bool staticTest);
+
+    void testLensCountChanged(int testLensCount);
 
 private:
     double m_PickForce = 0;
@@ -262,7 +313,10 @@ private:
     double m_lensHeight = 1;
     double m_pickSpeed = 10;
     int m_gripperDelay = 500;
-    bool m_enablePickForce = true;
+    int m_repeatTime = 10;
+    bool m_enablePickForce = false;
+    bool m_staticTest = false;
+    int m_testLensCount = 10;
 };
 
 class LutState:public PropertyBase
@@ -276,14 +330,30 @@ class LutState:public PropertyBase
     Q_PROPERTY(int aa1LensID READ aa1LensID WRITE setAa1LensID NOTIFY aa1LensIDChanged)
     Q_PROPERTY(int aa2TrayID READ aa2TrayID WRITE setAa2TrayID NOTIFY aa2TrayIDChanged)
     Q_PROPERTY(int aa2LensID READ aa2LensID WRITE setAa2LensID NOTIFY aa2LensIDChanged)
-    Q_PROPERTY(bool waitLens READ waitLens WRITE setWaitLens NOTIFY waitLensChanged)
+    Q_PROPERTY(bool waitingLens READ waitingLens WRITE setWaitingLens NOTIFY waitLensChanged)
     Q_PROPERTY(QString servingIP READ servingIP WRITE setServingIP NOTIFY servingIPChanged)
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool pickingLens READ pickingLens WRITE setPickingLens NOTIFY pickingLensChanged)
     Q_PROPERTY(QString cmd READ cmd WRITE setCmd NOTIFY cmdChanged)
     Q_PROPERTY(bool pickedLens READ pickedLens WRITE setPickedLens NOTIFY pickedLensChanged)
     Q_PROPERTY(bool unpickedNgLens READ unpickedNgLens WRITE setUnpickedNgLens NOTIFY unpickedNgLensChanged)
+    Q_PROPERTY(bool finishWaitLens READ finishWaitLens WRITE setFinishWaitLens NOTIFY finishWaitLensChanged)
+    Q_PROPERTY(bool lutHasNgLens READ lutHasNgLens WRITE setLutHasNgLens NOTIFY lutHasNgLensChanged)
+    Q_PROPERTY(bool aaPickedLens READ aaPickedLens WRITE setAaPickedLens NOTIFY aaPickedLensChanged)
+    Q_PROPERTY(bool lutLoadReady READ lutLoadReady WRITE setLutLoadReady NOTIFY lutLensReadyChanged)
+    Q_PROPERTY(bool needUplookPr READ needUplookPr WRITE setNeedUplookPr NOTIFY needUplookPrChanged)
+    Q_PROPERTY(QString lutUuid READ lutUuid WRITE setLutUuid NOTIFY lutUuidChanged)
+    Q_PROPERTY(QString aa1Uuid READ aa1Uuid WRITE setAa1Uuid NOTIFY aa1UuidChanged)
+    Q_PROPERTY(QString aa2Uuid READ aa2Uuid WRITE setAa2Uuid NOTIFY aa2UuidChanged)
 public:
+    LutState():PropertyBase()
+    {
+        init_values.insert("lutTrayID",-1);
+        init_values.insert("lutLensID",-1);
+        init_values.insert("lutNgTrayID",-1);
+        init_values.insert("lutTrayID",-1);
+        init_values.insert("lutTrayID",-1);
+    }
     int lutTrayID() const
     {
         return m_lutTrayID;
@@ -324,9 +394,9 @@ public:
         return m_aa2LensID;
     }
 
-    bool waitLens() const
+    bool waitingLens() const
     {
-        return m_waitLens;
+        return m_waitingLens;
     }
 
     QString servingIP() const
@@ -357,6 +427,46 @@ public:
     bool unpickedNgLens() const
     {
         return m_unpickedNgLens;
+    }
+
+    bool finishWaitLens() const
+    {
+        return m_finishWaitLens;
+    }
+
+    bool lutHasNgLens() const
+    {
+        return m_lutHasNgLens;
+    }
+
+    bool aaPickedLens() const
+    {
+        return m_aaPickedLens;
+    }
+
+    bool lutLoadReady() const
+    {
+        return m_lutloadReady;
+    }
+
+    bool needUplookPr() const
+    {
+        return m_needUplookPr;
+    }
+
+    QString lutUuid() const
+    {
+        return m_lutUuid;
+    }
+
+    QString aa1Uuid() const
+    {
+        return m_aa1Uuid;
+    }
+
+    QString aa2Uuid() const
+    {
+        return m_aa2Uuid;
     }
 
 public slots:
@@ -432,13 +542,13 @@ public slots:
         emit aa2LensIDChanged(m_aa2LensID);
     }
 
-    void setWaitLens(bool waitLens)
+    void setWaitingLens(bool waitLens)
     {
-        if (m_waitLens == waitLens)
+        if (m_waitingLens == waitLens)
             return;
 
-        m_waitLens = waitLens;
-        emit waitLensChanged(m_waitLens);
+        m_waitingLens = waitLens;
+        emit waitLensChanged(m_waitingLens);
     }
 
     void setServingIP(QString serviceIP)
@@ -495,6 +605,78 @@ public slots:
         emit unpickedNgLensChanged(m_unpickedNgLens);
     }
 
+    void setFinishWaitLens(bool finishWaitLens)
+    {
+        if (m_finishWaitLens == finishWaitLens)
+            return;
+
+        m_finishWaitLens = finishWaitLens;
+        emit finishWaitLensChanged(m_finishWaitLens);
+    }
+
+    void setLutHasNgLens(bool lutHasNgLens)
+    {
+        if (m_lutHasNgLens == lutHasNgLens)
+            return;
+
+        m_lutHasNgLens = lutHasNgLens;
+        emit lutHasNgLensChanged(m_lutHasNgLens);
+    }
+
+    void setAaPickedLens(bool aaPickedLens)
+    {
+        if (m_aaPickedLens == aaPickedLens)
+            return;
+
+        m_aaPickedLens = aaPickedLens;
+        emit aaPickedLensChanged(m_aaPickedLens);
+    }
+
+    void setLutLoadReady(bool lutLensReady)
+    {
+        if (m_lutloadReady == lutLensReady)
+            return;
+
+        m_lutloadReady = lutLensReady;
+        emit lutLensReadyChanged(m_lutloadReady);
+    }
+
+    void setNeedUplookPr(bool finishUplookPr)
+    {
+        if (m_needUplookPr == finishUplookPr)
+            return;
+
+        m_needUplookPr = finishUplookPr;
+        emit needUplookPrChanged(m_needUplookPr);
+    }
+
+    void setLutUuid(QString lutUuid)
+    {
+        if (m_lutUuid == lutUuid)
+            return;
+
+        m_lutUuid = lutUuid;
+        emit lutUuidChanged(m_lutUuid);
+    }
+
+    void setAa1Uuid(QString aa1Uuid)
+    {
+        if (m_aa1Uuid == aa1Uuid)
+            return;
+
+        m_aa1Uuid = aa1Uuid;
+        emit aa1UuidChanged(m_aa1Uuid);
+    }
+
+    void setAa2Uuid(QString aa2Uuid)
+    {
+        if (m_aa2Uuid == aa2Uuid)
+            return;
+
+        m_aa2Uuid = aa2Uuid;
+        emit aa2UuidChanged(m_aa2Uuid);
+    }
+
 signals:
     void lutTrayIDChanged(int lutTrayID);
 
@@ -512,7 +694,7 @@ signals:
 
     void aa2LensIDChanged(int aa2LensID);
 
-    void waitLensChanged(bool waitLens);
+    void waitLensChanged(bool waitingLens);
 
     void servingIPChanged(QString servingIP);
 
@@ -528,6 +710,22 @@ signals:
 
     void unpickedNgLensChanged(bool unpickedNgLens);
 
+    void finishWaitLensChanged(bool finishWaitLens);
+
+    void lutHasNgLensChanged(bool lutHasNgLens);
+
+    void aaPickedLensChanged(bool aaPickedLens);
+
+    void lutLensReadyChanged(bool lutLoadReady);
+
+    void needUplookPrChanged(bool needUplookPr);
+
+    void lutUuidChanged(QString lutUuid);
+
+    void aa1UuidChanged(QString aa1Uuid);
+
+    void aa2UuidChanged(QString aa2Uuid);
+
 private:
     int m_lutTrayID = -1;
     int m_lutLensID = -1;
@@ -537,13 +735,21 @@ private:
     int m_aa1LensID = -1;
     int m_aa2TrayID = -1;
     int m_aa2LensID = -1;
-    bool m_waitLens = false;
+    bool m_waitingLens = false;
     QString m_serviceIP = "";
     bool m_lutHasLens = false;
     bool m_pickingLens = false;
     QString m_cmd = "";
     bool m_pickedLens = false;
     bool m_unpickedNgLens = false;
+    bool m_finishWaitLens = false;
+    bool m_lutHasNgLens = false;
+    bool m_aaPickedLens = false;
+    bool m_lutloadReady = false;
+    bool m_needUplookPr = false;
+    QString m_lutUuid = "";
+    QString m_aa1Uuid = "";
+    QString m_aa2Uuid = "";
 };
 
 #endif // LUT_PARAMERTER_H

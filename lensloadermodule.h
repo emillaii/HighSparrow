@@ -5,6 +5,7 @@
 #include "material_carrier.h"
 #include "lenspickarm.h"
 #include "thread_worker_base.h"
+#include "unitlog.h"
 
 //namespace LensPickArmEnum {
 
@@ -62,11 +63,14 @@ public:
 signals:
     void sendChangeTrayRequst();
     void sendLoadLensFinish(int lens,int lens_tray);
+    void postCSVDataToUnit(QString uuid,QVariantMap data);
+    void saveUnitDataToCSV(QString uuid);
 public slots:
     void receiveLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
     void receiveChangeTrayFinish();
 private:
     void run(bool has_material);
+    void runTest();
 
     bool moveToNextTrayPos(int tray_index);
     bool moveToLUTPRPos1(bool check_softlanding = false);
@@ -155,6 +159,21 @@ private:
     QTime time_label;
 
     bool has_material = true;
+    QString picked_uuid = "";
+    QString lut_uuid = "";
+    Unitlog unitlog;
+
+
+
+    QMap<QString,QVariantMap> prRecordMap;
+
+    QString getUuid(bool is_right,int current_count, int current_time);
+public:
+    void recordLutLensPr(QString uuid);
+    void recordLutVacancyPr(QString uuid);
+    void recordTrayLensPr(QString uuid);
+    void recordTrayVacancyPr(QString uuid);
+    void recordNgLensPr(QString uuid);
 };
 
 #endif // LENSPICKARMMODULE_H

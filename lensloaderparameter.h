@@ -35,6 +35,10 @@ public:
     Q_PROPERTY(double lensYield READ lensYield WRITE setLensYield NOTIFY lensYieldChanged)
     Q_PROPERTY(double accumulatredHour READ accumulatredHour WRITE setAccumulatredHour NOTIFY accumulatredHourChanged)
     Q_PROPERTY(int lensUPH READ lensUPH WRITE setLensUPH NOTIFY lensUPHChanged)
+
+    Q_PROPERTY(int repeatTime READ repeatTime WRITE setRepeatTime NOTIFY repeatTimeChanged)
+    Q_PROPERTY(int testLensCount READ testLensCount WRITE setTestLensCount NOTIFY testLensCountChanged)
+    Q_PROPERTY(bool staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
     int runMode() const
     {
         return m_runMode;
@@ -155,6 +159,21 @@ public:
     int lensUPH() const
     {
         return m_lensUPH;
+    }
+
+    int repeatTime() const
+    {
+        return m_prTestTime;
+    }
+
+    int testLensCount() const
+    {
+        return m_testLensCount;
+    }
+
+    bool staticTest() const
+    {
+        return m_staticTest;
     }
 
 public slots:
@@ -392,6 +411,33 @@ public slots:
         emit lensUPHChanged(m_lensUPH);
     }
 
+    void setRepeatTime(int prTestTime)
+    {
+        if (m_prTestTime == prTestTime)
+            return;
+
+        m_prTestTime = prTestTime;
+        emit repeatTimeChanged(m_prTestTime);
+    }
+
+    void setTestLensCount(int testLensCount)
+    {
+        if (m_testLensCount == testLensCount)
+            return;
+
+        m_testLensCount = testLensCount;
+        emit testLensCountChanged(m_testLensCount);
+    }
+
+    void setStaticTest(bool staticTest)
+    {
+        if (m_staticTest == staticTest)
+            return;
+
+        m_staticTest = staticTest;
+        emit staticTestChanged(m_staticTest);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -441,6 +487,12 @@ signals:
 
     void lensUPHChanged(int lensUPH);
 
+    void repeatTimeChanged(int repeatTime);
+
+    void testLensCountChanged(int testLensCount);
+
+    void staticTestChanged(bool staticTest);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -468,6 +520,9 @@ private:
     double m_lensYield = 0;
     double m_accumulatredHour = 0;
     int m_lensUPH = 0;
+    int m_prTestTime = 10;
+    int m_testLensCount = 10;
+    bool m_staticTest = false;
 };
 
 class LensPickArmModuleState:public PropertyBase

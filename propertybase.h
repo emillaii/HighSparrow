@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QMap>
 #include <QObject>
+#include <QVariantMap>
 
 class PropertyBase : public QObject
 {
@@ -13,6 +14,7 @@ public:
     ~PropertyBase();
     void read(const QJsonObject &json);
     void write(QJsonObject &json) const;
+    void reset();
     bool loadJsonConfig(QString file_name,QString param_name);
     void saveJsonConfig(QString file_name,QString param_name);
 
@@ -25,6 +27,8 @@ public:
     static bool saveJsonArray(QString file_name,QJsonArray &array);
     static bool loadJsonObject(QString file_name, QJsonObject &object);
     static bool saveJsonObject(QString file_name,QJsonObject &object);
+protected:
+    QVariantMap init_values;
 };
 
 #endif // PROPERTYBASE_H

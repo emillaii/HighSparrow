@@ -114,3 +114,9 @@ bool fitCircle(const std::vector<cv::Point2d> &points, cv::Point2d &center, doub
      return true;
 
 }
+
+QString getPerformanceLogDir(){ return getDir(PERFORMANCE_DIR); }
+
+QString getAAProcessLogDir(){ return getDir(AA_PROCESS_DIR); }
+
+QString getProduceProcessLogDir(){ return getDir(PRODUCE_PROCESS_DIR); }

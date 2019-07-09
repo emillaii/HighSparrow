@@ -643,6 +643,7 @@ ErrorCodeStruct AACoreNew::performDispense()
 
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 {
+    QVariantMap map;
     clustered_sfr_map.clear();
     int zScanMode = params["mode"].toInt();
     double start = params["start_pos"].toDouble();
@@ -857,181 +858,18 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     }
     clustered_sfr_map.clear();
     qInfo("AA time elapsed: %d", timer.elapsed());
-
-//    QVariantMap map, dfovMap;
-//    QElapsedTimer timer; timer.start();
-//    qInfo("start: %f stop: %f step_size: %f", start, stop, step_size);
-//    int imageWidth = 0, imageHeight = 0;
-//    double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
-//    unsigned int zScanCount = 0;
-//    double xsum=0,x2sum=0,ysum=0,xysum=0;
-//    vector<cv::Mat> images;
-//    if (start > 0) sut->moveToZPos(start);
-//    mPoint3D start_pos = sut->carrier->GetFeedBackPos();
-//    int count = 0;
-//    QPointF prev_point = {0, 0};
-//    double prev_fov_slope = 0;
-//    if (zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
-//        if (start <= 0) {
-//            start = start_pos.Z;
-//            count = 6;
-//        } else {
-//            count = (int)fabs((start - stop)/step_size);
-//        }
-//        for (int i = 0; i < count; i++)
-//        {
-//           sut->moveToZPos(start+(i*step_size));
-//           QThread::msleep(zSleepInMs);
-//           double realZ = sut->carrier->GetFeedBackPos().Z;
-//           qInfo("Z scan start from %f, real: %f", start+(i*step_size), realZ);
-//           cv::Mat img = dk->DothinkeyGrabImageCV(0);
-//           imageWidth = img.cols; imageHeight = img.rows;
-//           QString imageName;
-//           imageName.append(getGrabberLogDir())
-//                           .append(getCurrentTimeString())
-//                           .append(".jpg");
-//           //cv::imwrite(imageName.toStdString().c_str(), img);
-//           double dfov = calculateDFOV(img);
-//           dfovMap.insert(QString::number(i), dfov);
-//           xsum=xsum+realZ;
-//           ysum=ysum+dfov;
-//           x2sum=x2sum+pow(realZ,2);
-//           xysum=xysum+realZ*dfov;
-//           qInfo("fov: %f  sut_z: %f", dfov,sut->carrier->GetFeedBackPos().Z);
-//           if(current_dfov.contains(QString::number(i)))
-//               current_dfov[QString::number(i)] = dfov;
-//           else
-//               current_dfov.insert(QString::number(i),dfov);
-//           imageWidth = img.cols;
-//           imageHeight = img.rows;
-//           images.push_back(std::move(img));
-//           zScanCount++;
-//           emit sfrWorkerController->calculate(i, start+i*step_size, images[i],  false, sfr::EdgeFilter::NO_FILTER);
-//       }
-//    }else {
-//        isZScanNeedToStop = false;
-//        QThread::msleep(zSleepInMs);
-//        cv::Mat img = dk->DothinkeyGrabImageCV(0);
-//        double dfov = calculateDFOV(img);
-//        dfovMap.insert("-1", dfov);
-//        if (dfov <= -1) {
-//            qInfo("Cannot find the target FOV!");
-//            LogicNg(current_aa_ng_time);
-//            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-//        }
-//        double estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
-//        double target_z = estimated_aa_z + zOffset;
-//        qInfo("The estimated target z is: %f dfov is%f", target_z, dfov);
-//        if (target_z >= stop) {
-//            qInfo("The estimated target is too large. value: %f", target_z);
-//            LogicNg(current_aa_ng_time);
-//            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};;
-//        }
-//        if (target_z <= start-1) {
-//            qInfo("The estimated target is too small. value: %f", target_z);
-//            LogicNg(current_aa_ng_time);
-//            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-//        }
-//        sut->moveToZPos(target_z);
-//        for (unsigned int i = 0; i < 10; i++) {
-//            if (isZScanNeedToStop) {
-//                qInfo("z scan detected finished");
-//                break;
-//            }
-//            sut->moveToZPos(target_z+(i*step_size));
-//            QThread::msleep(zSleepInMs);
-//            mPoint3D currPos = sut->carrier->GetFeedBackPos();
-//            cv::Mat img = dk->DothinkeyGrabImageCV(0);
-//            double dfov = calculateDFOV(img);
-//            if(current_dfov.contains(QString::number(i)))
-//                current_dfov[QString::number(i)] = dfov;
-//            else
-//                current_dfov.insert(QString::number(i),dfov);
-//            dfovMap.insert(QString::number(i), dfov);
-//            bool isCrashDetected = false;
-//            if (i > 1) {
-//                double slope = (dfov - prev_point.y()) / (currPos.Z - prev_point.x());
-//                double error = 0;
-//                if (prev_fov_slope != 0) {
-//                    error = (slope - prev_fov_slope) / prev_fov_slope;
-//                }
-//                if (fabs(error) > 0.2) {
-//                    qInfo("Crash detection is triggered");
-//                    isCrashDetected = true;
-//                }
-//                qInfo("current slope %f  prev_slope %f error %f", slope, prev_fov_slope, error);
-//                prev_fov_slope = slope;
-//            }
-//            prev_point.setX(currPos.Z); prev_point.setY(dfov);
-
-//            if (dfov <= -1) {
-//                qInfo("Cannot find the target FOV!");
-//                LogicNg(current_aa_ng_time);
-//                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-//            }
-//            xsum=xsum+currPos.Z;                        //calculate sigma(xi)
-//            ysum=ysum+dfov;                             //calculate sigma(yi)
-//            x2sum=x2sum+pow(currPos.Z,2);               //calculate sigma(x^2i)
-//            xysum=xysum+currPos.Z*dfov;                 //calculate sigma(xi*yi)
-//            imageWidth = img.cols;
-//            imageHeight = img.rows;
-//            images.push_back(std::move(img));
-//            zScanCount++;
-//            emit sfrWorkerController->calculate(i, currPos.Z, images[i], false, sfr::EdgeFilter::NO_FILTER);
-//            if (isCrashDetected) {
-//                qInfo("Total zCount: %d", zScanCount);
-//                break;
-//            }
-//        }
-//    }
-//    int timeout=1000;
-//    while(this->clustered_sfr_map.size() != zScanCount && timeout >0) {
-//        Sleep(10);
-//        timeout--;
-//    }
-//    if (timeout <= 0) {
-//        qInfo("Error in performing AA: %d", timeout);
-//        clustered_sfr_map.clear();
-//        LogicNg(current_aa_ng_time);
-//        return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
-//    }
-
-//    if (zScanCount < 6) {
-//        qInfo("Error in performing AA due to insufficient.");
-//        clustered_sfr_map.clear();
-//        LogicNg(current_aa_ng_time);
-//        return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
-//    }
-
-//    double fov_slope     = (zScanCount*xysum-xsum*ysum)/(zScanCount*x2sum-xsum*xsum);       //calculate slope
-//    double fov_intercept = (x2sum*ysum-xsum*xysum)/(x2sum*zScanCount-xsum*xsum);            //calculate intercept
-//    qInfo("fov_slope: %f fov_intercept: %f", fov_slope, fov_intercept);
-//    double dev = 0;
-//    sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak, dev);
-//    clustered_sfr_map.clear();
-//    qInfo("xTilt: %f yTilt: %f zPeak: %f", xTilt, yTilt, zPeak);
-////    QThread::msleep(zSleepInMs);
-//    qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
-//    //aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
-//    //aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
-//    if(no_tilt == 0)
-//        aa_head->stepInterpolation_AB_Sync(-yTilt, xTilt);
-
-//    qInfo("aa_head after :%f", aa_head->GetFeedBack().Z);
-//    sut->moveToZPos(zPeak);
-//    map.insert("X_TILT", xTilt);
-//    map.insert("Y_TILT", yTilt);
-//    map.insert("Z_PEAK_CC", zPeak);
-//    map.insert("Z_PEAK_UL", ul_zPeak);
+    map.insert("X_TILT", aa_result["xTilt"].toDouble());
+    map.insert("Y_TILT", aa_result["xTilt"].toDouble());
+    map.insert("Z_PEAK_CC", aa_result["zPeak"].toDouble());
+//    map.insert("Z_PEAK_UL", aa_result["zPeak"].toDouble());
 //    map.insert("Z_PEAK_UR", ur_zPeak);
 //    map.insert("Z_PEAK_LL", ll_zPeak);
 //    map.insert("Z_PEAK_LR", lr_zPeak);
-//    map.insert("FOV_SLOPE", fov_slope);
-//    map.insert("FOV_INTERCEPT", fov_intercept);
+    map.insert("FOV_SLOPE", fov_slope);
+    map.insert("FOV_INTERCEPT", fov_intercept);
 //    map.insert("DEV", dev);
-//    map.insert("timeElapsed", timer.elapsed());
-//    map.insert("DFOV", dfovMap);
-//    emit pushDataToUnit(runningUnit, "AA", map);
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "AA", map);
 
 //    qInfo("Finish AA");
     return ErrorCodeStruct{ ErrorCode::OK, ""};

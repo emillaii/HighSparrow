@@ -35,6 +35,7 @@ QString getDir(QString dir)
 QString getVisionLogDir(){ return getDir(VISION_PR_DEBUG_DIR); }
 QString getGrabberLogDir(){ return getDir(GRABBER_DEBUG_DIR); }
 QString getMTFLogDir(){ return getDir(MTF_DEBUG_DIR); }
+QString getUnitLogDir(){ return getDir(UNIT_LOG_DIR); }
 
 void writeFile(QString data, QString dir, QString filename)
 {

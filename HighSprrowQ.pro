@@ -55,7 +55,7 @@ SOURCES += \
     calibration.cpp \
     chart_calibration.cpp \
     imagegrabbingworkerthread.cpp\
-	dothinkey.cpp \
+    dothinkey.cpp \
     iniparser.cpp \
     imageprovider.cpp \
     dispenser.cpp \

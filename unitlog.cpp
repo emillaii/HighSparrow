@@ -65,12 +65,21 @@ bool Unitlog::postDataToELK(QString uuid)
          QNetworkRequest request(unitLogEndpoint);
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));
-         if (nam) {
-             nam->post(request, doc.toJson());
-             qInfo("Push data to ELK success: %s", uuid.toStdString().c_str());
-         } else {
-             qInfo("Post data to ELK fail");
-         }
+         qInfo(doc.toJson().toStdString().c_str());
+         QString filename = "";
+         filename.append(getUnitLogDir())
+                         .append(getCurrentTimeString())
+                         .append(".json");
+         QFile file(filename);
+         file.open(QIODevice::WriteOnly | QIODevice::Text);
+         file.write(doc.toJson());
+         file.close();
+//         if (nam) {
+//             nam->post(request, doc.toJson());
+//             qInfo("Push data to ELK success: %s", uuid.toStdString().c_str());
+//         } else {
+//             qInfo("Post data to ELK fail");
+//         }
     } else {
         qInfo("Cannot find the unit: %s", uuid.toStdString().c_str());
     }
@@ -91,8 +100,8 @@ bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
                        QVariant(QString("application/json")));
      if (nam)
      {
-//         nam->post(request, doc.toJson());
-//         qInfo("Push sfr data to ELK success: %s", uuid.toStdString().c_str());
+//       nam->post(request, doc.toJson());
+//       qInfo("Push sfr data to ELK success: %s", uuid.toStdString().c_str());
          qInfo("save json to a txt");
          QString filename = "";
          filename.append(getMTFLogDir())

@@ -10,6 +10,7 @@ $(document).ready(function () {
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, delay_in_ms: 200 };
+  var init_uv_params = { enable_y_level_check: 0, uv_time_in_ms: 3000 };
   var init_z_offset = { type: 0, z_offset_in_um: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0 };
   var init_dispense_params = {enable_save_image:1,lighting:195, retry: 0, delay_in_ms: 0 };

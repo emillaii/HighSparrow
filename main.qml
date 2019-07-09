@@ -141,7 +141,7 @@ ApplicationWindow {
                         aaNewCore.performHandling(AACoreNew.MTF, aaCoreTestParams)
                     } else if (aaCoreTestItemName.indexOf("OC") !== -1) {
                         console.log("Perform OC")
-                        aaNewCore.performHandling(AACoreNew.MTF, aaCoreTestParams)
+                        aaNewCore.performHandling(AACoreNew.OC, aaCoreTestParams)
                     } else if (aaCoreTestItemName.indexOf("AA") !== -1) {
                         console.log("Perform AA")
                         aaNewCore.performHandling(AACoreNew.AA, aaCoreTestParams)

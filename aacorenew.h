@@ -66,6 +66,9 @@ public:
     ErrorCodeStruct performTerminate();
     ErrorCodeStruct performGRR(bool change_lens,bool change_sensor,int repeat_time);
     ErrorCodeStruct performYLevelTest(QJsonValue params);
+    ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2);
+
+    static bool AACoreNew::performThreadTest(vector<QString> testList);
     bool blackScreenCheck(cv::Mat inImage);
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);

@@ -13,7 +13,10 @@
 #include "aa_util.h"
 #include "commonutils.h"
 #include "visionmodule.h"
+#include <QFuture>
+#include <QtConcurrent/QtConcurrent>
 #define PI  3.14159265
+#include <math.h>
 
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY) {
     size_t n = x.size();
@@ -22,8 +25,8 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
     double maxX = -999999;
 
     for (size_t i = 0; i < n; i++) {
-        minX = min(minX, x[i]);
-        maxX = max(maxX, x[i]);
+        minX = std::min(minX, x[i]);
+        maxX = std::max(maxX, x[i]);
     }
 
     Eigen::MatrixXd X(n, order + 1);
@@ -217,7 +220,6 @@ void AACoreNew::NgSensor()
         current_oc_ng_time = 0;
         current_mtf_ng_time = 0;
     }
-
 }
 
 void AACoreNew::NgProduct()
@@ -469,7 +471,7 @@ bool AACoreNew::runFlowchartTest()
                    }
                }
                qInfo("End of traversal");
-               //performParallelTest(thread_1_test_list, thread_2_test_list);
+               performParallelTest(thread_1_test_list, thread_2_test_list);
                //Perform Parallel Test
            }
        }
@@ -617,6 +619,32 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         }
     }
     return ret;
+}
+
+bool AACoreNew::performThreadTest(vector<QString> testList)
+{
+    foreach(QString testName, testList) {
+        qInfo() << "Perform Test in thread : " << testName;
+    }
+    return true;
+}
+
+ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector<QString> testList2)
+{
+    QFuture<bool> f1;
+    QFuture<bool> f2;
+    f1 = QtConcurrent::run(performThreadTest, testList1);
+    f2 = QtConcurrent::run(performThreadTest, testList2);
+    f1.waitForFinished();
+    f2.waitForFinished();
+    bool ret1 = f1.result();
+    bool ret2 = f2.result();
+    bool ret = (ret1 && ret2);
+    if (ret) {
+        return ErrorCodeStruct {ErrorCode::OK, ""};
+    } else {
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""};
+    }
 }
 
 ErrorCodeStruct AACoreNew::performDispense()
@@ -2185,10 +2213,12 @@ ErrorCodeStruct AACoreNew::performXYOffset(double xOffset, double yOffset)
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    mPoint3D ori_pos = sut->carrier->GetFeedBackPos();
-    sut->stepMove_XY_Sync(xOffset, yOffset);
-    QThread::msleep(200);
-    mPoint3D final_pos = sut->carrier->GetFeedBackPos();
+    mPoint3D ori_pos(0, 1, 2);
+    mPoint3D final_pos(3, 4, 5);
+//    mPoint3D ori_pos = sut->carrier->GetFeedBackPos();
+//    sut->stepMove_XY_Sync(xOffset, yOffset);
+//    QThread::msleep(200);
+//    mPoint3D final_pos = sut->carrier->GetFeedBackPos();
     map.insert("xOffset", xOffset);
     map.insert("yOffset", yOffset);
     map.insert("ori_x_pos", ori_pos.X);

@@ -68,6 +68,8 @@ void SingleheadLSutModule::saveParams(QString file_name)
 void SingleheadLSutModule::run(bool isProduct)
 {
 
+}
+
 
 void SingleheadLSutModule::startWork(int run_mode)
 {

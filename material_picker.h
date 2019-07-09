@@ -1,8 +1,8 @@
 #ifndef MATERIAL_PICKER_H
 #define MATERIAL_PICKER_H
 
-#include "XtVacuum.h"
-#include "XtVcMotor.h"
+#include "XtMotion/XtVacuum.h"
+#include "XtMotion/XtVcMotor.h"
 
 
 

@@ -1,11 +1,11 @@
 #ifndef MATERIAL_CARRIER_H
 #define MATERIAL_CARRIER_H
 
-#include "XtVacuum.h"
-#include "XtVcMotor.h"
+#include "XtMotion/XtVacuum.h"
+#include "XtMotion/XtVcMotor.h"
 #include "material_carrier_parameter.h"
 #include "position_define.h"
-#include "xtmotor.h"
+#include "XtMotion/xtmotor.h"
 class MaterialCarrier:public ErrorBase
 {
 public:

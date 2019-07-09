@@ -5,9 +5,9 @@
 #include <QTime>
 #include <QString>
 #include <qvector.h>
-#include "xtmotor.h"
+#include "XtMotion/xtmotor.h"
 #include "VCM_init_Struct.h"
-#include "xtvcmotorparameter.h"
+#include "XtMotion/xtvcmotorparameter.h"
 
 struct VCM_Parameter_struct
 {

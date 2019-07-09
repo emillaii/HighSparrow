@@ -4,8 +4,8 @@
 #include "thread_worker_base.h"
 #include "trayclip.h"
 #include "trayloaderparameter.h"
-#include "xtmotor.h"
-#include "XtCylinder.h"
+#include "XtMotion/xtmotor.h"
+#include "XtMotion/XtCylinder.h"
 
 class TrayLoaderModule : public ThreadWorkerBase{
     Q_OBJECT

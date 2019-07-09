@@ -1,8 +1,8 @@
 ﻿#ifndef XTCYLINDER_H
 #define XTCYLINDER_H
-#include "XtGeneralInput.h"
-#include "XtGeneralOutput.h"
-#include "xtcylinderparameter.h"
+#include "XtMotion/XtGeneralInput.h"
+#include "XtMotion/XtGeneralOutput.h"
+#include "XtMotion/xtcylinderparameter.h"
 #include "errorcode.h"
 #include <QString>
 #define CYLINDER_TIMEOUT 3000

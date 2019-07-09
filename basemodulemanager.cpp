@@ -1,6 +1,6 @@
-﻿#include "XtVcMotor.h"
+﻿#include "XtMotion/XtVcMotor.h"
 #include "basemodulemanager.h"
-#include "xtvcmotorparameter.h"
+#include "XtMotion/xtvcmotorparameter.h"
 
 #include <QMessageBox>
 #include <qcoreapplication.h>

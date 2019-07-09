@@ -1,11 +1,11 @@
 ﻿#ifndef AAHEADMODULE_H
 #define AAHEADMODULE_H
 
-#include "XtCylinder.h"
-#include "XtVacuum.h"
+#include "XtMotion/XtCylinder.h"
+#include "XtMotion/XtVacuum.h"
 #include "material_carrier.h"
 #include "position_define.h"
-#include "xtmotor.h"
+#include "XtMotion/xtmotor.h"
 
 
 #include <QObject>

@@ -9,7 +9,7 @@
 #include "calibration_parameter.h"
 #include "errorcode.h"
 #include "vision_location.h"
-#include "xtmotor.h"
+#include "XtMotion/xtmotor.h"
 
 
 enum CaliType{

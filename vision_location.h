@@ -4,7 +4,7 @@
 #include "pixel2mech.h"
 #include "vision_location_parameter.h"
 #include "visionmodule.h"
-#include "wordoplight.h"
+#include "Light/wordoplight.h"
 
 class VisionLocation:public ErrorBase
 {

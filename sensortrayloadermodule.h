@@ -1,11 +1,11 @@
 #ifndef SENSORTRAYLOADERMODULE_H
 #define SENSORTRAYLOADERMODULE_H
 
-#include "XtCylinder.h"
+#include "XtMotion/XtCylinder.h"
 #include "sensorclip.h"
 #include "sensortrayloaderparameter.h"
 #include "thread_worker_base.h"
-#include "xtmotor.h"
+#include "XtMotion/xtmotor.h"
 
 class SensorTrayLoaderModule:public ThreadWorkerBase
 {

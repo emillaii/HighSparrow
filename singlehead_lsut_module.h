@@ -1,7 +1,7 @@
 #ifndef SINGLEHEAD_LSUT_MODULE_H
 #define SINGLEHEAD_LSUT_MODULE_H
 
-#include "XtCylinder.h"
+#include "XtMotion/XtCylinder.h"
 #include "material_carrier.h"
 #include "singleheadlsutparameter.h"
 #include "thread_worker_base.h"

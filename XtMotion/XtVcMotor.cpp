@@ -1,4 +1,4 @@
-﻿#include "XtVcMotor.h"
+﻿#include "XtMotion/XtVcMotor.h"
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
 #include "C_SoftLanding_dll.h"

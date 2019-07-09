@@ -1,7 +1,7 @@
 #ifndef SUT_MODULE_H
 #define SUT_MODULE_H
 
-#include "XtCylinder.h"
+#include "XtMotion/XtCylinder.h"
 #include "baslerpyloncamera.h"
 #include "calibration.h"
 #include "material_carrier.h"
@@ -10,7 +10,7 @@
 #include "thread_worker_base.h"
 #include "vision_location.h"
 #include "visionmodule.h"
-#include "wordoplight.h"
+#include "Light/wordoplight.h"
 
 enum SUT_STATE
 {

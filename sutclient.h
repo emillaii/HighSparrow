@@ -1,7 +1,7 @@
 #ifndef SUTCILENT_H
 #define SUTCILENT_H
 
-#include "XtVacuum.h"
+#include "XtMotion/XtVacuum.h"
 #include "sparrowqclient.h"
 
 #include <qobject.h>

@@ -4,15 +4,15 @@
 #include <QObject>
 #include <QTime>
 #include <QString>
-#include "xtadcmodule.h"
-#include "XtGeneralInput.h"
-#include "XtGeneralOutput.h"
+#include "XtMotion/xtadcmodule.h"
+#include "XtMotion/XtGeneralInput.h"
+#include "XtMotion/XtGeneralOutput.h"
 #include "PropertyBase.h"
 #include "errorcode.h"
 #include "verticallimitparameter.h"
 #include "iolimitparameter.h"
 #include "parallellimitparameter.h"
-#include "xtmotorparameter.h"
+#include "XtMotion/xtmotorparameter.h"
 
 class XtMotorExtendParameters : public PropertyBase
 {

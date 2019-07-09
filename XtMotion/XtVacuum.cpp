@@ -1,7 +1,7 @@
 #include <qthread.h>
 #include <utility>
 //#include "xtmotion.h"
-#include "XtVacuum.h"
+#include "XtMotion/XtVacuum.h"
 
 XtVacuum::XtVacuum():ErrorBase ()
 {

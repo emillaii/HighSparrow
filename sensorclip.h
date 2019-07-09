@@ -1,9 +1,9 @@
 #ifndef SENSORCLIP_H
 #define SENSORCLIP_H
 
-#include "XtCylinder.h"
+#include "XtMotion/XtCylinder.h"
 #include "sensorclipparameter.h"
-#include "xtmotor.h"
+#include "XtMotion/xtmotor.h"
 
 #include <QObject>
 

@@ -1,4 +1,4 @@
-#include "XtCylinder.h"
+#include "XtMotion/XtCylinder.h"
 //#include "xtmotion.h"
 
 #include <QThread>

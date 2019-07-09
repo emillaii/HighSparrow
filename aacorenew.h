@@ -22,7 +22,7 @@
 #include "visionavadaptor.h"
 #include "imageprovider.h"
 #include "chart_calibration.h"
-#include "dispense_module.h"
+#include "Dispense/dispense_module.h"
 #include "aacoreparameters.h"
 #include "lutclient.h"
 #include "imagegrabbingworkerthread.h"

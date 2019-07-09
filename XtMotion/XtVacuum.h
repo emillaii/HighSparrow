@@ -1,9 +1,9 @@
 ﻿#ifndef XTVACUUM_H
 #define XTVACUUM_H
-#include "XtGeneralInput.h"
-#include "XtGeneralOutput.h"
+#include "XtMotion/XtGeneralInput.h"
+#include "XtMotion/XtGeneralOutput.h"
 #include "errorcode.h"
-#include "xtvacuumparameter.h"
+#include "XtMotion/xtvacuumparameter.h"
 #include <QString>
 #define VACUUM_TIMEOUT 3000
 #define VACUUM_INPUT_NULL_DELAY 1000

@@ -1,7 +1,7 @@
 #ifndef DISPENSER_H
 #define DISPENSER_H
 #include "dispenser_parameter.h"
-#include "xtmotor.h"
+#include "XtMotion/xtmotor.h"
 
 #include <windows.h>
 #include <QVector>

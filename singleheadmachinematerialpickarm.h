@@ -1,14 +1,14 @@
 ﻿#ifndef SINGLEHEADMACHINEMATERIALPICKARM_H
 #define SINGLEHEADMACHINEMATERIALPICKARM_H
 
-#include "XtCylinder.h"
-#include "XtVacuum.h"
-#include "XtVcMotor.h"
+#include "XtMotion/XtCylinder.h"
+#include "XtMotion/XtVacuum.h"
+#include "XtMotion/XtVcMotor.h"
 #include "errorcode.h"
 #include "pickarmposition.h"
 #include "position_define.h"
 #include "singleheadmachinematerialpickarmparameter.h"
-#include "xtmotor.h"
+#include "XtMotion/xtmotor.h"
 #include "vision_location.h"
 
 # define POS_ERROR 0.001

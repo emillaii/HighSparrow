@@ -30,19 +30,19 @@ SOURCES += \
     motorspositionmodel.cpp \
     propertybase.cpp \
     basemodule.cpp \
-    xtadcmodule.cpp \
-    XtGeneralOutput.cpp \
-    XtGeneralInput.cpp \
+    XtMotion/xtadcmodule.cpp \
+    XtMotion/XtGeneralOutput.cpp \
+    XtMotion/XtGeneralInput.cpp \
     sfrworker.cpp \
-    wordoplight.cpp \
+    Light/wordoplight.cpp \
     logicmanager.cpp \
     filecontent.cpp \
     basemodulemanager.cpp \
-    LontryLight.cpp \
-    XtCylinder.cpp \
-    XtMotor.cpp \
-    XtVcMotor.cpp \
-    XtVacuum.cpp \
+    Light/LontryLight.cpp \
+    XtMotion/XtCylinder.cpp \
+    XtMotion/XtMotor.cpp \
+    XtMotion/XtVcMotor.cpp \
+    XtMotion/XtVacuum.cpp \
     lut_module.cpp \
     sut_module.cpp \
     aadata.cpp \
@@ -52,11 +52,11 @@ SOURCES += \
     calibration.cpp \
     chart_calibration.cpp \
     imagegrabbingworkerthread.cpp\
-	dothinkey.cpp \
+    dothinkey.cpp \
     iniparser.cpp \
     imageprovider.cpp \
-    dispenser.cpp \
-    dispense_module.cpp \
+    Dispense/dispenser.cpp \
+    Dispense/dispense_module.cpp \
     vision_location.cpp \
     unitlog.cpp \
     workers_manager.cpp \
@@ -141,21 +141,21 @@ HEADERS += \
     motorspositionmodel.h \
     propertybase.h \
     basemodule.h \
-    xtadcmodule.h \
-    XtGeneralOutput.h \
-    XtGeneralInput.h \
+    XtMotion/xtadcmodule.h \
+    XtMotion/XtGeneralOutput.h \
+    XtMotion/XtGeneralInput.h \
     sfrworker.h \
     aaheadparameters.h \
-    wordoplight.h \
+    Light/wordoplight.h \
     logicmanager.h \
     filecontent.h \
     basemodulemanager.h \
-    LontryLight.h \
-    XtCylinder.h \
-    xtmotor.h \
-    XtVcMotor.h \
+    Light/LontryLight.h \
+    XtMotion/XtCylinder.h \
+    XtMotion/xtmotor.h \
+    XtMotion/XtVcMotor.h \
     material_carrier.h \
-    XtVacuum.h \
+    XtMotion/XtVacuum.h \
     sut_parameter.h \
     material_carrier_parameter.h \
     lut_module.h \
@@ -171,11 +171,11 @@ HEADERS += \
     dothinkey.h \
     iniparser.h \
     imageprovider.h \
-    XtVacuum.h \
-    dispenser.h \
-    dispenser_parameter.h \
-    dispense_module.h \
-    dispense_parameter.h \
+    XtMotion/XtVacuum.h \
+    Dispense/dispenser.h \
+    Dispense/dispenser_parameter.h \
+    Dispense/dispense_module.h \
+    Dispense/dispense_parameter.h \
     position_define.h \
     vision_location_parameter.h \
     vision_location.h \
@@ -194,13 +194,13 @@ HEADERS += \
     lenspickarmparameter.h \
     lensloaderparameter.h \
     lensloadermodule.h \
-    xtvcmotorparameter.h \
+    XtMotion/xtvcmotorparameter.h \
     trayloadermodule.h \
     trayclip.h \
     trayloaderparameter.h \
     trayclipstandardsparameter.h\
-    xtvacuumparameter.h \
-    xtcylinderparameter.h \
+    XtMotion/xtvacuumparameter.h \
+    XtMotion/xtcylinderparameter.h \
     lutclient.h \
     sensorpickarm.h \
     sensorpickarmparameter.h \
@@ -217,7 +217,7 @@ HEADERS += \
     parallellimitparameter.h \
     verticallimitparameter.h \
     modulemanagerparameter.h \
-    xtmotorparameter.h \
+    XtMotion/xtmotorparameter.h \
     checkprocessitem.h \
     checkprocessmodel.h \
     machinestatemonitor.h \

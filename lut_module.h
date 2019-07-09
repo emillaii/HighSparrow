@@ -2,7 +2,7 @@
 #define LUT_MODULE_H
 
 #include "material_carrier.h"
-#include "wordoplight.h"
+#include "Light/wordoplight.h"
 #include "baslerpyloncamera.h"
 #include "lut_parameter.h"
 #include "visionmodule.h"

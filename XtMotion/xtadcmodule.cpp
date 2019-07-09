@@ -1,4 +1,4 @@
-#include "xtadcmodule.h"
+#include "XtMotion/xtadcmodule.h"
 
 using namespace XT_Controler;
 

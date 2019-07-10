@@ -101,10 +101,13 @@ typedef enum {
     AA_STATIONARY_SCAN_MODE
 } ZSCAN_MODE;
 
+AACoreNew * that;
+
 AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 {
     Q_UNUSED(name)
     Q_UNUSED(parent)
+    that = this;
 }
 
 void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Dothinkey *dk, ChartCalibration *chartCalibration,
@@ -369,7 +372,7 @@ bool AACoreNew::runFlowchartTest()
                }
                else {
                    qInfo(QString("Do Test:" + currentPointer).toStdString().c_str());
-                   QJsonValue op = operators[currentPointer.toStdString().c_str()];\
+                   QJsonValue op = operators[currentPointer.toStdString().c_str()];
                    //Choose Path base on the result
                    ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
                    bool ret = true;
@@ -389,9 +392,6 @@ bool AACoreNew::runFlowchartTest()
                             }
                        }
                        if (!hasFailPath) {
-                           //qInfo() << "Missing fail path, will put to reject test item";
-                           // qInfo() << "Reject! -> To Reject Tray";
-                           //qInfo() << "End of graph";
                            qInfo("Finished With Auto Reject");
                            performReject();
                            end = true;
@@ -470,8 +470,16 @@ bool AACoreNew::runFlowchartTest()
                        }
                    }
                }
-               qInfo("End of traversal");
-               performParallelTest(thread_1_test_list, thread_2_test_list);
+               qInfo("End of traversal: %s", jsonMap["operators"].toString().toStdString().c_str());
+               QJsonValue op1 = operators[thread_1_test_list[0].toStdString().c_str()];
+               QJsonValue op2 = operators[thread_2_test_list[0].toStdString().c_str()];
+               ErrorCodeStruct ret = performParallelTest(thread_1_test_list, thread_2_test_list, op1["properties"], op2["properties"]);
+               if (ret.code != ErrorCode::OK) {
+                   qInfo("Finished With Auto Reject");
+                   performReject();
+                   end = true;
+                   break;
+               }
                //Perform Parallel Test
            }
        }
@@ -621,22 +629,38 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
     return ret;
 }
 
-bool AACoreNew::performThreadTest(vector<QString> testList)
+bool AACoreNew::performThreadTest(vector<QString> testList, QJsonValue params)
 {
+    ErrorCodeStruct ret = ErrorCodeStruct {ErrorCode::OK, ""};
     foreach(QString testName, testList) {
         qInfo() << "Perform Test in thread : " << testName;
+        if (testName.contains(AA_PIECE_DELAY)) {
+            int delay_in_ms = params["delay_in_ms"].toInt();
+            that->performDelay(delay_in_ms);
+        } else if (testName.contains(AA_PIECE_Y_LEVEL)) {
+            ret = that->performYLevelTest(params);
+        } else if (testName.contains(AA_PIECE_UV)) {
+            int uv_time = params["delay_in_ms"].toInt();
+            ret = that->performUV(uv_time);
+        }
     }
-    return true;
+    if (ret.code == ErrorCode::OK)
+        return true;
+    else
+        return false;
 }
 
-ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector<QString> testList2)
+ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue prop1, QJsonValue prop2)
 {
+    QJsonValue params1 = prop1["params"];
+    QJsonValue params2 = prop2["params"];
     QFuture<bool> f1;
     QFuture<bool> f2;
-    f1 = QtConcurrent::run(performThreadTest, testList1);
-    f2 = QtConcurrent::run(performThreadTest, testList2);
+    f1 = QtConcurrent::run(performThreadTest, testList1, params1);
+    f2 = QtConcurrent::run(performThreadTest, testList2, params2);
     f1.waitForFinished();
     f2.waitForFinished();
+    qInfo("Finish parallel test");
     bool ret1 = f1.result();
     bool ret2 = f2.result();
     bool ret = (ret1 && ret2);

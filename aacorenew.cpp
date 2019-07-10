@@ -540,9 +540,9 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             qInfo("End of perform unload camera %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_OC)) {
-            qInfo("Performing OC");
             bool enable_motion = params["enable_motion"].toInt();
             bool fast_mode = params["fast_mode"].toInt();
+            qInfo("Performing OC enable_motion:%d fast_mode:%d",enable_motion,fast_mode);
             ret = performOC(enable_motion, fast_mode);
             qInfo("End of perform OC %s",ret.errorMessage.toStdString().c_str());
         }

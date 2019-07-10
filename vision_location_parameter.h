@@ -19,7 +19,8 @@ public:
     Q_PROPERTY(bool needCalibration READ needCalibration WRITE setNeedCalibration NOTIFY needCalibrationChanged)
     Q_PROPERTY(bool canMotion READ canMotion WRITE setCanMotion NOTIFY canMotionChanged)
     Q_PROPERTY(double waitImageDelay READ waitImageDelay WRITE setWaitImageDelay NOTIFY waitImageDelayChanged)
-
+    Q_PROPERTY(bool enablePrTest READ enablePrTest WRITE setEnablePrTest NOTIFY enablePrTestChanged)
+    Q_PROPERTY(int testIndex READ testIndex WRITE setTestIndex NOTIFY testIndexChanged)
     QString prFileName() const
     {
         return m_prFileName;
@@ -73,6 +74,16 @@ public:
     double waitImageDelay() const
     {
         return m_waitImageDelay;
+    }
+
+    bool enablePrTest() const
+    {
+        return m_enablePrTest;
+    }
+
+    int testIndex() const
+    {
+        return m_testIndex;
     }
 
 public slots:
@@ -178,6 +189,24 @@ public slots:
         emit waitImageDelayChanged(m_waitImageDelay);
     }
 
+    void setEnablePrTest(bool enablePrTest)
+    {
+        if (m_enablePrTest == enablePrTest)
+            return;
+
+        m_enablePrTest = enablePrTest;
+        emit enablePrTestChanged(m_enablePrTest);
+    }
+
+    void setTestIndex(int testIndex)
+    {
+        if (m_testIndex == testIndex)
+            return;
+
+        m_testIndex = testIndex;
+        emit testIndexChanged(m_testIndex);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -201,6 +230,10 @@ signals:
 
     void waitImageDelayChanged(double waitImageDelay);
 
+    void enablePrTestChanged(bool enablePrTest);
+
+    void testIndexChanged(int testIndex);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -213,6 +246,8 @@ private:
     bool m_needCalibration = false;
     bool m_canMotion = true;
     double m_waitImageDelay = 100;
+    bool m_enablePrTest = false;
+    int m_testIndex = 1;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

@@ -42,6 +42,16 @@ public:
     Q_PROPERTY(bool usePlan READ usePlan WRITE setUsePlan NOTIFY usePlanChanged)
     Q_PROPERTY(int planNumber READ planNumber WRITE setPlanNumber NOTIFY planNumberChanged)
     Q_PROPERTY(double accumulatedHour READ accumulatedHour WRITE setAccumulatedHour NOTIFY accumulatedHourChanged)
+
+    Q_PROPERTY(int repeatTime READ repeatTime WRITE setRepeatTime NOTIFY repeatTimeChanged)
+    Q_PROPERTY(int testSensorCount READ testSensorCount WRITE setTestSensorCount NOTIFY testSensorCountChanged)
+    Q_PROPERTY(int staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
+    Q_PROPERTY(bool enableTraySensorPrTest READ enableTraySensorPrTest WRITE setEnableTraySensorPrTest NOTIFY enableTraySensorPrTestChanged)
+    Q_PROPERTY(bool enableSutVacancyPrTest READ enableSutVacancyPrTest WRITE setEnableSutVacancyPrTest NOTIFY enableSutVacancyPrTestChanged)
+    Q_PROPERTY(bool enableSutPrTest READ enableSutPrTest WRITE setEnableSutPrTest NOTIFY enableSutPrTestChanged)
+    Q_PROPERTY(bool enableSutSensorPrTest READ enableSutSensorPrTest WRITE setEnableSutSensorPrTest NOTIFY enableSutSensorPrTestChanged)
+    Q_PROPERTY(bool enableTrayVacancyPrTest READ enableTrayVacancyPrTest WRITE setEnableTrayVacancyPrTest NOTIFY enableTrayVacancyPrTestChanged)
+
     double vcmWorkForce() const
     {
         return m_vcmWorkForce;
@@ -194,6 +204,46 @@ public:
     double sensorOffsetY() const
     {
         return m_sensorOffsetY;
+    }
+
+    int repeatTime() const
+    {
+        return m_repeatTime;
+    }
+
+    int testSensorCount() const
+    {
+        return m_testSensorCount;
+    }
+
+    int staticTest() const
+    {
+        return m_staticTest;
+    }
+
+    bool enableTraySensorPrTest() const
+    {
+        return m_enableTraySensorPrTest;
+    }
+
+    bool enableSutVacancyPrTest() const
+    {
+        return m_enableSutVacancyPrTest;
+    }
+
+    bool enableSutPrTest() const
+    {
+        return m_enableSutPrTest;
+    }
+
+    bool enableSutSensorPrTest() const
+    {
+        return m_enableSutSensorPrTest;
+    }
+
+    bool enableTrayVacancyPrTest() const
+    {
+        return m_enableTrayVacancyPrTest;
     }
 
 public slots:
@@ -495,6 +545,78 @@ public slots:
         emit sensorOffsetYChanged(m_sensorOffsetY);
     }
 
+    void setRepeatTime(int repeatTime)
+    {
+        if (m_repeatTime == repeatTime)
+            return;
+
+        m_repeatTime = repeatTime;
+        emit repeatTimeChanged(m_repeatTime);
+    }
+
+    void setTestSensorCount(int testSensorCount)
+    {
+        if (m_testSensorCount == testSensorCount)
+            return;
+
+        m_testSensorCount = testSensorCount;
+        emit testSensorCountChanged(m_testSensorCount);
+    }
+
+    void setStaticTest(int staticTest)
+    {
+        if (m_staticTest == staticTest)
+            return;
+
+        m_staticTest = staticTest;
+        emit staticTestChanged(m_staticTest);
+    }
+
+    void setEnableTraySensorPrTest(bool enableTraySensorPrTest)
+    {
+        if (m_enableTraySensorPrTest == enableTraySensorPrTest)
+            return;
+
+        m_enableTraySensorPrTest = enableTraySensorPrTest;
+        emit enableTraySensorPrTestChanged(m_enableTraySensorPrTest);
+    }
+
+    void setEnableSutVacancyPrTest(bool enableSutVacancyPrTest)
+    {
+        if (m_enableSutVacancyPrTest == enableSutVacancyPrTest)
+            return;
+
+        m_enableSutVacancyPrTest = enableSutVacancyPrTest;
+        emit enableSutVacancyPrTestChanged(m_enableSutVacancyPrTest);
+    }
+
+    void setEnableSutPrTest(bool enableSutPrTest)
+    {
+        if (m_enableSutPrTest == enableSutPrTest)
+            return;
+
+        m_enableSutPrTest = enableSutPrTest;
+        emit enableSutPrTestChanged(m_enableSutPrTest);
+    }
+
+    void setEnableSutSensorPrTest(bool enableSutSensorPrTest)
+    {
+        if (m_enableSutSensorPrTest == enableSutSensorPrTest)
+            return;
+
+        m_enableSutSensorPrTest = enableSutSensorPrTest;
+        emit enableSutSensorPrTestChanged(m_enableSutSensorPrTest);
+    }
+
+    void setEnableTrayVacancyPrTest(bool enableTrayVacancyPrTest)
+    {
+        if (m_enableTrayVacancyPrTest == enableTrayVacancyPrTest)
+            return;
+
+        m_enableTrayVacancyPrTest = enableTrayVacancyPrTest;
+        emit enableTrayVacancyPrTestChanged(m_enableTrayVacancyPrTest);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -559,6 +681,22 @@ signals:
 
     void sensorOffsetYChanged(double sensorOffsetY);
 
+    void repeatTimeChanged(int repeatTime);
+
+    void testSensorCountChanged(int testSensorCount);
+
+    void staticTestChanged(int staticTest);
+
+    void enableTraySensorPrTestChanged(bool enableTraySensorPrTest);
+
+    void enableSutVacancyPrTestChanged(bool enableSutVacancyPrTest);
+
+    void enableSutPrTestChanged(bool enableSutPrTest);
+
+    void enableSutSensorPrTestChanged(bool enableSutSensorPrTest);
+
+    void enableTrayVacancyPrTestChanged(bool enableTrayVacancyPrTest);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -591,6 +729,14 @@ private:
     bool m_useSensorOffset = false;
     double m_sensorOffsetX = 4.8;
     double m_sensorOffsetY = 0;
+    int m_repeatTime = 10;
+    int m_testSensorCount = 10;
+    int m_staticTest = false;
+    bool m_enableTraySensorPrTest = false;
+    bool m_enableSutVacancyPrTest = false;
+    bool m_enableSutPrTest = false;
+    bool m_enableSutSensorPrTest = false;
+    bool m_enableTrayVacancyPrTest = false;
 };
 class SensorLoaderState:public PropertyBase
 {

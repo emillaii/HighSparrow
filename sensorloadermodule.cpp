@@ -1181,6 +1181,608 @@ void SensorLoaderModule::run(bool has_material)
     qInfo("sensor Loader Module stoped");
 }
 
+void SensorLoaderModule::runTest()
+{
+    int sensor_tray_index = 0;
+    int ng_tray_index = 2;
+    is_run = true;
+    finish_stop = false;
+    bool has_task = true;
+    int current_time = parameters.repeatTime();
+    int current_count = parameters.testSensorCount();
+    bool finished = false;
+    states.setHasTray(true);
+    while (is_run)
+    {
+        if(!has_task)
+            QThread::msleep(1000);
+        has_task = false;
+        //放Ng到成品盘
+        if((!states.allowChangeTray())&&states.hasTray()&&states.hasPickedProduct())
+        {
+            has_task = true;
+            vacancy_vision->OpenLight();
+            if(!moveToProductTrayNextPos())
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            if(parameters.staticTest())
+                current_time = parameters.repeatTime();
+            while (current_time>0)
+            {
+                if((!performVacancyPR()))
+                {
+                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                    if(waitMessageReturn(is_run))
+                    {
+                        continue;
+                    }
+                    if(!is_run)break;
+                    if(parameters.enableSutVacancyPrTest()||(!parameters.staticTest()))
+                        break;
+                    current_time--;
+                }
+            }
+            vacancy_vision->CloseLight();
+            if(!moveToWorkPos2(true))
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                {
+                    states.setHasPickedProduct(false);
+                    continue;
+                }
+                if(!is_run)break;
+            }
+            if(!placeSensorToTray())
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
+                    continue;
+            }
+            tray->setCurrentMaterialState(MaterialState::IsNg,ng_tray_index);
+            states.setHasPickedNgSensor(false);
+            if(!is_run)break;
+            if(parameters.staticTest())
+            {
+                if(finish_stop)
+                {
+                    if(finished)
+                    {
+                        is_run = false;
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,"测试完成,自动停止！");
+                        break;
+                    }
+                    else
+                    {
+                        finished = true;
+                        current_count = parameters.testSensorCount();
+                        tray->resetTrayState(0);
+                    }
+                    finish_stop = false;
+                }
+            }
+            else
+            {
+                if(finish_stop)
+                   current_time--;
+                if(current_time <= 0)
+                {
+                    if(finished)
+                    {
+                        is_run = false;
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,"测试完成,自动停止！");
+                        break;
+                    }
+                    else
+                    {
+                        finished = true;
+                        current_time = parameters.repeatTime();
+                        current_count = parameters.testSensorCount();
+                        tray->resetTrayState(0);
+                    }
+                }
+                else
+                {
+                    current_count = parameters.testSensorCount();
+                    tray->resetTrayState(0);
+                }
+                finish_stop = false;
+            }
+        }
+        //取料
+        if((!finish_stop)&&(!states.allowChangeTray())&&states.hasTray()&&(!states.hasPickedSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgProduct())&&(!states.hasPickedNgSensor()))
+        {
+            has_task = true;
+            sensor_vision->OpenLight();
+            if(!moveToSensorTrayNextPos())
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            if(parameters.staticTest())
+                current_time = parameters.repeatTime();
+            while(current_time > 0)
+            {
+                if(!performSensorPR())
+                {
+                    sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                    if(waitMessageReturn(is_run))
+                        is_run = false;
+                    else
+                        continue;
+                    if(!is_run)break;
+                }
+                if(!parameters.staticTest())
+                    break;
+                current_time--;
+            }
+            sensor_vision->CloseLight();
+            getPicker1SensorOffset();
+            if(!moveToWorkPos(false))
+            {
+                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                waitMessageReturn(is_run);
+                if(!is_run)break;
+            }
+            if((!pickTraySensor()))
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                if(!waitMessageReturn(is_run))
+                    states.setHasPickedSensor(true);
+            }
+            else
+                states.setHasPickedSensor(true);
+            tray->setCurrentMaterialState(MaterialState::IsEmpty,sensor_tray_index);
+            picked_material = tray->getCurrentIndex(sensor_tray_index);
+            if(!is_run)break;
+        }
+        //等待位置
+        if(!moveToSUTPRPos(isLocalHost,true))
+        {
+            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+            is_run = false;
+            break;
+        }
+        //sut操作
+        if ((!states.allowChangeTray())&&(!requestQueue.isEmpty()) && (!states.beExchangeMaterial())&&states.hasPickedSensor()&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgProduct()))
+        {
+            has_task = true;
+            QMutexLocker locker(&tcp_mutex);
+            QJsonObject obj = requestQueue.dequeue();
+            qInfo("Start to consume request: %s", getStringFromJsonObject(obj).toStdString().c_str());
+            QString client_ip = obj["client_ip"].toString("");
+            servingIP = client_ip;
+            QString cmd = obj["cmd"].toString("");
+            if(client_ip == "::1")
+            {
+                qInfo("This command come from localhost");
+                isLocalHost = true;
+            }
+            else
+            {
+                qInfo("This command come from anther computer");
+                isLocalHost = false;
+            }
+
+            if (cmd == "sensorReq")
+            {
+                qInfo("start commincate with %s",servingIP.toStdString().c_str());
+//                actionQueue.clear();
+                states.setBeExchangeMaterial(true);
+                sendEvent("sensorResp");
+            }
+        }
+
+        if ((!states.allowChangeTray())&&(!actionQueue.isEmpty()) && states.beExchangeMaterial())
+        {
+            has_task = true;
+            while(states.beExchangeMaterial())
+            {
+                if((actionQueue.isEmpty()))
+                {
+                    QThread::msleep(1);
+                    if(states.cmd() == "")
+                        continue;
+                    if(!is_run)
+                        break;
+                }
+                if(states.cmd() == "")
+                {
+                    QMutexLocker locker(&tcp_mutex);
+                    QJsonObject obj = actionQueue.dequeue();
+                    qInfo("Start to consume action request: %s", getStringFromJsonObject(obj).toStdString().c_str());
+                    states.setCmd(obj["cmd"].toString(""));
+                }
+
+                if((states.cmd() == "unloadProductReq")&&states.hasUnpickedProduct())
+                {
+                    sendEvent("unloadProductResp");
+                    states.setCmd("");
+                }
+                else if((states.cmd() == "unloadProductReq")&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct())&&(!states.hasUnpickedProduct()))
+                {
+                    sut_product_vision->OpenLight();
+                    if(!moveToSUTPRPos(isLocalHost))
+                    {
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                        is_run = false;
+                        break;
+                    }
+                    if((!performSUTProductPR()))
+                    {
+                        AppendError(u8"成品视觉失败！");
+                        sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                        int result = waitMessageReturn(is_run);
+                        if(result)is_run = false;
+                        if(!is_run)break;
+                        if(result)
+                            continue;
+                    }
+                    sut_product_vision->CloseLight();
+                    getPicker2SensorOffset();
+//                    states.setPicker2OffsetX(pr_offset.O_X);
+//                    states.setPicker2OffsetY(pr_offset.O_Y);
+                    if(!moveToWorkPos2(false))
+                    {
+                        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                        waitMessageReturn(is_run);
+                        if(!is_run)break;
+                    }
+                    if((!pickSUTProduct(isLocalHost?"::1":"remote")))
+                    {
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                        if(waitMessageReturn(is_run))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            states.setHasUnpickedProduct(true);
+                            states.setSutHasProduct(false);
+                            states.setHasPickedProduct(true);
+                        }
+                    }
+                    else
+                    {
+                        states.setHasUnpickedProduct(true);
+                        states.setSutHasProduct(false);
+                        states.setHasPickedProduct(true);
+                    }
+                    sendEvent("unloadProductResp");
+                    states.setCmd("");
+                    product_uph.addCurrentNumber(updateAccumulatedHour());
+                    product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    if(isLocalHost)
+                    {
+                        right_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        right_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                        right_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    }
+                    else
+                    {
+                        left_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        left_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                        left_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    }
+                }
+                else if((states.cmd() == "unloadNgProductReq")&&states.hasUnpickedNgProduct())
+                {
+
+                    sendEvent("unloadNgProductResp");
+                    states.setCmd("");
+                }
+                else if((states.cmd() == "unloadNgProductReq")&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct())&&(!states.hasUnpickedNgProduct()))
+                {
+                    sut_product_vision->OpenLight();
+                    if(!moveToSUTPRPos(isLocalHost))
+                    {
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                        is_run = false;
+                        break;
+                    }
+                    if((!performSUTProductPR()))
+                    {
+                        AppendError(u8"成品视觉失败！");
+                        sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                        int result = waitMessageReturn(is_run);
+                        if(result)is_run = false;
+                        if(!is_run)break;
+                        if(result)
+                            continue;
+                    }
+                    sut_product_vision->CloseLight();
+                    getPicker2SensorOffset();
+//                    states.setPicker2OffsetX(pr_offset.O_X);
+//                    states.setPicker2OffsetY(pr_offset.O_Y);
+                    if(!moveToWorkPos2(false))
+                    {
+                        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                        waitMessageReturn(is_run);
+                        if(!is_run)break;
+                    }
+                    if((!pickSUTProduct(isLocalHost?"::1":"remote")))
+                    {
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                        if(waitMessageReturn(is_run))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            states.setHasUnpickedNgProduct(true);
+                            states.setSutHasNgProduct(false);
+                            states.setHasPickedNgProduct(true);
+                        }
+                    }
+                    else
+                    {
+                        states.setHasUnpickedNgProduct(true);
+                        states.setSutHasNgProduct(false);
+                        states.setHasPickedNgProduct(true);
+                    }
+                    sendEvent("unloadNgProductResp");
+                    states.setCmd("");
+                    product_uph.addCurrentNumber(updateAccumulatedHour());
+                    comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    if(isLocalHost)
+                    {
+                        right_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        right_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    }
+                    else
+                    {
+                        left_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        left_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    }
+                }
+
+                else if((states.cmd() == "unloadNgSensorReq")&&states.hasUpickedNgSensor())
+                {
+                    sendEvent("unloadNgSensorResp");
+                    states.setCmd("");
+                }
+                else if((states.cmd() == "unloadNgSensorReq")&&(!states.hasPickedNgSensor())&&(!states.hasUpickedNgSensor()))
+                {
+                    //取NG sensor
+                    sut_sensor_vision->OpenLight();
+                    if(!moveToSUTPRPos(isLocalHost))
+                    {
+                        AppendError("moveToSUTPRPos fail!");
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                        is_run = false;
+                        break;
+                    }
+                    if((!performSUTSensorPR()))
+                    {
+                        AppendError(u8"NG视觉失败！");
+                        sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                        int result = waitMessageReturn(is_run);
+                        if(result)
+                            is_run = false;
+                        else
+                            continue;
+                        if(!is_run)break;
+                    }
+                    sut_sensor_vision->CloseLight();
+                    getPicker2SensorOffset();
+//                    states.setPicker2OffsetX(pr_offset.O_X);
+//                    states.setPicker2OffsetY(pr_offset.O_Y);
+                    if(!moveToWorkPos2(false))
+                    {
+                        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                        waitMessageReturn(is_run);
+                        if(!is_run)break;
+                    }
+                    if((!pickSUTSensor(isLocalHost?"::1":"remote")))
+                    {
+                        AppendError("pickSUTSensor fail!");
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                        if(waitMessageReturn(is_run))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            states.setHasUnpickedNgSensor(true);
+                            states.setSutHasNgSensor(false);
+                            states.setHasPickedNgSensor(true);
+                        }
+                    }
+                    else
+                    {
+                        states.setHasUnpickedNgSensor(true);
+                        states.setSutHasNgSensor(false);
+                        states.setHasPickedNgSensor(true);
+                    }
+                    sendEvent("unloadNgSensorResp");
+                    states.setCmd("");
+                    sensor_uph.addCurrentReslutNumber(updateAccumulatedHour());
+                    if(isLocalHost)
+                        right_sensor_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    else
+                        left_sensor_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                }
+                else if ((states.cmd() == "loadSensorReq")&&states.hasPickedSensor())
+                {
+                    //放料到SUT
+                    if(!movePicker1ToSUTPos(isLocalHost))
+                    {
+                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                        is_run = false;
+                        break;
+                    }
+                    if((!placeSensorToSUT(isLocalHost?"::1":"remote")))
+                    {
+                        sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                        if(waitMessageReturn(is_run))
+                        {
+                            states.setHasPickedSensor(false);
+                            break;
+                        }
+                    }
+                    states.setNeedLoadSensor(false);
+                    states.setHasPickedSensor(false);
+                    sendEvent("loadSensorResp");
+                    states.setCmd("");
+                    sensor_uph.addCurrentNumber(updateAccumulatedHour());
+                    comprehensive_uph.addCurrentNumber(updateAccumulatedHour(false));
+                    if(isLocalHost)
+                    {
+                        right_sensor_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        right_comprehensive_uph.addCurrentNumber(updateAccumulatedHour(false));
+                    }
+                    else
+                    {
+                        left_sensor_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        left_comprehensive_uph.addCurrentNumber(updateAccumulatedHour(false));
+                    }
+                    states.setHasUnpickedNgSensor(false);
+                    states.setHasUnpickedProduct(false);
+                    states.setHasUnpickedNgProduct(false);
+                    states.setBeExchangeMaterial(false);
+                }
+                else if((((states.cmd() == "unloadProductReq")||(states.cmd() == "unloadNgSensorReq"))&&(states.hasPickedNgSensor()||states.hasPickedProduct()))
+                        ||((states.cmd() == "loadSensorReq")&&(!states.hasPickedSensor())))
+                {
+                    break;
+                }
+            }
+            }
+
+        //        //放料到SUT
+//        if(states.needLoadSensor()&&states.hasPickedSensor())
+//        {
+//            has_task = true;
+//            if(!moveToSUTPRPos())
+//            {
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                is_run = false;
+//                break;
+//            }
+//            if(!moveToWorkPos())
+//            {
+//                AppendError("moveToWorkPos fail!");
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                is_run = false;
+//                break;
+//            }
+//            if((!placeSensorToSUT())&&has_material)
+//            {
+//                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+//                if(waitMessageReturn(is_run))
+//                    states.setHasPickedSensor(false);
+//                else
+//                {
+//                    states.setNeedLoadSensor(false);
+//                    states.setHasPickedSensor(false);
+//                }
+//            }
+//            else
+//            {
+//                states.setNeedLoadSensor(false);
+//                states.setHasPickedSensor(false);
+//            }
+//            sut_raw_material = picked_material;
+//        }
+//        //取成品
+//        if(states.sutHasProduct()&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
+//        {
+//            has_task = true;
+//            if(!moveToSUTPRPos())
+//            {
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                is_run = false;
+//                break;
+//            }
+//            if((!performSUTProductPR())&&has_material)
+//            {
+//                AppendError(u8"NG视觉失败！");
+//                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+//                int result = waitMessageReturn(is_run);
+//                if(!result)is_run = false;
+//                if(!is_run)break;
+//                if(result)
+//                    continue;
+//            }
+//            if(!moveToWorkPos2())
+//            {
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                is_run = false;
+//                break;
+//            }
+//            if((!pickSUTProduct())&&has_material)
+//            {
+//                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+//                if(waitMessageReturn(is_run))
+//                    states.setSutHasProduct(false);
+//                else
+//                {
+//                    states.setSutHasProduct(false);
+//                    states.setHasPickedProduct(true);
+//                }
+//            }
+//            else
+//            {
+//                states.setSutHasProduct(false);
+//                states.setHasPickedProduct(true);
+//            }
+
+//        }
+//        //取NGsensor
+//        if(states.sutHasNgSensor()&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
+//        {
+//            has_task = true;
+//            if(!moveToSUTPRPos())
+//            {
+//                AppendError("moveToSUTPRPos fail!");
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                is_run = false;
+//                break;
+//            }
+//            if((!performSUTSensorPR())&&has_material)
+//            {
+//                AppendError(u8"NG视觉失败！");
+//                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+//                int result = waitMessageReturn(is_run);
+//                if(!result)is_run = false;
+//                if(!is_run)break;
+//                if(result)
+//                    continue;
+//            }
+//            if(!moveToWorkPos2())
+//            {
+//                AppendError("moveToWorkPos2 fail!");
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                is_run = false;
+//                break;
+//            }
+//            if((!pickSUTSensor())&&has_material)
+//            {
+//                AppendError("pickSUTSensor fail!");
+//                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+//                if(waitMessageReturn(is_run))
+//                    states.setSutHasNgSensor(false);
+//                else
+//                {
+//                    states.setSutHasNgSensor(false);
+//                    states.setHasPickedNgSensor(true);
+//                }
+//            }
+//            else
+//            {
+//                states.setSutHasNgSensor(false);
+//                states.setHasPickedNgSensor(true);
+//            }
+//        }
+    }
+    qInfo("sensor Loader Module stoped");
+}
+
 bool SensorLoaderModule::checkTrayNeedChange()
 {
     if(tray->isTrayNeedChange(0)||tray->isTrayNeedChange(1))
@@ -1673,3 +2275,46 @@ void SensorLoaderModule::getPicker2SensorOffset()
         states.setPicker2OffsetY(pr_offset.O_Y);
     }
 }
+
+QString SensorLoaderModule::getUuid(int sensor_index)
+{
+    QString uuid = "";
+    if(is_test_finish)
+        uuid.append("left_");
+    else
+        uuid.append("right_");
+    uuid.append(QString::number(sensor_index + 1));
+    uuid.append("_");
+    uuid.append(QString::number(parameters.repeatTime() - current_time + 1));
+    return uuid;
+}
+
+void SensorLoaderModule::startRecord(QString uuid)
+{
+    qInfo("startRecord %s",uuid.toStdString().c_str());
+    QStringList list = uuid.split('_');
+    QVariantMap* temp = new QVariantMap();
+    temp->insert("_station",list[0]);
+    temp->insert("_lens_id",list[1]);
+    temp->insert("_test_time",list[2]);
+}
+
+void SensorLoaderModule::recordPrTest(QString uuid,VisionLocation location)
+{
+    if(!location.parameters.enablePrTest())
+        return;
+    qInfo("record %s uuid: %s",location.parameters.locationName().toStdString().c_str(),uuid.toStdString().c_str());
+    QVariantMap* temp_map = &prRecordMap[uuid];
+    QString temp_name = QString::number(location.parameters.testIndex()).append("_").append(location.parameters.locationName().append("_offset"));
+    temp_map->insert(temp_name.append(".X"),pr_offset.X);
+    temp_map->insert(temp_name.append(".Y"),pr_offset.Y);
+    temp_map->insert(temp_name.append(".T"),pr_offset.Theta);
+}
+
+void SensorLoaderModule::endRecord(QString uuid)
+{
+    postCSVDataToUnit(uuid,prRecordMap[uuid]);
+    saveUnitDataToCSV(uuid);
+    prRecordMap.remove(uuid);
+}
+

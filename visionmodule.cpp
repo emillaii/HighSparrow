@@ -136,6 +136,14 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
     }
     qInfo("%s perform %s",camera_name.toStdString().c_str(),pr_name.toStdString().c_str());
     pr_name.replace("file:///", "");
+
+    QFileInfo fileInfo(pr_name);
+    if(!fileInfo.isFile())
+    {
+        qInfo("pr file name not exist");
+        return ErrorCodeStruct{ GENERIC_ERROR, "pr file name not exist" };
+    }
+
     QString pr_offset_name = pr_name;
     pr_offset_name.replace(".avdata", "_offset.avdata");
     ErrorCodeStruct error_code = { OK, "" };

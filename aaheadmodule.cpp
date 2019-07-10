@@ -331,7 +331,11 @@ bool AAHeadModule::XYZAB_Interpolation(double x, double y, double z, double a, d
 
     double start[] = {motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos(),motor_a->GetFeedbackPos(),motor_b->GetFeedbackPos()};
     double end[] = {x,y,z,a,b};
-
+    motor_x->SetCurrentTragetPos(x);
+    motor_y->SetCurrentTragetPos(y);
+    motor_z->SetCurrentTragetPos(z);
+    motor_a->SetCurrentTragetPos(a);
+    motor_b->SetCurrentTragetPos(b);
     int res = XT_Controler_Extend::Set_Curve_Param(curve_id, 0.1, dem, axis, axis_max_vel, axis_max_acc, axis_max_jerk, axis_combine);
     if(1!=res)
     {

@@ -205,6 +205,11 @@ double XtMotor::GetCurrentTragetPos()
     return current_target;
 }
 
+void XtMotor::SetCurrentTragetPos(double target)
+{
+   current_target = target;
+}
+
 double XtMotor::GetCurVel() const
 {
     if(!is_init)

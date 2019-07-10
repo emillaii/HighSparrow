@@ -79,6 +79,8 @@ public:
 signals:
     void sendMessageToClient(QString destAddress, QString message);
     void sendChangeTrayRequst();
+    void postCSVDataToUnit(QString uuid,QVariantMap data);
+    void saveUnitDataToCSV(QString uuid);
     // ThreadWorkerBase interface
 public slots:
     void startWork(int run_mode);
@@ -89,7 +91,7 @@ public slots:
     void receiveChangeTrayFinish();
 private:
     void run(bool has_material);
-
+    void runTest();
     bool checkTrayNeedChange();
     bool moveToSensorTrayNextPos();
     bool moveToProductTrayNextPos();
@@ -185,6 +187,15 @@ private:
     bool isLocalHost = false;
     QTime time_label;
     QMutex tcp_mutex;
+    QMap<QString,QVariantMap> prRecordMap;
+    bool is_test_finish;
+    bool current_count;
+    bool current_time;
+    QString getUuid(int sensor_index);
+public:
+    void startRecord(QString uuid);
+    void recordPrTest(QString uuid,VisionLocation location);
+    void endRecord(QString uuid);
 };
 
 #endif // SENSORLOADERMODULE_H

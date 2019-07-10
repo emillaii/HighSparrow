@@ -255,7 +255,7 @@ void LogicManager::lensPickArmMoveToPickLensFromTray2()
 void LogicManager::lensPickArmMoveToPickLensFromLut()
 {
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::LUT_POS2+
-                                                           LensLoaderModule::HandlePR::LUT_PR+
+                                                           LensLoaderModule::HandlePR::LUT_LENS_PR+
                                                            LensLoaderModule::HandleToWorkPos::ToWork+
                                                            LensLoaderModule::HandlePickerAction::PICK_NG_LENS_FROM_LUT);
 }

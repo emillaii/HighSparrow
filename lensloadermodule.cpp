@@ -378,19 +378,17 @@ void LensLoaderModule::run(bool has_material)
             if((!pickLUTLens())&&has_material)
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                    lut_has_ng_lens = false;
-                else
+                if(!waitMessageReturn(is_run))
                     states.setHasPickedNgLens(true);
+                if(!is_run)break;
             }
             else
             {
-                lut_has_ng_lens = false;
                 states.setHasPickedNgLens(true);
             }
             {
                 QMutexLocker temp_locker(&lut_mutex);
-                states.setLutHasNgLens(lut_has_ng_lens);
+                states.setLutHasNgLens(false);
                 states.setPickedTrayID(states.lutNgTrayID());
                 states.setPickedLensID(states.lutNgLensID());
                 qInfo("picked ng lens index %d, tray_id %d",states.pickedLensID(),states.pickedTrayID());
@@ -436,11 +434,6 @@ void LensLoaderModule::runTest()
         if(!has_task)
         {
             QThread::msleep(100);
-            if(finish_stop)
-            {
-                is_run = false;
-                break;
-            }
         }
         //放NGLens
         if(states.hasTray()&&(!states.allowChangeTray())&&states.hasPickedNgLens())
@@ -457,10 +450,10 @@ void LensLoaderModule::runTest()
                 states.setHasPickedNgLens(false);
                 continue;
             }
-            if(parameters.staticTest())
-                current_time = parameters.repeatTime();
-            while(current_time > 0)
-            {
+//            if(parameters.staticTest())
+//                current_time = parameters.repeatTime();
+//            while(current_time > 0)
+//            {
                 if(!performVacancyPR())
                 {
                     sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
@@ -470,11 +463,11 @@ void LensLoaderModule::runTest()
                         continue;
                     if(!is_run)break;
                 }
-                recordTrayVacancyPr(getUuid(finished,states.hasPickedLens()?current_count+1:current_count,current_time));
-                if(!parameters.staticTest())
-                    break;
-                current_time--;
-            }
+//                recordTrayVacancyPr(getUuid(finished,states.pickedLensID(),current_time));
+//                if(!parameters.staticTest())
+//                    break;
+//                current_time--;
+//            }
             vacancy_vision->CloseLight();
             if(!moveToWorkPos(true))
             {
@@ -500,7 +493,7 @@ void LensLoaderModule::runTest()
             states.setHasPickedNgLens(false);
             if(parameters.staticTest())
             {
-                if(finish_stop)
+                if(finish_stop&&(tray->getCurrentIndex() == parameters.testLensCount() -1))
                 {
                     if(finished)
                     {
@@ -523,7 +516,7 @@ void LensLoaderModule::runTest()
                    current_time--;
                 if(current_time <= 0)
                 {
-                    if(finished)
+                    if(finished&&(tray->getCurrentIndex() == parameters.testLensCount() -1))
                     {
                         is_run = false;
                         sendAlarmMessage(ErrorLevel::ErrorMustStop,"测试完成,自动停止！");
@@ -576,17 +569,24 @@ void LensLoaderModule::runTest()
                 {
                     sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
                     if(waitMessageReturn(is_run))
+                    {
                         is_run = false;
+                    }
                     else
+                    {
+                        qInfo("continue performLensPR");
+                        QThread::msleep(1000);
                         continue;
+                    }
                     if(!is_run)break;
                 }
-                recordTrayLensPr(getUuid(finished,current_count,current_time));
+                recordTrayLensPr(getUuid(finished,tray->getCurrentIndex(states.currentTray()),current_time));
                 if(!parameters.staticTest())
                     break;
                 current_time--;
             }
             lens_vision->CloseLight();
+            if(!is_run)break;
 
             if(!moveToWorkPos(false))
             {
@@ -610,20 +610,16 @@ void LensLoaderModule::runTest()
                     finish_stop = true;
                 tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
                 states.setHasPickedLens(true);
+                states.setPickedTrayID(states.currentTray());
+                states.setPickedLensID(tray->getCurrentIndex(states.currentTray()));
             }
 
-        }
-        //等待位置
-        if(!movePickerToLUTPos1())
-        {
-            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-            is_run = false;
-            break;
         }
         //放料到LUT
         if(need_load_lens&&states.hasPickedLens())
         {
             has_task = true;
+            lut_vision->OpenLight();
             if(!moveToLUTPRPos1())
             {
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -643,11 +639,13 @@ void LensLoaderModule::runTest()
                         continue;
                     if(!is_run)break;
                 }
-                recordLutVacancyPr(getUuid(finished,current_count,current_time));
+                recordLutVacancyPr(getUuid(finished,states.pickedLensID(),current_time));
                 if(!parameters.staticTest())
                     break;
                 current_time--;
             }
+            lut_vision->CloseLight();
+            if(!is_run)break;
             if(!moveToWorkPos(true))
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
@@ -668,13 +666,14 @@ void LensLoaderModule::runTest()
                     need_load_lens = false;
                     states.setHasPickedLens(false);
                 }
+                if(!is_run)break;
             }
             else
             {
                 need_load_lens = false;
                 states.setHasPickedLens(false);
             }
-            {
+            lut_lens_vision->OpenLight();
                 if(!moveToLUTPRPos1())
                 {
                     sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -685,7 +684,7 @@ void LensLoaderModule::runTest()
                     current_time = parameters.repeatTime();
                 while(current_time > 0)
                 {
-                    if(!performLensPR())
+                    if(!performLUTLensPR())
                     {
                         sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
                         if(waitMessageReturn(is_run))
@@ -694,16 +693,17 @@ void LensLoaderModule::runTest()
                             continue;
                         if(!is_run)break;
                     }
-                    recordLutLensPr(getUuid(finished,current_count,current_time));
+                    recordLutLensPr(getUuid(finished,states.pickedLensID(),current_time));
                     if(!parameters.staticTest())
                         break;
                     current_time--;
                 }
+                lut_lens_vision->CloseLight();
+                if(!is_run)break;
                 QMutexLocker temp_locker(&lut_mutex);
                 states.setNeedLoadLens(need_load_lens);
                 states.setLutTrayID(states.pickedTrayID());
                 states.setLutLensID(states.pickedLensID());
-            }
         }
         //取NGlens
         if(lut_has_ng_lens&&(!states.hasPickedLens())&&(!states.hasPickedNgLens()))
@@ -729,12 +729,13 @@ void LensLoaderModule::runTest()
                         continue;
                     if(!is_run)break;
                 }
-                recordNgLensPr(getUuid(finished,states.hasPickedLens()?current_count+1:current_count,current_time));
+                recordNgLensPr(getUuid(finished,states.lutNgLensID(),current_time));
                 if(!parameters.staticTest())
                     break;
                 current_time--;
             }
             lut_lens_vision->CloseLight();
+            if(!is_run)break;
             if(!moveToWorkPos(false))
             {
                 sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
@@ -745,19 +746,17 @@ void LensLoaderModule::runTest()
             if((!pickLUTLens())&&has_material)
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                    lut_has_ng_lens = false;
-                else
+                if(!waitMessageReturn(is_run))
                     states.setHasPickedNgLens(true);
+                if(!is_run)break;
             }
             else
             {
-                lut_has_ng_lens = false;
                 states.setHasPickedNgLens(true);
             }
             {
                 QMutexLocker temp_locker(&lut_mutex);
-                states.setLutHasNgLens(lut_has_ng_lens);
+                states.setLutHasNgLens(false);
                 states.setPickedTrayID(states.lutNgTrayID());
                 states.setPickedLensID(states.lutNgLensID());
                 qInfo("picked ng lens index %d, tray_id %d",states.pickedLensID(),states.pickedTrayID());
@@ -1338,47 +1337,51 @@ QString LensLoaderModule::getUuid(bool is_right, int current_count, int current_
         uuid.append("right_");
     else
         uuid.append("left_");
-    uuid.append(parameters.testLensCount() - current_count + 1);
+    uuid.append(QString::number(current_count + 1));
     uuid.append("_");
-    uuid.append(parameters.repeatTime() - current_time + 1);
+    uuid.append(QString::number(parameters.repeatTime() - current_time + 1));
     return uuid;
 }
 
 void LensLoaderModule::recordLutLensPr(QString uuid)
 {
+    qInfo("recordLutLensPr %s",uuid.toStdString().c_str());
     QVariantMap* temp = &prRecordMap[uuid];
-    temp->insert("lut_lens_offset.x",pr_offset.X);
-    temp->insert("lut_lens_offset.y",pr_offset.Y);
-    temp->insert("lut_lens_offset.th",pr_offset.Theta);
+    temp->insert("3_lut_lens_offset.x",pr_offset.X);
+    temp->insert("3_lut_lens_offset.y",pr_offset.Y);
+    temp->insert("3_lut_lens_offset.t",pr_offset.Theta);
 }
 
 void LensLoaderModule::recordLutVacancyPr(QString uuid)
 {
+    qInfo("recordLutVacancyPr %s",uuid.toStdString().c_str());
     QVariantMap* temp = &prRecordMap[uuid];
-    temp->insert("lut_vacancy_offset.x",pr_offset.X);
-    temp->insert("lut_vacancy_offset.y",pr_offset.Y);
-    temp->insert("lut_vacancy_offset.th",pr_offset.Theta);
+    temp->insert("2_lut_vacancy_offset.x",pr_offset.X);
+    temp->insert("2_lut_vacancy_offset.y",pr_offset.Y);
+    temp->insert("2_lut_vacancy_offset.t",pr_offset.Theta);
 }
 
 void LensLoaderModule::recordTrayLensPr(QString uuid)
 {
+    qInfo("recordTrayLensPr %s",uuid.toStdString().c_str());
     QStringList list = uuid.split('_');
     QVariantMap* temp = new QVariantMap();
-    temp->insert("station",list[0]);
-    temp->insert("lens_id",list[1]);
-    temp->insert("test_time",list[2]);
-    temp->insert("tray_lens_offset.x",pr_offset.X);
-    temp->insert("tray_lens_offset.y",pr_offset.Y);
-    temp->insert("tray_lens_offset.th",pr_offset.Theta);
+    temp->insert("_station",list[0]);
+    temp->insert("_lens_id",list[1]);
+    temp->insert("_test_time",list[2]);
+    temp->insert("1_tray_lens_offset.x",pr_offset.X);
+    temp->insert("1_tray_lens_offset.y",pr_offset.Y);
+    temp->insert("1_tray_lens_offset.t",pr_offset.Theta);
     prRecordMap.insert(uuid,*temp);
 }
 
 void LensLoaderModule::recordTrayVacancyPr(QString uuid)
 {
+    qInfo("recordTrayVacancyPr %s",uuid.toStdString().c_str());
     QVariantMap* temp = &prRecordMap[uuid];
-    temp->insert("tray_vacancy_offset.x",pr_offset.X);
-    temp->insert("tray_vacancy_offset.y",pr_offset.Y);
-    temp->insert("tray_vacancy_offset.th",pr_offset.Theta);
+    temp->insert("6_tray_vacancy_offset.x",pr_offset.X);
+    temp->insert("6_tray_vacancy_offset.y",pr_offset.Y);
+    temp->insert("6_tray_vacancy_offset.t",pr_offset.Theta);
     postCSVDataToUnit(uuid,prRecordMap[uuid]);
     saveUnitDataToCSV(uuid);
     prRecordMap.remove(uuid);
@@ -1386,8 +1389,12 @@ void LensLoaderModule::recordTrayVacancyPr(QString uuid)
 
 void LensLoaderModule::recordNgLensPr(QString uuid)
 {
+    qInfo("recordNgLensPr %s",uuid.toStdString().c_str());
     QVariantMap* temp = &prRecordMap[uuid];
-    temp->insert("ng_lens_offset.x",pr_offset.X);
-    temp->insert("ng_lens_offset.y",pr_offset.Y);
-    temp->insert("ng_lens_offset.th",pr_offset.Theta);
+    temp->insert("5_ng_lens_offset.x",pr_offset.X);
+    temp->insert("5_ng_lens_offset.y",pr_offset.Y);
+    temp->insert("5_ng_lens_offset.t",pr_offset.Theta);
+    postCSVDataToUnit(uuid,prRecordMap[uuid]);
+    saveUnitDataToCSV(uuid);
+    prRecordMap.remove(uuid);
 }

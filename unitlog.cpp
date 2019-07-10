@@ -257,8 +257,12 @@ void Unitlog::postCSVDataToUnit(QString uuid,QVariantMap data)
     {
         unit_log_list.insert(uuid,QVariantMap());
     }
+    qInfo("postCSVDataToUnit %s :  %d",uuid.toStdString().c_str(),data.size());
     foreach(QString temp_data, data.keys())
+    {
+        qInfo("postCSVDataToUnit %s : %s",temp_data.toStdString().c_str(),data[temp_data].toString().toStdString().c_str());
         unit_log_list[uuid][temp_data] = data[temp_data];
+    }
 }
 
 void Unitlog::saveUnitDataToCSV(QString uuid)

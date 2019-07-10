@@ -443,6 +443,7 @@ void LutModule::runTest()
                 break;
             }
             states.setWaitingLens(false);
+            states.setFinishWaitLens(false);
             states.setLutHasLens(true);
             states.setLutLoadReady(true);
             states.setLutNgLensID(-1);
@@ -484,7 +485,7 @@ void LutModule::runTest()
                 current_time = parameters.repeatTime();
             while (current_time>0)
             {
-                isLocalHost ?action_result = moveToAA1UplookPR(pr_offset) : action_result = moveToAA2UplookPR(pr_offset);
+                isLocalHost ?action_result = moveToAA1UplookPR(pr_offset,false) : action_result = moveToAA2UplookPR(pr_offset,false);
                 if((!action_result))
                 {
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
@@ -499,6 +500,7 @@ void LutModule::runTest()
                     break;
                 current_time--;
             }
+            uplook_location->CloseLight();
             if(!is_run)break;
             states.setNeedUplookPr(false);
         }
@@ -528,6 +530,7 @@ void LutModule::runTest()
                 states.setAaPickedLens(false);
                 states.setLutHasNgLens(true);
                 states.setLutLoadReady(false);
+                states.setLutHasLens(false);
                 if(parameters.staticTest())
                 {
                     current_count--;
@@ -1070,19 +1073,20 @@ QString LutModule::getUuid(bool is_right, int current_count, int current_time)
         uuid.append("right_");
     else
         uuid.append("left_");
-    uuid.append(parameters.testLensCount() - current_count + 1);
+    uuid.append(QString::number(parameters.testLensCount() - current_count + 1));
     uuid.append("_");
-    uuid.append(parameters.repeatTime() - current_time + 1);
+    uuid.append(QString::number(parameters.repeatTime() - current_time + 1));
     return uuid;
 }
 
 void LutModule::recordAALensPr(QString uuid)
 {
+    qInfo("recordAALensPr");
     QString lensId = QString::number(states.lutLensID());
     QVariantMap temp_map;
-    temp_map.insert("aa_offset.x",pr_offset.X);
-    temp_map.insert("aa_offset.y",pr_offset.Y);
-    temp_map.insert("aa_offset.th",pr_offset.Theta);
+    temp_map.insert("4_uplook_offset.x",pr_offset.X);
+    temp_map.insert("4_uplook_offset.y",pr_offset.Y);
+    temp_map.insert("4_uplook_offset.t",pr_offset.Theta);
 
     postCSVDataToUnit(uuid,temp_map);
 }

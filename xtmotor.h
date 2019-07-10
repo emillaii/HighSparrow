@@ -53,6 +53,7 @@ public:
     virtual double GetOutpuPos() const;
     virtual double GetFeedbackPos(int decimal_digit = 4) const;
     double GetCurrentTragetPos();
+    void SetCurrentTragetPos(double target);
     virtual double GetCurVel() const;
     virtual double GetCurAcc() const;
     virtual double GetCurADC() const;

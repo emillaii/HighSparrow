@@ -100,6 +100,7 @@ public:
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     SingleHeadMachineMaterialLoaderModuleParameter parameters;
+    MaterialLoaderState states;
     Q_INVOKABLE void performHandling(int cmd);
     // Camera view and picker tips distance offset calibration
     Q_INVOKABLE void cameraTipOffsetCalibration(int pickhead);
@@ -195,7 +196,8 @@ private:
     bool moveToNextLensTrayPos(int tray_index);
     bool moveToLUTPRPos(bool check_softlanding = false);
 
-    bool checkNeedChangeTray();
+    bool checkNeedChangeLensTray();
+    bool checkNeedChangeSensorTray();
 
     bool performLensPR();
     bool performLensVacancyPR();
@@ -223,6 +225,10 @@ private:
 
     bool isRunning();
 
+signals:
+    void sendChangeLensTrayRequst();
+    void sendLoadLensFinish(int lens,int lens_tray);
+    void sendChangeSensorTrayRequst();
 
 public slots:
     void startWork(int run_mode);
@@ -231,6 +237,7 @@ public slots:
     void performHandlingOperation(int cmd);
 private:
     bool is_run = false;
+    bool finish_stop = false;
     SingleHeadMachineMaterialPickArm* pick_arm = Q_NULLPTR;
     MaterialTray *sensorTray;
     MaterialTray *lensTray;
@@ -251,6 +258,10 @@ private:
     VisionLocation * lpa_picker_vision = Q_NULLPTR;
 
     PrOffset pr_offset;
+    QMutex lut_mutex;
+    QMutex sut_mutex;
+    QMutex lens_tray_mutex;
+    QMutex sensor_tray_mutex;
 };
 
 #endif // SINGLEHEADMACHINEMATERIALLOADERMODULE_H

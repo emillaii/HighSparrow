@@ -391,6 +391,9 @@ ApplicationWindow {
             navigationFeatureButton.onClicked: {
                 highSprrow.callQProcess("EdgeFinder.avexe")
             }
+            drawPathButton.onClicked: {
+                highSprrow.callQProcess("DrawPath.avexe")
+            }
         }
 
         Page2Form {}

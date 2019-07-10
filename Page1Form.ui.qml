@@ -10,6 +10,7 @@ Page {
     height: 720
     property alias featureButton: featureButton
     property alias navigationFeatureButton: navigationFeatureButton
+    property alias drawPathButton: drawPathButton
 
     ColumnLayout {
         id: mainRowLayout
@@ -32,6 +33,14 @@ Page {
         Button {
             id: featureButton
             text: qsTr("机械视觉")
+            icon.source: "icons/select.png"
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
+
+        Button {
+            id: drawPathButton
+            text: qsTr("画胶")
             icon.source: "icons/select.png"
             Layout.fillWidth: true
             Layout.fillHeight: true

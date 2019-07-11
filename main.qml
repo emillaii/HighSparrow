@@ -146,7 +146,14 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("AA") !== -1) {
                         console.log("Perform AA")
                         aaNewCore.performHandling(AACoreNew.AA, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Init Camera") !== -1) {
+                        console.log("Perform Init Camera")
+                        aaNewCore.performHandling(AACoreNew.INIT_CAMERA, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Y_Level") !== -1) {
+                        console.log("Perform Y Level")
+                        aaNewCore.performHandling(AACoreNew.Y_LEVEL, aaCoreTestParams)
                     }
+
                     aaCoreTestParams = ""
                     aaCoreTestItemName = ""
                 }
@@ -280,7 +287,7 @@ ApplicationWindow {
                icon.source: "icons/flowchart_1.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   var command = "document.getElementsByClassName('get_data')[0].click()";
+                   var command = "document.getElementById('get_data').click()";
                    flowChartPage.webView.runJavaScript(command, function(result) {
                        command = "document.getElementById('flowchart_data').value";
                        flowChartPage.webView.runJavaScript(command, function(result) {
@@ -299,7 +306,7 @@ ApplicationWindow {
                icon.source: "icons/auto-run.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   var command = "document.getElementsByClassName('get_data')[0].click()";
+                   var command = "document.getElementById('get_data').click()";
                    flowChartPage.webView.runJavaScript(command, function(result) {
                        command = "document.getElementById('flowchart_data').value";
                        flowChartPage.webView.runJavaScript(command, function(result) {
@@ -402,7 +409,10 @@ ApplicationWindow {
             text: qsTr("AA Data")
         }
         TabButton {
-            text: qsTr("Dignostics")
+            text: qsTr("MTF")
+        }
+        TabButton {
+            text: qsTr("AA Core")
         }
     }
 }

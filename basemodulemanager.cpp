@@ -37,7 +37,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
-
+    sfrWorkerController = new SfrWorkerController(&aaCoreNew);
+    aaCoreNew.setSfrWorkerController(sfrWorkerController);
     connect(&aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &BaseModuleManager::receiveImageFromAACore);
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
@@ -967,8 +968,8 @@ bool BaseModuleManager::InitStruct()
                             GetInputIoByName(tray_loader_module.parameters.clipoutInputName()),
                             GetInputIoByName(tray_loader_module.parameters.trayInputIoName()));
 
-    sfrWorkerController = new SfrWorkerController(&aaCoreNew);
-    aaCoreNew.setSfrWorkerController(sfrWorkerController);
+    //sfrWorkerController = new SfrWorkerController(&aaCoreNew);
+    //aaCoreNew.setSfrWorkerController(sfrWorkerController);
     aaCoreNew.Init(&aa_head_module, &sh_lsut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog);
     entrance_clip.Init(u8"Sensor进料盘弹夹",&sensor_clip_stand);
     exit_clip.Init(u8"Sensor出料盘弹夹",&sensor_clip_stand);

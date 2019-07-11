@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dataFromCpp3", &highSprrow.baseModuleManager->aaCoreNew.mtf_log);
     engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.baseModuleManager->aaCoreNew.aaData_1);
     engine.rootContext()->setContextProperty("dataFromCpp2", &highSprrow.baseModuleManager->aaCoreNew.aaData_2);
+    engine.rootContext()->setContextProperty("dataFromIntensityProfile", &highSprrow.baseModuleManager->aaCoreNew.intensity_profile);
     //Module
     engine.rootContext()->setContextProperty("sh_lsut_Module", &highSprrow.baseModuleManager->sh_lsut_module);
 
@@ -200,7 +201,7 @@ int main(int argc, char *argv[])
     QStringList outputListRaw = highSprrow.baseModuleManager->output_ios.keys();
     QStringList outputList;
     for(QString output:outputListRaw){
-        if(output.contains('.')||output.startsWith("SUT1补充")||output.contains("OUT"))
+        if(output.contains('.')||output.startsWith("SUT1??")||output.contains("OUT"))
             continue;
         outputList<<output;
     }
@@ -220,7 +221,7 @@ int main(int argc, char *argv[])
     QStringList logList;
     QFile file("./log/system_log/log.txt");
     if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
-        qDebug()<<"找不到log文件";
+        qDebug()<<"???log??";
     }else{
         QTextStream in(&file);
         QString line = in.readLine();

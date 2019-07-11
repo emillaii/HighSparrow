@@ -141,7 +141,6 @@ void AACoreNew::saveJsonConfig(QString file_name)
 }
 
 void AACoreNew::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
-    qInfo("setSfrWorkerController");
     this->sfrWorkerController = sfrWorkerController;
 }
 
@@ -159,7 +158,99 @@ void AACoreNew::run(bool has_material)
     qInfo("End of thread");
 }
 
-void AACoreNew::startWork(int run_mode)
+void AACoreNew::LogicNg(int &ng_time)
+{
+    if(has_product)
+    {
+        has_ng_product = true;
+        has_product = false;
+        return;
+    }
+    if(parameters.firstRejectSensor())
+    {
+        if(ng_time >= parameters.rejectTimes())
+        {
+            ng_time = 0;
+            has_ng_lens = true;
+            has_lens = false;
+        }
+        else
+        {
+            has_ng_sensor = true;
+            has_sensor = false;
+            ng_time++;
+        }
+    }
+    else
+    {
+        if(ng_time >= parameters.rejectTimes())
+        {
+            ng_time = 0;
+            has_ng_sensor = true;
+            has_sensor = false;
+        }
+        else
+        {
+            has_ng_lens = true;
+            has_lens = false;
+            ng_time++;
+        }
+    }
+}
+
+void AACoreNew::NgLens()
+{
+    has_lens = false;
+    has_ng_lens = true;
+    if(parameters.firstRejectSensor())
+    {
+        current_aa_ng_time = 0;
+        current_oc_ng_time = 0;
+        current_mtf_ng_time = 0;
+    }
+}
+
+void AACoreNew::NgSensor()
+{
+    has_sensor = false;
+    has_ng_sensor = true;
+    if(!parameters.firstRejectSensor())
+    {
+        current_aa_ng_time = 0;
+        current_oc_ng_time = 0;
+        current_mtf_ng_time = 0;
+    }
+}
+
+void AACoreNew::NgProduct()
+{
+    has_product = false;
+    has_ng_product = true;
+}
+
+void AACoreNew::SetLens()
+{
+    has_lens = true;
+    has_ng_lens = false;
+}
+
+void AACoreNew::SetSensor()
+{
+    has_sensor = true;
+    has_ng_sensor = false;
+    has_product = false;
+    has_ng_product = false;
+}
+
+void AACoreNew::SetProduct()
+{
+    has_sensor = false;
+    has_ng_sensor = false;
+    has_product = true;
+    has_ng_product = false;
+}
+
+void AACoreNew::startWork( int run_mode)
 {
     if (run_mode == RunMode::Normal) run(true);
     else if (run_mode == RunMode::NoMaterial) {
@@ -207,8 +298,8 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::PR_To_Bond)
     {
-        has_sensor = true;
-        has_lens = true;
+        SetSensor();
+        SetLens();
         performPRToBond();
     }
     else if (cmd == HandleTest::MTF) {
@@ -222,16 +313,35 @@ void AACoreNew::performHandlingOperation(int cmd)
         //performAA(currentTestParams);
         performAAOffline();
     }
+    else if (cmd == HandleTest::INIT_CAMERA) {
+        performInitSensor();
+    }
+    else if (cmd == HandleTest::Y_LEVEL) {
+        performYLevelTest(params);
+    }
+    handlingParams = "";
     return;
 }
 
 void AACoreNew::resetLogic()
 {
     if(is_run)return;
+    has_product = false;
+    has_ng_product = false;
     has_ng_lens = false;
     has_ng_sensor = false;
     has_sensor = false;
     has_lens = false;
+    send_lens_request = false;
+    send_sensor_request = false;
+//    aa_head->receive_sensor = false;
+    aa_head->waiting_sensor = false;
+//    aa_head->receive_lens = false;
+    aa_head->waiting_lens = false;
+    current_aa_ng_time = 0;
+    current_oc_ng_time = 0;
+    current_mtf_ng_time = 0;
+    current_grr = 0;
 }
 
 bool AACoreNew::runFlowchartTest()
@@ -281,9 +391,6 @@ bool AACoreNew::runFlowchartTest()
                             }
                        }
                        if (!hasFailPath) {
-                           //qInfo() << "Missing fail path, will put to reject test item";
-                           // qInfo() << "Reject! -> To Reject Tray";
-                           //qInfo() << "End of graph";
                            qInfo("Finished With Auto Reject");
                            performReject();
                            end = true;
@@ -307,6 +414,7 @@ bool AACoreNew::runFlowchartTest()
                        && value["fromConnector"].toString() == "thread_1" ) {
                qInfo("Found Parallel Test Item");
                vector<QString> thread_1_test_list, thread_2_test_list;
+
                QString current_thread_1 = currentPointer, current_thread_2 = currentPointer;
                //Find the head first
                bool isFoundThread_1 = false, isFoundThread_2 = false;
@@ -361,8 +469,16 @@ bool AACoreNew::runFlowchartTest()
                        }
                    }
                }
-               qInfo("End of traversal");
-               //performParallelTest(thread_1_test_list, thread_2_test_list);
+               qInfo("End of traversal: %s", jsonMap["operators"].toString().toStdString().c_str());
+               QJsonValue op1 = operators[thread_1_test_list[0].toStdString().c_str()];
+               QJsonValue op2 = operators[thread_2_test_list[0].toStdString().c_str()];
+               ErrorCodeStruct ret = performParallelTest(thread_1_test_list, thread_2_test_list, op1["properties"], op2["properties"]);
+               if (ret.code != ErrorCode::OK) {
+                   qInfo("Finished With Auto Reject");
+                   performReject();
+                   end = true;
+                   break;
+               }
                //Perform Parallel Test
            }
        }
@@ -386,12 +502,13 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         else if (testItemName.contains(AA_PIECE_INIT_CAMERA)) {
             qInfo("Performing init camera");
             ret = performInitSensor();
-            qInfo("End of init camera");
+            qInfo("End of init camera %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_PR_TO_BOND)) {
-            qInfo("Performing PR To Bond");
+            int finish_delay = params["delay_in_ms"].toInt();
+            qInfo("Performing PR To Bond :%d",finish_delay);
             ret = performPRToBond();
-            qInfo("End of perform PR To Bond");
+            qInfo("End of perform PR To Bond %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_INITIAL_TILT)) {
             qInfo("Performing Initial Tilt");
@@ -401,16 +518,25 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             qInfo("End of perform initial tilt");
         }
         else if (testItemName.contains(AA_PIECE_Z_OFFSET)) {
-            qInfo("Performaing Z Offset");
+            qInfo("Performing Z Offset");
             double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
             z_offset_in_um /= 1000;
             performZOffset(z_offset_in_um);
             qInfo("End of perform z offset");
         }
-        else if (testItemName.contains(AA_PIECE_PICK_LENS)) {
-            qInfo("Performing AA pick lens");
-            ret = performAAPickLens();
-            qInfo("End of perform AA pick lens");
+        else if (testItemName.contains(AA_PIECE_XY_OFFSET)) {
+            qInfo("Performing XY Offset");
+            double x_offset_in_um = params["x_offset_in_um"].toDouble(0);
+            double y_offset_in_um = params["y_offset_in_um"].toDouble(0);
+            x_offset_in_um /= 1000;
+            y_offset_in_um /= 1000;
+            performXYOffset(x_offset_in_um, y_offset_in_um);
+            qInfo("End of perform xy offset");
+        }
+        else if (testItemName.contains(AA_PIECE_LOAD_MATERIAL)) {
+            qInfo("Performing Load Material");
+            //ret = performLoadMaterial();
+            qInfo("End of perform Load Material %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_UNLOAD_LENS)) {
             qInfo("Performing AA unload lens");
@@ -418,48 +544,72 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         else if (testItemName.contains(AA_UNLOAD_CAMERA)) {
             qInfo("AA Unload Camera");
             ret = performCameraUnload();
-            qInfo("End of perform unload camera");
+            qInfo("End of perform unload camera %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_OC)) {
-            qInfo("Performing OC");
             ret = performOC(params);
-            qInfo("End of perform OC");
+            qInfo("End of perform OC %s",ret.errorMessage.toStdString().c_str());
+        }
+        else if (testItemName.contains(AA_PIECE_Y_LEVEL)) {
+            qInfo("Performing Y Level");
+            ret = performYLevelTest(params);
+            qInfo("End of perform Y Level %s", ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_AA)) {
             qInfo("Performing AA");
             ret = performAA(params);
-            qInfo("End of perform AA");
+            qInfo("End of perform AA %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_MTF)) {
             qInfo("Performing MTF");
             ret = performMTF(params);
-            qInfo("End of perform MTF");
+            qInfo("End of perform MTF %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_UV)) {
             qInfo("Performing UV");
-            //int uv_time_input = params["delay_in_ms"].toInt();
-            int uv_time = 3000;
-            performUV(uv_time);
-            qInfo("End of perform UV");
+            int uv_time = params["delay_in_ms"].toInt();
+            ret = performUV(uv_time);
+            qInfo("End of perform UV %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_DISPENSE)) {
             qInfo("Performing Dispense");
             int enable_save_image = params["enable_save_image"].toInt();
             int lighting = params["lighting"].toInt();
-            //ret = performDispense();
+            ret = performDispense();
+            qInfo("End of perform UV %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_DELAY)) {
             int delay_in_ms = params["delay_in_ms"].toInt();
             qInfo("Performing Delay : %d", delay_in_ms);
             performDelay(delay_in_ms);
+            qInfo("End of perform Delay");
         }
         else if (testItemName.contains(AA_PIECE_ACCEPT))
         {
             qInfo("Performing Accept");
+            performAccept();
+            qInfo("End of perform Accept");
         }
         else if (testItemName.contains(AA_PIECE_REJECT))
         {
             qInfo("Performing Reject");
+            performReject();
+            qInfo("End of perform Reject");
+        }
+        else if (testItemName.contains(AA_PIECE_TERMINATE))
+        {
+            qInfo("Performing Terminate");
+            performTerminate();
+            qInfo("End of perform Terminate");
+        }
+        else if (testItemName.contains(AA_PIECE_GRR))
+        {
+            qInfo("Performing GRR");
+            bool change_lens = params["change_lens"].toInt();
+            bool change_sensor = params["change_sensor"].toInt();
+            int repeat_time = params["repeat_time"].toInt();
+            performGRR(change_lens,change_sensor,repeat_time);
+            qInfo("End of perform GRR");
         }
         else if (testItemName.contains(AA_PIECE_JOIN))
         {
@@ -475,8 +625,54 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
     return ret;
 }
 
+bool AACoreNew::performThreadTest(vector<QString> testList, QJsonValue params)
+{
+    ErrorCodeStruct ret = ErrorCodeStruct {ErrorCode::OK, ""};
+    foreach(QString testName, testList) {
+        qInfo() << "Perform Test in thread : " << testName;
+        if (testName.contains(AA_PIECE_DELAY)) {
+            int delay_in_ms = params["delay_in_ms"].toInt();
+            that->performDelay(delay_in_ms);
+        } else if (testName.contains(AA_PIECE_Y_LEVEL)) {
+            ret = that->performYLevelTest(params);
+        } else if (testName.contains(AA_PIECE_UV)) {
+            int uv_time = params["delay_in_ms"].toInt();
+            ret = that->performUV(uv_time);
+        }
+    }
+    if (ret.code == ErrorCode::OK)
+        return true;
+    else
+        return false;
+}
+
+ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue prop1, QJsonValue prop2)
+{
+    QJsonValue params1 = prop1["params"];
+    QJsonValue params2 = prop2["params"];
+    QFuture<bool> f1;
+    QFuture<bool> f2;
+    f1 = QtConcurrent::run(performThreadTest, testList1, params1);
+    f2 = QtConcurrent::run(performThreadTest, testList2, params2);
+    f1.waitForFinished();
+    f2.waitForFinished();
+    qInfo("Finish parallel test");
+    bool ret1 = f1.result();
+    bool ret2 = f2.result();
+    bool ret = (ret1 && ret2);
+    if (ret) {
+        return ErrorCodeStruct {ErrorCode::OK, ""};
+    } else {
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""};
+    }
+}
+
 ErrorCodeStruct AACoreNew::performDispense()
 {
+    qInfo("Performing Dispense");
+    has_product = true;
+    has_lens = false;
+    has_sensor = false;
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     lsut->recordCurrentPos();
@@ -488,9 +684,9 @@ ErrorCodeStruct AACoreNew::performDispense()
     if(!lsut->movetoRecordPos()){return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
+    qInfo("Finish Dispense");
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
-
 
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 {
@@ -527,9 +723,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
+               LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
+               LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
            }
            cv::Mat dst;
@@ -562,14 +760,17 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            cv::imwrite("fucker.bmp", img);
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
+               LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
+               LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
            }
            double dfov = calculateDFOV(img);
            if (dfov <= -1) {
                qInfo("Cannot find the target FOV!");
+               LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
            }
            double estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
@@ -577,6 +778,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            qInfo("The estimated target z is: %f dfov is %f", target_z, dfov);
            if (target_z >= stop) {
                qInfo("The estimated target is too large. value: %f", target_z);
+               LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
            }
            for (unsigned int i = 0; i < imageCount; i++) {
@@ -585,9 +787,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
+                    LogicNg(current_aa_ng_time);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
                 }
                 if (!blackScreenCheck(img)) {
+                    LogicNg(current_aa_ng_time);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
                 }
                 double realZ = sut->carrier->GetFeedBackPos().Z;
@@ -634,9 +838,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              cv::Mat img = dk->DothinkeyGrabImageCV(0,grabRet);
              if (!grabRet) {
                  qInfo("AA Cannot grab image.");
+                 LogicNg(current_aa_ng_time);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
              }
              if (!blackScreenCheck(img)) {
+                 LogicNg(current_aa_ng_time);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
              }
              double realZ = sut->carrier->GetFeedBackPos().Z;
@@ -676,6 +882,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     qInfo("Layer 3 xTilt : %f yTilt: %f ", aa_result["xTilt_3"].toDouble(), aa_result["yTilt_3"].toDouble());
     bool aaResult = aa_result["OK"].toBool();
     if (!aaResult) {
+        LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Perform AA fail"};
     }
     sut->moveToZPos(aa_result["zPeak"].toDouble());
@@ -717,7 +924,6 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 
 void AACoreNew::performAAOffline()
 {
-    qInfo("this %p", this);
     clustered_sfr_map.clear();
     ErrorCodeStruct ret = { OK, ""};
     QVariantMap map, stepTimerMap, dFovMap, sfrTimeElapsedMap;
@@ -748,10 +954,9 @@ void AACoreNew::performAAOffline()
         cv::Mat dst;
         cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
         cv::resize(img, dst, size);
-        qInfo("calculateDFOV start");
+
         double dfov = calculateDFOV(img);
 
-        qInfo("calculateDFOV end");
         if (i == 0)
         {
             double target_z = (49 - dfov)/estimated_fov_slope + start;
@@ -765,7 +970,6 @@ void AACoreNew::performAAOffline()
         xysum=xysum+currZ*dfov;                 //calculate sigma(xi*yi)
         dFovMap.insert(QString::number(i), dfov);
 
-        qInfo("calculate start");
         emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, resize_factor);
         img.release();
         dst.release();
@@ -1268,23 +1472,15 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
         qPainter.end();
         sfrImageReady(std::move(qImage));
     }
+
     clustered_sfr_map.clear();
     qInfo("Time elapsed : %d sv size: %d", timer.elapsed(), sv.size());
     if (sfr_check) {
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
+       LogicNg(current_mtf_ng_time);
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
-}
-
-ErrorCodeStruct AACoreNew::performUV(int uv_time)
-{
-    QElapsedTimer timer; timer.start();
-    QVariantMap map;
-    aa_head->openUVTillTime(uv_time);
-    map.insert("timeElapsed", timer.elapsed());
-    emit pushDataToUnit(this->runningUnit, "UV", map);
-    return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
@@ -1431,29 +1627,349 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     if (sfr_check) {
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
+       LogicNg(current_mtf_ng_time);
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
 
+//ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
+//{
+//    QElapsedTimer timer; timer.start();
+//    QVariantMap map;
+//    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
+//    cv::Mat img = dk->DothinkeyGrabImageCV(0);
+//    int imageWidth = img.cols;
+//    int imageHeight = img.rows;
+//    double fov = this->calculateDFOV(img);
+//    map.insert("DFOV", fov);
+//    if (fov == -1) {
+//        qInfo("Error in calculating fov");
+//        LogicNg(current_mtf_ng_time);
+//        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+//    } else {
+//        qInfo("DFOV :%f", fov);
+//    }
+//    emit sfrWorkerController->calculate(0, 0, img, true);
+//    int timeout=1000;
+//    while(this->clustered_sfr_map.size() != 1 && timeout >0) {
+//        Sleep(10);
+//        timeout--;
+//    }
+//    if (timeout <= 0) {
+//        qInfo("Error in performing MTF: %d", timeout);
+//        LogicNg(current_mtf_ng_time);
+//        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+//    }
+//    vector<Sfr_entry> sfr_entry = clustered_sfr_map.at(0);
+//    double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
+//    unsigned int ccROIIndex = 0 , ulROIIndex = 0, urROIIndex = 0, llROIIndex = 0, lrROIIndex = 0;
+//    for (unsigned int i = 0; i < sfr_entry.size(); i++)
+//    {
+//        double cc_d = sqrt(pow(sfr_entry.at(i).px - imageWidth/2, 2) + pow(sfr_entry.at(i).py - imageHeight/2, 2));
+//        double ul_d = sqrt(pow(sfr_entry.at(i).px, 2) + pow(sfr_entry.at(i).py, 2));
+//        double ur_d = sqrt(pow(sfr_entry.at(i).px - imageWidth, 2) + pow(sfr_entry.at(i).py, 2));
+//        double ll_d = sqrt(pow(sfr_entry.at(i).px, 2) + pow(sfr_entry.at(i).py - imageHeight, 2));
+//        double lr_d = sqrt(pow(sfr_entry.at(i).px - imageWidth, 2) + pow(sfr_entry.at(i).py - imageHeight, 2));
+//        if (cc_d < cc_min_d) {
+//              cc_min_d = cc_d;
+//              ccROIIndex = i;
+//        }
+//        if (ul_d < ul_min_d) {
+//             ul_min_d = ul_d;
+//             ulROIIndex = i;
+//        }
+//        if (ur_d < ur_min_d) {
+//             ur_min_d = ur_d;
+//             urROIIndex = i;
+//        }
+//        if (ll_d < ll_min_d) {
+//             ll_min_d = ll_d;
+//             llROIIndex = i;
+//        }
+//        if (lr_d < lr_min_d) {
+//            lr_min_d = lr_d;
+//            lrROIIndex = i;
+//        }
+//    }
+
+//    double cc_min_sfr = params["CC"].toDouble(-1);
+//    double ul_min_sfr = params["UL"].toDouble(-1);
+//    double ur_min_sfr = params["UR"].toDouble(-1);
+//    double ll_min_sfr = params["LL"].toDouble(-1);
+//    double lr_min_sfr = params["LR"].toDouble(-1);
+//    double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
+
+//    map.insert("CC_CHECK", cc_min_sfr);
+//    map.insert("UR_CHECK", ul_min_sfr);
+//    map.insert("UL_CHECK", ur_min_sfr);
+//    map.insert("LR_CHECK", lr_min_sfr);
+//    map.insert("LL_CHECK", ll_min_sfr);
+//    map.insert("SFR_MAX_TOL", sfr_dev_tol);
+
+//    bool sfr_check = true;
+//    if (sfr_entry[ccROIIndex].t_sfr < cc_min_sfr ||
+//        sfr_entry[ccROIIndex].r_sfr < cc_min_sfr ||
+//        sfr_entry[ccROIIndex].b_sfr < cc_min_sfr ||
+//        sfr_entry[ccROIIndex].l_sfr < cc_min_sfr) {
+//       qInfo("cc cannot pass");
+//       sfr_check = false;
+//    }
+//    if (sfr_entry[urROIIndex].t_sfr < ur_min_sfr ||
+//        sfr_entry[urROIIndex].r_sfr < ur_min_sfr ||
+//        sfr_entry[urROIIndex].b_sfr < ur_min_sfr ||
+//        sfr_entry[urROIIndex].l_sfr < ur_min_sfr) {
+//       qInfo("ur cannot pass");
+//       sfr_check = false;
+//    }
+//    if (sfr_entry[ulROIIndex].t_sfr < ul_min_sfr ||
+//        sfr_entry[ulROIIndex].r_sfr < ul_min_sfr ||
+//        sfr_entry[ulROIIndex].b_sfr < ul_min_sfr ||
+//        sfr_entry[ulROIIndex].l_sfr < ul_min_sfr) {
+//       qInfo("ul cannot pass");
+//       sfr_check = false;
+//    }
+//    if (sfr_entry[lrROIIndex].t_sfr < lr_min_sfr ||
+//        sfr_entry[lrROIIndex].r_sfr < lr_min_sfr ||
+//        sfr_entry[lrROIIndex].b_sfr < lr_min_sfr ||
+//        sfr_entry[lrROIIndex].l_sfr < lr_min_sfr) {
+//       qInfo("lr cannot pass");
+//       sfr_check = false;
+//    }
+//    if (sfr_entry[llROIIndex].t_sfr < ll_min_sfr ||
+//        sfr_entry[llROIIndex].r_sfr < ll_min_sfr ||
+//        sfr_entry[llROIIndex].b_sfr < ll_min_sfr ||
+//        sfr_entry[llROIIndex].l_sfr < ll_min_sfr) {
+//       qInfo("ll cannot pass");
+//       sfr_check = false;
+//    }
+
+//    std::vector<double> sfr_v;
+//    for (int i = 0; i < 4; i++) {
+//        unsigned int index = 0;
+//        if (i == 0) index = urROIIndex;
+//        if (i == 1) index = ulROIIndex;
+//        if (i == 2) index = lrROIIndex;
+//        if (i == 3) index = llROIIndex;
+//        sfr_v.push_back(sfr_entry[index].sfr);
+//        sfr_v.push_back(sfr_entry[index].sfr);
+//        sfr_v.push_back(sfr_entry[index].sfr);
+//        sfr_v.push_back(sfr_entry[index].sfr);
+//        sfr_v.push_back(sfr_entry[index].sfr);
+//    }
+
+//    std::sort(sfr_v.begin(), sfr_v.end());
+//    double max_sfr_deviation = fabs(sfr_v[0] - sfr_v[sfr_v.size()-1]);
+//    if (max_sfr_deviation >= sfr_dev_tol) {
+//        qInfo("max_sfr_deviation cannot pass");
+//        sfr_check = false;
+//    }
+
+//    qInfo("Read the aahead and sut carrier feedback");
+//    mPoint6D motorsPosition = this->aa_head->GetFeedBack();
+//    mPoint3D sutPosition = this->sut->carrier->GetFeedBackPos();
+//    qInfo("inset data to map ccROIIndex %d urROIIndex %d ulROIInde %dx lrROIIndex %d llROIIndex %d size %d",ccROIIndex,urROIIndex,ulROIIndex,lrROIIndex,llROIIndex,sfr_entry.size());
+//    map.insert("AA_X", motorsPosition.X);
+//    map.insert("AA_Y", motorsPosition.Y);
+//    map.insert("AA_Z", motorsPosition.Z);
+//    map.insert("AA_A", motorsPosition.A);
+//    map.insert("AA_B", motorsPosition.B);
+//    map.insert("AA_C", motorsPosition.C);
+//    map.insert("AA_A", motorsPosition.A);
+//    map.insert("AA_B", motorsPosition.B);
+//    map.insert("AA_C", motorsPosition.C);
+//    map.insert("SUT_X", sutPosition.X);
+//    map.insert("SUT_Y", sutPosition.Y);
+//    map.insert("SUT_Z", sutPosition.Z);
+//    map.insert("OC_X", sfr_entry[ccROIIndex].px - imageWidth/2);
+//    map.insert("OC_Y", sfr_entry[ccROIIndex].py - imageHeight/2);
+
+//    map.insert("CC_SFR", sfr_entry[ccROIIndex].sfr);
+//    map.insert("CC_SFR_1", sfr_entry[ccROIIndex].t_sfr);
+//    map.insert("CC_SFR_2", sfr_entry[ccROIIndex].r_sfr);
+//    map.insert("CC_SFR_3", sfr_entry[ccROIIndex].b_sfr);
+//    map.insert("CC_SFR_4", sfr_entry[ccROIIndex].l_sfr);
+
+//    map.insert("UR_SFR", sfr_entry[urROIIndex].sfr);
+//    map.insert("UR_SFR_1", sfr_entry[urROIIndex].t_sfr);
+//    map.insert("UR_SFR_2", sfr_entry[urROIIndex].r_sfr);
+//    map.insert("UR_SFR_3", sfr_entry[urROIIndex].b_sfr);
+//    map.insert("UR_SFR_4", sfr_entry[urROIIndex].l_sfr);
+
+//    map.insert("UL_SFR", sfr_entry[ulROIIndex].sfr);
+//    map.insert("UL_SFR_1", sfr_entry[ulROIIndex].t_sfr);
+//    map.insert("UL_SFR_2", sfr_entry[ulROIIndex].r_sfr);
+//    map.insert("UL_SFR_3", sfr_entry[ulROIIndex].b_sfr);
+//    map.insert("UL_SFR_4", sfr_entry[ulROIIndex].l_sfr);
+
+//    map.insert("LR_SFR", sfr_entry[lrROIIndex].sfr);
+//    map.insert("LR_SFR_1", sfr_entry[lrROIIndex].t_sfr);
+//    map.insert("LR_SFR_2", sfr_entry[lrROIIndex].r_sfr);
+//    map.insert("LR_SFR_3", sfr_entry[lrROIIndex].b_sfr);
+//    map.insert("LR_SFR_4", sfr_entry[lrROIIndex].l_sfr);
+
+//    map.insert("LL_SFR", sfr_entry[llROIIndex].sfr);
+//    map.insert("LL_SFR_1", sfr_entry[llROIIndex].t_sfr);
+//    map.insert("LL_SFR_2", sfr_entry[llROIIndex].r_sfr);
+//    map.insert("LL_SFR_3", sfr_entry[llROIIndex].b_sfr);
+//    map.insert("LL_SFR_4", sfr_entry[llROIIndex].l_sfr);
+
+//    map.insert("Sensor_ID", dk->readSensorID());
+//    map.insert("SFR_CHECK", sfr_check);
+//    map.insert("DFOV", fov);
+//    map.insert("timeElapsed", timer.elapsed());
+//    qInfo("CC_X :%f CC_Y: %f", sfr_entry[ccROIIndex].px, sfr_entry[ccROIIndex].py);
+//    clustered_sfr_map.clear();
+//    emit pushDataToUnit(this->runningUnit, "MTF", map);
+//    if (write_log) {
+//        this->loopTestResult.append(QString::number(sfr_entry[ccROIIndex].sfr))
+//                            .append(",")
+//                            .append(QString::number(sfr_entry[ulROIIndex].sfr))
+//                            .append(",")
+//                            .append(QString::number(sfr_entry[urROIIndex].sfr))
+//                            .append(",")
+//                            .append(QString::number(sfr_entry[llROIIndex].sfr))
+//                            .append(",")
+//                            .append(QString::number(sfr_entry[lrROIIndex].sfr))
+//                            .append(",\n");
+//        this->mtf_log.incrementData(sfr_entry[ccROIIndex].sfr, sfr_entry[ulROIIndex].sfr, sfr_entry[urROIIndex].sfr, sfr_entry[llROIIndex].sfr,sfr_entry[lrROIIndex].sfr);
+//    }
+//    qInfo("MTF done");
+//    if (sfr_check) {
+//        return ErrorCodeStruct{ErrorCode::OK, ""};
+//    } else {
+//        LogicNg(current_mtf_ng_time);
+//        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+//    }
+//}
+
+ErrorCodeStruct AACoreNew::performUV(int uv_time)
+{
+    QElapsedTimer timer; timer.start();
+    QVariantMap map;
+    aa_head->openUVTillTime(uv_time);
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(this->runningUnit, "UV", map);
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
 ErrorCodeStruct AACoreNew::performReject()
+{
+    QVariantMap map;
+    imageThread->stop();
+    Sleep(100);
+    imageThread->exit();
+    dk->DothinkeyClose();
+//    NgLens();
+//    NgSensor();
+//    if(!has_product)
+//    {
+//        if(has_lens)
+//            has_ng_lens = true;
+//        if(has_sensor)
+//            has_ng_sensor = true;
+//    }
+//    has_sensor = false;
+//    has_lens = false;
+//    map.insert("has_ng_lens", has_product);
+//    map.insert("has_ng_sensor", has_ng_sensor);
+//    map.insert("has_product", has_product);
+//    map.insert("has_sensor", has_sensor);
+//    map.insert("has_lens", has_lens);
+//    emit pushDataToUnit(this->runningUnit, "Reject", map);
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performAccept()
 {
     imageThread->stop();
     Sleep(100);
     imageThread->exit();
     dk->DothinkeyClose();
-    has_ng_lens = true;
-    has_ng_sensor = true;
-    has_sensor = false;
-    has_lens = false;
+    current_aa_ng_time = 0;
+    current_oc_ng_time = 0;
+    current_mtf_ng_time = 0;
     return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performTerminate()
+{
+    imageThread->stop();
+    Sleep(100);
+    imageThread->exit();
+    dk->DothinkeyClose();
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int repeat_time)
+{
+   performTerminate();
+   current_grr++;
+   if(current_grr >= repeat_time)
+   {
+       current_grr = 0;
+       if(change_lens)
+           NgLens();
+       if(change_sensor)
+           NgSensor();
+   }
+   return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
+{
+    int enable_plot = params["enable_plot"].toInt();
+//    cv::Mat inputImage = cv::imread("1/5.bmp");
+    bool grabRet;
+    cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        qInfo("Cannot grab image.");
+        NgSensor();
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Test Fail. Cannot grab image"};
+    }
+    float min_i = 0;
+    float max_i = 0;
+    vector<float> intensityProfile;
+    QElapsedTimer timer; timer.start();
+    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile);
+    if (ret) {
+        qInfo("performYLevelTest Success. Min I: %f Max I: %f size: %d", min_i, max_i, intensityProfile.size());
+        if (enable_plot == 1) {
+            intensity_profile.clear();
+            this->intensity_profile.plotIntensityProfile(min_i, max_i, intensityProfile);
+        }
+        if (max_i < 10) {
+            qInfo("This is black screen.");
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Black screen detected"};
+        }
+        qInfo("Time elapsed: %d", timer.elapsed());
+        return ErrorCodeStruct{ErrorCode::OK, ""};
+    } else {
+        qInfo("performYLevelTest Fail");
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Cannot grab image"};
+    }
+}
+
+bool AACoreNew::blackScreenCheck(cv::Mat inImage)
+{
+    vector<float> intensityProfile; float min_i = 0; float max_i = 0;
+    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile);
+    if (ret) {
+        qInfo("[blackScreenCheck] Checking intensity...min: %f max: %f", min_i, max_i);
+        if (max_i < 10) {
+            qInfo("Detect black screen");
+            return false;
+        }
+        return true;
+    } else {
+        qInfo("Check intensity fail");
+        return false;
+    }
 }
 
 ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
 {
     bool enableMotion = params["enable_motion"].toInt();
     bool fastMode = params["fast_mode"].toInt();
-
-    qInfo("enable_motion: %d fast_mode: %d", enableMotion, fastMode);
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
     QVariantMap map;
     QElapsedTimer timer;
@@ -1462,6 +1978,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
         qInfo("AA Cannot grab image.");
+        LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     QString imageName;
@@ -1475,12 +1992,18 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     int method = 1;  //1: Pattern ; else : Mass center
     if (method == 1)
     {
-        std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, fastMode,
+        std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, false,
                                                                         ccIndex, ulIndex, urIndex,
                                                                         llIndex, lrIndex);
         ocImageProvider_1->setImage(outImage);
         emit callQmlRefeshImg(1);
-        if( vector.size()<1 || ccIndex > 9 ) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
+        if( vector.size()<1 || ccIndex > 9 )
+        {
+            NgLens();
+            NgSensor();
+//            LogicNg(current_oc_ng_time);
+            return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
+        }
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
         offsetY = vector[ccIndex].center.y() - (vector[ccIndex].height/2);
         qInfo("OC OffsetX: %f %f", offsetX, offsetY);
@@ -1488,7 +2011,13 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         map.insert("OC_OFFSET_Y_IN_PIXEL", offsetY);
     } else {
         QImage outImage; QPointF center;
-        if (!AA_Helper::calculateOC(img, center, outImage)) return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
+        if (!AA_Helper::calculateOC(img, center, outImage))
+        {
+            NgLens();
+            NgSensor();
+//            LogicNg(current_oc_ng_time);
+            return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
+        }
         ocImageProvider_1->setImage(outImage);
         emit callQmlRefeshImg(1);
         offsetX = center.x() - img.cols/2;
@@ -1507,32 +2036,41 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         qInfo("xy step: %f %f ", stepX, stepY);
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
-            qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
+            NgLens();
+            NgSensor();
+//            LogicNg(current_oc_ng_time);
+            qInfo("OC result too big (x:%f,y:%f) pixel:(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
         }
         this->lsut->stepMove_XY_Sync(-stepX, -stepY);
     }
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "OC", map);
+    qInfo("Finish OC");
     return ret;
 }
 
 ErrorCodeStruct AACoreNew::performInitSensor()
 {
+    if(!has_sensor) return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "has no sensor"};
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
     const int channel = 0;
     bool res = dk->DothinkeyEnum();
-    if (!res) { qCritical("Cannot find dothinkey"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
-    dk->DothinkeyOpen();
+    if (!res) { qCritical("Cannot find dothinkey");NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "1"}; }
+    res = dk->DothinkeyOpen();
     map.insert("dothinkeyOpen", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot open dothinkey"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
-    dk->DothinkeyLoadIniFile(channel);
+    if (!res) { qCritical("Cannot open dothinkey"); NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "2"}; }
+    res = dk->DothinkeyLoadIniFile(channel);
     map.insert("dothinkeyLoadIniFile", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot load dothinkey ini file"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
-    dk->DothinkeyStartCamera(channel);
+    if (!res) { qCritical("Cannot load dothinkey ini file");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "3"}; }
+    res = dk->DothinkeyStartCamera(channel);
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot start camera"); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""}; }
+    if (!res) { qCritical("Cannot start camera");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "4"}; }
+
+    QString sensorID = dk->readSensorID();
+    qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());
+    map.insert("sensorID", sensorID);
     if (!imageThread->isRunning())
         imageThread->start();
     map.insert("timeElapsed", timer.elapsed());
@@ -1665,6 +2203,27 @@ ErrorCodeStruct AACoreNew::performZOffset(double zOffset)
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
+ErrorCodeStruct AACoreNew::performXYOffset(double xOffset, double yOffset)
+{
+    QElapsedTimer timer; timer.start();
+    QVariantMap map;
+    mPoint3D ori_pos(0, 1, 2);
+    mPoint3D final_pos(3, 4, 5);
+//    mPoint3D ori_pos = sut->carrier->GetFeedBackPos();
+//    sut->stepMove_XY_Sync(xOffset, yOffset);
+//    QThread::msleep(200);
+//    mPoint3D final_pos = sut->carrier->GetFeedBackPos();
+    map.insert("xOffset", xOffset);
+    map.insert("yOffset", yOffset);
+    map.insert("ori_x_pos", ori_pos.X);
+    map.insert("ori_y_pos", ori_pos.Y);
+    map.insert("final_x_pos", final_pos.X);
+    map.insert("final_y_pos", final_pos.Y);
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(this->runningUnit, "XY_Offset", map);
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
 std::vector<AA_Helper::patternAttr> AACoreNew::search_mtf_pattern(cv::Mat inImage, QImage &image, bool isFastMode, unsigned int &ccROIIndex, unsigned int &ulROIIndex, unsigned int &urROIIndex, unsigned int &llROIIndex, unsigned int &lrROIIndex)
 {
     return AA_Helper::AA_Search_MTF_Pattern(inImage, image, isFastMode, ccROIIndex, ulROIIndex, urROIIndex, llROIIndex, lrROIIndex, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
@@ -1692,8 +2251,9 @@ double AACoreNew::calculateDFOV(cv::Mat img)
 
 void AACoreNew::storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElapsed)
 {
-    qInfo("Received sfr result from index: %d timeElapsed: %d", index, timeElapsed);
     clustered_sfr_map[index] = std::move(sfrs);
+    qInfo("Received sfr result from index: %d timeElapsed: %d size: %d", index, timeElapsed, clustered_sfr_map.size());
+
 }
 
 void AACoreNew::stopZScan()
@@ -1709,23 +2269,6 @@ void AACoreNew::triggerGripperOn(bool isOn)
     else aa_head->closeGripper();
 }
 
-bool AACoreNew::blackScreenCheck(cv::Mat inImage)
-{
-    vector<float> intensityProfile; float min_i = 0; float max_i = 0;
-    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile);
-    if (ret) {
-        qInfo("[blackScreenCheck] Checking intensity...min: %f max: %f", min_i, max_i);
-        if (max_i < 10) {
-            qInfo("Detect black screen");
-            return false;
-        }
-        return true;
-    } else {
-        qInfo("Check intensity fail");
-        return false;
-    }
-}
-
 void AACoreNew::sfrImageReady(QImage img)
 {
     qInfo("Sfr Image Ready");
@@ -1735,17 +2278,17 @@ void AACoreNew::sfrImageReady(QImage img)
 
 void AACoreNew::captureLiveImage()
 {
-//    if(!dk->DothinkeyIsGrabbing()) {
-//        qInfo("Image Grabber is not ON");
-//        return;
-//    }
-//    bool grabRet = false;
-//    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
-//    if (!grabRet) {
-//        qInfo("AA Cannot grab image.");
-//        return;
-//    }
-//    cv::imwrite("livePhoto.bmp", img);
+    if(!dk->DothinkeyIsGrabbing()) {
+        qInfo("Image Grabber is not ON");
+        return;
+    }
+    bool grabRet = false;
+    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        qInfo("AA Cannot grab image.");
+        return;
+    }
+    cv::imwrite("livePhoto.bmp", img);
 }
 
 void AACoreNew::aaCoreParametersChanged()

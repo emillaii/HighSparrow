@@ -88,6 +88,7 @@ public:
     ImageProvider * dispenseImageProvider;
     ImageProvider * aaCoreTuningProvider;
     AACoreParameters parameters;
+    AACoreStates states;
 private:
     bool is_run = false;
     QMutex lut_mutex;
@@ -96,6 +97,9 @@ private:
     void NgLens();
     void NgSensor();
     void NgProduct();
+    void SetLens();
+    void SetSensor();
+    void SetProduct();
 private:
     QString loopTestResult;
     int currentAAMode;
@@ -122,6 +126,8 @@ private:
     bool has_ng_lens = false;
     bool has_ng_sensor = false;
     bool has_sensor = false;
+    bool send_lens_request = false;
+    bool send_sensor_request = false;
     bool has_lens = false;
 
     int current_aa_ng_time = 0;

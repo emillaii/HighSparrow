@@ -31,11 +31,12 @@
 		<ul>
 			<button id="create_start" class="btn btn-primary test_button">Start</button>
 			<button id="create_init_camera" class="btn btn-primary test_button">Init Camera</button>
+			<button id="create_y_level" class="btn btn-primary test_button">Y Level</button> 
 			<button id="create_pr_to_bond" class="btn btn-primary test_button">PR To Bond</button>
 			<button id="create_initial_tilt" class="btn btn-primary test_button">Initial Tilt</button>
 		</ul>
 		<ul>
-			<button id="create_aa_pick_lens" class="btn btn-success test_button">AA Pick Lens</button>
+			<button id="create_load_material" class="btn btn-success test_button">Load Material</button>
 			<button id="create_aa_unload_lens" class="btn btn-success test_button">AA Unload Lens</button>
 			<button id="create_oc" class="btn btn-success test_button">OC</button>
 			<button id="create_aa" class="btn btn-success test_button">AA</button>
@@ -50,8 +51,8 @@
 			<button id="create_delay" class="btn btn-info test_button">Delay</button>
 			<button id="create_accept" class="btn btn-info test_button">Accept</button>
 			<button id="create_reject" class="btn btn-info test_button">Reject</button>
+			<button id="create_grr" class="btn btn-info test_button">GRR</button>
 			<button id="create_terminate" class="btn btn-info test_button">Terminate</button>
-		    <button id="create_grr" class="btn btn-info test_button">GRR</button>
 		</ul>
 		<ul>
 			<button id="create_thread" class="btn btn-danger test_button">Parallel Test</button>
@@ -60,10 +61,8 @@
 	  </nav>
 	  
 	  <article>
-		<p>Keyboard C - Duplicate operator</p>
-		<p>Keyboard E - Edit parameters in operator</p>
-		<p>Keyboard DELETE - Delete Link or operator</p>
-		<p>Double Click - Run operator</p>
+		<p>Keyboard C - Duplicate operator; E - Edit parameters in operator</p>
+		<p>Keyboard DELETE - Delete Link or operator; Double Click - Run operator</p>
 	    <div class="flowchart-example-container flowchart-container" id="example_7">
 		<svg class="flowchart-links-layer"></svg>
 		</div>
@@ -80,8 +79,11 @@
 		<div id="aa_operator_properties">
 		  <label for="aa_operator_title">Operator's title: </label><input type="text" id="aa_operator_title">
 		</div>
-		  <div id="initial_tilt_properties">
+		<div id="initial_tilt_properties">
 		  <label for="initial_tilt_title">Operator's title: </label><input type="text" id="initial_tilt_operator_title">
+		</div>
+		<div id="y_level_operator_properties">
+		  <label for="y_level_title">Operator's title: </label><input type="text" id="y_level_operator_title">
 		</div>
 		<div id="oc_operator_properties">
 		  <label for="oc_operator_title">Operator's title: </label><input type="text" id="oc_operator_title">
@@ -104,8 +106,8 @@
 			</table>
 		</div>
 		<div id="grr_operator_properties">
-            <label for="grr_operator_title">Operator's title: </label><input type="text" id="grr_operator_title">
-        </div>
+			<label for="grr_operator_title">Operator's title: </label><input type="text" id="grr_operator_title">
+		</div>
       <button id="update_data_button">Update data</button>
 	</div>
   <div>

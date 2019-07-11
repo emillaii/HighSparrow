@@ -98,6 +98,7 @@ private:
     bool moveToNgTrayNextPos();
     bool moveToSUTPRPos(bool is_local = true,bool check_arrived = false,bool check_softlanding = false);
     bool movePicker1ToSUTPos(bool is_local = true);
+    bool movePicker2ToSUTPos(bool is_local = true);
 
     bool performSensorPR();
     bool performVacancyPR();
@@ -109,6 +110,8 @@ private:
     bool moveToWorkPos(bool check_state,bool check_softlanding = false);
     bool moveToWorkPos2(bool check_state,bool check_softlanding = false);
     bool moveToPRResultPos(bool check_softlanding = false);
+
+    bool movePicker2ToTrayPos(int tray_index);
 
     bool picker1SearchZ(double z,bool is_open = true,int time_out = 10000);
     bool picker1SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);

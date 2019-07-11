@@ -104,9 +104,9 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmMoveToTray2Pos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2)
@@ -200,7 +200,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
                         if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmVacancyTrayPR()
@@ -218,7 +218,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
                         if (baseModuleManager.getServerMode() == 0){
                             logicManager.lensPickArmMoveToPlaceLensToTray2()

@@ -495,6 +495,13 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
     return true;
 }
 
+bool XtMotor::MoveToMinPosSync(int time_out)
+{
+    bool result =MoveToPos(min_range);
+    result &= WaitArrivedTargetPos(time_out);
+    return result;
+}
+
 bool XtMotor::MoveToPosSafty(double pos,int thread)
 {
     if(is_debug)return true;
@@ -988,7 +995,7 @@ bool XtMotor::checkInterface(const double pos)
         }
     }
     for (int i = 0; i < io_limit_parameters.size(); ++i) {
-        IOLimitParameter* temp_parameter =io_limit_parameters[i];
+        IOLimitParameter* temp_parameter = io_limit_parameters[i];
         //与检测区间有干涉
         if(temp_parameter->hasInterferenceWithMoveSpance(current_pos,pos))
         {
@@ -997,7 +1004,7 @@ bool XtMotor::checkInterface(const double pos)
             {
                 bool result = true,temp_result;
                 QString temp_name = "",temp_io;
-                for(int i = 0; i < temp_parameter->input_io_indexs.size(); ++i)
+                for(int i = 0; i < temp_parameter->inputIOName().size(); ++i)
                 {
                     temp_io =  temp_parameter->inputIOName()[i].toString();
                     DeviceStatesGeter::IoState io_state = geter->getInputIoState(temp_io);
@@ -1011,7 +1018,7 @@ bool XtMotor::checkInterface(const double pos)
                         result = false;
                     }
                 }
-                for (int i = 0; i < temp_parameter->output_io_indexs.size(); ++i)
+                for (int i = 0; i < temp_parameter->outputIOName().size(); ++i)
                 {
                     temp_io =  temp_parameter->outputIOName()[i].toString();
                     DeviceStatesGeter::IoState io_state = geter->getOutputIoState(temp_io);
@@ -1034,7 +1041,7 @@ bool XtMotor::checkInterface(const double pos)
             else
             {
                 QString temp_io;
-                for(int i = 0; i < temp_parameter->input_io_indexs.size(); ++i)
+                for(int i = 0; i < temp_parameter->inputIOName().size(); ++i)
                 {
                     temp_io = temp_parameter->inputIOName()[i].toString();
                     DeviceStatesGeter::IoState io_state = geter->getInputIoState(temp_io);
@@ -1046,7 +1053,7 @@ bool XtMotor::checkInterface(const double pos)
                         return false;
                     }
                 }
-                for (int i = 0; i < temp_parameter->output_io_indexs.size(); ++i)
+                for (int i = 0; i < temp_parameter->outputIOName().size(); ++i)
                 {
                     temp_io =  temp_parameter->outputIOName()[i].toString();
                     DeviceStatesGeter::IoState io_state = geter->getOutputIoState(temp_io);

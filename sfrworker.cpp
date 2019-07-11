@@ -30,24 +30,24 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
         emit sfrResultsReady(index, std::move(sv_result), 0);
         return;
     }
-//    int roi_width = sqrt(sv[0].area)*this->roi_ratio;
+    int roi_width = sqrt(sv[0].area)*this->roi_ratio;
 
     emit sfrResultsReady(index, std::move(sv_result), timerTest.elapsed());
-//    if (is_display_image) {
-//        QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(displayImage);
-//        QPainter qPainter(&qImage);
-//        qPainter.setBrush(Qt::NoBrush);
-//        qPainter.setPen(QPen(Qt::blue, 4.0));
-//        qPainter.setFont(QFont("Times",75*display_factor, QFont::Light));
-//        for (Sfr_entry sfr_entry : sv) {
-//            qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
-//            qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
-//            qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
-//            qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
-//        }
-//        qPainter.end();
-//        emit imageReady(std::move(qImage));
-//    }
+    if (is_display_image) {
+        QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(displayImage);
+        QPainter qPainter(&qImage);
+        qPainter.setBrush(Qt::NoBrush);
+        qPainter.setPen(QPen(Qt::blue, 4.0));
+        qPainter.setFont(QFont("Times",75*display_factor, QFont::Light));
+        for (Sfr_entry sfr_entry : sv) {
+            qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
+            qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
+            qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
+            qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
+        }
+        qPainter.end();
+        emit imageReady(std::move(qImage));
+    }
     displayImage.release();
 }
 //void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_display_image, sfr::EdgeFilter edgeFilter)

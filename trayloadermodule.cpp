@@ -746,10 +746,20 @@ bool TrayLoaderModule::moveToWorkPos()
 
 void TrayLoaderModule::startWork(int run_mode)
 {
-    if(parameters.isHandly())
-        runHandle();
-    else if(run_mode == RunMode::Normal)run(true);
-    else if(run_mode == RunMode::NoMaterial)run(false);
+    if(run_mode == RunMode::Normal)
+    {
+        if(parameters.isHandly())
+            runHandle();
+        else
+            run(true);
+    }
+    else if(run_mode == RunMode::NoMaterial)
+    {
+        if(parameters.isHandly())
+            runHandle();
+        else
+            run(false);
+    }
 }
 
 void TrayLoaderModule::stopWork(bool wait_finish)

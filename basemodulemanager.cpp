@@ -85,7 +85,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
     connect(&timer, &QTimer::timeout, this, &BaseModuleManager::alarmChecking);
     connect(this,&BaseModuleManager::sendHandlingOperation,this,&BaseModuleManager::performHandlingOperation);
-    connect(&state_geter,&DeviceStatesGeter::sendGetDeviceState,this,&BaseModuleManager::deviceResp,Qt::BlockingQueuedConnection);
+    connect(&state_geter,&DeviceStatesGeter::sendGetDeviceState,this,&BaseModuleManager::deviceResp,Qt::DirectConnection);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -182,8 +182,8 @@ QString BaseModuleManager::deviceResp(QString message)
             qDebug()<<"inquiry input io state :"<< temp_name<<"thread id:"<<QThread::currentThreadId();
             QJsonObject result;
             result["inputIoName"] = temp_name;
-            XtGeneralInput* temp_inptio = GetInputIoByName(temp_name);
-            if(temp_inptio == nullptr)
+            XtGeneralInput* temp_io = GetInputIoByName(temp_name);
+            if(temp_io == nullptr)
             {
                 result["error"] = QString("can not find input io ").append(temp_name);
                 bool geted = false;
@@ -196,7 +196,7 @@ QString BaseModuleManager::deviceResp(QString message)
                       if(result_json["error"].toString() == "")
                       {
                             geted = true;
-                            result["inputIoValue"] = result_json["inputIoValue"];
+                            result["IoValue"] = result_json["IoValue"];
                             result["error"] = "";
                             break;
                       }
@@ -206,7 +206,43 @@ QString BaseModuleManager::deviceResp(QString message)
                     result["error"] = QString("tcp cannot find input io ").append(temp_name);
             }
             else {
-                result["inputIoValue"] = temp_inptio->Value();
+                result["IoValue"] = temp_io->Value();
+                result["error"] = "";
+
+            }
+            return getStringFromJsonObject(result);
+        }
+        else if(cmd == "inquiryOutputIoState")
+        {
+            QString temp_name = message_object["outputIoName"].toString();
+            qDebug()<<"inquiry output io state :"<< temp_name<<"thread id:"<<QThread::currentThreadId();
+            QJsonObject result;
+            result["outputIoName"] = temp_name;
+            XtGeneralOutput* temp_io = GetOutputIoByName(temp_name);
+            if(temp_io == nullptr)
+            {
+                result["error"] = QString("can not find input io ").append(temp_name);
+                bool geted = false;
+                foreach (QString messger_name, messagers.keys())
+                {
+                  QString tcp_result =  messagers[messger_name]->inquiryMessage(message);
+                  QJsonObject result_json = getJsonObjectFromString(tcp_result);
+                  if(result_json.contains("error"))
+                  {
+                      if(result_json["error"].toString() == "")
+                      {
+                            geted = true;
+                            result["IoValue"] = result_json["IoValue"];
+                            result["error"] = "";
+                            break;
+                      }
+                  }
+                }
+                if(!geted)
+                    result["error"] = QString("tcp cannot find input io ").append(temp_name);
+            }
+            else {
+                result["IoValue"] = temp_io->Value();
                 result["error"] = "";
 
             }
@@ -1338,6 +1374,8 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(sensor_pickarm.parameters.motorZName())->SeekOrigin();
     GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->SeekOrigin();
     result = GetMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
+    if(!result) return false;
+    GetMotorByName(sut_module.parameters.motorZName())->MoveToMinPosSync();
     if(!result) return false;
     GetMotorByName(sut_module.parameters.motorYName())->SeekOrigin();
 

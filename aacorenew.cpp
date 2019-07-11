@@ -295,6 +295,8 @@ void AACoreNew::performHandlingOperation(int cmd)
     qInfo("AACore perform command: %d parmas :%s", cmd, handlingParams.toStdString().c_str());
     QJsonDocument jsonDoc = QJsonDocument::fromJson(handlingParams.toLocal8Bit().data());
     QJsonValue params = jsonDoc.object();
+
+    runningUnit = this->unitlog->createUnit();
     if (cmd == HandleTest::Dispense)
     {
         performDispense();

@@ -60,9 +60,9 @@ Popup {
         ListElement{
             cylinderName:"POGOPIN"
             oneInName:"null"
-            oneOutName:"POGOPIN下"
+            oneOutName:"POGOPIN_DOWN"
             zeroInName:"null"
-            zeroOutName:"POGOPIN上"
+            zeroOutName:"POGOPIN_UP"
         }
         ListElement{
             cylinderName:"STK1气缸"
@@ -177,15 +177,15 @@ Popup {
                             target: timer
                             onTriggered: {
                                 if (dialog.visible) {
-                                    if(special_ouput.checked !== baseModuleManager.getOutput("POGOPIN下"))
+                                    if(special_ouput.checked !== baseModuleManager.getOutput("POGOPIN_DOWN"))
                                         special_ouput.toggle()
                                     //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                 }
                             }
                         }
                         onCheckedChanged:{
-                            baseModuleManager.setOutput("POGOPIN下", checked)
-                            baseModuleManager.setOutput("POGOPIN上", !checked)
+                            baseModuleManager.setOutput("POGOPIN_DOWN", checked)
+                            baseModuleManager.setOutput("POGOPIN_UP", !checked)
                         }
                     }
                     ListView{

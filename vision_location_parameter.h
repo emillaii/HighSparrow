@@ -15,6 +15,7 @@ public:
     Q_PROPERTY(int lightBrightness READ lightBrightness WRITE setLightBrightness NOTIFY lightBrightnessChanged)
     Q_PROPERTY(double maximunAngle READ maximunAngle WRITE setMaximunAngle NOTIFY maximunAngleChanged)
     Q_PROPERTY(double maximumLength READ maximumLength WRITE setMaximumLength NOTIFY maximumLengthChanged)
+    Q_PROPERTY(double maximumOffset READ maximumOffset WRITE setMaximumOffset NOTIFY maximumOffsetChanged)
     Q_PROPERTY(QString calibrationName READ calibrationName WRITE setCalibrationName NOTIFY calibrationNameChanged)
     Q_PROPERTY(bool needCalibration READ needCalibration WRITE setNeedCalibration NOTIFY needCalibrationChanged)
     Q_PROPERTY(bool canMotion READ canMotion WRITE setCanMotion NOTIFY canMotionChanged)
@@ -84,6 +85,11 @@ public:
     int testIndex() const
     {
         return m_testIndex;
+    }
+
+    double maximumOffset() const
+    {
+        return m_maximumOffset;
     }
 
 public slots:
@@ -207,6 +213,16 @@ public slots:
         emit testIndexChanged(m_testIndex);
     }
 
+    void setMaximumOffset(double maximumOffset)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_maximumOffset, maximumOffset))
+            return;
+
+        m_maximumOffset = maximumOffset;
+        emit maximumOffsetChanged(m_maximumOffset);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -234,12 +250,14 @@ signals:
 
     void testIndexChanged(int testIndex);
 
+    void maximumOffsetChanged(double maximumOffset);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
     int m_lightChannel = 0;
     int m_lightBrightness = 0;
-    double m_maximunAngle = 15;
+    double m_maximunAngle = 10;
     double m_maximumLength = 3;
     QString m_locationName = "Location";
     QString m_calibrationName = "Calibration";
@@ -248,6 +266,7 @@ private:
     double m_waitImageDelay = 100;
     bool m_enablePrTest = false;
     int m_testIndex = 1;
+    double m_maximumOffset = 10;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

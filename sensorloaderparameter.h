@@ -13,6 +13,7 @@ public:
     Q_PROPERTY(double vcmWorkForce READ vcmWorkForce WRITE setVcmWorkForce NOTIFY vcmWorkForceChanged)
     Q_PROPERTY(double vcmWorkSpeed READ vcmWorkSpeed WRITE setVcmWorkSpeed NOTIFY vcmWorkSpeedChanged)
     Q_PROPERTY(double vcmMargin READ vcmMargin WRITE setVcmMargin NOTIFY vcmMarginChanged)
+    Q_PROPERTY(bool enableForceLimit READ enableForceLimit WRITE setEnableForceLimit NOTIFY enableForceLimitChanged)
     Q_PROPERTY(double pickSensorZ READ pickSensorZ WRITE setPickSensorZ NOTIFY pickSensorZChanged)
     Q_PROPERTY(double placeSensorZ READ placeSensorZ WRITE setPlaceSensorZ NOTIFY placeSensorZChanged)
     Q_PROPERTY(QString sensorLocationName READ sensorLocationName WRITE setSensorLocationName NOTIFY sensorLocationNameChanged)
@@ -28,6 +29,7 @@ public:
     Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
     Q_PROPERTY(double pickNgSensorZ READ pickNgSensorZ WRITE setPickNgSensorZ NOTIFY pickNgSensorZChanged)
     Q_PROPERTY(double placeNgSensorZ READ placeNgSensorZ WRITE setPlaceNgSensorZ NOTIFY placeNgSensorZChanged)
+    Q_PROPERTY(bool enableEscape READ enableEscape WRITE setEnableEscape NOTIFY enableEscapeChanged)
     Q_PROPERTY(double escapeHeight READ escapeHeight WRITE setEscapeHeight NOTIFY escapeHeightChanged)
     Q_PROPERTY(double escapeX READ escapeX WRITE setEscapeX NOTIFY escapeXChanged)
     Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
@@ -46,11 +48,13 @@ public:
     Q_PROPERTY(int repeatTime READ repeatTime WRITE setRepeatTime NOTIFY repeatTimeChanged)
     Q_PROPERTY(int testSensorCount READ testSensorCount WRITE setTestSensorCount NOTIFY testSensorCountChanged)
     Q_PROPERTY(int staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
-    Q_PROPERTY(bool enableTraySensorPrTest READ enableTraySensorPrTest WRITE setEnableTraySensorPrTest NOTIFY enableTraySensorPrTestChanged)
-    Q_PROPERTY(bool enableSutVacancyPrTest READ enableSutVacancyPrTest WRITE setEnableSutVacancyPrTest NOTIFY enableSutVacancyPrTestChanged)
-    Q_PROPERTY(bool enableSutPrTest READ enableSutPrTest WRITE setEnableSutPrTest NOTIFY enableSutPrTestChanged)
-    Q_PROPERTY(bool enableSutSensorPrTest READ enableSutSensorPrTest WRITE setEnableSutSensorPrTest NOTIFY enableSutSensorPrTestChanged)
-    Q_PROPERTY(bool enableTrayVacancyPrTest READ enableTrayVacancyPrTest WRITE setEnableTrayVacancyPrTest NOTIFY enableTrayVacancyPrTestChanged)
+    Q_PROPERTY(bool enableNgSensorPr READ enableNgSensorPr WRITE setEnableNgSensorPr NOTIFY enableNgSensorPrChanged)
+    Q_PROPERTY(bool enableProductPr READ enableProductPr WRITE setEnableProductPr NOTIFY enableProductPrChanged)
+    Q_PROPERTY(bool enableNgProductPr READ enableNgProductPr WRITE setEnableNgProductPr NOTIFY enableNgProductPrChanged)
+    Q_PROPERTY(bool enableProdcutTrayPr READ enableProdcutTrayPr WRITE setEnableProdcutTrayPr NOTIFY enableProdcutTrayPrChanged)
+    Q_PROPERTY(bool enableNgProductTrayPr READ enableNgProductTrayPr WRITE setEnableNgProductTrayPr NOTIFY enableNgProductTrayPrChanged)
+    Q_PROPERTY(bool enableNgSensorTrayPr READ enableNgSensorTrayPr WRITE setEnableNgSensorTrayPr NOTIFY enableNgSensorTrayPrChanged)
+    Q_PROPERTY(int autoPrTime READ autoPrTime WRITE setAutoPrTime NOTIFY autoPrTimeChanged)
 
     double vcmWorkForce() const
     {
@@ -220,30 +224,49 @@ public:
     {
         return m_staticTest;
     }
-
-    bool enableTraySensorPrTest() const
+    bool enableEscape() const
     {
-        return m_enableTraySensorPrTest;
+        return m_enableEscape;
     }
 
-    bool enableSutVacancyPrTest() const
+    bool enableForceLimit() const
     {
-        return m_enableSutVacancyPrTest;
+        return m_enableForceLimit;
     }
 
-    bool enableSutPrTest() const
+    bool enableNgSensorPr() const
     {
-        return m_enableSutPrTest;
+        return m_enableNgSensorPr;
     }
 
-    bool enableSutSensorPrTest() const
+    bool enableProductPr() const
     {
-        return m_enableSutSensorPrTest;
+        return m_enableProductPr;
     }
 
-    bool enableTrayVacancyPrTest() const
+    bool enableNgProductPr() const
     {
-        return m_enableTrayVacancyPrTest;
+        return m_enableNgProductPr;
+    }
+
+    bool enableProdcutTrayPr() const
+    {
+        return m_enableProdcutTrayPr;
+    }
+
+    bool enableNgProductTrayPr() const
+    {
+        return m_enableNgProductTrayPr;
+    }
+
+    bool enableNgSensorTrayPr() const
+    {
+        return m_enableNgSensorTrayPr;
+    }
+
+    int autoPrTime() const
+    {
+        return m_autoPrTime;
     }
 
 public slots:
@@ -572,49 +595,85 @@ public slots:
         emit staticTestChanged(m_staticTest);
     }
 
-    void setEnableTraySensorPrTest(bool enableTraySensorPrTest)
+    void setEnableEscape(bool enableEscape)
     {
-        if (m_enableTraySensorPrTest == enableTraySensorPrTest)
+        if (m_enableEscape == enableEscape)
             return;
 
-        m_enableTraySensorPrTest = enableTraySensorPrTest;
-        emit enableTraySensorPrTestChanged(m_enableTraySensorPrTest);
+        m_enableEscape = enableEscape;
+        emit enableEscapeChanged(m_enableEscape);
     }
 
-    void setEnableSutVacancyPrTest(bool enableSutVacancyPrTest)
+    void setEnableForceLimit(bool enableForceLimit)
     {
-        if (m_enableSutVacancyPrTest == enableSutVacancyPrTest)
+        if (m_enableForceLimit == enableForceLimit)
             return;
 
-        m_enableSutVacancyPrTest = enableSutVacancyPrTest;
-        emit enableSutVacancyPrTestChanged(m_enableSutVacancyPrTest);
+        m_enableForceLimit = enableForceLimit;
+        emit enableForceLimitChanged(m_enableForceLimit);
     }
 
-    void setEnableSutPrTest(bool enableSutPrTest)
+    void setEnableNgSensorPr(bool enableNgSensorPr)
     {
-        if (m_enableSutPrTest == enableSutPrTest)
+        if (m_enableNgSensorPr == enableNgSensorPr)
             return;
 
-        m_enableSutPrTest = enableSutPrTest;
-        emit enableSutPrTestChanged(m_enableSutPrTest);
+        m_enableNgSensorPr = enableNgSensorPr;
+        emit enableNgSensorPrChanged(m_enableNgSensorPr);
     }
 
-    void setEnableSutSensorPrTest(bool enableSutSensorPrTest)
+    void setEnableProductPr(bool enableProductPr)
     {
-        if (m_enableSutSensorPrTest == enableSutSensorPrTest)
+        if (m_enableProductPr == enableProductPr)
             return;
 
-        m_enableSutSensorPrTest = enableSutSensorPrTest;
-        emit enableSutSensorPrTestChanged(m_enableSutSensorPrTest);
+        m_enableProductPr = enableProductPr;
+        emit enableProductPrChanged(m_enableProductPr);
     }
 
-    void setEnableTrayVacancyPrTest(bool enableTrayVacancyPrTest)
+    void setEnableNgProductPr(bool enableNgProductPr)
     {
-        if (m_enableTrayVacancyPrTest == enableTrayVacancyPrTest)
+        if (m_enableNgProductPr == enableNgProductPr)
             return;
 
-        m_enableTrayVacancyPrTest = enableTrayVacancyPrTest;
-        emit enableTrayVacancyPrTestChanged(m_enableTrayVacancyPrTest);
+        m_enableNgProductPr = enableNgProductPr;
+        emit enableNgProductPrChanged(m_enableNgProductPr);
+    }
+
+    void setEnableProdcutTrayPr(bool enableProdcutTrayPr)
+    {
+        if (m_enableProdcutTrayPr == enableProdcutTrayPr)
+            return;
+
+        m_enableProdcutTrayPr = enableProdcutTrayPr;
+        emit enableProdcutTrayPrChanged(m_enableProdcutTrayPr);
+    }
+
+    void setEnableNgProductTrayPr(bool enableNgProductTrayPr)
+    {
+        if (m_enableNgProductTrayPr == enableNgProductTrayPr)
+            return;
+
+        m_enableNgProductTrayPr = enableNgProductTrayPr;
+        emit enableNgProductTrayPrChanged(m_enableNgProductTrayPr);
+    }
+
+    void setEnableNgSensorTrayPr(bool enableNgSensorTrayPr)
+    {
+        if (m_enableNgSensorTrayPr == enableNgSensorTrayPr)
+            return;
+
+        m_enableNgSensorTrayPr = enableNgSensorTrayPr;
+        emit enableNgSensorTrayPrChanged(m_enableNgSensorTrayPr);
+    }
+
+    void setAutoPrTime(int autoPrTime)
+    {
+        if (m_autoPrTime == autoPrTime)
+            return;
+
+        m_autoPrTime = autoPrTime;
+        emit autoPrTimeChanged(m_autoPrTime);
     }
 
 signals:
@@ -687,15 +746,23 @@ signals:
 
     void staticTestChanged(int staticTest);
 
-    void enableTraySensorPrTestChanged(bool enableTraySensorPrTest);
+    void enableEscapeChanged(bool enableEscape);
 
-    void enableSutVacancyPrTestChanged(bool enableSutVacancyPrTest);
+    void enableForceLimitChanged(bool enableForceLimit);
 
-    void enableSutPrTestChanged(bool enableSutPrTest);
+    void enableNgSensorPrChanged(bool enableNgSensorPr);
 
-    void enableSutSensorPrTestChanged(bool enableSutSensorPrTest);
+    void enableProductPrChanged(bool enableProductPr);
 
-    void enableTrayVacancyPrTestChanged(bool enableTrayVacancyPrTest);
+    void enableNgProductPrChanged(bool enableNgProductPr);
+
+    void enableProdcutTrayPrChanged(bool enableProdcutTrayPr);
+
+    void enableNgProductTrayPrChanged(bool enableNgProductTrayPr);
+
+    void enableNgSensorTrayPrChanged(bool enableNgSensorTrayPr);
+
+    void autoPrTimeChanged(int autoPrTime);
 
 private:
     double m_vcmWorkForce = 0;
@@ -732,11 +799,15 @@ private:
     int m_repeatTime = 10;
     int m_testSensorCount = 10;
     int m_staticTest = false;
-    bool m_enableTraySensorPrTest = false;
-    bool m_enableSutVacancyPrTest = false;
-    bool m_enableSutPrTest = false;
-    bool m_enableSutSensorPrTest = false;
-    bool m_enableTrayVacancyPrTest = false;
+    bool m_enableEscape = false;
+    bool m_enableForceLimit = false;
+    bool m_enableNgSensorPr = false;
+    bool m_enableProductPr = false;
+    bool m_enableNgProductPr = false;
+    bool m_enableProdcutTrayPr = false;
+    bool m_enableNgProductTrayPr = false;
+    bool m_enableNgSensorTrayPr = false;
+    int m_autoPrTime = 5;
 };
 class SensorLoaderState:public PropertyBase
 {
@@ -760,10 +831,10 @@ public:
     Q_PROPERTY(QString cmd READ cmd WRITE setCmd NOTIFY cmdChanged)
     Q_PROPERTY(bool waitingChangeTray READ waitingChangeTray WRITE setWaitingChangeTray NOTIFY waitingChangeTrayChanged)
     Q_PROPERTY(bool finishChangeTray READ finishChangeTray WRITE setFinishChangeTray NOTIFY finishChangeTrayChanged)
-    Q_PROPERTY(double picker1OffsetX READ picker1OffsetX WRITE setPicker1OffsetX NOTIFY picker1OffsetXChanged)
-    Q_PROPERTY(double picker1OffsetY READ picker1OffsetY WRITE setPicker1OffsetY NOTIFY picker1OffsetYChanged)
-    Q_PROPERTY(double picker2OffsetX READ picker2OffsetX WRITE setPicker2OffsetX NOTIFY picker2OffsetXChanged)
-    Q_PROPERTY(double picker2OffsetY READ picker2OffsetY WRITE setPicker2OffsetY NOTIFY picker2OffsetYChanged)
+    Q_PROPERTY(double picker1SensorOffsetX READ picker1SensorOffsetX WRITE setPicker1SensorOffsetX NOTIFY picker1SensorOffsetXChanged)
+    Q_PROPERTY(double picker1SensorOffsetY READ picker1SensorOffsetY WRITE setPicker1SensorOffsetY NOTIFY picker1SensorOffsetYChanged)
+    Q_PROPERTY(double picker2SensorOffsetX READ picker2SensorOffsetX WRITE setPicker2SensorOffsetX NOTIFY picker2SensorOffsetXChanged)
+    Q_PROPERTY(double picker2SensorOffsetY READ picker2SensorOffsetY WRITE setPicker2SensorOffsetY NOTIFY picker2SensorOffsetYChanged)
 
     Q_PROPERTY(bool hasUnpickedNgProduct READ hasUnpickedNgProduct WRITE setHasUnpickedNgProduct NOTIFY hasUnpickedNgProductChanged)
     Q_PROPERTY(bool hasUnpickedProduct READ hasUnpickedProduct WRITE setHasUnpickedProduct NOTIFY hasUnpickedProductChanged)
@@ -842,24 +913,24 @@ public:
         return m_finishChangeTray;
     }
 
-    double picker1OffsetX() const
+    double picker1SensorOffsetX() const
     {
-        return m_picker1OffsetX;
+        return m_picker1SensorOffsetX;
     }
 
-    double picker1OffsetY() const
+    double picker1SensorOffsetY() const
     {
-        return m_picker1OffsetY;
+        return m_picker1SensorOffsetY;
     }
 
-    double picker2OffsetX() const
+    double picker2SensorOffsetX() const
     {
-        return m_picker2OffsetX;
+        return m_picker2SensorOffsetX;
     }
 
-    double picker2OffsetY() const
+    double picker2SensorOffsetY() const
     {
-        return m_picker2OffsetY;
+        return m_picker2SensorOffsetY;
     }
 
     bool hasUnpickedNgProduct() const
@@ -1022,44 +1093,44 @@ public slots:
         emit finishChangeTrayChanged(m_finishChangeTray);
     }
 
-    void setPicker1OffsetX(double picker1OffsetX)
+    void setPicker1SensorOffsetX(double picker1OffsetX)
     {
         qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_picker1OffsetX, picker1OffsetX))
+        if (qFuzzyCompare(m_picker1SensorOffsetX, picker1OffsetX))
             return;
 
-        m_picker1OffsetX = picker1OffsetX;
-        emit picker1OffsetXChanged(m_picker1OffsetX);
+        m_picker1SensorOffsetX = picker1OffsetX;
+        emit picker1SensorOffsetXChanged(m_picker1SensorOffsetX);
     }
 
-    void setPicker1OffsetY(double picker1OffsetY)
+    void setPicker1SensorOffsetY(double picker1OffsetY)
     {
         qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_picker1OffsetY, picker1OffsetY))
+        if (qFuzzyCompare(m_picker1SensorOffsetY, picker1OffsetY))
             return;
 
-        m_picker1OffsetY = picker1OffsetY;
-        emit picker1OffsetYChanged(m_picker1OffsetY);
+        m_picker1SensorOffsetY = picker1OffsetY;
+        emit picker1SensorOffsetYChanged(m_picker1SensorOffsetY);
     }
 
-    void setPicker2OffsetX(double picker2OffsetX)
+    void setPicker2SensorOffsetX(double picker2OffsetX)
     {
         qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_picker2OffsetX, picker2OffsetX))
+        if (qFuzzyCompare(m_picker2SensorOffsetX, picker2OffsetX))
             return;
 
-        m_picker2OffsetX = picker2OffsetX;
-        emit picker2OffsetXChanged(m_picker2OffsetX);
+        m_picker2SensorOffsetX = picker2OffsetX;
+        emit picker2SensorOffsetXChanged(m_picker2SensorOffsetX);
     }
 
-    void setPicker2OffsetY(double picker2OffsetY)
+    void setPicker2SensorOffsetY(double picker2OffsetY)
     {
         qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_picker2OffsetY, picker2OffsetY))
+        if (qFuzzyCompare(m_picker2SensorOffsetY, picker2OffsetY))
             return;
 
-        m_picker2OffsetY = picker2OffsetY;
-        emit picker2OffsetYChanged(m_picker2OffsetY);
+        m_picker2SensorOffsetY = picker2OffsetY;
+        emit picker2SensorOffsetYChanged(m_picker2SensorOffsetY);
     }
 
     void setHasUnpickedNgProduct(bool hasUnpickedSensor)
@@ -1137,13 +1208,13 @@ signals:
 
     void finishChangeTrayChanged(bool finishChangeTray);
 
-    void picker1OffsetXChanged(double picker1OffsetX);
+    void picker1SensorOffsetXChanged(double picker1SensorOffsetX);
 
-    void picker1OffsetYChanged(double picker1OffsetY);
+    void picker1SensorOffsetYChanged(double picker1SensorOffsetY);
 
-    void picker2OffsetXChanged(double picker2OffsetX);
+    void picker2SensorOffsetXChanged(double picker2SensorOffsetX);
 
-    void picker2OffsetYChanged(double picker2OffsetY);
+    void picker2SensorOffsetYChanged(double picker2SensorOffsetY);
 
     void hasUnpickedNgProductChanged(bool hasUnpickedNgProduct);
 
@@ -1171,10 +1242,10 @@ private:
     QString m_cmd = "";
     bool m_waitingChangeTray = false;
     bool m_finishChangeTray = false;
-    double m_picker1OffsetX = 0;
-    double m_picker1OffsetY = 0;
-    double m_picker2OffsetX = 0;
-    double m_picker2OffsetY = 0;
+    double m_picker1SensorOffsetX = 0;
+    double m_picker1SensorOffsetY = 0;
+    double m_picker2SensorOffsetX = 0;
+    double m_picker2SensorOffsetY = 0;
     bool m_hasUnpickedSensor = false;
     bool m_hasUnpickedProduct = false;
     bool m_hasUnpickedNgSensor = false;

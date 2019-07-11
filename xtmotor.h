@@ -86,6 +86,7 @@ public:
     bool WaitArrivedTargetPos(double target_position,int timeout=10000);
     bool WaitArrivedTargetPos(int timeout = 10000);
     virtual bool MoveToPosSync(double pos,int thread = -1,int time_out = 30000);
+    bool MoveToMinPosSync(int time_out = 3000);
     bool MoveToPosSafty(double pos,int thread = -1);
     bool CheckArrivedTargetPos(double target_position);
     bool CheckArrivedTargetPos();

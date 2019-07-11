@@ -50,7 +50,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
            temp_offset.Y = mech_o.y();
            temp_offset.O_X = mech.x() - mech_o.x();
            temp_offset.O_Y = mech.y() - mech_o.y();
-            if(abs(temp_offset.X)>parameters.maximumLength()||abs(temp_offset.Y)>parameters.maximumLength()||abs(temp_offset.O_X)>parameters.maximumLength()||abs(temp_offset.O_Y)>parameters.maximumLength())
+            if(abs(temp_offset.X)>parameters.maximumLength()||abs(temp_offset.Y)>parameters.maximumLength()||abs(temp_offset.O_X)>parameters.maximumOffset()||abs(temp_offset.O_Y)>parameters.maximumOffset())
             {
                 qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8" pr result too big"));

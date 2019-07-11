@@ -183,8 +183,6 @@ signals:
     void effectXSpanceChanged(QVariantList effectXSpance);
 
 public:
-    QList<int> input_io_indexs;
-    QList<int> output_io_indexs;
     bool crashSpance() const
     {
         return m_crashSpance;

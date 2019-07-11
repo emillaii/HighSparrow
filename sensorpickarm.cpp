@@ -35,13 +35,19 @@ bool SensorPickArm::move_XY_Synic(QPointF position, bool check_softlanding, int 
     return resut;
 }
 
-bool SensorPickArm::move_XYT1_Synic(const double x, const double y, const double t, const bool check_softlanding, int timeout)
+bool SensorPickArm::checkXYT1Arrived(const double x, const double y, const double t)
+{
+    return motor_x->CheckArrivedTargetPos(x)&&motor_y->CheckArrivedTargetPos(y)&&picker1->motor_t->CheckArrivedTargetPos(t);
+}
+
+bool SensorPickArm::move_XYT1_Synic(const double x, const double y, const double t,const bool check_arrived, const bool check_softlanding, int timeout)
 {
     if(check_softlanding)
     {
         if(!picker1->motor_z->resetSoftLanding(timeout))return false;
         if(!picker2->motor_z->resetSoftLanding(timeout))return false;
     }
+    if(check_arrived&&checkXYT1Arrived(x,y,t))return true;
     motor_x->MoveToPos(x);
     motor_y->MoveToPos(y);
     picker1->motor_t->MoveToPos(t);
@@ -50,6 +56,20 @@ bool SensorPickArm::move_XYT1_Synic(const double x, const double y, const double
     resut &= picker1->motor_t->WaitArrivedTargetPos(t,timeout);
     return resut;
 
+}
+
+bool SensorPickArm::move_XYT1_Pos(const double x, const double y, const double t,const bool check_arrived, const bool check_softlanding, int timeout)
+{
+    if(check_softlanding)
+    {
+        if(!picker1->motor_z->resetSoftLanding(timeout))return false;
+        if(!picker2->motor_z->resetSoftLanding(timeout))return false;
+    }
+    if(check_arrived&&checkXYT1Arrived(x,y,t))return true;
+    bool result = motor_x->MoveToPos(x);
+    result &= motor_y->MoveToPos(y);
+    result &=  picker1->motor_t->MoveToPos(t);
+    return result;
 }
 
 bool SensorPickArm::checkXYT2Arrived(const double x, const double y, const double t)
@@ -72,6 +92,20 @@ bool SensorPickArm::move_XYT2_Synic(const double x, const double y, const double
     resut &= motor_y->WaitArrivedTargetPos(y,timeout);
     resut &= picker2->motor_t->WaitArrivedTargetPos(t,timeout);
     return resut;
+}
+
+bool SensorPickArm::move_XYT2_Pos(const double x, const double y, const double t, const bool check_arrived, const bool check_softlanding, int timeout)
+{
+    if(check_softlanding)
+    {
+        if(!picker1->motor_z->resetSoftLanding(timeout))return false;
+        if(!picker2->motor_z->resetSoftLanding(timeout))return false;
+    }
+    if(check_arrived&&checkXYT2Arrived(x,y,t))return true;
+    bool result = motor_x->MoveToPos(x);
+    result &= motor_y->MoveToPos(y);
+    result &= picker2->motor_t->MoveToPos(t);
+    return result;
 }
 
 bool SensorPickArm::move_XeYe_Z1_XY(double z, double escape_x, double escape_y, const bool check_softlanding, int timeout)
@@ -186,7 +220,7 @@ bool SensorPickArm::stepMove_XYT1_Pos(const double step_x, const double step_y, 
     return result;
 }
 
-bool SensorPickArm::waitStepMove_XYT1(int timeout)
+bool SensorPickArm::wait_XYT1_Arrived(int timeout)
 {
     bool resut = motor_x->WaitArrivedTargetPos(timeout);
     resut &= motor_y->WaitArrivedTargetPos(timeout);
@@ -226,7 +260,7 @@ bool SensorPickArm::stepMove_XYT2_Pos(const double step_x, const double step_y, 
     return result;
 }
 
-bool SensorPickArm::waitStepMove_XYT2(int timeout)
+bool SensorPickArm::wait_XYT2_Arrived(int timeout)
 {
     bool result = motor_x->WaitArrivedTargetPos(timeout);
     result &= motor_y->WaitArrivedTargetPos(timeout);
@@ -234,7 +268,17 @@ bool SensorPickArm::waitStepMove_XYT2(int timeout)
     return result;
 }
 
-bool SensorPickArm::ZSerchByForce(double speed, double force, bool check_softlanding, int timeout)
+bool SensorPickArm::Z1MoveToPick(double target, bool open_vacuum, bool check_softlanding,bool need_return, int timeout)
+{
+    if(check_softlanding)if(!picker1->motor_z->resetSoftLanding(timeout))return false;
+    bool result = picker1->motor_z->MoveToPosSync(target);
+    result &= picker1->vacuum->Set(open_vacuum);
+    if(need_return)
+    picker1->motor_z->MoveToPosSync(0);
+    return result;
+}
+
+bool SensorPickArm::Z1SerchByForce(double speed, double force, bool check_softlanding, int timeout)
 {
     if(check_softlanding)if(!picker1->motor_z->resetSoftLanding(timeout))return false;
     bool result = picker1->motor_z->SearchPosByForce(speed,force);
@@ -245,7 +289,7 @@ bool SensorPickArm::ZSerchByForce(double speed, double force, bool check_softlan
     return result;
 }
 
-bool SensorPickArm::ZSerchByForce(double speed, double force, double limit, double margin, int finish_time, bool open_vacuum,bool need_return, int timeout)
+bool SensorPickArm::Z1SerchByForce(double speed, double force, double limit, double margin, int finish_time, bool open_vacuum,bool need_return, int timeout)
 {
     qInfo("SensorPickArm::ZSerchByForce timeout %d",timeout);
     bool result = picker1->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
@@ -272,7 +316,17 @@ double SensorPickArm::GetSoftladngPosition(bool get_current)
     return softlanding_position;
 }
 
-bool SensorPickArm::ZSerchByForce2(double speed, double force, bool check_softlanding, int timeout)
+bool SensorPickArm::Z2MoveToPick(double target, bool open_vacuum, bool check_softlanding,bool need_return, int timeout)
+{
+    if(check_softlanding)if(!picker2->motor_z->resetSoftLanding(timeout))return false;
+    bool result = picker2->motor_z->MoveToPosSync(target);
+    result &= picker2->vacuum->Set(open_vacuum);
+    if(need_return)
+        picker2->motor_z->MoveToPosSync(0);
+    return result;
+}
+
+bool SensorPickArm::Z2SerchByForce(double speed, double force, bool check_softlanding, int timeout)
 {
     if(check_softlanding)if(!picker2->motor_z->resetSoftLanding(timeout))return false;
     bool result = picker2->motor_z->SearchPosByForce(speed,force);
@@ -284,7 +338,7 @@ bool SensorPickArm::ZSerchByForce2(double speed, double force, bool check_softla
 
 }
 
-bool SensorPickArm::ZSerchByForce2(double speed, double force, double limit, double margin, int finish_time, bool open_vacuum,bool need_return, int timeout)
+bool SensorPickArm::Z2SerchByForce(double speed, double force, double limit, double margin, int finish_time, bool open_vacuum,bool need_return, int timeout)
 {
     bool result = picker2->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
     if(result)

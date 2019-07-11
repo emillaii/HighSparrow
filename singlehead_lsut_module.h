@@ -48,6 +48,13 @@ public:
         //GRAB_LENS_TO_GRIPPER = 2000
     };
 
+    enum LUTState
+    {
+        NO_LENS,
+        HAS_LENS,
+        BUSY
+    };
+
 public:
     SingleheadLSutModule(QString name = "LSutModule", QObject *parent = nullptr);
     void Init(MaterialCarrier *_sut_carrier,
@@ -73,6 +80,7 @@ public:
     PositionT  up_downlook_offset;
 
     SingleHeadLSutParameter parameters;
+    LSutState states;
 
     //! Load LSUT parameters from config file
     void loadParams(QString file_name);
@@ -87,11 +95,16 @@ public:
     bool stepMove_Z_Sync(double step_z);
     void recordCurrentPos();
     bool movetoRecordPos(bool check_autochthonous = false);
+    bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
 
     // Distance offset between lens center to uplook camera center
     Position lens_offset;
     // Distance offset between sensor center to uplook camera center
     Position sensor_offset;
+
+signals:
+    void sendLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
+    void sendLoadSensorFinish(double offset_x,double offset_y,double offset_z);
 
 public slots:
     void startWork(int run_mode);
@@ -102,14 +115,14 @@ public slots:
 private:
     void run(bool isProduct);
 
-    bool moveToMushroomPosition(bool check_autochthonous);
-    bool moveToGripperPosition(bool check_autochthonous);
-    bool moveToLoadPosition(bool check_autochthonous);
-    bool moveToPRPosition(bool check_autochthonous);
-    bool moveToCalibrationPosition(bool check_autochthonous);
-    bool moveToSafetyPosition(bool check_autochthonous);
-    bool moveToPickLensPosition(bool check_autochthonous);
-    bool moveToUnpickLensPosition(bool check_autochthonous);
+    bool moveToMushroomPosition(bool check_autochthonous = false);
+    bool moveToGripperPosition(bool check_autochthonous = false);
+    bool moveToLoadPosition(bool check_autochthonous = false);
+    bool moveToPRPosition(bool check_autochthonous = false);
+    bool moveToCalibrationPosition(bool check_autochthonous = false);
+    bool moveToSafetyPosition(bool check_autochthonous = false);
+    bool moveToPickLensPosition(bool check_autochthonous = false);
+    bool moveToUnpickLensPosition(bool check_autochthonous = false);
 
     bool performDownlookSensorPR();
     bool performUplookLensPR();
@@ -133,6 +146,8 @@ private:
     XtVacuum *vacuum_sut;
     PrOffset pr_offset;
     mPoint3D record_position;
+
+    LUTState state = NO_LENS;
 };
 
 #endif // SINGLEHEAD_LSUT_MODULE_H

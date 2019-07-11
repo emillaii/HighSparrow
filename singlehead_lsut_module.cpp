@@ -64,10 +64,66 @@ void SingleheadLSutModule::saveParams(QString file_name)
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
-// TODO
-void SingleheadLSutModule::run(bool isProduct)
+// TODO： add lut behavior
+void SingleheadLSutModule::run(bool has_material)
 {
-
+    is_run = true;
+    while (is_run)
+    {
+        if(!states.allowLoadSensor())
+        {
+            QThread::msleep(1000);
+            continue;
+        }
+        if((!states.sutHasSensor()))
+        {
+            if(!moveToLoadPosition())
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run =false;
+                break;
+            }
+            if(!pogopin->Set(false))
+            {
+                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                waitMessageReturn(is_run);
+                continue;
+            }
+            QThread::msleep(100);
+//            if(!sendSensorRequest(states.sutHasProduct(),states.sutHasNgSensor()))
+//            {
+//                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+//                waitMessageReturn(is_run);
+//                continue;
+//            }
+//            else
+//            {
+//                states.setSutHasSensor(true);
+//            }
+            states.setSutHasSensor(true);
+        }
+        if(states.sutHasSensor())
+        {
+            if(!pogopin->Set(true))
+            {
+                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                waitMessageReturn(is_run);
+                continue;
+            }
+            QThread::msleep(100);
+            if((!moveToDownlookPR(pr_offset))&&has_material)
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            else
+            {
+                emit sendLoadSensorFinish(-pr_offset.X,-pr_offset.Y,pr_offset.Theta);
+                states.setAllowLoadSensor(false);
+            }
+        }
+    }
 }
 
 
@@ -206,6 +262,20 @@ void SingleheadLSutModule::performHandlingOperation(int cmd)
     }
 
     return;
+}
+
+bool SingleheadLSutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check_autochthonous)
+{
+    vision_downlook_location->OpenLight();
+    //bool result = moveToDownlookPos(check_autochthonous);
+    bool result = moveToPRPosition(check_autochthonous);
+    if(result)
+    {
+        result = vision_downlook_location->performPR(offset);
+    }
+    if(close_lighting)
+        vision_downlook_location->CloseLight();
+    return result;
 }
 
 bool SingleheadLSutModule::moveToMushroomPosition(bool check_autochthonous)

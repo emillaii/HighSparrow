@@ -1498,9 +1498,11 @@ void BaseModuleManager::sendLoadLens(bool has_ng)
 {
     aa_head_module.moveToPickLensPosition();
     if(has_ng)
-        emit lut_module.sendLoadLensRequst(true,0,0);
+        //emit lut_module.sendLoadLensRequst(true,0,0);
+        emit sh_lsut_module.sendLoadLensRequst(true,0,0);
     else
-        emit lut_module.sendLoadLensRequst(true,-1,-1);
+        //emit lut_module.sendLoadLensRequst(true,-1,-1);
+        emit sh_lsut_module.sendLoadLensRequst(true,-1,-1);
 }
 
 void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
@@ -1524,7 +1526,8 @@ void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
 
 void BaseModuleManager::sendChangeSensorTray()
 {
-   emit sensor_loader_module.sendChangeTrayRequst();
+   //emit sensor_loader_module.sendChangeTrayRequst();
+    emit single_station_material_loader_module.sendChangeSensorTrayRequst();
 }
 
 bool BaseModuleManager::initSensor()

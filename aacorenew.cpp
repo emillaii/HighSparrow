@@ -303,15 +303,15 @@ void AACoreNew::performHandlingOperation(int cmd)
         performPRToBond();
     }
     else if (cmd == HandleTest::MTF) {
-        //performMTF(true, true);
-        performMTFOffline(params);
+        performMTF(params, true);
+        //performMTFOffline(params);
     }
     else if (cmd == HandleTest::OC) {
-        //performOC(currentTestParams);
+        performOC(params);
     }
     else if (cmd == HandleTest::AA) {
-        //performAA(currentTestParams);
-        performAAOffline();
+        performAA(params);
+        //performAAOffline();
     }
     else if (cmd == HandleTest::INIT_CAMERA) {
         performInitSensor();

@@ -23,6 +23,7 @@ class Dothinkey : public PropertyBase
 public:
     explicit Dothinkey(QObject *parent = 0);
     ~Dothinkey();
+    Q_PROPERTY(QString currentSensorID READ currentSensorID WRITE setCurrentSensorID NOTIFY paramsChanged)
     Q_PROPERTY(QString IniFilename READ IniFilename WRITE setIniFilename NOTIFY paramsChanged)
     Q_INVOKABLE bool initSensor();
     void loadParams(QString file_name);
@@ -32,9 +33,10 @@ public:
     BOOL DothinkeyLoadIniFile(int channel);   // 0 is camera channel 0, 1 is camera channel 1
     BOOL DothinkeyStartCamera(int channel);
     QImage* DothinkeyGrabImage(int channel);
-    cv::Mat DothinkeyGrabImageCV(int channel);
+    cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
     void DothinkeySetConfigFile(std::string filename);
-
+    QString readSensorID();
+    BOOL DothinkeyIsGrabbing();
     struct CameraChannel
     {
         CameraChannel()
@@ -70,6 +72,11 @@ public:
         return m_IniFilename;
     }
 
+    QString currentSensorID() const
+    {
+        return m_currentSensorID;
+    }
+
 public slots:
     void saveJsonConfig(QString file_name);
     void setIniFilename(QString IniFilename)
@@ -79,6 +86,15 @@ public slots:
 
         m_IniFilename = IniFilename;
         emit paramsChanged(m_IniFilename);
+    }
+
+    void setCurrentSensorID(QString currentSensorID)
+    {
+        if (m_currentSensorID == currentSensorID)
+            return;
+
+        m_currentSensorID = currentSensorID;
+        emit paramsChanged(m_currentSensorID);
     }
 
 signals:
@@ -95,6 +111,9 @@ private:
     std::string iniFilename;
 
     QString m_IniFilename;
+    QString m_currentSensorID = "";
+
+    bool isGrabbing = false;
 };
 
 #endif // DOTHINKEY_H

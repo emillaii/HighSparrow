@@ -9,15 +9,109 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QJsonObject>
+#include <QPainter>
 #include "aa_util.h"
 #include "commonutils.h"
+#include "visionmodule.h"
+#include <QFuture>
+#include <QtConcurrent/QtConcurrent>
 #define PI  3.14159265
+#include <math.h>
+
+vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY) {
+    size_t n = x.size();
+
+    double minX = 999999;
+    double maxX = -999999;
+
+    for (size_t i = 0; i < n; i++) {
+        minX = std::min(minX, x[i]);
+        maxX = std::max(maxX, x[i]);
+    }
+
+    Eigen::MatrixXd X(n, order + 1);
+    for (size_t i = 0; i < n; ++i) {
+        double tmp = 1;
+        for (int j = 0; j <= order; ++j) {
+            X(i, j) = tmp;
+            tmp *= x[i];
+        }
+    }
+    Eigen::MatrixXd Y(n, 1);
+    for (size_t i = 0; i < n; ++i) {
+        Y(i, 0) = y[i];
+    }
+    Eigen::MatrixXd Xt(order + 1, n);
+    Xt = X.transpose();
+
+    Eigen::MatrixXd XtX(order + 1, order + 1);
+    XtX = Xt * X;
+    Eigen::MatrixXd XtX_inverse(order + 1, order + 1);
+    XtX_inverse = XtX.inverse();
+
+    Eigen::MatrixXd A(order + 1, 1);
+    A = XtX_inverse * Xt * Y;
+
+    Eigen::MatrixXd B(order + 1, 1);
+    B = X * A;
+
+    Eigen::MatrixXd Ans(n, 1);
+    Ans = X * A;
+
+//    qInfo("Y | Prediction | Error");
+//    for (size_t i = 0; i < n; ++i) {
+//       qInfo("X: %f Y: %f  Ans: %f Error: %f", X(i,0), Y(i, 0), Ans(i, 0), Y(i, 0) - Ans(i, 0));
+//    }
+
+//    double error = 0;
+//    for (size_t i = 0; i < n; ++i) {
+//        error += (B(i, 0) - Y(i, 0)) * (B(i, 0) - Y(i, 0));
+//    }
+
+//    qInfo("Error: %f", error);
+
+    vector<double> ans;
+    for (int i = 0; i <= order; ++i) {
+        ans.push_back(A(i, 0));
+        //qInfo("i: %f", A(i, 0));
+    }
+
+    double delta = (maxX - minX) / 300;
+    localMaxY = -999999;
+    localMaxX = minX;
+    for (double z = minX; z <= maxX; z += delta)
+    {
+        double tmp = 1; double ey = 0;
+        for (int i = 0; i <= order; ++i) {
+            ey += A(i,0)*tmp;
+            tmp *= z;
+        }
+        if (ey > localMaxY) {
+            localMaxX = z;
+            localMaxY = ey;
+        }
+    }
+    qInfo("Local Maxima X : %f local maxima Y : %f", localMaxX, localMaxY);
+    return ans;
+}
+
 typedef enum {
-    AA_ZSCAN_NORMAL
+    AA_ZSCAN_NORMAL,
+    AA_DFOV_MODE,
+    AA_STATIONARY_SCAN_MODE
 } ZSCAN_MODE;
+
+AACoreNew * that;
 
 AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 {
+    Q_UNUSED(name)
+    Q_UNUSED(parent)
+    that = this;
+    ocImageProvider_1 = new ImageProvider();
+    sfrImageProvider = new ImageProvider();
+    connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
+    connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
 }
 
 void AACoreNew::Init(AAHeadModule *aa_head, SingleheadLSutModule *lsut, Dothinkey *dk, ChartCalibration *chartCalibration,
@@ -30,10 +124,6 @@ void AACoreNew::Init(AAHeadModule *aa_head, SingleheadLSutModule *lsut, Dothinke
     this->dispense = dispense;
     this->imageThread = imageThread;
     this->unitlog = unitlog;
-    ocImageProvider_1 = new ImageProvider();
-    sfrImageProvider = new ImageProvider();
-    connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
-    connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
 }
 
 void AACoreNew::loadJsonConfig(QString file_name)
@@ -51,6 +141,7 @@ void AACoreNew::saveJsonConfig(QString file_name)
 }
 
 void AACoreNew::setSfrWorkerController(SfrWorkerController * sfrWorkerController){
+    qInfo("setSfrWorkerController");
     this->sfrWorkerController = sfrWorkerController;
 }
 
@@ -107,7 +198,9 @@ void AACoreNew::stopWork(bool wait_finish)
 
 void AACoreNew::performHandlingOperation(int cmd)
 {
-    qInfo("AACore perform command: %d", cmd);
+    qInfo("AACore perform command: %d parmas :%s", cmd, handlingParams.toStdString().c_str());
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(handlingParams.toLocal8Bit().data());
+    QJsonValue params = jsonDoc.object();
     if (cmd == HandleTest::Dispense)
     {
         performDispense();
@@ -119,13 +212,15 @@ void AACoreNew::performHandlingOperation(int cmd)
         performPRToBond();
     }
     else if (cmd == HandleTest::MTF) {
-        performMTF(true, true);
+        //performMTF(true, true);
+        performMTFOffline(params);
     }
     else if (cmd == HandleTest::OC) {
-        performOC(currentTestParams);
+        //performOC(currentTestParams);
     }
     else if (cmd == HandleTest::AA) {
-        performAA(currentTestParams);
+        //performAA(currentTestParams);
+        performAAOffline();
     }
     return;
 }
@@ -399,205 +494,244 @@ ErrorCodeStruct AACoreNew::performDispense()
 
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 {
+    QVariantMap map;
+    clustered_sfr_map.clear();
     int zScanMode = params["mode"].toInt();
     double start = params["start_pos"].toDouble();
     double stop = params["stop_pos"].toDouble();
-    double zOffset = params["offset_in_um"].toDouble()/1000;
     double step_size = params["step_size"].toDouble()/1000;
-    int zSleepInMs = params["delay_Z_in_ms"].toInt();
-    int wait_tilt = params["wait_tilt"].toInt();
-    int edge_filter_mode = params["edge_filter"].toInt();
-    int is_debug = params["is_debug"].toInt();
-    double estimated_aa_fov = params["estimated_aa_fov"].toDouble();
-    double estimated_fov_slope = params["estimated_fov_slope"].toDouble();
-    int no_tilt = params["no_tilt"].toInt();
-    sfr::EdgeFilter edgeFilter = sfr::EdgeFilter::NO_FILTER;
-    if (edge_filter_mode == 1) {
-        edgeFilter = sfr::EdgeFilter::VERTICAL_ONLY;
-    } else if (edge_filter_mode == 2) {
-        edgeFilter = sfr::EdgeFilter::HORIZONTAL_ONLY;
-    }
-
-    QVariantMap map, dfovMap;
-    QElapsedTimer timer; timer.start();
-    qInfo("start: %f stop: %f step_size: %f", start, stop, step_size);
-    int imageWidth = 0, imageHeight = 0;
-    double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
-    unsigned int zScanCount = 0;
+    unsigned int zSleepInMs = params["delay_Z_in_ms"].toInt();
+    double estimated_aa_fov = parameters.EstimatedAAFOV();
+    double estimated_fov_slope = parameters.EstimatedFOVSlope();
+    double offset_in_um = params["offset_in_um"].toDouble()/1000;
+    int enableTilt = params["enable_tilt"].toInt();
+    int imageCount = params["image_count"].toInt();
+    int position_checking = params["position_checking"].toInt();
     double xsum=0,x2sum=0,ysum=0,xysum=0;
-    vector<cv::Mat> images;
-    if (start > 0) lsut->moveToZPos(start);
-    mPoint3D start_pos = lsut->sut_carrier->GetFeedBackPos();
-    int count = 0;
+    qInfo("start : %f stop: %f enable_tilt: %d", start, stop, enableTilt);
+    unsigned int zScanCount = 0;
+    QElapsedTimer timer; timer.start();
+    int resize_factor = 2;
+    vector<double> fov_y; vector<double> fov_x;
     QPointF prev_point = {0, 0};
     double prev_fov_slope = 0;
-    if (zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
-        if (start <= 0) {
-            start = start_pos.Z;
-            count = 6;
-        } else {
-            count = (int)fabs((start - stop)/step_size);
-        }
-        for (int i = 0; i < count; i++)
+    bool grabRet = true;
+    if(zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
+        unsigned int count = (int)fabs((start - stop)/step_size);
+        for (unsigned int i = 0; i < count; i++)
         {
-           lsut->moveToZPos(start+(i*step_size));
+           sut->moveToZPos(start+(i*step_size));
            QThread::msleep(zSleepInMs);
-           double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
+           double realZ = sut->carrier->GetFeedBackPos().Z;
            qInfo("Z scan start from %f, real: %f", start+(i*step_size), realZ);
-           cv::Mat img = dk->DothinkeyGrabImageCV(0);
-           imageWidth = img.cols; imageHeight = img.rows;
+           cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+           if (!grabRet) {
+               qInfo("AA Cannot grab image.");
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
+           }
+           if (!blackScreenCheck(img)) {
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+           }
+           cv::Mat dst;
+           cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
+           cv::resize(img, dst, size);
            QString imageName;
            imageName.append(getGrabberLogDir())
                            .append(getCurrentTimeString())
                            .append(".bmp");
            cv::imwrite(imageName.toStdString().c_str(), img);
            double dfov = calculateDFOV(img);
-           dfovMap.insert(QString::number(i), dfov);
+           if(current_dfov.contains(QString::number(i)))
+                current_dfov[QString::number(i)] = dfov;
+           else
+                current_dfov.insert(QString::number(i),dfov);
+           qInfo("fov: %f  sut_z: %f", dfov, sut->carrier->GetFeedBackPos().Z);
            xsum=xsum+realZ;
            ysum=ysum+dfov;
            x2sum=x2sum+pow(realZ,2);
            xysum=xysum+realZ*dfov;
-           qInfo("fov: %f  lsut_z: %f", dfov,lsut->sut_carrier->GetFeedBackPos().Z);
-           imageWidth = img.cols;
-           imageHeight = img.rows;
-           images.push_back(std::move(img));
            zScanCount++;
-           emit sfrWorkerController->calculate(i, start+i*step_size, images[i], false, sfr::EdgeFilter::NO_FILTER);
-       }
-    }else {
-        isZScanNeedToStop = false;
-        QThread::msleep(zSleepInMs);
-        cv::Mat img = dk->DothinkeyGrabImageCV(0);
-        double dfov = calculateDFOV(img);
-        dfovMap.insert("-1", dfov);
-        if (dfov <= -1) {
-            qInfo("Cannot find the target FOV!");
-            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-        }
-        double estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
-        double target_z = estimated_aa_z + zOffset;
-        qInfo("The estimated target z is: %f dfov is%f", target_z, dfov);
-        if (target_z >= stop) {
-            qInfo("The estimated target is too large. value: %f", target_z);
-            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};;
-        }
-        if (target_z <= start-1) {
-            qInfo("The estimated target is too small. value: %f", target_z);
-            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-        }
-        lsut->moveToZPos(target_z);
-        for (unsigned int i = 0; i < 10; i++) {
-            if (isZScanNeedToStop) {
-                qInfo("z scan detected finished");
-                break;
-            }
-            lsut->moveToZPos(target_z+(i*step_size));
-            QThread::msleep(zSleepInMs);
-            mPoint3D currPos = lsut->sut_carrier->GetFeedBackPos();
-            cv::Mat img = dk->DothinkeyGrabImageCV(0);
-            double dfov = calculateDFOV(img);
-            dfovMap.insert(QString::number(i), dfov);
-            bool isCrashDetected = false;
-            if (i > 1) {
-                double slope = (dfov - prev_point.y()) / (currPos.Z - prev_point.x());
-                double error = 0;
-                if (prev_fov_slope != 0) {
-                    error = (slope - prev_fov_slope) / prev_fov_slope;
+           emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, resize_factor);
+           img.release();
+           dst.release();
+         }
+      } else if (zScanMode == ZSCAN_MODE::AA_DFOV_MODE){
+           sut->moveToZPos(start);
+           QThread::msleep(zSleepInMs);
+           cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+           cv::imwrite("fucker.bmp", img);
+           if (!grabRet) {
+               qInfo("AA Cannot grab image.");
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
+           }
+           if (!blackScreenCheck(img)) {
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+           }
+           double dfov = calculateDFOV(img);
+           if (dfov <= -1) {
+               qInfo("Cannot find the target FOV!");
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+           }
+           double estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
+           double target_z = estimated_aa_z + offset_in_um;
+           qInfo("The estimated target z is: %f dfov is %f", target_z, dfov);
+           if (target_z >= stop) {
+               qInfo("The estimated target is too large. value: %f", target_z);
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+           }
+           for (unsigned int i = 0; i < imageCount; i++) {
+                sut->moveToZPos(target_z+(i*step_size));
+                QThread::msleep(zSleepInMs);
+                cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+                if (!grabRet) {
+                    qInfo("AA Cannot grab image.");
+                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
                 }
-                if (fabs(error) > 0.2) {
-                    qInfo("Crash detection is triggered");
-                    isCrashDetected = true;
+                if (!blackScreenCheck(img)) {
+                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
                 }
-                qInfo("current slope %f  prev_slope %f error %f", slope, prev_fov_slope, error);
-                prev_fov_slope = slope;
-            }
-            prev_point.setX(currPos.Z); prev_point.setY(dfov);
+                double realZ = sut->carrier->GetFeedBackPos().Z;
+                double dfov = calculateDFOV(img);
 
-            if (dfov <= -1) {
-                qInfo("Cannot find the target FOV!");
-                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-            }
-            xsum=xsum+currPos.Z;                        //calculate sigma(xi)
-            ysum=ysum+dfov;                             //calculate sigma(yi)
-            x2sum=x2sum+pow(currPos.Z,2);               //calculate sigma(x^2i)
-            xysum=xysum+currPos.Z*dfov;                 //calculate sigma(xi*yi)
-            imageWidth = img.cols;
-            imageHeight = img.rows;
-            images.push_back(std::move(img));
-            zScanCount++;
-            emit sfrWorkerController->calculate(i, currPos.Z, images[i], false, sfr::EdgeFilter::NO_FILTER);
-            if (isCrashDetected) {
-                qInfo("Total zCount: %d", zScanCount);
-                break;
-            }
-        }
+                if (i > 1) {
+                   double slope = (dfov - prev_point.y()) / (realZ - prev_point.x());
+                   double error = 0;
+                   if (prev_fov_slope != 0) {
+                       error = (slope - prev_fov_slope) / prev_fov_slope;
+                   }
+                   qInfo("current slope %f  prev_slope %f error %f", slope, prev_fov_slope, error);
+                   if (fabs(error) > 0.2) {
+                       qInfo("Crash detection is triggered");
+                       break;
+                   }
+                   prev_fov_slope = slope;
+                }
+                prev_point.setX(realZ); prev_point.setY(dfov);
+
+                if(current_dfov.contains(QString::number(i)))
+                     current_dfov[QString::number(i)] = dfov;
+                else
+                     current_dfov.insert(QString::number(i),dfov);
+                qInfo("fov: %f  sut_z: %f", dfov, sut->carrier->GetFeedBackPos().Z);
+                xsum=xsum+realZ;
+                ysum=ysum+dfov;
+                x2sum=x2sum+pow(realZ,2);
+                xysum=xysum+realZ*dfov;
+                cv::Mat dst;
+                cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
+                cv::resize(img, dst, size);
+                emit sfrWorkerController->calculate(i, realZ, dst, false, resize_factor);
+                img.release();
+                dst.release();
+                zScanCount++;
+           }
+    } else if (zScanMode == ZSCAN_MODE::AA_STATIONARY_SCAN_MODE){
+         double currentZ = sut->carrier->GetFeedBackPos().Z;
+         double target_z = currentZ + offset_in_um;
+         for (unsigned int i = 0; i < imageCount; i++) {
+             sut->moveToZPos(target_z+(i*step_size));
+             QThread::msleep(zSleepInMs);
+             cv::Mat img = dk->DothinkeyGrabImageCV(0,grabRet);
+             if (!grabRet) {
+                 qInfo("AA Cannot grab image.");
+                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
+             }
+             if (!blackScreenCheck(img)) {
+                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+             }
+             double realZ = sut->carrier->GetFeedBackPos().Z;
+             double dfov = calculateDFOV(img);
+             if(current_dfov.contains(QString::number(i)))
+                  current_dfov[QString::number(i)] = dfov;
+             else
+                  current_dfov.insert(QString::number(i),dfov);
+             qInfo("fov: %f  sut_z: %f", dfov, sut->carrier->GetFeedBackPos().Z);
+             xsum=xsum+realZ;
+             ysum=ysum+dfov;
+             x2sum=x2sum+pow(realZ,2);
+             xysum=xysum+realZ*dfov;
+             cv::Mat dst;
+             cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
+             cv::resize(img, dst, size);
+             emit sfrWorkerController->calculate(i, realZ, dst, false, resize_factor);
+             img.release();
+             dst.release();
+             zScanCount++;
+         }
     }
     int timeout=1000;
     while(this->clustered_sfr_map.size() != zScanCount && timeout >0) {
-        Sleep(10);
-        timeout--;
+          Sleep(10);
+          timeout--;
     }
-    if (timeout <= 0) {
-        qInfo("Error in performing AA: %d", timeout);
-        clustered_sfr_map.clear();
-        return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
-    }
-
-    if (zScanCount < 6) {
-        qInfo("Error in performing AA due to insufficient.");
-        clustered_sfr_map.clear();
-        return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
-    }
-
     double fov_slope     = (zScanCount*xysum-xsum*ysum)/(zScanCount*x2sum-xsum*xsum);       //calculate slope
     double fov_intercept = (x2sum*ysum-xsum*xysum)/(x2sum*zScanCount-xsum*xsum);            //calculate intercept
+    current_fov_slope = fov_slope;
     qInfo("fov_slope: %f fov_intercept: %f", fov_slope, fov_intercept);
-    double dev = 0;
-    sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak, dev);
-    clustered_sfr_map.clear();
-    qInfo("xTilt: %f yTilt: %f zPeak: %f", xTilt, yTilt, zPeak);
-    QThread::msleep(zSleepInMs);
-    qInfo("aa_head before: %f", aa_head->GetFeedBack().Z);
-    //aa_head->stepInterpolation_AB_Sync(xTilt,yTilt);
-    //aa_head->stepInterpolation_AB_Sync(-yTilt,xTilt);
-    //aa_head->stepInterpolation_AB_Sync(-yTilt, xTilt);
-    if (no_tilt == 0) {
-        aa_head->stepInterpolation_AB_Sync(xTilt,-yTilt);
-    }
 
-    qInfo("aa_head after :%f", aa_head->GetFeedBack().Z);
-    lsut->moveToZPos(zPeak);
-    map.insert("X_TILT", xTilt);
-    map.insert("Y_TILT", yTilt);
-    map.insert("Z_PEAK_CC", zPeak);
-    map.insert("Z_PEAK_UL", ul_zPeak);
-    map.insert("Z_PEAK_UR", ur_zPeak);
-    map.insert("Z_PEAK_LL", ll_zPeak);
-    map.insert("Z_PEAK_LR", lr_zPeak);
+    QVariantMap aa_result = sfrFitCurve_Advance(resize_factor, start);
+
+    qInfo("Layer 1 xTilt : %f yTilt: %f ", aa_result["xTilt_1"].toDouble(), aa_result["yTilt_1"].toDouble());
+    qInfo("Layer 2 xTilt : %f yTilt: %f ", aa_result["xTilt_2"].toDouble(), aa_result["yTilt_2"].toDouble());
+    qInfo("Layer 3 xTilt : %f yTilt: %f ", aa_result["xTilt_3"].toDouble(), aa_result["yTilt_3"].toDouble());
+    bool aaResult = aa_result["OK"].toBool();
+    if (!aaResult) {
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Perform AA fail"};
+    }
+    sut->moveToZPos(aa_result["zPeak"].toDouble());
+    if (enableTilt == 0) {
+        qInfo("Disable tilt...");
+    } else {
+        qInfo("Enable tilt...xTilt: %f yTilt: %f", aa_result["xTilt"].toDouble(), aa_result["yTilt"].toDouble());
+        aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
+    }
+    if (position_checking == 1){
+        QThread::msleep(zSleepInMs);
+        cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+        double beforeZ = sut->carrier->GetFeedBackPos().Z;
+        double expected_fov = fov_slope*aa_result["zPeak"].toDouble() + fov_intercept;
+        double dfov = calculateDFOV(img);
+        double diff_z = (dfov - expected_fov)/fov_slope;
+        sut->moveToZPos(beforeZ - diff_z);
+        double afterZ = sut->carrier->GetFeedBackPos().Z;
+        qInfo("before z: %f after z: %f now fov: %f expected fov: %f fov slope: %f fov intercept: %f", beforeZ, afterZ, dfov, expected_fov, fov_slope, fov_intercept);
+    }
+    clustered_sfr_map.clear();
+    qInfo("AA time elapsed: %d", timer.elapsed());
+    map.insert("X_TILT", aa_result["xTilt"].toDouble());
+    map.insert("Y_TILT", aa_result["xTilt"].toDouble());
+    map.insert("Z_PEAK_CC", aa_result["zPeak"].toDouble());
+//    map.insert("Z_PEAK_UL", aa_result["zPeak"].toDouble());
+//    map.insert("Z_PEAK_UR", ur_zPeak);
+//    map.insert("Z_PEAK_LL", ll_zPeak);
+//    map.insert("Z_PEAK_LR", lr_zPeak);
     map.insert("FOV_SLOPE", fov_slope);
     map.insert("FOV_INTERCEPT", fov_intercept);
-    map.insert("DEV", dev);
+//    map.insert("DEV", dev);
     map.insert("timeElapsed", timer.elapsed());
-    map.insert("DFOV", dfovMap);
     emit pushDataToUnit(runningUnit, "AA", map);
+
+//    qInfo("Finish AA");
     return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
 
 void AACoreNew::performAAOffline()
 {
+    qInfo("this %p", this);
+    clustered_sfr_map.clear();
     ErrorCodeStruct ret = { OK, ""};
     QVariantMap map, stepTimerMap, dFovMap, sfrTimeElapsedMap;
-    QElapsedTimer timer, stepTimer;
-    timer.start(); stepTimer.start();
+    QElapsedTimer timer;
+    timer.start();
+    int resize_factor = 2;
     int sfrCount = 0;
-    double step_size = 0.01, start = -0.5;
-    int imageWidth, imageHeight;
+    double step_size = 0.01, start = -20.5;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     double estimated_fov_slope = 15;
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
-    int inputImageCount = 17;
-    for (int i = 0; i < inputImageCount; i++)
+    int inputImageCount = 10;
+    for (int i = 0; i < inputImageCount -1; i++)
     {
         if (isZScanNeedToStop) {
             qInfo("All peak passed, stop zscan");
@@ -605,12 +739,19 @@ void AACoreNew::performAAOffline()
         }
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
-        QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
+        //QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
+        QString filename = "1\\" + QString::number(i+1) + ".bmp";
         cv::Mat img = cv::imread(filename.toStdString());
-        stepTimerMap.insert(QString("image_grab_").append(QString::number(i)), stepTimer.elapsed());
-        stepTimer.restart();
+        if (!blackScreenCheck(img)) {
+            return;
+        }
+        cv::Mat dst;
+        cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
+        cv::resize(img, dst, size);
+        qInfo("calculateDFOV start");
         double dfov = calculateDFOV(img);
 
+        qInfo("calculateDFOV end");
         if (i == 0)
         {
             double target_z = (49 - dfov)/estimated_fov_slope + start;
@@ -623,15 +764,15 @@ void AACoreNew::performAAOffline()
         x2sum=x2sum+pow(currZ,2);               //calculate sigma(x^2i)
         xysum=xysum+currZ*dfov;                 //calculate sigma(xi*yi)
         dFovMap.insert(QString::number(i), dfov);
-        imageWidth = img.cols; imageHeight = img.rows;
-        stepTimerMap.insert(QString("z_scan_move_").append(QString::number(i)), stepTimer.elapsed());
-        stepTimer.restart();
-        emit sfrWorkerController->calculate(i, start+i*step_size, img, false, sfr::EdgeFilter::VERTICAL_ONLY);
+
+        qInfo("calculate start");
+        emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, resize_factor);
         img.release();
+        dst.release();
         sfrCount++;
     }
     int timeout=1000;
-    while(this->clustered_sfr_map.size() != sfrCount && timeout >0) {
+    while(this->clustered_sfr_map.size() != sfrCount && timeout > 0) {
         Sleep(10);
         timeout--;
     }
@@ -639,290 +780,501 @@ void AACoreNew::performAAOffline()
         qInfo("Error in performing AA Offline: %d", timeout);
         return;
     }
-//    for (int i = 0; i < sfrCount; i++) {
-//        sfrTimeElapsedMap.insert(QString("sfr_time_elapsed_").append(QString::number(i)), this->sfr_timeElapsed_map[i]);
-//    }
-    double fov_slope     = (20*xysum-xsum*ysum)/(20*x2sum-xsum*xsum);               //calculate slope
-    double fov_intercept = (x2sum*ysum-xsum*xysum)/(x2sum*20-xsum*xsum);            //calculate intercept
-    stepTimerMap.insert("sfr_wait", stepTimer.elapsed());
-    stepTimer.restart();
-    double xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak;
-    double dev = 0;
-    sfrFitCurve_Advance(imageWidth, imageHeight, xTilt, yTilt, zPeak, ul_zPeak, ur_zPeak, ll_zPeak, lr_zPeak, dev);
-    if (isnan(xTilt) || isnan(yTilt)) {
-        qInfo("if (isnan(xTilt) || isnan(yTilt)) failed");
-        return;
-    }
+    qInfo("clustered sfr map pattern size: %d clustered_sfr_map size: %d", clustered_sfr_map[0].size(), clustered_sfr_map.size());
+    QVariantMap aa_result = sfrFitCurve_Advance(resize_factor, start);
     clustered_sfr_map.clear();
-    qInfo("[performAAOffline] Finished xTilt: %f yTilt: %f zPeak: %f ulPeak: %f", xTilt, yTilt, zPeak, ul_zPeak);
-    qInfo("time elapsed: %d", timer.elapsed());
-    map.insert("timeElapsed", timer.elapsed());
-    emit pushDataToUnit(runningUnit, "AAOffline", map);
+    qInfo("[PerformAAOffline] time elapsed: %d", timer.elapsed());
 }
 
 void AACoreNew::performHandling(int cmd, QString params)
 {
-    qInfo("Receive perform handling event. cmd: %d", cmd);
-    QJsonDocument jsonDocument = QJsonDocument::fromJson(params.toLocal8Bit().data());
-    QJsonValue json = jsonDocument.object();
-    currentTestParams = json;
+    qInfo("performHandling: %d %s", cmd, params.toStdString().c_str());
+    handlingParams = params;
     emit sendHandlingOperation(cmd);
 }
 
-void AACoreNew::sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
-                                  double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak, double &dev)
+bool zPeakComp(const threeDPoint & p1, const threeDPoint & p2)
 {
-    std::vector<aa_util::aaCurve> aaCurves;
-    std::vector<std::vector<Sfr_entry>> clustered_sfr;
-    QVariantMap map;
-    for (unsigned int i = 0; i < clustered_sfr_map.size(); ++i) {
-        if (clustered_sfr_map.find(i) != clustered_sfr_map.end()) {
-            clustered_sfr.push_back(std::move(clustered_sfr_map[i]));
-        }
-    }
-    clustered_sfr = sfr_curve_analysis(clustered_sfr);
-    vector<threeDPoint> points;
-    int principle_center_x = imageWidth/2, principle_center_y = imageHeight/2;
-    double cc_peak_z = 0, ul_peak_z = 0, ur_peak_z = 0, ll_peak_z = 0, lr_peak_z = 0;
-    int cc_curve_index = 0;
-    double g_x_min = 99999;
-    double g_x_max = -99999;
-    qInfo("X Ratio: %d Y Ratio: %d PCX : %d PCY : %d", parameters.SensorXRatio(), parameters.SensorYRatio(), principle_center_x, principle_center_y);
-    sfrFitAllCurves(clustered_sfr, aaCurves, points, g_x_min, g_x_max, cc_peak_z, cc_curve_index, principle_center_x, principle_center_y, parameters.SensorXRatio(), parameters.SensorYRatio());
-    double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
-    unsigned int ccROIIndex = 0, ulROIIndex = 0, urROIIndex = 0, llROIIndex = 0, lrROIIndex = 0;
-    if (points.size() == 5) {
-        for (unsigned int i = 0; i < 5; i++) {
-            double cc_d = sqrt(pow(points[i].x - imageWidth/2, 2) + pow(points[i].y - imageHeight/2, 2));
-            double ul_d = sqrt(pow(points[i].x, 2) + pow(points[i].y, 2));
-            double ur_d = sqrt(pow(points[i].x - imageWidth, 2) + pow(points[i].y, 2));
-            double ll_d = sqrt(pow(points[i].x, 2) + pow(points[i].y - imageHeight, 2));
-            double lr_d = sqrt(pow(points[i].x - imageWidth, 2) + pow(points[i].y - imageHeight, 2));
-            if (cc_d < cc_min_d) {
-                  cc_min_d = cc_d;
-                  ccROIIndex = i;
-            }
-            if (ul_d < ul_min_d) {
-                 ul_min_d = ul_d;
-                 ulROIIndex = i;
-            }
-            if (ur_d < ur_min_d) {
-                 ur_min_d = ur_d;
-                 urROIIndex = i;
-            }
-            if (ll_d < ll_min_d) {
-                 ll_min_d = ll_d;
-                 llROIIndex = i;
-            }
-            if (lr_d < lr_min_d) {
-                lr_min_d = lr_d;
-                lrROIIndex = i;
-            }
-        }
-    } else { qInfo("Insufficient curve point"); return; }
-    ul_peak_z = points[ulROIIndex].z;
-    ur_peak_z = points[urROIIndex].z;
-    ll_peak_z = points[llROIIndex].z;
-    lr_peak_z = points[lrROIIndex].z;
-    for (int i = 0; i < 5; i++) {
-        points[i].x /= parameters.SensorXRatio(); points[i].y /= parameters.SensorYRatio();
-    }
-    threeDPoint weighted_vector = planeFitting(points);
-
-    unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, llIndex = 0, lrIndex = 0;
-    AA_Helper::AA_Find_Charactertistics_Pattern(clustered_sfr, imageWidth, imageHeight,
-                                                ccIndex, ulIndex, urIndex, llIndex, lrIndex);
-    for(unsigned i = 0; i < clustered_sfr.size(); i++) {
-        QVariantMap sfrMap;
-        if (i == ccIndex || i == ulIndex || i == urIndex || i == llIndex || i == lrIndex)
-        {
-            QString indexString;
-            if (i == ccIndex) indexString = "CC";
-            else if (i == ulIndex) indexString = "UL";
-            else if (i == urIndex) indexString = "UR";
-            else if (i == llIndex) indexString = "LL";
-            else if (i == lrIndex) indexString = "LR";
-            for (unsigned int j = 0; j < clustered_sfr[i].size(); j++) {
-                QVariantMap s;
-                s.insert("index", j);
-                s.insert("position", indexString);
-                s.insert("px", clustered_sfr[i][j].px);
-                s.insert("py", clustered_sfr[i][j].py);
-                s.insert("area", clustered_sfr[i][j].area);
-                s.insert("sfr", clustered_sfr[i][j].sfr);
-                s.insert("pz", clustered_sfr[i][j].pz);
-                sfrMap.insert(QString::number(j), s);
-                emit postSfrDataToELK(runningUnit, sfrMap);
-            }
-            map.insert(indexString, sfrMap);
-        }
-    }
-    xTilt = weighted_vector.z * weighted_vector.x;
-    yTilt = weighted_vector.z * weighted_vector.y;
-    double corner_deviation = AA_Helper::calculateAACornerDeviation(ul_peak_z, ur_peak_z, ll_peak_z, lr_peak_z);
-    dev = corner_deviation;
-    map.insert("ul_peak", ul_peak_z);
-    map.insert("ur_peak", ur_peak_z);
-    map.insert("ll_peak", ll_peak_z);
-    map.insert("lr_peak", lr_peak_z);
-    map.insert("cc_peak", cc_peak_z);
-    map.insert("xTilt", xTilt);
-    map.insert("yTilt", yTilt);
-    map.insert("dev", dev);
-    emit postSfrDataToELK(runningUnit, map);
-    if (currentChartDisplayChannel == 0) {
-        currentChartDisplayChannel = 1;
-        aaData_1.clear();
-        aaData_1.setDev(round(corner_deviation*1000)/1000);
-        aaData_1.setWCCPeakZ(round(cc_peak_z*1000));
-        aaData_1.setWULPeakZ(round(ul_peak_z*1000));
-        aaData_1.setWURPeakZ(round(ur_peak_z*1000));
-        aaData_1.setWLLPeakZ(round(ll_peak_z*1000));
-        aaData_1.setWLRPeakZ(round(lr_peak_z*1000));
-        aaData_1.setXTilt(round(xTilt*10000)/10000);
-        aaData_1.setYTilt(round(yTilt*10000)/10000);
-
-        for (unsigned int i = 0; i < clustered_sfr.size(); i++)
-        {
-            for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
-                if (i == ccIndex) this->aaData_1.addData(0, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == ulIndex) this->aaData_1.addData(1, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == urIndex) this->aaData_1.addData(2, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == llIndex) this->aaData_1.addData(3, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == lrIndex) this->aaData_1.addData(4, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
-            }
-        }
-        aaData_1.plot();
-    } else {
-        currentChartDisplayChannel = 0;
-        aaData_2.clear();
-        aaData_2.setDev(round(corner_deviation*1000)/1000);
-        aaData_2.setWCCPeakZ(round(cc_peak_z*1000));
-        aaData_2.setWULPeakZ(round(ul_peak_z*1000));
-        aaData_2.setWURPeakZ(round(ur_peak_z*1000));
-        aaData_2.setWLLPeakZ(round(ll_peak_z*1000));
-        aaData_2.setWLRPeakZ(round(lr_peak_z*1000));
-        aaData_2.setXTilt(round(xTilt*10000)/10000);
-        aaData_2.setYTilt(round(yTilt*10000)/10000);
-        for (unsigned int i = 0; i < clustered_sfr.size(); i++)
-        {
-            for (unsigned int j = 0; j < clustered_sfr.at(i).size(); j++) {
-                if (i == ccIndex) this->aaData_2.addData(0, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == ulIndex) this->aaData_2.addData(1, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == urIndex) this->aaData_2.addData(2, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == llIndex) this->aaData_2.addData(3, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
-                else if (i == lrIndex) this->aaData_2.addData(4, clustered_sfr.at(i).at(j).pz*1000, clustered_sfr.at(i).at(j).sfr);
-            }
-        }
-        aaData_2.plot();
-    }
-    zPeak = cc_peak_z;
-    ul_zPeak = ul_peak_z;
-    ur_zPeak = ur_peak_z;
-    ll_zPeak = ll_peak_z;
-    lr_zPeak = lr_peak_z;
-    qInfo("End of sfrFitCurve");
+    return p1.z < p2.z;
 }
 
-ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
+QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 {
-    QElapsedTimer timer; timer.start();
-    QVariantMap map;
-    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    cv::Mat img = dk->DothinkeyGrabImageCV(0);
-    int imageWidth = img.cols;
-    int imageHeight = img.rows;
-    double fov = this->calculateDFOV(img);
-    map.insert("DFOV", fov);
-    if (fov == -1) {
-        qInfo("Error in calculating fov");
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-    } else {
-        qInfo("DFOV :%f", fov);
+    QVariantMap result, map;
+    vector<vector<Sfr_entry>> sorted_sfr_map;
+    for (size_t i = 0; i < clustered_sfr_map[0].size(); ++i)
+    {
+        vector<Sfr_entry> sfr_map;
+        for (size_t ii = 0; ii < clustered_sfr_map.size(); ++ii)
+        {
+            sfr_map.push_back(clustered_sfr_map[ii][i]);
+        }
+        sorted_sfr_map.push_back(sfr_map);
     }
-    emit sfrWorkerController->calculate(0, 0, img, true);
+    qInfo("clustered sfr map pattern size: %d sorted_sfr_map size: %d", clustered_sfr_map[0].size(), sorted_sfr_map.size());
+    if (clustered_sfr_map[0].size() == 0) {
+        qInfo("AA Scan Fail");
+        result.insert("OK", false);
+        return result;
+    }
+    threeDPoint point_0;
+    vector<threeDPoint> points_1, points_11;
+    vector<threeDPoint> points_2, points_22;
+    vector<threeDPoint> points_3, points_33;
+    for (size_t i = 0; i < sorted_sfr_map.size(); i++) {
+        vector<double> sfr, z;
+        double ex = 0; double ey = 0;
+        for (size_t ii=0; ii < sorted_sfr_map[i].size(); ii++) {
+            sfr.push_back(sorted_sfr_map[i][ii].sfr);
+            z.push_back(sorted_sfr_map[i][ii].pz-start_pos);
+            ex += sorted_sfr_map[i][ii].px*resize_factor;
+            ey += sorted_sfr_map[i][ii].py*resize_factor;
+        }
+        ex /= (sorted_sfr_map[i].size()*parameters.SensorXRatio());
+        ey /= (sorted_sfr_map[i].size()*parameters.SensorYRatio());
+
+        double peak_sfr, peak_z;
+        fitCurve(z, sfr, 6, peak_z, peak_sfr);
+        if (i==0) {
+            point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
+        } else if ( i >= 1 && i <= 4) {
+            points_1.emplace_back(ex, ey, peak_z + start_pos);
+            points_11.emplace_back(ex, ey, peak_z + start_pos);
+        } else if ( i >= 5 && i <= 8) {
+            points_2.emplace_back(ex, ey, peak_z + start_pos);
+            points_22.emplace_back(ex, ey, peak_z + start_pos);
+        } else if ( i >= 9 && i <= 12) {
+            points_3.emplace_back(ex, ey, peak_z + start_pos);
+            points_33.emplace_back(ex, ey, peak_z + start_pos);
+        }
+    }
+    sort(points_11.begin(), points_11.end(), zPeakComp);
+    sort(points_22.begin(), points_22.end(), zPeakComp);
+    sort(points_33.begin(), points_33.end(), zPeakComp);
+
+    qInfo("Layer 0: x: %f y: %f z: %f", point_0.x, point_0.y, point_0.z);
+    int layerDetected = 0; int validLayer = 0;
+    if (points_1.size()==4) { validLayer++; }
+    if (points_2.size()==4) { validLayer++; }
+    if (points_3.size()==4) { validLayer++; }
+    for (size_t i = 0; i < points_1.size(); i++) {
+        qInfo("Layer 1: x: %f y: %f z: %f", points_1[i].x, points_1[i].y, points_1[i].z);
+        layerDetected++;
+    }
+
+    for (size_t i = 0; i < points_2.size(); i++) {
+        qInfo("Layer 2: x: %f y: %f z: %f", points_2[i].x, points_2[i].y, points_2[i].z);
+        layerDetected++;
+    }
+
+    for (size_t i = 0; i < points_3.size(); i++) {
+        qInfo("Layer 3: x: %f y: %f z: %f", points_3[i].x, points_3[i].y, points_3[i].z);
+        layerDetected++;
+    }
+    threeDPoint weighted_vector_1 = planeFitting(points_1);
+    threeDPoint weighted_vector_2 = planeFitting(points_2);
+    threeDPoint weighted_vector_3 = planeFitting(points_3);
+    double dev_1 = 0, dev_2 = 0, dev_3 =0;
+    if (points_11.size()>0) dev_1 = fabs(points_11[0].z - points_11[points_11.size()-1].z)*1000;
+    if (points_22.size()>0) dev_2 = fabs(points_22[0].z - points_22[points_22.size()-1].z)*1000;
+    if (points_33.size()>0) dev_3 = fabs(points_33[0].z - points_33[points_33.size()-1].z)*1000;
+    double xTilt_1 = weighted_vector_1.z * weighted_vector_1.x;
+    double yTilt_1 = weighted_vector_1.z * weighted_vector_1.y;
+    double xTilt_2 = weighted_vector_2.z * weighted_vector_2.x;
+    double yTilt_2 = weighted_vector_2.z * weighted_vector_2.y;
+    double xTilt_3 = weighted_vector_3.z * weighted_vector_3.x;
+    double yTilt_3 = weighted_vector_3.z * weighted_vector_3.y;
+
+    qInfo("Layer 1: xTilt: %f yTilt: %f dev: %f", xTilt_1, yTilt_1, dev_1);
+    qInfo("Layer 2: xTilt: %f yTilt: %f dev: %f", xTilt_2, yTilt_2, dev_2);
+    qInfo("Layer 3: xTilt: %f yTilt: %f dev: %f", xTilt_3, yTilt_3, dev_3);
+    result.insert("xTilt_1", xTilt_1); map.insert("xTilt_1", xTilt_1);
+    result.insert("yTilt_1", yTilt_1); map.insert("yTilt_1", yTilt_1);
+    result.insert("xTilt_2", xTilt_2); map.insert("xTilt_2", xTilt_2);
+    result.insert("yTilt_2", yTilt_2); map.insert("yTilt_2", yTilt_2);
+    result.insert("xTilt_3", xTilt_3); map.insert("xTilt_3", xTilt_3);
+    result.insert("yTilt_3", yTilt_3); map.insert("yTilt_3", yTilt_3);
+    result.insert("zPeak", point_0.z); map.insert("zPeak", point_0.z);
+    result.insert("OK", true);
+    if (validLayer == 1) {
+        result.insert("xTilt", xTilt_1);
+        result.insert("yTilt", yTilt_1);
+    } else if (validLayer == 2) {
+        result.insert("xTilt", xTilt_2);
+        result.insert("yTilt", yTilt_2);
+    } else if (validLayer == 3) {
+        result.insert("xTilt", xTilt_3);
+        result.insert("yTilt", yTilt_3);
+    }
+    AAData *data;
+
+    if (currentChartDisplayChannel == 0) {
+        data = &aaData_1;
+        currentChartDisplayChannel = 1;
+    } else {
+        data = &aaData_2;
+        currentChartDisplayChannel = 0;
+    }
+    data->clear();
+    data->setDev(round(dev_1*1000)/1000);
+    data->setWCCPeakZ(round(point_0.z*1000));
+    data->setXTilt(round(xTilt_1*10000)/10000);
+    data->setYTilt(round(yTilt_1*10000)/10000);
+    //Layer 0:
+    data->setLayer0(QString("L0 -- CC:")
+                    .append(QString::number(point_0.z, 'g', 6))
+    );
+    //Layer 1:
+    if (points_1.size() > 0) {
+        data->setLayer1(QString("L1- XT:")
+                           .append(QString::number(xTilt_1,'g',3))
+                           .append(" YT:")
+                           .append(QString::number(yTilt_1,'g',3))
+                           .append(" UL:")
+                           .append(QString::number(points_1[0].z,'g',6))
+                           .append(" UR:")
+                           .append(QString::number(points_1[3].z,'g',6))
+                           .append(" LL:")
+                           .append(QString::number(points_1[1].z,'g',6))
+                           .append(" LR:")
+                           .append(QString::number(points_1[2].z,'g',6))
+                           .append(" DEV:")
+                           .append(QString::number(dev_1,'g',3))
+        );
+    }
+    //Layer 2:
+    if (points_2.size() > 0) {
+        data->setLayer2(QString("L2- XT:")
+                           .append(QString::number(xTilt_2,'g',3))
+                           .append(" YT:")
+                           .append(QString::number(yTilt_2,'g',3))
+                           .append(" UL:")
+                           .append(QString::number(points_2[0].z,'g',6))
+                           .append(" UR:")
+                           .append(QString::number(points_2[3].z,'g',6))
+                           .append(" LL:")
+                           .append(QString::number(points_2[1].z,'g',6))
+                           .append(" LR:")
+                           .append(QString::number(points_2[2].z,'g',6))
+                           .append(" DEV:")
+                           .append(QString::number(dev_2,'g',3))
+        );
+    }
+    //Layer 3
+    if (points_3.size() > 0) {
+        data->setLayer3(QString("L3- XT:")
+                           .append(QString::number(xTilt_3,'g',3))
+                           .append(" YT:")
+                           .append(QString::number(yTilt_3,'g',3))
+                           .append(" UL:")
+                           .append(QString::number(points_3[0].z,'g',6))
+                           .append(" UR:")
+                           .append(QString::number(points_3[3].z,'g',6))
+                           .append(" LL:")
+                           .append(QString::number(points_3[1].z,'g',6))
+                           .append(" LR:")
+                           .append(QString::number(points_3[2].z,'g',6))
+                           .append(" DEV:")
+                           .append(QString::number(dev_3,'g',3))
+        );
+    }
+
+    int display_layer = validLayer-1;
+    QVariantMap sfrMap;
+    for(size_t i = 0; i < sorted_sfr_map[0].size(); i++)
+    {
+        data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_map[0][i].sfr);
+        QVariantMap s;
+        s.insert("index", i);
+        s.insert("px", sorted_sfr_map[0][i].px);
+        s.insert("py", sorted_sfr_map[0][i].py);
+        s.insert("area", sorted_sfr_map[0][i].area);
+        s.insert("sfr", sorted_sfr_map[0][i].sfr);
+        s.insert("dfov", current_dfov[QString::number(i)]);
+        s.insert("t_sfr", sorted_sfr_map[0][i].t_sfr);
+        s.insert("b_sfr", sorted_sfr_map[0][i].b_sfr);
+        s.insert("l_sfr", sorted_sfr_map[0][i].l_sfr);
+        s.insert("r_sfr", sorted_sfr_map[0][i].r_sfr);
+        s.insert("pz", sorted_sfr_map[0][i].pz);
+        sfrMap.insert(QString::number(i), s);
+
+        if (points_3.size() > 0) {
+            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, sorted_sfr_map[1+4*display_layer][i].sfr);
+            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, sorted_sfr_map[4+4*display_layer][i].sfr);
+            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, sorted_sfr_map[3+4*display_layer][i].sfr);
+            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, sorted_sfr_map[2+4*display_layer][i].sfr);
+        }
+    }
+    map.insert("CC", sfrMap);
+    if (validLayer>=1) {
+        for (size_t j = 0; j < 4; j++){
+            QVariantMap sfrMap;
+            for(size_t i = 0; i < sorted_sfr_map[1].size(); i++)
+            {
+                QVariantMap s;
+                s.insert("index", i);
+                s.insert("px", sorted_sfr_map[1+j][i].px);
+                s.insert("py", sorted_sfr_map[1+j][i].py);
+                s.insert("area", sorted_sfr_map[1+j][i].area);
+                s.insert("sfr", sorted_sfr_map[1+j][i].sfr);
+                s.insert("dfov", current_dfov[QString::number(i)]);
+                s.insert("t_sfr", sorted_sfr_map[1+j][i].t_sfr);
+                s.insert("b_sfr", sorted_sfr_map[1+j][i].b_sfr);
+                s.insert("l_sfr", sorted_sfr_map[1+j][i].l_sfr);
+                s.insert("r_sfr", sorted_sfr_map[1+j][i].r_sfr);
+                s.insert("pz", sorted_sfr_map[1+j][i].pz);
+                sfrMap.insert(QString::number(i), s);
+            }
+            QString indexString = "";
+            if (j==0) indexString = "UL_1";
+            if (j==1) indexString = "LL_1";
+            if (j==2) indexString = "LR_1";
+            if (j==3) indexString = "UR_1";
+            map.insert(indexString, sfrMap);
+        }
+        map.insert("xPeak_1_UL", points_1[0].x);
+        map.insert("xPeak_1_LL", points_1[1].x);
+        map.insert("xPeak_1_LR", points_1[2].x);
+        map.insert("xPeak_1_UR", points_1[3].x);
+        map.insert("yPeak_1_UL", points_1[0].y);
+        map.insert("yPeak_1_LL", points_1[1].y);
+        map.insert("yPeak_1_LR", points_1[2].y);
+        map.insert("yPeak_1_UR", points_1[3].y);
+        map.insert("zPeak_1_UL", points_1[0].z);
+        map.insert("zPeak_1_LL", points_1[1].z);
+        map.insert("zPeak_1_LR", points_1[2].z);
+        map.insert("zPeak_1_UR", points_1[3].z);
+    }
+    if (validLayer>=2) {
+        for (size_t j = 0; j < 4; j++){
+            QVariantMap sfrMap;
+            for(size_t i = 0; i < sorted_sfr_map[5].size(); i++)
+            {
+                QVariantMap s;
+                s.insert("index", i);
+                s.insert("px", sorted_sfr_map[5+j][i].px);
+                s.insert("py", sorted_sfr_map[5+j][i].py);
+                s.insert("area", sorted_sfr_map[5+j][i].area);
+                s.insert("sfr", sorted_sfr_map[5+j][i].sfr);
+                s.insert("dfov", current_dfov[QString::number(i)]);
+                s.insert("t_sfr", sorted_sfr_map[5+j][i].t_sfr);
+                s.insert("b_sfr", sorted_sfr_map[5+j][i].b_sfr);
+                s.insert("l_sfr", sorted_sfr_map[5+j][i].l_sfr);
+                s.insert("r_sfr", sorted_sfr_map[5+j][i].r_sfr);
+                s.insert("pz", sorted_sfr_map[5+j][i].pz);
+                sfrMap.insert(QString::number(i), s);
+            }
+            QString indexString = "";
+            if (j==0) indexString = "UL_2";
+            if (j==1) indexString = "LL_2";
+            if (j==2) indexString = "LR_2";
+            if (j==3) indexString = "UR_2";
+            map.insert(indexString, sfrMap);
+        }
+        map.insert("xPeak_2_UL", points_2[0].x);
+        map.insert("xPeak_2_LL", points_2[1].x);
+        map.insert("xPeak_2_LR", points_2[2].x);
+        map.insert("xPeak_2_UR", points_2[3].x);
+        map.insert("yPeak_2_UL", points_2[0].y);
+        map.insert("yPeak_2_LL", points_2[1].y);
+        map.insert("yPeak_2_LR", points_2[2].y);
+        map.insert("yPeak_2_UR", points_2[3].y);
+        map.insert("zPeak_2_UL", points_2[0].z);
+        map.insert("zPeak_2_LL", points_2[1].z);
+        map.insert("zPeak_2_LR", points_2[2].z);
+        map.insert("zPeak_2_UR", points_2[3].z);
+    }
+    if (validLayer>=3) {
+        for (size_t j = 0; j < 4; j++){
+            QVariantMap sfrMap;
+            for(size_t i = 0; i < sorted_sfr_map[1].size(); i++)
+            {
+                QVariantMap s;
+                s.insert("index", i);
+                s.insert("px", sorted_sfr_map[9+j][i].px);
+                s.insert("py", sorted_sfr_map[9+j][i].py);
+                s.insert("area", sorted_sfr_map[9+j][i].area);
+                s.insert("sfr", sorted_sfr_map[9+j][i].sfr);
+                s.insert("dfov", current_dfov[QString::number(i)]);
+                s.insert("t_sfr", sorted_sfr_map[9+j][i].t_sfr);
+                s.insert("b_sfr", sorted_sfr_map[9+j][i].b_sfr);
+                s.insert("l_sfr", sorted_sfr_map[9+j][i].l_sfr);
+                s.insert("r_sfr", sorted_sfr_map[9+j][i].r_sfr);
+                s.insert("pz", sorted_sfr_map[9+j][i].pz);
+                sfrMap.insert(QString::number(i), s);
+            }
+            QString indexString = "";
+            if (j==0) indexString = "UL_3";
+            if (j==1) indexString = "LL_3";
+            if (j==2) indexString = "LR_3";
+            if (j==3) indexString = "UR_3";
+            map.insert(indexString, sfrMap);
+        }
+        map.insert("xPeak_3_UL", points_3[0].x);
+        map.insert("xPeak_3_LL", points_3[1].x);
+        map.insert("xPeak_3_LR", points_3[2].x);
+        map.insert("xPeak_3_UR", points_3[3].x);
+        map.insert("yPeak_3_UL", points_3[0].y);
+        map.insert("yPeak_3_LL", points_3[1].y);
+        map.insert("yPeak_3_LR", points_3[2].y);
+        map.insert("yPeak_3_UR", points_3[3].y);
+        map.insert("zPeak_3_UL", points_3[0].z);
+        map.insert("zPeak_3_LL", points_3[1].z);
+        map.insert("zPeak_3_LR", points_3[2].z);
+        map.insert("zPeak_3_UR", points_3[3].z);
+        map.insert("fov_slope", current_fov_slope);
+    }
+    emit postSfrDataToELK(runningUnit, map);
+    data->plot();
+    return result;
+}
+
+ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
+{
+    double cc_min_sfr = params["CC"].toDouble(-1);
+    double ul_min_sfr = params["UL"].toDouble(-1);
+    double ur_min_sfr = params["UR"].toDouble(-1);
+    double ll_min_sfr = params["LL"].toDouble(-1);
+    double lr_min_sfr = params["LR"].toDouble(-1);
+    double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
+    qInfo("%f %f %f %f %f", cc_min_sfr, ul_min_sfr, ur_min_sfr, ll_min_sfr, lr_min_sfr);
+    clustered_sfr_map.clear();
+    QJsonValue aaPrams;
+    this->sfrWorkerController->setSfrWorkerParams(aaPrams);
+    QElapsedTimer timer;
+    QVariantMap map;
+    cv::Mat img = cv::imread("1\\5.bmp");
+    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
+    //cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
+    cv::Mat dst;
+    cv::Size size(img.cols, img.rows);
+    timer.start();
+    cv::resize(img, dst, size);/*
+    double imageCenterX = dst.cols/2;
+    double imageCenterY = dst.rows/2;*/
+    qInfo("img resize: %d %d time elapsed: %d", dst.cols, dst.rows, timer.elapsed());
+    timer.restart();
+
+    emit sfrWorkerController->calculate(0, 0, dst, false);
     int timeout=1000;
     while(this->clustered_sfr_map.size() != 1 && timeout >0) {
         Sleep(10);
         timeout--;
     }
-    if (timeout <= 0) {
-        qInfo("Error in performing MTF: %d", timeout);
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-    }
-    vector<Sfr_entry> sfr_entry = clustered_sfr_map.at(0);
-    double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
-    unsigned int ccROIIndex = 0 , ulROIIndex = 0, urROIIndex = 0, llROIIndex = 0, lrROIIndex = 0;
-    for (unsigned int i = 0; i < sfr_entry.size(); i++)
+    qInfo("clustered sfr map size: %d", clustered_sfr_map.size());
+    vector<Sfr_entry> sv = clustered_sfr_map[0];
+    int max_layer = 0;
+    for (unsigned int i = 0; i < sv.size(); i++)
     {
-        double cc_d = sqrt(pow(sfr_entry.at(i).px - imageWidth/2, 2) + pow(sfr_entry.at(i).py - imageHeight/2, 2));
-        double ul_d = sqrt(pow(sfr_entry.at(i).px, 2) + pow(sfr_entry.at(i).py, 2));
-        double ur_d = sqrt(pow(sfr_entry.at(i).px - imageWidth, 2) + pow(sfr_entry.at(i).py, 2));
-        double ll_d = sqrt(pow(sfr_entry.at(i).px, 2) + pow(sfr_entry.at(i).py - imageHeight, 2));
-        double lr_d = sqrt(pow(sfr_entry.at(i).px - imageWidth, 2) + pow(sfr_entry.at(i).py - imageHeight, 2));
-        if (cc_d < cc_min_d) {
-              cc_min_d = cc_d;
-              ccROIIndex = i;
-        }
-        if (ul_d < ul_min_d) {
-             ul_min_d = ul_d;
-             ulROIIndex = i;
-        }
-        if (ur_d < ur_min_d) {
-             ur_min_d = ur_d;
-             urROIIndex = i;
-        }
-        if (ll_d < ll_min_d) {
-             ll_min_d = ll_d;
-             llROIIndex = i;
-        }
-        if (lr_d < lr_min_d) {
-            lr_min_d = lr_d;
-            lrROIIndex = i;
+        qInfo("%f %f %f %f %f %f %d %d", sv.at(i).px, sv.at(i).py,
+              sv.at(i).t_sfr, sv.at(i).r_sfr, sv.at(i).b_sfr, sv.at(i).l_sfr,
+              sv.at(i).layer, sv.at(i).location);
+        if (sv.at(i).layer > max_layer) {
+            max_layer = sv.at(i).layer - 1;
         }
     }
-    qInfo("Read the aahead and sut carrier feedback");
-    mPoint6D motorsPosition = this->aa_head->GetFeedBack();
-    mPoint3D sutPosition = this->lsut->sut_carrier->GetFeedBackPos();
-    map.insert("AA_X", motorsPosition.X);
-    map.insert("AA_Y", motorsPosition.Y);
-    map.insert("AA_Z", motorsPosition.Z);
-    map.insert("AA_A", motorsPosition.A);
-    map.insert("AA_B", motorsPosition.B);
-    map.insert("AA_C", motorsPosition.C);
-    map.insert("AA_A", motorsPosition.A);
-    map.insert("AA_B", motorsPosition.B);
-    map.insert("AA_C", motorsPosition.C);
-    map.insert("SUT_X", sutPosition.X);
-    map.insert("SUT_Y", sutPosition.Y);
-    map.insert("SUT_Z", sutPosition.Z);
-    map.insert("OC_X", sfr_entry[ccROIIndex].px - imageWidth/2);
-    map.insert("OC_Y", sfr_entry[ccROIIndex].py - imageHeight/2);
-    map.insert("CC_SFR", sfr_entry[ccROIIndex].sfr);
-    map.insert("UR_SFR", sfr_entry[urROIIndex].sfr);
-    map.insert("UL_SFR", sfr_entry[ulROIIndex].sfr);
-    map.insert("LR_SFR", sfr_entry[lrROIIndex].sfr);
-    map.insert("LL_SFR", sfr_entry[llROIIndex].sfr);
-    map.insert("DFOV", fov);
-    map.insert("timeElapsed", timer.elapsed());
-    qInfo("CC_X :%f CC_Y: %f", sfr_entry[ccROIIndex].px, sfr_entry[ccROIIndex].py);
+    bool sfr_check = true;
+    std::vector<double> sfr_check_list;
+
+    for (size_t ii = 1; ii <= 4; ii++) {
+        sfr_check_list.push_back(sv[max_layer*4 + ii].t_sfr);
+        sfr_check_list.push_back(sv[max_layer*4 + ii].r_sfr);
+        sfr_check_list.push_back(sv[max_layer*4 + ii].b_sfr);
+        sfr_check_list.push_back(sv[max_layer*4 + ii].l_sfr);
+        qInfo("Outer layer: %d t_sfr: %f l_sfr: %f b_sfr: %f r_sfr: %f", max_layer,
+              sv[max_layer*4 + ii].t_sfr, sv[max_layer*4 + ii].l_sfr,
+              sv[max_layer*4 + ii].b_sfr, sv[max_layer*4 + ii].r_sfr);
+    }
+
+    std::sort(sfr_check_list.begin(), sfr_check_list.end());
+    double max_sfr_deviation = fabs(sfr_check_list[0] - sfr_check_list[sfr_check_list.size()-1]);
+    qInfo("Max sfr deviation : %f", max_sfr_deviation);
+    if (max_sfr_deviation >= sfr_dev_tol) {
+        qInfo("max_sfr_deviation cannot pass");
+        sfr_check = false;
+    }
+
+    if (sv[0].t_sfr < cc_min_sfr || sv[0].r_sfr < cc_min_sfr || sv[0].b_sfr < cc_min_sfr || sv[0].l_sfr < cc_min_sfr) {
+       qInfo("cc cannot pass");
+       sfr_check = false;
+    }
+    if (sv[max_layer*4 + 1].t_sfr < ul_min_sfr || sv[max_layer*4 + 1].r_sfr < ul_min_sfr ||
+        sv[max_layer*4 + 1].b_sfr < ul_min_sfr || sv[max_layer*4 + 1].l_sfr < ul_min_sfr) {
+        qInfo("ul cannot pass");
+        sfr_check = false;
+    }
+    if (sv[max_layer*4 + 2].t_sfr < ll_min_sfr || sv[max_layer*4 + 2].r_sfr < ll_min_sfr ||
+        sv[max_layer*4 + 2].b_sfr < ll_min_sfr || sv[max_layer*4 + 2].l_sfr < ll_min_sfr) {
+        qInfo("ll cannot pass");
+        sfr_check = false;
+    }
+    if (sv[max_layer*4 + 3].t_sfr < lr_min_sfr || sv[max_layer*4 + 3].r_sfr < lr_min_sfr ||
+        sv[max_layer*4 + 3].b_sfr < lr_min_sfr || sv[max_layer*4 + 3].l_sfr < lr_min_sfr) {
+        qInfo("lr cannot pass");
+        sfr_check = false;
+    }
+    if (sv[max_layer*4 + 4].t_sfr < ur_min_sfr || sv[max_layer*4 + 4].r_sfr < ur_min_sfr ||
+        sv[max_layer*4 + 4].b_sfr < ur_min_sfr || sv[max_layer*4 + 4].l_sfr < ur_min_sfr) {
+        qInfo("ur cannot pass");
+        sfr_check = false;
+    }
+
+    if (true) {
+        double display_factor = img.cols/CONSTANT_REFERENCE;
+        int roi_width = sqrt(sv[0].area)*this->parameters.ROIRatio();
+        QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(img);
+        QPainter qPainter(&qImage);
+        qPainter.setBrush(Qt::NoBrush);
+        qPainter.setFont(QFont("Times",75*display_factor, QFont::Light));
+        for (Sfr_entry sfr_entry : sv) {
+            qPainter.setPen(QPen(Qt::blue, 4.0));
+            if(sfr_entry.layer == (max_layer +1)) {
+                double min_sfr = 0;
+                if(sfr_entry.location == 1) { min_sfr = ul_min_sfr; }
+                if(sfr_entry.location == 2) { min_sfr = ur_min_sfr; }
+                if(sfr_entry.location == 3) { min_sfr = lr_min_sfr; }
+                if(sfr_entry.location == 4) { min_sfr = ll_min_sfr; }
+                    if(sfr_entry.t_sfr < min_sfr) {
+                        qPainter.setPen(QPen(Qt::red, 4.0));
+                    }else {
+                        qPainter.setPen(QPen(Qt::blue, 4.0));
+                    }
+                    qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
+                    if(sfr_entry.r_sfr < min_sfr) {
+                        qPainter.setPen(QPen(Qt::red, 4.0));
+                    }else {
+                        qPainter.setPen(QPen(Qt::blue, 4.0));
+                    }
+                    qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
+                    if(sfr_entry.b_sfr < min_sfr) {
+                        qPainter.setPen(QPen(Qt::red, 4.0));
+                    }else {
+                        qPainter.setPen(QPen(Qt::blue, 4.0));
+                    }
+                    qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
+                    if(sfr_entry.l_sfr < min_sfr) {
+                        qPainter.setPen(QPen(Qt::red, 4.0));
+                    }else {
+                        qPainter.setPen(QPen(Qt::blue, 4.0));
+                    }
+                    qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
+            } else {
+                qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
+                qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
+                qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
+                qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
+            }
+        }
+        qPainter.end();
+        sfrImageReady(std::move(qImage));
+    }
     clustered_sfr_map.clear();
-    emit pushDataToUnit(this->runningUnit, "MTF", map);
-    if (write_log) {
-        this->loopTestResult.append(QString::number(sfr_entry[ccROIIndex].sfr))
-                            .append(",")
-                            .append(QString::number(sfr_entry[ulROIIndex].sfr))
-                            .append(",")
-                            .append(QString::number(sfr_entry[urROIIndex].sfr))
-                            .append(",")
-                            .append(QString::number(sfr_entry[llROIIndex].sfr))
-                            .append(",")
-                            .append(QString::number(sfr_entry[lrROIIndex].sfr))
-                            .append(",\n");
-        this->mtf_log.incrementData(sfr_entry[ccROIIndex].sfr, sfr_entry[ulROIIndex].sfr, sfr_entry[urROIIndex].sfr, sfr_entry[llROIIndex].sfr,sfr_entry[lrROIIndex].sfr);
+    qInfo("Time elapsed : %d sv size: %d", timer.elapsed(), sv.size());
+    if (sfr_check) {
+       return ErrorCodeStruct{ErrorCode::OK, ""};
+    } else {
+       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
-    qInfo("MTF done");
-    return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performUV(int uv_time)
@@ -933,6 +1285,154 @@ ErrorCodeStruct AACoreNew::performUV(int uv_time)
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "UV", map);
     return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
+{
+    double cc_min_sfr = params["CC"].toDouble(-1);
+    double ul_min_sfr = params["UL"].toDouble(-1);
+    double ur_min_sfr = params["UR"].toDouble(-1);
+    double ll_min_sfr = params["LL"].toDouble(-1);
+    double lr_min_sfr = params["LR"].toDouble(-1);
+    double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
+    clustered_sfr_map.clear();
+    QJsonValue aaPrams;
+    this->sfrWorkerController->setSfrWorkerParams(aaPrams);
+    QElapsedTimer timer;
+    QVariantMap map;
+    bool grabRet = false;
+    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        qInfo("MTF Cannot grab image.");
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+    }
+    double fov = calculateDFOV(img);
+    cv::Mat dst;
+    cv::Size size(img.cols, img.rows);
+    timer.start();
+    cv::resize(img, dst, size);
+    qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, dst.cols, dst.rows, timer.elapsed());
+    timer.restart();
+    emit sfrWorkerController->calculate(0, 0, dst, true);
+    int timeout=1000;
+    while(this->clustered_sfr_map.size() != 1 && timeout >0) {
+        Sleep(10);
+        timeout--;
+    }
+    vector<Sfr_entry> sv = clustered_sfr_map[0];
+    int max_layer = 0;
+    for (unsigned int i = 0; i < sv.size(); i++)
+    {
+        qInfo("%f %f %f %f %f %f %d %d", sv.at(i).px, sv.at(i).py,
+              sv.at(i).t_sfr, sv.at(i).r_sfr, sv.at(i).b_sfr, sv.at(i).l_sfr,
+              sv.at(i).layer, sv.at(i).location);
+        if (sv.at(i).layer > max_layer) {
+            max_layer = sv.at(i).layer - 1;
+        }
+    }
+    bool sfr_check = true;
+    std::vector<double> sfr_check_list;
+
+    for (size_t ii = 1; ii <= 4; ii++) {
+        sfr_check_list.push_back(sv[max_layer*4 + ii].t_sfr);
+        sfr_check_list.push_back(sv[max_layer*4 + ii].r_sfr);
+        sfr_check_list.push_back(sv[max_layer*4 + ii].b_sfr);
+        sfr_check_list.push_back(sv[max_layer*4 + ii].l_sfr);
+        qInfo("Outer layer: %d t_sfr: %f l_sfr: %f b_sfr: %f r_sfr: %f", max_layer,
+              sv[max_layer*4 + ii].t_sfr, sv[max_layer*4 + ii].l_sfr,
+              sv[max_layer*4 + ii].b_sfr, sv[max_layer*4 + ii].r_sfr);
+    }
+
+    std::sort(sfr_check_list.begin(), sfr_check_list.end());
+    double max_sfr_deviation = fabs(sfr_check_list[0] - sfr_check_list[sfr_check_list.size()-1]);
+    qInfo("Max sfr deviation : %f", max_sfr_deviation);
+    if (max_sfr_deviation >= sfr_dev_tol) {
+        qInfo("max_sfr_deviation cannot pass");
+        sfr_check = false;
+    }
+
+    if (sv[0].t_sfr < cc_min_sfr || sv[0].r_sfr < cc_min_sfr || sv[0].b_sfr < cc_min_sfr || sv[0].l_sfr < cc_min_sfr) {
+       qInfo("cc cannot pass");
+       sfr_check = false;
+    }
+    if (sv[max_layer*4 + 1].t_sfr < ul_min_sfr || sv[max_layer*4 + 1].r_sfr < ul_min_sfr ||
+        sv[max_layer*4 + 1].b_sfr < ul_min_sfr || sv[max_layer*4 + 1].l_sfr < ul_min_sfr) {
+        qInfo("ul cannot pass");
+        sfr_check = false;
+    }
+    if (sv[max_layer*4 + 2].t_sfr < ll_min_sfr || sv[max_layer*4 + 2].r_sfr < ll_min_sfr ||
+        sv[max_layer*4 + 2].b_sfr < ll_min_sfr || sv[max_layer*4 + 2].l_sfr < ll_min_sfr) {
+        qInfo("ll cannot pass");
+        sfr_check = false;
+    }
+    if (sv[max_layer*4 + 3].t_sfr < lr_min_sfr || sv[max_layer*4 + 3].r_sfr < lr_min_sfr ||
+        sv[max_layer*4 + 3].b_sfr < lr_min_sfr || sv[max_layer*4 + 3].l_sfr < lr_min_sfr) {
+        qInfo("lr cannot pass");
+        sfr_check = false;
+    }
+    if (sv[max_layer*4 + 4].t_sfr < ur_min_sfr || sv[max_layer*4 + 4].r_sfr < ur_min_sfr ||
+        sv[max_layer*4 + 4].b_sfr < ur_min_sfr || sv[max_layer*4 + 4].l_sfr < ur_min_sfr) {
+        qInfo("ur cannot pass");
+        sfr_check = false;
+    }
+
+    if (true) {
+        double display_factor = img.cols/CONSTANT_REFERENCE;
+        int roi_width = sqrt(sv[0].area)*this->parameters.ROIRatio();
+        QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(img);
+        QPainter qPainter(&qImage);
+        qPainter.setBrush(Qt::NoBrush);
+        qPainter.setFont(QFont("Times",75*display_factor, QFont::Light));
+        for (Sfr_entry sfr_entry : sv) {
+            qPainter.setPen(QPen(Qt::blue, 4.0));
+            if(sfr_entry.layer == (max_layer +1)) {
+                double min_sfr = 0;
+                if(sfr_entry.location == 1) { min_sfr = ul_min_sfr; }
+                if(sfr_entry.location == 2) { min_sfr = ur_min_sfr; }
+                if(sfr_entry.location == 3) { min_sfr = lr_min_sfr; }
+                if(sfr_entry.location == 4) { min_sfr = ll_min_sfr; }
+                    if(sfr_entry.t_sfr < min_sfr) {
+                        qPainter.setPen(QPen(Qt::red, 4.0));
+                    }else {
+                        qPainter.setPen(QPen(Qt::blue, 4.0));
+                    }
+                    qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
+                    if(sfr_entry.r_sfr < min_sfr) {
+                        qPainter.setPen(QPen(Qt::red, 4.0));
+                    }else {
+                        qPainter.setPen(QPen(Qt::blue, 4.0));
+                    }
+                    qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
+                    if(sfr_entry.b_sfr < min_sfr) {
+                        qPainter.setPen(QPen(Qt::red, 4.0));
+                    }else {
+                        qPainter.setPen(QPen(Qt::blue, 4.0));
+                    }
+                    qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
+                    if(sfr_entry.l_sfr < min_sfr) {
+                        qPainter.setPen(QPen(Qt::red, 4.0));
+                    }else {
+                        qPainter.setPen(QPen(Qt::blue, 4.0));
+                    }
+                    qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
+            } else {
+                qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
+                qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
+                qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
+                qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
+            }
+        }
+        qPainter.end();
+        sfrImageReady(std::move(qImage));
+    }
+
+    clustered_sfr_map.clear();
+    qInfo("Time elapsed : %d sv size: %d", timer.elapsed(), sv.size());
+    if (sfr_check) {
+       return ErrorCodeStruct{ErrorCode::OK, ""};
+    } else {
+       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+    }
 }
 
 ErrorCodeStruct AACoreNew::performReject()
@@ -958,7 +1458,12 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     QVariantMap map;
     QElapsedTimer timer;
     timer.start();
-    cv::Mat img = dk->DothinkeyGrabImageCV(0);
+    bool grabRet;
+    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        qInfo("AA Cannot grab image.");
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+    }
     QString imageName;
     imageName.append(getGrabberLogDir())
                     .append(getCurrentTimeString())
@@ -1204,14 +1709,103 @@ void AACoreNew::triggerGripperOn(bool isOn)
     else aa_head->closeGripper();
 }
 
+bool AACoreNew::blackScreenCheck(cv::Mat inImage)
+{
+    vector<float> intensityProfile; float min_i = 0; float max_i = 0;
+    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile);
+    if (ret) {
+        qInfo("[blackScreenCheck] Checking intensity...min: %f max: %f", min_i, max_i);
+        if (max_i < 10) {
+            qInfo("Detect black screen");
+            return false;
+        }
+        return true;
+    } else {
+        qInfo("Check intensity fail");
+        return false;
+    }
+}
+
 void AACoreNew::sfrImageReady(QImage img)
 {
     qInfo("Sfr Image Ready");
     sfrImageProvider->setImage(img);
-//    QString filename = "";
-//    filename.append(getMTFLogDir())
-//                    .append(getCurrentTimeString())
-//                    .append(".jpg");
-//    img.save(filename);
     emit callQmlRefeshImg(0);
+}
+
+void AACoreNew::captureLiveImage()
+{
+//    if(!dk->DothinkeyIsGrabbing()) {
+//        qInfo("Image Grabber is not ON");
+//        return;
+//    }
+//    bool grabRet = false;
+//    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+//    if (!grabRet) {
+//        qInfo("AA Cannot grab image.");
+//        return;
+//    }
+//    cv::imwrite("livePhoto.bmp", img);
+}
+
+void AACoreNew::aaCoreParametersChanged()
+{
+    qInfo("AA Core parameters changed");
+    QVariantMap map;
+    cv::Mat img = cv::imread("livePhoto.bmp");
+    QImage outImage = imageThread->cvMat2QImage(img);
+    double dfov = calculateDFOV(img);
+    double imageCenterX = img.cols/2;
+    double imageCenterY = img.rows/2;
+    QPainter qPainter(&outImage);
+    qPainter.setBrush(Qt::NoBrush);
+    qPainter.setPen(QPen(Qt::red, 4.0));
+    emit sfrWorkerController->calculate(0, 0, img, true);
+    int timeout=1000;
+    while(this->clustered_sfr_map.size() != 1 && timeout >0) {
+        Sleep(10);
+        timeout--;
+    }
+    vector<Sfr_entry> sv = clustered_sfr_map[0];
+    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
+
+    qPainter.setFont(QFont("Times",50, QFont::Bold));
+    qPainter.drawText(imageCenterX/2 , 100 , QString("DFOV: ").append(QString::number(dfov)));
+    for (unsigned int i = 0; i < sv.size(); i++)
+    {
+        double roi_width = sqrt(sv[i].area)*this->parameters.ROIRatio();
+        qInfo("%f %f %f %f %f %f %d %d", sv.at(i).px, sv.at(i).py,
+              sv.at(i).t_sfr, sv.at(i).r_sfr, sv.at(i).b_sfr, sv.at(i).l_sfr,
+              sv.at(i).layer, sv.at(i).location);
+        double radius = sqrt(pow(sv[i].px - imageCenterX, 2) + pow(sv[i].py - imageCenterY, 2));
+
+        if (sv[i].layer == 0) {
+            qPainter.setPen(QPen(Qt::red, 4.0));
+        }
+        else if (sv[i].layer == 1) {
+            qPainter.setPen(QPen(QColor(102, 0, 204), 4.0)); //Purple
+        }
+        else if (sv[i].layer == 2) {
+            qPainter.setPen(QPen(Qt::blue, 4.0));
+        }
+        else if (sv[i].layer == 3) {
+            qPainter.setPen(QPen(Qt::yellow, 4.0));
+        }
+        double w_t = parameters.WeightList()[0 + sv[i].layer*4].toDouble();
+        double w_r = parameters.WeightList()[1 + sv[i].layer*4].toDouble();
+        double w_b = parameters.WeightList()[2 + sv[i].layer*4].toDouble();
+        double w_l = parameters.WeightList()[3 + sv[i].layer*4].toDouble();
+
+        qPainter.drawRect(QRectF(sv[i].px-roi_width/2, sv[i].py-roi_width/2, roi_width, roi_width));
+        qPainter.drawEllipse(QPoint(imageCenterX, imageCenterY), (int)(radius), (int)(radius));
+
+        qPainter.drawText(sv[i].px - 50 , sv[i].py - roi_width/2, QString("").append(QString::number(w_t)));
+        qPainter.drawText(sv[i].px - 50 + roi_width/2, sv[i].py,  QString("").append(QString::number(w_r)));
+        qPainter.drawText(sv[i].px - 50, sv[i].py + roi_width/2,  QString("").append(QString::number(w_b)));
+        qPainter.drawText(sv[i].px - roi_width/2 - 50, sv[i].py,  QString("").append(QString::number(w_l)));
+    }
+    clustered_sfr_map.clear();
+    qPainter.end();
+    aaCoreTuningProvider->setImage(outImage);
+    emit callQmlRefeshImg(2);
 }

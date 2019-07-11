@@ -18,6 +18,9 @@ class AAData : public QThread
     Q_PROPERTY(QPointF wLLValue READ wLLValue)
     Q_PROPERTY(QPointF wLRValue READ wLRValue)
 
+    Q_PROPERTY(double minValue READ minValue)
+    Q_PROPERTY(double maxValue READ maxValue)
+
     Q_PROPERTY(double dev READ dev WRITE setDev)
     Q_PROPERTY(double xTilt READ xTilt WRITE setXTilt)
     Q_PROPERTY(double yTilt READ yTilt WRITE setYTilt)
@@ -26,6 +29,11 @@ class AAData : public QThread
     Q_PROPERTY(double wURPeakZ READ wURPeakZ WRITE setWURPeakZ)
     Q_PROPERTY(double wLLPeakZ READ wLLPeakZ WRITE setWLLPeakZ)
     Q_PROPERTY(double wLRPeakZ READ wLRPeakZ WRITE setWLRPeakZ)
+    Q_PROPERTY(QString layer0 READ layer0 WRITE setLayer0)
+    Q_PROPERTY(QString layer1 READ layer1 WRITE setLayer1)
+    Q_PROPERTY(QString layer2 READ layer2 WRITE setLayer2)
+    Q_PROPERTY(QString layer3 READ layer3 WRITE setLayer3)
+
     Q_PROPERTY(NOTIFY wValueClear)
     Q_PROPERTY(NOTIFY wValueChanged)
 
@@ -33,6 +41,7 @@ public:
     AAData(QObject *parent=Q_NULLPTR);
     void addData(int i, double x, double y);
     void incrementData(double y1, double y2, double y3, double y4, double y5);
+    void plotIntensityProfile(float minI, float maxI, std::vector<float> values);
     void clear();
     void plot();
     QPointF wValue() const{
@@ -103,6 +112,36 @@ public:
         return m_yTilt;
     }
 
+    QString layer1() const
+    {
+        return m_layer1;
+    }
+
+    QString layer0() const
+    {
+        return m_layer0;
+    }
+
+    QString layer2() const
+    {
+        return m_layer2;
+    }
+
+    QString layer3() const
+    {
+        return m_layer3;
+    }
+
+    double minValue() const
+    {
+        return m_minValue;
+    }
+
+    double maxValue() const
+    {
+        return m_maxValue;
+    }
+
 public slots:
     void setDev(double dev)
     {
@@ -144,6 +183,26 @@ public slots:
         m_yTilt = yTilt;
     }
 
+    void setLayer1(QString layer1)
+    {
+        m_layer1 = layer1;
+    }
+
+    void setLayer0(QString layer0)
+    {
+        m_layer0 = layer0;
+    }
+
+    void setLayer2(QString layer2)
+    {
+        m_layer2 = layer2;
+    }
+
+    void setLayer3(QString layer3)
+    {
+        m_layer3 = layer3;
+    }
+
 signals:
     void wValueChanged();
     void wValueClear();
@@ -151,8 +210,10 @@ private slots:
     void wTimeout();
 private:
     int count = 0;
+    int plotProfile = 0;
     QTimer * m_wTimer;
     QPointF m_wValue;
+    QList<QPointF> m_PointsList;
     QList<QPointF> m_CCPointsList;
     QList<QPointF> m_ULPointsList;
     QList<QPointF> m_URPointsList;
@@ -179,6 +240,18 @@ private:
     double m_xTilt;
 
     double m_yTilt;
+
+    QString m_layer1;
+
+    QString m_layer0;
+
+    QString m_layer2;
+
+    QString m_layer3;
+
+    double m_minValue;
+
+    double m_maxValue;
 
 protected:
     void run();

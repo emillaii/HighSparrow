@@ -57,6 +57,10 @@
 #define SYSTEM_LOG_DIR               "system_log//"
 #define GRABBER_DEBUG_DIR            "grabber_log//"
 #define MTF_DEBUG_DIR                "mtf_log//"
+#define UNIT_LOG_DIR                 "unit_log//"
+#define PERFORMANCE_DIR              "performance//"
+#define AA_PROCESS_DIR               "aa_process//"
+#define PRODUCE_PROCESS_DIR          "produce_process//"
 #define VISION_PR_DEBUG_DIR          "pr_log//"
 #define AA_DEBUG_DIR                 "aa_log//"
 #define AA_SAVE_IMAGE_DIR            "aa_save_image//"
@@ -134,6 +138,8 @@
 
 #define UPLOOK_VISION_CAMERA_WIDTH      659
 #define UPLOOK_VISION_CAMERA_HEIGHT     494
+
+#define CONSTANT_REFERENCE 2304
 
 //PR Execuatable for HMI
 #define SAVE_IMAGE_FROM_BASLER_EXEC     "SaveImage.avexe"
@@ -263,19 +269,24 @@
 #define AA_PIECE_PR_TO_BOND "PR To Bond"
 #define AA_PIECE_INITIAL_TILT "Initial Tilt"
 #define AA_PIECE_PICK_LENS "AA Pick Lens"
+#define AA_PIECE_LOAD_MATERIAL "Load Material"
 #define AA_PIECE_UNLOAD_LENS "AA Unload Lens"
 #define AA_PIECE_Z_OFFSET "Z Offset"
+#define AA_PIECE_XY_OFFSET "XY Offset"
 #define AA_PIECE_AA "AA"
 #define AA_PIECE_OC "OC"
 #define AA_PIECE_MTF "MTF"
 #define AA_PIECE_UV "UV"
 #define AA_PIECE_DISPENSE "Dispense"
+#define AA_PIECE_Y_LEVEL "Y_Level"
 //#define AA_PIECE_SAVE_IMAGE "Save Image"
 #define AA_PIECE_DELAY "Delay"
 #define AA_PIECE_JOIN "Join"
 #define AA_PIECE_SAVE_IMAGE "Save Image"
 #define AA_PIECE_ACCEPT "Accept"
 #define AA_PIECE_REJECT "Reject"
+#define AA_PIECE_TERMINATE "Terminate"
+#define AA_PIECE_GRR "GRR"
 
 #define AA_PIECE_INITIAL_POSITION "Init Pos"
 #define AA_PIECE_INIT_SENSOR "Init Sensor"

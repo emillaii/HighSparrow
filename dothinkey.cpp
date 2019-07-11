@@ -1,5 +1,5 @@
 #include "dothinkey.h"
-#include <QElapsedTimer>
+
 bool Dothinkey::CameraChannel::CloseCameraChannel()
 {
     if (this->m_iDevID>= 0) {
@@ -36,6 +36,11 @@ void Dothinkey::loadParams(QString file_name)
 void Dothinkey::DothinkeySetConfigFile(std::string filename)
 {
     this->iniFilename = filename;
+}
+
+QString Dothinkey::readSensorID()
+{
+    return this->currentSensorID();
 }
 
 BOOL Dothinkey::DothinkeyEnum()
@@ -90,6 +95,7 @@ BOOL Dothinkey::DothinkeyOpen()
 BOOL Dothinkey::DothinkeyClose()
 {
     qInfo("Close device!");
+    setCurrentSensorID("");
     for (CameraChannel cc: m_CameraChannels)
     {
         cc.CloseCameraChannel();
@@ -149,6 +155,7 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     int res;
     SensorTab *pSensor = nullptr;
     ULONG *grabSize = nullptr;
+    m_currentSensorID = "0";
     int iDevID = -1;
     float fMclk = 0;
     float fAvdd = 0;
@@ -234,6 +241,43 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     qDebug("[DothinkeyStartCamera]InitDisplay(nullptr, pSensor->width, pSensor->height, pSensor->type, CHANNEL_A, NULL, iDevID) = %d",res);
     res = InitIsp(pSensor->width, pSensor->height, pSensor->type, CHANNEL_A, iDevID);
     qDebug("[DothinkeyStartCamera]InitIsp(pSensor->width, pSensor->height, pSensor->type, CHANNEL_A, iDevID) = %d",res);
+    isGrabbing = true;
+    //TODO: Move that to test item or in dothinkey config file
+    USHORT value_1 =0, value_2 =0, value_3 =0;
+//    WriteSensorReg(pSensor->SlaveID, 0x6028, 0x4000, pSensor->mode);
+//    Sleep(30);
+//    WriteSensorReg(pSensor->SlaveID, 0x6029, 0x0100, pSensor->mode);
+//    Sleep(30);
+//    WriteSensorReg(pSensor->SlaveID, 0x6F12, 0x0100, pSensor->mode);
+//    Sleep(30);
+//    WriteSensorReg(pSensor->SlaveID, 0x0a02, 0x0000, pSensor->mode);
+//    Sleep(30);
+//    WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0100, pSensor->mode);
+//    Sleep(30);
+//    ReadSensorReg(pSensor->SlaveID, 0x0a24, &value_1, pSensor->mode);
+//    ReadSensorReg(pSensor->SlaveID, 0x0a26, &value_2, pSensor->mode);
+//    ReadSensorReg(pSensor->SlaveID, 0x0a28, &value_3, pSensor->mode);
+//    qInfo("Read reg value %X %X %X", value_1, value_2, value_3);
+//    QString temp = "";
+//    temp.sprintf("%04X%04X%04X", value_1, value_2, value_3);
+//    setCurrentSensorID(temp);
+
+    WriteSensorReg(pSensor->SlaveID, 0x0a02, 0x007F, pSensor->mode);
+    Sleep(30);
+    WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0001, pSensor->mode);
+    Sleep(30);
+
+    USHORT start = 0x0a17;
+    USHORT end = 0x0a21;
+    QString temp = "";
+    QString senser_id = "";
+    for (USHORT i = start; i <= end; ++i) {
+        ReadSensorReg(pSensor->SlaveID, i, &value_1, pSensor->mode);
+        qInfo("Read reg %X  value %02X",i, value_1);
+        senser_id.append(temp.sprintf("%02X", value_1));
+        Sleep(30);
+    }
+    setCurrentSensorID(senser_id);
     return true;
 }
 
@@ -379,8 +423,9 @@ BOOL Dothinkey::SetVoltageMclk(SensorTab CurrentSensor, int iDevID, float Mclk, 
     return TRUE;
 }
 
-cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel)
+cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel, bool &grabRet)
 {
+    grabRet = true;
     SensorTab *pSensor = nullptr;
     ULONG retSize = 0;
     int iDevID = -1;
@@ -405,6 +450,7 @@ cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel)
     {
         qInfo("CameraBuffer is Null");
         cv::Mat img;
+        grabRet = false;
         return img;
     }
     memset(CameraBuffer, 0, nSize);
@@ -414,6 +460,8 @@ cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel)
         GetMipiCrcErrorCount(&crcCount, CHANNEL_A, iDevID);
     } else {
         qInfo("Camera Grab Frame Fail");
+        cv::Mat img;
+        grabRet = false;
     }
     ImageProcess(CameraBuffer, bmpBuffer, width, height, &frameInfo, iDevID);
     CvSize mSize;
@@ -451,9 +499,7 @@ QImage* Dothinkey::DothinkeyGrabImage(int channel)
     {
         return false;
     }
-    //memset(CameraBuffer, 0, nSize);
-
-    QElapsedTimer timer; timer.start();
+    memset(CameraBuffer, 0, nSize);
     int ret = GrabFrame(CameraBuffer, grabSize, &retSize, &frameInfo, iDevID);
     if (ret == DT_ERROR_OK)
     {
@@ -465,7 +511,6 @@ QImage* Dothinkey::DothinkeyGrabImage(int channel)
     mSize.width = width;
     QImage * image = new QImage((const uchar*) bmpBuffer, width, height, QImage::Format_RGB888);
     delete(CameraBuffer);
-            qInfo("Time elapsed:%d", timer.elapsed());
     CameraBuffer = NULL;
     return image;
 }
@@ -533,4 +578,9 @@ bool Dothinkey::initSensor()
     if (!res) { qCritical("Cannot start camera"); return false; }
     //imageThread->start();
     return true;
+}
+
+BOOL Dothinkey::DothinkeyIsGrabbing()
+{
+    return isGrabbing;
 }

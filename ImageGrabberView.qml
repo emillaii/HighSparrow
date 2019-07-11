@@ -8,7 +8,6 @@ ItemDelegate {
     width: parent.width
     contentItem: ColumnLayout {
         spacing: 0
-
         ColumnLayout {
             FileDialog {
                 id: loadfileDialog

@@ -39,7 +39,9 @@ public:
         PR_To_Bond = 2,
         OC = 3,
         MTF = 4,
-        AA = 5
+        AA = 5,
+        INIT_CAMERA = 6,
+        Y_LEVEL = 7
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head, SingleheadLSutModule *lsut, Dothinkey *dk,
@@ -47,12 +49,14 @@ public:
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
     void performAAOffline();
     Q_INVOKABLE void performHandling(int cmd, QString params);
+    Q_INVOKABLE void captureLiveImage();
     ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond();
     ErrorCodeStruct performAAPickLens();
     ErrorCodeStruct performAA(QJsonValue params);
     ErrorCodeStruct performOC(QJsonValue params);
     ErrorCodeStruct performMTF(QJsonValue params, bool write_log = false);
+    ErrorCodeStruct performMTFOffline(QJsonValue params);
     ErrorCodeStruct performZOffset(double zOffset);
     ErrorCodeStruct performXYOffset(double xOffset, double yOffset);
     ErrorCodeStruct performDelay(int);
@@ -60,6 +64,13 @@ public:
     ErrorCodeStruct performUV(int uv_time);
     ErrorCodeStruct performReject();
     ErrorCodeStruct performAccept();
+    ErrorCodeStruct performTerminate();
+    ErrorCodeStruct performGRR(bool change_lens,bool change_sensor,int repeat_time);
+    ErrorCodeStruct performYLevelTest(QJsonValue params);
+    ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
+
+    static bool AACoreNew::performThreadTest(vector<QString> testList, QJsonValue params);
+    bool blackScreenCheck(cv::Mat inImage);
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
@@ -71,9 +82,11 @@ public:
     AAData aaData_1;  // For Display Channel 1
     AAData aaData_2;  // For Display Channel 2
     AAData mtf_log;   // For Display MTF Log
+    AAData intensity_profile; //For Display intensity profile
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
-
+    ImageProvider * dispenseImageProvider;
+    ImageProvider * aaCoreTuningProvider;
     AACoreParameters parameters;
 private:
     bool is_run = false;
@@ -99,8 +112,8 @@ private:
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QVariantMap current_dfov;
+    double current_fov_slope;
     QJsonDocument flowchartDocument;
-    QJsonValue currentTestParams;
     bool isZScanNeedToStop = false;
     int currentChartDisplayChannel = 0;
     int currentOCDisplayChannel = 0;
@@ -114,9 +127,11 @@ private:
     int current_aa_ng_time = 0;
     int current_oc_ng_time = 0;
     int current_mtf_ng_time = 0;
+    int current_grr = 0;
+    QString handlingParams = "";
 
-    void sfrFitCurve_Advance(double imageWidth, double imageHeight, double &xTilt, double &yTilt,
-                             double &zPeak, double &ul_zPeak, double &ur_zPeak, double &ll_zPeak, double &lr_zPeak, double &dev);
+
+    QVariantMap sfrFitCurve_Advance(int resize_factor, double start_pos);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,
                                                                unsigned int & ccROIIndex,
                                                                unsigned int & ulROIIndex,
@@ -146,6 +161,7 @@ public slots:
         flowchartDocument = QJsonDocument::fromJson(json.toUtf8());
     }
     void sfrImageReady(QImage);
+    void aaCoreParametersChanged();
 };
 
 #endif // AACORENEW_H

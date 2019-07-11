@@ -12,8 +12,12 @@ ChartCalibration::ChartCalibration(Dothinkey *dothinkey, int max_intensity, int 
 
 bool ChartCalibration::GetPixelPoint(double &x, double &y)
 {
-    cv::Mat img = dothinkey->DothinkeyGrabImageCV(0);
-
+    bool grabRet;
+    cv::Mat img = dothinkey->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        qInfo("ChartCalibration Cannot grab image.");
+        return false;
+    }
     QImage outImage;
     double offsetX, offsetY;
     unsigned int ccIndex = 10000, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;

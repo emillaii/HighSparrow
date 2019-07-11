@@ -39,6 +39,13 @@ Grid {
             source: "icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
+            Label {
+                id: sensorIDLabel
+                text: qsTr("SensorID: ") + dothinkey.currentSensorID
+                background: Rectangle {
+                    color: "black"
+                }
+            }
         }
         Connections {
             target: imageGrabberThread
@@ -57,10 +64,10 @@ Grid {
         ChartView {
             id: spline1
             anchors.fill: parent
-            title: "AA"
+            title: "AA "
             antialiasing: true
             theme: ChartView.ChartThemeDark
-
+            legend.alignment: Qt.AlignBottom
             ValueAxis {
                 id: axisY1
                 titleText: "SFR"
@@ -118,16 +125,28 @@ Grid {
                         color: "black"
                     }
                 }
+                Label {
+                    id: spline1Label3
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
+                Label {
+                    id: spline1Label4
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
             }
         }
 
         Connections {
             target: dataFromCpp
             onWValueChanged: {
-                spline1Label.text = "CC: " + dataFromCpp.wCCPeakZ + " UL: " + dataFromCpp.wULPeakZ +
-                        " UR: " + dataFromCpp.wURPeakZ + " LL: " + dataFromCpp.wLLPeakZ +
-                        " LR: " + dataFromCpp.wLRPeakZ + " DEV: " + dataFromCpp.dev
-                spline1Label2.text = "XTilt: " + dataFromCpp.xTilt + " YTilt: " + dataFromCpp.yTilt
+                spline1Label.text = dataFromCpp.layer0
+                spline1Label2.text = dataFromCpp.layer1
+                spline1Label3.text = dataFromCpp.layer2
+                spline1Label4.text = dataFromCpp.layer3
                 ccSeries.append(dataFromCpp.wCCValue.x, dataFromCpp.wCCValue.y)
                 ulSeries.append(dataFromCpp.wULValue.x, dataFromCpp.wULValue.y)
                 urSeries.append(dataFromCpp.wURValue.x, dataFromCpp.wURValue.y)
@@ -151,6 +170,54 @@ Grid {
         id: frame3
         width: grid.width/3
         height: grid.height/2
+        ChartView {
+            id: lineSeries
+            anchors.fill: parent
+            antialiasing: true
+            theme: ChartView.ChartThemeDark
+
+            ValueAxis {
+                id: axisY3
+                titleText: ""
+                min: 0
+                max: 255
+                gridVisible: true
+            }
+
+            ValueAxis {
+                titleText: "pixel location "
+                id: axisX3
+                gridVisible: true
+                min: 0
+                max: 2000
+            }
+
+            LineSeries {
+                name: "Intensity Profile "
+                id: iSeries
+                axisX: axisX3
+                axisY: axisY3
+            }
+            ColumnLayout {
+                Label {
+                    id: iSeriesLabel
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
+            }
+        }
+        Connections {
+            target: dataFromIntensityProfile
+            onWValueChanged: {
+                iSeriesLabel.text = "Min: " + dataFromIntensityProfile.minValue + " Max: " + dataFromIntensityProfile.maxValue
+                iSeries.append(dataFromIntensityProfile.wValue.x, dataFromIntensityProfile.wValue.y)
+            }
+            onWValueClear: {
+                console.log("Clear")
+                iSeries.clear()
+            }
+        }
     }
 
     Frame {
@@ -180,10 +247,10 @@ Grid {
         ChartView {
             id: spline2
             anchors.fill: parent
-            title: "AA"
+            title: "AA "
             antialiasing: true
             theme: ChartView.ChartThemeDark
-
+            legend.alignment: Qt.AlignBottom
             ValueAxis {
                 id: axisY2
                 titleText: "SFR"
@@ -241,17 +308,28 @@ Grid {
                         color: "black"
                     }
                 }
+                Label {
+                    id: spline2Label3
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
+                Label {
+                    id: spline2Label4
+                    background: Rectangle {
+                        color: "black"
+                    }
+                }
             }
         }
 
         Connections {
             target: dataFromCpp2
             onWValueChanged: {
-                spline2Label.text = "CC: " + dataFromCpp2.wCCPeakZ + " UL: " + dataFromCpp2.wULPeakZ +
-                        " UR: " + dataFromCpp2.wURPeakZ + " LL: " + dataFromCpp2.wLLPeakZ +
-                        " LR: " + dataFromCpp2.wLRPeakZ + " DEV: " + dataFromCpp2.dev
-                spline2Label2.text = "XTilt: " + dataFromCpp2.xTilt + " YTilt: " + dataFromCpp2.yTilt
-                ccSeries2.name = "CC " + dataFromCpp2.wCCPeakZ
+                spline2Label.text = dataFromCpp2.layer0
+                spline2Label2.text = dataFromCpp2.layer1
+                spline2Label3.text = dataFromCpp2.layer2
+                spline2Label4.text = dataFromCpp2.layer3
                 ccSeries2.append(dataFromCpp2.wCCValue.x, dataFromCpp2.wCCValue.y)
                 ulSeries2.append(dataFromCpp2.wULValue.x, dataFromCpp2.wULValue.y)
                 urSeries2.append(dataFromCpp2.wURValue.x, dataFromCpp2.wURValue.y)

@@ -843,7 +843,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                    qInfo("current slope %f  prev_slope %f error %f", slope, prev_fov_slope, error);
                    if (fabs(error) > 0.2) {
                        qInfo("Crash detection is triggered");
-                       break;
+                       LogicNg(current_aa_ng_time);
+                       map["Result"] = QString("Crash detection is triggered. prev_fov_slope:%1 now_fov_slope:%2 error:%3").arg(prev_fov_slope).arg(slope).arg(error);
+                       emit pushDataToUnit(runningUnit, "AA", map);
+                       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
                    }
                    prev_fov_slope = slope;
                 }
@@ -2351,9 +2354,6 @@ double AACoreNew::calculateDFOV(cv::Mat img)
         double dfov1 = 2*atan(d1/(2*parameters.SensorXRatio()*f))*180/PI;
         double dfov2 = 2*atan(d2/(2*parameters.SensorYRatio()*f))*180/PI;
         double dfov = (dfov1 + dfov2)/2;
-
-        mtf_oc_x = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
-        mtf_oc_y = vector[ccIndex].center.y() - (vector[ccIndex].height/2);
         return dfov;
     }
     return -1;

@@ -1443,6 +1443,8 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
 
     std::sort(sfr_check_list.begin(), sfr_check_list.end());
     double max_sfr_deviation = fabs(sfr_check_list[0] - sfr_check_list[sfr_check_list.size()-1]);
+    mtf_oc_x = sv[0].px; mtf_oc_y = sv[0].py;
+    qInfo("mtf_oc_x: %f mtf_oc_y: %f", mtf_oc_x, mtf_oc_y);
     qInfo("Max sfr deviation : %f", max_sfr_deviation);
     if (max_sfr_deviation >= sfr_dev_tol) {
         qInfo("max_sfr_deviation cannot pass");
@@ -1594,6 +1596,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
 
     std::sort(sfr_check_list.begin(), sfr_check_list.end());
     double max_sfr_deviation = fabs(sfr_check_list[0] - sfr_check_list[sfr_check_list.size()-1]);
+    mtf_oc_x = sv[0].px; mtf_oc_y = sv[0].py;
     qInfo("Max sfr deviation : %f", max_sfr_deviation);
     if (max_sfr_deviation >= sfr_dev_tol) {
         qInfo("max_sfr_deviation cannot pass");

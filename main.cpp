@@ -100,6 +100,13 @@ int main(int argc, char *argv[])
     //engine.rootContext()->setContextProperty("tray_start_point2",&highSprrow.baseModuleManager->material_tray.parameters[1]->tray_start_position);
     engine.rootContext()->setContextProperty("sh_sensor_tray_standard_parameter",&highSprrow.baseModuleManager->sensor_tray.standards_parameters);
 
+    //reject tray
+    engine.rootContext()->setContextProperty("sh_reject_tray",&highSprrow.baseModuleManager->reject_tray);
+    engine.rootContext()->setContextProperty("sh_reject_first_tray_end_position",&highSprrow.baseModuleManager->reject_tray.first_tray_end_position);
+    engine.rootContext()->setContextProperty("sh_reject_tray_start_point1",&highSprrow.baseModuleManager->reject_tray.parameters[0]->tray_start_position);
+    engine.rootContext()->setContextProperty("sh_reject_tray_standard_parameter",&highSprrow.baseModuleManager->reject_tray.standards_parameters);
+
+
     engine.rootContext()->setContextProperty("sh_lens_tray",&highSprrow.baseModuleManager->lens_tray);
     engine.rootContext()->setContextProperty("sh_lens_first_tray_end_position",&highSprrow.baseModuleManager->lens_tray.first_tray_end_position);
     engine.rootContext()->setContextProperty("sh_lens_tray_start_point1",&highSprrow.baseModuleManager->lens_tray.parameters[0]->tray_start_position);

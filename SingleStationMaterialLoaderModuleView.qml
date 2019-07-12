@@ -1,4 +1,4 @@
-﻿import QtQuick 2.9
+import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import FileContentItem 1.0
@@ -58,7 +58,6 @@ ItemDelegate {
                     width: 40
                     height: 40
                     onClicked: {
-                        //sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_SENSOR_IN_TRAY)
                         baseModuleManager.showSetting()
                     }
                 }
@@ -84,6 +83,15 @@ ItemDelegate {
             GroupBox{
                 title:qsTr("sensor盘")
                 SingleHeadSensorTray{}
+            }
+            GroupBox{
+                title:qsTr("reject盘规格")
+                RejectTraySpecs{}
+            }
+
+            GroupBox{
+                title:qsTr("reject盘")
+                SingleHeadRejectTray{}
             }
 
             GroupBox{

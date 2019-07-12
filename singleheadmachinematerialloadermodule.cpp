@@ -10,6 +10,7 @@ SingleHeadMachineMaterialLoaderModule::SingleHeadMachineMaterialLoaderModule(QSt
 void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickArm *_pick_arm,
                                                  MaterialTray* _sensorTray,
                                                  MaterialTray* _lensTray,
+                                                 MaterialTray* _rejectTray,
                                                  VisionLocation* _sensor_vision,
                                                  VisionLocation* _sensor_vacancy_vision,
                                                  VisionLocation* _sut_vision,
@@ -19,6 +20,7 @@ void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickAr
                                                  VisionLocation* _lens_vacancy_vision,
                                                  VisionLocation* _lut_vision,
                                                  VisionLocation* _lut_lens_vision,
+                                                 VisionLocation* _reject_tray_vacancy_vision,
                                                  XtVacuum* _sutVacuum,
                                                  XtVacuum* _lutVacuum)
 {
@@ -26,6 +28,7 @@ void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickAr
     this->pick_arm->parent = this;
     this->sensorTray = _sensorTray;
     this->lensTray = _lensTray;
+    this->rejectTray = _rejectTray;
     this->sensor_vision = _sensor_vision;
     this->sensor_vacancy_vision = _sensor_vacancy_vision;
     this->sut_vision = _sut_vision;
@@ -35,6 +38,7 @@ void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickAr
     this->lens_vacancy_vision = _lens_vacancy_vision;
     this->lut_vision = _lut_vision;
     this->lut_lens_vision = _lut_lens_vision;
+    this->reject_tray_vacancy_vision = _reject_tray_vacancy_vision;
     this->sut_vacuum = _sutVacuum;
     this->lut_vacuum = _lutVacuum;
 }
@@ -1314,6 +1318,11 @@ bool SingleHeadMachineMaterialLoaderModule::performNGLensPR()
     return lut_lens_vision->performPR(pr_offset);
 }
 
+bool SingleHeadMachineMaterialLoaderModule::performRejectVacancyPR()
+{
+    return reject_tray_vacancy_vision->performPR(pr_offset);
+}
+
 bool SingleHeadMachineMaterialLoaderModule::moveToLPAWorkPos(bool check_softlanding)
 {
     PrOffset temp(lens_suction_offset.X() - pr_offset.X,lens_suction_offset.Y() - pr_offset.Y,0);
@@ -1425,6 +1434,56 @@ bool SingleHeadMachineMaterialLoaderModule::moveToLensTray1EndPos()
     qInfo("moveToTray1EndPos");
     bool result = pick_arm->move_Xm_Origin();
     result &= pick_arm->move_XtXY_Synic(lensTray->getEndPosition(),parameters.visionPositionX(),true);
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToRejectTrayPos(int index, int tray_index)
+{
+    qInfo("moveToRejectTrayPos index %d tray_index %d",index,tray_index);
+    bool result = pick_arm->move_XY_Synic(rejectTray->getPositionByIndex(index,tray_index));
+    if(!result)
+        AppendError(QString(u8"移动到reject盘%1号位置失败").arg(index));
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToRejectTrayPos(int tray_index)
+{
+    qInfo("moveToRejectTrayPos tray_index %d",tray_index);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= pick_arm->move_XY_Synic(rejectTray->getCurrentPosition(tray_index),true);
+    if(!result)
+        AppendError(QString(u8"移动到reject盘当前位置失败"));
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToRejectStartPos(int tray_index)
+{
+    qInfo("moveToRejectStartPos%d",tray_index);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= pick_arm->move_XY_Synic(rejectTray->getStartPosition(tray_index),true);
+    if(!result)
+        AppendError(QString(u8"移动到reject盘起始位置失败"));
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToRejectTrayEndPos()
+{
+    qInfo("moveToRejectTrayEndPos");
+    bool result = pick_arm->move_Xm_Origin();
+    result &= pick_arm->move_XY_Synic(rejectTray->getEndPosition(),true);
+    if(!result)
+        AppendError(QString(u8"移动到reject盘结束位置失败"));
+    return result;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::moveToNextRejectTrayPos(int tray_index)
+{
+    qInfo("moveToNextRejectTrayPos tray_index %d",tray_index);
+    bool result = rejectTray->findNextPositionOfInitState(tray_index);
+    if(result)
+        result &=  pick_arm->move_XY_Synic(rejectTray->getCurrentPosition(tray_index));
+    if(!result)
+        AppendError(QString(u8"移动到reject盘下一个位置失败"));
     return result;
 }
 
@@ -2151,6 +2210,24 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
         result = moveToSensorTray1EndPos();
     }
         break;
+    case REJECT_TRAY:
+    {
+        qInfo("spa move to reject tray current position,cmd: %d",REJECT_TRAY);
+        result = moveToRejectTrayPos(0);
+    }
+        break;
+    case REJECT_TRAY_START_POS:
+    {
+        qInfo("spa move to reject tray start position,cmd: %d",REJECT_TRAY_START_POS);
+        result = moveToRejectStartPos(0);
+    }
+        break;
+    case REJECT_TRAY_END_POS:
+    {
+        qInfo("spa move to reject tray end position,cmd: %d",REJECT_TRAY_END_POS);
+        result = moveToRejectTrayEndPos();
+    }
+        break;
     default:
         result = true;
         break;
@@ -2231,6 +2308,12 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
         qInfo("perform lens suction PR");
     }
         break;
+    case REJECT_VACANCY_PR:
+        {
+            qInfo("perform reject tray vacancy PR, cmd: %d",REJECT_VACANCY_PR);
+            result = performRejectVacancyPR();
+        }
+            break;
     default:
         result = true;
         break;

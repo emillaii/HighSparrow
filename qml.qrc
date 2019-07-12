@@ -90,6 +90,8 @@
         <file>MPAHeadParameter.qml</file>
         <file>LensTraySpecs.qml</file>
         <file>SUTGripperPosition.qml</file>
+        <file>RejectTraySpecs.qml</file>
+        <file>SingleHeadRejectTray.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

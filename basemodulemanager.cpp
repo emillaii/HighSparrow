@@ -51,6 +51,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     material_tray.standards_parameters.setTrayCount(2);
     lens_tray.standards_parameters.setTrayCount(2);
     sensor_tray.standards_parameters.setTrayCount(2);
+    reject_tray.standards_parameters.setTrayCount(2);
     unitlog.setServerAddress(configs.dataServerURL());
     setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
@@ -101,6 +102,7 @@ bool BaseModuleManager::loadParameters()
     if(ServerMode() ==2){
         lens_tray.loadJsonConfig(getCurrentParameterDir().append(SH_LENS_TRAY_FILE));
         sensor_tray.loadJsonConfig(getCurrentParameterDir().append(SH_SENSOR_TRAY_FILE));
+        reject_tray.loadJsonConfig(getCurrentParameterDir().append(SH_REJECT_TRAY_FILE));
     }
     aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     dothinkey->loadParams(getCurrentParameterDir().append(DOTHINGKEY_FILE));
@@ -183,6 +185,7 @@ bool BaseModuleManager::saveParameters()
     if(ServerMode() ==2){
         lens_tray.saveJsonConfig(getCurrentParameterDir().append(SH_LENS_TRAY_FILE));
         sensor_tray.saveJsonConfig(getCurrentParameterDir().append(SH_SENSOR_TRAY_FILE));
+        reject_tray.saveJsonConfig(getCurrentParameterDir().append(SH_REJECT_TRAY_FILE));
     }
     aa_head_module.saveJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     sut_module.saveJsonConfig(getCurrentParameterDir().append(SUT_FILE));
@@ -920,7 +923,7 @@ bool BaseModuleManager::InitStruct()
                                              GetVacuumByName(single_station_material_pickarm.parameters.vacuumLUTName()),
                                              GetVacuumByName(single_station_material_pickarm.parameters.vacuumSUTName()),
                                              GetCylinderByName(single_station_material_pickarm.parameters.cylinderName()));
-        single_station_material_loader_module.Init(&single_station_material_pickarm,&sensor_tray,&lens_tray,
+        single_station_material_loader_module.Init(&single_station_material_pickarm,&sensor_tray,&lens_tray,&reject_tray,
                                                    GetVisionLocationByName(single_station_material_loader_module.parameters.sensorVisionName()),
                                                    GetVisionLocationByName(single_station_material_loader_module.parameters.sensorVacancyVisionName()),
                                                    GetVisionLocationByName(single_station_material_loader_module.parameters.sutVisionName()),
@@ -929,13 +932,16 @@ bool BaseModuleManager::InitStruct()
                                                    GetVisionLocationByName(single_station_material_loader_module.parameters.lensVisionName()),
                                                    GetVisionLocationByName(single_station_material_loader_module.parameters.lensVacancyVisionName()),
                                                    GetVisionLocationByName(single_station_material_loader_module.parameters.lutVisionName()),
-                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.lutLensVision()),
+                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.lutLensVisionName()),
+                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.rejectTrayVacancyVisionName()),
                                                    GetVacuumByName(single_station_material_loader_module.parameters.sutVacuumName()),
                                                    GetVacuumByName(single_station_material_loader_module.parameters.lutVacuumName()));
         sensor_tray.resetTrayState(0);
         sensor_tray.resetTrayState(1);
         lens_tray.resetTrayState(0);
         lens_tray.resetTrayState(1);
+        reject_tray.resetTrayState(0);
+        reject_tray.resetTrayState(1);
 
         sh_lsut_module.Init(&sut_carrier,
                             GetVisionLocationByName(sh_lsut_module.parameters.sutDownLookLocationName()),

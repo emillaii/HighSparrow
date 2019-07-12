@@ -32,7 +32,8 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     QString m_lensVisionName = "";
     QString m_lensVancyVisionName = "";
     QString m_lutVisionName = "";
-    QString m_lutLensVision = "";
+    QString m_lutLensVisionName = "";
+    QString m_rejectTrayVacancyVisionName = "";
     double m_zOffset = 0;
     double m_escapeHeight = 0;
     double m_escapeX = 0;
@@ -67,7 +68,8 @@ public:
     Q_PROPERTY(QString lensVisionName READ lensVisionName WRITE setLensVisionName NOTIFY lensVisionNameChanged)
     Q_PROPERTY(QString lensVacancyVisionName READ lensVacancyVisionName WRITE setLensVacancyVisionName NOTIFY lensVacancyVisionNameChanged)
     Q_PROPERTY(QString lutVisionName READ lutVisionName WRITE setLutVisionName NOTIFY lutVisionNameChanged)
-    Q_PROPERTY(QString lutLensVision READ lutLensVision WRITE setLutLensVision NOTIFY lutLensVisionChanged)
+    Q_PROPERTY(QString lutLensVisionName READ lutLensVisionName WRITE setLutLensVisionName NOTIFY lutLensVisionNameChanged)
+    Q_PROPERTY(QString rejectTrayVacancyVisionName READ rejectTrayVacancyVisionName WRITE setRejectTrayVacancyVisionName NOTIFY rejectTrayVacancyVisionNameChanged)
     Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
     Q_PROPERTY(double escapeHeight READ escapeHeight WRITE setEscapeHeight NOTIFY escapeHeightChanged)
     Q_PROPERTY(double escapeX READ escapeX WRITE setEscapeX NOTIFY escapeXChanged)
@@ -191,9 +193,14 @@ public:
         return m_lutVisionName;
     }
 
-    QString lutLensVision() const
+    QString lutLensVisionName() const
     {
-        return m_lutLensVision;
+        return m_lutLensVisionName;
+    }
+
+    QString rejectTrayVacancyVisionName() const
+    {
+        return m_rejectTrayVacancyVisionName;
     }
 
     double zOffset() const
@@ -455,13 +462,22 @@ public slots:
         emit lutVisionNameChanged(m_lutVisionName);
     }
 
-    void setLutLensVision(QString lutLensVision)
+    void setLutLensVisionName(QString lutLensVisionName)
     {
-        if (m_lutLensVision == lutLensVision)
+        if (m_lutLensVisionName == lutLensVisionName)
             return;
 
-        m_lutLensVision = lutLensVision;
-        emit lutLensVisionChanged(m_lutLensVision);
+        m_lutLensVisionName = lutLensVisionName;
+        emit lutLensVisionNameChanged(m_lutLensVisionName);
+    }
+
+    void setRejectTrayVacancyVisionName(QString rejectTrayVacancyVisionName)
+    {
+        if (m_rejectTrayVacancyVisionName == rejectTrayVacancyVisionName)
+            return;
+
+        m_rejectTrayVacancyVisionName = rejectTrayVacancyVisionName;
+        emit rejectTrayVacancyVisionNameChanged(m_rejectTrayVacancyVisionName);
     }
 
     void setZOffset(double zOffset)
@@ -565,7 +581,8 @@ signals:
     void lensVisionNameChanged(QString lensVisionName);
     void lensVacancyVisionNameChanged(QString lensVacancyVisionName);
     void lutVisionNameChanged(QString lutVisionName);
-    void lutLensVisionChanged(QString lutLensVision);
+    void lutLensVisionNameChanged(QString lutLensVisionName);
+    void rejectTrayVacancyVisionNameChanged(QString rejectTrayVacancyVisionName);
     void zOffsetChanged(double zOffset);
     void escapeHeightChanged(double escapeHeight);
     void escapeXChanged(double escapeX);

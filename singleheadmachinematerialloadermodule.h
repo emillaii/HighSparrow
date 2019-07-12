@@ -30,6 +30,9 @@ public:
         SUT_POS = 11,
         SENSOR_TRAY_START_POS = 12,
         SENSOR_TRAY_END_POS = 13,
+        REJECT_TRAY = 14,
+        REJECT_TRAY_START_POS = 15,
+        REJECT_TRAY_END_POS = 16,
 
         HANDLE_POSITION = (1<<6)-1
     };
@@ -46,6 +49,7 @@ public:
         UPDOWNLOOK_DOWN_PR = 10<<6,
         LENS_PICKER_PR = 11<<6,
         NG_LENS_PR = 12<<6,
+        REJECT_VACANCY_PR = 13<<6,
 
         HANDLE_PR = (1<<11) - (1<<6)
     };
@@ -86,6 +90,7 @@ public:
     void Init(SingleHeadMachineMaterialPickArm* pick_arm,
               MaterialTray* _sensorTray,
               MaterialTray* _lensTray,
+              MaterialTray* _rejectTray,
               VisionLocation* _sensor_vision = nullptr,
               VisionLocation* _sensor_vacancy_vision = nullptr,
               VisionLocation* _sut_vision = nullptr,
@@ -95,6 +100,7 @@ public:
               VisionLocation* _lens_vacancy_vision = nullptr,
               VisionLocation* _lut_vision = nullptr,
               VisionLocation* _lut_lens_vision = nullptr,
+              VisionLocation* _reject_tray_vacancy_vision = nullptr,
               XtVacuum* sutVacuum = nullptr,
               XtVacuum* lutVacuum = nullptr);
     void loadJsonConfig(QString file_name);
@@ -194,6 +200,11 @@ private:
 
 
     bool moveToNextLensTrayPos(int tray_index);
+    bool moveToRejectTrayPos(int index,int tray_index);
+    bool moveToRejectTrayPos(int tray_index);
+    bool moveToRejectStartPos(int tray_index);
+    bool moveToRejectTrayEndPos();
+    bool moveToNextRejectTrayPos(int tray_index);
     bool moveToLUTPRPos(bool check_softlanding = false);
 
     bool checkNeedChangeLensTray();
@@ -204,6 +215,7 @@ private:
     bool performLUTPR();
     bool performLensPickerPR();
     bool performNGLensPR();
+    bool performRejectVacancyPR();
 
     bool moveToLPAWorkPos(bool check_softlanding = false);
     bool moveToLPAPrOffset(bool check_softlanding = false);
@@ -241,6 +253,7 @@ private:
     SingleHeadMachineMaterialPickArm* pick_arm = Q_NULLPTR;
     MaterialTray *sensorTray;
     MaterialTray *lensTray;
+    MaterialTray *rejectTray = Q_NULLPTR;
     XtVacuum* sut_vacuum = Q_NULLPTR;
     XtVacuum* lut_vacuum = Q_NULLPTR;
 
@@ -254,6 +267,8 @@ private:
     VisionLocation* lens_vacancy_vision = Q_NULLPTR;
     VisionLocation* lut_vision = Q_NULLPTR;
     VisionLocation* lut_lens_vision = Q_NULLPTR;
+
+    VisionLocation* reject_tray_vacancy_vision = Q_NULLPTR;
 
     VisionLocation * lpa_picker_vision = Q_NULLPTR;
 

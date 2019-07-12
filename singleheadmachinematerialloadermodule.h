@@ -168,7 +168,7 @@ private:
 
     bool stepMove_XY_Sync(double x,double y);
 
-    bool checkTrayNeedChange();
+    //bool checkTrayNeedChange();
     bool moveToNextSensorTrayPos(int tray_index);
     bool moveToSUTPRPos(bool is_local = true,bool check_softlanding = false);
 
@@ -219,6 +219,7 @@ private:
 
     bool moveToLPAWorkPos(bool check_softlanding = false);
     bool moveToLPAPrOffset(bool check_softlanding = false);
+    bool vcm1SearchZ(double z,bool is_open = true);
     bool vcm2SearchZ(double z,bool is_open = true);
     bool pickTrayLens();
     bool placeLensToLUT();

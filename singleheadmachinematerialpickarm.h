@@ -106,8 +106,9 @@ public:
     bool move_XeYe_Z2_XY(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
     double GetSoftladngPosition(bool get_current = false,int index=0);
 
-    bool move_XtXYT2_Synic(QPointF position,double x,double t,bool check_softlanding = false,int timeout = 30000);
-    bool move_XYT2_Synic(double x,double y,double t,bool check_softlanding = false,int timeout = 10000);
+    bool move_XtXYT1_Synic(QPointF position,double x,double t,bool check_softlanding = false,int timeout = 30000);
+    bool move_XYT1_Synic(double x,double y,double t,bool check_softlanding = false,int timeout = 10000);
+    bool stepMove_XYT2_Synic(const double step_x,const double step_y,const double step_t2,const bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XYT2_Synic(PrOffset position,bool check_softlanding = false,int timeout = 10000);
     bool move_XtXY_Synic(QPointF position,double x,bool check_softlanding = false,int timeout = 30000);
 private:

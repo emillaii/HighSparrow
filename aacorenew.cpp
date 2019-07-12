@@ -769,7 +769,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            imageName.append(getGrabberLogDir())
                            .append(getCurrentTimeString())
                            .append(".bmp");
-           cv::imwrite(imageName.toStdString().c_str(), img);
+//           cv::imwrite(imageName.toStdString().c_str(), img);
            double dfov = calculateDFOV(img);
            if(current_dfov.contains(QString::number(i)))
                 current_dfov[QString::number(i)] = dfov;
@@ -789,7 +789,6 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            sut->moveToZPos(start);
            QThread::msleep(zSleepInMs);
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
-           cv::imwrite("fucker.bmp", img);
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                LogicNg(current_aa_ng_time);
@@ -1054,10 +1053,18 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         sorted_sfr_map.push_back(sfr_map);
     }
     qInfo("clustered sfr map pattern size: %d sorted_sfr_map size: %d", clustered_sfr_map[0].size(), sorted_sfr_map.size());
-    if (clustered_sfr_map[0].size() == 0) {
-        qInfo("AA Scan Fail");
+    if (clustered_sfr_map[0].size() == 0 || clustered_sfr_map[0].size() < 4) {
+        qInfo("AA Scan Fail. Not enough data points for data fitting");
         result.insert("OK", false);
         return result;
+    }
+    int fitOrder = 6;
+    if (clustered_sfr_map[0].size() == 6) {
+        qInfo("Down the curve fitting to 5 order");
+        fitOrder = 5;
+    } else if (clustered_sfr_map[0].size() == 5) {
+        qInfo("Down the curve fitting to 4 order");
+        fitOrder = 4;
     }
     threeDPoint point_0;
     vector<threeDPoint> points_1, points_11;
@@ -1076,7 +1083,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         ey /= (sorted_sfr_map[i].size()*parameters.SensorYRatio());
 
         double peak_sfr, peak_z;
-        fitCurve(z, sfr, 6, peak_z, peak_sfr);
+        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr);
         if (i==0) {
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
         } else if ( i >= 1 && i <= 4) {
@@ -1366,10 +1373,6 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         map.insert("zPeak_3_UR", points_3[3].z);
         map.insert("fov_slope", current_fov_slope);
     }
-
-//    QJsonObject json = QJsonObject::fromVariantMap(map);
-//    QJsonDocument doc(json);
-//    qInfo(doc.toJson().toStdString().c_str());
     emit postSfrDataToELK(runningUnit, map);
     data->plot();
     return result;
@@ -1392,6 +1395,9 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     cv::Mat img = cv::imread("1\\5.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
+    double dfov = calculateDFOV(img);
+    qInfo("%f %d %d %d", dfov, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea() );
+    AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
     cv::Mat dst;
     cv::Size size(img.cols, img.rows);
     timer.start();
@@ -2337,15 +2343,10 @@ std::vector<AA_Helper::patternAttr> AACoreNew::search_mtf_pattern(cv::Mat inImag
 
 double AACoreNew::calculateDFOV(cv::Mat img)
 {
-    QImage outImage;
-    unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
-    std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, true,
-                                                                    ccIndex, ulIndex, urIndex,
-                                                                    llIndex, lrIndex);
-    if (vector.size() >= 5)
-    {
-        double d1 = sqrt(pow((vector[ulIndex].center.x() - vector[lrIndex].center.x()), 2) + pow((vector[ulIndex].center.y() - vector[lrIndex].center.y()), 2));
-        double d2 = sqrt(pow((vector[urIndex].center.x() - vector[llIndex].center.x()), 2) + pow((vector[urIndex].center.y() - vector[llIndex].center.y()), 2));
+    std::vector<AA_Helper::patternAttr> vector = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
+    if (vector.size() == 4) {
+        double d1 = sqrt(pow((vector[0].center.x() - vector[2].center.x()), 2) + pow((vector[0].center.y() - vector[2].center.y()), 2));
+        double d2 = sqrt(pow((vector[3].center.x() - vector[1].center.x()), 2) + pow((vector[3].center.y() - vector[1].center.y()), 2));
         double f = parameters.EFL();
         double dfov1 = 2*atan(d1/(2*parameters.SensorXRatio()*f))*180/PI;
         double dfov2 = 2*atan(d2/(2*parameters.SensorYRatio()*f))*180/PI;

@@ -41,7 +41,8 @@ public:
         MTF = 4,
         AA = 5,
         INIT_CAMERA = 6,
-        Y_LEVEL = 7
+        Y_LEVEL = 7,
+        UV = 8
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head, SingleheadLSutModule *lsut, Dothinkey *dk,
@@ -65,7 +66,7 @@ public:
     ErrorCodeStruct performReject();
     ErrorCodeStruct performAccept();
     ErrorCodeStruct performTerminate();
-    ErrorCodeStruct performGRR(bool change_lens,bool change_sensor,int repeat_time);
+    ErrorCodeStruct performGRR(bool change_lens,bool change_sensor,int repeat_time,int change_time);
     ErrorCodeStruct performYLevelTest(QJsonValue params);
     ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
 
@@ -96,6 +97,8 @@ private:
     void LogicNg(int & ng_time);
     void NgLens();
     void NgSensor();
+    bool HasLens();
+    bool HasSensorOrProduct();
     void NgProduct();
     void SetLens();
     void SetSensor();
@@ -133,8 +136,11 @@ private:
     int current_aa_ng_time = 0;
     int current_oc_ng_time = 0;
     int current_mtf_ng_time = 0;
-    int current_grr = 0;
+    int grr_repeat_time = 0;
+    int grr_change_time = 0;
     QString handlingParams = "";
+    double mtf_oc_x = 0;
+    double mtf_oc_y = 0;
 
 
     QVariantMap sfrFitCurve_Advance(int resize_factor, double start_pos);

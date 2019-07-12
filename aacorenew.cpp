@@ -160,6 +160,7 @@ void AACoreNew::run(bool has_material)
 
 void AACoreNew::LogicNg(int &ng_time)
 {
+    qInfo("LogicNg ng_time:%d",ng_time);
     if(has_product)
     {
         has_ng_product = true;
@@ -200,6 +201,7 @@ void AACoreNew::LogicNg(int &ng_time)
 
 void AACoreNew::NgLens()
 {
+    qInfo("NgLens");
     has_lens = false;
     has_ng_lens = true;
     if(parameters.firstRejectSensor())
@@ -212,14 +214,27 @@ void AACoreNew::NgLens()
 
 void AACoreNew::NgSensor()
 {
+    qInfo("NgSensor");
     has_sensor = false;
     has_ng_sensor = true;
+    has_product = false;
+    has_ng_product = false;
     if(!parameters.firstRejectSensor())
     {
         current_aa_ng_time = 0;
         current_oc_ng_time = 0;
         current_mtf_ng_time = 0;
     }
+}
+
+bool AACoreNew::HasLens()
+{
+    return has_lens||has_ng_lens;
+}
+
+bool AACoreNew::HasSensorOrProduct()
+{
+    return has_sensor||has_ng_sensor||has_product||has_ng_product;
 }
 
 void AACoreNew::NgProduct()
@@ -292,6 +307,8 @@ void AACoreNew::performHandlingOperation(int cmd)
     qInfo("AACore perform command: %d parmas :%s", cmd, handlingParams.toStdString().c_str());
     QJsonDocument jsonDoc = QJsonDocument::fromJson(handlingParams.toLocal8Bit().data());
     QJsonValue params = jsonDoc.object();
+
+    runningUnit = this->unitlog->createUnit();
     if (cmd == HandleTest::Dispense)
     {
         performDispense();
@@ -311,7 +328,6 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::AA) {
         performAA(params);
-        //performAAOffline();
     }
     else if (cmd == HandleTest::INIT_CAMERA) {
         performInitSensor();
@@ -319,7 +335,11 @@ void AACoreNew::performHandlingOperation(int cmd)
     else if (cmd == HandleTest::Y_LEVEL) {
         performYLevelTest(params);
     }
+    else if (cmd == HandleTest::UV) {
+        performUV(params["delay_in_ms"].toInt());
+    }
     handlingParams = "";
+    emit postDataToELK(this->runningUnit);
     return;
 }
 
@@ -334,14 +354,15 @@ void AACoreNew::resetLogic()
     has_lens = false;
     send_lens_request = false;
     send_sensor_request = false;
-//    aa_head->receive_sensor = false;
+    //aa_head->receive_sensor = false;
     aa_head->waiting_sensor = false;
-//    aa_head->receive_lens = false;
+   // aa_head->receive_lens = false;
     aa_head->waiting_lens = false;
     current_aa_ng_time = 0;
     current_oc_ng_time = 0;
     current_mtf_ng_time = 0;
-    current_grr = 0;
+    grr_repeat_time = 0;
+    grr_change_time = 0;
 }
 
 bool AACoreNew::runFlowchartTest()
@@ -399,8 +420,7 @@ bool AACoreNew::runFlowchartTest()
                    }
                    if (currentPointer.contains("Accept")
                            ||currentPointer.contains("Reject")
-                           ||currentPointer.contains("Terminate")
-                           ||currentPointer.contains("GRR")) {
+                           ||currentPointer.contains("Terminate")) {
                        QJsonValue op = operators[currentPointer.toStdString().c_str()];
                        ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
                        qInfo("Finished With %s",currentPointer.toStdString().c_str());
@@ -604,11 +624,12 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         }
         else if (testItemName.contains(AA_PIECE_GRR))
         {
-            qInfo("Performing GRR");
             bool change_lens = params["change_lens"].toInt();
             bool change_sensor = params["change_sensor"].toInt();
             int repeat_time = params["repeat_time"].toInt();
-            performGRR(change_lens,change_sensor,repeat_time);
+            int change_time = params["change_time"].toInt();
+            qInfo("Performing GRR change_lens:%d change_sensor:%d repeat_time:%d change_time:%d",change_lens,change_sensor,repeat_time,change_time);
+            performGRR(change_lens,change_sensor,repeat_time,change_time);
             qInfo("End of perform GRR");
         }
         else if (testItemName.contains(AA_PIECE_JOIN))
@@ -691,6 +712,7 @@ ErrorCodeStruct AACoreNew::performDispense()
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 {
     QVariantMap map;
+    map.insert("Result","OK");
     clustered_sfr_map.clear();
     int zScanMode = params["mode"].toInt();
     double start = params["start_pos"].toDouble();
@@ -723,11 +745,15 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
+               map["Result"] = "AA Cannot grab image.";
+               emit pushDataToUnit(runningUnit, "AA", map);
                LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
                LogicNg(current_aa_ng_time);
+               map["Result"] = "Detect black screen";
+               emit pushDataToUnit(runningUnit, "AA", map);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
            }
            cv::Mat dst;
@@ -737,7 +763,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            imageName.append(getGrabberLogDir())
                            .append(getCurrentTimeString())
                            .append(".bmp");
-           cv::imwrite(imageName.toStdString().c_str(), img);
+//           cv::imwrite(imageName.toStdString().c_str(), img);
            double dfov = calculateDFOV(img);
            if(current_dfov.contains(QString::number(i)))
                 current_dfov[QString::number(i)] = dfov;
@@ -757,7 +783,6 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            sut->moveToZPos(start);
            QThread::msleep(zSleepInMs);
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
-           cv::imwrite("fucker.bmp", img);
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                LogicNg(current_aa_ng_time);
@@ -779,6 +804,8 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            if (target_z >= stop) {
                qInfo("The estimated target is too large. value: %f", target_z);
                LogicNg(current_aa_ng_time);
+               map["Result"] = QString("The estimated target is too large. value:%1 target:%2").arg(target_z).arg(stop);
+               emit pushDataToUnit(runningUnit, "AA", map);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
            }
            for (unsigned int i = 0; i < imageCount; i++) {
@@ -788,10 +815,14 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
                     LogicNg(current_aa_ng_time);
+                    map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                    emit pushDataToUnit(runningUnit, "AA", map);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
                 }
                 if (!blackScreenCheck(img)) {
                     LogicNg(current_aa_ng_time);
+                    map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                    emit pushDataToUnit(runningUnit, "AA", map);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
                 }
                 double realZ = sut->carrier->GetFeedBackPos().Z;
@@ -806,7 +837,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                    qInfo("current slope %f  prev_slope %f error %f", slope, prev_fov_slope, error);
                    if (fabs(error) > 0.2) {
                        qInfo("Crash detection is triggered");
-                       break;
+                       LogicNg(current_aa_ng_time);
+                       map["Result"] = QString("Crash detection is triggered. prev_fov_slope:%1 now_fov_slope:%2 error:%3").arg(prev_fov_slope).arg(slope).arg(error);
+                       emit pushDataToUnit(runningUnit, "AA", map);
+                       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
                    }
                    prev_fov_slope = slope;
                 }
@@ -1016,10 +1050,18 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         sorted_sfr_map.push_back(sfr_map);
     }
     qInfo("clustered sfr map pattern size: %d sorted_sfr_map size: %d", clustered_sfr_map[0].size(), sorted_sfr_map.size());
-    if (clustered_sfr_map[0].size() == 0) {
-        qInfo("AA Scan Fail");
+    if (clustered_sfr_map[0].size() == 0 || clustered_sfr_map[0].size() < 4) {
+        qInfo("AA Scan Fail. Not enough data points for data fitting");
         result.insert("OK", false);
         return result;
+    }
+    int fitOrder = 6;
+    if (clustered_sfr_map[0].size() == 6) {
+        qInfo("Down the curve fitting to 5 order");
+        fitOrder = 5;
+    } else if (clustered_sfr_map[0].size() == 5) {
+        qInfo("Down the curve fitting to 4 order");
+        fitOrder = 4;
     }
     threeDPoint point_0;
     vector<threeDPoint> points_1, points_11;
@@ -1038,7 +1080,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         ey /= (sorted_sfr_map[i].size()*parameters.SensorYRatio());
 
         double peak_sfr, peak_z;
-        fitCurve(z, sfr, 6, peak_z, peak_sfr);
+        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr);
         if (i==0) {
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
         } else if ( i >= 1 && i <= 4) {
@@ -1350,6 +1392,9 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     cv::Mat img = cv::imread("1\\5.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
+    double dfov = calculateDFOV(img);
+    qInfo("%f %d %d %d", dfov, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea() );
+    AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
     cv::Mat dst;
     cv::Size size(img.cols, img.rows);
     timer.start();
@@ -1494,7 +1539,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     clustered_sfr_map.clear();
     QJsonValue aaPrams;
     this->sfrWorkerController->setSfrWorkerParams(aaPrams);
-    QElapsedTimer timer;
+    QElapsedTimer timer;timer.start();
     QVariantMap map;
     bool grabRet = false;
     cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
@@ -1505,10 +1550,12 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     double fov = calculateDFOV(img);
     cv::Mat dst;
     cv::Size size(img.cols, img.rows);
-    timer.start();
+//    timer.start();
+    qint64 start_time = timer.elapsed();
     cv::resize(img, dst, size);
-    qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, dst.cols, dst.rows, timer.elapsed());
-    timer.restart();
+    qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, dst.cols, dst.rows, timer.elapsed() - start_time);
+//    timer.restart();
+    start_time = timer.elapsed();
     emit sfrWorkerController->calculate(0, 0, dst, true);
     int timeout=1000;
     while(this->clustered_sfr_map.size() != 1 && timeout >0) {
@@ -1623,7 +1670,39 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     }
 
     clustered_sfr_map.clear();
-    qInfo("Time elapsed : %d sv size: %d", timer.elapsed(), sv.size());
+    qInfo("Time elapsed : %d sv size: %d", timer.elapsed() - start_time, sv.size());
+    map.insert("FOV",fov);
+    map.insert("zPeak",sut->carrier->GetFeedBackPos().Z);
+    map.insert("CC_T_SFR", sv[0].t_sfr);
+    map.insert("CC_R_SFR", sv[0].r_sfr);
+    map.insert("CC_B_SFR", sv[0].b_sfr);
+    map.insert("CC_L_SFR", sv[0].l_sfr);
+    map.insert("CC_SFR", (sv[0].t_sfr + sv[0].r_sfr + sv[0].b_sfr + sv[0].l_sfr)/4);
+    map.insert("UL_T_SFR", sv[max_layer*4 + 1].t_sfr);
+    map.insert("UL_R_SFR", sv[max_layer*4 + 1].r_sfr);
+    map.insert("UL_B_SFR", sv[max_layer*4 + 1].b_sfr);
+    map.insert("UL_L_SFR", sv[max_layer*4 + 1].l_sfr);
+    map.insert("UL_SFR", (sv[max_layer*4 + 1].t_sfr + sv[max_layer*4 + 1].r_sfr + sv[max_layer*4 + 1].b_sfr + sv[max_layer*4 + 1].l_sfr)/4);
+    map.insert("LL_T_SFR", sv[max_layer*4 + 2].t_sfr);
+    map.insert("LL_R_SFR", sv[max_layer*4 + 2].r_sfr);
+    map.insert("LL_B_SFR", sv[max_layer*4 + 2].b_sfr);
+    map.insert("LL_L_SFR", sv[max_layer*4 + 2].l_sfr);
+    map.insert("LL_SFR", (sv[max_layer*4 + 2].t_sfr + sv[max_layer*4 + 2].r_sfr + sv[max_layer*4 + 2].b_sfr + sv[max_layer*4 + 2].l_sfr)/4);
+    map.insert("LR_T_SFR", sv[max_layer*4 + 3].t_sfr);
+    map.insert("LR_R_SFR", sv[max_layer*4 + 3].r_sfr);
+    map.insert("LR_B_SFR", sv[max_layer*4 + 3].b_sfr);
+    map.insert("LR_L_SFR", sv[max_layer*4 + 3].l_sfr);
+    map.insert("LR_SFR", (sv[max_layer*4 + 3].t_sfr + sv[max_layer*4 + 3].r_sfr + sv[max_layer*4 + 3].b_sfr + sv[max_layer*4 + 3].l_sfr)/4);
+    map.insert("UR_T_SFR", sv[max_layer*4 + 4].t_sfr);
+    map.insert("UR_R_SFR", sv[max_layer*4 + 4].r_sfr);
+    map.insert("UR_B_SFR", sv[max_layer*4 + 4].b_sfr);
+    map.insert("UR_L_SFR", sv[max_layer*4 + 4].l_sfr);
+    map.insert("UR_SFR", (sv[max_layer*4 + 4].t_sfr + sv[max_layer*4 + 4].r_sfr + sv[max_layer*4 + 4].b_sfr + sv[max_layer*4 + 4].l_sfr)/4);
+    map.insert("OC_OFFSET_X_IN_PIXEL", mtf_oc_x);
+    map.insert("OC_OFFSET_Y_IN_PIXEL", mtf_oc_y);
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "MTF", map);
+
     if (sfr_check) {
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
@@ -1900,18 +1979,27 @@ ErrorCodeStruct AACoreNew::performTerminate()
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
-ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int repeat_time)
+ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int repeat_time,int change_time)
 {
-   performTerminate();
-   current_grr++;
-   if(current_grr >= repeat_time)
+    if(!change_lens)
+        SetLens();
+    if(!change_sensor)
+        SetSensor();
+   if(grr_repeat_time >= repeat_time)
    {
-       current_grr = 0;
-       if(change_lens)
+       grr_repeat_time = 0;
+       grr_change_time++;
+       if(grr_change_time >= change_time)
+       {
+           grr_change_time = 0;
+           sendAlarmMessage(ErrorLevel::ErrorMustStop,"GRR Finished!");
+       }
+       if(change_lens&&HasLens())
            NgLens();
-       if(change_sensor)
+       if(change_sensor&&HasSensorOrProduct())
            NgSensor();
    }
+   grr_repeat_time++;
    return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -2231,15 +2319,10 @@ std::vector<AA_Helper::patternAttr> AACoreNew::search_mtf_pattern(cv::Mat inImag
 
 double AACoreNew::calculateDFOV(cv::Mat img)
 {
-    QImage outImage;
-    unsigned int ccIndex = 0, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
-    std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, true,
-                                                                    ccIndex, ulIndex, urIndex,
-                                                                    llIndex, lrIndex);
-    if (vector.size() >= 5)
-    {
-        double d1 = sqrt(pow((vector[ulIndex].center.x() - vector[lrIndex].center.x()), 2) + pow((vector[ulIndex].center.y() - vector[lrIndex].center.y()), 2));
-        double d2 = sqrt(pow((vector[urIndex].center.x() - vector[llIndex].center.x()), 2) + pow((vector[urIndex].center.y() - vector[llIndex].center.y()), 2));
+    std::vector<AA_Helper::patternAttr> vector = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
+    if (vector.size() == 4) {
+        double d1 = sqrt(pow((vector[0].center.x() - vector[2].center.x()), 2) + pow((vector[0].center.y() - vector[2].center.y()), 2));
+        double d2 = sqrt(pow((vector[3].center.x() - vector[1].center.x()), 2) + pow((vector[3].center.y() - vector[1].center.y()), 2));
         double f = parameters.EFL();
         double dfov1 = 2*atan(d1/(2*parameters.SensorXRatio()*f))*180/PI;
         double dfov2 = 2*atan(d2/(2*parameters.SensorYRatio()*f))*180/PI;

@@ -65,8 +65,6 @@ bool WordopLight::setBrightness(int ch, uint8_t brightness)
     change_result = false;
     change_done = false;
     emit ChangeBrightnessSignal(ch,brightness);
-    //qInfo("%d ChangeBrightnessSignal", QThread::currentThreadId());
-    QThread::msleep(100);
     return true;
     int timeout = 1000;
     while(timeout>0)

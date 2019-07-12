@@ -195,15 +195,12 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     }
     else if(cmd%temp_value == HandlePR::PRODUCT_PR){
         qInfo(u8"执行成品PR");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+        sut_product_vision->OpenLight();
         result = performSUTProductPR();
         if(result)
         {
             getPicker2SensorOffset();
-            //                states.setPicker2OffsetX(pr_offset.O_X);
-            //                states.setPicker2OffsetY(pr_offset.O_Y);
         }
-        //        }
     }
     else
         result = true;
@@ -496,7 +493,7 @@ void SensorLoaderModule::run(bool has_material)
             finish_change_tray = states.finishChangeTray();
         }
         if(!has_task)
-            QThread::msleep(1000);
+            QThread::msleep(1);
         has_task = false;
         //放成品
         if((!states.allowChangeTray())&&states.hasTray()&&states.hasPickedProduct())
@@ -646,19 +643,19 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     if(!is_run)break;
                 }
-        }
-        else
-        {
-            if(!movePicker2ToTrayPos(ng_tray_index))
-            {
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    continue;
-                }
-                if(!is_run)break;
             }
-        }
+            else
+            {
+                if(!movePicker2ToTrayPos(ng_tray_index))
+                {
+                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                    if(waitMessageReturn(is_run))
+                    {
+                        continue;
+                    }
+                    if(!is_run)break;
+                }
+            }
             if((!placeSensorToTray())&&has_material)
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
@@ -819,7 +816,7 @@ void SensorLoaderModule::run(bool has_material)
             }
         }
 
-        if ((!states.allowChangeTray())&&(!actionQueue.isEmpty()) && states.beExchangeMaterial())
+        if ((!states.allowChangeTray())&& states.beExchangeMaterial())
         {
             has_task = true;
             while(states.beExchangeMaterial())
@@ -868,8 +865,6 @@ void SensorLoaderModule::run(bool has_material)
                         }
                         sut_product_vision->CloseLight();
                         getPicker2SensorOffset();
-                        //                    states.setPicker2OffsetX(pr_offset.O_X);
-                        //                    states.setPicker2OffsetY(pr_offset.O_Y);
                         if(!moveToWorkPos2(false))
                         {
                             sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
@@ -937,47 +932,47 @@ void SensorLoaderModule::run(bool has_material)
                 {
                     if(parameters.enableNgProductPr())
                     {
-                    sut_product_vision->OpenLight();
-                    if(!moveToSUTPRPos(isLocalHost))
-                    {
-                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                        is_run = false;
-                        break;
-                    }
-                    if((!performSUTProductPR())&&has_material)
-                    {
-                        AppendError(u8"成品视觉失败！");
-                        sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-                        int result = waitMessageReturn(is_run);
-                        if(result)is_run = false;
-                        if(!is_run)break;
-                        if(result)
-                            continue;
-                    }
-                    sut_product_vision->CloseLight();
-                    getPicker2SensorOffset();
-                    //                    states.setPicker2OffsetX(pr_offset.O_X);
-                    //                    states.setPicker2OffsetY(pr_offset.O_Y);
-                    if(!moveToWorkPos2(false))
-                    {
-                        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                        waitMessageReturn(is_run);
-                        if(!is_run)break;
-                    }
-                }
-                else
-                {
-
-                    if(!movePicker2ToSUTPos(isLocalHost))
-                    {
-                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                        if(waitMessageReturn(is_run))
+                        sut_product_vision->OpenLight();
+                        if(!moveToSUTPRPos(isLocalHost))
                         {
-                            continue;
+                            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                            is_run = false;
+                            break;
                         }
-                        if(!is_run)break;
+                        if((!performSUTProductPR())&&has_material)
+                        {
+                            AppendError(u8"成品视觉失败！");
+                            sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                            int result = waitMessageReturn(is_run);
+                            if(result)is_run = false;
+                            if(!is_run)break;
+                            if(result)
+                                continue;
+                        }
+                        sut_product_vision->CloseLight();
+                        getPicker2SensorOffset();
+                        //                    states.setPicker2OffsetX(pr_offset.O_X);
+                        //                    states.setPicker2OffsetY(pr_offset.O_Y);
+                        if(!moveToWorkPos2(false))
+                        {
+                            sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                            waitMessageReturn(is_run);
+                            if(!is_run)break;
+                        }
                     }
-                }
+                    else
+                    {
+
+                        if(!movePicker2ToSUTPos(isLocalHost))
+                        {
+                            sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                            if(waitMessageReturn(is_run))
+                            {
+                                continue;
+                            }
+                            if(!is_run)break;
+                        }
+                    }
                     if((!pickSUTProduct(isLocalHost?"::1":"remote"))&&has_material)
                     {
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
@@ -1024,35 +1019,35 @@ void SensorLoaderModule::run(bool has_material)
                     //取NG sensor
                     if(parameters.enableNgSensorPr())
                     {
-                    sut_sensor_vision->OpenLight();
-                    if(!moveToSUTPRPos(isLocalHost))
-                    {
-                        AppendError("moveToSUTPRPos fail!");
-                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                        is_run = false;
-                        break;
-                    }
-                    if((!performSUTSensorPR())&&has_material)
-                    {
-                        AppendError(u8"NG视觉失败！");
-                        sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-                        int result = waitMessageReturn(is_run);
-                        if(result)
+                        sut_sensor_vision->OpenLight();
+                        if(!moveToSUTPRPos(isLocalHost))
+                        {
+                            AppendError("moveToSUTPRPos fail!");
+                            sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                             is_run = false;
-                        else
-                            continue;
-                        if(!is_run)break;
-                    }
-                    sut_sensor_vision->CloseLight();
-                    getPicker2SensorOffset();
-                    //                    states.setPicker2OffsetX(pr_offset.O_X);
-                    //                    states.setPicker2OffsetY(pr_offset.O_Y);
-                    if(!moveToWorkPos2(false))
-                    {
-                        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                        waitMessageReturn(is_run);
-                        if(!is_run)break;
-                    }
+                            break;
+                        }
+                        if((!performSUTSensorPR())&&has_material)
+                        {
+                            AppendError(u8"NG视觉失败！");
+                            sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                            int result = waitMessageReturn(is_run);
+                            if(result)
+                                is_run = false;
+                            else
+                                continue;
+                            if(!is_run)break;
+                        }
+                        sut_sensor_vision->CloseLight();
+                        getPicker2SensorOffset();
+                        //                    states.setPicker2OffsetX(pr_offset.O_X);
+                        //                    states.setPicker2OffsetY(pr_offset.O_Y);
+                        if(!moveToWorkPos2(false))
+                        {
+                            sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                            waitMessageReturn(is_run);
+                            if(!is_run)break;
+                        }
                     }
                     else
                     {
@@ -1467,7 +1462,7 @@ void SensorLoaderModule::runTest()
             }
         }
 
-        if ((!states.allowChangeTray())&&(!actionQueue.isEmpty()) && states.beExchangeMaterial())
+        if ((!states.allowChangeTray())&& states.beExchangeMaterial())
         {
             has_task = true;
             while(states.beExchangeMaterial())
@@ -2027,7 +2022,7 @@ bool SensorLoaderModule::moveToWorkPos2(bool check_state,bool check_softlanding)
     bool check_result = checkPickedNgOrProduct(check_state);
     result &= pick_arm->wait_XYT2_Arrived();
     if(!result)
-        AppendError(QString(u8"去2号吸头工作作位置(step x %1,y %2,t %3)失败!").arg(temp.X).arg(temp.Y).arg(temp.Theta));
+        AppendError(QString(u8"去2号吸头工作位置(step x %1,y %2,t %3)失败!").arg(temp.X).arg(temp.Y).arg(temp.Theta));
     result &= check_result;
     return  result;
 }
@@ -2047,19 +2042,19 @@ bool SensorLoaderModule::movePicker2ToTrayPos(int tray_index)
     bool result = tray->findNextPositionOfInitState(tray_index);
     if(!result)
     {
-        AppendError(QString(u8"获取成品盘下一个位置失败"));
-        qInfo("获取成品盘下一个位置失败");
+        AppendError(QString(u8"获取盘下一个位置失败"));
+        qInfo("获取盘下一个位置失败");
         return false;
     }
-    QPointF next_pos = tray->getCurrentPosition(1);
+    QPointF next_pos = tray->getCurrentPosition(tray_index);
     double x = next_pos.x() + picker2_offset.X() - states.picker2SensorOffsetX();
     double y = next_pos.y() + picker2_offset.Y() - states.picker2SensorOffsetY();
     double t = parameters.picker2ThetaOffset();
-    result = pick_arm->stepMove_XYT2_Pos(x,y,t);
+    result = pick_arm->move_XYT2_Pos(x,y,t);
     bool check_result = checkPickedNgOrProduct(true);
     result &= pick_arm->wait_XYT2_Arrived();
     if(!result)
-        AppendError(QString(u8"去2号吸头工作作位置(step x %1,y %2,t %3)失败!").arg(x).arg(y).arg(t));
+        AppendError(QString(u8"去2号吸头盘工作位置(step x %1,y %2,t %3)失败!").arg(x).arg(y).arg(t));
     result &= check_result;
     return  result;
 }

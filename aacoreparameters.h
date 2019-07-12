@@ -33,6 +33,10 @@ class AACoreParameters : public PropertyBase
 
     double m_EstimatedAAFOV = 70;
 
+    double m_minCircleTime = 1;
+
+    double m_maxCicleTime = 100;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -52,7 +56,8 @@ public:
     Q_PROPERTY(int rejectTimes READ rejectTimes WRITE setRejectTimes NOTIFY rejectTimesChanged)
     Q_PROPERTY(double EstimatedFOVSlope READ EstimatedFOVSlope WRITE setEstimatedFOVSlope NOTIFY paramsChanged)
     Q_PROPERTY(double EstimatedAAFOV READ EstimatedAAFOV WRITE setEstimatedAAFOV NOTIFY paramsChanged)
-
+    Q_PROPERTY(double minCircleTime READ minCircleTime WRITE setMinCircleTime NOTIFY minCircleTimeChanged)
+    Q_PROPERTY(double maxCicleTime READ maxCicleTime WRITE setMaxCicleTime NOTIFY maxCicleTimeChanged)
 double EFL() const
 {
     return m_EFL;
@@ -110,6 +115,16 @@ double EstimatedFOVSlope() const
 double EstimatedAAFOV() const
 {
     return m_EstimatedAAFOV;
+}
+
+double minCircleTime() const
+{
+    return m_minCircleTime;
+}
+
+double maxCicleTime() const
+{
+    return m_maxCicleTime;
 }
 
 public slots:
@@ -200,10 +215,32 @@ void setEstimatedAAFOV(double EstimatedAAFOV)
     emit paramsChanged();
 }
 
+void setMinCircleTime(double minCircleTime)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_minCircleTime, minCircleTime))
+        return;
+
+    m_minCircleTime = minCircleTime;
+    emit minCircleTimeChanged(m_minCircleTime);
+}
+
+void setMaxCicleTime(double maxCicleTime)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_maxCicleTime, maxCicleTime))
+        return;
+
+    m_maxCicleTime = maxCicleTime;
+    emit maxCicleTimeChanged(m_maxCicleTime);
+}
+
 signals:
 void paramsChanged();
 void firstRejectSensorChanged(bool firstRejectSensor);
 void rejectTimesChanged(int rejectTimes);
+void minCircleTimeChanged(double minCircleTime);
+void maxCicleTimeChanged(double maxCicleTime);
 };
 class AACoreStates: public PropertyBase
 {
@@ -221,6 +258,9 @@ public:
     Q_PROPERTY(bool hasNgSensor READ hasNgSensor WRITE setHasNgSensor NOTIFY hasNgSensorChanged)
     Q_PROPERTY(bool hasProduct READ hasProduct WRITE setHasProduct NOTIFY hasProductChanged)
     Q_PROPERTY(bool hasNgProduct READ hasNgProduct WRITE setHasNgProduct NOTIFY hasNgProductChanged)
+    Q_PROPERTY(double circleTime READ circleTime WRITE setCircleTime NOTIFY circleTimeChanged)
+    Q_PROPERTY(double circleAverageTime READ circleAverageTime WRITE setCircleAverageTime NOTIFY circleAverageTimeChanged)
+    Q_PROPERTY(int circleCount READ circleCount WRITE setCircleCount NOTIFY circleCountChanged)
     bool isWaitingLens() const
     {
         return m_isWaitingLens;
@@ -258,6 +298,22 @@ public:
     bool hasNgProduct() const
     {
         return m_hasNgProduct;
+    }
+
+
+    double circleTime() const
+    {
+        return m_circleTime;
+    }
+
+    int circleCount() const
+    {
+        return m_circleCount;
+    }
+
+    double circleAverageTime() const
+    {
+        return m_circleAverageTime;
     }
 
 public slots:
@@ -332,6 +388,35 @@ public slots:
         emit hasNgProductChanged(m_hasNgProduct);
     }
 
+    void setCircleTime(double circleTime)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_circleTime, circleTime))
+            return;
+
+        m_circleTime = circleTime;
+        emit circleTimeChanged(m_circleTime);
+    }
+
+    void setCircleCount(int circleCount)
+    {
+        if (m_circleCount == circleCount)
+            return;
+
+        m_circleCount = circleCount;
+        emit circleCountChanged(m_circleCount);
+    }
+
+    void setCircleAverageTime(double circleAverageTime)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_circleAverageTime, circleAverageTime))
+            return;
+
+        m_circleAverageTime = circleAverageTime;
+        emit circleAverageTimeChanged(m_circleAverageTime);
+    }
+
 signals:
     void isWaitingLensChanged(bool isWaitingLens);
     void isWaitingSensorChanged(bool isWaitingSensor);
@@ -348,6 +433,12 @@ signals:
 
     void hasNgProductChanged(bool hasNgProduct);
 
+    void circleTimeChanged(double circleTime);
+
+    void circleCountChanged(int circleCount);
+
+    void circleAverageTimeChanged(double circleAverageTime);
+
 private:
     bool m_isWaitingLens = false;
     bool m_isWaitingSensor = false;
@@ -357,6 +448,9 @@ private:
     bool m_hasNgSensor = false;
     bool m_hasProduct = false;
     bool m_hasNgProduct = false;
+    double m_circleTime = 0;
+    int m_circleCount = 0;
+    double m_circleAverageTime = 0;
 };
 
 #endif // AACOREPARAMETERS_H

@@ -46,7 +46,7 @@ bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool ch
     if(check_autochthonous&&CheckXYZArrived(x,y,z))
             return true;
     bool result;
-    if(CheckXYDistanceBigger(x,y,check_distance))
+    if(fabs(y - motor_y->GetFeedbackPos()) > check_distance)
     {
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
         if(!result) return false;
@@ -68,7 +68,7 @@ bool MaterialCarrier::Move_SZ_SX_YS_X_Z_Sync(double x, double y, double z, bool 
     if(check_autochthonous&&CheckXYZArrived(x,y,z))
             return true;
     bool result;
-    if(CheckXYDistanceBigger(x,y,check_distance))
+    if(fabs(y - motor_y->GetFeedbackPos()) > check_distance)
     {
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
         if(!result) return false;
@@ -89,7 +89,7 @@ bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool ch
     if(check_autochthonous&&CheckXYZArrived(x,y,z))
             return true;
     bool result;
-    if(CheckXYDistanceBigger(x,y,check_distance))
+    if(fabs(x - motor_x->GetFeedbackPos()) > check_distance)
     {
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
         if(!result) return false;
@@ -110,7 +110,7 @@ bool MaterialCarrier::Move_SZ_SY_X_YS_Z_Sync(double x, double y, double z, bool 
     if(check_autochthonous&&CheckXYZArrived(x,y,z))
             return true;
     bool result;
-    if(CheckXYDistanceBigger(x,y,check_distance))
+    if(fabs(x - motor_x->GetFeedbackPos()) > check_distance)
     {
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
         if(!result) return false;

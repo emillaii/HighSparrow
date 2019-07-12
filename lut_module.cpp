@@ -859,7 +859,7 @@ double LutModule::getLoadUplookPRY()
 bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
 {
     sendCmd("::1","gripperOnReq");
-    bool result = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
+    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
     if(result)
     {
         if(parameters.enablePickForce())
@@ -910,7 +910,7 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
     if(result)
     {
         qInfo("moveToAA1UnPickLens Start ZSerchByForce");
-        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,1,unload_vacuum);
+        result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,1,unload_vacuum);
         qInfo("moveToAA1UnPickLens Start ZSerchByForce");
         //        if(result)
         //        {

@@ -374,6 +374,24 @@ ApplicationWindow {
                    color: "red"
                }
            }
+           Label{
+               text: qsTr("循环时间")
+           }
+           Label{
+               text:aaCoreStates.circleTime
+           }
+           Label{
+               text: qsTr("_")
+           }
+           Label{
+               text:aaCoreStates.circleCount
+           }
+           Label{
+               text: qsTr("_")
+           }
+           Label{
+               text:aaCoreStates.circleAverageTime
+           }
         }
     }
 

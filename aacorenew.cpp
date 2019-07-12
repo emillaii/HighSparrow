@@ -151,12 +151,29 @@ void AACoreNew::run(bool has_material)
 {
     qInfo("Start AACore Thread");
     is_run = true;
+
+    QElapsedTimer timer;timer.start();
     while(is_run) {
         qInfo("AACore is running");
+        timer.restart();
         runningUnit = this->unitlog->createUnit();
         runFlowchartTest();
         emit postDataToELK(this->runningUnit);
         QThread::msleep(100);
+        double temp_time = timer.elapsed();
+        temp_time/=1000;
+        qInfo("circle_time :%f",temp_time);
+        states.setCircleTime(temp_time);
+        if(states.circleTime() > parameters.minCircleTime() && states.circleTime() < parameters.maxCicleTime())
+        {
+            states.setCircleCount(states.circleCount()+1);
+            double temp_average = states.circleAverageTime()*(states.circleCount()-1) + states.circleTime();
+            temp_average /= states.circleCount();
+            temp_average *= 1000;
+            temp_average = round(temp_average)/1000;
+            qInfo("CircleAverageTime :%f",temp_average);
+            states.setCircleAverageTime(temp_average);
+        }
     }
     qInfo("End of thread");
 }
@@ -284,9 +301,14 @@ void AACoreNew::startWork( int run_mode)
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
     } else if (run_mode == RunMode::AAFlowChartTest) {
+        QElapsedTimer timer;timer.start();
         runningUnit = this->unitlog->createUnit();
         runFlowchartTest();
         emit postDataToELK(this->runningUnit);
+        double temp_time = timer.elapsed();
+        temp_time/=1000;
+        qInfo("circle_time :%f",temp_time);
+        states.setCircleTime(temp_time);
     }
     else if(run_mode == RunMode::OnllyLeftAA&&aa_head->parameters.moduleName().contains("1"))
     {
@@ -879,10 +901,14 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              if (!grabRet) {
                  qInfo("AA Cannot grab image.");
                  LogicNg(current_aa_ng_time);
+                 map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                 emit pushDataToUnit(runningUnit, "AA", map);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
              }
              if (!blackScreenCheck(img)) {
                  LogicNg(current_aa_ng_time);
+                 map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                 emit pushDataToUnit(runningUnit, "AA", map);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
              }
              double realZ = sut->carrier->GetFeedBackPos().Z;
@@ -923,6 +949,8 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     bool aaResult = aa_result["OK"].toBool();
     if (!aaResult) {
         LogicNg(current_aa_ng_time);
+        map["Result"] = QString("sfrFitCurve_Advance fail");
+        emit pushDataToUnit(runningUnit, "AA", map);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Perform AA fail"};
     }
     sut->moveToZPos(aa_result["zPeak"].toDouble());

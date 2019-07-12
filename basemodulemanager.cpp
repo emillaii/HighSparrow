@@ -122,7 +122,7 @@ void BaseModuleManager::tcpResp(QString message)
 
 QString BaseModuleManager::deviceResp(QString message)
 {
-    qInfo("deviceResp %s in thread %d",message.toStdString().c_str(),QThread::currentThreadId());
+//    qInfo("deviceResp %s in thread %d",message.toStdString().c_str(),QThread::currentThreadId());
     QJsonObject message_object = getJsonObjectFromString(message);
     QJsonObject result;
     if(message_object.contains("cmd"))

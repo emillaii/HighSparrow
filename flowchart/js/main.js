@@ -15,7 +15,7 @@ $(document).ready(function () {
   var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0 };
   var init_dispense_params = {enable_save_image:1,lighting:195, retry: 0, delay_in_ms: 0 };
   var init_save_image = { type: 0, lighting: 100 };
-  var init_grr ={ change_lens: 1, change_sensor: 0, repeat_time: 9};
+  var init_grr_params ={ change_lens: 1, change_sensor: 0, repeat_time: 10,change_time: 11};
   var latestCreatedLinkId;
   var $linkProperties = $('#link_properties');
   var $operatorTitle = $('#operator_title');
@@ -87,6 +87,7 @@ $(document).ready(function () {
   $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Lens: <select id=\"grr_change_lens\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Sensor: <select id=\"grr_change_sensor\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $grr_operator_properties.append("<div style=\"margin-top:20px\">Repeat Time: <input type=\"number\" id=\"grr_repeat_time\" value=10></div>");
+  $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Time: <input type=\"number\" id=\"grr_change_time\" value=10></div>");
   
 
   // Apply the plugin on a standard, empty div...
@@ -206,6 +207,7 @@ $(document).ready(function () {
 		$('#grr_change_lens').val(params["change_lens"]);
 		$('#grr_change_sensor').val(params["change_sensor"]);
         $('#grr_repeat_time').val(params["repeat_time"]);
+        $('#grr_change_time').val(params["change_time"]);
 	  } 
 	  else {
         $operator_properties.show();
@@ -383,6 +385,8 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_save_image);
 	} else if (operatorId.includes("Y_Level")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
+	}else if (operatorId.includes("GRR")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr_params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -433,6 +437,8 @@ $(document).ready(function () {
 	} else if (operatorId.includes("MTF")) {
 	  var params = { CC: 0, UL: 0, UR: 0, LR: 0, LL: 0, SFR_DEV_TOL: 100 }
 	  $flowchart.flowchart('setOperatorParams', operatorId, params);
+	}else if (operatorId.includes("GRR")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr_params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -574,12 +580,7 @@ $(document).ready(function () {
       }
     };
     $flowchart.flowchart('createOperator', operatorId, operatorData);
-	if (operatorId.includes("GRR")) {
-	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr);
-	}
-    else {
-      $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
-    }
+    $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
   }
 
   $flowchart.siblings('.set_data').click(function () {
@@ -639,7 +640,7 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("GRR")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#grr_operator_title').val());
-      var params = { change_lens: Number($('#grr_change_lens').val()), change_sensor: Number($('#grr_change_sensor').val()), repeat_time:  Number($('#grr_repeat_time').val())};
+      var params = { change_lens: Number($('#grr_change_lens').val()), change_sensor: Number($('#grr_change_sensor').val()), repeat_time:  Number($('#grr_repeat_time').val()), change_time:  Number($('#grr_change_time').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Y_Level")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#y_level_operator_title').val());
@@ -755,7 +756,7 @@ $(document).ready(function () {
   $('#create_thread').click(function () { addThreadWidget("Parallel"); });
   $('#create_join_thread').click(function () { addJoinThreadWidget("Join"); });
   $('#create_load_material').click(function () { addOperationWidget("Load Material"); });
-  $('#create_grr').click(function () { addEndWidget("GRR"); });
+  $('#create_grr').click(function () { addOperationWidget("GRR"); });
 
 
   $('#get_data').click(function () {
@@ -845,7 +846,8 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $grr_operator_title.val());
       var params = { change_lens: Number($('#grr_change_lens').val()),
 		change_sensor: Number($('#grr_change_sensor').val()),
-        repeat_time: Number($('#grr_repeat_time').val()) };
+        repeat_time: Number($('#grr_repeat_time').val()),
+        change_time: Number($('#grr_change_time').val()) };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Y_Level")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $y_level_operator_title.val());

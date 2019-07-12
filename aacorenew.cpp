@@ -163,6 +163,7 @@ void AACoreNew::run(bool has_material)
 
 void AACoreNew::LogicNg(int &ng_time)
 {
+    qInfo("LogicNg ng_time:%d",ng_time);
     if(has_product)
     {
         has_ng_product = true;
@@ -203,6 +204,7 @@ void AACoreNew::LogicNg(int &ng_time)
 
 void AACoreNew::NgLens()
 {
+    qInfo("NgLens");
     has_lens = false;
     has_ng_lens = true;
     if(parameters.firstRejectSensor())
@@ -215,14 +217,27 @@ void AACoreNew::NgLens()
 
 void AACoreNew::NgSensor()
 {
+    qInfo("NgSensor");
     has_sensor = false;
     has_ng_sensor = true;
+    has_product = false;
+    has_ng_product = false;
     if(!parameters.firstRejectSensor())
     {
         current_aa_ng_time = 0;
         current_oc_ng_time = 0;
         current_mtf_ng_time = 0;
     }
+}
+
+bool AACoreNew::HasLens()
+{
+    return has_lens||has_ng_lens;
+}
+
+bool AACoreNew::HasSensorOrProduct()
+{
+    return has_sensor||has_ng_sensor||has_product||has_ng_product;
 }
 
 void AACoreNew::NgProduct()
@@ -322,6 +337,9 @@ void AACoreNew::performHandlingOperation(int cmd)
     else if (cmd == HandleTest::Y_LEVEL) {
         performYLevelTest(params);
     }
+    else if (cmd == HandleTest::UV) {
+        performUV(params["delay_in_ms"].toInt());
+    }
     handlingParams = "";
     emit postDataToELK(this->runningUnit);
     return;
@@ -345,7 +363,8 @@ void AACoreNew::resetLogic()
     current_aa_ng_time = 0;
     current_oc_ng_time = 0;
     current_mtf_ng_time = 0;
-    current_grr = 0;
+    grr_repeat_time = 0;
+    grr_change_time = 0;
 }
 
 bool AACoreNew::runFlowchartTest()
@@ -403,8 +422,7 @@ bool AACoreNew::runFlowchartTest()
                    }
                    if (currentPointer.contains("Accept")
                            ||currentPointer.contains("Reject")
-                           ||currentPointer.contains("Terminate")
-                           ||currentPointer.contains("GRR")) {
+                           ||currentPointer.contains("Terminate")) {
                        QJsonValue op = operators[currentPointer.toStdString().c_str()];
                        ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
                        qInfo("Finished With %s",currentPointer.toStdString().c_str());
@@ -611,11 +629,12 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         }
         else if (testItemName.contains(AA_PIECE_GRR))
         {
-            qInfo("Performing GRR");
             bool change_lens = params["change_lens"].toInt();
             bool change_sensor = params["change_sensor"].toInt();
             int repeat_time = params["repeat_time"].toInt();
-            performGRR(change_lens,change_sensor,repeat_time);
+            int change_time = params["change_time"].toInt();
+            qInfo("Performing GRR change_lens:%d change_sensor:%d repeat_time:%d change_time:%d",change_lens,change_sensor,repeat_time,change_time);
+            performGRR(change_lens,change_sensor,repeat_time,change_time);
             qInfo("End of perform GRR");
         }
         else if (testItemName.contains(AA_PIECE_JOIN))
@@ -699,6 +718,7 @@ ErrorCodeStruct AACoreNew::performDispense()
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 {
     QVariantMap map;
+    map.insert("Result","OK");
     clustered_sfr_map.clear();
     int zScanMode = params["mode"].toInt();
     double start = params["start_pos"].toDouble();
@@ -731,11 +751,15 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
+               map["Result"] = "AA Cannot grab image.";
+               emit pushDataToUnit(runningUnit, "AA", map);
                LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
                LogicNg(current_aa_ng_time);
+               map["Result"] = "Detect black screen";
+               emit pushDataToUnit(runningUnit, "AA", map);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
            }
            cv::Mat dst;
@@ -787,6 +811,8 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            if (target_z >= stop) {
                qInfo("The estimated target is too large. value: %f", target_z);
                LogicNg(current_aa_ng_time);
+               map["Result"] = QString("The estimated target is too large. value:%1 target:%2").arg(target_z).arg(stop);
+               emit pushDataToUnit(runningUnit, "AA", map);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
            }
            for (unsigned int i = 0; i < imageCount; i++) {
@@ -796,10 +822,14 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
                     LogicNg(current_aa_ng_time);
+                    map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                    emit pushDataToUnit(runningUnit, "AA", map);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
                 }
                 if (!blackScreenCheck(img)) {
                     LogicNg(current_aa_ng_time);
+                    map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                    emit pushDataToUnit(runningUnit, "AA", map);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
                 }
                 double realZ = sut->carrier->GetFeedBackPos().Z;
@@ -1946,20 +1976,27 @@ ErrorCodeStruct AACoreNew::performTerminate()
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
-ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int repeat_time)
+ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int repeat_time,int change_time)
 {
-   performTerminate();
-   current_grr++;
-   if(current_grr >= repeat_time)
+    if(!change_lens)
+        SetLens();
+    if(!change_sensor)
+        SetSensor();
+   if(grr_repeat_time >= repeat_time)
    {
-       current_grr = 0;
-       if(change_lens)
+       grr_repeat_time = 0;
+       grr_change_time++;
+       if(grr_change_time >= change_time)
+       {
+           grr_change_time = 0;
+           sendAlarmMessage(ErrorLevel::ErrorMustStop,"GRR Finished!");
+       }
+       if(change_lens&&HasLens())
            NgLens();
-       if(change_sensor)
+       if(change_sensor&&HasSensorOrProduct())
            NgSensor();
    }
-   this->sut->moveToDownlookPos();
-   this->aa_head->moveToPickLensPosition();
+   grr_repeat_time++;
    return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 

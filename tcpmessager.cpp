@@ -83,6 +83,7 @@ QString TcpMessager::inquiryMessage(QString message)
                     break;
                 }
                 current_time --;
+                if (parameters.needQInfo())
                     qInfo("current_time: %d",current_time);
                 QThread::msleep(1);
             }
@@ -96,7 +97,7 @@ QString TcpMessager::inquiryMessage(QString message)
         result_message["error"] = "tryLock fail";
     is_waitting = false;
     qure_mutex.unlock();
-//    if(!result)
+    if(!result)
     qDebug("inquiry Result:%d in thread %d",result,QThread::currentThreadId());
     return  getStringFromJsonObject(result_message);
 }

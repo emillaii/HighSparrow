@@ -71,6 +71,7 @@ void DispenseModule::setPRPosition(double pr_x, double pr_y, double pr_theta)
 }
 void DispenseModule::moveToDispenseDot(bool record_z)
 {
+    cancalculation = true;
     start_pos = carrier->GetFeedBackPos();
     if(!carrier->StepMove_SZ_XY_Sync(parameters.dispenseXOffset(),parameters.dispenseYOffset()))
     {
@@ -78,33 +79,57 @@ void DispenseModule::moveToDispenseDot(bool record_z)
     }
     if(carrier->ZSerchByForce(10,parameters.testForce()))
     {
-        if(dispense_io != nullptr)
-            dispense_io->Set(true);
-        else
-            qInfo("dispense_io is null");
-        Sleep(parameters.openTime());
-        if(dispense_io != nullptr)
-            dispense_io->Set(false);
-        if(record_z){
-            double zValue = carrier->GetFeedBackPos().Z;
+        QThread::msleep(200);
+        double zValue = carrier->motor_z->GetFeedbackPos();
+        if(record_z)
+        {
             QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否应用此高度:%1").arg(zValue),QMessageBox::Yes|QMessageBox::No);
             if(rb==QMessageBox::Yes)
             {
-                parameters.setDispenseZPos(carrier->GetFeedBackPos().Z);
+                parameters.setDispenseZPos(zValue);
+                if(dispense_io != nullptr)
+                {
+                    dispense_io->Set(true);
+                    Sleep(parameters.openTime());
+                    dispense_io->Set(false);
+                }
+                else
+                    qInfo("dispense_io is null");
+            }
+            carrier->ZSerchReturn();
+        }
+        else
+        {
+            carrier->ZSerchReturn();
+            if(parameters.dispenseZOffset()>0)
+            {
+                carrier->motor_z->SlowMoveToPosSync(zValue - parameters.dispenseZOffset(),50);
+                QThread::msleep(100);
+                if(dispense_io != nullptr)
+                {
+                    dispense_io->Set(true);
+                    Sleep(parameters.openTime());
+                    dispense_io->Set(false);
+                }
+                else
+                    qInfo("dispense_io is null");
+                QThread::msleep(100);
+                carrier->motor_z->MoveToPosSync(0);
             }
         }
-        carrier->ZSerchReturn();
     }
     carrier->Move_SZ_XY_Z_Sync(start_pos.X,start_pos.Y,start_pos.Z);
 }
 
 void DispenseModule::calulateOffset(int digit)
 {
+    if(!cancalculation)return;
     mPoint3D end_pos = carrier->GetFeedBackPos();
     double x = parameters.dispenseXOffset() -(end_pos.X - start_pos.X);
     double y = parameters.dispenseYOffset() -(end_pos.Y - start_pos.Y);
     parameters.setDispenseXOffset((round(x*pow(10,4))/pow(10,4)));
     parameters.setDispenseYOffset((round(y*pow(10,4))/pow(10,4)));
+    cancalculation = false;
 }
 
 QVector<mPoint3D> DispenseModule::getDispensePath()

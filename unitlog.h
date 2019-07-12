@@ -27,9 +27,10 @@ private:
 public slots:
     bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
     bool postDataToELK(QString uuid);
+    bool postUnitDataToCSV(QString uuid);
     bool postSfrDataToELK(QString uuid, QVariantMap data);
     QString getCSVString(QString data_name,QVariantMap map);
-    void postCSVDataToUnit(QString uuid,QVariantMap data);
+    void pushCSVDataToUnit(QString uuid,QVariantMap data);
     void saveUnitDataToCSV(QString uuid);
 };
 

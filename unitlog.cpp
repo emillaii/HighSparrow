@@ -33,6 +33,7 @@ bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap map)
     QVariantMap testMap;
     if (unit_log_list.contains(uuid))
     {
+        qInfo("get data name: %s uuid:%s",test_name.toStdString().c_str(),uuid.toStdString().c_str());
         int index = 1;
         for (QString s : unit_log_test_name_list[uuid]) {
             QString name = test_name;
@@ -65,6 +66,7 @@ bool Unitlog::postDataToELK(QString uuid)
          QNetworkRequest request(unitLogEndpoint);
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));
+         //json log
          qInfo(doc.toJson().toStdString().c_str());
          QString filename = "";
          filename.append(getUnitLogDir())
@@ -74,15 +76,81 @@ bool Unitlog::postDataToELK(QString uuid)
          file.open(QIODevice::WriteOnly | QIODevice::Text);
          file.write(doc.toJson());
          file.close();
-//         if (nam) {
-//             nam->post(request, doc.toJson());
-//             qInfo("Push data to ELK success: %s", uuid.toStdString().c_str());
-//         } else {
-//             qInfo("Post data to ELK fail");
-//         }
+         //csv
+           postUnitDataToCSV(uuid);
+         //elk
+         if (nam) {
+             nam->post(request, doc.toJson());
+             qInfo("Push data to ELK success: %s", uuid.toStdString().c_str());
+         } else {
+             qInfo("Post data to ELK fail");
+         }
     } else {
         qInfo("Cannot find the unit: %s", uuid.toStdString().c_str());
     }
+    return true;
+}
+
+bool Unitlog::postUnitDataToCSV(QString uuid)
+{
+    if(!unit_log_list.contains(uuid))
+    {
+        qInfo("can not find uuid %s",uuid.toStdString().c_str());
+        return false;
+    }
+    QString file_name = "";
+    file_name.append(getProduceProcessLogDir())
+                    .append(getCurrentDateString());
+    QVariantMap data_map =  unit_log_list[uuid];
+    if(data_map.size() == 1)
+    {
+        file_name.append("_");
+        file_name.append(data_map.keys()[0]);
+    }
+    file_name.append(".csv");
+    QFile file(file_name);
+    QFileInfo fileInfo(file_name);
+    QString content = "";
+    if(!fileInfo.isFile())
+    {
+        foreach (QString temp_key, data_map.keys())
+        {
+            QVariantMap temp_map = data_map[temp_key].toMap();
+            foreach (QString temp_s_key, temp_map.keys())
+            {
+                content.append(QString(temp_key).append(".").append(temp_s_key));
+                content.append(",");
+            }
+        }
+        content.remove(content.lastIndexOf(","),1);
+        content.append("\n");
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        file.write(content.toStdString().c_str());
+        file.close();
+    }
+
+    content = "";
+    foreach (QString temp_key, data_map.keys())
+    {
+        QVariantMap temp_map = data_map[temp_key].toMap();
+        foreach (QString temp_s_key, temp_map.keys())
+        {
+            QVariant temp_data = temp_map[temp_s_key];
+//            if(temp_data.canConvert<double>())
+//            content.append(QString::number(temp_data.toDouble()));
+//            else if(temp_data.canConvert<int>())
+//                content.append(QString::number(temp_data.toInt()));
+//            else
+                content.append(temp_data.toString());
+            content.append(",");
+        }
+    }
+    content.remove(content.lastIndexOf(","),1);
+    content.append("\n");
+    file.open(QIODevice::Append | QIODevice::Text);
+    file.write(content.toStdString().c_str());
+    file.close();
+    qInfo("postUnitDataToCSV success. uuid: %s",uuid.toStdString().c_str());
     return true;
 }
 
@@ -251,7 +319,7 @@ QString Unitlog::getCSVString(QString data_name,QVariantMap map)
     return data_string;
 }
 
-void Unitlog::postCSVDataToUnit(QString uuid,QVariantMap data)
+void Unitlog::pushCSVDataToUnit(QString uuid,QVariantMap data)
 {
     if(!unit_log_list.contains(uuid))
     {

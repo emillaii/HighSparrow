@@ -41,6 +41,7 @@ private:
     mPoint3D start_pos;
     QString file_path = "";
     QString name = "";
+    bool cancalculation = false;
 };
 
 #endif // DISPENSE_MODULE_H

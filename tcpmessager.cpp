@@ -38,8 +38,8 @@ bool TcpMessager::waitMessage(QString message, bool &is_run)
             if(message == received_message)
                 return true;
         }
-        time_out -= parameters.waitIntervel();
-        QThread::msleep(parameters.waitIntervel());
+        time_out --;
+        QThread::msleep(1);
     }
     return false;
 }
@@ -82,9 +82,9 @@ QString TcpMessager::inquiryMessage(QString message)
                     qDebug("wait time:%d in thread %d",(parameters.outTime() - current_time),QThread::currentThreadId());
                     break;
                 }
-                current_time -= parameters.waitIntervel();
-                qInfo("current_time: %d",current_time);
-                QThread::msleep(parameters.waitIntervel());
+                current_time --;
+                    qInfo("current_time: %d",current_time);
+                QThread::msleep(1);
             }
             if(result_message.keys().count()<= 0)
                 result_message["error"] = "inquiry time out";

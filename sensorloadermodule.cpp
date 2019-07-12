@@ -2083,7 +2083,7 @@ bool SensorLoaderModule::picker1SearchSutZ(double z, QString dest, QString cmd, 
 {
     qInfo("picker1SearchSutZ z %f dest %s cmd %s is_open %d time_out %d",z,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
     bool result = true;
-    if(parameters.enableEscape())
+    if(parameters.enablePlaceForce())
         result = pick_arm->move_XeYe_Z1_XY(z - parameters.escapeHeight(),parameters.escapeX(),parameters.escapeY());
     if(result)
     {
@@ -2105,7 +2105,7 @@ bool SensorLoaderModule::picker2SearchZ(double z,double force,bool is_open, int 
 {
     qInfo("picker2SearchZ z %f is_open %d time_out %d",z,is_open,time_out);
     bool result = true;
-    if(parameters.enableForceLimit())
+    if(parameters.enablePlaceForce())
         result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
     else
         result = pick_arm->Z2MoveToPick(z - parameters.vcmMargin(),is_open,false);

@@ -323,6 +323,7 @@ void AACoreNew::performHandlingOperation(int cmd)
         performYLevelTest(params);
     }
     handlingParams = "";
+    emit postDataToELK(this->runningUnit);
     return;
 }
 
@@ -1505,7 +1506,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     clustered_sfr_map.clear();
     QJsonValue aaPrams;
     this->sfrWorkerController->setSfrWorkerParams(aaPrams);
-    QElapsedTimer timer;
+    QElapsedTimer timer;timer.start();
     QVariantMap map;
     bool grabRet = false;
     cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
@@ -1516,10 +1517,12 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     double fov = calculateDFOV(img);
     cv::Mat dst;
     cv::Size size(img.cols, img.rows);
-    timer.start();
+//    timer.start();
+    qint64 start_time = timer.elapsed();
     cv::resize(img, dst, size);
-    qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, dst.cols, dst.rows, timer.elapsed());
-    timer.restart();
+    qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, dst.cols, dst.rows, timer.elapsed() - start_time);
+//    timer.restart();
+    start_time = timer.elapsed();
     emit sfrWorkerController->calculate(0, 0, dst, true);
     int timeout=1000;
     while(this->clustered_sfr_map.size() != 1 && timeout >0) {
@@ -1634,7 +1637,39 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     }
 
     clustered_sfr_map.clear();
-    qInfo("Time elapsed : %d sv size: %d", timer.elapsed(), sv.size());
+    qInfo("Time elapsed : %d sv size: %d", timer.elapsed() - start_time, sv.size());
+    map.insert("FOV",fov);
+    map.insert("zPeak",sut->carrier->GetFeedBackPos().Z);
+    map.insert("CC_T_SFR", sv[0].t_sfr);
+    map.insert("CC_R_SFR", sv[0].r_sfr);
+    map.insert("CC_B_SFR", sv[0].b_sfr);
+    map.insert("CC_L_SFR", sv[0].l_sfr);
+    map.insert("CC_SFR", (sv[0].t_sfr + sv[0].r_sfr + sv[0].b_sfr + sv[0].l_sfr)/4);
+    map.insert("UL_T_SFR", sv[max_layer*4 + 1].t_sfr);
+    map.insert("UL_R_SFR", sv[max_layer*4 + 1].r_sfr);
+    map.insert("UL_B_SFR", sv[max_layer*4 + 1].b_sfr);
+    map.insert("UL_L_SFR", sv[max_layer*4 + 1].l_sfr);
+    map.insert("UL_SFR", (sv[max_layer*4 + 1].t_sfr + sv[max_layer*4 + 1].r_sfr + sv[max_layer*4 + 1].b_sfr + sv[max_layer*4 + 1].l_sfr)/4);
+    map.insert("LL_T_SFR", sv[max_layer*4 + 2].t_sfr);
+    map.insert("LL_R_SFR", sv[max_layer*4 + 2].r_sfr);
+    map.insert("LL_B_SFR", sv[max_layer*4 + 2].b_sfr);
+    map.insert("LL_L_SFR", sv[max_layer*4 + 2].l_sfr);
+    map.insert("LL_SFR", (sv[max_layer*4 + 2].t_sfr + sv[max_layer*4 + 2].r_sfr + sv[max_layer*4 + 2].b_sfr + sv[max_layer*4 + 2].l_sfr)/4);
+    map.insert("LR_T_SFR", sv[max_layer*4 + 3].t_sfr);
+    map.insert("LR_R_SFR", sv[max_layer*4 + 3].r_sfr);
+    map.insert("LR_B_SFR", sv[max_layer*4 + 3].b_sfr);
+    map.insert("LR_L_SFR", sv[max_layer*4 + 3].l_sfr);
+    map.insert("LR_SFR", (sv[max_layer*4 + 3].t_sfr + sv[max_layer*4 + 3].r_sfr + sv[max_layer*4 + 3].b_sfr + sv[max_layer*4 + 3].l_sfr)/4);
+    map.insert("UR_T_SFR", sv[max_layer*4 + 4].t_sfr);
+    map.insert("UR_R_SFR", sv[max_layer*4 + 4].r_sfr);
+    map.insert("UR_B_SFR", sv[max_layer*4 + 4].b_sfr);
+    map.insert("UR_L_SFR", sv[max_layer*4 + 4].l_sfr);
+    map.insert("UR_SFR", (sv[max_layer*4 + 4].t_sfr + sv[max_layer*4 + 4].r_sfr + sv[max_layer*4 + 4].b_sfr + sv[max_layer*4 + 4].l_sfr)/4);
+    map.insert("OC_OFFSET_X_IN_PIXEL", mtf_oc_x);
+    map.insert("OC_OFFSET_Y_IN_PIXEL", mtf_oc_y);
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "MTF", map);
+
     if (sfr_check) {
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
@@ -1923,6 +1958,8 @@ ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int re
        if(change_sensor)
            NgSensor();
    }
+   this->sut->moveToDownlookPos();
+   this->aa_head->moveToPickLensPosition();
    return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -2276,6 +2313,9 @@ double AACoreNew::calculateDFOV(cv::Mat img)
         double dfov1 = 2*atan(d1/(2*parameters.SensorXRatio()*f))*180/PI;
         double dfov2 = 2*atan(d2/(2*parameters.SensorYRatio()*f))*180/PI;
         double dfov = (dfov1 + dfov2)/2;
+
+        mtf_oc_x = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
+        mtf_oc_y = vector[ccIndex].center.y() - (vector[ccIndex].height/2);
         return dfov;
     }
     return -1;

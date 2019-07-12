@@ -55,6 +55,7 @@ public:
     Q_PROPERTY(bool enableNgProductTrayPr READ enableNgProductTrayPr WRITE setEnableNgProductTrayPr NOTIFY enableNgProductTrayPrChanged)
     Q_PROPERTY(bool enableNgSensorTrayPr READ enableNgSensorTrayPr WRITE setEnableNgSensorTrayPr NOTIFY enableNgSensorTrayPrChanged)
     Q_PROPERTY(int autoPrTime READ autoPrTime WRITE setAutoPrTime NOTIFY autoPrTimeChanged)
+    Q_PROPERTY(bool enablePlaceForce READ enablePlaceForce WRITE setEnablePlaceForce NOTIFY enablePlaceForceChanged)
 
     double vcmWorkForce() const
     {
@@ -267,6 +268,11 @@ public:
     int autoPrTime() const
     {
         return m_autoPrTime;
+    }
+
+    bool enablePlaceForce() const
+    {
+        return m_enablePlaceForce;
     }
 
 public slots:
@@ -676,6 +682,15 @@ public slots:
         emit autoPrTimeChanged(m_autoPrTime);
     }
 
+    void setEnablePlaceForce(bool enablePlaceForce)
+    {
+        if (m_enablePlaceForce == enablePlaceForce)
+            return;
+
+        m_enablePlaceForce = enablePlaceForce;
+        emit enablePlaceForceChanged(m_enablePlaceForce);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -764,6 +779,8 @@ signals:
 
     void autoPrTimeChanged(int autoPrTime);
 
+    void enablePlaceForceChanged(bool enablePlaceForce);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -808,6 +825,7 @@ private:
     bool m_enableNgProductTrayPr = false;
     bool m_enableNgSensorTrayPr = false;
     int m_autoPrTime = 5;
+    bool m_enablePlaceForce = false;
 };
 class SensorLoaderState:public PropertyBase
 {

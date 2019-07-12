@@ -133,6 +133,8 @@ private:
     int current_mtf_ng_time = 0;
     int current_grr = 0;
     QString handlingParams = "";
+    double mtf_oc_x = 0;
+    double mtf_oc_y = 0;
 
 
     QVariantMap sfrFitCurve_Advance(int resize_factor, double start_pos);

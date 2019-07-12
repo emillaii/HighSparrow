@@ -547,8 +547,8 @@ bool XtMotor::MoveToPosSaftySync(double pos,int thread,int timeout)
         else
             if(!MoveToPosSafty(pos,thread))
                 return false;
-        Sleep(10);
-        timeout-=10;
+        Sleep(30);
+        timeout-=30;
     }
     qInfo("MoveTo Pos :%f Safty time out, current_position:%f",pos,GetFeedbackPos());
     current_target = GetFeedbackPos();
@@ -660,6 +660,7 @@ bool XtMotor::WaitSeekDone(int thread,int timeout)
         XT_Controler::GetThreadInsBufferRemainCount(thread, buffer_len, finish);
         if (buffer_len == 0 && finish == 1)
         {
+            QThread::msleep(100);
             SetVel(max_vel);
             SetFeedbackZero(GetOutpuPos());
             current_target = GetOutpuPos();

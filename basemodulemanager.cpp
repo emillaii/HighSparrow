@@ -67,8 +67,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
     connect(&aaCoreNew, &AACoreNew::postSfrDataToELK, &unitlog, &Unitlog::postSfrDataToELK);
-    connect(&lut_module, &LutModule::postCSVDataToUnit, &unitlog, &Unitlog::postCSVDataToUnit);
-    connect(&lens_loader_module, &LensLoaderModule::postCSVDataToUnit, &unitlog, &Unitlog::postCSVDataToUnit);
+    connect(&lut_module, &LutModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
+    connect(&lens_loader_module, &LensLoaderModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::saveUnitDataToCSV, &unitlog, &Unitlog::saveUnitDataToCSV);
 
     connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTrayRequst,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);

@@ -390,6 +390,7 @@ ApplicationWindow {
         }
         Page4FormForm {}
         Page5Form {}
+        Page6Form {}
     }
 
     footer: TabBar {

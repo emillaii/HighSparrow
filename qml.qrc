@@ -90,6 +90,8 @@
         <file>MPAHeadParameter.qml</file>
         <file>LensTraySpecs.qml</file>
         <file>SUTGripperPosition.qml</file>
+        <file>Page6.qml</file>
+        <file>Page6Form.ui.qml</file>
         <file>RejectTraySpecs.qml</file>
         <file>SingleHeadRejectTray.qml</file>
     </qresource>

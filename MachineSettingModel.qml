@@ -24,10 +24,6 @@ ListModel {
         index: 5
     }
     ListElement {
-        label: "AA Core 配置"
-        index: 6
-    }
-    ListElement {
         label: "System 配置"
         index: 7
     }

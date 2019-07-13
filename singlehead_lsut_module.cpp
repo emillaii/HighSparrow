@@ -364,7 +364,7 @@ bool SingleheadLSutModule::stepMove_Z_Sync(double step_z)
 
 bool SingleheadLSutModule::moveToZPos(double z)
 {
-    qInfo("Targert : %f",z);
+    qInfo("Motor Z : %s Target : %f", sut_carrier->motor_z->Name().toStdString().c_str(),z);
     return sut_carrier->Move_Z_Sync(z);
 }
 

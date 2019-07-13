@@ -153,6 +153,7 @@ bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)
     double dx = qSin(qDegreesToRadians(step_b))*new_z;
     new_z = qCos(qDegreesToRadians(step_b))*new_z;
     double dz = new_z - parameters.rotateZOffset();
+    qInfo("motor x : %s y: %s z: %s", motor_x->Name().toStdString().c_str(), motor_y->Name().toStdString().c_str(), motor_z->Name().toStdString().c_str());
     if(motor_x->Name().contains("SUT"))
         dx =-dx;
     if(motor_y->Name().contains("SUT"))
@@ -160,13 +161,13 @@ bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)
     if(motor_z->Name().contains("SUT"))
         dz =-dz;
 
-    double x = dx + motor_x->GetFeedbackPos();
-    double y = -dy + motor_y->GetFeedbackPos();
+    double x = -dx + motor_x->GetFeedbackPos();
+    double y = dy + motor_y->GetFeedbackPos();
     double z = -dz + motor_z->GetFeedbackPos();
     double a = step_a + motor_a->GetFeedbackPos();
     double b = step_b + motor_b->GetFeedbackPos();
     qInfo("Rotate Z Offset: %f", parameters.rotateZOffset());
-    qInfo("x: %f y: %f z:%f a:%f b:%f step_a: %f step_b: %f dx: %f  dy: %f dz：%f", x, y, z, a, b, step_a, step_b, dx, dy, dz);
+    qInfo("x: %f y: %f z:%f a:%f b:%f step_a: %f step_b: %f dx: %f  dy: %f dz: %f", x, y, z, a, b, step_a, step_b, dx, dy, dz);
     return XYZAB_Interpolation(x,y,z,a,b);
 }
 

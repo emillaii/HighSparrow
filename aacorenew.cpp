@@ -118,7 +118,7 @@ void AACoreNew::Init(AAHeadModule *aa_head, SingleheadLSutModule *lsut, Dothinke
                      DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog)
 {
     this->aa_head = aa_head;
-    this->lut = lut;
+    this->lsut = lsut;
     this->dk = dk;
     this->chartCalibration = chartCalibration;
     this->dispense = dispense;
@@ -735,14 +735,20 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     double prev_fov_slope = 0;
     bool grabRet = true;
     if(zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
+        qInfo("z scan mode");
         unsigned int count = (int)fabs((start - stop)/step_size);
         for (unsigned int i = 0; i < count; i++)
         {
-           sut->moveToZPos(start+(i*step_size));
+           double target = start + i*step_size;
+           qInfo("target: %f",target);
+           this->lsut->sut_carrier->Move_Z_Sync(start+(i*step_size));
            QThread::msleep(zSleepInMs);
-           double realZ = sut->carrier->GetFeedBackPos().Z;
+           qInfo("Getting feedback position from lsut");
+           double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
            qInfo("Z scan start from %f, real: %f", start+(i*step_size), realZ);
+           QElapsedTimer grabTimer; grabTimer.start();
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+           qInfo("Grab time elapsed: %d", grabTimer.elapsed());
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                map["Result"] = "AA Cannot grab image.";
@@ -769,7 +775,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 current_dfov[QString::number(i)] = dfov;
            else
                 current_dfov.insert(QString::number(i),dfov);
-           qInfo("fov: %f  sut_z: %f", dfov, sut->carrier->GetFeedBackPos().Z);
+           qInfo("fov: %f  sut_z: %f", dfov, lsut->sut_carrier->GetFeedBackPos().Z);
            xsum=xsum+realZ;
            ysum=ysum+dfov;
            x2sum=x2sum+pow(realZ,2);
@@ -780,7 +786,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            dst.release();
          }
       } else if (zScanMode == ZSCAN_MODE::AA_DFOV_MODE){
-           sut->moveToZPos(start);
+           lsut->sut_carrier->Move_Z_Sync(start);
            QThread::msleep(zSleepInMs);
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
            if (!grabRet) {
@@ -809,7 +815,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
            }
            for (unsigned int i = 0; i < imageCount; i++) {
-                sut->moveToZPos(target_z+(i*step_size));
+                lsut->sut_carrier->Move_Z_Sync(target_z+(i*step_size));
                 QThread::msleep(zSleepInMs);
                 cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
                 if (!grabRet) {
@@ -825,7 +831,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                     emit pushDataToUnit(runningUnit, "AA", map);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
                 }
-                double realZ = sut->carrier->GetFeedBackPos().Z;
+                double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
                 double dfov = calculateDFOV(img);
 
                 if (i > 1) {
@@ -837,10 +843,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                    qInfo("current slope %f  prev_slope %f error %f", slope, prev_fov_slope, error);
                    if (fabs(error) > 0.2) {
                        qInfo("Crash detection is triggered");
-                       LogicNg(current_aa_ng_time);
-                       map["Result"] = QString("Crash detection is triggered. prev_fov_slope:%1 now_fov_slope:%2 error:%3").arg(prev_fov_slope).arg(slope).arg(error);
-                       emit pushDataToUnit(runningUnit, "AA", map);
-                       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+//                       LogicNg(current_aa_ng_time);
+//                       map["Result"] = QString("Crash detection is triggered. prev_fov_slope:%1 now_fov_slope:%2 error:%3").arg(prev_fov_slope).arg(slope).arg(error);
+//                       emit pushDataToUnit(runningUnit, "AA", map);
+//                       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
                    }
                    prev_fov_slope = slope;
                 }
@@ -850,7 +856,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                      current_dfov[QString::number(i)] = dfov;
                 else
                      current_dfov.insert(QString::number(i),dfov);
-                qInfo("fov: %f  sut_z: %f", dfov, sut->carrier->GetFeedBackPos().Z);
+                qInfo("fov: %f  sut_z: %f", dfov, lsut->sut_carrier->GetFeedBackPos().Z);
                 xsum=xsum+realZ;
                 ysum=ysum+dfov;
                 x2sum=x2sum+pow(realZ,2);
@@ -867,7 +873,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
          double currentZ = sut->carrier->GetFeedBackPos().Z;
          double target_z = currentZ + offset_in_um;
          for (unsigned int i = 0; i < imageCount; i++) {
-             sut->moveToZPos(target_z+(i*step_size));
+             lsut->sut_carrier->Move_Z_Sync(target_z+(i*step_size));
              QThread::msleep(zSleepInMs);
              cv::Mat img = dk->DothinkeyGrabImageCV(0,grabRet);
              if (!grabRet) {
@@ -879,7 +885,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                  LogicNg(current_aa_ng_time);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
              }
-             double realZ = sut->carrier->GetFeedBackPos().Z;
+             double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
              double dfov = calculateDFOV(img);
              if(current_dfov.contains(QString::number(i)))
                   current_dfov[QString::number(i)] = dfov;
@@ -919,22 +925,23 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Perform AA fail"};
     }
-    sut->moveToZPos(aa_result["zPeak"].toDouble());
+    lsut->sut_carrier->Move_Z_Sync(aa_result["zPeak"].toDouble());
     if (enableTilt == 0) {
         qInfo("Disable tilt...");
     } else {
         qInfo("Enable tilt...xTilt: %f yTilt: %f", aa_result["xTilt"].toDouble(), aa_result["yTilt"].toDouble());
-        aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
+        //aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
+        aa_head->stepInterpolation_AB_Sync(-aa_result["xTilt"].toDouble(), -aa_result["yTilt"].toDouble());
     }
     if (position_checking == 1){
         QThread::msleep(zSleepInMs);
         cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
-        double beforeZ = sut->carrier->GetFeedBackPos().Z;
+        double beforeZ = lsut->sut_carrier->GetFeedBackPos().Z;
         double expected_fov = fov_slope*aa_result["zPeak"].toDouble() + fov_intercept;
         double dfov = calculateDFOV(img);
         double diff_z = (dfov - expected_fov)/fov_slope;
         sut->moveToZPos(beforeZ - diff_z);
-        double afterZ = sut->carrier->GetFeedBackPos().Z;
+        double afterZ = lsut->sut_carrier->GetFeedBackPos().Z;
         qInfo("before z: %f after z: %f now fov: %f expected fov: %f fov slope: %f fov intercept: %f", beforeZ, afterZ, dfov, expected_fov, fov_slope, fov_intercept);
     }
     clustered_sfr_map.clear();
@@ -1244,13 +1251,14 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         s.insert("pz", sorted_sfr_map[0][i].pz);
         sfrMap.insert(QString::number(i), s);
 
-        if (points_3.size() > 0) {
+        if (points_1.size() > 0) {
             data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, sorted_sfr_map[1+4*display_layer][i].sfr);
             data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, sorted_sfr_map[4+4*display_layer][i].sfr);
             data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, sorted_sfr_map[3+4*display_layer][i].sfr);
             data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, sorted_sfr_map[2+4*display_layer][i].sfr);
         }
     }
+    data->plot();
     map.insert("CC", sfrMap);
     if (validLayer>=1) {
         for (size_t j = 0; j < 4; j++){
@@ -1371,7 +1379,6 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         map.insert("fov_slope", current_fov_slope);
     }
     emit postSfrDataToELK(runningUnit, map);
-    data->plot();
     return result;
 }
 
@@ -1672,7 +1679,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     clustered_sfr_map.clear();
     qInfo("Time elapsed : %d sv size: %d", timer.elapsed() - start_time, sv.size());
     map.insert("FOV",fov);
-    map.insert("zPeak",sut->carrier->GetFeedBackPos().Z);
+    map.insert("zPeak",lsut->sut_carrier->GetFeedBackPos().Z);
     map.insert("CC_T_SFR", sv[0].t_sfr);
     map.insert("CC_R_SFR", sv[0].r_sfr);
     map.insert("CC_B_SFR", sv[0].b_sfr);

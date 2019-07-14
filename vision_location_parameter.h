@@ -22,6 +22,8 @@ public:
     Q_PROPERTY(double waitImageDelay READ waitImageDelay WRITE setWaitImageDelay NOTIFY waitImageDelayChanged)
     Q_PROPERTY(bool enablePrTest READ enablePrTest WRITE setEnablePrTest NOTIFY enablePrTestChanged)
     Q_PROPERTY(int testIndex READ testIndex WRITE setTestIndex NOTIFY testIndexChanged)
+    Q_PROPERTY(double objectScore READ objectScore WRITE setObjectScore NOTIFY objectScoreChanged)
+
     QString prFileName() const
     {
         return m_prFileName;
@@ -90,6 +92,11 @@ public:
     double maximumOffset() const
     {
         return m_maximumOffset;
+    }
+
+    double objectScore() const
+    {
+        return m_objectScore;
     }
 
 public slots:
@@ -223,6 +230,16 @@ public slots:
         emit maximumOffsetChanged(m_maximumOffset);
     }
 
+    void setObjectScore(double objectScore)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_objectScore, objectScore))
+            return;
+
+        m_objectScore = objectScore;
+        emit objectScoreChanged(m_objectScore);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -252,6 +269,8 @@ signals:
 
     void maximumOffsetChanged(double maximumOffset);
 
+    void objectScoreChanged(double objectScore);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -267,6 +286,7 @@ private:
     bool m_enablePrTest = false;
     int m_testIndex = 1;
     double m_maximumOffset = 10;
+    double m_objectScore = 0.7;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

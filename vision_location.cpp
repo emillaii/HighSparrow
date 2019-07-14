@@ -28,7 +28,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
     current_offset.ReSet();
     PRResultStruct pr_result;
     QThread::msleep(parameters.waitImageDelay());
-    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result);
+    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
     last_image_name = pr_result.imageName;
     if(ErrorCode::OK == temp.code)
     {
@@ -92,7 +92,7 @@ bool VisionLocation::performPR()
     PrOffset offset;
     PRResultStruct pr_result;
     QThread::msleep(parameters.waitImageDelay());
-    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result);
+    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
     last_image_name = pr_result.imageName;
     if(ErrorCode::OK == temp.code)
     {
@@ -138,7 +138,7 @@ bool VisionLocation::performPR()
 bool VisionLocation::performPR(PRResultStruct &pr_result)
 {
     QThread::msleep(parameters.waitImageDelay());
-    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result);
+    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
     last_image_name = pr_result.imageName;
     qInfo("CameraName: %s prFilename: %s PR_Result: %f %f %f",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str(),
           pr_result.x, pr_result.y, pr_result.theta);

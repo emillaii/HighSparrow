@@ -106,8 +106,6 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);
     engine.rootContext()->setContextProperty("aaNewCore", &highSprrow.baseModuleManager->aaCoreNew);
-    //engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.logicManager->aaCore->aaData_1);
-    //engine.rootContext()->setContextProperty("dataFromCpp2", &highSprrow.logicManager->aaCore->aaData_2);
     engine.rootContext()->setContextProperty("dataFromCpp3", &highSprrow.baseModuleManager->aaCoreNew.mtf_log);
     engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.baseModuleManager->aaCoreNew.aaData_1);
     engine.rootContext()->setContextProperty("dataFromCpp2", &highSprrow.baseModuleManager->aaCoreNew.aaData_2);

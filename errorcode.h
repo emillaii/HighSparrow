@@ -8,7 +8,8 @@ typedef enum {
     AA_ZSCAN_DFOV,
     AA_MTF_TIMEOUT,
     PR_OBJECT_NOT_FOUND,
-    GENERIC_ERROR
+    GENERIC_ERROR,
+    PR_OBJECT_SCORE_FAIL
 } ErrorCode;
 
 

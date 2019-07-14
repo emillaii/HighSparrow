@@ -1836,6 +1836,10 @@ void BaseModuleManager::sendChangeSensorTray()
 
 bool BaseModuleManager::initSensor()
 {
+    if (dothinkey->DothinkeyIsGrabbing()) {
+        qInfo("Dothinkey is already init and grabbing image.");
+        return true;
+    }
     const int channel = 0;
     bool res = dothinkey->DothinkeyEnum();
     if (!res) { qCritical("Cannot find dothinkey"); return false; }

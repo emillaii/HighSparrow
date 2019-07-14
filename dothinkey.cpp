@@ -95,6 +95,7 @@ BOOL Dothinkey::DothinkeyOpen()
 BOOL Dothinkey::DothinkeyClose()
 {
     qInfo("Close device!");
+    isGrabbing = false;
     setCurrentSensorID("");
     for (CameraChannel cc: m_CameraChannels)
     {

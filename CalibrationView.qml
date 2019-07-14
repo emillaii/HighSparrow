@@ -6,7 +6,7 @@ import QtQuick.Dialogs 1.2
 
 
 ItemDelegate {
-    width: parent.width
+    width: 700
     contentItem: ColumnLayout {
         spacing: 0
         ColumnLayout {
@@ -16,7 +16,7 @@ ItemDelegate {
             }
             ListView{
                 model:vl_parameter_list
-                height: 200 * count
+                height: 250 * count
                 delegate: GroupBox{
                     title:locationName
                     ColumnLayout{
@@ -64,6 +64,8 @@ ItemDelegate {
                                 color: "#57f529"
                                 text: prFileName
                                 font.pixelSize: 14
+                                width: 300
+                                Layout.preferredWidth: 300
                             }
                         }
                         RowLayout{
@@ -78,6 +80,17 @@ ItemDelegate {
                                 text:qsTr("执行PR")
                                 onClicked:{
                                     logicManager.performLocation(locationName)
+                                }
+                            }
+                            Image{
+                                cache: false
+                                sourceSize.width: 100
+                                sourceSize.height: 100
+                                fillMode: Image.PreserveAspectFit
+                                source: {
+                                    console.log(prFileName)
+                                    var imageName = prFileName.replace(".avdata", "_resultImage.jpg")
+                                    return imageName
                                 }
                             }
                         }

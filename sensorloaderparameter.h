@@ -56,6 +56,8 @@ public:
     Q_PROPERTY(bool enableNgSensorTrayPr READ enableNgSensorTrayPr WRITE setEnableNgSensorTrayPr NOTIFY enableNgSensorTrayPrChanged)
     Q_PROPERTY(int autoPrTime READ autoPrTime WRITE setAutoPrTime NOTIFY autoPrTimeChanged)
     Q_PROPERTY(bool enablePlaceForce READ enablePlaceForce WRITE setEnablePlaceForce NOTIFY enablePlaceForceChanged)
+    Q_PROPERTY(double sut1Theta READ sut1Theta WRITE setSut1Theta NOTIFY sut1ThetaChanged)
+    Q_PROPERTY(double sut2Theta READ sut2Theta WRITE setSut2Theta NOTIFY sut2ThetaChanged)
 
     double vcmWorkForce() const
     {
@@ -273,6 +275,16 @@ public:
     bool enablePlaceForce() const
     {
         return m_enablePlaceForce;
+    }
+
+    double sut1Theta() const
+    {
+        return m_sut1Theta;
+    }
+
+    double sut2Theta() const
+    {
+        return m_sut2Theta;
     }
 
 public slots:
@@ -691,6 +703,26 @@ public slots:
         emit enablePlaceForceChanged(m_enablePlaceForce);
     }
 
+    void setSut1Theta(double sut1Theta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_sut1Theta, sut1Theta))
+            return;
+
+        m_sut1Theta = sut1Theta;
+        emit sut1ThetaChanged(m_sut1Theta);
+    }
+
+    void setSut2Theta(double sut2Theta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_sut2Theta, sut2Theta))
+            return;
+
+        m_sut2Theta = sut2Theta;
+        emit sut2ThetaChanged(m_sut2Theta);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -781,6 +813,10 @@ signals:
 
     void enablePlaceForceChanged(bool enablePlaceForce);
 
+    void sut1ThetaChanged(double sut1Theta);
+
+    void sut2ThetaChanged(double sut2Theta);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -826,6 +862,8 @@ private:
     bool m_enableNgSensorTrayPr = false;
     int m_autoPrTime = 5;
     bool m_enablePlaceForce = false;
+    double m_sut1Theta = 0;
+    double m_sut2Theta = 0;
 };
 class SensorLoaderState:public PropertyBase
 {

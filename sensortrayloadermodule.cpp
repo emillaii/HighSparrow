@@ -128,6 +128,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
                     states.setHasReadyTray(false);
                     states.setHasCarrierReady(true);
                 }
+                if(!is_run)break;
             }
             else
             {
@@ -162,6 +163,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
                     }
 
                 }
+                if(!is_run)break;
             }
             else
             {
@@ -176,7 +178,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
             }
         }
         //放下第一个盘
-        if(states.needChangeTray()&&states.hasReadyTray()&&states.isFirstTray())
+        if(states.needChangeTray()&&states.hasReadyTray()&&(!states.hasUpTray())&&(!states.hasWorkTray()))
         {
             if((!moveToPutFirstTray())&&has_material)
             {
@@ -186,6 +188,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
                 {
                     continue;
                 }
+                if(!is_run)break;
             }
         }
         //去准备推盘位置
@@ -202,10 +205,12 @@ void SensorTrayLoaderModule:: run(bool has_material)
                 }
                 else
                 {
+                    states.setIsFirstTray(true);
                     states.setHasWorkTray(false);
                     states.setHasKickTray(true);
                     states.setHasKickReady(true);
                 }
+                if(!is_run)break;
             }
             else
             {
@@ -235,6 +240,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
                     states.setHasVacancyTray(true);
                     states.setHasCarrierReady(true);
                 }
+                if(!is_run)break;
             }
             else
             {
@@ -266,6 +272,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
                     states.setEntranceClipReady(false);
                     states.setHasKickReady(false);
                 }
+                if(!is_run)break;
             }
             else
             {
@@ -293,6 +300,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
                     states.setHasUpTray(false);
                     continue;
                 }
+                if(!is_run)break;
             }
             states.setHasUpTray(false);
             states.setNeedChangeTray(false);
@@ -320,6 +328,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
                 {
                     states.setEntranceClipReady(true);
                 }
+                if(!is_run)break;
             }
             else
             {
@@ -341,6 +350,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
                 {
                     states.setExitClipReady(true);
                 }
+                if(!is_run)break;
             }
             else
             {

@@ -1357,7 +1357,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     result &= GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->WaitSeekDone();
     if(result)
     {
-        qInfo("all motors seeked origin");
+        qInfo("all motors seeked origin success!");
         setHomeState(true);
         this->aa_head_module.moveToMushroomPosition(true);
         return true;
@@ -1370,6 +1370,8 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     qInfo("allMotorsSeekOriginal2 Start");
     //推料氣缸復位
     bool result;
+    if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
+        return false;
     GetMotorByName(sut_module.parameters.motorZName())->SeekOrigin();
     GetMotorByName(sensor_pickarm.parameters.motorZName())->SeekOrigin();
     GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->SeekOrigin();
@@ -1400,8 +1402,8 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
-//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
-//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
+    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
+    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
     if(!result)return false;
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->SeekOrigin();
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();

@@ -34,9 +34,18 @@ bool TcpMessager::waitMessage(QString message, bool &is_run)
         if(is_run)
             return false;
         {
-            QMutexLocker locker(&message_mutex);
-            if(message == received_message)
-                return true;
+           bool try_result = message_mutex.tryLock(parameters.outTime());
+           if(try_result)
+           {
+               if(message == received_message)
+               {
+                   message_mutex.unlock();
+                   return true;
+               }
+               message_mutex.unlock();
+           }
+           else if(parameters.needQInfo())
+               qInfo("message_mutex lock fail");
         }
         time_out --;
         QThread::msleep(1);
@@ -46,16 +55,31 @@ bool TcpMessager::waitMessage(QString message, bool &is_run)
 
 bool TcpMessager::checkMessage(QString message)
 {
-    QMutexLocker locker(&message_mutex);
-    if(message == received_message)
-        return true;
+    bool try_result = message_mutex.tryLock(parameters.outTime());
+    if(try_result)
+    {
+        if(message == received_message)
+        {
+            message_mutex.unlock();
+            return true;
+        }
+        message_mutex.unlock();
+    }
+    else if(parameters.needQInfo())
+        qInfo("message_mutex lock fail");
     return false;
 }
 
 void TcpMessager::clearMessage(QString)
 {
-    QMutexLocker locker(&message_mutex);
-    received_message = "";
+    bool try_result = message_mutex.tryLock(parameters.outTime());
+    if(try_result)
+    {
+        received_message = "";
+        message_mutex.unlock();
+    }
+    else if(parameters.needQInfo())
+        qInfo("message_mutex lock fail");
 }
 
 QString TcpMessager::inquiryMessage(QString message)
@@ -76,10 +100,17 @@ QString TcpMessager::inquiryMessage(QString message)
             {
                 if(!is_waitting)
                 {
-                    QMutexLocker locker(&message_mutex);
-                    result_message = getJsonObjectFromString(received_message);
+                    bool try_result = message_mutex.tryLock(parameters.outTime());
+                    if(try_result)
+                    {
+                        result_message = getJsonObjectFromString(received_message);
+                        message_mutex.unlock();
+                    }
+                    else if(parameters.needQInfo())
+                        qInfo("message_mutex lock fail");
                     result = true;
-                    qDebug("wait time:%d in thread %d",(parameters.outTime() - current_time),QThread::currentThreadId());
+                    if (parameters.needQInfo())
+                        qDebug("wait time:%d in thread %d",(parameters.outTime() - current_time),QThread::currentThreadId());
                     break;
                 }
                 current_time --;
@@ -92,11 +123,11 @@ QString TcpMessager::inquiryMessage(QString message)
         }
         else
             result_message["error"] = "send inquiry message fail";
+        qure_mutex.unlock();
     }
     else
         result_message["error"] = "tryLock fail";
     is_waitting = false;
-    qure_mutex.unlock();
     if(!result)
     qDebug("inquiry Result:%d in thread %d",result,QThread::currentThreadId());
     return  getStringFromJsonObject(result_message);
@@ -104,9 +135,9 @@ QString TcpMessager::inquiryMessage(QString message)
 
 QJsonObject TcpMessager::getJsonObjectFromString(const QString json_string)
 {
-    QJsonDocument jsonDocument = QJsonDocument::fromJson(json_string.toLocal8Bit().data());
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(json_string.toUtf8().data());
     if( jsonDocument.isNull() ){
-        qDebug()<< "===> please check the string "<< json_string.toLocal8Bit().data();
+        qDebug()<< "===> please check the string "<< json_string.toUtf8().data();
     }
     QJsonObject jsonObject = jsonDocument.object();
     return jsonObject;
@@ -122,6 +153,16 @@ bool TcpMessager::onSendTextMessage(QString message)
     if (parameters.needQInfo())
         qDebug("%s tcp WebSocket send %s in thread %d",parameters.messagerName().toStdString().c_str(),message.toStdString().c_str(),QThread::currentThreadId());
      qint64 result = m_webSocket->sendTextMessage(message);
+
+     if (parameters.needQInfo())
+         qDebug("%s tcp WebSocket send message size %d in thread %d",parameters.messagerName().toStdString().c_str(),message.size(),QThread::currentThreadId());
+     if(result != message.size())
+     {
+         QThread::msleep(1);
+         result = m_webSocket->sendTextMessage(message);
+         if (parameters.needQInfo())
+             qDebug("%s tcp WebSocket retry send message size %d in thread %d",parameters.messagerName().toStdString().c_str(),message.size(),QThread::currentThreadId());
+     }
      return result == message.size();
 }
 
@@ -129,7 +170,13 @@ void TcpMessager::onReceiveTextMessage(QString message)
 {
     if (parameters.needQInfo())
         qDebug("%s tcp WebSocket receive %s in thread %d",parameters.messagerName().toStdString().c_str(),message.toStdString().c_str(),QThread::currentThreadId());
-    QMutexLocker locker(&message_mutex);
+     bool try_result = message_mutex.tryLock(parameters.outTime());
+    if(try_result)
+    {
+        received_message = message;
+        message_mutex.unlock();
+    }
+    else if(parameters.needQInfo())
+        qInfo("message_mutex lock fail");
     is_waitting = false;
-    received_message = message;
 }

@@ -158,6 +158,18 @@ void MaterialTray::setTrayCurrent(const int column_index, const int row_index, c
     parameters[getTrayIndex(tray_index)]->setCurrentIndex(getMaterialIndex(getColumnIndex(column_index),getRowIndex(row_index)));
 }
 
+void MaterialTray::setTrayFirst(const int column_index, const int row_index, const int tray_index)
+{
+    for (int i = getMaterialIndex(getColumnIndex(column_index),getRowIndex(row_index)) -1; i >= 0; --i)
+    {
+        if(getMaterialState(i,tray_index) == 1)
+        {
+            setTrayCurrent(i,tray_index);
+            setCurrentMaterialState(2,tray_index);
+        }
+    }
+}
+
 void MaterialTray::setTrayCurrent(const int index, const int tray_index)
 {
     parameters[getTrayIndex(tray_index)]->setCurrentIndex(getMaterialIndex(index));

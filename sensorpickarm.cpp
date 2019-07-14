@@ -51,6 +51,8 @@ bool SensorPickArm::move_XYT1_Synic(const double x, const double y, const double
     motor_x->MoveToPos(x);
     motor_y->MoveToPos(y);
     picker1->motor_t->MoveToPos(t);
+    picker1->motor_t->MoveToPos(t - 2);
+    picker1->motor_t->MoveToPos(t);
     bool resut = motor_x->WaitArrivedTargetPos(x,timeout);
     resut &= motor_y->WaitArrivedTargetPos(y,timeout);
     resut &= picker1->motor_t->WaitArrivedTargetPos(t,timeout);
@@ -68,6 +70,8 @@ bool SensorPickArm::move_XYT1_Pos(const double x, const double y, const double t
     if(check_arrived&&checkXYT1Arrived(x,y,t))return true;
     bool result = motor_x->MoveToPos(x);
     result &= motor_y->MoveToPos(y);
+    result &=  picker1->motor_t->MoveToPos(t);
+    result &=  picker1->motor_t->MoveToPos(t-2);
     result &=  picker1->motor_t->MoveToPos(t);
     return result;
 }
@@ -88,6 +92,8 @@ bool SensorPickArm::move_XYT2_Synic(const double x, const double y, const double
     motor_x->MoveToPos(x);
     motor_y->MoveToPos(y);
     picker2->motor_t->MoveToPos(t);
+    picker2->motor_t->MoveToPos(t - 2);
+    picker2->motor_t->MoveToPos(t);
     bool resut = motor_x->WaitArrivedTargetPos(x,timeout);
     resut &= motor_y->WaitArrivedTargetPos(y,timeout);
     resut &= picker2->motor_t->WaitArrivedTargetPos(t,timeout);
@@ -104,6 +110,8 @@ bool SensorPickArm::move_XYT2_Pos(const double x, const double y, const double t
     if(check_arrived&&checkXYT2Arrived(x,y,t))return true;
     bool result = motor_x->MoveToPos(x);
     result &= motor_y->MoveToPos(y);
+    result &= picker2->motor_t->MoveToPos(t);
+    result &= picker2->motor_t->MoveToPos(t - 2);
     result &= picker2->motor_t->MoveToPos(t);
     return result;
 }
@@ -200,6 +208,8 @@ bool SensorPickArm::stepMove_XYT1_Synic(const double step_x, const double step_y
     motor_x->StepMove(step_x);
     motor_y->StepMove(step_y);
     picker1->motor_t->StepMove(step_t1);
+    picker1->motor_t->StepMove(step_t1 - 2);
+    picker1->motor_t->StepMove(step_t1);
     bool resut = motor_x->WaitArrivedTargetPos(target_x);
     resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
     resut &= picker1->motor_t->WaitArrivedTargetPos(target_t,timeout);
@@ -216,6 +226,8 @@ bool SensorPickArm::stepMove_XYT1_Pos(const double step_x, const double step_y, 
     }
     bool result = motor_x->StepMove(step_x);
     result &= motor_y->StepMove(step_y);
+    result &= picker1->motor_t->StepMove(step_t1);
+    result &= picker1->motor_t->StepMove(step_t1 - 2);
     result &= picker1->motor_t->StepMove(step_t1);
     return result;
 }
@@ -241,6 +253,8 @@ bool SensorPickArm::stepMove_XYT2_Synic(const double step_x, const double step_y
     motor_x->StepMove(step_x);
     motor_y->StepMove(step_y);
     picker2->motor_t->StepMove(step_t2);
+    picker2->motor_t->StepMove(step_t2 - 2);
+    picker2->motor_t->StepMove(step_t2);
     bool resut = motor_x->WaitArrivedTargetPos(target_x);
     resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
     resut &= picker2->motor_t->WaitArrivedTargetPos(target_t,timeout);
@@ -256,6 +270,8 @@ bool SensorPickArm::stepMove_XYT2_Pos(const double step_x, const double step_y, 
     }
     bool result = motor_x->StepMove(step_x);
     result &= motor_y->StepMove(step_y);
+    result &= picker2->motor_t->StepMove(step_t2);
+    result &= picker2->motor_t->StepMove(step_t2 - 2);
     result &= picker2->motor_t->StepMove(step_t2);
     return result;
 }

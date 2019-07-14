@@ -44,21 +44,24 @@ bool MaterialCarrier::Move_SZ_XY_Z_Sync(double x, double y, double z, int timeou
 bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool check_autochthonous,double check_distance, int timeout)
 {
     if(check_autochthonous&&CheckXYZArrived(x,y,z))
-            return true;
+        return true;
     bool result;
-    if(fabs(y - motor_y->GetFeedbackPos()) > check_distance)
+    if(CheckXYDistanceBigger(x,y,check_distance))
     {
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
         if(!result) return false;
-        result = motor_x->MoveToPosSync(parameters.SafetyX());
-        if(!result) return false;
+        if(fabs(y - motor_y->GetFeedbackPos()) > check_distance)
+        {
+            result = motor_x->MoveToPosSync(parameters.SafetyX());
+            if(!result) return false;
+        }
     }
     result = motor_y->MoveToPosSync(y);
     if(!result) return false;
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-//    QThread::msleep(300);
+    //    QThread::msleep(300);
     return result;
 }
 
@@ -66,63 +69,72 @@ bool MaterialCarrier::Move_SZ_SX_YS_X_Z_Sync(double x, double y, double z, bool 
 {
 
     if(check_autochthonous&&CheckXYZArrived(x,y,z))
-            return true;
+        return true;
     bool result;
-    if(fabs(y - motor_y->GetFeedbackPos()) > check_distance)
+    if(CheckXYDistanceBigger(x,y,check_distance))
     {
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
         if(!result) return false;
-        result = motor_x->MoveToPosSync(parameters.SafetyX());
-        if(!result) return false;
+        if(fabs(y - motor_y->GetFeedbackPos()) > check_distance)
+        {
+            result = motor_x->MoveToPosSync(parameters.SafetyX());
+            if(!result) return false;
+        }
     }
     result = motor_y->MoveToPosSaftySync(y);
     if(!result) return false;
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-//    QThread::msleep(300);
+    //    QThread::msleep(300);
     return result;
 }
 
 bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool check_autochthonous,double check_distance, int timeout)
 {
     if(check_autochthonous&&CheckXYZArrived(x,y,z))
-            return true;
+        return true;
     bool result;
-    if(fabs(x - motor_x->GetFeedbackPos()) > check_distance)
+    if(CheckXYDistanceBigger(x,y,check_distance))
     {
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
         if(!result) return false;
+        if(fabs(x - motor_x->GetFeedbackPos()) > check_distance)
+        {
             result = motor_y->MoveToPosSync(parameters.SafetyY());
-        if(!result) return false;
+            if(!result) return false;
+        }
     }
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_y->MoveToPosSync(y);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-//    QThread::msleep(300);
+    //    QThread::msleep(300);
     return result;
 }
 
 bool MaterialCarrier::Move_SZ_SY_X_YS_Z_Sync(double x, double y, double z, bool check_autochthonous, double check_distance, int timeout)
 {
     if(check_autochthonous&&CheckXYZArrived(x,y,z))
-            return true;
+        return true;
     bool result;
-    if(fabs(x - motor_x->GetFeedbackPos()) > check_distance)
+    if(CheckXYDistanceBigger(x,y,check_distance))
     {
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
         if(!result) return false;
+        if(fabs(x - motor_x->GetFeedbackPos()) > check_distance)
+        {
             result = motor_y->MoveToPosSync(parameters.SafetyY());
-        if(!result) return false;
+            if(!result) return false;
+        }
     }
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_y->MoveToPosSaftySync(y);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-//    QThread::msleep(300);
+    //    QThread::msleep(300);
     return result;
 }
 
@@ -189,18 +201,18 @@ bool MaterialCarrier::ZSerchByForce(const double speed,const double force,const 
     if(nullptr != excute_vacuum)vacuum = excute_vacuum;
     qInfo("CP 1");
     bool result  = motor_z->SearchPosByForce(speed,force);
-        qInfo("CP 2");
+    qInfo("CP 2");
     if(!result)
     {
         motor_z->resetSoftLanding();
-            qInfo("CP 3");
+        qInfo("CP 3");
         motor_z->RestoreForce();
-            qInfo("CP 4");
+        qInfo("CP 4");
     }
-//    if(result && vacuum_state > -1&&vacuum != nullptr)
-//        result &= vacuum->Set(vacuum_state > 0);
-//    result &= motor_z->DoSoftLandingReturn();
-//    result &= motor_z->WaitSoftLandingDone();
+    //    if(result && vacuum_state > -1&&vacuum != nullptr)
+    //        result &= vacuum->Set(vacuum_state > 0);
+    //    result &= motor_z->DoSoftLandingReturn();
+    //    result &= motor_z->WaitSoftLandingDone();
     return result;
 }
 

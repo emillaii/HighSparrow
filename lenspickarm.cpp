@@ -38,6 +38,8 @@ bool LensPickArm::move_XtXYT_Synic(QPointF position, double x, double t, bool ch
     motor_y->MoveToPos(position.y());
     motor_x->MoveToPos(x);
     picker->motor_t->MoveToPos(t);
+    picker->motor_t->MoveToPos(t - 2);
+    picker->motor_t->MoveToPos(t);
     bool resut = motor_x_tray->WaitArrivedTargetPos(position.x(),timeout);
     resut &= motor_y->WaitArrivedTargetPos(position.y(),timeout);
     resut &= motor_x->WaitArrivedTargetPos(x,timeout);
@@ -68,6 +70,8 @@ bool LensPickArm::move_XYT_Synic(double x, double y, double t,bool check_arrived
     motor_x->MoveToPos(x);
     motor_y->MoveToPos(y);
     picker->motor_t->MoveToPos(t);
+    picker->motor_t->MoveToPos(t - 2);
+    picker->motor_t->MoveToPos(t);
     bool resut = motor_x->WaitArrivedTargetPos(x,timeout);
     resut &= motor_y->WaitArrivedTargetPos(y,timeout);
     resut &= picker->motor_t->WaitArrivedTargetPos(t,timeout);
@@ -83,6 +87,8 @@ bool LensPickArm::stepMove_XYTp_Synic(PrOffset position,bool check_softlanding,i
     motor_x->MoveToPos(target_x);
     motor_y->MoveToPos(target_y);
     picker->motor_t->MoveToPos(target_t);
+    picker->motor_t->MoveToPos(target_t - 2);
+    picker->motor_t->MoveToPos(target_t);
     bool result = motor_x->WaitArrivedTargetPos(target_x,timeout);
     result &= motor_y->WaitArrivedTargetPos(target_y,timeout);
     result &= picker->motor_t->WaitArrivedTargetPos(target_t,timeout);
@@ -96,6 +102,8 @@ bool LensPickArm::stepMove_XYTp_Pos(PrOffset position, bool check_softlanding, i
     double target_y = position.Y +  motor_y->GetFeedbackPos();
     double target_t = position.Theta +  picker->motor_t->GetFeedbackPos();
     bool result = motor_x->MoveToPos(target_x);
+    result &= motor_y->MoveToPos(target_y);
+    result &= motor_y->MoveToPos(target_y - 2);
     result &= motor_y->MoveToPos(target_y);
     result &= picker->motor_t->MoveToPos(target_t);
     return result;

@@ -145,6 +145,8 @@ private:
 
     void getPicker1SensorOffset();
     void getPicker2SensorOffset();
+    void setPicker1SensorOffset();
+    void setPicker2SensorOffset();
 public:
     SensorLoaderParameter parameters;
     SensorLoaderState states;

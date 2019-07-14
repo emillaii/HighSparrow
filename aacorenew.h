@@ -50,7 +50,7 @@ public:
     void performAAOffline();
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
-    ErrorCodeStruct performInitSensor();
+    ErrorCodeStruct performInitSensor(bool check_map = false);
     ErrorCodeStruct performPRToBond(int finish_delay);
     ErrorCodeStruct performLoadMaterial();
     ErrorCodeStruct performAA(QJsonValue params);
@@ -103,6 +103,7 @@ private:
     void SetSensor();
     void SetProduct();
 private:
+    QString sensorID = "";
     QString loopTestResult;
     int currentAAMode;
     QString runningUnit;

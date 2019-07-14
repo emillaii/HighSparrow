@@ -354,7 +354,7 @@ void AACoreNew::performHandlingOperation(int cmd)
         performAA(params);
     }
     else if (cmd == HandleTest::INIT_CAMERA) {
-        performInitSensor();
+        performInitSensor(true);
     }
     else if (cmd == HandleTest::Y_LEVEL) {
         performYLevelTest(params);
@@ -545,7 +545,7 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         }
         else if (testItemName.contains(AA_PIECE_INIT_CAMERA)) {
             qInfo("Performing init camera");
-            ret = performInitSensor();
+            ret = performInitSensor(true);
             qInfo("End of init camera %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_PR_TO_BOND)) {
@@ -1073,6 +1073,7 @@ bool zPeakComp(const threeDPoint & p1, const threeDPoint & p2)
 QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 {
     QVariantMap result, map;
+    map.insert("SensorID",sensorID);
     vector<vector<Sfr_entry>> sorted_sfr_map;
     for (size_t i = 0; i < clustered_sfr_map[0].size(); ++i)
     {
@@ -2173,7 +2174,7 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
     return ret;
 }
 
-ErrorCodeStruct AACoreNew::performInitSensor()
+ErrorCodeStruct AACoreNew::performInitSensor(bool check_map)
 {
     if(!has_sensor) return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "has no sensor"};
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
@@ -2191,13 +2192,31 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
     if (!res) { qCritical("Cannot start camera");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "4"}; }
 
-    QString sensorID = dk->readSensorID();
+    sensorID = dk->readSensorID();
     qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());
     map.insert("sensorID", sensorID);
     if (!imageThread->isRunning())
         imageThread->start();
+
+    if(check_map)
+    {
+        bool grabRet = true;
+        cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+        if(!grabRet)
+        {
+            map.insert("result", "Grab Image fail");
+            emit pushDataToUnit(runningUnit, "InitSensor", map);
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Grab Image fail"};
+        }
+        if(!blackScreenCheck(img))
+        {
+            map.insert("result", "Detect black screen");
+            emit pushDataToUnit(runningUnit, "InitSensor", map);
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Detect black screen"};
+        }
+    }
     map.insert("timeElapsed", timer.elapsed());
-    map.insert("success", res);
+    map.insert("result", "OK");
     emit pushDataToUnit(runningUnit, "InitSensor", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }

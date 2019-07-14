@@ -37,6 +37,7 @@ public:
     int getMaterialState(int index,int tray_index);
     void setMaterialState(int column_index,int row_index,int state,int tray_index);
     Q_INVOKABLE void setTrayCurrent(const int column_index,const int row_index,const int tray_index);
+    Q_INVOKABLE void setTrayFirst(const int column_index,const int row_index,const int tray_index);
     void setTrayCurrent(const int index,const int tray_index);
     void getTrayCurrent(int& column_index,int& row_index,const int tray_index);
     void resetTrayState(int tray_index = 0);

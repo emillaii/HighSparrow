@@ -102,45 +102,31 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     int temp_value = 10;
     if(cmd%temp_value == HandlePosition::SUT_POS1){
         qInfo(u8"移动SPA到SUT1位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
         result = moveToSUTPRPos(false,true,true);
-        //        }
     }
     else if(cmd%temp_value == HandlePosition::SUT_POS2){
         qInfo(u8"移动SPA到SUT2位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
         result = moveToSUTPRPos(true,true,true);
-        //        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1){
         qInfo(u8"移动SPA到sensor料盘当前位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
         result = moveToTrayPos(0);
-        //        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2){
         qInfo(u8"移动SPA到成品料盘当前位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
         result = moveToTrayPos(1);
-        //        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_START_POS){
         qInfo(u8"移动SPA到sensor料盘起始位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
         result = moveToStartPos(0);
-        //        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY2_START_POS){
         qInfo(u8"移动SPA到成品料盘起始位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
         result = moveToStartPos(1);
-        //        }
     }
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_END_POS){
         qInfo(u8"移动SPA到sensor料盘起始位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
         result = moveToTray1EndPos();
-        //        }
     }
     else
         result =true;
@@ -153,45 +139,31 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     temp_value = 100;
     if(cmd%temp_value == HandlePR::RESET_PR){
         qInfo(u8"重置PR结果");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
         pr_offset.ReSet();
-        //        }
     }
     else if(cmd%temp_value == HandlePR::SENSOR_PR){
         qInfo(u8"执行sensorPR");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
         result = performSensorPR();
         if(result)
         {
             getPicker1SensorOffset();
-            //                states.setPicker1OffsetX(pr_offset.O_X);
-            //                states.setPicker1OffsetY(pr_offset.O_Y);
         }
-        //        }
     }
     else if(cmd%temp_value == HandlePR::VACANCY_PR){
         qInfo(u8"执行料盘空位PR");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
         result = performVacancyPR();
-        //        }
     }
     else if(cmd%temp_value == HandlePR::SUT_PR){
         qInfo(u8"执行SUT定位PR");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
         result = performSUTPR();
-        //        }
     }
     else if(cmd%temp_value == HandlePR::NG_SENSOR_PR){
         qInfo(u8"执行NG sensor PR");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
         result = performSUTSensorPR();
         if(result)
         {
             getPicker2SensorOffset();
-            //                states.setPicker2OffsetX(pr_offset.O_X);
-            //                states.setPicker2OffsetY(pr_offset.O_Y);
         }
-        //        }
     }
     else if(cmd%temp_value == HandlePR::PRODUCT_PR){
         qInfo(u8"执行成品PR");
@@ -213,33 +185,29 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     temp_value = 1000;
     if(cmd%temp_value == HandleToWorkPos::TO_PICK_SENSOR_OFFSET){
         qInfo(u8"移动吸头1到视觉位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
-        result = moveToWorkPos(false);
-        //        }
+            result = moveToWorkPos(false,true);
     }
     else if(cmd%temp_value == HandleToWorkPos::TO_PICK_PRODUCT_OFFSET){
         qInfo(u8"移动吸头2到视觉位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
-        result = moveToWorkPos2(false);
-        //        }
+        if(pick_arm->motor_x->GetFeedbackPos()>400)
+            result = movePicker2ToSUTPos(true);
+        else
+            result = movePicker2ToSUTPos(false);
     }
     if(cmd%temp_value == HandleToWorkPos::TO_PLACE_SENSOR_OFFSET){
         qInfo(u8"移动吸头1到视觉位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
-        result = moveToWorkPos(true);
-        //        }
+        if(pick_arm->motor_x->GetFeedbackPos()>400)
+            result = movePicker1ToSUTPos(true);
+        else
+            result = movePicker1ToSUTPos(false);
     }
     else if(cmd%temp_value == HandleToWorkPos::TO_PLACE_PRODUCT_OFFSET){
         qInfo(u8"移动吸头2到视觉位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
-        result = moveToWorkPos2(true);
-        //        }
+        result = movePicker2ToTrayPos(1);
     }
     else if(cmd%temp_value == HandleToWorkPos::TO_PR_OFFSET){
         qInfo(u8"移动SA到当前视觉结果位置");
-        //        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动"))){
         result = moveToPRResultPos(true);
-        //        }
     }
     if(!result)
     {
@@ -252,6 +220,8 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     if(cmd%temp_value == handlePickerAction::PICK_SENSOR_FROM_TRAY){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickTraySensor();
+            getPicker1SensorOffset();
+            getPicker2SensorOffset();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT1){
@@ -267,11 +237,15 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickSUTSensor("remote");
+            if(fabs(pr_offset.Theta)>0.01)
+                getPicker2SensorOffset();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT2){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickSUTSensor("::1");
+            if(fabs(pr_offset.Theta)>0.01)
+                getPicker2SensorOffset();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_NG_SENSOR_TO_TRAY){
@@ -282,11 +256,15 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickSUTProduct("remote");
+            if(fabs(pr_offset.Theta)>0.01)
+                getPicker2SensorOffset();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT2){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickSUTProduct("::1");
+            if(fabs(pr_offset.Theta)>0.01)
+                getPicker2SensorOffset();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_PRODUCT_TO_TRAY){
@@ -519,28 +497,19 @@ void SensorLoaderModule::run(bool has_material)
                     if(!is_run)break;
                 }
                 vacancy_vision->CloseLight();
-                if(!moveToWorkPos2(true))
-                {
-                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                    {
-                        states.setHasPickedProduct(false);
-                        continue;
-                    }
-                    if(!is_run)break;
-                }
             }
             else
             {
-                if(!movePicker2ToTrayPos(product_tray_index))
+                pr_offset.ReSet();
+            }
+            if(!movePicker2ToTrayPos(product_tray_index))
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                    {
-                        continue;
-                    }
-                    if(!is_run)break;
+                    continue;
                 }
+                if(!is_run)break;
             }
             if((!placeProductToTray())&&has_material)
             {
@@ -575,28 +544,19 @@ void SensorLoaderModule::run(bool has_material)
                     if(!is_run)break;
                 }
                 vacancy_vision->CloseLight();
-                if(!moveToWorkPos2(true))
-                {
-                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                    {
-                        states.setHasPickedNgProduct(false);
-                        continue;
-                    }
-                    if(!is_run)break;
-                }
             }
             else
             {
-                if(!movePicker2ToTrayPos(ng_tray_index))
+                pr_offset.ReSet();
+            }
+            if(!movePicker2ToTrayPos(ng_tray_index))
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                    {
-                        continue;
-                    }
-                    if(!is_run)break;
+                    continue;
                 }
+                if(!is_run)break;
             }
             if((!placeProductToTray())&&has_material)
             {
@@ -633,28 +593,19 @@ void SensorLoaderModule::run(bool has_material)
                     if(!is_run)break;
                 }
                 vacancy_vision->CloseLight();
-                if(!moveToWorkPos2(true))
-                {
-                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                    {
-                        states.setHasPickedNgSensor(false);
-                        continue;
-                    }
-                    if(!is_run)break;
-                }
             }
             else
             {
-                if(!movePicker2ToTrayPos(ng_tray_index))
+                pr_offset.ReSet();
+            }
+            if(!movePicker2ToTrayPos(ng_tray_index))
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                if(waitMessageReturn(is_run))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                    {
-                        continue;
-                    }
-                    if(!is_run)break;
+                    continue;
                 }
+                if(!is_run)break;
             }
             if((!placeSensorToTray())&&has_material)
             {
@@ -727,6 +678,8 @@ void SensorLoaderModule::run(bool has_material)
             }
             else
                 states.setHasPickedSensor(true);
+            setPicker1SensorOffset();
+            setPicker2SensorOffset();
             tray->setCurrentMaterialState(MaterialState::IsEmpty,sensor_tray_index);
             picked_material = tray->getCurrentIndex(sensor_tray_index);
             if(!is_run)break;
@@ -865,24 +818,19 @@ void SensorLoaderModule::run(bool has_material)
                         }
                         sut_product_vision->CloseLight();
                         getPicker2SensorOffset();
-                        if(!moveToWorkPos2(false))
-                        {
-                            sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                            waitMessageReturn(is_run);
-                            if(!is_run)break;
-                        }
                     }
                     else
                     {
-                        if(!movePicker2ToSUTPos(isLocalHost))
+                        pr_offset.ReSet();
+                    }
+                    if(!movePicker2ToSUTPos(isLocalHost))
+                    {
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                        if(waitMessageReturn(is_run))
                         {
-                            sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                            if(waitMessageReturn(is_run))
-                            {
-                                continue;
-                            }
-                            if(!is_run)break;
+                            continue;
                         }
+                        if(!is_run)break;
                     }
                     if((!pickSUTProduct(isLocalHost?"::1":"remote"))&&has_material)
                     {
@@ -906,6 +854,7 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     sendEvent("unloadProductResp");
                     states.setCmd("");
+                    setPicker2SensorOffset();
                     product_uph.addCurrentNumber(updateAccumulatedHour());
                     product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
                     comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
@@ -951,27 +900,19 @@ void SensorLoaderModule::run(bool has_material)
                         }
                         sut_product_vision->CloseLight();
                         getPicker2SensorOffset();
-                        //                    states.setPicker2OffsetX(pr_offset.O_X);
-                        //                    states.setPicker2OffsetY(pr_offset.O_Y);
-                        if(!moveToWorkPos2(false))
-                        {
-                            sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                            waitMessageReturn(is_run);
-                            if(!is_run)break;
-                        }
                     }
                     else
                     {
-
-                        if(!movePicker2ToSUTPos(isLocalHost))
+                        pr_offset.ReSet();
+                    }
+                    if(!movePicker2ToSUTPos(isLocalHost))
+                    {
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                        if(waitMessageReturn(is_run))
                         {
-                            sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                            if(waitMessageReturn(is_run))
-                            {
-                                continue;
-                            }
-                            if(!is_run)break;
+                            continue;
                         }
+                        if(!is_run)break;
                     }
                     if((!pickSUTProduct(isLocalHost?"::1":"remote"))&&has_material)
                     {
@@ -995,6 +936,7 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     sendEvent("unloadNgProductResp");
                     states.setCmd("");
+                    setPicker2SensorOffset();
                     product_uph.addCurrentNumber(updateAccumulatedHour());
                     comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
                     if(isLocalHost)
@@ -1040,26 +982,19 @@ void SensorLoaderModule::run(bool has_material)
                         }
                         sut_sensor_vision->CloseLight();
                         getPicker2SensorOffset();
-                        //                    states.setPicker2OffsetX(pr_offset.O_X);
-                        //                    states.setPicker2OffsetY(pr_offset.O_Y);
-                        if(!moveToWorkPos2(false))
-                        {
-                            sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                            waitMessageReturn(is_run);
-                            if(!is_run)break;
-                        }
                     }
                     else
                     {
-                        if(!movePicker2ToSUTPos(isLocalHost))
+                        pr_offset.ReSet();
+                    }
+                    if(!movePicker2ToSUTPos(isLocalHost))
+                    {
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+                        if(waitMessageReturn(is_run))
                         {
-                            sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                            if(waitMessageReturn(is_run))
-                            {
-                                continue;
-                            }
-                            if(!is_run)break;
+                            continue;
                         }
+                        if(!is_run)break;
                     }
                     if((!pickSUTSensor(isLocalHost?"::1":"remote"))&&has_material)
                     {
@@ -1084,6 +1019,7 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     sendEvent("unloadNgSensorResp");
                     states.setCmd("");
+                    setPicker2SensorOffset();
                     sensor_uph.addCurrentReslutNumber(updateAccumulatedHour());
                     if(isLocalHost)
                         right_sensor_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
@@ -1093,6 +1029,7 @@ void SensorLoaderModule::run(bool has_material)
                 else if ((states.cmd() == "loadSensorReq")&&states.hasPickedSensor())
                 {
                     //放料到SUT
+                    pr_offset.ReSet();
                     if(!movePicker1ToSUTPos(isLocalHost))
                     {
                         sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -1311,7 +1248,7 @@ void SensorLoaderModule::runTest()
                 }
             }
             vacancy_vision->CloseLight();
-            if(!moveToWorkPos2(true))
+            if(!movePicker2ToSUTPos(isLocalHost))
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
@@ -1407,6 +1344,7 @@ void SensorLoaderModule::runTest()
             }
             sensor_vision->CloseLight();
             getPicker1SensorOffset();
+            getPicker2SensorOffset();
             if(!moveToWorkPos(false))
             {
                 sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
@@ -1421,6 +1359,8 @@ void SensorLoaderModule::runTest()
             }
             else
                 states.setHasPickedSensor(true);
+            setPicker1SensorOffset();
+            setPicker2SensorOffset();
             tray->setCurrentMaterialState(MaterialState::IsEmpty,sensor_tray_index);
             picked_material = tray->getCurrentIndex(sensor_tray_index);
             if(!is_run)break;
@@ -1509,9 +1449,7 @@ void SensorLoaderModule::runTest()
                     }
                     sut_product_vision->CloseLight();
                     getPicker2SensorOffset();
-                    //                    states.setPicker2OffsetX(pr_offset.O_X);
-                    //                    states.setPicker2OffsetY(pr_offset.O_Y);
-                    if(!moveToWorkPos2(false))
+                    if(!movePicker2ToSUTPos(isLocalHost))
                     {
                         sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                         waitMessageReturn(is_run);
@@ -1539,6 +1477,7 @@ void SensorLoaderModule::runTest()
                     }
                     sendEvent("unloadProductResp");
                     states.setCmd("");
+                    setPicker2SensorOffset();
                     product_uph.addCurrentNumber(updateAccumulatedHour());
                     product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
                     comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
@@ -1584,7 +1523,7 @@ void SensorLoaderModule::runTest()
                     getPicker2SensorOffset();
                     //                    states.setPicker2OffsetX(pr_offset.O_X);
                     //                    states.setPicker2OffsetY(pr_offset.O_Y);
-                    if(!moveToWorkPos2(false))
+                    if(!movePicker2ToSUTPos(isLocalHost))
                     {
                         sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                         waitMessageReturn(is_run);
@@ -1612,6 +1551,7 @@ void SensorLoaderModule::runTest()
                     }
                     sendEvent("unloadNgProductResp");
                     states.setCmd("");
+                    setPicker2SensorOffset();
                     product_uph.addCurrentNumber(updateAccumulatedHour());
                     comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
                     if(isLocalHost)
@@ -1657,7 +1597,7 @@ void SensorLoaderModule::runTest()
                     getPicker2SensorOffset();
                     //                    states.setPicker2OffsetX(pr_offset.O_X);
                     //                    states.setPicker2OffsetY(pr_offset.O_Y);
-                    if(!moveToWorkPos2(false))
+                    if(!movePicker2ToSUTPos(isLocalHost))
                     {
                         sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                         waitMessageReturn(is_run);
@@ -1686,6 +1626,7 @@ void SensorLoaderModule::runTest()
                     }
                     sendEvent("unloadNgSensorResp");
                     states.setCmd("");
+                    setPicker2SensorOffset();
                     sensor_uph.addCurrentReslutNumber(updateAccumulatedHour());
                     if(isLocalHost)
                         right_sensor_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
@@ -1695,6 +1636,7 @@ void SensorLoaderModule::runTest()
                 else if ((states.cmd() == "loadSensorReq")&&states.hasPickedSensor())
                 {
                     //放料到SUT
+                    pr_offset.ReSet();
                     if(!movePicker1ToSUTPos(isLocalHost))
                     {
                         sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
@@ -1930,15 +1872,24 @@ bool SensorLoaderModule::movePicker1ToSUTPos(bool is_local)
 {
     bool result;
     QPointF temp_pos;
+    double theta = parameters.picker1ThetaOffset() + pr_offset.Theta;
     if(is_local)
+    {
         temp_pos =  sut2_pr_position.ToPointF();
+            theta += parameters.sut2Theta();
+    }
     else
+    {
         temp_pos =  sut1_pr_position.ToPointF();
-    result = pick_arm->move_XYT2_Synic(temp_pos.x() + picker1_offset.X() - states.picker1SensorOffsetX(),temp_pos.y() + picker1_offset.Y() - states.picker1SensorOffsetY(),parameters.picker2ThetaOffset());
+        theta += parameters.sut1Theta();
+    }
+    result = pick_arm->move_XYT1_Synic(temp_pos.x() + picker1_offset.X() - pr_offset.X - states.picker1SensorOffsetX(),temp_pos.y() + picker1_offset.Y() - pr_offset.Y - states.picker1SensorOffsetY(),theta);
+    bool check_result = checkPickedSensor(true);
+    result &= pick_arm->wait_XYT1_Arrived();
     if(!result)
         AppendError(QString(u8"移动SPA吸嘴1到SUT位置失败%1").arg(is_local));
     qInfo(u8"移动SPA吸嘴1到SUT位置失败%d,返回值%d",is_local,result);
-    return result;
+    return result&&check_result;
 }
 
 bool SensorLoaderModule::movePicker2ToSUTPos(bool is_local)
@@ -1949,11 +1900,13 @@ bool SensorLoaderModule::movePicker2ToSUTPos(bool is_local)
         temp_pos =  sut2_pr_position.ToPointF();
     else
         temp_pos =  sut1_pr_position.ToPointF();
-    result = pick_arm->move_XYT2_Synic(temp_pos.x() + picker2_offset.X() - states.picker2SensorOffsetX(),temp_pos.y() + picker2_offset.Y() - states.picker2SensorOffsetY(),parameters.picker2ThetaOffset());
+    result = pick_arm->move_XYT2_Pos(temp_pos.x() + picker2_offset.X() - pr_offset.X - states.picker2SensorOffsetX(),temp_pos.y() + picker2_offset.Y() - pr_offset.Y - states.picker2SensorOffsetY(),parameters.picker2ThetaOffset() + pr_offset.Theta);
+    bool check_result = checkPickedNgOrProduct(false);
+    result &= pick_arm->wait_XYT2_Arrived();
     if(!result)
         AppendError(QString(u8"移动SPA吸嘴2到SUT位置失败%1").arg(is_local));
     qInfo(u8"移动SPA吸嘴2到SUT位置失败%d,返回值%d",is_local,result);
-    return result;
+    return result&&check_result;
 }
 
 bool SensorLoaderModule::performSensorPR()
@@ -2003,6 +1956,7 @@ bool SensorLoaderModule::performSUTProductPR()
 
 bool SensorLoaderModule::moveToWorkPos(bool check_state,bool check_softlanding)
 {
+
     PrOffset temp(picker1_offset.X() - states.picker1SensorOffsetX() - pr_offset.X,picker1_offset.Y() - states.picker1SensorOffsetY() - pr_offset.Y,-pr_offset.Theta);
     qInfo("moveToWorkPos offset:(%f,%f,%f)",temp.X,temp.Y,temp.Theta);
     bool result = pick_arm->stepMove_XYT1_Pos(temp.X,temp.Y,temp.Theta,check_softlanding);
@@ -2420,6 +2374,40 @@ void SensorLoaderModule::getPicker2SensorOffset()
     {
         states.setPicker2SensorOffsetX(pr_offset.O_X);
         states.setPicker2SensorOffsetY(pr_offset.O_Y);
+    }
+}
+
+void SensorLoaderModule::setPicker1SensorOffset()
+{
+    if(parameters.useSensorOffset())
+    {
+        states.setPicker1SensorOffsetX(parameters.sensorOffsetX());
+        states.setPicker1SensorOffsetY(parameters.sensorOffsetY());
+    }
+    else
+    {
+        double temp_theta = -pr_offset.Theta*PI/180;
+        double x = pr_offset.O_X*cos(temp_theta) + pr_offset.O_Y*sin(temp_theta) ;
+        double y = pr_offset.O_Y*cos(temp_theta) - pr_offset.O_X*sin(temp_theta) ;
+        states.setPicker1SensorOffsetX(x);
+        states.setPicker1SensorOffsetY(y);
+    }
+}
+
+void SensorLoaderModule::setPicker2SensorOffset()
+{
+    if(parameters.useSensorOffset())
+    {
+        states.setPicker2SensorOffsetX(parameters.sensorOffsetX());
+        states.setPicker2SensorOffsetY(parameters.sensorOffsetY());
+    }
+    else
+    {
+        double temp_theta = -pr_offset.Theta*PI/180;
+        double x = pr_offset.O_X*cos(temp_theta) + pr_offset.O_Y*sin(temp_theta) ;
+        double y = pr_offset.O_Y*cos(temp_theta) - pr_offset.O_X*sin(temp_theta) ;
+        states.setPicker2SensorOffsetX(x);
+        states.setPicker2SensorOffsetY(y);
     }
 }
 

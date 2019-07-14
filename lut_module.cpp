@@ -344,6 +344,8 @@ void LutModule::run(bool has_material)
                         states.setWaitingLens(false);
                         states.setFinishWaitLens(false);
                     }
+                    states.setLutNgLensID(-1);
+                    states.setLutNgTrayID(-1);
                     state = HAS_LENS;
                     bool action_result;
                     isLocalHost ?action_result = moveToAA2ReadyPos(): action_result = moveToAA1ReadyPos();

@@ -147,6 +147,7 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
         if(result)
         {
             getPicker1SensorOffset();
+            getPicker2SensorOffset();
         }
     }
     else if(cmd%temp_value == HandlePR::VACANCY_PR){
@@ -220,56 +221,65 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     if(cmd%temp_value == handlePickerAction::PICK_SENSOR_FROM_TRAY){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickTraySensor();
-            getPicker1SensorOffset();
-            getPicker2SensorOffset();
+            setPicker1SensorOffset();
+            setPicker2SensorOffset();
+            pr_offset.ReSet();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = placeSensorToSUT("remote");
+            pr_offset.ReSet();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_TO_SUT2){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = placeSensorToSUT("::1");
+            pr_offset.ReSet();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickSUTSensor("remote");
             if(fabs(pr_offset.Theta)>0.01)
-                getPicker2SensorOffset();
+                setPicker2SensorOffset();
+            pr_offset.ReSet();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PICK_NG_SENSOR_FROM_SUT2){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickSUTSensor("::1");
             if(fabs(pr_offset.Theta)>0.01)
-                getPicker2SensorOffset();
+                setPicker2SensorOffset();
+            pr_offset.ReSet();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_NG_SENSOR_TO_TRAY){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = placeSensorToTray();
+            pr_offset.ReSet();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickSUTProduct("remote");
             if(fabs(pr_offset.Theta)>0.01)
-                getPicker2SensorOffset();
+                setPicker2SensorOffset();
+            pr_offset.ReSet();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT2){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickSUTProduct("::1");
             if(fabs(pr_offset.Theta)>0.01)
-                getPicker2SensorOffset();
+                setPicker2SensorOffset();
+            pr_offset.ReSet();
         }
     }
     else if(cmd%temp_value == handlePickerAction::PLACE_PRODUCT_TO_TRAY){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = placeProductToTray();
+            pr_offset.ReSet();
         }
     }
     else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_TRAY){
@@ -2001,9 +2011,9 @@ bool SensorLoaderModule::movePicker2ToTrayPos(int tray_index)
         return false;
     }
     QPointF next_pos = tray->getCurrentPosition(tray_index);
-    double x = next_pos.x() + picker2_offset.X() - states.picker2SensorOffsetX();
-    double y = next_pos.y() + picker2_offset.Y() - states.picker2SensorOffsetY();
-    double t = parameters.picker2ThetaOffset();
+    double x = next_pos.x() + picker2_offset.X() - states.picker2SensorOffsetX() - pr_offset.X;
+    double y = next_pos.y() + picker2_offset.Y() - states.picker2SensorOffsetY() - pr_offset.Y;
+    double t = parameters.picker2ThetaOffset() + pr_offset.Theta;
     result = pick_arm->move_XYT2_Pos(x,y,t);
     bool check_result = checkPickedNgOrProduct(true);
     result &= pick_arm->wait_XYT2_Arrived();

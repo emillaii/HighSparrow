@@ -195,6 +195,7 @@ bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
          data_content.append("zPeak_3_LR,");
          data_content.append("zPeak_3_LL,");
          data_content.append("zPeak,");
+         data_content.append("cczPeak,");
          data_content.append("dev,");
          data_content.append("xTilt_1,");
          data_content.append("yTilt_1,");
@@ -229,6 +230,8 @@ bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
          data_content.append(data["zPeak_3_LL"].toString());
          data_content.append(",");
          data_content.append(data["zPeak"].toString());
+         data_content.append(",");
+         data_content.append(data["cczPeak"].toString());
          data_content.append(",");
          data_content.append(data["dev"].toString());
          data_content.append(",");

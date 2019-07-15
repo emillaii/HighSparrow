@@ -161,8 +161,19 @@ ColumnLayout {
                     onClicked: {
                         //7263
                         sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
-                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
+                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
                                                            +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_POS1)
+                    }
+                }
+                Button{
+                    text:qsTr("盲取成品")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        //7263
+                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
+                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
                                                            +SensorLoaderModule.SUT_POS1)
                     }
                 }
@@ -282,6 +293,18 @@ ColumnLayout {
                         sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT2
                                                            +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
                                                            +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_POS2)
+                    }
+                }
+
+                Button{
+                    text:qsTr("盲取成品")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        //7263
+                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT2
+                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
                                                            +SensorLoaderModule.SUT_POS2)
                     }
                 }

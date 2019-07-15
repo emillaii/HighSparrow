@@ -209,18 +209,18 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
         avs::LoadObject< avl::Vector2D >( g_constData2, avl::StreamMode::Binary, g_constData3, vector2D1 );
         avs::LoadObject< avl::GrayModel >( g_constData4, avl::StreamMode::Binary, g_constData5, grayModel1 );
-        try {
-            avs::LoadObject< avl::Region >( g_constData8, avl::StreamMode::Binary, g_constData9, region1 );
-        } catch(const atl::Error& error) {
-            isSearchRegionFound = false;
-            qInfo("Missing search region file, set this to nil for backward compatible: %s", error.Message());
-        }
-        if (isSearchRegionFound) {
-            avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-        }
-        else {
+//        try {
+//            avs::LoadObject< avl::Region >( g_constData8, avl::StreamMode::Binary, g_constData9, region1 );
+//        } catch(const atl::Error& error) {
+//            isSearchRegionFound = false;
+//            qInfo("Missing search region file, set this to nil for backward compatible: %s", error.Message());
+//        }
+//        if (isSearchRegionFound) {
+//            avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+//        }
+//        else {
             avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-        }
+//        }
         bool is_object_score_pass = true;
         if (object2D1 != atl::NIL)
         {

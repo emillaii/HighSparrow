@@ -753,6 +753,8 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     int enableTilt = params["enable_tilt"].toInt();
     int imageCount = params["image_count"].toInt();
     int position_checking = params["position_checking"].toInt();
+//    int is_debug = params["is_debug"].toInt();
+    int is_debug = 0;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     qInfo("start : %f stop: %f enable_tilt: %d", start, stop, enableTilt);
     unsigned int zScanCount = 0;
@@ -787,11 +789,14 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            cv::Mat dst;
            cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
            cv::resize(img, dst, size);
-           QString imageName;
-           imageName.append(getGrabberLogDir())
-                           .append(getCurrentTimeString())
-                           .append(".bmp");
-//           cv::imwrite(imageName.toStdString().c_str(), img);
+           if(is_debug == 1)
+           {
+               QString imageName;
+               imageName.append(getGrabberLogDir())
+                               .append(getCurrentTimeString())
+                               .append(".bmp");
+               cv::imwrite(imageName.toStdString().c_str(), img);
+           }
            double dfov = calculateDFOV(img);
            if(current_dfov.contains(QString::number(i)))
                 current_dfov[QString::number(i)] = dfov;
@@ -811,6 +816,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            sut->moveToZPos(start);
            QThread::msleep(zSleepInMs);
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+           if(is_debug == 1) {
+               QString imageName;
+               imageName.append(getGrabberLogDir())
+                               .append(getCurrentTimeString())
+                               .append(".bmp");
+               cv::imwrite(imageName.toStdString().c_str(), img);
+           }
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                LogicNg(current_aa_ng_time);
@@ -839,6 +851,8 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            for (unsigned int i = 0; i < imageCount; i++) {
                 sut->moveToZPos(target_z+(i*step_size));
                 QThread::msleep(zSleepInMs);
+
+                qInfo("Current Z: %f", sut->carrier->GetFeedBackPos().Z);
                 cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
@@ -863,13 +877,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                        error = (slope - prev_fov_slope) / prev_fov_slope;
                    }
                    qInfo("current slope %f  prev_slope %f error %f", slope, prev_fov_slope, error);
-                   if (fabs(error) > 0.2) {
-                       qInfo("Crash detection is triggered");
-                       LogicNg(current_aa_ng_time);
-                       map["Result"] = QString("Crash detection is triggered. prev_fov_slope:%1 now_fov_slope:%2 error:%3").arg(prev_fov_slope).arg(slope).arg(error);
-                       emit pushDataToUnit(runningUnit, "AA", map);
-                       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-                   }
+//                   if (fabs(error) > 0.5) {
+//                       qInfo("Crash detection is triggered");
+//                       LogicNg(current_aa_ng_time);
+//                       map["Result"] = QString("Crash detection is triggered. prev_fov_slope:%1 now_fov_slope:%2 error:%3").arg(prev_fov_slope).arg(slope).arg(error);
+//                       emit pushDataToUnit(runningUnit, "AA", map);
+//                       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+//                   }
                    prev_fov_slope = slope;
                 }
                 prev_point.setX(realZ); prev_point.setY(dfov);
@@ -974,7 +988,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     clustered_sfr_map.clear();
     qInfo("AA time elapsed: %d", timer.elapsed());
     map.insert("X_TILT", aa_result["xTilt"].toDouble());
-    map.insert("Y_TILT", aa_result["xTilt"].toDouble());
+    map.insert("Y_TILT", aa_result["yTilt"].toDouble());
     map.insert("Z_PEAK_CC", aa_result["zPeak"].toDouble());
 //    map.insert("Z_PEAK_UL", aa_result["zPeak"].toDouble());
 //    map.insert("Z_PEAK_UR", ur_zPeak);
@@ -1138,16 +1152,19 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     if (points_1.size()==4) { validLayer++; }
     if (points_2.size()==4) { validLayer++; }
     if (points_3.size()==4) { validLayer++; }
+
     for (size_t i = 0; i < points_1.size(); i++) {
         qInfo("Layer 1: x: %f y: %f z: %f", points_1[i].x, points_1[i].y, points_1[i].z);
         layerDetected++;
     }
-
+    double peak_05  = 0;
     for (size_t i = 0; i < points_2.size(); i++) {
         qInfo("Layer 2: x: %f y: %f z: %f", points_2[i].x, points_2[i].y, points_2[i].z);
         layerDetected++;
+        peak_05 += points_2[i].z;
     }
-
+    peak_05 /= points_2.size();
+    qInfo("Peak 0.5F : %f", peak_05);
     for (size_t i = 0; i < points_3.size(); i++) {
         qInfo("Layer 3: x: %f y: %f z: %f", points_3[i].x, points_3[i].y, points_3[i].z);
         layerDetected++;
@@ -1175,7 +1192,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     result.insert("yTilt_2", yTilt_2); map.insert("yTilt_2", yTilt_2);
     result.insert("xTilt_3", xTilt_3); map.insert("xTilt_3", xTilt_3);
     result.insert("yTilt_3", yTilt_3); map.insert("yTilt_3", yTilt_3);
-    result.insert("zPeak", point_0.z); map.insert("zPeak", point_0.z);
+    map.insert("cczPeak", point_0.z);
+    result.insert("zPeak", peak_05); map.insert("zPeak", peak_05);
     result.insert("OK", true);
     if (validLayer == 1) {
         result.insert("xTilt", xTilt_1);
@@ -1472,7 +1490,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
 
     std::sort(sfr_check_list.begin(), sfr_check_list.end());
     double max_sfr_deviation = fabs(sfr_check_list[0] - sfr_check_list[sfr_check_list.size()-1]);
-    mtf_oc_x = sv[0].px; mtf_oc_y = sv[0].py;
+    mtf_oc_x = sv[0].px - img.cols/2; mtf_oc_y = sv[0].py - img.rows/2;
     qInfo("mtf_oc_x: %f mtf_oc_y: %f", mtf_oc_x, mtf_oc_y);
     qInfo("Max sfr deviation : %f", max_sfr_deviation);
     if (max_sfr_deviation >= sfr_dev_tol) {
@@ -1625,7 +1643,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
 
     std::sort(sfr_check_list.begin(), sfr_check_list.end());
     double max_sfr_deviation = fabs(sfr_check_list[0] - sfr_check_list[sfr_check_list.size()-1]);
-    mtf_oc_x = sv[0].px; mtf_oc_y = sv[0].py;
+    mtf_oc_x = sv[0].px - img.cols/2; mtf_oc_y = sv[0].py - img.rows/2;
     qInfo("Max sfr deviation : %f", max_sfr_deviation);
     if (max_sfr_deviation >= sfr_dev_tol) {
         qInfo("max_sfr_deviation cannot pass");
@@ -2404,6 +2422,7 @@ double AACoreNew::calculateDFOV(cv::Mat img)
         double dfov1 = 2*atan(d1/(2*parameters.SensorXRatio()*f))*180/PI;
         double dfov2 = 2*atan(d2/(2*parameters.SensorYRatio()*f))*180/PI;
         double dfov = (dfov1 + dfov2)/2;
+        qInfo("d1: %f d2 %f f: %f dfov1: %f dfov2: %f", d1, d2, f, dfov1, dfov2);
         return dfov;
     }
     return -1;

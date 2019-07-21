@@ -429,13 +429,6 @@ ItemDelegate {
                     }
                 }
             }
-
-            LogView{
-                id: logView
-                width: coreParamGroupBox.width
-//                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
         }
 
         Frame {
@@ -446,7 +439,7 @@ ItemDelegate {
             Image {
                 id: image1
                 anchors.fill: parent
-                source: "icons/sparrow.png"
+                source: "../../icons/sparrow.png"
                 fillMode: Image.PreserveAspectFit
                 cache: false
                 Connections {

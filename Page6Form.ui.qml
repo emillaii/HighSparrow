@@ -2,6 +2,7 @@
 import QtQuick.Controls 2.2
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.11
+import "qml/AACore"
 
 Page {
     width: 1280

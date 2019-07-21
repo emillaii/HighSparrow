@@ -4,11 +4,11 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
-
+import "qml/AAHeadModule"
 ItemDelegate {
     width: parent.width
 
-    contentItem: ColumnLayout{     
+    contentItem: ColumnLayout{
         spacing: 0
 
         ColumnLayout {

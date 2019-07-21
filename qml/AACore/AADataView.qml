@@ -16,7 +16,7 @@ Grid {
         Image {
             id: image1
             anchors.fill: parent
-            source: "icons/sparrow.png"
+            source: "../../icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
             Connections {
@@ -36,7 +36,7 @@ Grid {
         Image {
             id: image3
             anchors.fill: parent
-            source: "icons/sparrow.png"
+            source: "../../icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
             Label {
@@ -227,7 +227,7 @@ Grid {
         Image {
             id: image4
             anchors.fill: parent
-            source: "icons/sparrow.png"
+            source: "../../icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
             Connections {
@@ -248,7 +248,7 @@ Grid {
         Image {
             id: image6
             anchors.fill: parent
-            source: "icons/sparrow.png"
+            source: "../../icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
             Connections {

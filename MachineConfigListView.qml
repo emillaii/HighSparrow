@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.11
 import QtQuick.Controls 2.4
 import "qml"
 import "qml/AAHeadModule"
+import "qml/LUTModule"
 
 ScrollView {
     id: machineConfigListView

@@ -21,6 +21,7 @@ public:
     bool saveJsonConfig(QString file_name);
     bool generateConfig(QString filename);
     TcpMessager* GetTcpMessager(QString messager_name);
+    TcpMessager *GetAllTcpMessager(QString messager_name);
     TcpMessager *GetPeerTcpMessager(QString messager_name);
     QList<TcpMessager *> GetAllTcpMessager();
 signals:

@@ -23,6 +23,7 @@ public:
     QString inquiryMessage(QString message);
     static QJsonObject getJsonObjectFromString(const QString json_string);
     static QString getStringFromJsonObject(const QJsonObject& jsonObject);
+    static QString getStringFromQvariantMap(const QVariantMap& qvariantMap);
 private:
     bool waitMessage(QString& message);
 signals:

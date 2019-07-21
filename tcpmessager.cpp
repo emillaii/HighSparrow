@@ -148,6 +148,11 @@ QString TcpMessager::getStringFromJsonObject(const QJsonObject &json_object)
     return QString(QJsonDocument(json_object).toJson());
 }
 
+QString TcpMessager::getStringFromQvariantMap(const QVariantMap &qvariantMap)
+{
+    return QString(QJsonDocument(QJsonObject::fromVariantMap(qvariantMap)).toJson());
+}
+
 bool TcpMessager::onSendTextMessage(QString message)
 {
     if (parameters.needQInfo())

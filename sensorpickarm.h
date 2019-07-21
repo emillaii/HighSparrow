@@ -12,7 +12,8 @@ class SensorPickArm: public ErrorBase
 public:
     SensorPickArm(QString name = "SensorPickArm");
     void Init(XtMotor* motor_x,XtMotor* motor_y,MaterialPicker * picker1,MaterialPicker * picker2);
-    bool move_XY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
+    bool move_XY_Synic(const QPointF position,const bool check_arrived = false,const bool check_softlanding = false,int timeout = 10000);
+    bool checkXYArrived(const double x,const double y);
     bool checkXYT1Arrived(const double x,const double y,const double t);
     bool move_XYT1_Synic(const double x,const double y,const double t,const bool check_arrived = false,const bool check_softlanding = false,int timeout = 10000);
     bool move_XYT1_Pos(const double x,const double y,const double t,const bool check_arrived = false,const bool check_softlanding = false,int timeout = 10000);

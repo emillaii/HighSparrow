@@ -876,6 +876,11 @@ public:
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
     Q_PROPERTY(bool sutHasProduct READ sutHasProduct WRITE setSutHasProduct NOTIFY sutHasProductChanged)
     Q_PROPERTY(bool sutHasNgProduct READ sutHasNgProduct WRITE setSutHasNgProduct NOTIFY sutHasNgProductChanged)
+    Q_PROPERTY(bool sut2HasSensor READ sut2HasSensor WRITE setSut2HasSensor NOTIFY sut2HasSensorChanged)
+    Q_PROPERTY(bool sut2HasNgSensor READ sut2HasNgSensor WRITE setSut2HasNgSensor NOTIFY sut2HasNgSensorChanged)
+    Q_PROPERTY(bool sut2HasProduct READ sut2HasProduct WRITE setSut2HasProduct NOTIFY sut2HasProductChanged)
+    Q_PROPERTY(bool sut2HasNgProduct READ sut2HasNgProduct WRITE setSut2HasNgProduct NOTIFY sut2HasNgProductChanged)
+
     Q_PROPERTY(bool needLoadSensor READ needLoadSensor WRITE setNeedLoadSensor NOTIFY needLoadSensorChanged)
     Q_PROPERTY(bool needChangTray READ needChangTray WRITE setNeedChangTray NOTIFY needChangTrayChanged)
     Q_PROPERTY(bool allowChangeTray READ allowChangeTray WRITE setAllowChangeTray NOTIFY allowChangeTrayChanged)
@@ -1012,6 +1017,26 @@ public:
     bool sutHasNgProduct() const
     {
         return m_sutHasNgProduct;
+    }
+
+    bool sut2HasSensor() const
+    {
+        return m_sut2HasSensor;
+    }
+
+    bool sut2HasNgSensor() const
+    {
+        return m_sut2HasNgSensor;
+    }
+
+    bool sut2HasProduct() const
+    {
+        return m_sut2HasProduct;
+    }
+
+    bool sut2HasNgProduct() const
+    {
+        return m_sut2HasNgProduct;
     }
 
 public slots:
@@ -1234,6 +1259,42 @@ public slots:
         emit sutHasNgProductChanged(m_sutHasNgProduct);
     }
 
+    void setSut2HasSensor(bool sut2HasSensor)
+    {
+        if (m_sut2HasSensor == sut2HasSensor)
+            return;
+
+        m_sut2HasSensor = sut2HasSensor;
+        emit sut2HasSensorChanged(m_sut2HasSensor);
+    }
+
+    void setSut2HasNgSensor(bool sut2HasNgSensor)
+    {
+        if (m_sut2HasNgSensor == sut2HasNgSensor)
+            return;
+
+        m_sut2HasNgSensor = sut2HasNgSensor;
+        emit sut2HasNgSensorChanged(m_sut2HasNgSensor);
+    }
+
+    void setSut2HasProduct(bool sut2HasProduct)
+    {
+        if (m_sut2HasProduct == sut2HasProduct)
+            return;
+
+        m_sut2HasProduct = sut2HasProduct;
+        emit sut2HasProductChanged(m_sut2HasProduct);
+    }
+
+    void setSut2HasNgProduct(bool sut2HasNgProduct)
+    {
+        if (m_sut2HasNgProduct == sut2HasNgProduct)
+            return;
+
+        m_sut2HasNgProduct = sut2HasNgProduct;
+        emit sut2HasNgProductChanged(m_sut2HasNgProduct);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayChanged(bool hasTray);
@@ -1282,6 +1343,14 @@ signals:
 
     void sutHasNgProductChanged(bool sutHasNgProduct);
 
+    void sut2HasSensorChanged(bool sut2HasSensor);
+
+    void sut2HasNgSensorChanged(bool sut2HasNgSensor);
+
+    void sut2HasProductChanged(bool sut2HasProduct);
+
+    void sut2HasNgProductChanged(bool sut2HasNgProduct);
+
 private:
     int m_runMode = 0;
     bool m_hasTray = false;
@@ -1307,6 +1376,10 @@ private:
     bool m_hasUnpickedNgSensor = false;
     bool m_hasPickedNgProduct = false;
     bool m_sutHasNgProduct = false;
+    bool m_sut2HasSensor = false;
+    bool m_sut2HasNgSensor = false;
+    bool m_sut2HasProduct = false;
+    bool m_sut2HasNgProduct = false;
 };
 
 #endif // SENSORLOADERPARAMETER_H

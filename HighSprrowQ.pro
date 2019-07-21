@@ -86,7 +86,8 @@ SOURCES += \
     tcpmessager.cpp \
     tcpclientmessager.cpp \
     tcpmanager.cpp \
-    tcpservermessager.cpp
+    tcpservermessager.cpp 
+
 RESOURCES += qml.qrc \
     icons.qrc
 
@@ -234,7 +235,8 @@ HEADERS += \
     tcpmanager.h \
     tcpmanagerparameter.h \
     tcpclientmessager.h \
-    tcpservermessager.h
+    tcpservermessager.h \
+    workersmanagerparameter.h
 
 DISTFILES += \
     icons/index.theme

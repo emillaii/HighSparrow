@@ -5,7 +5,23 @@
 
 WorkersManager::WorkersManager(QObject *parent):QObject (parent)
 {
+//    this->moveToThread(&work_thread);
+//    this->work_thread.start();
+}
 
+void WorkersManager::Init(QList<TcpMessager*> senders,QList<TcpMessager*> receivers)
+{
+    send_messagers.clear();
+    foreach (TcpMessager* temp_messager, senders) {
+        send_messagers.insert(temp_messager->parameters.messagerName(),temp_messager);
+    }
+    qInfo("send_messagers size %d",send_messagers.size());
+    receive_messagers.clear();
+    foreach (TcpMessager* temp_messager, receivers) {
+        receive_messagers.insert(temp_messager->parameters.messagerName(),temp_messager);
+        connect(temp_messager,&TcpMessager::receiveTextMessage,this,&WorkersManager::tcpResp);
+    }
+    qInfo("receive_messagers size %d",receive_messagers.size());
 }
 
 bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
@@ -20,6 +36,7 @@ bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
         connect(worker,&ThreadWorkerBase::sendErrorMessage,this,&WorkersManager::receiveAlarm);
         connect(this,&WorkersManager::feedbackOperation,worker,&ThreadWorkerBase::receiveOperation,Qt::DirectConnection);
         connect(worker,&ThreadWorkerBase::sendMsgSignal,this,&WorkersManager::sendMessageTest,Qt::BlockingQueuedConnection);
+        connect(worker,&ThreadWorkerBase::sendModuleMessage,this,&WorkersManager::receiveModuleMessage,Qt::DirectConnection);
         worker->setAlarmId(workers.count());
         qInfo("registerWorker :%s",worker->Name().toStdString().c_str());
         return true;
@@ -39,7 +56,24 @@ void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message
     this->workersState.insert(sender_id, level);
     this->workersError.insert(sender_id, error_message);
     //三色灯
-//    showAlarm(sender_id,level,error_message);
+    //    showAlarm(sender_id,level,error_message);
+}
+
+void WorkersManager::tcpResp(QString message)
+{
+    qInfo("receive tcp module message %s", message.toStdString().c_str());
+    QJsonObject message_object = TcpMessager::getJsonObjectFromString(message);
+    if(message_object.contains("TargetModule"))
+    {
+        QString module_name = message_object["TargetModule"].toString();
+        if(workers.contains(module_name))
+        {
+           workers[module_name]->receivceModuleMessage(message_object.toVariantMap());
+        }
+        else {
+            qInfo("module name error");
+        }
+    }
 }
 
 bool WorkersManager::sendMessageTest(QString title, QString content)
@@ -52,12 +86,36 @@ bool WorkersManager::sendMessageTest(QString title, QString content)
     }
 }
 
+void WorkersManager::receiveModuleMessage(QVariantMap message)
+{
+    qInfo("receive module message %s to %s",message["Message"].toString().toStdString().c_str(),message["TargetModule"].toString().toStdString().c_str());
+    if(message.contains("TargetModule"))
+    {
+        QString target_module = message["TargetModule"].toString();
+        if(workers.contains(target_module))
+        {
+            workers[target_module]->receivceModuleMessage(message);
+        }
+        else
+        {
+            sendTcpMessage(message);
+        }
+    }
+}
+
 void WorkersManager::showAlarm(const int sender_id, const int level, const QString error_message)
 {
     qInfo("ShowAlarm sender_id: %d level: %d", sender_id, level);
     this->setShowAlarmDialog(true);
     this->workersState.insert(sender_id, level);
     this->workersError.insert(sender_id, error_message);
+}
+
+void WorkersManager::sendTcpMessage(QVariantMap message)
+{
+    foreach (TcpMessager* temp_messager, send_messagers) {
+         temp_messager->sendMessage(TcpMessager::getStringFromQvariantMap(message));
+     }
 }
 
 void WorkersManager::startWorkers(int run_mode)
@@ -165,20 +223,4 @@ void WorkersManager::sendOperation(QString workerName, int operation_type)
     workersState.remove(sender_id);
     workersError.remove(sender_id);
     //this->setShowAlarmDialog(false);
-}
-
-void WorkersManager::sendModuleMessage(QVariantMap message)
-{
-    if(message.contains("TargetModle"))
-    {
-        QString target_module = message["TargetModle"].toString();
-        if(workers.contains(target_module))
-        {
-//            workers[target_module]->receiveModuleMessage(message);
-        }
-    }
-    else
-    {
-
-    }
 }

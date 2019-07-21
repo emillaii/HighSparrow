@@ -125,8 +125,8 @@ void LutModule::run(bool has_material)
     time_label = QTime::currentTime();
     while(is_run){
         has_task = false;
-        if(!has_task)
-            QThread::msleep(1);
+//        if(!has_task)
+            QThread::msleep(100);
         has_task = false;
         if (state == HAS_LENS) {
             tcp_mutex.lock();
@@ -371,7 +371,7 @@ void LutModule::run(bool has_material)
                     is_run = false;
                     break;
                 }
-                if(!(checkLutLens(false)&&checkLutNgLens(states.lutNgLensID()>=0)))
+                if(!(checkLutLens(false)&&checkLutNgLens(states.lutNgLensID()>=0)))//todo
                 {
                     sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                     waitMessageReturn(is_run);
@@ -398,7 +398,7 @@ void LutModule::runTest()
     bool finished = false;
     isLocalHost = true;
     while(is_run){
-        if(!has_task)
+//        if(!has_task)
             QThread::msleep(1);
         has_task = false;
         //取lens请求

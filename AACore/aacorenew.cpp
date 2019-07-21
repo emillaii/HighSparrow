@@ -113,6 +113,7 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Dothinkey *dk, ChartCalibration *chartCalibration,
                      DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog)
 {
+    setName(parameters.moduleName());
     this->aa_head = aa_head;
     this->lut = lut;
     this->dk = dk;
@@ -337,6 +338,7 @@ void AACoreNew::performHandlingOperation(int cmd)
     runningUnit = this->unitlog->createUnit();
     if (cmd == HandleTest::Dispense)
     {
+        sut->DownlookPrDone = false;
         performDispense();
     }
     else if (cmd == HandleTest::PR_To_Bond)
@@ -347,12 +349,14 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::MTF) {
         performMTF(true, true);
+        //performMTFOffline(params);
     }
     else if (cmd == HandleTest::OC) {
         performOC(true, false);
     }
     else if (cmd == HandleTest::AA) {
         performAA(params);
+        //performAAOffline();
     }
     else if (cmd == HandleTest::INIT_CAMERA) {
         performInitSensor(true);
@@ -408,7 +412,7 @@ bool AACoreNew::runFlowchartTest()
                if (currentPointer == "start") {
                    QVariantMap map;
                    map.insert("Time", getCurrentTimeString());
-                   emit pushDataToUnit(0, "a_StartTime", map);    //Add a_ to make it first in map sorting
+                   emit pushDataToUnit(runningUnit, "AAA_StartTime", map);    //Add a_ to make it first in map sorting
 
                    qInfo(QString("Move from " + currentPointer + " to " + value["toOperator"].toString()).toStdString().c_str());
                    currentPointer = value["toOperator"].toString();
@@ -532,6 +536,11 @@ bool AACoreNew::runFlowchartTest()
            }
        }
     }
+
+    QVariantMap map;
+    map.insert("Time", getCurrentTimeString());
+    emit pushDataToUnit(runningUnit, "AAA_TerminateTime", map);   //Add a_ to make it the first one in map sorting
+
     return true;
 }
 
@@ -1091,7 +1100,7 @@ void AACoreNew::performAAOffline()
     double estimated_fov_slope = 15;
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
-    int inputImageCount = 10;
+    int inputImageCount = 12;
     for (int i = 0; i < inputImageCount -1; i++)
     {
         if (isZScanNeedToStop) {
@@ -1101,7 +1110,7 @@ void AACoreNew::performAAOffline()
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
-        QString filename = "1\\" + QString::number(i+1) + ".bmp";
+        QString filename = "offline\\" + QString::number(i) + ".bmp";
         cv::Mat img = cv::imread(filename.toStdString());
         if (!blackScreenCheck(img)) {
             return;
@@ -1548,7 +1557,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     this->sfrWorkerController->setSfrWorkerParams(aaPrams);
     QElapsedTimer timer;
     QVariantMap map;
-    cv::Mat img = cv::imread("1\\5.bmp");
+    cv::Mat img = cv::imread("offline\\5.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
     double dfov = calculateDFOV(img);
@@ -2161,9 +2170,6 @@ ErrorCodeStruct AACoreNew::performTerminate()
     Sleep(100);
     imageThread->exit();
     dk->DothinkeyClose();
-    QVariantMap map;
-    map.insert("Time", getCurrentTimeString());
-    emit pushDataToUnit(0, "a_TerminateTime", map);   //Add a_ to make it the first one in map sorting
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -2421,13 +2427,25 @@ ErrorCodeStruct AACoreNew::performLoadMaterial()
     {
         qInfo("need sensor has_product %d  has_ng_product %d has_ng_sensor %d",has_product,has_ng_product,has_ng_sensor);
         if(has_product)
+        {
             aa_head->sendSensorRequest(SUT_STATE::HAS_PRODUCT);
+            sendMessageToModule("SensorLoaderModule","GoodProduct");
+        }
         else if(has_ng_product)
+        {
             aa_head->sendSensorRequest(SUT_STATE::HAS_NG_PRODUCT);
+            sendMessageToModule("SensorLoaderModule","NgProduct");
+        }
         else if(has_ng_sensor)
+        {
             aa_head->sendSensorRequest(SUT_STATE::HAS_NG_SENSOR);
+            sendMessageToModule("SensorLoaderModule","NgSensor");
+        }
         else
+        {
             aa_head->sendSensorRequest(SUT_STATE::NO_MATERIAL);
+            sendMessageToModule("SensorLoaderModule","NoSensor");
+        }
         send_sensor_request = true;
     }
     if(aa_head->receive_lens)
@@ -2626,6 +2644,7 @@ void AACoreNew::aaCoreParametersChanged()
         timeout--;
     }
     vector<Sfr_entry> sv = clustered_sfr_map[0];
+    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
 
     qPainter.setFont(QFont("Times",50, QFont::Bold));
     qPainter.drawText(imageCenterX/2 , 100 , QString("DFOV: ").append(QString::number(dfov)));

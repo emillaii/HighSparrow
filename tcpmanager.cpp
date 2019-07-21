@@ -4,8 +4,9 @@ TcpManager::TcpManager(QObject *parent) : QObject(parent)
 {
     this->moveToThread(&work_thread);
     work_thread.start();
+    work_thread.setPriority(QThread::TimeCriticalPriority);
     connect(this,&TcpManager::sendInit,this,&TcpManager::onInit);
-    connect(this,&TcpManager::sendCreat,this,&TcpManager::onCreat);
+    connect(this,&TcpManager::sendCreat,this,&TcpManager::onCreat,Qt::BlockingQueuedConnection);
     connect(this,&TcpManager::sendDelete,this,&TcpManager::onDelete,Qt::BlockingQueuedConnection);
 }
 
@@ -61,6 +62,21 @@ TcpMessager* TcpManager::GetTcpMessager(QString messager_name)
 {
     if(m_client_messagers.contains(messager_name))
         return m_client_messagers[messager_name];
+    else {
+        qInfo("TcpMessage(%s) is not exist",messager_name.toStdString().c_str());
+    }
+    return nullptr;
+}
+
+TcpMessager *TcpManager::GetAllTcpMessager(QString messager_name)
+{
+    if(m_client_messagers.contains(messager_name))
+        return m_client_messagers[messager_name];
+    else if(m_server_messagers.contains(messager_name))
+        return m_server_messagers[messager_name];
+    else {
+        qInfo("all TcpMessage(%s) is not exist",messager_name.toStdString().c_str());
+    }
     return nullptr;
 }
 
@@ -68,6 +84,9 @@ TcpMessager *TcpManager::GetPeerTcpMessager(QString messager_name)
 {
     if(m_server_messagers.contains(messager_name))
         return m_server_messagers[messager_name];
+    else {
+        qInfo("Peer TcpMessage(%s) is not exist",messager_name.toStdString().c_str());
+    }
     return nullptr;
 }
 
@@ -157,6 +176,9 @@ void TcpManager::onNewConnection()
     if(m_server_messagers.contains(temp_socket)&&m_server_messagers[temp_socket]!=nullptr)
     {
        m_server_messagers[temp_socket]->Init(pSocket);
+    }
+    else {
+        qInfo("not define tcp mssager %s",temp_socket.toStdString().c_str());
     }
 }
 

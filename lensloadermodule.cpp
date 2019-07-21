@@ -118,9 +118,9 @@ void LensLoaderModule::run(bool has_material)
             waiting_change_tray = states.waitingChangeTray();
             finish_change_tray = states.finishChangeTray();
         }
-        if(!has_task)
+//        if(!has_task)
         {
-            QThread::msleep(100);
+            QThread::msleep(1);
             if(finish_stop)
             {
                 is_run = false;
@@ -192,7 +192,7 @@ void LensLoaderModule::run(bool has_material)
                     states.setCurrentTray(1);
                 else
                 {
-                    AppendError(u8"逻辑错误，五可用lens");
+                    AppendError(u8"逻辑错误，无可用lens");
                     sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                     is_run = false;
                     break;
@@ -431,7 +431,7 @@ void LensLoaderModule::runTest()
             need_load_lens = states.needLoadLens();
             lut_has_ng_lens = states.lutHasNgLens();
         }
-        if(!has_task)
+//        if(!has_task)
         {
             QThread::msleep(100);
         }
@@ -1398,3 +1398,4 @@ void LensLoaderModule::recordNgLensPr(QString uuid)
     saveUnitDataToCSV(uuid);
     prRecordMap.remove(uuid);
 }
+

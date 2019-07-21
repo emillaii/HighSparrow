@@ -4,6 +4,7 @@
 #include "utils/errorcode.h"
 
 #include <QObject>
+#include <QVariantMap>
 #include <qmutex.h>
 #include <qthread.h>
 enum AlarmOperation
@@ -49,11 +50,16 @@ public:
     void sendAlarmMessage(int error_level,QString error_message);
     int waitMessageReturn(bool &interruput);
     Q_INVOKABLE void performHandling(int cmd);
+    bool waitResponseMessage(bool &is_run,QString target_message);
+    virtual void receivceModuleMessage(QVariantMap message);
+    Q_INVOKABLE void sendMessageToModule(QString module_name,QString message);
+    Q_INVOKABLE QString getModuleMessage();
 signals:
     void sendErrorMessage(int alarm_id,int error_level,QString error_message);
     void sendHandlingOperation(int cmd);
     void NameChanged(QString Name);
     bool sendMsgSignal(QString,QString);
+    void sendModuleMessage(QVariantMap message);
 
 public slots:
     virtual void startWork(int run_mode) = 0;
@@ -70,7 +76,9 @@ private:
     int operation_type = 0;
     bool message_returned = false;
     int alarm_id = 0;
+protected:
     QMutex message_mutex;
+    QVariantMap message;
 };
 
 #endif // WORKER_BASE_H

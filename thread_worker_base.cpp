@@ -40,7 +40,7 @@ int ThreadWorkerBase::getAlarmId()
 
 void ThreadWorkerBase::sendAlarmMessage(int error_level, QString error_message)
 {
-   qInfo("send alarm error_level %d error_message %s",error_level,error_message.toStdString().c_str());
+    qInfo("send alarm error_level %d error_message %s",error_level,error_message.toStdString().c_str());
     message_returned = false;
     emit sendErrorMessage(alarm_id,error_level,error_message);
 }
@@ -79,6 +79,48 @@ void ThreadWorkerBase::performHandling(int cmd)
     emit sendHandlingOperation(cmd);
 }
 
+bool ThreadWorkerBase::waitResponseMessage(bool &is_run, QString target_message)
+{
+    int current_time = 0;
+    while (is_run)
+    {
+        current_time++;
+        QThread::msleep(10);
+        {
+            QMutexLocker temp_locker(&message_mutex);
+            if(message_returned)
+            {
+                if(message.contains("Response")&&message["Response"] == target_message)
+                {
+                    qInfo("wait repnonse time : %d",current_time*10);
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void ThreadWorkerBase::receivceModuleMessage(QVariantMap message)
+{
+    qInfo("receive module message %s",message["Message"].toString().toStdString().c_str());
+    QMutexLocker temp_locker(&message_mutex);
+    this->message = message;
+}
+
+void ThreadWorkerBase::sendMessageToModule(QString module_name, QString message)
+{
+    QVariantMap message_map;
+    message_map.insert("TargetModule",module_name);
+    message_map.insert("Message",message);
+    message_map.insert("OriginModule",Name());
+    emit sendModuleMessage(message_map);
+}
+
+QString ThreadWorkerBase::getModuleMessage()
+{
+    return message["Message"].toString();
+}
 void ThreadWorkerBase::setName(QString Name)
 {
     if (m_Name == Name)

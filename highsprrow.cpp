@@ -11,8 +11,12 @@ HighSprrow::HighSprrow()
     worker_manager = new WorkersManager(this);
     baseModuleManager = new BaseModuleManager();
     baseModuleManager->loadProfile();
+    worker_manager->parameters.loadJsonConfig(baseModuleManager->getSystermParameterDir().append("WorkManager.json"),"WorkManager");
+//    worker_manager->parameters.saveJsonConfig(baseModuleManager->getSystermParameterDir().append("WorkManager.json"),"WorkManager");
     logicManager = new LogicManager(baseModuleManager);
     baseModuleManager->registerWorkers(worker_manager);
+    worker_manager->Init(baseModuleManager->GetTcpMessagersByName(worker_manager->parameters.cmsMessagerNames()),
+                         baseModuleManager->GetTcpMessagersByName(worker_manager->parameters.respMessagerNames()));
     connect(logicManager,&LogicManager::sendMsgSignal,worker_manager,&WorkersManager::sendMessageTest,Qt::BlockingQueuedConnection);
     connect(&baseModuleManager->aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &HighSprrow::receiveImageFromAACore);
 }

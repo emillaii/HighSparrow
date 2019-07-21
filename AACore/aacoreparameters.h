@@ -39,6 +39,8 @@ class AACoreParameters : public PropertyBase
 
     int m_peakProfile = 0;
 
+    QString m_moduleName = "AACoreNew";
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -46,6 +48,7 @@ public:
             m_WeightList.push_back(QVariant(0.25));
         }
     }
+    Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
     Q_PROPERTY(double EFL READ EFL WRITE setEFL NOTIFY paramsChanged)
     Q_PROPERTY(int MaxIntensity READ MaxIntensity WRITE setMaxIntensity NOTIFY paramsChanged)
     Q_PROPERTY(int MinArea READ MinArea WRITE setMinArea NOTIFY paramsChanged)
@@ -138,6 +141,11 @@ int setPeakProfile() const
 int PeakProfile() const
 {
     return m_peakProfile;
+}
+
+QString moduleName() const
+{
+    return m_moduleName;
 }
 
 public slots:
@@ -257,12 +265,22 @@ void setPeakProfile(int peakProfile)
     emit paramsChanged();
 }
 
+void setModuleName(QString moduleName)
+{
+    if (m_moduleName == moduleName)
+        return;
+
+    m_moduleName = moduleName;
+    emit moduleNameChanged(m_moduleName);
+}
+
 signals:
 void paramsChanged();
 void firstRejectSensorChanged(bool firstRejectSensor);
 void rejectTimesChanged(int rejectTimes);
 void minCircleTimeChanged(double minCircleTime);
 void maxCicleTimeChanged(double maxCicleTime);
+void moduleNameChanged(QString moduleName);
 };
 class AACoreStates: public PropertyBase
 {

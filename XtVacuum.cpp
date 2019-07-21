@@ -68,7 +68,7 @@ bool XtVacuum::checkHasMateriel()
     else
     {
         out_io->Set(true);
-        int time = parameters.outTime();
+        int time = parameters.checkOutTime();
         bool result = in_io->Value();
         while(time > 0)
         {

@@ -91,6 +91,7 @@ public slots:
     void receiveRequestMessage(QString message, QString client_ip);
     void receiveChangeTrayFinish();
 private:
+    void receivceModuleMessage(QVariantMap message);
     void run(bool has_material);
     void runTest();
     bool checkTrayNeedChange();
@@ -98,8 +99,8 @@ private:
     bool moveToProductTrayNextPos();
     bool moveToNgTrayNextPos();
     bool moveToSUTPRPos(bool is_local = true,bool check_arrived = false,bool check_softlanding = false);
-    bool movePicker1ToSUTPos(bool is_local = true);
-    bool movePicker2ToSUTPos(bool is_local = true);
+    bool movePicker1ToSUTPos(bool is_local = true,bool check_arrived = false,bool check_softlanding = false);
+    bool movePicker2ToSUTPos(bool is_local = true,bool check_arrived = false,bool check_softlanding = false);
 
     bool performSensorPR();
     bool performVacancyPR();
@@ -138,7 +139,7 @@ private:
     bool moveToStartPos(int tray_index);
     bool moveToTray1EndPos();
 
-    bool moveToStandbyPos();
+    bool moveToStandbyPos(bool check_arrived = false,bool check_softlanding = false);
 
     double updateAccumulatedHour(bool calculate = true);
     double getHourSpace(QTime time_label);

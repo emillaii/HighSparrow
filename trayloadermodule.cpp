@@ -1004,8 +1004,8 @@ void TrayLoaderModule::run(bool has_tray)
     bool has_task = false;
     bool allow_change_tray;
     while(is_run){
-        if(!has_task)
-            QThread::msleep(1000);
+//        if(!has_task)
+            QThread::msleep(100);
         has_task = false;
         {
             QMutexLocker temp_locker(&tray_mutex);
@@ -1271,8 +1271,8 @@ void TrayLoaderModule::runHandle()
     bool allow_change_tray;
     while(is_run)
     {
-        if(!has_task)
-            QThread::msleep(1000);
+//        if(!has_task)
+            QThread::msleep(100);
         has_task = false;
         {
             QMutexLocker temp_locker(&tray_mutex);

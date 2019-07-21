@@ -64,6 +64,40 @@ ItemDelegate {
                     }
                 }
             }
+//            GroupBox{
+//                title: qsTr("测试参数")
+//                visible: baseModuleManager.getServerMode() !== 0
+//                ColumnLayout{
+//                    CheckBox {
+//                        text: qsTr("静态测试")
+//                        checked: lens_loader_parameter.staticTest
+//                        onClicked: {
+//                            sensorLoaderParameter.setStaticTest(checked)
+//                            sutParams.setStaticTest(checked)
+//                        }
+//                    }
+//                    Label{
+//                        text: qsTr("重复次数")
+//                    }
+//                    TextField{
+//                        text: sensorLoaderParameter.repeatTime
+//                        onEditingFinished: {
+//                            sensorLoaderParameter.setRepeatTime(text)
+//                            sutParams.setRepeatTime(text)
+//                        }
+//                    }
+//                    Label{
+//                        text: qsTr("测试个数")
+//                    }
+//                    TextField{
+//                        text: sensorLoaderParameter.testLensCount
+//                        onEditingFinished: {
+//                            sensorLoaderParameter.setTestLensCount(text)
+//                            sutParams.setTestLensCount(text)
+//                        }
+//                    }
+//                }
+//            }
             GroupBox{
                 title:qsTr("系统操作")
                 ColumnLayout {
@@ -253,7 +287,67 @@ ItemDelegate {
                     }
                 }
             }
-        UPHView{}
+        GroupBox{
+            title:qsTr("消息路由测试")
+            RowLayout{
+                TextField{
+                    id:module_name
+                    width: 100
+                    text: "SUT1Module"
+                }
+
+                TextField{
+                    id:target_module_name
+                    width: 100
+                    text: "AA1CoreNew"
+                }
+
+                Button{
+                    text: qsTr("发送")
+                    onClicked: {
+                        if(module_name.text === "SUT1Module")
+                        {
+                            sutModule.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
+                        }
+                        else if(module_name.text === "AA1CoreNew")
+                        {
+                            aaNewCore.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
+                        }
+                        else if(module_name.text === "AA2CoreNew")
+                        {
+                            aaNewCore.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
+                        }
+                        else if(module_name.text === "SUT2Module")
+                        {
+                            aaNewCore.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
+                        }
+                    }
+                }
+                Button{
+                    text: qsTr("读取")
+                    onClicked: {
+                        if(target_module_name.text === "SUT1Module")
+                            receive_message.text = sutModule.getModuleMessage()
+                        else if(target_module_name.text === "AA1CoreNew")
+                            receive_message.text = aaNewCore.getModuleMessage()
+                        else if(module_name.text === "AA2CoreNew")
+                        {
+                            receive_message.text = aaNewCore.getModuleMessage()
+                        }
+                        else if(module_name.text === "SUT2Module")
+                        {
+                            receive_message.text = sutModule.getModuleMessage()
+                        }
+                    }
+                }
+                Label
+                {
+                    id:receive_message
+                    text: "无"
+                }
+                }
+        }
+            UPHView{}
         }
     }
 }

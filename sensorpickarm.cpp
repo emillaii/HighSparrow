@@ -21,13 +21,19 @@ void SensorPickArm::Init(XtMotor *motor_x, XtMotor *motor_y, MaterialPicker *pic
     parts.append(this->picker2->vacuum);
 }
 
-bool SensorPickArm::move_XY_Synic(QPointF position, bool check_softlanding, int timeout)
+bool SensorPickArm::checkXYArrived(const double x, const double y)
+{
+    return motor_x->CheckArrivedTargetPos(x)&&motor_y->CheckArrivedTargetPos(y);
+}
+
+bool SensorPickArm::move_XY_Synic(QPointF position,bool check_arrived, bool check_softlanding, int timeout)
 {
     if(check_softlanding)
     {
         if(!picker1->motor_z->resetSoftLanding(timeout))return false;
         if(!picker2->motor_z->resetSoftLanding(timeout))return false;
     }
+    if(check_arrived&&checkXYArrived(position.x(),position.y()))return true;
     motor_x->MoveToPos(position.x());
     motor_y->MoveToPos(position.y());
     bool resut = motor_x->WaitArrivedTargetPos(position.x(),timeout);

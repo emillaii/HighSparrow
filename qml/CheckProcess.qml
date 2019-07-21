@@ -207,15 +207,15 @@ ItemDelegate {
                                     target: timer
                                     onTriggered: {
                                         if (process5_operate.visible) {
-                                            if(pogopin_ouput.checked !== baseModuleManager.getOutput("POGOPIN下"))
+                                            if(pogopin_ouput.checked !== baseModuleManager.getOutput("POGOPIN_DOWN"))
                                                 pogopin_ouput.toggle()
                                             //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                         }
                                     }
                                 }
                                 onCheckedChanged:{
-                                    baseModuleManager.setOutput("POGOPIN下", checked)
-                                    baseModuleManager.setOutput("POGOPIN上", !checked)
+                                    baseModuleManager.setOutput("POGOPIN_DOWN", checked)
+                                    baseModuleManager.setOutput("POGOPIN_UP", !checked)
                                 }
                             }
                             Switch {

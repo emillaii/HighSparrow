@@ -19,7 +19,6 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     ErrorBase ("BaseModuleManager")
 {
     qInfo("main thread id :%d",QThread::currentThreadId());
-    work_thread.setPriority(QThread::Priority::HighestPriority);
     this->moveToThread(&work_thread);
     this->work_thread.start();
     QMap<QString,PropertyBase*> temp_map;
@@ -116,7 +115,7 @@ void BaseModuleManager::tcpResp(QString message)
                 result["error"] = "";
 
             }
-            messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+            receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
         }
     }
 }
@@ -145,9 +144,9 @@ QString BaseModuleManager::deviceResp(QString message)
             {
                 result["error"] = QString("can not find motor ").append(motor_name);
                 bool geted = false;
-                foreach (QString messger_name, all_messagers.keys())
+                foreach (QString messger_name, sender_messagers.keys())
                 {
-                  QString tcp_result =  all_messagers[messger_name]->inquiryMessage(message);
+                  QString tcp_result =  sender_messagers[messger_name]->inquiryMessage(message);
                   QJsonObject result_json = getJsonObjectFromString(tcp_result);
                   if(result_json.contains("error"))
                   {
@@ -188,9 +187,9 @@ QString BaseModuleManager::deviceResp(QString message)
             {
                 result["error"] = QString("can not find input io ").append(temp_name);
                 bool geted = false;
-                foreach (QString messger_name, messagers.keys())
+                foreach (QString messger_name, receive_messagers.keys())
                 {
-                  QString tcp_result =  messagers[messger_name]->inquiryMessage(message);
+                  QString tcp_result =  receive_messagers[messger_name]->inquiryMessage(message);
                   QJsonObject result_json = getJsonObjectFromString(tcp_result);
                   if(result_json.contains("error"))
                   {
@@ -224,9 +223,9 @@ QString BaseModuleManager::deviceResp(QString message)
             {
                 result["error"] = QString("can not find input io ").append(temp_name);
                 bool geted = false;
-                foreach (QString messger_name, messagers.keys())
+                foreach (QString messger_name, receive_messagers.keys())
                 {
-                  QString tcp_result =  messagers[messger_name]->inquiryMessage(message);
+                  QString tcp_result =  receive_messagers[messger_name]->inquiryMessage(message);
                   QJsonObject result_json = getJsonObjectFromString(tcp_result);
                   if(result_json.contains("error"))
                   {
@@ -981,22 +980,19 @@ QString BaseModuleManager::getSystermParameterDir()
 bool BaseModuleManager::InitStruct()
 {
     tcp_manager.Init();
-    foreach (TcpMessager* temp_messager, tcp_manager.GetAllTcpMessager())
-    {
-        if(!paramers.respMessagerNames().contains(temp_messager->parameters.messagerName()))
-            all_messagers.insert(temp_messager->parameters.messagerName(),temp_messager);
-    }
     foreach (QVariant messager_name, paramers.respMessagerNames()) {
-        TcpMessager* temp_messager = tcp_manager.GetTcpMessager(messager_name.toString());
+        TcpMessager* temp_messager = tcp_manager.GetAllTcpMessager(messager_name.toString());
         if(temp_messager!=nullptr)
         {
-            messagers.insert(messager_name.toString(),temp_messager);
+            receive_messagers.insert(messager_name.toString(),temp_messager);
             connect(temp_messager,&TcpMessager::receiveTextMessage,this,&BaseModuleManager::tcpResp);
         }
-        temp_messager = tcp_manager.GetPeerTcpMessager(messager_name.toString());
+    }
+    foreach (QVariant messager_name, paramers.cmsMessageerNames()) {
+        TcpMessager* temp_messager = tcp_manager.GetAllTcpMessager(messager_name.toString());
         if(temp_messager!=nullptr)
         {
-            messagers.insert(messager_name.toString(),temp_messager);
+            sender_messagers.insert(messager_name.toString(),temp_messager);
             connect(temp_messager,&TcpMessager::receiveTextMessage,this,&BaseModuleManager::tcpResp);
         }
     }
@@ -1574,6 +1570,21 @@ Calibration *BaseModuleManager::GetCalibrationByName(QString name)
     return nullptr;
 }
 
+QList<TcpMessager *> BaseModuleManager::GetTcpMessagersByName(QVariantList messager_names)
+{
+    QList<TcpMessager *> temp_list;
+    foreach (QVariant temp_name, messager_names) {
+       TcpMessager* temp_messager = tcp_manager.GetAllTcpMessager(temp_name.toString());
+       if(temp_messager != nullptr)
+           temp_list.append(temp_messager);
+       else {
+           qInfo("can not find tcpmessager %s",temp_name.toString().toStdString().c_str());
+       }
+    }
+    qInfo("TcpMessagers size %d",temp_list.size());
+    return temp_list;
+}
+
 bool BaseModuleManager::stepMove(QString name, double step, bool isPositive)
 {
     if (!motors.contains(name)) {
@@ -1748,6 +1759,19 @@ void BaseModuleManager::setOutput(QString name, bool on)
         qInfo("set output : %s %d", name.toStdString().c_str(), on);
         output_ios[name]->Set(on);
     }
+}
+
+bool BaseModuleManager::getCylinderOutput(QString name)
+{
+    if(GetCylinderByName(name)!=nullptr)
+        return  GetCylinderByName(name)->Value();
+    return false;
+}
+
+void BaseModuleManager::setCylinderOutput(QString name, bool on)
+{
+    if(GetCylinderByName(name)!=nullptr)
+        GetCylinderByName(name)->Set(on);
 }
 
 bool BaseModuleManager::getOutput(QString name)

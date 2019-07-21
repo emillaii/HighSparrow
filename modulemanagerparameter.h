@@ -59,6 +59,7 @@ public:
     Q_PROPERTY(QString materialType READ materialType WRITE setMaterialType NOTIFY materialTypeChanged)
     Q_PROPERTY(QString machineType READ machineType WRITE setMachineType NOTIFY machineTypeChanged)
     Q_PROPERTY(QVariantList respMessagerNames READ respMessagerNames WRITE setRespMessagerNames NOTIFY respMessagerNamesChanged)
+    Q_PROPERTY(QVariantList cmsMessageerNames READ cmsMessageerNames WRITE setCmsMessageerNames NOTIFY cmsMessageerNamesChanged)
     Q_PROPERTY(QString flowChartURL READ flowChartURL WRITE setFlowChartURL NOTIFY flowChartURLChanged)
     int runMode() const
     {
@@ -82,6 +83,11 @@ public:
     QString flowChartURL() const
     {
         return m_flowChartURL;
+    }
+
+    QVariantList cmsMessageerNames() const
+    {
+        return m_cmsMessageerNames;
     }
 
 public slots:
@@ -129,6 +135,15 @@ public slots:
         emit flowChartURLChanged(m_flowChartURL);
     }
 
+    void setCmsMessageerNames(QVariantList cmsMessageerNames)
+    {
+        if (m_cmsMessageerNames == cmsMessageerNames)
+            return;
+
+        m_cmsMessageerNames = cmsMessageerNames;
+        emit cmsMessageerNamesChanged(m_cmsMessageerNames);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void materialTypeChanged(QString materialType);
@@ -139,12 +154,15 @@ signals:
 
     void flowChartURLChanged(QString flowChartURL);
 
+    void cmsMessageerNamesChanged(QVariantList cmsMessageerNames);
+
 private:
     int m_runMode = 0;
     QString m_materialType = "TESTTYPE";
     QString m_machineType = "DAA_001";
     QVariantList m_respMessagerNames;
     QString m_flowChartURL = "http://192.168.0.251//flowchart/flowchart.html";
+    QVariantList m_cmsMessageerNames;
 };
 class ModuleManagerState:public PropertyBase
 {

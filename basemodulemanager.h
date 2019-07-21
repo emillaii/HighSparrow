@@ -60,8 +60,8 @@ public:
     QMap<QString,XtVacuum*> vacuums;
     QMap<QString,XtCylinder*> cylinder;
     TcpManager tcp_manager;
-    QMap<QString,TcpMessager*> messagers;//需要响应的连接；
-    QMap<QString,TcpMessager*> all_messagers;
+    QMap<QString,TcpMessager*> receive_messagers;//需要响应的连接；
+    QMap<QString,TcpMessager*> sender_messagers;
     DeviceStatesGeter state_geter;
 
     ChartCalibration * chart_calibration = Q_NULLPTR;
@@ -247,6 +247,8 @@ public:
     bool performLocation(QString location_name);
     Q_INVOKABLE QString getCalibrationParam(QString calibration_name);
     Q_INVOKABLE void setOutput(QString name, bool on);
+    Q_INVOKABLE bool getCylinderOutput(QString name);
+    Q_INVOKABLE void setCylinderOutput(QString name, bool on);
     Q_INVOKABLE bool getOutput(QString name);
     Q_INVOKABLE bool getInput(QString name);
     Q_INVOKABLE void motorSeekOrigin(QString name);
@@ -293,6 +295,7 @@ public:
     VisionLocation *GetVisionLocationByName(QString name);
     Pixel2Mech *GetPixel2MechByName(QString name);
     Calibration *GetCalibrationByName(QString name);
+    QList<TcpMessager *> GetTcpMessagersByName(QVariantList messager_names);
     int ServerMode() const
     {
         return m_ServerMode;

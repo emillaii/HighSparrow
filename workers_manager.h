@@ -3,6 +3,7 @@
 
 #include "tcpmessager.h"
 #include "thread_worker_base.h"
+#include "workersmanagerparameter.h"
 #include <qmap.h>
 
 class WorkersManager:public QObject
@@ -11,6 +12,7 @@ class WorkersManager:public QObject
     Q_PROPERTY(bool ShowAlarmDialog READ ShowAlarmDialog WRITE setShowAlarmDialog NOTIFY paramsChanged)
 public:
     WorkersManager(QObject *parent = nullptr);
+    void Init(QList<TcpMessager*> senders,QList<TcpMessager*> receivers);
     bool registerWorker(ThreadWorkerBase* worker);
 signals:
     void startWorkersSignal(int run_mode);
@@ -23,6 +25,7 @@ signals:
     void feedbackOperation(const int sender_id,const int operation_type);
 public slots:
 void receiveAlarm(int sender_id,int level, QString error_message);
+void tcpResp(QString message);
 void setShowAlarmDialog(bool ShowAlarmDialog)
 {
     qInfo("setShowAlarm: %d", ShowAlarmDialog);
@@ -33,6 +36,7 @@ void setShowAlarmDialog(bool ShowAlarmDialog)
     emit paramsChanged(m_ShowAlarmDialog);
 }
 bool sendMessageTest(QString title,QString content);
+void receiveModuleMessage(QVariantMap message);
 public:
     Q_INVOKABLE void startWorkers(int run_mode = 0);
     Q_INVOKABLE void stopWorkers(bool wait_finish = true);
@@ -48,19 +52,20 @@ public:
     {
         return m_ShowAlarmDialog;
     }
-
-    void sendModuleMessage(QVariantMap message);
 private:
     void showAlarm(const int sender_id,const int level, const QString error_message);
-public:
-//    WorkersManagerParameter parameters;
+    void sendTcpMessage(QVariantMap message);
 private:
     QMap<QString,ThreadWorkerBase*> workers;
     QString current_name = "";
     bool m_ShowAlarmDialog = false;
     QMap<int, QString> workersError;
     QMap<int, int> workersState;
-    QMap<QString,TcpMessager*> service_messagers;
+    QMap<QString,TcpMessager*> receive_messagers;
+    QMap<QString,TcpMessager*> send_messagers;
+    QThread work_thread;
+public:
+    WorkersManagerParameter parameters;
 };
 
 #endif // WORKERS_MANAGER_H

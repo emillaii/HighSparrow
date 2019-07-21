@@ -4,9 +4,9 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
-import "qml/AAHeadModule"
-import "qml/LUTModule"
-import "qml/SUTModule"
+import "AAHeadModule"
+import "LUTModule"
+import "SUTModule"
 
 ItemDelegate {
     width: parent.width

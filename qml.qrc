@@ -4,7 +4,6 @@
         <file>Page1Form.ui.qml</file>
         <file>Page2Form.ui.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>FeatureButton.qml</file>
         <file>MachineSettingModel.qml</file>
         <file>Page3Form.ui.qml</file>
         <file>PickLensPositionView.qml</file>
@@ -14,8 +13,6 @@
         <file>MachineConfigListView.qml</file>
         <file>Page4FormForm.ui.qml</file>
         <file>IODialog.qml</file>
-        <file>Page5Form.ui.qml</file>
-        <file>DiagnosticsView.qml</file>
         <file>SystemConfigView.qml</file>
         <file>LensPickArmModuleView.qml</file>
         <file>TrayParamater.qml</file>
@@ -33,13 +30,9 @@
         <file>SensorPickArmSUT.qml</file>
         <file>MotionPopup.qml</file>
         <file>SensorTrayLoaderViewModule.qml</file>
-        <file>CommonUsedView.qml</file>
-        <file>CommonControl.qml</file>
-        <file>CheckProcess.qml</file>
         <file>UPHView.qml</file>
         <file>LogView.qml</file>
         <file>TrayMapView.qml</file>
-        <file>Page6.qml</file>
         <file>Page6Form.ui.qml</file>
         <file>qml/AACore/AACoreView.qml</file>
         <file>qml/AACore/AADataView.qml</file>
@@ -84,5 +77,10 @@
         <file>qml/DispenseModule/DispenserParam.qml</file>
         <file>qml/DispenseModule/DispenseXYOffset.qml</file>
         <file>qml/DispenseModule/DispenseZPos.qml</file>
+        <file>qml/DiagnosticsView.qml</file>
+        <file>qml/Page5Form.ui.qml</file>
+        <file>qml/CheckProcess.qml</file>
+        <file>qml/CommonControl.qml</file>
+        <file>qml/CommonUsedView.qml</file>
     </qresource>
 </RCC>

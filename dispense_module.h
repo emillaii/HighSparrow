@@ -2,11 +2,11 @@
 #define DISPENSE_MODULE_H
 
 #include "dispenser.h"
-#include "calibration.h"
+#include "calibration/calibration.h"
 #include "position_define.h"
 #include "dispense_parameter.h"
 #include "material_carrier.h"
-#include "visionmodule.h"
+#include "vision/visionmodule.h"
 class DispenseModule:public QObject
 {
     Q_OBJECT

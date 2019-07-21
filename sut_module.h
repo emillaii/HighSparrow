@@ -3,14 +3,14 @@
 
 #include "XtCylinder.h"
 #include "baslerpyloncamera.h"
-#include "calibration.h"
+#include "calibration/calibration.h"
 #include "material_carrier.h"
 #include "sut_parameter.h"
 #include "sutclient.h"
 #include "thread_worker_base.h"
-#include "vision_location.h"
-#include "visionmodule.h"
-#include "wordoplight.h"
+#include "vision/vision_location.h"
+#include "vision/visionmodule.h"
+#include "vision/wordoplight.h"
 
 enum SUT_STATE
 {

@@ -4,7 +4,7 @@
 #include "material_picker.h"
 #include "materialtray.h"
 #include "lenspickarmparameter.h"
-#include "vision_location.h"
+#include "vision/vision_location.h"
 
 
 

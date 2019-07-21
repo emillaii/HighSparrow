@@ -6,9 +6,9 @@
 #include <qmath.h>
 #include <QVector>
 #include <QPointF>
-#include "calibration_parameter.h"
+#include "calibration/calibration_parameter.h"
 #include "errorcode.h"
-#include "vision_location.h"
+#include "vision/vision_location.h"
 #include "xtmotor.h"
 
 

@@ -7,7 +7,7 @@
 #include "sparrowqserver.h"
 #include "thread_worker_base.h"
 #include "uphhelper.h"
-#include "vision_location.h"
+#include "vision/vision_location.h"
 
 
 

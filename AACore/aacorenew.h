@@ -20,7 +20,7 @@
 #include "imageGrabber/dothinkey.h"
 #include "visionavadaptor.h"
 #include "imageprovider.h"
-#include "chart_calibration.h"
+#include "calibration/chart_calibration.h"
 #include "dispense_module.h"
 #include "AACore/aacoreparameters.h"
 #include "lutclient.h"

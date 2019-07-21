@@ -12,7 +12,7 @@
 #include <QPainter>
 #include "aa_util.h"
 #include "commonutils.h"
-#include "visionmodule.h"
+#include "vision/visionmodule.h"
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
 #define PI  3.14159265

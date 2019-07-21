@@ -2,12 +2,12 @@
 #define LUT_MODULE_H
 
 #include "material_carrier.h"
-#include "wordoplight.h"
+#include "vision/wordoplight.h"
 #include "baslerpyloncamera.h"
 #include "lut_parameter.h"
-#include "visionmodule.h"
-#include "calibration.h"
-#include "vision_location.h"
+#include "vision/visionmodule.h"
+#include "calibration/calibration.h"
+#include "vision/vision_location.h"
 #include "sparrowqserver.h"
 #include <QObject>
 #include <QQueue>

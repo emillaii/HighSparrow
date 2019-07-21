@@ -27,7 +27,6 @@ SOURCES += \
     errorcode.cpp \
     aaheadmodule.cpp \
     traymapmodel.cpp \
-    visionmodule.cpp \
     commonutils.cpp \
     logger.cpp \
     motorspositionmodel.cpp \
@@ -37,7 +36,6 @@ SOURCES += \
     XtGeneralOutput.cpp \
     XtGeneralInput.cpp \
     AACore\sfrworker.cpp \
-    wordoplight.cpp \
     logicmanager.cpp \
     filecontent.cpp \
     basemodulemanager.cpp \
@@ -52,15 +50,17 @@ SOURCES += \
     material_carrier.cpp \
     pixel2mech.cpp \
     Matrix/Matrix.cpp \
-    calibration.cpp \
-    chart_calibration.cpp \
-    imageGrabber\imagegrabbingworkerthread.cpp\
-    imageGrabber\dothinkey.cpp \
-    imageGrabber\iniparser.cpp \
+    calibration/calibration.cpp \
+    calibration/chart_calibration.cpp \
+    imageGrabber/imagegrabbingworkerthread.cpp\
+    imageGrabber/dothinkey.cpp \
+    imageGrabber/iniparser.cpp \
     imageprovider.cpp \
     dispenser.cpp \
     dispense_module.cpp \
-    vision_location.cpp \
+    vision/wordoplight.cpp \
+    vision/visionmodule.cpp \
+    vision/vision_location.cpp \
     unitlog.cpp \
     workers_manager.cpp \
     thread_worker_base.cpp \
@@ -144,7 +144,7 @@ HEADERS += \
     aaheadmodule.h \
     logmodel.h \
     traymapmodel.h \
-    visionmodule.h \
+    vision/visionmodule.h \
     commonutils.h \
     logger.h \
     motorspositionmodel.h \
@@ -155,7 +155,6 @@ HEADERS += \
     XtGeneralInput.h \
     AACore\sfrworker.h \
     aaheadparameters.h \
-    wordoplight.h \
     logicmanager.h \
     filecontent.h \
     basemodulemanager.h \
@@ -171,14 +170,14 @@ HEADERS += \
     lut_parameter.h \
     sut_module.h \
     AACore/aadata.h \
-    calibration.h \
     pixel2mech.h \
     Matrix/Matrix.h \
-    calibration_parameter.h \
-    chart_calibration.h \
-    imageGrabber\imagegrabbingworkerthread.h\
-    imageGrabber\dothinkey.h \
-    imageGrabber\iniparser.h \
+    calibration/calibration.h \
+    calibration/calibration_parameter.h \
+    calibration/chart_calibration.h \
+    imageGrabber/imagegrabbingworkerthread.h\
+    imageGrabber/dothinkey.h \
+    imageGrabber/iniparser.h \
     imageprovider.h \
     XtVacuum.h \
     dispenser.h \
@@ -186,8 +185,9 @@ HEADERS += \
     dispense_module.h \
     dispense_parameter.h \
     position_define.h \
-    vision_location_parameter.h \
-    vision_location.h \
+    vision/wordoplight.h \
+    vision/vision_location_parameter.h \
+    vision/vision_location.h \
     unitlog.h \
     workers_manager.h \
     thread_worker_base.h \

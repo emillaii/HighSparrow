@@ -1,4 +1,4 @@
-﻿#include "lut_module.h"
+﻿#include "lutModule/lut_module.h"
 #include "utils/commonutils.h"
 
 LutModule::LutModule(QString name, QObject *parent):ThreadWorkerBase (name)

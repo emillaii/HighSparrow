@@ -44,7 +44,7 @@ SOURCES += \
     XtMotor.cpp \
     XtVcMotor.cpp \
     XtVacuum.cpp \
-    lut_module.cpp \
+    lutModule/lut_module.cpp \
     sutModule/sut_module.cpp \
     AACore/aadata.cpp \
     material_carrier.cpp \
@@ -71,7 +71,7 @@ SOURCES += \
     lensloadermodule.cpp \
     trayloadermodule.cpp \
     trayclip.cpp \
-    lutclient.cpp \
+    lutModule/lutclient.cpp \
     sensorpickarm.cpp \
     sensorloadermodule.cpp \
     sutModule/sutclient.cpp \
@@ -164,8 +164,8 @@ HEADERS += \
     XtVacuum.h \
     sutModule/sut_parameter.h \
     material_carrier_parameter.h \
-    lut_module.h \
-    lut_parameter.h \
+    lutModule/lut_module.h \
+    lutModule/lut_parameter.h \
     sutModule/sut_module.h \
     AACore/aadata.h \
     utils/pixel2mech.h \
@@ -207,7 +207,7 @@ HEADERS += \
     trayclipstandardsparameter.h\
     xtvacuumparameter.h \
     xtcylinderparameter.h \
-    lutclient.h \
+    lutModule/lutclient.h \
     sensorpickarm.h \
     sensorpickarmparameter.h \
     sensorloadermodule.h \

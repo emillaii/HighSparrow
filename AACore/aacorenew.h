@@ -15,7 +15,7 @@
 #include "AACore/sfrworker.h"
 #include "AACore/aadata.h"
 #include "aaHeadModule/aaheadmodule.h"
-#include "lut_module.h"
+#include "lutModule/lut_module.h"
 #include "sutModule/sut_module.h"
 #include "imageGrabber/dothinkey.h"
 #include "visionavadaptor.h"
@@ -23,7 +23,7 @@
 #include "calibration/chart_calibration.h"
 #include "dispenseModule/dispense_module.h"
 #include "AACore/aacoreparameters.h"
-#include "lutclient.h"
+#include "lutModule/lutclient.h"
 #include "imageGrabber/imagegrabbingworkerthread.h"
 #include "utils/unitlog.h"
 

@@ -1,4 +1,4 @@
-#include "lutclient.h"
+#include "lutModule/lutclient.h"
 #include <QJsonObject>
 #include <QThread>
 #include "utils/commonutils.h"

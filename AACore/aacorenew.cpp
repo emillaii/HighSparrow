@@ -348,15 +348,15 @@ void AACoreNew::performHandlingOperation(int cmd)
         performPRToBond(0);
     }
     else if (cmd == HandleTest::MTF) {
-        performMTF(true, true);
-        //performMTFOffline(params);
+        //performMTF(true, true);
+        performMTFOffline(params);
     }
     else if (cmd == HandleTest::OC) {
         performOC(true, false);
     }
     else if (cmd == HandleTest::AA) {
-        performAA(params);
-        //performAAOffline();
+        //performAA(params);
+        performAAOffline();
     }
     else if (cmd == HandleTest::INIT_CAMERA) {
         performInitSensor(true);
@@ -1100,7 +1100,7 @@ void AACoreNew::performAAOffline()
     double estimated_fov_slope = 15;
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
-    int inputImageCount = 12;
+    int inputImageCount = 17;
     for (int i = 0; i < inputImageCount -1; i++)
     {
         if (isZScanNeedToStop) {
@@ -1109,8 +1109,8 @@ void AACoreNew::performAAOffline()
         }
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
-        //QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
-        QString filename = "offline\\" + QString::number(i) + ".bmp";
+        QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
+        //QString filename = "offline\\" + QString::number(i) + ".bmp";
         cv::Mat img = cv::imread(filename.toStdString());
         if (!blackScreenCheck(img)) {
             return;
@@ -1186,14 +1186,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         result.insert("OK", false);
         return result;
     }
-    int fitOrder = 6;
-    if (clustered_sfr_map.size() == 6) {
-        qInfo("Down the curve fitting to 5 order");
-        fitOrder = 5;
-    } else if (clustered_sfr_map.size() == 5) {
-        qInfo("Down the curve fitting to 4 order");
-        fitOrder = 4;
-    }
+    int fitOrder = 4;
     threeDPoint point_0;
     vector<threeDPoint> points_1, points_11;
     vector<threeDPoint> points_2, points_22;
@@ -1409,7 +1402,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         s.insert("pz", sorted_sfr_map[0][i].pz);
         sfrMap.insert(QString::number(i), s);
 
-        if (points_3.size() > 0) {
+        if (points_1.size() > 0) {
             data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, sorted_sfr_map[1+4*display_layer][i].sfr);
             data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, sorted_sfr_map[4+4*display_layer][i].sfr);
             data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, sorted_sfr_map[3+4*display_layer][i].sfr);
@@ -1557,9 +1550,9 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     this->sfrWorkerController->setSfrWorkerParams(aaPrams);
     QElapsedTimer timer;
     QVariantMap map;
-    cv::Mat img = cv::imread("offline\\5.bmp");
+    //cv::Mat img = cv::imread("offline\\5.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    //cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
+    cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
     double dfov = calculateDFOV(img);
     qInfo("%f %d %d %d", dfov, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea() );
     AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
@@ -1903,216 +1896,6 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
-
-//ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
-//{
-//    QElapsedTimer timer; timer.start();
-//    QVariantMap map;
-//    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-//    cv::Mat img = dk->DothinkeyGrabImageCV(0);
-//    int imageWidth = img.cols;
-//    int imageHeight = img.rows;
-//    double fov = this->calculateDFOV(img);
-//    map.insert("DFOV", fov);
-//    if (fov == -1) {
-//        qInfo("Error in calculating fov");
-//        LogicNg(current_mtf_ng_time);
-//        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-//    } else {
-//        qInfo("DFOV :%f", fov);
-//    }
-//    emit sfrWorkerController->calculate(0, 0, img, true);
-//    int timeout=1000;
-//    while(this->clustered_sfr_map.size() != 1 && timeout >0) {
-//        Sleep(10);
-//        timeout--;
-//    }
-//    if (timeout <= 0) {
-//        qInfo("Error in performing MTF: %d", timeout);
-//        LogicNg(current_mtf_ng_time);
-//        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-//    }
-//    vector<Sfr_entry> sfr_entry = clustered_sfr_map.at(0);
-//    double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
-//    unsigned int ccROIIndex = 0 , ulROIIndex = 0, urROIIndex = 0, llROIIndex = 0, lrROIIndex = 0;
-//    for (unsigned int i = 0; i < sfr_entry.size(); i++)
-//    {
-//        double cc_d = sqrt(pow(sfr_entry.at(i).px - imageWidth/2, 2) + pow(sfr_entry.at(i).py - imageHeight/2, 2));
-//        double ul_d = sqrt(pow(sfr_entry.at(i).px, 2) + pow(sfr_entry.at(i).py, 2));
-//        double ur_d = sqrt(pow(sfr_entry.at(i).px - imageWidth, 2) + pow(sfr_entry.at(i).py, 2));
-//        double ll_d = sqrt(pow(sfr_entry.at(i).px, 2) + pow(sfr_entry.at(i).py - imageHeight, 2));
-//        double lr_d = sqrt(pow(sfr_entry.at(i).px - imageWidth, 2) + pow(sfr_entry.at(i).py - imageHeight, 2));
-//        if (cc_d < cc_min_d) {
-//              cc_min_d = cc_d;
-//              ccROIIndex = i;
-//        }
-//        if (ul_d < ul_min_d) {
-//             ul_min_d = ul_d;
-//             ulROIIndex = i;
-//        }
-//        if (ur_d < ur_min_d) {
-//             ur_min_d = ur_d;
-//             urROIIndex = i;
-//        }
-//        if (ll_d < ll_min_d) {
-//             ll_min_d = ll_d;
-//             llROIIndex = i;
-//        }
-//        if (lr_d < lr_min_d) {
-//            lr_min_d = lr_d;
-//            lrROIIndex = i;
-//        }
-//    }
-
-//    double cc_min_sfr = params["CC"].toDouble(-1);
-//    double ul_min_sfr = params["UL"].toDouble(-1);
-//    double ur_min_sfr = params["UR"].toDouble(-1);
-//    double ll_min_sfr = params["LL"].toDouble(-1);
-//    double lr_min_sfr = params["LR"].toDouble(-1);
-//    double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
-
-//    map.insert("CC_CHECK", cc_min_sfr);
-//    map.insert("UR_CHECK", ul_min_sfr);
-//    map.insert("UL_CHECK", ur_min_sfr);
-//    map.insert("LR_CHECK", lr_min_sfr);
-//    map.insert("LL_CHECK", ll_min_sfr);
-//    map.insert("SFR_MAX_TOL", sfr_dev_tol);
-
-//    bool sfr_check = true;
-//    if (sfr_entry[ccROIIndex].t_sfr < cc_min_sfr ||
-//        sfr_entry[ccROIIndex].r_sfr < cc_min_sfr ||
-//        sfr_entry[ccROIIndex].b_sfr < cc_min_sfr ||
-//        sfr_entry[ccROIIndex].l_sfr < cc_min_sfr) {
-//       qInfo("cc cannot pass");
-//       sfr_check = false;
-//    }
-//    if (sfr_entry[urROIIndex].t_sfr < ur_min_sfr ||
-//        sfr_entry[urROIIndex].r_sfr < ur_min_sfr ||
-//        sfr_entry[urROIIndex].b_sfr < ur_min_sfr ||
-//        sfr_entry[urROIIndex].l_sfr < ur_min_sfr) {
-//       qInfo("ur cannot pass");
-//       sfr_check = false;
-//    }
-//    if (sfr_entry[ulROIIndex].t_sfr < ul_min_sfr ||
-//        sfr_entry[ulROIIndex].r_sfr < ul_min_sfr ||
-//        sfr_entry[ulROIIndex].b_sfr < ul_min_sfr ||
-//        sfr_entry[ulROIIndex].l_sfr < ul_min_sfr) {
-//       qInfo("ul cannot pass");
-//       sfr_check = false;
-//    }
-//    if (sfr_entry[lrROIIndex].t_sfr < lr_min_sfr ||
-//        sfr_entry[lrROIIndex].r_sfr < lr_min_sfr ||
-//        sfr_entry[lrROIIndex].b_sfr < lr_min_sfr ||
-//        sfr_entry[lrROIIndex].l_sfr < lr_min_sfr) {
-//       qInfo("lr cannot pass");
-//       sfr_check = false;
-//    }
-//    if (sfr_entry[llROIIndex].t_sfr < ll_min_sfr ||
-//        sfr_entry[llROIIndex].r_sfr < ll_min_sfr ||
-//        sfr_entry[llROIIndex].b_sfr < ll_min_sfr ||
-//        sfr_entry[llROIIndex].l_sfr < ll_min_sfr) {
-//       qInfo("ll cannot pass");
-//       sfr_check = false;
-//    }
-
-//    std::vector<double> sfr_v;
-//    for (int i = 0; i < 4; i++) {
-//        unsigned int index = 0;
-//        if (i == 0) index = urROIIndex;
-//        if (i == 1) index = ulROIIndex;
-//        if (i == 2) index = lrROIIndex;
-//        if (i == 3) index = llROIIndex;
-//        sfr_v.push_back(sfr_entry[index].sfr);
-//        sfr_v.push_back(sfr_entry[index].sfr);
-//        sfr_v.push_back(sfr_entry[index].sfr);
-//        sfr_v.push_back(sfr_entry[index].sfr);
-//        sfr_v.push_back(sfr_entry[index].sfr);
-//    }
-
-//    std::sort(sfr_v.begin(), sfr_v.end());
-//    double max_sfr_deviation = fabs(sfr_v[0] - sfr_v[sfr_v.size()-1]);
-//    if (max_sfr_deviation >= sfr_dev_tol) {
-//        qInfo("max_sfr_deviation cannot pass");
-//        sfr_check = false;
-//    }
-
-//    qInfo("Read the aahead and sut carrier feedback");
-//    mPoint6D motorsPosition = this->aa_head->GetFeedBack();
-//    mPoint3D sutPosition = this->sut->carrier->GetFeedBackPos();
-//    qInfo("inset data to map ccROIIndex %d urROIIndex %d ulROIInde %dx lrROIIndex %d llROIIndex %d size %d",ccROIIndex,urROIIndex,ulROIIndex,lrROIIndex,llROIIndex,sfr_entry.size());
-//    map.insert("AA_X", motorsPosition.X);
-//    map.insert("AA_Y", motorsPosition.Y);
-//    map.insert("AA_Z", motorsPosition.Z);
-//    map.insert("AA_A", motorsPosition.A);
-//    map.insert("AA_B", motorsPosition.B);
-//    map.insert("AA_C", motorsPosition.C);
-//    map.insert("AA_A", motorsPosition.A);
-//    map.insert("AA_B", motorsPosition.B);
-//    map.insert("AA_C", motorsPosition.C);
-//    map.insert("SUT_X", sutPosition.X);
-//    map.insert("SUT_Y", sutPosition.Y);
-//    map.insert("SUT_Z", sutPosition.Z);
-//    map.insert("OC_X", sfr_entry[ccROIIndex].px - imageWidth/2);
-//    map.insert("OC_Y", sfr_entry[ccROIIndex].py - imageHeight/2);
-
-//    map.insert("CC_SFR", sfr_entry[ccROIIndex].sfr);
-//    map.insert("CC_SFR_1", sfr_entry[ccROIIndex].t_sfr);
-//    map.insert("CC_SFR_2", sfr_entry[ccROIIndex].r_sfr);
-//    map.insert("CC_SFR_3", sfr_entry[ccROIIndex].b_sfr);
-//    map.insert("CC_SFR_4", sfr_entry[ccROIIndex].l_sfr);
-
-//    map.insert("UR_SFR", sfr_entry[urROIIndex].sfr);
-//    map.insert("UR_SFR_1", sfr_entry[urROIIndex].t_sfr);
-//    map.insert("UR_SFR_2", sfr_entry[urROIIndex].r_sfr);
-//    map.insert("UR_SFR_3", sfr_entry[urROIIndex].b_sfr);
-//    map.insert("UR_SFR_4", sfr_entry[urROIIndex].l_sfr);
-
-//    map.insert("UL_SFR", sfr_entry[ulROIIndex].sfr);
-//    map.insert("UL_SFR_1", sfr_entry[ulROIIndex].t_sfr);
-//    map.insert("UL_SFR_2", sfr_entry[ulROIIndex].r_sfr);
-//    map.insert("UL_SFR_3", sfr_entry[ulROIIndex].b_sfr);
-//    map.insert("UL_SFR_4", sfr_entry[ulROIIndex].l_sfr);
-
-//    map.insert("LR_SFR", sfr_entry[lrROIIndex].sfr);
-//    map.insert("LR_SFR_1", sfr_entry[lrROIIndex].t_sfr);
-//    map.insert("LR_SFR_2", sfr_entry[lrROIIndex].r_sfr);
-//    map.insert("LR_SFR_3", sfr_entry[lrROIIndex].b_sfr);
-//    map.insert("LR_SFR_4", sfr_entry[lrROIIndex].l_sfr);
-
-//    map.insert("LL_SFR", sfr_entry[llROIIndex].sfr);
-//    map.insert("LL_SFR_1", sfr_entry[llROIIndex].t_sfr);
-//    map.insert("LL_SFR_2", sfr_entry[llROIIndex].r_sfr);
-//    map.insert("LL_SFR_3", sfr_entry[llROIIndex].b_sfr);
-//    map.insert("LL_SFR_4", sfr_entry[llROIIndex].l_sfr);
-
-//    map.insert("Sensor_ID", dk->readSensorID());
-//    map.insert("SFR_CHECK", sfr_check);
-//    map.insert("DFOV", fov);
-//    map.insert("timeElapsed", timer.elapsed());
-//    qInfo("CC_X :%f CC_Y: %f", sfr_entry[ccROIIndex].px, sfr_entry[ccROIIndex].py);
-//    clustered_sfr_map.clear();
-//    emit pushDataToUnit(this->runningUnit, "MTF", map);
-//    if (write_log) {
-//        this->loopTestResult.append(QString::number(sfr_entry[ccROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[ulROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[urROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[llROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[lrROIIndex].sfr))
-//                            .append(",\n");
-//        this->mtf_log.incrementData(sfr_entry[ccROIIndex].sfr, sfr_entry[ulROIIndex].sfr, sfr_entry[urROIIndex].sfr, sfr_entry[llROIIndex].sfr,sfr_entry[lrROIIndex].sfr);
-//    }
-//    qInfo("MTF done");
-//    if (sfr_check) {
-//        return ErrorCodeStruct{ErrorCode::OK, ""};
-//    } else {
-//        LogicNg(current_mtf_ng_time);
-//        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-//    }
-//}
 
 ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
 {

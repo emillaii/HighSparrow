@@ -2,7 +2,7 @@
 #define XTVACUUM_H
 #include "XtGeneralInput.h"
 #include "XtGeneralOutput.h"
-#include "errorcode.h"
+#include "utils/errorcode.h"
 #include "xtvacuumparameter.h"
 #include <QString>
 class XtVacuum :public ErrorBase

@@ -6,7 +6,7 @@
 #include "vision/visionmodule.h"
 #include "vision/wordoplight.h"
 #include "propertybase.h"
-#include "LontryLight.h"
+#include "utils/LontryLight.h"
 #include "xtmotor.h"
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"

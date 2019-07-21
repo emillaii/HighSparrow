@@ -7,7 +7,7 @@
 #include <QVector>
 #include <QPointF>
 #include "calibration/calibration_parameter.h"
-#include "errorcode.h"
+#include "utils/errorcode.h"
 #include "vision/vision_location.h"
 #include "xtmotor.h"
 

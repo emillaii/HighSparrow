@@ -1,7 +1,7 @@
 ﻿#ifndef IOLIMITPARAMETER_H
 #define IOLIMITPARAMETER_H
 
-#include "errorcode.h"
+#include "utils/errorcode.h"
 #include "propertybase.h"
 
 #include <QVariantList>

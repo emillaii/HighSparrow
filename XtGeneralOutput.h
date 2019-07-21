@@ -1,6 +1,6 @@
 #ifndef XTGENERALOUTPUT_H
 #define XTGENERALOUTPUT_H
-#include "errorcode.h"
+#include "utils/errorcode.h"
 
 #include <windows.h>
 #include <QObject>

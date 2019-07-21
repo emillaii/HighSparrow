@@ -1,6 +1,6 @@
 #ifndef XTGENERALINPUT_H
 #define XTGENERALINPUT_H
-#include "errorcode.h"
+#include "utils/errorcode.h"
 #include <windows.h>
 #include <QObject>
 #include <QTime>

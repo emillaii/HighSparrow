@@ -5,12 +5,12 @@
 #include "thread_worker_base.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
-#include <errorcode.h>
+#include <utils/errorcode.h>
 #include <sfr_entry.h>
 #include <unordered_map>
 #include <QObject>
 #include <QJsonDocument>
-#include <errorcode.h>
+#include <utils/errorcode.h>
 #include <QMap>
 #include "AACore/sfrworker.h"
 #include "AACore/aadata.h"

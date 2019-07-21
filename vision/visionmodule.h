@@ -2,7 +2,7 @@
 #define VISIONMODULE_H
 
 #include <QObject>
-#include <errorcode.h>
+#include <utils/errorcode.h>
 #include <QQuickImageProvider>
 #include <AVL.h>
 #include "imageprovider.h"

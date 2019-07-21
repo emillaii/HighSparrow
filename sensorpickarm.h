@@ -1,7 +1,7 @@
 #ifndef SENSORPICKARM_H
 #define SENSORPICKARM_H
 
-#include "errorcode.h"
+#include "utils/errorcode.h"
 #include "material_picker.h"
 #include "pixel2mech.h"
 #include "sensorpickarmparameter.h"

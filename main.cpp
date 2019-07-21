@@ -4,8 +4,8 @@
 #include <QQmlContext>
 #include <highsprrow.h>
 #include <QIcon>
-#include <logger.h>
-#include "filecontent.h"
+#include <utils/logger.h>
+#include "utils/filecontent.h"
 #include <QtWebEngine/QtWebEngine>
 
 #include <QDebug>

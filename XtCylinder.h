@@ -3,7 +3,7 @@
 #include "XtGeneralInput.h"
 #include "XtGeneralOutput.h"
 #include "xtcylinderparameter.h"
-#include "errorcode.h"
+#include "utils/errorcode.h"
 #include <QString>
 class XtCylinder:public ErrorBase
 {

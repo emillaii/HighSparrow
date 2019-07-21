@@ -1,7 +1,7 @@
 #ifndef MATERIALTRAY_H
 #define MATERIALTRAY_H
 
-#include "errorcode.h"
+#include "utils/errorcode.h"
 #include "trayparameter.h"
 #include "traystandardsparameter.h"
 

@@ -1,7 +1,7 @@
 #ifndef HIGHSPRROW_H
 #define HIGHSPRROW_H
 #include <QObject>
-#include "errorcode.h"
+#include "utils/errorcode.h"
 #include "aaheadmodule.h"
 #include "sut_module.h"
 #include "logicmanager.h"

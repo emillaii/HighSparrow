@@ -24,22 +24,22 @@ SOURCES += \
     main.cpp \
     baslerpyloncamera.cpp \
     highsprrow.cpp \
-    errorcode.cpp \
+    utils/errorcode.cpp \
     aaheadmodule.cpp \
     traymapmodel.cpp \
     utils/commonutils.cpp \
-    logger.cpp \
+    utils/logger.cpp \
     motorspositionmodel.cpp \
     propertybase.cpp \
     basemodule.cpp \
     xtadcmodule.cpp \
     XtGeneralOutput.cpp \
     XtGeneralInput.cpp \
-    AACore\sfrworker.cpp \
+    AACore/sfrworker.cpp \
     logicmanager.cpp \
-    filecontent.cpp \
+    utils/filecontent.cpp \
     basemodulemanager.cpp \
-    LontryLight.cpp \
+    utils/LontryLight.cpp \
     XtCylinder.cpp \
     XtMotor.cpp \
     XtVcMotor.cpp \
@@ -140,25 +140,25 @@ HEADERS += \
     config.h \
     devicestatesgeter.h \
     highsprrow.h \
-    errorcode.h \
+    utils/errorcode.h \
     aaheadmodule.h \
     logmodel.h \
     traymapmodel.h \
     vision/visionmodule.h \
     utils/commonutils.h \
-    logger.h \
+    utils/logger.h \
     motorspositionmodel.h \
     propertybase.h \
     basemodule.h \
     xtadcmodule.h \
     XtGeneralOutput.h \
     XtGeneralInput.h \
-    AACore\sfrworker.h \
+    AACore/sfrworker.h \
     aaheadparameters.h \
     logicmanager.h \
-    filecontent.h \
+    utils/filecontent.h \
     basemodulemanager.h \
-    LontryLight.h \
+    utils/LontryLight.h \
     XtCylinder.h \
     xtmotor.h \
     XtVcMotor.h \

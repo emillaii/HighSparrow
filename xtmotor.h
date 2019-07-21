@@ -8,7 +8,7 @@
 #include "XtGeneralInput.h"
 #include "XtGeneralOutput.h"
 #include "PropertyBase.h"
-#include "errorcode.h"
+#include "utils/errorcode.h"
 #include "verticallimitparameter.h"
 #include "iolimitparameter.h"
 #include "parallellimitparameter.h"

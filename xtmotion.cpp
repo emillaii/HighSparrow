@@ -1,7 +1,7 @@
 ﻿#include "xtmotion.h"
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
-#include "logger.h"
+#include "utils/logger.h"
 #include <QtMath>
 #include <QJsonDocument>
 #include <QJsonObject>

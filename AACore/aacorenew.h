@@ -25,7 +25,7 @@
 #include "AACore/aacoreparameters.h"
 #include "lutclient.h"
 #include "imageGrabber/imagegrabbingworkerthread.h"
-#include "unitlog.h"
+#include "utils/unitlog.h"
 
 class AACoreNew : public ThreadWorkerBase
 {

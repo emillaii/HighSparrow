@@ -61,7 +61,7 @@ SOURCES += \
     vision/wordoplight.cpp \
     vision/visionmodule.cpp \
     vision/vision_location.cpp \
-    unitlog.cpp \
+    utils/unitlog.cpp \
     workers_manager.cpp \
     thread_worker_base.cpp \
     materialtray.cpp \
@@ -188,7 +188,7 @@ HEADERS += \
     vision/wordoplight.h \
     vision/vision_location_parameter.h \
     vision/vision_location.h \
-    unitlog.h \
+    utils/unitlog.h \
     workers_manager.h \
     thread_worker_base.h \
     materialtray.h \

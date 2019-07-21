@@ -30,7 +30,7 @@
 #include "lutclient.h"
 #include "workers_manager.h"
 #include "trayloadermodule.h"
-#include "unitlog.h"
+#include "utils/unitlog.h"
 #include "sensorloadermodule.h"
 #include "AACore/aacorenew.h"
 #include "sensorclip.h"

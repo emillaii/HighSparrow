@@ -4,7 +4,7 @@
 #include "basemodulemanager.h"
 
 #include <QThread>
-#include <unitlog.h>
+#include <utils/unitlog.h>
 
 enum CommandType{
     IDLE,

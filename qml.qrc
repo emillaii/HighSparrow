@@ -21,13 +21,11 @@
         <file>LensHeadParameter.qml</file>
         <file>LensPcikArmLUT.qml</file>
         <file>TrayLoaderModuleView.qml</file>
-        <file>ThreadManagerView.qml</file>
         <file>SensorLoaderModuleView.qml</file>
         <file>SensorHeadParameter.qml</file>
         <file>SensorPickArmSUT.qml</file>
         <file>MotionPopup.qml</file>
         <file>SensorTrayLoaderViewModule.qml</file>
-        <file>UPHView.qml</file>
         <file>LogView.qml</file>
         <file>TrayMapView.qml</file>
         <file>Page6Form.ui.qml</file>
@@ -82,5 +80,7 @@
         <file>qml/SystemConfigView.qml</file>
         <file>qml/ImageGrabberView.qml</file>
         <file>qml/IODialog.qml</file>
+        <file>qml/ThreadManager/ThreadManagerView.qml</file>
+        <file>qml/UPHView.qml</file>
     </qresource>
 </RCC>

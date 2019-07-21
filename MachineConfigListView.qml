@@ -6,6 +6,7 @@ import "qml/AAHeadModule"
 import "qml/LUTModule"
 import "qml/SUTModule"
 import "qml/DispenseModule"
+import "qml/ThreadManager"
 ScrollView {
     id: machineConfigListView
     width: 600
@@ -80,7 +81,6 @@ ScrollView {
                     return "SensorTrayLoaderViewModule.qml"
 
             }
-
             visible: trayLoderViewSwitch.checked
         }
 

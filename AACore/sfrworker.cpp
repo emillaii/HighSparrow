@@ -1,6 +1,6 @@
-#include <sfrworker.h>
+#include "AACore/sfrworker.h"
 #include <visionavadaptor.h>
-#include "aacorenew.h"
+#include "AACore/aacorenew.h"
 #include <QElapsedTimer>
 #include <QImage>
 #include <QPainter>

@@ -10,7 +10,7 @@
 
 #include <QDebug>
 
-#include "aadata.h"
+#include "AACore/aadata.h"
 #include "checkprocessmodel.h"
 #include "logmodel.h"
 #include "traymapmodel.h"

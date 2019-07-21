@@ -8,12 +8,12 @@
 #include <errorcode.h>
 #include <sfr_entry.h>
 #include <unordered_map>
-#include <sfrworker.h>
 #include <QObject>
 #include <QJsonDocument>
 #include <errorcode.h>
 #include <QMap>
-#include "aadata.h"
+#include "AACore/sfrworker.h"
+#include "AACore/aadata.h"
 #include "aaheadmodule.h"
 #include "lut_module.h"
 #include "sut_module.h"
@@ -22,7 +22,7 @@
 #include "imageprovider.h"
 #include "chart_calibration.h"
 #include "dispense_module.h"
-#include "aacoreparameters.h"
+#include "AACore/aacoreparameters.h"
 #include "lutclient.h"
 #include "imagegrabbingworkerthread.h"
 #include "unitlog.h"

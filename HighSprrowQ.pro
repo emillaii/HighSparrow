@@ -36,7 +36,7 @@ SOURCES += \
     xtadcmodule.cpp \
     XtGeneralOutput.cpp \
     XtGeneralInput.cpp \
-    sfrworker.cpp \
+    AACore\sfrworker.cpp \
     wordoplight.cpp \
     logicmanager.cpp \
     filecontent.cpp \
@@ -48,7 +48,7 @@ SOURCES += \
     XtVacuum.cpp \
     lut_module.cpp \
     sut_module.cpp \
-    aadata.cpp \
+    AACore/aadata.cpp \
     material_carrier.cpp \
     pixel2mech.cpp \
     Matrix/Matrix.cpp \
@@ -75,7 +75,7 @@ SOURCES += \
     sensorpickarm.cpp \
     sensorloadermodule.cpp \
     sutclient.cpp \
-    aacorenew.cpp \
+    AACore/aacorenew.cpp \
     sensortrayloadermodule.cpp \
     sensorclip.cpp \
     checkprocessitem.cpp \
@@ -153,7 +153,7 @@ HEADERS += \
     xtadcmodule.h \
     XtGeneralOutput.h \
     XtGeneralInput.h \
-    sfrworker.h \
+    AACore\sfrworker.h \
     aaheadparameters.h \
     wordoplight.h \
     logicmanager.h \
@@ -170,7 +170,7 @@ HEADERS += \
     lut_module.h \
     lut_parameter.h \
     sut_module.h \
-    aadata.h \
+    AACore/aadata.h \
     calibration.h \
     pixel2mech.h \
     Matrix/Matrix.h \
@@ -195,7 +195,7 @@ HEADERS += \
     material_picker.h \
     traystandardsparameter.h \
     trayparameter.h \
-    aacoreparameters.h \
+    AACore/aacoreparameters.h \
     sparrowqserver.h \
     sparrowqclient.h \
     lenspickarm.h \
@@ -215,7 +215,7 @@ HEADERS += \
     sensorloadermodule.h \
     sensorloaderparameter.h \
     sutclient.h \
-    aacorenew.h \
+    AACore/aacorenew.h \
     sendmessagetool.h \
     sensortrayloadermodule.h \
     sensortrayloaderparameter.h \

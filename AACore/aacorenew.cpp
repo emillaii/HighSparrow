@@ -1,4 +1,4 @@
-﻿#include "aacorenew.h"
+﻿#include "AACore/aacorenew.h"
 #include <QVariantMap>
 #include <QImage>
 #include <QElapsedTimer>

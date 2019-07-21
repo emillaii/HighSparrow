@@ -16,7 +16,7 @@
     if( ( c ) == 0 )\
             {\
         QString AssertText;\
-        AssertText.asprintf("%s %s\nfunc: %s\nline: %d\n\n--------------\n\n发生异常(Debug)", (__DATE__), (__TIME__), (__FUNCSIG__), __LINE__);\
+        AssertText.asprintf("%s %s\nfunc: %s\nline: %d\n\n--------------Error\n\n", (__DATE__), (__TIME__), (__FUNCSIG__), __LINE__);\
        throw new QException();\
 }\
 }

@@ -1,4 +1,4 @@
-﻿#include "baslerpyloncamera.h"
+﻿#include "vision/baslerpyloncamera.h"
 #include <QElapsedTimer>
 #include <QPixmap>
 BaslerPylonCamera::BaslerPylonCamera(QString name)

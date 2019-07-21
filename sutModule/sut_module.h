@@ -2,7 +2,7 @@
 #define SUT_MODULE_H
 
 #include "XtCylinder.h"
-#include "baslerpyloncamera.h"
+#include "vision/baslerpyloncamera.h"
 #include "calibration/calibration.h"
 #include "material_carrier.h"
 #include "sutModule/sut_parameter.h"

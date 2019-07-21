@@ -2,7 +2,7 @@
 #define BASEMODULEMANAGER_H
 
 #include <QObject>
-#include "baslerpyloncamera.h"
+#include "vision/baslerpyloncamera.h"
 #include "vision/visionmodule.h"
 #include "vision/wordoplight.h"
 #include "propertybase.h"

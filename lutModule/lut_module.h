@@ -3,7 +3,7 @@
 
 #include "material_carrier.h"
 #include "vision/wordoplight.h"
-#include "baslerpyloncamera.h"
+#include "vision/baslerpyloncamera.h"
 #include "lutModule/lut_parameter.h"
 #include "vision/visionmodule.h"
 #include "calibration/calibration.h"

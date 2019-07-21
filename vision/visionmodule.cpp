@@ -13,7 +13,7 @@
 #include <QDir>
 #include <config.h>
 #include <utils/commonutils.h>
-#include "baslerpyloncamera.h"
+#include "vision/baslerpyloncamera.h"
 
 VisionModule:: VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera)
              :QQuickImageProvider(QQuickImageProvider::Image)

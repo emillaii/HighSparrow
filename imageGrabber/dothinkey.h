@@ -5,7 +5,7 @@
 #include <Windows.h>
 #include "imagekit.h"
 #include "dtccm2.h"
-#include "iniparser.h"
+#include "imageGrabber\iniparser.h"
 #include <QObject>
 #include <QPixmap>
 #include "propertybase.h"

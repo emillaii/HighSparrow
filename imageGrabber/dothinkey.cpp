@@ -1,4 +1,4 @@
-#include "dothinkey.h"
+#include "imageGrabber/dothinkey.h"
 
 bool Dothinkey::CameraChannel::CloseCameraChannel()
 {
@@ -244,30 +244,11 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     qDebug("[DothinkeyStartCamera]InitIsp(pSensor->width, pSensor->height, pSensor->type, CHANNEL_A, iDevID) = %d",res);
     isGrabbing = true;
     //TODO: Move that to test item or in dothinkey config file
-    USHORT value_1 =0, value_2 =0, value_3 =0;
-//    WriteSensorReg(pSensor->SlaveID, 0x6028, 0x4000, pSensor->mode);
-//    Sleep(30);
-//    WriteSensorReg(pSensor->SlaveID, 0x6029, 0x0100, pSensor->mode);
-//    Sleep(30);
-//    WriteSensorReg(pSensor->SlaveID, 0x6F12, 0x0100, pSensor->mode);
-//    Sleep(30);
-//    WriteSensorReg(pSensor->SlaveID, 0x0a02, 0x0000, pSensor->mode);
-//    Sleep(30);
-//    WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0100, pSensor->mode);
-//    Sleep(30);
-//    ReadSensorReg(pSensor->SlaveID, 0x0a24, &value_1, pSensor->mode);
-//    ReadSensorReg(pSensor->SlaveID, 0x0a26, &value_2, pSensor->mode);
-//    ReadSensorReg(pSensor->SlaveID, 0x0a28, &value_3, pSensor->mode);
-//    qInfo("Read reg value %X %X %X", value_1, value_2, value_3);
-//    QString temp = "";
-//    temp.sprintf("%04X%04X%04X", value_1, value_2, value_3);
-//    setCurrentSensorID(temp);
-
+    USHORT value_1 =0;
     WriteSensorReg(pSensor->SlaveID, 0x0a02, 0x007F, pSensor->mode);
     Sleep(30);
     WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0001, pSensor->mode);
     Sleep(30);
-
     USHORT start = 0x0a17;
     USHORT end = 0x0a21;
     QString temp = "";

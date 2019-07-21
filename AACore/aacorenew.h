@@ -17,14 +17,14 @@
 #include "aaheadmodule.h"
 #include "lut_module.h"
 #include "sut_module.h"
-#include "dothinkey.h"
+#include "imageGrabber/dothinkey.h"
 #include "visionavadaptor.h"
 #include "imageprovider.h"
 #include "chart_calibration.h"
 #include "dispense_module.h"
 #include "AACore/aacoreparameters.h"
 #include "lutclient.h"
-#include "imagegrabbingworkerthread.h"
+#include "imageGrabber/imagegrabbingworkerthread.h"
 #include "unitlog.h"
 
 class AACoreNew : public ThreadWorkerBase

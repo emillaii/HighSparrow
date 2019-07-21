@@ -2626,7 +2626,6 @@ void AACoreNew::aaCoreParametersChanged()
         timeout--;
     }
     vector<Sfr_entry> sv = clustered_sfr_map[0];
-    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
 
     qPainter.setFont(QFont("Times",50, QFont::Bold));
     qPainter.drawText(imageCenterX/2 , 100 , QString("DFOV: ").append(QString::number(dfov)));

@@ -1,4 +1,4 @@
-#include "iniparser.h"
+#include "imageGrabber\iniparser.h"
 #include <fstream>
 #include <algorithm>
 

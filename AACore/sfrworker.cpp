@@ -4,7 +4,7 @@
 #include <QElapsedTimer>
 #include <QImage>
 #include <QPainter>
-#include "imagegrabbingworkerthread.h"
+#include "imageGrabber/imagegrabbingworkerthread.h"
 
 #define CONSTANT_REFERENCE 2304
 

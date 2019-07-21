@@ -54,9 +54,9 @@ SOURCES += \
     Matrix/Matrix.cpp \
     calibration.cpp \
     chart_calibration.cpp \
-    imagegrabbingworkerthread.cpp\
-    dothinkey.cpp \
-    iniparser.cpp \
+    imageGrabber\imagegrabbingworkerthread.cpp\
+    imageGrabber\dothinkey.cpp \
+    imageGrabber\iniparser.cpp \
     imageprovider.cpp \
     dispenser.cpp \
     dispense_module.cpp \
@@ -176,9 +176,9 @@ HEADERS += \
     Matrix/Matrix.h \
     calibration_parameter.h \
     chart_calibration.h \
-    imagegrabbingworkerthread.h\
-    dothinkey.h \
-    iniparser.h \
+    imageGrabber\imagegrabbingworkerthread.h\
+    imageGrabber\dothinkey.h \
+    imageGrabber\iniparser.h \
     imageprovider.h \
     XtVacuum.h \
     dispenser.h \

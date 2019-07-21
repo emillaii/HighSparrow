@@ -2,7 +2,7 @@
 #define IMAGEGRABBINGWORKERTHREAD_H
 #include <QThread>
 #include <QImage>
-#include "dothinkey.h"
+#include "imageGrabber/dothinkey.h"
 #include <QMutex>
 #include "imageprovider.h"
 

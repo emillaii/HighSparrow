@@ -2,8 +2,8 @@
 #define HIGHSPRROW_H
 #include <QObject>
 #include "utils/errorcode.h"
-#include "aaheadmodule.h"
-#include "sut_module.h"
+#include "aaHeadModule/aaheadmodule.h"
+#include "sutModule/sut_module.h"
 #include "logicmanager.h"
 #include "basemodulemanager.h"
 #include "STD.h"

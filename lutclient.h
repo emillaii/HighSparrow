@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include "network/sparrowqclient.h"
-#include "aaheadmodule.h"
-#include "pixel2mech.h"
+#include "aaHeadModule/aaheadmodule.h"
+#include "utils/pixel2mech.h"
 enum LutClientState{
     LUT_CLIENT_IDLE,
     WAITING_LENS_PICK_EVENT,

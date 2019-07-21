@@ -2,7 +2,7 @@
 #define CALIBRATION_H
 
 #include <QObject>
-#include "pixel2mech.h"
+#include "utils/pixel2mech.h"
 #include <qmath.h>
 #include <QVector>
 #include <QPointF>

@@ -25,7 +25,7 @@ SOURCES += \
     baslerpyloncamera.cpp \
     highsprrow.cpp \
     utils/errorcode.cpp \
-    aaheadmodule.cpp \
+    aaHeadModule/aaheadmodule.cpp \
     traymapmodel.cpp \
     utils/commonutils.cpp \
     utils/logger.cpp \
@@ -45,10 +45,10 @@ SOURCES += \
     XtVcMotor.cpp \
     XtVacuum.cpp \
     lut_module.cpp \
-    sut_module.cpp \
+    sutModule/sut_module.cpp \
     AACore/aadata.cpp \
     material_carrier.cpp \
-    pixel2mech.cpp \
+    utils/pixel2mech.cpp \
     Matrix/Matrix.cpp \
     calibration/calibration.cpp \
     calibration/chart_calibration.cpp \
@@ -74,7 +74,7 @@ SOURCES += \
     lutclient.cpp \
     sensorpickarm.cpp \
     sensorloadermodule.cpp \
-    sutclient.cpp \
+    sutModule/sutclient.cpp \
     AACore/aacorenew.cpp \
     sensortrayloadermodule.cpp \
     sensorclip.cpp \
@@ -141,7 +141,7 @@ HEADERS += \
     devicestatesgeter.h \
     highsprrow.h \
     utils/errorcode.h \
-    aaheadmodule.h \
+    aaHeadModule/aaheadmodule.h \
     logmodel.h \
     traymapmodel.h \
     vision/visionmodule.h \
@@ -154,7 +154,7 @@ HEADERS += \
     XtGeneralOutput.h \
     XtGeneralInput.h \
     AACore/sfrworker.h \
-    aaheadparameters.h \
+    aaHeadModule/aaheadparameters.h \
     logicmanager.h \
     utils/filecontent.h \
     basemodulemanager.h \
@@ -164,13 +164,13 @@ HEADERS += \
     XtVcMotor.h \
     material_carrier.h \
     XtVacuum.h \
-    sut_parameter.h \
+    sutModule/sut_parameter.h \
     material_carrier_parameter.h \
     lut_module.h \
     lut_parameter.h \
-    sut_module.h \
+    sutModule/sut_module.h \
     AACore/aadata.h \
-    pixel2mech.h \
+    utils/pixel2mech.h \
     Matrix/Matrix.h \
     calibration/calibration.h \
     calibration/calibration_parameter.h \
@@ -214,7 +214,7 @@ HEADERS += \
     sensorpickarmparameter.h \
     sensorloadermodule.h \
     sensorloaderparameter.h \
-    sutclient.h \
+    sutModule/sutclient.h \
     AACore/aacorenew.h \
     sendmessagetool.h \
     sensortrayloadermodule.h \

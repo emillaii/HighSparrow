@@ -1,4 +1,4 @@
-#include "sutclient.h"
+#include "sutModule/sutclient.h"
 #include <utils/commonutils.h>
 #include <qthread.h>
 

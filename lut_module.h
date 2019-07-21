@@ -12,7 +12,7 @@
 #include <QObject>
 #include <QQueue>
 #include "thread_worker_base.h"
-#include "sut_module.h"
+#include "sutModule/sut_module.h"
 #include "uphhelper.h"
 
 enum LUTState

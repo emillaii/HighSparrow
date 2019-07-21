@@ -14,9 +14,9 @@
 #include <QMap>
 #include "AACore/sfrworker.h"
 #include "AACore/aadata.h"
-#include "aaheadmodule.h"
+#include "aaHeadModule/aaheadmodule.h"
 #include "lut_module.h"
-#include "sut_module.h"
+#include "sutModule/sut_module.h"
 #include "imageGrabber/dothinkey.h"
 #include "visionavadaptor.h"
 #include "imageprovider.h"

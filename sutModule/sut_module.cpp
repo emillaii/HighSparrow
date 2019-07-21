@@ -1,4 +1,4 @@
-﻿#include "sut_module.h"
+﻿#include "sutModule/sut_module.h"
 
 #include <QMessageBox>
 

@@ -1,7 +1,7 @@
 #ifndef VISION_LOCATION_H
 #define VISION_LOCATION_H
 
-#include "pixel2mech.h"
+#include "utils/pixel2mech.h"
 #include "vision/vision_location_parameter.h"
 #include "vision/visionmodule.h"
 #include "vision/wordoplight.h"

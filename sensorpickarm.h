@@ -3,7 +3,7 @@
 
 #include "utils/errorcode.h"
 #include "material_picker.h"
-#include "pixel2mech.h"
+#include "utils/pixel2mech.h"
 #include "sensorpickarmparameter.h"
 
 

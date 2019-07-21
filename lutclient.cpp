@@ -1,7 +1,7 @@
 #include "lutclient.h"
 #include <QJsonObject>
 #include <QThread>
-#include "commonutils.h"
+#include "utils/commonutils.h"
 LutClient::LutClient(AAHeadModule * aaHead, QString address, QObject *parent) : QObject(parent)
 {
     socketClient = new SparrowClient(QUrl(address),  true);

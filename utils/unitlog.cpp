@@ -5,7 +5,7 @@
 #include <QFile>
 #include <qfileinfo.h>
 #include "config.h"
-#include "commonutils.h"
+#include "utils/commonutils.h"
 Unitlog::Unitlog(QObject * parent) : QObject(parent)
 {
     nam = new QNetworkAccessManager();

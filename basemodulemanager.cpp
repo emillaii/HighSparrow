@@ -8,7 +8,7 @@
 #include <qfileinfo.h>
 #include <qjsonarray.h>
 #include <qjsondocument.h>
-#include "commonutils.h"
+#include "utils/commonutils.h"
 
 wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
 wchar_t BaseModuleManager::profile_path1[] = L".\\config\\";

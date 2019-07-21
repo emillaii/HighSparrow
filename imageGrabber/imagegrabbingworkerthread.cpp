@@ -3,7 +3,7 @@
 #include "sfr.h"
 #include <QFileDialog>
 #include <QTextStream>
-#include "commonutils.h"
+#include "utils/commonutils.h"
 QImage ImageGrabbingWorkerThread::cvMat2QImage(const cv::Mat& mat)
 {
     // 8-bits unsigned, NO. OF CHANNELS = 1

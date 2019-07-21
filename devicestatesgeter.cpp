@@ -1,5 +1,5 @@
 #include "devicestatesgeter.h"
-#include "commonutils.h"
+#include "utils/commonutils.h"
 
 DeviceStatesGeter::DeviceStatesGeter(QObject *parent) : QObject(parent)
 {

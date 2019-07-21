@@ -80,7 +80,7 @@ bool isLoggingEnabled(QLoggingCategory& cat)
 }
 
 
-//#include <commonutils.h>
+//#include <utils/commonutils.h>
 //#include <config.h>
 //#include <stdio.h>
 //#include <fstream>

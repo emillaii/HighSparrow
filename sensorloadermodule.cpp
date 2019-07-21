@@ -1,9 +1,9 @@
 ﻿#include "sensorloadermodule.h"
-#include "commonutils.h"
+#include "utils/commonutils.h"
 //#include "logicmanager.h"
 #include "basemodulemanager.h"
 #include <QMessageBox>
-#include "commonutils.h"
+#include "utils/commonutils.h"
 #define PI 3.1415926535898
 SensorLoaderModule::SensorLoaderModule():ThreadWorkerBase ("SensorLoader")
 {

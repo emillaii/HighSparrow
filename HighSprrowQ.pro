@@ -27,7 +27,7 @@ SOURCES += \
     errorcode.cpp \
     aaheadmodule.cpp \
     traymapmodel.cpp \
-    commonutils.cpp \
+    utils/commonutils.cpp \
     logger.cpp \
     motorspositionmodel.cpp \
     propertybase.cpp \
@@ -145,7 +145,7 @@ HEADERS += \
     logmodel.h \
     traymapmodel.h \
     vision/visionmodule.h \
-    commonutils.h \
+    utils/commonutils.h \
     logger.h \
     motorspositionmodel.h \
     propertybase.h \

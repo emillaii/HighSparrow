@@ -1,6 +1,6 @@
 ﻿#include "basemodulemanager.h"
 #include "machinestatemonitor.h"
-#include "commonutils.h"
+#include "utils/commonutils.h"
 #include <QUuid>
 
 #define CMD_GET_MOTOR_STATE_REQ    "getMotorStateReq"

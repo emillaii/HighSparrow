@@ -11,7 +11,7 @@
 #include <QJsonObject>
 #include <QPainter>
 #include "aa_util.h"
-#include "commonutils.h"
+#include "utils/commonutils.h"
 #include "vision/visionmodule.h"
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>

@@ -12,7 +12,7 @@
 #include <QTime>
 #include <QDir>
 #include <config.h>
-#include <commonutils.h>
+#include <utils/commonutils.h>
 #include "baslerpyloncamera.h"
 
 VisionModule:: VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera)

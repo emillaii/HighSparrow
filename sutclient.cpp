@@ -1,5 +1,5 @@
 #include "sutclient.h"
-#include <commonutils.h>
+#include <utils/commonutils.h>
 #include <qthread.h>
 
 

@@ -1,6 +1,6 @@
 #ifndef DISPENSER_H
 #define DISPENSER_H
-#include "dispenser_parameter.h"
+#include "dispenseModule/dispenser_parameter.h"
 #include "xtmotor.h"
 
 #include <windows.h>

@@ -1,4 +1,4 @@
-﻿#include "imageprovider.h"
+﻿#include "utils/imageprovider.h"
 
 ImageProvider::ImageProvider()
     : QQuickImageProvider(QQuickImageProvider::Image)

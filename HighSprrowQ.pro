@@ -55,9 +55,9 @@ SOURCES += \
     imageGrabber/imagegrabbingworkerthread.cpp\
     imageGrabber/dothinkey.cpp \
     imageGrabber/iniparser.cpp \
-    imageprovider.cpp \
-    dispenser.cpp \
-    dispense_module.cpp \
+    utils/imageprovider.cpp \
+    dispenseModule/dispenser.cpp \
+    dispenseModule/dispense_module.cpp \
     vision/wordoplight.cpp \
     vision/visionmodule.cpp \
     vision/vision_location.cpp \
@@ -178,12 +178,12 @@ HEADERS += \
     imageGrabber/imagegrabbingworkerthread.h\
     imageGrabber/dothinkey.h \
     imageGrabber/iniparser.h \
-    imageprovider.h \
+    utils/ \
     XtVacuum.h \
-    dispenser.h \
-    dispenser_parameter.h \
-    dispense_module.h \
-    dispense_parameter.h \
+    dispenseModule/dispenser.h \
+    dispenseModule/dispenser_parameter.h \
+    dispenseModule/dispense_module.h \
+    dispenseModule/dispense_parameter.h \
     position_define.h \
     vision/wordoplight.h \
     vision/vision_location_parameter.h \

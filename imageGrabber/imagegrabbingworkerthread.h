@@ -4,7 +4,7 @@
 #include <QImage>
 #include "imageGrabber/dothinkey.h"
 #include <QMutex>
-#include "imageprovider.h"
+#include "utils/imageprovider.h"
 
 class ImageGrabbingWorkerThread : public QThread
 {

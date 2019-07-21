@@ -19,11 +19,16 @@ ItemDelegate {
                 ColumnLayout {
                     RowLayout {
                         Label {
-                            text: qsTr("Selected Profile: ")
+                            text: qsTr("Selected Peak Profile: ")
                         }
                         ComboBox {
-                            width: 200
-                            model: [ "Default", "Profile 1", "Profile 2" ]
+                            id: aaCoreProfile
+                            Layout.preferredWidth: 300
+                            model: [ "Best CC", "Best 0.3F", "Best 0.5F", "Best 0.8F" ]
+                            currentIndex: aaCoreParams.peakProfile
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setPeakProfile(currentIndex)
+                            }
                         }
                     }
 
@@ -448,7 +453,7 @@ ItemDelegate {
                     target: highSprrow
                     onDisplayAACoreTuningImageInUI: {
                         image1.source = ""
-                        image1.source = "image://aaCoreTuningImage"
+                        image1.source = "image://dispenseImage"
                     }
                 }
             }

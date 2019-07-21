@@ -128,6 +128,19 @@ void VisionModule::saveImage(int channel)
         avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
 }
 
+bool VisionModule::saveImage(QString cameraName, QString imageName)
+{
+    avl::Image image1;
+    bool ret = grabImageFromCamera(cameraName, image1);
+    if (!ret) {
+        qInfo("Cannot save image due to camera is not running");
+        return ret;
+    }
+
+    if (!image1.Empty())
+        avl::SaveImageToJpeg(image1 , imageName.toStdString().c_str(), atl::NIL, false);
+}
+
 ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score)
 {
     //if(is_debug)return ErrorCodeStruct{ OK, "" };

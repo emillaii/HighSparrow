@@ -4,13 +4,13 @@ import QtCharts 2.0
 import QtQuick.Layouts 1.11
 Grid {
     id: grid
-    columns: 3
+    columns: 4
     width: 800
     height: 800
 
     Frame {
         id: frame
-        width: grid.width/3
+        width: grid.width/4
         height: grid.height/2
 
         Image {
@@ -31,7 +31,7 @@ Grid {
 
     Frame {
         id: frame1
-        width: grid.width/3
+        width: grid.width/4
         height: grid.height/2
         Image {
             id: image3
@@ -58,7 +58,7 @@ Grid {
 
     Frame {
         id: frame2
-        width: grid.width/3
+        width: grid.width/4
         height: grid.height/2
 
         ChartView {
@@ -168,7 +168,7 @@ Grid {
 
     Frame {
         id: frame3
-        width: grid.width/3
+        width: grid.width/4
         height: grid.height/2
         ChartView {
             id: lineSeries
@@ -222,7 +222,7 @@ Grid {
 
     Frame {
         id: frame4
-        width: grid.width/3
+        width: grid.width/4
         height: grid.height/2
         Image {
             id: image4
@@ -241,8 +241,29 @@ Grid {
     }
 
     Frame {
+        id: frame6
+        width: grid.width/4
+        height: grid.height/2
+
+        Image {
+            id: image6
+            anchors.fill: parent
+            source: "icons/sparrow.png"
+            fillMode: Image.PreserveAspectFit
+            cache: false
+            Connections {
+                target: highSprrow
+                onDisplayGlueInspectImageInUI: {
+                    image6.source = ""
+                    image6.source = "image://dispenseImage"
+                }
+            }
+        }
+    }
+
+    Frame {
         id: frame5
-        width: grid.width/3
+        width: grid.width/4
         height: grid.height/2
         ChartView {
             id: spline2

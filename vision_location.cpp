@@ -167,3 +167,8 @@ QString VisionLocation::getLastImageName()
 {
     return last_image_name;
 }
+
+bool VisionLocation::saveImage(QString imageName)
+{
+    return vison->saveImage(parameters.cameraName(), imageName);
+}

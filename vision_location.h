@@ -20,6 +20,7 @@ public:
     void OpenLight();
     void CloseLight();
     QString getLastImageName();
+    bool saveImage(QString imageName);
 public:
     VisionLocationParameter parameters;
 private:

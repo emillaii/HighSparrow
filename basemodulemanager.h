@@ -113,8 +113,7 @@ public:
 
 signals:
     void sendHandlingOperation(int cmd);
-    void displaySfrImageInUI();
-    void displayOCImageInUI();
+
     void lightingValueChanged(int downlookLighting);
 
     void lightPanelValueChanged(int lightPanelLighting);

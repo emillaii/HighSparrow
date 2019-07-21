@@ -57,6 +57,7 @@
 #define AA_PROCESS_DIR               "aa_process//"
 #define PRODUCE_PROCESS_DIR          "produce_process//"
 #define VISION_PR_DEBUG_DIR          "pr_log//"
+#define DISPENSE_VISION_PR_DIR       "dispense_log//"
 #define AA_DEBUG_DIR                 "aa_log//"
 #define AA_SAVE_IMAGE_DIR            "aa_save_image//"
 #define AA_SAVE_IMAGE_DOWNLOOK_DIR   "aa_save_image//downlook//"

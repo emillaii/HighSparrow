@@ -19,6 +19,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     ErrorBase ("BaseModuleManager")
 {
     qInfo("main thread id :%d",QThread::currentThreadId());
+    work_thread.setPriority(QThread::Priority::HighestPriority);
     this->moveToThread(&work_thread);
     this->work_thread.start();
     QMap<QString,PropertyBase*> temp_map;

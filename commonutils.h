@@ -12,6 +12,7 @@ QString getVisionLogDir();
 QString getGrabberLogDir();
 QString getMTFLogDir();
 QString getUnitLogDir();
+QString getDispensePrLogDir();
 QString getPerformanceLogDir();
 QString getAAProcessLogDir();
 QString getProduceProcessLogDir();

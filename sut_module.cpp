@@ -103,10 +103,26 @@ bool SutModule::moveToDownlookPR(bool close_lighting, bool check_autochthonous)
     if((moveToDownlookPR(offset,close_lighting,check_autochthonous)))
     {
         emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta);
+        DownlookPrDone = true;
         return true;
     }
     AppendError(u8"执行downlook pr 失败");
     return false;
+}
+
+bool SutModule::moveToDownlookSaveImage(QString imageName,bool close_lighting,bool check_autochthonous)
+{
+    vision_downlook_location->OpenLight();
+    bool result = moveToDownlookPos(check_autochthonous);
+    if(result)
+    {
+        if(has_material)
+            QThread::msleep(80);
+            result = vision_downlook_location->saveImage(imageName);
+    }
+    if(close_lighting)
+        vision_downlook_location->CloseLight();
+    return result;
 }
 
 bool SutModule::moveToLoadPos(bool check_autochthonous)

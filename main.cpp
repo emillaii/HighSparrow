@@ -215,6 +215,8 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->sensor_loader_module.sut1_pr_position);
     engine.rootContext()->setContextProperty("sut_pr_position2",
                                              &highSprrow.baseModuleManager->sensor_loader_module.sut2_pr_position);
+    engine.rootContext()->setContextProperty("spa_standby_position",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.spa_standby_position);
     engine.rootContext()->setContextProperty("pick1_offset",
                                              &highSprrow.baseModuleManager->sensor_loader_module.picker1_offset);
     engine.rootContext()->setContextProperty("pick2_offset",
@@ -296,7 +298,7 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("imageGrabberLiveImage"), highSprrow.baseModuleManager->imageGrabberThread->m_pImgProvider);
     engine.addImageProvider(QLatin1String("ocImage1"), highSprrow.baseModuleManager->aaCoreNew.ocImageProvider_1);
     engine.addImageProvider(QLatin1String("sfrImage"), highSprrow.baseModuleManager->aaCoreNew.sfrImageProvider);
-engine.addImageProvider(QLatin1String("dispenseImage"), highSprrow.baseModuleManager->aaCoreNew.dispenseImageProvider);
+    engine.addImageProvider(QLatin1String("dispenseImage"), highSprrow.baseModuleManager->aaCoreNew.dispenseImageProvider);
     engine.addImageProvider(QLatin1String("aaCoreTuningImage"), highSprrow.baseModuleManager->aaCoreNew.aaCoreTuningProvider);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())

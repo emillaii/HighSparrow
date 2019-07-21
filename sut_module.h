@@ -35,6 +35,7 @@ public:
     Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     bool moveToDownlookPR(bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPos(bool check_autochthonous = false);
+    bool moveToDownlookSaveImage(QString imageName,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToReadyPos();
     Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool toolDownlookPR(PrOffset &offset,bool close_lighting = true,bool motion = false);
@@ -71,6 +72,7 @@ public:
     PositionT  up_downlook_offset;
     MaterialCarrier* carrier;
     VisionLocation* vision_downlook_location;
+    bool DownlookPrDone = false;
 private:
     VisionLocation* vision_updownlook_down_location;
     VisionLocation* vision_updownlook_up_location;

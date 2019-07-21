@@ -61,7 +61,7 @@ public:
     ErrorCodeStruct performXYOffset(double xOffset, double yOffset);
     ErrorCodeStruct performDelay(int);
     ErrorCodeStruct performCameraUnload();
-    ErrorCodeStruct performUV(int uv_time);
+    ErrorCodeStruct performUV(QJsonValue params);
     ErrorCodeStruct performReject();
     ErrorCodeStruct performAccept();
     ErrorCodeStruct performTerminate();

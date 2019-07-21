@@ -39,6 +39,7 @@ bool SensorLoaderModule::loadJsonConfig(QString file_name)
     temp_map.insert("parameters", &parameters);
     temp_map.insert("sut1_pr_position", &sut1_pr_position);
     temp_map.insert("sut2_pr_position", &sut2_pr_position);
+    temp_map.insert("spa_standby_position", &spa_standby_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
     temp_map.insert("sensor_uph",&sensor_uph);
@@ -60,6 +61,7 @@ void SensorLoaderModule::saveJsonConfig(QString file_name)
     temp_map.insert("parameters", &parameters);
     temp_map.insert("sut1_pr_position", &sut1_pr_position);
     temp_map.insert("sut2_pr_position", &sut2_pr_position);
+    temp_map.insert("spa_standby_position", &spa_standby_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
     temp_map.insert("sensor_uph",&sensor_uph);
@@ -127,6 +129,10 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     else if(cmd%temp_value == HandlePosition::SENSOR_TRAY1_END_POS){
         qInfo(u8"移动SPA到sensor料盘起始位置");
         result = moveToTray1EndPos();
+    }
+    else if(cmd%temp_value == HandlePosition::SPA_STANDBY_POS){
+        qInfo(u8"移动SPA到standby位置");
+        result = moveToStandbyPos();
     }
     else
         result =true;
@@ -2078,6 +2084,7 @@ bool SensorLoaderModule::picker2SearchZ(double z,double force,bool is_open, int 
 bool SensorLoaderModule::picker2SearchSutZ(double z,double force, QString dest, QString cmd, bool is_open, int time_out)
 {
     qInfo("picker2SearchZ %s",dest.toStdString().c_str());
+    sendCmd(dest,cmd);
     bool result = true;
     if(parameters.enableEscape())
         result = pick_arm->picker2->motor_z->MoveToPosSync(z - parameters.escapeHeight());
@@ -2087,8 +2094,9 @@ bool SensorLoaderModule::picker2SearchSutZ(double z,double force, QString dest, 
             result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
         else
             result = pick_arm->Z2MoveToPick(z - parameters.vcmMargin(),is_open,false);
-        sendCmd(dest,cmd);
-        QThread::msleep(200);
+//        qInfo("Send cmd");
+//        sendCmd(dest,cmd);
+//        QThread::msleep(5000);
         if(parameters.enableForceLimit())
             result &= pick_arm->ZSerchReturn2(time_out);
         else
@@ -2302,6 +2310,15 @@ bool SensorLoaderModule::moveToTray1EndPos()
     bool result = pick_arm->move_XY_Synic(tray->getEndPosition(),true);
     if(!result)
         AppendError(QString(u8"移动到sensor盘结束位置失败"));
+    return result;
+}
+
+bool SensorLoaderModule::moveToStandbyPos()
+{
+    qInfo("moveToStandbyPosition");
+    bool result = pick_arm->move_XY_Synic(QPointF(spa_standby_position.X(), spa_standby_position.Y()));
+    if(!result)
+         AppendError(QString(u8"移动SPA到standby位置失败"));
     return result;
 }
 

@@ -40,6 +40,7 @@ public:
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 
     Q_INVOKABLE void saveImage(int channel);
+    bool saveImage(QString cameraName, QString imageName);
     Q_INVOKABLE void testVision();
 private:
     QString last_uplook_pr_result;

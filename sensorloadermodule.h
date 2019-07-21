@@ -29,6 +29,7 @@ public:
         SENSOR_TRAY1_START_POS = 5,
         SENSOR_TRAY2_START_POS = 6,
         SENSOR_TRAY1_END_POS = 7,
+        SPA_STANDBY_POS = 8,
     };
     enum HandlePR
     {
@@ -137,6 +138,8 @@ private:
     bool moveToStartPos(int tray_index);
     bool moveToTray1EndPos();
 
+    bool moveToStandbyPos();
+
     double updateAccumulatedHour(bool calculate = true);
     double getHourSpace(QTime time_label);
 
@@ -152,6 +155,7 @@ public:
     SensorLoaderState states;
     Position sut1_pr_position;
     Position sut2_pr_position;
+    Position spa_standby_position;
     Position picker1_offset;
     Position picker2_offset;
 

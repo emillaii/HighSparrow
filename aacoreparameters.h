@@ -37,6 +37,8 @@ class AACoreParameters : public PropertyBase
 
     double m_maxCicleTime = 100;
 
+    int m_peakProfile = 0;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -58,6 +60,7 @@ public:
     Q_PROPERTY(double EstimatedAAFOV READ EstimatedAAFOV WRITE setEstimatedAAFOV NOTIFY paramsChanged)
     Q_PROPERTY(double minCircleTime READ minCircleTime WRITE setMinCircleTime NOTIFY minCircleTimeChanged)
     Q_PROPERTY(double maxCicleTime READ maxCicleTime WRITE setMaxCicleTime NOTIFY maxCicleTimeChanged)
+    Q_PROPERTY(int peakProfile READ PeakProfile WRITE setPeakProfile NOTIFY paramsChanged)
 double EFL() const
 {
     return m_EFL;
@@ -125,6 +128,16 @@ double minCircleTime() const
 double maxCicleTime() const
 {
     return m_maxCicleTime;
+}
+
+int setPeakProfile() const
+{
+    return m_peakProfile;
+}
+
+int PeakProfile() const
+{
+    return m_peakProfile;
 }
 
 public slots:
@@ -233,6 +246,15 @@ void setMaxCicleTime(double maxCicleTime)
 
     m_maxCicleTime = maxCicleTime;
     emit maxCicleTimeChanged(m_maxCicleTime);
+}
+
+void setPeakProfile(int peakProfile)
+{
+    if (m_peakProfile == peakProfile)
+        return;
+
+    m_peakProfile = peakProfile;
+    emit paramsChanged();
 }
 
 signals:

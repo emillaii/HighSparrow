@@ -64,6 +64,21 @@ void WorkersManager::startWorkers(int run_mode)
 {
     qInfo("start all worker %d",workers.size());
 
+    // Reset logic if necessary
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否重置逻辑？(Yes: 重置逻辑并开始 No: 不重置逻辑并开始 Cancle: 取消)"),QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+    if(rb==QMessageBox::Yes)
+    {
+        resetLogics();
+        qInfo("Reset logics before start workers signal.");
+    }
+    else if (rb==QMessageBox::No){
+        qInfo("Not reset logics before start workers signal.");
+    }
+    else if (rb==QMessageBox::Cancel || rb==QMessageBox::Close) {
+        qInfo("Cancle start workers.");
+        return;
+    }
+
     emit startWorkersSignal(run_mode);
 }
 

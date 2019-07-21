@@ -82,8 +82,6 @@ SOURCES += \
     checkprocessmodel.cpp \
     machinestatemonitor.cpp \
     machinestatemonitorcontroller.cpp \
-    singleheadmachinematerialpickarm.cpp \
-    singleheadmachinematerialloadermodule.cpp \
     uphhelper.cpp \
     tcpmessager.cpp \
     tcpclientmessager.cpp \
@@ -230,10 +228,6 @@ HEADERS += \
     checkprocessmodel.h \
     machinestatemonitor.h \
     machinestatemonitorcontroller.h \
-    singleheadmachinematerialpickarm.h \
-    singleheadmachinematerialpickarmparameter.h \
-    singleheadmachinematerialloadermodule.h \
-    singleheadmachinematerialloadermoduleparameter.h \
     uphhelper.h \
     tcpmessager.h \
     tcpmessagerparameter.h \

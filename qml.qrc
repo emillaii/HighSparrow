@@ -9,11 +9,8 @@
         <file>PickLensPositionView.qml</file>
         <file>MotionDialog.qml</file>
         <file>PopupMessageView.qml</file>
-        <file>ImageGrabberView.qml</file>
         <file>MachineConfigListView.qml</file>
         <file>Page4FormForm.ui.qml</file>
-        <file>IODialog.qml</file>
-        <file>SystemConfigView.qml</file>
         <file>LensPickArmModuleView.qml</file>
         <file>TrayParamater.qml</file>
         <file>LensPickArmModuleParameter.qml</file>
@@ -82,5 +79,8 @@
         <file>qml/CheckProcess.qml</file>
         <file>qml/CommonControl.qml</file>
         <file>qml/CommonUsedView.qml</file>
+        <file>qml/SystemConfigView.qml</file>
+        <file>qml/ImageGrabberView.qml</file>
+        <file>qml/IODialog.qml</file>
     </qresource>
 </RCC>

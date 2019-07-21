@@ -1,4 +1,4 @@
-#include "sparrowqclient.h"
+#include "network/sparrowqclient.h"
 
 #include <QtCore/QDebug>
 #include <QJsonObject>

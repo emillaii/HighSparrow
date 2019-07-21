@@ -65,8 +65,8 @@ SOURCES += \
     workers_manager.cpp \
     thread_worker_base.cpp \
     materialtray.cpp \
-    sparrowqserver.cpp \
-    sparrowqclient.cpp \
+    network/sparrowqserver.cpp \
+    network/sparrowqclient.cpp \
     lenspickarm.cpp \
     lensloadermodule.cpp \
     trayloadermodule.cpp \
@@ -196,8 +196,8 @@ HEADERS += \
     traystandardsparameter.h \
     trayparameter.h \
     AACore/aacoreparameters.h \
-    sparrowqserver.h \
-    sparrowqclient.h \
+    network/sparrowqserver.h \
+    network/sparrowqclient.h \
     lenspickarm.h \
     lenspickarmparameter.h \
     lensloaderparameter.h \

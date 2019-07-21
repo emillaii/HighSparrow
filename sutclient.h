@@ -2,7 +2,7 @@
 #define SUTCILENT_H
 
 #include "XtVacuum.h"
-#include "sparrowqclient.h"
+#include "network/sparrowqclient.h"
 
 #include <qobject.h>
 

@@ -4,7 +4,7 @@
 #include "materialtray.h"
 #include "sensorloaderparameter.h"
 #include "sensorpickarm.h"
-#include "sparrowqserver.h"
+#include "network/sparrowqserver.h"
 #include "thread_worker_base.h"
 #include "uphhelper.h"
 #include "vision/vision_location.h"

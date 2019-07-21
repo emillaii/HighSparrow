@@ -2,8 +2,8 @@
 #define MACHINESTATEMONITOR_H
 
 #include <QObject>
-#include "sparrowqserver.h"
-#include "sparrowqclient.h"
+#include "network/sparrowqserver.h"
+#include "network/sparrowqclient.h"
 #include <QWaitCondition>
 #include <QMutex>
 #include <QThread>

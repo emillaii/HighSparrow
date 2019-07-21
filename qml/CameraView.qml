@@ -22,7 +22,7 @@ Grid {
         Image {
             id: image3
             anchors.fill: parent
-            source: "icons/sparrow.png"
+            source: "../icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
 
@@ -108,7 +108,7 @@ Grid {
                     text: "Button"
                     display: AbstractButton.IconOnly
                     icon.color: "lightGreen"
-                    icon.source: "icons/save.png"
+                    icon.source: "../icons/save.png"
                     onClicked: {
                         console.log("Save Image Grabber Image")
                         imageGrabberThread.saveImage()
@@ -133,7 +133,7 @@ Grid {
         Image {
             id: image
             anchors.fill: parent
-            source: "icons/sparrow.png"
+            source: "../icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
 
@@ -221,7 +221,7 @@ Grid {
                     text: "Button"
                     display: AbstractButton.IconOnly
                     icon.color: "lightGreen"
-                    icon.source: "icons/save.png"
+                    icon.source: "../icons/save.png"
                     onClicked: {
                         console.log("Save Image")
                         visionModule.saveImage(0)
@@ -247,7 +247,7 @@ Grid {
         Image {
             id: image1
             anchors.fill: parent
-            source: "icons/sparrow.png"
+            source: "../icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
 
@@ -319,7 +319,7 @@ Grid {
                     text: "Button"
                     display: AbstractButton.IconOnly
                     icon.color: "lightGreen"
-                    icon.source: "icons/save.png"
+                    icon.source: "../icons/save.png"
                     onClicked: {
                         console.log("Save Image")
                         visionModule.saveImage(1)
@@ -355,7 +355,7 @@ Grid {
         Image {
             id: image2
             anchors.fill: parent
-            source: "icons/sparrow.png"
+            source: "../icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
             Rectangle {
@@ -446,7 +446,7 @@ Grid {
                     text: "Button"
                     display: AbstractButton.IconOnly
                     icon.color: "lightGreen"
-                    icon.source: "icons/save.png"
+                    icon.source: "../icons/save.png"
                     onClicked: {
                         console.log("Save Image")
                         visionModule.saveImage(2)

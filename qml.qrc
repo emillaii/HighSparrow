@@ -4,7 +4,6 @@
         <file>Page1Form.ui.qml</file>
         <file>Page2Form.ui.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>CameraView.qml</file>
         <file>FeatureButton.qml</file>
         <file>MachineSettingModel.qml</file>
         <file>Page3Form.ui.qml</file>
@@ -19,7 +18,6 @@
         <file>SUTSafetyPositionView.qml</file>
         <file>PopupMessageView.qml</file>
         <file>ImageGrabberView.qml</file>
-        <file>CalibrationView.qml</file>
         <file>MachineConfigListView.qml</file>
         <file>SUTMushroomPosition.qml</file>
         <file>SUTToollookPosition.qml</file>
@@ -36,7 +34,6 @@
         <file>LUTUnloadPosition.qml</file>
         <file>Page4FormForm.ui.qml</file>
         <file>IODialog.qml</file>
-        <file>BusyDialog.qml</file>
         <file>DispenseModuleView.qml</file>
         <file>DispenserParam.qml</file>
         <file>DispenseXYOffset.qml</file>
@@ -55,7 +52,6 @@
         <file>LensHeadParameter.qml</file>
         <file>LensPcikArmLUT.qml</file>
         <file>TrayLoaderModuleView.qml</file>
-        <file>AlarmDialog.qml</file>
         <file>ThreadManagerView.qml</file>
         <file>SensorLoaderModuleView.qml</file>
         <file>SensorHeadParameter.qml</file>
@@ -78,5 +74,9 @@
         <file>qml/AAHeadModule/AAHeadMushroomPosition.qml</file>
         <file>qml/AAHeadModule/AAHeadOCPosition.qml</file>
         <file>qml/AAHeadModule/AAHeadPickLensPosition.qml</file>
+        <file>qml/CalibrationView.qml</file>
+        <file>qml/AlarmDialog.qml</file>
+        <file>qml/BusyDialog.qml</file>
+        <file>qml/CameraView.qml</file>
     </qresource>
 </RCC>

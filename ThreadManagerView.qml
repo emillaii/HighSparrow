@@ -64,40 +64,6 @@ ItemDelegate {
                     }
                 }
             }
-//            GroupBox{
-//                title: qsTr("测试参数")
-//                visible: baseModuleManager.getServerMode() !== 0
-//                ColumnLayout{
-//                    CheckBox {
-//                        text: qsTr("静态测试")
-//                        checked: lens_loader_parameter.staticTest
-//                        onClicked: {
-//                            sensorLoaderParameter.setStaticTest(checked)
-//                            sutParams.setStaticTest(checked)
-//                        }
-//                    }
-//                    Label{
-//                        text: qsTr("重复次数")
-//                    }
-//                    TextField{
-//                        text: sensorLoaderParameter.repeatTime
-//                        onEditingFinished: {
-//                            sensorLoaderParameter.setRepeatTime(text)
-//                            sutParams.setRepeatTime(text)
-//                        }
-//                    }
-//                    Label{
-//                        text: qsTr("测试个数")
-//                    }
-//                    TextField{
-//                        text: sensorLoaderParameter.testLensCount
-//                        onEditingFinished: {
-//                            sensorLoaderParameter.setTestLensCount(text)
-//                            sutParams.setTestLensCount(text)
-//                        }
-//                    }
-//                }
-//            }
             GroupBox{
                 title:qsTr("系统操作")
                 ColumnLayout {

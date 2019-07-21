@@ -9,23 +9,11 @@
         <file>Page3Form.ui.qml</file>
         <file>PickLensPositionView.qml</file>
         <file>MotionDialog.qml</file>
-        <file>SUTModuleView.qml</file>
-        <file>SUTLoadPositionView.qml</file>
-        <file>SUTPRPositionView.qml</file>
-        <file>SUTSafetyPositionView.qml</file>
         <file>PopupMessageView.qml</file>
         <file>ImageGrabberView.qml</file>
         <file>MachineConfigListView.qml</file>
-        <file>SUTMushroomPosition.qml</file>
-        <file>SUTToollookPosition.qml</file>
-        <file>SUTToolUplookPosition.qml</file>
         <file>Page4FormForm.ui.qml</file>
         <file>IODialog.qml</file>
-        <file>DispenseModuleView.qml</file>
-        <file>DispenserParam.qml</file>
-        <file>DispenseXYOffset.qml</file>
-        <file>DispenseParam.qml</file>
-        <file>DispenseZPos.qml</file>
         <file>Page5Form.ui.qml</file>
         <file>DiagnosticsView.qml</file>
         <file>SystemConfigView.qml</file>
@@ -83,5 +71,18 @@
         <file>qml/LUTModule/LUTUnloadPosition.qml</file>
         <file>qml/LUTModule/LUTUnPick2PositionView.qml</file>
         <file>qml/LUTModule/LUTUnPickPositionView.qml</file>
+        <file>qml/SUTModule/SUTLoadPositionView.qml</file>
+        <file>qml/SUTModule/SUTModuleView.qml</file>
+        <file>qml/SUTModule/SUTMushroomPosition.qml</file>
+        <file>qml/SUTModule/SUTOCPositionView.qml</file>
+        <file>qml/SUTModule/SUTPRPositionView.qml</file>
+        <file>qml/SUTModule/SUTSafetyPositionView.qml</file>
+        <file>qml/SUTModule/SUTToollookPosition.qml</file>
+        <file>qml/SUTModule/SUTToolUplookPosition.qml</file>
+        <file>qml/DispenseModule/DispenseModuleView.qml</file>
+        <file>qml/DispenseModule/DispenseParam.qml</file>
+        <file>qml/DispenseModule/DispenserParam.qml</file>
+        <file>qml/DispenseModule/DispenseXYOffset.qml</file>
+        <file>qml/DispenseModule/DispenseZPos.qml</file>
     </qresource>
 </RCC>

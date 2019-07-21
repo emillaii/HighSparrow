@@ -6,6 +6,7 @@ import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
 import "qml/AAHeadModule"
 import "qml/LUTModule"
+import "qml/SUTModule"
 
 ItemDelegate {
     width: parent.width

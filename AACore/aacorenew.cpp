@@ -348,15 +348,15 @@ void AACoreNew::performHandlingOperation(int cmd)
         performPRToBond(0);
     }
     else if (cmd == HandleTest::MTF) {
-        //performMTF(true, true);
-        performMTFOffline(params);
+        performMTF(true, true);
+        //performMTFOffline(params);
     }
     else if (cmd == HandleTest::OC) {
         performOC(true, false);
     }
     else if (cmd == HandleTest::AA) {
-        //performAA(params);
-        performAAOffline();
+        performAA(params);
+        //performAAOffline();
     }
     else if (cmd == HandleTest::INIT_CAMERA) {
         performInitSensor(true);
@@ -1552,7 +1552,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     QVariantMap map;
     //cv::Mat img = cv::imread("offline\\5.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
+    cv::Mat img = cv::imread("22-15-46-422.bmp");
     double dfov = calculateDFOV(img);
     qInfo("%f %d %d %d", dfov, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea() );
     AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());

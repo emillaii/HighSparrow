@@ -3,6 +3,8 @@
 
 #include "utils/errorcode.h"
 
+#include "propertybase.h"
+
 #include <QObject>
 #include <QVariantMap>
 #include <qmutex.h>
@@ -51,6 +53,7 @@ public:
     int waitMessageReturn(bool &interruput);
     bool waitResponseMessage(bool &is_run,QString target_message);
     virtual void receivceModuleMessage(QVariantMap message);
+    virtual PropertyBase* getModuleState() = 0;
 
     Q_INVOKABLE void performHandling(int cmd);
     bool  waitPerformHandling();

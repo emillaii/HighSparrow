@@ -174,6 +174,11 @@ public:
     void recordTrayLensPr(QString uuid);
     void recordTrayVacancyPr(QString uuid);
     void recordNgLensPr(QString uuid);
+
+    // ThreadWorkerBase interface
+public:
+    void receivceModuleMessage(QVariantMap message);
+    PropertyBase *getModuleState();
 };
 
 #endif // LENSPICKARMMODULE_H

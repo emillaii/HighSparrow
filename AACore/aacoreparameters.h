@@ -53,6 +53,8 @@ class AACoreParameters : public PropertyBase
 
     double m_maxDev = 100;
 
+    double m_minDev = 0;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -82,6 +84,7 @@ public:
     Q_PROPERTY(double zpeak05Coefficient READ zpeak05Coefficient WRITE setZpeak05Coefficient NOTIFY zpeak05CoefficientChanged)
     Q_PROPERTY(double zpeak08Coefficient READ zpeak08Coefficient WRITE setZpeak08Coefficient NOTIFY zpeak08CoefficientChanged)
     Q_PROPERTY(double maxDev READ maxDev WRITE setMaxDev NOTIFY maxDevChanged)
+    Q_PROPERTY(double minDev READ minDev WRITE setMinDev NOTIFY minDevChanged)
     double EFL() const
     {
         return m_EFL;
@@ -194,6 +197,11 @@ public:
     double maxDev() const
     {
         return m_maxDev;
+    }
+
+    double minDev() const
+    {
+        return m_minDev;
     }
 
 public slots:
@@ -385,6 +393,16 @@ public slots:
         emit maxDevChanged(m_maxDev);
     }
 
+    void setMinDev(double minDev)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_minDev, minDev))
+            return;
+
+        m_minDev = minDev;
+        emit minDevChanged(m_minDev);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -398,6 +416,7 @@ signals:
     void zpeak05CoefficientChanged(double zpeak05Coefficient);
     void zpeak08CoefficientChanged(double zpeak08Coefficient);
     void maxDevChanged(double maxDev);
+    void minDevChanged(double minDev);
 };
 class AACoreStates: public PropertyBase
 {

@@ -117,9 +117,64 @@ void BaseModuleManager::tcpResp(QString message)
                 result["motorPosition"] = temp_motor->GetFeedbackPos();
                 result["motorTargetPosition"] = temp_motor->GetCurrentTragetPos();
                 result["error"] = "";
-
             }
             receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+        }
+        else if(cmd == "inquiryModuleState")
+        {
+            QString module_name = message_object["moduleName"].toString();
+            qDebug()<<"qure motor pos :"<< module_name<<"thread id:"<<QThread::currentThreadId();
+            if(workers.contains(module_name))
+            {
+                QJsonObject result;
+                result["resp"] = "moduleState";
+                result["moduleName"] = module_name;
+                QJsonObject module_state;
+                workers[module_name]->getModuleState()->write(module_state);
+                result["moduleState"] = module_state;
+                receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+            }
+        }
+        else if(cmd == "inquiryModuleNames")
+        {
+            QJsonObject result;
+            result["resp"] = "moduleNames";
+            result["moduleNames"] = QJsonArray::fromStringList(workers.keys());
+            receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+        }
+    }
+    else if(message_object.contains("resp"))
+    {
+        QString resp = message_object["resp"].toString();
+        if(resp == "moduleState")
+        {
+            QString module_name = message_object["moduleName"].toString();
+            qDebug()<<"resp moduleState :"<< module_name<<"thread id:"<<QThread::currentThreadId();
+            if(tcp_workers.contains(module_name))
+            {
+                QJsonObject module_state = TcpMessager::getJsonObjectFromString(message_object["moduleState"].toString());
+                tcp_workers[module_name]->getModuleState()->write(module_state);
+            }
+        }
+        else if(resp == "moduleNames")
+        {
+            QJsonArray module_names = message_object["moduleNames"].toArray();
+            qDebug()<<"resp moduleState :"<< module_names<<"thread id:"<<QThread::currentThreadId();
+
+            foreach (QJsonValue temp_name, module_names) {
+                //todo 构建相应的模块对象//仅仅包含参数和状态、可以暂时用原来的类
+                if(temp_name.toString().contains("AA"))
+                {
+                    AACoreNew* tcp_aa = new AACoreNew();
+                    tcp_workers.insert(temp_name.toString(),tcp_aa);
+                }
+                else if(temp_name.toString().contains("SUT"))
+                {
+                    SutModule* tcp_sut = new SutModule();
+                    tcp_workers.insert(temp_name.toString(),tcp_sut);
+                }
+                //todo
+            }
         }
     }
 }
@@ -410,15 +465,22 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
     if (this->ServerMode() == 0)
     {
         result &= manager->registerWorker(&lens_loader_module);
+        workers.insert(lens_loader_module.Name(),&lens_loader_module);
         result &= manager->registerWorker(&lut_module);
+        workers.insert(lut_module.Name(),&lut_module);
         result &= manager->registerWorker(&tray_loader_module);
+        workers.insert(tray_loader_module.Name(),&tray_loader_module);
     }
     else {
         result &= manager->registerWorker(&sensor_loader_module);
+        workers.insert(sensor_loader_module.Name(),&sensor_loader_module);
         result &= manager->registerWorker(&sensor_tray_loder_module);
+        workers.insert(sensor_tray_loder_module.Name(),&sensor_tray_loder_module);
     }
     result &= manager->registerWorker(&sut_module);
+    workers.insert(sut_module.Name(),&sut_module);
     result &= manager->registerWorker(&aaCoreNew);
+    workers.insert(aaCoreNew.Name(),&aaCoreNew);
     return result;
 }
 
@@ -1175,6 +1237,15 @@ bool BaseModuleManager::InitStruct()
     return result;
 }
 
+void BaseModuleManager::inquiryTcpModule()
+{
+    QJsonObject message;
+    message["cmd"] = "inquiryModuleNames";
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
+}
+
 bool BaseModuleManager::initialDevice()
 {
     if(is_init)
@@ -1234,6 +1305,7 @@ bool BaseModuleManager::initialDevice()
     }
     EnableMotors();
 //    timer.start(1000);
+    inquiryTcpModule();
     return true;
 }
 

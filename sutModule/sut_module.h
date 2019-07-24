@@ -88,6 +88,11 @@ private:
     bool has_raw_sensor = false;
     bool loading_sensor = false;
     Qt::HANDLE gui_thread_id;
+
+    // ThreadWorkerBase interface
+public:
+    void receivceModuleMessage(QVariantMap message);
+    PropertyBase *getModuleState();
 };
 
 #endif // SUT_MODULE_H

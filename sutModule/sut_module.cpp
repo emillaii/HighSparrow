@@ -427,4 +427,14 @@ void SutModule::performHandlingOperation(int cmd)
             sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
 }
 
+void SutModule::receivceModuleMessage(QVariantMap message)
+{
+
+}
+
+PropertyBase *SutModule::getModuleState()
+{
+    return &states;
+}
+
 

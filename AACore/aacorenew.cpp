@@ -1119,7 +1119,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     double zpeak_dev = get_Dev(aa_result["zPeak_cc"].toDouble(),aa_result["zPeak_05"].toDouble(),aa_result["zPeak_08"].toDouble());
     qInfo("zpeak_dev: %f",zpeak_dev);
     if (position_checking == 1){
-        if(zpeak_dev > parameters.maxDev())
+        if(zpeak_dev > parameters.maxDev()|| zpeak_dev < parameters.minDev())
         {
             LogicNg(current_aa_ng_time);
             map["Result"] = QString("zpeak dev %1 too lag").arg(zpeak_dev);
@@ -2573,4 +2573,9 @@ void AACoreNew::aaCoreParametersChanged()
     qPainter.end();
     aaCoreTuningProvider->setImage(outImage);
     emit callQmlRefeshImg(2);
+}
+
+PropertyBase *AACoreNew::getModuleState()
+{
+    return &states;
 }

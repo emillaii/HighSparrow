@@ -1422,3 +1422,13 @@ void LensLoaderModule::recordNgLensPr(QString uuid)
     prRecordMap.remove(uuid);
 }
 
+void LensLoaderModule::receivceModuleMessage(QVariantMap message)
+{
+
+}
+
+PropertyBase *LensLoaderModule::getModuleState()
+{
+    return &states;
+}
+

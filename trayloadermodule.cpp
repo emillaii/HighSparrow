@@ -991,6 +991,11 @@ void TrayLoaderModule::onReset(){
     qDebug()<<"Reset completete...";
 }
 
+PropertyBase *TrayLoaderModule::getModuleState()
+{
+    return &states;
+}
+
 
 
 void TrayLoaderModule::run(bool has_tray)

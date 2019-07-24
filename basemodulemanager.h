@@ -204,6 +204,9 @@ private:
     QString m_DataServerURL;
     QThread work_thread;
 
+    QMap<QString,ThreadWorkerBase*> workers;
+    QMap<QString,ThreadWorkerBase*> tcp_workers;
+    void inquiryTcpModule();
 public:
     bool loadProfile();
     bool loadStructConfig(QString file_dir);

@@ -124,6 +124,10 @@ public slots:
     void onReset();
 
 
+
+    // ThreadWorkerBase interface
+public:
+    PropertyBase *getModuleState();
 };
 
 #endif // TRAYLOADERMODULE_H

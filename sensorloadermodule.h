@@ -206,6 +206,10 @@ public:
     void startRecord(QString uuid);
     void recordPrTest(QString uuid,VisionLocation location);
     void endRecord(QString uuid);
+
+    // ThreadWorkerBase interface
+public:
+    PropertyBase *getModuleState();
 };
 
 #endif // SENSORLOADERMODULE_H

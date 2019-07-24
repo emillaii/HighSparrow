@@ -97,6 +97,10 @@ private:
     bool checkReadyTray(bool check_state);
     bool checkVacancyTray(bool check_state);
     bool checkExitTray(bool check_state);
+
+    // ThreadWorkerBase interface
+public:
+    PropertyBase *getModuleState();
 };
 
 #endif // SENSORTRAYLOADERMODULE_H

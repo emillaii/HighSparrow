@@ -2632,3 +2632,8 @@ void SensorLoaderModule::endRecord(QString uuid)
     prRecordMap.remove(uuid);
 }
 
+PropertyBase *SensorLoaderModule::getModuleState()
+{
+    return &states;
+}
+

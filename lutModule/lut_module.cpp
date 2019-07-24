@@ -1093,6 +1093,16 @@ void LutModule::recordAALensPr(QString uuid)
     postCSVDataToUnit(uuid,temp_map);
 }
 
+void LutModule::receivceModuleMessage(QVariantMap message)
+{
+
+}
+
+PropertyBase *LutModule::getModuleState()
+{
+    return &states;
+}
+
 void LutModule::receiveToolUpPRRequest(PrOffset &offset)
 {
     sut->toolUplookPR(offset, true, false);

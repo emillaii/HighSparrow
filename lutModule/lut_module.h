@@ -150,6 +150,11 @@ private:
 public:
     void recordAALensPr(QString uuid);
 
+
+    // ThreadWorkerBase interface
+public:
+    void receivceModuleMessage(QVariantMap message);
+    PropertyBase *getModuleState();
 };
 
 #endif // LUT_MODULE_H

@@ -828,3 +828,8 @@ bool SensorTrayLoaderModule::checkExitTray(bool check_state)
     return false;
 }
 
+PropertyBase *SensorTrayLoaderModule::getModuleState()
+{
+    return &states;
+}
+

@@ -86,6 +86,10 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&timer, &QTimer::timeout, this, &BaseModuleManager::alarmChecking);
     connect(this,&BaseModuleManager::sendHandlingOperation,this,&BaseModuleManager::performHandlingOperation);
     connect(&state_geter,&DeviceStatesGeter::sendGetDeviceState,this,&BaseModuleManager::deviceResp,Qt::DirectConnection);
+
+    //Machine Map Initialization
+    machineMap = new GraphWidget;
+    //machineMap->show();
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -389,6 +393,15 @@ bool BaseModuleManager::loadDispenseParam()
 void BaseModuleManager::showSettingDialog()
 {
     XtVcMotor::showSettingDialog();
+}
+
+void BaseModuleManager::showMachineMap()
+{
+    if (!machineMap->isHidden()) {
+        this->machineMap->close();
+    } else {
+        this->machineMap->show();
+    }
 }
 
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)

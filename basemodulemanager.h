@@ -38,6 +38,7 @@
 #include "modulemanagerparameter.h"
 #include "tcpmanager.h"
 #include "devicestatesgeter.h"
+#include "uiControl/graphwidget.h"
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
@@ -105,6 +106,8 @@ public:
     SensorTrayLoaderModule sensor_tray_loder_module;
 
     Unitlog unitlog;
+
+    GraphWidget *machineMap;
 
     int lightPanelLighting() const
     {
@@ -211,6 +214,7 @@ public:
     Q_INVOKABLE bool saveParameters();
     Q_INVOKABLE bool loadDispenseParam();
     Q_INVOKABLE void showSettingDialog();
+    Q_INVOKABLE void showMachineMap();
     bool loadVcmFile(QString file_name);
     bool saveVcmfile(QString file_name);
     bool loadMotorFile(QString file_name);

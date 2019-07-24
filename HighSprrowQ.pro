@@ -86,7 +86,10 @@ SOURCES += \
     tcpmessager.cpp \
     tcpclientmessager.cpp \
     tcpmanager.cpp \
-    tcpservermessager.cpp 
+    tcpservermessager.cpp \ 
+    uiControl/edge.cpp \
+    uiControl/graphwidget.cpp \
+    uiControl/node.cpp
 
 RESOURCES += qml.qrc \
     icons.qrc
@@ -236,7 +239,10 @@ HEADERS += \
     tcpmanagerparameter.h \
     tcpclientmessager.h \
     tcpservermessager.h \
-    workersmanagerparameter.h
+    workersmanagerparameter.h \
+    uiControl/edge.h \
+    uiControl/graphwidget.h \
+    uiControl/node.h
 
 DISTFILES += \
     icons/index.theme

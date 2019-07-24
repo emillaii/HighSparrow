@@ -299,6 +299,20 @@ ApplicationWindow {
                    })
                }
            }
+
+           ToolButton {
+               text: qsTr("Map")
+               transformOrigin: Item.Center
+               display: Button.TextUnderIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/machine.png"
+               icon.color: "yellow"
+               onClicked: {
+                   baseModuleManager.showMachineMap()
+               }
+           }
+
            ToolButton {
                text: qsTr("Auto")
                transformOrigin: Item.Center

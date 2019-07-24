@@ -1787,6 +1787,11 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
     double ll_min_sfr = params["LL"].toDouble(-1);
     double lr_min_sfr = params["LR"].toDouble(-1);
     double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
+    double sfr_tol[4] = {100};
+    sfr_tol[0] = params["CC_TOL"].toDouble(100);
+    sfr_tol[1] = params["03F_TOL"].toDouble(100);
+    sfr_tol[2] = params["05F_TOL"].toDouble(100);
+    sfr_tol[3] = params["08F_TOL"].toDouble(100);
     clustered_sfr_map.clear();
     QJsonValue aaPrams;
     this->sfrWorkerController->setSfrWorkerParams(aaPrams);
@@ -1929,6 +1934,11 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
     map.insert("CC_B_SFR", sv[0].b_sfr);
     map.insert("CC_L_SFR", sv[0].l_sfr);
     map.insert("CC_SFR", (sv[0].t_sfr + sv[0].r_sfr + sv[0].b_sfr + sv[0].l_sfr)/4);
+    // Check 4 lines in CC if each SFR score is lower than tolerance
+    if (sv[0].t_sfr < sfr_tol[0] || sv[0].r_sfr < sfr_tol[0] || sv[0].b_sfr < sfr_tol[0] || sv[0].l_sfr < sfr_tol[0])
+    {
+        sfr_check = false;
+    }
     for(unsigned i = 0; i <= max_layer; i++) {
         map.insert(QString("UL_T_SFR_").append(QString::number(i+1)), sv[i*4 + 1].t_sfr);
         map.insert(QString("UL_R_SFR_").append(QString::number(i+1)), sv[i*4 + 1].r_sfr);
@@ -1950,6 +1960,14 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
         map.insert(QString("UR_B_SFR_").append(QString::number(i+1)), sv[i*4 + 4].b_sfr);
         map.insert(QString("UR_L_SFR_").append(QString::number(i+1)), sv[i*4 + 4].l_sfr);
         map.insert(QString("UR_SFR_").append(QString::number(i+1)), (sv[i*4 + 4].t_sfr + sv[i*4 + 4].r_sfr + sv[i*4 + 4].b_sfr + sv[i*4 + 4].l_sfr)/4);
+        //Check each 4 ROI in 03F, 05F, 08F if each 4 SFR score is lower than tolerance
+        if (sv[i*4+1].t_sfr < sfr_tol[i+1] || sv[i*4+1].r_sfr < sfr_tol[i+1] || sv[i*4+1].b_sfr < sfr_tol[i+1] || sv[i*4+1].l_sfr < sfr_tol[i+1]
+                || sv[i*4+2].t_sfr < sfr_tol[i+1] || sv[i*4+2].r_sfr < sfr_tol[i+1] || sv[i*4+2].b_sfr < sfr_tol[i+1] || sv[i*4+2].l_sfr < sfr_tol[i+1]
+                || sv[i*4+3].t_sfr < sfr_tol[i+1] || sv[i*4+3].r_sfr < sfr_tol[i+1] || sv[i*4+3].b_sfr < sfr_tol[i+1] || sv[i*4+3].l_sfr < sfr_tol[i+1]
+                || sv[i*4+4].t_sfr < sfr_tol[i+1] || sv[i*4+4].r_sfr < sfr_tol[i+1] || sv[i*4+4].b_sfr < sfr_tol[i+1] || sv[i*4+4].l_sfr < sfr_tol[i+1])
+        {
+            sfr_check = false;
+        }
     }
     map.insert("UL_T_SFR", sv[max_layer*4 + 1].t_sfr);
     map.insert("UL_R_SFR", sv[max_layer*4 + 1].r_sfr);

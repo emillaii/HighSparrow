@@ -102,8 +102,10 @@ private:
     void SetLens();
     void SetSensor();
     void SetProduct();
+    double getMin(double numbers,...);
+    double getMax(double numbers,...);
     double getDev(double numbers,...);
-    double get_Dev(double numbers,...);
+    double get_Dev(double fcc,double f05,double f08);
 private:
     QString sensorID = "";
     QString loopTestResult;

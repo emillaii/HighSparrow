@@ -39,12 +39,19 @@ Grid {
             source: "../../icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
-            Label {
+            TextEdit {
                 id: sensorIDLabel
                 text: qsTr("SensorID: ") + dothinkey.currentSensorID
-                background: Rectangle {
-                    color: "black"
-                }
+                color: "steelblue"
+                font.bold: true
+                font.italic: true
+                font.underline: true
+                cursorVisible: true
+                mouseSelectionMode: TextEdit.SelectWords
+                selectByMouse: true
+//                background: Rectangle {
+//                    color: "black"
+//                }
             }
         }
         Connections {

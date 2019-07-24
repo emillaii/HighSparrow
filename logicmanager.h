@@ -5,7 +5,7 @@
 
 #include <QThread>
 #include <utils/unitlog.h>
-
+//模块联动
 enum CommandType{
     IDLE,
     STOP,
@@ -39,7 +39,7 @@ class LogicManager : public QThread
     Q_OBJECT
 public:
     explicit LogicManager(BaseModuleManager* device_manager, QObject *parent = nullptr);
-
+    bool registerWorker(ThreadWorkerBase* worker);
     Q_PROPERTY(int currentMode READ currentMode WRITE setCurrentMode)
     Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage NOTIFY stateMessageChanged)
 
@@ -172,9 +172,12 @@ public slots:
         m_stateMessage = stateMessage;
     }
     void receiveCommand(int cmd);
+
+    void receiveMessageFromWorkerManger(QVariantMap message);
 signals:
     void stateMessageChanged(QString stateMessage);
     bool sendMsgSignal(QString,QString);
+    void sendMessageToWorkerManger(QVariantMap message);
 private:
     BaseModuleManager * baseModuleManage;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
@@ -183,7 +186,14 @@ private:
     QString m_stateMessage;
 
     QString location_name;
+
     QString calibration_name;
+//    bool handling_fini
+    QMap<QString,ThreadWorkerBase*> workers;
+
+
+
+    QVariantMap  return_message;
 protected:
     void run();
 };

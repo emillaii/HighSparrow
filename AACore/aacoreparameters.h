@@ -41,6 +41,18 @@ class AACoreParameters : public PropertyBase
 
     QString m_moduleName = "AACoreNew";
 
+    bool m_enableZpeakCoefficient = false;
+
+    double m_zpeakccCoefficient = 1;
+
+    double m_zpeak03Coefficient = 0;
+
+    double m_zpeak05Coefficient = 0;
+
+    double m_zpeak08Coefficient = 0;
+
+    double m_maxDev = 100;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -64,223 +76,328 @@ public:
     Q_PROPERTY(double minCircleTime READ minCircleTime WRITE setMinCircleTime NOTIFY minCircleTimeChanged)
     Q_PROPERTY(double maxCicleTime READ maxCicleTime WRITE setMaxCicleTime NOTIFY maxCicleTimeChanged)
     Q_PROPERTY(int peakProfile READ PeakProfile WRITE setPeakProfile NOTIFY paramsChanged)
-double EFL() const
-{
-    return m_EFL;
-}
-int MaxIntensity() const
-{
-    return m_MaxIntensity;
-}
+    Q_PROPERTY(bool enableZpeakCoefficient READ enableZpeakCoefficient WRITE setEnableZpeakCoefficient NOTIFY enableZpeakCoefficientChanged)
+    Q_PROPERTY(double zpeakccCoefficient READ zpeakccCoefficient WRITE setZpeakccCoefficient NOTIFY zpeakccCoefficientChanged)
+    Q_PROPERTY(double zpeak03Coefficient READ zpeak03Coefficient WRITE setZpeak03Coefficient NOTIFY zpeak03CoefficientChanged)
+    Q_PROPERTY(double zpeak05Coefficient READ zpeak05Coefficient WRITE setZpeak05Coefficient NOTIFY zpeak05CoefficientChanged)
+    Q_PROPERTY(double zpeak08Coefficient READ zpeak08Coefficient WRITE setZpeak08Coefficient NOTIFY zpeak08CoefficientChanged)
+    Q_PROPERTY(double maxDev READ maxDev WRITE setMaxDev NOTIFY maxDevChanged)
+    double EFL() const
+    {
+        return m_EFL;
+    }
+    int MaxIntensity() const
+    {
+        return m_MaxIntensity;
+    }
 
-int MinArea() const
-{
-    return m_MinArea;
-}
+    int MinArea() const
+    {
+        return m_MinArea;
+    }
 
-int MaxArea() const
-{
-    return m_MaxArea;
-}
+    int MaxArea() const
+    {
+        return m_MaxArea;
+    }
 
-int SensorXRatio() const
-{
-    return m_SensorXRatio;
-}
+    int SensorXRatio() const
+    {
+        return m_SensorXRatio;
+    }
 
-int SensorYRatio() const
-{
-    return m_SensorYRatio;
-}
+    int SensorYRatio() const
+    {
+        return m_SensorYRatio;
+    }
 
-double ROIRatio() const
-{
-    return m_ROIRatio;
-}
+    double ROIRatio() const
+    {
+        return m_ROIRatio;
+    }
 
-bool firstRejectSensor() const
-{
-    return m_firstRejectSensor;
-}
+    bool firstRejectSensor() const
+    {
+        return m_firstRejectSensor;
+    }
 
-int rejectTimes() const
-{
-    return m_rejectTimes;
-}
+    int rejectTimes() const
+    {
+        return m_rejectTimes;
+    }
 
-QVariantList WeightList() const
-{
-    return m_WeightList;
-}
+    QVariantList WeightList() const
+    {
+        return m_WeightList;
+    }
 
-double EstimatedFOVSlope() const
-{
-    return m_EstimatedFOVSlope;
-}
+    double EstimatedFOVSlope() const
+    {
+        return m_EstimatedFOVSlope;
+    }
 
-double EstimatedAAFOV() const
-{
-    return m_EstimatedAAFOV;
-}
+    double EstimatedAAFOV() const
+    {
+        return m_EstimatedAAFOV;
+    }
 
-double minCircleTime() const
-{
-    return m_minCircleTime;
-}
+    double minCircleTime() const
+    {
+        return m_minCircleTime;
+    }
 
-double maxCicleTime() const
-{
-    return m_maxCicleTime;
-}
+    double maxCicleTime() const
+    {
+        return m_maxCicleTime;
+    }
 
-int setPeakProfile() const
-{
-    return m_peakProfile;
-}
+    int setPeakProfile() const
+    {
+        return m_peakProfile;
+    }
 
-int PeakProfile() const
-{
-    return m_peakProfile;
-}
+    int PeakProfile() const
+    {
+        return m_peakProfile;
+    }
 
-QString moduleName() const
-{
-    return m_moduleName;
-}
+    QString moduleName() const
+    {
+        return m_moduleName;
+    }
+
+    bool enableZpeakCoefficient() const
+    {
+        return m_enableZpeakCoefficient;
+    }
+
+    double zpeakccCoefficient() const
+    {
+        return m_zpeakccCoefficient;
+    }
+
+    double zpeak03Coefficient() const
+    {
+        return m_zpeak03Coefficient;
+    }
+
+    double zpeak05Coefficient() const
+    {
+        return m_zpeak05Coefficient;
+    }
+
+    double zpeak08Coefficient() const
+    {
+        return m_zpeak08Coefficient;
+    }
+
+    double maxDev() const
+    {
+        return m_maxDev;
+    }
 
 public slots:
-void setEFL(double EFL)
-{
-    m_EFL = EFL;
-    emit paramsChanged();
-}
-void setMaxIntensity(int MaxIntensity)
-{
-    m_MaxIntensity = MaxIntensity;
-    emit paramsChanged();
-}
+    void setEFL(double EFL)
+    {
+        m_EFL = EFL;
+        emit paramsChanged();
+    }
+    void setMaxIntensity(int MaxIntensity)
+    {
+        m_MaxIntensity = MaxIntensity;
+        emit paramsChanged();
+    }
 
-void setMinArea(int MinArea)
-{
-    m_MinArea = MinArea;
-    emit paramsChanged();
-}
+    void setMinArea(int MinArea)
+    {
+        m_MinArea = MinArea;
+        emit paramsChanged();
+    }
 
-void setMaxArea(int MaxArea)
-{
-    m_MaxArea = MaxArea;
-    emit paramsChanged();
-}
+    void setMaxArea(int MaxArea)
+    {
+        m_MaxArea = MaxArea;
+        emit paramsChanged();
+    }
 
-void setSensorXRatio(int SensorXRatio)
-{
-    m_SensorXRatio = SensorXRatio;
-    emit paramsChanged();
-}
+    void setSensorXRatio(int SensorXRatio)
+    {
+        m_SensorXRatio = SensorXRatio;
+        emit paramsChanged();
+    }
 
-void setSensorYRatio(int SensorYRatio)
-{
-    m_SensorYRatio = SensorYRatio;
-    emit paramsChanged();
-}
+    void setSensorYRatio(int SensorYRatio)
+    {
+        m_SensorYRatio = SensorYRatio;
+        emit paramsChanged();
+    }
 
-void setROIRatio(double ROIRatio)
-{
-    m_ROIRatio = ROIRatio;
-    emit paramsChanged();
-}
+    void setROIRatio(double ROIRatio)
+    {
+        m_ROIRatio = ROIRatio;
+        emit paramsChanged();
+    }
 
-void setFirstRejectSensor(bool firstRejectSensor)
-{
-    if (m_firstRejectSensor == firstRejectSensor)
-        return;
+    void setFirstRejectSensor(bool firstRejectSensor)
+    {
+        if (m_firstRejectSensor == firstRejectSensor)
+            return;
 
-    m_firstRejectSensor = firstRejectSensor;
-    emit firstRejectSensorChanged(m_firstRejectSensor);
-}
+        m_firstRejectSensor = firstRejectSensor;
+        emit firstRejectSensorChanged(m_firstRejectSensor);
+    }
 
-void setRejectTimes(int rejectTimes)
-{
-    if (m_rejectTimes == rejectTimes)
-        return;
+    void setRejectTimes(int rejectTimes)
+    {
+        if (m_rejectTimes == rejectTimes)
+            return;
 
-    m_rejectTimes = rejectTimes;
-    emit rejectTimesChanged(m_rejectTimes);
-}
+        m_rejectTimes = rejectTimes;
+        emit rejectTimesChanged(m_rejectTimes);
+    }
 
-void setWeightValue(int index, double value)
-{
-    qInfo("Set Weight Value: %d %f", index, value);
-    m_WeightList[index].setValue(value);
-    emit paramsChanged();
-}
+    void setWeightValue(int index, double value)
+    {
+        qInfo("Set Weight Value: %d %f", index, value);
+        m_WeightList[index].setValue(value);
+        emit paramsChanged();
+    }
 
-void setWeightList(QVariantList WeightList)
-{
-    if (m_WeightList == WeightList)
-        return;
+    void setWeightList(QVariantList WeightList)
+    {
+        if (m_WeightList == WeightList)
+            return;
 
-    m_WeightList = WeightList;
-    emit paramsChanged();
-}
+        m_WeightList = WeightList;
+        emit paramsChanged();
+    }
 
-void setEstimatedFOVSlope(double EstimatedFOVSlope)
-{
-    m_EstimatedFOVSlope = EstimatedFOVSlope;
-    emit paramsChanged();
-}
+    void setEstimatedFOVSlope(double EstimatedFOVSlope)
+    {
+        m_EstimatedFOVSlope = EstimatedFOVSlope;
+        emit paramsChanged();
+    }
 
-void setEstimatedAAFOV(double EstimatedAAFOV)
-{
-    m_EstimatedAAFOV = EstimatedAAFOV;
-    emit paramsChanged();
-}
+    void setEstimatedAAFOV(double EstimatedAAFOV)
+    {
+        m_EstimatedAAFOV = EstimatedAAFOV;
+        emit paramsChanged();
+    }
 
-void setMinCircleTime(double minCircleTime)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_minCircleTime, minCircleTime))
-        return;
+    void setMinCircleTime(double minCircleTime)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_minCircleTime, minCircleTime))
+            return;
 
-    m_minCircleTime = minCircleTime;
-    emit minCircleTimeChanged(m_minCircleTime);
-}
+        m_minCircleTime = minCircleTime;
+        emit minCircleTimeChanged(m_minCircleTime);
+    }
 
-void setMaxCicleTime(double maxCicleTime)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_maxCicleTime, maxCicleTime))
-        return;
+    void setMaxCicleTime(double maxCicleTime)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_maxCicleTime, maxCicleTime))
+            return;
 
-    m_maxCicleTime = maxCicleTime;
-    emit maxCicleTimeChanged(m_maxCicleTime);
-}
+        m_maxCicleTime = maxCicleTime;
+        emit maxCicleTimeChanged(m_maxCicleTime);
+    }
 
-void setPeakProfile(int peakProfile)
-{
-    if (m_peakProfile == peakProfile)
-        return;
+    void setPeakProfile(int peakProfile)
+    {
+        if (m_peakProfile == peakProfile)
+            return;
 
-    m_peakProfile = peakProfile;
-    emit paramsChanged();
-}
+        m_peakProfile = peakProfile;
+        emit paramsChanged();
+    }
 
-void setModuleName(QString moduleName)
-{
-    if (m_moduleName == moduleName)
-        return;
+    void setModuleName(QString moduleName)
+    {
+        if (m_moduleName == moduleName)
+            return;
 
-    m_moduleName = moduleName;
-    emit moduleNameChanged(m_moduleName);
-}
+        m_moduleName = moduleName;
+        emit moduleNameChanged(m_moduleName);
+    }
+
+    void setEnableZpeakCoefficient(bool enableZpeakCoefficient)
+    {
+        if (m_enableZpeakCoefficient == enableZpeakCoefficient)
+            return;
+
+        m_enableZpeakCoefficient = enableZpeakCoefficient;
+        emit enableZpeakCoefficientChanged(m_enableZpeakCoefficient);
+    }
+
+    void setZpeakccCoefficient(double zpeakccCoefficient)
+    {
+        if(zpeakccCoefficient<0)return;
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zpeakccCoefficient, zpeakccCoefficient))
+            return;
+
+        m_zpeakccCoefficient = zpeakccCoefficient;
+        emit zpeakccCoefficientChanged(m_zpeakccCoefficient);
+    }
+
+    void setZpeak03Coefficient(double zpeak03Coefficient)
+    {
+        if(zpeak03Coefficient<0)return;
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zpeak03Coefficient, zpeak03Coefficient))
+            return;
+
+        m_zpeak03Coefficient = zpeak03Coefficient;
+        emit zpeak03CoefficientChanged(m_zpeak03Coefficient);
+    }
+
+    void setZpeak05Coefficient(double zpeak05Coefficient)
+    {
+        if(zpeak05Coefficient<0)return;
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zpeak05Coefficient, zpeak05Coefficient))
+            return;
+
+        m_zpeak05Coefficient = zpeak05Coefficient;
+        emit zpeak05CoefficientChanged(m_zpeak05Coefficient);
+    }
+
+    void setZpeak08Coefficient(double zpeak08Coefficient)
+    {
+        if(zpeak08Coefficient<0)return;
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zpeak08Coefficient, zpeak08Coefficient))
+            return;
+
+        m_zpeak08Coefficient = zpeak08Coefficient;
+        emit zpeak08CoefficientChanged(m_zpeak08Coefficient);
+    }
+
+    void setMaxDev(double maxDev)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_maxDev, maxDev))
+            return;
+
+        m_maxDev = maxDev;
+        emit maxDevChanged(m_maxDev);
+    }
 
 signals:
-void paramsChanged();
-void firstRejectSensorChanged(bool firstRejectSensor);
-void rejectTimesChanged(int rejectTimes);
-void minCircleTimeChanged(double minCircleTime);
-void maxCicleTimeChanged(double maxCicleTime);
-void moduleNameChanged(QString moduleName);
+    void paramsChanged();
+    void firstRejectSensorChanged(bool firstRejectSensor);
+    void rejectTimesChanged(int rejectTimes);
+    void minCircleTimeChanged(double minCircleTime);
+    void maxCicleTimeChanged(double maxCicleTime);
+    void moduleNameChanged(QString moduleName);
+    void enableZpeakCoefficientChanged(bool enableZpeakCoefficient);
+    void zpeakccCoefficientChanged(double zpeakccCoefficient);
+    void zpeak03CoefficientChanged(double zpeak03Coefficient);
+    void zpeak05CoefficientChanged(double zpeak05Coefficient);
+    void zpeak08CoefficientChanged(double zpeak08Coefficient);
+    void maxDevChanged(double maxDev);
 };
 class AACoreStates: public PropertyBase
 {

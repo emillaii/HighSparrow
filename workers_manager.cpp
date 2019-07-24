@@ -103,6 +103,11 @@ void WorkersManager::receiveModuleMessage(QVariantMap message)
     }
 }
 
+void WorkersManager::receiveMessageFromLogicManger(QVariantMap message)
+{
+
+}
+
 void WorkersManager::showAlarm(const int sender_id, const int level, const QString error_message)
 {
     qInfo("ShowAlarm sender_id: %d level: %d", sender_id, level);

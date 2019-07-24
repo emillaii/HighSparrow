@@ -55,7 +55,7 @@ public:
     ErrorCodeStruct performLoadMaterial();
     ErrorCodeStruct performAA(QJsonValue params);
     ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
-    ErrorCodeStruct performMTF(QJsonValue params, bool write_log = false);
+    ErrorCodeStruct performMTF(QJsonValue params);
     ErrorCodeStruct performMTFOffline(QJsonValue params);
     ErrorCodeStruct performZOffset(double zOffset);
     ErrorCodeStruct performXYOffset(double xOffset, double yOffset);
@@ -102,6 +102,8 @@ private:
     void SetLens();
     void SetSensor();
     void SetProduct();
+    double getDev(double numbers,...);
+    double get_Dev(double numbers,...);
 private:
     QString sensorID = "";
     QString loopTestResult;

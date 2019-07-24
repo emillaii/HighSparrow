@@ -76,7 +76,20 @@ int ThreadWorkerBase::waitMessageReturn(bool &interruput)
 
 void ThreadWorkerBase::performHandling(int cmd)
 {
+    if(is_handling)
+        return;
+    is_handling = true;
+    is_error = false;
     emit sendHandlingOperation(cmd);
+}
+
+bool ThreadWorkerBase::waitPerformHandling()
+{
+    while (is_handling)
+    {
+        QThread::msleep(10);
+    }
+    return is_error;
 }
 
 bool ThreadWorkerBase::waitResponseMessage(bool &is_run, QString target_message)

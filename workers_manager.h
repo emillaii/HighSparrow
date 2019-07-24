@@ -23,20 +23,24 @@ signals:
     void resetLogicSignal();
     void paramsChanged(bool ShowAlarmDialog);
     void feedbackOperation(const int sender_id,const int operation_type);
-public slots:
-void receiveAlarm(int sender_id,int level, QString error_message);
-void tcpResp(QString message);
-void setShowAlarmDialog(bool ShowAlarmDialog)
-{
-    qInfo("setShowAlarm: %d", ShowAlarmDialog);
-    if (m_ShowAlarmDialog == ShowAlarmDialog)
-        return;
 
-    m_ShowAlarmDialog = ShowAlarmDialog;
-    emit paramsChanged(m_ShowAlarmDialog);
-}
-bool sendMessageTest(QString title,QString content);
-void receiveModuleMessage(QVariantMap message);
+    void sendMessageToLogicManager(QVariantMap message);
+public slots:
+    void receiveAlarm(int sender_id,int level, QString error_message);
+    void tcpResp(QString message);
+    void setShowAlarmDialog(bool ShowAlarmDialog)
+    {
+        qInfo("setShowAlarm: %d", ShowAlarmDialog);
+        if (m_ShowAlarmDialog == ShowAlarmDialog)
+            return;
+
+        m_ShowAlarmDialog = ShowAlarmDialog;
+        emit paramsChanged(m_ShowAlarmDialog);
+    }
+    bool sendMessageTest(QString title,QString content);
+    void receiveModuleMessage(QVariantMap message);
+
+    void receiveMessageFromLogicManger(QVariantMap message);
 public:
     Q_INVOKABLE void startWorkers(int run_mode = 0);
     Q_INVOKABLE void stopWorkers(bool wait_finish = true);

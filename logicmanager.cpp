@@ -12,6 +12,17 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     baseModuleManage = device_manager;
 }
 
+bool LogicManager::registerWorker(ThreadWorkerBase *worker)
+{
+    if(!workers.contains(worker->Name()))
+    {
+        workers.insert(worker->Name(),worker);
+        qInfo("registerWorker :%s",worker->Name().toStdString().c_str());
+        return true;
+    }
+    return false;
+}
+
 void LogicManager::updateParams()
 {
     //aaCore->updateParams();
@@ -607,5 +618,25 @@ void LogicManager::receiveCommand(int cmd)
     qInfo("receive command: %d", cmd);
     if (cmd == CommandType::MOTION_INIT) {
         init();
+    }
+}
+
+void LogicManager::receiveMessageFromWorkerManger(QVariantMap message)
+{
+    if(message.contains("performHandling"))
+    {
+       QString module_name = message["Module"].toString();
+       if(workers.contains(module_name))
+       {
+           workers[module_name]->performHandling(message["cmd"].toInt());
+          bool result = workers[module_name] ->waitPerformHandling();
+          QVariantMap  return_message;
+          return_message.insert("performHandlingResp",result);
+          sendMessageToWorkerManger(return_message);
+       }
+    }
+    else if(message.contains("performHandlingResp"))
+    {
+       return_message.insert("performHandlingResp",message["performHandlingResp"].toBool());
     }
 }

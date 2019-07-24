@@ -31,7 +31,85 @@ ItemDelegate {
                             }
                         }
                     }
-
+                    RowLayout {
+                        CheckBox {
+                            text: qsTr("使能zpeak系数:")
+                            checked: aaCoreParams.enableZpeakCoefficient
+                            onClicked: {
+                                aaCoreParams.setEnableZpeakCoefficient(checked)
+                            }
+                        }
+                        Label {
+                            text: qsTr("CC")
+                        }
+                        TextField {
+                            text: aaCoreParams.zpeakccCoefficient
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setZpeakccCoefficient(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("03")
+                        }
+                        TextField {
+                            text: aaCoreParams.zpeak03Coefficient
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setZpeak03Coefficient(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("05")
+                        }
+                        TextField {
+                            text: aaCoreParams.zpeak05Coefficient
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setZpeak05Coefficient(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("08")
+                        }
+                        TextField {
+                            text: aaCoreParams.zpeak08Coefficient
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setZpeak08Coefficient(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("MaxDev")
+                        }
+                        TextField {
+                            text: aaCoreParams.maxDev
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setMaxDev(text)
+                            }
+                        }
+                    }
                     RowLayout {
                         Label {
                             text: qsTr("EFL")

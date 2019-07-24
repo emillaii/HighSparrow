@@ -287,6 +287,53 @@ void AACoreNew::SetProduct()
     has_ng_product = false;
 }
 
+double AACoreNew::getDev(double numbers,...)
+{
+    va_list arg_ptr;
+    va_start(arg_ptr,numbers);
+    double max = numbers;
+    double min = max;
+    while (true) {
+        numbers = va_arg(arg_ptr,double);
+        if(numbers != 0 && abs(numbers)< pow(10,-10))
+              break;
+        if(max < numbers)
+            max = numbers;
+        if(min > numbers)
+            min = numbers;
+    }
+    va_end(arg_ptr);
+    return (max- min)*1000;
+}
+double AACoreNew::get_Dev(double numbers,...)
+{
+    va_list arg_ptr;
+    va_start(arg_ptr,numbers);
+    double max = numbers;
+    double min = max;
+    bool temp = true;
+    while (true) {
+        numbers = va_arg(arg_ptr,double);
+        if(numbers != 0 && abs(numbers)< pow(10,-10))
+            break;
+        if(max < numbers)
+        {
+            temp = false;
+            max = numbers;
+        }
+        if(min > numbers)
+        {
+            temp = true;
+            min = numbers;
+        }
+    }
+    va_end(arg_ptr);
+    if(temp)
+        return (max- min)*1000;
+    else
+        return -(max- min)*1000;
+}
+
 void AACoreNew::startWork( int run_mode)
 {
     if (run_mode == RunMode::Normal) run(true);
@@ -298,7 +345,15 @@ void AACoreNew::startWork( int run_mode)
         loopTestResult = "";
         loopTestResult.append("CC, UL,UR,LL,LR,\n");
         while (is_run) {
-            performMTF(true,true);
+            QJsonObject  params;
+            params["CC"] = 0;
+            params["UL"] = 0;
+            params["UR"] = 0;
+            params["LL"] = 0;
+            params["LR"] = 0;
+            params["SFR_DEV_TOL"] = 100;
+            performMTF(params);
+            performMTF(true);
             QThread::msleep(200);
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
@@ -348,7 +403,7 @@ void AACoreNew::performHandlingOperation(int cmd)
         performPRToBond(0);
     }
     else if (cmd == HandleTest::MTF) {
-        performMTF(true, true);
+        performMTF(params);
         //performMTFOffline(params);
     }
     else if (cmd == HandleTest::OC) {
@@ -1041,7 +1096,17 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     }
 
     step_move_timer.start();
-    sut->moveToZPos(aa_result["zPeak"].toDouble());
+    double z_peak = aa_result["zPeak"].toDouble();
+    double all_coefficient = parameters.zpeakccCoefficient() +parameters.zpeak03Coefficient() +parameters.zpeak05Coefficient() +parameters.zpeak08Coefficient();
+    if(parameters.enableZpeakCoefficient()&&all_coefficient>0)
+    {
+        z_peak = (parameters.zpeakccCoefficient()*aa_result["zPeak_cc"].toDouble()+
+                parameters.zpeak03Coefficient()*aa_result["zPeak_03"].toDouble()+
+                parameters.zpeak05Coefficient()*aa_result["zPeak_05"].toDouble()+
+                parameters.zpeak08Coefficient()*aa_result["zPeak_08"].toDouble())/all_coefficient;
+    }
+    sut->moveToZPos(z_peak);
+    qInfo("zpeak: %f",z_peak);
     step_move_time += step_move_timer.elapsed();
     if (enableTilt == 0) {
         qInfo("Disable tilt...");
@@ -1051,11 +1116,20 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
         wait_tilt_time += step_move_timer.elapsed();
     }
+    double zpeak_dev = get_Dev(aa_result["zPeak_cc"].toDouble(),aa_result["zPeak_05"].toDouble(),aa_result["zPeak_08"].toDouble());
+    qInfo("zpeak_dev: %f",zpeak_dev);
     if (position_checking == 1){
+        if(zpeak_dev > parameters.maxDev())
+        {
+            LogicNg(current_aa_ng_time);
+            map["Result"] = QString("zpeak dev %1 too lag").arg(zpeak_dev);
+            emit pushDataToUnit(runningUnit, "AA", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, map["Result"].toString()};
+        }
         QThread::msleep(zSleepInMs);
         cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
         double beforeZ = sut->carrier->GetFeedBackPos().Z;
-        double expected_fov = fov_slope*aa_result["zPeak"].toDouble() + fov_intercept;
+        double expected_fov = fov_slope*z_peak + fov_intercept;
         double dfov = calculateDFOV(img);
         double diff_z = (dfov - expected_fov)/fov_slope;
         sut->moveToZPos(beforeZ - diff_z);
@@ -1075,7 +1149,14 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     map.insert("TILT_WAIT_TIME", wait_tilt_time);
     map.insert("X_TILT", aa_result["xTilt"].toDouble());
     map.insert("Y_TILT", aa_result["yTilt"].toDouble());
-    map.insert("Z_PEAK_CC", aa_result["zPeak"].toDouble());
+    map.insert("Z_PEAK_CC", aa_result["zPeak_cc"].toDouble());
+    map.insert("Z_PEAK_03",aa_result["zPeak_03"].toDouble());
+    map.insert("Z_PEAK_05",aa_result["zPeak_05"].toDouble());
+    map.insert("Z_PEAK_08",aa_result["zPeak_08"].toDouble());
+    map.insert("Z_PEAK",z_peak);
+    map.insert("Z_PEAK_DEV_CC_08_um",(aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_08"].toDouble())*1000);
+    map.insert("Z_PEAK_DEV_CC_05_um",(aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_05"].toDouble())*1000);
+    map.insert("Z_PEAK_DEV_um",zpeak_dev);
     map.insert("FOV_SLOPE", fov_slope);
     map.insert("FOV_INTERCEPT", fov_intercept);
 //    map.insert("DEV", dev);
@@ -1290,6 +1371,12 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     result.insert("xTilt_3", xTilt_3); map.insert("xTilt_3", xTilt_3);
     result.insert("yTilt_3", yTilt_3); map.insert("yTilt_3", yTilt_3);
     map.insert("cczPeak", point_0.z);
+
+    result.insert("zPeak_03", peak_03); map.insert("zPeak_03", peak_03);
+    result.insert("zPeak_05", peak_05); map.insert("zPeak_05", peak_05);
+    result.insert("zPeak_08", peak_08); map.insert("zPeak_08", peak_08);
+    result.insert("zPeak_cc", point_0.z); map.insert("zPeak_cc", point_0.z);
+
     if (parameters.PeakProfile() == 1) {
         result.insert("zPeak", peak_03); map.insert("zPeak", peak_03);
     } else if (parameters.PeakProfile() == 2) {
@@ -1552,7 +1639,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     QVariantMap map;
     //cv::Mat img = cv::imread("offline\\5.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    cv::Mat img = cv::imread("22-15-46-422.bmp");
+    cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
     double dfov = calculateDFOV(img);
     qInfo("%f %d %d %d", dfov, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea() );
     AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
@@ -1691,7 +1778,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     }
 }
 
-ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
+ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
 {
     int resize_factor = 2;
     double cc_min_sfr = params["CC"].toDouble(-1);

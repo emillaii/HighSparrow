@@ -49,9 +49,11 @@ public:
     int getAlarmId();
     void sendAlarmMessage(int error_level,QString error_message);
     int waitMessageReturn(bool &interruput);
-    Q_INVOKABLE void performHandling(int cmd);
     bool waitResponseMessage(bool &is_run,QString target_message);
     virtual void receivceModuleMessage(QVariantMap message);
+
+    Q_INVOKABLE void performHandling(int cmd);
+    bool  waitPerformHandling();
     Q_INVOKABLE void sendMessageToModule(QString module_name,QString message);
     Q_INVOKABLE QString getModuleMessage();
 signals:
@@ -77,6 +79,9 @@ private:
     bool message_returned = false;
     int alarm_id = 0;
 protected:
+    bool is_handling = false;
+    bool is_error = false;
+    bool handling_finish = false;
     QMutex message_mutex;
     QVariantMap message;
 };

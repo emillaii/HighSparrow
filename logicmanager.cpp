@@ -6,9 +6,6 @@
 LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     : QThread (parent), m_currentMode(CommandType::IDLE)
 {
-//    aaCore = new AACore(&device_manager->aa_head_module,device_manager->lutClient,&device_manager->sut_module,
-//                        device_manager->dothinkey, device_manager->chart_calibration,&device_manager->dispense_module,
-//                        device_manager->imageGrabberThread);
     baseModuleManage = device_manager;
 }
 
@@ -629,7 +626,7 @@ void LogicManager::receiveMessageFromWorkerManger(QVariantMap message)
        if(workers.contains(module_name))
        {
            workers[module_name]->performHandling(message["cmd"].toInt());
-          bool result = workers[module_name] ->waitPerformHandling();
+          bool result = workers[module_name]->waitPerformHandling();
           QVariantMap  return_message;
           return_message.insert("performHandlingResp",result);
           sendMessageToWorkerManger(return_message);

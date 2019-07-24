@@ -270,6 +270,7 @@
 #define AA_PIECE_UV "UV"
 #define AA_PIECE_DISPENSE "Dispense"
 #define AA_PIECE_Y_LEVEL "Y_Level"
+#define AA_PIECE_OTP "OTP"
 //#define AA_PIECE_SAVE_IMAGE "Save Image"
 #define AA_PIECE_DELAY "Delay"
 #define AA_PIECE_JOIN "Join"

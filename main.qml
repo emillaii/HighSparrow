@@ -154,6 +154,9 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("UV") !== -1) {
                         console.log("Perform UV")
                         aaNewCore.performHandling(AACoreNew.UV, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("OTP") !== -1) {
+                        console.log("Perform OTP")
+                        aaNewCore.performHandling(AACoreNew.OTP, aaCoreTestParams)
                     }
 
                     aaCoreTestParams = ""

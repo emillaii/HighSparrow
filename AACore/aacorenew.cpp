@@ -422,6 +422,9 @@ void AACoreNew::performHandlingOperation(int cmd)
     else if (cmd == HandleTest::UV) {
         performUV(params);
     }
+    else if (cmd == HandleTest::OTP) {
+        performOTP(params);
+    }
     handlingParams = "";
     emit postDataToELK(this->runningUnit);
     return;
@@ -686,6 +689,11 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             ret = performUV(params);
             qInfo("End of perform UV %s",ret.errorMessage.toStdString().c_str());
         }
+        else if (testItemName.contains(AA_PIECE_OTP)) {
+            qInfo("Performing OTP");
+            ret = performOTP(params);
+            qInfo("End of perform OTP %s",ret.errorMessage.toStdString().c_str());
+        }
         else if (testItemName.contains(AA_PIECE_DISPENSE)) {
             qInfo("Performing Dispense");
             int enable_save_image = params["enable_save_image"].toInt();
@@ -759,6 +767,8 @@ bool AACoreNew::performThreadTest(vector<QString> testList, QJsonValue params)
             ret = that->performPRToBond(finish_delay);
         } else if (testName.contains(AA_PIECE_INIT_CAMERA)) {
             ret = that->performInitSensor(true);
+        } else if (testName.contains(AA_PIECE_OTP)) {
+            ret = that->performOTP(params);
         }
     }
     if (ret.code == ErrorCode::OK)
@@ -2086,6 +2096,12 @@ ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int re
    }
    grr_repeat_time++;
    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performOTP(QJsonValue params)
+{
+    qInfo("Performing OTP");
+    return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)

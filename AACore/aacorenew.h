@@ -41,7 +41,8 @@ public:
         AA = 5,
         INIT_CAMERA = 6,
         Y_LEVEL = 7,
-        UV = 8
+        UV = 8,
+        OTP = 9
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
@@ -67,6 +68,7 @@ public:
     ErrorCodeStruct performTerminate();
     ErrorCodeStruct performGRR(bool change_lens,bool change_sensor,int repeat_time,int change_time);
     ErrorCodeStruct performYLevelTest(QJsonValue params);
+    ErrorCodeStruct performOTP(QJsonValue params);
     ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
 
     static bool AACoreNew::performThreadTest(vector<QString> testList, QJsonValue params);

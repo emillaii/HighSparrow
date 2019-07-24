@@ -48,6 +48,7 @@ void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMoto
     this->uv4 = uv4;
     this->thread_id = thread_id;
     setName(parameters.moduleName());
+
 }
 
 bool AAHeadModule::moveToMushroomPosition(bool moveXYC)

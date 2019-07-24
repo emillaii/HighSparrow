@@ -756,6 +756,7 @@ $(document).ready(function () {
   $('#create_thread').click(function () { addThreadWidget("Parallel"); });
   $('#create_join_thread').click(function () { addJoinThreadWidget("Join"); });
   $('#create_load_material').click(function () { addOperationWidget("Load Material"); });
+  $('#create_otp').click(function () { addOperationWidget("OTP"); });
   $('#create_grr').click(function () { addOperationWidget("GRR"); });
 
 

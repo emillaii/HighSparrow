@@ -26,7 +26,12 @@ void initLoggingSystem()
         QDir().mkdir(QString(BASE_LOG_DIR).append(SYSTEM_LOG_DIR));
     }
 
-    QString filename = QString(BASE_LOG_DIR).append(SYSTEM_LOG_DIR).append("\\log.txt");
+    if (!QDir(QString(BASE_LOG_DIR).append(SYSTEM_LOG_DIR).append(QDateTime::currentDateTime().toString("yyyy-MM-dd"))).exists())
+    {
+        QDir().mkdir(QString(BASE_LOG_DIR).append(SYSTEM_LOG_DIR).append(QDateTime::currentDateTime().toString("yyyy-MM-dd")));
+    }
+
+    QString filename = QString(BASE_LOG_DIR).append(SYSTEM_LOG_DIR).append(QDateTime::currentDateTime().toString("yyyy-MM-dd")).append("\\log.txt");
     logFile.setFileName(filename);
     if(logFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
     {

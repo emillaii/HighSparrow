@@ -36,6 +36,7 @@ public:
     void setUplookResult(double x,double y,double theta);
     bool moveToUplookResultPosition();
     void openUVTillTime(int till_time);
+    void waitUVFinish();
     void openGripper();
     void closeGripper();
     Q_INVOKABLE bool stepMove_XY_Sync(double step_x,double step_y);

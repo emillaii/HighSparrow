@@ -13,7 +13,9 @@ public:
     bool Set(bool new_state, bool wait_done = true, bool open_break = true);
     void SET(int thread, bool new_state);
     bool Wait(bool target_state);
-    bool checkHasMateriel();
+    bool checkHasMaterielSync();
+    bool checkHasMateriel(int thread);
+    bool getHasMateriel(int thread);
     bool checkState(bool check_state);
 public:
     XtVacuumParameter parameters;

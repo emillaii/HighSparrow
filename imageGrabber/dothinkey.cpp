@@ -1,4 +1,6 @@
 #include "imageGrabber/dothinkey.h"
+#include <QTime>
+#include <QDateTime>
 
 bool Dothinkey::CameraChannel::CloseCameraChannel()
 {
@@ -261,6 +263,60 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     }
     setCurrentSensorID(senser_id);
     return true;
+}
+
+// Hardcore OTP in UV, temp solution, move to ini file later
+BOOL Dothinkey::DothinkeyOTP(int serverMode)
+{
+    // 解开保护
+    SensorTab *pSensor = nullptr;
+    pSensor = &(m_CameraChannels[0].current_sensor);
+    WriteSensorReg(pSensor->SlaveID, 0x8000, 0x00, pSensor->mode);
+    Sleep(0xFA);
+
+    // 机台号
+    WriteSensorReg(pSensor->SlaveID, 0x1F00, 0x01, pSensor->mode);
+    Sleep(0xFA);
+    // 工位号
+    WriteSensorReg(pSensor->SlaveID, 0x1F01, serverMode+1, pSensor->mode);
+    Sleep(0xFA);
+
+    // 镜头标志位
+    WriteSensorReg(pSensor->SlaveID, 0x1F03, 0x01, pSensor->mode);
+    Sleep(0xFA);
+
+    // 时间
+    QDate date = QDate::currentDate();
+    QTime time = QTime::currentTime();
+    int year = date.year();
+    QByteArray byte;
+    byte.resize(sizeof(int));
+    memcpy(byte.data(), &year, sizeof(int));
+    WriteSensorReg(pSensor->SlaveID, 0x1F04, byte[0], pSensor->mode);
+    Sleep(0xFA);
+    WriteSensorReg(pSensor->SlaveID, 0x1F05, byte[1], pSensor->mode);
+    Sleep(0xFA);
+    WriteSensorReg(pSensor->SlaveID, 0x1F06, date.month(), pSensor->mode);
+    Sleep(0xFA);
+    WriteSensorReg(pSensor->SlaveID, 0x1F07, date.day(), pSensor->mode);
+    Sleep(0xFA);
+    WriteSensorReg(pSensor->SlaveID, 0x1F08, time.hour(), pSensor->mode);
+    Sleep(0xFA);
+    WriteSensorReg(pSensor->SlaveID, 0x1F09, time.minute(), pSensor->mode);
+    Sleep(0xFA);
+    WriteSensorReg(pSensor->SlaveID, 0x1F0A, 0x01, pSensor->mode);
+    Sleep(0xFA);
+
+    // 检查镜头标志位 0 or 1
+    USHORT value =0;
+    ReadSensorReg(pSensor->SlaveID, 0x1F03, &value, pSensor->mode);
+    if (value != 1)
+    {
+        return FALSE;
+    }
+    else {
+        return TRUE;
+    }
 }
 
 BOOL Dothinkey::SetVoltageMclk(SensorTab CurrentSensor, int iDevID, float Mclk, float Avdd, float Dvdd, float Dovdd, float Afvcc, float vpp)

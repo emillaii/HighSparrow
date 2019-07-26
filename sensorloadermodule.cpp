@@ -140,6 +140,7 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        is_handling = false;
         return;
     }
     temp_value = 100;
@@ -186,6 +187,7 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        is_handling = false;
         return;
     }
     cmd =cmd/temp_value*temp_value;
@@ -219,6 +221,7 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        is_handling = false;
         return;
     }
     cmd =cmd/temp_value*temp_value;
@@ -325,8 +328,10 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        is_handling = false;
         return;
     }
+    is_handling = false;
 }
 
 void SensorLoaderModule::receiveRequestMessage(QString message, QString client_ip)
@@ -777,6 +782,36 @@ void SensorLoaderModule::run(bool has_material)
             picked_material = tray->getCurrentIndex(sensor_tray_index);
             if(!is_run)break;
         }
+        //sut操作
+        if ((!states.allowChangeTray())&&(!requestQueue.isEmpty()) && (!states.beExchangeMaterial())&&states.hasPickedSensor()&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgProduct()))
+        {
+            has_task = true;
+            QMutexLocker locker(&tcp_mutex);
+            QJsonObject obj = requestQueue.dequeue();
+            qInfo("Start to consume request: %s", getStringFromJsonObject(obj).toStdString().c_str());
+            QString client_ip = obj["client_ip"].toString("");
+            servingIP = client_ip;
+            QString cmd = obj["cmd"].toString("");
+            if(client_ip == "::1")
+            {
+                qInfo("This command come from localhost");
+                isLocalHost = true;
+            }
+            else
+            {
+                qInfo("This command come from anther computer");
+                isLocalHost = false;
+            }
+
+            if (cmd == "sensorReq")
+            {
+                qInfo("start commincate with %s",servingIP.toStdString().c_str());
+                //                actionQueue.clear();
+                states.setBeExchangeMaterial(true);
+                sendEvent("sensorResp");
+            }
+        }
+
         //等待位置
 
         if(states.allowChangeTray())
@@ -900,35 +935,6 @@ void SensorLoaderModule::run(bool has_material)
                 }
                 change_tray_time_out = parameters.changeTrayTimeOut();
                 qInfo("sendChangeTray");
-            }
-        }
-        //sut操作
-        if ((!states.allowChangeTray())&&(!requestQueue.isEmpty()) && (!states.beExchangeMaterial())&&states.hasPickedSensor()&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgProduct()))
-        {
-            has_task = true;
-            QMutexLocker locker(&tcp_mutex);
-            QJsonObject obj = requestQueue.dequeue();
-            qInfo("Start to consume request: %s", getStringFromJsonObject(obj).toStdString().c_str());
-            QString client_ip = obj["client_ip"].toString("");
-            servingIP = client_ip;
-            QString cmd = obj["cmd"].toString("");
-            if(client_ip == "::1")
-            {
-                qInfo("This command come from localhost");
-                isLocalHost = true;
-            }
-            else
-            {
-                qInfo("This command come from anther computer");
-                isLocalHost = false;
-            }
-
-            if (cmd == "sensorReq")
-            {
-                qInfo("start commincate with %s",servingIP.toStdString().c_str());
-                //                actionQueue.clear();
-                states.setBeExchangeMaterial(true);
-                sendEvent("sensorResp");
             }
         }
 
@@ -2029,7 +2035,6 @@ bool SensorLoaderModule::moveToSUTPRPos(bool is_local,bool check_arrived,bool ch
     result = pick_arm->move_XYT2_Synic(temp_pos.x(),temp_pos.y(),parameters.picker2ThetaOffset(),check_arrived,check_softlanding);
     if(!result)
         AppendError(QString(u8"移动SPA相机SUT位置失败%1").arg(is_local));
-//    qInfo(u8"移动SPA相机到SUT%d位置,返回值%d",is_local,result);
     return result;
 }
 
@@ -2056,7 +2061,6 @@ bool SensorLoaderModule::movePicker1ToSUTPos(bool is_local,bool check_arrived,bo
     result &= pick_arm->wait_XYT1_Arrived();
     if(!result)
         AppendError(QString(u8"移动SPA吸嘴1到SUT位置失败%1").arg(is_local));
-    qInfo(u8"移动SPA吸嘴1到SUT位置失败%d,返回值%d",is_local,result);
     return result&&check_result;
 }
 
@@ -2076,7 +2080,6 @@ bool SensorLoaderModule::movePicker2ToSUTPos(bool is_local,bool check_arrived,bo
     result &= pick_arm->wait_XYT2_Arrived();
     if(!result)
         AppendError(QString(u8"移动SPA吸嘴2到SUT位置失败%1").arg(is_local));
-    qInfo(u8"移动SPA吸嘴2到SUT位置失败%d,返回值%d",is_local,result);
     return result&&check_result;
 }
 
@@ -2207,13 +2210,13 @@ bool SensorLoaderModule::picker1SearchSutZ(double z, QString dest, QString cmd, 
         result = pick_arm->move_XeYe_Z1_XY(z - parameters.escapeHeight(),parameters.escapeX(),parameters.escapeY());
     if(result)
     {
-        if(parameters.enableForceLimit())
+        if(parameters.enableSutForceLimit())
             result = pick_arm->Z1SerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
         else
-            result = pick_arm->Z1MoveToPick(z - parameters.vcmMargin(),is_open,false);
+            result = pick_arm->Z1MoveToPick(z - parameters.sutMargin(),is_open,false);
         sendCmd(dest,cmd);
         QThread::msleep(200);
-        if(parameters.enableForceLimit())
+        if(parameters.enableSutForceLimit())
             result &= pick_arm->ZSerchReturn(time_out);
         else
             result &= pick_arm->picker1->motor_z->MoveToPosSync(0);
@@ -2228,8 +2231,8 @@ bool SensorLoaderModule::picker2SearchZ(double z,double force,bool is_open, int 
     if(parameters.enablePlaceForce())
         result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
     else
-        result = pick_arm->Z2MoveToPick(z - parameters.vcmMargin(),is_open,false);
-    if(parameters.enableForceLimit())
+        result = pick_arm->Z2MoveToPick(z - parameters.placeTrayMargin(),is_open,false);
+    if(parameters.enablePlaceForce())
         result &= pick_arm->ZSerchReturn2(time_out);
     else
         result &= pick_arm->picker2->motor_z->MoveToPosSync(0);
@@ -2245,11 +2248,11 @@ bool SensorLoaderModule::picker2SearchSutZ(double z,double force, QString dest, 
         result = pick_arm->picker2->motor_z->MoveToPosSync(z - parameters.escapeHeight());
     if(result)
     {
-        if(parameters.enableForceLimit())
+        if(parameters.enableSutForceLimit())
             result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
         else
-            result = pick_arm->Z2MoveToPick(z - parameters.vcmMargin(),is_open,false);
-        if(parameters.enableForceLimit())
+            result = pick_arm->Z2MoveToPick(z - parameters.sutMargin(),is_open,false);
+        if(parameters.enableSutForceLimit())
             result &= pick_arm->ZSerchReturn2(time_out);
         else
             result &= pick_arm->picker2->motor_z->MoveToPosSync(0);
@@ -2262,7 +2265,7 @@ bool SensorLoaderModule::picker2SearchSutZ(double z,double force, QString dest, 
 bool SensorLoaderModule::checkPickedSensor(bool check_state)
 {
     bool result;
-    result = pick_arm->picker1->vacuum->checkHasMateriel();
+    result = pick_arm->picker1->vacuum->checkHasMaterielSync();
     if(result == check_state)
         return true;
     QString error = QString(u8"sensor吸头上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
@@ -2274,7 +2277,7 @@ bool SensorLoaderModule::checkPickedSensor(bool check_state)
 bool SensorLoaderModule::checkPickedNgOrProduct(bool check_state)
 {
     bool result;
-    result = pick_arm->picker2->vacuum->checkHasMateriel();
+    result = pick_arm->picker2->vacuum->checkHasMaterielSync();
     if(result == check_state)
         return true;
     QString error = QString(u8"成品吸头上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");

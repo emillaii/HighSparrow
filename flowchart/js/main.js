@@ -10,7 +10,7 @@ $(document).ready(function () {
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, delay_in_ms: 200 };
-  var init_uv_params = { enable_y_level_check: 0, uv_time_in_ms: 3000 };
+  var init_uv_params = {time_in_ms: 3000, enable_OTP: 0 };
   var init_z_offset = { type: 0, z_offset_in_um: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0 };
   var init_dispense_params = {enable_save_image:1,lighting:195, retry: 0, delay_in_ms: 0 };
@@ -36,6 +36,8 @@ $(document).ready(function () {
   var $dispense_operator_title = $('#dispense_operator_title');
   var $grr_operator_title = $('#grr_operator_title');
   var $grr_operator_properties = $('#grr_operator_properties');
+  var $uv_operator_title = $('#uv_operator_title');
+  var $uv_operator_properties = $('#uv_operator_properties');
   var $y_level_operator_title = $('#y_level_operator_title');
   var $y_level_operator_properties = $('#y_level_operator_properties');
   var $mtf_table = $('#mtf_table');
@@ -89,6 +91,8 @@ $(document).ready(function () {
   $grr_operator_properties.append("<div style=\"margin-top:20px\">Repeat Time: <input type=\"number\" id=\"grr_repeat_time\" value=10></div>");
   $grr_operator_properties.append("<div style=\"margin-top:20px\">Change Time: <input type=\"number\" id=\"grr_change_time\" value=10></div>");
   
+  $uv_operator_properties.append("<div style=\"margin-top:20px\">Enable OTP: <select id=\"uv_enable_OTP\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $uv_operator_properties.append("<div style=\"margin-top:20px\">UV time: <input type=\"number\" id=\"uv_time_in_ms\" value=3000></div>"); 
 
   // Apply the plugin on a standard, empty div...
   var $flowchart = $('#example_7');
@@ -207,8 +211,13 @@ $(document).ready(function () {
 		$('#grr_change_lens').val(params["change_lens"]);
 		$('#grr_change_sensor').val(params["change_sensor"]);
         $('#grr_repeat_time').val(params["repeat_time"]);
-        $('#grr_change_time').val(params["change_time"]);
-	  } 
+        $('#grr_change_time').val(params["change_time"]); 
+	  }else if (operatorId.includes("UV")) {
+		$uv_operator_properties.show();
+		$uv_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+		$('#uv_time_in_ms').val(params["time_in_ms"]);
+        $('#uv_enable_OTP').val(params["enable_OTP"]);
+	  }
 	  else {
         $operator_properties.show();
         $operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -229,6 +238,7 @@ $(document).ready(function () {
 	  $grr_operator_properties.hide();
 	  $mtf_table.hide();
 	  $y_level_operator_properties.hide();
+	  $uv_operator_properties.hide();
       return true;
     },
 	onOperatorCreate: function (operatorId, operatorData, fullElement) {
@@ -387,8 +397,9 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
 	}else if (operatorId.includes("GRR")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr_params);
-	}
-    else {
+	}else if (operatorId.includes("UV")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_uv_params);
+	}else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
     }
   }
@@ -435,12 +446,13 @@ $(document).ready(function () {
 	} else if (operatorId.includes("Y_Level")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
 	} else if (operatorId.includes("MTF")) {
-	  var params = { CC: 0, UL: 0, UR: 0, LR: 0, LL: 0, SFR_DEV_TOL: 100, CC_TOL: 100, "03F_TOL": 100, "05F_TOL": 100, "08F_TOL": 100}
+	  var params = { CC: 0, UL: 0, UR: 0, LR: 0, LL: 0, SFR_DEV_TOL: 100, CC_TOL: 0, "03F_TOL": 0, "05F_TOL": 0, "08F_TOL": 0}
 	  $flowchart.flowchart('setOperatorParams', operatorId, params);
 	}else if (operatorId.includes("GRR")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr_params);
-	}
-    else {
+	}else if (operatorId.includes("UV")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_uv_params);
+	}else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
     }
   }
@@ -646,8 +658,11 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#y_level_operator_title').val());
 	  var params = { enable_plot: Number($('#y_level_enable_plot').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-	}
-    else {
+	} else if (selectedOperatorId.includes("UV")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#uv_operator_title').val());
+	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()), enable_OTP:  Number($('#uv_enable_OTP').val()) };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    }else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()), delay_in_ms: Number($('#basic_delay').val()) };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
@@ -854,8 +869,12 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $y_level_operator_title.val());
       var params = { enable_plot: Number($('#y_level_enable_plot').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-    }
-    else {
+    } else if (selectedOperatorId.includes("UV")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $uv_operator_title.val());
+      var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
+        enable_OTP: Number($('#uv_enable_OTP').val())};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    }else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()), delay_in_ms: Number($('#basic_delay').val()) };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);

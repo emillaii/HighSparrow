@@ -25,6 +25,7 @@ enum CommandType{
     LUT_MOVETO_AA2_UPLOOK_CMD,
     LUT_PICK_LENS_TO_AA2_CMD,
     LUT_PICK_LENS_TO_AA1_CMD,
+    LUT_PICK_LENS_TO_AA1_CMD1,
     PERFORM_CALIBRATION,
     PERFORM_UPDNLOOK_CALIBRATION,
     PERFORM_LENS_UPDNLOOK_CALIBRATION,
@@ -67,6 +68,7 @@ public:
     Q_INVOKABLE void lutMoveToAA2UplookPos();
 
     Q_INVOKABLE void lutPickLensToAA1();
+    Q_INVOKABLE void lutPickLensToAA11();
     Q_INVOKABLE void lutPickLensToAA2();
 
     Q_INVOKABLE void performChartCalibration();

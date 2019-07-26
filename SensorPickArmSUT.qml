@@ -5,6 +5,22 @@ import SomeLib 1.1
 ColumnLayout {
     RowLayout{
         Label{
+            text:qsTr("取料区间")
+        }
+        TextField{
+            text:sensorLoaderParameter.sutMargin
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setSutMargin(text)
+            }
+        }
+    }
+    RowLayout{
+        Label{
             text:qsTr("sensor高度")
         }
         TextField{

@@ -148,6 +148,14 @@ ColumnLayout {
             }
         }
         Button {
+            text: qsTr("Pick Return")
+            width: 40
+            height: 40
+            onClicked: {
+                logicManager.lutPickLensToAA11()
+            }
+        }
+        Button {
             text: qsTr("Return")
             width: 40
             height: 40

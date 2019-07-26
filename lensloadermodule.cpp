@@ -947,7 +947,7 @@ bool LensLoaderModule::checkPickedLensOrNg(bool check_state)
 {
     if(!has_material)
         return true;
-    bool result =pick_arm->picker->vacuum->checkHasMateriel();
+    bool result =pick_arm->picker->vacuum->checkHasMaterielSync();
     if(result == check_state)
         return true;
     QString error = QString(u8"lens吸头上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
@@ -960,7 +960,7 @@ bool LensLoaderModule::checkLutLens(bool check_state)
 {
     if(!has_material)
         return true;
-    bool result = load_vacuum->checkHasMateriel();
+    bool result = load_vacuum->checkHasMaterielSync();
     if(result == check_state)
         return true;
     QString error = QString(u8"LUT放Lens位置上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
@@ -973,7 +973,7 @@ bool LensLoaderModule::checkLutNgLens(bool check_state)
 {
     if(!has_material)
         return true;
-    bool result = unload_vacuum->checkHasMateriel();
+    bool result = unload_vacuum->checkHasMaterielSync();
     if(result == check_state)
         return true;
     QString error = QString(u8"LUT放NgLens位置逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
@@ -1283,6 +1283,7 @@ void LensLoaderModule::performHandlingOperation(int cmd)
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        is_handling = false;
         return;
     }
     if(cmd%temp_value == HandlePR::RESET_PR)
@@ -1302,6 +1303,7 @@ void LensLoaderModule::performHandlingOperation(int cmd)
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        is_handling = false;
         return;
     }
     cmd =cmd/temp_value*temp_value;
@@ -1316,6 +1318,7 @@ void LensLoaderModule::performHandlingOperation(int cmd)
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        is_handling = false;
         return;
     }
     cmd =cmd/temp_value*temp_value;
@@ -1349,8 +1352,10 @@ void LensLoaderModule::performHandlingOperation(int cmd)
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        is_handling = false;
         return;
     }
+    is_handling = false;
 }
 
 QString LensLoaderModule::getUuid(bool is_right, int current_count, int current_time)

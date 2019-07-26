@@ -32,6 +32,8 @@ public:
     BOOL DothinkeyClose();  //Close Camera Devices
     BOOL DothinkeyLoadIniFile(int channel);   // 0 is camera channel 0, 1 is camera channel 1
     BOOL DothinkeyStartCamera(int channel);
+    // Hardcore OTP in UV, temp solution, move to ini file later
+    BOOL DothinkeyOTP(int serverMode);
     QImage* DothinkeyGrabImage(int channel);
     cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
     void DothinkeySetConfigFile(std::string filename);

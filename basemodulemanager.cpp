@@ -1168,7 +1168,8 @@ bool BaseModuleManager::InitStruct()
                         GetVisionLocationByName(lut_module.parameters.mushroomLocationName()),
                         GetVacuumByName(lut_module.parameters.vacuum1Name()),
                         GetVacuumByName(lut_module.parameters.vacuum2Name()),
-                        GetOutputIoByName(aa_head_module.parameters.gripperName()), &sut_module);
+                        GetOutputIoByName(aa_head_module.parameters.gripperName()), &sut_module,
+                        XtMotor::GetThreadResource());
         lens_picker.Init(GetVcMotorByName(lens_pick_arm.parameters.motorZName()),
                          GetMotorByName(lens_pick_arm.parameters.motorTName()),
                          GetVacuumByName(lens_pick_arm.parameters.vacuumName()));
@@ -1207,7 +1208,7 @@ bool BaseModuleManager::InitStruct()
 
     sfrWorkerController = new SfrWorkerController(&aaCoreNew);
     aaCoreNew.setSfrWorkerController(sfrWorkerController);
-    aaCoreNew.Init(&aa_head_module, lutClient, &sut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog);
+    aaCoreNew.Init(&aa_head_module, lutClient, &sut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog, ServerMode());
     entrance_clip.Init(u8"Sensor进料盘弹夹",&sensor_clip_stand);
     exit_clip.Init(u8"Sensor出料盘弹夹",&sensor_clip_stand);
     sensor_tray_loder_module.Init(GetMotorByName(sensor_tray_loder_module.parameters.motorTrayName()),
@@ -1450,6 +1451,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 bool BaseModuleManager::allMotorsSeekOriginal2()
 {
     qInfo("allMotorsSeekOriginal2 Start");
+    GetOutputIoByName(u8"夹爪稳压阀")->Set(1);
     //推料氣缸復位
     bool result;
     if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
@@ -1809,6 +1811,8 @@ bool BaseModuleManager::performLocation(QString location_name)
     }
     else
     {
+        temp_location->OpenLight();
+        QThread::msleep(200);
         if(!temp_location->performPR(offset))return false;
     }
     if(temp_location->parameters.canMotion())

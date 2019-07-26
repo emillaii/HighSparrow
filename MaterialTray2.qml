@@ -115,7 +115,33 @@ ColumnLayout {
                 }
             }
             RowLayout{
-                visible: baseModuleManager.getServerMode() !=0
+                visible: baseModuleManager.getServerMode() !==0
+                CheckBox{
+                    text: qsTr("放料限力")
+                    checked: sensorLoaderParameter.enablePlaceForce
+                    onClicked: {
+                        sensorLoaderParameter.setEnablePlaceForce(checked)
+                    }
+                }
+
+                Label{
+                    text:qsTr("取料区间")
+                }
+                TextField{
+                    text:sensorLoaderParameter.placeTrayMargin
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorLoaderParameter.setPlaceTrayMargin(text)
+                    }
+                }
+            }
+            RowLayout{
+                visible: baseModuleManager.getServerMode() !==0
+
                 Label{
                     text:qsTr("成品高度")
                 }
@@ -138,7 +164,7 @@ ColumnLayout {
                 }
             }
             RowLayout{
-                visible: baseModuleManager.getServerMode() !=0
+                visible: baseModuleManager.getServerMode() !==0
                 Label{
                     text:qsTr("Ng Sensor高度")
                 }
@@ -163,7 +189,7 @@ ColumnLayout {
             RowLayout{
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
-                    visible: baseModuleManager.getServerMode()==0
+                    visible: baseModuleManager.getServerMode()===0
                     text:qsTr("lens视觉")
                     width: 40
                     height: 40
@@ -172,7 +198,7 @@ ColumnLayout {
                     }
                 }
                 Button{
-                    visible: baseModuleManager.getServerMode()==0
+                    visible: baseModuleManager.getServerMode()===0
                     text:qsTr("取lens")
                     width: 40
                     height: 40
@@ -185,7 +211,7 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked:{
-                        if(baseModuleManager.getServerMode()==0){
+                        if(baseModuleManager.getServerMode()===0){
                             logicManager.performLocation(lens_loader_parameter.vacancyLocationName)
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.TO_PR_OFFSET
@@ -202,7 +228,7 @@ ColumnLayout {
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmVacancyTrayPR()
                         }else{
                             //232
@@ -214,13 +240,13 @@ ColumnLayout {
                 }
 
                 Button{
-                    text:baseModuleManager.getServerMode()==0?qsTr("放lens"):qsTr("放成品")
+                    text:baseModuleManager.getServerMode()===0?qsTr("放lens"):qsTr("放成品")
                     width: 40
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmMoveToPlaceLensToTray2()
                         }else{
                             //9232
@@ -232,7 +258,7 @@ ColumnLayout {
                     }
                 }
                 Button{
-                    visible: baseModuleManager.getServerMode()!=0
+                    visible: baseModuleManager.getServerMode()!==0
                     text:qsTr("放ng Sensor")
                     width:40
                     height: 40

@@ -29,7 +29,7 @@ public:
     explicit LutModule(QString name = "LUTModule", QObject * parent = nullptr);
     void Init(MaterialCarrier* carrier,
               VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location,
-              XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper, SutModule* sut);
+              XtVacuum* load_vacuum, XtVacuum* unload_vacuum,XtGeneralOutput* gripper, SutModule* sut,int check_thread);
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     void openServer(int port);
@@ -93,6 +93,7 @@ private:
     bool has_material = true;
     PrOffset pr_offset;
     QString uuid = "";
+    int check_thread = 0;
 
     void run(bool has_material);
     void runTest();
@@ -112,6 +113,7 @@ public:
     Q_INVOKABLE bool moveToAA2UplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToAA2UplookPR(bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToLoadPosAndCheckMaterial(bool has_lens,bool has_ng_lens,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLutDownlookloadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLutDownlookUnloadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToLoadUplookPos(bool check_autochthonous = false);
@@ -135,9 +137,10 @@ public:
     bool moveToAA1ReadyPos(bool check_autochthonous = false);
     bool moveToAA2ReadyPos(bool check_autochthonous = false);
 
+    bool checkLutLensSync(bool check_state);
+    bool checkLutNgLensSync(bool check_state);
     bool checkLutLens(bool check_state);
     bool checkLutNgLens(bool check_state);
-
     bool stepMove_XY_Sync(double x,double y);
 
 

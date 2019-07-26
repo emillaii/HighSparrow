@@ -47,7 +47,7 @@ public:
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
-              ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
+              ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog, int serverMode);
     void performAAOffline();
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
@@ -104,10 +104,11 @@ private:
     void SetLens();
     void SetSensor();
     void SetProduct();
-    double getDev(double numbers,...);
-    double get_Dev(double numbers,...);
+    double getDev(int count,double numbers,...);
+    double get_Dev(int count,double numbers,...);
 private:
     QString sensorID = "";
+    int serverMode = 0;
     QString loopTestResult;
     int currentAAMode;
     QString runningUnit;

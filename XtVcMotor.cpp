@@ -373,6 +373,7 @@ bool XtVcMotor::SearchPosByForce(const double speed,const double force,const dou
 
 bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int timeout)
 {
+    qInfo("start SearchPosByForce");
     if(is_debug)return true;
     if(!(checkState()&&checkLimit(max_range)&&checkInterface(max_range)))return false;
     double start_pos = GetOutpuPos();
@@ -412,6 +413,7 @@ void XtVcMotor::RestoreForce()
 {
     if(!is_init)
         return;
+    qInfo("RestoreForce");
     SetCurrentLimit(vcm_id,10,-10);
 }
 
@@ -454,6 +456,7 @@ bool XtVcMotor::DoSoftLanding()
 
 bool XtVcMotor::DoSoftLandingReturn()
 {
+    qInfo("VCM %s DoSoftLandingReturn start",name.toStdString().c_str());
     if(is_debug)return true;
     if(!is_init)
         return false;
@@ -462,7 +465,6 @@ bool XtVcMotor::DoSoftLandingReturn()
     if(res==0)
         return true;
     AppendError(QString(u8"%1 软着陆返回失败 错误码 %2").arg(name).arg(res));
-//    qInfo("VCM %d DoSoftLandingReturn Failed! code: %d",vcm_id,res);
     return false;
 }
 
@@ -473,10 +475,15 @@ bool XtVcMotor::resetSoftLanding(int timeout)
         if(!WaitSoftLandingDone(timeout))
             ret = false;
     if(is_softlanded)
-        ret = DoSoftLandingReturn()&WaitSoftLandingDone(timeout);
-    RestoreForce();
+    {
+        ret = DoSoftLandingReturn();
+        ret &= WaitSoftLandingDone(timeout);
+    }
     if(!ret)
+    {
+        RestoreForce();
         AppendError(QString(u8"%1 软着陆复位失败").arg(name));
+    }
     return ret;
 }
 
@@ -485,16 +492,16 @@ bool XtVcMotor::WaitSoftLandingDone(int timeout)
     qInfo("WaitSoftLandingDone Start");
     if(is_debug)return true;
     if(!checkState(false))return false;
+    int out_time = timeout;
     while(timeout > 0)
     {
-        //qInfo("CheckPosReady Start vcm_id: %d %s", vcm_id, this->parameters.motorName().toStdString().c_str());
         int res = CheckPosReady(vcm_id);
-        //qInfo("CheckPosReady Finish vcm_id: %d %s", vcm_id, this->parameters.motorName().toStdString().c_str());
         if (res == 1)
         {
             is_softlanded = is_softlanding;
             is_softlanding = false;
             is_returning = false;
+            qInfo("%s WaitSoftLandingDone %d",name.toStdString().c_str(),out_time - timeout);
             return true;
         }
         timeout-=10;

@@ -77,7 +77,10 @@ int ThreadWorkerBase::waitMessageReturn(bool &interruput)
 void ThreadWorkerBase::performHandling(int cmd)
 {
     if(is_handling)
+    {
+        qInfo("is_handling");
         return;
+    }
     is_handling = true;
     is_error = false;
     emit sendHandlingOperation(cmd);

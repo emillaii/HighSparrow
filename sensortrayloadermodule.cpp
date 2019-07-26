@@ -87,6 +87,7 @@ void SensorTrayLoaderModule::stopWork(bool wait_finish)
 
 void SensorTrayLoaderModule::performHandlingOperation(int cmd)
 {
+    is_handling = false;
 
 }
 

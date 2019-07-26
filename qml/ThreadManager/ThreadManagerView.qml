@@ -152,8 +152,9 @@ ItemDelegate {
                     Button {
                         text: "开始"
                         onClicked: {
+                            workersManager.startWorker("SensorTrayLoaderModule",systerm_param.runMode)
                             workersManager.startWorker(sutParams.moduleName,systerm_param.runMode)
-                            workersManager.startWorker("SensorLoader",systerm_param.runMode)
+                            workersManager.startWorker("SensorLoaderModule",systerm_param.runMode)
                         }
                     }
                     Button {

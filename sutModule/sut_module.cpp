@@ -45,7 +45,7 @@ void SutModule::saveJsonConfig(QString file_name)
 
 bool SutModule::checkSutSensorOrProduct(bool check_state)
 {
-    bool result = vacuum->checkHasMateriel();
+    bool result = vacuum->checkHasMaterielSync();
     if(result == check_state)
         return true;
     QString error = QString(u8"SUT上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
@@ -94,6 +94,8 @@ bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check
     }
     if(close_lighting)
         vision_downlook_location->CloseLight();
+    if(result)
+        AppendError(u8"执行downlook pr 失败");
     return result;
 }
 
@@ -103,7 +105,6 @@ bool SutModule::moveToDownlookPR(bool close_lighting, bool check_autochthonous)
     if((moveToDownlookPR(offset,close_lighting,check_autochthonous)))
     {
         emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta);
-        DownlookPrDone = true;
         return true;
     }
     AppendError(u8"执行downlook pr 失败");
@@ -389,6 +390,7 @@ void SutModule::run(bool has_material)
             }
             else
             {
+                DownlookPrDone = true;
                 emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta);
                 states.setAllowLoadSensor(false);
             }
@@ -425,6 +427,7 @@ void SutModule::performHandlingOperation(int cmd)
     if(cmd == 1)
         if(!moveToDownlookPR(false,true))
             sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+    is_handling = false;
 }
 
 void SutModule::receivceModuleMessage(QVariantMap message)

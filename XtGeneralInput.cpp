@@ -74,6 +74,27 @@ bool XtGeneralInput::checkState(bool check_state)
     return (state == check_state);
 }
 
+bool XtGeneralInput::getValueToReg(int thread)
+{
+    if(input_id<0)
+        return false;
+    XT_Controler::USE_LOCAL_REG(thread);
+    XT_Controler::GET_INPUT_IO(thread,input_id,input_id);
+    return true;
+}
+
+bool XtGeneralInput::getRegState(int thread)
+{
+    if(input_id<0)
+        return false;
+    XT_Controler::WaitForAllInsFinish(thread);
+    XT_Controler::USE_LOCAL_REG(thread);
+    double reg_valur[1];
+    XT_Controler::ReadControlerRegVal(thread,input_id,input_id,reg_valur);
+    qInfo("getRegState %f",reg_valur[0]);
+    return reg_valur[0] != 0.0;
+}
+
 bool XtGeneralInput::Wait(bool value, int timeout)
 {
     if(input_id<0)

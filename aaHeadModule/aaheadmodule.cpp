@@ -89,17 +89,29 @@ bool AAHeadModule::moveToUplookResultPosition()
 }
 
 void AAHeadModule::openUVTillTime(int till_time)
+{ 
+    uv1->SET(1,thread_id);
+    uv2->SET(1,thread_id);
+    uv3->SET(1,thread_id);
+    uv4->SetOnTllTimeSpan(till_time,thread_id);
+    uv1->SET(0,thread_id);
+    uv2->SET(0,thread_id);
+    uv3->SET(0,thread_id);
+
+//    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),1);
+//    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),1);
+//    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),1);
+//    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),1);
+//    QThread::msleep(till_time);
+//    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),0);
+//    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),0);
+//    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),0);
+    //    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),0);
+}
+
+void AAHeadModule::waitUVFinish()
 {
-//    int mini_time = 30;
-    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),1);
-    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),1);
-    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),1);
-    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),1);
-    QThread::msleep(till_time);
-    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),0);
-    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),0);
-    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),0);
-    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),0);
+    uv1->WaitForFInish(thread_id);
 }
 
 void AAHeadModule::openGripper()

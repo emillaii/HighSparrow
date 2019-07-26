@@ -186,7 +186,7 @@ void LutModule::run(bool has_material)
                 if(states.cmd() == "unpickNgLensReq"&&(!states.unpickedNgLens()))
                 {
                     qInfo("start to unpickNgLensReq");
-                    if(!checkLutNgLens(false))
+                    if(!checkLutNgLensSync(false))
                     {
                         AppendError("请人工拿走多LUT上NG位置多余物料并检测真空状态！");
                         sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
@@ -231,7 +231,7 @@ void LutModule::run(bool has_material)
                 }
                 else if (states.cmd() == "pickLensReq"&&(!states.pickedLens())) {
                     qInfo("states.pickedLens %d",states.pickedLens());
-                    if(!checkLutLens(true))
+                    if(!checkLutLensSync(true))
                     {
                         sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                         if(waitMessageReturn(is_run))
@@ -328,7 +328,7 @@ void LutModule::run(bool has_material)
             {
                 if(states.finishWaitLens())
                 {
-                    if(!(checkLutLens(true)&&checkLutNgLens(false)))
+                    if(!(checkLutLensSync(true)&&checkLutNgLensSync(false)))
                     {
                         sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                         if(waitMessageReturn(is_run))
@@ -364,14 +364,7 @@ void LutModule::run(bool has_material)
             }
             else
             {
-                if(!moveToLoadPos(true))
-                {
-                    AppendError("move to load pos fail");
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
-                }
-                if(!(checkLutLens(false)&&checkLutNgLens(states.lutNgLensID()>=0)))//todo
+                if(!moveToLoadPosAndCheckMaterial(false,states.lutNgLensID()>=0,true))
                 {
                     sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                     waitMessageReturn(is_run);
@@ -405,14 +398,7 @@ void LutModule::runTest()
         if((!states.waitingLens())&&(!states.lutHasLens())&&(!states.lutLoadReady()))
         {
             has_task = true;
-            if(!moveToLoadPos(true))
-            {
-                AppendError("move to load pos fail");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
-            }
-            if(!(checkLutLens(false)&&checkLutNgLens(states.lutNgLensID()>=0)))
+            if(!moveToLoadPosAndCheckMaterial(false,states.lutNgLensID()>=0,true))
             {
                 sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                 waitMessageReturn(is_run);
@@ -425,7 +411,7 @@ void LutModule::runTest()
         //等待lens
         if(states.waitingLens()&&states.finishWaitLens())
         {
-            if(!(checkLutLens(true)&&checkLutNgLens(false)))
+            if(!(checkLutLensSync(true)&&checkLutNgLensSync(false)))
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
@@ -456,7 +442,7 @@ void LutModule::runTest()
         if(states.lutHasLens()&&(!states.aaPickedLens()))
         {
             has_task = true;
-            if(!checkLutLens(true))
+            if(!checkLutLensSync(true))
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
                 if(waitMessageReturn(is_run))
@@ -510,7 +496,7 @@ void LutModule::runTest()
         if(states.aaPickedLens()&&(!states.needUplookPr())&&(!states.lutHasNgLens()))
         {
             has_task = true;
-            if(!checkLutNgLens(false))
+            if(!checkLutNgLensSync(false))
             {
                 AppendError("请人工拿走多LUT上NG位置多余物料并检测真空状态！");
                 sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
@@ -630,7 +616,11 @@ void LutModule::stopWork(bool wait_finish)
 
 void LutModule::performHandlingOperation(int cmd)
 {
-    if(is_run)return;
+    if(is_run)
+    {
+        is_handling = false;
+        return;
+    }
     qInfo("Lut Module perform command: %d", cmd);
     bool result = true;
     if(cmd == 1)
@@ -642,8 +632,10 @@ void LutModule::performHandlingOperation(int cmd)
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        is_handling = false;
         return;
     }
+    is_handling = false;
 }
 
 void LutModule::resetLogic()
@@ -670,7 +662,7 @@ void LutModule::resetLogic()
     states.setPickedLens(false);
 }
 
-void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper, SutModule *sut)
+void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper, SutModule *sut,int check_thread)
 {
     this->carrier = carrier;
     parts.append(carrier);
@@ -685,6 +677,7 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     this->mushroom_location = mushroom_location;
     parts.append(mushroom_location);
     this->sut = sut;
+    this->check_thread = check_thread;
 }
 
 void LutModule::saveJsonConfig(QString file_name)
@@ -820,6 +813,16 @@ bool LutModule::moveToLoadPos(bool check_autochthonous)
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
 }
 
+bool LutModule::moveToLoadPosAndCheckMaterial(bool has_lens,bool has_ng_lens,bool check_autochthonous)
+{
+    bool result = load_vacuum->checkHasMateriel(check_thread);
+    result &= unload_vacuum->checkHasMateriel(check_thread);
+    result &= carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
+    result &=  checkLutLens(has_lens);
+    result &=  checkLutNgLens(has_ng_lens);
+    return result;
+}
+
 bool LutModule::moveToLutDownlookloadPos(bool check_autochthonous)
 {
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(lut_downlook_load_position.X(),lut_downlook_load_position.Y(),lut_downlook_load_position.Z(),check_autochthonous);
@@ -871,8 +874,8 @@ bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
             qInfo("moveToAA1PickLens Finish ZSerchByForce");
         }
         sendCmd("::1","gripperOffReq");
-        Sleep(parameters.gripperDelay());
         load_vacuum->Set(false);
+        Sleep(parameters.gripperDelay());
         if(need_return)
             result &= carrier->ZSerchReturn();
     }
@@ -881,7 +884,7 @@ bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
 
 bool LutModule::vcmReturn()
 {
-    return  carrier->ZSerchReturn();
+    return  carrier->motor_z->resetSoftLanding();
 }
 
 bool LutModule::moveToAA1PickLensPos(bool check_autochthonous)
@@ -947,8 +950,8 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
             qInfo("moveToAA1PickLens Finish ZSerchByForce");
         }
         sendCmd("remote","gripperOffReq");
-        Sleep(parameters.gripperDelay());
         load_vacuum->Set(false);
+        Sleep(parameters.gripperDelay());
         if(need_return)
             result &= carrier->ZSerchReturn();
     }
@@ -1009,11 +1012,35 @@ bool LutModule::moveToAA2ReadyPos(bool check_autochthonous)
     return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_unpicklens_position.X(),0,0,check_autochthonous);
 }
 
-bool LutModule::checkLutLens(bool check_state)
+bool LutModule::checkLutLensSync(bool check_state)
 {
     if(!has_material)
         return true;
-    bool result = load_vacuum->checkHasMateriel();
+    bool result = load_vacuum->checkHasMaterielSync();
+    if(result == check_state)
+        return true;
+    QString error = QString(u8"LUT放Lens位置上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
+    AppendError(error);
+    qInfo(error.toStdString().c_str());
+    return false;
+}
+
+bool LutModule::checkLutNgLensSync(bool check_state)
+{
+    if(!has_material)
+        return true;
+    bool result = unload_vacuum->checkHasMaterielSync();
+    if(result == check_state)
+        return true;
+    QString error = QString(u8"LUT放NgLens位置逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
+    AppendError(error);
+    qInfo(error.toStdString().c_str());
+    return false;
+}
+
+bool LutModule::checkLutLens(bool check_state)
+{
+    bool result = load_vacuum->getHasMateriel(check_thread);
     if(result == check_state)
         return true;
     QString error = QString(u8"LUT放Lens位置上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
@@ -1024,9 +1051,7 @@ bool LutModule::checkLutLens(bool check_state)
 
 bool LutModule::checkLutNgLens(bool check_state)
 {
-    if(!has_material)
-        return true;
-    bool result = unload_vacuum->checkHasMateriel();
+    bool result = unload_vacuum->getHasMateriel(check_thread);
     if(result == check_state)
         return true;
     QString error = QString(u8"LUT放NgLens位置逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");

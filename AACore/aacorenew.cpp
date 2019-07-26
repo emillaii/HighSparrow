@@ -111,7 +111,7 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 }
 
 void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Dothinkey *dk, ChartCalibration *chartCalibration,
-                     DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog)
+                     DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog, int serverMode)
 {
     setName(parameters.moduleName());
     this->aa_head = aa_head;
@@ -129,6 +129,7 @@ void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Doth
     connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
     connect(&this->parameters, &AACoreParameters::paramsChanged, this, &AACoreNew::aaCoreParametersChanged);
+    this->serverMode = serverMode;
 }
 
 void AACoreNew::loadJsonConfig(QString file_name)
@@ -287,35 +288,34 @@ void AACoreNew::SetProduct()
     has_ng_product = false;
 }
 
-double AACoreNew::getDev(double numbers,...)
+double AACoreNew::getDev(int count,double numbers,...)
 {
     va_list arg_ptr;
     va_start(arg_ptr,numbers);
     double max = numbers;
     double min = max;
-    while (true) {
+    count--;
+    while (count >0) {
         numbers = va_arg(arg_ptr,double);
-        if(numbers != 0 && abs(numbers)< pow(10,-10))
-              break;
         if(max < numbers)
             max = numbers;
         if(min > numbers)
             min = numbers;
+        count--;
     }
     va_end(arg_ptr);
     return (max- min)*1000;
 }
-double AACoreNew::get_Dev(double numbers,...)
+double AACoreNew::get_Dev(int count,double numbers,...)
 {
     va_list arg_ptr;
     va_start(arg_ptr,numbers);
     double max = numbers;
     double min = max;
     bool temp = true;
-    while (true) {
+    count--;
+    while (count>0) {
         numbers = va_arg(arg_ptr,double);
-        if(numbers != 0 && abs(numbers)< pow(10,-10))
-            break;
         if(max < numbers)
         {
             temp = false;
@@ -326,6 +326,7 @@ double AACoreNew::get_Dev(double numbers,...)
             temp = true;
             min = numbers;
         }
+        count--;
     }
     va_end(arg_ptr);
     if(temp)
@@ -427,7 +428,7 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     handlingParams = "";
     emit postDataToELK(this->runningUnit);
-    return;
+    is_handling = false;
 }
 
 void AACoreNew::resetLogic()
@@ -819,14 +820,14 @@ ErrorCodeStruct AACoreNew::performDispense()
         dispense->setPRPosition(this->aa_head->offset_x,this->aa_head->offset_y,this->aa_head->offset_theta);
     }
 
-    // Capture image before dispense
-    QString imageNameBeforeDispense;
-    imageNameBeforeDispense.append(getDispensePrLogDir())
-                    .append(getCurrentTimeString())
-                    .append("_")
-                    .append(dk->readSensorID())
-                    .append("_before_dispense.jpg");
-    sut->moveToDownlookSaveImage(imageNameBeforeDispense); // For save image only
+//    // Capture image before dispense
+//    QString imageNameBeforeDispense;
+//    imageNameBeforeDispense.append(getDispensePrLogDir())
+//                    .append(getCurrentTimeString())
+//                    .append("_")
+//                    .append(dk->readSensorID())
+//                    .append("_before_dispense.jpg");
+//    sut->moveToDownlookSaveImage(imageNameBeforeDispense); // For save image only
 
     // Perform dispense
     if(!dispense->performDispense()) { NgProduct(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
@@ -1126,7 +1127,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
         wait_tilt_time += step_move_timer.elapsed();
     }
-    double zpeak_dev = get_Dev(aa_result["zPeak_cc"].toDouble(),aa_result["zPeak_05"].toDouble(),aa_result["zPeak_08"].toDouble());
+    double zpeak_dev = get_Dev(3,aa_result["zPeak_cc"].toDouble(),aa_result["zPeak_05"].toDouble(),aa_result["zPeak_08"].toDouble());
     qInfo("zpeak_dev: %f",zpeak_dev);
     if (position_checking == 1){
         if(zpeak_dev > parameters.maxDev()|| zpeak_dev < parameters.minDev())
@@ -1164,8 +1165,8 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     map.insert("Z_PEAK_05",aa_result["zPeak_05"].toDouble());
     map.insert("Z_PEAK_08",aa_result["zPeak_08"].toDouble());
     map.insert("Z_PEAK",z_peak);
-    map.insert("Z_PEAK_DEV_CC_08_um",(aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_08"].toDouble())*1000);
-    map.insert("Z_PEAK_DEV_CC_05_um",(aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_05"].toDouble())*1000);
+    map.insert("Z_PEAK_DEV_CC_08_um",get_Dev(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_08"].toDouble()));
+    map.insert("Z_PEAK_DEV_CC_05_um",get_Dev(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_05"].toDouble()));
     map.insert("Z_PEAK_DEV_um",zpeak_dev);
     map.insert("FOV_SLOPE", fov_slope);
     map.insert("FOV_INTERCEPT", fov_intercept);
@@ -1797,11 +1798,12 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
     double ll_min_sfr = params["LL"].toDouble(-1);
     double lr_min_sfr = params["LR"].toDouble(-1);
     double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
-    double sfr_tol[4] = {100};
-    sfr_tol[0] = params["CC_TOL"].toDouble(100);
-    sfr_tol[1] = params["03F_TOL"].toDouble(100);
-    sfr_tol[2] = params["05F_TOL"].toDouble(100);
-    sfr_tol[3] = params["08F_TOL"].toDouble(100);
+    double sfr_tol[4] = {0};
+    sfr_tol[0] = params["CC_TOL"].toDouble(-1);
+    sfr_tol[1] = params["03F_TOL"].toDouble(-1);
+    sfr_tol[2] = params["05F_TOL"].toDouble(-1);
+    sfr_tol[3] = params["08F_TOL"].toDouble(-1);
+    QString error = "";
     clustered_sfr_map.clear();
     QJsonValue aaPrams;
     this->sfrWorkerController->setSfrWorkerParams(aaPrams);
@@ -1857,32 +1859,33 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
     if (max_sfr_deviation >= sfr_dev_tol) {
         qInfo("max_sfr_deviation cannot pass");
         sfr_check = false;
+        error.append("SFR dev fail.");
     }
 
-    if (sv[0].t_sfr < cc_min_sfr || sv[0].r_sfr < cc_min_sfr || sv[0].b_sfr < cc_min_sfr || sv[0].l_sfr < cc_min_sfr) {
-       qInfo("cc cannot pass");
-       sfr_check = false;
-    }
-    if (sv[max_layer*4 + 1].t_sfr < ul_min_sfr || sv[max_layer*4 + 1].r_sfr < ul_min_sfr ||
-        sv[max_layer*4 + 1].b_sfr < ul_min_sfr || sv[max_layer*4 + 1].l_sfr < ul_min_sfr) {
-        qInfo("ul cannot pass");
-        sfr_check = false;
-    }
-    if (sv[max_layer*4 + 2].t_sfr < ll_min_sfr || sv[max_layer*4 + 2].r_sfr < ll_min_sfr ||
-        sv[max_layer*4 + 2].b_sfr < ll_min_sfr || sv[max_layer*4 + 2].l_sfr < ll_min_sfr) {
-        qInfo("ll cannot pass");
-        sfr_check = false;
-    }
-    if (sv[max_layer*4 + 3].t_sfr < lr_min_sfr || sv[max_layer*4 + 3].r_sfr < lr_min_sfr ||
-        sv[max_layer*4 + 3].b_sfr < lr_min_sfr || sv[max_layer*4 + 3].l_sfr < lr_min_sfr) {
-        qInfo("lr cannot pass");
-        sfr_check = false;
-    }
-    if (sv[max_layer*4 + 4].t_sfr < ur_min_sfr || sv[max_layer*4 + 4].r_sfr < ur_min_sfr ||
-        sv[max_layer*4 + 4].b_sfr < ur_min_sfr || sv[max_layer*4 + 4].l_sfr < ur_min_sfr) {
-        qInfo("ur cannot pass");
-        sfr_check = false;
-    }
+//    if (sv[0].t_sfr < cc_min_sfr || sv[0].r_sfr < cc_min_sfr || sv[0].b_sfr < cc_min_sfr || sv[0].l_sfr < cc_min_sfr) {
+//       qInfo("cc cannot pass");
+//       sfr_check = false;
+//    }
+//    if (sv[max_layer*4 + 1].t_sfr < ul_min_sfr || sv[max_layer*4 + 1].r_sfr < ul_min_sfr ||
+//        sv[max_layer*4 + 1].b_sfr < ul_min_sfr || sv[max_layer*4 + 1].l_sfr < ul_min_sfr) {
+//        qInfo("ul cannot pass");
+//        sfr_check = false;
+//    }
+//    if (sv[max_layer*4 + 2].t_sfr < ll_min_sfr || sv[max_layer*4 + 2].r_sfr < ll_min_sfr ||
+//        sv[max_layer*4 + 2].b_sfr < ll_min_sfr || sv[max_layer*4 + 2].l_sfr < ll_min_sfr) {
+//        qInfo("ll cannot pass");
+//        sfr_check = false;
+//    }
+//    if (sv[max_layer*4 + 3].t_sfr < lr_min_sfr || sv[max_layer*4 + 3].r_sfr < lr_min_sfr ||
+//        sv[max_layer*4 + 3].b_sfr < lr_min_sfr || sv[max_layer*4 + 3].l_sfr < lr_min_sfr) {
+//        qInfo("lr cannot pass");
+//        sfr_check = false;
+//    }
+//    if (sv[max_layer*4 + 4].t_sfr < ur_min_sfr || sv[max_layer*4 + 4].r_sfr < ur_min_sfr ||
+//        sv[max_layer*4 + 4].b_sfr < ur_min_sfr || sv[max_layer*4 + 4].l_sfr < ur_min_sfr) {
+//        qInfo("ur cannot pass");
+//        sfr_check = false;
+//    }
 
     if (true) {
         double display_factor = img.cols/CONSTANT_REFERENCE;
@@ -1947,6 +1950,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
     // Check 4 lines in CC if each SFR score is lower than tolerance
     if (sv[0].t_sfr < sfr_tol[0] || sv[0].r_sfr < sfr_tol[0] || sv[0].b_sfr < sfr_tol[0] || sv[0].l_sfr < sfr_tol[0])
     {
+        error.append("CC fail.");
         sfr_check = false;
     }
     for(unsigned i = 0; i <= max_layer; i++) {
@@ -1976,6 +1980,18 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
                 || sv[i*4+3].t_sfr < sfr_tol[i+1] || sv[i*4+3].r_sfr < sfr_tol[i+1] || sv[i*4+3].b_sfr < sfr_tol[i+1] || sv[i*4+3].l_sfr < sfr_tol[i+1]
                 || sv[i*4+4].t_sfr < sfr_tol[i+1] || sv[i*4+4].r_sfr < sfr_tol[i+1] || sv[i*4+4].b_sfr < sfr_tol[i+1] || sv[i*4+4].l_sfr < sfr_tol[i+1])
         {
+            if (i == 0)
+            {
+                error.append("03F fail.");
+            }
+            else if (i == 1)
+            {
+                error.append("05F fail.");
+            }
+            else if (i == 2)
+            {
+                error.append("08F fail.");
+            }
             sfr_check = false;
         }
     }
@@ -2002,22 +2018,33 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
     map.insert("OC_OFFSET_X_IN_PIXEL", mtf_oc_x);
     map.insert("OC_OFFSET_Y_IN_PIXEL", mtf_oc_y);
     map.insert("timeElapsed", timer.elapsed());
-    emit pushDataToUnit(runningUnit, "MTF", map);
 
     if (sfr_check) {
+       map.insert("result", "Pass");
+       emit pushDataToUnit(runningUnit, "MTF", map);
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
+       map.insert("result", error);
+       emit pushDataToUnit(runningUnit, "MTF", map);
        LogicNg(current_mtf_ng_time);
-       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
     }
 }
 
 ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
 {
+    return ErrorCodeStruct{ErrorCode::OK, ""};
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    int uv_time = params["delay_in_ms"].toInt();
+    int uv_time = params["time_in_ms"].toInt();
+    bool enable_OTP = params["enable_OTP"].toInt();
     aa_head->openUVTillTime(uv_time);
+    if (enable_OTP)
+    {
+        // OTP
+        dk->DothinkeyOTP(serverMode);
+    }
+    aa_head->waitUVFinish();
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "UV", map);
     return ErrorCodeStruct{ErrorCode::OK, ""};
@@ -2393,7 +2420,7 @@ ErrorCodeStruct AACoreNew::performLoadMaterial()
         aa_head->waitForLoadSensor(is_run);
         if(aa_head->receive_sensor)
         {
-            qInfo("wait sensor suceess");
+            qInfo("wait sensor success");
             SetSensor();
             send_sensor_request = false;
             aa_head->receive_sensor = false;

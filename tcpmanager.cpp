@@ -4,7 +4,7 @@ TcpManager::TcpManager(QObject *parent) : QObject(parent)
 {
     this->moveToThread(&work_thread);
     work_thread.start();
-    work_thread.setPriority(QThread::TimeCriticalPriority);
+//    work_thread.setPriority(QThread::TimeCriticalPriority);
     connect(this,&TcpManager::sendInit,this,&TcpManager::onInit);
     connect(this,&TcpManager::sendCreat,this,&TcpManager::onCreat,Qt::BlockingQueuedConnection);
     connect(this,&TcpManager::sendDelete,this,&TcpManager::onDelete,Qt::BlockingQueuedConnection);

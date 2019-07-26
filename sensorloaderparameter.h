@@ -13,7 +13,10 @@ public:
     Q_PROPERTY(double vcmWorkForce READ vcmWorkForce WRITE setVcmWorkForce NOTIFY vcmWorkForceChanged)
     Q_PROPERTY(double vcmWorkSpeed READ vcmWorkSpeed WRITE setVcmWorkSpeed NOTIFY vcmWorkSpeedChanged)
     Q_PROPERTY(double vcmMargin READ vcmMargin WRITE setVcmMargin NOTIFY vcmMarginChanged)
+    Q_PROPERTY(double sutMargin READ sutMargin WRITE setSutMargin NOTIFY sutMarginChanged)
+    Q_PROPERTY(double placeTrayMargin READ placeTrayMargin WRITE setPlaceTrayMargin NOTIFY placeTrayMarginChanged)
     Q_PROPERTY(bool enableForceLimit READ enableForceLimit WRITE setEnableForceLimit NOTIFY enableForceLimitChanged)
+    Q_PROPERTY(bool enableSutForceLimit READ enableSutForceLimit WRITE setEnableSutForceLimit NOTIFY enableSutForceLimitChanged)
     Q_PROPERTY(double pickSensorZ READ pickSensorZ WRITE setPickSensorZ NOTIFY pickSensorZChanged)
     Q_PROPERTY(double placeSensorZ READ placeSensorZ WRITE setPlaceSensorZ NOTIFY placeSensorZChanged)
     Q_PROPERTY(QString sensorLocationName READ sensorLocationName WRITE setSensorLocationName NOTIFY sensorLocationNameChanged)
@@ -285,6 +288,21 @@ public:
     double sut2Theta() const
     {
         return m_sut2Theta;
+    }
+
+    bool enableSutForceLimit() const
+    {
+        return m_enableSutForceLimit;
+    }
+
+    double placeTrayMargin() const
+    {
+        return m_placeTrayMargin;
+    }
+
+    double sutMargin() const
+    {
+        return m_sutMargin;
     }
 
 public slots:
@@ -723,6 +741,35 @@ public slots:
         emit sut2ThetaChanged(m_sut2Theta);
     }
 
+    void setEnableSutForceLimit(bool enableSutForceLimit)
+    {
+        if (m_enableSutForceLimit == enableSutForceLimit)
+            return;
+
+        m_enableSutForceLimit = enableSutForceLimit;
+        emit enableSutForceLimitChanged(m_enableSutForceLimit);
+    }
+
+    void setPlaceTrayMargin(double placeTrayMargin)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeTrayMargin, placeTrayMargin))
+            return;
+
+        m_placeTrayMargin = placeTrayMargin;
+        emit placeTrayMarginChanged(m_placeTrayMargin);
+    }
+
+    void setSutMargin(double sutMargin)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_sutMargin, sutMargin))
+            return;
+
+        m_sutMargin = sutMargin;
+        emit sutMarginChanged(m_sutMargin);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -817,6 +864,12 @@ signals:
 
     void sut2ThetaChanged(double sut2Theta);
 
+    void enableSutForceLimitChanged(bool enableSutForceLimit);
+
+    void placeTrayMarginChanged(double placeTrayMargin);
+
+    void sutMarginChanged(double sutMargin);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -864,6 +917,9 @@ private:
     bool m_enablePlaceForce = false;
     double m_sut1Theta = 0;
     double m_sut2Theta = 0;
+    bool m_enableSutForceLimit = false;
+    double m_placeTrayMargin = 2;
+    double m_sutMargin = 0;
 };
 class SensorLoaderState:public PropertyBase
 {

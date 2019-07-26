@@ -62,7 +62,10 @@ bool Calibration::performCalibration()
     QVector<QPointF> pixelPoints;
     QVector<QPointF> motorPoints;
     if (location)
+    {
         location->OpenLight();
+        QThread::msleep(200);
+    }
     else {
         qInfo("This is not require vision");
     }

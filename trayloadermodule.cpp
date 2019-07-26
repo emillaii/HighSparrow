@@ -770,6 +770,7 @@ void TrayLoaderModule::stopWork(bool wait_finish)
 void TrayLoaderModule::performHandlingOperation(int cmd)
 {
 
+    is_handling = false;
 }
 
 void TrayLoaderModule::onNextTrayPos()

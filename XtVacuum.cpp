@@ -59,7 +59,7 @@ bool XtVacuum::Wait(bool target_state)
     return false;
 }
 
-bool XtVacuum::checkHasMateriel()
+bool XtVacuum::checkHasMaterielSync()
 {
     if(out_io->Value())
     {
@@ -83,6 +83,17 @@ bool XtVacuum::checkHasMateriel()
     }
 }
 
+bool XtVacuum::getHasMateriel(int thread)
+{
+    return in_io->getRegState(thread);
+}
+
+bool XtVacuum::checkHasMateriel(int thread)
+{
+    bool result = out_io->SetStateAndTillTimeSpan(true,parameters.checkOutTime(),thread);
+     result &= in_io->getValueToReg(thread);
+    return result;
+}
 bool XtVacuum::checkState(bool check_state)
 {
     return out_io->checkState(check_state)&&in_io->checkState(check_state);

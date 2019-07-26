@@ -107,6 +107,10 @@ void LogicManager::run() {
     {
         baseModuleManage->lut_module.moveToAA1PickLens(false,true);
     }
+    else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA1_CMD1)
+    {
+        baseModuleManage->lut_module.moveToAA1PickLens(true,true);
+    }
     else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA2_CMD)
     {
         qInfo("Move To AA2 PickLens");
@@ -157,6 +161,7 @@ void LogicManager::lutMoveToAA1UplookPos(){setStateMessage(__FUNCTION__);moveToC
 void LogicManager::lutMoveToAA2UplookPos(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_MOVETO_AA2_UPLOOK_CMD);}
 
 void LogicManager::lutPickLensToAA1(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_PICK_LENS_TO_AA1_CMD);}
+void LogicManager::lutPickLensToAA11(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_PICK_LENS_TO_AA1_CMD1);}
 void LogicManager::lutPickLensToAA2(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::LUT_PICK_LENS_TO_AA2_CMD);}
 
 void LogicManager::performChartCalibration()

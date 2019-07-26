@@ -18,6 +18,8 @@ public:
     int ID();
     bool Value();
     bool checkState(bool check_state);
+    bool getValueToReg(int thread);
+    bool getRegState(int thread);
     bool Wait(bool value,int timeout);
     QString Name();
 private:

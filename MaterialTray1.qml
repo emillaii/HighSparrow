@@ -187,7 +187,7 @@ ColumnLayout {
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
 
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmMoveToTray1Pos()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1)
@@ -198,17 +198,17 @@ ColumnLayout {
 
             RowLayout{
                 Label{
-                    text: baseModuleManager.getServerMode()==0?qsTr("物料高度"):qsTr("sensor高度")
+                    text: baseModuleManager.getServerMode()===0?qsTr("物料高度"):qsTr("sensor高度")
                 }
                 TextField{
-                    text: baseModuleManager.getServerMode()==0 ?lensPickArmModuleParameter.pickLensZ:sensorLoaderParameter.pickSensorZ
+                    text: baseModuleManager.getServerMode()===0 ?lensPickArmModuleParameter.pickLensZ:sensorLoaderParameter.pickSensorZ
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        if (baseModuleManager.getServerMode()==0)
+                        if (baseModuleManager.getServerMode()===0)
                             lensPickArmModuleParameter.setPickLensZ(text)
                         else {
                             sensorLoaderParameter.setPickSensorZ(text)
@@ -234,12 +234,12 @@ ColumnLayout {
                     width:40
                     height:40
                     onClicked: {
-                        if(baseModuleManager.getServerMode()==0){
+                        if(baseModuleManager.getServerMode()===0){
                             logicManager.performLocation(lens_loader_parameter.lensLocationName);
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.TO_PR_OFFSET
                                                                + SensorLoaderModule.SENSOR_PR
-                                                               + sensorLoaderModule.SENSOR_TRAY1)
+                                                               + SensorLoaderModule.SENSOR_TRAY1)
                         }
                     }
                 }
@@ -250,26 +250,25 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmLensPR()
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK_SENSOR_OFFSET
                                                                + SensorLoaderModule.SENSOR_PR
-                                                               + sensorLoaderModule.SENSOR_TRAY1)
+                                                               + SensorLoaderModule.SENSOR_TRAY1)
                         }
                     }
                 }
 
                 Button{
-                    text:baseModuleManager.getServerMode()==0?qsTr("取lens"):qsTr("取sensor")
+                    text:baseModuleManager.getServerMode()===0?qsTr("取lens"):qsTr("取sensor")
                     width: 40
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                        if (baseModuleManager.getServerMode() == 0){
+                        if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmMoveToPickLensFromTray1()
                         }else{
-                            //1121
                             sensorLoaderModule.performHandling(SensorLoaderModule.PICK_SENSOR_FROM_TRAY
                                                                +SensorLoaderModule.TO_PICK_SENSOR_OFFSET
                                                                +SensorLoaderModule.SENSOR_PR
@@ -279,7 +278,7 @@ ColumnLayout {
                 }
             }
             RowLayout{
-                visible: baseModuleManager.getServerMode()==0
+                visible: baseModuleManager.getServerMode()===0
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
                     text:qsTr("执行空位视觉")

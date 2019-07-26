@@ -348,11 +348,13 @@ void Unitlog::saveUnitDataToCSV(QString uuid)
     QFile file(file_name);
     QFileInfo fileInfo(file_name);
     QString content = "";
-    if(!fileInfo.isFile())
+    if((!fileInfo.isFile())||headers.size()<unit_log_list[uuid].keys().size())
     {
+        headers.clear();
         foreach (QString temp_key, unit_log_list[uuid].keys())
         {
            content.append(temp_key);
+           headers.append(temp_key);
            content.append(",");
         }
         content.remove(content.lastIndexOf(","),1);
@@ -362,7 +364,7 @@ void Unitlog::saveUnitDataToCSV(QString uuid)
         file.close();
     }
     content = "";
-    foreach (QString temp_key, unit_log_list[uuid].keys())
+    foreach (QString temp_key, headers)
     {
        content.append(unit_log_list[uuid][temp_key].toString());
        content.append(",");

@@ -24,6 +24,7 @@ private:
     QMap<QString, std::vector<QString>> unit_log_test_name_list;
     QNetworkAccessManager * nam = Q_NULLPTR;
     QString serverAddress;
+    QStringList headers;
 public slots:
     bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
     bool postDataToELK(QString uuid);

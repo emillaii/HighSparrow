@@ -25,8 +25,10 @@ private:
     QNetworkAccessManager * nam = Q_NULLPTR;
     QString serverAddress;
     QStringList headers;
+    int headers_length;
 public slots:
     bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
+    void clearHeaders();
     bool postDataToELK(QString uuid);
     bool postUnitDataToCSV(QString uuid);
     bool postSfrDataToELK(QString uuid, QVariantMap data);

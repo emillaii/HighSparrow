@@ -166,6 +166,7 @@ signals:
     void sfrResultsDetectFinished();
     void callQmlRefeshImg(int);
     void pushDataToUnit(QString uuid, QString name, QVariantMap map);
+    void clearHeaders();
     void postDataToELK(QString);
     void postSfrDataToELK(QString, QVariantMap);
     void sendLensRequestToLut();

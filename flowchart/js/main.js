@@ -116,6 +116,7 @@ $(document).ready(function () {
 	  $grr_operator_properties.hide();
 	  $mtf_table.hide();
 	  $y_level_operator_properties.hide();
+	  $uv_operator_properties.hide();
       if (operatorId.includes("AA_")) {
         $aa_operator_properties.show();
         $aa_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));

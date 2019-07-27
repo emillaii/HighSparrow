@@ -455,6 +455,7 @@ void AACoreNew::resetLogic()
 
 bool AACoreNew::runFlowchartTest()
 {
+    emit clearHeaders();
     qInfo("aaAutoTest Started");
     QVariantMap jsonMap = flowchartDocument.object().toVariantMap();
     QJsonObject links = jsonMap["links"].toJsonObject();
@@ -471,7 +472,7 @@ bool AACoreNew::runFlowchartTest()
                if (currentPointer == "start") {
                    QVariantMap map;
                    map.insert("Time", getCurrentTimeString());
-                   emit pushDataToUnit(runningUnit, "AAA_StartTime", map);    //Add a_ to make it first in map sorting
+                   emit pushDataToUnit(runningUnit, "FlowChart_StartTime", map);    //Add a_ to make it first in map sorting
 
                    qInfo(QString("Move from " + currentPointer + " to " + value["toOperator"].toString()).toStdString().c_str());
                    currentPointer = value["toOperator"].toString();
@@ -598,7 +599,7 @@ bool AACoreNew::runFlowchartTest()
 
     QVariantMap map;
     map.insert("Time", getCurrentTimeString());
-    emit pushDataToUnit(runningUnit, "AAA_TerminateTime", map);   //Add a_ to make it the first one in map sorting
+    emit pushDataToUnit(runningUnit, "FlowChart_TerminateTime", map);   //Add a_ to make it the first one in map sorting
 
     return true;
 }
@@ -2033,21 +2034,31 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
 
 ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
 {
-    return ErrorCodeStruct{ErrorCode::OK, ""};
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     int uv_time = params["time_in_ms"].toInt();
     bool enable_OTP = params["enable_OTP"].toInt();
     aa_head->openUVTillTime(uv_time);
+    bool result = true;
     if (enable_OTP)
     {
         // OTP
-        dk->DothinkeyOTP(serverMode);
+      result = dk->DothinkeyOTP(serverMode);
     }
     aa_head->waitUVFinish();
     map.insert("timeElapsed", timer.elapsed());
-    emit pushDataToUnit(this->runningUnit, "UV", map);
-    return ErrorCodeStruct{ErrorCode::OK, ""};
+    if(result)
+    {
+        map.insert("result", "ok");
+        emit pushDataToUnit(this->runningUnit, "UV", map);
+        return ErrorCodeStruct{ErrorCode::OK, ""};
+    }
+    else
+    {
+        map.insert("result", "otp fail");
+        emit pushDataToUnit(this->runningUnit, "UV", map);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "otp fail"};
+    }
 }
 
 ErrorCodeStruct AACoreNew::performReject()
@@ -2192,6 +2203,8 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
     cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
         qInfo("AA Cannot grab image.");
+        //            NgLens();
+        //            NgSensor();
         LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
@@ -2213,9 +2226,9 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
         emit callQmlRefeshImg(1);
         if( vector.size()<1 || ccIndex > 9 )
         {
-            NgLens();
-            NgSensor();
-//            LogicNg(current_oc_ng_time);
+//            NgLens();
+//            NgSensor();
+            LogicNg(current_oc_ng_time);
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
         }
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
@@ -2227,9 +2240,9 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage))
         {
-            NgLens();
-            NgSensor();
-//            LogicNg(current_oc_ng_time);
+//            NgLens();
+//            NgSensor();
+            LogicNg(current_oc_ng_time);
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
         }
         ocImageProvider_1->setImage(outImage);
@@ -2250,9 +2263,9 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
         qInfo("xy step: %f %f ", stepX, stepY);
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
-            NgLens();
-            NgSensor();
-//            LogicNg(current_oc_ng_time);
+//            NgLens();
+//            NgSensor();
+            LogicNg(current_oc_ng_time);
             qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
         }

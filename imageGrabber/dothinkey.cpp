@@ -1,4 +1,4 @@
-#include "imageGrabber/dothinkey.h"
+ï»¿#include "imageGrabber/dothinkey.h"
 #include <QTime>
 #include <QDateTime>
 
@@ -268,50 +268,94 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
 // Hardcore OTP in UV, temp solution, move to ini file later
 BOOL Dothinkey::DothinkeyOTP(int serverMode)
 {
-    // ½â¿ª±£»¤
+    // è§£å¼€ä¿æŠ¤
     SensorTab *pSensor = nullptr;
     pSensor = &(m_CameraChannels[0].current_sensor);
-    WriteSensorReg(pSensor->SlaveID, 0x8000, 0x00, pSensor->mode);
-    Sleep(0xFA);
+//    byte uAddr = pSensor->SlaveID;
+    bool result_otp = true;
+    byte uAddr = 0xA0;
+    int result = WriteSensorReg(uAddr, 0x8000, 0x00, pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x8000,0x00,result);
+    if(result != 1)
+        result_otp = false;
+    int number = 100 + serverMode + 1;
+    QByteArray byte;
+    byte.resize(sizeof(int));
+    memcpy(byte.data(), &number, sizeof(int));
+    USHORT value = byte[0];
+    // æœºå°å·
+    WriteSensorReg(uAddr, 0x1F00, value, pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x1F00, value,result);
+    if(result != 1)
+        result_otp = false;
+    // å·¥ä½å·
+    value = byte[1];
+    WriteSensorReg(uAddr, 0x1F01, value, pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x1F01, value,result);
+    if(result != 1)
+        result_otp = false;
 
-    // »úÌ¨ºÅ
-    WriteSensorReg(pSensor->SlaveID, 0x1F00, 0x01, pSensor->mode);
-    Sleep(0xFA);
-    // ¹¤Î»ºÅ
-    WriteSensorReg(pSensor->SlaveID, 0x1F01, serverMode+1, pSensor->mode);
-    Sleep(0xFA);
+    // é•œå¤´æ ‡å¿—ä½
+    WriteSensorReg(uAddr, 0x1F03, 0x01, pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x1F03, 0x01,result);
+    if(result != 1)
+        result_otp = false;
 
-    // ¾µÍ·±êÖ¾Î»
-    WriteSensorReg(pSensor->SlaveID, 0x1F03, 0x01, pSensor->mode);
-    Sleep(0xFA);
-
-    // Ê±¼ä
+    // æ—¶é—´
     QDate date = QDate::currentDate();
     QTime time = QTime::currentTime();
     int year = date.year();
-    QByteArray byte;
     byte.resize(sizeof(int));
     memcpy(byte.data(), &year, sizeof(int));
-    WriteSensorReg(pSensor->SlaveID, 0x1F04, byte[0], pSensor->mode);
-    Sleep(0xFA);
-    WriteSensorReg(pSensor->SlaveID, 0x1F05, byte[1], pSensor->mode);
-    Sleep(0xFA);
-    WriteSensorReg(pSensor->SlaveID, 0x1F06, date.month(), pSensor->mode);
-    Sleep(0xFA);
-    WriteSensorReg(pSensor->SlaveID, 0x1F07, date.day(), pSensor->mode);
-    Sleep(0xFA);
-    WriteSensorReg(pSensor->SlaveID, 0x1F08, time.hour(), pSensor->mode);
-    Sleep(0xFA);
-    WriteSensorReg(pSensor->SlaveID, 0x1F09, time.minute(), pSensor->mode);
-    Sleep(0xFA);
-    WriteSensorReg(pSensor->SlaveID, 0x1F0A, 0x01, pSensor->mode);
-    Sleep(0xFA);
+    value = byte[0];
+    WriteSensorReg(uAddr, 0x1F04, value, pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x1F04, value,result);
+    if(result != 1)
+        result_otp = false;
+    value = byte[1];
+    WriteSensorReg(uAddr, 0x1F05, value, pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x1F05,value,result);
+    if(result != 1)
+        result_otp = false;
+    WriteSensorReg(uAddr, 0x1F06, date.month(), pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x1F06, date.month(),result);
+    if(result != 1)
+        result_otp = false;
+    WriteSensorReg(uAddr, 0x1F07, date.day(), pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x1F07, date.day(),result);
+    if(result != 1)
+        result_otp = false;
+    WriteSensorReg(uAddr, 0x1F08, time.hour(), pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x1F08, time.hour(),result);
+    if(result != 1)
+        result_otp = false;
+    WriteSensorReg(uAddr, 0x1F09, time.minute(), pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x1F09, time.minute(),result);
+    if(result != 1)
+        result_otp = false;
+    WriteSensorReg(uAddr, 0x1F0A, time.second(), pSensor->mode);
+    Sleep(300);
+    qInfo("write reg %X  value %02X result %d",0x1F0A, time.second(),result);
+    if(result != 1)
+        result_otp = false;
 
-    // ¼ì²é¾µÍ·±êÖ¾Î» 0 or 1
-    USHORT value =0;
-    ReadSensorReg(pSensor->SlaveID, 0x1F03, &value, pSensor->mode);
-    if (value != 1)
+    // æ£€æŸ¥é•œå¤´æ ‡å¿—ä½ 0 or 1
+    value = 0;
+    ReadSensorReg(uAddr, 0x1F03, &value, pSensor->mode);
+    qInfo("Read reg %X  value %02X",uAddr, value);
+    if ((value != 1)||(!result_otp))
     {
+        qInfo("DothinkeyOTP fail");
         return FALSE;
     }
     else {

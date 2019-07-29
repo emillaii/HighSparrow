@@ -77,7 +77,7 @@ public:
     Q_INVOKABLE void performLensUpDnLookCalibration();
     Q_INVOKABLE void performSensorPickheadCalibration();
 
-    Q_INVOKABLE void performLocation(QString location_name);
+    Q_INVOKABLE void performLocation(QString location_name,bool use_origin);
 
     Q_INVOKABLE void performOC();
     Q_INVOKABLE void performLoopTest(int mode);
@@ -188,6 +188,7 @@ private:
     QString m_stateMessage;
 
     QString location_name;
+    bool use_origin;
 
     QString calibration_name;
 //    bool handling_fini

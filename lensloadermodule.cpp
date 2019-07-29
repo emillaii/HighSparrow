@@ -281,7 +281,7 @@ void LensLoaderModule::run(bool has_material)
                 finish_stop = true;
         }
         //等待位置
-        if(!movePickerToLUTPos1())
+        if(!movePickerToLUTPos1(true))
         {
             sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
             is_run = false;
@@ -338,8 +338,9 @@ void LensLoaderModule::run(bool has_material)
         //放料到LUT
         if(need_load_lens&&states.hasPickedLens())
         {
+            qInfo(u8"放料到LUT");
             has_task = true;
-            if(!movePickerToLUTPos1())
+            if(!movePickerToLUTPos1(true))
             {
                 sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
                 is_run = false;
@@ -824,28 +825,37 @@ bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 
 bool LensLoaderModule::movePickerToLUTPos1(bool check_arrived,bool check_softlanding)
 {
+//    if(parameters.openTimeLog())
+//        qInfo("movePickerToLUTPos1 check_arrived %d check_softlanding %d",check_arrived,check_softlanding);
     bool result =  pick_arm->move_XYT_Synic(lut_pr_position1.X() + camera_to_picker_offset.X(),lut_pr_position1.Y() + camera_to_picker_offset.Y(),parameters.placeTheta(),check_arrived,check_softlanding);
     if(!result)
         AppendError(QString(u8"移动吸头到LUT放Lens位置失败"));
-    //    qInfo(u8"移动吸头到LUT放Lens位置,返回值%d",result);
+//    if(parameters.openTimeLog())
+//        qInfo("movePickerToLUTPos1 result %d",result);
     return result;
 }
 
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
+    if(parameters.openTimeLog())
+        qInfo("moveToLUTPRPos2 check_softlanding %d",check_softlanding);
     bool result = pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),parameters.placeTheta(),false,check_softlanding);
     if(!result)
         AppendError(QString(u8"移动到相机LUT取NgLens位置失败"));
-    qInfo(u8"移动相机到LUT取NgLens位置,返回值%d",result);
+    if(parameters.openTimeLog())
+        qInfo(u8"移动相机到LUT取NgLens位置 result  %d",result);
     return result;
 }
 
 bool LensLoaderModule::movePickerToLUTPos2(bool check_arrived,bool check_softlanding)
 {
+    if(parameters.openTimeLog())
+        qInfo(u8"移动到吸头LUT取NgLens位置 check_arrived %d check_softlanding %d",check_arrived,check_softlanding);
     bool result = pick_arm->move_XYT_Synic(lut_pr_position2.X() + camera_to_picker_offset.X(),lut_pr_position2.Y()+ camera_to_picker_offset.Y(),parameters.placeTheta(),check_arrived,check_softlanding);
     if(!result)
         AppendError(QString(u8"移动吸头到LUT取NgLens位置失败"));
-    qInfo(u8"移动到吸头LUT取NgLens位置,返回值%d",result);
+    if(parameters.openTimeLog())
+        qInfo(u8"移动到吸头LUT取NgLens位置 result %",result);
     return result;
 }
 
@@ -858,7 +868,8 @@ bool LensLoaderModule::checkNeedChangeTray()
 
 bool LensLoaderModule::performLensPR()
 {
-    bool result = lens_vision->performPR(pr_offset);
+    bool result = lens_vision->performPR();
+    pr_offset = lens_vision->getCurrentResult();
     if(!result)
         AppendError(QString(u8"执行lens视觉失败"));
     qInfo(u8"执行lens视觉,返回值%d",result);
@@ -867,7 +878,8 @@ bool LensLoaderModule::performLensPR()
 
 bool LensLoaderModule::performVacancyPR()
 {
-    bool result = vacancy_vision->performPR(pr_offset);
+    bool result = vacancy_vision->performPR();
+    pr_offset = vacancy_vision->getCurrentResult();
     if(!result)
         AppendError(QString(u8"执行lens料盘空位视觉失败"));
     qInfo(u8"执行lens料盘空位视觉,返回值%d",result);
@@ -876,7 +888,9 @@ bool LensLoaderModule::performVacancyPR()
 
 bool LensLoaderModule::performLUTPR()
 {
-    bool result = lut_vision->performPR(pr_offset);
+    bool result = lut_vision->performPR();
+    pr_offset = lut_vision->getCurrentResult();
+
     if(!result)
         AppendError(QString(u8"执行LUT空位视觉失败"));
     qInfo(u8"执行LUT空位视觉,返回值%d",result);
@@ -885,7 +899,8 @@ bool LensLoaderModule::performLUTPR()
 
 bool LensLoaderModule::performLUTLensPR()
 {
-    bool result = lut_lens_vision->performPR(pr_offset);
+    bool result = lut_lens_vision->performPR();
+    pr_offset = lut_lens_vision->getCurrentResult();
     if(!result)
         AppendError(QString(u8"执行LUT上Lens视觉失败"));
     qInfo(u8"执行LUT上Lens视觉,返回值%d",result);
@@ -894,7 +909,8 @@ bool LensLoaderModule::performLUTLensPR()
 
 bool LensLoaderModule::performPickerPR()
 {
-    bool result = lpa_picker_vision->performPR(pr_offset);
+    bool result = lpa_picker_vision->performPR();
+    pr_offset = lpa_picker_vision->getCurrentResult();
     if(!result)
         AppendError(QString(u8"执行吸头视觉失败"));
     qInfo(u8"执行吸头视觉,返回值%d",result);
@@ -1021,12 +1037,15 @@ bool LensLoaderModule::pickTrayLens()
 
 bool LensLoaderModule::placeLensToLUT()
 {
+    if(parameters.openTimeLog())
+        qInfo(u8"从当前位置放lens到LUT");
     bool result = vcmSearchLUTZ(parameters.placeLensZ(), false);
     result &= load_vacuum->Set(true);
     result &= vcmSearchReturn();
     if(!result)
         AppendError(QString(u8"从当前位置放lens到LUT失败"));
-    qInfo(u8"从当前位置放lens到LUT,返回值%d",result);
+    if(parameters.openTimeLog())
+        qInfo(u8"从当前位置放lens到LUT result %d ",result);
     return result;
 }
 

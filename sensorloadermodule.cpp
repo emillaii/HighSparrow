@@ -2247,25 +2247,47 @@ bool SensorLoaderModule::picker2SearchZ(double z,double force,bool is_open, int 
 
 bool SensorLoaderModule::picker2SearchSutZ(double z,double force, QString dest, QString cmd, bool is_open, int time_out)
 {
-    qInfo("picker2SearchZ %s",dest.toStdString().c_str());
+    if(parameters.openTimeLog())
+        qInfo("picker2SearchSutZ z %f force %f dest %s cmd %s is_open %d time_out %d",z,force,dest.toStdString().c_str(),cmd.toStdString().c_str(),is_open,time_out);
     sendCmd(dest,cmd);
     pick_arm->picker2->vacuum->Set(is_open,false);
     bool result = true;
     if(parameters.enableEscape())
+    {
         result = pick_arm->picker2->motor_z->MoveToPosSync(z - parameters.escapeHeight());
+        if(parameters.openTimeLog())
+            qInfo("motor_z move  to escape %f result %d",z,result);
+    }
     if(result)
     {
+        double temp_z = 0;
         if(parameters.enableSutForceLimit())
-            result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z + parameters.zOffset(),parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
+        {
+            temp_z = z + parameters.zOffset();
+            result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,temp_z,parameters.vcmMargin(),parameters.finishDelay(),is_open,false,time_out);
+        }
         else
-            result = pick_arm->Z2MoveToPick(z - parameters.sutMargin(),is_open,false);
+        {
+            temp_z = z - parameters.sutMargin();
+            result = pick_arm->Z2MoveToPick(temp_z,is_open,false);
+        }
+
+        if(parameters.openTimeLog())
+            qInfo("motor_z move to %f result %d",temp_z,result);
+
         if(parameters.enableSutForceLimit())
             result &= pick_arm->ZSerchReturn2(time_out);
         else
             result &= pick_arm->picker2->motor_z->MoveToPosSync(0);
+
+        if(parameters.openTimeLog())
+            qInfo("motor_z move return result %d",result);
     }
     if(parameters.enableEscape())
         result &= pick_arm->move_XeYe_Z2(0,parameters.escapeX(),parameters.escapeY());
+
+    if(parameters.openTimeLog())
+        qInfo("picker2SearchSutZ result %d",result);
     return result;
 }
 
@@ -2283,8 +2305,12 @@ bool SensorLoaderModule::checkPickedSensor(bool check_state)
 
 bool SensorLoaderModule::checkPickedNgOrProduct(bool check_state)
 {
+    if(parameters.openTimeLog())
+        qInfo("checkPickedNgOrProduct check_state %d",check_state);
     bool result;
     result = pick_arm->picker2->vacuum->checkHasMaterielSync();
+    if(parameters.openTimeLog())
+        qInfo("checkPickedNgOrProduct result %d",result);
     if(result == check_state)
         return true;
     QString error = QString(u8"成品吸头上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
@@ -2315,23 +2341,30 @@ bool SensorLoaderModule::placeSensorToSUT(QString dest,int time_out)
 
 bool SensorLoaderModule::pickSUTSensor(QString dest,int time_out)
 {
+    if(parameters.openTimeLog())
     qInfo("pickSUTSensor dest %s time_out %d",dest.toStdString().c_str(),time_out);
     bool result = picker2SearchSutZ(parameters.pickNgSensorZ(),parameters.vcmWorkForce(),dest,"vacuumOffReq",true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取NGsenor失败").arg(dest=="remote"?1:2));
     if(result)
         result &= checkPickedNgOrProduct(true);
+    if(parameters.openTimeLog())
+    qInfo("pickSUTSensor resilt %d",result);
     return result;
 }
 
 bool SensorLoaderModule::pickSUTProduct(QString dest,int time_out)
 {
+    if(parameters.openTimeLog())
+        qInfo("pickSUTProduct dest %s timeout %d",dest.toStdString().c_str(),time_out);
     qInfo("pickSUTProduct dest %s time_out %d",dest.toStdString().c_str(),time_out);
     bool result = picker2SearchSutZ(parameters.pickProductZ(),parameters.pickProductForce(),dest,"vacuumOffReq",true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取成品失败").arg(dest=="remote"?1:2));
     if(result)
         result &= checkPickedNgOrProduct(true);
+    if(parameters.openTimeLog())
+        qInfo("pickSUTProduct result %d",result);
     return result;
 }
 

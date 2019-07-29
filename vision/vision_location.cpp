@@ -155,7 +155,34 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
 
 PrOffset VisionLocation::getCurrentResult()
 {
-    return current_result;
+    PrOffset temp_offset;
+    if(parameters.useOrigin())
+    {
+        temp_offset.X = current_result.O_X;
+        temp_offset.Y = current_result.O_Y;
+    }
+    else
+    {
+        temp_offset.X = current_result.X;
+        temp_offset.Y = current_result.Y;
+    }
+    return temp_offset;
+}
+
+PrOffset VisionLocation::getCurrentResult(bool use_origin)
+{
+    PrOffset temp_offset;
+    if(use_origin)
+    {
+        temp_offset.X = current_result.O_X;
+        temp_offset.Y = current_result.O_Y;
+    }
+    else
+    {
+        temp_offset.X = current_result.X;
+        temp_offset.Y = current_result.Y;
+    }
+    return temp_offset;
 }
 
 QPointF VisionLocation::getCurrentResultOffset()

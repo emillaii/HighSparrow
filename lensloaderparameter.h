@@ -39,6 +39,7 @@ public:
     Q_PROPERTY(int repeatTime READ repeatTime WRITE setRepeatTime NOTIFY repeatTimeChanged)
     Q_PROPERTY(int testLensCount READ testLensCount WRITE setTestLensCount NOTIFY testLensCountChanged)
     Q_PROPERTY(bool staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
+    Q_PROPERTY(bool openTimeLog READ openTimeLog WRITE setOpenTimeLog NOTIFY openTimeLogChanged)
     int runMode() const
     {
         return m_runMode;
@@ -174,6 +175,11 @@ public:
     bool staticTest() const
     {
         return m_staticTest;
+    }
+
+    bool openTimeLog() const
+    {
+        return m_openTimeLog;
     }
 
 public slots:
@@ -438,6 +444,15 @@ public slots:
         emit staticTestChanged(m_staticTest);
     }
 
+    void setOpenTimeLog(bool openTimeLog)
+    {
+        if (m_openTimeLog == openTimeLog)
+            return;
+
+        m_openTimeLog = openTimeLog;
+        emit openTimeLogChanged(m_openTimeLog);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -493,6 +508,8 @@ signals:
 
     void staticTestChanged(bool staticTest);
 
+    void openTimeLogChanged(bool openTimeLog);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -523,6 +540,7 @@ private:
     int m_prTestTime = 10;
     int m_testLensCount = 10;
     bool m_staticTest = false;
+    bool m_openTimeLog = false;
 };
 
 class LensPickArmModuleState:public PropertyBase

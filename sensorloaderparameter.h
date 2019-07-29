@@ -61,6 +61,7 @@ public:
     Q_PROPERTY(bool enablePlaceForce READ enablePlaceForce WRITE setEnablePlaceForce NOTIFY enablePlaceForceChanged)
     Q_PROPERTY(double sut1Theta READ sut1Theta WRITE setSut1Theta NOTIFY sut1ThetaChanged)
     Q_PROPERTY(double sut2Theta READ sut2Theta WRITE setSut2Theta NOTIFY sut2ThetaChanged)
+    Q_PROPERTY(bool openTimeLog READ openTimeLog WRITE setOpenTimeLog NOTIFY openTimeLogChanged)
 
     double vcmWorkForce() const
     {
@@ -303,6 +304,11 @@ public:
     double sutMargin() const
     {
         return m_sutMargin;
+    }
+
+    bool openTimeLog() const
+    {
+        return m_openTimeLog;
     }
 
 public slots:
@@ -770,6 +776,15 @@ public slots:
         emit sutMarginChanged(m_sutMargin);
     }
 
+    void setOpenTimeLog(bool openTimeLog)
+    {
+        if (m_openTimeLog == openTimeLog)
+            return;
+
+        m_openTimeLog = openTimeLog;
+        emit openTimeLogChanged(m_openTimeLog);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -870,6 +885,8 @@ signals:
 
     void sutMarginChanged(double sutMargin);
 
+    void openTimeLogChanged(bool openTimeLog);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -920,6 +937,7 @@ private:
     bool m_enableSutForceLimit = false;
     double m_placeTrayMargin = 2;
     double m_sutMargin = 0;
+    bool m_openTimeLog = false;
 };
 class SensorLoaderState:public PropertyBase
 {

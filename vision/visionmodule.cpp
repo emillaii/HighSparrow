@@ -217,7 +217,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         //avl::LoadImage( "pr//19-39-23-431_raw.jpg", false, image1 );
         this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
-        bool isSearchRegionFound = true;
+//        bool isSearchRegionFound = true;
         //Testing use
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
         avs::LoadObject< avl::Vector2D >( g_constData2, avl::StreamMode::Binary, g_constData3, vector2D1 );
@@ -305,7 +305,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         regionArray1[0].Get() = region1;
         avs::DrawRegions_SingleColor( image6, regionArray1, atl::NIL, avl::Pixel(192.0f, 255.0f, 192.0f, 0.0f), 0.3f, true, image7 );
         avl::SaveImageToJpeg( image7 , imageName.toStdString().c_str(), atl::NIL, false );
-        if(!isSearchRegionFound) {
+        if(!is_object_score_pass) {
             error_code.code = ErrorCode::PR_OBJECT_SCORE_FAIL;
             return error_code;
         }

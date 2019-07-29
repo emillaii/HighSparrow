@@ -1476,7 +1476,6 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     if(!result) return false;
     //KicK復位
     GetMotorByName(this->sensor_pickarm.parameters.motorXName())->SeekOrigin();
-    GetMotorByName(this->sensor_pickarm.parameters.motorYName())->SeekOrigin();
     GetMotorByName(this->sensor_pickarm.parameters.motorTName())->SeekOrigin();
     GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->SeekOrigin();
 
@@ -1492,6 +1491,10 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
+
+//    result = GetMotorByName(this->sensor_pickarm.parameters.motorXName())->WaitSeekDone();
+//    if(!result)return false;
+    GetMotorByName(this->sensor_pickarm.parameters.motorYName())->SeekOrigin();
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
     result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
     if(!result)return false;
@@ -1789,7 +1792,7 @@ bool BaseModuleManager::performLensUpDnLookCalibration()
     return true;
 }
 
-bool BaseModuleManager::performLocation(QString location_name)
+bool BaseModuleManager::performLocation(QString location_name,bool use_origin)
 {
 //    if(!emit sendMsgSignal("title","content")){
 //        return true;
@@ -1821,7 +1824,9 @@ bool BaseModuleManager::performLocation(QString location_name)
     {
         temp_location->OpenLight();
         QThread::msleep(200);
-        if(!temp_location->performPR(offset))return false;
+        if(!temp_location->performPR())
+            return false;
+        offset = temp_location->getCurrentResult(use_origin);
     }
     if(temp_location->parameters.canMotion())
     {

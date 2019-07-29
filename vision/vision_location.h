@@ -19,6 +19,7 @@ public:
     QPointF getCurrentOffset();
 
     PrOffset getCurrentResult();
+    PrOffset getCurrentResult(bool use_origin);
     QPointF getCurrentResultOffset();
     PRResultStruct getCurrentPixelResult();
 

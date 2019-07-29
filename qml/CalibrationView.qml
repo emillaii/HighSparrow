@@ -79,7 +79,13 @@ ItemDelegate {
                             Button{
                                 text:qsTr("执行PR")
                                 onClicked:{
-                                    logicManager.performLocation(locationName)
+                                    logicManager.performLocation(locationName,true)
+                                }
+                            }
+                            Button{
+                                text:qsTr("执行PR偏移")
+                                onClicked:{
+                                    logicManager.performLocation(locationName,false)
                                 }
                             }
 //                            Image{

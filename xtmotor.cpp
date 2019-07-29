@@ -479,6 +479,7 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
 //    if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
 //    double currPos = GetFeedbackPos();
 //    double targetPos = pos;
+    //qInfo("MoveToPosSync pos %f time_out %d",pos,time_out);
     if(!MoveToPos(pos,thread))
     {
         qInfo("%s move to pos %f fail",name.toStdString().c_str(),pos);

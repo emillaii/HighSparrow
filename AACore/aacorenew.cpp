@@ -424,7 +424,8 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::INIT_CAMERA) {
         SetSensor();
-        performInitSensor(0,true);
+        int finish_delay = params["delay_in_ms"].toInt(0);
+        performInitSensor(finish_delay);
     }
     else if (cmd == HandleTest::Y_LEVEL) {
         performYLevelTest(params);

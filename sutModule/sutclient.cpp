@@ -79,7 +79,6 @@ void SutClient::receiveMessage(QString message)
         isValid = true;
         qInfo("Sut Vacuum On Request");
         sut_vacuum->Set(0);
-        QThread::msleep(200);
     } else if (cmd == "vacuumOffReq") {
         isValid = true;
         qInfo("Sut Vacuum Off Request");

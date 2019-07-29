@@ -251,7 +251,7 @@ public:
     bool performCalibration(QString calibration_name);
     bool performUpDnLookCalibration();
     bool performLensUpDnLookCalibration();
-    bool performLocation(QString location_name);
+    bool performLocation(QString location_name,bool use_origin);
     Q_INVOKABLE QString getCalibrationParam(QString calibration_name);
     Q_INVOKABLE void setOutput(QString name, bool on);
     Q_INVOKABLE bool getCylinderOutput(QString name);

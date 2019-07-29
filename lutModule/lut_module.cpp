@@ -303,14 +303,14 @@ void LutModule::run(bool has_material)
                 }
                 else if (states.cmd() == "lutLeaveReq") {
                     bool action_result;
-                    isLocalHost ?action_result = moveToAA1ReturnPos(): action_result = moveToAA2ReturnPos();
-                    if((!action_result)&&has_material)
-                    {
-                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                        is_run = false;
-                        break;
-                    }
-                    else
+//                    isLocalHost ?action_result = moveToAA1ReturnPos(): action_result = moveToAA2ReturnPos();
+//                    if((!action_result)&&has_material)
+//                    {
+//                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                        is_run = false;
+//                        break;
+//                    }
+//                    else
                     {
                         sendEvent("lutLeaveResp");
                         states.setCmd("");

@@ -118,7 +118,7 @@ void LogicManager::run() {
     }
     else if (m_currentMode == CommandType::PERFORM_LOCATION)
     {
-        baseModuleManage->performLocation(location_name);
+        baseModuleManage->performLocation(location_name,use_origin);
         qInfo("location End");
     }
 
@@ -196,10 +196,11 @@ void LogicManager::performSensorPickheadCalibration()
     moveToCmd(CommandType::PERFORM_SENSOR_PICKHEAD_CALIBRATION);
 }
 
-void LogicManager::performLocation(QString location_name)
+void LogicManager::performLocation(QString location_name,bool use_origin)
 {
     setStateMessage(__FUNCTION__);
     this->location_name = location_name;
+    this->use_origin = use_origin;
     moveToCmd(CommandType::PERFORM_LOCATION);
 }
 

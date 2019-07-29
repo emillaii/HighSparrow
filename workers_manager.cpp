@@ -70,6 +70,10 @@ void WorkersManager::tcpResp(QString message)
         {
            workers[module_name]->receivceModuleMessage(message_object.toVariantMap());
         }
+        else if(module_name == "LogicManager")
+        {
+            sendMessageToLogicManager(message_object.toVariantMap());
+        }
         else {
             qInfo("module name error");
         }

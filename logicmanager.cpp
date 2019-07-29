@@ -9,15 +9,20 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
     baseModuleManage = device_manager;
 }
 
-bool LogicManager::registerWorker(ThreadWorkerBase *worker)
+//bool LogicManager::registerWorker(ThreadWorkerBase *worker)
+//{
+//    if(!workers.contains(worker->Name()))
+//    {
+//        workers.insert(worker->Name(),worker);
+//        qInfo("registerWorker :%s",worker->Name().toStdString().c_str());
+//        return true;
+//    }
+//    return false;
+//}
+
+void LogicManager::performHandling(int cmd)
 {
-    if(!workers.contains(worker->Name()))
-    {
-        workers.insert(worker->Name(),worker);
-        qInfo("registerWorker :%s",worker->Name().toStdString().c_str());
-        return true;
-    }
-    return false;
+
 }
 
 void LogicManager::updateParams()
@@ -27,6 +32,7 @@ void LogicManager::updateParams()
 
 void LogicManager::run() {
     qInfo("Logic manager is running");
+    is_handling = true;
     QString uuid = baseModuleManage->unitlog.createUnit();
     if (m_currentMode == CommandType::MOTION_STOP_HOME) {
         baseModuleManage->stopSeeking();
@@ -39,7 +45,24 @@ void LogicManager::run() {
     else if (m_currentMode == CommandType::PERFORM_OC) {
     }
     else if (m_currentMode == CommandType::MOTION_HOME) {
-        baseModuleManage->allMotorsSeekOrigin();
+        if(baseModuleManage->ServerMode() == 0)
+        {
+            if(baseModuleManage->allMotorsSeekOrigin())
+            {
+                QVariantMap message;
+                message.insert("MotorName","AllMotor");
+                sendCmdMessage(message,CommandType::MOTION_HOME);
+                waitReturnMessage();
+            }
+        }
+        else
+        {
+            QVariantMap message;
+            message.insert("MotorName","AllMotor");
+            sendCmdMessage(message,CommandType::MOTION_HOME);
+            if(waitReturnMessage())
+                baseModuleManage->allMotorsSeekOrigin();
+        }
     } else if (m_currentMode == CommandType::MOTION_INIT) {
         baseModuleManage->initialDevice();
     }
@@ -124,6 +147,45 @@ void LogicManager::run() {
 
     m_currentMode = CommandType::IDLE;
     qInfo("Logic Manager End");
+
+    is_handling = false;
+}
+
+bool LogicManager::motorSeekOrigin(QString motor_name)
+{
+    if(motor_name == "AllMotor")
+    {
+      return baseModuleManage->allMotorsSeekOrigin();
+    }
+    else if(baseModuleManage->motors.contains(motor_name))
+    {
+       return baseModuleManage->GetMotorByName(motor_name)->SeekOrigin();
+    }
+    else
+    {
+        qInfo("Motor Name not exist!");
+        return false;
+    }
+}
+
+void LogicManager::sendCmdMessage(QVariantMap message,int cmd)
+{
+    message.insert("TargetModule","LogicManager");
+    message.insert("performHandling",cmd);
+    emit sendMessageToWorkerManger(message);
+}
+
+bool LogicManager::waitReturnMessage()
+{
+    while (is_handling) {
+        if(return_message.contains("performHandlingResp"))
+        {
+            bool result =  return_message["performHandlingResp"].toBool();
+            return_message.remove("performHandlingResp");
+            return  result;
+        }
+    }
+    return false;
 }
 void LogicManager::moveToCmd(int cmd) {
     if (cmd == CommandType::STOP)
@@ -628,15 +690,27 @@ void LogicManager::receiveMessageFromWorkerManger(QVariantMap message)
 {
     if(message.contains("performHandling"))
     {
-       QString module_name = message["Module"].toString();
-       if(workers.contains(module_name))
+        is_handling = true;
+       QString module_name = message["ModuleName"].toString();
+       if(baseModuleManage->workers.contains(module_name))
        {
-           workers[module_name]->performHandling(message["cmd"].toInt());
-          bool result = workers[module_name]->waitPerformHandling();
+           baseModuleManage->workers[module_name]->performHandling(message["performHandling"].toInt());
+          bool result = baseModuleManage->workers[module_name]->waitPerformHandling();
           QVariantMap  return_message;
           return_message.insert("performHandlingResp",result);
           sendMessageToWorkerManger(return_message);
        }
+       else if(message["performHandling"].toInt() == CommandType::MOTION_HOME)
+       {
+           if(message.contains("MotorName"))
+           {
+               bool result =  motorSeekOrigin(message["MotorName"].toString());
+               QVariantMap  return_message;
+               return_message.insert("performHandlingResp",result);
+               sendMessageToWorkerManger(return_message);
+           }
+       }
+       is_handling = false;
     }
     else if(message.contains("performHandlingResp"))
     {

@@ -53,6 +53,9 @@ public:
     Q_PROPERTY(QString ServerURL READ ServerURL WRITE setServerURL NOTIFY paramsChanged)
     Q_PROPERTY(QString DataServerURL READ DataServerURL WRITE setDataServerURL NOTIFY paramsChanged)
 
+    QMap<QString,ThreadWorkerBase*> workers;
+    QMap<QString,ThreadWorkerBase*> tcp_workers;
+
     QMap<QString,XtMotor*> motors;
     QMap<QString,XtGeneralInput*> input_ios;
     QMap<QString,XtGeneralOutput*> output_ios;
@@ -204,8 +207,6 @@ private:
     QString m_DataServerURL;
     QThread work_thread;
 
-    QMap<QString,ThreadWorkerBase*> workers;
-    QMap<QString,ThreadWorkerBase*> tcp_workers;
     void inquiryTcpModule();
 public:
     bool loadProfile();

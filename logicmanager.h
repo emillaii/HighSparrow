@@ -32,7 +32,10 @@ enum CommandType{
     PERFORM_SENSOR_PICKHEAD_CALIBRATION,
     PERFORM_LOCATION,
     PERFORM_OC,
-    PERFORM_LOOP_TEST
+    PERFORM_LOOP_TEST,
+
+
+    SEEK_ORIGIN
 };
 
 class LogicManager : public QThread
@@ -40,7 +43,8 @@ class LogicManager : public QThread
     Q_OBJECT
 public:
     explicit LogicManager(BaseModuleManager* device_manager, QObject *parent = nullptr);
-    bool registerWorker(ThreadWorkerBase* worker);
+//    bool registerWorker(ThreadWorkerBase* worker);
+    void performHandling(int cmd);
     Q_PROPERTY(int currentMode READ currentMode WRITE setCurrentMode)
     Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage NOTIFY stateMessageChanged)
 
@@ -191,14 +195,17 @@ private:
     bool use_origin;
 
     QString calibration_name;
-//    bool handling_fini
-    QMap<QString,ThreadWorkerBase*> workers;
+//    QMap<QString,ThreadWorkerBase*> workers;
 
 
-
+    bool is_handling = false;
     QVariantMap  return_message;
 protected:
     void run();
+private:
+    bool motorSeekOrigin(QString motor_name);
+    void sendCmdMessage(QVariantMap message,int cmd);
+    bool waitReturnMessage();
 };
 
 #endif // LOGICMANAGER_H

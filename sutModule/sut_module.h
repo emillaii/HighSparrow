@@ -47,8 +47,10 @@ public:
     Q_INVOKABLE bool stepMove_XY_Sync(double x,double y);
     Q_INVOKABLE bool stepMove_Z_Sync(double step_z);
     Q_INVOKABLE bool moveToZPos(double z);
+    Q_INVOKABLE bool moveZToSaftyPos();
     Q_INVOKABLE void recordCurrentPos();
     Q_INVOKABLE bool movetoRecordPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool movetoRecordPosAddOffset(double x_offset,double y_offset,double z_offset,bool check_autochthonous = false);
 signals:
     void sendLoadSensorFinish(double offset_x,double offset_y,double offset_z);
 public slots:

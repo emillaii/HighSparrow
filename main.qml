@@ -157,6 +157,15 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("OTP") !== -1) {
                         console.log("Perform OTP")
                         aaNewCore.performHandling(AACoreNew.OTP, aaCoreTestParams)
+                    }else if (aaCoreTestItemName.indexOf("AA Unload Camera") !== -1) {
+                        console.log("Perform AA Unload Camera")
+                        aaNewCore.performHandling(AACoreNew.UNLOAD_CAMERA, aaCoreTestParams)
+                    }else if (aaCoreTestItemName.indexOf("Dispense") !== -1) {
+                        console.log("Perform Dispense")
+                        aaNewCore.performHandling(AACoreNew.Dispense, aaCoreTestParams)
+                    }else if (aaCoreTestItemName.indexOf("PR To Bond") !== -1) {
+                        console.log("Perform PR To Bond")
+                        aaNewCore.performHandling(AACoreNew.PR_To_Bond, aaCoreTestParams)
                     }
 
                     aaCoreTestParams = ""

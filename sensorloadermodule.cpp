@@ -715,12 +715,6 @@ void SensorLoaderModule::run(bool has_material)
             states.setHasPickedNgSensor(false);
             if(!is_run)break;
         }
-        //检测是否需要换盘
-        if((!states.allowChangeTray()))
-        {
-            if((!states.hasTray())||checkTrayNeedChange())
-                states.setAllowChangeTray(true);
-        }
         //取料
         if((!finish_stop)&&(!states.allowChangeTray())&&states.hasTray()&&(!states.hasPickedSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgProduct())&&(!states.hasPickedNgSensor()))
         {
@@ -782,6 +776,12 @@ void SensorLoaderModule::run(bool has_material)
             picked_material = tray->getCurrentIndex(sensor_tray_index);
             if(!is_run)break;
         }
+        //检测是否需要换盘
+        if((!states.allowChangeTray()))
+        {
+            if((!states.hasTray())||checkTrayNeedChange())
+                states.setAllowChangeTray(true);
+        }
         //sut操作
         if ((!states.allowChangeTray())&&(!requestQueue.isEmpty()) && (!states.beExchangeMaterial())&&states.hasPickedSensor()&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgProduct()))
         {
@@ -825,7 +825,7 @@ void SensorLoaderModule::run(bool has_material)
         }
         else if(states.beExchangeMaterial()?isLocalHost:(!isLocalHost))
         {
-            if((!states.sutHasSensor())||(!states.sutHasNgProduct())||(!states.sutHasProduct())||(!states.sutHasNgSensor()))
+            if(states.hasPickedSensor()&&(!states.sut2HasNgProduct())&&(!states.sut2HasProduct())&&(!states.sut2HasNgSensor()))
             {
                 if(!movePicker1ToSUTPos(true,true))
                 {
@@ -834,19 +834,9 @@ void SensorLoaderModule::run(bool has_material)
                     if(!is_run)break;
                 }
             }
-            else if(states.hasPickedSensor()||
-                    (states.sutHasNgProduct()&&parameters.enableNgProductPr())||
-                    (states.sutHasProduct()&&parameters.enableProductPr())||
-                    (states.sutHasNgSensor()&&parameters.enableNgSensorPr()))
-            {
-                if(!moveToSUTPRPos(true,true))
-                {
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    is_run = false;
-                    break;
-                }
-            }
-            else
+            else if((states.sut2HasNgProduct()&&(!parameters.enableNgProductPr()))||
+                    (states.sut2HasProduct()&&(!parameters.enableProductPr()))||
+                    (states.sut2HasNgSensor()&&(!parameters.enableNgSensorPr())))
             {
                 if(!movePicker2ToSUTPos(true,true))
                 {
@@ -855,10 +845,27 @@ void SensorLoaderModule::run(bool has_material)
                     if(!is_run)break;
                 }
             }
+            else
+            {
+                if((states.sut2HasNgProduct()&&parameters.enableNgProductPr())||(states.sut2HasProduct()&&parameters.enableProductPr()))
+                {
+                    sut_product_vision->OpenLight();
+                }
+                else if((states.sut2HasNgSensor()&&parameters.enableNgSensorPr()))
+                {
+                    sut_sensor_vision->OpenLight();
+                }
+                if(!moveToSUTPRPos(true,true))
+                {
+                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                    is_run = false;
+                    break;
+                }
+            }
         }
         else
         {
-            if((!states.sut2HasSensor())||(!states.sut2HasNgProduct())||(!states.sut2HasProduct())||(!states.sut2HasNgSensor()))
+            if(!(states.hasPickedSensor()||states.sutHasNgProduct()||states.sutHasProduct()||states.sutHasNgSensor()))
             {
                 if(!movePicker1ToSUTPos(false,true))
                 {
@@ -867,25 +874,24 @@ void SensorLoaderModule::run(bool has_material)
                     if(!is_run)break;
                 }
             }
-            else if(states.sut2HasSensor()||
-                    (states.sut2HasNgProduct()&&parameters.enableNgProductPr())||
-                    (states.sut2HasProduct()&&parameters.enableProductPr())||
-                    (states.sut2HasNgSensor()&&parameters.enableNgSensorPr()))
-            {
-                if(!moveToSUTPRPos(false,true))
-                {
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    is_run = false;
-                    break;
-                }
-            }
-            else
+            else if((states.sutHasNgProduct()&&(!parameters.enableNgProductPr()))||
+                    (states.sutHasProduct()&&(!parameters.enableProductPr()))||
+                    (states.sutHasNgSensor()&&(!parameters.enableNgSensorPr())))
             {
                 if(!movePicker2ToSUTPos(false,true))
                 {
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
                     waitMessageReturn(is_run);
                     if(!is_run)break;
+                }
+            }
+            else
+            {
+                if(!moveToSUTPRPos(false,true))
+                {
+                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                    is_run = false;
+                    break;
                 }
             }
         }
@@ -2243,6 +2249,7 @@ bool SensorLoaderModule::picker2SearchSutZ(double z,double force, QString dest, 
 {
     qInfo("picker2SearchZ %s",dest.toStdString().c_str());
     sendCmd(dest,cmd);
+    pick_arm->picker2->vacuum->Set(is_open,false);
     bool result = true;
     if(parameters.enableEscape())
         result = pick_arm->picker2->motor_z->MoveToPosSync(z - parameters.escapeHeight());

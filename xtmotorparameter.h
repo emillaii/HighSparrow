@@ -11,6 +11,7 @@ public:
     Q_PROPERTY(int arrivedDelay READ arrivedDelay WRITE setarrivedDelay NOTIFY arrivedDelayChanged)
     Q_PROPERTY(bool useDelay READ useDelay WRITE setUseDelay NOTIFY useDelayChanged)
     Q_PROPERTY(double positionError READ positionError WRITE setPositionError NOTIFY positionErrorChanged)
+    Q_PROPERTY(bool firstCheckArrived READ firstCheckArrived WRITE setFirstCheckArrived NOTIFY firstCheckArrivedChanged)
     int arrivedDelay() const
     {
         return m_arrivedDelay;
@@ -23,6 +24,12 @@ public:
     double positionError() const
     {
         return m_positionError;
+    }
+
+
+    bool firstCheckArrived() const
+    {
+        return m_firstCheckArrived;
     }
 
 public slots:
@@ -52,6 +59,14 @@ public slots:
         m_positionError = positionError;
         emit positionErrorChanged(m_positionError);
     }
+    void setFirstCheckArrived(bool firstCheckArrived)
+    {
+        if (m_firstCheckArrived == firstCheckArrived)
+            return;
+
+        m_firstCheckArrived = firstCheckArrived;
+        emit firstCheckArrivedChanged(m_firstCheckArrived);
+    }
 
 signals:
     void arrivedDelayChanged(int arrivedDelay);
@@ -59,10 +74,13 @@ signals:
 
     void positionErrorChanged(double positionError);
 
+    void firstCheckArrivedChanged(bool firstCheckArrived);
+
 private:
     int m_arrivedDelay = 100;
     bool m_useDelay = true;
     double m_positionError = 0.01;
+    bool m_firstCheckArrived = false;
 };
 class XtMotorState:public PropertyBase
 {

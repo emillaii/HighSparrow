@@ -109,7 +109,7 @@ QString TcpMessager::inquiryMessage(QString message)
                     else if(parameters.needQInfo())
                         qInfo("message_mutex lock fail");
                     result = true;
-                    if (parameters.needQInfo())
+//                    if (parameters.needQInfo())
                         qDebug("wait time:%d in thread %d",(parameters.outTime() - current_time),QThread::currentThreadId());
                     break;
                 }

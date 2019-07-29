@@ -17,6 +17,15 @@ ItemDelegate {
                 id: coreParamGroupBox
                 title: qsTr("AA Core Parameters")
                 ColumnLayout {
+                    RowLayout{
+                        Button{
+                            text: qsTr("加载")
+                            onClicked: {
+                                baseModuleManager.loadAACoreParameter()
+                            }
+                        }
+                    }
+
                     RowLayout {
                         Label {
                             text: qsTr("Selected Peak Profile: ")
@@ -93,6 +102,23 @@ ItemDelegate {
                             }
                             onEditingFinished: {
                                 aaCoreParams.setZpeak08Coefficient(text)
+                            }
+                        }
+                    }
+                    RowLayout {
+
+                        Label {
+                            text: qsTr("MInDev")
+                        }
+                        TextField {
+                            text: aaCoreParams.minDev
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setMinDev(text)
                             }
                         }
                         Label {

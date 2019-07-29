@@ -82,17 +82,17 @@ ItemDelegate {
                                     logicManager.performLocation(locationName)
                                 }
                             }
-                            Image{
-                                cache: false
-                                sourceSize.width: 100
-                                sourceSize.height: 100
-                                fillMode: Image.PreserveAspectFit
-                                source: {
-                                    console.log(prFileName)
-                                    var imageName = prFileName.replace(".avdata", "_resultImage.jpg")
-                                    return imageName
-                                }
-                            }
+//                            Image{
+//                                cache: false
+//                                sourceSize.width: 100
+//                                sourceSize.height: 100
+//                                fillMode: Image.PreserveAspectFit
+//                                source: {
+//                                    console.log(prFileName)
+//                                    var imageName = prFileName.replace(".avdata", "_resultImage.jpg")
+//                                    return imageName
+//                                }
+//                            }
                         }
                     }
                 }

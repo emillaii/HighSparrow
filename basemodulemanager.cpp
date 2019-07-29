@@ -89,7 +89,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&state_geter,&DeviceStatesGeter::sendGetDeviceState,this,&BaseModuleManager::deviceResp,Qt::DirectConnection);
 
     //Machine Map Initialization
-    machineMap = new GraphWidget;
+//    machineMap = new GraphWidget;
     //machineMap->show();
 }
 
@@ -166,8 +166,8 @@ void BaseModuleManager::tcpResp(QString message)
                 //todo 构建相应的模块对象//仅仅包含参数和状态、可以暂时用原来的类
                 if(temp_name.toString().contains("AA"))
                 {
-                    AACoreNew* tcp_aa = new AACoreNew();
-                    tcp_workers.insert(temp_name.toString(),tcp_aa);
+//                    AACoreNew* tcp_aa = new AACoreNew();
+//                    tcp_workers.insert(temp_name.toString(),tcp_aa);
                 }
                 else if(temp_name.toString().contains("SUT"))
                 {
@@ -453,11 +453,11 @@ void BaseModuleManager::showSettingDialog()
 
 void BaseModuleManager::showMachineMap()
 {
-    if (!machineMap->isHidden()) {
-        this->machineMap->close();
-    } else {
-        this->machineMap->show();
-    }
+//    if (!machineMap->isHidden()) {
+//        this->machineMap->close();
+//    } else {
+//        this->machineMap->show();
+//    }
 }
 
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)
@@ -488,6 +488,11 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
 void BaseModuleManager::performHandling(int cmd)
 {
     emit sendHandlingOperation(cmd);
+}
+
+void BaseModuleManager::loadAACoreParameter()
+{
+    aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
 }
 
 void BaseModuleManager::performHandlingOperation(int cmd)
@@ -1519,6 +1524,8 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
         qInfo("all motor seeked origin successed!");
         setHomeState(true);
         this->aa_head_module.moveToMushroomPosition(true);
+        if(ServerMode()!=0)
+            sensor_loader_module.performHandling(SensorLoaderModule::HandlePosition::SPA_STANDBY_POS);
         return  true;
     }
     return false;

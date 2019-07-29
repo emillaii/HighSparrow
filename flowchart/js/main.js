@@ -2,18 +2,18 @@ $(document).ready(function () {
 
   var data = {};
   var init_aa_params = {
-    mode: 1, start_pos: 0, stop_pos: 0,
+    mode: 1, start_pos: 0, stop_pos: 0, delay_in_ms: 0,
     offset_in_um: -40, delay_Z_in_ms: 200, step_size: 10,
     position_checking: 0, is_debug: 0, image_count: 7, enable_tilt: 0
   };
-  var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
-  var init_initial_tilt_params = { roll: 0, pitch: 0 };
+  var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 0, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
+  var init_initial_tilt_params = { roll: 0, pitch: 0, delay_in_ms: 0};
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
-  var init_y_level_params = { enable_plot: 1, delay_in_ms: 200 };
+  var init_y_level_params = { enable_plot: 1};
   var init_uv_params = {time_in_ms: 3000, enable_OTP: 0 };
-  var init_z_offset = { type: 0, z_offset_in_um: 0 };
-  var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0 };
-  var init_dispense_params = {enable_save_image:1,lighting:195, retry: 0, delay_in_ms: 0 };
+  var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
+  var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0, delay_in_ms: 0};
+  var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0 };
   var init_save_image = { type: 0, lighting: 100 };
   var init_grr_params ={ change_lens: 1, change_sensor: 0, repeat_time: 10,change_time: 11};
   var latestCreatedLinkId;
@@ -53,9 +53,11 @@ $(document).ready(function () {
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Position Checking: <select id=\"aa_position_checking\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Image Count: <input type=\"number\" id=\"aa_image_count\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px;\">Enable Tilt:  <select id=\"aa_enable_tilt\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"aa_delay_in_ms\"></div>");
 
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Roll: <input type=\"number\" id=\"roll\"></div>");
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Pitch: <input type=\"number\" id=\"pitch\"></div>");
+  $initial_tilt_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"initial_tilt_delay_in_ms\"></div>");
   
   $y_level_operator_properties.append("<div style=\"margin-top:20px;\">Enable Plot:  <select id=\"y_level_enable_plot\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
 
@@ -71,17 +73,19 @@ $(document).ready(function () {
   $oc_operator_properties.append("<div style=\"margin-top:20px\">X limit in um: <input type=\"number\" id=\"oc_x_limit_in_um\"></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Y limit in um: <input type=\"number\" id=\"oc_y_limit_in_um\"></div>");
   
-  $dispense_operator_properties.append("<div style=\"margin-top:20px\">Enable Save Image: <select id=\"dispense_enable_save_image\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
-  $dispense_operator_properties.append("<div style=\"margin-top:20px\">Lighting: <input type=\"number\" id=\"dispense_lighting\"></div>");
-  $dispense_operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"dispense_retry\"></div>");
+  $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT X Offset in um: <input type=\"number\" id=\"dispense_x_offset_in_um\"></div>");
+  $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT Y Offset in um: <input type=\"number\" id=\"dispense_y_offset_in_um\"></div>");
+  $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT Z Offset in um: <input type=\"number\" id=\"dispense_z_offset_in_um\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"dispense_delay_in_ms\"></div>");
-
+  
   $aa_z_offset_operator_properties.append("<div style=\"margin-top:20px\">Motion Type: <select id=\"aa_z_offset_type\"><option value=0>SUT Z</option><option value=1>AA Z</option></select></div>");
   $aa_z_offset_operator_properties.append("<div style=\"margin-top:20px\">Z Offset in um: <input type=\"number\" id=\"aa_z_offset_in_um\"></div>");
+  $aa_z_offset_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"aa_z_offset_delay_in_ms\"></div>");
 
   $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">Motion Type: <select id=\"aa_xy_offset_type\"><option value=0>SUT</option><option value=1>AA</option></select></div>");
   $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">X Offset in um: <input type=\"number\" id=\"aa_x_offset_in_um\"></div>");
   $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">Y Offset in um: <input type=\"number\" id=\"aa_y_offset_in_um\"></div>");
+  $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"aa_xy_offset_delay_in_ms\"></div>");
   
   $save_image_operator_properties.append("<div style=\"margin-top:20px\">Camera Type: <select id=\"save_image_type\"><option value=0>Downlook Camera</option><option value=1>Uplook Camera</option><option value=2>Pickarm Camera</option></select></div>");
   $save_image_operator_properties.append("<div style=\"margin-top:20px\">Lighting: <input type=\"number\" id=\"save_image_lighting\" value=100></div>");
@@ -93,7 +97,6 @@ $(document).ready(function () {
   
   $uv_operator_properties.append("<div style=\"margin-top:20px\">Enable OTP: <select id=\"uv_enable_OTP\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $uv_operator_properties.append("<div style=\"margin-top:20px\">UV time: <input type=\"number\" id=\"uv_time_in_ms\" value=3000></div>"); 
-
   // Apply the plugin on a standard, empty div...
   var $flowchart = $('#example_7');
   $mtf_table.hide();
@@ -131,11 +134,13 @@ $(document).ready(function () {
         $('#aa_is_debug').val(params["is_debug"]);
         $('#aa_image_count').val(params["image_count"]);
         $('#aa_enable_tilt').val(params["enable_tilt"]);
+        $('#aa_delay_in_ms').val(params["delay_in_ms"]);
       } else if (operatorId.includes("Initial Tilt")) {
         $initial_tilt_properties.show();
         $initial_tilt_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
         $('#roll').val(params["roll"]);
         $('#pitch').val(params['pitch']);
+        $('#initial_tilt_delay_in_ms').val(params['delay_in_ms']);
       } else if (operatorId.includes("Y_Level")) {
 		$y_level_operator_properties.show();
 		$y_level_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -145,12 +150,14 @@ $(document).ready(function () {
         $aa_z_offset_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
         $('#aa_z_offset_type').val(params["type"]);
         $('#aa_z_offset_in_um').val(params["z_offset_in_um"]);
+        $('#aa_z_offset_delay_in_ms').val(params["delay_in_ms"]);
       } else if (operatorId.includes("XY Offset")) {
         $aa_xy_offset_operator_properties.show();
         $aa_xy_offset_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
         $('#aa_xy_offset_type').val(params["type"]);
         $('#aa_x_offset_in_um').val(params["x_offset_in_um"]);
         $('#aa_y_offset_in_um').val(params["y_offset_in_um"]);
+        $('#aa_xy_offset_delay_in_ms').val(params["delay_in_ms"]);
       } else if (operatorId.includes("OC")) {
         $oc_operator_properties.show();
         $oc_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -171,10 +178,10 @@ $(document).ready(function () {
 	  } else if (operatorId.includes("Dispense")) {
 		$dispense_operator_properties.show();
 		$dispense_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
-		$('#dispense_enable_save_image').val(params["enable_save_image"]);
-		$('#dispense_lighting').val(params["lighting"]);
+        $('#dispense_x_offset_in_um').val(params["x_offset_in_um"]);
+        $('#dispense_y_offset_in_um').val(params["y_offset_in_um"]);
+        $('#dispense_z_offset_in_um').val(params["z_offset_in_um"]);
         $('#dispense_delay_in_ms').val(params["delay_in_ms"]);
-        $('#dispense_retry').val(params["retry"]);
 	  } else if (operatorId.includes("MTF")) {
 		$mtf_table.show();
 		console.log(params);
@@ -326,31 +333,98 @@ $(document).ready(function () {
     if (selectedOperatorId.includes("AA_")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_operatorTitle.val());
       var params = {
-        mode: Number($('#aa_mode').val()), start_pos: Number($('#aa_start_position').val()), stop_pos: Number($('#aa_stop_position').val()),
-        step_size: Number($('#aa_step_size').val()), offset_in_um: Number($('#aa_offset_in_um').val()), delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
+        mode: Number($('#aa_mode').val()),
+		start_pos: Number($('#aa_start_position').val()),
+		stop_pos: Number($('#aa_stop_position').val()),
+        step_size: Number($('#aa_step_size').val()), 
+		offset_in_um: Number($('#aa_offset_in_um').val()),
+		delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
         image_count: Number($('#aa_image_count').val()),
         enable_tilt: Number($('#aa_enable_tilt').val()),
-        position_checking: Number($('#aa_position_checking').val()), edge_filter: Number($('#aa_edge_filter').val()), is_debug: Number($('#aa_is_debug').val())
+        position_checking: Number($('#aa_position_checking').val()), 
+		edge_filter: Number($('#aa_edge_filter').val()), 
+		is_debug: Number($('#aa_is_debug').val()),
+		delay_in_ms: Number($('#aa_delay_in_ms').val())
       };
+
 	  $flowchart.flowchart('setOperatorParams', operatorId, params);
-    }else if (selectedOperatorId.includes("MTF")) {
+    } else if (selectedOperatorId.includes("Initial Tilt")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $initial_tilt_operatorTitle.val());
+      var params = { roll: Number($('#roll').val()),
+	  pitch: Number($('#pitch').val()),
+	  delay_in_ms:Number($('#initial_tilt_delay_in_ms'))
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+    } else if (selectedOperatorId.includes("OC")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $oc_operatorTitle.val());
+      var params = {
+        enable_motion: Number($('#oc_enable_motion').val()),
+        fast_mode: Number($('#oc_fast_mode').val()),
+		is_debug: Number($('#oc_is_debug').val()),
+        delay_in_ms: Number($('#oc_delay_in_ms').val()),
+		retry: Number($('#oc_retry').val()),
+		is_check: Number($('#oc_is_check').val()),
+		x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
+		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
+      };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+    } else if (selectedOperatorId.includes("Z Offset")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_z_offset_operator_title.val());
+      var params = { type: Number($('#aa_z_offset_type').val()),
+	  z_offset_in_um: Number($('#aa_z_offset_in_um').val()),
+	  delay_in_ms: Number($('#aa_z_offset_delay_in_ms').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+    } else if (selectedOperatorId.includes("XY Offset")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_xy_offset_operator_title.val());
+      var params = { type: Number($('#aa_xy_offset_type').val()),
+	  x_offset_in_um: Number($('#aa_x_offset_in_um').val()),
+	  y_offset_in_um: Number($('#aa_y_offset_in_um').val()),
+	  delay_in_ms: Number($('#aa_xy_offset_delay_in_ms').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+    } else if (selectedOperatorId.includes("Save Image")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $save_image_operator_title.val());
+      var params = { type: Number($('#save_image_type').val()),
+	  lighting: $('#save_image_lighting').val()
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+	} else if (selectedOperatorId.includes("Dispense")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $dispense_operator_title.val());
+      var params = {x_offset_in_um:  Number($('#dispense_x_offset_in_um').val()),
+	  y_offset_in_um:  Number($('#dispense_y_offset_in_um').val()),
+	  z_offset_in_um:  Number($('#dispense_z_offset_in_um').val()),
+	  delay_in_ms:  Number($('#dispense_delay_in_ms').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+	} else if (selectedOperatorId.includes("MTF")) {
 	  getTableData();
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#mtf_operator_title').val());
       var params = getTableData();
       $flowchart.flowchart('setOperatorParams', operatorId, params);
-	}else if (selectedOperatorId.includes("OC")) {
-      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $oc_operatorTitle.val());
-      var params = {
-        enable_motion: Number($('#oc_enable_motion').val()),
-        fast_mode: Number($('#oc_fast_mode').val()), debug: Number($('#oc_is_debug').val()),
-        delay_in_ms: Number($('#oc_delay_in_ms').val()), retry: Number($('#oc_retry').val()),
-		is_check: Number($('#oc_is_check').val()), x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
-		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
-      };
+	} else if (selectedOperatorId.includes("GRR")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#grr_operator_title').val());
+      var params = { change_lens: Number($('#grr_change_lens').val()),
+	  change_sensor: Number($('#grr_change_sensor').val()),
+	  repeat_time:  Number($('#grr_repeat_time').val()), 
+	  change_time:  Number($('#grr_change_time').val())};
       $flowchart.flowchart('setOperatorParams', operatorId, params);
-    } else {
+	} else if (selectedOperatorId.includes("Y_Level")){
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#y_level_operator_title').val());
+	  var params = { enable_plot: Number($('#y_level_enable_plot').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+	} else if (selectedOperatorId.includes("UV")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#uv_operator_title').val());
+	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
+	  enable_OTP:  Number($('#uv_enable_OTP').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+    }else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
-      var params = { retry: Number($('#basic_retry').val()), delay_in_ms: Number($('#basic_delay').val()) };
+      var params = { retry: Number($('#basic_retry').val()),
+	  delay_in_ms: Number($('#basic_delay').val())
+	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
     }
   }
@@ -608,43 +682,69 @@ $(document).ready(function () {
     if (selectedOperatorId.includes("AA_")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_operatorTitle.val());
       var params = {
-        mode: Number($('#aa_mode').val()), start_pos: Number($('#aa_start_position').val()), stop_pos: Number($('#aa_stop_position').val()),
-        step_size: Number($('#aa_step_size').val()), offset_in_um: Number($('#aa_offset_in_um').val()), delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
+        mode: Number($('#aa_mode').val()),
+		start_pos: Number($('#aa_start_position').val()),
+		stop_pos: Number($('#aa_stop_position').val()),
+        step_size: Number($('#aa_step_size').val()), 
+		offset_in_um: Number($('#aa_offset_in_um').val()),
+		delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
         image_count: Number($('#aa_image_count').val()),
         enable_tilt: Number($('#aa_enable_tilt').val()),
-        position_checking: Number($('#aa_position_checking').val()), edge_filter: Number($('#aa_edge_filter').val()), is_debug: Number($('#aa_is_debug').val())
+        position_checking: Number($('#aa_position_checking').val()), 
+		edge_filter: Number($('#aa_edge_filter').val()), 
+		is_debug: Number($('#aa_is_debug').val()),
+		delay_in_ms: Number($('#aa_delay_in_ms').val())
       };
 
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Initial Tilt")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $initial_tilt_operatorTitle.val());
-      var params = { roll: Number($('#roll').val()), pitch: Number($('#pitch').val()) };
+      var params = { roll: Number($('#roll').val()),
+	  pitch: Number($('#pitch').val()),
+	  delay_in_ms:Number($('#initial_tilt_delay_in_ms'))
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("OC")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $oc_operatorTitle.val());
       var params = {
         enable_motion: Number($('#oc_enable_motion').val()),
-        fast_mode: Number($('#oc_fast_mode').val()), debug: Number($('#oc_is_debug').val()),
-        delay_in_ms: Number($('#oc_delay_in_ms').val()), retry: Number($('#oc_retry').val()),
-		is_check: Number($('#oc_is_check').val()), x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
+        fast_mode: Number($('#oc_fast_mode').val()),
+		is_debug: Number($('#oc_is_debug').val()),
+        delay_in_ms: Number($('#oc_delay_in_ms').val()),
+		retry: Number($('#oc_retry').val()),
+		is_check: Number($('#oc_is_check').val()),
+		x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
 		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
       };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Z Offset")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_z_offset_operator_title.val());
-      var params = { type: Number($('#aa_z_offset_type').val()), z_offset_in_um: Number($('#aa_z_offset_in_um').val()) };
+      var params = { type: Number($('#aa_z_offset_type').val()),
+	  z_offset_in_um: Number($('#aa_z_offset_in_um').val()),
+	  delay_in_ms: Number($('#aa_z_offset_delay_in_ms').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("XY Offset")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_xy_offset_operator_title.val());
-      var params = { type: Number($('#aa_xy_offset_type').val()), x_offset_in_um: Number($('#aa_x_offset_in_um').val()), y_offset_in_um: Number($('#aa_y_offset_in_um').val()) };
+      var params = { type: Number($('#aa_xy_offset_type').val()),
+	  x_offset_in_um: Number($('#aa_x_offset_in_um').val()),
+	  y_offset_in_um: Number($('#aa_y_offset_in_um').val()),
+	  delay_in_ms: Number($('#aa_xy_offset_delay_in_ms').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Save Image")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $save_image_operator_title.val());
-      var params = { type: Number($('#save_image_type').val()), lighting: $('#save_image_lighting').val()};
+      var params = { type: Number($('#save_image_type').val()),
+	  lighting: $('#save_image_lighting').val()
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Dispense")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $dispense_operator_title.val());
-      var params = { enable_save_image: Number($('#dispense_enable_save_image').val()), lighting:  Number($('#dispense_lighting').val()), retry:  Number($('#dispense_retry').val()), delay_in_ms:  Number($('#dispense_delay_in_ms').val())};
+      var params = {x_offset_in_um:  Number($('#dispense_x_offset_in_um').val()),
+	  y_offset_in_um:  Number($('#dispense_y_offset_in_um').val()),
+	  z_offset_in_um:  Number($('#dispense_z_offset_in_um').val()),
+	  delay_in_ms:  Number($('#dispense_delay_in_ms').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("MTF")) {
 	  getTableData();
@@ -653,19 +753,27 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("GRR")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#grr_operator_title').val());
-      var params = { change_lens: Number($('#grr_change_lens').val()), change_sensor: Number($('#grr_change_sensor').val()), repeat_time:  Number($('#grr_repeat_time').val()), change_time:  Number($('#grr_change_time').val())};
+      var params = { change_lens: Number($('#grr_change_lens').val()),
+	  change_sensor: Number($('#grr_change_sensor').val()),
+	  repeat_time:  Number($('#grr_repeat_time').val()), 
+	  change_time:  Number($('#grr_change_time').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Y_Level")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#y_level_operator_title').val());
-	  var params = { enable_plot: Number($('#y_level_enable_plot').val())};
+	  var params = { enable_plot: Number($('#y_level_enable_plot').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("UV")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#uv_operator_title').val());
-	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()), enable_OTP:  Number($('#uv_enable_OTP').val()) };
+	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
+	  enable_OTP:  Number($('#uv_enable_OTP').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     }else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
-      var params = { retry: Number($('#basic_retry').val()), delay_in_ms: Number($('#basic_delay').val()) };
+      var params = { retry: Number($('#basic_retry').val()),
+	  delay_in_ms: Number($('#basic_delay').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     }
     alert(selectedOperatorId + " Params is updated");
@@ -758,12 +866,12 @@ $(document).ready(function () {
   $('#create_aa_unload_lens').click(function () { addMultipleOperationWidget("AA Unload Lens"); });
   $('#create_aa_unload_camera').click(function () { addMultipleOperationWidget("AA Unload Camera"); });
   $('#create_aa').click(function () { addOperationWidget("AA"); });
-  $('#create_oc').click(function () { addOperationWidget("OC"); });
+  $('#create_oc').click(function () { addMultipleOperationWidget("OC"); });
   $('#create_mtf').click(function () { addMultipleOperationWidget("MTF"); });
   $('#create_z_offset').click(function () { addOperationWidget("Z Offset"); });
   $('#create_xy_offset').click(function () { addOperationWidget("XY Offset"); });
   $('#create_save_image').click(function () { addOperationWidget("Save Image"); });
-  $('#create_disp').click(function () { addOperationWidget("Dispense"); });
+  $('#create_disp').click(function () { addMultipleOperationWidget("Dispense"); });
   $('#create_uv').click(function () { addMultipleOperationWidget("UV"); });
   $('#create_delay').click(function () { addOperationWidget("Delay"); });
   $('#create_accept').click(function () { addEndWidget("Accept"); });
@@ -816,43 +924,69 @@ $(document).ready(function () {
     if (selectedOperatorId.includes("AA_")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_operatorTitle.val());
       var params = {
-        mode: Number($('#aa_mode').val()), start_pos: Number($('#aa_start_position').val()), stop_pos: Number($('#aa_stop_position').val()),
-        step_size: Number($('#aa_step_size').val()), offset_in_um: Number($('#aa_offset_in_um').val()), delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
+        mode: Number($('#aa_mode').val()),
+		start_pos: Number($('#aa_start_position').val()),
+		stop_pos: Number($('#aa_stop_position').val()),
+        step_size: Number($('#aa_step_size').val()), 
+		offset_in_um: Number($('#aa_offset_in_um').val()),
+		delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
         image_count: Number($('#aa_image_count').val()),
         enable_tilt: Number($('#aa_enable_tilt').val()),
-        position_checking: Number($('#aa_position_checking').val()), edge_filter: Number($('#aa_edge_filter').val()), is_debug: Number($('#aa_is_debug').val())
+        position_checking: Number($('#aa_position_checking').val()), 
+		edge_filter: Number($('#aa_edge_filter').val()), 
+		is_debug: Number($('#aa_is_debug').val()),
+		delay_in_ms: Number($('#aa_delay_in_ms').val())
       };
 
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Initial Tilt")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $initial_tilt_operatorTitle.val());
-      var params = { roll: Number($('#roll').val()), pitch: Number($('#pitch').val()) };
+      var params = { roll: Number($('#roll').val()),
+	  pitch: Number($('#pitch').val()),
+	  delay_in_ms:Number($('#initial_tilt_delay_in_ms'))
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("OC")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $oc_operatorTitle.val());
       var params = {
         enable_motion: Number($('#oc_enable_motion').val()),
-        fast_mode: Number($('#oc_fast_mode').val()), debug: Number($('#oc_is_debug').val()),
-        delay_in_ms: Number($('#oc_delay_in_ms').val()), retry: Number($('#oc_retry').val()),
-		is_check: Number($('#oc_is_check').val()), x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
+        fast_mode: Number($('#oc_fast_mode').val()),
+		is_debug: Number($('#oc_is_debug').val()),
+        delay_in_ms: Number($('#oc_delay_in_ms').val()),
+		retry: Number($('#oc_retry').val()),
+		is_check: Number($('#oc_is_check').val()),
+		x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
 		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
       };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Z Offset")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_z_offset_operator_title.val());
-      var params = { type: Number($('#aa_z_offset_type').val()), z_offset_in_um: Number($('#aa_z_offset_in_um').val()) };
+      var params = { type: Number($('#aa_z_offset_type').val()),
+	  z_offset_in_um: Number($('#aa_z_offset_in_um').val()),
+	  delay_in_ms: Number($('#aa_z_offset_delay_in_ms').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("XY Offset")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_xy_offset_operator_title.val());
-      var params = { type: Number($('#aa_xy_offset_type').val()), x_offset_in_um: Number($('#aa_x_offset_in_um').val()), y_offset_in_um: Number($('#aa_y_offset_in_um').val()) };
+      var params = { type: Number($('#aa_xy_offset_type').val()),
+	  x_offset_in_um: Number($('#aa_x_offset_in_um').val()),
+	  y_offset_in_um: Number($('#aa_y_offset_in_um').val()),
+	  delay_in_ms: Number($('#aa_xy_offset_delay_in_ms').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Save Image")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $save_image_operator_title.val());
-      var params = { type: Number($('#save_image_type').val()), lighting: $('#save_image_lighting').val()};
+      var params = { type: Number($('#save_image_type').val()),
+	  lighting: $('#save_image_lighting').val()
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Dispense")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $dispense_operator_title.val());
-      var params = { enable_save_image: Number($('#dispense_enable_save_image').val()), lighting:  Number($('#dispense_lighting').val()), retry:  Number($('#dispense_retry').val()), delay_in_ms:  Number($('#dispense_delay_in_ms').val())};
+      var params = {x_offset_in_um:  Number($('#dispense_x_offset_in_um').val()),
+	  y_offset_in_um:  Number($('#dispense_y_offset_in_um').val()),
+	  z_offset_in_um:  Number($('#dispense_z_offset_in_um').val()),
+	  delay_in_ms:  Number($('#dispense_delay_in_ms').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("MTF")) {
 	  getTableData();
@@ -860,24 +994,28 @@ $(document).ready(function () {
       var params = getTableData();
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("GRR")) {
-	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $grr_operator_title.val());
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#grr_operator_title').val());
       var params = { change_lens: Number($('#grr_change_lens').val()),
-		change_sensor: Number($('#grr_change_sensor').val()),
-        repeat_time: Number($('#grr_repeat_time').val()),
-        change_time: Number($('#grr_change_time').val()) };
+	  change_sensor: Number($('#grr_change_sensor').val()),
+	  repeat_time:  Number($('#grr_repeat_time').val()), 
+	  change_time:  Number($('#grr_change_time').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-	} else if (selectedOperatorId.includes("Y_Level")) {
-      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $y_level_operator_title.val());
-      var params = { enable_plot: Number($('#y_level_enable_plot').val())};
+	} else if (selectedOperatorId.includes("Y_Level")){
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#y_level_operator_title').val());
+	  var params = { enable_plot: Number($('#y_level_enable_plot').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-    } else if (selectedOperatorId.includes("UV")) {
-      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $uv_operator_title.val());
-      var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
-        enable_OTP: Number($('#uv_enable_OTP').val())};
+	} else if (selectedOperatorId.includes("UV")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#uv_operator_title').val());
+	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
+	  enable_OTP:  Number($('#uv_enable_OTP').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     }else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
-      var params = { retry: Number($('#basic_retry').val()), delay_in_ms: Number($('#basic_delay').val()) };
+      var params = { retry: Number($('#basic_retry').val()),
+	  delay_in_ms: Number($('#basic_delay').val())
+	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     }
     alert(selectedOperatorId + " Params is updated");

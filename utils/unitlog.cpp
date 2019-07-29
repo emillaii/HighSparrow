@@ -33,7 +33,7 @@ bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap map)
     QVariantMap testMap;
     if (unit_log_list.contains(uuid))
     {
-        qInfo("get data name: %s uuid:%s",test_name.toStdString().c_str(),uuid.toStdString().c_str());
+//        qInfo("get data name: %s uuid:%s",test_name.toStdString().c_str(),uuid.toStdString().c_str());
         int index = 1;
         for (QString s : unit_log_test_name_list[uuid]) {
             QString name = test_name;
@@ -47,7 +47,7 @@ bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap map)
         testMap.insert(name, map);
         unit_log_list[uuid].insert(test_name, map);
         unit_log_test_name_list[uuid].push_back(test_name.append("_").append(QString::number(index)));
-        qInfo("Push data to unit: %s", uuid.toStdString().c_str());
+//        qInfo("Push data to unit: %s", uuid.toStdString().c_str());
 
         QString temp_header;
         foreach (QString temp_key, map.keys()) {
@@ -63,6 +63,7 @@ bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap map)
 
 void Unitlog::clearHeaders()
 {
+    headers_length = 0;
     headers.clear();
 }
 
@@ -79,7 +80,7 @@ bool Unitlog::postDataToELK(QString uuid)
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));
          //json log
-         qInfo(doc.toJson().toStdString().c_str());
+//         qInfo(doc.toJson().toStdString().c_str());
          QString filename = "";
          filename.append(getUnitLogDir())
                          .append(getCurrentTimeString())
@@ -137,7 +138,7 @@ bool Unitlog::postUnitDataToCSV(QString uuid)
         file.write(content.toStdString().c_str());
         file.close();
     }
-    else if(headers_length != headers.length())
+    else if(headers_length < headers.length())
     {
         headers_length = headers.length();
         foreach (QString temp_name, headers)
@@ -178,11 +179,13 @@ bool Unitlog::postUnitDataToCSV(QString uuid)
         file.setFileName(file_name.append("_temp.csv"));
         result = file.open(QIODevice::Append | QIODevice::Text);
     }
-
     foreach (QString temp_header, headers) {
         QStringList temp_names = temp_header.split(".");
-        QVariantMap temp_data = data_map[temp_names[0]].toMap();
-        content.append(temp_data[temp_names[1]].toString());
+        if(data_map.contains(temp_names[0]))
+        {
+            QVariantMap temp_data = data_map[temp_names[0]].toMap();
+            content.append(temp_data[temp_names[1]].toString());
+        }
         content.append(",");
     }
 //    foreach (QString temp_key, data_map.keys())

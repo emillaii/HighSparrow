@@ -218,8 +218,9 @@ bool MaterialCarrier::ZSerchByForce(const double speed,const double force,const 
 
 bool MaterialCarrier::ZSerchReturn()
 {
-    bool result = motor_z->DoSoftLandingReturn();
-    result &= motor_z->WaitSoftLandingDone();
+    bool result = motor_z->resetSoftLanding();
+//    bool result = motor_z->DoSoftLandingReturn();
+//    result &= motor_z->WaitSoftLandingDone();
     return result;
 }
 

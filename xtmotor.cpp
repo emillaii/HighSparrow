@@ -369,6 +369,8 @@ void XtMotor::Home(int thread)
 bool XtMotor::MoveToPos(double pos,int thread)
 {
     if(is_debug) return true;
+    if(parameters.firstCheckArrived()&&fabs(pos - GetFeedbackPos())<parameters.positionError())
+            return true;
     if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
     if(thread==-1)
         thread = default_using_thread;
@@ -447,23 +449,22 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
 {
     if(is_debug)return true;
     if(!(checkState()))return false;
-    if(fabs(GetFeedbackPos() - target_position) < parameters.positionError())return true;
-    while (timeout>0) {
-
-        if(fabs(GetFeedbackPos() - target_position) < parameters.positionError())
+    int current = 0;
+    while (fabs(GetFeedbackPos() - target_position) > parameters.positionError()) {
+        if(current > timeout)
         {
-            if(parameters.useDelay())
-                Sleep(parameters.arrivedDelay());
-            return true;
+            qInfo("%s wait target_position:%f time out, current_position:%f",name.toStdString().c_str(),target_position,GetFeedbackPos());
+            current_target = GetFeedbackPos();
+            return false;
         }
         Sleep(10);
-        timeout-=10;
-
+        current+=10;
     }
-    qInfo("wait target_position:%f time out, current_position:%f",target_position,GetFeedbackPos());
-
+//    qInfo("%s arrived %f time %d",name.toStdString().c_str(),target_position,current);
+    if(parameters.useDelay())
+        Sleep(parameters.arrivedDelay());
     current_target = GetFeedbackPos();
-    return false;
+    return true;
 }
 
 bool XtMotor::WaitArrivedTargetPos(int timeout)
@@ -474,25 +475,30 @@ bool XtMotor::WaitArrivedTargetPos(int timeout)
 
 bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
 {
-    if(is_debug)return true;
-    if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
-    double currPos = GetFeedbackPos();
-    double targetPos = pos;
-    MoveToPos(pos,thread);
-    int count = time_out;
-    while ( fabs(currPos - targetPos) >= parameters.positionError())
+//    if(is_debug)return true;
+//    if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
+//    double currPos = GetFeedbackPos();
+//    double targetPos = pos;
+    if(!MoveToPos(pos,thread))
     {
-        Sleep(10);
-        currPos = GetFeedbackPos();
-        count-=10;
-        if (count < 1) {
-            qInfo("Motion Timeout.target pos:%f current pos:%f",pos,currPos);
-            current_target = currPos;
-            return false;
-        }
+        qInfo("%s move to pos %f fail",name.toStdString().c_str(),pos);
+        return false;
     }
-    current_target = currPos;
-    return true;
+    return  WaitArrivedTargetPos(pos,time_out);
+//    int count = time_out;
+//    while ( fabs(currPos - targetPos) >= parameters.positionError())
+//    {
+//        Sleep(10);
+//        currPos = GetFeedbackPos();
+//        count-=10;
+//        if (count < 1) {
+//            qInfo("%s Motion Timeout.target pos:%f current pos:%f",name.toStdString().c_str(),pos,currPos);
+//            current_target = currPos;
+//            return false;
+//        }
+//    }
+//    current_target = currPos;
+//    return true;
 }
 
 bool XtMotor::MoveToMinPosSync(int time_out)

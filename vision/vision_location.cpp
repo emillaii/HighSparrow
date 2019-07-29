@@ -25,7 +25,7 @@ void VisionLocation::saveParam()
 bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
 {
     offset.ReSet();
-    current_offset.ReSet();
+    current_result.ReSet();
     PRResultStruct pr_result;
     QThread::msleep(parameters.waitImageDelay());
     ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
@@ -46,35 +46,35 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
         }
         if(mapping->CalcMechDistance(QPointF(pr_result.x,pr_result.y),mech)&&mapping->CalcMechDistance(QPointF(pr_result.ori_x,pr_result.ori_y),mech_o))
         {
-           temp_offset.X = mech_o.x();
-           temp_offset.Y = mech_o.y();
-           temp_offset.O_X = mech.x() - mech_o.x();
-           temp_offset.O_Y = mech.y() - mech_o.y();
+            temp_offset.X = mech_o.x();
+            temp_offset.Y = mech_o.y();
+            temp_offset.O_X = mech.x() - mech_o.x();
+            temp_offset.O_Y = mech.y() - mech_o.y();
             if(abs(temp_offset.X)>parameters.maximumLength()||abs(temp_offset.Y)>parameters.maximumLength()||abs(temp_offset.O_X)>parameters.maximumOffset()||abs(temp_offset.O_Y)>parameters.maximumOffset())
             {
                 qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8" pr result too big"));
                 return false;
             }
-           if(abs(pr_result.theta) < parameters.maximunAngle())
-               temp_offset.Theta = pr_result.theta;
-           else if(abs(pr_result.theta - 90) < parameters.maximunAngle())
-               temp_offset.Theta = pr_result.theta - 90;
-           else if(abs(pr_result.theta - 180) < parameters.maximunAngle())
-               temp_offset.Theta = pr_result.theta - 180;
-           else if(abs(pr_result.theta - 270) < parameters.maximunAngle())
-               temp_offset.Theta = pr_result.theta -270;
-           else if(abs(pr_result.theta - 360) < parameters.maximunAngle())
-               temp_offset.Theta = pr_result.theta -360;
-           else
-           {
-               qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
-               AppendError(QString(u8"theta result too big"));
-               return false;
-           }
-            current_offset = offset = temp_offset;
-           qInfo("mech: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
-           return true;
+            if(abs(pr_result.theta) < parameters.maximunAngle())
+                temp_offset.Theta = pr_result.theta;
+            else if(abs(pr_result.theta - 90) < parameters.maximunAngle())
+                temp_offset.Theta = pr_result.theta - 90;
+            else if(abs(pr_result.theta - 180) < parameters.maximunAngle())
+                temp_offset.Theta = pr_result.theta - 180;
+            else if(abs(pr_result.theta - 270) < parameters.maximunAngle())
+                temp_offset.Theta = pr_result.theta -270;
+            else if(abs(pr_result.theta - 360) < parameters.maximunAngle())
+                temp_offset.Theta = pr_result.theta -360;
+            else
+            {
+                qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
+                AppendError(QString(u8"theta result too big"));
+                return false;
+            }
+            current_result = offset = temp_offset;
+            qInfo("mech: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
+            return true;
         } else {
             qInfo("CalcMechDistance Fail");
         }
@@ -88,50 +88,57 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
 
 bool VisionLocation::performPR()
 {
-    current_offset.ReSet();
+    PRResultStruct current_pixel_result;
+    current_result.ReSet();
     PrOffset offset;
-    PRResultStruct pr_result;
     QThread::msleep(parameters.waitImageDelay());
-    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
-    last_image_name = pr_result.imageName;
+    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), current_pixel_result, parameters.objectScore());
+    last_image_name = current_pixel_result.imageName;
     if(ErrorCode::OK == temp.code)
     {
         QPointF mech;
-        qInfo("Perform PR Success. PR_Result: %f %f %f", pr_result.x, pr_result.y, pr_result.theta);
-        if(mapping->CalcMechDistance(QPointF(pr_result.x,pr_result.y),mech))
+        QPointF mech_o;
+        PrOffset temp_offset;
+        qInfo("Perform PR Success. PR_Result: %f %f %f %f %f", current_pixel_result.x, current_pixel_result.y, current_pixel_result.theta,current_pixel_result.ori_x,current_pixel_result.ori_y);
+        if(mapping->CalcMechDistance(QPointF(current_pixel_result.x,current_pixel_result.y),mech)&&mapping->CalcMechDistance(QPointF(current_pixel_result.ori_x,current_pixel_result.ori_y),mech_o))
         {
-           offset.X = mech.x();
-           offset.Y = mech.y();
-            if(fabs(offset.X)>parameters.maximumLength()||fabs(offset.Y)>parameters.maximumLength())
+            temp_offset.X = mech.x();
+            temp_offset.Y = mech.y();
+            temp_offset.O_X = mech_o.x();
+            temp_offset.O_Y = mech_o.y();
+            if(abs(temp_offset.X)>parameters.maximumLength()||abs(temp_offset.Y)>parameters.maximumLength()||abs(temp_offset.O_X)>parameters.maximumOffset()||abs(temp_offset.O_Y)>parameters.maximumOffset())
             {
+                qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8" pr result too big"));
-                qInfo("pr result too big: %f %f %f", offset.X, offset.Y, offset.Theta);
                 return false;
             }
-           if(fabs(pr_result.theta) < parameters.maximunAngle())
-               offset.Theta = pr_result.theta;
-           else if(fabs(pr_result.theta - 90) < parameters.maximunAngle())
-               offset.Theta = pr_result.theta - 90;
-           else if(fabs(pr_result.theta - 180) < parameters.maximunAngle())
-               offset.Theta = pr_result.theta - 180;
-           else if(fabs(pr_result.theta - 270) < parameters.maximunAngle())
-               offset.Theta = pr_result.theta -270;
-           else if(fabs(pr_result.theta - 360) < parameters.maximunAngle())
-               offset.Theta = pr_result.theta -360;
-           else
-           {
-               AppendError(QString(u8"theta result too big"));
-               qInfo("theta result too big: %f %f %f", offset.X, offset.Y, offset.Theta);
-               return false;
-           }
-           current_offset = offset;
-           qInfo("mech: %f %f %f", offset.X, offset.Y, offset.Theta);
-           return true;
+            if(abs(current_pixel_result.theta) < parameters.maximunAngle())
+                temp_offset.Theta = current_pixel_result.theta;
+            else if(abs(current_pixel_result.theta - 90) < parameters.maximunAngle())
+                temp_offset.Theta = current_pixel_result.theta - 90;
+            else if(abs(current_pixel_result.theta - 180) < parameters.maximunAngle())
+                temp_offset.Theta = current_pixel_result.theta - 180;
+            else if(abs(current_pixel_result.theta - 270) < parameters.maximunAngle())
+                temp_offset.Theta = current_pixel_result.theta -270;
+            else if(abs(current_pixel_result.theta - 360) < parameters.maximunAngle())
+                temp_offset.Theta = current_pixel_result.theta -360;
+            else
+            {
+                qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
+                AppendError(QString(u8"theta result too big"));
+                return false;
+            }
+            current_result = offset = temp_offset;
+            qInfo("mech: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
+            return true;
         } else {
             qInfo("CalcMechDistance Fail");
         }
     }
-    AppendError(QString(u8"Perform PR Fail"));
+    else {
+        qInfo("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
+    }
+    AppendError(QString(u8"Perform PR (%1) Fail").arg(parameters.cameraName()));
     return false;
 }
 
@@ -146,9 +153,24 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
     return  ErrorCode::OK == temp.code;
 }
 
+PrOffset VisionLocation::getCurrentResult()
+{
+    return current_result;
+}
+
+QPointF VisionLocation::getCurrentResultOffset()
+{
+    return QPointF(current_result.X - current_result.O_X,current_result.Y - current_result.O_Y);
+}
+
+PRResultStruct VisionLocation::getCurrentPixelResult()
+{
+    return current_pixel_result;
+}
+
 QPointF VisionLocation::getCurrentOffset()
 {
-    return QPointF(current_offset.X,current_offset.Y);
+    return QPointF(current_result.X,current_result.Y);
 }
 
 void VisionLocation::OpenLight()

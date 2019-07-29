@@ -55,6 +55,8 @@ bool WordopLight::ReInit(const QString &com_port) {
 
 bool WordopLight::setBrightness(int ch, uint8_t brightness)
 {
+    if(now_brightness[ch] == brightness)
+        return true;
     if(QThread::currentThreadId()==creator_tid)
     {
         change_result = false;

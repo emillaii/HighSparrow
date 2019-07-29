@@ -28,7 +28,7 @@ bool SutClient::sendSensorRequest(bool &is_run,int material_type)
     {
         if(!is_run)
             return false;
-        QThread::msleep(1000);
+        QThread::msleep(10);
     }
     return !be_comuniting;
 }

@@ -42,7 +42,8 @@ public:
         INIT_CAMERA = 6,
         Y_LEVEL = 7,
         UV = 8,
-        OTP = 9
+        OTP = 9,
+        UNLOAD_CAMERA = 10,
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
@@ -51,17 +52,17 @@ public:
     void performAAOffline();
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
-    ErrorCodeStruct performInitSensor(bool check_map = false);
+    ErrorCodeStruct performInitSensor(int finish_delay = 0,bool check_map = false);
     ErrorCodeStruct performPRToBond(int finish_delay);
-    ErrorCodeStruct performLoadMaterial();
+    ErrorCodeStruct performLoadMaterial(int finish_delay);
     ErrorCodeStruct performAA(QJsonValue params);
-    ErrorCodeStruct performOC(bool enableMotion, bool fastMode);
+    ErrorCodeStruct performOC(QJsonValue params);
     ErrorCodeStruct performMTF(QJsonValue params);
     ErrorCodeStruct performMTFOffline(QJsonValue params);
-    ErrorCodeStruct performZOffset(double zOffset);
-    ErrorCodeStruct performXYOffset(double xOffset, double yOffset);
+    ErrorCodeStruct performZOffset(QJsonValue params);
+    ErrorCodeStruct performXYOffset(QJsonValue params);
     ErrorCodeStruct performDelay(int);
-    ErrorCodeStruct performCameraUnload();
+    ErrorCodeStruct performCameraUnload(int finish_delay);
     ErrorCodeStruct performUV(QJsonValue params);
     ErrorCodeStruct performReject();
     ErrorCodeStruct performAccept();
@@ -71,14 +72,14 @@ public:
     ErrorCodeStruct performOTP(QJsonValue params);
     ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
 
-    static bool AACoreNew::performThreadTest(vector<QString> testList, QJsonValue params);
+    static bool performThreadTest(vector<QString> testList, QJsonValue params);
     bool blackScreenCheck(cv::Mat inImage);
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
     bool runFlowchartTest();
     ErrorCodeStruct performTest(QString testItemName, QJsonValue properties);
-    ErrorCodeStruct performDispense();
+    ErrorCodeStruct performDispense(QJsonValue params);
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     AAData aaData_1;  // For Display Channel 1
@@ -145,7 +146,7 @@ private:
     QString handlingParams = "";
     double mtf_oc_x = 0;
     double mtf_oc_y = 0;
-
+    int current_dispense = 0;
 
     QVariantMap sfrFitCurve_Advance(int resize_factor, double start_pos);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,

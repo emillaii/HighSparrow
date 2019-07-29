@@ -17,7 +17,6 @@
 #include <QtConcurrent/QtConcurrent>
 #define PI  3.14159265
 #include <math.h>
-
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY) {
     size_t n = x.size();
 
@@ -286,6 +285,8 @@ void AACoreNew::SetProduct()
     has_ng_sensor = false;
     has_product = true;
     has_ng_product = false;
+    has_lens = false;
+    has_ng_lens = false;
 }
 
 double AACoreNew::getDev(int count,double numbers,...)
@@ -337,6 +338,7 @@ double AACoreNew::get_Dev(int count,double numbers,...)
 
 void AACoreNew::startWork( int run_mode)
 {
+    emit clearHeaders();
     if (run_mode == RunMode::Normal) run(true);
     else if (run_mode == RunMode::NoMaterial) {
         run(false);
@@ -395,7 +397,13 @@ void AACoreNew::performHandlingOperation(int cmd)
     if (cmd == HandleTest::Dispense)
     {
         sut->DownlookPrDone = false;
-        performDispense();
+        bool enable = parameters.enableCheckDispense();
+        int check_count = parameters.checkDispenseCount();
+        parameters.setEnableCheckDispense(true);
+        parameters.setCheckDispenseCount(1);
+        performDispense(params);
+        parameters.setEnableCheckDispense(enable);
+        parameters.setCheckDispenseCount(check_count);
     }
     else if (cmd == HandleTest::PR_To_Bond)
     {
@@ -408,14 +416,15 @@ void AACoreNew::performHandlingOperation(int cmd)
         //performMTFOffline(params);
     }
     else if (cmd == HandleTest::OC) {
-        performOC(true, false);
+        performOC(params);
     }
     else if (cmd == HandleTest::AA) {
         performAA(params);
         //performAAOffline();
     }
     else if (cmd == HandleTest::INIT_CAMERA) {
-        performInitSensor(true);
+        SetSensor();
+        performInitSensor(0,true);
     }
     else if (cmd == HandleTest::Y_LEVEL) {
         performYLevelTest(params);
@@ -425,6 +434,10 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::OTP) {
         performOTP(params);
+    }
+    else if (cmd == HandleTest::UNLOAD_CAMERA) {
+        int finish_delay = params["delay_in_ms"].toInt(0);
+        performCameraUnload(finish_delay);
     }
     handlingParams = "";
     emit postDataToELK(this->runningUnit);
@@ -451,11 +464,11 @@ void AACoreNew::resetLogic()
     current_mtf_ng_time = 0;
     grr_repeat_time = 0;
     grr_change_time = 0;
+    current_dispense = 0;
 }
 
 bool AACoreNew::runFlowchartTest()
 {
-    emit clearHeaders();
     qInfo("aaAutoTest Started");
     QVariantMap jsonMap = flowchartDocument.object().toVariantMap();
     QJsonObject links = jsonMap["links"].toJsonObject();
@@ -618,57 +631,56 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             qInfo("Performing load camera");
         }
         else if (testItemName.contains(AA_PIECE_INIT_CAMERA)) {
-            qInfo("Performing init camera");
-            ret = performInitSensor(true);
+            int finish_delay = params["delay_in_ms"].toInt(0);
+            qInfo("Performing init camera :%d",finish_delay);
+            ret = performInitSensor(finish_delay);
             qInfo("End of init camera %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_PR_TO_BOND)) {
-            int finish_delay = params["delay_in_ms"].toInt();
+            int finish_delay = params["delay_in_ms"].toInt(0);
             qInfo("Performing PR To Bond :%d",finish_delay);
             ret = performPRToBond(finish_delay);
             qInfo("End of perform PR To Bond %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_INITIAL_TILT)) {
             qInfo("Performing Initial Tilt");
-            double initial_roll = params["roll"].toDouble();
-            double initial_pitch = params["pitch"].toDouble();
+            double initial_roll = params["roll"].toDouble(0);
+            double initial_pitch = params["pitch"].toDouble(0);
+            int finish_delay = params["delay_in_ms"].toInt(0);
             aa_head->stepInterpolation_AB_Sync(initial_roll, initial_pitch);
+            if(finish_delay>0)
+                Sleep(finish_delay);
             qInfo("End of perform initial tilt");
         }
         else if (testItemName.contains(AA_PIECE_Z_OFFSET)) {
             qInfo("Performing Z Offset");
-            double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
-            z_offset_in_um /= 1000;
-            performZOffset(z_offset_in_um);
+            performZOffset(params);
             qInfo("End of perform z offset");
         }
         else if (testItemName.contains(AA_PIECE_XY_OFFSET)) {
             qInfo("Performing XY Offset");
-            double x_offset_in_um = params["x_offset_in_um"].toDouble(0);
-            double y_offset_in_um = params["y_offset_in_um"].toDouble(0);
-            x_offset_in_um /= 1000;
-            y_offset_in_um /= 1000;
-            performXYOffset(x_offset_in_um, y_offset_in_um);
+            performXYOffset(params);
             qInfo("End of perform xy offset");
         }
         else if (testItemName.contains(AA_PIECE_LOAD_MATERIAL)) {
-            qInfo("Performing Load Material");
-            ret = performLoadMaterial();
+            int finish_delay = params["delay_in_ms"].toInt(0);
+            qInfo("Performing Load Material :%d",finish_delay);
+            ret = performLoadMaterial(finish_delay);
             qInfo("End of perform Load Material %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_UNLOAD_LENS)) {
             qInfo("Performing AA unload lens");
         }
         else if (testItemName.contains(AA_UNLOAD_CAMERA)) {
-            qInfo("AA Unload Camera");
-            ret = performCameraUnload();
+
+            int finish_delay = params["delay_in_ms"].toInt(0);
+            qInfo("AA Unload Camera delay %d",finish_delay);
+            ret = performCameraUnload(finish_delay);
             qInfo("End of perform unload camera %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_OC)) {
-            bool enable_motion = params["enable_motion"].toInt();
-            bool fast_mode = params["fast_mode"].toInt();
-            qInfo("Performing OC enable_motion:%d fast_mode:%d",enable_motion,fast_mode);
-            ret = performOC(enable_motion, fast_mode);
+            qInfo("Performing OC %s",params.toString().toStdString().c_str());
+            ret = performOC(params);
             qInfo("End of perform OC %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_Y_LEVEL)) {
@@ -697,10 +709,8 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             qInfo("End of perform OTP %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_DISPENSE)) {
-            qInfo("Performing Dispense");
-            int enable_save_image = params["enable_save_image"].toInt();
-            int lighting = params["lighting"].toInt();
-            ret = performDispense();
+            qInfo("Performing Dispense",params.toString().toStdString().c_str());
+            ret = performDispense(params);
             qInfo("End of perform UV %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_DELAY)) {
@@ -765,10 +775,15 @@ bool AACoreNew::performThreadTest(vector<QString> testList, QJsonValue params)
             ret = that->performUV(params);
         } else if (testName.contains(AA_PIECE_PR_TO_BOND)) {
             int finish_delay = params["delay_in_ms"].toInt();
-            qInfo("Performing PR To Bond :%d",finish_delay);
+            qInfo("start performPRToBond :%d",finish_delay);
             ret = that->performPRToBond(finish_delay);
+            qInfo("End performPRToBond %s",ret.errorMessage.toStdString().c_str());
         } else if (testName.contains(AA_PIECE_INIT_CAMERA)) {
-            ret = that->performInitSensor(true);
+
+            int finish_delay = params["delay_in_ms"].toInt(0);
+            qInfo("Performing init camera :%d",finish_delay);
+            ret = that->performInitSensor(finish_delay);
+            qInfo("End performInitSensor %s",ret.errorMessage.toStdString().c_str());
         } else if (testName.contains(AA_PIECE_OTP)) {
             ret = that->performOTP(params);
         }
@@ -800,12 +815,13 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
     }
 }
 
-ErrorCodeStruct AACoreNew::performDispense()
+ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
 {
-    qInfo("Performing Dispense");
-    has_product = true;
-    has_lens = false;
-    has_sensor = false;
+    double x_offset_in_um = params["x_offset_in_um"].toDouble(0);
+    double y_offset_in_um = params["y_offset_in_um"].toDouble(0);
+    double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
+    int finish_delay = params["delay_in_ms"].toInt(0);
+    SetProduct();
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     sut->recordCurrentPos();
@@ -840,13 +856,22 @@ ErrorCodeStruct AACoreNew::performDispense()
                     .append("_")
                     .append(dk->readSensorID())
                     .append("_after_dispense.jpg");
-    sut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
-    //ToDo: return QImage from this function
-    QImage image(imageNameAfterDispense);
-    dispenseImageProvider->setImage(image);
-    emit callQmlRefeshImg(3);  //Emit dispense image to QML
-
-    if(!sut->movetoRecordPos()){NgProduct(); return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
+    current_dispense--;
+    if(parameters.enableCheckDispense())
+    {
+        if(current_dispense<=0)
+        {
+            current_dispense = parameters.checkDispenseCount();
+            sut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
+            //ToDo: return QImage from this function
+            QImage image(imageNameAfterDispense);
+            dispenseImageProvider->setImage(image);
+            emit callQmlRefeshImg(3);  //Emit dispense image to QML
+        }
+    }
+    if(!sut->movetoRecordPosAddOffset(x_offset_in_um/1000,y_offset_in_um/1000,z_offset_in_um/1000)){NgProduct(); return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
+    if(finish_delay>0)
+        Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
     qInfo("Finish Dispense");
@@ -871,6 +896,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     int position_checking = params["position_checking"].toInt();
 //    int is_debug = params["is_debug"].toInt();
     int is_debug = 0;
+    int finish_delay = params["delay_in_ms"].toInt();
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     qInfo("start : %f stop: %f enable_tilt: %d", start, stop, enableTilt);
     unsigned int zScanCount = 0;
@@ -901,16 +927,16 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            grab_time += grab_timer.elapsed();
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
-               map["Result"] = "AA Cannot grab image.";
+               NgSensor();
+               map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                emit pushDataToUnit(runningUnit, "AA", map);
-               LogicNg(current_aa_ng_time);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
-               LogicNg(current_aa_ng_time);
-               map["Result"] = "Detect black screen";
+               NgSensor();
+               map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
                emit pushDataToUnit(runningUnit, "AA", map);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
            }
            cv::Mat dst;
            cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
@@ -955,12 +981,16 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            }
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
-               LogicNg(current_aa_ng_time);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
+               map["Result"] = "AA Cannot grab image.";
+               emit pushDataToUnit(runningUnit, "AA", map);
+               NgSensor();
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
-               LogicNg(current_aa_ng_time);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+               NgSensor();
+               map["Result"] = "AA Detect black screen";
+               emit pushDataToUnit(runningUnit, "AA", map);
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
            }
            double dfov = calculateDFOV(img);
            if (dfov <= -1) {
@@ -989,16 +1019,16 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 grab_time += grab_timer.elapsed();
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
-                    LogicNg(current_aa_ng_time);
+                    NgSensor();
                     map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                     emit pushDataToUnit(runningUnit, "AA", map);
-                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
+                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
                 }
                 if (!blackScreenCheck(img)) {
-                    LogicNg(current_aa_ng_time);
+                    NgSensor();
                     map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
                     emit pushDataToUnit(runningUnit, "AA", map);
-                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
                 }
                 double realZ = sut->carrier->GetFeedBackPos().Z;
                 double dfov = calculateDFOV(img);
@@ -1051,16 +1081,16 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              grab_time += grab_timer.elapsed();
              if (!grabRet) {
                  qInfo("AA Cannot grab image.");
-                 LogicNg(current_aa_ng_time);
+                 NgSensor();
                  map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                  emit pushDataToUnit(runningUnit, "AA", map);
-                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
+                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
              }
              if (!blackScreenCheck(img)) {
-                 LogicNg(current_aa_ng_time);
+                 NgSensor();
                  map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
                  emit pushDataToUnit(runningUnit, "AA", map);
-                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
              }
              double realZ = sut->carrier->GetFeedBackPos().Z;
              double dfov = calculateDFOV(img);
@@ -1172,10 +1202,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     map.insert("FOV_SLOPE", fov_slope);
     map.insert("FOV_INTERCEPT", fov_intercept);
 //    map.insert("DEV", dev);
+    if(finish_delay>0)
+        Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "AA", map);
-
-//    qInfo("Finish AA");
     return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
 
@@ -2112,12 +2142,12 @@ ErrorCodeStruct AACoreNew::performTerminate()
 ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int repeat_time,int change_time)
 {
    qInfo("Perform GRR : %d %d %d %d", change_lens, change_sensor, repeat_time, change_time);
-   if(!change_lens) {
-       SetLens();
-   }
-   if(!change_sensor) {
-       SetSensor();
-   }
+//   if(!change_lens) {
+//       SetLens();
+//   }
+//   if(!change_sensor) {
+//       SetSensor();
+//   }
    if(grr_repeat_time >= repeat_time)
    {
        grr_repeat_time = 0;
@@ -2182,7 +2212,7 @@ bool AACoreNew::blackScreenCheck(cv::Mat inImage)
     bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile);
     if (ret) {
         qInfo("[blackScreenCheck] Checking intensity...min: %f max: %f", min_i, max_i);
-        if (max_i < 10) {
+        if ((max_i - min_i) < parameters.minIntensityDiff()) {
             qInfo("Detect black screen");
             return false;
         }
@@ -2193,8 +2223,11 @@ bool AACoreNew::blackScreenCheck(cv::Mat inImage)
     }
 }
 
-ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
+ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
 {
+    bool enable_motion = params["enable_motion"].toInt();
+    bool fast_mode = params["fast_mode"].toInt();
+    int finish_delay = params["delay_in_ms"].toInt();
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
     QVariantMap map;
     QElapsedTimer timer;
@@ -2202,11 +2235,17 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
     bool grabRet;
     cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
-        qInfo("AA Cannot grab image.");
-        //            NgLens();
-        //            NgSensor();
-        LogicNg(current_aa_ng_time);
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+        qInfo("OC Cannot grab image.");
+        map["Result"] = "OC Cannot grab image.";
+        emit pushDataToUnit(runningUnit, "OC", map);
+        NgSensor();
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "OC Cannot Grab Image"};
+    }
+    if (!blackScreenCheck(img)) {
+        NgSensor();
+        map["Result"] = "OC Detect black screen";
+        emit pushDataToUnit(runningUnit, "OC", map);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "OC Detect BlackScreen"};
     }
     QString imageName;
     imageName.append(getGrabberLogDir())
@@ -2229,6 +2268,9 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
 //            NgLens();
 //            NgSensor();
             LogicNg(current_oc_ng_time);
+            map.insert("result", "OC Cannot find enough pattern");
+            map.insert("timeElapsed", timer.elapsed());
+            emit pushDataToUnit(this->runningUnit, "OC", map);
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
         }
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
@@ -2243,6 +2285,9 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
 //            NgLens();
 //            NgSensor();
             LogicNg(current_oc_ng_time);
+            map.insert("result", "OC Cannot calculate OC");
+            map.insert("timeElapsed", timer.elapsed());
+            emit pushDataToUnit(this->runningUnit, "OC", map);
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
         }
         ocImageProvider_1->setImage(outImage);
@@ -2250,7 +2295,7 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
         offsetX = center.x() - img.cols/2;
         offsetY = center.y() - img.rows/2;
     }
-    if (enableMotion)
+    if (enable_motion)
     {
         QPointF x_ratio = chartCalibration->getOneXPxielDistance();
         qInfo("x pixel Ratio: %f %f ", x_ratio.x(), x_ratio.y());
@@ -2267,17 +2312,23 @@ ErrorCodeStruct AACoreNew::performOC(bool enableMotion, bool fastMode)
 //            NgSensor();
             LogicNg(current_oc_ng_time);
             qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
-            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
+            map.insert("result", "OC result too big");
+            map.insert("timeElapsed", timer.elapsed());
+            emit pushDataToUnit(this->runningUnit, "OC", map);
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC result too big" };
         }
         this->sut->stepMove_XY_Sync(-stepX, -stepY);
     }
+    if(finish_delay>0)
+        Sleep(finish_delay);
+    map.insert("result", "OK");
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "OC", map);
     qInfo("Finish OC");
     return ret;
 }
 
-ErrorCodeStruct AACoreNew::performInitSensor(bool check_map)
+ErrorCodeStruct AACoreNew::performInitSensor(int finish_delay,bool check_map)
 {
     if (dk->DothinkeyIsGrabbing()) {
         qInfo("Dothinkey is grabbing image already, init sensor pass");
@@ -2311,17 +2362,21 @@ ErrorCodeStruct AACoreNew::performInitSensor(bool check_map)
         cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
         if(!grabRet)
         {
-            map.insert("result", "Grab Image fail");
+            NgSensor();
+            map.insert("result", "InitSensor Grab Image fail");
             emit pushDataToUnit(runningUnit, "InitSensor", map);
-            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Grab Image fail"};
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "InitSensor Grab Image fail"};
         }
         if(!blackScreenCheck(img))
         {
-            map.insert("result", "Detect black screen");
+            NgSensor();
+            map.insert("result", "InitSensor Detect black screen");
             emit pushDataToUnit(runningUnit, "InitSensor", map);
-            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Detect black screen"};
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "InitSensor Detect black screen"};
         }
     }
+    if(finish_delay>0)
+        Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
     map.insert("result", "OK");
     emit pushDataToUnit(runningUnit, "InitSensor", map);
@@ -2349,17 +2404,19 @@ ErrorCodeStruct AACoreNew::performPRToBond(int finish_delay)
     qInfo("uplook_offset(%f,%f,%f)",aa_head->uplook_x,aa_head->uplook_y,aa_head->uplook_theta);
     qInfo("up_downlook_offset(%f,%f,%f)",sut->up_downlook_offset.X(),sut->up_downlook_offset.Y(),sut->up_downlook_offset.Theta());
     if (!this->aa_head->moveToSZ_XYSC_Z_Sync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
-    QThread::msleep(finish_delay);
+    if(finish_delay>0)
+        Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "PrToBond", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
-ErrorCodeStruct AACoreNew::performLoadMaterial()
+ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     ErrorCodeStruct result = ErrorCodeStruct {ErrorCode::OK, ""};
+    if (!this->sut->moveZToSaftyPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to saft Pos"};}
     if(aa_head->receive_sensor)
     {
         qInfo("has wait sensor suceess");
@@ -2402,10 +2459,9 @@ ErrorCodeStruct AACoreNew::performLoadMaterial()
 
     if((!has_lens)&&(!send_lens_request))
     {
-        this->sut->moveToZPos(0);
-        if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
-        qInfo("need lens has_ng_lens %d",has_ng_lens);
         this->lut->sendLensRequest(has_ng_lens);
+        qInfo("need lens has_ng_lens %d",has_ng_lens);
+        if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
         send_lens_request = true;
         if(has_sensor)
             if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
@@ -2444,6 +2500,8 @@ ErrorCodeStruct AACoreNew::performLoadMaterial()
             result.errorMessage.append("sensor request fail.");
         }
     }
+    if(finish_delay>0)
+        Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "AA_Load_Material", map);
     qInfo("Done Load Material");
@@ -2460,47 +2518,58 @@ ErrorCodeStruct AACoreNew::performDelay(int delay_in_ms)
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
-ErrorCodeStruct AACoreNew::performCameraUnload()
+ErrorCodeStruct AACoreNew::performCameraUnload(int finish_delay)
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     aa_head->openGripper();
+    if(finish_delay>0)
+        Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "Camera_Unload", map);
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
-ErrorCodeStruct AACoreNew::performZOffset(double zOffset)
+ErrorCodeStruct AACoreNew::performZOffset(QJsonValue params)
 {
+    double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
+    int finish_delay = params["delay_in_ms"].toInt(0);
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     double curr_z = sut->carrier->GetFeedBackPos().Z;
-    double target_z = sut->carrier->GetFeedBackPos().Z + zOffset;
+    double target_z = sut->carrier->GetFeedBackPos().Z + z_offset_in_um/1000;
     sut->moveToZPos(target_z);
     QThread::msleep(50);
     double final_z = sut->carrier->GetFeedBackPos().Z;
-    map.insert("zOffset", zOffset);
+    map.insert("z_offset_in_um", z_offset_in_um);
     map.insert("ori_z_pos", curr_z);
     map.insert("final_z_pos", final_z);
+    if(finish_delay>0)
+        Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "Z_Offset", map);
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
-ErrorCodeStruct AACoreNew::performXYOffset(double xOffset, double yOffset)
+ErrorCodeStruct AACoreNew::performXYOffset(QJsonValue params)
 {
+    double x_offset_in_um = params["x_offset_in_um"].toDouble(0);
+    double y_offset_in_um = params["y_offset_in_um"].toDouble(0);
+    int finish_delay = params["delay_in_ms"].toInt(0);
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     mPoint3D ori_pos = sut->carrier->GetFeedBackPos();
-    sut->stepMove_XY_Sync(xOffset, yOffset);
+    sut->stepMove_XY_Sync(x_offset_in_um/1000, y_offset_in_um/1000);
     QThread::msleep(200);
     mPoint3D final_pos = sut->carrier->GetFeedBackPos();
-    map.insert("xOffset", xOffset);
-    map.insert("yOffset", yOffset);
+    map.insert("x_offset_in_um", x_offset_in_um);
+    map.insert("y_offset_in_um", y_offset_in_um);
     map.insert("ori_x_pos", ori_pos.X);
     map.insert("ori_y_pos", ori_pos.Y);
     map.insert("final_x_pos", final_pos.X);
     map.insert("final_y_pos", final_pos.Y);
+    if(finish_delay>0)
+        Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "XY_Offset", map);
     return ErrorCodeStruct{ErrorCode::OK, ""};

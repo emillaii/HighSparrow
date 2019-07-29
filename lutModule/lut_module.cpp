@@ -126,7 +126,7 @@ void LutModule::run(bool has_material)
     while(is_run){
         has_task = false;
 //        if(!has_task)
-            QThread::msleep(100);
+            QThread::msleep(10);
         has_task = false;
         if (state == HAS_LENS) {
             tcp_mutex.lock();
@@ -864,13 +864,22 @@ double LutModule::getLoadUplookPRY()
 bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
 {
     sendCmd("::1","gripperOnReq");
-    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
+    bool result = true;
+    if(parameters.enablePickForce())
+    {
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous);
+    }
+    else
+    {
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
+    }
     if(result)
     {
         if(parameters.enablePickForce())
         {
             qInfo("moveToAA1PickLens Start ZSerchByForce");
-            result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,0,load_vacuum);
+//            result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,0,load_vacuum);
+            result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_picklens_position.Z(),parameters.lensHeight());
             qInfo("moveToAA1PickLens Finish ZSerchByForce");
         }
         sendCmd("::1","gripperOffReq");
@@ -911,18 +920,16 @@ bool LutModule::moveToAAMeasurePickHeight(bool ishost, bool check_autochthonous)
 
 bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
 {
-    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),aa1_unpicklens_position.Z(),check_autochthonous);
+    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous);
     if(result)
     {
         qInfo("moveToAA1UnPickLens Start ZSerchByForce");
-        result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,1,unload_vacuum);
+//        result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,1,unload_vacuum);
+        result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_picklens_position.Z(),parameters.lensHeight());
         qInfo("moveToAA1UnPickLens Start ZSerchByForce");
-        //        if(result)
-        //        {
         sendCmd("::1","gripperOnReq");
         this->unload_vacuum->Set(true);
         Sleep(parameters.gripperDelay());
-        //        }
         result &= carrier->ZSerchReturn();
     }
     return result;
@@ -940,13 +947,22 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
 {
     qInfo("moveToAA2PickLens");
     sendCmd("remote","gripperOnReq");
-    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
-    if(result)
+    bool result = true;
+    if(parameters.enablePickForce())
+    {
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous);
+    }
+    else
+    {
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
+    }
+        if(result)
     {
         if(parameters.enablePickForce())
         {
             qInfo("moveToAA1PickLens Start ZSerchByForce");
-            result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,0,load_vacuum);
+//            result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,0,load_vacuum);
+            result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa2_picklens_position.Z(),parameters.lensHeight());
             qInfo("moveToAA1PickLens Finish ZSerchByForce");
         }
         sendCmd("remote","gripperOffReq");
@@ -961,18 +977,16 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
 bool LutModule::moveToAA2UnPickLens(bool check_autochthonous)
 {
     qInfo("moveToAA2UnPickLens Start to aa2 unpickLens");
-    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),aa2_unpicklens_position.Z(),check_autochthonous);
+    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous);
     if(result)
     {
         qInfo("moveToAA2UnPickLens Start ZSerchByForce");
-        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
+//        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
+        result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa2_picklens_position.Z(),parameters.lensHeight());
         qInfo("moveToAA2UnPickLens Finish ZSerchByForce");
-        //        if(result)
-        //        {
         sendCmd("remote","gripperOnReq");
         this->unload_vacuum->Set(true);
         Sleep(parameters.gripperDelay());
-        //        }
         result &= carrier->motor_z->resetSoftLanding();
     }
     return result;

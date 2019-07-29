@@ -94,7 +94,7 @@ bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check
     }
     if(close_lighting)
         vision_downlook_location->CloseLight();
-    if(result)
+    if(!result)
         AppendError(u8"执行downlook pr 失败");
     return result;
 }
@@ -245,6 +245,11 @@ bool SutModule::moveToZPos(double z)
     return carrier->Move_Z_Sync(z);
 }
 
+bool SutModule::moveZToSaftyPos()
+{
+    return carrier->Move_Z_Sync(carrier->parameters.SafetyZ());
+}
+
 void SutModule::recordCurrentPos()
 {
     record_position = carrier->GetFeedBackPos();
@@ -253,6 +258,11 @@ void SutModule::recordCurrentPos()
 bool SutModule::movetoRecordPos(bool check_autochthonous)
 {
     return carrier->Move_SZ_SX_Y_X_Z_Sync(record_position.X,record_position.Y,record_position.Z,check_autochthonous);
+}
+
+bool SutModule::movetoRecordPosAddOffset(double x_offset, double y_offset, double z_offset, bool check_autochthonous)
+{
+    return carrier->Move_SZ_SX_Y_X_Z_Sync(record_position.X + x_offset,record_position.Y + y_offset,record_position.Z + z_offset,check_autochthonous);
 }
 
 void SutModule::receiveLoadSensorRequst(int sut_state)
@@ -300,7 +310,7 @@ void SutModule::run(bool has_material)
     {
         if(!states.allowLoadSensor())
         {
-            QThread::msleep(1000);
+            QThread::msleep(10);
             continue;
         }
         if((!states.sutHasSensor())&&(!states.loadingSensor()))

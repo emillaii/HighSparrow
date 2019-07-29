@@ -55,6 +55,12 @@ class AACoreParameters : public PropertyBase
 
     double m_minDev = 0;
 
+    bool m_enableCheckDispense = false;
+
+    int m_checkDispenseCount = 10;
+
+    int m_minIntensityDiff = 10;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -85,6 +91,9 @@ public:
     Q_PROPERTY(double zpeak08Coefficient READ zpeak08Coefficient WRITE setZpeak08Coefficient NOTIFY zpeak08CoefficientChanged)
     Q_PROPERTY(double maxDev READ maxDev WRITE setMaxDev NOTIFY maxDevChanged)
     Q_PROPERTY(double minDev READ minDev WRITE setMinDev NOTIFY minDevChanged)
+    Q_PROPERTY(bool enableCheckDispense READ enableCheckDispense WRITE setEnableCheckDispense NOTIFY enableCheckDispenseChanged)
+    Q_PROPERTY(int checkDispenseCount READ checkDispenseCount WRITE setCheckDispenseCount NOTIFY checkDispenseCountChanged)
+    Q_PROPERTY(int minIntensityDiff READ minIntensityDiff WRITE setMinIntensityDiff NOTIFY minIntensityDiffChanged)
     double EFL() const
     {
         return m_EFL;
@@ -202,6 +211,21 @@ public:
     double minDev() const
     {
         return m_minDev;
+    }
+
+    bool enableCheckDispense() const
+    {
+        return m_enableCheckDispense;
+    }
+
+    int checkDispenseCount() const
+    {
+        return m_checkDispenseCount;
+    }
+
+    int minIntensityDiff() const
+    {
+        return m_minIntensityDiff;
     }
 
 public slots:
@@ -403,6 +427,33 @@ public slots:
         emit minDevChanged(m_minDev);
     }
 
+    void setEnableCheckDispense(bool enableCheckDispense)
+    {
+        if (m_enableCheckDispense == enableCheckDispense)
+            return;
+
+        m_enableCheckDispense = enableCheckDispense;
+        emit enableCheckDispenseChanged(m_enableCheckDispense);
+    }
+
+    void setCheckDispenseCount(int checkDispenseCount)
+    {
+        if (m_checkDispenseCount == checkDispenseCount)
+            return;
+
+        m_checkDispenseCount = checkDispenseCount;
+        emit checkDispenseCountChanged(m_checkDispenseCount);
+    }
+
+    void setMinIntensityDiff(int minIntensityDiff)
+    {
+        if (m_minIntensityDiff == minIntensityDiff)
+            return;
+
+        m_minIntensityDiff = minIntensityDiff;
+        emit minIntensityDiffChanged(m_minIntensityDiff);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -417,6 +468,9 @@ signals:
     void zpeak08CoefficientChanged(double zpeak08Coefficient);
     void maxDevChanged(double maxDev);
     void minDevChanged(double minDev);
+    void enableCheckDispenseChanged(bool enableCheckDispense);
+    void checkDispenseCountChanged(int checkDispenseCount);
+    void minIntensityDiffChanged(int minIntensityDiff);
 };
 class AACoreStates: public PropertyBase
 {

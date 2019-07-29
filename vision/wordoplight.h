@@ -176,7 +176,7 @@ private:
     bool change_done = false;
     bool change_result = false;
 
-    int now_brightness[10]={0};
+    uint8_t now_brightness[10]={0};
 
     int m_downlookLighting = 0;
 

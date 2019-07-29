@@ -16,7 +16,12 @@ public:
     bool performPR(PrOffset &offset, bool need_conversion = true);
     bool performPR();
     bool performPR(PRResultStruct &pr_result);
-    Q_INVOKABLE QPointF getCurrentOffset();
+    QPointF getCurrentOffset();
+
+    PrOffset getCurrentResult();
+    QPointF getCurrentResultOffset();
+    PRResultStruct getCurrentPixelResult();
+
     void OpenLight();
     void CloseLight();
     QString getLastImageName();
@@ -28,7 +33,8 @@ private:
     VisionModule* vison;
     Pixel2Mech* mapping;
     WordopLight* lighting;
-    PrOffset current_offset;
+    PrOffset current_result;
+    PRResultStruct current_pixel_result;
 };
 
 #endif // VISION_LOCATION_H

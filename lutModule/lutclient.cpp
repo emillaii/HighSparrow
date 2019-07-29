@@ -17,7 +17,7 @@ bool LutClient::waitLensRespond(bool &is_run)
         if(!is_run)
             return false;
         //qInfo("Waiting LUT ....");
-        QThread::msleep(1000);
+        QThread::msleep(10);
     }
     return this->state == LutClientState::LUT_CLIENT_IDLE;
 }

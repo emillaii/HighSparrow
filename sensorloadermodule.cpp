@@ -575,7 +575,7 @@ void SensorLoaderModule::run(bool has_material)
         if((!states.allowChangeTray())&&states.hasTray()&&states.hasPickedProduct())
         {
             has_task = true;
-            if(parameters.enableProdcutTrayPr())
+            if(parameters.enableProdcutTrayPr()||(!states.hasEmptyOffset()))
             {
                 vacancy_vision->OpenLight();
                 if(!moveToProductTrayNextPos())
@@ -586,7 +586,7 @@ void SensorLoaderModule::run(bool has_material)
                 }
                 if((!performVacancyPR())&&has_material)
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                     if(waitMessageReturn(is_run))
                     {
                         tray->setCurrentMaterialState(MaterialState::IsProduct,product_tray_index);
@@ -595,10 +595,15 @@ void SensorLoaderModule::run(bool has_material)
                     if(!is_run)break;
                 }
                 vacancy_vision->CloseLight();
+                states.setHasEmptyOffset(true);
+                states.setEmptyTrayOffsetX(pr_offset.X);
+                states.setEmptyTrayOffsetY(pr_offset.Y);
             }
             else
             {
                 pr_offset.ReSet();
+                pr_offset.X = states.emptyTrayOffsetX();
+                pr_offset.Y = states.emptyTrayOffsetY();
             }
             if(!movePicker2ToTrayPos(product_tray_index))
             {
@@ -633,7 +638,7 @@ void SensorLoaderModule::run(bool has_material)
                 }
                 if((!performVacancyPR())&&has_material)
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                     if(waitMessageReturn(is_run))
                     {
                         tray->setCurrentMaterialState(MaterialState::IsNgProduct,ng_tray_index);
@@ -682,7 +687,7 @@ void SensorLoaderModule::run(bool has_material)
                 }
                 if((!performVacancyPR())&&has_material)
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                     if(waitMessageReturn(is_run))
                     {
                         tray->setCurrentMaterialState(MaterialState::IsNg,ng_tray_index);
@@ -716,7 +721,7 @@ void SensorLoaderModule::run(bool has_material)
             if(!is_run)break;
         }
         //取料
-        if((!finish_stop)&&(!states.allowChangeTray())&&states.hasTray()&&(!states.hasPickedSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgProduct())&&(!states.hasPickedNgSensor()))
+        if((!finish_stop)&&(!tray->isTrayNeedChange(0))&&(!states.allowChangeTray())&&states.hasTray()&&(!states.hasPickedSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgProduct())&&(!states.hasPickedNgSensor()))
         {
             has_task = true;
             sensor_vision->OpenLight();
@@ -764,7 +769,7 @@ void SensorLoaderModule::run(bool has_material)
             }
             if((!pickTraySensor())&&has_material)
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(!waitMessageReturn(is_run))
                     states.setHasPickedSensor(true);
             }
@@ -898,6 +903,9 @@ void SensorLoaderModule::run(bool has_material)
         //执行换盘
         if(states.allowChangeTray())
         {
+            states.setHasEmptyOffset(false);
+            states.setEmptyTrayOffsetX(0);
+            states.setEmptyTrayOffsetY(0);
             if(waiting_change_tray)
             {
                 if(finish_change_tray)
@@ -1213,7 +1221,7 @@ void SensorLoaderModule::run(bool has_material)
                     }
                     if((!placeSensorToSUT(isLocalHost?"::1":"remote"))&&has_material)
                     {
-                        sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                        sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                         if(waitMessageReturn(is_run))
                         {
                             states.setHasPickedSensor(false);
@@ -1270,7 +1278,7 @@ void SensorLoaderModule::run(bool has_material)
         //            }
         //            if((!placeSensorToSUT())&&has_material)
         //            {
-        //                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+        //                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
         //                if(waitMessageReturn(is_run))
         //                    states.setHasPickedSensor(false);
         //                else
@@ -1314,7 +1322,7 @@ void SensorLoaderModule::run(bool has_material)
         //            }
         //            if((!pickSUTProduct())&&has_material)
         //            {
-        //                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+        //                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
         //                if(waitMessageReturn(is_run))
         //                    states.setSutHasProduct(false);
         //                else
@@ -1361,7 +1369,7 @@ void SensorLoaderModule::run(bool has_material)
         //            if((!pickSUTSensor())&&has_material)
         //            {
         //                AppendError("pickSUTSensor fail!");
-        //                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+        //                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
         //                if(waitMessageReturn(is_run))
         //                    states.setSutHasNgSensor(false);
         //                else
@@ -1427,7 +1435,7 @@ void SensorLoaderModule::runTest()
             vacancy_vision->CloseLight();
             if(!movePicker2ToSUTPos(isLocalHost))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     states.setHasPickedProduct(false);
@@ -1530,7 +1538,7 @@ void SensorLoaderModule::runTest()
             }
             if((!pickTraySensor()))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(!waitMessageReturn(is_run))
                     states.setHasPickedSensor(true);
             }
@@ -1822,7 +1830,7 @@ void SensorLoaderModule::runTest()
                     }
                     if((!placeSensorToSUT(isLocalHost?"::1":"remote")))
                     {
-                        sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                        sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                         if(waitMessageReturn(is_run))
                         {
                             states.setHasPickedSensor(false);
@@ -1877,7 +1885,7 @@ void SensorLoaderModule::runTest()
         //            }
         //            if((!placeSensorToSUT())&&has_material)
         //            {
-        //                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+        //                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
         //                if(waitMessageReturn(is_run))
         //                    states.setHasPickedSensor(false);
         //                else
@@ -1921,7 +1929,7 @@ void SensorLoaderModule::runTest()
         //            }
         //            if((!pickSUTProduct())&&has_material)
         //            {
-        //                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+        //                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
         //                if(waitMessageReturn(is_run))
         //                    states.setSutHasProduct(false);
         //                else
@@ -1968,7 +1976,7 @@ void SensorLoaderModule::runTest()
         //            if((!pickSUTSensor())&&has_material)
         //            {
         //                AppendError("pickSUTSensor fail!");
-        //                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+        //                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
         //                if(waitMessageReturn(is_run))
         //                    states.setSutHasNgSensor(false);
         //                else

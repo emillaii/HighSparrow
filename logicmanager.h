@@ -11,6 +11,8 @@ enum CommandType{
     STOP,
     MOTION_INIT,
     MOTION_HOME,
+    MOTION_INIT_ONLYSELF,
+    MOTION_HOME_ONLYSELF,
     MOTION_STOP_HOME,     // Interrupt
     MODE_AUTO_RUN,
     AA_MOVETO_MUSHROOM_CMD,
@@ -34,8 +36,6 @@ enum CommandType{
     PERFORM_OC,
     PERFORM_LOOP_TEST,
 
-
-    SEEK_ORIGIN
 };
 
 class LogicManager : public QThread
@@ -44,7 +44,7 @@ class LogicManager : public QThread
 public:
     explicit LogicManager(BaseModuleManager* device_manager, QObject *parent = nullptr);
 //    bool registerWorker(ThreadWorkerBase* worker);
-    void performHandling(int cmd);
+    Q_INVOKABLE void performHandling(int cmd);
     Q_PROPERTY(int currentMode READ currentMode WRITE setCurrentMode)
     Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage NOTIFY stateMessageChanged)
 
@@ -53,6 +53,8 @@ public:
 
     Q_INVOKABLE void init();
     Q_INVOKABLE void home();
+     void init_only_self();
+     void home_only_self();
     Q_INVOKABLE void stopHome();
     Q_INVOKABLE void stop();
 
@@ -180,10 +182,13 @@ public slots:
     void receiveCommand(int cmd);
 
     void receiveMessageFromWorkerManger(QVariantMap message);
+
+    void performHandlingOperation(int cmd);
 signals:
     void stateMessageChanged(QString stateMessage);
     bool sendMsgSignal(QString,QString);
     void sendMessageToWorkerManger(QVariantMap message);
+    void sendHandlingOperation(int cmd);
 private:
     BaseModuleManager * baseModuleManage;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
@@ -199,12 +204,14 @@ private:
 
 
     bool is_handling = false;
+    bool result;
     QVariantMap  return_message;
 protected:
     void run();
 private:
     bool motorSeekOrigin(QString motor_name);
     void sendCmdMessage(QVariantMap message,int cmd);
+    void sendRespMessage(QVariantMap message,bool result);
     bool waitReturnMessage();
 };
 

@@ -117,7 +117,7 @@ bool TrayLoaderModule::startUp()
 //            result = motorOutRelease();
 //            if(!result){
 //                AppendError(tr(u8"LTK_X2释放失败,是否继续移动LTLX"));
-//                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+//                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
 //                result = waitMessageReturn(is_run);
 //                if(!result){
 //                    is_run = false;
@@ -159,7 +159,7 @@ bool TrayLoaderModule::startUp()
 //            if(states.hasTrayReadyPosClear()){
 //                if(!motorInRelease()){
 //                    AppendError(tr(u8"LTK_X1释放失败,是否继续移动LTk_X1"));
-//                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+//                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
 //                    result = waitMessageReturn(is_run);
 //                    if(!result){
 //                        is_run = false;
@@ -184,7 +184,7 @@ bool TrayLoaderModule::startUp()
 //                    result = moveToFirstKick();
 //                    if(!motorInRelease()){
 //                        AppendError(tr(u8"LTK_X1释放失败,是否继续移动LTk_X1"));
-//                        sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+//                        sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
 //                        result = waitMessageReturn(is_run);
 //                        if(!result){
 //                            is_run = false;
@@ -1088,7 +1088,7 @@ void TrayLoaderModule::run(bool has_tray)
             has_task = true;
             if((!moveToWorkPosAndReayPullNewTray())&&has_tray)
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     states.setHasReadyTray(false);
@@ -1131,7 +1131,7 @@ void TrayLoaderModule::run(bool has_tray)
             has_task = true;
             if(!moveToPushOutTray())
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     states.setExitClipReady(false);
@@ -1204,7 +1204,7 @@ void TrayLoaderModule::run(bool has_tray)
             has_task = true;
             if((!clipPushoutTray(has_task))&&has_tray)
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     states.setReadyToPusReadyTray(false);
@@ -1299,7 +1299,7 @@ void TrayLoaderModule::runHandle()
             if(!is_run)break;
             if(!moveToWorkPos())
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                     continue;
             }

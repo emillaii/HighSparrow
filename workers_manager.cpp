@@ -74,6 +74,18 @@ void WorkersManager::tcpResp(QString message)
         {
             sendMessageToLogicManager(message_object.toVariantMap());
         }
+        else if(module_name == "WorkersManagerStart")
+        {
+            startWorkers(message_object["RunMode"].toInt());
+        }
+        else if(module_name == "WorkersManagerReset")
+        {
+            resetLogics();
+        }
+        else if(module_name == "WorkersManagerStop")
+        {
+            stopWorkers(message_object["waitFinish"].toBool());
+        }
         else {
             qInfo("module name error");
         }
@@ -107,10 +119,10 @@ void WorkersManager::receiveModuleMessage(QVariantMap message)
     }
 }
 
-void WorkersManager::receiveMessageFromLogicManger(QVariantMap message)
-{
+//void WorkersManager::receiveMessageFromLogicManger(QVariantMap message)
+//{
 
-}
+//}
 
 void WorkersManager::showAlarm(const int sender_id, const int level, const QString error_message)
 {
@@ -127,7 +139,7 @@ void WorkersManager::sendTcpMessage(QVariantMap message)
      }
 }
 
-void WorkersManager::startWorkers(int run_mode)
+void WorkersManager::startAllWorkers(int run_mode)
 {
     qInfo("start all worker %d",workers.size());
 
@@ -135,7 +147,12 @@ void WorkersManager::startWorkers(int run_mode)
     QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否重置逻辑？(Yes: 重置逻辑并开始 No: 不重置逻辑并开始 Cancle: 取消)"),QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
     if(rb==QMessageBox::Yes)
     {
+        QVariantMap message;
+        message.insert("TargetModule","WorkersManagerReset");
+        sendTcpMessage(message);
+
         resetLogics();
+        QThread::msleep(100);
         qInfo("Reset logics before start workers signal.");
     }
     else if (rb==QMessageBox::No){
@@ -146,6 +163,24 @@ void WorkersManager::startWorkers(int run_mode)
         return;
     }
 
+    startWorkers(run_mode);
+    QVariantMap message;
+    message.insert("TargetModule","WorkersManagerStart");
+    sendTcpMessage(message);
+}
+
+void WorkersManager::stopAllWorkers(bool wait_finish)
+{
+    stopWorkers(wait_finish);
+    QVariantMap message;
+    message.insert("TargetModule","WorkersManagerStop");
+    message.insert("waitFinish",wait_finish);
+    sendTcpMessage(message);
+}
+
+void WorkersManager::startWorkers(int run_mode)
+{
+    qInfo("startSelfWorkers");
     emit startWorkersSignal(run_mode);
 }
 

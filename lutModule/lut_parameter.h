@@ -345,6 +345,7 @@ class LutState:public PropertyBase
     Q_PROPERTY(QString lutUuid READ lutUuid WRITE setLutUuid NOTIFY lutUuidChanged)
     Q_PROPERTY(QString aa1Uuid READ aa1Uuid WRITE setAa1Uuid NOTIFY aa1UuidChanged)
     Q_PROPERTY(QString aa2Uuid READ aa2Uuid WRITE setAa2Uuid NOTIFY aa2UuidChanged)
+    Q_PROPERTY(bool beExchangeMaterial READ beExchangeMaterial WRITE setBeExchangeMaterial NOTIFY beExchangeMaterialChanged)
 public:
     LutState():PropertyBase()
     {
@@ -467,6 +468,11 @@ public:
     QString aa2Uuid() const
     {
         return m_aa2Uuid;
+    }
+
+    bool beExchangeMaterial() const
+    {
+        return m_beExchangeMaterial;
     }
 
 public slots:
@@ -677,6 +683,15 @@ public slots:
         emit aa2UuidChanged(m_aa2Uuid);
     }
 
+    void setBeExchangeMaterial(bool beExchangeMaterial)
+    {
+        if (m_beExchangeMaterial == beExchangeMaterial)
+            return;
+
+        m_beExchangeMaterial = beExchangeMaterial;
+        emit beExchangeMaterialChanged(m_beExchangeMaterial);
+    }
+
 signals:
     void lutTrayIDChanged(int lutTrayID);
 
@@ -726,6 +741,8 @@ signals:
 
     void aa2UuidChanged(QString aa2Uuid);
 
+    void beExchangeMaterialChanged(bool beExchangeMaterial);
+
 private:
     int m_lutTrayID = -1;
     int m_lutLensID = -1;
@@ -750,6 +767,7 @@ private:
     QString m_lutUuid = "";
     QString m_aa1Uuid = "";
     QString m_aa2Uuid = "";
+    bool m_beExchangeMaterial = false;
 };
 
 #endif // LUT_PARAMERTER_H

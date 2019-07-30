@@ -401,9 +401,11 @@ void AACoreNew::performHandlingOperation(int cmd)
         int check_count = parameters.checkDispenseCount();
         parameters.setEnableCheckDispense(true);
         parameters.setCheckDispenseCount(1);
-        performDispense(params);
+        ErrorCodeStruct ret = performDispense(params);
         parameters.setEnableCheckDispense(enable);
         parameters.setCheckDispenseCount(check_count);
+        sut->vision_downlook_location->OpenLight();
+        qInfo("End of perform Dispense %s",ret.errorMessage.toStdString().c_str());
     }
     else if (cmd == HandleTest::PR_To_Bond)
     {
@@ -712,7 +714,7 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         else if (testItemName.contains(AA_PIECE_DISPENSE)) {
             qInfo("Performing Dispense",params.toString().toStdString().c_str());
             ret = performDispense(params);
-            qInfo("End of perform UV %s",ret.errorMessage.toStdString().c_str());
+            qInfo("End of perform Dispense %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_DELAY)) {
             int delay_in_ms = params["delay_in_ms"].toInt();
@@ -850,29 +852,41 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
     // Perform dispense
     if(!dispense->performDispense()) { NgProduct(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
 
-    // Capture image after dispense
-    QString imageNameAfterDispense;
-    imageNameAfterDispense.append(getDispensePrLogDir())
-                    .append(getCurrentTimeString())
-                    .append("_")
-                    .append(dk->readSensorID())
-                    .append("_after_dispense.jpg");
     current_dispense--;
     if(parameters.enableCheckDispense())
     {
         if(current_dispense<=0)
         {
+            // Capture image after dispense
+            QString imageNameAfterDispense;
+            imageNameAfterDispense.append(getDispensePrLogDir())
+                            .append(getCurrentTimeString())
+                            .append("_")
+                            .append(dk->readSensorID())
+                            .append("_after_dispense.jpg");
+
             current_dispense = parameters.checkDispenseCount();
             sut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
             //ToDo: return QImage from this function
             QImage image(imageNameAfterDispense);
             dispenseImageProvider->setImage(image);
             emit callQmlRefeshImg(3);  //Emit dispense image to QML
+
+            sendAlarmMessage(ErrorLevel::ContinueOrReject, u8"画胶检查");
+            if (waitMessageReturn(is_run))
+            {
+                NgSensor();
+                return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, u8"画胶检查"};
+            }
         }
     }
     if(!sut->movetoRecordPosAddOffset(x_offset_in_um/1000,y_offset_in_um/1000,z_offset_in_um/1000)){NgProduct(); return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
     if(finish_delay>0)
         Sleep(finish_delay);
+    map.insert("x_offset_in_um",x_offset_in_um);
+    map.insert("y_offset_in_um",y_offset_in_um);
+    map.insert("z_offset_in_um",z_offset_in_um);
+    map.insert("z_peak",sut->carrier->GetFeedBackPos().Z);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
     qInfo("Finish Dispense");
@@ -1177,7 +1191,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         double diff_z = (dfov - expected_fov)/fov_slope;
         sut->moveToZPos(beforeZ - diff_z);
         double afterZ = sut->carrier->GetFeedBackPos().Z;
+        map.insert("Z_PEAK_Checked",-diff_z);
         qInfo("before z: %f after z: %f now fov: %f expected fov: %f fov slope: %f fov intercept: %f", beforeZ, afterZ, dfov, expected_fov, fov_slope, fov_intercept);
+    }
+    else {
+        map.insert("Z_PEAK_Checked",0);
     }
     clustered_sfr_map.clear();
     qInfo("AA time elapsed: %d", timer.elapsed());
@@ -2086,6 +2104,7 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
     }
     else
     {
+        NgProduct();
         map.insert("result", "otp fail");
         emit pushDataToUnit(this->runningUnit, "UV", map);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "otp fail"};

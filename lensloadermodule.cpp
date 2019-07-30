@@ -158,7 +158,7 @@ void LensLoaderModule::run(bool has_material)
             vacancy_vision->CloseLight();
             if(!moveToWorkPos(true))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     states.setHasPickedNgLens(false);
@@ -169,7 +169,7 @@ void LensLoaderModule::run(bool has_material)
             if((!placeLensToTray())&&has_material)
             {
                 AppendError(u8" 如果NG Lens未放好请手动拿走！");
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     //todo检测料已拿走
@@ -263,7 +263,7 @@ void LensLoaderModule::run(bool has_material)
 
             if((!pickTrayLens())&&has_material)
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(!waitMessageReturn(is_run))
                     states.setHasPickedLens(true);
                 if(!is_run)break;
@@ -348,7 +348,7 @@ void LensLoaderModule::run(bool has_material)
             }
             if((!placeLensToLUT())&&has_material)
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                     states.setHasPickedLens(false);
                 else
@@ -401,7 +401,7 @@ void LensLoaderModule::run(bool has_material)
             }
             if((!pickLUTLens())&&has_material)
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(!waitMessageReturn(is_run))
                     states.setHasPickedNgLens(true);
                 if(!is_run)break;
@@ -495,7 +495,7 @@ void LensLoaderModule::runTest()
             vacancy_vision->CloseLight();
             if(!moveToWorkPos(true))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     states.setHasPickedNgLens(false);
@@ -506,7 +506,7 @@ void LensLoaderModule::runTest()
             if((!placeLensToTray()))
             {
                 AppendError(u8" 如果NG Lens未放好请手动拿走！");
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     //todo检测料已拿走
@@ -622,7 +622,7 @@ void LensLoaderModule::runTest()
 
             if(!pickTrayLens())
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(!waitMessageReturn(is_run))
                     states.setHasPickedLens(true);
                 if(!is_run)break;
@@ -672,7 +672,7 @@ void LensLoaderModule::runTest()
             if(!is_run)break;
             if(!moveToWorkPos(true))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     states.setHasPickedNgLens(false);
@@ -682,7 +682,7 @@ void LensLoaderModule::runTest()
             }
             if(!placeLensToLUT())
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                     states.setHasPickedLens(false);
                 else
@@ -769,7 +769,7 @@ void LensLoaderModule::runTest()
             }
             if((!pickLUTLens())&&has_material)
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(!waitMessageReturn(is_run))
                     states.setHasPickedNgLens(true);
                 if(!is_run)break;

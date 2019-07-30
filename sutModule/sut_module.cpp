@@ -335,7 +335,7 @@ void SutModule::run(bool has_material)
             {
                 if(!checkSutSensorOrProduct(true))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                     if(waitMessageReturn(is_run))
                     {
                         states.setSutHasProduct(false);
@@ -372,7 +372,7 @@ void SutModule::run(bool has_material)
         {
             if(!checkSutSensorOrProduct(true))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     states.setSutHasSensor(false);

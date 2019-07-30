@@ -45,6 +45,7 @@ void LogicManager::run() {
     else if (m_currentMode == CommandType::PERFORM_OC) {
     }
     else if (m_currentMode == CommandType::MOTION_HOME) {
+        qInfo("CommandType::MOTION_HOME");
         if(baseModuleManage->ServerMode() == 0)
         {
             if(baseModuleManage->allMotorsSeekOrigin())
@@ -61,10 +62,25 @@ void LogicManager::run() {
             message.insert("MotorName","AllMotor");
             sendCmdMessage(message,CommandType::MOTION_HOME);
             if(waitReturnMessage())
+            {
                 baseModuleManage->allMotorsSeekOrigin();
+            }
         }
     } else if (m_currentMode == CommandType::MOTION_INIT) {
+        qInfo("CommandType::MOTION_INIT");
+        QVariantMap message;
+        sendCmdMessage(message,CommandType::MOTION_INIT);
         baseModuleManage->initialDevice();
+        waitReturnMessage();
+    }
+    else if (m_currentMode == CommandType::MOTION_HOME_ONLYSELF) {
+        result =  baseModuleManage->allMotorsSeekOrigin();
+        QVariantMap  return_message;
+        sendRespMessage(return_message,result);
+    } else if (m_currentMode == CommandType::MOTION_INIT_ONLYSELF) {
+        result = baseModuleManage->initialDevice();
+        QVariantMap  return_message;
+        sendRespMessage(return_message,result);
     }
     else if (m_currentMode == CommandType::AA_MOVETO_MUSHROOM_CMD)
     {
@@ -147,7 +163,6 @@ void LogicManager::run() {
 
     m_currentMode = CommandType::IDLE;
     qInfo("Logic Manager End");
-
     is_handling = false;
 }
 
@@ -155,11 +170,13 @@ bool LogicManager::motorSeekOrigin(QString motor_name)
 {
     if(motor_name == "AllMotor")
     {
-      return baseModuleManage->allMotorsSeekOrigin();
+        home_only_self();
+//        waitReturnMessage();
+        return result;
     }
     else if(baseModuleManage->motors.contains(motor_name))
     {
-       return baseModuleManage->GetMotorByName(motor_name)->SeekOrigin();
+        return baseModuleManage->GetMotorByName(motor_name)->SeekOrigin();
     }
     else
     {
@@ -175,15 +192,23 @@ void LogicManager::sendCmdMessage(QVariantMap message,int cmd)
     emit sendMessageToWorkerManger(message);
 }
 
+void LogicManager::sendRespMessage(QVariantMap message, bool result)
+{
+    message.insert("TargetModule","LogicManager");
+    message.insert("performHandlingResp",result);
+    emit sendMessageToWorkerManger(message);
+}
+
 bool LogicManager::waitReturnMessage()
 {
     while (is_handling) {
         if(return_message.contains("performHandlingResp"))
         {
-            bool result =  return_message["performHandlingResp"].toBool();
+            bool result = return_message["performHandlingResp"].toBool();
             return_message.remove("performHandlingResp");
-            return  result;
+            return result;
         }
+        Sleep(10);
     }
     return false;
 }
@@ -206,6 +231,8 @@ void LogicManager::moveToCmd(int cmd) {
 
 void LogicManager::home(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_HOME);}
 void LogicManager::init(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_INIT);}
+void LogicManager::home_only_self(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_HOME_ONLYSELF);}
+void LogicManager::init_only_self(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_INIT_ONLYSELF);}
 void LogicManager::stopHome(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_STOP_HOME);}
 void LogicManager::stop(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::STOP);}
 
@@ -315,49 +342,49 @@ void LogicManager::lensPickArmMoveToLutPos2()
 void LogicManager::lensPickArmMoveToPickLensFromTray1()
 {
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::LENS_TRAY1+
-                                                           LensLoaderModule::HandlePR::LENS_PR+
-                                                           LensLoaderModule::HandleToWorkPos::ToWork+
-                                                           LensLoaderModule::HandlePickerAction::PICK_LENS_FROM_TRAY);
+                                                         LensLoaderModule::HandlePR::LENS_PR+
+                                                         LensLoaderModule::HandleToWorkPos::ToWork+
+                                                         LensLoaderModule::HandlePickerAction::PICK_LENS_FROM_TRAY);
 }
 
 void LogicManager::lensPickArmMoveToPickLensFromTray2()
 {
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::LENS_TRAY2+
-                                                           LensLoaderModule::HandlePR::LENS_PR+
-                                                           LensLoaderModule::HandleToWorkPos::ToWork+
-                                                           LensLoaderModule::HandlePickerAction::PICK_LENS_FROM_TRAY);
+                                                         LensLoaderModule::HandlePR::LENS_PR+
+                                                         LensLoaderModule::HandleToWorkPos::ToWork+
+                                                         LensLoaderModule::HandlePickerAction::PICK_LENS_FROM_TRAY);
 }
 
 void LogicManager::lensPickArmMoveToPickLensFromLut()
 {
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::LUT_POS2+
-                                                           LensLoaderModule::HandlePR::LUT_LENS_PR+
-                                                           LensLoaderModule::HandleToWorkPos::ToWork+
-                                                           LensLoaderModule::HandlePickerAction::PICK_NG_LENS_FROM_LUT);
+                                                         LensLoaderModule::HandlePR::LUT_LENS_PR+
+                                                         LensLoaderModule::HandleToWorkPos::ToWork+
+                                                         LensLoaderModule::HandlePickerAction::PICK_NG_LENS_FROM_LUT);
 }
 
 void LogicManager::lensPickArmMoveToPlaceLensToTray1()
 {
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::LENS_TRAY1+
-                                                           LensLoaderModule::HandlePR::VACANCY_PR+
-                                                           LensLoaderModule::HandleToWorkPos::ToWork+
-                                                           LensLoaderModule::HandlePickerAction::PLACE_NG_LENS_TO_TRAY);
+                                                         LensLoaderModule::HandlePR::VACANCY_PR+
+                                                         LensLoaderModule::HandleToWorkPos::ToWork+
+                                                         LensLoaderModule::HandlePickerAction::PLACE_NG_LENS_TO_TRAY);
 }
 
 void LogicManager::lensPickArmMoveToPlaceLensToTray2()
 {
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::LENS_TRAY2+
-                                                           LensLoaderModule::HandlePR::VACANCY_PR+
-                                                           LensLoaderModule::HandleToWorkPos::ToWork+
-                                                           LensLoaderModule::HandlePickerAction::PLACE_NG_LENS_TO_TRAY);
+                                                         LensLoaderModule::HandlePR::VACANCY_PR+
+                                                         LensLoaderModule::HandleToWorkPos::ToWork+
+                                                         LensLoaderModule::HandlePickerAction::PLACE_NG_LENS_TO_TRAY);
 }
 
 void LogicManager::lensPickArmMoveToPlaceLensToLut()
 {
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::LUT_POS1+
-                                                           LensLoaderModule::HandlePR::RESET_PR+
-                                                           LensLoaderModule::HandleToWorkPos::ToWork+
-                                                           LensLoaderModule::HandlePickerAction::PLACE_LENS_TO_LUT);
+                                                         LensLoaderModule::HandlePR::RESET_PR+
+                                                         LensLoaderModule::HandleToWorkPos::ToWork+
+                                                         LensLoaderModule::HandlePickerAction::PLACE_LENS_TO_LUT);
 }
 
 void LogicManager::lensPickArmLensPR()
@@ -377,7 +404,7 @@ void LogicManager::lensPickArmLUTPR()
 
 void LogicManager::lensPickArmLensMeasureHeight()
 {
- baseModuleManage->lens_loader_module.performHandling( LensLoaderModule::HandlePickerAction::MeasureLensInTray);
+    baseModuleManage->lens_loader_module.performHandling( LensLoaderModule::HandlePickerAction::MeasureLensInTray);
 }
 
 void LogicManager::lensPickArmLUTMeasureHeight()
@@ -690,30 +717,33 @@ void LogicManager::receiveMessageFromWorkerManger(QVariantMap message)
 {
     if(message.contains("performHandling"))
     {
-        is_handling = true;
-       QString module_name = message["ModuleName"].toString();
-       if(baseModuleManage->workers.contains(module_name))
-       {
-           baseModuleManage->workers[module_name]->performHandling(message["performHandling"].toInt());
-          bool result = baseModuleManage->workers[module_name]->waitPerformHandling();
-          QVariantMap  return_message;
-          return_message.insert("performHandlingResp",result);
-          sendMessageToWorkerManger(return_message);
-       }
-       else if(message["performHandling"].toInt() == CommandType::MOTION_HOME)
-       {
-           if(message.contains("MotorName"))
-           {
-               bool result =  motorSeekOrigin(message["MotorName"].toString());
-               QVariantMap  return_message;
-               return_message.insert("performHandlingResp",result);
-               sendMessageToWorkerManger(return_message);
-           }
-       }
-       is_handling = false;
+        //is_handling = true;
+        QString module_name = message["ModuleName"].toString();
+        if(baseModuleManage->workers.contains(module_name))
+        {
+            baseModuleManage->workers[module_name]->performHandling(message["performHandling"].toInt());
+            result = baseModuleManage->workers[module_name]->waitPerformHandling();
+            QVariantMap  return_message;
+            sendRespMessage(return_message,result);
+        }
+        else if(message["performHandling"].toInt() == CommandType::MOTION_HOME)
+        {
+            if(message.contains("MotorName"))
+            {
+                motorSeekOrigin(message["MotorName"].toString());
+            }
+        }
+        else if (message["performHandling"].toInt() == CommandType::MOTION_INIT)
+        {
+            init_only_self();
+//            waitReturnMessage();
+//            QVariantMap  return_message;
+//            sendRespMessage(return_message,result);
+        }
+        //is_handling = false;
     }
     else if(message.contains("performHandlingResp"))
     {
-       return_message.insert("performHandlingResp",message["performHandlingResp"].toBool());
+        return_message.insert("performHandlingResp",message["performHandlingResp"].toBool());
     }
 }

@@ -76,7 +76,7 @@ Window {
                                     moduleRect.color = "orange"
                                     button1.text = qsTr("继续")
                                     button2.visible = true
-                                    button2.text = qsTr("放弃")
+                                    button2.text = qsTr("抛料/下一个")
                                 } else if (alarmType === 3) {
                                     moduleRect.color = "orange"
                                     button1.text = qsTr("继续")
@@ -87,6 +87,11 @@ Window {
                                     button1.text = qsTr("重试")
                                     button2.visible = true
                                     button2.text = qsTr("停止")
+                                }else if (alarmType === 6) {
+                                    moduleRect.color = "orange"
+                                    button1.text = qsTr("重试")
+                                    button2.visible = true
+                                    button2.text = qsTr("抛料/下一个")
                                 }
                                 else {
                                     moduleRect.color = "red"

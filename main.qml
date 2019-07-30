@@ -157,8 +157,8 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("OTP") !== -1) {
                         console.log("Perform OTP")
                         aaNewCore.performHandling(AACoreNew.OTP, aaCoreTestParams)
-                    }else if (aaCoreTestItemName.indexOf("AA Unload Camera") !== -1) {
-                        console.log("Perform AA Unload Camera")
+                    }else if (aaCoreTestItemName.indexOf("Unload Camera") !== -1) {
+                        console.log("Perform Unload Camera")
                         aaNewCore.performHandling(AACoreNew.UNLOAD_CAMERA, aaCoreTestParams)
                     }else if (aaCoreTestItemName.indexOf("Dispense") !== -1) {
                         console.log("Perform Dispense")
@@ -339,7 +339,7 @@ ApplicationWindow {
                        command = "document.getElementById('flowchart_data').value";
                        flowChartPage.webView.runJavaScript(command, function(result) {
                            baseModuleManager.loadFlowchart(result)
-                           workersManager.startWorkers(systerm_param.runMode)
+                           workersManager.startAllWorkers(systerm_param.runMode)
                        })
                    })
                }
@@ -353,7 +353,7 @@ ApplicationWindow {
                icon.source: "icons/stop.png"
                icon.color: "red"
                onClicked: {
-                   workersManager.stopWorkers(true)
+                   workersManager.stopAllWorkers(true)
                    logicManager.stop()
                }
            }

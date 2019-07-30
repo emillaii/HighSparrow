@@ -19,6 +19,8 @@ HighSprrow::HighSprrow()
                          baseModuleManager->GetTcpMessagersByName(worker_manager->parameters.respMessagerNames()));
     connect(logicManager,&LogicManager::sendMsgSignal,worker_manager,&WorkersManager::sendMessageTest,Qt::BlockingQueuedConnection);
     connect(&baseModuleManager->aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &HighSprrow::receiveImageFromAACore);
+    connect(worker_manager,&WorkersManager::sendMessageToLogicManager,logicManager,&LogicManager::receiveMessageFromWorkerManger);
+    connect(logicManager,&LogicManager::sendMessageToWorkerManger,worker_manager,&WorkersManager::receiveModuleMessage,Qt::DirectConnection);
 }
 
 HighSprrow::~HighSprrow()

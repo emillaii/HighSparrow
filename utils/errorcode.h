@@ -27,10 +27,11 @@ struct ErrorCodeStruct
 typedef enum {
     TipNonblock = 0,
     WarningBlock = 1,
-    ContinueOrGiveUp = 2,
+    ContinueOrReject = 2,
     ContinueOrRetry = 3,
     RetryOrStop = 4,
-    ErrorMustStop = 5
+    ErrorMustStop = 5,
+    RetryOrReject = 6
 } ErrorLevel;
 
 

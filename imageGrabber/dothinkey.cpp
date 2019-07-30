@@ -299,9 +299,10 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
         result_otp = false;
 
     // 镜头标志位
-    WriteSensorReg(uAddr, 0x1F03, 0x01, pSensor->mode);
+    USHORT lens_label = 0x00;
+    WriteSensorReg(uAddr, 0x1F03, lens_label, pSensor->mode);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F03, 0x01,result);
+    qInfo("write reg %X  value %02X result %d",0x1F03, lens_label,result);
     if(result != 1)
         result_otp = false;
 
@@ -353,7 +354,7 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
     value = 0;
     ReadSensorReg(uAddr, 0x1F03, &value, pSensor->mode);
     qInfo("Read reg %X  value %02X",uAddr, value);
-    if ((value != 1)||(!result_otp))
+    if ((value != lens_label)||(!result_otp))
     {
         qInfo("DothinkeyOTP fail");
         return FALSE;

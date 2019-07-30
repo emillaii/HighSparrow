@@ -115,7 +115,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
             if((!moveToUpReadyTray(states.hasReadyTray(),has_material)&&has_material))
             {
                 AppendError(u8"去顶起空盘失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     states.setHasReadyTray(false);
@@ -145,7 +145,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
             if((!moveToPullNextTray(has_material))&&has_material)
             {
                 AppendError(u8"去拉入空盘失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     states.setEntranceClipReady(false);
@@ -294,7 +294,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
             if(!moveToWorkPos(has_material))
             {
                 AppendError(u8"去工作位置失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrGiveUp,GetCurrentError());
+                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
                 {
                     hold_tray->Set(true);

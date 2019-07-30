@@ -40,9 +40,12 @@ public slots:
     bool sendMessageTest(QString title,QString content);
     void receiveModuleMessage(QVariantMap message);
 
-    void receiveMessageFromLogicManger(QVariantMap message);
+//    void receiveMessageFromLogicManger(QVariantMap message);
 public:
-    Q_INVOKABLE void startWorkers(int run_mode = 0);
+    Q_INVOKABLE void startAllWorkers(int run_mode = 0);
+    Q_INVOKABLE void stopAllWorkers(bool wait_finish);
+    void startWorkers(int run_mode = 0);
+
     Q_INVOKABLE void stopWorkers(bool wait_finish = true);
     Q_INVOKABLE void resetLogics();
     Q_INVOKABLE void startWorker(QString name,int run_mode = 0);

@@ -974,6 +974,9 @@ public:
     Q_PROPERTY(bool hasUnpickedNgProduct READ hasUnpickedNgProduct WRITE setHasUnpickedNgProduct NOTIFY hasUnpickedNgProductChanged)
     Q_PROPERTY(bool hasUnpickedProduct READ hasUnpickedProduct WRITE setHasUnpickedProduct NOTIFY hasUnpickedProductChanged)
     Q_PROPERTY(bool hasUpickedNgSensor READ hasUpickedNgSensor WRITE setHasUnpickedNgSensor NOTIFY hasUnpickedNgSensorChanged)
+    Q_PROPERTY(bool hasEmptyOffset READ hasEmptyOffset WRITE setHasEmptyOffset NOTIFY hasEmptyOffsetChanged)
+    Q_PROPERTY(double emptyTrayOffsetX READ emptyTrayOffsetX WRITE setEmptyTrayOffsetX NOTIFY emptyTrayOffsetXChanged)
+    Q_PROPERTY(double emptyTrayOffsetY READ emptyTrayOffsetY WRITE setEmptyTrayOffsetY NOTIFY emptyTrayOffsetYChanged)
     int runMode() const
     {
         return m_runMode;
@@ -1111,6 +1114,21 @@ public:
     bool sut2HasNgProduct() const
     {
         return m_sut2HasNgProduct;
+    }
+
+    bool hasEmptyOffset() const
+    {
+        return m_hasEmptyOffset;
+    }
+
+    double emptyTrayOffsetX() const
+    {
+        return m_emptyTrayOffsetX;
+    }
+
+    double emptyTrayOffsetY() const
+    {
+        return m_emptyTrayOffsetY;
     }
 
 public slots:
@@ -1369,6 +1387,35 @@ public slots:
         emit sut2HasNgProductChanged(m_sut2HasNgProduct);
     }
 
+    void setHasEmptyOffset(bool hasEmptyOffset)
+    {
+        if (m_hasEmptyOffset == hasEmptyOffset)
+            return;
+
+        m_hasEmptyOffset = hasEmptyOffset;
+        emit hasEmptyOffsetChanged(m_hasEmptyOffset);
+    }
+
+    void setEmptyTrayOffsetX(double emptyTrayOffsetX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_emptyTrayOffsetX, emptyTrayOffsetX))
+            return;
+
+        m_emptyTrayOffsetX = emptyTrayOffsetX;
+        emit emptyTrayOffsetXChanged(m_emptyTrayOffsetX);
+    }
+
+    void setEmptyTrayOffsetY(double emptyTrayOffsetY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_emptyTrayOffsetY, emptyTrayOffsetY))
+            return;
+
+        m_emptyTrayOffsetY = emptyTrayOffsetY;
+        emit emptyTrayOffsetYChanged(m_emptyTrayOffsetY);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayChanged(bool hasTray);
@@ -1425,6 +1472,12 @@ signals:
 
     void sut2HasNgProductChanged(bool sut2HasNgProduct);
 
+    void hasEmptyOffsetChanged(bool hasEmptyOffset);
+
+    void emptyTrayOffsetXChanged(double emptyTrayOffsetX);
+
+    void emptyTrayOffsetYChanged(double emptyTrayOffsetY);
+
 private:
     int m_runMode = 0;
     bool m_hasTray = false;
@@ -1454,6 +1507,9 @@ private:
     bool m_sut2HasNgSensor = false;
     bool m_sut2HasProduct = false;
     bool m_sut2HasNgProduct = false;
+    bool m_hasEmptyOffset = false;
+    double m_emptyTrayOffsetX = 0;
+    double m_emptyTrayOffsetY = 0;
 };
 
 #endif // SENSORLOADERPARAMETER_H

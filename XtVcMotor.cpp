@@ -29,8 +29,8 @@ void XtVcMotor::ConfigVCM()
     qInfo("ConfigVCM::vcm_id:%d,max_range:%f min_range:%f",vcm_id,max_range,min_range);
 
     SetSoftlandingSlot(vcm_id,GetCurveResource());
-    double current[4]{0.1,1,2,3};
-    double force[4]{100,1000,2000,3000};
+    double current[4]{0.2,0.5,0.8,1.2};
+    double force[4]{10,330,660,1000};
     if(parameters.needMapForce())
     {
         MapCurrent2Force(vcm_id,current,force,4);
@@ -90,7 +90,7 @@ void XtVcMotor::InitAllVCM()
         int res = Get_Init_Ready();
         if(res == 1)
         {
-            SetDebugLog(0);
+            //SetDebugLog(0);
             return;
         }
         if(res == -1)

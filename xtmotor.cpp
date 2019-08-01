@@ -32,6 +32,7 @@ int XtMotor::GetCurveResource()
 
 int XtMotor::GetThreadResource()
 {
+    qInfo("current thread Resource %d",thread_resource);
     return thread_resource++;
 }
 

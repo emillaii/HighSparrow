@@ -144,16 +144,16 @@ void LogicManager::run() {
     }
     else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA1_CMD)
     {
-        baseModuleManage->lut_module.moveToAA1PickLens(false,true);
+        baseModuleManage->lut_module.moveToAA1PickLens(false,false,true);
     }
     else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA1_CMD1)
     {
-        baseModuleManage->lut_module.moveToAA1PickLens(true,true);
+        baseModuleManage->lut_module.moveToAA1PickLens(true,false,true);
     }
     else if (m_currentMode == CommandType::LUT_PICK_LENS_TO_AA2_CMD)
     {
         qInfo("Move To AA2 PickLens");
-        baseModuleManage->lut_module.moveToAA2PickLens(false,true);
+        baseModuleManage->lut_module.moveToAA2PickLens(false,false,true);
     }
     else if (m_currentMode == CommandType::PERFORM_LOCATION)
     {

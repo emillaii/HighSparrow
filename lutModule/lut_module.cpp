@@ -641,11 +641,11 @@ void LutModule::performHandlingOperation(int cmd)
     qInfo("Lut Module perform command: %d", cmd);
     bool result = true;
     if(cmd == 1)
-        result =  moveToAA1UplookPR(false,true);
+        result =  moveToAA1UplookPR(false,true,true);
     else if(cmd == 2)
-        result =  moveToAA2UplookPR(false,true);
+        result =  moveToAA2UplookPR(false,true,true);
     else if(cmd == 3)
-        result =  moveToAA1UnPickLens(true);
+        result =  moveToAA1UnPickLens(true,true);
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
@@ -747,17 +747,17 @@ void LutModule::loadJsonConfig(QString file_name)
     PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
-bool LutModule::moveToAA1UplookPos(bool check_autochthonous)
+bool LutModule::moveToAA1UplookPos(bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA1UplookPos");
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_uplook_position.X(),aa1_uplook_position.Y(),aa1_uplook_position.Z(),check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_uplook_position.X(),aa1_uplook_position.Y(),aa1_uplook_position.Z(),check_autochthonous, check_softlanding);
 }
 
-bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous)
+bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA1UplookPR");
     uplook_location->OpenLight();
-    bool result = moveToAA1UplookPos(check_autochthonous);
+    bool result = moveToAA1UplookPos(check_autochthonous, check_softlanding);
     if(result)
     {
         if(has_material)
@@ -768,11 +768,11 @@ bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting,bool che
     return result;
 }
 
-bool LutModule::moveToAA1UplookPR(bool close_lighting, bool check_autochthonous)
+bool LutModule::moveToAA1UplookPR(bool close_lighting, bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA1UplookPR");
     PrOffset pr_offset;
-    if(moveToAA1UplookPR(pr_offset,close_lighting,check_autochthonous))
+    if(moveToAA1UplookPR(pr_offset,close_lighting,check_autochthonous, check_softlanding))
     {
         QJsonObject result;
         result.insert("prOffsetX", pr_offset.X);
@@ -786,17 +786,17 @@ bool LutModule::moveToAA1UplookPR(bool close_lighting, bool check_autochthonous)
     return false;
 }
 
-bool LutModule::moveToAA2UplookPos(bool check_autochthonous)
+bool LutModule::moveToAA2UplookPos(bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA2UplookPos");
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_uplook_position.X(),aa2_uplook_position.Y(),aa2_uplook_position.Z(),check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_uplook_position.X(),aa2_uplook_position.Y(),aa2_uplook_position.Z(),check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous)
+bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA2UplookPR");
     uplook_location->OpenLight();
-    bool result = moveToAA2UplookPos(check_autochthonous);
+    bool result = moveToAA2UplookPos(check_autochthonous,check_softlanding);
     if(result)
     {
         if(has_material)
@@ -807,11 +807,11 @@ bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting,bool che
     return result;
 }
 
-bool LutModule::moveToAA2UplookPR(bool close_lighting, bool check_autochthonous)
+bool LutModule::moveToAA2UplookPR(bool close_lighting, bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA2UplookPR");
     PrOffset pr_offset;
-    if(moveToAA2UplookPR(pr_offset,close_lighting,check_autochthonous))
+    if(moveToAA2UplookPR(pr_offset,close_lighting,check_autochthonous,check_softlanding))
     {
         QJsonObject result;
         result.insert("prOffsetX", pr_offset.X);
@@ -825,39 +825,39 @@ bool LutModule::moveToAA2UplookPR(bool close_lighting, bool check_autochthonous)
     return false;
 }
 
-bool LutModule::moveToLoadPos(bool check_autochthonous)
+bool LutModule::moveToLoadPos(bool check_autochthonous,bool check_softlanding)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToLoadPosAndCheckMaterial(bool has_lens,bool has_ng_lens,bool check_autochthonous)
+bool LutModule::moveToLoadPosAndCheckMaterial(bool has_lens,bool has_ng_lens,bool check_autochthonous,bool check_softlanding)
 {
     bool result = load_vacuum->checkHasMateriel(check_thread);
     result &= unload_vacuum->checkHasMateriel(check_thread);
-    result &= carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
+    result &= carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous,check_softlanding);
     result &=  checkLutLens(has_lens);
     result &=  checkLutNgLens(has_ng_lens);
     return result;
 }
 
-bool LutModule::moveToLutDownlookloadPos(bool check_autochthonous)
+bool LutModule::moveToLutDownlookloadPos(bool check_autochthonous,bool check_softlanding)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(lut_downlook_load_position.X(),lut_downlook_load_position.Y(),lut_downlook_load_position.Z(),check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(lut_downlook_load_position.X(),lut_downlook_load_position.Y(),lut_downlook_load_position.Z(),check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToLutDownlookUnloadPos(bool check_autochthonous)
+bool LutModule::moveToLutDownlookUnloadPos(bool check_autochthonous,bool check_softlanding)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(lut_downlook_unload_position.X(),lut_downlook_unload_position.Y(),lut_downlook_unload_position.Z(),check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(lut_downlook_unload_position.X(),lut_downlook_unload_position.Y(),lut_downlook_unload_position.Z(),check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToLoadUplookPos(bool check_autochthonous)
+bool LutModule::moveToLoadUplookPos(bool check_autochthonous,bool check_softlanding)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_uplook_position.X(),load_uplook_position.Y(),load_uplook_position.Z(),check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(load_uplook_position.X(),load_uplook_position.Y(),load_uplook_position.Z(),check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToLoadUplookPR(bool check_autochthonous)
+bool LutModule::moveToLoadUplookPR(bool check_autochthonous,bool check_softlanding)
 {
-    return moveToLoadUplookPos(check_autochthonous);
+    return moveToLoadUplookPos(check_autochthonous,check_softlanding);
     //    if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
     //        load_location->OpenLight();
     //        if(moveToLoadUplookPos(check_autochthonous))
@@ -878,17 +878,17 @@ double LutModule::getLoadUplookPRY()
     return load_location->getCurrentOffset().y();
 }
 
-bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous)
+bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous,bool check_softlanding)
 {
     sendCmd("::1","gripperOnReq");
     bool result = true;
     if(parameters.enablePickForce())
     {
-        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous);
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
     }
     else
     {
-        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous,check_softlanding);
     }
     if(result)
     {
@@ -913,31 +913,31 @@ bool LutModule::vcmReturn()
     return  carrier->motor_z->resetSoftLanding();
 }
 
-bool LutModule::moveToAA1PickLensPos(bool check_autochthonous)
+bool LutModule::moveToAA1PickLensPos(bool check_autochthonous,bool check_softlanding)
 {
     //if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
-    return carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
+    return carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous,check_softlanding);
     //}else{
     //    return true;
     //}
 }
 
-bool LutModule::moveToAAMeasurePickHeight(bool ishost, bool check_autochthonous)
+bool LutModule::moveToAAMeasurePickHeight(bool ishost, bool check_autochthonous,bool check_softlanding)
 {
     bool result = true;
     if(ishost)
-        result &= carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),0,check_autochthonous);
+        result &= carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),0,check_autochthonous,check_softlanding);
     else
-        result &=  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),0,check_autochthonous);
+        result &=  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),0,check_autochthonous,check_softlanding);
 
     if(result)
         result &= carrier->motor_z-> SearchPosByForce(parameters.pickSpeed(),parameters.pickForce());
     return result;
 }
 
-bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
+bool LutModule::moveToAA1UnPickLens(bool check_autochthonous,bool check_softlanding)
 {
-    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous);
+    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
     if(result)
     {
         qInfo("moveToAA1UnPickLens Start ZSerchByForce");
@@ -952,26 +952,26 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous)
     return result;
 }
 
-bool LutModule::moveToAA2PickLensPos(bool check_autochthonous)
+bool LutModule::moveToAA2PickLensPos(bool check_autochthonous,bool check_softlanding)
 {
     //    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否移动？"))){
     //        return true;
     //    }
-    return carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
+    return carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
+bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA2PickLens");
     sendCmd("remote","gripperOnReq");
     bool result = true;
     if(parameters.enablePickForce())
     {
-        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous);
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
     }
     else
     {
-        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous);
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous,check_softlanding);
     }
         if(result)
     {
@@ -991,10 +991,10 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous)
     return result;
 }
 
-bool LutModule::moveToAA2UnPickLens(bool check_autochthonous)
+bool LutModule::moveToAA2UnPickLens(bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA2UnPickLens Start to aa2 unpickLens");
-    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous);
+    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
     if(result)
     {
         qInfo("moveToAA2UnPickLens Start ZSerchByForce");
@@ -1009,38 +1009,38 @@ bool LutModule::moveToAA2UnPickLens(bool check_autochthonous)
     return result;
 }
 
-bool LutModule::moveToAA1MushroomLens(bool check_autochthonous)
+bool LutModule::moveToAA1MushroomLens(bool check_autochthonous,bool check_softlanding)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_mushroom_position.X(),aa1_mushroom_position.Y(),aa1_mushroom_position.Z(),check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_mushroom_position.X(),aa1_mushroom_position.Y(),aa1_mushroom_position.Z(),check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToAA2MushroomLens(bool check_autochthonous)
+bool LutModule::moveToAA2MushroomLens(bool check_autochthonous,bool check_softlanding)
 {
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_mushroom_position.X(),aa2_mushroom_position.Y(),aa2_mushroom_position.Z(),check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_mushroom_position.X(),aa2_mushroom_position.Y(),aa2_mushroom_position.Z(),check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToAA1ReturnPos(bool check_autochthonous)
+bool LutModule::moveToAA1ReturnPos(bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA1readyPos(%f,%f,%f)",aa1_uplook_position.X(),0,0);
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_uplook_position.X(),0,0,check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_uplook_position.X(),0,0,check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToAA2ReturnPos(bool check_autochthonous)
+bool LutModule::moveToAA2ReturnPos(bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA2readyPos(%f,%f,%f)",aa2_uplook_position.X(),0,0);
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_uplook_position.X(),0,0,check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_uplook_position.X(),0,0,check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToAA1ReadyPos(bool check_autochthonous)
+bool LutModule::moveToAA1ReadyPos(bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA1readyPos(%f,%f,%f)",aa1_unpicklens_position.X(),0,0);
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_unpicklens_position.X(),0,0,check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_unpicklens_position.X(),0,0,check_autochthonous,check_softlanding);
 }
 
-bool LutModule::moveToAA2ReadyPos(bool check_autochthonous)
+bool LutModule::moveToAA2ReadyPos(bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA2readyPos(%f,%f,%f)",aa2_unpicklens_position.X(),0,0);
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_unpicklens_position.X(),0,0,check_autochthonous);
+    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_unpicklens_position.X(),0,0,check_autochthonous,check_softlanding);
 }
 
 bool LutModule::checkLutLensSync(bool check_state)

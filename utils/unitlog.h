@@ -26,6 +26,7 @@ private:
     QString serverAddress;
     QStringList headers;
     int headers_length;
+    QString temp_file_name = "";
 public slots:
     bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
     void clearHeaders();

@@ -55,7 +55,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToAA2PickLensPos(true)
+                lutModule.moveToAA2PickLensPos(false,true)
             }
         }
         Button {
@@ -78,7 +78,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToAAMeasurePickHeight(false,true)
+                lutModule.moveToAAMeasurePickHeight(false,false,true)
             }
         }
         Button {

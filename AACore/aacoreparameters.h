@@ -61,6 +61,10 @@ class AACoreParameters : public PropertyBase
 
     int m_minIntensityDiff = 10;
 
+    double m_zPeakDiff05Max = 3;
+
+    double m_zPeakDiff08Max = 5;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -94,6 +98,8 @@ public:
     Q_PROPERTY(bool enableCheckDispense READ enableCheckDispense WRITE setEnableCheckDispense NOTIFY enableCheckDispenseChanged)
     Q_PROPERTY(int checkDispenseCount READ checkDispenseCount WRITE setCheckDispenseCount NOTIFY checkDispenseCountChanged)
     Q_PROPERTY(int minIntensityDiff READ minIntensityDiff WRITE setMinIntensityDiff NOTIFY minIntensityDiffChanged)
+    Q_PROPERTY(double zPeakDiff05Max READ zPeakDiff05Max WRITE setZPeakDiff05Max NOTIFY zPeakDiff05MaxChanged)
+    Q_PROPERTY(double zPeakDiff08Max READ zPeakDiff08Max WRITE setZPeakDiff08Max NOTIFY zPeakDiff08MaxChanged)
     double EFL() const
     {
         return m_EFL;
@@ -226,6 +232,16 @@ public:
     int minIntensityDiff() const
     {
         return m_minIntensityDiff;
+    }
+
+    double zPeakDiff05Max() const
+    {
+        return m_zPeakDiff05Max;
+    }
+
+    double zPeakDiff08Max() const
+    {
+        return m_zPeakDiff08Max;
     }
 
 public slots:
@@ -454,6 +470,26 @@ public slots:
         emit minIntensityDiffChanged(m_minIntensityDiff);
     }
 
+    void setZPeakDiff05Max(double zPeakDiff05Max)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zPeakDiff05Max, zPeakDiff05Max))
+            return;
+
+        m_zPeakDiff05Max = zPeakDiff05Max;
+        emit zPeakDiff05MaxChanged(m_zPeakDiff05Max);
+    }
+
+    void setZPeakDiff08Max(double zPeakDiff08Max)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zPeakDiff08Max, zPeakDiff08Max))
+            return;
+
+        m_zPeakDiff08Max = zPeakDiff08Max;
+        emit zPeakDiff08MaxChanged(m_zPeakDiff08Max);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -471,6 +507,8 @@ signals:
     void enableCheckDispenseChanged(bool enableCheckDispense);
     void checkDispenseCountChanged(int checkDispenseCount);
     void minIntensityDiffChanged(int minIntensityDiff);
+    void zPeakDiff05MaxChanged(double zPeakDiff05Max);
+    void zPeakDiff08MaxChanged(double zPeakDiff08Max);
 };
 class AACoreStates: public PropertyBase
 {

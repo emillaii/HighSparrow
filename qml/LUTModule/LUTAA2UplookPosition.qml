@@ -54,7 +54,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToAA2UplookPos()
+                lutModule.moveToAA2UplookPos(false,true)
             }
         }
         Button {

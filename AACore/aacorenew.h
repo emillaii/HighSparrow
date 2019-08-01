@@ -105,8 +105,8 @@ private:
     void SetLens();
     void SetSensor();
     void SetProduct();
-    double getDev(int count,double numbers,...);
-    double get_Dev(int count,double numbers,...);
+    double getSFRDev_mm(int count,double numbers,...);
+    double getzPeakDev_um(int count,double numbers,...);
 private:
     QString sensorID = "";
     int serverMode = 0;

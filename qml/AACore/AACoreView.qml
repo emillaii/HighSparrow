@@ -108,7 +108,7 @@ ItemDelegate {
                     RowLayout {
 
                         Label {
-                            text: qsTr("MInDev")
+                            text: qsTr("MinDev")
                         }
                         TextField {
                             text: aaCoreParams.minDev
@@ -133,6 +133,34 @@ ItemDelegate {
                             }
                             onEditingFinished: {
                                 aaCoreParams.setMaxDev(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("05F ZPeak Diff")
+                        }
+                        TextField {
+                            text: aaCoreParams.zPeakDiff05Max
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setZPeakDiff05Max(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("08F ZPeak Diff")
+                        }
+                        TextField {
+                            text: aaCoreParams.zPeakDiff08Max
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setZPeakDiff08Max(text)
                             }
                         }
                     }

@@ -1017,6 +1017,7 @@ void TrayLoaderModule::run(bool has_tray)
             QMutexLocker temp_locker(&tray_mutex);
             allow_change_tray = states.allowChangeTray();
         }
+        if(!is_run)break;
         //送出空盘
         //准备推出空盘
         if(allow_change_tray&&states.hasReadyTray()&&states.hasWorkTray()&&(!states.readyToPushEmptyTray()))
@@ -1037,6 +1038,7 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setReadyToPushEmptyTray(true);
             }
         }
+        if(!is_run)break;
         //去取盘
         //推入满盘
         //推出空盘
@@ -1062,6 +1064,7 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setIsReadyTrayPushed(true);
             }
         }
+        if(!is_run)break;
         //无空盘时推出满盘
         if(allow_change_tray&&states.hasReadyTray()&&(!states.isReadyTrayPushed())&&(!states.hasWorkTray())&&states.readyToPushReadyTray())
         {
@@ -1081,6 +1084,7 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setIsReadyTrayPushed(true);
             }
         }
+        if(!is_run)break;
         //到工作位置
         //准备接备用盘
         if(allow_change_tray&&states.hasReadyTray()&&states.isReadyTrayPushed()&&(!states.hasWorkTray())&&(!states.readyToPushEmptyTray()))
@@ -1125,6 +1129,7 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setIsReadyTrayPushed(false);
             }
         }
+        if(!is_run)break;
         //无备用盘时推出空盘
         if((!states.hasReadyTray())&&(!states.hasWorkTray())&&states.readyToPushEmptyTray()&&states.exitClipReady())
         {
@@ -1144,6 +1149,7 @@ void TrayLoaderModule::run(bool has_tray)
             }
             states.setReadyToPushEmptyTray(false);
         }
+        if(!is_run)break;
         //提示换出料弹夹
         if(states.hasExitClipFull()&&(!states.exitClipReady()))
         {
@@ -1153,6 +1159,7 @@ void TrayLoaderModule::run(bool has_tray)
             if(is_run)
                 states.setHasExitClipFull(false);
         }
+        if(!is_run)break;
         //入料弹夹到位
         if((!states.hasEntranceClipEmpty())&&(!states.entanceClipReady()))
         {
@@ -1170,6 +1177,7 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setEntanceClipReady(true);
             }
         }
+        if(!is_run)break;
         //准备接备用盘
         if((!states.readyToPushReadyTray()))
         {
@@ -1198,6 +1206,7 @@ void TrayLoaderModule::run(bool has_tray)
 
             }
         }
+        if(!is_run)break;
         //弹夹出盘并拉盘到拉备用位置
         if((!states.hasReadyTray())&&(!states.hasPulledTray())&&states.entanceClipReady()&&states.readyToPushReadyTray())
         {
@@ -1224,6 +1233,7 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setHasPulledTray(true);
             }
         }
+        if(!is_run)break;
         //提示换入料弹夹
         if(states.hasEntranceClipEmpty()&&(!states.entanceClipReady()))
         {
@@ -1233,6 +1243,7 @@ void TrayLoaderModule::run(bool has_tray)
             if(is_run)
                 states.setHasEntranceClipEmpty(false);
         }
+        if(!is_run)break;
         //出料弹夹到位
         if((!states.hasExitClipFull())&&(!states.exitClipReady()))
         {
@@ -1250,6 +1261,7 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setExitClipReady(true);
             }
         }
+        if(!is_run)break;
     }
 
 }

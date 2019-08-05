@@ -79,16 +79,25 @@ Grid {
                 id: axisY1
                 titleText: "SFR"
                 min: 0
-                max: 100
+                max: 60
+                tickCount: 13
                 gridVisible: true
             }
 
             ValueAxis {
                 titleText: "z (um)"
                 id: axisX
+                tickCount: 7
                 gridVisible: true
             }
 
+            LineSeries
+            {
+                name:"zPeak"
+                id:zPeak
+                axisX: axisX
+                axisY: axisY1
+            }
             SplineSeries {
                 name: "CC "
                 id: ccSeries
@@ -159,6 +168,8 @@ Grid {
                 urSeries.append(dataFromCpp.wURValue.x, dataFromCpp.wURValue.y)
                 llSeries.append(dataFromCpp.wLLValue.x, dataFromCpp.wLLValue.y)
                 lrSeries.append(dataFromCpp.wLRValue.x, dataFromCpp.wLRValue.y)
+                zPeak.append(dataFromCpp.zPeak,0)
+                zPeak.append(dataFromCpp.zPeak,60)
                 axisX.min = ccSeries.at(0).x
                 axisX.max = ccSeries.at(ccSeries.count - 1).x
             }
@@ -169,6 +180,7 @@ Grid {
                 urSeries.clear()
                 llSeries.clear()
                 lrSeries.clear()
+                zPeak.clear()
             }
         }
     }
@@ -283,16 +295,25 @@ Grid {
                 id: axisY2
                 titleText: "SFR"
                 min: 0
-                max: 100
+                max: 60
+                tickCount: 13
                 gridVisible: true
             }
 
             ValueAxis {
                 titleText: "z (um)"
                 id: axisX2
+                tickCount: 7
                 gridVisible: true
-            }
 
+            }
+           LineSeries
+           {
+               name:"zPeak"
+               id:zPeak2
+               axisX: axisX2
+               axisY: axisY2
+           }
             SplineSeries {
                 name: "CC "
                 id: ccSeries2
@@ -363,6 +384,8 @@ Grid {
                 urSeries2.append(dataFromCpp2.wURValue.x, dataFromCpp2.wURValue.y)
                 llSeries2.append(dataFromCpp2.wLLValue.x, dataFromCpp2.wLLValue.y)
                 lrSeries2.append(dataFromCpp2.wLRValue.x, dataFromCpp2.wLRValue.y)
+                zPeak2.append(dataFromCpp2.zPeak,0)
+                zPeak2.append(dataFromCpp2.zPeak,60)
                 axisX2.min = ccSeries2.at(0).x
                 axisX2.max = ccSeries2.at(ccSeries2.count - 1).x
             }
@@ -373,6 +396,7 @@ Grid {
                 urSeries2.clear()
                 llSeries2.clear()
                 lrSeries2.clear()
+                zPeak2.clear()
             }
         }
     }

@@ -22,7 +22,6 @@ SOURCES += \
     devicestatesgeter.cpp \
     logmodel.cpp \
     main.cpp \
-    performhandling.cpp \
     vision/baslerpyloncamera.cpp \
     highsprrow.cpp \
     utils/errorcode.cpp \
@@ -139,7 +138,6 @@ INCLUDEPATH += $$PWD/../libs/DTCCM2_SDK
 DEPENDPATH += $$PWD/../libs/DTCCM2_SDK/X64_Lib
 
 HEADERS += \
-    performhandling.h \
     vision/baslerpyloncamera.h \
     config.h \
     devicestatesgeter.h \

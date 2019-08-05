@@ -130,6 +130,7 @@ void LensLoaderModule::run(bool has_material)
                 break;
             }
         }
+        if(!is_run)break;
         //放NGLens
         if(states.hasTray()&&(!states.allowChangeTray())&&states.hasPickedNgLens())
         {
@@ -195,12 +196,14 @@ void LensLoaderModule::run(bool has_material)
                 finish_stop = false;
             }
         }
+        if(!is_run)break;
         //检测是否需要换盘
         if((!states.allowChangeTray())&&(!states.hasPickedLens())&&(!states.lutHasNgLens()))
         {
             if((!states.hasTray())||checkNeedChangeTray())
                 states.setAllowChangeTray(true);
         }
+        if(!is_run)break;
         //取料
         if((!finish_stop)&&states.hasTray()&&(!states.allowChangeTray())&&(!states.lutHasNgLens())&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
         {
@@ -280,6 +283,7 @@ void LensLoaderModule::run(bool has_material)
             if(current_count<=0)
                 finish_stop = true;
         }
+        if(!is_run)break;
         //等待位置
         if(!movePickerToLUTPos1(true))
         {
@@ -287,6 +291,7 @@ void LensLoaderModule::run(bool has_material)
             is_run = false;
             break;
         }
+        if(!is_run)break;
         //执行换盘
         if(states.allowChangeTray())
         {
@@ -335,6 +340,7 @@ void LensLoaderModule::run(bool has_material)
                 qInfo("sendChangeTray");
             }
         }
+        if(!is_run)break;
         //放料到LUT
         if(need_load_lens&&states.hasPickedLens())
         {
@@ -369,6 +375,7 @@ void LensLoaderModule::run(bool has_material)
                 states.setLutLensID(states.pickedLensID());
             }
         }
+        if(!is_run)break;
         //取NGlens
         if(lut_has_ng_lens&&(!states.hasPickedLens())&&(!states.hasPickedNgLens()))
         {
@@ -418,6 +425,7 @@ void LensLoaderModule::run(bool has_material)
                 qInfo("picked ng lens index %d, tray_id %d",states.pickedLensID(),states.pickedTrayID());
             }
         }
+        if(!is_run)break;
         //判断是否完成
         if((!states.lutHasNgLens())&&(!states.needLoadLens()))
         {
@@ -430,6 +438,7 @@ void LensLoaderModule::run(bool has_material)
                 states.setLoadingLens(false);
             }
         }
+        if(!is_run)break;
     }
     qInfo("Lens Loader module end of thread");
 }

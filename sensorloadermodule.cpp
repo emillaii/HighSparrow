@@ -571,6 +571,7 @@ void SensorLoaderModule::run(bool has_material)
 //        if(!has_task)
             QThread::msleep(1);
         has_task = false;
+        if(!is_run)break;
         //放成品
         if((!states.allowChangeTray())&&states.hasTray()&&states.hasPickedProduct())
         {
@@ -623,6 +624,7 @@ void SensorLoaderModule::run(bool has_material)
             tray->setCurrentMaterialState(MaterialState::IsProduct,product_tray_index);
             states.setHasPickedProduct(false);
         }
+        if(!is_run)break;
         //放Ng成品
         if((!states.allowChangeTray())&&states.hasTray()&&states.hasPickedNgProduct())
         {
@@ -671,6 +673,7 @@ void SensorLoaderModule::run(bool has_material)
             states.setHasPickedNgProduct(false);
             if(!is_run)break;
         }
+        if(!is_run)break;
         //放NGSensor
         if((!states.allowChangeTray())&&states.hasTray()&&states.hasPickedNgSensor())
         {
@@ -720,6 +723,7 @@ void SensorLoaderModule::run(bool has_material)
             states.setHasPickedNgSensor(false);
             if(!is_run)break;
         }
+        if(!is_run)break;
         //取料
         if((!finish_stop)&&(!tray->isTrayNeedChange(0))&&(!states.allowChangeTray())&&states.hasTray()&&(!states.hasPickedSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgProduct())&&(!states.hasPickedNgSensor()))
         {
@@ -781,12 +785,14 @@ void SensorLoaderModule::run(bool has_material)
             picked_material = tray->getCurrentIndex(sensor_tray_index);
             if(!is_run)break;
         }
+        if(!is_run)break;
         //检测是否需要换盘
         if((!states.allowChangeTray()))
         {
             if((!states.hasTray())||checkTrayNeedChange())
                 states.setAllowChangeTray(true);
         }
+        if(!is_run)break;
         //sut操作
         if ((!states.allowChangeTray())&&(!requestQueue.isEmpty()) && (!states.beExchangeMaterial())&&states.hasPickedSensor()&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct())&&(!states.hasPickedNgProduct()))
         {
@@ -816,9 +822,8 @@ void SensorLoaderModule::run(bool has_material)
                 sendEvent("sensorResp");
             }
         }
-
+        if(!is_run)break;
         //等待位置
-
         if(states.allowChangeTray())
         {
             if(!moveToStandbyPos(true))
@@ -900,6 +905,7 @@ void SensorLoaderModule::run(bool has_material)
                 }
             }
         }
+        if(!is_run)break;
         //执行换盘
         if(states.allowChangeTray())
         {
@@ -951,6 +957,7 @@ void SensorLoaderModule::run(bool has_material)
                 qInfo("sendChangeTray");
             }
         }
+        if(!is_run)break;
 
         if ((!states.allowChangeTray())&& states.beExchangeMaterial())
         {
@@ -1258,6 +1265,7 @@ void SensorLoaderModule::run(bool has_material)
                 }
             }
         }
+        if(!is_run)break;
 
         //        //放料到SUT
         //        if(states.needLoadSensor()&&states.hasPickedSensor())

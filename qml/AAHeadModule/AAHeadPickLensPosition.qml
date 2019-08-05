@@ -6,20 +6,65 @@ import QtQuick.Layouts 1.11
 ColumnLayout {
     RowLayout {
         Label {
-            text: qsTr("AA_Z")
+            text: qsTr("AA_A")
         }
         TextField {
-            text: aaHeadParams.PickLensPositionZ
+            text: aaHeadPickLensPosition.A
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                aaHeadParams.setPickLensPositionZ(text)
+                aaHeadPickLensPosition.setA(text)
+            }
+        }
+        Label {
+            text: qsTr("AA_B")
+        }
+        TextField {
+            text: aaHeadPickLensPosition.B
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                aaHeadPickLensPosition.setB(text)
+            }
+        }
+        Label {
+            text: qsTr("AA_C")
+        }
+        TextField {
+            text: aaHeadPickLensPosition.C
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                aaHeadPickLensPosition.setC(text)
             }
         }
     }
+
+//    RowLayout {
+//        Label {
+//            text: qsTr("AA_Z")
+//        }
+//        TextField {
+//            text: aaHeadParams.PickLensPositionZ
+//            horizontalAlignment: TextInput.AlignHCenter
+//            validator: DoubleValidator {
+//                decimals: 6
+//                notation: DoubleValidator.StandardNotation
+//            }
+//            onEditingFinished: {
+//                aaHeadParams.setPickLensPositionZ(text)
+//            }
+//        }
+//    }
 
     RowLayout {
         Button {
@@ -35,8 +80,15 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                var z = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorZName)
-                aaHeadParams.setPickLensPositionZ(z)
+//                var z = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorZName)
+//                aaHeadParams.setPickLensPositionZ(z)
+                var a = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorAName)
+                var b = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorBName)
+                var c = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorCName)
+
+                aaHeadMushroomPosition.setA(a)
+                aaHeadMushroomPosition.setB(b)
+                aaHeadMushroomPosition.setC(c)
             }
         }
     }

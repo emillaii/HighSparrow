@@ -55,10 +55,11 @@ ItemDelegate {
                 AAHeadPickLensPosition {}
             }
 
-            GroupBox{
-                title: qsTr("OC Position")
-                AAHeadOCPosition {}
-            }
+//            // Comment out, not used
+//            GroupBox{
+//                title: qsTr("OC Position")
+//                AAHeadOCPosition {}
+//            }
         }
     }
 }

@@ -90,7 +90,7 @@ void XtVcMotor::InitAllVCM()
         int res = Get_Init_Ready();
         if(res == 1)
         {
-            //SetDebugLog(0);
+            SetDebugLog(0);
             return;
         }
         if(res == -1)

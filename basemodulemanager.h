@@ -219,6 +219,7 @@ public:
     Q_INVOKABLE bool loadDispenseParam();
     Q_INVOKABLE void showSettingDialog();
     Q_INVOKABLE void showMachineMap();
+    Q_INVOKABLE void loadModuleParameter(QString module_name);
     bool loadVcmFile(QString file_name);
     bool saveVcmfile(QString file_name);
     bool loadMotorFile(QString file_name);
@@ -233,7 +234,6 @@ public:
     bool saveCalibrationFiles(QString file_name);
     bool loadMotorLimitFiles(QString file_name);
     bool saveMotorLimitFiles(QString file_name);
-
     bool loadJsonArray(QString file_name, QJsonArray &array);
     bool saveJsonArray(QString file_name,QJsonArray &array);
     bool loadJsonObject(QString file_name, QJsonObject &object);

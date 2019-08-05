@@ -35,6 +35,12 @@ ItemDelegate {
                         sut_model_motions.open()
                     }
                 }
+                Button{
+                    text:qsTr("加载")
+                    onClicked:{
+                        baseModuleManager.loadModuleParameter(sutParams.moduleName)
+                    }
+                }
             }
 
 

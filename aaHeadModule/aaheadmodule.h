@@ -65,7 +65,8 @@ private:
 
 public:
     AAHeadParameters parameters;
-    Position6D mushroom_position;
+    Position6D mushroom_position;   // aahead position in Pr2Bond, Only A B C for now
+    Position6D pick_lens_position;  // aahead position in pick lens, requested by Tao
     bool waiting_lens = false;
     bool receive_lens = false;
     double uplook_x = 0;

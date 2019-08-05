@@ -70,6 +70,33 @@ bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool ch
     return result;
 }
 
+bool MaterialCarrier::Move_SZ_SX_Y_X_Sync(double x, double y, double y_error, bool check_autochthonous, bool check_softlanding, double check_distance, int timeout)
+{
+
+    if (check_softlanding)
+    {
+        if (!motor_z->resetSoftLanding(timeout)) return false;
+    }
+
+    if(check_autochthonous&&CheckXYZArrived(x,y,parameters.SafetyZ()))
+        return true;
+    bool result;
+    if(CheckXYDistanceBigger(x,y,check_distance))
+    {
+        result = motor_z->MoveToPosSync(parameters.SafetyZ(),0.1);
+        if(!result) return false;
+        if(fabs(y - motor_y->GetFeedbackPos()) > check_distance)
+        {
+            result = motor_x->MoveToPosSync(parameters.SafetyX());
+            if(!result) return false;
+        }
+    }
+    result = motor_y->MoveToPosSync(y,y_error);
+    if(!result) return false;
+    result = motor_x->MoveToPosSync(x);
+    return result;
+}
+
 bool MaterialCarrier::Move_SZ_SX_YS_X_Z_Sync(double x, double y, double z, bool check_autochthonous, bool check_softlanding, double check_distance, int timeout)
 {
     if (check_softlanding)

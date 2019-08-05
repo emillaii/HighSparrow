@@ -98,6 +98,7 @@ bool LensPickArm::stepMove_XYTp_Pos(PrOffset position, bool check_softlanding, i
     double target_x = position.X + motor_x->GetFeedbackPos();
     double target_y = position.Y +  motor_y->GetFeedbackPos();
     double target_t = position.Theta +  picker->motor_t->GetFeedbackPos();
+    qInfo("target_x: %f target_y: %f target_t: %f",target_x,target_y,target_t);
     bool result = motor_x->MoveToPos(target_x);
     result &= motor_y->MoveToPos(target_y);
     result &= picker->motor_t->MoveToPosSync(target_t - 2);

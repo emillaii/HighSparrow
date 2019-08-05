@@ -18,6 +18,10 @@ public:
     Q_PROPERTY(QString updownlookDownLocationName READ updownlookDownLocationName WRITE setUpdownlookDownLocationName NOTIFY updownlookDownLocationNameChanged)
     Q_PROPERTY(double cameraTheta READ cameraTheta WRITE setCameraTheta NOTIFY cameraThetaChanged)
     Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
+    Q_PROPERTY(double loadPosArrivedY READ loadPosArrivedY WRITE setLoadPosArriedY NOTIFY loadPosArrivedYChanged)
+    Q_PROPERTY(double prPosArrivedY READ prPosArrivedY WRITE setPrPosArrivedY NOTIFY prPosArrivedYChanged)
+    Q_PROPERTY(double mushroomPosArrivedY READ mushroomPosArrivedY WRITE setMushroomPosArrivedY NOTIFY mushroomPosArrivedYChanged)
+    Q_PROPERTY(double zArrivedEorror READ zArrivedEorror WRITE setzArrivedEorror NOTIFY zArrivedEorrorChanged)
     double Force() const
     {
         return m_Force;
@@ -70,6 +74,26 @@ public:
     QString moduleName() const
     {
         return m_moduleName;
+    }
+
+    double loadPosArrivedY() const
+    {
+        return m_yArrivedError;
+    }
+
+    double zArrivedEorror() const
+    {
+        return m_zArrivedEorror;
+    }
+
+    double prPosArrivedY() const
+    {
+        return m_prPosArrivedY;
+    }
+
+    double mushroomPosArrivedY() const
+    {
+        return m_mushroomPosArrivedY;
     }
 
 public slots:
@@ -173,6 +197,46 @@ public slots:
         emit moduleNameChanged(m_moduleName);
     }
 
+    void setLoadPosArriedY(double yArrivedError)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_yArrivedError, yArrivedError))
+            return;
+
+        m_yArrivedError = yArrivedError;
+        emit loadPosArrivedYChanged(m_yArrivedError);
+    }
+
+    void setzArrivedEorror(double zArrivedEorror)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zArrivedEorror, zArrivedEorror))
+            return;
+
+        m_zArrivedEorror = zArrivedEorror;
+        emit zArrivedEorrorChanged(m_zArrivedEorror);
+    }
+
+    void setPrPosArrivedY(double prPosArrivedY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_prPosArrivedY, prPosArrivedY))
+            return;
+
+        m_prPosArrivedY = prPosArrivedY;
+        emit prPosArrivedYChanged(m_prPosArrivedY);
+    }
+
+    void setMushroomPosArrivedY(double mushroomPosArrivedY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_mushroomPosArrivedY, mushroomPosArrivedY))
+            return;
+
+        m_mushroomPosArrivedY = mushroomPosArrivedY;
+        emit mushroomPosArrivedYChanged(m_mushroomPosArrivedY);
+    }
+
 signals:
     void paramsChanged(double Force);
 
@@ -198,6 +262,14 @@ signals:
 
     void moduleNameChanged(QString moduleName);
 
+    void loadPosArrivedYChanged(double loadPosArrivedY);
+
+    void zArrivedEorrorChanged(double zArrivedEorror);
+
+    void prPosArrivedYChanged(double prPosArrivedY);
+
+    void mushroomPosArrivedYChanged(double mushroomPosArrivedY);
+
 private:
     double m_Force = 0;
     QString m_motorXName = "SUT_X";
@@ -210,6 +282,10 @@ private:
     QString m_updownlookDownLocationName;
     double m_cameraTheta = 0;
     QString m_moduleName = "SUT1Module";
+    double m_yArrivedError = 10;
+    double m_zArrivedEorror = 0.1;
+    double m_prPosArrivedY = 10;
+    double m_mushroomPosArrivedY = 1;
 };
 
 class SutState:public PropertyBase

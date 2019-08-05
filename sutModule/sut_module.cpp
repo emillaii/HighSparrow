@@ -129,8 +129,17 @@ bool SutModule::moveToDownlookSaveImage(QString imageName,bool close_lighting,bo
 bool SutModule::moveToLoadPos(bool check_autochthonous)
 {
     qInfo("moveToLoadPos");
-//    popgpin->Set(true);
-    return carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
+    bool result = carrier->Move_SZ_SX_Y_X_Sync(load_position.X(),load_position.Y(),parameters.loadPosArrivedY(),check_autochthonous);
+    result &= popgpin->Set(false,false);
+    if(result)
+    {
+        qInfo("moveToLoadPos z");
+        result &= carrier->motor_z->MoveToPosSync(load_position.Z(),0.1);
+        qInfo("moveToLoadPos z");
+        result &= carrier->motor_y->WaitArrivedTargetPos(load_position.Y());
+    }
+    qInfo("moveToLoadPos");
+    return result;
 }
 
 bool SutModule::moveToDownlookPos(bool check_autochthonous)
@@ -226,6 +235,7 @@ bool SutModule::moveToToolUplookPos(bool check_autochthonous)
 
 bool SutModule::moveToMushroomPos(bool check_autochthonous)
 {
+    popgpin->Set(true);
     return carrier->Move_SZ_SX_YS_X_Z_Sync(mushroom_positon.X(),mushroom_positon.Y(),mushroom_positon.Z(),check_autochthonous);
 }
 

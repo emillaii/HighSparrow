@@ -23,6 +23,7 @@ public:
     bool CheckXYDistanceBigger(double x,double y,double check_distance);
     bool Move_SZ_XY_Z_Sync(double x,double y,double z,int timeout = 3000);
     bool Move_SZ_SX_Y_X_Z_Sync(double x,double y,double z,bool check_autochthonous = false,bool check_softlanding = false, double check_distance = 0.1,int timeout = 3000);
+    bool Move_SZ_SX_Y_X_Sync(double x,double y,double y_error,bool check_autochthonous = false,bool check_softlanding = false, double check_distance = 0.1,int timeout = 3000);
     bool Move_SZ_SX_YS_X_Z_Sync(double x,double y,double z,bool check_autochthonous = false,bool check_softlanding = false,double check_distance = 0.1,int timeout = 3000);
     bool Move_SZ_SY_X_Y_Z_Sync(double x,double y,double z,bool check_autochthonous = false,bool check_softlanding = false,double check_distance = 5, int timeout = 3000);
     bool Move_SZ_SY_X_YS_Z_Sync(double x,double y,double z,bool check_autochthonous = false,bool check_softlanding = false,double check_distance = 5, int timeout = 3000);

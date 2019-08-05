@@ -29,6 +29,7 @@ class AAData : public QThread
     Q_PROPERTY(double wURPeakZ READ wURPeakZ WRITE setWURPeakZ)
     Q_PROPERTY(double wLLPeakZ READ wLLPeakZ WRITE setWLLPeakZ)
     Q_PROPERTY(double wLRPeakZ READ wLRPeakZ WRITE setWLRPeakZ)
+    Q_PROPERTY(double zPeak READ zPeak WRITE setZPeak NOTIFY zPeakChanged)
     Q_PROPERTY(QString layer0 READ layer0 WRITE setLayer0)
     Q_PROPERTY(QString layer1 READ layer1 WRITE setLayer1)
     Q_PROPERTY(QString layer2 READ layer2 WRITE setLayer2)
@@ -142,6 +143,11 @@ public:
         return m_maxValue;
     }
 
+    double zPeak() const
+    {
+        return m_zPeak;
+    }
+
 public slots:
     void setDev(double dev)
     {
@@ -203,9 +209,21 @@ public slots:
         m_layer3 = layer3;
     }
 
+    void setZPeak(double zPeak)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zPeak, zPeak))
+            return;
+
+        m_zPeak = zPeak;
+        emit zPeakChanged(m_zPeak);
+    }
+
 signals:
     void wValueChanged();
     void wValueClear();
+    void zPeakChanged(double zPeak);
+
 private slots:
     void wTimeout();
 private:
@@ -252,6 +270,8 @@ private:
     double m_minValue;
 
     double m_maxValue;
+
+    double m_zPeak;
 
 protected:
     void run();

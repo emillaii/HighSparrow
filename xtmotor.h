@@ -84,8 +84,10 @@ public:
     virtual bool SlowMoveToPos(double pos,double low_vel, int thread = -1);
     virtual bool WaitMoveStop(int timeout = 30000);
     bool WaitArrivedTargetPos(double target_position,int timeout=10000);
+    bool WaitArrivedTargetPos(double target_position,double arived_error,int timeout=10000);
     bool WaitArrivedTargetPos(int timeout = 10000);
     virtual bool MoveToPosSync(double pos,int thread = -1,int time_out = 30000);
+    virtual bool MoveToPosSync(double pos,double arrived_error,int thread = -1,int time_out = 30000);
     bool MoveToMinPosSync(int time_out = 3000);
     bool MoveToPosSafty(double pos,int thread = -1);
     bool CheckArrivedTargetPos(double target_position);

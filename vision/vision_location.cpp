@@ -166,6 +166,7 @@ PrOffset VisionLocation::getCurrentResult()
         temp_offset.X = current_result.X;
         temp_offset.Y = current_result.Y;
     }
+    temp_offset.Theta = current_result.Theta;
     return temp_offset;
 }
 
@@ -182,6 +183,7 @@ PrOffset VisionLocation::getCurrentResult(bool use_origin)
         temp_offset.X = current_result.X;
         temp_offset.Y = current_result.Y;
     }
+    temp_offset.Theta = current_result.Theta;
     return temp_offset;
 }
 

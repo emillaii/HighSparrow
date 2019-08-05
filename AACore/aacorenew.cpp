@@ -1161,14 +1161,6 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 
     step_move_timer.start();
     double z_peak = aa_result["zPeak"].toDouble();
-    double all_coefficient = parameters.zpeakccCoefficient() +parameters.zpeak03Coefficient() +parameters.zpeak05Coefficient() +parameters.zpeak08Coefficient();
-    if(parameters.enableZpeakCoefficient()&&all_coefficient>0)
-    {
-        z_peak = (parameters.zpeakccCoefficient()*aa_result["zPeak_cc"].toDouble()+
-                parameters.zpeak03Coefficient()*aa_result["zPeak_03"].toDouble()+
-                parameters.zpeak05Coefficient()*aa_result["zPeak_05"].toDouble()+
-                parameters.zpeak08Coefficient()*aa_result["zPeak_08"].toDouble())/all_coefficient;
-    }
     sut->moveToZPos(z_peak);
     qInfo("zpeak: %f",z_peak);
     step_move_time += step_move_timer.elapsed();
@@ -1192,6 +1184,40 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     qInfo("Check 05F zPeak %f", zPeakDiff05F);
     qInfo("Check 08F zPeak %f", zPeakDiff08F);
 
+    map.insert("CC_Zpeak_Dev", aa_result["CC_Zpeak_Dev"].toDouble());
+    map.insert("UL_03F_Zpeak_Dev", aa_result["UL_03F_Zpeak_Dev"].toDouble());
+    map.insert("UR_03F_Zpeak_Dev", aa_result["UR_03F_Zpeak_Dev"].toDouble());
+    map.insert("LR_03F_Zpeak_Dev", aa_result["LR_03F_Zpeak_Dev"].toDouble());
+    map.insert("LL_03F_Zpeak_Dev", aa_result["LL_03F_Zpeak_Dev"].toDouble());
+    map.insert("UL_05F_Zpeak_Dev", aa_result["UL_05F_Zpeak_Dev"].toDouble());
+    map.insert("UR_05F_Zpeak_Dev", aa_result["UR_05F_Zpeak_Dev"].toDouble());
+    map.insert("LR_05F_Zpeak_Dev", aa_result["LR_05F_Zpeak_Dev"].toDouble());
+    map.insert("LL_05F_Zpeak_Dev", aa_result["LL_05F_Zpeak_Dev"].toDouble());
+    map.insert("UL_08F_Zpeak_Dev", aa_result["UL_08F_Zpeak_Dev"].toDouble());
+    map.insert("UR_08F_Zpeak_Dev", aa_result["UR_08F_Zpeak_Dev"].toDouble());
+    map.insert("LR_08F_Zpeak_Dev", aa_result["LR_08F_Zpeak_Dev"].toDouble());
+    map.insert("LL_08F_Zpeak_Dev", aa_result["LL_08F_Zpeak_Dev"].toDouble());
+    map.insert("Mode", zScanMode);
+    map.insert("START_POS", start);
+    map.insert("STOP_POS", stop);
+    map.insert("STEP_SIZE", step_size);
+    map.insert("IMAGE_COUNT", imageCount);
+    map.insert("STEP_MOVE_TIME", step_move_time);
+    map.insert("GRAB_TIME", grab_time);
+    map.insert("SFR_WAIT_TIME", sfr_wait_time);
+    map.insert("TILT_WAIT_TIME", wait_tilt_time);
+    map.insert("X_TILT", aa_result["xTilt"].toDouble());
+    map.insert("Y_TILT", aa_result["yTilt"].toDouble());
+    map.insert("Z_PEAK_CC", aa_result["zPeak_cc"].toDouble());
+    map.insert("Z_PEAK_03",aa_result["zPeak_03"].toDouble());
+    map.insert("Z_PEAK_05",aa_result["zPeak_05"].toDouble());
+    map.insert("Z_PEAK_08",aa_result["zPeak_08"].toDouble());
+    map.insert("Z_PEAK",z_peak);
+    map.insert("Z_PEAK_DEV_CC_08_um",getzPeakDev_um(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_08"].toDouble()));
+    map.insert("Z_PEAK_DEV_CC_05_um",getzPeakDev_um(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_05"].toDouble()));
+    map.insert("Z_PEAK_DEV_um",zpeak_dev);
+    map.insert("FOV_SLOPE", fov_slope);
+    map.insert("FOV_INTERCEPT", fov_intercept);
     if (position_checking == 1){
         if(zpeak_dev > parameters.maxDev()|| zpeak_dev < parameters.minDev())
         {
@@ -1235,28 +1261,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     }
     clustered_sfr_map.clear();
     qInfo("AA time elapsed: %d", timer.elapsed());
-    map.insert("Mode", zScanMode);
-    map.insert("START_POS", start);
-    map.insert("STOP_POS", stop);
-    map.insert("STEP_SIZE", step_size);
-    map.insert("IMAGE_COUNT", imageCount);
-    map.insert("STEP_MOVE_TIME", step_move_time);
-    map.insert("GRAB_TIME", grab_time);
-    map.insert("SFR_WAIT_TIME", sfr_wait_time);
-    map.insert("TILT_WAIT_TIME", wait_tilt_time);
-    map.insert("X_TILT", aa_result["xTilt"].toDouble());
-    map.insert("Y_TILT", aa_result["yTilt"].toDouble());
-    map.insert("Z_PEAK_CC", aa_result["zPeak_cc"].toDouble());
-    map.insert("Z_PEAK_03",aa_result["zPeak_03"].toDouble());
-    map.insert("Z_PEAK_05",aa_result["zPeak_05"].toDouble());
-    map.insert("Z_PEAK_08",aa_result["zPeak_08"].toDouble());
-    map.insert("Z_PEAK",z_peak);
-    map.insert("Z_PEAK_DEV_CC_08_um",getzPeakDev_um(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_08"].toDouble()));
-    map.insert("Z_PEAK_DEV_CC_05_um",getzPeakDev_um(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_05"].toDouble()));
-    map.insert("Z_PEAK_DEV_um",zpeak_dev);
-    map.insert("FOV_SLOPE", fov_slope);
-    map.insert("FOV_INTERCEPT", fov_intercept);
-//    map.insert("DEV", dev);
+    //    map.insert("DEV", dev);
     if(finish_delay>0)
         Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
@@ -1370,7 +1375,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     vector<threeDPoint> points_2, points_22;
     vector<threeDPoint> points_3, points_33;
     for (size_t i = 0; i < sorted_sfr_map.size(); i++) {
-        vector<double> sfr, z;
+        vector<double> sfr,b_sfr,t_sfr,l_sfr,r_sfr, z;
         double ex = 0; double ey = 0;
         for (size_t ii=0; ii < sorted_sfr_map[i].size(); ii++) {
             double avg_sfr = sorted_sfr_map[i][ii].sfr;
@@ -1389,6 +1394,11 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 //                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].r_sfr + sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].l_sfr)/4;
 //            }
             sfr.push_back(avg_sfr);
+            b_sfr.push_back(sorted_sfr_map[i][ii].b_sfr);
+            t_sfr.push_back(sorted_sfr_map[i][ii].t_sfr);
+            l_sfr.push_back(sorted_sfr_map[i][ii].l_sfr);
+            r_sfr.push_back(sorted_sfr_map[i][ii].r_sfr);
+
             z.push_back(sorted_sfr_map[i][ii].pz-start_pos);
             ex += sorted_sfr_map[i][ii].px*resize_factor;
             ey += sorted_sfr_map[i][ii].py*resize_factor;
@@ -1396,7 +1406,61 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         ex /= (sorted_sfr_map[i].size()*parameters.SensorXRatio());
         ey /= (sorted_sfr_map[i].size()*parameters.SensorYRatio());
 
-        double peak_sfr, peak_z;
+        double peak_sfr, peak_z,b_peak_z,t_peak_z,l_peak_z,r_peak_z;
+
+        fitCurve(z, b_sfr, fitOrder, b_peak_z, peak_sfr);
+        fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr);
+        fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr);
+        fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr);
+        qInfo("%i b_peak_z %f ",i,b_peak_z + start_pos);
+        qInfo("%i t_peak_z %f ",i,t_peak_z + start_pos);
+        qInfo("%i l_peak_z %f ",i,l_peak_z + start_pos);
+        qInfo("%i r_peak_z %f ",i,r_peak_z + start_pos);
+        double dev = abs(getzPeakDev_um(4,b_peak_z,t_peak_z,l_peak_z,r_peak_z));
+        qInfo("%i peak_z_dev %f ",i,dev);
+        switch (i) {
+        case 0:
+            result.insert("CC_Zpeak_Dev", dev); map.insert("CC_Zpeak_Dev", dev);
+            break;
+        case 1:
+            result.insert("UL_03F_Zpeak_Dev", dev); map.insert("UL_03F_Zpeak_Dev", dev);
+            break;
+        case 2:
+            result.insert("UR_03F_Zpeak_Dev", dev); map.insert("UR_03F_Zpeak_Dev", dev);
+            break;
+        case 3:
+            result.insert("LR_03F_Zpeak_Dev", dev); map.insert("LR_03F_Zpeak_Dev", dev);
+            break;
+        case 4:
+            result.insert("LL_03F_Zpeak_Dev", dev); map.insert("LL_03F_Zpeak_Dev", dev);
+            break;
+        case 5:
+            result.insert("UL_05F_Zpeak_Dev", dev); map.insert("UL_05F_Zpeak_Dev", dev);
+            break;
+        case 6:
+            result.insert("UR_05F_Zpeak_Dev", dev); map.insert("UR_05F_Zpeak_Dev", dev);
+            break;
+        case 7:
+            result.insert("LR_05F_Zpeak_Dev", dev); map.insert("LR_05F_Zpeak_Dev", dev);
+            break;
+        case 8:
+            result.insert("LL_05F_Zpeak_Dev", dev); map.insert("LL_05F_Zpeak_Dev", dev);
+            break;
+        case 9:
+            result.insert("UL_08F_Zpeak_Dev", dev); map.insert("UL_08F_Zpeak_Dev", dev);
+            break;
+        case 10:
+            result.insert("UR_08F_Zpeak_Dev", dev); map.insert("UR_08F_Zpeak_Dev", dev);
+            break;
+        case 11:
+            result.insert("LR_08F_Zpeak_Dev", dev); map.insert("LR_08F_Zpeak_Dev", dev);
+            break;
+        case 12:
+            result.insert("LL_08F_Zpeak_Dev", dev); map.insert("LL_08F_Zpeak_Dev", dev);
+            break;
+        default:
+            break;
+        }
         fitCurve(z, sfr, fitOrder, peak_z, peak_sfr);
         if (i==0) {
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
@@ -1474,15 +1538,28 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     result.insert("zPeak_08", peak_08); map.insert("zPeak_08", peak_08);
     result.insert("zPeak_cc", point_0.z); map.insert("zPeak_cc", point_0.z);
 
-    if (parameters.PeakProfile() == 1) {
-        result.insert("zPeak", peak_03); map.insert("zPeak", peak_03);
-    } else if (parameters.PeakProfile() == 2) {
-        result.insert("zPeak", peak_05); map.insert("zPeak", peak_05);
-    } else if (parameters.PeakProfile() == 3) {
-        result.insert("zPeak", peak_08); map.insert("zPeak", peak_08);
-    } else {
-        result.insert("zPeak", point_0.z); map.insert("zPeak", point_0.z);
+    double all_coefficient = parameters.zpeakccCoefficient() +parameters.zpeak03Coefficient() +parameters.zpeak05Coefficient() +parameters.zpeak08Coefficient();
+
+    if(parameters.enableZpeakCoefficient()&&all_coefficient>0)
+    {
+        double z_peak = (parameters.zpeakccCoefficient()*map["zPeak_cc"].toDouble()+
+                parameters.zpeak03Coefficient()*map["zPeak_03"].toDouble()+
+                parameters.zpeak05Coefficient()*map["zPeak_05"].toDouble()+
+                parameters.zpeak08Coefficient()*map["zPeak_08"].toDouble())/all_coefficient;
+        result.insert("zPeak", z_peak); map.insert("zPeak", z_peak);
     }
+    else {
+        if (parameters.PeakProfile() == 1) {
+            result.insert("zPeak", peak_03); map.insert("zPeak", peak_03);
+        } else if (parameters.PeakProfile() == 2) {
+            result.insert("zPeak", peak_05); map.insert("zPeak", peak_05);
+        } else if (parameters.PeakProfile() == 3) {
+            result.insert("zPeak", peak_08); map.insert("zPeak", peak_08);
+        } else {
+            result.insert("zPeak", point_0.z); map.insert("zPeak", point_0.z);
+        }
+    }
+
     result.insert("OK", true);
     if (validLayer == 1) {
         result.insert("xTilt", xTilt_1);
@@ -1508,6 +1585,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     data->setWCCPeakZ(round(point_0.z*1000));
     data->setXTilt(round(xTilt_1*10000)/10000);
     data->setYTilt(round(yTilt_1*10000)/10000);
+    data->setZPeak(map["zPeak"].toDouble()*1000);
     //Layer 0:
     data->setLayer0(QString("L0 -- CC:")
                     .append(QString::number(point_0.z, 'g', 6))

@@ -460,6 +460,12 @@ void BaseModuleManager::showMachineMap()
 //    }
 }
 
+void BaseModuleManager::loadModuleParameter(QString module_name)
+{
+    if(module_name == sut_module.parameters.moduleName())
+          sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
+}
+
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)
 {
     bool result = true;

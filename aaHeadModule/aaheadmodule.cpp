@@ -13,6 +13,7 @@ void AAHeadModule::loadJsonConfig(QString file_name)
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("AA_HEAD_PARAMS", &parameters);
     temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
+    temp_map.insert("AA_PICK_LENS_POSITION", &this->pick_lens_position);
     PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
@@ -21,6 +22,7 @@ void AAHeadModule::saveJsonConfig(QString file_name)
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("AA_HEAD_PARAMS", &this->parameters);
     temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
+    temp_map.insert("AA_PICK_LENS_POSITION", &this->pick_lens_position);
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
@@ -63,7 +65,8 @@ bool AAHeadModule::moveToMushroomPosition(bool moveXYC)
 
 bool AAHeadModule::moveToPickLensPosition()
 {
-    return  moveToDiffrentZSync(parameters.PickLensPositionZ());
+    //return  moveToDiffrentZSync(parameters.PickLensPositionZ());
+    return moveToSync(pick_lens_position.X(), pick_lens_position.Y(), pick_lens_position.Z(), pick_lens_position.A(), pick_lens_position.B(), pick_lens_position.C());
 }
 
 bool AAHeadModule::moveToOCPosition()

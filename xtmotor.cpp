@@ -464,7 +464,25 @@ bool XtMotor::WaitArrivedTargetPos(double target_position, int timeout)
 //    qInfo("%s arrived %f time %d",name.toStdString().c_str(),target_position,current);
     if(parameters.useDelay())
         Sleep(parameters.arrivedDelay());
-    current_target = GetFeedbackPos();
+//    current_target = GetFeedbackPos();
+    return true;
+}
+
+bool XtMotor::WaitArrivedTargetPos(double target_position, double arived_error, int timeout)
+{
+    if(is_debug)return true;
+    if(!(checkState()))return false;
+    int current = 0;
+    while (fabs(GetFeedbackPos() - target_position) > arived_error) {
+        if(current > timeout)
+        {
+            qInfo("%s wait target_position:%f time out, current_position:%f",name.toStdString().c_str(),target_position,GetFeedbackPos());
+            current_target = GetFeedbackPos();
+            return false;
+        }
+        Sleep(10);
+        current+=10;
+    }
     return true;
 }
 
@@ -500,7 +518,17 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
 //        }
 //    }
 //    current_target = currPos;
-//    return true;
+    //    return true;
+}
+
+bool XtMotor::MoveToPosSync(double pos, double arrived_error, int thread, int time_out)
+{
+    if(!MoveToPos(pos,thread))
+    {
+        qInfo("%s move to pos %f fail",name.toStdString().c_str(),pos);
+        return false;
+    }
+    return  WaitArrivedTargetPos(pos,arrived_error,time_out);
 }
 
 bool XtMotor::MoveToMinPosSync(int time_out)
@@ -531,6 +559,7 @@ bool XtMotor::CheckArrivedTargetPos(double target_position)
     if(!(checkState()))return false;
     if(fabs(GetFeedbackPos() - target_position) < parameters.positionError())
         return true;
+    qInfo("%s CheckArrivedTargetPos fail",name.toStdString().c_str());
     return false;
 }
 

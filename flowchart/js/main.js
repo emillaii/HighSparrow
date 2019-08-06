@@ -862,7 +862,7 @@ $(document).ready(function () {
   $('#create_load_camera').click(function () { addOperationWidget("Load Camera"); });
   $('#create_pr_to_bond').click(function () { addOperationWidget("PR To Bond"); });
   $('#create_initial_tilt').click(function () { addOperationWidget("Initial Tilt"); });
-  $('#create_aa_unload_camera').click(function () { addMultipleOperationWidget("Unload Camera"); });
+  $('#create_unload_camera').click(function () { addMultipleOperationWidget("Unload Camera"); });
   $('#create_aa').click(function () { addOperationWidget("AA"); });
   $('#create_oc').click(function () { addMultipleOperationWidget("OC"); });
   $('#create_mtf').click(function () { addMultipleOperationWidget("MTF"); });

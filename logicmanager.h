@@ -44,7 +44,7 @@ class LogicManager : public QThread
 public:
     explicit LogicManager(BaseModuleManager* device_manager, QObject *parent = nullptr);
 //    bool registerWorker(ThreadWorkerBase* worker);
-    Q_INVOKABLE void performHandling(int cmd);
+    void performHandling(int cmd);
     Q_PROPERTY(int currentMode READ currentMode WRITE setCurrentMode)
     Q_PROPERTY(QString stateMessage READ stateMessage WRITE setStateMessage NOTIFY stateMessageChanged)
 
@@ -182,13 +182,10 @@ public slots:
     void receiveCommand(int cmd);
 
     void receiveMessageFromWorkerManger(QVariantMap message);
-
-    void performHandlingOperation(int cmd);
 signals:
     void stateMessageChanged(QString stateMessage);
     bool sendMsgSignal(QString,QString);
     void sendMessageToWorkerManger(QVariantMap message);
-    void sendHandlingOperation(int cmd);
 private:
     BaseModuleManager * baseModuleManage;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;

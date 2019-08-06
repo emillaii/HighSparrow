@@ -518,7 +518,7 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
 //        }
 //    }
 //    current_target = currPos;
-    //    return true;
+//    return true;
 }
 
 bool XtMotor::MoveToPosSync(double pos, double arrived_error, int thread, int time_out)

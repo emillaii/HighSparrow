@@ -1379,20 +1379,20 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         double ex = 0; double ey = 0;
         for (size_t ii=0; ii < sorted_sfr_map[i].size(); ii++) {
             double avg_sfr = sorted_sfr_map[i][ii].sfr;
-//            if (sorted_sfr_map[i][ii].location == 1) {
-//                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].l_sfr)/2;
-//            }
-//            else if (sorted_sfr_map[i][ii].location == 2) {
-//                avg_sfr = (sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].l_sfr)/2;
-//            }
-//            else if (sorted_sfr_map[i][ii].location == 3) {
-//                avg_sfr = (sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].r_sfr)/2;
-//            }
-//            else if (sorted_sfr_map[i][ii].location == 4) {
-//                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].r_sfr)/2;
-//            } else {
-//                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].r_sfr + sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].l_sfr)/4;
-//            }
+            //            if (sorted_sfr_map[i][ii].location == 1) {
+            //                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].l_sfr)/2;
+            //            }
+            //            else if (sorted_sfr_map[i][ii].location == 2) {
+            //                avg_sfr = (sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].l_sfr)/2;
+            //            }
+            //            else if (sorted_sfr_map[i][ii].location == 3) {
+            //                avg_sfr = (sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].r_sfr)/2;
+            //            }
+            //            else if (sorted_sfr_map[i][ii].location == 4) {
+            //                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].r_sfr)/2;
+            //            } else {
+            //                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].r_sfr + sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].l_sfr)/4;
+            //            }
             sfr.push_back(avg_sfr);
             b_sfr.push_back(sorted_sfr_map[i][ii].b_sfr);
             t_sfr.push_back(sorted_sfr_map[i][ii].t_sfr);

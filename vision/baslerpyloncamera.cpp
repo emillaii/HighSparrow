@@ -12,13 +12,17 @@ BaslerPylonCamera::BaslerPylonCamera(QString name)
 
 void BaslerPylonCamera::OnImageGrabbed( CInstantCamera&, const CGrabResultPtr& ptrGrabResult)
 {
-   QMutexLocker locker(&mutex);
-   CopyBufferToQImage(ptrGrabResult, latestImage);
-   trig_mutex.lock();
-   is_triged = false;
-   got_new = true;
-   trig_mutex.unlock();
-   emit callQmlRefeshImg();
+    if (!ptrGrabResult->CheckCRC()) {
+        qCritical("Camera : %s CRC check fail, image discard.", this->cameraChannelName.toStdString().c_str());
+        return;
+    }
+    QMutexLocker locker(&mutex);
+    CopyBufferToQImage(ptrGrabResult, latestImage);
+    trig_mutex.lock();
+    is_triged = false;
+    got_new = true;
+    trig_mutex.unlock();
+    emit callQmlRefeshImg();
 }
 
 BaslerPylonCamera::~BaslerPylonCamera()

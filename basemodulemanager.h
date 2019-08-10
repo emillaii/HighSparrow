@@ -23,7 +23,7 @@
 #include "Dispense/dispenser.h"
 #include "Dispense/dispense_module.h"
 #include "Vision/vision_location.h"
-#include "chart_calibration.h"
+#include "Vision/chart_calibration.h"
 #include "sparrowqserver.h"
 #include "sparrowqclient.h"
 #include "DualHead/lensloadermodule.h"

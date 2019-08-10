@@ -21,7 +21,7 @@
 #include "dothinkey.h"
 #include "visionavadaptor.h"
 #include "imageprovider.h"
-#include "chart_calibration.h"
+#include "Vision/chart_calibration.h"
 #include "Dispense/dispense_module.h"
 #include "aacoreparameters.h"
 #include "DualHead/lutclient.h"

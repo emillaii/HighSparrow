@@ -1,4 +1,4 @@
-#include "sparrowqserver.h"
+#include "network/sparrowqserver.h"
 #include "QtWebSockets/qwebsocketserver.h"
 #include "QtWebSockets/qwebsocket.h"
 #include "Utils/commonutils.h"

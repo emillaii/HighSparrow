@@ -160,8 +160,8 @@ HEADERS += \
     motorspositionmodel.h \
     sendmessagetool.h \
     AACore/sfrworker.h \
-    sparrowqclient.h \
-    sparrowqserver.h \
+    network/sparrowqclient.h \
+    network/sparrowqserver.h \
     thread_worker_base.h \
     trayparameter.h \
     traystandardsparameter.h \
@@ -228,8 +228,8 @@ SOURCES += \
     material_carrier.cpp \
     materialtray.cpp \
     motorspositionmodel.cpp \
-    sparrowqclient.cpp \
-    sparrowqserver.cpp \
+    network/sparrowqclient.cpp \
+    network/sparrowqserver.cpp \
     thread_worker_base.cpp \
     workers_manager.cpp \
     TrayMap/traymapmodel.cpp

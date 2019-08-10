@@ -2,7 +2,7 @@
 #define LUTCLIENT_H
 
 #include <QObject>
-#include "sparrowqclient.h"
+#include "network/sparrowqclient.h"
 #include "AAHeadModule/aaheadmodule.h"
 #include "Vision/pixel2mech.h"
 enum LutClientState{

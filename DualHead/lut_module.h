@@ -8,7 +8,7 @@
 #include "Vision/visionmodule.h"
 #include "Vision/calibration.h"
 #include "Vision/vision_location.h"
-#include "sparrowqserver.h"
+#include "network/sparrowqserver.h"
 #include <QObject>
 #include <QQueue>
 #include "thread_worker_base.h"

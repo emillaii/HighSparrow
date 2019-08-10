@@ -20,7 +20,7 @@
 #include "SingleHead/singlehead_lsut_module.h"
 #include "ImageGrabber/dothinkey.h"
 #include "visionavadaptor.h"
-#include "imageprovider.h"
+#include "Utils/imageprovider.h"
 #include "Vision/chart_calibration.h"
 #include "Dispense/dispense_module.h"
 #include "aacoreparameters.h"

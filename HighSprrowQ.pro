@@ -98,7 +98,7 @@ HEADERS += \
     DualHead/trayclipstandardsparameter.h \
     DualHead/trayloadermodule.h \
     DualHead/trayloaderparameter.h \
-    LontryLight.h \
+    Light/LontryLight.h \
     Matrix/Matrix.h \
     SingleHead/singlehead_lsut_module.h \
     SingleHead/singleheadlsutparameter.h \
@@ -149,7 +149,7 @@ HEADERS += \
     ImageGrabber/dothinkey.h \
     ImageGrabber/imagegrabbingworkerthread.h \
     highsprrow.h \
-    imageprovider.h \
+    Utils/imageprovider.h \
     logicmanager.h \
     machinestatemonitor.h \
     machinestatemonitorcontroller.h \
@@ -183,7 +183,7 @@ SOURCES += \
     DualHead/sutclient.cpp \
     DualHead/trayclip.cpp \
     DualHead/trayloadermodule.cpp \
-    LontryLight.cpp \
+    Light/LontryLight.cpp \
     Matrix/Matrix.cpp \
     SingleHead/singlehead_lsut_module.cpp \
     SingleHead/singleheadmachinematerialloadermodule.cpp \
@@ -220,7 +220,7 @@ SOURCES += \
     ImageGrabber/dothinkey.cpp \
     ImageGrabber/imagegrabbingworkerthread.cpp \
     highsprrow.cpp \
-    imageprovider.cpp \
+    Utils/imageprovider.cpp \
     logicmanager.cpp \
     machinestatemonitor.cpp \
     machinestatemonitorcontroller.cpp \

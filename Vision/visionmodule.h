@@ -5,7 +5,7 @@
 #include <Utils/errorcode.h>
 #include <QQuickImageProvider>
 #include <AVL.h>
-//#include "imageprovider.h"
+
 class BaslerPylonCamera;
 
 struct PRResultStruct {

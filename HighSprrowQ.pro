@@ -138,9 +138,9 @@ HEADERS += \
     XtMotion/xtmotorparameter.h \
     XtMotion/xtvacuumparameter.h \
     XtMotion/xtvcmotorparameter.h \
-    aacorenew.h \
-    aacoreparameters.h \
-    aadata.h \
+    AACore/aacorenew.h \
+    AACore/aacoreparameters.h \
+    AACore/aadata.h \
     aaheadmodule.h \
     aaheadparameters.h \
     basemodulemanager.h \
@@ -159,7 +159,7 @@ HEADERS += \
     modulemanagerparameter.h \
     motorspositionmodel.h \
     sendmessagetool.h \
-    sfrworker.h \
+    AACore/sfrworker.h \
     sparrowqclient.h \
     sparrowqserver.h \
     thread_worker_base.h \
@@ -209,8 +209,9 @@ SOURCES += \
     XtMotion/XtVcMotor.cpp \
     XtMotion/xtadcmodule.cpp \
     XtMotion/xtmotor.cpp \
-    aacorenew.cpp \
-    aadata.cpp \
+    AACore/aacorenew.cpp \
+    AACore/aadata.cpp \
+    AACore/sfrworker.cpp \
     aaheadmodule.cpp \
     aaheadparameters.cpp \
     basemodulemanager.cpp \
@@ -227,7 +228,6 @@ SOURCES += \
     material_carrier.cpp \
     materialtray.cpp \
     motorspositionmodel.cpp \
-    sfrworker.cpp \
     sparrowqclient.cpp \
     sparrowqserver.cpp \
     thread_worker_base.cpp \

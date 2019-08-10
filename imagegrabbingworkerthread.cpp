@@ -3,7 +3,7 @@
 #include "sfr.h"
 #include <QFileDialog>
 #include <QTextStream>
-#include "commonutils.h"
+#include "Utils/commonutils.h"
 #include <QElapsedTimer>
 QImage ImageGrabbingWorkerThread::cvMat2QImage(const cv::Mat& mat)
 {

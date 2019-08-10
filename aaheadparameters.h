@@ -2,8 +2,8 @@
 #define AAHEADPARAMETERS_H
 
 #include <QObject>
-#include <propertybase.h>
-#include "config.h"
+#include "Utils/propertybase.h"
+#include "Utils/config.h"
 
 class AAHeadParameters : public PropertyBase
 {

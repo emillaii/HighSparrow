@@ -1,7 +1,7 @@
 #ifndef XTVACUUMPARAMETER_H
 #define XTVACUUMPARAMETER_H
 
-#include "PropertyBase.h"
+#include "Utils/propertybase.h"
 
 
 

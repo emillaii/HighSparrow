@@ -3,7 +3,7 @@
 #include <QImage>
 #include <QElapsedTimer>
 #include <visionavadaptor.h>
-#include <config.h>
+#include "Utils/config.h"
 #include <QThread>
 #include <stdlib.h>
 #include <QFile>
@@ -11,8 +11,8 @@
 #include <QJsonObject>
 #include <QPainter>
 #include "aa_util.h"
-#include "commonutils.h"
-#include "visionmodule.h"
+#include "Utils/commonutils.h"
+#include "Vision/visionmodule.h"
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
 #define PI  3.14159265
@@ -144,15 +144,31 @@ void AACoreNew::setSfrWorkerController(SfrWorkerController * sfrWorkerController
     this->sfrWorkerController = sfrWorkerController;
 }
 
+void AACoreNew::receiveStartAAProcessRequest()
+{
+    qInfo(__FUNCTION__);
+    this->has_sensor = true;
+    this->has_ng_sensor = true;
+    this->has_lens = true;
+    this->has_ng_lens = true;
+    this->has_product = false;
+    this->has_ng_product = false;
+    start_process = true;
+}
+
 void AACoreNew::run(bool has_material)
 {
     qInfo("Start AACore Thread");
     is_run = true;
     while(is_run) {
-        qInfo("AACore is running");
-        runningUnit = this->unitlog->createUnit();
-        runFlowchartTest();
-        emit postDataToELK(this->runningUnit);
+        if (start_process)
+        {
+            runningUnit = this->unitlog->createUnit();
+            runFlowchartTest();
+            start_process = false;
+            emit postDataToELK(this->runningUnit);
+            emit sendAAProcessResponse(has_ng_sensor, has_ng_lens, has_product, has_ng_product);
+        }
         QThread::msleep(100);
     }
     qInfo("End of thread");
@@ -354,9 +370,7 @@ void AACoreNew::resetLogic()
     has_lens = false;
     send_lens_request = false;
     send_sensor_request = false;
-    //aa_head->receive_sensor = false;
     aa_head->waiting_sensor = false;
-   // aa_head->receive_lens = false;
     aa_head->waiting_lens = false;
     current_aa_ng_time = 0;
     current_oc_ng_time = 0;
@@ -555,7 +569,7 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         }
         else if (testItemName.contains(AA_PIECE_LOAD_MATERIAL)) {
             qInfo("Performing Load Material");
-            //ret = performLoadMaterial();
+            ret = performAAPickLens();
             qInfo("End of perform Load Material %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_UNLOAD_LENS)) {
@@ -2177,27 +2191,19 @@ ErrorCodeStruct AACoreNew::performInitSensor()
 // TO BE MODIFIED
 ErrorCodeStruct AACoreNew::performPRToBond()
 {
-    //if (!this->lut->moveToUnloadPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT cannot move to unload Pos"};}
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
-//    PrOffset offset;
-//    if (sut->moveToDownlookPR(offset, false,true))
-//    {
-//       sut->stepMove_XY_Sync(-offset.X, -offset.Y);
-//       map.insert("prOffsetX_in_mm", offset.X);
-//       map.insert("prOffsetY_in_mm", offset.Y);
-//    }
-    map.insert("moveToDownlookPR", stepTimer.elapsed()); stepTimer.restart();
+
     if (!this->aa_head->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
-
-    double x = lsut->downlook_position.X() + lsut->up_downlook_offset.X() + aa_head->uplook_x + aa_head->offset_x;
-    double y = lsut->downlook_position.Y() + lsut->up_downlook_offset.Y() + aa_head->uplook_y + aa_head->offset_y;
-    double z = lsut->mushroom_position.Z();
+    PrOffset downlookPrOffset;
+    if(!lsut->moveToDownlookPR(downlookPrOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
+    qInfo("downlook Pr Offset x: %f y: %f t: %f", downlookPrOffset.X, downlookPrOffset.Y, downlookPrOffset.Theta);
+//    PrOffset uplookPrOffset;
+//    //if(!lsut->moveToGripperPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
     double theta = lsut->up_downlook_offset.Theta() + aa_head->uplook_theta + aa_head->offset_theta;
-   if (!this->aa_head->moveToSync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
-//    if (!this->sut->moveToMushroomPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to mushroom Pos"};}
-//    map.insert("sut_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
+////    if (!this->aa_head->moveToSync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
+    this->aa_head->moveToSync(0, 0, 0, theta);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "PrToBond", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};
@@ -2206,59 +2212,11 @@ ErrorCodeStruct AACoreNew::performPRToBond()
 // TO BE MODIFIED
 ErrorCodeStruct AACoreNew::performAAPickLens()
 {
-//    if (!this->lsut->moveToPRPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
-//    if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
-//    if((!has_sensor)&&(!is_wait_sensor))
-//    {
-//        qInfo("need sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
-//        if(has_product)
-//            aa_head->sendSensrRequest(SUT_STATE::HAS_PRODUCT);
-//        else if(has_ng_sensor)
-//            aa_head->sendSensrRequest(SUT_STATE::HAS_NG_SENSOR);
-//        else
-//            aa_head->sendSensrRequest(SUT_STATE::NO_MATERIAL);
-//        is_wait_sensor = true;
-//    }
-//    if(!has_lens)
-//    {
-//        qInfo("need lens has_ng_lens %d",has_ng_lens);
-//        if (this->lsut->sendLensRequest(is_run,has_ng_lens,true))
-//        {
-//            qInfo("wait lens suceess");
-//            has_lens = true;
-//        }
-//        else{
-//            if(is_run)
-//            {
-//                AppendError("wait sensor time_out");
-//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-//            }
-//            is_run = false;
-//            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Lens lens request fail"};
-//        }
-//    }
-//    if(!has_sensor)
-//    {
-//        qInfo("wait sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
-//        if(aa_head->waitForLoadSensor(is_run))
-//        {
-//            qInfo("wait sensor suceess");
-//            has_sensor = true;
-//            is_wait_sensor = false;
-//        }
-//        else
-//        {
-//            if(is_run)
-//            {
-//                AppendError("wait sensor time_out");
-//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-//            }
-//            is_run = false;
-//            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sensor request fail"};
-//        }
-//    }
-    qInfo("Done Pick Lens");
-    return ErrorCodeStruct {ErrorCode::OK, ""};
+    QElapsedTimer timer; timer.start();
+    QVariantMap map;
+    if (!lsut->gripLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "AAPickLens", map);
 }
 
 ErrorCodeStruct AACoreNew::performDelay(int delay_in_ms)

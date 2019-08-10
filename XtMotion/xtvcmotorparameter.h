@@ -1,7 +1,7 @@
 #ifndef XTVCMOTORPARAMETER_H
 #define XTVCMOTORPARAMETER_H
 
-#include "propertybase.h"
+#include "Utils/propertybase.h"
 
 
 

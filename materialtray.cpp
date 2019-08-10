@@ -1,5 +1,5 @@
 #include "materialtray.h"
-
+#include "TrayMap/traymapmodel.h"
 MaterialTray::MaterialTray():QObject (),ErrorBase ("MateryTray")
 {
     connect(&standards_parameters,&TrayStandardsParameter::trayCountChanged,this,&MaterialTray::changeTrayCount);
@@ -8,7 +8,7 @@ MaterialTray::MaterialTray():QObject (),ErrorBase ("MateryTray")
 void MaterialTray::calculateDelta()
 {
     int digit =100;
-    standards_parameters.setColumnDeta(round(digit*(first_tray_end_position.X() - parameters[0]->tray_start_position.X())/(standards_parameters.columnCount()-1))/digit);
+    standards_parameters.setColumnDelta(round(digit*(first_tray_end_position.X() - parameters[0]->tray_start_position.X())/(standards_parameters.columnCount()-1))/digit);
     standards_parameters.setRowDelta(round(digit*(first_tray_end_position.Y() - parameters[0]->tray_start_position.Y())/(standards_parameters.rowCount()-1))/digit);
 }
 
@@ -22,6 +22,20 @@ void MaterialTray::loadJsonConfig(QString file_name)
     temp_map.insert("TRAY1_START_POSITION", &parameters[0]->tray_start_position);
     temp_map.insert("TRAY2_START_POSITION", &parameters[1]->tray_start_position);
     PropertyBase::loadJsonConfig(file_name, temp_map);
+
+    if (this->trayType == SENSOR_TRAY) {
+        TrayMapModel* model = TrayMapModel::instance(TrayMapModel::SensorTray);
+        model->resetModel(standards_parameters.columnCount(), standards_parameters.rowCount(), TrayMapModel::StatusIdle);
+    } else if (this->trayType == LENS_TRAY) {
+        TrayMapModel* model = TrayMapModel::instance(TrayMapModel::LensTray);
+        model->resetModel(standards_parameters.columnCount(), standards_parameters.rowCount(), TrayMapModel::StatusIdle);
+    } else if (this->trayType == REJECT_TRAY) {
+        TrayMapModel* model = TrayMapModel::instance(TrayMapModel::RejectTray);
+        model->resetModel(standards_parameters.columnCount(), standards_parameters.rowCount(), TrayMapModel::StatusIdle);
+    } else if (this->trayType == PRODUCT_TRAY) {
+        TrayMapModel* model = TrayMapModel::instance(TrayMapModel::ProductTray);
+        model->resetModel(standards_parameters.columnCount(), standards_parameters.rowCount(), TrayMapModel::StatusIdle);
+    }
 }
 
 void MaterialTray::saveJsonConfig(QString file_name)
@@ -36,16 +50,6 @@ void MaterialTray::saveJsonConfig(QString file_name)
     PropertyBase::saveJsonConfig(file_name, temp_map);
 }
 
-QPointF MaterialTray::getRelativePosition(int column_index, int row_index)
-{
-    return getOffsetPositon(getColumnIndex(column_index),getRowIndex(row_index));
-}
-
-QPointF MaterialTray::getPosition(int column, int row,int tray_index)
-{
-    return  getOffsetPositon(getColumnIndex(column),getRowIndex(row)) + parameters[getTrayIndex(tray_index)]->tray_start_position.ToPointF();
-}
-
 QPointF MaterialTray::getPositionByIndex(int index, int tray_index)
 {
     int column,row;
@@ -56,6 +60,7 @@ QPointF MaterialTray::getPositionByIndex(int index, int tray_index)
 bool MaterialTray::findNextPositionOfInitState(int tray_index)
 {
     int max_index = standards_parameters.columnCount()*standards_parameters.rowCount() - 1;
+    qInfo("Max index: %d", max_index);
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
     while (true)
     {
@@ -106,16 +111,27 @@ QPointF MaterialTray::getCurrentPosition(int tray_index)
     return getOffsetPositon(column,row) + current_tray->tray_start_position.ToPointF();
 }
 
-int MaterialTray::getCurrentMaterialState(int tray_index)
-{
-    TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
-    return current_tray->tray_material_state[current_tray->currentIndex()];
-}
-
 void MaterialTray::setCurrentMaterialState(int state, int tray_index)
 {
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
     current_tray->tray_material_state[current_tray->currentIndex()] = state;
+    TrayMapModel::UnitStatus unitStatus = TrayMapModel::UnitStatus::StatusIdle;
+    if (state == MaterialState::IsNg) unitStatus = TrayMapModel::UnitStatus::StatusNG;
+    else if (state == MaterialState::IsProduct) unitStatus = TrayMapModel::UnitStatus::StatusGood;
+    else if (state == MaterialState::IsInUse)   unitStatus = TrayMapModel::UnitStatus::StatusInUse;
+
+    qInfo("Index: %d", current_tray->currentIndex());
+    TrayMapModel *model = Q_NULLPTR;
+    if (this->trayType == SENSOR_TRAY) {
+        model = TrayMapModel::instance(TrayMapModel::SensorTray);
+    } else if (trayType == LENS_TRAY) {
+        model = TrayMapModel::instance(TrayMapModel::LensTray);
+    } else if (trayType == PRODUCT_TRAY) {
+        model = TrayMapModel::instance(TrayMapModel::ProductTray);
+    } else if (trayType == REJECT_TRAY) {
+        model = TrayMapModel::instance(TrayMapModel::SensorTray);
+    }
+    if(model != Q_NULLPTR) model->setUnitStatus(current_tray->currentIndex(), unitStatus);
 }
 
 int MaterialTray::getMaterialState(int column_index, int row_index,int tray_index)
@@ -130,21 +146,26 @@ int MaterialTray::getMaterialState(int index, int tray_index)
     return parameters[getTrayIndex(tray_index)]->tray_material_state[getMaterialIndex(column_index,row_index)];
 }
 
-void MaterialTray::setMaterialState(int column_index, int row_index, int state,int tray_index)
+void MaterialTray::setTrayType(TrayType type)
 {
-    parameters[getTrayIndex(tray_index)]->tray_material_state[getMaterialIndex(getColumnIndex(column_index),getRowIndex(row_index))] = state;
+    this->trayType = type;
 }
+
+//void MaterialTray::setMaterialState(int column_index, int row_index, int state,int tray_index)
+//{
+//    parameters[getTrayIndex(tray_index)]->tray_material_state[getMaterialIndex(getColumnIndex(column_index),getRowIndex(row_index))] = state;
+//}
 
 void MaterialTray::setTrayCurrent(const int column_index, const int row_index, const int tray_index)
 {
     parameters[getTrayIndex(tray_index)]->setCurrentIndex(getMaterialIndex(getColumnIndex(column_index),getRowIndex(row_index)));
 }
 
-void MaterialTray::getTrayCurrent(int &column_index, int &row_index, const int tray_index)
-{
-   int temp_index = parameters[getTrayIndex(tray_index)]->currentIndex();
-   getColumnAndRowIndex(temp_index,column_index,row_index);
-}
+//void MaterialTray::getTrayCurrent(int &column_index, int &row_index, const int tray_index)
+//{
+//   int temp_index = parameters[getTrayIndex(tray_index)]->currentIndex();
+//   getColumnAndRowIndex(temp_index,column_index,row_index);
+//}
 
 void MaterialTray::resetTrayState(int tray_index)
 {
@@ -188,7 +209,7 @@ void MaterialTray::changeTrayCount(int trayCount)
 
 QPointF MaterialTray::getOffsetPositon(int column_index, int row_index)
 {
-    return QPointF(column_index*standards_parameters.columnDeta(),row_index*standards_parameters.rowDelta());
+    return QPointF(column_index*standards_parameters.ColumnDelta(),row_index*standards_parameters.rowDelta());
 }
 
 int MaterialTray::getMaterialIndex(int column_index, int row_index)
@@ -198,7 +219,7 @@ int MaterialTray::getMaterialIndex(int column_index, int row_index)
     else
         return row_index + column_index*standards_parameters.rowCount();
 }
-
+//get materilai count,calcuate by import column and row
 int MaterialTray::getMaterialIndex(int index)
 {
     int max_index = standards_parameters.columnCount()*standards_parameters.rowCount() - 1;
@@ -207,7 +228,7 @@ int MaterialTray::getMaterialIndex(int index)
     if(index < 1) return 0;
     return  index;
 }
-
+//get column count
 int MaterialTray::getColumnIndex(int column_index)
 {
     if(column_index >= standards_parameters.columnCount())
@@ -215,7 +236,7 @@ int MaterialTray::getColumnIndex(int column_index)
     if(column_index < 1) return 0;
     return  column_index;
 }
-
+//get row count
 int MaterialTray::getRowIndex(int row_index)
 {
     if(row_index >= standards_parameters.rowCount())
@@ -223,7 +244,7 @@ int MaterialTray::getRowIndex(int row_index)
     if(row_index < 1) return 0;
     return  row_index;
 }
-
+//get tray column and row index
 void MaterialTray::getColumnAndRowIndex(const int material_index, int &column_index, int &row_index)
 {
     if(standards_parameters.useByRow())
@@ -237,7 +258,7 @@ void MaterialTray::getColumnAndRowIndex(const int material_index, int &column_in
         column_index = material_index/standards_parameters.rowCount();
     }
 }
-
+//get tray count
 int MaterialTray::getTrayIndex(int tray_index)
 {
     if(parameters.count()>tray_index)

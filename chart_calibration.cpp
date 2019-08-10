@@ -1,6 +1,6 @@
 #include "chart_calibration.h"
 #include "visionavadaptor.h"
-#include "commonutils.h"
+#include "Utils/commonutils.h"
 ChartCalibration::ChartCalibration(Dothinkey *dothinkey, int max_intensity, int min_area, int max_area, QString name, QString file_name, QObject *parent)
     :Calibration(name,file_name,nullptr)
 {

@@ -129,7 +129,7 @@ ColumnLayout {
                 Button{
                     text:qsTr("测高")
                     onClicked: {
-                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_PRODUCT_IN_TRAY)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.PICKER1_MEASURE_PRODUCT_IN_TRAY)
                     }
                 }
             }

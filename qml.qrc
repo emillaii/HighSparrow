@@ -38,21 +38,15 @@
         <file>SUTToolUplookPosition.qml</file>
         <file>LUTLoadUplookPosition.qml</file>
         <file>LUTUnloadPosition.qml</file>
-        <file>CalibrationDownlookView.qml</file>
-        <file>CalibrationUplookView.qml</file>
-        <file>CalibrationAA1MushroomView.qml</file>
         <file>Page4FormForm.ui.qml</file>
         <file>AADataView.qml</file>
         <file>IODialog.qml</file>
         <file>BusyDialog.qml</file>
-        <file>CalibrationChart.qml</file>
         <file>DispenseModuleView.qml</file>
         <file>DispenserParam.qml</file>
         <file>DispenseXYOffset.qml</file>
         <file>DispenseParam.qml</file>
         <file>DispenseZPos.qml</file>
-        <file>CalibrationAA1ToolDownlookView.qml</file>
-        <file>CalibrationAA1ToolUplookView.qml</file>
         <file>Page5Form.ui.qml</file>
         <file>DiagnosticsView.qml</file>
         <file>AACoreView.qml</file>
@@ -66,9 +60,6 @@
         <file>TraySpecs.qml</file>
         <file>LensHeadParameter.qml</file>
         <file>LensPcikArmLUT.qml</file>
-        <file>CalibrationPrLENSLpaLookView.qml</file>
-        <file>CalibrationPrVACANCYLpaLookView.qml</file>
-        <file>CalibrationPrLENSLutLookView.qml</file>
         <file>TrayLoaderModuleView.qml</file>
         <file>AlarmDialog.qml</file>
         <file>ThreadManagerView.qml</file>
@@ -94,6 +85,9 @@
         <file>Page6Form.ui.qml</file>
         <file>RejectTraySpecs.qml</file>
         <file>SingleHeadRejectTray.qml</file>
+        <file>qml/TrayMapView.qml</file>
+        <file>SUTPicklensPosition.qml</file>
+        <file>SUTUnPicklensPosition.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

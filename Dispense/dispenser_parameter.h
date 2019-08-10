@@ -1,7 +1,7 @@
 #ifndef DISPENSER_PARAMETER_H
 #define DISPENSER_PARAMETER_H
 
-#include "PropertyBase.h"
+#include "Utils/propertybase.h"
 
 class DispenserParameter:public PropertyBase
 {

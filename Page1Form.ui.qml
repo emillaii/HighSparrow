@@ -8,9 +8,9 @@ Page {
     id: page1
     width: 1580
     height: 720
+    property alias drawPathButton: drawPathButton
     property alias featureButton: featureButton
     property alias navigationFeatureButton: navigationFeatureButton
-    property alias drawPathButton: drawPathButton
 
     ColumnLayout {
         id: mainRowLayout
@@ -49,6 +49,7 @@ Page {
 
     MachineConfigListView {
         id: machineConfigListView
+        width: 580
         anchors.left: mainRowLayout.right
         anchors.bottom: parent.bottom
         anchors.top: parent.top
@@ -66,7 +67,7 @@ Page {
         anchors.bottom: parent.bottom
         anchors.topMargin: 10
         anchors.bottomMargin: 10
-        anchors.leftMargin: 10
+        anchors.leftMargin: 1
         anchors.rightMargin: 10
     }
 }

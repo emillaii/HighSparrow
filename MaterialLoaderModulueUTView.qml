@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.11
 import SingleHeadMaterialLoaderLib 1.0
 ColumnLayout {
     GroupBox{
-        title:qsTr("sut_pr_position")
+        title:qsTr("sut_pr_position_picker2")
         ColumnLayout{
             RowLayout{
                 Label{
@@ -40,8 +40,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1)
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_POS);
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR_POS);
                     }
                 }
                 Button{
@@ -78,6 +77,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sh_materialLoaderModule.performHandling(MaterialLoaderModule.NG_SENSOR_PR)
+
                     }
                 }
             }
@@ -87,7 +87,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_NG_SENSOR_IN_SUT)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_MEASURE_NG_SENSOR_IN_SUT)
                     }
                 }
                 Button{
@@ -95,7 +95,15 @@ ColumnLayout {
                     width:40
                     height:40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TO_PICK)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_TO_WORKPOS)
+                    }
+                }
+                Button{
+                    text:qsTr("吸頭動作")
+                    width:40
+                    height:40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_PICK_NG_SENSOR_FROM_SUT)
                     }
                 }
                 Button{
@@ -103,10 +111,10 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_POS|
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR_POS|
                                                                 MaterialLoaderModule.NG_SENSOR_PR|
-                                                                MaterialLoaderModule.SENSOR_TO_PICK|
-                                                                MaterialLoaderModule.PICK_NG_SENSOR_FROM_SUT)
+                                                                MaterialLoaderModule.PICKER2_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER2_PICK_NG_SENSOR_FROM_SUT)
                     }
                 }
             }
@@ -131,6 +139,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sh_materialLoaderModule.performHandling(MaterialLoaderModule.PRODUCT_PR)
+
                     }
                 }
             }
@@ -140,8 +149,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        //sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_PRODUCT_IN_SUT1)
-                        MaterialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_PRODUCT_IN_SUT)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_MEASURE_PRODUCT_IN_SUT)
                     }
                 }
                 Button{
@@ -149,7 +157,15 @@ ColumnLayout {
                     width:40
                     height:40
                     onClicked: {
-                        MaterialLoaderModule.performHandling(MaterialLoaderModule.LPA_TO_WORK)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS)
+                    }
+                }
+                Button{
+                    text:qsTr("吸頭動作")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_PICK_PRODUCT_FROM_SUT)
                     }
                 }
                 Button{
@@ -157,10 +173,11 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_POS|
-                                                                MaterialLoaderModule.PRODUCT_PR|
-                                                                MaterialLoaderModule.LPA_TO_WORK|
-                                                                MaterialLoaderModule.PICK_PRODUCT_FROM_SUT)
+                        sh_materialLoaderModule.performHandling(
+                                                                MaterialLoaderModule.SUT_PR_POS|
+//                                                                MaterialLoaderModule.PRODUCT_PR|
+                                                                MaterialLoaderModule.PICKER2_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER2_PICK_PRODUCT_FROM_SUT)
                     }
                 }
             }
@@ -184,7 +201,8 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR_POS|
+                                                                MaterialLoaderModule.SUT_PR)
                     }
                 }
             }
@@ -194,8 +212,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        //sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT1)
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_SENSOR_IN_SUT)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_MEASURE_SENSOR_IN_SUT)
                     }
                 }
                 Button{
@@ -203,25 +220,35 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TO_PICK)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_TO_WORKPOS)
                     }
                 }
                 Button{
-                    text:qsTr("放Sensor")
+                    text:qsTr("吸頭動作")
                     width:40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_POS|
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_PLACE_SENSOR_TO_SUT)
+                    }
+                }
+                Button{
+                    text:qsTr("picker2放Sensor")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR_POS|
                                                                 MaterialLoaderModule.SUT_PR|
-                                                                MaterialLoaderModule.SENSOR_TO_PICK|
-                                                                MaterialLoaderModule.PLACE_SENSOR_TO_SUT)
+                                                                MaterialLoaderModule.PICKER2_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER2_PLACE_SENSOR_TO_SUT)
                     }
                 }
             }
         }
     }
+
+
     GroupBox{
-        title:qsTr("lut_pr_position")
+        title:qsTr("lut_pr_position_Picker1")
         ColumnLayout{
             RowLayout{
                 Label{
@@ -257,8 +284,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1)
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_POS);
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_PR_POS);
                     }
                 }
                 Button{
@@ -311,8 +337,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        //sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT1)
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_LENS_IN_LUT)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_MEASURE_LENS_IN_LUT)
                     }
                 }
             }
@@ -332,169 +357,109 @@ ColumnLayout {
                     }
                 }
                 Button{
+                    text:qsTr("移動吸嘴")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS
+                                                                )
+
+
+                    }
+                }
+                Button{
+                    text:qsTr("吸嘴動作")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_PLACE_LENS_TO_LUT
+                                                                )
+
+
+                    }
+                }
+                Button{
                     text:qsTr("取NG Lens")
                     width:40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_POS|
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_PR_POS|
                                                                 MaterialLoaderModule.NG_LENS_PR|
-                                                                MaterialLoaderModule.LPA_TO_WORK|
-                                                                MaterialLoaderModule.PICK_NG_LENS_FROM_LUT)
+                                                                MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER1_PICK_NG_LENS_FROM_LUT)
                     }
                 }
+
                 Button{
                     text:qsTr("放Lens")
                     width:40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_POS|
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_PR_POS|
                                                                 MaterialLoaderModule.NG_LENS_PR|
-                                                                MaterialLoaderModule.LPA_TO_WORK|
-                                                                MaterialLoaderModule.PLACE_LENS_TO_LUT)
+                                                                MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER1_PLACE_LENS_TO_LUT)
                     }
                 }
             }
         }
     }
-    GroupBox{
-        title:qsTr("updownlook_up_position")
-        ColumnLayout{
-            RowLayout{
-                Label{
-                    text:qsTr("X")
-                }
-                TextField{
-                    text:sh_updownlook_up_position.X
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator{
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                    onEditingFinished: {
-                        sh_updownlook_up_position.setX(text)
-                    }
-                }
-                Label{
-                    text:qsTr("Y")
-                }
-                TextField{
-                    text:sh_updownlook_up_position.Y
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator{
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                    onEditingFinished: {
-                        sh_updownlook_up_position.setY(text)
-                    }
-                }
-                Button{
-                    text:title_move_to
-                    width: 40
-                    height: 40
-                    onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1)
-                    }
-                }
-                Button{
-                    text:title_read_encoder
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorVcmXName)
-                        var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
 
-                        sh_updownlook_up_position.setX(x);
-                        sh_updownlook_up_position.setY(y);
-                    }
-                }
-            }
-        }
-    }
-    GroupBox{
-        title:qsTr("lens_suction_offset")
-        ColumnLayout{
-            RowLayout{
-                Label{
-                    text:qsTr("X")
-                }
-                TextField{
-                    text:sh_lens_suction_offset.X
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator{
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                    onEditingFinished: {
-                        sh_lens_suction_offset.setX(text)
-                    }
-                }
-                Label{
-                    text:qsTr("Y")
-                }
-                TextField{
-                    text:sh_lens_suction_offset.Y
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator{
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                    onEditingFinished: {
-                        sh_lens_suction_offset.setY(text)
-                    }
-                }
-                Button{
-                    text:qsTr("测量")
-                    width: 40
-                    height: 40
-                    onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1)
-                    }
-                }
-            }
-        }
-    }
-    GroupBox{
-        title:qsTr("sensor_suction_offset")
-        ColumnLayout{
-            RowLayout{
-                Label{
-                    text:qsTr("X")
-                }
-                TextField{
-                    text:sh_sensor_suction_offset.X
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator{
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                    onEditingFinished: {
-                        sh_sensor_suction_offset.setX(text)
-                    }
-                }
-                Label{
-                    text:qsTr("Y")
-                }
-                TextField{
-                    text:sh_sensor_suction_offset.Y
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator{
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                    onEditingFinished: {
-                        sh_sensor_suction_offset.setY(text)
-                    }
-                }
-                Button{
-                    text:qsTr("测量")
-                    width: 40
-                    height: 40
-                    onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1)
-                    }
-                }
-            }
-        }
-    }
+
+//    GroupBox{
+//        title:qsTr("updownlook_up_position")
+//        ColumnLayout{
+//            RowLayout{
+//                Label{
+//                    text:qsTr("X")
+//                }
+//                TextField{
+//                    text:sh_updownlook_up_position.X
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    validator: DoubleValidator{
+//                        decimals: 6
+//                        notation: DoubleValidator.StandardNotation
+//                    }
+//                    onEditingFinished: {
+//                        sh_updownlook_up_position.setX(text)
+//                    }
+//                }
+//                Label{
+//                    text:qsTr("Y")
+//                }
+//                TextField{
+//                    text:sh_updownlook_up_position.Y
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    validator: DoubleValidator{
+//                        decimals: 6
+//                        notation: DoubleValidator.StandardNotation
+//                    }
+//                    onEditingFinished: {
+//                        sh_updownlook_up_position.setY(text)
+//                    }
+//                }
+//                Button{
+//                    text:title_move_to
+//                    width: 40
+//                    height: 40
+//                    onClicked: {
+////                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_PR_POS1)
+//                    }
+//                }
+//                Button{
+//                    text:title_read_encoder
+//                    width: 40
+//                    height: 40
+//                    onClicked: {
+//                        var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorVcmXName)
+//                        var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
+
+//                        sh_updownlook_up_position.setX(x);
+//                        sh_updownlook_up_position.setY(y);
+//                    }
+//                }
+//            }
+//        }
+//    }
+
 }

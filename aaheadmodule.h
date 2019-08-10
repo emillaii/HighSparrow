@@ -4,13 +4,13 @@
 #include "XtMotion/XtCylinder.h"
 #include "XtMotion/XtVacuum.h"
 #include "material_carrier.h"
-#include "position_define.h"
+#include "Utils/position_define.h"
 #include "XtMotion/xtmotor.h"
 
 
 #include <QObject>
-#include <propertybase.h>
-#include <visionmodule.h>
+#include "Utils/propertybase.h"
+#include "Vision/visionmodule.h"
 #include <aaheadparameters.h>
 
 //#define AA_Z_OFFSET (31.5)

@@ -1,7 +1,7 @@
 #ifndef CHART_CALIBRATION_H
 #define CHART_CALIBRATION_H
 
-#include "calibration.h"
+#include "Vision/calibration.h"
 #include "dothinkey.h"
 
 #include <QObject>

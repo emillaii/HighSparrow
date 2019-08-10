@@ -5,28 +5,28 @@
 #include "thread_worker_base.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
-#include <errorcode.h>
+#include <Utils/errorcode.h>
 #include <sfr_entry.h>
 #include <unordered_map>
 #include <sfrworker.h>
 #include <QObject>
 #include <QJsonDocument>
-#include <errorcode.h>
+#include <Utils/errorcode.h>
 #include <QMap>
 #include "aadata.h"
 #include "aaheadmodule.h"
-#include "lut_module.h"
-#include "sut_module.h"
-#include "singlehead_lsut_module.h"
+#include "DualHead/lut_module.h"
+#include "DualHead/sut_module.h"
+#include "SingleHead/singlehead_lsut_module.h"
 #include "dothinkey.h"
 #include "visionavadaptor.h"
 #include "imageprovider.h"
 #include "chart_calibration.h"
 #include "Dispense/dispense_module.h"
 #include "aacoreparameters.h"
-#include "lutclient.h"
+#include "DualHead/lutclient.h"
 #include "imagegrabbingworkerthread.h"
-#include "unitlog.h"
+#include "Utils/unitlog.h"
 
 class AACoreNew : public ThreadWorkerBase
 {
@@ -124,6 +124,7 @@ private:
     bool isZScanNeedToStop = false;
     int currentChartDisplayChannel = 0;
     int currentOCDisplayChannel = 0;
+    bool start_process = false;
     bool has_product = false;
     bool has_ng_product = false;
     bool has_ng_lens = false;
@@ -165,6 +166,7 @@ signals:
     void postDataToELK(QString);
     void postSfrDataToELK(QString, QVariantMap);
     void sendLensRequestToLut();
+    void sendAAProcessResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product);
 public slots:
     void triggerGripperOn(bool isOn);
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);
@@ -174,6 +176,7 @@ public slots:
     }
     void sfrImageReady(QImage);
     void aaCoreParametersChanged();
+    void receiveStartAAProcessRequest();
 };
 
 #endif // AACORENEW_H

@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QVariant>
-#include <propertybase.h>
-#include "config.h"
+#include "Utils/propertybase.h"
+#include "Utils/config.h"
 
 class AACoreParameters : public PropertyBase
 {

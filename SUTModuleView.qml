@@ -59,6 +59,14 @@ ItemDelegate {
                 title: qsTr("Safety Position")
                 SUTSafetyPositionView {}
             }
+            GroupBox{
+                title: qsTr("Pick Lens Position")
+                SUTPicklensPosition {}
+            }
+            GroupBox{
+                title: qsTr("Unpick Lens Position")
+                SUTUnPicklensPosition {}
+            }
         }
     }
 }

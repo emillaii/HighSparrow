@@ -1,7 +1,7 @@
 #ifndef MATERIAL_CARRIER_PARAMETER_H
 #define MATERIAL_CARRIER_PARAMETER_H
 
-#include "propertybase.h"
+#include "Utils/propertybase.h"
 
 class MaterialCarrierParameter:public PropertyBase
 {

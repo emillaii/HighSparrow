@@ -98,6 +98,10 @@ ItemDelegate {
                 title:qsTr("SUT & LUT")
                 MaterialLoaderModulueUTView{}
             }
+//            GroupBox{
+//                title:qsTr("MotionTest")
+//                SingleHeadMaterialLoderTest{}
+//            }
         }
     }
 }

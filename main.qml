@@ -36,66 +36,66 @@ ApplicationWindow {
     property string aaCoreTestItemName: ""
     property string aaCoreTestParams: ""
 
-    FileDialog {
-        id: loadfileDialog
-        title: qsTr("选择加载文件")
-        selectExisting: true
-        selectFolder: false
-        selectMultiple: false
+        FileDialog {
+            id: loadfileDialog
+            title: qsTr("选择加载文件")
+            selectExisting: true
+            selectFolder: false
+            selectMultiple: false
 
-        nameFilters: ["json文件 (*.json)"]
-        onAccepted: {
-            file.setSource(loadfileDialog.fileUrl)
-            var result = file.read()
-            var command = "document.getElementById('flowchart_data').value ='" + result + "'";
-            flowChartPage.webView.runJavaScript(command, function(result) {
-                console.log("Load flowchart success")
-                command = "document.getElementById('set_data').click()"
-                flowChartPage.webView.runJavaScript(command)
-                baseModuleManager.loadFlowchart(result)
-            })
+            nameFilters: ["json文件 (*.json)"]
+            onAccepted: {
+                file.setSource(loadfileDialog.fileUrl)
+                var result = file.read()
+                var command = "document.getElementById('flowchart_data').value ='" + result + "'";
+                flowChartPage.webView.runJavaScript(command, function(result) {
+                    console.log("Load flowchart success")
+                    command = "document.getElementById('set_data').click()"
+                    flowChartPage.webView.runJavaScript(command)
+                    baseModuleManager.loadFlowchart(result)
+                })
+            }
         }
-    }
 
-    FileDialog {
-        id: saveFileDialog
-        title: "选择保存文件"
-        selectExisting: false
-        selectFolder: false
-        selectMultiple: false
-        nameFilters: ["json文件 (*.json)"]
-        onAccepted: {
-            file.setSource(saveFileDialog.fileUrl)
-            file.write()
+        FileDialog {
+            id: saveFileDialog
+            title: "选择保存文件"
+            selectExisting: false
+            selectFolder: false
+            selectMultiple: false
+            nameFilters: ["json文件 (*.json)"]
+            onAccepted: {
+                file.setSource(saveFileDialog.fileUrl)
+                file.write()
+            }
         }
-    }
 
-    MotionDialog {
-        id: motionDialog
-    }
+        MotionDialog {
+            id: motionDialog
+        }
 
-    IODialog {
-        id: ioDialog
-    }
+        IODialog {
+            id: ioDialog
+        }
 
-    BusyDialog {
-        id: busyDialog
-        visible: false
-    }
+        BusyDialog {
+            id: busyDialog
+            visible: false
+        }
 
-    AlarmDialog {
-        id: alarmDialog
-        visible: false
-    }
+        AlarmDialog {
+            id: alarmDialog
+            visible: false
+        }
 
-    PopupMessageView {
-        id: messageDialog
-    }
+        PopupMessageView {
+            id: messageDialog
+        }
 
-    FileContentItem {
-        id: file
-        onError: console.log(msg)
-    }
+        FileContentItem {
+            id: file
+            onError: console.log(msg)
+        }
 
     header:
         ToolBar {
@@ -235,7 +235,7 @@ ApplicationWindow {
                 icon.source: "icons/flowchart.png"
                 icon.color: "deepskyblue"
                 onClicked: {
-                    baseModuleManager.loadconfig()
+                    baseModuleManager.loadParameter()
                 }
            }
            ToolButton {
@@ -249,7 +249,7 @@ ApplicationWindow {
                icon.color: "deepskyblue"
                onClicked: {
                    baseModuleManager.updateParams()
-                   logicManager.updateParams()
+//                   logicManager.updateParams()
 //                   messageDialog.messageText.text = "Save Complete"
 //                   messageDialog.open()
                }

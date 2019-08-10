@@ -152,100 +152,98 @@ ColumnLayout {
                     }
                 }
 
-                RowLayout{
-                    Label{
-                        text: qsTr("Ng Sensor高度")
-                    }
-                    TextField{
-                        text: materialPickArmParams.pickNgSensorZ
-                        horizontalAlignment: TextInput.AlignHCenter
-                        validator: DoubleValidator{
-                            decimals: 6
-                            notation: DoubleValidator.StandardNotation
-                        }
-                        onEditingFinished: {
-                            materialPickArmParams.setPickNgSensorZ(text)
-                        }
-                    }
+//                RowLayout{
+//                    Label{
+//                        text: qsTr("Ng Sensor高度")
+//                    }
+//                    TextField{
+//                        text: materialPickArmParams.pickNgSensorZ
+//                        horizontalAlignment: TextInput.AlignHCenter
+//                        validator: DoubleValidator{
+//                            decimals: 6
+//                            notation: DoubleValidator.StandardNotation
+//                        }
+//                        onEditingFinished: {
+//                            materialPickArmParams.setPickNgSensorZ(text)
+//                        }
+//                    }
 
-                    Button{
-                        text:qsTr("测高")
-                        width: 40
-                        height: 40
-                        onClicked: {
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_NG_SENSOR_IN_TRAY)
-                        }
-                    }
-                    }
+//                    Button{
+//                        text:qsTr("测高")
+//                        width: 40
+//                        height: 40
+//                        onClicked: {
+//                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_MEASURE_NG_SENSOR_IN_TRAY)
+//                        }
+//                    }
+//                    }
                 }
-                RowLayout{
-                    Label{
-                        text:qsTr("Ng Camera高度")
-                    }
-                    TextField{
-                        text: materialPickArmParams.placeNgSensorZ
-                        horizontalAlignment: TextInput.AlignHCenter
-                        validator: DoubleValidator {
-                            decimals: 6
-                            notation: DoubleValidator.StandardNotation
-                        }
-                        onEditingFinished: {
-                            materialPickArmParams.setPlaceNgSensorZ(text)
-                        }
-                    }
-                    Button{
-                        text:qsTr("测高")
-                        onClicked: {
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.MEASURE_NG_SENSOR_IN_TRAY)
-                        }
-                    }
-                }
+//                RowLayout{
+//                    Label{
+//                        text:qsTr("Ng product高度")
+//                    }
+//                    TextField{
+//                        text: materialPickArmParams.placeNgSensorZ
+//                        horizontalAlignment: TextInput.AlignHCenter
+//                        validator: DoubleValidator {
+//                            decimals: 6
+//                            notation: DoubleValidator.StandardNotation
+//                        }
+//                        onEditingFinished: {
+//                            materialPickArmParams.setPlaceNgSensorZ(text)
+//                        }
+//                    }
+//                    Button{
+//                        text:qsTr("测高")
+//                        onClicked: {
+//                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_MEASURE_NG_SENSOR_IN_TRAY)
+//                        }
+//                    }
+//                }
                 RowLayout{
                     Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
-                    Button{
-                        text:qsTr("空位视觉")
-                        width:40
-                        height: 40
-                        onClicked:{
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_VACANCY_PR)
-                        }
-                    }
+//                    Button{
+//                        text:qsTr("空位视觉")
+//                        width:40
+//                        height: 40
+//                        onClicked:{
+//                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_VACANCY_PR)
+//                        }
+//                    }
+
+//                    Button{
+//                        text:qsTr("移动吸头")
+//                        width:40
+//                        height: 40
+//                        onClicked: {
+//                            sh_reject_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+//                            sh_materialLoaderModule.performHandling( MaterialLoaderModule.PICKER2_TO_WORKPOS)
+
+//                        }
+//                    }
 
                     Button{
-                        text:qsTr("移动吸头")
-                        width:40
-                        height: 40
-                        onClicked: {
-                            sh_reject_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
-                                                                    MaterialLoaderModule.REJECT_VACANCY_PR|
-                                                                    MaterialLoaderModule.SENSOR_TO_PICK)
-                        }
-                    }
-
-                    Button{
-                        text:qsTr("放ng Camera")
+                        text:qsTr("放ng product")
                         width: 40
                         height: 40
                         onClicked: {
                             sh_reject_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                             sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
-                                                                    MaterialLoaderModule.REJECT_VACANCY_PR|
-                                                                    MaterialLoaderModule.SENSOR_TO_PICK|
+                                                                    MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                    MaterialLoaderModule.PICKER2_TO_WORKPOS|
                                                                     MaterialLoaderModule.PLACE_PRODUCT_TO_TRAY)
                         }
                     }
                     Button{
-                        visible: baseModuleManager.getServerMode()!==0
                         text:qsTr("放ng Sensor")
                         width:40
                         height: 40
                         onClicked: {
                             sh_reject_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                             sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
-                                                                    MaterialLoaderModule.REJECT_VACANCY_PR|
-                                                                    MaterialLoaderModule.SENSOR_TO_PICK|
-                                                                    MaterialLoaderModule.PLACE_NG_SENSOR_TO_TRAY)
+                                                                    MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                    MaterialLoaderModule.PICKER2_TO_WORKPOS|
+                                                                    MaterialLoaderModule.PICKER2_PLACE_NG_SENSOR_TO_TRAY)
                         }
                     }
                 }

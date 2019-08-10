@@ -73,6 +73,66 @@ ColumnLayout {
             }
         }
     }
+    RowLayout {
+        Label{
+            text: qsTr("Lens offset X")
+        }
+        TextField{
+            text: lsutLensOffset.X
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                lsutLensOffset.setX(text)
+            }
+        }
+        Label{
+            text: qsTr("Y")
+        }
+        TextField{
+            text: lsutLensOffset.Y
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                lsutLensOffset.setY(text)
+            }
+        }
+    }
+    RowLayout {
+        Label{
+            text: qsTr("Sensor offset X")
+        }
+        TextField{
+            text: lsutSensorOffset.X
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                lsutSensorOffset.setX(text)
+            }
+        }
+        Label{
+            text: qsTr("Y")
+        }
+        TextField{
+            text: lsutSensorOffset.Y
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                lsutSensorOffset.setY(text)
+            }
+        }
+    }
 
     RowLayout {
         Label{
@@ -99,7 +159,7 @@ ColumnLayout {
             }
         }
         Button {
-            text: qsTr("执行视觉")
+            text: qsTr("GRIPPER视觉")
             width: 40
             height: 40
             onClicked: {
@@ -108,22 +168,72 @@ ColumnLayout {
             }
         }
         Button {
+            text: qsTr("LENS视觉")
+            width: 40
+            height: 40
+            onClicked: {
+                console.log("Execute lens pr")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.UPLOOK_LENS_PR)
+            }
+        }
+    }
+    RowLayout {
+        Button {
             text: qsTr("移动Lens")
             width: 40
             height: 40
             onClicked: {
                 console.log("Move lens to center of gripper")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.LENS_TO_GRIPPER_CENTER)
+            }
+        }
+        Button {
+            text: qsTr("LENS TO GRIPER")
+            width: 40
+            height: 40
+            onClicked: {
+                console.log("Move lens to gripper position")
                 sh_lsut_Module.performHandling(SingleheadLSutModule.LENS_TO_GRIPPER)
             }
         }
-//        Button {
-//            text: qsTr("夹Lens")
-//            width: 40
-//            height: 40
-//            onClicked: {
-//                console.log("Move Lens to gripper")
-//                sh_lsut_Module.performHandling(0+1+2)
-//            }
-//        }
+        Button {
+            text: qsTr("夹Lens")
+            width: 40
+            height: 40
+            onClicked: {
+                console.log("Move Lens to gripper")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.GRAB_LENS_TO_GRIPPER)
+            }
+        }
+        Button {
+            text: qsTr("UnPick Lens")
+            width: 40
+            height: 40
+            onClicked: {
+                console.log("UnpickLens to LUT")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.UNPICK_LENS_TO_LUT)
+            }
+        }
+    }
+    RowLayout {
+        Button {
+            text: qsTr("移动Sensor")
+            width: 40
+            height: 40
+            onClicked: {
+                console.log("Move lens to center of gripper")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.SENSOR_TO_BOND_CENTER)
+            }
+        }
+        Button {
+            text: qsTr("Sensor to bond")
+            width: 40
+            height: 40
+            onClicked: {
+                console.log("Move sensor to bond position")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.SENSOR_TO_BOND)
+            }
+        }
     }
 }
+

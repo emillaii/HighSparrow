@@ -93,6 +93,14 @@ bool MaterialCarrier::Wait_XY_ToPos(double x, double y, int timeout)
     result &= motor_y->WaitArrivedTargetPos(y,timeout);
     return result;
 }
+bool MaterialCarrier::Wait_XYZ_ToPos(double x, double y, double z, int timeout)
+{
+    bool result;
+    result = motor_x->WaitArrivedTargetPos(x,timeout);
+    result &= motor_y->WaitArrivedTargetPos(y,timeout);
+    result &= motor_z->WaitArrivedTargetPos(z,timeout);
+    return result;
+}
 
 bool MaterialCarrier::StepMove_XY_Sync(double step_x, double step_y, int timeout)
 {
@@ -103,6 +111,24 @@ bool MaterialCarrier::StepMove_XY_Sync(double step_x, double step_y, int timeout
     motor_x->MoveToPos(target_x);
     motor_y->MoveToPos(target_y);
     return Wait_XY_ToPos(target_x,target_y,timeout);
+}
+
+bool MaterialCarrier::StepMove_XYZ_Sync(double step_x, double step_y,double step_z, int timeout)
+{
+    double cur_x = motor_x->GetFeedbackPos();
+    double cur_y = motor_y->GetFeedbackPos();
+    double cur_z = motor_z->GetFeedbackPos();
+    double target_x = cur_x + step_x;
+    double target_y = cur_y + step_y;
+    double target_z = cur_z + step_z;
+    motor_x->MoveToPos(target_x);
+    motor_y->MoveToPos(target_y);
+    motor_z->MoveToPos(target_z);
+    bool result = motor_x->WaitArrivedTargetPos(target_x);
+    result &= motor_y->WaitArrivedTargetPos(target_y);
+    result &= motor_z->WaitArrivedTargetPos(target_z);
+//    return Wait_XYZ_ToPos(target_x,target_y,target_z, timeout);
+    return result;
 }
 
 bool MaterialCarrier::StepMove_SZ_XY_Sync(double step_x, double step_y, int timeout)

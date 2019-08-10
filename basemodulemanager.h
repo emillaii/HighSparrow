@@ -2,11 +2,11 @@
 #define BASEMODULEMANAGER_H
 
 #include <QObject>
-#include "baslerpyloncamera.h"
-#include "visionmodule.h"
-#include "Light/wordoplight.h"
-#include "propertybase.h"
-#include "Light/LontryLight.h"
+#include "Vision/baslerpyloncamera.h"
+#include "Vision/visionmodule.h"
+#include "Vision/wordoplight.h"
+#include "Utils/propertybase.h"
+#include "LontryLight.h"
 #include "XtMotion/xtmotor.h"
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
@@ -15,29 +15,30 @@
 #include "XtMotion/XtVcMotor.h"
 #include "aaheadmodule.h"
 #include "material_carrier.h"
-#include "lut_module.h"
-#include "sut_module.h"
-#include "calibration.h"
+#include "DualHead/lut_module.h"
+#include "DualHead/sut_module.h"
+#include "Vision/calibration.h"
 #include "dothinkey.h"
 #include "imagegrabbingworkerthread.h"
 #include "Dispense/dispenser.h"
 #include "Dispense/dispense_module.h"
-#include "vision_location.h"
+#include "Vision/vision_location.h"
 #include "chart_calibration.h"
 #include "sparrowqserver.h"
 #include "sparrowqclient.h"
-#include "lensloadermodule.h"
-#include "lutclient.h"
+#include "DualHead/lensloadermodule.h"
+#include "DualHead/lutclient.h"
 #include "workers_manager.h"
-#include "trayloadermodule.h"
-#include "unitlog.h"
-#include "sensorloadermodule.h"
+#include "DualHead/trayloadermodule.h"
+#include "Utils/unitlog.h"
+#include "DualHead/sensorloadermodule.h"
 #include "aacorenew.h"
-#include "sensorclip.h"
+#include "DualHead/sensorclip.h"
 #include "sensortrayloadermodule.h"
 #include "modulemanagerparameter.h"
-#include "singleheadmachinematerialloadermodule.h"
-#include "singlehead_lsut_module.h"
+#include "SingleHead/singleheadmachinematerialloadermodule.h"
+#include "SingleHead/singlehead_lsut_module.h"
+#include "materialtray.h"
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
@@ -96,16 +97,11 @@ public:
     SingleHeadMachineMaterialPickArm single_station_material_pickarm;
 
 
-    TrayClip trayClipIn;
-    TrayClip trayClipOut;
 
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;
     LutClient * lutClient;
     SutClient * sut_clitent;
-    SensorClip entrance_clip;
-    SensorClip exit_clip;
-    SensorClipStandParameter sensor_clip_stand;
     SensorTrayLoaderModule sensor_tray_loder_module;
 
     Unitlog unitlog;
@@ -233,12 +229,14 @@ public:
     bool loadMotorLimitFiles(QString file_name);
     bool saveMotorLimitFiles(QString file_name);
 
+private:
     bool loadJsonArray(QString file_name, QJsonArray &array);
     bool saveJsonArray(QString file_name,QJsonArray &array);
     bool loadJsonObject(QString file_name, QJsonObject &object);
     bool saveJsonObject(QString file_name,QJsonObject &object);
     QString getCurrentParameterDir();
 
+public:
     bool registerWorkers(WorkersManager* manager);
 
     Q_INVOKABLE void performHandling(int cmd);
@@ -248,8 +246,6 @@ public:
     Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
     Q_INVOKABLE void setMotorParamByName(QString name,double vel,double acc,double jert);
     bool performCalibration(QString calibration_name);
-    bool performUpDnLookCalibration();
-    bool performLensUpDnLookCalibration();
     bool performLocation(QString location_name);
     Q_INVOKABLE QString getCalibrationParam(QString calibration_name);
     Q_INVOKABLE void setOutput(QString name, bool on);
@@ -268,7 +264,7 @@ public:
 
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();
-    Q_INVOKABLE void loadSensorLoaderParameter();
+//    Q_INVOKABLE void loadSensorLoaderParameter();
     Q_INVOKABLE double showChartCalibrationRotation();
     void EnableMotors();
     void DisableAllMotors();
@@ -281,7 +277,7 @@ public:
 
     Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString);
-    Q_INVOKABLE void loadSensorTrayLoaderMuduleParameter();
+//    Q_INVOKABLE void loadSensorTrayLoaderMuduleParameter();
 
     Q_INVOKABLE int getServerMode() { return m_ServerMode; }
 

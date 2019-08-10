@@ -5,10 +5,10 @@
 #include <Windows.h>
 #include "imagekit.h"
 #include "dtccm2.h"
-#include "iniparser.h"
+#include "Utils/iniparser.h"
 #include <QObject>
 #include <QPixmap>
-#include "propertybase.h"
+#include "Utils/propertybase.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
 

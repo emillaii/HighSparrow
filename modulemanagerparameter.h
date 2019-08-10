@@ -1,7 +1,7 @@
 #ifndef BASEMODULEMANAGERPARAMETER_H
 #define BASEMODULEMANAGERPARAMETER_H
 
-#include "propertybase.h"
+#include "Utils/propertybase.h"
 class ModuleManangerConfig:public PropertyBase
 {
     Q_OBJECT

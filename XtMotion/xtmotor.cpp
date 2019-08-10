@@ -3,8 +3,8 @@
 #include "XtMotion/xtmotor.h"
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
-#include "logger.h"
-#include "config.h"
+#include "Utils/logger.h"
+#include "Utils/config.h"
 
 using namespace XT_Controler_Extend;
 int XtMotor::curve_resource = 0;
@@ -815,7 +815,7 @@ bool XtMotor::checkLimit(const double pos)
 
 bool XtMotor::checkInterface(const double pos)
 {
-    qInfo("%s CheckLimit %d,%d,%d",name.toStdString().c_str(),vertical_limit_parameters.size(),parallel_limit_parameters.size(),io_limit_parameters.size());
+    //qInfo("%s CheckLimit %d,%d,%d",name.toStdString().c_str(),vertical_limit_parameters.size(),parallel_limit_parameters.size(),io_limit_parameters.size());
     double current_pos = GetFeedbackPos();
     for (int i = 0; i < vertical_limit_parameters.size(); ++i) {
         VerticalLimitParameter* temp_parameter = vertical_limit_parameters[i];

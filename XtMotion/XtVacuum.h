@@ -2,7 +2,7 @@
 #define XTVACUUM_H
 #include "XtMotion/XtGeneralInput.h"
 #include "XtMotion/XtGeneralOutput.h"
-#include "errorcode.h"
+#include "Utils/errorcode.h"
 #include "XtMotion/xtvacuumparameter.h"
 #include <QString>
 #define VACUUM_TIMEOUT 3000

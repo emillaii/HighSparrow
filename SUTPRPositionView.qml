@@ -72,5 +72,14 @@ ColumnLayout {
                 lsutPRPosition.setZ(z)
             }
         }
+        Button {
+            text: qsTr("SENSOR视觉")
+            width: 40
+            height: 40
+            onClicked: {
+                console.log("Execute sensor pr")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.DOWNLOOK_SENSOR_PR)
+            }
+        }
     }
 }

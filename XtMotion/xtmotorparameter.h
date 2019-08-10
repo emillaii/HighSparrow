@@ -1,7 +1,7 @@
 #ifndef XTMOTORPARAMETER_H
 #define XTMOTORPARAMETER_H
 
-#include "propertybase.h"
+#include "Utils/propertybase.h"
 
 class XtMotorParameter:public PropertyBase
 {

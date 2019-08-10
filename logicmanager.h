@@ -4,7 +4,7 @@
 #include "basemodulemanager.h"
 
 #include <QThread>
-#include <unitlog.h>
+#include "Utils/unitlog.h"
 
 enum CommandType{
     IDLE,
@@ -26,9 +26,6 @@ enum CommandType{
     LUT_PICK_LENS_TO_AA2_CMD,
     LUT_PICK_LENS_TO_AA1_CMD,
     PERFORM_CALIBRATION,
-    PERFORM_UPDNLOOK_CALIBRATION,
-    PERFORM_LENS_UPDNLOOK_CALIBRATION,
-    PERFORM_SENSOR_PICKHEAD_CALIBRATION,
     PERFORM_LOCATION,
     PERFORM_OC,
     PERFORM_LOOP_TEST
@@ -71,9 +68,6 @@ public:
 
     Q_INVOKABLE void performChartCalibration();
     Q_INVOKABLE void performCalibration(QString calibration_name);
-    Q_INVOKABLE void performUpDnLookCalibration();
-    Q_INVOKABLE void performLensUpDnLookCalibration();
-    Q_INVOKABLE void performSensorPickheadCalibration();
 
     Q_INVOKABLE void performLocation(QString location_name);
 
@@ -102,52 +96,10 @@ public:
     Q_INVOKABLE void lensPickArmMoveToUpdownlookDownPos();
     Q_INVOKABLE void lensPickArmMoveToUpdownlookUpPos();
 
-    Q_INVOKABLE void trayLoaderModuleLTIEMovetoFirstPos();
-    Q_INVOKABLE void trayLoaderModuleLTIEMovetoLastPos();
-    Q_INVOKABLE void trayLoaderModuleLTOEMovetoFirstPos();
-    Q_INVOKABLE void trayLoaderModuleLTOEMovetoLastPos();
 
-    Q_INVOKABLE void trayLoaderModuleLTKX1MovetoGetPos();
-    Q_INVOKABLE void trayLoaderModuleLTKX1MovetoSetPos();
-    Q_INVOKABLE void trayLoaderModuleLTKX2MovetoGetPos();
-    Q_INVOKABLE void trayLoaderModuleLTKX2MovetoSetPos();
-    Q_INVOKABLE void trayLoaderModuleLTLMovetoGetPos();
-    Q_INVOKABLE void trayLoaderModuleLTLMovetoSetPos();
-
-    Q_INVOKABLE void trayLoaderModuleLTIEMovetoColumnIndex(int);
-    Q_INVOKABLE void trayLoaderModuleLTOEMovetoColumnIndex(int);
-
-    Q_INVOKABLE void trayLoaderModuleEjectTray();
-
-    Q_INVOKABLE void trayLoaderModuleLTKX1CylinderOn();
-    Q_INVOKABLE void trayLoaderModuleLTKX1CylinderOff();
-
-    Q_INVOKABLE void trayLoaderModuleLTKX2CylinderOn();
-    Q_INVOKABLE void trayLoaderModuleLTKX2CylinderOff();
-
-    Q_INVOKABLE void trayLoaderModuleLTLXCylinderOn();
-    Q_INVOKABLE void trayLoaderModuleLTLXCylinderOff();
-
-    Q_INVOKABLE void trayLoaderModuleStartup();
-    Q_INVOKABLE void trayLoaderModuleEmitTestTrayUsed();
-
-    Q_INVOKABLE void trayLoaderModuleLTKX1MoveToRelayPos();
-
-    Q_INVOKABLE bool trayLoaderModuleCheckLTLXGetPos(double);
-    Q_INVOKABLE bool trayLoaderModuleCheckLTLXSetPos(double);
-
-    Q_INVOKABLE void trayLoaderModuleLTLXPickUpTray();
-    Q_INVOKABLE void trayLoaderModuleLTLXPutDownTray();
-
-    Q_INVOKABLE void sensorTrayLoaderModuleSTIEMovetoColumnIndex(int);
-    Q_INVOKABLE void sensorTrayLoaderModuleSTOEMovetoColumnIndex(int);
     Q_INVOKABLE void sensorTrayLoaderModuleMovetoPushMotorSafePosotion();
     Q_INVOKABLE void sensorTrayLoaderModuleMovetoDownTrayPosition();
     Q_INVOKABLE void sensorTrayLoaderModuleMovetoGetTrayPosition();
-    Q_INVOKABLE void sensorTrayLoaderModuleMovetoFinishKickTrayPosition();
-    Q_INVOKABLE void sensorTrayLoaderModuleMovetoPushoutPosition();
-    Q_INVOKABLE void sensorTrayLoaderModuleMovetoPutTrayPosition();
-    Q_INVOKABLE void sensorTrayLoaderModuleMovetoStartKickTrayPosition();
     Q_INVOKABLE void sensorTrayLoaderModuleMovetoTrayWorkPosition();
     Q_INVOKABLE void sensorTrayLoaderModuleMovetoVacancyTrayPosition();
 

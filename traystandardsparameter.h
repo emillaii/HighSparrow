@@ -1,7 +1,7 @@
 #ifndef MATERIALSTANDARDSPARAMETER_H
 #define MATERIALSTANDARDSPARAMETER_H
 
-#include "propertybase.h"
+#include "Utils/propertybase.h"
 
 
 
@@ -13,7 +13,7 @@ public:
     Q_PROPERTY(int columnCount READ columnCount WRITE setColumnCount NOTIFY columnCountChanged)
     Q_PROPERTY(int rowCount READ rowCount WRITE setRowCount NOTIFY rowCountChanged)
     Q_PROPERTY(bool useByRow READ useByRow WRITE setUseByRow NOTIFY useByRowChanged)
-    Q_PROPERTY(double columnDeta READ columnDeta WRITE setColumnDeta NOTIFY columnDetaChanged)
+    Q_PROPERTY(double ColumnDelta READ ColumnDelta WRITE setColumnDelta NOTIFY ColumnDeltaChanged)
     Q_PROPERTY(double rowDelta READ rowDelta WRITE setRowDelta NOTIFY rowDeltaChanged)
     Q_PROPERTY(int trayCount READ trayCount WRITE setTrayCount NOTIFY trayCountChanged)
     int columnCount() const
@@ -31,9 +31,9 @@ public:
         return m_useByRow;
     }
 
-    double columnDeta() const
+    double ColumnDelta() const
     {
-        return m_columnDeta;
+        return m_ColumnDelta;
     }
 
     double rowDelta() const
@@ -76,14 +76,14 @@ public slots:
         emit useByRowChanged(m_useByRow);
     }
 
-    void setColumnDeta(double columnDeta)
+    void setColumnDelta(double ColumnDelta)
     {
         qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_columnDeta, columnDeta))
+        if (qFuzzyCompare(m_ColumnDelta, ColumnDelta))
             return;
 
-        m_columnDeta = columnDeta;
-        emit columnDetaChanged(m_columnDeta);
+        m_ColumnDelta = ColumnDelta;
+        emit ColumnDeltaChanged(m_ColumnDelta);
     }
 
     void setRowDelta(double rowDelta)
@@ -114,7 +114,7 @@ signals:
 
     void useByRowChanged(bool useByRow);
 
-    void columnDetaChanged(double columnDeta);
+    void ColumnDeltaChanged(double ColumnDelta);
 
     void rowDeltaChanged(double rowDelta);
 
@@ -124,7 +124,7 @@ private:
     int m_columnCount = 1;
     int m_rowCount = 1;
     bool m_useByRow = false;
-    double m_columnDeta = 0;
+    double m_ColumnDelta = 0;
     double m_rowDelta = 0;
     int m_trayCount = 1;
 };

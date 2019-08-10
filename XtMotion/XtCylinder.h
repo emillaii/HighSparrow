@@ -3,7 +3,7 @@
 #include "XtMotion/XtGeneralInput.h"
 #include "XtMotion/XtGeneralOutput.h"
 #include "XtMotion/xtcylinderparameter.h"
-#include "errorcode.h"
+#include "Utils/errorcode.h"
 #include <QString>
 #define CYLINDER_TIMEOUT 3000
 class XtCylinder:public ErrorBase

@@ -94,87 +94,172 @@ ColumnLayout {
             }
         }
     }
-
-    RowLayout{
-        Label{
-            text:qsTr("sensor_picker_offset")
-        }
-    }
-    RowLayout{
-        Label{
-            text:qsTr("X")
-        }
-        TextField{
-            text:sensor_picker_offset.X
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                sensor_picker_offset.setX(text)
-            }
-        }
-        Label{
-            text:qsTr("Y")
-        }
-        TextField{
-            text:sensor_picker_offset.Y
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                sensor_picker_offset.setY(text)
-            }
-        }
-        Button{
-            text: qsTr("测量")
-            onClicked: {
-                sh_materialLoaderModule.cameraTipOffsetCalibration(1)
-            }
-        }
-    }
-    RowLayout{
-        Label{
-            text:qsTr("lens_picker_offset")
-        }
-    }
-    RowLayout{
-        Label{
-            text:qsTr("X")
-        }
-        TextField{
-            text:lens_picker_offset.X
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                lens_picker_offset.setX(text)
-            }
-        }
-        Label{
-            text:qsTr("Y")
-        }
-        TextField{
-            text:lens_picker_offset.Y
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                lens_picker_offset.setY(text)
-            }
-        }
-        Button{
-            text: qsTr("测量")
-            onClicked: {
-                sh_materialLoaderModule.cameraTipOffsetCalibration(0)
+    GroupBox{
+        title:qsTr("camera_to_picker1_offset")
+        ColumnLayout{
+            RowLayout{
+                Label{
+                    text:qsTr("X")
+                }
+                TextField{
+                    text:sh_camera_to_picker1_offset.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sh_camera_to_picker1_offset.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("Y")
+                }
+                TextField{
+                    text:sh_camera_to_picker1_offset.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sh_camera_to_picker1_offset.setY(text)
+                    }
+                }
+                Button{
+                    text:qsTr("测量")
+                    width: 40
+                    height: 40
+                    onClicked: {
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_PR_POS1)
+                    }
+                }
             }
         }
     }
+    GroupBox{
+        title:qsTr("camera_to_picker2_offset")
+        ColumnLayout{
+            RowLayout{
+                Label{
+                    text:qsTr("X")
+                }
+                TextField{
+                    text:sh_camera_to_picker2_offset.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sh_camera_to_picker2_offset.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("Y")
+                }
+                TextField{
+                    text:sh_camera_to_picker2_offset.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sh_camera_to_picker2_offset.setY(text)
+                    }
+                }
+                Button{
+                    text:qsTr("测量")
+                    width: 40
+                    height: 40
+                    onClicked: {
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_PR_POS1)
+                    }
+                }
+            }
+        }
+    }
+//    RowLayout{
+//        Label{
+//            text:qsTr("sensor_picker_offset")
+//        }
+//    }
+//    RowLayout{
+//        Label{
+//            text:qsTr("X")
+//        }
+//        TextField{
+//            text:sensor_picker_offset.X
+//            horizontalAlignment: TextInput.AlignHCenter
+//            validator: DoubleValidator{
+//                decimals: 6
+//                notation: DoubleValidator.StandardNotation
+//            }
+//            onEditingFinished: {
+//                sensor_picker_offset.setX(text)
+//            }
+//        }
+//        Label{
+//            text:qsTr("Y")
+//        }
+//        TextField{
+//            text:sensor_picker_offset.Y
+//            horizontalAlignment: TextInput.AlignHCenter
+//            validator: DoubleValidator{
+//                decimals: 6
+//                notation: DoubleValidator.StandardNotation
+//            }
+//            onEditingFinished: {
+//                sensor_picker_offset.setY(text)
+//            }
+//        }
+//        Button{
+//            text: qsTr("测量")
+//            onClicked: {
+//                sh_materialLoaderModule.cameraTipOffsetCalibration(1)
+//            }
+//        }
+//    }
+//    RowLayout{
+//        Label{
+//            text:qsTr("lens_picker_offset")
+//        }
+//    }
+//    RowLayout{
+//        Label{
+//            text:qsTr("X")
+//        }
+//        TextField{
+//            text:lens_picker_offset.X
+//            horizontalAlignment: TextInput.AlignHCenter
+//            validator: DoubleValidator{
+//                decimals: 6
+//                notation: DoubleValidator.StandardNotation
+//            }
+//            onEditingFinished: {
+//                lens_picker_offset.setX(text)
+//            }
+//        }
+//        Label{
+//            text:qsTr("Y")
+//        }
+//        TextField{
+//            text:lens_picker_offset.Y
+//            horizontalAlignment: TextInput.AlignHCenter
+//            validator: DoubleValidator{
+//                decimals: 6
+//                notation: DoubleValidator.StandardNotation
+//            }
+//            onEditingFinished: {
+//                lens_picker_offset.setY(text)
+//            }
+//        }
+//        Button{
+//            text: qsTr("测量")
+//            onClicked: {
+//                sh_materialLoaderModule.cameraTipOffsetCalibration(0)
+//            }
+//        }
+//    }
 }

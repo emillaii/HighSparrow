@@ -1,7 +1,7 @@
 #ifndef WORKER_BASE_H
 #define WORKER_BASE_H
 
-#include "errorcode.h"
+#include "Utils/errorcode.h"
 
 #include <QObject>
 #include <qmutex.h>

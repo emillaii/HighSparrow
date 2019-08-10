@@ -1,5 +1,5 @@
 ﻿#include "aaheadmodule.h"
-#include "config.h"
+#include "Utils/config.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
 #include <QtMath>
 
@@ -100,14 +100,16 @@ void AAHeadModule::openUVTillTime(int till_time)
 
 void AAHeadModule::openGripper()
 {
+    qInfo("open gripper is called");
     gripper->Set(true);
-    Sleep(200);
+    Sleep(100);
 }
 
 void AAHeadModule::closeGripper()
 {
+    qInfo("close gripper is called");
     gripper->Set(false);
-    Sleep(200);
+    Sleep(100);
 }
 
 bool AAHeadModule::stepMove_XY_Sync(double step_x, double step_y)

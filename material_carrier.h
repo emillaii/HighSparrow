@@ -4,7 +4,7 @@
 #include "XtMotion/XtVacuum.h"
 #include "XtMotion/XtVcMotor.h"
 #include "material_carrier_parameter.h"
-#include "position_define.h"
+#include "Utils/position_define.h"
 #include "XtMotion/xtmotor.h"
 class MaterialCarrier:public ErrorBase
 {
@@ -24,6 +24,7 @@ public:
     bool Move_SZ_SY_X_Y_Z_Sync(double x,double y,double z,bool check_autochthonous = false,double check_distance = 0.1, int timeout = 3000);
     bool Move_SZ_XY_ToPos(double x,double y,int timeout = 3000);
     bool Wait_XY_ToPos(double x,double y,int timeout = 3000);
+    bool Wait_XYZ_ToPos(double x,double y,double z, int timeout = 3000);
     bool StepMove_XY_Sync(double step_x,double step_y,int timeout = 3000);
     bool StepMove_SZ_XY_Sync(double step_x,double step_y,int timeout = 3000);
     bool StepMove_Z(double z, int timeout = 3000);
@@ -36,6 +37,8 @@ public:
 
     double GetSoftladngPosition(bool get_current = false);
     double softlandingPosition;
+
+    bool StepMove_XYZ_Sync(double step_x,double step_y, double step_z, int timeout = 3000);
 };
 
 #endif // MATERIAL_CARRIER_H

@@ -37,14 +37,14 @@ ColumnLayout {
             text:qsTr("列距")
         }
         TextField{
-            text:tray_standard_parameter.columnDeta
+            text:tray_standard_parameter.ColumnDelta
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tray_standard_parameter.setColumnDeta(text)
+                tray_standard_parameter.setColumnDelta(text)
             }
         }
         Label{

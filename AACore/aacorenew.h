@@ -8,12 +8,12 @@
 #include <Utils/errorcode.h>
 #include <sfr_entry.h>
 #include <unordered_map>
-#include <sfrworker.h>
+#include "AACore/sfrworker.h"
 #include <QObject>
 #include <QJsonDocument>
 #include <Utils/errorcode.h>
 #include <QMap>
-#include "aadata.h"
+#include "AACore/aadata.h"
 #include "aaheadmodule.h"
 #include "DualHead/lut_module.h"
 #include "DualHead/sut_module.h"

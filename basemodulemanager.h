@@ -32,7 +32,7 @@
 #include "DualHead/trayloadermodule.h"
 #include "Utils/unitlog.h"
 #include "DualHead/sensorloadermodule.h"
-#include "aacorenew.h"
+#include "AACore/aacorenew.h"
 #include "DualHead/sensorclip.h"
 #include "sensortrayloadermodule.h"
 #include "modulemanagerparameter.h"

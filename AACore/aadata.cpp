@@ -1,4 +1,4 @@
-#include "aadata.h"
+#include "AACore/aadata.h"
 #include <QThread>
 void AAData::wTimeout(){
     for (int i = 0; i < m_CCPointsList.size(); i++) {

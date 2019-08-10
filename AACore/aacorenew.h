@@ -18,14 +18,14 @@
 #include "DualHead/lut_module.h"
 #include "DualHead/sut_module.h"
 #include "SingleHead/singlehead_lsut_module.h"
-#include "dothinkey.h"
+#include "ImageGrabber/dothinkey.h"
 #include "visionavadaptor.h"
 #include "imageprovider.h"
 #include "Vision/chart_calibration.h"
 #include "Dispense/dispense_module.h"
 #include "aacoreparameters.h"
 #include "DualHead/lutclient.h"
-#include "imagegrabbingworkerthread.h"
+#include "ImageGrabber/imagegrabbingworkerthread.h"
 #include "Utils/unitlog.h"
 
 class AACoreNew : public ThreadWorkerBase

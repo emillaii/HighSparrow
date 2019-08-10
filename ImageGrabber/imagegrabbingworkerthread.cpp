@@ -1,4 +1,4 @@
-#include "imagegrabbingworkerthread.h"
+#include "ImageGrabber/imagegrabbingworkerthread.h"
 #include <Qmutex>
 #include "sfr.h"
 #include <QFileDialog>

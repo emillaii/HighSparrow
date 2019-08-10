@@ -146,9 +146,9 @@ HEADERS += \
     basemodulemanager.h \
     checkprocessitem.h \
     checkprocessmodel.h \
-    dothinkey.h \
+    ImageGrabber/dothinkey.h \
+    ImageGrabber/imagegrabbingworkerthread.h \
     highsprrow.h \
-    imagegrabbingworkerthread.h \
     imageprovider.h \
     logicmanager.h \
     machinestatemonitor.h \
@@ -217,9 +217,9 @@ SOURCES += \
     basemodulemanager.cpp \
     checkprocessitem.cpp \
     checkprocessmodel.cpp \
-    dothinkey.cpp \
+    ImageGrabber/dothinkey.cpp \
+    ImageGrabber/imagegrabbingworkerthread.cpp \
     highsprrow.cpp \
-    imagegrabbingworkerthread.cpp \
     imageprovider.cpp \
     logicmanager.cpp \
     machinestatemonitor.cpp \

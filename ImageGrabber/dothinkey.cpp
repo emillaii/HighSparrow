@@ -1,4 +1,4 @@
-#include "dothinkey.h"
+#include "ImageGrabber/dothinkey.h"
 
 bool Dothinkey::CameraChannel::CloseCameraChannel()
 {

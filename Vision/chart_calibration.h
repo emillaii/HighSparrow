@@ -2,7 +2,7 @@
 #define CHART_CALIBRATION_H
 
 #include "Vision/calibration.h"
-#include "dothinkey.h"
+#include "ImageGrabber/dothinkey.h"
 
 #include <QObject>
 

@@ -123,6 +123,7 @@ HEADERS += \
     Vision/vision_location_parameter.h \
     Vision/visionmodule.h \
     Vision/wordoplight.h \
+    Vision/chart_calibration.h \
     XtMotion/XtCylinder.h \
     XtMotion/XtGeneralInput.h \
     XtMotion/XtGeneralOutput.h \
@@ -143,7 +144,6 @@ HEADERS += \
     aaheadmodule.h \
     aaheadparameters.h \
     basemodulemanager.h \
-    chart_calibration.h \
     checkprocessitem.h \
     checkprocessmodel.h \
     dothinkey.h \
@@ -201,6 +201,7 @@ SOURCES += \
     Vision/vision_location.cpp \
     Vision/visionmodule.cpp \
     Vision/wordoplight.cpp \
+    Vision/chart_calibration.cpp \
     XtMotion/XtCylinder.cpp \
     XtMotion/XtGeneralInput.cpp \
     XtMotion/XtGeneralOutput.cpp \
@@ -213,7 +214,6 @@ SOURCES += \
     aaheadmodule.cpp \
     aaheadparameters.cpp \
     basemodulemanager.cpp \
-    chart_calibration.cpp \
     checkprocessitem.cpp \
     checkprocessmodel.cpp \
     dothinkey.cpp \

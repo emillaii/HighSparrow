@@ -39,7 +39,6 @@
         <file>LUTLoadUplookPosition.qml</file>
         <file>LUTUnloadPosition.qml</file>
         <file>Page4FormForm.ui.qml</file>
-        <file>AADataView.qml</file>
         <file>IODialog.qml</file>
         <file>BusyDialog.qml</file>
         <file>DispenseModuleView.qml</file>
@@ -49,7 +48,6 @@
         <file>DispenseZPos.qml</file>
         <file>Page5Form.ui.qml</file>
         <file>DiagnosticsView.qml</file>
-        <file>AACoreView.qml</file>
         <file>SystemConfigView.qml</file>
         <file>LensPickArmModuleView.qml</file>
         <file>TrayParamater.qml</file>
@@ -88,6 +86,8 @@
         <file>qml/TrayMapView.qml</file>
         <file>SUTPicklensPosition.qml</file>
         <file>SUTUnPicklensPosition.qml</file>
+        <file>qml/AACore/AACoreView.qml</file>
+        <file>qml/AACore/AADataView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

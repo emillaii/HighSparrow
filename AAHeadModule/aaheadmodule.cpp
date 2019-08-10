@@ -1,4 +1,4 @@
-﻿#include "aaheadmodule.h"
+﻿#include "AAHeadModule/aaheadmodule.h"
 #include "Utils/config.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
 #include <QtMath>

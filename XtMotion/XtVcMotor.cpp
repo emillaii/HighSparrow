@@ -65,7 +65,7 @@ void XtVcMotor::Init()
     vcm_resource.CanID = parameters.canId();
     vcm_resource.iAxis = axis_id;
     vcm_resource.IO_ID = origin.ID();
-    vcm_resource.Z_Index_ID = origin2.ID();
+    //vcm_resource.Z_Index_ID = origin2.ID();
     vcm_resource.iThread = default_using_thread;
     vcm_resource.iThread_Curve = GetThreadResource();
     vcm_resource.Connet_Rebuild = 0;
@@ -279,10 +279,9 @@ bool XtVcMotor::SeekOrigin(int thread)
 {
     if(!checkState(false))return false;
     int result;
-    qInfo("sadas");
     ChangeDiretion(true);
-    if(parameters.findOriginCurrent() > 0)
-        result = Touch_Go_Zero(vcm_id,parameters.findOriginCurrent(),parameters.touchDistance());
+    if(parameters.findOriginCurrent() > 0) {}
+        //result = Touch_Go_Zero(vcm_id,parameters.findOriginCurrent(),parameters.touchDistance());
     else {
 
         SetZeroPos(vcm_id,0);

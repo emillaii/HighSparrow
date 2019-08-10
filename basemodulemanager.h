@@ -13,7 +13,7 @@
 #include "XtMotion/XtVacuum.h"
 #include "XtMotion/XtCylinder.h"
 #include "XtMotion/XtVcMotor.h"
-#include "aaheadmodule.h"
+#include "AAHeadModule/aaheadmodule.h"
 #include "material_carrier.h"
 #include "DualHead/lut_module.h"
 #include "DualHead/sut_module.h"

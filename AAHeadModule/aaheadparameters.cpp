@@ -1,4 +1,4 @@
-#include "aaheadparameters.h"
+#include "AAHeadModule/aaheadparameters.h"
 
 #define AA_HEAD_PARAMS "AAHeadParameters"
 

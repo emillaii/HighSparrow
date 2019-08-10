@@ -14,7 +14,7 @@
 #include <Utils/errorcode.h>
 #include <QMap>
 #include "AACore/aadata.h"
-#include "aaheadmodule.h"
+#include "AAHeadModule/aaheadmodule.h"
 #include "DualHead/lut_module.h"
 #include "DualHead/sut_module.h"
 #include "SingleHead/singlehead_lsut_module.h"

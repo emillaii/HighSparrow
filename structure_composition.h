@@ -1,7 +1,7 @@
 #ifndef STRUCTURE_COMPOSITION_H
 #define STRUCTURE_COMPOSITION_H
 
-#include "aaheadmodule.h"
+#include "AAHeadModule/aaheadmodule.h"
 #include "basemodulemanager.h"
 #include "material_carrier.h"
 

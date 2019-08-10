@@ -141,8 +141,8 @@ HEADERS += \
     AACore/aacorenew.h \
     AACore/aacoreparameters.h \
     AACore/aadata.h \
-    aaheadmodule.h \
-    aaheadparameters.h \
+    AAHeadModule/aaheadmodule.h \
+    AAHeadModule/aaheadparameters.h \
     basemodulemanager.h \
     checkprocessitem.h \
     checkprocessmodel.h \
@@ -212,8 +212,8 @@ SOURCES += \
     AACore/aacorenew.cpp \
     AACore/aadata.cpp \
     AACore/sfrworker.cpp \
-    aaheadmodule.cpp \
-    aaheadparameters.cpp \
+    AAHeadModule/aaheadmodule.cpp \
+    AAHeadModule/aaheadparameters.cpp \
     basemodulemanager.cpp \
     checkprocessitem.cpp \
     checkprocessmodel.cpp \

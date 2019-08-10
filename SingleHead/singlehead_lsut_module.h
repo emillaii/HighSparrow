@@ -6,7 +6,7 @@
 #include "singleheadlsutparameter.h"
 #include "thread_worker_base.h"
 #include "Vision/vision_location.h"
-#include "aaheadmodule.h"
+#include "AAHeadModule/aaheadmodule.h"
 
 //! This class is defined as LSUT module in single-head AA machine
 //! LSUT is named as LUT and SUT is combined in single-head AA machine

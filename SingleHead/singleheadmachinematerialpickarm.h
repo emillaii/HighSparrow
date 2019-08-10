@@ -9,8 +9,6 @@
 #include "XtMotion/xtmotor.h"
 #include "Vision/vision_location.h"
 
-# define POS_ERROR 0.001
-
 class SingleHeadMachineMaterialPickArm:public ErrorBase
 {
 public:

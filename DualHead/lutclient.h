@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "sparrowqclient.h"
-#include "aaheadmodule.h"
+#include "AAHeadModule/aaheadmodule.h"
 #include "Vision/pixel2mech.h"
 enum LutClientState{
     LUT_CLIENT_IDLE,

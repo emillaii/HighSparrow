@@ -11,7 +11,7 @@
 #include <QObject>
 #include "Utils/propertybase.h"
 #include "Vision/visionmodule.h"
-#include <aaheadparameters.h>
+#include <AAHeadModule/aaheadparameters.h>
 
 //#define AA_Z_OFFSET (31.5)
 

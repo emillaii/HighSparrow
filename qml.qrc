@@ -6,7 +6,6 @@
         <file>qtquickcontrols2.conf</file>
         <file>CameraView.qml</file>
         <file>FeatureButton.qml</file>
-        <file>AAHeadModuleView.qml</file>
         <file>MachineSettingModel.qml</file>
         <file>Page3Form.ui.qml</file>
         <file>PickLensPositionView.qml</file>
@@ -22,9 +21,6 @@
         <file>ImageGrabberView.qml</file>
         <file>CalibrationView.qml</file>
         <file>MachineConfigListView.qml</file>
-        <file>AAHeadMushroomPosition.qml</file>
-        <file>AAHeadPickLensPosition.qml</file>
-        <file>AAHeadOCPosition.qml</file>
         <file>SUTMushroomPosition.qml</file>
         <file>SUTToollookPosition.qml</file>
         <file>LUTAA1UpDownlookPosition.qml</file>
@@ -88,6 +84,10 @@
         <file>SUTUnPicklensPosition.qml</file>
         <file>qml/AACore/AACoreView.qml</file>
         <file>qml/AACore/AADataView.qml</file>
+        <file>qml/AAHeadModule/AAHeadModuleView.qml</file>
+        <file>qml/AAHeadModule/AAHeadMushroomPosition.qml</file>
+        <file>qml/AAHeadModule/AAHeadOCPosition.qml</file>
+        <file>qml/AAHeadModule/AAHeadPickLensPosition.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

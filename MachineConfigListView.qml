@@ -1,7 +1,7 @@
 ﻿import QtQuick 2.0
 import QtQuick.Layouts 1.11
 import QtQuick.Controls 2.4
-
+import "qml/AAHeadModule"
 ScrollView {
     id: machineConfigListView
     width: 600
@@ -61,10 +61,10 @@ ScrollView {
             visible: {commonCtrlSwitch.checked}
         }
 
-        Switch {id: checkProcessSwitch; text:"校正过程"; font.bold: true}
-        CheckProcess{
-            Layout.fillWidth: true
-            visible: {checkProcessSwitch.checked}
-        }
+//        Switch {id: checkProcessSwitch; text:"校正过程"; font.bold: true}
+//        CheckProcess{
+//            Layout.fillWidth: true
+//            visible: {checkProcessSwitch.checked}
+//        }
     }
 }

@@ -85,7 +85,7 @@ public:
         PICKER2_PICK_PRODUCT_FROM_SUT = 19<<16,
         PICKER2_PLACE_PRODUCT_TO_TRAY = 20<<16,
 
-        //Measure high, TODO
+        //Measure high
         PICKER1_MEASURE_LENS_IN_TRAY = 21<<16,
         PICKER1_MEASURE_LENS_IN_LUT = 22<<16,
         PICKER1_MEASURE_PRODUCT_IN_TRAY = 23<<16,

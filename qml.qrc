@@ -4,7 +4,6 @@
         <file>Page1Form.ui.qml</file>
         <file>Page2Form.ui.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>CameraView.qml</file>
         <file>FeatureButton.qml</file>
         <file>MachineSettingModel.qml</file>
         <file>Page3Form.ui.qml</file>
@@ -14,7 +13,6 @@
         <file>MachineConfigListView.qml</file>
         <file>Page4FormForm.ui.qml</file>
         <file>IODialog.qml</file>
-        <file>BusyDialog.qml</file>
         <file>Page5Form.ui.qml</file>
         <file>DiagnosticsView.qml</file>
         <file>SystemConfigView.qml</file>
@@ -23,10 +21,7 @@
         <file>MaterialTray2.qml</file>
         <file>TraySpecs.qml</file>
         <file>TrayLoaderModuleView.qml</file>
-        <file>AlarmDialog.qml</file>
         <file>MotionPopup.qml</file>
-        <file>CommonUsedView.qml</file>
-        <file>CommonControl.qml</file>
         <file>MaterialLoaderModulueUTView.qml</file>
         <file>Page6.qml</file>
         <file>Page6Form.ui.qml</file>
@@ -93,6 +88,11 @@
         <file>qml/SingleStationMaterialLoaderModule/SingleHeadRejectTray.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/SingleHeadSensorTray.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/SingleStationMaterialLoaderModuleView.qml</file>
+        <file>qml/AlarmDialog.qml</file>
+        <file>qml/BusyDialog.qml</file>
+        <file>qml/CameraView.qml</file>
+        <file>qml/CommonControl.qml</file>
+        <file>qml/CommonUsedView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

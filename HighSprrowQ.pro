@@ -144,8 +144,8 @@ HEADERS += \
     AAHeadModule/aaheadmodule.h \
     AAHeadModule/aaheadparameters.h \
     basemodulemanager.h \
-    checkprocessitem.h \
-    checkprocessmodel.h \
+    MachineUtils/checkprocessitem.h \
+    MachineUtils/checkprocessmodel.h \
     ImageGrabber/dothinkey.h \
     ImageGrabber/imagegrabbingworkerthread.h \
     highsprrow.h \
@@ -215,8 +215,8 @@ SOURCES += \
     AAHeadModule/aaheadmodule.cpp \
     AAHeadModule/aaheadparameters.cpp \
     basemodulemanager.cpp \
-    checkprocessitem.cpp \
-    checkprocessmodel.cpp \
+    MachineUtils/checkprocessitem.cpp \
+    MachineUtils/checkprocessmodel.cpp \
     ImageGrabber/dothinkey.cpp \
     ImageGrabber/imagegrabbingworkerthread.cpp \
     highsprrow.cpp \

@@ -4,20 +4,11 @@
         <file>Page1Form.ui.qml</file>
         <file>Page2Form.ui.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>MachineSettingModel.qml</file>
         <file>Page3Form.ui.qml</file>
-        <file>PopupMessageView.qml</file>
         <file>MachineConfigListView.qml</file>
         <file>Page4FormForm.ui.qml</file>
         <file>Page5Form.ui.qml</file>
-        <file>SystemConfigView.qml</file>
-        <file>TrayParamater.qml</file>
-        <file>MaterialTray1.qml</file>
-        <file>MaterialTray2.qml</file>
-        <file>TraySpecs.qml</file>
-        <file>TrayLoaderModuleView.qml</file>
         <file>MotionPopup.qml</file>
-        <file>MaterialLoaderModulueUTView.qml</file>
         <file>Page6.qml</file>
         <file>Page6Form.ui.qml</file>
         <file>qml/TrayMapView.qml</file>
@@ -92,6 +83,14 @@
         <file>qml/ImageGrabberView.qml</file>
         <file>qml/IODialog.qml</file>
         <file>qml/MotionDialog.qml</file>
+        <file>qml/MaterialTray/MaterialTray1.qml</file>
+        <file>qml/MaterialTray/MaterialTray2.qml</file>
+        <file>qml/SingleStationMaterialLoaderModule/MaterialLoaderModulueUTView.qml</file>
+        <file>qml/TrayLoader/TrayLoaderModuleView.qml</file>
+        <file>qml/TrayLoader/TrayParamater.qml</file>
+        <file>qml/TrayLoader/TraySpecs.qml</file>
+        <file>qml/PopupMessageView.qml</file>
+        <file>qml/SystemConfigView.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

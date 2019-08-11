@@ -11,7 +11,7 @@
 #include <QDebug>
 
 #include "AACore/aadata.h"
-#include "checkprocessmodel.h"
+#include "MachineUtils/checkprocessmodel.h"
 #include "TrayMap/traymapmodel.h"
 
 

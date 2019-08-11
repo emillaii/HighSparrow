@@ -1,8 +1,9 @@
-﻿#include "checkprocessitem.h"
-#include "checkprocessmodel.h"
+﻿#include "MachineUtils/checkprocessitem.h"
+#include "MachineUtils/checkprocessmodel.h"
 
 CheckProcessModel::CheckProcessModel(QObject *parent)
 {
+    Q_UNUSED(parent)
     mRoleNames.insert(ItemName,"title");
     mRoleNames.insert(Operate,"operate");
     //1.提示放入蘑菇头，确定LUT的 AA1UplookPosition和AA2UplookPosition及其等待位置（移动、校正LUT的MushroomCalibration、执行LUT的MushroomPR、记录位置）
@@ -182,6 +183,7 @@ int CheckProcessModel::rowCount(const QModelIndex &parent) const
 
 int CheckProcessModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return 2;
 }
 

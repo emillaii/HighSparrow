@@ -19,7 +19,6 @@
         <file>SUTSafetyPositionView.qml</file>
         <file>PopupMessageView.qml</file>
         <file>ImageGrabberView.qml</file>
-        <file>CalibrationView.qml</file>
         <file>MachineConfigListView.qml</file>
         <file>SUTMushroomPosition.qml</file>
         <file>SUTToollookPosition.qml</file>
@@ -37,23 +36,13 @@
         <file>Page4FormForm.ui.qml</file>
         <file>IODialog.qml</file>
         <file>BusyDialog.qml</file>
-        <file>DispenseModuleView.qml</file>
-        <file>DispenserParam.qml</file>
-        <file>DispenseXYOffset.qml</file>
-        <file>DispenseParam.qml</file>
-        <file>DispenseZPos.qml</file>
         <file>Page5Form.ui.qml</file>
         <file>DiagnosticsView.qml</file>
         <file>SystemConfigView.qml</file>
-        <file>LensPickArmModuleView.qml</file>
         <file>TrayParamater.qml</file>
-        <file>LensPickArmModuleParameter.qml</file>
-        <file>LensPickArmOtherParameter.qml</file>
         <file>MaterialTray1.qml</file>
         <file>MaterialTray2.qml</file>
         <file>TraySpecs.qml</file>
-        <file>LensHeadParameter.qml</file>
-        <file>LensPcikArmLUT.qml</file>
         <file>TrayLoaderModuleView.qml</file>
         <file>AlarmDialog.qml</file>
         <file>ThreadManagerView.qml</file>
@@ -64,7 +53,6 @@
         <file>SensorTrayLoaderViewModule.qml</file>
         <file>CommonUsedView.qml</file>
         <file>CommonControl.qml</file>
-        <file>CheckProcess.qml</file>
         <file>LUTDownlookLoadPosition.qml</file>
         <file>LUTDownlookUnloadPosition.qml</file>
         <file>SingleStationMaterialLoaderModuleView.qml</file>
@@ -88,6 +76,18 @@
         <file>qml/AAHeadModule/AAHeadMushroomPosition.qml</file>
         <file>qml/AAHeadModule/AAHeadOCPosition.qml</file>
         <file>qml/AAHeadModule/AAHeadPickLensPosition.qml</file>
+        <file>qml/CheckProcessItem/CheckProcess.qml</file>
+        <file>qml/DispenseModule/DispenseModuleView.qml</file>
+        <file>qml/DispenseModule/DispenseParam.qml</file>
+        <file>qml/DispenseModule/DispenserParam.qml</file>
+        <file>qml/DispenseModule/DispenseXYOffset.qml</file>
+        <file>qml/DispenseModule/DispenseZPos.qml</file>
+        <file>qml/CalibrationView.qml</file>
+        <file>qml/LensPickarmModule/LensHeadParameter.qml</file>
+        <file>qml/LensPickarmModule/LensPcikArmLUT.qml</file>
+        <file>qml/LensPickarmModule/LensPickArmModuleParameter.qml</file>
+        <file>qml/LensPickarmModule/LensPickArmModuleView.qml</file>
+        <file>qml/LensPickarmModule/LensPickArmOtherParameter.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

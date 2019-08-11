@@ -2,6 +2,8 @@
 import QtQuick.Layouts 1.11
 import QtQuick.Controls 2.4
 import "qml/AAHeadModule"
+import "qml/DispenseModule"
+import "qml"
 ScrollView {
     id: machineConfigListView
     width: 600

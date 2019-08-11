@@ -264,7 +264,6 @@ public:
 
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();
-//    Q_INVOKABLE void loadSensorLoaderParameter();
     Q_INVOKABLE double showChartCalibrationRotation();
     void EnableMotors();
     void DisableAllMotors();
@@ -277,7 +276,6 @@ public:
 
     Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString);
-//    Q_INVOKABLE void loadSensorTrayLoaderMuduleParameter();
 
     Q_INVOKABLE int getServerMode() { return m_ServerMode; }
 

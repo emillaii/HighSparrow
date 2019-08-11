@@ -1,16 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>Page1Form.ui.qml</file>
-        <file>Page2Form.ui.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>Page3Form.ui.qml</file>
-        <file>MachineConfigListView.qml</file>
-        <file>Page4FormForm.ui.qml</file>
-        <file>Page5Form.ui.qml</file>
-        <file>MotionPopup.qml</file>
-        <file>Page6.qml</file>
-        <file>Page6Form.ui.qml</file>
         <file>qml/TrayMapView.qml</file>
         <file>qml/AACore/AACoreView.qml</file>
         <file>qml/AACore/AADataView.qml</file>
@@ -91,6 +82,13 @@
         <file>qml/TrayLoader/TraySpecs.qml</file>
         <file>qml/PopupMessageView.qml</file>
         <file>qml/SystemConfigView.qml</file>
+        <file>qml/Page1Form.ui.qml</file>
+        <file>qml/MachineConfigListView.qml</file>
+        <file>qml/Page2Form.ui.qml</file>
+        <file>qml/Page3Form.ui.qml</file>
+        <file>qml/Page4FormForm.ui.qml</file>
+        <file>qml/Page6Form.ui.qml</file>
+        <file>qml/Page5Form.ui.qml</file>
+        <file>qml/MotionPopup.qml</file>
     </qresource>
-    <qresource prefix="/sut"/>
 </RCC>

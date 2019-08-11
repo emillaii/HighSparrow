@@ -151,14 +151,10 @@ HEADERS += \
     highsprrow.h \
     Utils/imageprovider.h \
     logicmanager.h \
-    machinestatemonitor.h \
-    machinestatemonitorcontroller.h \
     material_carrier.h \
     material_carrier_parameter.h \
     materialtray.h \
     modulemanagerparameter.h \
-    motorspositionmodel.h \
-    sendmessagetool.h \
     AACore/sfrworker.h \
     network/sparrowqclient.h \
     network/sparrowqserver.h \
@@ -222,12 +218,9 @@ SOURCES += \
     highsprrow.cpp \
     Utils/imageprovider.cpp \
     logicmanager.cpp \
-    machinestatemonitor.cpp \
-    machinestatemonitorcontroller.cpp \
     main.cpp \
     material_carrier.cpp \
     materialtray.cpp \
-    motorspositionmodel.cpp \
     network/sparrowqclient.cpp \
     network/sparrowqserver.cpp \
     thread_worker_base.cpp \

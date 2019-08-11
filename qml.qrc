@@ -4,17 +4,12 @@
         <file>Page1Form.ui.qml</file>
         <file>Page2Form.ui.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>FeatureButton.qml</file>
         <file>MachineSettingModel.qml</file>
         <file>Page3Form.ui.qml</file>
-        <file>MotionDialog.qml</file>
         <file>PopupMessageView.qml</file>
-        <file>ImageGrabberView.qml</file>
         <file>MachineConfigListView.qml</file>
         <file>Page4FormForm.ui.qml</file>
-        <file>IODialog.qml</file>
         <file>Page5Form.ui.qml</file>
-        <file>DiagnosticsView.qml</file>
         <file>SystemConfigView.qml</file>
         <file>TrayParamater.qml</file>
         <file>MaterialTray1.qml</file>
@@ -93,6 +88,10 @@
         <file>qml/CameraView.qml</file>
         <file>qml/CommonControl.qml</file>
         <file>qml/CommonUsedView.qml</file>
+        <file>qml/DiagnosticsView.qml</file>
+        <file>qml/ImageGrabberView.qml</file>
+        <file>qml/IODialog.qml</file>
+        <file>qml/MotionDialog.qml</file>
     </qresource>
     <qresource prefix="/sut"/>
 </RCC>

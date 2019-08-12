@@ -78,23 +78,25 @@ public:
         //NG Sensor
         PICKER1_PICK_NG_SENSOR_FROM_SUT = 15<<16,
         PICKER1_PLACE_NG_SENSOR_TO_TRAY = 16<<16,
+        //NG Product
+        PICKER1_PLACE_NG_PRODUCT_TO_TRAY = 17<<16,
+        //Measure high
+        PICKER1_MEASURE_LENS_IN_TRAY = 18<<16,
+        PICKER1_MEASURE_LENS_IN_LUT = 19<<16,
+        PICKER1_MEASURE_PRODUCT_IN_SUT = 20<<16,
+        PICKER1_MEASURE_PRODUCT_IN_TRAY = 21<<16,
+
+        PICKER2_MEASURE_SENSOR_IN_TRAY = 22<<16,
+        PICKER2_MEASURE_SENSOR_IN_SUT = 23<<16,
+
+        //measure camer tip TODO
 
         //test, remove after project finish
-        PICKER1_PLACE_SENSOR_TO_SUT = 17<<16,
-        PICKER1_PICK_SENSOR_FROM_TRAY = 18<<16,
-        PICKER2_PICK_PRODUCT_FROM_SUT = 19<<16,
-        PICKER2_PLACE_PRODUCT_TO_TRAY = 20<<16,
+        PICKER1_PLACE_SENSOR_TO_SUT = 24<<16,
+        PICKER1_PICK_SENSOR_FROM_TRAY = 25<<16,
+        PICKER2_PICK_PRODUCT_FROM_SUT = 26<<16,
+        PICKER2_PLACE_PRODUCT_TO_TRAY = 27<<16,
 
-        //Measure high
-        PICKER1_MEASURE_LENS_IN_TRAY = 21<<16,
-        PICKER1_MEASURE_LENS_IN_LUT = 22<<16,
-        PICKER1_MEASURE_PRODUCT_IN_TRAY = 23<<16,
-
-        PICKER2_MEASURE_SENSOR_IN_TRAY = 24<<16,
-        PICKER2_MEASURE_NG_SENSOR_IN_TRAY = 25<<16,
-        PICKER2_MEASURE_SENSOR_IN_SUT = 26<<16,
-        PICKER2_MEASURE_NG_SENSOR_IN_SUT = 27<<16,
-        PICKER2_MEASURE_PRODUCT_IN_SUT = 28<<16,
 
         HANDLE_PICKER_ACTION = (1<<23)-(1<<16)
     };
@@ -209,7 +211,7 @@ private:
     bool picker2SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
     bool picker2SearchSutZ2(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
     bool picker1MeasureHight(bool is_tray,bool is_product = false);
-    bool picker2MeasureHight(bool is_tray,bool is_product,bool is_ng_material = true);
+    bool picker2MeasureHight(bool is_tray,bool is_product = false);
 
     //Action Combination
     bool loadLensFromTrayAndPlaceToLUT();

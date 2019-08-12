@@ -117,7 +117,7 @@ ColumnLayout {
     }
 
     GroupBox{
-        title:qsTr("Lens盘1操作picker1")
+        title:qsTr("Lens盘1操作")
         ColumnLayout{
             RowLayout{
                 Label{
@@ -166,7 +166,7 @@ ColumnLayout {
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        materialPickArmParams.pickLensZ
+                        materialPickArmParams.setPickLensZ
                     }
                 }
 
@@ -178,25 +178,9 @@ ColumnLayout {
                         sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_MEASURE_LENS_IN_TRAY)
                     }
                 }
-//                Button{
-//                    text:qsTr("执行视觉")
-//                    width:40
-//                    height:40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_PR)
-//                    }
-//                }
-
-//                Button{
-//                    text:qsTr("移动吸头")
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS
-//                                                            )
-//                    }
-//                }
-
+            }
+            RowLayout{
+                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
                     text:qsTr("picker1取lens")
                     width: 40
@@ -209,26 +193,18 @@ ColumnLayout {
                                                                 MaterialLoaderModule.PICKER1_PICK_LENS_FROM_TRAY)
                     }
                 }
-            }
-            RowLayout{
-                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
-//                Button{
-//                    text:qsTr("执行空位视觉")
-//                    width:40
-//                    height:40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_VACANCY_PR)
-//                    }
-//                }
-
-//                Button{
-//                    text:qsTr("移动吸头")
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS)
-//                    }
-//                }
+                Button{
+                    text:qsTr("picker1放lens")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        sh_lens_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1|
+                                                                MaterialLoaderModule.LENS_VACANCY_PR|
+                                                                MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER1_PLACE_LENS_TO_TRAY)
+                    }
+                }
                 Button{
                     text:qsTr("picker1放NGlens")
                     width: 40
@@ -241,126 +217,6 @@ ColumnLayout {
                                                                 MaterialLoaderModule.PICKER1_PLACE_NG_LENS_TO_TRAY)
                     }
                 }
-            }
-        }
-    }
-
-
-    GroupBox{
-        title:qsTr("Lens盘1操作picker2")
-        ColumnLayout{
-            RowLayout{
-                Label{
-                    text: qsTr("目标行")
-                }
-                TextField{
-                    id:t_nrow1
-                    text: "1"
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: IntValidator{
-                        bottom: 1
-                    }
-                }
-                Label{
-                    text: qsTr("目标列")
-                }
-                TextField{
-                    id:t_ncol1
-                    text: "1"
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: IntValidator{
-                        bottom: 1
-                    }
-                }
-                Button{
-                    text:title_move_to
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_lens_tray.setTrayCurrent(t_ncol1.text-1,t_nrow1.text-1,0)
-                        //todo moveto
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1)
-                    }
-                }
-            }
-
-            RowLayout{
-//                Label{
-//                    text: qsTr("lens高度")
-//                }
-//                TextField{
-//                    text: materialPickArmParams.pickLensZ
-//                    horizontalAlignment: TextInput.AlignHCenter
-//                    validator: DoubleValidator{
-//                        decimals: 6
-//                        notation: DoubleValidator.StandardNotation
-//                    }
-//                    onEditingFinished: {
-//                        materialPickArmParams.pickLensZ
-//                    }
-//                }
-
-//                Button{
-//                    text:qsTr("测高")
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_MEASURE_LENS_IN_TRAY)
-//                    }
-//                }
-//                Button{
-//                    text:qsTr("执行视觉")
-//                    width:40
-//                    height:40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(
-//                                                                MaterialLoaderModule.LENS_PR)
-//                    }
-//                }
-
-//                Button{
-//                    text:qsTr("移动吸头")
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(
-//                                                                MaterialLoaderModule.PICKER1_TO_WORKPOS)
-//                    }
-//                }
-
-                Button{
-                    text:qsTr("picker2取lens")
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_lens_tray.setTrayCurrent(t_ncol1.text-1,t_nrow1.text-1,0)
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1|
-                                                                MaterialLoaderModule.LENS_PR|
-                                                                MaterialLoaderModule.PICKER2_TO_WORKPOS|
-                                                                MaterialLoaderModule.PICKER1_PICK_LENS_FROM_TRAY)
-                    }
-                }
-            }
-            RowLayout{
-                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
-//                Button{
-//                    text:qsTr("执行空位视觉")
-//                    width:40
-//                    height:40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_VACANCY_PR)
-//                    }
-//                }
-
-//                Button{
-//                    text:qsTr("移动吸头")
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(
-//                                                                MaterialLoaderModule.LENS_VACANCY_PR)
-//                    }
-//                }
                 Button{
                     text:qsTr("picker2放NGlens")
                     width: 40
@@ -468,60 +324,6 @@ ColumnLayout {
                     }
                 }
             }
-//            RowLayout{
-//                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
-//                Button{
-//                    text:qsTr("lens视觉")
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_PR)
-//                    }
-//                }
-//                Button{
-//                    text:qsTr("取lens")
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2|
-//                                                                MaterialLoaderModule.LENS_PR|
-//                                                                MaterialLoaderModule.PICKER1_TO_WORKPOS|
-//                                                                MaterialLoaderModule.PICKER1_PICK_LENS_FROM_TRAY)
-//                    }
-//                }
-//                Button{
-//                    text:qsTr("空位视觉")
-//                    width:40
-//                    height: 40
-//                    onClicked:{
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_VACANCY_PR)
-//                    }
-//                }
-
-//                Button{
-//                    text:qsTr("移动吸头")
-//                    width:40
-//                    height: 40
-//                    onClicked: {
-//                        sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
-//                        sh_materialLoaderModule.performHandling(
-//                                                                MaterialLoaderModule.PICKER1_TO_WORKPOS)
-//                    }
-//                }
-
-//                Button{
-//                    text:qsTr("放NGlens")
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2|
-//                                                                MaterialLoaderModule.LENS_VACANCY_PR|
-//                                                                MaterialLoaderModule.PICKER1_TO_WORKPOS|
-//                                                                MaterialLoaderModule.PICKER1_PLACE_NG_LENS_TO_TRAY)
-//                    }
-//                }
-//            }
         }
     }
 

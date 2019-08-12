@@ -7,8 +7,8 @@ SingleheadLSutModule::SingleheadLSutModule(QString name, QObject * parent) : Thr
 
 void SingleheadLSutModule::Init(MaterialCarrier *sut_carrier,
                                 VisionLocation *downlook_location,
-                                VisionLocation *updownlook_down_location,
-                                VisionLocation *updownlook_up_location,
+//                                VisionLocation *updownlook_down_location,
+//                                VisionLocation *updownlook_up_location,
                                 VisionLocation *mushroom_location,
                                 VisionLocation * gripper_location,
                                 XtVacuum *sutVacuum,
@@ -20,8 +20,8 @@ void SingleheadLSutModule::Init(MaterialCarrier *sut_carrier,
     this->aa_head = aa_head;
     this->sut_carrier = sut_carrier;
     this->vision_downlook_location = downlook_location;
-    this->vision_updownlook_down_location = updownlook_down_location;
-    this->vision_updownlook_up_location = updownlook_up_location;
+//    this->vision_updownlook_down_location = updownlook_down_location;
+//    this->vision_updownlook_up_location = updownlook_up_location;
     this->vision_mushroom_location = mushroom_location;
     this->vision_gripper_location = gripper_location;
     this->vacuum_sut = sutVacuum;

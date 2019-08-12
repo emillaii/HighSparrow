@@ -25,10 +25,10 @@ public:
     Q_PROPERTY(double placeSensorZ READ placeSensorZ WRITE setPlaceSensorZ NOTIFY placeSensorZChanged)
     Q_PROPERTY(double pickProductZ READ pickProductZ WRITE setPickProductZ NOTIFY pickProductZChanged)
     Q_PROPERTY(double placeProductZ READ placeProductZ WRITE setPlaceProductZ NOTIFY placeProductZChanged)
-    Q_PROPERTY(double pickNgLensZ READ pickNgLensZ WRITE setPickNgLensZ NOTIFY pickNgLensZChanged)
-    Q_PROPERTY(double placeNgLensZ READ placeNgLensZ WRITE setPlaceNgLensZ NOTIFY placeNgLensZChanged)
-    Q_PROPERTY(double pickNgSensorZ READ pickNgSensorZ WRITE setPickNgSensorZ NOTIFY pickNgSensorZChanged)
-    Q_PROPERTY(double placeNgSensorZ READ placeNgSensorZ WRITE setPlaceNgSensorZ NOTIFY placeNgSensorZChanged)
+//    Q_PROPERTY(double pickNgLensZ READ pickNgLensZ WRITE setPickNgLensZ NOTIFY pickNgLensZChanged)
+//    Q_PROPERTY(double placeNgLensZ READ placeNgLensZ WRITE setPlaceNgLensZ NOTIFY placeNgLensZChanged)
+//    Q_PROPERTY(double pickNgSensorZ READ pickNgSensorZ WRITE setPickNgSensorZ NOTIFY pickNgSensorZChanged)
+//    Q_PROPERTY(double placeNgSensorZ READ placeNgSensorZ WRITE setPlaceNgSensorZ NOTIFY placeNgSensorZChanged)
     Q_PROPERTY(double pickLensTheta READ pickLensTheta WRITE setPickLensTheta NOTIFY pickLensThetaChanged)
     Q_PROPERTY(double placeLensTheta READ placeLensTheta WRITE setPlaceLensTheta NOTIFY placeLensThetaChanged)
 
@@ -129,25 +129,25 @@ public:
         return m_placeProductZ;
     }
 
-    double pickNgLensZ() const
-    {
-        return m_pickNgLensZ;
-    }
+//    double pickNgLensZ() const
+//    {
+//        return m_pickNgLensZ;
+//    }
 
-    double placeNgLensZ() const
-    {
-        return m_placeNgLensZ;
-    }
+//    double placeNgLensZ() const
+//    {
+//        return m_placeNgLensZ;
+//    }
 
-    double pickNgSensorZ() const
-    {
-        return m_pickNgSensorZ;
-    }
+//    double pickNgSensorZ() const
+//    {
+//        return m_pickNgSensorZ;
+//    }
 
-    double placeNgSensorZ() const
-    {
-        return m_placeNgSensorZ;
-    }
+//    double placeNgSensorZ() const
+//    {
+//        return m_placeNgSensorZ;
+//    }
 
     double pickLensTheta() const
     {
@@ -337,45 +337,45 @@ public slots:
         emit placeProductZChanged(m_placeProductZ);
     }
 
-    void setPickNgLensZ(double pickNgLensZ)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_pickNgLensZ, pickNgLensZ))
-            return;
+//    void setPickNgLensZ(double pickNgLensZ)
+//    {
+//        qWarning("Floating point comparison needs context sanity check");
+//        if (qFuzzyCompare(m_pickNgLensZ, pickNgLensZ))
+//            return;
 
-        m_pickNgLensZ = pickNgLensZ;
-        emit pickNgLensZChanged(m_pickNgLensZ);
-    }
+//        m_pickNgLensZ = pickNgLensZ;
+//        emit pickNgLensZChanged(m_pickNgLensZ);
+//    }
 
-    void setPlaceNgLensZ(double placeNgLensZ)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_placeNgLensZ, placeNgLensZ))
-            return;
+//    void setPlaceNgLensZ(double placeNgLensZ)
+//    {
+//        qWarning("Floating point comparison needs context sanity check");
+//        if (qFuzzyCompare(m_placeNgLensZ, placeNgLensZ))
+//            return;
 
-        m_placeNgLensZ = placeNgLensZ;
-        emit placeNgLensZChanged(m_placeNgLensZ);
-    }
+//        m_placeNgLensZ = placeNgLensZ;
+//        emit placeNgLensZChanged(m_placeNgLensZ);
+//    }
 
-    void setPickNgSensorZ(double pickNgSensorZ)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_pickNgSensorZ, pickNgSensorZ))
-            return;
+//    void setPickNgSensorZ(double pickNgSensorZ)
+//    {
+//        qWarning("Floating point comparison needs context sanity check");
+//        if (qFuzzyCompare(m_pickNgSensorZ, pickNgSensorZ))
+//            return;
 
-        m_pickNgSensorZ = pickNgSensorZ;
-        emit pickNgSensorZChanged(m_pickNgSensorZ);
-    }
+//        m_pickNgSensorZ = pickNgSensorZ;
+//        emit pickNgSensorZChanged(m_pickNgSensorZ);
+//    }
 
-    void setPlaceNgSensorZ(double placeNgSensorZ)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_placeNgSensorZ, placeNgSensorZ))
-            return;
+//    void setPlaceNgSensorZ(double placeNgSensorZ)
+//    {
+//        qWarning("Floating point comparison needs context sanity check");
+//        if (qFuzzyCompare(m_placeNgSensorZ, placeNgSensorZ))
+//            return;
 
-        m_placeNgSensorZ = placeNgSensorZ;
-        emit placeNgSensorZChanged(m_placeNgSensorZ);
-    }
+//        m_placeNgSensorZ = placeNgSensorZ;
+//        emit placeNgSensorZChanged(m_placeNgSensorZ);
+//    }
 
     void setPickLensTheta(double pickLensTheta)
     {
@@ -436,13 +436,13 @@ signals:
 
     void placeProductZChanged(double placeProductZ);
 
-    void pickNgLensZChanged(double pickNgLensZ);
+//    void pickNgLensZChanged(double pickNgLensZ);
 
-    void placeNgLensZChanged(double placeNgLensZ);
+//    void placeNgLensZChanged(double placeNgLensZ);
 
-    void pickNgSensorZChanged(double pickNgSensorZ);
+//    void pickNgSensorZChanged(double pickNgSensorZ);
 
-    void placeNgSensorZChanged(double placeNgSensorZ);
+//    void placeNgSensorZChanged(double placeNgSensorZ);
 
     void pickLensThetaChanged(double pickLensTheta);
 
@@ -468,10 +468,10 @@ private:
     double m_placeSensorZ = 0;
     double m_pickProductZ = 0;
     double m_placeProductZ = 0;
-    double m_pickNgLensZ = 0;
-    double m_placeNgLensZ = 0;
-    double m_pickNgSensorZ = 0;
-    double m_placeNgSensorZ = 0;
+//    double m_pickNgLensZ = 0;
+//    double m_placeNgLensZ = 0;
+//    double m_pickNgSensorZ = 0;
+//    double m_placeNgSensorZ = 0;
     double m_pickLensTheta = 0;
     double m_placeLensTheta = 0;
 };

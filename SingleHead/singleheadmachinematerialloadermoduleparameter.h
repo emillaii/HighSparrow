@@ -8,17 +8,13 @@
 class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
 {
     Q_OBJECT
-    int m_runMode = 0;
-    double m_saftyZHeight = 0;
-    double m_vcm1BaseHeight = 0;
-    double m_vcm2BaseHeight = 0;
-    double m_vcmSafeHeight = 0;
+
     double m_vcm1Svel = 0;
-    double m_vcm1Sacc = 0;
+
     double m_vcm1PickForce = 0;
     double m_vcm1Margin = 0;
     double m_vcm2Svel = 0;
-    double m_vcm2Sacc = 0;
+ 
     double m_vcm2PickForce = 0;
     double m_vcm2Margin = 0;
     int m_vcm1FinishDelay = 0;
@@ -33,29 +29,25 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     QString m_lensVancyVisionName = "";
     QString m_lutVisionName = "";
     QString m_lutLensVisionName = "";
-    QString m_rejectTrayVacancyVisionName = "";
+ 
     double m_zOffset = 0;
     double m_escapeHeight = 0;
     double m_escapeX = 0;
     double m_escapeY = 0;
     QString m_sutVacuumName = "";
     QString m_lutVacuumName = "";
-    double m_visionPositionX = 0;
+ 
     int m_changeTrayTimeOut = 180000;
 
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
-    Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
-    Q_PROPERTY(double saftyZHeight READ saftyZHeight WRITE setSaftyZHeight NOTIFY saftyZHeightChanged)
-    Q_PROPERTY(double vcm1BaseHeight READ vcm1BaseHeight WRITE setVcm1BaseHeight NOTIFY vcm1BaseHeightChanged)
-    Q_PROPERTY(double vcm2BaseHeight READ vcm2BaseHeight WRITE setVcm2BaseHeight NOTIFY vcm2BaseHeightChanged)
-    Q_PROPERTY(double vcmSafeHeight READ vcmSafeHeight WRITE setVcmSafeHeight NOTIFY vcmSafeHeightChanged)
+ 
     Q_PROPERTY(double vcm1Svel READ vcm1Svel WRITE setVcm1Svel NOTIFY vcm1SvelChanged)
-    Q_PROPERTY(double vcm1Sacc READ vcm1Sacc WRITE setVcm1Sacc NOTIFY vcm1SaccChanged)
+ 
     Q_PROPERTY(double vcm1PickForce READ vcm1PickForce WRITE setVcm1PickForce NOTIFY vcm1PickForceChanged)
     Q_PROPERTY(double vcm1Margin READ vcm1Margin WRITE setVcm1Margin NOTIFY vcm1MarginChanged)
     Q_PROPERTY(double vcm2Svel READ vcm2Svel WRITE setVcm2Svel NOTIFY vcm2SvelChanged)
-    Q_PROPERTY(double vcm2Sacc READ vcm2Sacc WRITE setVcm2Sacc NOTIFY vcm2SaccChanged)
+
     Q_PROPERTY(double vcm2PickForce READ vcm2PickForce WRITE setVcm2PickForce NOTIFY vcm2PickForceChanged)
     Q_PROPERTY(double vcm2Margin READ vcm2Margin WRITE setVcm2Margin NOTIFY vcm2MarginChanged)
     Q_PROPERTY(int vcm1FinishDelay READ vcm1FinishDelay WRITE setVcm1FinishDelay NOTIFY vcm1FinishDelayChanged)
@@ -69,49 +61,24 @@ public:
     Q_PROPERTY(QString lensVacancyVisionName READ lensVacancyVisionName WRITE setLensVacancyVisionName NOTIFY lensVacancyVisionNameChanged)
     Q_PROPERTY(QString lutVisionName READ lutVisionName WRITE setLutVisionName NOTIFY lutVisionNameChanged)
     Q_PROPERTY(QString lutLensVisionName READ lutLensVisionName WRITE setLutLensVisionName NOTIFY lutLensVisionNameChanged)
-    Q_PROPERTY(QString rejectTrayVacancyVisionName READ rejectTrayVacancyVisionName WRITE setRejectTrayVacancyVisionName NOTIFY rejectTrayVacancyVisionNameChanged)
+ 
     Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
     Q_PROPERTY(double escapeHeight READ escapeHeight WRITE setEscapeHeight NOTIFY escapeHeightChanged)
     Q_PROPERTY(double escapeX READ escapeX WRITE setEscapeX NOTIFY escapeXChanged)
     Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
     Q_PROPERTY(QString sutVacuumName READ sutVacuumName WRITE setSutVacuumName NOTIFY sutVacuumNameChanged)
     Q_PROPERTY(QString lutVacuumName READ lutVacuumName WRITE setLutVacuumName NOTIFY lutVacuumNameChanged)
-    Q_PROPERTY(double visionPositionX READ visionPositionX WRITE setVisionPositionX NOTIFY visionPositionXChanged)
+ 
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
 
-    int runMode() const
-    {
-        return m_runMode;
-    }
-    double saftyZHeight() const
-    {
-        return m_saftyZHeight;
-    }
-
-    double vcm1BaseHeight() const
-    {
-        return m_vcm1BaseHeight;
-    }
-
-    double vcm2BaseHeight() const
-    {
-        return m_vcm2BaseHeight;
-    }
-
-    double vcmSafeHeight() const
-    {
-        return m_vcmSafeHeight;
-    }
+ 
 
     double vcm1Svel() const
     {
         return m_vcm1Svel;
     }
 
-    double vcm1Sacc() const
-    {
-        return m_vcm1Sacc;
-    }
+ 
 
     double vcm1PickForce() const
     {
@@ -128,10 +95,7 @@ public:
         return m_vcm2Svel;
     }
 
-    double vcm2Sacc() const
-    {
-        return m_vcm2Sacc;
-    }
+ 
 
     double vcm2PickForce() const
     {
@@ -198,10 +162,7 @@ public:
         return m_lutLensVisionName;
     }
 
-    QString rejectTrayVacancyVisionName() const
-    {
-        return m_rejectTrayVacancyVisionName;
-    }
+  
 
     double zOffset() const
     {
@@ -233,10 +194,7 @@ public:
         return m_lutVacuumName;
     }
 
-    double visionPositionX() const
-    {
-        return m_visionPositionX;
-    }
+  
 
     int changeTrayTimeOut() const
     {
@@ -244,53 +202,7 @@ public:
     }
 
 public slots:
-    void setRunMode(int runMode)
-    {
-        if (m_runMode == runMode)
-            return;
-
-        m_runMode = runMode;
-        emit runModeChanged(m_runMode);
-    }
-    void setSaftyZHeight(double saftyZHeight)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_saftyZHeight, saftyZHeight))
-            return;
-
-        m_saftyZHeight = saftyZHeight;
-        emit saftyZHeightChanged(m_saftyZHeight);
-    }
-
-    void setVcm1BaseHeight(double vcm1BaseHeight)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_vcm1BaseHeight, vcm1BaseHeight))
-            return;
-
-        m_vcm1BaseHeight = vcm1BaseHeight;
-        emit vcm1BaseHeightChanged(m_vcm1BaseHeight);
-    }
-
-    void setVcm2BaseHeight(double vcm2BaseHeight)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_vcm2BaseHeight, vcm2BaseHeight))
-            return;
-
-        m_vcm2BaseHeight = vcm2BaseHeight;
-        emit vcm2BaseHeightChanged(m_vcm2BaseHeight);
-    }
-
-    void setVcmSafeHeight(double vcmSafeHeight)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_vcmSafeHeight, vcmSafeHeight))
-            return;
-
-        m_vcmSafeHeight = vcmSafeHeight;
-        emit vcmSafeHeightChanged(m_vcmSafeHeight);
-    }
+  
 
     void setVcm1Svel(double vcm1Svel)
     {
@@ -302,15 +214,6 @@ public slots:
         emit vcm1SvelChanged(m_vcm1Svel);
     }
 
-    void setVcm1Sacc(double vcm1Sacc)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_vcm1Sacc, vcm1Sacc))
-            return;
-
-        m_vcm1Sacc = vcm1Sacc;
-        emit vcm1SaccChanged(m_vcm1Sacc);
-    }
 
     void setVcm1PickForce(double vcm1PickForce)
     {
@@ -342,15 +245,7 @@ public slots:
         emit vcm2SvelChanged(m_vcm2Svel);
     }
 
-    void setVcm2Sacc(double vcm2Sacc)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_vcm2Sacc, vcm2Sacc))
-            return;
-
-        m_vcm2Sacc = vcm2Sacc;
-        emit vcm2SaccChanged(m_vcm2Sacc);
-    }
+  
 
     void setVcm2PickForce(double vcm2PickForce)
     {
@@ -471,15 +366,7 @@ public slots:
         emit lutLensVisionNameChanged(m_lutLensVisionName);
     }
 
-    void setRejectTrayVacancyVisionName(QString rejectTrayVacancyVisionName)
-    {
-        if (m_rejectTrayVacancyVisionName == rejectTrayVacancyVisionName)
-            return;
-
-        m_rejectTrayVacancyVisionName = rejectTrayVacancyVisionName;
-        emit rejectTrayVacancyVisionNameChanged(m_rejectTrayVacancyVisionName);
-    }
-
+  
     void setZOffset(double zOffset)
     {
         qWarning("Floating point comparison needs context sanity check");
@@ -538,15 +425,7 @@ public slots:
         emit lutVacuumNameChanged(m_lutVacuumName);
     }
 
-    void setVisionPositionX(double visionPositionX)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_visionPositionX, visionPositionX))
-            return;
-
-        m_visionPositionX = visionPositionX;
-        emit visionPositionXChanged(m_visionPositionX);
-    }
+ 
 
     void setChangeTrayTimeOut(int changeTrayTimeOut)
     {
@@ -558,17 +437,13 @@ public slots:
     }
 
 signals:
-    void runModeChanged(int runMode);
-    void saftyZHeightChanged(double saftyZHeight);
-    void vcm1BaseHeightChanged(double vcm1BaseHeight);
-    void vcm2BaseHeightChanged(double vcm2BaseHeight);
-    void vcmSafeHeightChanged(double vcmSafeHeight);
+ 
     void vcm1SvelChanged(double vcm1Svel);
-    void vcm1SaccChanged(double vcm1Sacc);
+
     void vcm1PickForceChanged(double vcm1PickForce);
     void vcm1MarginChanged(double vcm1Margin);
     void vcm2SvelChanged(double vcm2Svel);
-    void vcm2SaccChanged(double vcm2Sacc);
+ 
     void vcm2PickForceChanged(double vcm2PickForce);
     void vcm2MarginChanged(double vcm2Margin);
     void vcm1FinishDelayChanged(int vcm1FinishDelay);
@@ -582,14 +457,14 @@ signals:
     void lensVacancyVisionNameChanged(QString lensVacancyVisionName);
     void lutVisionNameChanged(QString lutVisionName);
     void lutLensVisionNameChanged(QString lutLensVisionName);
-    void rejectTrayVacancyVisionNameChanged(QString rejectTrayVacancyVisionName);
+ 
     void zOffsetChanged(double zOffset);
     void escapeHeightChanged(double escapeHeight);
     void escapeXChanged(double escapeX);
     void escapeYChanged(double escapeY);
     void sutVacuumNameChanged(QString sutVacuumName);
     void lutVacuumNameChanged(QString lutVacuumName);
-    void visionPositionXChanged(double visionPositionX);
+  
     void changeTrayTimeOutChanged(double changeTrayTimeOut);
 };
 

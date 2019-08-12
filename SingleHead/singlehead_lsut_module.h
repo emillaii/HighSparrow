@@ -66,8 +66,8 @@ public:
     SingleheadLSutModule(QString name = "LSutModule", QObject *parent = nullptr);
     void Init(MaterialCarrier *sut_carrier,
               VisionLocation *downlook_location,
-              VisionLocation *updownlook_down_location,
-              VisionLocation *updownlook_up_location,
+//              VisionLocation *updownlook_down_location,
+//              VisionLocation *updownlook_up_location,
               VisionLocation *mushroom_location,
               VisionLocation * gripper_location,
               XtVacuum* sutVacuum,
@@ -153,8 +153,8 @@ private:
     bool is_run = false;
     XtGeneralOutput* pogopin = Q_NULLPTR;
     VisionLocation* vision_downlook_location = Q_NULLPTR;
-    VisionLocation* vision_updownlook_down_location = Q_NULLPTR;
-    VisionLocation* vision_updownlook_up_location = Q_NULLPTR;
+//    VisionLocation* vision_updownlook_down_location = Q_NULLPTR;
+//    VisionLocation* vision_updownlook_up_location = Q_NULLPTR;
     VisionLocation* vision_mushroom_location = Q_NULLPTR;
     VisionLocation* vision_gripper_location = Q_NULLPTR;   //Is this vision location for lens in gripper?
     XtVacuum *vacuum_lut;

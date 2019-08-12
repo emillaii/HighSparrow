@@ -144,7 +144,7 @@ bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker, double speed, d
     qInfo("SensorPickArm::ZSerchByForce timeout %d",timeout);
     bool result = motor_vcm->SearchPosByForce(speed,force,limit,margin,timeout);
     if(result)
-        result &= vacuum->Set(open_vacuum,false,finish_time);
+        result &= vacuum->Set(open_vacuum,true,finish_time);
     softlanding_position = motor_vcm->GetFeedbackPos();
     if(need_return)
     {

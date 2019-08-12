@@ -322,7 +322,11 @@ bool SingleHeadMachineMaterialLoaderModule::performLUTLensPR()
 bool SingleHeadMachineMaterialLoaderModule::picker2PickSensorFormTray(int time_out)
 {
     qInfo("pickTraySensor time_out %d",time_out);
+    pick_arm->motor_th2->MoveToPosSync(0);
     bool result = picker2SearchZ(pick_arm->parameters.pickSensorZ(),true,time_out, 1);
+    if(result) {
+        pick_arm->motor_th2->MoveToPosSync(90);
+    }
     if(!result)
         AppendError(QString(u8"从sensor盘取sensor失败"));
     return result;
@@ -330,7 +334,11 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PickSensorFormTray(int time_o
 bool SingleHeadMachineMaterialLoaderModule::picker1PickSensorFormTray(int time_out)
 {
     qInfo("pickTraySensor time_out %d",time_out);
+    pick_arm->motor_th1->MoveToPosSync(0);
     bool result = picker1SearchZ(pick_arm->parameters.pickSensorZ(),true,time_out, 0);
+    if(result) {
+        pick_arm->motor_th1->MoveToPosSync(90);
+    }
     if(!result)
         AppendError(QString(u8"从sensor盘取sensor失败"));
     return result;
@@ -357,7 +365,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PlaceSensorToSUT(QString dest
 bool SingleHeadMachineMaterialLoaderModule::picker2PickNGSensorFormSUT(int time_out)
 {
     qInfo("picker2PickNGSensorFormSUT time_out %d",time_out);
-    bool result = picker2SearchSutZ2(pick_arm->parameters.pickNgSensorZ(),"dummy","vacuumOffReq",true,time_out);
+    bool result = picker2SearchSutZ2(pick_arm->parameters.placeSensorZ(),"dummy","vacuumOffReq",true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT取NGsenor失败"));
     return result;
@@ -365,7 +373,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PickNGSensorFormSUT(int time_
 bool SingleHeadMachineMaterialLoaderModule::picker1PickNGSensorFormSUT(QString dest, int time_out)
 {
     qInfo("pickSUTSensor dest %s time_out %d",dest.toStdString().c_str(),time_out);
-    bool result = picker1SearchSutZ2(pick_arm->parameters.pickNgSensorZ(),dest,"vacuumOffReq",true,time_out);
+    bool result = picker1SearchSutZ2(pick_arm->parameters.placeSensorZ(),dest,"vacuumOffReq",true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取NGsenor失败").arg(dest=="remote"?1:2));
     return result;
@@ -392,7 +400,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PickProductFormSUT(QString de
 bool SingleHeadMachineMaterialLoaderModule::picker1PlaceNGSensorToTray(int time_out)
 {
     qInfo("placeSensorToTray time_out %d",time_out);
-    bool result = picker2SearchZ(pick_arm->parameters.placeNgSensorZ(),false,time_out, 0);
+    bool result = picker1SearchZ(pick_arm->parameters.placeSensorZ(),false,time_out, 0);
     if(!result)
         AppendError(QString(u8"将Ngsensor放入NG盘失败"));
     return result;
@@ -401,7 +409,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PlaceNGSensorToTray(int time_
 bool SingleHeadMachineMaterialLoaderModule::picker2PlaceSensorToTray(int time_out)
 {
     qInfo("placeSensorToTray time_out %d",time_out);
-    bool result = picker2SearchZ(pick_arm->parameters.placeNgSensorZ(),false,time_out, 1);
+    bool result = picker2SearchZ(pick_arm->parameters.placeSensorZ(),false,time_out, 1);
     if(!result)
         AppendError(QString(u8"将Ngsensor放入NG盘失败"));
     return result;
@@ -410,7 +418,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PlaceSensorToTray(int time_ou
 bool SingleHeadMachineMaterialLoaderModule::picker2PlaceNGSensorToTray(int time_out)
 {
     qInfo("placeSensorToTray time_out %d",time_out);
-    bool result = picker2SearchZ(pick_arm->parameters.placeNgSensorZ(),false,time_out, 1);
+    bool result = picker2SearchZ(pick_arm->parameters.placeSensorZ(),false,time_out, 1);
     if(!result)
         AppendError(QString(u8"将Ngsensor放入NG盘失败"));
     return result;
@@ -603,7 +611,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1MeasureHight(bool is_tray,boo
     }
     return false;
 }
-bool SingleHeadMachineMaterialLoaderModule::picker2MeasureHight(bool is_tray, bool is_product,bool is_ng)
+bool SingleHeadMachineMaterialLoaderModule::picker2MeasureHight(bool is_tray, bool is_product)
 {
     qInfo("picker2MeasureHight is_tray %d is_product %d",is_tray,is_product);
     if(pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),true))
@@ -617,12 +625,9 @@ bool SingleHeadMachineMaterialLoaderModule::picker2MeasureHight(bool is_tray, bo
             if(is_product)
                 pick_arm->parameters.setPlaceProductZ(pick_arm->GetSoftladngPosition(false, 1));
             else{
-                if(is_ng){
-                    pick_arm->parameters.setPlaceNgSensorZ(pick_arm->GetSoftladngPosition(false, 1));
-                }
-                else{
+              
                     pick_arm->parameters.setPickSensorZ(pick_arm->GetSoftladngPosition(false, 1));
-                }
+                
             }
         }
         else
@@ -631,9 +636,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2MeasureHight(bool is_tray, bo
                 pick_arm->parameters.setPickProductZ(pick_arm->GetSoftladngPosition(false, 1));
             else
             {
-                if(is_ng)
-                    pick_arm->parameters.setPickNgSensorZ(pick_arm->GetSoftladngPosition(false, 1));
-                else
+  
                     pick_arm->parameters.setPlaceSensorZ(pick_arm->GetSoftladngPosition(false, 1));
             }
 
@@ -963,6 +966,7 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
         qInfo("perform ng lens PR, cmd: %d",NG_LENS_PR);
         result = performLUTLensPR();
     }
+        break;
     case LENS_VACANCY_PR:
     {
         qInfo("perform lens tray vacancy PR,cmd: %d",LENS_VACANCY_PR);
@@ -1040,6 +1044,13 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
         qInfo("place product to tray,cmd: %d",PICKER1_PLACE_PRODUCT_TO_TRAY);
         result = picker1PlaceProductToTray();
     }
+        break;
+    case PICKER1_PLACE_NG_PRODUCT_TO_TRAY:
+    {
+        qInfo("place ng product to tray,cmd: %d",PICKER1_PLACE_NG_PRODUCT_TO_TRAY);
+        result = picker1PlaceProductToTray();// use place product ation for NG
+    }
+        break;
 
     case PICKER2_PICK_NG_SENSOR_FROM_SUT:
     {
@@ -1080,13 +1091,7 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
     case PICKER2_MEASURE_SENSOR_IN_TRAY:
     {
         qInfo("mesure pick senso from tray height, cmd: %d",PICKER2_MEASURE_SENSOR_IN_TRAY);
-        result = picker2MeasureHight(true,false,false);
-
-    }
-        break;
-    case PICKER2_MEASURE_NG_SENSOR_IN_TRAY:
-    {
-        qInfo("measure place ng sensor to tray height, cmd: %d",PICKER2_MEASURE_NG_SENSOR_IN_TRAY);
+ 
         result = picker2MeasureHight(true,false);
     }
         break;
@@ -1099,19 +1104,14 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
     case PICKER2_MEASURE_SENSOR_IN_SUT:
     {
         qInfo("measure place sensor to SUT,cmd: %d",PICKER2_MEASURE_SENSOR_IN_SUT);
-        result = picker2MeasureHight(false,false,false);
-    }
-        break;
-    case PICKER2_MEASURE_NG_SENSOR_IN_SUT:
-    {
-        qInfo("measure pick ng sensor from SUT, cmd: %d",PICKER2_MEASURE_NG_SENSOR_IN_SUT);
+ 
         result = picker2MeasureHight(false,false);
     }
         break;
-    case PICKER2_MEASURE_PRODUCT_IN_SUT:
+    case PICKER1_MEASURE_PRODUCT_IN_SUT:
     {
-        qInfo("measure pick product form SUT, cmd: %d",PICKER2_MEASURE_PRODUCT_IN_SUT);
-        result = picker2MeasureHight(false,true,false);
+        qInfo("measure pick product form SUT, cmd: %d",PICKER1_MEASURE_PRODUCT_IN_SUT);
+        result = picker1MeasureHight(false,true);
     }
         break;
     case PICKER1_PICK_LENS_FROM_TRAY:

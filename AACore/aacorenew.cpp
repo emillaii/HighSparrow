@@ -1174,6 +1174,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     }
     double zpeak_dev = getzPeakDev_um(3,aa_result["zPeak_cc"].toDouble(),aa_result["zPeak_05"].toDouble(),aa_result["zPeak_08"].toDouble());
     qInfo("zpeak_dev: %f",zpeak_dev);
+    double zpeak_dev_cc_05 = getzPeakDev_um(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_05"].toDouble());
+    qInfo("zpeak_dev_cc_05: %f",zpeak_dev);
+    double zpeak_dev_cc_08 = getzPeakDev_um(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_08"].toDouble());
+    qInfo("zpeak_dev_cc_08: %f",zpeak_dev);
 
     double zPeakDiff05Max = parameters.zPeakDiff05Max();
     double zPeakDiff08Max = parameters.zPeakDiff08Max();
@@ -1213,8 +1217,8 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     map.insert("Z_PEAK_05",aa_result["zPeak_05"].toDouble());
     map.insert("Z_PEAK_08",aa_result["zPeak_08"].toDouble());
     map.insert("Z_PEAK",z_peak);
-    map.insert("Z_PEAK_DEV_CC_08_um",getzPeakDev_um(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_08"].toDouble()));
-    map.insert("Z_PEAK_DEV_CC_05_um",getzPeakDev_um(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_05"].toDouble()));
+    map.insert("Z_PEAK_DEV_CC_05_um",zpeak_dev_cc_05);
+    map.insert("Z_PEAK_DEV_CC_08_um",zpeak_dev_cc_08);
     map.insert("Z_PEAK_DEV_um",zpeak_dev);
     map.insert("FOV_SLOPE", fov_slope);
     map.insert("FOV_INTERCEPT", fov_intercept);
@@ -1223,6 +1227,21 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         {
             LogicNg(current_aa_ng_time);
             map["Result"] = QString("zpeak dev(%1) fail.").arg(zpeak_dev);
+            emit pushDataToUnit(runningUnit, "AA", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, map["Result"].toString()};
+        }
+
+        if(zpeak_dev_cc_05 > parameters.CC05MaxDev() || zpeak_dev_cc_05 < parameters.CC05MinDev())
+        {
+            LogicNg(current_aa_ng_time);
+            map["Result"] = QString("zpeak dev CC_05(%1) fail.").arg(zpeak_dev_cc_05);
+            emit pushDataToUnit(runningUnit, "AA", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, map["Result"].toString()};
+        }
+        if(zpeak_dev_cc_08 > parameters.CC08MaxDev() || zpeak_dev_cc_08 < parameters.CC08MinDev())
+        {
+            LogicNg(current_aa_ng_time);
+            map["Result"] = QString("zpeak dev CC_08(%1) fail.").arg(zpeak_dev_cc_08);
             emit pushDataToUnit(runningUnit, "AA", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, map["Result"].toString()};
         }

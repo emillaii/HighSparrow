@@ -12,8 +12,11 @@ BaslerPylonCamera::BaslerPylonCamera(QString name)
 
 void BaslerPylonCamera::OnImageGrabbed( CInstantCamera&, const CGrabResultPtr& ptrGrabResult)
 {
-    if (!ptrGrabResult->CheckCRC()) {
+    if (ptrGrabResult->CheckCRC() != 0) {
+        uint32_t errCode = ptrGrabResult->GetErrorCode();
+        Pylon::String_t errDes = ptrGrabResult->GetErrorDescription();
         qCritical("Camera : %s CRC check fail, image discard.", this->cameraChannelName.toStdString().c_str());
+        qCritical("Error code: %d, Error Description: %s", errCode, errDes.c_str());
         return;
     }
     QMutexLocker locker(&mutex);

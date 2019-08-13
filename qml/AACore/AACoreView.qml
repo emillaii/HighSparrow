@@ -106,7 +106,6 @@ ItemDelegate {
                         }
                     }
                     RowLayout {
-
                         Label {
                             text: qsTr("MinDev")
                         }
@@ -161,6 +160,64 @@ ItemDelegate {
                             }
                             onEditingFinished: {
                                 aaCoreParams.setZPeakDiff08Max(text)
+                            }
+                        }
+                    }
+                    RowLayout {
+                        Label {
+                            text: qsTr("CC_08MinDev")
+                        }
+                        TextField {
+                            text: aaCoreParams.CC08MinDev
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setCC08MinDev(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("CC_08MaxDev")
+                        }
+                        TextField {
+                            text: aaCoreParams.CC08MaxDev
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setCC08MaxDev(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("CC_05MinDev")
+                        }
+                        TextField {
+                            text: aaCoreParams.minDev
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setCC05MinDev(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("CC_05MaxDev")
+                        }
+                        TextField {
+                            text: aaCoreParams.CC05maxDev
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setCC05MaxDev(text)
                             }
                         }
                     }

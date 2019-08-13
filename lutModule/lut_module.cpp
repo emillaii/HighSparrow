@@ -641,11 +641,14 @@ void LutModule::performHandlingOperation(int cmd)
     qInfo("Lut Module perform command: %d", cmd);
     bool result = true;
     if(cmd == 1)
-        result =  moveToAA1UplookPR(false,true,true);
+        result = moveToAA1UplookPR(false,true,true);
     else if(cmd == 2)
-        result =  moveToAA2UplookPR(false,true,true);
+        result = moveToAA2UplookPR(false,true,true);
     else if(cmd == 3)
-        result =  moveToAA1UnPickLens(true,true);
+        result = moveToAA1UnPickLens(true,true);
+    else if(cmd == 4) {
+        result = moveToAA2UnPickLens(true,true);
+    }
     if(!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());

@@ -53,7 +53,7 @@ class AACoreParameters : public PropertyBase
 
     double m_maxDev = 100;
 
-    double m_minDev = 0;
+    double m_minDev = -100;
 
     bool m_enableCheckDispense = false;
 
@@ -64,6 +64,14 @@ class AACoreParameters : public PropertyBase
     double m_zPeakDiff05Max = 3;
 
     double m_zPeakDiff08Max = 5;
+
+    double m_CC05MinDev = -100;
+
+    double m_CC05MaxDev = 100;
+
+    double m_CC08MinDev = -100;
+
+    double m_CC08MaxDev = 100;
 
 public:
     explicit AACoreParameters(){
@@ -100,6 +108,10 @@ public:
     Q_PROPERTY(int minIntensityDiff READ minIntensityDiff WRITE setMinIntensityDiff NOTIFY minIntensityDiffChanged)
     Q_PROPERTY(double zPeakDiff05Max READ zPeakDiff05Max WRITE setZPeakDiff05Max NOTIFY zPeakDiff05MaxChanged)
     Q_PROPERTY(double zPeakDiff08Max READ zPeakDiff08Max WRITE setZPeakDiff08Max NOTIFY zPeakDiff08MaxChanged)
+    Q_PROPERTY(double CC05MinDev READ CC05MinDev WRITE setCC05MinDev NOTIFY CC05MinDevChanged)
+    Q_PROPERTY(double CC05MaxDev READ CC05MaxDev WRITE setCC05MaxDev NOTIFY CC05MaxDevChanged)
+    Q_PROPERTY(double CC08MinDev READ CC08MinDev WRITE setCC08MinDev NOTIFY CC08MinDevChanged)
+    Q_PROPERTY(double CC08MaxDev READ CC08MaxDev WRITE setCC08MaxDev NOTIFY CC08MaxDevChanged)
     double EFL() const
     {
         return m_EFL;
@@ -242,6 +254,26 @@ public:
     double zPeakDiff08Max() const
     {
         return m_zPeakDiff08Max;
+    }
+
+    double CC05MinDev() const
+    {
+        return m_CC05MinDev;
+    }
+
+    double CC05MaxDev() const
+    {
+        return m_CC05MaxDev;
+    }
+
+    double CC08MinDev() const
+    {
+        return m_CC08MinDev;
+    }
+
+    double CC08MaxDev() const
+    {
+        return m_CC08MaxDev;
     }
 
 public slots:
@@ -490,6 +522,46 @@ public slots:
         emit zPeakDiff08MaxChanged(m_zPeakDiff08Max);
     }
 
+    void setCC05MinDev(double CC05MinDev)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_CC05MinDev, CC05MinDev))
+            return;
+
+        m_CC05MinDev = CC05MinDev;
+        emit CC05MinDevChanged(m_CC05MinDev);
+    }
+
+    void setCC05MaxDev(double CC05MaxDev)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_CC05MaxDev, CC05MaxDev))
+            return;
+
+        m_CC05MaxDev = CC05MaxDev;
+        emit CC05MaxDevChanged(m_CC05MaxDev);
+    }
+
+    void setCC08MinDev(double CC08MinDev)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_CC08MinDev, CC08MinDev))
+            return;
+
+        m_CC08MinDev = CC08MinDev;
+        emit CC08MinDevChanged(m_CC08MinDev);
+    }
+
+    void setCC08MaxDev(double CC08MaxDev)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_CC08MaxDev, CC08MaxDev))
+            return;
+
+        m_CC08MaxDev = CC08MaxDev;
+        emit CC08MaxDevChanged(m_CC08MaxDev);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -509,6 +581,10 @@ signals:
     void minIntensityDiffChanged(int minIntensityDiff);
     void zPeakDiff05MaxChanged(double zPeakDiff05Max);
     void zPeakDiff08MaxChanged(double zPeakDiff08Max);
+    void CC05MinDevChanged(double CC05MinDev);
+    void CC05MaxDevChanged(double CC05MaxDev);
+    void CC08MinDevChanged(double CC08MinDev);
+    void CC08MaxDevChanged(double CC08MaxDev);
 };
 class AACoreStates: public PropertyBase
 {

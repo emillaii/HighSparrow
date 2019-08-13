@@ -70,5 +70,13 @@ ColumnLayout {
                 lutUnPickLensPositionAA2.setZ(z)
             }
         }
+        Button {
+            text: qsTr("UnPick")
+            width: 40
+            height: 40
+            onClicked: {
+                lutModule.performHandling(4);
+            }
+        }
     }
 }

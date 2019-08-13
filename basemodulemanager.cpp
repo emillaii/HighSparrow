@@ -1247,6 +1247,7 @@ bool BaseModuleManager::InitStruct()
     //todo
     material_tray.resetTrayState(0);
     material_tray.resetTrayState(1);
+
     return result;
 }
 

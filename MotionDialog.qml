@@ -139,6 +139,17 @@ Popup {
                         }
                     }
                 }
+                RadioButton {
+                    id: step0001Button
+                    text: qsTr("0.001")
+                    font.pixelSize: 10
+                    onCheckedChanged: {
+                        if (step0001Button.checked)
+                        {
+                            selectedStepSize = 0.001
+                        }
+                    }
+                }
             }
             ScrollView {
                 Timer {

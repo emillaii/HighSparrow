@@ -932,6 +932,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     int step_move_time = 0;
     int sfr_wait_time = 0;
     int wait_tilt_time = 0;
+    double zScanStopPosition = 0;
     QElapsedTimer step_move_timer;
     QElapsedTimer grab_timer;
     if(zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
@@ -940,6 +941,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         {
            step_move_timer.start();
            sut->moveToZPos(start+(i*step_size));
+           zScanStopPosition = start+(i*step_size);
            QThread::msleep(zSleepInMs);
            step_move_time += step_move_timer.elapsed();
            double realZ = sut->carrier->GetFeedBackPos().Z;
@@ -1033,6 +1035,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            for (unsigned int i = 0; i < imageCount; i++) {
                 step_move_timer.start();
                 sut->moveToZPos(target_z+(i*step_size));
+                zScanStopPosition = start+(i*step_size);
                 QThread::msleep(zSleepInMs);
                 step_move_time += step_move_timer.elapsed();
                 qInfo("Current Z: %f", sut->carrier->GetFeedBackPos().Z);
@@ -1096,6 +1099,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
          for (unsigned int i = 0; i < imageCount; i++) {
              step_move_timer.start();
              sut->moveToZPos(target_z+(i*step_size));
+             zScanStopPosition = start+(i*step_size);
              QThread::msleep(zSleepInMs);
              step_move_time += step_move_timer.elapsed();
              grab_timer.start();
@@ -1223,6 +1227,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     map.insert("FOV_SLOPE", fov_slope);
     map.insert("FOV_INTERCEPT", fov_intercept);
     if (position_checking == 1){
+        double maxZPeak = aa_result["maxZPeak"].toDouble();
+        if ( fabs(zScanStopPosition - maxZPeak) < 0.001 ) {
+            LogicNg(current_aa_ng_time);
+            map["Result"] = QString("one of the zpeak too close to z scan boundary.(%1)").arg(maxZPeak);
+            emit pushDataToUnit(runningUnit, "AA", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, map["Result"].toString()};
+        }
         if(zpeak_dev > parameters.maxDev()|| zpeak_dev < parameters.minDev())
         {
             LogicNg(current_aa_ng_time);
@@ -1352,6 +1363,7 @@ void AACoreNew::performAAOffline()
     }
     qInfo("clustered sfr map pattern size: %d clustered_sfr_map size: %d", clustered_sfr_map[0].size(), clustered_sfr_map.size());
     QVariantMap aa_result = sfrFitCurve_Advance(resize_factor, start);
+    qInfo("MaxPeakZ: %f", aa_result["maxPeakZ"].toDouble());
     clustered_sfr_map.clear();
     qInfo("[PerformAAOffline] time elapsed: %d", timer.elapsed());
 }
@@ -1393,6 +1405,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     vector<threeDPoint> points_1, points_11;
     vector<threeDPoint> points_2, points_22;
     vector<threeDPoint> points_3, points_33;
+    double maxPeakZ = -99999;
     for (size_t i = 0; i < sorted_sfr_map.size(); i++) {
         vector<double> sfr,b_sfr,t_sfr,l_sfr,r_sfr, z;
         double ex = 0; double ey = 0;
@@ -1431,6 +1444,12 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr);
         fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr);
         fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr);
+
+        if (b_peak_z > maxPeakZ) maxPeakZ = b_peak_z;
+        if (t_peak_z > maxPeakZ) maxPeakZ = t_peak_z;
+        if (l_peak_z > maxPeakZ) maxPeakZ = l_peak_z;
+        if (r_peak_z > maxPeakZ) maxPeakZ = r_peak_z;
+
         qInfo("%i b_peak_z %f ",i,b_peak_z + start_pos);
         qInfo("%i t_peak_z %f ",i,t_peak_z + start_pos);
         qInfo("%i l_peak_z %f ",i,l_peak_z + start_pos);
@@ -1556,7 +1575,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     result.insert("zPeak_05", peak_05); map.insert("zPeak_05", peak_05);
     result.insert("zPeak_08", peak_08); map.insert("zPeak_08", peak_08);
     result.insert("zPeak_cc", point_0.z); map.insert("zPeak_cc", point_0.z);
-
+    result.insert("maxPeakZ", maxPeakZ + start_pos); map.insert("maxPeakZ", maxPeakZ + start_pos);
     double all_coefficient = parameters.zpeakccCoefficient() +parameters.zpeak03Coefficient() +parameters.zpeak05Coefficient() +parameters.zpeak08Coefficient();
 
     if(parameters.enableZpeakCoefficient()&&all_coefficient>0)
@@ -1812,6 +1831,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         map.insert("dev_3", dev_3);
     }
     map.insert("fov_slope", current_fov_slope);
+
     emit postSfrDataToELK(runningUnit, map);
     data->plot();
     return result;

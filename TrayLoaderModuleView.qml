@@ -48,6 +48,35 @@ ItemDelegate {
                 ColumnLayout{
                     RowLayout{
                         Label{
+                            text:qsTr("换料位置")
+                        }
+                        TextField{
+                            text:tray_clipin_parameter.changeClipPos
+                            horizontalAlignment:TextInput.AlignHCenter
+                            validator: DoubleValidator{
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                tray_clipin_parameter.setChangeClipPos(text);
+                            }
+                        }
+                        Button{
+                            text:title_move_to
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTIEMovetoChangeClipPos()
+                            }
+                        }
+                        Button{
+                            text:title_read_encoder
+                            onClicked: {
+                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTIEName)
+                                tray_clipin_parameter.setChangeClipPos(x)
+                            }
+                        }
+                    }
+                    RowLayout{
+                        Label{
                             text:qsTr("起始位置")
                         }
                         TextField{

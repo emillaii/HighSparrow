@@ -10,6 +10,7 @@ private:
     int m_columnCount=2;
     bool m_fromTop=1;
     double m_columnDelta=0;
+    double m_changeClipPos = 0;
     double m_firstTrayPos=0;
     double m_lastTrayPos=0;
     int m_currentIndex=0;
@@ -25,6 +26,7 @@ public:
     Q_PROPERTY(int columnCount READ columnCount WRITE setColumnCount NOTIFY columnCountChanged)
     Q_PROPERTY(bool fromTop READ fromTop WRITE setFromTop NOTIFY fromTopChanged)
     Q_PROPERTY(double columnDelta READ columnDelta WRITE setColumnDelta NOTIFY columnDeltaChanged)
+    Q_PROPERTY(double changeClipPos READ changeClipPos WRITE setChangeClipPos NOTIFY changeClipPosChanged)
     Q_PROPERTY(double firstTrayPos READ firstTrayPos WRITE setFirstTrayPos NOTIFY firstTrayPosChanged)
     Q_PROPERTY(double lastTrayPos READ lastTrayPos WRITE setLastTrayPos NOTIFY lastTrayPosChanged)
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
@@ -41,6 +43,11 @@ bool fromTop() const
 double columnDelta() const
 {
     return m_columnDelta;
+}
+
+double changeClipPos() const
+{
+    return m_changeClipPos;
 }
 
 double firstTrayPos() const
@@ -95,6 +102,16 @@ void setColumnDelta(double columnDelta)
     emit columnDeltaChanged(m_columnDelta);
 }
 
+void setChangeClipPos(double changeClipPos)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_changeClipPos, changeClipPos))
+        return;
+
+    m_changeClipPos = changeClipPos;
+    emit changeClipPosChanged(m_changeClipPos);
+}
+
 void setFirstTrayPos(double firstTrayPos)
 {
     qWarning("Floating point comparison needs context sanity check");
@@ -137,6 +154,7 @@ signals:
 void columnCountChanged(int columnCount);
 void fromTopChanged(bool fromTop);
 void columnDeltaChanged(double columnDelta);
+void changeClipPosChanged(double changeClipPos);
 void firstTrayPosChanged(double firstTrayPos);
 void lastTrayPosChanged(double lastTrayPos);
 void currentIndexChanged(int currentIndex);

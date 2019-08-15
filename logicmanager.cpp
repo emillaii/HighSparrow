@@ -422,6 +422,15 @@ void LogicManager::lensPickArmMoveToUpdownlookUpPos()
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::UPDOWNLOOK_UP_POS);
 }
 
+void LogicManager::trayLoaderModuleLTIEMovetoChangeClipPos()
+{
+    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
+    if(rb==QMessageBox::No){
+        return;
+    }
+    baseModuleManage->tray_loader_module.moveToChangeClipPos();
+}
+
 void LogicManager::trayLoaderModuleLTIEMovetoFirstPos()
 {
     QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);

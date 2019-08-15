@@ -110,6 +110,7 @@ public:
     Q_INVOKABLE void lensPickArmMoveToUpdownlookDownPos();
     Q_INVOKABLE void lensPickArmMoveToUpdownlookUpPos();
 
+    Q_INVOKABLE void trayLoaderModuleLTIEMovetoChangeClipPos();
     Q_INVOKABLE void trayLoaderModuleLTIEMovetoFirstPos();
     Q_INVOKABLE void trayLoaderModuleLTIEMovetoLastPos();
     Q_INVOKABLE void trayLoaderModuleLTOEMovetoFirstPos();

@@ -49,6 +49,8 @@ public:
 
     bool moveToNextEmptyPos();
 
+    bool moveToChangeClipPos();
+
     bool LTIEMovetoColumnIndex(int);
     bool LTOEMovetoColumnIndex(int);
 

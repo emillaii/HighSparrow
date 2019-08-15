@@ -106,6 +106,7 @@ ItemDelegate {
                         }
                     }
                     RowLayout {
+
                         Label {
                             text: qsTr("MinDev")
                         }
@@ -196,7 +197,7 @@ ItemDelegate {
                             text: qsTr("CC_05MinDev")
                         }
                         TextField {
-                            text: aaCoreParams.minDev
+                            text: aaCoreParams.CC05MinDev
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2
@@ -210,7 +211,7 @@ ItemDelegate {
                             text: qsTr("CC_05MaxDev")
                         }
                         TextField {
-                            text: aaCoreParams.CC05maxDev
+                            text: aaCoreParams.CC05MaxDev
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2

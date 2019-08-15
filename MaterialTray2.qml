@@ -100,6 +100,14 @@ ColumnLayout {
                     }
                 }
                 Button{
+                    text:qsTr("下次取料位置")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        material_tray.setTrayFirst(t_ncol.text-1,t_nrow.text-1,1)
+                    }
+                }
+                Button{
                     text:title_move_to
                     width: 40
                     height: 40

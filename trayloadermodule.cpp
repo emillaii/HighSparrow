@@ -511,6 +511,13 @@ bool TrayLoaderModule::moveToNextEmptyPos()
     return result;
 }
 
+bool TrayLoaderModule::moveToChangeClipPos()
+{
+    motor_clip_in->MoveToPos(tray_clip->standards_parameters.changeClipPos());
+    bool result = motor_clip_in->WaitArrivedTargetPos(tray_clip->standards_parameters.changeClipPos());
+    return result;
+}
+
 bool TrayLoaderModule::LTIEMovetoColumnIndex(int col)
 {
     if(col<tray_clip->standards_parameters.columnCount()){

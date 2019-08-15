@@ -308,6 +308,7 @@ void LensLoaderModule::run(bool has_material)
                     states.setHasTray(true);
                     tray->resetTrayState(0);
                     tray->resetTrayState(1);
+                    states.setCurrentTray(0);
                     states.setNeedChangTray(false);
                     states.setAllowChangeTray(false);
                     qInfo("finishChangeTray");

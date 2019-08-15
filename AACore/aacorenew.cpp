@@ -969,8 +969,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            {
                QString imageName;
                imageName.append(getGrabberLogDir())
-                               .append(getCurrentTimeString())
-                               .append(".bmp");
+                       .append(sensorID)
+                       .append("_")
+                       .append(getCurrentTimeString())
+                       .append(".bmp");
                cv::imwrite(imageName.toStdString().c_str(), img);
            }
            double dfov = calculateDFOV(img);
@@ -996,13 +998,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            grab_timer.start();
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
            grab_time += grab_timer.elapsed();
-           if(is_debug == 1) {
-               QString imageName;
-               imageName.append(getGrabberLogDir())
-                               .append(getCurrentTimeString())
-                               .append(".bmp");
-               cv::imwrite(imageName.toStdString().c_str(), img);
-           }
+
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                map["Result"] = "AA Cannot grab image.";
@@ -1055,6 +1051,17 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                     emit pushDataToUnit(runningUnit, "AA", map);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
                 }
+
+                if(is_debug == 1) {
+                    QString imageName;
+                    imageName.append(getGrabberLogDir())
+                            .append(sensorID)
+                            .append("_")
+                            .append(getCurrentTimeString())
+                            .append(".bmp");
+                    cv::imwrite(imageName.toStdString().c_str(), img);
+                }
+
                 double realZ = sut->carrier->GetFeedBackPos().Z;
                 double dfov = calculateDFOV(img);
 

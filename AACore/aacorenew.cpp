@@ -15,6 +15,7 @@
 #include "vision/visionmodule.h"
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
+#include "sfr.h"
 #define PI  3.14159265
 #include <math.h>
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY) {
@@ -360,8 +361,7 @@ void AACoreNew::startWork( int run_mode)
             params["LL"] = 0;
             params["LR"] = 0;
             params["SFR_DEV_TOL"] = 100;
-            performMTF(params);
-            performMTF(true);
+            performMTFNew(params);
             QThread::msleep(200);
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
@@ -421,8 +421,9 @@ void AACoreNew::performHandlingOperation(int cmd)
         performPRToBond(0);
     }
     else if (cmd == HandleTest::MTF) {
-        performMTF(params);
+        //performMTF(params);
         //performMTFOffline(params);
+        performMTFNew(params);
     }
     else if (cmd == HandleTest::OC) {
         performOC(params);
@@ -705,7 +706,8 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         }
         else if (testItemName.contains(AA_PIECE_MTF)) {
             qInfo("Performing MTF");
-            ret = performMTF(params);
+            //ret = performMTF(params);
+            ret = performMTFNew(params);
             qInfo("End of perform MTF %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_UV)) {
@@ -1852,150 +1854,283 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     double ll_min_sfr = params["LL"].toDouble(-1);
     double lr_min_sfr = params["LR"].toDouble(-1);
     double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
-    qInfo("%f %f %f %f %f", cc_min_sfr, ul_min_sfr, ur_min_sfr, ll_min_sfr, lr_min_sfr);
-    clustered_sfr_map.clear();
-    QJsonValue aaPrams;
-    this->sfrWorkerController->setSfrWorkerParams(aaPrams);
-    QElapsedTimer timer;
+    double sfr_tol[4] = {0};
+    sfr_tol[0] = params["CC_TOL"].toDouble(-1);
+    sfr_tol[1] = params["03F_TOL"].toDouble(-1);
+    sfr_tol[2] = params["05F_TOL"].toDouble(-1);
+    sfr_tol[3] = params["08F_TOL"].toDouble(-1);
+
+    cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\aaData\\22-15-46-422.bmp");
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, 35, 8000, parameters.MaxArea(), -1);
+    vector<double> sfr_l_v, sfr_r_v, sfr_t_v, sfr_b_v;
+    cv::Rect roi; roi.width = 32; roi.height = 32;
+    double rect_width = 0;
+    std::vector<MTF_Pattern_Position> vec;
+    double imageCenterX = input_img.cols/2;
+    double imageCenterY = input_img.rows/2;
+    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
+    for (uint i = 0; i < patterns.size(); i++) {
+        qInfo("Pattern width : %f height: %f", patterns[i].width, patterns[i].height);
+        cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
+        rect_width = sqrt(patterns[i].area)/2;
+        //Left ROI
+        roi.x = patterns[i].center.x() - rect_width - roi.width/2;
+        roi.y = patterns[i].center.y() - roi.width/2;
+        input_img(roi).copyTo(cropped_l_img);
+        //Right ROI
+        roi.x = patterns[i].center.x() + rect_width - roi.width/2;
+        roi.y = patterns[i].center.y() - roi.width/2;
+        input_img(roi).copyTo(cropped_r_img);
+        //Top ROI
+        roi.x = patterns[i].center.x() - roi.width/2;
+        roi.y = patterns[i].center.y() - rect_width - roi.width/2;
+        input_img(roi).copyTo(cropped_t_img);
+        //Bottom ROI
+        roi.x = patterns[i].center.x() - roi.width/2;
+        roi.y = patterns[i].center.y() + rect_width - roi.width/2;
+        input_img(roi).copyTo(cropped_b_img);
+
+        QString filename_t = "t_";
+        filename_t.append(QString::number(i)).append(".bmp");
+        cv::imwrite(filename_t.toStdString(), cropped_t_img);
+        QString filename_b = "b_";
+        filename_b.append(QString::number(i)).append(".bmp");;
+        cv::imwrite(filename_b.toStdString(), cropped_b_img);
+        QString filename_l = "l_";
+        filename_l.append(QString::number(i)).append(".bmp");;
+        cv::imwrite(filename_l.toStdString(), cropped_l_img);
+        QString filename_r = "r_";
+        filename_r.append(QString::number(i)).append(".bmp");;
+        cv::imwrite(filename_r.toStdString(), cropped_r_img);
+
+        double sfr_l = sfr::calculateSfrWithSingleRoi(cropped_l_img,1);
+        double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
+        double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
+        double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
+        sfr_l_v.push_back(sfr_l);
+        sfr_r_v.push_back(sfr_r);
+        sfr_t_v.push_back(sfr_t);
+        sfr_b_v.push_back(sfr_b);
+        double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
+        double f = radius/r1;
+        double avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l)/4;
+        qInfo("x: %f y: %f sfr_l: %f sfr_r: %f sfr_t: %f sfr_b: %f",
+              patterns[i].center.x(), patterns[i].center.y(), sfr_l, sfr_r, sfr_t, sfr_b);
+        vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
+                         f, sfr_t, sfr_r, sfr_b, sfr_l, patterns[i].area, avg_sfr);
+
+    }
+    vector<int> layers = sfr::classifyLayers(vec);
+
+    double display_factor = input_img.cols/CONSTANT_REFERENCE;
+    QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(input_img);
+    QPainter qPainter(&qImage);
+    qPainter.setBrush(Qt::NoBrush);
+    qPainter.setFont(QFont("Times",75*display_factor, QFont::Light));
+    for (size_t i = 0; i < vec.size(); i++) {
+        qInfo("Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
+              vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
+        qPainter.setPen(QPen(Qt::blue, 4.0));
+        qPainter.drawText(vec[i].x - rect_width/2, vec[i].y - rect_width*2, QString::number(vec[i].t_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x + 150, vec[i].y,  QString::number(vec[i].r_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x - 50, vec[i].y+ 120,  QString::number(vec[i].b_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x - 250, vec[i].y,  QString::number(vec[i].l_sfr, 'g', 4));
+    }
+    qPainter.end();
+    sfrImageReady(std::move(qImage));
+    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+}
+
+ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params)
+{
+    double cc_min_sfr = params["CC"].toDouble(-1);
+    double ul_min_sfr = params["UL"].toDouble(-1);
+    double ur_min_sfr = params["UR"].toDouble(-1);
+    double ll_min_sfr = params["LL"].toDouble(-1);
+    double lr_min_sfr = params["LR"].toDouble(-1);
+    double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
+    double sfr_tol[4] = {0};
+    sfr_tol[0] = params["CC_TOL"].toDouble(-1);
+    sfr_tol[1] = params["03F_TOL"].toDouble(-1);
+    sfr_tol[2] = params["05F_TOL"].toDouble(-1);
+    sfr_tol[3] = params["08F_TOL"].toDouble(-1);
+    QString error = "";
+    QElapsedTimer timer;timer.start();
     QVariantMap map;
-    //cv::Mat img = cv::imread("offline\\5.bmp");
-    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-    cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
-    double dfov = calculateDFOV(img);
-    qInfo("%f %d %d %d", dfov, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea() );
-    AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
-    cv::Mat dst;
-    cv::Size size(img.cols, img.rows);
-    timer.start();
-    cv::resize(img, dst, size);/*
-    double imageCenterX = dst.cols/2;
-    double imageCenterY = dst.rows/2;*/
-    qInfo("img resize: %d %d time elapsed: %d", dst.cols, dst.rows, timer.elapsed());
-    timer.restart();
-
-    emit sfrWorkerController->calculate(0, 0, dst, false);
-    int timeout=1000;
-    while(this->clustered_sfr_map.size() != 1 && timeout >0) {
-        Sleep(10);
-        timeout--;
+    bool grabRet = false;
+    cv::Mat input_img = dk->DothinkeyGrabImageCV(0, grabRet);
+    //cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\mtf_test\\18-45-31-211.bmp");
+    if (!grabRet) {
+        qInfo("MTF Cannot grab image.");
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
-    qInfo("clustered sfr map size: %d", clustered_sfr_map.size());
-    vector<Sfr_entry> sv = clustered_sfr_map[0];
-    int max_layer = 0;
-    for (unsigned int i = 0; i < sv.size(); i++)
-    {
-        qInfo("%f %f %f %f %f %f %d %d", sv.at(i).px, sv.at(i).py,
-              sv.at(i).t_sfr, sv.at(i).r_sfr, sv.at(i).b_sfr, sv.at(i).l_sfr,
-              sv.at(i).layer, sv.at(i).location);
-        if (sv.at(i).layer > max_layer) {
-            max_layer = sv.at(i).layer - 1;
-        }
-    }
+    double fov = calculateDFOV(input_img);
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    vector<double> sfr_l_v, sfr_r_v, sfr_t_v, sfr_b_v;
+    cv::Rect roi; roi.width = 32; roi.height = 32;
+    double rect_width = 0;
     bool sfr_check = true;
-    std::vector<double> sfr_check_list;
+    std::vector<MTF_Pattern_Position> vec;
+    double imageCenterX = input_img.cols/2;
+    double imageCenterY = input_img.rows/2;
+    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
+    for (uint i = 0; i < patterns.size(); i++) {
+        cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
+        rect_width = sqrt(patterns[i].area)/2;
+        //Left ROI
+        roi.x = patterns[i].center.x() - rect_width - roi.width/2;
+        roi.y = patterns[i].center.y() - roi.width/2;
+        input_img(roi).copyTo(cropped_l_img);
+        //Right ROI
+        roi.x = patterns[i].center.x() + rect_width - roi.width/2;
+        roi.y = patterns[i].center.y() - roi.width/2;
+        input_img(roi).copyTo(cropped_r_img);
+        //Top ROI
+        roi.x = patterns[i].center.x() - roi.width/2;
+        roi.y = patterns[i].center.y() - rect_width - roi.width/2;
+        input_img(roi).copyTo(cropped_t_img);
+        //Bottom ROI
+        roi.x = patterns[i].center.x() - roi.width/2;
+        roi.y = patterns[i].center.y() + rect_width - roi.width/2;
+        input_img(roi).copyTo(cropped_b_img);
 
-    for (size_t ii = 1; ii <= 4; ii++) {
-        sfr_check_list.push_back(sv[max_layer*4 + ii].t_sfr);
-        sfr_check_list.push_back(sv[max_layer*4 + ii].r_sfr);
-        sfr_check_list.push_back(sv[max_layer*4 + ii].b_sfr);
-        sfr_check_list.push_back(sv[max_layer*4 + ii].l_sfr);
-        qInfo("Outer layer: %d t_sfr: %f l_sfr: %f b_sfr: %f r_sfr: %f", max_layer,
-              sv[max_layer*4 + ii].t_sfr, sv[max_layer*4 + ii].l_sfr,
-              sv[max_layer*4 + ii].b_sfr, sv[max_layer*4 + ii].r_sfr);
-    }
+        double sfr_l = sfr::calculateSfrWithSingleRoi(cropped_l_img,1);
+        double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
+        double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
+        double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
+        sfr_l_v.push_back(sfr_l);
+        sfr_r_v.push_back(sfr_r);
+        sfr_t_v.push_back(sfr_t);
+        sfr_b_v.push_back(sfr_b);
+        double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
+        double f = radius/r1;
+        double avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l)/4;
+        qInfo("x: %f y: %f sfr_l: %f sfr_r: %f sfr_t: %f sfr_b: %f",
+              patterns[i].center.x(), patterns[i].center.y(), sfr_l, sfr_r, sfr_t, sfr_b);
+        vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
+                         f, sfr_t, sfr_r, sfr_b, sfr_l, patterns[i].area, avg_sfr);
 
-    std::sort(sfr_check_list.begin(), sfr_check_list.end());
-    double max_sfr_deviation = fabs(sfr_check_list[0] - sfr_check_list[sfr_check_list.size()-1]);
-    mtf_oc_x = sv[0].px - img.cols/2; mtf_oc_y = sv[0].py - img.rows/2;
-    qInfo("mtf_oc_x: %f mtf_oc_y: %f", mtf_oc_x, mtf_oc_y);
-    qInfo("Max sfr deviation : %f", max_sfr_deviation);
-    if (max_sfr_deviation >= sfr_dev_tol) {
-        qInfo("max_sfr_deviation cannot pass");
-        sfr_check = false;
     }
-
-    if (sv[0].t_sfr < cc_min_sfr || sv[0].r_sfr < cc_min_sfr || sv[0].b_sfr < cc_min_sfr || sv[0].l_sfr < cc_min_sfr) {
-       qInfo("cc cannot pass");
-       sfr_check = false;
-    }
-    if (sv[max_layer*4 + 1].t_sfr < ul_min_sfr || sv[max_layer*4 + 1].r_sfr < ul_min_sfr ||
-        sv[max_layer*4 + 1].b_sfr < ul_min_sfr || sv[max_layer*4 + 1].l_sfr < ul_min_sfr) {
-        qInfo("ul cannot pass");
-        sfr_check = false;
-    }
-    if (sv[max_layer*4 + 2].t_sfr < ll_min_sfr || sv[max_layer*4 + 2].r_sfr < ll_min_sfr ||
-        sv[max_layer*4 + 2].b_sfr < ll_min_sfr || sv[max_layer*4 + 2].l_sfr < ll_min_sfr) {
-        qInfo("ll cannot pass");
-        sfr_check = false;
-    }
-    if (sv[max_layer*4 + 3].t_sfr < lr_min_sfr || sv[max_layer*4 + 3].r_sfr < lr_min_sfr ||
-        sv[max_layer*4 + 3].b_sfr < lr_min_sfr || sv[max_layer*4 + 3].l_sfr < lr_min_sfr) {
-        qInfo("lr cannot pass");
-        sfr_check = false;
-    }
-    if (sv[max_layer*4 + 4].t_sfr < ur_min_sfr || sv[max_layer*4 + 4].r_sfr < ur_min_sfr ||
-        sv[max_layer*4 + 4].b_sfr < ur_min_sfr || sv[max_layer*4 + 4].l_sfr < ur_min_sfr) {
-        qInfo("ur cannot pass");
-        sfr_check = false;
-    }
-
-    if (true) {
-        double display_factor = img.cols/CONSTANT_REFERENCE;
-        int roi_width = sqrt(sv[0].area)*this->parameters.ROIRatio();
-        QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(img);
-        QPainter qPainter(&qImage);
-        qPainter.setBrush(Qt::NoBrush);
-        qPainter.setFont(QFont("Times",75*display_factor, QFont::Light));
-        for (Sfr_entry sfr_entry : sv) {
-            qPainter.setPen(QPen(Qt::blue, 4.0));
-            if(sfr_entry.layer == (max_layer +1)) {
-                double min_sfr = 0;
-                if(sfr_entry.location == 1) { min_sfr = ul_min_sfr; }
-                if(sfr_entry.location == 2) { min_sfr = ur_min_sfr; }
-                if(sfr_entry.location == 3) { min_sfr = lr_min_sfr; }
-                if(sfr_entry.location == 4) { min_sfr = ll_min_sfr; }
-                    if(sfr_entry.t_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
-                    if(sfr_entry.r_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
-                    if(sfr_entry.b_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
-                    if(sfr_entry.l_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
-            } else {
-                qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
-                qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
-                qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
-                qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
-            }
+    vector<int> layers = sfr::classifyLayers(vec);
+    double display_factor = input_img.cols/CONSTANT_REFERENCE;
+    QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(input_img);
+    QPainter qPainter(&qImage);
+    qPainter.setBrush(Qt::NoBrush);
+    qPainter.setFont(QFont("Times",75*display_factor, QFont::Light));
+    int max_layer = 0;
+    for (unsigned int i = 0; i < vec.size(); i++)
+    {
+        if (vec.at(i).layer > max_layer) {
+            max_layer = vec.at(i).layer - 1;
         }
-        qPainter.end();
-        sfrImageReady(std::move(qImage));
     }
+    for (size_t i = 0; i < vec.size(); i++) {
+        qPainter.setPen(QPen(Qt::blue, 4.0));
+        qPainter.drawText(vec[i].x - rect_width/2, vec[i].y - rect_width*2, QString::number(vec[i].t_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x + 150, vec[i].y,  QString::number(vec[i].r_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x - 50, vec[i].y+ 120,  QString::number(vec[i].b_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x - 250, vec[i].y,  QString::number(vec[i].l_sfr, 'g', 4));
+    }
+    qPainter.end();
+    sfrImageReady(std::move(qImage));
 
-    clustered_sfr_map.clear();
-    qInfo("Time elapsed : %d sv size: %d", timer.elapsed(), sv.size());
+    for(int i = 0; i <= max_layer; i++) {
+        map.insert(QString("UL_T_SFR_").append(QString::number(i+1)), vec[i*4 + 1].t_sfr);
+        map.insert(QString("UL_R_SFR_").append(QString::number(i+1)), vec[i*4 + 1].r_sfr);
+        map.insert(QString("UL_B_SFR_").append(QString::number(i+1)), vec[i*4 + 1].b_sfr);
+        map.insert(QString("UL_L_SFR_").append(QString::number(i+1)), vec[i*4 + 1].l_sfr);
+        map.insert(QString("UL_SFR_").append(QString::number(i+1)), vec[i*4 + 1].avg_sfr);
+        map.insert(QString("LL_T_SFR_").append(QString::number(i+1)), vec[i*4 + 2].t_sfr);
+        map.insert(QString("LL_R_SFR_").append(QString::number(i+1)), vec[i*4 + 2].r_sfr);
+        map.insert(QString("LL_B_SFR_").append(QString::number(i+1)), vec[i*4 + 2].b_sfr);
+        map.insert(QString("LL_L_SFR_").append(QString::number(i+1)), vec[i*4 + 2].l_sfr);
+        map.insert(QString("LL_SFR_").append(QString::number(i+1)), vec[i*4 + 2].avg_sfr);
+        map.insert(QString("LR_T_SFR_").append(QString::number(i+1)), vec[i*4 + 3].t_sfr);
+        map.insert(QString("LR_R_SFR_").append(QString::number(i+1)), vec[i*4 + 3].r_sfr);
+        map.insert(QString("LR_B_SFR_").append(QString::number(i+1)), vec[i*4 + 3].b_sfr);
+        map.insert(QString("LR_L_SFR_").append(QString::number(i+1)), vec[i*4 + 3].l_sfr);
+        map.insert(QString("LR_SFR_").append(QString::number(i+1)), vec[i*4 + 3].avg_sfr);
+        map.insert(QString("UR_T_SFR_").append(QString::number(i+1)), vec[i*4 + 4].t_sfr);
+        map.insert(QString("UR_R_SFR_").append(QString::number(i+1)), vec[i*4 + 4].r_sfr);
+        map.insert(QString("UR_B_SFR_").append(QString::number(i+1)), vec[i*4 + 4].b_sfr);
+        map.insert(QString("UR_L_SFR_").append(QString::number(i+1)), vec[i*4 + 4].l_sfr);
+        map.insert(QString("UR_SFR_").append(QString::number(i+1)), vec[i*4 + 4].avg_sfr);
+        //Check each 4 ROI in 03F, 05F, 08F if each 4 SFR score is lower than tolerance
+        if (vec[i*4+1].t_sfr < sfr_tol[i+1] || vec[i*4+1].r_sfr < sfr_tol[i+1] || vec[i*4+1].b_sfr < sfr_tol[i+1] || vec[i*4+1].l_sfr < sfr_tol[i+1]
+                || vec[i*4+2].t_sfr < sfr_tol[i+1] || vec[i*4+2].r_sfr < sfr_tol[i+1] || vec[i*4+2].b_sfr < sfr_tol[i+1] || vec[i*4+2].l_sfr < sfr_tol[i+1]
+                || vec[i*4+3].t_sfr < sfr_tol[i+1] || vec[i*4+3].r_sfr < sfr_tol[i+1] || vec[i*4+3].b_sfr < sfr_tol[i+1] || vec[i*4+3].l_sfr < sfr_tol[i+1]
+                || vec[i*4+4].t_sfr < sfr_tol[i+1] || vec[i*4+4].r_sfr < sfr_tol[i+1] || vec[i*4+4].b_sfr < sfr_tol[i+1] || vec[i*4+4].l_sfr < sfr_tol[i+1])
+        {
+            if (i == 0)
+            {
+                qInfo("03F check SFR fail with %f", sfr_tol[1]);
+                error.append("03F fail.");
+            }
+            else if (i == 1)
+            {
+                qInfo("05F check SFR fail with %f", sfr_tol[2]);
+                error.append("05F fail.");
+            }
+            else if (i == 2)
+            {
+                qInfo("08F check SFR fail with %f", sfr_tol[3]);
+                error.append("08F fail.");
+            }
+            sfr_check = false;
+        }
+    }
+    qInfo("%f %f %f %f", vec[max_layer*4 + 1].t_sfr, vec[max_layer*4 + 1].r_sfr, vec[max_layer*4 + 1].b_sfr, vec[max_layer*4 + 1].l_sfr);
+    double ul_08f_sfr_dev = getSFRDev_mm(4,vec[max_layer*4 + 1].t_sfr,vec[max_layer*4 + 1].r_sfr,vec[max_layer*4 + 1].b_sfr,vec[max_layer*4 + 1].l_sfr);
+    double ll_08f_sfr_dev = getSFRDev_mm(4,vec[max_layer*4 + 2].t_sfr,vec[max_layer*4 + 2].r_sfr,vec[max_layer*4 + 2].b_sfr,vec[max_layer*4 + 2].l_sfr);
+    double lr_08f_sfr_dev = getSFRDev_mm(4,vec[max_layer*4 + 3].t_sfr,vec[max_layer*4 + 3].r_sfr,vec[max_layer*4 + 3].b_sfr,vec[max_layer*4 + 3].l_sfr);
+    double ur_08f_sfr_dev = getSFRDev_mm(4,vec[max_layer*4 + 4].t_sfr,vec[max_layer*4 + 4].r_sfr,vec[max_layer*4 + 4].b_sfr,vec[max_layer*4 + 4].l_sfr);
+    qInfo("ul_08f_sfr_dev : %f ll_08f_sfr_dev : %f lr_08f_sfr_dev : %f ur_08f_sfr_dev : %f", ul_08f_sfr_dev,ll_08f_sfr_dev,lr_08f_sfr_dev,ur_08f_sfr_dev);
+    if (ul_08f_sfr_dev >= sfr_dev_tol || ll_08f_sfr_dev >= sfr_dev_tol || lr_08f_sfr_dev >= sfr_dev_tol || ur_08f_sfr_dev >= sfr_dev_tol) {
+        qInfo("08f_sfr_corner_dev cannot pass");
+        sfr_check = false;
+        error.append("08F SFR corner dev fail.");
+    }
+    map.insert("SensorID", dk->readSensorID());
+    map.insert("FOV",fov);
+    map.insert("zPeak",sut->carrier->GetFeedBackPos().Z);
+    map.insert("UL_T_SFR", vec[max_layer*4 + 1].t_sfr);
+    map.insert("UL_R_SFR", vec[max_layer*4 + 1].r_sfr);
+    map.insert("UL_B_SFR", vec[max_layer*4 + 1].b_sfr);
+    map.insert("UL_L_SFR", vec[max_layer*4 + 1].l_sfr);
+    map.insert("UL_SFR", vec[max_layer*4 + 1].avg_sfr);
+    map.insert("LL_T_SFR", vec[max_layer*4 + 2].t_sfr);
+    map.insert("LL_R_SFR", vec[max_layer*4 + 2].r_sfr);
+    map.insert("LL_B_SFR", vec[max_layer*4 + 2].b_sfr);
+    map.insert("LL_L_SFR", vec[max_layer*4 + 2].l_sfr);
+    map.insert("LL_SFR", vec[max_layer*4 + 2].avg_sfr);
+    map.insert("LR_T_SFR", vec[max_layer*4 + 3].t_sfr);
+    map.insert("LR_R_SFR", vec[max_layer*4 + 3].r_sfr);
+    map.insert("LR_B_SFR", vec[max_layer*4 + 3].b_sfr);
+    map.insert("LR_L_SFR", vec[max_layer*4 + 3].l_sfr);
+    map.insert("LR_SFR", vec[max_layer*4 + 3].avg_sfr);
+    map.insert("UR_T_SFR", vec[max_layer*4 + 4].t_sfr);
+    map.insert("UR_R_SFR", vec[max_layer*4 + 4].r_sfr);
+    map.insert("UR_B_SFR", vec[max_layer*4 + 4].b_sfr);
+    map.insert("UR_L_SFR", vec[max_layer*4 + 4].l_sfr);
+    map.insert("UR_SFR", vec[max_layer*4 + 4].avg_sfr);
+    map.insert("OC_OFFSET_X_IN_PIXEL", mtf_oc_x);
+    map.insert("OC_OFFSET_Y_IN_PIXEL", mtf_oc_y);
+//    map.insert("SFR_DEV",max_sfr_deviation);
+    map.insert("UL_08F_SFR_DEV",ul_08f_sfr_dev);
+    map.insert("LL_08F_SFR_DEV",ll_08f_sfr_dev);
+    map.insert("LR_08F_SFR_DEV",lr_08f_sfr_dev);
+    map.insert("UR_08F_SFR_DEV",ur_08f_sfr_dev);
+    map.insert("timeElapsed", timer.elapsed());
+    qInfo("Time Elapsed: %d", timer.elapsed());
     if (sfr_check) {
+       map.insert("result", "Pass");
+       emit pushDataToUnit(runningUnit, "MTF", map);
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
+       map.insert("result", error);
+       emit pushDataToUnit(runningUnit, "MTF", map);
        LogicNg(current_mtf_ng_time);
-       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
     }
 }
 
@@ -2076,32 +2211,6 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
         sfr_check = false;
         error.append("08F SFR corner dev fail.");
     }
-
-//    if (sv[0].t_sfr < cc_min_sfr || sv[0].r_sfr < cc_min_sfr || sv[0].b_sfr < cc_min_sfr || sv[0].l_sfr < cc_min_sfr) {
-//       qInfo("cc cannot pass");
-//       sfr_check = false;
-//    }
-//    if (sv[max_layer*4 + 1].t_sfr < ul_min_sfr || sv[max_layer*4 + 1].r_sfr < ul_min_sfr ||
-//        sv[max_layer*4 + 1].b_sfr < ul_min_sfr || sv[max_layer*4 + 1].l_sfr < ul_min_sfr) {
-//        qInfo("ul cannot pass");
-//        sfr_check = false;
-//    }
-//    if (sv[max_layer*4 + 2].t_sfr < ll_min_sfr || sv[max_layer*4 + 2].r_sfr < ll_min_sfr ||
-//        sv[max_layer*4 + 2].b_sfr < ll_min_sfr || sv[max_layer*4 + 2].l_sfr < ll_min_sfr) {
-//        qInfo("ll cannot pass");
-//        sfr_check = false;
-//    }
-//    if (sv[max_layer*4 + 3].t_sfr < lr_min_sfr || sv[max_layer*4 + 3].r_sfr < lr_min_sfr ||
-//        sv[max_layer*4 + 3].b_sfr < lr_min_sfr || sv[max_layer*4 + 3].l_sfr < lr_min_sfr) {
-//        qInfo("lr cannot pass");
-//        sfr_check = false;
-//    }
-//    if (sv[max_layer*4 + 4].t_sfr < ur_min_sfr || sv[max_layer*4 + 4].r_sfr < ur_min_sfr ||
-//        sv[max_layer*4 + 4].b_sfr < ur_min_sfr || sv[max_layer*4 + 4].l_sfr < ur_min_sfr) {
-//        qInfo("ur cannot pass");
-//        sfr_check = false;
-//    }
-
     if (true) {
         double display_factor = img.cols/CONSTANT_REFERENCE;
         int roi_width = sqrt(sv[0].area)*this->parameters.ROIRatio();
@@ -2775,7 +2884,7 @@ std::vector<AA_Helper::patternAttr> AACoreNew::search_mtf_pattern(cv::Mat inImag
 
 double AACoreNew::calculateDFOV(cv::Mat img)
 {
-    std::vector<AA_Helper::patternAttr> vector = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
+    std::vector<AA_Helper::patternAttr> vector = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), 1);
     if (vector.size() == 4) {
         double d1 = sqrt(pow((vector[0].center.x() - vector[2].center.x()), 2) + pow((vector[0].center.y() - vector[2].center.y()), 2));
         double d2 = sqrt(pow((vector[3].center.x() - vector[1].center.x()), 2) + pow((vector[3].center.y() - vector[1].center.y()), 2));

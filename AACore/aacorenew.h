@@ -57,6 +57,7 @@ public:
     ErrorCodeStruct performLoadMaterial(int finish_delay);
     ErrorCodeStruct performAA(QJsonValue params);
     ErrorCodeStruct performOC(QJsonValue params);
+    ErrorCodeStruct performMTFNew(QJsonValue params);
     ErrorCodeStruct performMTF(QJsonValue params);
     ErrorCodeStruct performMTFOffline(QJsonValue params);
     ErrorCodeStruct performZOffset(QJsonValue params);

@@ -50,7 +50,11 @@ QHash<int, QByteArray> LogModel::roleNames() const
 
 void LogModel::onNewLog(const QString& log)
 {
+    int housekeepingLength = 1000;
     beginInsertRows(QModelIndex(), 0, 0);
+    if (m_logs.size() > housekeepingLength) {
+        for (size_t i = 0; i < housekeepingLength*0.1; i++) m_logs.removeLast();
+    }
     m_logs.push_front(log);
     endInsertRows();
 }

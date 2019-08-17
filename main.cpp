@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
 
     // initialize logging system
     initLoggingSystem();
-//    qInstallMessageHandler(messageLogger);
-	//qInstallMessageHandler(sparrowLogOutput);
+    qInstallMessageHandler(messageLogger);
+    //qInstallMessageHandler(sparrowLogOutput);
     qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{type}] %{file}:%{line}(%{function}):%{message}");
 
     app.setWindowIcon(QIcon(ICON_SPARROW));

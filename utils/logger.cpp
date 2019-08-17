@@ -5,12 +5,13 @@
 #include <QDir>
 #include <QThread>
 #include <iostream>
-
+#include <QMutex>
 // declear a motion logging category:
 // QLoggingCategory motionLog("motion");
 
 static QFile logFile;
 static QTextStream logStream;
+QMutex mutex;
 
 void initLoggingSystem()
 {
@@ -41,6 +42,7 @@ void initLoggingSystem()
 
 void messageLogger(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    QMutexLocker locker(&mutex);
     QString typeStr;
     if(type == QtDebugMsg)
     {
@@ -70,8 +72,9 @@ void messageLogger(QtMsgType type, const QMessageLogContext &context, const QStr
     QString log = qFormatLogMessage(type, context, msg);
 
     std::cout << log.toStdString().c_str() << std::endl; // print to system console
-    LogModel::instance()->addLog(log); // add to log model
+    //LogModel::instance()->addLog(log); // add to log model
     logStream << log << endl; // stream to log file
+    LogModel::instance()->addLog(log); // add to log model
 }
 
 void setLoggingEnabled(QLoggingCategory& cat, bool enable)

@@ -1566,12 +1566,16 @@ void BaseModuleManager::updateParams()
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
     saveParameters();
-    //    loadParameters();
 }
 
-void BaseModuleManager::loadFlowchart(QString json)
+void BaseModuleManager::loadFlowchart(QString json, QString filename)
 {
-    qInfo("Load flowchart: %s", json.toStdString().c_str());
+    if (!filename.isEmpty()) {
+        qInfo("Flowchart filename: %s", filename.toStdString().c_str());
+        this->setFlowchartFilename(filename);
+        updateParams();
+    }
+    qDebug("Load flowchart: %s", json.toStdString().c_str());
     aaCoreNew.setFlowchartDocument(json);
 }
 

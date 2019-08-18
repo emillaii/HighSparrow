@@ -263,7 +263,7 @@ int main(int argc, char *argv[])
     QStringList logList;
     QFile file("./log/system_log/log.txt");
     if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
-        qDebug()<<"找不到log文件";
+        qDebug()<<"Missing the log.txt";
     }else{
         QTextStream in(&file);
         QString line = in.readLine();

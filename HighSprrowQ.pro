@@ -2,10 +2,12 @@ QT += quick
 QT += serialport
 QT += webengine
 QT += widgets
-QT += charts qml quick
+QT += charts
+QT += qml
+QT += quick
 QT += websockets
 CONFIG += c++11
-
+CONFIG+=qtquickcompiler
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Refer to the documentation for the
@@ -91,9 +93,9 @@ SOURCES += \
     uiControl/graphwidget.cpp \
     uiControl/node.cpp
 
-RESOURCES += qml.qrc \
-    icons.qrc
-
+RESOURCES += myqml.qrc
+RESOURCES += icons.qrc
+#QTQUICK_COMPILER_SKIPPED_RESOURCES += myqml.qrc
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 

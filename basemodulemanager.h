@@ -52,6 +52,7 @@ public:
     Q_PROPERTY(bool HomeState READ HomeState WRITE setHomeState NOTIFY paramsChanged)
     Q_PROPERTY(QString ServerURL READ ServerURL WRITE setServerURL NOTIFY paramsChanged)
     Q_PROPERTY(QString DataServerURL READ DataServerURL WRITE setDataServerURL NOTIFY paramsChanged)
+    Q_PROPERTY(QString FlowchartFilename READ FlowchartFilename WRITE setFlowchartFilename NOTIFY paramsChanged)
 
     QMap<QString,ThreadWorkerBase*> workers;
     QMap<QString,ThreadWorkerBase*> tcp_workers;
@@ -181,6 +182,15 @@ public slots:
             return;
         m_DataServerURL = DataServerURL;
     }
+    void setFlowchartFilename(QString FlowchartFilename)
+    {
+        if (m_FlowchartFilename == FlowchartFilename)
+            return;
+
+        m_FlowchartFilename = FlowchartFilename;
+        emit paramsChanged();
+    }
+
 public:
     ModuleManangerConfig configs;
     ModuleManagerParameter paramers;
@@ -208,6 +218,8 @@ private:
     QThread work_thread;
 
     void inquiryTcpModule();
+    QString m_FlowchartFilename;
+
 public:
     bool loadProfile();
     bool loadStructConfig(QString file_dir);
@@ -289,7 +301,7 @@ public:
     Q_INVOKABLE QString getMotorsName(int);
 
     Q_INVOKABLE void updateParams();
-    Q_INVOKABLE void loadFlowchart(QString);
+    Q_INVOKABLE void loadFlowchart(QString json, QString filename = "");
     Q_INVOKABLE void loadSensorTrayLoaderMuduleParameter();
 
     Q_INVOKABLE int getServerMode() { return m_ServerMode; }
@@ -323,6 +335,10 @@ public:
     QString DataServerURL() const
     {
         return m_DataServerURL;
+    }
+    QString FlowchartFilename() const
+    {
+        return m_FlowchartFilename;
     }
 };
 

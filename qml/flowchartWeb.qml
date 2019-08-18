@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtWebEngine 1.8
+import QtWebEngine 1.4
 
 WebEngineView {
     anchors.centerIn: parent

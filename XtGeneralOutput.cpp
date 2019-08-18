@@ -101,7 +101,7 @@ bool XtGeneralOutput::SetStateAndTillTimeSpan(byte state, int time_span, int thr
     XT_Controler::TILLTIME(thread,time_span);
     return true;
 }
-void XtGeneralOutput::WaitForFInish(int thread)
+void XtGeneralOutput::WaitForFinish(int thread)
 {
     XT_Controler::WaitForAllInsFinish(thread);
 }

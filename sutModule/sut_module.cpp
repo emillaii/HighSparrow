@@ -130,13 +130,15 @@ bool SutModule::moveToLoadPos(bool check_autochthonous)
 {
     qInfo("moveToLoadPos");
     bool result = carrier->Move_SZ_SX_Y_X_Sync(load_position.X(),load_position.Y(),parameters.loadPosArrivedY(),check_autochthonous);
-    result &= popgpin->Set(false,false);
+    //result &= popgpin->Set(false,false);
     if(result)
     {
+        result &= popgpin->Set(false,false);
         qInfo("moveToLoadPos z");
         result &= carrier->motor_z->MoveToPosSync(load_position.Z(),0.1);
         qInfo("moveToLoadPos z");
         result &= carrier->motor_y->WaitArrivedTargetPos(load_position.Y());
+        result &= vacuum->Set(true,false,false);
     }
     qInfo("moveToLoadPos");
     return result;
@@ -327,12 +329,12 @@ void SutModule::run(bool has_material)
         {
             if(!moveToLoadPos(true))
             {
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run =false;
-                break;
-            }
-            if(!popgpin->Set(false))
-            {
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                is_run =false;
+//                break;
+//            }
+//            if(!popgpin->Set(false))
+//            {
                 sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                 waitMessageReturn(is_run);
                 continue;
@@ -380,6 +382,7 @@ void SutModule::run(bool has_material)
         }
         if(states.sutHasSensor())
         {
+            vacuum->Set(false);
             if(!checkSutSensorOrProduct(true))
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());

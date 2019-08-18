@@ -634,9 +634,11 @@ void SensorLoaderModule::run(bool has_material)
                 vacancy_vision->OpenLight();
                 if(!moveToNgTrayNextPos())
                 {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
+                    AppendError("请更换Ng盘后继续！");
+                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+                    waitMessageReturn(is_run);
+                    tray->resetTrayState(2);
+                    moveToNgTrayNextPos();
                 }
                 if((!performVacancyPR())&&has_material)
                 {
@@ -687,6 +689,7 @@ void SensorLoaderModule::run(bool has_material)
                     sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                     waitMessageReturn(is_run);
                     tray->resetTrayState(2);
+                    moveToNgTrayNextPos();
                 }
                 if((!performVacancyPR())&&has_material)
                 {
@@ -999,11 +1002,16 @@ void SensorLoaderModule::run(bool has_material)
                         if((!performSUTProductPR())&&has_material)
                         {
                             AppendError(u8"成品视觉失败！");
-                            sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
+                            sendAlarmMessage(ErrorLevel::RetryOrReject,GetCurrentError());
                             int result = waitMessageReturn(is_run);
-                            if(result)is_run = false;
                             if(!is_run)break;
                             if(result)
+                            {
+                                sendEvent("unloadProductResp");
+                                states.setCmd("");
+                                continue;
+                            }
+                            else
                                 continue;
                         }
                         sut_product_vision->CloseLight();
@@ -1035,6 +1043,7 @@ void SensorLoaderModule::run(bool has_material)
                             states.setSutHasProduct(false);
                             states.setHasPickedProduct(true);
                         }
+                        if(!is_run)break;
                     }
                     else
                     {

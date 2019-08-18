@@ -1318,6 +1318,11 @@ bool BaseModuleManager::initialDevice()
         m->GetMasterAxisID();
     }
     EnableMotors();
+
+    if (ServerMode() == 1)
+    {
+        setOutput(u8"三色报警指示灯_绿", true);
+    }
 //    timer.start(1000);
     inquiryTcpModule();
     return true;
@@ -1871,6 +1876,10 @@ void BaseModuleManager::setOutput(QString name, bool on)
     if (this->output_ios.contains(name)){
         qInfo("set output : %s %d", name.toStdString().c_str(), on);
         output_ios[name]->Set(on);
+    }
+    else
+    {
+        qInfo(u8"Cannot find output IO with name: %s", name.toStdString().c_str());
     }
 }
 

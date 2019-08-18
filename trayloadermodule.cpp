@@ -513,8 +513,13 @@ bool TrayLoaderModule::moveToNextEmptyPos()
 
 bool TrayLoaderModule::moveToChangeClipPos()
 {
+    qInfo("moveToChangeClipPos");
     motor_clip_in->MoveToPos(tray_clip->standards_parameters.changeClipPos());
     bool result = motor_clip_in->WaitArrivedTargetPos(tray_clip->standards_parameters.changeClipPos());
+    if (result)
+    {
+        AppendError(tr(u8"移动到换料位置失败！"));
+    }
     return result;
 }
 
@@ -1245,7 +1250,13 @@ void TrayLoaderModule::run(bool has_tray)
         if(states.hasEntranceClipEmpty()&&(!states.entanceClipReady()))
         {
             has_task = true;
-            sendAlarmMessage(ErrorLevel::WarningBlock,u8"入料弹夹已满，请更换后再点击确认,谢谢配合！");
+            if(!moveToChangeClipPos())
+            {
+                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                is_run = false;
+                break;
+            }
+            sendAlarmMessage(ErrorLevel::WarningBlock,u8"入料弹夹已空，请更换后再点击确认,谢谢配合！");
             waitMessageReturn(is_run);
             if(is_run)
                 states.setHasEntranceClipEmpty(false);

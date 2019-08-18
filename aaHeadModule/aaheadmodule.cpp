@@ -114,7 +114,7 @@ void AAHeadModule::openUVTillTime(int till_time)
 
 void AAHeadModule::waitUVFinish()
 {
-    uv1->WaitForFInish(thread_id);
+    uv1->WaitForFinish(thread_id);
 }
 
 void AAHeadModule::openGripper()

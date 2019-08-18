@@ -44,6 +44,7 @@ public:
         UV = 8,
         OTP = 9,
         UNLOAD_CAMERA = 10,
+        Z_OFFSET = 11
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,

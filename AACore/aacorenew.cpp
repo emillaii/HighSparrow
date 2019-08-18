@@ -18,7 +18,7 @@
 #include "sfr.h"
 #define PI  3.14159265
 #include <math.h>
-vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY) {
+vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY,double & error_avg,double & error_dev) {
     size_t n = x.size();
 
     double minX = 999999;
@@ -32,6 +32,7 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
     Eigen::MatrixXd X(n, order + 1);
     for (size_t i = 0; i < n; ++i) {
         double tmp = 1;
+        //order次方
         for (int j = 0; j <= order; ++j) {
             X(i, j) = tmp;
             tmp *= x[i];
@@ -63,12 +64,23 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
 //       qInfo("X: %f Y: %f  Ans: %f Error: %f", X(i,0), Y(i, 0), Ans(i, 0), Y(i, 0) - Ans(i, 0));
 //    }
 
-//    double error = 0;
-//    for (size_t i = 0; i < n; ++i) {
-//        error += (B(i, 0) - Y(i, 0)) * (B(i, 0) - Y(i, 0));
-//    }
+    double error = 0;
+    double average = 0;
+    for (size_t i = 0; i < n; ++i) {
+        average += (B(i, 0) - Y(i, 0));
+        qInfo("Error Average: %f", (B(i, 0) - Y(i, 0)));
+    }
+    qInfo("Error Average: %f", average);
+    average = average/n;
+    qInfo("Error Average: %f", average);
+    error_avg = average;
 
-//    qInfo("Error: %f", error);
+    for (size_t i = 0; i < n; ++i) {
+        double diff = B(i, 0) - Y(i, 0) - average;
+        error +=(diff * diff);
+    }
+    error_dev = error;
+//    qInfo("Error deviation square: %f", error);
 
     vector<double> ans;
     for (int i = 0; i <= order; ++i) {
@@ -439,6 +451,9 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::Y_LEVEL) {
         performYLevelTest(params);
+    }
+    else if (cmd == HandleTest::Z_OFFSET) {
+        performZOffset(params);
     }
     else if (cmd == HandleTest::UV) {
         performUV(params);
@@ -833,7 +848,6 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
     double y_offset_in_um = params["y_offset_in_um"].toDouble(0);
     double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
     int finish_delay = params["delay_in_ms"].toInt(0);
-    SetProduct();
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     sut->recordCurrentPos();
@@ -889,6 +903,7 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
             }
         }
     }
+    SetProduct();
     if(!sut->movetoRecordPosAddOffset(x_offset_in_um/1000,y_offset_in_um/1000,z_offset_in_um/1000)){NgProduct(); return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
     if(finish_delay>0)
         Sleep(finish_delay);
@@ -919,7 +934,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     int imageCount = params["image_count"].toInt();
     int position_checking = params["position_checking"].toInt();
 //    int is_debug = params["is_debug"].toInt();
-    int is_debug = 0;
+    //int is_debug = 0;
     int finish_delay = params["delay_in_ms"].toInt();
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     qInfo("start : %f stop: %f enable_tilt: %d", start, stop, enableTilt);
@@ -967,7 +982,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            cv::Mat dst;
            cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
            cv::resize(img, dst, size);
-           if(is_debug == 1)
+           if(parameters.isDebug() == true)
            {
                QString imageName;
                imageName.append(getGrabberLogDir())
@@ -1054,7 +1069,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
                 }
 
-                if(is_debug == 1) {
+                if(parameters.isDebug() == true) {
                     QString imageName;
                     imageName.append(getGrabberLogDir())
                             .append(sensorID)
@@ -1419,21 +1434,26 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         vector<double> sfr,b_sfr,t_sfr,l_sfr,r_sfr, z;
         double ex = 0; double ey = 0;
         for (size_t ii=0; ii < sorted_sfr_map[i].size(); ii++) {
-            double avg_sfr = sorted_sfr_map[i][ii].sfr;
-            //            if (sorted_sfr_map[i][ii].location == 1) {
-            //                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].l_sfr)/2;
-            //            }
-            //            else if (sorted_sfr_map[i][ii].location == 2) {
-            //                avg_sfr = (sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].l_sfr)/2;
-            //            }
-            //            else if (sorted_sfr_map[i][ii].location == 3) {
-            //                avg_sfr = (sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].r_sfr)/2;
-            //            }
-            //            else if (sorted_sfr_map[i][ii].location == 4) {
-            //                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].r_sfr)/2;
-            //            } else {
-            //                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].r_sfr + sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].l_sfr)/4;
-            //            }
+            //double avg_sfr = sorted_sfr_map[i][ii].sfr;
+            double avg_sfr = 0;
+            if (sorted_sfr_map[i][ii].location == 1) {
+                avg_sfr = parameters.WeightList().at(0).toDouble()*sorted_sfr_map[i][ii].t_sfr + parameters.WeightList().at(1).toDouble()*sorted_sfr_map[i][ii].r_sfr
+                        + parameters.WeightList().at(2).toDouble()*sorted_sfr_map[i][ii].b_sfr + parameters.WeightList().at(3).toDouble()*sorted_sfr_map[i][ii].b_sfr;
+            }
+            else if (sorted_sfr_map[i][ii].location == 2) {
+                avg_sfr = parameters.WeightList().at(4).toDouble()*sorted_sfr_map[i][ii].t_sfr + parameters.WeightList().at(5).toDouble()*sorted_sfr_map[i][ii].r_sfr
+                        + parameters.WeightList().at(6).toDouble()*sorted_sfr_map[i][ii].b_sfr + parameters.WeightList().at(7).toDouble()*sorted_sfr_map[i][ii].b_sfr;
+            }
+            else if (sorted_sfr_map[i][ii].location == 3) {
+                avg_sfr = parameters.WeightList().at(8).toDouble()*sorted_sfr_map[i][ii].t_sfr + parameters.WeightList().at(9).toDouble()*sorted_sfr_map[i][ii].r_sfr
+                        + parameters.WeightList().at(10).toDouble()*sorted_sfr_map[i][ii].b_sfr + parameters.WeightList().at(11).toDouble()*sorted_sfr_map[i][ii].b_sfr;
+            }
+            else if (sorted_sfr_map[i][ii].location == 4) {
+                avg_sfr = parameters.WeightList().at(12).toDouble()*sorted_sfr_map[i][ii].t_sfr + parameters.WeightList().at(13).toDouble()*sorted_sfr_map[i][ii].r_sfr
+                        + parameters.WeightList().at(14).toDouble()*sorted_sfr_map[i][ii].b_sfr + parameters.WeightList().at(15).toDouble()*sorted_sfr_map[i][ii].b_sfr;
+            } else {
+                avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].r_sfr + sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].l_sfr)/4;
+            }
             sfr.push_back(avg_sfr);
             b_sfr.push_back(sorted_sfr_map[i][ii].b_sfr);
             t_sfr.push_back(sorted_sfr_map[i][ii].t_sfr);
@@ -1449,10 +1469,11 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 
         double peak_sfr, peak_z,b_peak_z,t_peak_z,l_peak_z,r_peak_z;
 
-        fitCurve(z, b_sfr, fitOrder, b_peak_z, peak_sfr);
-        fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr);
-        fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr);
-        fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr);
+        double error_avg,error_dev;
+        fitCurve(z, b_sfr, fitOrder, b_peak_z, peak_sfr,error_avg,error_dev);
+        fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr,error_avg,error_dev);
+        fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr,error_avg,error_dev);
+        fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr,error_avg,error_dev);
 
         if (b_peak_z > maxPeakZ) maxPeakZ = b_peak_z;
         if (t_peak_z > maxPeakZ) maxPeakZ = t_peak_z;
@@ -1508,18 +1529,60 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         default:
             break;
         }
-        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr);
+        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev);
         if (i==0) {
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
+            result.insert("fitCurveErrorDevCC", error_dev); map.insert("fitCurveErrorDevCC", error_dev);
+            qInfo("fitCurveErrorDevCC:avg%f,dev:%f",error_avg,error_dev);
         } else if ( i >= 1 && i <= 4) {
             points_1.emplace_back(ex, ey, peak_z + start_pos);
             points_11.emplace_back(ex, ey, peak_z + start_pos);
         } else if ( i >= 5 && i <= 8) {
             points_2.emplace_back(ex, ey, peak_z + start_pos);
             points_22.emplace_back(ex, ey, peak_z + start_pos);
+            if(i==5)
+            {
+                result.insert("fitCurveErrorDevUL", error_dev); map.insert("fitCurveErrorDevUL", error_dev);
+                qInfo("fitCurveErrorDev05UL:avg%f,dev:%f",error_avg,error_dev);
+            }
+            else if(i==6)
+            {
+                result.insert("fitCurveErrorDevUR", error_dev); map.insert("fitCurveErrorDevUR", error_dev);
+                qInfo("fitCurveErrorDev05UR:avg%f,dev:%f",error_avg,error_dev);
+            }
+            else if(i==7)
+                {
+                result.insert("fitCurveErrorDevLR", error_dev); map.insert("fitCurveErrorDevLR", error_dev);
+                qInfo("fitCurveErrorDev05LR:avg%f,dev:%f",error_avg,error_dev);
+            }
+            else if(i==8)
+                {
+                result.insert("fitCurveErrorDevLL", error_dev); map.insert("fitCurveErrorDevLL", error_dev);
+                qInfo("fitCurveErrorDev05UL:avg%f,dev:%f",error_avg,error_dev);
+            }
         } else if ( i >= 9 && i <= 12) {
             points_3.emplace_back(ex, ey, peak_z + start_pos);
             points_33.emplace_back(ex, ey, peak_z + start_pos);
+            if(i==9)
+            {
+                result.insert("fitCurveErrorDevUL", error_dev); map.insert("fitCurveErrorDevUL", error_dev);
+                qInfo("fitCurveErrorDev08UL:avg%f,dev:%f",error_avg,error_dev);
+            }
+            else if(i==10)
+            {
+                result.insert("fitCurveErrorDevUR", error_dev); map.insert("fitCurveErrorDevUR", error_dev);
+                qInfo("fitCurveErrorDev08UR:avg%f,dev:%f",error_avg,error_dev);
+            }
+            else if(i==11)
+                {
+                result.insert("fitCurveErrorDevLR", error_dev); map.insert("fitCurveErrorDevLR", error_dev);
+                qInfo("fitCurveErrorDev08LR:avg%f,dev:%f",error_avg,error_dev);
+            }
+            else if(i==12)
+                {
+                result.insert("fitCurveErrorDevLL", error_dev); map.insert("fitCurveErrorDevLL", error_dev);
+                qInfo("fitCurveErrorDev08LL:avg%f,dev:%f",error_avg,error_dev);
+            }
         }
     }
     sort(points_11.begin(), points_11.end(), zPeakComp);
@@ -1712,10 +1775,10 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         sfrMap.insert(QString::number(i), s);
 
         if (points_1.size() > 0) {
-            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, sorted_sfr_map[1+4*display_layer][i].sfr);
-            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, sorted_sfr_map[4+4*display_layer][i].sfr);
-            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, sorted_sfr_map[3+4*display_layer][i].sfr);
-            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, sorted_sfr_map[2+4*display_layer][i].sfr);
+            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, (sorted_sfr_map[1+4*display_layer][i].b_sfr+sorted_sfr_map[1+4*display_layer][i].r_sfr)/2);
+            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, (sorted_sfr_map[4+4*display_layer][i].t_sfr+sorted_sfr_map[4+4*display_layer][i].r_sfr)/2);
+            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, (sorted_sfr_map[3+4*display_layer][i].t_sfr+sorted_sfr_map[3+4*display_layer][i].l_sfr)/2);
+            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, (sorted_sfr_map[2+4*display_layer][i].b_sfr+sorted_sfr_map[2+4*display_layer][i].l_sfr)/2);
         }
     }
     map.insert("CC", sfrMap);
@@ -2093,6 +2156,11 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params)
     map.insert("SensorID", dk->readSensorID());
     map.insert("FOV",fov);
     map.insert("zPeak",sut->carrier->GetFeedBackPos().Z);
+    map.insert("CC_T_SFR", vec[0].t_sfr);
+    map.insert("CC_R_SFR", vec[0].r_sfr);
+    map.insert("CC_B_SFR", vec[0].b_sfr);
+    map.insert("CC_L_SFR", vec[0].l_sfr);
+    map.insert("CC_SFR", (vec[0].t_sfr + vec[0].r_sfr + vec[0].b_sfr + vec[0].l_sfr)/4);
     map.insert("UL_T_SFR", vec[max_layer*4 + 1].t_sfr);
     map.insert("UL_R_SFR", vec[max_layer*4 + 1].r_sfr);
     map.insert("UL_B_SFR", vec[max_layer*4 + 1].b_sfr);
@@ -2568,8 +2636,8 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         if( vector.size()<1 || ccIndex > 9 )
         {
 //            NgLens();
-//            NgSensor();
-            LogicNg(current_oc_ng_time);
+            NgSensor();
+//            LogicNg(current_oc_ng_time);
             map.insert("result", "OC Cannot find enough pattern");
             map.insert("timeElapsed", timer.elapsed());
             emit pushDataToUnit(this->runningUnit, "OC", map);
@@ -2585,8 +2653,8 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         if (!AA_Helper::calculateOC(img, center, outImage))
         {
 //            NgLens();
-//            NgSensor();
-            LogicNg(current_oc_ng_time);
+            NgSensor();
+//            LogicNg(current_oc_ng_time);
             map.insert("result", "OC Cannot calculate OC");
             map.insert("timeElapsed", timer.elapsed());
             emit pushDataToUnit(this->runningUnit, "OC", map);
@@ -2611,8 +2679,8 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
 //            NgLens();
-//            NgSensor();
-            LogicNg(current_oc_ng_time);
+            NgSensor();
+//            LogicNg(current_oc_ng_time);
             qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
             map.insert("result", "OC result too big");
             map.insert("timeElapsed", timer.elapsed());

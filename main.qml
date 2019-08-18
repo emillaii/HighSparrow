@@ -166,6 +166,9 @@ ApplicationWindow {
                     }else if (aaCoreTestItemName.indexOf("PR To Bond") !== -1) {
                         console.log("Perform PR To Bond")
                         aaNewCore.performHandling(AACoreNew.PR_To_Bond, aaCoreTestParams)
+                    }else if (aaCoreTestItemName.indexOf("Z Offset") !== -1) {
+                        console.log("Perform Z Offset")
+                        aaNewCore.performHandling(AACoreNew.Z_OFFSET, aaCoreTestParams)
                     }
 
                     aaCoreTestParams = ""
@@ -305,8 +308,8 @@ ApplicationWindow {
                    flowChartPage.webView.runJavaScript(command, function(result) {
                        command = "document.getElementById('flowchart_data').value";
                        flowChartPage.webView.runJavaScript(command, function(result) {
-                            baseModuleManager.loadFlowchart(result)
-                            workersManager.startWorkers(4)
+                           baseModuleManager.loadFlowchart(result)
+                           workersManager.startAllWorkers(4)
                        })
                    })
                }

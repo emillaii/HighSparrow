@@ -73,6 +73,8 @@ class AACoreParameters : public PropertyBase
 
     double m_CC08MaxDev = 100;
 
+    bool m_isDebug = false;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -112,6 +114,7 @@ public:
     Q_PROPERTY(double CC05MaxDev READ CC05MaxDev WRITE setCC05MaxDev NOTIFY CC05MaxDevChanged)
     Q_PROPERTY(double CC08MinDev READ CC08MinDev WRITE setCC08MinDev NOTIFY CC08MinDevChanged)
     Q_PROPERTY(double CC08MaxDev READ CC08MaxDev WRITE setCC08MaxDev NOTIFY CC08MaxDevChanged)
+    Q_PROPERTY(bool isDebug READ isDebug WRITE setIsDebug NOTIFY isDebugChanged)
     double EFL() const
     {
         return m_EFL;
@@ -274,6 +277,11 @@ public:
     double CC08MaxDev() const
     {
         return m_CC08MaxDev;
+    }
+
+    bool isDebug() const
+    {
+        return m_isDebug;
     }
 
 public slots:
@@ -562,6 +570,15 @@ public slots:
         emit CC08MaxDevChanged(m_CC08MaxDev);
     }
 
+    void setIsDebug(bool isDebug)
+    {
+        if (m_isDebug == isDebug)
+            return;
+
+        m_isDebug = isDebug;
+        emit isDebugChanged(m_isDebug);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -585,6 +602,7 @@ signals:
     void CC05MaxDevChanged(double CC05MaxDev);
     void CC08MinDevChanged(double CC08MinDev);
     void CC08MaxDevChanged(double CC08MaxDev);
+    void isDebugChanged(bool isDebug);
 };
 class AACoreStates: public PropertyBase
 {

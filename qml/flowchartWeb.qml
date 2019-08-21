@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtWebEngine 1.4
 
 WebEngineView {
+    property bool isFirstLoad: true
     anchors.centerIn: parent
     width: parent.width
     height: parent.height
@@ -9,7 +10,8 @@ WebEngineView {
     onLoadProgressChanged: {
         if (loadProgress === 0) {
             console.log("Flowchart start to laod")
-        } else if (loadProgress === 100) {
+        } else if (loadProgress === 100 && isFirstLoad) {
+            isFirstLoad = false
             console.log("Flowchart load complete")
             if (baseModuleManager.FlowchartFilename.length > 0) {
                 console.log("Trying to load : " + baseModuleManager.FlowchartFilename)

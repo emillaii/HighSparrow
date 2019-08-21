@@ -134,24 +134,28 @@ Grid {
                     background: Rectangle {
                         color: "black"
                     }
+                    font.pixelSize: 10
                 }
                 Label {
                     id: spline1Label2
                     background: Rectangle {
                         color: "black"
                     }
+                    font.pixelSize: 10
                 }
                 Label {
                     id: spline1Label3
                     background: Rectangle {
                         color: "black"
                     }
+                    font.pixelSize: 10
                 }
                 Label {
                     id: spline1Label4
                     background: Rectangle {
                         color: "black"
                     }
+                    font.pixelSize: 10
                 }
             }
         }
@@ -306,7 +310,7 @@ Grid {
                 tickCount: 7
                 gridVisible: true
 
-            }
+           }
            LineSeries
            {
                name:"zPeak"
@@ -350,24 +354,28 @@ Grid {
                     background: Rectangle {
                         color: "black"
                     }
+                    font.pixelSize: 10
                 }
                 Label {
                     id: spline2Label2
                     background: Rectangle {
                         color: "black"
                     }
+                    font.pixelSize: 10
                 }
                 Label {
                     id: spline2Label3
                     background: Rectangle {
                         color: "black"
                     }
+                    font.pixelSize: 10
                 }
                 Label {
                     id: spline2Label4
                     background: Rectangle {
                         color: "black"
                     }
+                    font.pixelSize: 10
                 }
             }
         }

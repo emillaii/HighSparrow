@@ -2080,6 +2080,12 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
 }
 
+double AACoreNew::performMTFInThread( cv::Mat input, int freq )
+{
+    double sfr = sfr::calculateSfrWithSingleRoi(input, freq);
+    return sfr;
+}
+
 ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params)
 {
 //    double cc_min_sfr = params["CC"].toDouble(-1);
@@ -2133,10 +2139,23 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params)
         roi.y = patterns[i].center.y() + rect_width - roi.width/2;
         input_img(roi).copyTo(cropped_b_img);
 
-        double sfr_l = sfr::calculateSfrWithSingleRoi(cropped_l_img,1);
-        double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
-        double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
-        double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
+        QFuture<double> f1, f2, f3, f4;
+//        double sfr_l = sfr::calculateSfrWithSingleRoi(cropped_l_img,1);
+//        double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
+//        double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
+//        double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
+        f1 = QtConcurrent::run(performMTFInThread, cropped_l_img, 1);
+        f2 = QtConcurrent::run(performMTFInThread, cropped_r_img, 1);
+        f3 = QtConcurrent::run(performMTFInThread, cropped_t_img, 1);
+        f4 = QtConcurrent::run(performMTFInThread, cropped_b_img, 1);
+        f1.waitForFinished();
+        f2.waitForFinished();
+        f3.waitForFinished();
+        f4.waitForFinished();
+        double sfr_l = f1.result();
+        double sfr_r = f2.result();
+        double sfr_t = f3.result();
+        double sfr_b = f4.result();
         sfr_l_v.push_back(sfr_l);
         sfr_r_v.push_back(sfr_r);
         sfr_t_v.push_back(sfr_t);

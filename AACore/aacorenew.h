@@ -75,6 +75,7 @@ public:
     ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
 
     static bool performThreadTest(vector<QString> testList, QJsonValue params);
+    static double performMTFInThread( cv::Mat input, int freq);
     bool blackScreenCheck(cv::Mat inImage);
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);

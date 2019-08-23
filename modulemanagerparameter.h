@@ -56,11 +56,16 @@ class ModuleManagerParameter:public PropertyBase
 public:
     ModuleManagerParameter():PropertyBase (){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
+    Q_PROPERTY(bool handlyChangeLens READ handlyChangeLens WRITE setHandlyChangeLens NOTIFY handlyChangeLensChanged)
+    Q_PROPERTY(bool handlyChangeSensor READ handlyChangeSensor WRITE setHandlyChangeSensor NOTIFY handlyChangeSensorChanged)
+    Q_PROPERTY(bool handlyChangeLensTray READ handlyChangeLensTray WRITE setHandlyChangeLensTray NOTIFY handlyChangeLensTrayChanged)
+    Q_PROPERTY(bool handlyChangeSensorTray READ handlyChangeSensorTray WRITE setHandlyChangeSensorTray NOTIFY handlyChangeSensorTrayChanged)
     Q_PROPERTY(QString materialType READ materialType WRITE setMaterialType NOTIFY materialTypeChanged)
     Q_PROPERTY(QString machineType READ machineType WRITE setMachineType NOTIFY machineTypeChanged)
     Q_PROPERTY(QVariantList respMessagerNames READ respMessagerNames WRITE setRespMessagerNames NOTIFY respMessagerNamesChanged)
     Q_PROPERTY(QVariantList cmsMessageerNames READ cmsMessageerNames WRITE setCmsMessageerNames NOTIFY cmsMessageerNamesChanged)
     Q_PROPERTY(QString flowChartURL READ flowChartURL WRITE setFlowChartURL NOTIFY flowChartURLChanged)
+    Q_PROPERTY(bool disableStation READ disableStation WRITE setDisableStation NOTIFY disableStationChanged)
     int runMode() const
     {
         return m_runMode;
@@ -88,6 +93,31 @@ public:
     QVariantList cmsMessageerNames() const
     {
         return m_cmsMessageerNames;
+    }
+
+    bool disableStation() const
+    {
+        return m_disableStation;
+    }
+
+    bool handlyChangeLens() const
+    {
+        return m_handlyChangeLens;
+    }
+
+    bool handlyChangeSensor() const
+    {
+        return m_handlyChangeSensor;
+    }
+
+    bool handlyChangeLensTray() const
+    {
+        return m_handlyChangeLensTray;
+    }
+
+    bool handlyChangeSensorTray() const
+    {
+        return m_handlyChangeSensorTray;
     }
 
 public slots:
@@ -144,6 +174,51 @@ public slots:
         emit cmsMessageerNamesChanged(m_cmsMessageerNames);
     }
 
+    void setDisableStation(bool disableStation)
+    {
+        if (m_disableStation == disableStation)
+            return;
+
+        m_disableStation = disableStation;
+        emit disableStationChanged(m_disableStation);
+    }
+
+    void setHandlyChangeLens(bool handlyChangeLens)
+    {
+        if (m_handlyChangeLens == handlyChangeLens)
+            return;
+
+        m_handlyChangeLens = handlyChangeLens;
+        emit handlyChangeLensChanged(m_handlyChangeLens);
+    }
+
+    void setHandlyChangeSensor(bool handlyChangeSensor)
+    {
+        if (m_handlyChangeSensor == handlyChangeSensor)
+            return;
+
+        m_handlyChangeSensor = handlyChangeSensor;
+        emit handlyChangeSensorChanged(m_handlyChangeSensor);
+    }
+
+    void setHandlyChangeLensTray(bool handlyChangeLensTray)
+    {
+        if (m_handlyChangeLensTray == handlyChangeLensTray)
+            return;
+
+        m_handlyChangeLensTray = handlyChangeLensTray;
+        emit handlyChangeLensTrayChanged(m_handlyChangeLensTray);
+    }
+
+    void setHandlyChangeSensorTray(bool handlyChangeSensorTray)
+    {
+        if (m_handlyChangeSensorTray == handlyChangeSensorTray)
+            return;
+
+        m_handlyChangeSensorTray = handlyChangeSensorTray;
+        emit handlyChangeSensorTrayChanged(m_handlyChangeSensorTray);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void materialTypeChanged(QString materialType);
@@ -156,6 +231,16 @@ signals:
 
     void cmsMessageerNamesChanged(QVariantList cmsMessageerNames);
 
+    void disableStationChanged(bool disableStation);
+
+    void handlyChangeLensChanged(bool handlyChangeLens);
+
+    void handlyChangeSensorChanged(bool handlyChangeSensor);
+
+    void handlyChangeLensTrayChanged(bool handlyChangeLensTray);
+
+    void handlyChangeSensorTrayChanged(bool handlyChangeSensorTray);
+
 private:
     int m_runMode = 0;
     QString m_materialType = "TESTTYPE";
@@ -163,6 +248,11 @@ private:
     QVariantList m_respMessagerNames;
     QString m_flowChartURL = "http://192.168.0.251//flowchart/flowchart.html";
     QVariantList m_cmsMessageerNames;
+    bool m_disableStation = false;
+    bool m_handlyChangeLens = false;
+    bool m_handlyChangeSensor = false;
+    bool m_handlyChangeLensTray = false;
+    bool m_handlyChangeSensorTray = false;
 };
 class ModuleManagerState:public PropertyBase
 {

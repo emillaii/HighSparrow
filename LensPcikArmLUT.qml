@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import SomeLib 1.1
 ColumnLayout {
     GroupBox{
         title:"放lens位置"
@@ -39,7 +40,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmMoveToLutPos1()
+                        //logicManager.lensPickArmMoveToLutPos1()
+                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1)
                     }
                 }
                 Button{
@@ -91,7 +93,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmLUTMeasureHeight()
+                        //logicManager.lensPickArmLUTMeasureHeight()
+                        lensLoaderModule.performHandling(LensLoaderModule.MeasureLensInLUT)
                     }
                 }
                 Button{
@@ -99,7 +102,11 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmMoveToPlaceLensToLut()
+                        //logicManager.lensPickArmMoveToPlaceLensToLut()
+                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1+
+                                                         LensLoaderModule.RESET_PR+
+                                                         LensLoaderModule.ToWork+
+                                                         LensLoaderModule.PLACE_LENS_TO_LUT)
                     }
                 }
             }
@@ -142,7 +149,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmMoveToLutPos2()
+                        //logicManager.lensPickArmMoveToLutPos2()
+                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2)
                     }
                 }
                 Button{
@@ -165,7 +173,9 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmLUTPR()
+                        //logicManager.lensPickArmLUTPR()
+                        lensLoaderModule.performHandling(LensLoaderModule.LUT_PR+
+                                                         LensLoaderModule.ToWork)
                     }
                 }
                 Button{
@@ -173,7 +183,11 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmMoveToPickLensFromLut()
+                        //logicManager.lensPickArmMoveToPickLensFromLut()
+                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
+                                                         LensLoaderModule.LUT_LENS_PR+
+                                                         LensLoaderModule.ToWork+
+                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
                     }
                 }
             }
@@ -217,7 +231,8 @@ ColumnLayout {
                 Button{
                     text:title_move_to
                     onClicked: {
-                        logicManager.lensPickArmMoveToUpdownlookDownPos()
+                        //logicManager.lensPickArmMoveToUpdownlookDownPos()
+                        lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_DOWN_POS)
                     }
                 }
                 Button{
@@ -285,7 +300,8 @@ ColumnLayout {
                 Button{
                     text:title_move_to
                     onClicked: {
-                        logicManager.lensPickArmMoveToUpdownlookUpPos()
+                        //logicManager.lensPickArmMoveToUpdownlookUpPos()
+                        lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_UP_POS)
                     }
                 }
                 Button{

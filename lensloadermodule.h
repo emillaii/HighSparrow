@@ -12,6 +12,10 @@
 class LensLoaderModule:public ThreadWorkerBase
 {
     Q_OBJECT
+    Q_ENUMS(HandlePosition)
+    Q_ENUMS(HandlePR)
+    Q_ENUMS(HandleToWorkPos)
+    Q_ENUMS(HandlePickerAction)
 public:
     enum HandlePosition
         {
@@ -177,8 +181,12 @@ public:
 
     // ThreadWorkerBase interface
 public:
-    void receivceModuleMessage(QVariantMap message);
+    void receivceModuleMessage(QVariantMap module_message);
     PropertyBase *getModuleState();
+
+    // ThreadWorkerBase interface
+public:
+    QMap<QString, PropertyBase *> getModuleParameter();
 };
 
 #endif // LENSPICKARMMODULE_H

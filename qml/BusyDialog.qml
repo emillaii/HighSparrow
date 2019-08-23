@@ -20,9 +20,9 @@ Window {
     Timer {
         interval: 500; running: true; repeat: true
         onTriggered: {
-            if (logicManager.currentMode !== 0) {
+            if (logicManagerState.isHandling) {
                 count++;
-                stateLabel.text = logicManager.stateMessage
+                stateLabel.text = logicManagerState.handlingMessage
                 timerLabel.text = Math.floor(count*0.5) + " s"
                 busyDialog.show()
                 //busyDialog.visible = true
@@ -41,7 +41,7 @@ Window {
         RowLayout {
             Label {
                 id: stateLabel
-                text: logicManager.stateMessage
+                text: logicManagerState.handlingMessage
                 font.pointSize: 20
                 color: "white"
             }

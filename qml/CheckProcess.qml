@@ -7,6 +7,8 @@ import QtQuick.Dialogs 1.2
 import "AAHeadModule"
 import "LUTModule"
 import "SUTModule"
+import SomeLib 1.1
+import LogicManagerLib 1.1
 
 ItemDelegate {
     width: parent.width
@@ -50,13 +52,18 @@ ItemDelegate {
                                         Button{
                                             text:qsTr("校正")
                                             onClicked: {
-                                                logicManager.performCalibration("aa1_upLook_calibration")
+                                                //logicManager.performCalibration("aa1_upLook_calibration")
+                                                logicManagerState.setCurrentCalibrationName("aa1_uplook_calibration")
+                                                logicManager.performHandling(LogicManager.PERFORM_CALIBRATION)
                                             }
                                         }
                                         Button{
                                             text:qsTr("执行PR")
                                             onClicked: {
-                                                logicManager.performLocation("aa1_upLook_location")
+                                                //logicManager.performLocation("aa1_upLook_location")
+                                                logicManagerState.setCurrentLocationName("aa1_upLook_location")
+                                                logicManagerState.setUseOriginPr(true)
+                                                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
                                             }
                                         }
                                     }
@@ -68,7 +75,10 @@ ItemDelegate {
                                     Button{
                                         text:qsTr("执行PR")
                                         onClicked: {
-                                            logicManager.performLocation("aa2_upLook_location")
+                                            //logicManager.performLocation("aa2_upLook_location")
+                                            logicManagerState.setCurrentLocationName("aa2_upLook_location")
+                                            logicManagerState.setUseOriginPr(true)
+                                            logicManager.performHandling(LogicManager.PERFORM_LOCATION)
                                         }
                                     }
                                 }
@@ -324,6 +334,8 @@ ItemDelegate {
                                     text:qsTr("校正SUT UpdownlookDownCalibration")
                                     onClicked: {
                                         //logicManager.performCalibration("aa1_updownLook_down_calibration")
+                                        logicManagerState.setCurrentCalibrationName("aa1_updownLook_down_calibration")
+                                        logicManager.performHandling(LogicManager.PERFORM_CALIBRATION)
                                     }
                                 }
 
@@ -333,6 +345,8 @@ ItemDelegate {
                                     text:qsTr("校正SUT UpdownLookUpCailration")
                                     onClicked: {
                                         //logicManager.performCalibration("aa1_updownLook_up_calibration")
+                                        logicManagerState.setCurrentCalibrationName("aa1_updownLook_up_calibration")
+                                        logicManager.performHandling(LogicManager.PERFORM_CALIBRATION)
                                     }
                                 }
                                 Button{
@@ -377,13 +391,18 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("校正CartCalibration")
                                     onClicked: {
-                                        logicManager.performCalibration("aa1_chart_calibration")
+                                        //logicManager.performCalibration("aa1_chart_calibration")
+                                        logicManagerState.setCurrentCalibrationName("aa1_chart_calibration")
+                                        logicManager.performHandling(LogicManager.PERFORM_CALIBRATION)
                                     }
                                 }
                                 Button{
                                     text:qsTr("执行ChartCalibrationPR")
                                     onClicked: {
-                                        logicManager.performLocation("aa1_chart_location")
+                                        //logicManager.performLocation("aa1_chart_location")
+                                        logicManagerState.setCurrentLocationName("aa1_chart_location")
+                                        logicManagerState.setUseOriginPr(true)
+                                        logicManager.performHandling(LogicManager.PERFORM_LOCATION)
                                     }
                                 }
                             }
@@ -520,7 +539,8 @@ ItemDelegate {
                                         Button{
                                             text:title_move_to
                                             onClicked: {
-                                                logicManager.lensPickArmMoveToUpdownlookDownPos()
+                                                //logicManager.lensPickArmMoveToUpdownlookDownPos()
+                                                lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_DOWN_POS)
                                             }
                                         }
                                         Button{
@@ -540,21 +560,32 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("校正lpa_updownlook_up_calibration")
                                     onClicked: {
-                                        logicManager.performCalibration("lpa_updownlook_up_calibration")
+                                        //logicManager.performCalibration("lpa_updownlook_up_calibration")
+                                        logicManagerState.setCurrentCalibrationName("lpa_updownlook_up_calibration")
+                                        logicManager.performHandling(LogicManager.PERFORM_CALIBRATION)
                                     }
                                 }
                                 Button{
                                     text:qsTr("校正lpa_updownlook_down_calibration")
                                     onClicked: {
-                                        logicManager.performCalibration("lpa_updownlook_down_calibration")
+                                        //logicManager.performCalibration("lpa_updownlook_down_calibration")
+                                        logicManagerState.setCurrentCalibrationName("lpa_updownlook_down_calibration")
+                                        logicManager.performHandling(LogicManager.PERFORM_CALIBRATION)
                                     }
                                 }
                             }
                             Button{
                                 text:qsTr("执行lpa_updownlook_pr")
                                 onClicked: {
-                                    logicManager.performLocation("lpa_updownlook_up_location")
-                                    logicManager.performLocation("lpa_updownlook_down_location")
+                                    //logicManager.performLocation("lpa_updownlook_up_location")
+                                    //logicManager.performLocation("lpa_updownlook_down_location")
+                                    logicManagerState.setCurrentLocationName("lpa_updownlook_up_location")
+                                    logicManagerState.setUseOriginPr(true)
+                                    logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+
+                                    logicManagerState.setCurrentLocationName("lpa_updownlook_down_location")
+                                    logicManagerState.setUseOriginPr(true)
+                                    logicManager.performHandling(LogicManager.PERFORM_LOCATION)
                                 }
                             }
 
@@ -622,7 +653,8 @@ ItemDelegate {
                                         Button{
                                             text:title_move_to
                                             onClicked: {
-                                                logicManager.lensPickArmMoveToUpdownlookUpPos()
+                                                //logicManager.lensPickArmMoveToUpdownlookUpPos()
+                                                lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_UP_POS)
                                             }
                                         }
                                         Button{
@@ -725,13 +757,21 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("lpa取NGLens");
                                     onClicked: {
-                                        logicManager.lensPickArmMoveToPickLensFromLut()
+                                        //logicManager.lensPickArmMoveToPickLensFromLut()
+                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
+                                                                         LensLoaderModule.LUT_LENS_PR+
+                                                                         LensLoaderModule.ToWork+
+                                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
                                     }
                                 }
                                 Button{
                                     text:qsTr("lpa放lens")
                                     onClicked: {
-                                        logicManager.lensPickArmMoveToPlaceLensToLut()
+                                        //logicManager.lensPickArmMoveToPlaceLensToLut()
+                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1+
+                                                                         LensLoaderModule.RESET_PR+
+                                                                         LensLoaderModule.ToWork+
+                                                                         LensLoaderModule.PLACE_LENS_TO_LUT)
                                     }
                                 }
                             }

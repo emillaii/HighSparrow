@@ -26,10 +26,14 @@ public:
     SutModule();
     void Init(MaterialCarrier* carrier,SutClient* sut_cilent,
               VisionLocation* vision_downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn,
-              XtVacuum *vacuum,XtCylinder* popgpin);
+              XtVacuum *vacuum,XtCylinder* popgpin,int thread_id);
     void loadParams(QString file_name);
     void saveJsonConfig(QString file_name);
+
     bool checkSutSensorOrProduct(bool check_state);
+    bool checkSutHasMaterialSynic();
+    bool checkSutHasMaterial();
+    bool waitSutCheckResult(bool check_state);
 
     Q_INVOKABLE bool moveToLoadPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
@@ -47,10 +51,13 @@ public:
     Q_INVOKABLE bool stepMove_XY_Sync(double x,double y);
     Q_INVOKABLE bool stepMove_Z_Sync(double step_z);
     Q_INVOKABLE bool moveToZPos(double z);
-    Q_INVOKABLE bool moveZToSaftyPos();
+    Q_INVOKABLE bool moveZToSaftyInMushroom();
     Q_INVOKABLE void recordCurrentPos();
     Q_INVOKABLE bool movetoRecordPos(bool check_autochthonous = false);
     Q_INVOKABLE bool movetoRecordPosAddOffset(double x_offset,double y_offset,double z_offset,bool check_autochthonous = false);
+
+    bool OpenSutVacuum();
+    bool CloseSutVacuum();
 signals:
     void sendLoadSensorFinish(double offset_x,double offset_y,double offset_z);
 public slots:
@@ -81,6 +88,7 @@ private:
     XtVacuum* vacuum;
     XtCylinder *popgpin;
     SutClient* sut_cilent;
+    int thread_id;
     mPoint3D record_position;
     PrOffset offset;
     bool is_run = false;
@@ -93,8 +101,12 @@ private:
 
     // ThreadWorkerBase interface
 public:
-    void receivceModuleMessage(QVariantMap message);
+    void receivceModuleMessage(QVariantMap module_message);
     PropertyBase *getModuleState();
+
+    // ThreadWorkerBase interface
+public:
+    QMap<QString, PropertyBase *> getModuleParameter();
 };
 
 #endif // SUT_MODULE_H

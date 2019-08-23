@@ -2,6 +2,7 @@
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import SomeLib 1.1
+import LogicManagerLib 1.1
 ColumnLayout {
     GroupBox{
         title:qsTr("料盘起点")
@@ -41,9 +42,10 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         if (baseModuleManager.getServerMode() === 0){
-                            logicManager.lensPickArmMoveToTray2StartPos()
+                            //logicManager.lensPickArmMoveToTray2StartPos()
+                            lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2_START_POS)
                         }else{
-                            sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2_START_POS)
+                            sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_START_POS)
                         }
                     }
                 }
@@ -115,86 +117,186 @@ ColumnLayout {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
                         if (baseModuleManager.getServerMode() === 0){
-                            logicManager.lensPickArmMoveToTray2Pos()
+                            lensLoaderModule.performHandling(lensLoaderModule.LENS_TRAY2)
                         }else{
-                            sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2)
+                            sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS)
                         }
                     }
                 }
             }
+
             RowLayout{
-                visible: baseModuleManager.getServerMode() !==0
-                CheckBox{
-                    text: qsTr("放料限力")
-                    checked: sensorLoaderParameter.enablePlaceForce
+                visible: baseModuleManager.getServerMode()===1
+                Button{
+                    text:qsTr("执行视觉")
+                    width:40
+                    height:40
                     onClicked: {
-                        sensorLoaderParameter.setEnablePlaceForce(checked)
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS
+                                                           +SensorLoaderModule.TRAY_SENSOR_PR
+                                                           +SensorLoaderModule.TO_PR_OFFSET)
                     }
                 }
 
                 Label{
-                    text:qsTr("取料区间")
+                    text: qsTr("sensor高度")
                 }
                 TextField{
-                    text:sensorLoaderParameter.placeTrayMargin
+                    text: sensorLoaderParameter.pickSensorZ2
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sensorLoaderParameter.setPlaceTrayMargin(text)
+                        sensorLoaderParameter.setPickSensorZ2(text)
+                    }
+                }
+                Button{
+                    text:qsTr("移动吸头")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS
+                                                           +SensorLoaderModule.TRAY_SENSOR_PR
+                                                           +SensorLoaderModule.TO_PICK_SENSOR_POS2)
+                    }
+                }
+
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_SENSOR_IN_TRAY2)
+                    }
+                }
+
+                Button{
+                    text:qsTr("取sensor")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS
+                                                           +SensorLoaderModule.TRAY_SENSOR_PR
+                                                           +SensorLoaderModule.TO_PICK_SENSOR_POS2
+                                                           +SensorLoaderModule.PICK_SENSOR_FROM_TRAY2)
                     }
                 }
             }
             RowLayout{
-                visible: baseModuleManager.getServerMode() !==0
+                visible: baseModuleManager.getServerMode()===1
+                Button{
+                    text:qsTr("空位视觉")
+                    width:40
+                    height:40
+                    onClicked: {
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS
+                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+                                                           +SensorLoaderModule.TO_PR_OFFSET)
+                    }
+                }
 
                 Label{
-                    text:qsTr("成品高度")
+                    text: qsTr("成品  高度")
                 }
                 TextField{
-                    text: sensorLoaderParameter.placeProductZ
+                    text: sensorLoaderParameter.placeProductZ2
                     horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator {
+                    validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sensorLoaderParameter.setPlaceProductZ(text)
+                        sensorLoaderParameter.setPlaceProductZ2(text)
                     }
                 }
+
+                Button{
+                    text:qsTr("移动吸头")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS
+                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_POS2)
+                    }
+                }
+
                 Button{
                     text:qsTr("测高")
+                    width: 40
+                    height: 40
                     onClicked: {
-                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_PRODUCT_IN_TRAY)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_PRODUCT_IN_TRAY2)
                     }
                 }
             }
             RowLayout{
-                visible: baseModuleManager.getServerMode() !==0
+                visible: baseModuleManager.getServerMode()===1
+                CheckBox{
+                    text: qsTr("不限力")
+                    checked: sensorLoaderParameter.disablePlaceToGoodTrayForceLimit
+                    onCheckedChanged: {
+                        sensorLoaderParameter.setDisablePlaceToGoodTrayForceLimit(checked)
+                    }
+                }
+
                 Label{
-                    text:qsTr("Ng Sensor高度")
+                    text:qsTr("放料区间")
                 }
                 TextField{
-                    text: sensorLoaderParameter.placeNgSensorZ
+                    text:sensorLoaderParameter.placeToGoodTrayMargin
                     horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator {
+                    validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sensorLoaderParameter.setPlaceNgSensorZ(text)
+                        sensorLoaderParameter.setPlaceToGoodTrayMargin(text)
                     }
                 }
                 Button{
-                    text:qsTr("测高")
+                    text:qsTr("退Sensor")
+                    width: 40
+                    height: 40
                     onClicked: {
-                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_SENSOR_IN_TRAY)
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        //                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2
+                        //                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+                        //                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_POS2
+                        //                                                           +SensorLoaderModule.PLACE_PRODUCT_TO_TRAY2)
+                    }
+                }
+                CheckBox{
+                    text: qsTr("使能视觉")
+                    checked: sensorLoaderParameter.enablePlaceProdcutPr
+                    onCheckedChanged:
+                        sensorLoaderParameter.setEnablePlaceProdcuPr(checked)
+                }
+                Button{
+                    text:qsTr("放成品")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS
+//                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_POS2
+                                                           +SensorLoaderModule.PLACE_PRODUCT_TO_TRAY2)
                     }
                 }
             }
+
+
+
             RowLayout{
+                visible: baseModuleManager.getServerMode()===0
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
                     visible: baseModuleManager.getServerMode()===0
@@ -202,7 +304,9 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmLensPR()
+                        //logicManager.lensPickArmLensPR()
+                        lensLoaderModule.performHandling(LensLoaderModule.LENS_PR+
+                                                         LensLoaderModule.ToWork)
                     }
                 }
                 Button{
@@ -211,7 +315,11 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        logicManager.lensPickArmMoveToPickLensFromTray2()
+                        //logicManager.lensPickArmMoveToPickLensFromTray2()
+                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2+
+                                                         LensLoaderModule.LENS_PR+
+                                                         LensLoaderModule.ToWork+
+                                                         LensLoaderModule.PICK_LENS_FROM_TRAY)
                     }
                 }
                 Button{
@@ -219,12 +327,16 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked:{
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                         if(baseModuleManager.getServerMode()===0){
-                            logicManager.performLocation(lens_loader_parameter.vacancyLocationName)
+                            //logicManager.performLocation(lens_loader_parameter.vacancyLocationName)
+                            logicManagerState.setCurrentLocationName(lens_loader_parameter.vacancyLocationName)
+                            logicManagerState.setUseOriginPr(true)
+                            logicManager.performHandling(LogicManager.PERFORM_LOCATION)
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.TO_PR_OFFSET
-                                                               +SensorLoaderModule.VACANCY_PR
-                                                               +SensorLoaderModule.SENSOR_TRAY2)
+                                                               +SensorLoaderModule.TRAY_EMPTY_PR
+                                                               +SensorLoaderModule.SENSOR_TRAY_2_POS)
                         }
                     }
                 }
@@ -237,12 +349,14 @@ ColumnLayout {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
                         if (baseModuleManager.getServerMode() === 0){
-                            logicManager.lensPickArmVacancyTrayPR()
+                            //logicManager.lensPickArmVacancyTrayPR()
+                            lensLoaderModule.performHandling(LensLoaderModule.VACANCY_PR+
+                                                             LensLoaderModule.ToWork)
                         }else{
                             //232
                             sensorLoaderModule.performHandling(SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
-                                                               +SensorLoaderModule.VACANCY_PR
-                                                               +SensorLoaderModule.SENSOR_TRAY2)
+                                                               +SensorLoaderModule.TRAY_EMPTY_PR
+                                                               +SensorLoaderModule.SENSOR_TRAY_2_POS)
                         }
                     }
                 }
@@ -255,13 +369,17 @@ ColumnLayout {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
                         if (baseModuleManager.getServerMode() === 0){
-                            logicManager.lensPickArmMoveToPlaceLensToTray2()
+                            //logicManager.lensPickArmMoveToPlaceLensToTray2()
+                            lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2+
+                                                             LensLoaderModule.VACANCY_PR+
+                                                             LensLoaderModule.ToWork+
+                                                             LensLoaderModule.PLACE_NG_LENS_TO_TRAY)
                         }else{
                             //9232
                             sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_PRODUCT_TO_TRAY
                                                                +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
-                                                               +SensorLoaderModule.VACANCY_PR
-                                                               +SensorLoaderModule.SENSOR_TRAY2)
+                                                               +SensorLoaderModule.TRAY_EMPTY_PR
+                                                               +SensorLoaderModule.SENSOR_TRAY_2_POS)
                         }
                     }
                 }
@@ -275,8 +393,8 @@ ColumnLayout {
                         //6232
                         sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY
                                                            +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
-                                                           +SensorLoaderModule.VACANCY_PR
-                                                           +SensorLoaderModule.SENSOR_TRAY2)
+                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+                                                           +SensorLoaderModule.SENSOR_TRAY_2_POS)
                     }
                 }
             }

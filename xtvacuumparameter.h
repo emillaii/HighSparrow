@@ -17,6 +17,7 @@ public:
     Q_PROPERTY(int outTime READ outTime WRITE setOutTime NOTIFY outTimeChanged)
     Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
     Q_PROPERTY(int checkOutTime READ checkOutTime WRITE setCheckOutTime NOTIFY checkOutTimeChanged)
+    Q_PROPERTY(bool reserveValue READ reserveValue WRITE setReserveValue NOTIFY reserveValueChanged)
     QString vacuumName() const
     {
         return m_vacuumName;
@@ -49,6 +50,11 @@ public:
     int checkOutTime() const
     {
         return m_checkOutTime;
+    }
+
+    bool reserveValue() const
+    {
+        return m_reserveValue;
     }
 
 public slots:
@@ -114,6 +120,15 @@ public slots:
         emit checkOutTimeChanged(m_checkOutTime);
     }
 
+    void setReserveValue(bool reserveValue)
+    {
+        if (m_reserveValue == reserveValue)
+            return;
+
+        m_reserveValue = reserveValue;
+        emit reserveValueChanged(m_reserveValue);
+    }
+
 signals:
     void vacuumNameChanged(QString vacuumName);
     void outIoNameChanged(QString outIoName);
@@ -128,6 +143,8 @@ signals:
 
     void checkOutTimeChanged(int checkOutTime);
 
+    void reserveValueChanged(bool reserveValue);
+
 private:
     QString m_vacuumName = "Vcauum";
     QString m_outIoName = "";
@@ -136,6 +153,7 @@ private:
     int m_outTime = 200;
     int m_finishDelay = 0;
     int m_checkOutTime = 200;
+    bool m_reserveValue = false;
 };
 
 #endif // XTVACUUMPARAMETER_H

@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
+import SomeLib 1.1
 
 ItemDelegate {
     width: parent.width
@@ -57,21 +58,30 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                                        logicManager.lensPickArmMoveToTray1Pos()
+                                        //logicManager.lensPickArmMoveToTray1Pos()
+                                        lensLoaderModule.performHandling(lensLoaderModule.LENS_TRAY1)
                                     }
                                 }
                                 Button{
                                     text:qsTr("取lens")
                                     onClicked:{
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                                        logicManager.lensPickArmMoveToPickLensFromTray1()
+                                        //logicManager.lensPickArmMoveToPickLensFromTray1()
+                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1+
+                                                                         LensLoaderModule.LENS_PR+
+                                                                         LensLoaderModule.ToWork+
+                                                                         LensLoaderModule.PICK_LENS_FROM_TRAY)
                                     }
                                 }
                                 Button{
                                     text:qsTr("放lens")
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                                        logicManager.lensPickArmMoveToPlaceLensToTray1()
+                                        //logicManager.lensPickArmMoveToPlaceLensToTray1()
+                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1+
+                                                                         LensLoaderModule.VACANCY_PR+
+                                                                         LensLoaderModule.ToWork+
+                                                                         LensLoaderModule.PLACE_NG_LENS_TO_TRAY)
                                     }
                                 }
                             }
@@ -109,21 +119,30 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                                        logicManager.lensPickArmMoveToTray2Pos()
+                                        //logicManager.lensPickArmMoveToTray2Pos()
+                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1)
                                     }
                                 }
                                 Button{
                                     text:qsTr("取lens")
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                                        logicManager.lensPickArmMoveToTray2Pos()
+                                        //logicManager.lensPickArmMoveToPickLensFromTray2()
+                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2+
+                                                                         LensLoaderModule.LENS_PR+
+                                                                         LensLoaderModule.ToWork+
+                                                                         LensLoaderModule.PICK_LENS_FROM_TRAY)
                                     }
                                 }
                                 Button{
                                     text:qsTr("放lens")
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                                        logicManager.lensPickArmMoveToPlaceLensToTray2()
+                                        //logicManager.lensPickArmMoveToPlaceLensToTray2()
+                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2+
+                                                                         LensLoaderModule.VACANCY_PR+
+                                                                         LensLoaderModule.ToWork+
+                                                                         LensLoaderModule.PLACE_NG_LENS_TO_TRAY)
                                     }
                                 }
                             }
@@ -136,13 +155,21 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("从LUT取NGlens")
                                     onClicked: {
-                                        logicManager.lensPickArmMoveToPickLensFromLut()
+                                        //logicManager.lensPickArmMoveToPickLensFromLut()
+                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
+                                                                         LensLoaderModule.LUT_LENS_PR+
+                                                                         LensLoaderModule.ToWork+
+                                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
                                     }
                                 }
                                 Button{
                                     text:qsTr("放lens到LUT")
                                     onClicked: {
-                                        logicManager.lensPickArmMoveToPlaceLensToLut()
+                                        //logicManager.lensPickArmMoveToPlaceLensToLut()
+                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1+
+                                                                         LensLoaderModule.RESET_PR+
+                                                                         LensLoaderModule.ToWork+
+                                                                         LensLoaderModule.PLACE_LENS_TO_LUT)
                                     }
                                 }
                             }
@@ -378,7 +405,7 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         material_tray.setTrayCurrent(ts_ncol.text-1,ts_nrow.text-1,0)
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1)
+                                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS)
                                     }
                                 }
                             }
@@ -432,8 +459,8 @@ ItemDelegate {
                                         material_tray.setTrayCurrent(ts_ncol.text-1,ts_nrow.text-1,0)
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PICK_SENSOR_FROM_TRAY
                                                                            +SensorLoaderModule.TO_PICK1
-                                                                           +SensorLoaderModule.SENSOR_PR
-                                                                           +SensorLoaderModule.SENSOR_TRAY1)
+                                                                           +SensorLoaderModule.TRAY_SENSOR_PR
+                                                                           +SensorLoaderModule.SENSOR_TRAY_1_POS)
                                     }
                                 }
                                 Button{
@@ -443,7 +470,7 @@ ItemDelegate {
                                         //6232
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY
                                                                            +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
-                                                                           +SensorLoaderModule.VACANCY_PR
+                                                                           +SensorLoaderModule.TRAY_EMPTY_PR
                                                                            +SensorLoaderModule.SENSOR_TRAY2)
                                     }
                                 }
@@ -453,7 +480,7 @@ ItemDelegate {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_PRODUCT_TO_TRAY
                                                                            +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
-                                                                           +SensorLoaderModule.VACANCY_PR
+                                                                           +SensorLoaderModule.TRAY_EMPTY_PR
                                                                            +SensorLoaderModule.SENSOR_TRAY2)
                                     }
                                 }

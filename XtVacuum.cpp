@@ -20,7 +20,7 @@ void XtVacuum::Init(XtGeneralOutput *output_io, XtGeneralInput *input_io, XtGene
 
 bool XtVacuum::Set(bool new_state, bool wait_done, bool open_break)
 {
-    out_io->Set(new_state);
+    out_io->Set(parameters.reserveValue()?(!new_state):new_state);
     if(open_break&&(nullptr != break_io)&&(!new_state))
         break_io->Set(true);
     if(!wait_done)
@@ -30,7 +30,7 @@ bool XtVacuum::Set(bool new_state, bool wait_done, bool open_break)
 
 void XtVacuum::SET(int thread, bool new_state)
 {
-    out_io->Set(new_state, thread);
+    out_io->Set(parameters.reserveValue()?(!new_state):new_state, thread);
 }
 
 bool XtVacuum::Wait(bool target_state)
@@ -61,13 +61,14 @@ bool XtVacuum::Wait(bool target_state)
 
 bool XtVacuum::checkHasMaterielSync()
 {
-    if(out_io->Value())
+    bool enable_value = parameters.reserveValue()?false:true;
+    if(out_io->Value() == enable_value)
     {
         return in_io->Value();
     }
     else
     {
-        out_io->Set(true);
+        out_io->Set(enable_value);
         int time = parameters.checkOutTime();
         bool result = in_io->Value();
         while(time > 0)
@@ -78,7 +79,7 @@ bool XtVacuum::checkHasMaterielSync()
             QThread::msleep(10);
             time-=10;
         }
-        out_io->Set(false);
+        out_io->Set(!enable_value);
         return result;
     }
 }
@@ -90,8 +91,18 @@ bool XtVacuum::getHasMateriel(int thread)
 
 bool XtVacuum::checkHasMateriel(int thread)
 {
-    bool result = out_io->SetStateAndTillTimeSpan(true,parameters.checkOutTime(),thread);
-     result &= in_io->getValueToReg(thread);
+    bool enable_value = parameters.reserveValue()?false:true;
+    bool result = true;
+    bool origin_value = out_io->Value();
+    if(origin_value != enable_value)
+        result &= out_io->SetStateAndTillTimeSpan(enable_value,parameters.checkOutTime(),thread);
+    result &= in_io->getValueToReg(thread);
+    if(origin_value != enable_value)
+        result &= out_io->SET(origin_value,thread);
+    if(!result)
+    {
+        qInfo("%s checkHasMateriel fail",parameters.vacuumName().toStdString().c_str());
+    }
     return result;
 }
 bool XtVacuum::checkState(bool check_state)

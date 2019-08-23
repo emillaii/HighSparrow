@@ -4,6 +4,7 @@ import QtQuick.Dialogs 1.2
 import FileContentItem 1.0
 import QtQuick.Layouts 1.11
 import AACoreNew 1.1
+import LogicManagerLib 1.1
 import "qml"
 ApplicationWindow {
     visible: true
@@ -114,7 +115,7 @@ ApplicationWindow {
                 icon.source: "icons/initial.png"
                 icon.color: "deepskyblue"
                 onClicked: {
-                    logicManager.init()
+                    logicManager.performHandling("",LogicManager.MOTION_INIT)
                 }
             }
 
@@ -125,7 +126,7 @@ ApplicationWindow {
                 icon:StandardIcon.Question
                 onYes: {
                     console.log("home start!")
-                    logicManager.home()
+                    logicManager.performHandling("",LogicManager.MOTION_HOME)
                 }
                 //Component.onCompleted: visible = true
             }
@@ -357,7 +358,7 @@ ApplicationWindow {
                icon.color: "red"
                onClicked: {
                    workersManager.stopAllWorkers(true)
-                   logicManager.stop()
+                   logicManagerState.setIsHandling(false)
                }
            }
 
@@ -425,6 +426,12 @@ ApplicationWindow {
            }
            Label{
                text:aaCoreStates.circleAverageTime
+           }
+           Button{
+               text: "报警信息"
+               onClicked: {
+                    workersManager.changeAlarmShow()
+               }
            }
         }
     }

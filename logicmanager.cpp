@@ -3,8 +3,16 @@
 #include <QFuture>
 #include <QMessageBox>
 
-LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
-    : QThread (parent), m_currentMode(CommandType::IDLE)
+LogicManager::LogicManager(QObject *parent):QObject (parent)
+{
+    this->setObjectName("LogicManager");
+    this->moveToThread(&work_thread);
+    work_thread.start();
+    connect(this,&LogicManager::sendPerformHandling,this,&LogicManager::performHandlingOperation);
+    connect(this,&LogicManager::sendPerformTcp,this,&LogicManager::performTcpOperation);
+}
+
+void LogicManager::init(BaseModuleManager *device_manager)
 {
     baseModuleManage = device_manager;
 }
@@ -20,14 +28,19 @@ LogicManager::LogicManager(BaseModuleManager* device_manager,QObject *parent)
 //    return false;
 //}
 
-void LogicManager::performHandling(int cmd)
+void LogicManager::performHandling(QString module_name,int cmd)
 {
-
+    emit sendPerformHandling(module_name,cmd);
 }
 
-void LogicManager::updateParams()
+void LogicManager::performHandling(int cmd)
 {
-    //aaCore->updateParams();
+    emit sendPerformHandling("",cmd);
+}
+
+void LogicManager::allMotorsSeekOrigin()
+{
+
 }
 
 void LogicManager::run() {
@@ -170,9 +183,7 @@ bool LogicManager::motorSeekOrigin(QString motor_name)
 {
     if(motor_name == "AllMotor")
     {
-        home_only_self();
-//        waitReturnMessage();
-        return result;
+        return baseModuleManage->allMotorsSeekOrigin();
     }
     else if(baseModuleManage->motors.contains(motor_name))
     {
@@ -199,6 +210,24 @@ void LogicManager::sendRespMessage(QVariantMap message, bool result)
     emit sendMessageToWorkerManger(message);
 }
 
+void LogicManager::sendMessageToModule(QString module_name,  QString message)
+{
+    QVariantMap message_map;
+    message_map.insert("TargetModule",module_name);
+    message_map.insert("OriginModule",parameters.moduleName());
+    message_map.insert("Message",message);
+    emit sendMessageToWorkerManger(message_map);
+}
+
+void LogicManager::sendLogicManangerName()
+{
+    QVariantMap message_map;
+    message_map.insert("TargetModule","WorksManager");
+    message_map.insert("Message","SendLogicManagerName");
+    message_map.insert("LogicManagerName",parameters.moduleName());
+    emit sendMessageToWorkerManger(message_map);
+}
+
 bool LogicManager::waitReturnMessage()
 {
     while (is_handling) {
@@ -212,22 +241,9 @@ bool LogicManager::waitReturnMessage()
     }
     return false;
 }
-void LogicManager::moveToCmd(int cmd) {
-    if (cmd == CommandType::STOP)
-    {
-        m_currentMode = CommandType::IDLE;
-        return;
-    }
 
-    if (m_currentMode == CommandType::IDLE || cmd == CommandType::MOTION_STOP_HOME)
-    {
-        setCurrentMode(cmd);
-        this->start();
-    }
-    else {
-        qInfo("%s Fail ! Due to previous command is running", __FUNCTION__);
-    }
-}
+
+
 
 void LogicManager::home(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_HOME);}
 void LogicManager::init(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::MOTION_INIT);}
@@ -420,15 +436,6 @@ void LogicManager::lensPickArmMoveToUpdownlookDownPos()
 void LogicManager::lensPickArmMoveToUpdownlookUpPos()
 {
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::UPDOWNLOOK_UP_POS);
-}
-
-void LogicManager::trayLoaderModuleLTIEMovetoChangeClipPos()
-{
-    QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否移动？"),QMessageBox::Yes|QMessageBox::No);
-    if(rb==QMessageBox::No){
-        return;
-    }
-    baseModuleManage->tray_loader_module.moveToChangeClipPos();
 }
 
 void LogicManager::trayLoaderModuleLTIEMovetoFirstPos()
@@ -714,19 +721,96 @@ void LogicManager::sensorTrayLoaderModuleMovetoVacancyTrayPosition()
     baseModuleManage->sensor_tray_loder_module.movetoVacancyTrayPosition();
 }
 
-void LogicManager::receiveCommand(int cmd)
+void LogicManager::performHandlingOperation(QString module_name, int cmd)
 {
-    qInfo("receive command: %d", cmd);
-    if (cmd == CommandType::MOTION_INIT) {
-        init();
+    states.setIsHandling(true);
+    is_handling = true;
+    if(module_name == "")//组合动作
+    {
+        if(cmd == CommandType::MOTION_INIT)
+        {
+            states.setHandlingMessage(u8"正在初始化……");
+            QVariantMap message;
+            sendCmdMessage(message,CommandType::MOTION_INIT);
+            baseModuleManage->initialDevice();
+            waitReturnMessage();
+        }
+        else if(cmd == CommandType::MOTION_HOME)
+        {
+            states.setHandlingMessage(u8"正在回零……");
+            if(baseModuleManage->ServerMode() == 0)
+            {
+                if(baseModuleManage->allMotorsSeekOrigin())
+                {
+                    QVariantMap message;
+                    message.insert("MotorName","AllMotor");
+                    sendCmdMessage(message,CommandType::MOTION_HOME);
+                    waitReturnMessage();
+                }
+            }
+            else
+            {
+                QVariantMap message;
+                message.insert("MotorName","AllMotor");
+                sendCmdMessage(message,CommandType::MOTION_HOME);
+                if(waitReturnMessage())
+                    baseModuleManage->allMotorsSeekOrigin();
+            }
+        }
+        else if (cmd == CommandType::PERFORM_LOCATION)
+        {
+            states.setHandlingMessage(u8"正在执行视觉……");
+            baseModuleManage->performLocation(states.currentLocationName(), states.useOriginPr());
+        }
+        else if (cmd == CommandType::PERFORM_CALIBRATION)
+        {
+            states.setHandlingMessage(u8"正在执行校正……");
+            baseModuleManage->performCalibration(states.currentCalibrationName());
+        }
+        else if (cmd == CommandType::PERFORM_UPDNLOOK_CALIBRATION)
+        {
+            states.setHandlingMessage(u8"正在执行up&down相机校正……");
+            baseModuleManage->performUpDnLookCalibration();
+        }
     }
+    else if(baseModuleManage->workers.contains(module_name))//单一模块动作
+    {
+        baseModuleManage->workers[module_name]->performHandling(cmd);
+    }
+    is_handling = false;
+    states.setIsHandling(false);
 }
 
-void LogicManager::receiveMessageFromWorkerManger(QVariantMap message)
+void LogicManager::performTcpOperation(QVariantMap message)
 {
-    if(message.contains("performHandling"))
+    qInfo("receiveMessageFromWorkerManger");
+    if(message.contains("Message"))
     {
-        //is_handling = true;
+        qInfo("receiveMessageFromWorkerManger Message %s",message["Message"].toString().toStdString().c_str());
+        if(message["Message"].toString() == "OpenSutVacuum")
+        {
+            bool result = baseModuleManage->sut_module.OpenSutVacuum();
+            if(message.contains("OriginModule"))
+            {
+                sendMessageToModule(message["OriginModule"].toString(),result?"OpenSutVacuumSuccess":"OpenSutVacuumFail");
+            }
+        }
+        else if(message["Message"].toString() == "CloseSutVacuum")
+        {
+            bool result = baseModuleManage->sut_module.CloseSutVacuum();
+            if(message.contains("OriginModule"))
+            {
+                sendMessageToModule(message["OriginModule"].toString(),result?"CloseSutVacuumSuccess":"CloseSutVacuumFail");
+            }
+        }
+
+    }
+    else if(message.contains("performHandling"))
+    {
+        states.setIsHandling(true);
+        bool result = true;
+
+        qInfo("receiveMessageFromWorkerManger performHandling %d",message["performHandling"].toInt());
         QString module_name = message["ModuleName"].toString();
         if(baseModuleManage->workers.contains(module_name))
         {
@@ -737,22 +821,48 @@ void LogicManager::receiveMessageFromWorkerManger(QVariantMap message)
         }
         else if(message["performHandling"].toInt() == CommandType::MOTION_HOME)
         {
+            states.setHandlingMessage(u8"正在回零……");
             if(message.contains("MotorName"))
             {
-                motorSeekOrigin(message["MotorName"].toString());
+                result = motorSeekOrigin(message["MotorName"].toString());
             }
         }
         else if (message["performHandling"].toInt() == CommandType::MOTION_INIT)
         {
-            init_only_self();
-//            waitReturnMessage();
-//            QVariantMap  return_message;
-//            sendRespMessage(return_message,result);
+            states.setHandlingMessage(u8"正在初始化……");
+            result = baseModuleManage->initialDevice();
         }
-        //is_handling = false;
+
+
+        sendRespMessage(return_message,result);
+        states.setIsHandling(false);
     }
-    else if(message.contains("performHandlingResp"))
+}
+
+void LogicManager::receiveCommand(int cmd)
+{
+    qInfo("receive command: %d", cmd);
+    if (cmd == CommandType::MOTION_INIT) {
+        init();
+    }
+}
+
+void LogicManager::moveToCmd(int)
+{
+
+}
+
+void LogicManager::receiveMessageFromWorkerManger(QVariantMap message)
+{
+    qInfo("receiveMessageFromWorkerManger");
+    if(message.contains("performHandlingResp"))
     {
-        return_message.insert("performHandlingResp",message["performHandlingResp"].toBool());
+        qInfo("receiveMessageFromWorkerManger performHandlingResp %d",message["performHandlingResp"].toBool());
+        if(!return_message.contains("performHandlingResp"))
+            return_message.insert("performHandlingResp",message["performHandlingResp"].toBool());
+    }
+    else
+    {
+        emit sendPerformTcp(message);
     }
 }

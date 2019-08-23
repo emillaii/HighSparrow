@@ -83,5 +83,7 @@
         <file>qml/ThreadManager/ThreadManagerView.qml</file>
         <file>qml/UPHView.qml</file>
         <file>qml/FlowchartWeb.qml</file>
+        <file>MaterialTray3.qml</file>
+        <file>MaterialTray4.qml</file>
     </qresource>
 </RCC>

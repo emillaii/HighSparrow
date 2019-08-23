@@ -1,4 +1,5 @@
 ﻿#include "lensloadermodule.h"
+#include "tcpmessager.h"
 
 LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 {
@@ -130,7 +131,6 @@ void LensLoaderModule::run(bool has_material)
                 break;
             }
         }
-        if(!is_run)break;
         //放NGLens
         if(states.hasTray()&&(!states.allowChangeTray())&&states.hasPickedNgLens())
         {
@@ -177,7 +177,7 @@ void LensLoaderModule::run(bool has_material)
                 }
                 if(!is_run)break;
             }
-            tray->setCurrentMaterialState(MaterialState::IsNg,result_tray);
+            tray->setCurrentMaterialState(MaterialState::IsNgSensor,result_tray);
             states.setHasPickedNgLens(false);
             if(parameters.staticTest()&&finish_stop&&(tray->getCurrentIndex() == parameters.testLensCount() -1))
             {
@@ -203,7 +203,6 @@ void LensLoaderModule::run(bool has_material)
             if((!states.hasTray())||checkNeedChangeTray())
                 states.setAllowChangeTray(true);
         }
-        if(!is_run)break;
         //取料
         if((!finish_stop)&&states.hasTray()&&(!states.allowChangeTray())&&(!states.lutHasNgLens())&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
         {
@@ -523,7 +522,7 @@ void LensLoaderModule::runTest()
                 }
                 if(!is_run)break;
             }
-            tray->setCurrentMaterialState(MaterialState::IsNg,result_tray);
+            tray->setCurrentMaterialState(MaterialState::IsNgSensor,result_tray);
             states.setHasPickedNgLens(false);
             if(parameters.staticTest())
             {
@@ -1010,7 +1009,7 @@ bool LensLoaderModule::checkLutNgLens(bool check_state)
 
 bool LensLoaderModule::moveToPrOffset(bool check_softlanding)
 {
-    PrOffset temp(- pr_offset.X, - pr_offset.Y,pr_offset.Theta);
+    PrOffset temp(- pr_offset.X, - pr_offset.Y,-pr_offset.Theta);
     bool result = pick_arm->stepMove_XYTp_Synic(temp,check_softlanding);
     if(!result)
         AppendError(QString(u8"移动视觉偏移失败"));
@@ -1233,9 +1232,38 @@ bool LensLoaderModule::isRunning()
 
 void LensLoaderModule::startWork(int run_mode)
 {
+    QVariantMap run_params = inquirRunParameters();
+    if(run_params.isEmpty())
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数为空.启动失败.");
+        return;
+    }
+    if(run_params.contains("RunMode"))
+    {
+        states.setRunMode(run_params["RunMode"].toInt());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数RunMode缺失.启动失败.");
+        return;
+    }
+
+    if(run_params.contains("HandlyChangeLens"))
+    {
+        states.setHandlyChangeLens(run_params["HandlyChangeLens"].toBool());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeLens缺失.启动失败.");
+        return;
+    }
+    if(states.handlyChangeLens())
+        return;
+
     has_material = true;
     qInfo("Lensloader start run_mode :%d",run_mode);
-    if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)run(true);
+    if(run_mode == RunMode::Normal)
+        run(true);
     else if(run_mode == RunMode::NoMaterial)
     {
         has_material = false;
@@ -1458,11 +1486,20 @@ void LensLoaderModule::recordNgLensPr(QString uuid)
 
 void LensLoaderModule::receivceModuleMessage(QVariantMap message)
 {
-
+    qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
+    QMutexLocker temp_locker(&message_mutex);
+    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
+        this->module_message = message;
 }
 
 PropertyBase *LensLoaderModule::getModuleState()
 {
     return &states;
+}
+
+QMap<QString, PropertyBase *> LensLoaderModule::getModuleParameter()
+{
+    QMap<QString, PropertyBase *> temp;
+    return temp;
 }
 

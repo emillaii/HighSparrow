@@ -180,7 +180,7 @@ ColumnLayout {
         Button{
             text: qsTr("测量")
             onClicked: {
-                 sensorLoaderModule.cameraTipOffsetCalibration(1)
+                sensorLoaderModule.cameraTipOffsetCalibration(1)
             }
         }
     }
@@ -221,7 +221,37 @@ ColumnLayout {
         Button{
             text: qsTr("测量")
             onClicked: {
-                 sensorLoaderModule.cameraTipOffsetCalibration(2)
+                sensorLoaderModule.cameraTipOffsetCalibration(2)
+            }
+        }
+    }
+    RowLayout{
+        Label{
+            text:qsTr("吸头1初始角度")
+        }
+        TextField{
+            text:sensorLoaderParameter.picker1ThetaOffset
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPicker1ThetaOffset(text)
+            }
+        }
+        Label{
+            text:qsTr("吸头2初始角度")
+        }
+        TextField{
+            text:sensorLoaderParameter.picker2ThetaOffset
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPicker2ThetaOffset(text)
             }
         }
     }

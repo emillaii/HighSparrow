@@ -23,9 +23,9 @@ ItemDelegate {
                             text: qsTr("物料型号")
                         }
                         TextField {
-                            text: systerm_param.materialType
+                            text: moduleManagerParam.materialType
                             onEditingFinished: {
-                                systerm_param.setMaterialType(text)
+                                moduleManagerParam.setMaterialType(text)
                             }
                         }
                         Label {

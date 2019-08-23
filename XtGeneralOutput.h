@@ -21,7 +21,7 @@ public:
     int GetID();
     void Set(bool value,int thread = -1);
     void SetOnTllTimeSpan(int time_span, int thread);
-    void SET(int state,int thread);
+    bool SET(bool value,int thread);
     void SetOnTillTimeSpan(int time_span, int thread);
     bool SetStateAndTillTimeSpan(byte state,int time_span, int thread);
     void WaitForFinish(int thread);

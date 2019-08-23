@@ -1,4 +1,5 @@
-﻿#include "trayloadermodule.h"
+﻿#include "tcpmessager.h"
+#include "trayloadermodule.h"
 
 #include <QDebug>
 #include <QObject>
@@ -65,17 +66,8 @@ void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
 void TrayLoaderModule::resetLogic()
 {
     if(is_run)return;
-    if(parameters.isHandly())
-    {
-        states.setIsFirstTray(false);
-        states.setHasWorkTray(true);
-    }
-    else
-    {
-        states.setIsFirstTray(true);
-        states.setHasWorkTray(false);
-    }
-
+    states.setIsFirstTray(true);
+    states.setHasWorkTray(false);
     states.setHasTrayReady(false);
     states.setHasReadyTray(false);
     states.setHasPulledTray(false);
@@ -758,16 +750,52 @@ bool TrayLoaderModule::moveToWorkPos()
 
 void TrayLoaderModule::startWork(int run_mode)
 {
+    QVariantMap run_params = inquirRunParameters();
+    if(run_params.isEmpty())
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数为空.启动失败.");
+        return;
+    }
+    if(run_params.contains("RunMode"))
+    {
+        states.setRunMode(run_params["RunMode"].toInt());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数RunMode缺失.启动失败.");
+        return;
+    }
+    if(run_params.contains("HandlyChangeLens"))
+    {
+        states.setHandlyChangeLens(run_params["HandlyChangeLens"].toBool());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeLens缺失.启动失败.");
+        return;
+    }
+
+    if(run_params.contains("HandlyChangeLensTray"))
+    {
+        states.setHandlyChangeLensTray(run_params["HandlyChangeLensTray"].toBool());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeLensTray缺失.启动失败.");
+        return;
+    }
+    if(states.handlyChangeLens())
+        return;
     if(run_mode == RunMode::Normal)
     {
-        if(parameters.isHandly())
+        if(states.handlyChangeLensTray())
             runHandle();
         else
             run(true);
     }
     else if(run_mode == RunMode::NoMaterial)
     {
-        if(parameters.isHandly())
+        if(states.handlyChangeLensTray())
             runHandle();
         else
             run(false);
@@ -954,7 +982,7 @@ void TrayLoaderModule::onTestLTLXPickUpTray()
     motorInPress();
     motor_in->MoveToPos(parameters.ltkx1ReleasePos());
     motor_work->MoveToPos(parameters.ltlPressPos());
-    int result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
+    bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
     result &= motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
     if(result){
         motorInRelease();
@@ -1007,6 +1035,21 @@ void TrayLoaderModule::onReset(){
 PropertyBase *TrayLoaderModule::getModuleState()
 {
     return &states;
+}
+
+void TrayLoaderModule::receivceModuleMessage(QVariantMap message)
+{
+    qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
+    QMutexLocker temp_locker(&message_mutex);
+    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
+        this->module_message = message;
+}
+
+QMap<QString, PropertyBase *> TrayLoaderModule::getModuleParameter()
+{
+
+    QMap<QString, PropertyBase *> temp;
+    return temp;
 }
 
 

@@ -83,10 +83,9 @@ void PropertyBase::reset()
     {
         QMetaProperty metaproperty = metaobject->property(i);
         const char *name = metaproperty.name();
-        if(init_values.contains(name))
+        if(init_values.contains(QString::fromUtf8(name)))
             this->setProperty(name,init_values[name]);
-
-        if(metaproperty.type() == QVariant::Type::Double)
+        else if(metaproperty.type() == QVariant::Type::Double)
             this->setProperty(name,0.0);
         else if (metaproperty.type() == QVariant::Type::Int)
             this->setProperty(name,0);

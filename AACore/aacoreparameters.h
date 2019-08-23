@@ -612,6 +612,9 @@ public:
     bool needSendLensRequest(){return(!hasLens())&&(!isWaitingLens());}
     bool needSendSensorRequest(){return (!hasSensor())&&(!isWaitingSensor());}
 
+    Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
+    Q_PROPERTY(int stationNumber READ stationNumber WRITE setStationNumber NOTIFY stationNumberChanged)
+    Q_PROPERTY(bool disableStation READ disableStation WRITE setDisableStation NOTIFY disableStationChanged)
     Q_PROPERTY(bool isWaitingLens READ isWaitingLens WRITE setIsWaitingLens NOTIFY isWaitingLensChanged)
     Q_PROPERTY(bool isWaitingSensor READ isWaitingSensor WRITE setIsWaitingSensor NOTIFY isWaitingSensorChanged)
     Q_PROPERTY(bool hasLens READ hasLens WRITE setHasLens NOTIFY hasLensChanged)
@@ -676,6 +679,21 @@ public:
     double circleAverageTime() const
     {
         return m_circleAverageTime;
+    }
+
+    int runMode() const
+    {
+        return m_runMode;
+    }
+
+    bool disableStation() const
+    {
+        return m_disableStation;
+    }
+
+    int stationNumber() const
+    {
+        return m_stationNumber;
     }
 
 public slots:
@@ -779,6 +797,33 @@ public slots:
         emit circleAverageTimeChanged(m_circleAverageTime);
     }
 
+    void setRunMode(int runMode)
+    {
+        if (m_runMode == runMode)
+            return;
+
+        m_runMode = runMode;
+        emit runModeChanged(m_runMode);
+    }
+
+    void setDisableStation(bool disableStation)
+    {
+        if (m_disableStation == disableStation)
+            return;
+
+        m_disableStation = disableStation;
+        emit disableStationChanged(m_disableStation);
+    }
+
+    void setStationNumber(int stationNumber)
+    {
+        if (m_stationNumber == stationNumber)
+            return;
+
+        m_stationNumber = stationNumber;
+        emit stationNumberChanged(m_stationNumber);
+    }
+
 signals:
     void isWaitingLensChanged(bool isWaitingLens);
     void isWaitingSensorChanged(bool isWaitingSensor);
@@ -801,6 +846,12 @@ signals:
 
     void circleAverageTimeChanged(double circleAverageTime);
 
+    void runModeChanged(int runMode);
+
+    void disableStationChanged(bool disableStation);
+
+    void stationNumberChanged(int stationNumber);
+
 private:
     bool m_isWaitingLens = false;
     bool m_isWaitingSensor = false;
@@ -813,6 +864,9 @@ private:
     double m_circleTime = 0;
     int m_circleCount = 0;
     double m_circleAverageTime = 0;
+    int m_runMode = 0;
+    bool m_disableStation = false;
+    int m_stationNumber = 0;
 };
 
 #endif // AACOREPARAMETERS_H

@@ -9,76 +9,127 @@
 #include "uphhelper.h"
 #include "vision/vision_location.h"
 
-
+#define TIMES_1 100
+#define TIMES_2 1000
+#define TIMES_3 100000
+#define TIMES_4 10000000
 
 class SensorLoaderModule:public ThreadWorkerBase
 {
     Q_OBJECT
-    Q_ENUMS(HandlePosition)
+    Q_ENUMS(HandleCameraPosition)
     Q_ENUMS(HandlePR)
-    Q_ENUMS(HandleToWorkPos)
+    Q_ENUMS(HandlePickerPos)
     Q_ENUMS(handlePickerAction)
 
 public:
-    enum HandlePosition
+    enum HandleCameraPosition
     {
-        SENSOR_TRAY1 = 1,
-        SENSOR_TRAY2 = 2,
-        SUT_POS1 = 3,
-        SUT_POS2 = 4,
-        SENSOR_TRAY1_START_POS = 5,
-        SENSOR_TRAY2_START_POS = 6,
-        SENSOR_TRAY1_END_POS = 7,
-        SPA_STANDBY_POS = 8,
+        SENSOR_TRAY_1_POS = 1,
+        SENSOR_TRAY_2_POS = 2,
+        NG_SENSOR_TRAY_POS = 3,
+        BUFFER_TRAY_POS = 4,
+        SUT_POS1 = 5,
+        SUT_POS2 = 6,
+        SENSOR_TRAY_1_START_POS = 7,
+        SENSOR_TRAY_2_START_POS = 8,
+        BUFFER_TRAY_START_POS = 9,
+        NG_SENSOR_TRAY_START_POS = 10,
+        SENSOR_TRAY_1_END_POS = 11,
+        SPA_STANDBY_POS = 12,
     };
     enum HandlePR
     {
-        RESET_PR = 10,
-        SENSOR_PR = 20,
-        VACANCY_PR = 30,
-        SUT_PR = 40,
-        NG_SENSOR_PR = 50,
-        PRODUCT_PR = 60
+        TRAY_SENSOR_PR = 1*TIMES_1,
+        TRAY_EMPTY_PR = 2*TIMES_1,
+        SUT_EMPTY_PR = 3*TIMES_1,
+        SUT_SENSOR_PR = 4*TIMES_1,
+        SUT_PRODUCT_PR = 5*TIMES_1,
+        TRAY_SENSOR_OFFSET = 6*TIMES_1
     };
-    enum HandleToWorkPos
+    enum HandlePickerPos
     {
-        TO_PICK_SENSOR_OFFSET = 100,
-        TO_PLACE_SENSOR_OFFSET = 200,
-        TO_PICK_PRODUCT_OFFSET = 300,
-        TO_PLACE_PRODUCT_OFFSET = 400,
-        TO_PR_OFFSET = 500
+        TO_PICK_SENSOR_POS1 = 1*TIMES_2,
+        TO_PICK_SENSOR_POS2 = 2*TIMES_2,
+        TO_PLACE_SENSOR_POS1 = 3*TIMES_2,
+        TO_PLACE_SENSOR_POS2 = 4*TIMES_2,
+        TO_PICK_PRODUCT_POS1 = 5*TIMES_2,
+        TO_PICK_PRODUCT_POS2 = 6*TIMES_2,
+        TO_PLACE_PRODUCT_POS1 = 7*TIMES_2,
+        TO_PLACE_PRODUCT_POS2 = 8*TIMES_2,
+        TO_PICK_NG_SENSOR_POS1 = 9*TIMES_2,
+        TO_PICK_NG_SENSOR_POS2 = 10*TIMES_2,
+        TO_PLACE_NG_POS = 11*TIMES_2,
+        TO_PLACE_BUFFER_POS = 12*TIMES_2,
+        TO_PR_OFFSET = 13*TIMES_2
     };
+
     enum handlePickerAction
     {
-        PICK_SENSOR_FROM_TRAY = 1000,
-        PLACE_SENSOR_TO_SUT1 = 2000,
-        PLACE_SENSOR_TO_SUT2 = 3000,
-        PICK_NG_SENSOR_FROM_SUT1 = 4000,
-        PICK_NG_SENSOR_FROM_SUT2 = 5000,
-        PLACE_NG_SENSOR_TO_TRAY = 6000,
-        PICK_PRODUCT_FROM_SUT1 = 7000,
-        PICK_PRODUCT_FROM_SUT2 = 8000,
-        PLACE_PRODUCT_TO_TRAY = 9000,
-        MEASURE_SENSOR_IN_TRAY = 10000,
-        MEASURE_NG_SENSOR_IN_TRAY = 11000,
-        MEASURE_PRODUCT_IN_TRAY = 12000,
-        MEASURE_SENSOR_IN_SUT1 = 13000,
-        MEASURE_NG_SENSOR_IN_SUT1 = 14000,
-        MEASURE_PRODUCT_IN_SUT1 = 15000,
-        MEASURE_Z_OFFSET = 16000
+        PICK_SENSOR_FROM_TRAY1 = 1*TIMES_3,
+        PICK_SENSOR_FROM_TRAY2 = 2*TIMES_3,
+        PLACE_SENSOR_TO_SUT1 = 3*TIMES_3,
+        PLACE_SENSOR_TO_SUT2 = 4*TIMES_3,
+        PICK_NG_SENSOR_FROM_SUT1 = 5*TIMES_3,
+        PICK_NG_SENSOR_FROM_SUT2 = 6*TIMES_3,
+        PLACE_NG_SENSOR_TO_TRAY = 7*TIMES_3,
+        PICK_PRODUCT_FROM_SUT1 = 8*TIMES_3,
+        PICK_PRODUCT_FROM_SUT2 = 9*TIMES_3,
+        PLACE_PRODUCT_TO_TRAY1 = 10*TIMES_3,
+        PLACE_PRODUCT_TO_TRAY2 = 11*TIMES_3,
+        PLACE_PRODUCT_TO_BUFFER_TRAY = 12*TIMES_3,
+        PLACE_NG_PRODUCT_TO_TRAY = 13*TIMES_3,
+
+        MEASURE_SENSOR_IN_TRAY1 = 14*TIMES_3,
+        MEASURE_SENSOR_IN_TRAY2 = 15*TIMES_3,
+        MEASURE_SENSOR_IN_SUT = 16*TIMES_3,
+        MEASURE_PRODUCT_IN_SUT = 17*TIMES_3,
+        MEASURE_PRODUCT_IN_TRAY1 = 18*TIMES_3,
+        MEASURE_PRODUCT_IN_TRAY2 = 19*TIMES_3,
+        MEASURE_PRODUCT_IN_BUFFER = 19*TIMES_3,
+        MEASURE_NG_PRODUCT_IN_TRAY = 20*TIMES_3,
+        MEASURE_NG_SENSOR_IN_SUT = 21*TIMES_3,
+        MEASURE_NG_SENSOR_IN_TRAY = 22*TIMES_3,
+        MEASURE_Z_OFFSET = 23*TIMES_3
+    };
+
+    enum SensorPosition
+    {
+        SENSOR_TRAY_1,//tray id 0
+        SENSOR_TRAY_2,//tray id 1
+        NG_SENSOR_TRAY,//tray id 2
+        BUFFER_TRAY,//tray id 3
+
+        TRAY_NG_PRODUCT,
+        SUT_SENSOR,
+        SUT_PRODUCT
+    };
+    enum BusyState
+    {
+        IDLE,
+        SUT1,
+        SUT2
     };
 
     SensorLoaderModule();
-    void Init(SensorPickArm* pick_arm,MaterialTray *tray,
-              VisionLocation * sensor_vision,VisionLocation * vacancy_vision,VisionLocation * sut_vision,
-              VisionLocation *sut_sensor_vision,VisionLocation *sut_product_vision, VisionLocation *sensor_pickarm_calibration_glass_vision);
-    bool loadJsonConfig(QString file_name);
-    void saveJsonConfig(QString file_name);
-    void openServer(int port);
+    void Init(SensorPickArm* pick_arm,
+              MaterialTray *tray,
+              VisionLocation * tray_sensor_location,
+              VisionLocation * tray_empty_location,
+              VisionLocation * sut_empty_location,
+              VisionLocation *sut_sensor_location,
+              VisionLocation *sut_product_location,
+              VisionLocation *sensor_pickarm_calibration_glass_location,
+              int thread_id);
+//    void openServer(int port);
     Q_INVOKABLE void cameraTipOffsetCalibration(int pickhead);
     Q_INVOKABLE void clearNumber();
+    // ThreadWorkerBase interface
+    void receivceModuleMessage(QVariantMap module_message);
+    PropertyBase *getModuleState();
+    QMap<QString,PropertyBase*> getModuleParameter();
 signals:
-    void sendMessageToClient(QString destAddress, QString message);
+    void sendMessageToClient(QString destAddress, QString module_message);
     void sendChangeTrayRequst();
     void postCSVDataToUnit(QString uuid,QVariantMap data);
     void saveUnitDataToCSV(QString uuid);
@@ -88,69 +139,102 @@ public slots:
     void stopWork(bool wait_finish);
     void resetLogic();
     void performHandlingOperation(int cmd);
-    void receiveRequestMessage(QString message, QString client_ip);
-    void receiveChangeTrayFinish();
 private:
-    void receivceModuleMessage(QVariantMap message);
-    void run(bool has_material);
-    void runTest();
+    void run();
+//    void runTest();
+//    bool moveToSensorTrayNextPos();
+//    bool moveToProductTrayNextPos();
+//    bool moveToNgTrayNextPos();
+    //状态机条件检测
     bool checkTrayNeedChange();
-    bool moveToSensorTrayNextPos();
-    bool moveToProductTrayNextPos();
-    bool moveToNgTrayNextPos();
-    bool moveToSUTPRPos(bool is_local = true,bool check_arrived = false,bool check_softlanding = false);
-    bool movePicker1ToSUTPos(bool is_local = true,bool check_arrived = false,bool check_softlanding = false);
-    bool movePicker2ToSUTPos(bool is_local = true,bool check_arrived = false,bool check_softlanding = false);
-
-    bool performSensorPR();
-    bool performVacancyPR();
-    bool performSUTPR();
+    bool checkNeedPickSensor();
+    bool checkSut1WaitCondition();
+    bool checkSut2WaitCondition();
+    //查找盘可用位置
+    bool findTrayNextSensorPos(bool allow_change_tray);
+    bool findTrayNextEmptyPos();
+    bool findTrayNextInitStatePos(int tray_index);
+    int getTrayIndex();
+    //移动相机位置
+    bool moveCameraToTrayCurrentPos(int tray_index,bool check_softlanding = false);
+    bool moveCameraToSUTPRPos(bool is_local = true,bool check_softlanding = false);
+    bool moveCameraToStandbyPos(bool check_arrived = false,bool check_softlanding = false);
+    //执行视觉
+    bool performTraySensorPR();
+    bool performTrayEmptyPR();
+    bool performSUTEmptyPR();
     bool performSUTSensorPR();
     bool performSUTProductPR();
-    void resetPR();
+    //吸料偏移
+    QPointF getPickerResultOffset(double theta);
+    void setSensorOffset();
+    //走视觉偏差
+    bool moveToPRResultPos(PrOffset pr_result,bool check_softlanding = false);
+    //带偏差值走位
+    bool movePicker1ToTrayCurrentPos(int tray_index,bool check_softlanding = false);
+    bool movePicker2ToTrayCurrentPos(int tray_index,bool check_softlanding = false);
+    bool movePicker1ToSUTPos(bool is_local,bool check_softlanding = false);
+    bool movePicker2ToSUTPos(bool is_local,bool is_product,bool check_softlanding = false);
 
-    bool moveToWorkPos(bool check_state,bool check_softlanding = false);
-    bool moveToWorkPos2(bool check_state,bool check_softlanding = false);
-    bool moveToPRResultPos(bool check_softlanding = false);
+    //取放料动作
+    bool pickSensorFromTray(int tray_id,int time_out = 10000);
+    bool backSensorToTray(int tray_id,int time_out = 10000);
+    bool placeSensorToSUT(bool is_local,int time_out = 10000);
+    bool pickNgSensorFromSut(bool is_local,int time_out = 10000);
+    bool pickProductFromSut(bool is_local, int time_out = 10000);
+    bool placeNgSensorToTray(int time_out = 10000);
+    bool placeNgProductToTray(int time_out = 10000);
+    bool placeProductToTray(int tray_id,int time_out = 10000);
+    bool placeProductToBuferr(int time_out = 10000);
 
-    bool movePicker2ToTrayPos(int tray_index);
+    bool picker1PickFromTray(double z,int time_out = 10000);
+    bool picker1BackToTray(double z,int time_out = 10000);
+    bool picker1PlaceToSut(double z,bool is_local,int time_out = 10000);
+    bool picker2PickFromSut(double z,double force,bool is_local,int time_out = 10000);
+    bool picker2PlaceToTray(double z,double force,bool is_product,int time_out = 10000);
+    //真空动作
+    void openSut1Vacuum();
+    void closeSut1Vacuum();
+    bool waitSutVacuumFinish();
+    void openSut2Vacuum();
+    void closeSut2Vacuum();
 
-    bool picker1SearchZ(double z,bool is_open = true,int time_out = 10000);
-    bool picker1SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
-    bool picker2SearchZ(double z,double force,bool is_open = true,int time_out = 10000);
-    bool picker2SearchSutZ(double z,double force,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
+    //真空检测
+    bool checkPicker1HasMaterialSync();
+    bool checkPicker1HasMateril();
+    bool waitPicker1CheckResult(bool check_state);
+    bool checkPicker2HasMaterialSync();
+    bool checkPicker2HasMateril();
+    bool waitPicker2CheckResult(bool check_state);
 
-    bool checkPickedSensor(bool check_state);
-    bool checkPickedNgOrProduct(bool check_state);
-
-    bool pickTraySensor(int time_out = 10000);
-    bool placeSensorToSUT(QString dest,int time_out = 10000);
-    bool pickSUTSensor(QString dest,int time_out = 10000);
-    bool pickSUTProduct(QString dest, int time_out = 10000);
-    bool placeSensorToTray(int time_out = 10000);
-    bool placeProductToTray(int time_out = 10000);
-    bool picker1MeasureHight(bool is_tray);
-    bool picker2MeasureHight(bool is_tray,bool is_product);
+    //手动特殊操作
+    bool moveToStartPos(int tray_index);
+    bool moveToTray1EndPos();
+    bool picker1MeasureHight(int tray_id);
+    bool picker2MeasureHight(int tray_id);
     bool measureZOffset();
 
 
-    bool moveToTrayPos(int index,int tray_index);
-    bool moveToTrayPos(int tray_index);
-    bool moveToStartPos(int tray_index);
-    bool moveToTray1EndPos();
+//    bool checkPickedSensor(bool check_state);
+//    bool checkPickedNgOrProduct(bool check_state);
 
-    bool moveToStandbyPos(bool check_arrived = false,bool check_softlanding = false);
 
+//    bool moveToTrayPos(int index,int tray_index);
+//    bool moveToTrayPos(int tray_index);
+
+
+
+//uph 统计
     double updateAccumulatedHour(bool calculate = true);
     double getHourSpace(QTime time_label);
 
-    void sendEvent(const QString event);
-    void sendCmd(QString serving_ip,const QString cmd);
+//    void sendEvent(const QString event);
+//    void sendCmd(QString serving_ip,const QString cmd);
 
-    void getPicker1SensorOffset();
-    void getPicker2SensorOffset();
-    void setPicker1SensorOffset();
-    void setPicker2SensorOffset();
+//    void getPicker1SensorOffset();
+//    void getPicker2SensorOffset();
+//    void setPicker1SensorOffset();
+//    void setPicker2SensorOffset();
 public:
     SensorLoaderParameter parameters;
     SensorLoaderState states;
@@ -173,22 +257,22 @@ public:
     UPHHelper right_comprehensive_uph;
 
 private:
-    SensorPickArm* pick_arm = Q_NULLPTR;
-    MaterialTray *tray = Q_NULLPTR;
-    VisionLocation * sensor_vision = Q_NULLPTR;
-    VisionLocation * vacancy_vision = Q_NULLPTR;
-    VisionLocation * sut_vision = Q_NULLPTR;
-    VisionLocation *sut_sensor_vision = Q_NULLPTR;
-    VisionLocation *sut_product_vision = Q_NULLPTR;
-    VisionLocation * sensor_pickarm_calibration_glass_vision = Q_NULLPTR;
-
-    SparrowQServer * server;
-    QQueue<QJsonObject> requestQueue;
-    QQueue<QJsonObject> actionQueue;
-
+    SensorPickArm * pick_arm = Q_NULLPTR;
+    MaterialTray * tray = Q_NULLPTR;
+    VisionLocation * tray_sensor_location = Q_NULLPTR;
+    VisionLocation * tray_empty_location = Q_NULLPTR;
+    VisionLocation * sut_empty_location = Q_NULLPTR;
+    VisionLocation *sut_sensor_location = Q_NULLPTR;
+    VisionLocation *sut_product_location = Q_NULLPTR;
+    VisionLocation * sensor_pickarm_calibration_glass_location = Q_NULLPTR;
+    int thread_id = 0;
     bool is_run = false;
     bool finish_stop = false;
     QMutex tray_mutex;
+    QVariantMap picker1_senseor_data;
+    QVariantMap sut1_sensor_data;
+    QVariantMap sut2_sensor_data;
+    QVariantMap picker2_senseor_data;
     PrOffset pr_offset;
     int sut_raw_material;
     int sut_used_material;
@@ -196,7 +280,7 @@ private:
     QString servingIP = "";
     bool isLocalHost = false;
     QTime time_label;
-    QMutex tcp_mutex;
+
     QMap<QString,QVariantMap> prRecordMap;
     bool is_test_finish;
     bool current_count;
@@ -206,10 +290,6 @@ public:
     void startRecord(QString uuid);
     void recordPrTest(QString uuid,VisionLocation location);
     void endRecord(QString uuid);
-
-    // ThreadWorkerBase interface
-public:
-    PropertyBase *getModuleState();
 };
 
 #endif // SENSORLOADERMODULE_H

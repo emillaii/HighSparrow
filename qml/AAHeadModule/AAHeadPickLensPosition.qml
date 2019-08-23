@@ -72,7 +72,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                logicManager.aaMoveToPickLensPos()
+                //logicManager.aaMoveToPickLensPos()
+                aaHeadModule.moveToPickLensPosition()
             }
         }
         Button {

@@ -27,9 +27,9 @@ AAData::AAData(QObject *parent) : QThread(parent){
 void AAData::addData(int index, double x, double y){
     if (index == 0) m_CCPointsList.append(QPointF(x, y));
     if (index == 1) m_ULPointsList.append(QPointF(x, y));
-    if (index == 2) m_URPointsList.append(QPointF(x, y));
-    if (index == 3) m_LLPointsList.append(QPointF(x, y));
-    if (index == 4) m_LRPointsList.append(QPointF(x, y));
+    if (index == 2) m_LLPointsList.append(QPointF(x, y));
+    if (index == 3) m_LRPointsList.append(QPointF(x, y));
+    if (index == 4) m_URPointsList.append(QPointF(x, y));
 }
 
 void AAData::clear()

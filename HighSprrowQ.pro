@@ -244,7 +244,8 @@ HEADERS += \
     workersmanagerparameter.h \
     uiControl/edge.h \
     uiControl/graphwidget.h \
-    uiControl/node.h
+    uiControl/node.h \
+    logicmanagerparameter.h
 
 DISTFILES += \
     icons/index.theme

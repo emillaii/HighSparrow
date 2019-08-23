@@ -1,4 +1,5 @@
 ﻿#include "sensortrayloadermodule.h"
+#include "tcpmessager.h"
 
 SensorTrayLoaderModule::SensorTrayLoaderModule():ThreadWorkerBase ("SensorTrayLoaderModule")
 {
@@ -59,17 +60,52 @@ void SensorTrayLoaderModule::Init(XtMotor *motor_tray, XtMotor *motor_kick, XtMo
 
 void SensorTrayLoaderModule::startWork(int run_mode)
 {
-    qInfo("SensorLoader start run_mode :%d in %d",run_mode,QThread::currentThreadId());
-    if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)
+    QVariantMap run_params = inquirRunParameters();
+    if(run_params.isEmpty())
     {
-        if(parameters.isHandly())
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数为空.启动失败.");
+        return;
+    }
+    if(run_params.contains("RunMode"))
+    {
+        states.setRunMode(run_params["RunMode"].toInt());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数RunMode缺失.启动失败.");
+        return;
+    }
+    if(run_params.contains("HandlyChangeSensorTray"))
+    {
+        states.setHandlyChangeTray(run_params["HandlyChangeSensorTray"].toBool());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeSensorTray缺失.启动失败.");
+        return;
+    }
+    if(run_params.contains("HandlyChangeSensor"))
+    {
+        states.setHandlyChangeSensor(run_params["HandlyChangeSensor"].toBool());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeSensor缺失.启动失败.");
+        return;
+    }
+    if(states.handlyChangeSensor())
+        return;
+    qInfo("SensorLoader start run_mode :%d in %d",run_mode,QThread::currentThreadId());
+    if(run_mode == RunMode::Normal)
+    {
+        if(states.handlyChangeTray())
             runHandly();
         else
             run(true);
     }
     else if(run_mode == RunMode::NoMaterial)
     {
-        if(parameters.isHandly())
+        if(states.handlyChangeTray())
             runHandly();
         else
             run(false);
@@ -91,16 +127,16 @@ void SensorTrayLoaderModule::performHandlingOperation(int cmd)
 
 }
 
-void SensorTrayLoaderModule::receiveChangeTray()
-{
-    qInfo("receiveChangeTray");
-    if(states.changingTray())
-        return;
-    states.setNeedChangeTray(true);
-    if(states.hasVacancyTray())
-        states.setHasProductTray(true);
-    states.setChangingTray(true);
-}
+//void SensorTrayLoaderModule::receiveChangeTray()
+//{
+//    qInfo("receiveChangeTray");
+//    if(states.changingTray())
+//        return;
+//    states.setNeedChangeTray(true);
+//    if(states.hasVacancyTray())
+//        states.setHasProductTray(true);
+//    states.setChangingTray(true);
+//}
 
 void SensorTrayLoaderModule:: run(bool has_material)
 {
@@ -272,6 +308,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
                     states.setHasReadyTray(true);
                     states.setEntranceClipReady(false);
                     states.setHasKickReady(false);
+                    sendMessageToModule("SensorLoaderModule","finishChangeTray2");
                 }
                 if(!is_run)break;
             }
@@ -286,6 +323,7 @@ void SensorTrayLoaderModule:: run(bool has_material)
                 states.setHasReadyTray(true);
                 states.setEntranceClipReady(false);
                 states.setHasKickReady(false);
+                sendMessageToModule("SensorLoaderModule","finishChangeTray2");
             }
         }
         //去工作位置
@@ -306,7 +344,8 @@ void SensorTrayLoaderModule:: run(bool has_material)
             states.setHasUpTray(false);
             states.setNeedChangeTray(false);
             states.setHasWorkTray(true);
-            emit sendChangeTrayFinish();
+//            emit sendChangeTrayFinish();
+            sendMessageToModule("SensorLoaderModule","finishChangeTray1");
             states.setChangingTray(false);
         }
 
@@ -416,7 +455,8 @@ void SensorTrayLoaderModule::runHandly()
                     continue;
             }
             states.setNeedChangeTray(false);
-            emit sendChangeTrayFinish();
+            sendMessageToModule("SensorLoaderModule","finishChangeTray2");
+            sendMessageToModule("SensorLoaderModule","finishChangeTray1");
             states.setChangingTray(false);
         }
     }
@@ -425,29 +465,7 @@ void SensorTrayLoaderModule::runHandly()
 void SensorTrayLoaderModule::resetLogic()
 {
     if(is_run)return;
-    states.setHasTrayToGet(false);
-    states.setHasVacancyTray(false);
-    states.setHandlePutVacancyTray(false);
-    states.setFirstTrayIsVacancy(false);
-    states.setNeedChangeTray(false);
-    states.setChangingTray(false);
-    states.setEntranceClipReady(false);
-    states.setExitClipReady(false);
-    states.setHasGetedTray(false);
-    states.setHasWorkTray(false);
-    states.setHasKickTray(false);
-    states.setNeedChangeVacancyTray(false);
-    states.setNeedChangeEntranceClip(false);
-    states.setNeedChangeExitClip(false);
-    states.setUseSpareEntanceClip(false);
-    states.setUseSpareExitClip(false);
-    states.setHoldVacancyTray(false);
-    states.setGetedVacancyTray(false);
-    states.setHasProductTray(false);
-    states.setIsFirstTray(true);
-    states.setHasReadyTray(false);
-    states.setHasUpTray(false);
-    states.setHasCarrierReady(false);
+    states.reset();
 
     entrance_clip->resetClip();
     exit_clip->resetClip();
@@ -832,5 +850,53 @@ bool SensorTrayLoaderModule::checkExitTray(bool check_state)
 PropertyBase *SensorTrayLoaderModule::getModuleState()
 {
     return &states;
+}
+
+void SensorTrayLoaderModule::receivceModuleMessage(QVariantMap message)
+{
+    qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
+    QMutexLocker temp_locker(&message_mutex);
+    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
+        this->module_message = message;
+    if(!message.contains("OriginModule"))
+    {
+        qInfo("message error! has no OriginModule.");
+        return;
+    }
+    if(message["OriginModule"].toString() == "SensorLoaderModule")
+    {
+        if(message.contains("Message"))
+        {
+            if(message["Message"].toString()=="ChangeTrayResquest")
+            {
+                if(states.changingTray())
+                {
+                    qInfo("receive ChangeTrayResquest in changingTray");
+                    return;
+                }
+                states.setNeedChangeTray(true);
+                if(states.hasVacancyTray())
+                    states.setHasProductTray(true);
+                states.setChangingTray(true);
+            }
+        }
+        else
+        {
+            qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            return;
+        }
+    }
+    else
+    {
+        qInfo("module name error %s",message["OriginModule"].toString().toStdString().c_str());
+        return;
+    }
+}
+
+QMap<QString, PropertyBase *> SensorTrayLoaderModule::getModuleParameter()
+{
+
+    QMap<QString, PropertyBase *> temp;
+    return temp;
 }
 

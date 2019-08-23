@@ -103,8 +103,10 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("workerNameList",workerNameList);
     engine.rootContext()->setContextProperty("baseModuleManager", highSprrow.baseModuleManager);
+    engine.rootContext()->setContextProperty("moduleManagerParam", &highSprrow.baseModuleManager->paramters);
 
     engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);
+    engine.rootContext()->setContextProperty("logicManagerState", &highSprrow.logicManager->states);
     engine.rootContext()->setContextProperty("aaNewCore", &highSprrow.baseModuleManager->aaCoreNew);
     engine.rootContext()->setContextProperty("dataFromCpp3", &highSprrow.baseModuleManager->aaCoreNew.mtf_log);
     engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.baseModuleManager->aaCoreNew.aaData_1);
@@ -116,9 +118,12 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("aaHeadModule", &highSprrow.baseModuleManager->aa_head_module);
     engine.rootContext()->setContextProperty("dispenseModule", &highSprrow.baseModuleManager->dispense_module);
     engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
+    qmlRegisterType<LensLoaderModule>("SomeLib",1,1,"LensLoaderModule");
     qmlRegisterType<SensorLoaderModule>("SomeLib",1,1,"SensorLoaderModule");
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
+    qmlRegisterType<LogicManager>("LogicManagerLib",1,1,"LogicManager");
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
+    engine.rootContext()->setContextProperty("lensLoaderModule", &highSprrow.baseModuleManager->lens_loader_module);
     engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
     engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
     engine.rootContext()->setContextProperty("dothinkey", highSprrow.baseModuleManager->dothinkey);
@@ -194,6 +199,11 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("first_tray_end_position",&highSprrow.baseModuleManager->material_tray.first_tray_end_position);
     engine.rootContext()->setContextProperty("tray_start_point1",&highSprrow.baseModuleManager->material_tray.parameters[0]->tray_start_position);
     engine.rootContext()->setContextProperty("tray_start_point2",&highSprrow.baseModuleManager->material_tray.parameters[1]->tray_start_position);
+    if(highSprrow.baseModuleManager->getServerMode()==1)
+    {
+        engine.rootContext()->setContextProperty("tray_start_point3",&highSprrow.baseModuleManager->material_tray.parameters[2]->tray_start_position);
+        engine.rootContext()->setContextProperty("tray_start_point4",&highSprrow.baseModuleManager->material_tray.parameters[3]->tray_start_position);
+    }
     engine.rootContext()->setContextProperty("tray_standard_parameter",&highSprrow.baseModuleManager->material_tray.standards_parameters);
     engine.rootContext()->setContextProperty("lensPickArmModuleParameter",
                                              &highSprrow.baseModuleManager->lens_loader_module.parameters);
@@ -235,7 +245,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("left_lens_uph",&highSprrow.baseModuleManager->lut_module.left_lens_uph);
     engine.rootContext()->setContextProperty("right_lens_uph",&highSprrow.baseModuleManager->lut_module.right_lens_uph);
 
-    engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramers);
+    engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramters);
 
     QStringList data = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames",data);

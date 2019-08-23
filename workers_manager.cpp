@@ -58,7 +58,6 @@ void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message
     //三色灯
     //    showAlarm(sender_id,level,error_message);
 }
-
 void WorkersManager::tcpResp(QString message)
 {
     qInfo("receive tcp module message %s", message.toStdString().c_str());
@@ -70,9 +69,59 @@ void WorkersManager::tcpResp(QString message)
         {
            workers[module_name]->receivceModuleMessage(message_object.toVariantMap());
         }
-        else if(module_name == "LogicManager")
+        else if(module_name == logic_manager_name||module_name == "LogicManager")
         {
-            sendMessageToLogicManager(message_object.toVariantMap());
+            emit sendMessageToLogicManager(message_object.toVariantMap());
+        }
+//        else if(module_name == "LogicManager")
+//        {
+//            emit sendMessageToLogicManager(message_object.toVariantMap());
+//        }
+        else if(module_name == "WorksManager")
+        {
+            QString message_content = message_object["Message"].toString();
+            if(message_content == "inquirRunParameters")
+            {
+                sendMessageToDevicesManager(message_object.toVariantMap());
+            }
+            else if(message_content == "runParametersResp")
+            {
+                QVariantMap message_map = message_object.toVariantMap();
+                QString station_number =  message_map["StationNumber"].toString();
+                qInfo("station_number %s",station_number.toStdString().c_str());
+                if(!run_parameter.contains(station_number))
+                {
+                    qInfo("station_number %s",station_number.toStdString().c_str());
+                    run_parameter.insert(station_number,message_map);
+                }
+
+                QString target_module = message_map["OriginModule"].toString();
+                qInfo("OriginModule:%s",target_module.toStdString().c_str());
+                if(workers.contains(target_module))
+                {
+                    qInfo("resdds %d ",run_parameter.size());
+                    if(run_parameter.size() >= 2)
+                    {
+                        QVariantMap temp_map;
+                        foreach (QString temp_station, run_parameter.keys()) {
+                            temp_map.insert(temp_station,run_parameter[temp_station]["DisableStation"]);
+                        }
+                        QVariantMap temp_message;
+                        foreach (QString temp_key, run_parameter["1"].keys()) {
+                            temp_message.insert(temp_key,run_parameter["1"][temp_key]);
+                        }
+                        temp_message["StationNumber"] = local_run_parameter["StationNumber"];
+                        temp_message["OriginModule"] = target_module;
+                        temp_message["DisableStation"] = temp_map;
+                        workers[target_module]->receivceModuleMessage(temp_message);
+                    }
+                }
+                else
+                {
+//                    sendTcpMessage(message_map);
+                    qInfo("module name error!");
+                }
+            }
         }
         else if(module_name == "WorkersManagerStart")
         {
@@ -104,7 +153,8 @@ bool WorkersManager::sendMessageTest(QString title, QString content)
 
 void WorkersManager::receiveModuleMessage(QVariantMap message)
 {
-    qInfo("receive module message %s to %s",message["Message"].toString().toStdString().c_str(),message["TargetModule"].toString().toStdString().c_str());
+
+    qInfo("receive module message %s to %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str(),message["TargetModule"].toString().toStdString().c_str());
     if(message.contains("TargetModule"))
     {
         QString target_module = message["TargetModule"].toString();
@@ -112,10 +162,75 @@ void WorkersManager::receiveModuleMessage(QVariantMap message)
         {
             workers[target_module]->receivceModuleMessage(message);
         }
+        else if(target_module == logic_manager_name)
+        {
+            emit sendMessageToLogicManager(message);
+        }
+//        else if(target_module == "LogicManager")
+//        {
+//            sendTcpMessage(message);
+//        }
+        else if(target_module == "WorksManager")
+        {
+            QString message_content = message["Message"].toString();
+            if(message_content == "SendLogicManagerName")
+            {
+                logic_manager_name = message["LogicManagerName"].toString();
+            }
+            else if(message_content == "inquirRunParameters")
+            {
+                emit sendMessageToDevicesManager(message);
+                sendTcpMessage(message);
+            }
+            else if(message_content == "runParametersResp")
+            {
+                QString station_number =  message["StationNumber"].toString();
+                qInfo("station_number %s",station_number.toStdString().c_str());
+                if(!run_parameter.contains(station_number))
+                {
+                    qInfo("station_number %s",station_number.toStdString().c_str());
+                    run_parameter.insert(station_number,message);
+                    local_run_parameter = message;
+                }
+
+                QString target_module = message["OriginModule"].toString();
+                if(workers.contains(target_module))
+                {
+                    qInfo("resdds %d ",run_parameter.size());
+                    if(run_parameter.size() >= 2)
+                    {
+                        QVariantMap temp_map;
+                        foreach (QString temp_station, run_parameter.keys()) {
+                            temp_map.insert(temp_station,run_parameter[temp_station]["DisableStation"]);
+                        }
+                        QVariantMap temp_message;
+                        foreach (QString temp_key, run_parameter["1"].keys()) {
+                                temp_message.insert(temp_key,run_parameter["1"][temp_key]);
+                        }
+                        temp_message["StationNumber"] = local_run_parameter["StationNumber"];
+                        temp_message["OriginModule"] = target_module;
+                        temp_message["DisableStation"] = temp_map;
+                        workers[target_module]->receivceModuleMessage(temp_message);
+                    }
+                }
+                else
+                {
+                    sendTcpMessage(message);
+                }
+            }
+            else
+            {
+                sendTcpMessage(message);
+            }
+        }
         else
         {
             sendTcpMessage(message);
         }
+    }
+    else
+    {
+        qInfo("has no TargetModule");
     }
 }
 
@@ -180,12 +295,16 @@ void WorkersManager::stopAllWorkers(bool wait_finish)
 
 void WorkersManager::startWorkers(int run_mode)
 {
+    run_parameter.clear();
+    local_run_parameter.clear();
     qInfo("startSelfWorkers");
     emit startWorkersSignal(run_mode);
 }
 
 void WorkersManager::stopWorkers(bool wait_finish)
 {
+    run_parameter.clear();
+    local_run_parameter.clear();
     qInfo("stop all worker");
     emit stopWorkersSignal(wait_finish);
 }
@@ -266,5 +385,21 @@ void WorkersManager::sendOperation(QString workerName, int operation_type)
     int sender_id = workers[workerName]->getAlarmId();
     workersState.remove(sender_id);
     workersError.remove(sender_id);
-    //this->setShowAlarmDialog(false);
+    if(!checkHasAlarm())
+        this->setShowAlarmDialog(false);
+}
+
+void WorkersManager::changeAlarmShow()
+{
+    this->setShowAlarmDialog(!ShowAlarmDialog());
+}
+
+bool WorkersManager::checkHasAlarm()
+{
+    bool has_alarm = false;
+    foreach (QString temp_name, workers.keys()) {
+        if(0 != getAlarmState(temp_name))
+            has_alarm = true;
+    }
+    return has_alarm;
 }

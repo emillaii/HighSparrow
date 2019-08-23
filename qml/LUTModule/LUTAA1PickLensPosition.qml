@@ -144,7 +144,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                logicManager.lutPickLensToAA1()
+                //logicManager.lutPickLensToAA1()
+                lutModule.moveToAA1PickLens(false,false,true)
             }
         }
         Button {
@@ -152,7 +153,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                logicManager.lutPickLensToAA11()
+                //logicManager.lutPickLensToAA11()
+                lutModule.moveToAA1PickLens(true,false,true)
             }
         }
         Button {

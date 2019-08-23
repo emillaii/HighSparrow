@@ -25,17 +25,17 @@ public:
               XtGeneralInput* entrance_tray_check_io,
               XtGeneralInput* exit_tray_check_io);
 signals:
-    void sendChangeTrayFinish();
+//    void sendChangeTrayFinish();
     // ThreadWorkerBase interface
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
     void performHandlingOperation(int cmd);
-    void receiveChangeTray();
+    void resetLogic();
+//    void receiveChangeTray();
 private:
     void run(bool has_material);
     void runHandly();
-    void resetLogic();
 public:
     SensorTrayLoaderParameter parameters;
     SensorTrayLoaderState states;
@@ -72,7 +72,7 @@ public:
     bool movetoPushoutPosition();
     bool movetoPutTrayPosition();
     bool movetoStartKickTrayPosition();
-    bool movetoTrayWorkPosition();
+    Q_INVOKABLE bool movetoTrayWorkPosition();
     bool movetoVacancyTrayPosition();
 
 private:
@@ -101,6 +101,11 @@ private:
     // ThreadWorkerBase interface
 public:
     PropertyBase *getModuleState();
+
+    // ThreadWorkerBase interface
+public:
+    void receivceModuleMessage(QVariantMap module_message);
+    QMap<QString, PropertyBase *> getModuleParameter();
 };
 
 #endif // SENSORTRAYLOADERMODULE_H

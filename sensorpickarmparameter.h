@@ -19,6 +19,8 @@ public:
     Q_PROPERTY(QString motorZ2Name READ motorZ2Name WRITE setMotorZ2Name NOTIFY motorZ2NameChanged)
     Q_PROPERTY(QString motorT2Name READ motorT2Name WRITE setMotorT2Name NOTIFY motorT2NameChanged)
     Q_PROPERTY(QString vacuum2Name READ vacuum2Name WRITE setVacuum2Name NOTIFY vacuum2NameChanged)
+    Q_PROPERTY(double motor1SafeHeight READ motor1SafeHeight WRITE setMotor1SafeHeight NOTIFY motor1SafeHeightChanged)
+    Q_PROPERTY(double motor2SafeHeight READ motor2SafeHeight WRITE setMotor2SafeHeight NOTIFY motor2SafeHeightChanged)
     QString motorXName() const
     {
         return m_motorXName;
@@ -61,6 +63,16 @@ public:
     QString vacuum2Name() const
     {
         return m_vacuum2Name;
+    }
+
+    double motor1SafeHeight() const
+    {
+        return m_motor1SafeHeight;
+    }
+
+    double motor2SafeHeight() const
+    {
+        return m_motor2SaftHeight;
     }
 
 public slots:
@@ -144,6 +156,26 @@ public slots:
         emit vacuum2NameChanged(m_vacuum2Name);
     }
 
+    void setMotor1SafeHeight(double motor1SafeHeight)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_motor1SafeHeight, motor1SafeHeight))
+            return;
+
+        m_motor1SafeHeight = motor1SafeHeight;
+        emit motor1SafeHeightChanged(m_motor1SafeHeight);
+    }
+
+    void setMotor2SafeHeight(double motor2SaftHeight)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_motor2SaftHeight, motor2SaftHeight))
+            return;
+
+        m_motor2SaftHeight = motor2SaftHeight;
+        emit motor2SafeHeightChanged(m_motor2SaftHeight);
+    }
+
 signals:
     void motorXNameChanged(QString motorXName);
 //    void motorTrayNameChanged(QString motorTrayName);
@@ -162,6 +194,10 @@ signals:
 
     void vacuum2NameChanged(QString vacuum2Name);
 
+    void motor1SafeHeightChanged(double motor1SafeHeight);
+
+    void motor2SafeHeightChanged(double motor2SafeHeight);
+
 private:
     QString m_motorXName = "";
 //    QString m_motorTrayName = "";
@@ -172,6 +208,8 @@ private:
     QString m_motorZ2Name = "";
     QString m_motorT2Name = "";
     QString m_vacuum2Name = "";
+    double m_motor1SafeHeight = 0;
+    double m_motor2SaftHeight = 0;
 };
 
 #endif // SENSORPICKARMPARAMETER_H

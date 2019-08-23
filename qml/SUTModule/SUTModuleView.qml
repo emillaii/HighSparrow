@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
 import "../.."
+import LogicManagerLib 1.1
 
 ItemDelegate {
     contentItem: ColumnLayout {
@@ -76,7 +77,8 @@ ItemDelegate {
                             Button{
                                 text:qsTr("UpDn Calib")
                                 onClicked: {
-                                    logicManager.performUpDnLookCalibration()
+                                    //logicManager.performUpDnLookCalibration()
+                                    logicManager.performHandling(LogicManager.PERFORM_UPDNLOOK_CALIBRATION)
                                 }
                             }
                             Label {

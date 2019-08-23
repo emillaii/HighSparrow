@@ -129,12 +129,14 @@ signals:
 
     bool sendMsgSignal(QString,QString);
     void sendAlarm(int sender_id,int level, QString error_message);
+    void sendMessageToWorkerManger(QVariantMap message);
 public slots:
     void tcpResp(QString message);
     QString deviceResp(QString message);
     void alarmChecking();
     void performHandlingOperation(int cmd);
     bool sendMessageTest(QString title,QString content);
+    void receiveMessageFromWorkerManger(QVariantMap message);
     void setLightPanelLighting(int lightPanelLighting)
     {
         if (m_lightPanelLighting == lightPanelLighting)
@@ -193,7 +195,7 @@ public slots:
 
 public:
     ModuleManangerConfig configs;
-    ModuleManagerParameter paramers;
+    ModuleManagerParameter paramters;
     ModuleManagerState states;
 private:
     bool is_init;
@@ -228,6 +230,7 @@ public:
     Q_INVOKABLE bool loadParameters();
     Q_INVOKABLE bool loadconfig();
     Q_INVOKABLE bool saveParameters();
+    Q_INVOKABLE bool saveStates();
     Q_INVOKABLE bool loadDispenseParam();
     Q_INVOKABLE void showSettingDialog();
     Q_INVOKABLE void showMachineMap();
@@ -246,11 +249,13 @@ public:
     bool saveCalibrationFiles(QString file_name);
     bool loadMotorLimitFiles(QString file_name);
     bool saveMotorLimitFiles(QString file_name);
+
     bool loadJsonArray(QString file_name, QJsonArray &array);
     bool saveJsonArray(QString file_name,QJsonArray &array);
     bool loadJsonObject(QString file_name, QJsonObject &object);
     bool saveJsonObject(QString file_name,QJsonObject &object);
     QString getCurrentParameterDir();
+    QString getCurrentStatesDir();
     QString getSystermParameterDir();
 
     bool registerWorkers(WorkersManager* manager);
@@ -280,7 +285,7 @@ public:
     Q_INVOKABLE void setLightingBrightness(QString location_name);
     Q_INVOKABLE void sendLoadLens(bool has_ng);
     Q_INVOKABLE void sendLoadSensor(bool has_product,bool has_ng);
-    Q_INVOKABLE void sendChangeSensorTray();
+//    Q_INVOKABLE void sendChangeSensorTray();
 
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();

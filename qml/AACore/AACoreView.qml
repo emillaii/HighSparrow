@@ -358,8 +358,7 @@ ItemDelegate {
                     }
                     RowLayout {
                         Label {
-                            text: qsTr("Layer 0 w_t")
-                            color: "red"
+                            text: qsTr("UL w_top")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[0]
@@ -373,7 +372,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_r")
+                            text: qsTr("w_right")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[1]
@@ -387,7 +386,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_b")
+                            text: qsTr("w_bottom")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[2]
@@ -401,7 +400,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_l")
+                            text: qsTr("w_left")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[3]
@@ -419,8 +418,7 @@ ItemDelegate {
 
                     RowLayout {
                         Label {
-                            text: qsTr("Layer 1 w_t")
-                            color: "purple"
+                            text: qsTr("LL w_top")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[4]
@@ -434,7 +432,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_r")
+                            text: qsTr("w_right")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[5]
@@ -448,7 +446,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_b")
+                            text: qsTr("w_bottom")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[6]
@@ -462,7 +460,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_l")
+                            text: qsTr("w_left")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[7]
@@ -480,8 +478,7 @@ ItemDelegate {
 
                     RowLayout {
                         Label {
-                            text: qsTr("Layer 2 w_t")
-                            color: "blue"
+                            text: qsTr("LR w_top")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[8]
@@ -495,7 +492,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_r")
+                            text: qsTr("w_right")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[9]
@@ -509,7 +506,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_b")
+                            text: qsTr("w_bottom")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[10]
@@ -523,7 +520,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_l")
+                            text: qsTr("w_left")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[11]
@@ -540,8 +537,7 @@ ItemDelegate {
 
                     RowLayout {
                         Label {
-                            text: qsTr("Layer 3 w_t")
-                            color: "yellow"
+                            text: qsTr("UR w_top")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[12]
@@ -555,7 +551,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_r")
+                            text: qsTr("w_right")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[13]
@@ -569,7 +565,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_b")
+                            text: qsTr("w_bottom")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[14]
@@ -583,7 +579,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("w_l")
+                            text: qsTr("w_left")
                         }
                         TextField {
                             text: aaCoreParams.WeightList[15]

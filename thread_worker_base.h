@@ -52,19 +52,22 @@ public:
     void sendAlarmMessage(int error_level,QString error_message);
     int waitMessageReturn(bool &interruput);
     bool waitResponseMessage(bool &is_run,QString target_message);
-    virtual void receivceModuleMessage(QVariantMap message);
+    virtual void receivceModuleMessage(QVariantMap module_message) = 0;
     virtual PropertyBase* getModuleState() = 0;
-
+    virtual QMap<QString,PropertyBase*> getModuleParameter() = 0;
     Q_INVOKABLE void performHandling(int cmd);
-    bool  waitPerformHandling();
-    Q_INVOKABLE void sendMessageToModule(QString module_name,QString message);
+    bool waitPerformHandling();
+    Q_INVOKABLE void sendMessageToModule(QString module_name,QString module_message,QJsonValue param = 0);
     Q_INVOKABLE QString getModuleMessage();
+    Q_INVOKABLE bool loadJsonConfig(QString file_name);
+    Q_INVOKABLE void saveJsonConfig(QString file_name);
+    QVariantMap inquirRunParameters(int out_time = 1000);
 signals:
     void sendErrorMessage(int alarm_id,int error_level,QString error_message);
     void sendHandlingOperation(int cmd);
     void NameChanged(QString Name);
     bool sendMsgSignal(QString,QString);
-    void sendModuleMessage(QVariantMap message);
+    void sendModuleMessage(QVariantMap module_message);
 
 public slots:
     virtual void startWork(int run_mode) = 0;
@@ -86,7 +89,7 @@ protected:
     bool is_error = false;
     bool handling_finish = false;
     QMutex message_mutex;
-    QVariantMap message;
+    QVariantMap module_message;
 };
 
 #endif // WORKER_BASE_H

@@ -13,14 +13,23 @@ HighSprrow::HighSprrow()
     baseModuleManager->loadProfile();
     worker_manager->parameters.loadJsonConfig(baseModuleManager->getSystermParameterDir().append("WorkManager.json"),"WorkManager");
 //    worker_manager->parameters.saveJsonConfig(baseModuleManager->getSystermParameterDir().append("WorkManager.json"),"WorkManager");
-    logicManager = new LogicManager(baseModuleManager);
+    logicManager = new LogicManager();
+    logicManager->parameters.loadJsonConfig(baseModuleManager->getSystermParameterDir().append("LogicManager.json"),"logicManager");
+    logicManager->parameters.saveJsonConfig(baseModuleManager->getSystermParameterDir().append("LogicManager.json"),"logicManager");
+    logicManager->init(baseModuleManager);
     baseModuleManager->registerWorkers(worker_manager);
     worker_manager->Init(baseModuleManager->GetTcpMessagersByName(worker_manager->parameters.cmsMessagerNames()),
                          baseModuleManager->GetTcpMessagersByName(worker_manager->parameters.respMessagerNames()));
     connect(logicManager,&LogicManager::sendMsgSignal,worker_manager,&WorkersManager::sendMessageTest,Qt::BlockingQueuedConnection);
     connect(&baseModuleManager->aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &HighSprrow::receiveImageFromAACore);
-    connect(worker_manager,&WorkersManager::sendMessageToLogicManager,logicManager,&LogicManager::receiveMessageFromWorkerManger);
+
+    connect(worker_manager,&WorkersManager::sendMessageToLogicManager,logicManager,&LogicManager::receiveMessageFromWorkerManger,Qt::DirectConnection);
     connect(logicManager,&LogicManager::sendMessageToWorkerManger,worker_manager,&WorkersManager::receiveModuleMessage,Qt::DirectConnection);
+
+    connect(worker_manager,&WorkersManager::sendMessageToDevicesManager,baseModuleManager,&BaseModuleManager::receiveMessageFromWorkerManger);
+    connect(baseModuleManager,&BaseModuleManager::sendMessageToWorkerManger,worker_manager,&WorkersManager::receiveModuleMessage,Qt::DirectConnection);
+
+    logicManager->sendLogicManangerName();
 }
 
 HighSprrow::~HighSprrow()

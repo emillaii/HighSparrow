@@ -2,7 +2,7 @@
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.2
-
+import LogicManagerLib 1.1
 
 
 ItemDelegate {
@@ -73,19 +73,27 @@ ItemDelegate {
                                 visible: needCalibration
                                 text:qsTr("校正")
                                 onClicked:{
-                                    logicManager.performCalibration(calibrationName)
+                                    //logicManager.performCalibration(calibrationName)
+                                    logicManagerState.setCurrentCalibrationName(calibrationName)
+                                    logicManager.performHandling(LogicManager.PERFORM_CALIBRATION)
                                 }
                             }
                             Button{
                                 text:qsTr("执行PR")
                                 onClicked:{
-                                    logicManager.performLocation(locationName,true)
+                                    //logicManager.performLocation(locationName,true)
+                                    logicManagerState.setCurrentLocationName(locationName)
+                                    logicManagerState.setUseOriginPr(true)
+                                    logicManager.performHandling(LogicManager.PERFORM_LOCATION)
                                 }
                             }
                             Button{
                                 text:qsTr("执行PR偏移")
                                 onClicked:{
-                                    logicManager.performLocation(locationName,false)
+                                    //logicManager.performLocation(locationName,false)
+                                    logicManagerState.setCurrentLocationName(locationName)
+                                    logicManagerState.setUseOriginPr(false)
+                                    logicManager.performHandling(LogicManager.PERFORM_LOCATION)
                                 }
                             }
 //                            Image{

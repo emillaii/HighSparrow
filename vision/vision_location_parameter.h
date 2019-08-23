@@ -24,7 +24,7 @@ public:
     Q_PROPERTY(int testIndex READ testIndex WRITE setTestIndex NOTIFY testIndexChanged)
     Q_PROPERTY(double objectScore READ objectScore WRITE setObjectScore NOTIFY objectScoreChanged)
     Q_PROPERTY(bool useOrigin READ useOrigin WRITE setUseOrigin NOTIFY useOriginChanged)
-
+    Q_PROPERTY(int performTime READ performTime WRITE setPerformTime NOTIFY performTimeChanged)
     QString prFileName() const
     {
         return m_prFileName;
@@ -103,6 +103,12 @@ public:
     bool useOrigin() const
     {
         return m_useOrigin;
+    }
+
+
+    int performTime() const
+    {
+        return m_performTime;
     }
 
 public slots:
@@ -255,6 +261,15 @@ public slots:
         emit useOriginChanged(m_useOrigin);
     }
 
+    void setPerformTime(int performTime)
+    {
+        if (m_performTime == performTime)
+            return;
+
+        m_performTime = performTime;
+        emit performTimeChanged(m_performTime);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -288,6 +303,8 @@ signals:
 
     void useOriginChanged(bool useOrigin);
 
+    void performTimeChanged(int performTime);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -305,6 +322,7 @@ private:
     double m_maximumOffset = 10;
     double m_objectScore = 0.7;
     bool m_useOrigin = false;
+    int m_performTime = 0;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

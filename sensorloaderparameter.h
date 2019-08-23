@@ -17,7 +17,23 @@ public:
     Q_PROPERTY(double placeTrayMargin READ placeTrayMargin WRITE setPlaceTrayMargin NOTIFY placeTrayMarginChanged)
     Q_PROPERTY(bool enableForceLimit READ enableForceLimit WRITE setEnableForceLimit NOTIFY enableForceLimitChanged)
     Q_PROPERTY(bool enableSutForceLimit READ enableSutForceLimit WRITE setEnableSutForceLimit NOTIFY enableSutForceLimitChanged)
+
+    Q_PROPERTY(bool disablePickFromTrayForceLimit READ disablePickFromTrayForceLimit WRITE setDisablePickFromTrayForceLimit NOTIFY disablePickFromTrayForceLimitChanged)
+    Q_PROPERTY(bool disableBackToTrayForceLimit READ disableBackToTrayForceLimit WRITE setDisableBackToTrayForceLimit NOTIFY disableBackToTrayForceLimitChanged)
+    Q_PROPERTY(bool disablePlaceToSutForceLimmit READ disablePlaceToSutForceLimmit WRITE setDisablePlaceToSutForceLimmit NOTIFY disablePlaceToSutForceLimmitChanged)
+    Q_PROPERTY(bool disablePickFromSutForceLimit READ disablePickFromSutForceLimit WRITE setDisablePickFromSutForceLimit NOTIFY disablePickFromSutForceLimitChanged)
+    Q_PROPERTY(bool disablePlaceToGoodTrayForceLimit READ disablePlaceToGoodTrayForceLimit WRITE setDisablePlaceToGoodTrayForceLimit NOTIFY disablePlaceToGoodTrayForceLimitChanged)
+    Q_PROPERTY(bool disablePlaceToNgTrayForceLimit READ disablePlaceToNgTrayForceLimit WRITE setDisablePlaceToNgTrayForceLimit NOTIFY disablePlaceToNgTrayForceLimitChanged)
+    Q_PROPERTY(double pickFromTrayMargin READ pickFromTrayMargin WRITE setPickFromTrayMargin NOTIFY pickFromTrayMarginChanged)
+    Q_PROPERTY(double backToTrayMargin READ backToTrayMargin WRITE setBackToTrayMargin NOTIFY backToTrayMarginChanged)
+    Q_PROPERTY(double placeToSutMargin READ placeToSutMargin WRITE setPlaceToSutMargin NOTIFY placeToSutMarginChanged)
+    Q_PROPERTY(double pickFromSutMargin READ pickFromSutMargin WRITE setPickFromSutMargin NOTIFY pickFromSutMarginChanged)
+    Q_PROPERTY(double placeToGoodTrayMargin READ placeToGoodTrayMargin WRITE setPlaceToGoodTrayMargin NOTIFY placeToGoodTrayMarginChanged)
+    Q_PROPERTY(double placeToNgTrayMargin READ placeToNgTrayMargin WRITE setPlaceToNgTrayMargin NOTIFY placeToNgTrayMarginChanged)
+
+
     Q_PROPERTY(double pickSensorZ READ pickSensorZ WRITE setPickSensorZ NOTIFY pickSensorZChanged)
+    Q_PROPERTY(double pickSensorZ2 READ pickSensorZ2 WRITE setPickSensorZ2 NOTIFY pickSensorZ2Changed)
     Q_PROPERTY(double placeSensorZ READ placeSensorZ WRITE setPlaceSensorZ NOTIFY placeSensorZChanged)
     Q_PROPERTY(QString sensorLocationName READ sensorLocationName WRITE setSensorLocationName NOTIFY sensorLocationNameChanged)
     Q_PROPERTY(QString vacancyLocationName READ vacancyLocationName WRITE setVacancyLocationName NOTIFY vacancyLocationNameChanged)
@@ -28,6 +44,8 @@ public:
     Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
     Q_PROPERTY(double pickProductZ READ pickProductZ WRITE setPickProductZ NOTIFY pickProductZChanged)
     Q_PROPERTY(double placeProductZ READ placeProductZ WRITE setPlaceProductZ NOTIFY placeProductZChanged)
+    Q_PROPERTY(double placeProductZ2 READ placeProductZ2 WRITE setPlaceProductZ2 NOTIFY placeProductZ2Changed)
+    Q_PROPERTY(double placeBufferProductZ READ placeBufferProductZ WRITE setPlaceBufferProductZ NOTIFY placeBufferProductZChanged)
     Q_PROPERTY(double placeNgProductZ READ placeNgProductZ WRITE setPlaceNgProductZ NOTIFY placeNgProductZChanged)
     Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
     Q_PROPERTY(double pickNgSensorZ READ pickNgSensorZ WRITE setPickNgSensorZ NOTIFY pickNgSensorZChanged)
@@ -53,16 +71,17 @@ public:
     Q_PROPERTY(int staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
     Q_PROPERTY(bool enableNgSensorPr READ enableNgSensorPr WRITE setEnableNgSensorPr NOTIFY enableNgSensorPrChanged)
     Q_PROPERTY(bool enableProductPr READ enableProductPr WRITE setEnableProductPr NOTIFY enableProductPrChanged)
+    Q_PROPERTY(bool enableBufferProductPr READ enableBufferProductPr WRITE setEnableBufferProductPr NOTIFY enableBufferProductPrChanged)
     Q_PROPERTY(bool enableNgProductPr READ enableNgProductPr WRITE setEnableNgProductPr NOTIFY enableNgProductPrChanged)
-    Q_PROPERTY(bool enableProdcutTrayPr READ enableProdcutTrayPr WRITE setEnableProdcutTrayPr NOTIFY enableProdcutTrayPrChanged)
-    Q_PROPERTY(bool enableNgProductTrayPr READ enableNgProductTrayPr WRITE setEnableNgProductTrayPr NOTIFY enableNgProductTrayPrChanged)
-    Q_PROPERTY(bool enableNgSensorTrayPr READ enableNgSensorTrayPr WRITE setEnableNgSensorTrayPr NOTIFY enableNgSensorTrayPrChanged)
+    Q_PROPERTY(bool enablePlaceProdcutPr READ enablePlaceProdcutPr WRITE setEnablePlaceProdcuPr NOTIFY enablePlaceProdcutPrChanged)
+    Q_PROPERTY(bool enablePlaceNgProductPr READ enablePlaceNgProductPr WRITE setEnablePlaceNgProductPr NOTIFY enablePlacceNgProductPrChanged)
+    Q_PROPERTY(bool enablePlaceNgSensorPr READ enablePlaceNgSensorPr WRITE setEnablePlaceNgSensorPr NOTIFY enablePlaceNgSensorPrChanged)
     Q_PROPERTY(int autoPrTime READ autoPrTime WRITE setAutoPrTime NOTIFY autoPrTimeChanged)
     Q_PROPERTY(bool enablePlaceForce READ enablePlaceForce WRITE setEnablePlaceForce NOTIFY enablePlaceForceChanged)
     Q_PROPERTY(double sut1Theta READ sut1Theta WRITE setSut1Theta NOTIFY sut1ThetaChanged)
     Q_PROPERTY(double sut2Theta READ sut2Theta WRITE setSut2Theta NOTIFY sut2ThetaChanged)
     Q_PROPERTY(bool openTimeLog READ openTimeLog WRITE setOpenTimeLog NOTIFY openTimeLogChanged)
-
+    Q_PROPERTY(int vacuumOperationOutTime READ vacuumOperationOutTime WRITE setVacuumOperationOutTime NOTIFY vacuumOperationOutTimeChanged)
     double vcmWorkForce() const
     {
         return m_vcmWorkForce;
@@ -256,19 +275,19 @@ public:
         return m_enableNgProductPr;
     }
 
-    bool enableProdcutTrayPr() const
+    bool enablePlaceProdcutPr() const
     {
-        return m_enableProdcutTrayPr;
+        return m_enablePlaceProdcutPr;
     }
 
-    bool enableNgProductTrayPr() const
+    bool enablePlaceNgProductPr() const
     {
-        return m_enableNgProductTrayPr;
+        return m_enablePlaceNgProductPr;
     }
 
-    bool enableNgSensorTrayPr() const
+    bool enablePlaceNgSensorPr() const
     {
-        return m_enableNgSensorTrayPr;
+        return m_enablePlaceNgSensorPr;
     }
 
     int autoPrTime() const
@@ -309,6 +328,91 @@ public:
     bool openTimeLog() const
     {
         return m_openTimeLog;
+    }
+
+    double pickSensorZ2() const
+    {
+        return m_pickSensorZ2;
+    }
+
+    double placeProductZ2() const
+    {
+        return m_placeProductZ2;
+    }
+
+    double placeBufferProductZ() const
+    {
+        return m_placeBufferProductZ;
+    }
+
+    int vacuumOperationOutTime() const
+    {
+        return m_vacuumOperationOutTime;
+    }
+
+    bool disablePickFromTrayForceLimit() const
+    {
+        return m_disablePickFromTrayForceLimit;
+    }
+
+    bool disableBackToTrayForceLimit() const
+    {
+        return m_disableBackToTrayForceLimit;
+    }
+
+    bool disablePlaceToSutForceLimmit() const
+    {
+        return m_disablePlaceToSutForceLimmit;
+    }
+
+    bool disablePickFromSutForceLimit() const
+    {
+        return m_disablePickFromSutForceLimit;
+    }
+
+    bool disablePlaceToGoodTrayForceLimit() const
+    {
+        return m_disablePlaceToGoodTrayForceLimit;
+    }
+
+    bool disablePlaceToNgTrayForceLimit() const
+    {
+        return m_disablePlaceToNgTrayForceLimit;
+    }
+
+    double pickFromTrayMargin() const
+    {
+        return m_pickFromTrayMargin;
+    }
+
+    double backToTrayMargin() const
+    {
+        return m_backToTrayMargin;
+    }
+
+    double placeToSutMargin() const
+    {
+        return m_placeToSutMargin;
+    }
+
+    double pickFromSutMargin() const
+    {
+        return m_pickFromSutMargin;
+    }
+
+    double placeToGoodTrayMargin() const
+    {
+        return m_placeToGoodTrayMargin;
+    }
+
+    double placeToNgTrayMargin() const
+    {
+        return m_placeToNgTrayMargin;
+    }
+
+    bool enableBufferProductPr() const
+    {
+        return m_enableBufferProductPr;
     }
 
 public slots:
@@ -682,31 +786,31 @@ public slots:
         emit enableNgProductPrChanged(m_enableNgProductPr);
     }
 
-    void setEnableProdcutTrayPr(bool enableProdcutTrayPr)
+    void setEnablePlaceProdcuPr(bool enableProdcutTrayPr)
     {
-        if (m_enableProdcutTrayPr == enableProdcutTrayPr)
+        if (m_enablePlaceProdcutPr == enableProdcutTrayPr)
             return;
 
-        m_enableProdcutTrayPr = enableProdcutTrayPr;
-        emit enableProdcutTrayPrChanged(m_enableProdcutTrayPr);
+        m_enablePlaceProdcutPr = enableProdcutTrayPr;
+        emit enablePlaceProdcutPrChanged(m_enablePlaceProdcutPr);
     }
 
-    void setEnableNgProductTrayPr(bool enableNgProductTrayPr)
+    void setEnablePlaceNgProductPr(bool enableNgProductTrayPr)
     {
-        if (m_enableNgProductTrayPr == enableNgProductTrayPr)
+        if (m_enablePlaceNgProductPr == enableNgProductTrayPr)
             return;
 
-        m_enableNgProductTrayPr = enableNgProductTrayPr;
-        emit enableNgProductTrayPrChanged(m_enableNgProductTrayPr);
+        m_enablePlaceNgProductPr = enableNgProductTrayPr;
+        emit enablePlacceNgProductPrChanged(m_enablePlaceNgProductPr);
     }
 
-    void setEnableNgSensorTrayPr(bool enableNgSensorTrayPr)
+    void setEnablePlaceNgSensorPr(bool enableNgSensorTrayPr)
     {
-        if (m_enableNgSensorTrayPr == enableNgSensorTrayPr)
+        if (m_enablePlaceNgSensorPr == enableNgSensorTrayPr)
             return;
 
-        m_enableNgSensorTrayPr = enableNgSensorTrayPr;
-        emit enableNgSensorTrayPrChanged(m_enableNgSensorTrayPr);
+        m_enablePlaceNgSensorPr = enableNgSensorTrayPr;
+        emit enablePlaceNgSensorPrChanged(m_enablePlaceNgSensorPr);
     }
 
     void setAutoPrTime(int autoPrTime)
@@ -783,6 +887,168 @@ public slots:
 
         m_openTimeLog = openTimeLog;
         emit openTimeLogChanged(m_openTimeLog);
+    }
+
+    void setPickSensorZ2(double pickSensorZ2)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickSensorZ2, pickSensorZ2))
+            return;
+
+        m_pickSensorZ2 = pickSensorZ2;
+        emit pickSensorZ2Changed(m_pickSensorZ2);
+    }
+
+    void setPlaceProductZ2(double placeProductZ2)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeProductZ2, placeProductZ2))
+            return;
+
+        m_placeProductZ2 = placeProductZ2;
+        emit placeProductZ2Changed(m_placeProductZ2);
+    }
+
+    void setPlaceBufferProductZ(double placeBufferProductZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeBufferProductZ, placeBufferProductZ))
+            return;
+
+        m_placeBufferProductZ = placeBufferProductZ;
+        emit placeBufferProductZChanged(m_placeBufferProductZ);
+    }
+
+    void setDisablePickFromTrayForceLimit(bool disablePickFromTrayForceLimit)
+    {
+        if (m_disablePickFromTrayForceLimit == disablePickFromTrayForceLimit)
+            return;
+
+        m_disablePickFromTrayForceLimit = disablePickFromTrayForceLimit;
+        emit disablePickFromTrayForceLimitChanged(m_disablePickFromTrayForceLimit);
+    }
+
+    void setDisableBackToTrayForceLimit(bool disableBackToTrayForceLimit)
+    {
+        if (m_disableBackToTrayForceLimit == disableBackToTrayForceLimit)
+            return;
+
+        m_disableBackToTrayForceLimit = disableBackToTrayForceLimit;
+        emit disableBackToTrayForceLimitChanged(m_disableBackToTrayForceLimit);
+    }
+
+    void setDisablePlaceToSutForceLimmit(bool disablePlaceToSutForceLimmit)
+    {
+        if (m_disablePlaceToSutForceLimmit == disablePlaceToSutForceLimmit)
+            return;
+
+        m_disablePlaceToSutForceLimmit = disablePlaceToSutForceLimmit;
+        emit disablePlaceToSutForceLimmitChanged(m_disablePlaceToSutForceLimmit);
+    }
+
+    void setDisablePickFromSutForceLimit(bool disablePickFromSutForceLimit)
+    {
+        if (m_disablePickFromSutForceLimit == disablePickFromSutForceLimit)
+            return;
+
+        m_disablePickFromSutForceLimit = disablePickFromSutForceLimit;
+        emit disablePickFromSutForceLimitChanged(m_disablePickFromSutForceLimit);
+    }
+
+    void setDisablePlaceToGoodTrayForceLimit(bool disablePlaceToGoodTrayForceLimit)
+    {
+        if (m_disablePlaceToGoodTrayForceLimit == disablePlaceToGoodTrayForceLimit)
+            return;
+
+        m_disablePlaceToGoodTrayForceLimit = disablePlaceToGoodTrayForceLimit;
+        emit disablePlaceToGoodTrayForceLimitChanged(m_disablePlaceToGoodTrayForceLimit);
+    }
+
+    void setDisablePlaceToNgTrayForceLimit(bool disablePlaceToNgTrayForceLimit)
+    {
+        if (m_disablePlaceToNgTrayForceLimit == disablePlaceToNgTrayForceLimit)
+            return;
+
+        m_disablePlaceToNgTrayForceLimit = disablePlaceToNgTrayForceLimit;
+        emit disablePlaceToNgTrayForceLimitChanged(m_disablePlaceToNgTrayForceLimit);
+    }
+
+    void setPickFromTrayMargin(double pickFromTrayMargin)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickFromTrayMargin, pickFromTrayMargin))
+            return;
+
+        m_pickFromTrayMargin = pickFromTrayMargin;
+        emit pickFromTrayMarginChanged(m_pickFromTrayMargin);
+    }
+
+    void setBackToTrayMargin(double backToTrayMargin)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_backToTrayMargin, backToTrayMargin))
+            return;
+
+        m_backToTrayMargin = backToTrayMargin;
+        emit backToTrayMarginChanged(m_backToTrayMargin);
+    }
+
+    void setPlaceToSutMargin(double placeToSutMargin)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeToSutMargin, placeToSutMargin))
+            return;
+
+        m_placeToSutMargin = placeToSutMargin;
+        emit placeToSutMarginChanged(m_placeToSutMargin);
+    }
+
+    void setPickFromSutMargin(double pickFromSutMargin)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickFromSutMargin, pickFromSutMargin))
+            return;
+
+        m_pickFromSutMargin = pickFromSutMargin;
+        emit pickFromSutMarginChanged(m_pickFromSutMargin);
+    }
+
+    void setPlaceToGoodTrayMargin(double placeToGoodTrayMargin)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeToGoodTrayMargin, placeToGoodTrayMargin))
+            return;
+
+        m_placeToGoodTrayMargin = placeToGoodTrayMargin;
+        emit placeToGoodTrayMarginChanged(m_placeToGoodTrayMargin);
+    }
+
+    void setPlaceToNgTrayMargin(double placeToNgTrayMargin)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_placeToNgTrayMargin, placeToNgTrayMargin))
+            return;
+
+        m_placeToNgTrayMargin = placeToNgTrayMargin;
+        emit placeToNgTrayMarginChanged(m_placeToNgTrayMargin);
+    }
+
+    void setEnableBufferProductPr(bool enableBufferProductPr)
+    {
+        if (m_enableBufferProductPr == enableBufferProductPr)
+            return;
+
+        m_enableBufferProductPr = enableBufferProductPr;
+        emit enableBufferProductPrChanged(m_enableBufferProductPr);
+    }
+
+    void setVacuumOperationOutTime(int vacuumOperationOutTime)
+    {
+        if (m_vacuumOperationOutTime == vacuumOperationOutTime)
+            return;
+
+        m_vacuumOperationOutTime = vacuumOperationOutTime;
+        emit vacuumOperationOutTimeChanged(m_vacuumOperationOutTime);
     }
 
 signals:
@@ -865,11 +1131,11 @@ signals:
 
     void enableNgProductPrChanged(bool enableNgProductPr);
 
-    void enableProdcutTrayPrChanged(bool enableProdcutTrayPr);
+    void enablePlaceProdcutPrChanged(bool enablePlaceProdcutPr);
 
-    void enableNgProductTrayPrChanged(bool enableNgProductTrayPr);
+    void enablePlacceNgProductPrChanged(bool enablePlaceNgProductPr);
 
-    void enableNgSensorTrayPrChanged(bool enableNgSensorTrayPr);
+    void enablePlaceNgSensorPrChanged(bool enablePlaceNgSensorPr);
 
     void autoPrTimeChanged(int autoPrTime);
 
@@ -886,6 +1152,40 @@ signals:
     void sutMarginChanged(double sutMargin);
 
     void openTimeLogChanged(bool openTimeLog);
+
+    void pickSensorZ2Changed(double pickSensorZ2);
+
+    void placeProductZ2Changed(double placeProductZ2);
+
+    void placeBufferProductZChanged(double placeBufferProductZ);
+
+    void vacuumOperationOutTimeChanged(int vacuumOperationOutTime);
+
+    void disablePickFromTrayForceLimitChanged(bool disablePickFromTrayForceLimit);
+
+    void disableBackToTrayForceLimitChanged(bool disableBackToTrayForceLimit);
+
+    void disablePlaceToSutForceLimmitChanged(bool disablePlaceToSutForceLimmit);
+
+    void disablePickFromSutForceLimitChanged(bool disablePickFromSutForceLimit);
+
+    void disablePlaceToGoodTrayForceLimitChanged(bool disablePlaceToGoodTrayForceLimit);
+
+    void disablePlaceToNgTrayForceLimitChanged(bool disablePlaceToNgTrayForceLimit);
+
+    void pickFromTrayMarginChanged(double pickFromTrayMargin);
+
+    void backToTrayMarginChanged(double backToTrayMargin);
+
+    void placeToSutMarginChanged(double placeToSutMargin);
+
+    void pickFromSutMarginChanged(double pickFromSutMargin);
+
+    void placeToGoodTrayMarginChanged(double placeToGoodTrayMargin);
+
+    void placeToNgTrayMarginChanged(double placeToNgTrayMargin);
+
+    void enableBufferProductPrChanged(bool enableBufferProductPr);
 
 private:
     double m_vcmWorkForce = 0;
@@ -927,9 +1227,9 @@ private:
     bool m_enableNgSensorPr = false;
     bool m_enableProductPr = false;
     bool m_enableNgProductPr = false;
-    bool m_enableProdcutTrayPr = false;
-    bool m_enableNgProductTrayPr = false;
-    bool m_enableNgSensorTrayPr = false;
+    bool m_enablePlaceProdcutPr = false;
+    bool m_enablePlaceNgProductPr = false;
+    bool m_enablePlaceNgSensorPr = false;
     int m_autoPrTime = 5;
     bool m_enablePlaceForce = false;
     double m_sut1Theta = 0;
@@ -938,107 +1238,79 @@ private:
     double m_placeTrayMargin = 2;
     double m_sutMargin = 0;
     bool m_openTimeLog = false;
+    double m_pickSensorZ2 = 0;
+    double m_placeProductZ2 = 0;
+    double m_placeBufferProductZ = 0;
+    int m_vacuumOperationOutTime = 500;
+    bool m_disablePickFromTrayForceLimit = false;
+    bool m_disableBackToTrayForceLimit = false;
+    bool m_disablePlaceToSutForceLimmit = false;
+    bool m_disablePickFromSutForceLimit = false;
+    bool m_disablePlaceToGoodTrayForceLimit = false;
+    bool m_disablePlaceToNgTrayForceLimit = false;
+    double m_pickFromTrayMargin = 0;
+    double m_backToTrayMargin = 0;
+    double m_placeToSutMargin = 0;
+    double m_pickFromSutMargin = 0;
+    double m_placeToGoodTrayMargin = 0;
+    double m_placeToNgTrayMargin = 0;
+    bool m_enableBufferProductPr = false;
 };
 class SensorLoaderState:public PropertyBase
 {
     Q_OBJECT
 public:
-    SensorLoaderState():PropertyBase (){}
+    SensorLoaderState():PropertyBase (){init_values.insert("crossTrayPlaceProduct",true);}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
-    Q_PROPERTY(bool hasTray READ hasTray WRITE setHasTray NOTIFY hasTrayChanged)
-    Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
-    Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
-    Q_PROPERTY(bool sutHasProduct READ sutHasProduct WRITE setSutHasProduct NOTIFY sutHasProductChanged)
-    Q_PROPERTY(bool sutHasNgProduct READ sutHasNgProduct WRITE setSutHasNgProduct NOTIFY sutHasNgProductChanged)
-    Q_PROPERTY(bool sut2HasSensor READ sut2HasSensor WRITE setSut2HasSensor NOTIFY sut2HasSensorChanged)
-    Q_PROPERTY(bool sut2HasNgSensor READ sut2HasNgSensor WRITE setSut2HasNgSensor NOTIFY sut2HasNgSensorChanged)
-    Q_PROPERTY(bool sut2HasProduct READ sut2HasProduct WRITE setSut2HasProduct NOTIFY sut2HasProductChanged)
-    Q_PROPERTY(bool sut2HasNgProduct READ sut2HasNgProduct WRITE setSut2HasNgProduct NOTIFY sut2HasNgProductChanged)
-
-    Q_PROPERTY(bool needLoadSensor READ needLoadSensor WRITE setNeedLoadSensor NOTIFY needLoadSensorChanged)
-    Q_PROPERTY(bool needChangTray READ needChangTray WRITE setNeedChangTray NOTIFY needChangTrayChanged)
+    Q_PROPERTY(bool disableStation1 READ disableStation1 WRITE setDisableStation1 NOTIFY disableStation1Changed)
+    Q_PROPERTY(bool disableStation2 READ disableStation2 WRITE setDisableStation2 NOTIFY disableStation2Changed)
+    Q_PROPERTY(bool handlyChangeSensor READ handlyChangeSensor WRITE setHandlyChangeSensor NOTIFY handlyChangeSensorChanged)
+    Q_PROPERTY(bool hasSensorTray1 READ hasSensorTray1 WRITE setHasSensorTray1 NOTIFY hasSensorTray1Changed)
+    Q_PROPERTY(bool hasSensorTray2 READ hasSensorTray2 WRITE setHasSensorTray2 NOTIFY hasSensorTray2Changed)
     Q_PROPERTY(bool allowChangeTray READ allowChangeTray WRITE setAllowChangeTray NOTIFY allowChangeTrayChanged)
-    Q_PROPERTY(bool hasPickedSensor READ hasPickedSensor WRITE setHasPickedSensor NOTIFY hasPickedSensorChanged)
-    Q_PROPERTY(bool hasPickedProduct READ hasPickedProduct WRITE setHasPickedProduct NOTIFY hasPickedProductChanged)
-    Q_PROPERTY(bool hasPickedNgSensor READ hasPickedNgSensor WRITE setHasPickedNgSensor NOTIFY hasPickedNgSensorChanged)
-    Q_PROPERTY(bool hasPickedNgProduct READ hasPickedNgProduct WRITE setHasPickedNgProduct NOTIFY hasPickedNgProductChanged)
-    Q_PROPERTY(bool beExchangeMaterial READ beExchangeMaterial WRITE setBeExchangeMaterial NOTIFY beExchangeMaterialChanged)
-    Q_PROPERTY(QString cmd READ cmd WRITE setCmd NOTIFY cmdChanged)
     Q_PROPERTY(bool waitingChangeTray READ waitingChangeTray WRITE setWaitingChangeTray NOTIFY waitingChangeTrayChanged)
     Q_PROPERTY(bool finishChangeTray READ finishChangeTray WRITE setFinishChangeTray NOTIFY finishChangeTrayChanged)
-    Q_PROPERTY(double picker1SensorOffsetX READ picker1SensorOffsetX WRITE setPicker1SensorOffsetX NOTIFY picker1SensorOffsetXChanged)
-    Q_PROPERTY(double picker1SensorOffsetY READ picker1SensorOffsetY WRITE setPicker1SensorOffsetY NOTIFY picker1SensorOffsetYChanged)
-    Q_PROPERTY(double picker2SensorOffsetX READ picker2SensorOffsetX WRITE setPicker2SensorOffsetX NOTIFY picker2SensorOffsetXChanged)
-    Q_PROPERTY(double picker2SensorOffsetY READ picker2SensorOffsetY WRITE setPicker2SensorOffsetY NOTIFY picker2SensorOffsetYChanged)
-
-    Q_PROPERTY(bool hasUnpickedNgProduct READ hasUnpickedNgProduct WRITE setHasUnpickedNgProduct NOTIFY hasUnpickedNgProductChanged)
-    Q_PROPERTY(bool hasUnpickedProduct READ hasUnpickedProduct WRITE setHasUnpickedProduct NOTIFY hasUnpickedProductChanged)
-    Q_PROPERTY(bool hasUpickedNgSensor READ hasUpickedNgSensor WRITE setHasUnpickedNgSensor NOTIFY hasUnpickedNgSensorChanged)
-    Q_PROPERTY(bool hasEmptyOffset READ hasEmptyOffset WRITE setHasEmptyOffset NOTIFY hasEmptyOffsetChanged)
-    Q_PROPERTY(double emptyTrayOffsetX READ emptyTrayOffsetX WRITE setEmptyTrayOffsetX NOTIFY emptyTrayOffsetXChanged)
-    Q_PROPERTY(double emptyTrayOffsetY READ emptyTrayOffsetY WRITE setEmptyTrayOffsetY NOTIFY emptyTrayOffsetYChanged)
+    Q_PROPERTY(int sut1MaterialState READ sut1MaterialState WRITE setSut1MaterialState NOTIFY sut1MaterialStateChanged)
+    Q_PROPERTY(int sut2MaterialState READ sut2MaterialState WRITE setSut2MaterialState NOTIFY sut2MaterialStateChanged)
+    Q_PROPERTY(int picker1MaterialState READ picker1MaterialState WRITE setPicker1MaterialState NOTIFY picker1MaterialStateChanged)
+    Q_PROPERTY(int picker2MaterialState READ picker2MaterialState WRITE setPicker2MaterialState NOTIFY picker2MaterialStateChanged)
+    Q_PROPERTY(int busyState READ busyState WRITE setBusyState NOTIFY busyStateChanged)
+    Q_PROPERTY(int lastState READ lastState WRITE setLastState NOTIFY lastStateChanged)
+    Q_PROPERTY(bool sut1NeedLoadSensor READ sut1NeedLoadSensor WRITE setSut1NeedLoadSensor NOTIFY sut1NeedLoadSensorChanged)
+    Q_PROPERTY(bool sut2NeedLoadSensor READ sut2NeedLoadSensor WRITE setSut2NeedLoadSensor NOTIFY sut2NeedLoadSensorChanged)
+    Q_PROPERTY(bool station1HasRequest READ station1HasRequest WRITE setStation1HasRequest NOTIFY station1HasRequestChanged)
+    Q_PROPERTY(bool station2HasRequest READ station2HasRequest WRITE setStation2HasRequest NOTIFY station2HasRequestChanged)
+    Q_PROPERTY(bool finishStation1Task READ finishStation1Task WRITE setFinishStation1Task NOTIFY finishStation1TaskChanged)
+    Q_PROPERTY(bool finishStation2Task READ finishStation2Task WRITE setFinishStation2Task NOTIFY finishStation2TaskChanged)
+    Q_PROPERTY(bool sut1Ready READ sut1Ready WRITE setSut1Ready NOTIFY sut1ReadyChanged)
+    Q_PROPERTY(bool sut2Ready READ sut2Ready WRITE setSut2Ready NOTIFY sut2ReadyChanged)
+    Q_PROPERTY(bool finishVacuumOperation READ finishVacuumOperation WRITE setFinishVacuumOperation NOTIFY finishVacuumOperationChanged)
+    Q_PROPERTY(int vacuumOperationResult READ vacuumOperationResult WRITE setVacuumOperationResult NOTIFY vacuumOperationResultChanged)
+    Q_PROPERTY(int currentTrayID READ currentTrayID WRITE setCurrentTrayID NOTIFY currentTrayIDChanged)
+    Q_PROPERTY(bool handlyChangeTray READ handlyChangeTray WRITE setHandlyChangeTray NOTIFY handlyChangeTrayChanged)
+    Q_PROPERTY(bool station1Unload READ station1Unload WRITE setStation1Unload NOTIFY station1UnloadChanged)
+    Q_PROPERTY(bool station2Unload READ station2Unload WRITE setStation2Unload NOTIFY station2UnloadChanged)
+    Q_PROPERTY(bool crossTrayPlaceProduct READ crossTrayPlaceProduct WRITE setCrossTrayPlaceProduct NOTIFY crossTrayPlaceProductChanged)
+    Q_PROPERTY(bool hasNgTrayPrOffset READ hasNgTrayPrOffset WRITE setHasNgTrayPrOffset NOTIFY hasNgTrayPrOffsetChanged)
+    Q_PROPERTY(bool hasBufferTrayPrOffset READ hasBufferTrayPrOffset WRITE setHasBufferTrayPrOffset NOTIFY hasBufferTrayPrOffsetChanged)
     int runMode() const
     {
         return m_runMode;
     }
-    bool hasTray() const
+
+    bool hasSensorTray1() const
     {
-        return m_hasTray;
+        return m_hasSensorTray1;
     }
 
-    bool sutHasSensor() const
+    bool hasSensorTray2() const
     {
-        return m_sutHasSensor;
-    }
-
-    bool sutHasNgSensor() const
-    {
-        return m_sutHasNgSensor;
-    }
-
-    bool sutHasProduct() const
-    {
-        return m_sutHasProduct;
-    }
-
-    bool needLoadSensor() const
-    {
-        return m_needLoadSensor;
-    }
-
-    bool needChangTray() const
-    {
-        return m_needChangTray;
+        return m_hasSensorTray2;
     }
 
     bool allowChangeTray() const
     {
         return m_allowChangeTray;
-    }
-
-    bool hasPickedSensor() const
-    {
-        return m_hasPickedSensor;
-    }
-
-    bool hasPickedProduct() const
-    {
-        return m_hasPickedProduct;
-    }
-
-    bool hasPickedNgSensor() const
-    {
-        return m_hasPickedNgSensor;
-    }
-
-    bool beExchangeMaterial() const
-    {
-        return m_beExchangeMaterial;
-    }
-
-    QString cmd() const
-    {
-        return m_cmd;
     }
 
     bool waitingChangeTray() const
@@ -1051,84 +1323,134 @@ public:
         return m_finishChangeTray;
     }
 
-    double picker1SensorOffsetX() const
+    int sut1MaterialState() const
     {
-        return m_picker1SensorOffsetX;
+        return m_sut1MaterialState;
     }
 
-    double picker1SensorOffsetY() const
+    int sut2MaterialState() const
     {
-        return m_picker1SensorOffsetY;
+        return m_sut2MaterialState;
     }
 
-    double picker2SensorOffsetX() const
+    int picker1MaterialState() const
     {
-        return m_picker2SensorOffsetX;
+        return m_picker1MaterialState;
     }
 
-    double picker2SensorOffsetY() const
+    int picker2MaterialState() const
     {
-        return m_picker2SensorOffsetY;
+        return m_picker2MaterialState;
     }
 
-    bool hasUnpickedNgProduct() const
+    int busyState() const
     {
-        return m_hasUnpickedSensor;
+        return m_busyState;
     }
 
-    bool hasUnpickedProduct() const
+    bool sut1NeedLoadSensor() const
     {
-        return m_hasUnpickedProduct;
+        return m_sut1NeedLoadSensor;
     }
 
-    bool hasUpickedNgSensor() const
+    bool sut2NeedLoadSensor() const
     {
-        return m_hasUnpickedNgSensor;
+        return m_sut2NeedLoadSensor;
     }
 
-    bool hasPickedNgProduct() const
+    bool station1HasRequest() const
     {
-        return m_hasPickedNgProduct;
+        return m_station1HasRequest;
     }
 
-    bool sutHasNgProduct() const
+    bool station2HasRequest() const
     {
-        return m_sutHasNgProduct;
+        return m_station2HasRequest;
     }
 
-    bool sut2HasSensor() const
+    bool finishStation1Task() const
     {
-        return m_sut2HasSensor;
+        return m_finishStation1Task;
     }
 
-    bool sut2HasNgSensor() const
+    bool finishStation2Task() const
     {
-        return m_sut2HasNgSensor;
+        return m_finishStation2Task;
     }
 
-    bool sut2HasProduct() const
+    bool sut1Ready() const
     {
-        return m_sut2HasProduct;
+        return m_sut1Ready;
     }
 
-    bool sut2HasNgProduct() const
+    bool sut2Ready() const
     {
-        return m_sut2HasNgProduct;
+        return m_sut2Ready;
     }
 
-    bool hasEmptyOffset() const
+    bool finishVacuumOperation() const
     {
-        return m_hasEmptyOffset;
+        return m_finishVacuumOperation;
     }
 
-    double emptyTrayOffsetX() const
+    int currentTrayID() const
     {
-        return m_emptyTrayOffsetX;
+        return m_currentTrayID;
     }
 
-    double emptyTrayOffsetY() const
+    bool handlyChangeTray() const
     {
-        return m_emptyTrayOffsetY;
+        return m_handlyChangeTray;
+    }
+
+    bool station1Unload() const
+    {
+        return m_station1Unload;
+    }
+
+    bool station2Unload() const
+    {
+        return m_station2Unload;
+    }
+
+    bool crossTrayPlaceProduct() const
+    {
+        return m_crossTrayPlaceProduct;
+    }
+
+    bool hasNgTrayPrOffset() const
+    {
+        return m_hasNgTrayPrOffset;
+    }
+
+    bool hasBufferTrayPrOffset() const
+    {
+        return m_hasBufferTrayPrOffset;
+    }
+
+    int lastState() const
+    {
+        return m_lastState;
+    }
+
+    int vacuumOperationResult() const
+    {
+        return m_vacuumOperationResult;
+    }
+
+    bool disableStation1() const
+    {
+        return m_disableStation1;
+    }
+
+    bool disableStation2() const
+    {
+        return m_disableStation2;
+    }
+
+    bool handlyChangeSensor() const
+    {
+        return m_handlyChangeSensor;
     }
 
 public slots:
@@ -1140,58 +1462,23 @@ public slots:
         m_runMode = runMode;
         emit runModeChanged(m_runMode);
     }
-    void setHasTray(bool hasTray)
+
+    void setHasSensorTray1(bool hasSensorTray1)
     {
-        if (m_hasTray == hasTray)
+        if (m_hasSensorTray1 == hasSensorTray1)
             return;
 
-        m_hasTray = hasTray;
-        emit hasTrayChanged(m_hasTray);
+        m_hasSensorTray1 = hasSensorTray1;
+        emit hasSensorTray1Changed(m_hasSensorTray1);
     }
 
-    void setSutHasSensor(bool sutHasSensor)
+    void setHasSensorTray2(bool hasSensorTray2)
     {
-        if (m_sutHasSensor == sutHasSensor)
+        if (m_hasSensorTray2 == hasSensorTray2)
             return;
 
-        m_sutHasSensor = sutHasSensor;
-        emit sutHasSensorChanged(m_sutHasSensor);
-    }
-
-    void setSutHasNgSensor(bool sutHasNgSensor)
-    {
-        if (m_sutHasNgSensor == sutHasNgSensor)
-            return;
-
-        m_sutHasNgSensor = sutHasNgSensor;
-        emit sutHasNgSensorChanged(m_sutHasNgSensor);
-    }
-
-    void setSutHasProduct(bool sutHasProduct)
-    {
-        if (m_sutHasProduct == sutHasProduct)
-            return;
-
-        m_sutHasProduct = sutHasProduct;
-        emit sutHasProductChanged(m_sutHasProduct);
-    }
-
-    void setNeedLoadSensor(bool needLoadSensor)
-    {
-        if (m_needLoadSensor == needLoadSensor)
-            return;
-
-        m_needLoadSensor = needLoadSensor;
-        emit needLoadSensorChanged(m_needLoadSensor);
-    }
-
-    void setNeedChangTray(bool needChangTray)
-    {
-        if (m_needChangTray == needChangTray)
-            return;
-
-        m_needChangTray = needChangTray;
-        emit needChangTrayChanged(m_needChangTray);
+        m_hasSensorTray2 = hasSensorTray2;
+        emit hasSensorTray2Changed(m_hasSensorTray2);
     }
 
     void setAllowChangeTray(bool allowChangeTray)
@@ -1201,51 +1488,6 @@ public slots:
 
         m_allowChangeTray = allowChangeTray;
         emit allowChangeTrayChanged(m_allowChangeTray);
-    }
-
-    void setHasPickedSensor(bool hasPickedSensor)
-    {
-        if (m_hasPickedSensor == hasPickedSensor)
-            return;
-
-        m_hasPickedSensor = hasPickedSensor;
-        emit hasPickedSensorChanged(m_hasPickedSensor);
-    }
-
-    void setHasPickedProduct(bool hasPickedProduct)
-    {
-        if (m_hasPickedProduct == hasPickedProduct)
-            return;
-
-        m_hasPickedProduct = hasPickedProduct;
-        emit hasPickedProductChanged(m_hasPickedProduct);
-    }
-
-    void setHasPickedNgSensor(bool hasPickedNgSensor)
-    {
-        if (m_hasPickedNgSensor == hasPickedNgSensor)
-            return;
-
-        m_hasPickedNgSensor = hasPickedNgSensor;
-        emit hasPickedNgSensorChanged(m_hasPickedNgSensor);
-    }
-
-    void setBeExchangeMaterial(bool beExchangeMaterial)
-    {
-        if (m_beExchangeMaterial == beExchangeMaterial)
-            return;
-
-        m_beExchangeMaterial = beExchangeMaterial;
-        emit beExchangeMaterialChanged(m_beExchangeMaterial);
-    }
-
-    void setCmd(QString cmd)
-    {
-        if (m_cmd == cmd)
-            return;
-
-        m_cmd = cmd;
-        emit cmdChanged(m_cmd);
     }
 
     void setWaitingChangeTray(bool waitingChangeTray)
@@ -1266,250 +1508,338 @@ public slots:
         emit finishChangeTrayChanged(m_finishChangeTray);
     }
 
-    void setPicker1SensorOffsetX(double picker1OffsetX)
+    void setSut1MaterialState(int sut1MaterialState)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_picker1SensorOffsetX, picker1OffsetX))
+        if (m_sut1MaterialState == sut1MaterialState)
             return;
 
-        m_picker1SensorOffsetX = picker1OffsetX;
-        emit picker1SensorOffsetXChanged(m_picker1SensorOffsetX);
+        m_sut1MaterialState = sut1MaterialState;
+        emit sut1MaterialStateChanged(m_sut1MaterialState);
     }
 
-    void setPicker1SensorOffsetY(double picker1OffsetY)
+    void setSut2MaterialState(int sut2MaterialState)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_picker1SensorOffsetY, picker1OffsetY))
+        if (m_sut2MaterialState == sut2MaterialState)
             return;
 
-        m_picker1SensorOffsetY = picker1OffsetY;
-        emit picker1SensorOffsetYChanged(m_picker1SensorOffsetY);
+        m_sut2MaterialState = sut2MaterialState;
+        emit sut2MaterialStateChanged(m_sut2MaterialState);
     }
 
-    void setPicker2SensorOffsetX(double picker2OffsetX)
+    void setPicker1MaterialState(int picker1MaterialState)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_picker2SensorOffsetX, picker2OffsetX))
+        if (m_picker1MaterialState == picker1MaterialState)
             return;
 
-        m_picker2SensorOffsetX = picker2OffsetX;
-        emit picker2SensorOffsetXChanged(m_picker2SensorOffsetX);
+        m_picker1MaterialState = picker1MaterialState;
+        emit picker1MaterialStateChanged(m_picker1MaterialState);
     }
 
-    void setPicker2SensorOffsetY(double picker2OffsetY)
+    void setPicker2MaterialState(int picker2MaterialState)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_picker2SensorOffsetY, picker2OffsetY))
+        if (m_picker2MaterialState == picker2MaterialState)
             return;
 
-        m_picker2SensorOffsetY = picker2OffsetY;
-        emit picker2SensorOffsetYChanged(m_picker2SensorOffsetY);
+        m_picker2MaterialState = picker2MaterialState;
+        emit picker2MaterialStateChanged(m_picker2MaterialState);
     }
 
-    void setHasUnpickedNgProduct(bool hasUnpickedSensor)
+    void setBusyState(int busyState)
     {
-        if (m_hasUnpickedSensor == hasUnpickedSensor)
+        if (m_busyState == busyState)
             return;
 
-        m_hasUnpickedSensor = hasUnpickedSensor;
-        emit hasUnpickedNgProductChanged(m_hasUnpickedSensor);
+        m_busyState = busyState;
+        emit busyStateChanged(m_busyState);
     }
 
-    void setHasUnpickedProduct(bool hasUnpickedProduct)
+    void setSut1NeedLoadSensor(bool sut1NeedLoadSensor)
     {
-        if (m_hasUnpickedProduct == hasUnpickedProduct)
+        if (m_sut1NeedLoadSensor == sut1NeedLoadSensor)
             return;
 
-        m_hasUnpickedProduct = hasUnpickedProduct;
-        emit hasUnpickedProductChanged(m_hasUnpickedProduct);
+        m_sut1NeedLoadSensor = sut1NeedLoadSensor;
+        emit sut1NeedLoadSensorChanged(m_sut1NeedLoadSensor);
     }
 
-    void setHasUnpickedNgSensor(bool hasUnpickedNgSensor)
+    void setSut2NeedLoadSensor(bool sut2NeedLoadSensor)
     {
-        if (m_hasUnpickedNgSensor == hasUnpickedNgSensor)
+        if (m_sut2NeedLoadSensor == sut2NeedLoadSensor)
             return;
 
-        m_hasUnpickedNgSensor = hasUnpickedNgSensor;
-        emit hasUnpickedNgSensorChanged(m_hasUnpickedNgSensor);
+        m_sut2NeedLoadSensor = sut2NeedLoadSensor;
+        emit sut2NeedLoadSensorChanged(m_sut2NeedLoadSensor);
     }
 
-    void setHasPickedNgProduct(bool hasPickedNgProduct)
+    void setStation1HasRequest(bool station1HasRequest)
     {
-        if (m_hasPickedNgProduct == hasPickedNgProduct)
+        if (m_station1HasRequest == station1HasRequest)
             return;
 
-        m_hasPickedNgProduct = hasPickedNgProduct;
-        emit hasPickedNgProductChanged(m_hasPickedNgProduct);
+        m_station1HasRequest = station1HasRequest;
+        emit station1HasRequestChanged(m_station1HasRequest);
     }
 
-    void setSutHasNgProduct(bool sutHasNgProduct)
+    void setStation2HasRequest(bool station2HasRequest)
     {
-        if (m_sutHasNgProduct == sutHasNgProduct)
+        if (m_station2HasRequest == station2HasRequest)
             return;
 
-        m_sutHasNgProduct = sutHasNgProduct;
-        emit sutHasNgProductChanged(m_sutHasNgProduct);
+        m_station2HasRequest = station2HasRequest;
+        emit station2HasRequestChanged(m_station2HasRequest);
     }
 
-    void setSut2HasSensor(bool sut2HasSensor)
+    void setFinishStation1Task(bool finishStation1Task)
     {
-        if (m_sut2HasSensor == sut2HasSensor)
+        if (m_finishStation1Task == finishStation1Task)
             return;
 
-        m_sut2HasSensor = sut2HasSensor;
-        emit sut2HasSensorChanged(m_sut2HasSensor);
+        m_finishStation1Task = finishStation1Task;
+        emit finishStation1TaskChanged(m_finishStation1Task);
     }
 
-    void setSut2HasNgSensor(bool sut2HasNgSensor)
+    void setFinishStation2Task(bool finishStation2Task)
     {
-        if (m_sut2HasNgSensor == sut2HasNgSensor)
+        if (m_finishStation2Task == finishStation2Task)
             return;
 
-        m_sut2HasNgSensor = sut2HasNgSensor;
-        emit sut2HasNgSensorChanged(m_sut2HasNgSensor);
+        m_finishStation2Task = finishStation2Task;
+        emit finishStation2TaskChanged(m_finishStation2Task);
     }
 
-    void setSut2HasProduct(bool sut2HasProduct)
+    void setSut1Ready(bool sut1Ready)
     {
-        if (m_sut2HasProduct == sut2HasProduct)
+        if (m_sut1Ready == sut1Ready)
             return;
 
-        m_sut2HasProduct = sut2HasProduct;
-        emit sut2HasProductChanged(m_sut2HasProduct);
+        m_sut1Ready = sut1Ready;
+        emit sut1ReadyChanged(m_sut1Ready);
     }
 
-    void setSut2HasNgProduct(bool sut2HasNgProduct)
+    void setSut2Ready(bool sut2Ready)
     {
-        if (m_sut2HasNgProduct == sut2HasNgProduct)
+        if (m_sut2Ready == sut2Ready)
             return;
 
-        m_sut2HasNgProduct = sut2HasNgProduct;
-        emit sut2HasNgProductChanged(m_sut2HasNgProduct);
+        m_sut2Ready = sut2Ready;
+        emit sut2ReadyChanged(m_sut2Ready);
     }
 
-    void setHasEmptyOffset(bool hasEmptyOffset)
+    void setFinishVacuumOperation(bool finishVacuumOperation)
     {
-        if (m_hasEmptyOffset == hasEmptyOffset)
+        if (m_finishVacuumOperation == finishVacuumOperation)
             return;
 
-        m_hasEmptyOffset = hasEmptyOffset;
-        emit hasEmptyOffsetChanged(m_hasEmptyOffset);
+        m_finishVacuumOperation = finishVacuumOperation;
+        emit finishVacuumOperationChanged(m_finishVacuumOperation);
     }
 
-    void setEmptyTrayOffsetX(double emptyTrayOffsetX)
+    void setCurrentTrayID(int currentTrayID)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_emptyTrayOffsetX, emptyTrayOffsetX))
+        if (m_currentTrayID == currentTrayID)
             return;
 
-        m_emptyTrayOffsetX = emptyTrayOffsetX;
-        emit emptyTrayOffsetXChanged(m_emptyTrayOffsetX);
+        m_currentTrayID = currentTrayID;
+        emit currentTrayIDChanged(m_currentTrayID);
     }
 
-    void setEmptyTrayOffsetY(double emptyTrayOffsetY)
+    void setHandlyChangeTray(bool handlyChangeTray)
     {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_emptyTrayOffsetY, emptyTrayOffsetY))
+        if (m_handlyChangeTray == handlyChangeTray)
             return;
 
-        m_emptyTrayOffsetY = emptyTrayOffsetY;
-        emit emptyTrayOffsetYChanged(m_emptyTrayOffsetY);
+        m_handlyChangeTray = handlyChangeTray;
+        emit handlyChangeTrayChanged(m_handlyChangeTray);
+    }
+
+    void setStation1Unload(bool station1Unload)
+    {
+        if (m_station1Unload == station1Unload)
+            return;
+
+        m_station1Unload = station1Unload;
+        emit station1UnloadChanged(m_station1Unload);
+    }
+
+    void setStation2Unload(bool station2Unload)
+    {
+        if (m_station2Unload == station2Unload)
+            return;
+
+        m_station2Unload = station2Unload;
+        emit station2UnloadChanged(m_station2Unload);
+    }
+
+    void setCrossTrayPlaceProduct(bool crossTrayPlaceProduct)
+    {
+        if (m_crossTrayPlaceProduct == crossTrayPlaceProduct)
+            return;
+
+        m_crossTrayPlaceProduct = crossTrayPlaceProduct;
+        emit crossTrayPlaceProductChanged(m_crossTrayPlaceProduct);
+    }
+
+    void setHasNgTrayPrOffset(bool hasNgTrayPrOffset)
+    {
+        if (m_hasNgTrayPrOffset == hasNgTrayPrOffset)
+            return;
+
+        m_hasNgTrayPrOffset = hasNgTrayPrOffset;
+        emit hasNgTrayPrOffsetChanged(m_hasNgTrayPrOffset);
+    }
+
+    void setHasBufferTrayPrOffset(bool hasBufferTrayPrOffset)
+    {
+        if (m_hasBufferTrayPrOffset == hasBufferTrayPrOffset)
+            return;
+
+        m_hasBufferTrayPrOffset = hasBufferTrayPrOffset;
+        emit hasBufferTrayPrOffsetChanged(m_hasBufferTrayPrOffset);
+    }
+
+    void setLastState(int lastState)
+    {
+        if (m_lastState == lastState)
+            return;
+
+        m_lastState = lastState;
+        emit lastStateChanged(m_lastState);
+    }
+
+    void setVacuumOperationResult(int vacuumOperationResult)
+    {
+        if (m_vacuumOperationResult == vacuumOperationResult)
+            return;
+
+        m_vacuumOperationResult = vacuumOperationResult;
+        emit vacuumOperationResultChanged(m_vacuumOperationResult);
+    }
+
+    void setDisableStation1(bool disableStation1)
+    {
+        if (m_disableStation1 == disableStation1)
+            return;
+
+        m_disableStation1 = disableStation1;
+        emit disableStation1Changed(m_disableStation1);
+    }
+
+    void setDisableStation2(bool disableStation2)
+    {
+        if (m_disableStation2 == disableStation2)
+            return;
+
+        m_disableStation2 = disableStation2;
+        emit disableStation2Changed(m_disableStation2);
+    }
+
+    void setHandlyChangeSensor(bool handlyChangeSensor)
+    {
+        if (m_handlyChangeSensor == handlyChangeSensor)
+            return;
+
+        m_handlyChangeSensor = handlyChangeSensor;
+        emit handlyChangeSensorChanged(m_handlyChangeSensor);
     }
 
 signals:
     void runModeChanged(int runMode);
-    void hasTrayChanged(bool hasTray);
 
-    void sutHasSensorChanged(bool sutHasSensor);
+    void hasSensorTray1Changed(bool hasSensorTray1);
 
-    void sutHasNgSensorChanged(bool sutHasNgSensor);
-
-    void sutHasProductChanged(bool sutHasProduct);
-
-    void needLoadSensorChanged(bool needLoadSensor);
-
-    void needChangTrayChanged(bool needChangTray);
+    void hasSensorTray2Changed(bool hasSensorTray2);
 
     void allowChangeTrayChanged(bool allowChangeTray);
-
-    void hasPickedSensorChanged(bool hasPickedSensor);
-
-    void hasPickedProductChanged(bool hasPickedProduct);
-
-    void hasPickedNgSensorChanged(bool hasPickedNgSensor);
-
-    void beExchangeMaterialChanged(bool beExchangeMaterial);
-
-    void cmdChanged(QString cmd);
 
     void waitingChangeTrayChanged(bool waitingChangeTray);
 
     void finishChangeTrayChanged(bool finishChangeTray);
 
-    void picker1SensorOffsetXChanged(double picker1SensorOffsetX);
+    void sut1MaterialStateChanged(int sut1MaterialState);
 
-    void picker1SensorOffsetYChanged(double picker1SensorOffsetY);
+    void sut2MaterialStateChanged(int sut2MaterialState);
 
-    void picker2SensorOffsetXChanged(double picker2SensorOffsetX);
+    void picker1MaterialStateChanged(int picker1MaterialState);
 
-    void picker2SensorOffsetYChanged(double picker2SensorOffsetY);
+    void picker2MaterialStateChanged(int picker2MaterialState);
 
-    void hasUnpickedNgProductChanged(bool hasUnpickedNgProduct);
+    void busyStateChanged(int busyState);
 
-    void hasUnpickedProductChanged(bool hasUnpickedProduct);
+    void sut1NeedLoadSensorChanged(bool sut1NeedLoadSensor);
 
-    void hasUnpickedNgSensorChanged(bool hasUpickedNgSensor);
+    void sut2NeedLoadSensorChanged(bool sut2NeedLoadSensor);
 
-    void hasPickedNgProductChanged(bool hasPickedNgProduct);
+    void station1HasRequestChanged(bool station1HasRequest);
 
-    void sutHasNgProductChanged(bool sutHasNgProduct);
+    void station2HasRequestChanged(bool station2HasRequest);
 
-    void sut2HasSensorChanged(bool sut2HasSensor);
+    void finishStation1TaskChanged(bool finishStation1Task);
 
-    void sut2HasNgSensorChanged(bool sut2HasNgSensor);
+    void finishStation2TaskChanged(bool finishStation2Task);
 
-    void sut2HasProductChanged(bool sut2HasProduct);
+    void sut1ReadyChanged(bool sut1Ready);
 
-    void sut2HasNgProductChanged(bool sut2HasNgProduct);
+    void sut2ReadyChanged(bool sut2Ready);
 
-    void hasEmptyOffsetChanged(bool hasEmptyOffset);
+    void finishVacuumOperationChanged(bool finishVacuumOperation);
 
-    void emptyTrayOffsetXChanged(double emptyTrayOffsetX);
+    void currentTrayIDChanged(int currentTrayID);
 
-    void emptyTrayOffsetYChanged(double emptyTrayOffsetY);
+    void handlyChangeTrayChanged(bool handlyChangeTray);
+
+    void station1UnloadChanged(bool station1Unload);
+
+    void station2UnloadChanged(bool station2Unload);
+
+    void crossTrayPlaceProductChanged(bool crossTrayPlaceProduct);
+
+    void hasNgTrayPrOffsetChanged(bool hasNgTrayPrOffset);
+
+    void hasBufferTrayPrOffsetChanged(bool hasBufferTrayPrOffset);
+
+    void lastStateChanged(int lastState);
+
+    void vacuumOperationResultChanged(int vacuumOperationResult);
+
+    void disableStation1Changed(bool disableStation1);
+
+    void disableStation2Changed(bool disableStation2);
+
+    void handlyChangeSensorChanged(bool handlyChangeSensor);
 
 private:
     int m_runMode = 0;
-    bool m_hasTray = false;
-    bool m_sutHasSensor = false;
-    bool m_sutHasNgSensor = false;
-    bool m_sutHasProduct = false;
-    bool m_needLoadSensor = false;
-    bool m_needChangTray = false;
+    bool m_hasSensorTray1 = false;
+    bool m_hasSensorTray2 = false;
     bool m_allowChangeTray = false;
-    bool m_hasPickedSensor = false;
-    bool m_hasPickedProduct = false;
-    bool m_hasPickedNgSensor = false;
-    bool m_beExchangeMaterial = false;
-    QString m_cmd = "";
     bool m_waitingChangeTray = false;
     bool m_finishChangeTray = false;
-    double m_picker1SensorOffsetX = 0;
-    double m_picker1SensorOffsetY = 0;
-    double m_picker2SensorOffsetX = 0;
-    double m_picker2SensorOffsetY = 0;
-    bool m_hasUnpickedSensor = false;
-    bool m_hasUnpickedProduct = false;
-    bool m_hasUnpickedNgSensor = false;
-    bool m_hasPickedNgProduct = false;
-    bool m_sutHasNgProduct = false;
-    bool m_sut2HasSensor = false;
-    bool m_sut2HasNgSensor = false;
-    bool m_sut2HasProduct = false;
-    bool m_sut2HasNgProduct = false;
-    bool m_hasEmptyOffset = false;
-    double m_emptyTrayOffsetX = 0;
-    double m_emptyTrayOffsetY = 0;
+    int m_sut1MaterialState = 0;
+    int m_sut2MaterialState = 0;
+    int m_picker1MaterialState = 0;
+    int m_picker2MaterialState = 0;
+    int m_busyState = 0;
+    bool m_sut1NeedLoadSensor = false;
+    bool m_sut2NeedLoadSensor = false;
+    bool m_station1HasRequest = false;
+    bool m_station2HasRequest = false;
+    bool m_finishStation1Task = false;
+    bool m_finishStation2Task = false;
+    bool m_sut1Ready = false;
+    bool m_sut2Ready = false;
+    bool m_finishVacuumOperation = false;
+    int m_currentTrayID = 0;
+    bool m_handlyChangeTray = false;
+    bool m_station1Unload = false;
+    bool m_station2Unload = false;
+    bool m_crossTrayPlaceProduct = true;
+    bool m_hasNgTrayPrOffset = false;
+    bool m_hasBufferTrayPrOffset = false;
+    int m_lastState = 0;
+    int m_vacuumOperationResult = 0;
+    bool m_disableStation1 = false;
+    bool m_disableStation2 = false;
+    bool m_handlyChangeSensor = false;
 };
 
 #endif // SENSORLOADERPARAMETER_H

@@ -30,14 +30,16 @@ public:
     bool stepMove_XYT2_Pos(const double step_x,const double step_y,const double step_t2,const bool check_softlanding = false,int timeout = 10000);
     bool wait_XYT2_Arrived(int timeout = 10000);
 
-    bool Z1MoveToPick(double target,bool open_vacuum = true,bool check_softlanding = false,bool need_return = true,int timeout = 10000);
+    bool Z1MoveToPick(double target,bool open_vacuum,bool need_return,bool check_softlanding = false,int timeout = 10000);
     bool Z1SerchByForce(double speed,double force,bool check_softlanding = false,int timeout = 10000);
     bool Z1SerchByForce(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);
     bool ZSerchReturn(int timeout = 10000);
+    bool MoveZ1ToSafeHeighSync();
+    bool MoveZ2ToSafeHeighSync();
     double GetSoftladngPosition(bool get_current = false);
 
 
-    bool Z2MoveToPick(double target,bool open_vacuum = true,bool check_softlanding = false,bool need_return = true,int timeout = 10000);
+    bool Z2MoveToPick(double target,bool open_vacuum,bool need_return,bool check_softlanding = false,int timeout = 10000);
     bool Z2SerchByForce(double speed,double force,bool check_softlanding = false,int timeout = 10000);
     bool Z2SerchByForce(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);
     bool ZSerchReturn2(int timeout = 10000);

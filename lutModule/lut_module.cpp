@@ -1,6 +1,8 @@
 ﻿#include "lutModule/lut_module.h"
 #include "utils/commonutils.h"
 
+#include <tcpmessager.h>
+
 LutModule::LutModule(QString name, QObject *parent):ThreadWorkerBase (name)
 {
 }
@@ -609,6 +611,42 @@ void LutModule::sendPrEvent(const PrOffset pr_offset)
 }
 void LutModule::startWork(int run_mode)
 {
+    QVariantMap run_params = inquirRunParameters();
+    if(run_params.isEmpty())
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数为空.启动失败.");
+        return;
+    }
+    if(run_params.contains("RunMode"))
+    {
+        states.setRunMode(run_params["RunMode"].toInt());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数RunMode缺失.启动失败.");
+        return;
+    }
+    if(run_params.contains("DisableStation"))
+    {
+        QVariantMap disable_map = run_params["DisableStation"].toMap();
+        states.setDisableStation1(disable_map["0"].toBool());
+        states.setDisableStation2(disable_map["1"].toBool());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数DisableStation缺失.启动失败.");
+        return;
+    }
+    if(run_params.contains("HandlyChangeLens"))
+    {
+        states.setHandlyChangeLens(run_params["HandlyChangLens"].toBool());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeLens缺失.启动失败.");
+        return;
+    }
+
     this->has_material = true;
     qInfo("Lut Module start work in run mode: %d", run_mode);
     if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)
@@ -1154,12 +1192,21 @@ void LutModule::recordAALensPr(QString uuid)
 
 void LutModule::receivceModuleMessage(QVariantMap message)
 {
-
+    qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
+    QMutexLocker temp_locker(&message_mutex);
+    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
+        this->module_message = message;
 }
 
 PropertyBase *LutModule::getModuleState()
 {
     return &states;
+}
+
+QMap<QString, PropertyBase *> LutModule::getModuleParameter()
+{
+    QMap<QString, PropertyBase *> temp;
+    return temp;
 }
 
 void LutModule::receiveToolUpPRRequest(PrOffset &offset)

@@ -3,6 +3,7 @@
 #include <QString>
 
 #define CONFIG_DIR                   "config//"
+#define STATES_DIR                   "states//"
 #define PR_CONFIG_DIR                "config//prConfig"
 #define SYSTERM_PARAM_DIR            "config//systermParameter//"
 #define SYSTERM_CONGIF_FILE           "systermConfig.json"

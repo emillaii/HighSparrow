@@ -59,7 +59,7 @@ public:
     UPHHelper left_lens_uph;
     UPHHelper right_lens_uph;
 signals:
-    void sendMessageToClient(QString destAddress, QString message);
+    void sendMessageToClient(QString destAddress, QString module_message);
     void sendLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
     void postCSVDataToUnit(QString uuid,QVariantMap data);
 public slots:
@@ -69,7 +69,7 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
     //End of ThreadWorkerBase
-    void receiveRequestMessage(QString message, QString client_ip);
+    void receiveRequestMessage(QString module_message, QString client_ip);
     void receiveLoadLensRequstFinish(int lens,int lens_tray);
     void receiveToolUpPRRequest(PrOffset &offset);
     LUTState getLUTState();
@@ -143,8 +143,6 @@ public:
     bool checkLutNgLens(bool check_state);
     bool stepMove_XY_Sync(double x,double y);
 
-
-
     double updateAccumulatedHour(bool calculate = true);
     double getHourSpace(QTime time_label);
     Q_INVOKABLE void clearNumber();
@@ -156,8 +154,12 @@ public:
 
     // ThreadWorkerBase interface
 public:
-    void receivceModuleMessage(QVariantMap message);
+    void receivceModuleMessage(QVariantMap module_message);
     PropertyBase *getModuleState();
+
+    // ThreadWorkerBase interface
+public:
+    QMap<QString, PropertyBase *> getModuleParameter();
 };
 
 #endif // LUT_MODULE_H

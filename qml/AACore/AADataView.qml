@@ -118,13 +118,13 @@ Grid {
             }
             SplineSeries {
                 name: "LL "
-                id: lrSeries
+                id: llSeries
                 axisX: axisX
                 axisY: axisY1
             }
             SplineSeries {
                 name: "LR "
-                id: llSeries
+                id: lrSeries
                 axisX: axisX
                 axisY: axisY1
             }
@@ -338,13 +338,13 @@ Grid {
             }
             SplineSeries {
                 name: "LL "
-                id: lrSeries2
+                id: llSeries2
                 axisX: axisX2
                 axisY: axisY2
             }
             SplineSeries {
                 name: "LR "
-                id: llSeries2
+                id: lrSeries2
                 axisX: axisX2
                 axisY: axisY2
             }

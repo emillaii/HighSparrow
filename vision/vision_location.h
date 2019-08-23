@@ -15,12 +15,16 @@ public:
     void saveParam();
     bool performPR(PrOffset &offset, bool need_conversion = true);
     bool performPR();
+    bool performNoMaterialPR();
     bool performPR(PRResultStruct &pr_result);
+    void resetResult();
     QPointF getCurrentOffset();
 
     PrOffset getCurrentResult();
+    void setCurrentResult(PrOffset pr_offset);
     PrOffset getCurrentResult(bool use_origin);
     QPointF getCurrentResultOffset();
+    QPointF getOffsetResult(QPoint offset);
     PRResultStruct getCurrentPixelResult();
 
     void OpenLight();

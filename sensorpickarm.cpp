@@ -283,7 +283,7 @@ bool SensorPickArm::wait_XYT2_Arrived(int timeout)
     return result;
 }
 
-bool SensorPickArm::Z1MoveToPick(double target, bool open_vacuum, bool check_softlanding,bool need_return, int timeout)
+bool SensorPickArm::Z1MoveToPick(double target, bool open_vacuum,bool need_return, bool check_softlanding, int timeout)
 {
     if(check_softlanding)if(!picker1->motor_z->resetSoftLanding(timeout))return false;
     bool result = picker1->motor_z->MoveToPosSync(target);
@@ -324,6 +324,16 @@ bool SensorPickArm::ZSerchReturn(int timeout)
     return picker1->motor_z->resetSoftLanding(timeout);
 }
 
+bool SensorPickArm::MoveZ1ToSafeHeighSync()
+{
+    return picker1->motor_z->MoveToPosSync(parameters.motor1SafeHeight());
+}
+
+bool SensorPickArm::MoveZ2ToSafeHeighSync()
+{
+    return picker2->motor_z->MoveToPosSync(parameters.motor2SafeHeight());
+}
+
 double SensorPickArm::GetSoftladngPosition(bool get_current)
 {
     if(get_current)
@@ -331,13 +341,13 @@ double SensorPickArm::GetSoftladngPosition(bool get_current)
     return softlanding_position;
 }
 
-bool SensorPickArm::Z2MoveToPick(double target, bool open_vacuum, bool check_softlanding,bool need_return, int timeout)
+bool SensorPickArm::Z2MoveToPick(double target, bool open_vacuum,bool need_return, bool check_softlanding, int timeout)
 {
     if(check_softlanding)if(!picker2->motor_z->resetSoftLanding(timeout))return false;
     bool result = picker2->motor_z->MoveToPosSync(target);
     result &= picker2->vacuum->Set(open_vacuum);
     if(need_return)
-        picker2->motor_z->MoveToPosSync(0);
+        MoveZ2ToSafeHeighSync();
     return result;
 }
 

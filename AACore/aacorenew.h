@@ -106,6 +106,7 @@ private:
     void NgProduct();
     void SetLens();
     void SetSensor();
+    void SetNoSensor();
     void SetProduct();
     double getSFRDev_mm(int count,double numbers,...);
     double getzPeakDev_um(int count,double numbers,...);
@@ -186,6 +187,11 @@ public slots:
     // ThreadWorkerBase interface
 public:
     PropertyBase *getModuleState();
+
+    // ThreadWorkerBase interface
+public:
+    void receivceModuleMessage(QVariantMap module_message);
+    QMap<QString, PropertyBase *> getModuleParameter();
 };
 
 #endif // AACORENEW_H

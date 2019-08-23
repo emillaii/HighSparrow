@@ -25,6 +25,7 @@ signals:
     void feedbackOperation(const int sender_id,const int operation_type);
 
     void sendMessageToLogicManager(QVariantMap message);
+    void sendMessageToDevicesManager(QVariantMap message);
 public slots:
     void receiveAlarm(int sender_id,int level, QString error_message);
     void tcpResp(QString message);
@@ -44,8 +45,7 @@ public slots:
 public:
     Q_INVOKABLE void startAllWorkers(int run_mode = 0);
     Q_INVOKABLE void stopAllWorkers(bool wait_finish);
-    Q_INVOKABLE void startWorkers(int run_mode = 0);
-
+    void startWorkers(int run_mode = 0);
     Q_INVOKABLE void stopWorkers(bool wait_finish = true);
     Q_INVOKABLE void resetLogics();
     Q_INVOKABLE void startWorker(QString name,int run_mode = 0);
@@ -55,6 +55,8 @@ public:
     Q_INVOKABLE QString getAlarmMessage(QString workerName);
     Q_INVOKABLE int getAlarmState(QString workerName);
     Q_INVOKABLE void sendOperation(QString workerName, int operation_type);
+    Q_INVOKABLE void changeAlarmShow();
+    bool checkHasAlarm();
     bool ShowAlarmDialog() const
     {
         return m_ShowAlarmDialog;
@@ -64,6 +66,7 @@ private:
     void sendTcpMessage(QVariantMap message);
 private:
     QMap<QString,ThreadWorkerBase*> workers;
+    QString logic_manager_name = "";
     QString current_name = "";
     bool m_ShowAlarmDialog = false;
     QMap<int, QString> workersError;
@@ -71,6 +74,8 @@ private:
     QMap<QString,TcpMessager*> receive_messagers;
     QMap<QString,TcpMessager*> send_messagers;
     QThread work_thread;
+    QMap<QString,QVariantMap> run_parameter;
+    QVariantMap local_run_parameter;
 public:
     WorkersManagerParameter parameters;
 };

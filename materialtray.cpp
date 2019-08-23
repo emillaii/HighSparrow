@@ -21,9 +21,11 @@ void MaterialTray::loadJsonConfig(QString file_name)
     temp_map.insert("TRAY1_PARAMETER", parameters[0]);
     temp_map.insert("TRAY2_PARAMETER", parameters[1]);
     temp_map.insert("TRAY3_PARAMETER", parameters[2]);
+    temp_map.insert("TRAY4_PARAMETER", parameters[3]);
     temp_map.insert("TRAY1_START_POSITION", &parameters[0]->tray_start_position);
     temp_map.insert("TRAY2_START_POSITION", &parameters[1]->tray_start_position);
     temp_map.insert("TRAY3_START_POSITION", &parameters[2]->tray_start_position);
+    temp_map.insert("TRAY4_START_POSITION", &parameters[3]->tray_start_position);
     PropertyBase::loadJsonConfig(file_name, temp_map);
     qInfo("parameters.size() %d",parameters.size());
 }
@@ -39,6 +41,24 @@ void MaterialTray::saveJsonConfig(QString file_name)
         temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_START_POSITION"), &parameters[i]->tray_start_position);
     }
     PropertyBase::saveJsonConfig(file_name, temp_map);
+}
+
+QString MaterialTray::getMaterialStateName(int material_state)
+{
+    switch (material_state) {
+    case MaterialState::IsEmpty:
+        return u8"空位";
+    case MaterialState::IsRaw:
+        return u8"新料";
+    case MaterialState::IsNgSensor:
+        return u8"NG料";
+    case MaterialState::IsProduct:
+        return u8"成品料";
+    case MaterialState::IsNgProduct:
+        return u8"NG成品料";
+    default:
+        return "";
+    }
 }
 
 QPointF MaterialTray::getRelativePosition(int column_index, int row_index)
@@ -88,17 +108,19 @@ bool MaterialTray::findLastPositionOfState(int state, int tray_index)
     int curren_index = 0;
     while (true)
     {
-        if(current_tray->tray_material_state[curren_index]== state)
+        int temp_state = current_tray->tray_material_state[curren_index];
+        if(temp_state == state)
         {
-            if(curren_index == max_index)
+            if(curren_index == max_index && state == current_tray->initState())
                 current_tray->setNeedChange(true);
             current_tray->setCurrentIndex(curren_index);
             qInfo("findLastPositionOfState find index %d tray %d",curren_index,tray_index);
             return true;
         }
-        if(curren_index >= max_index)
+        if(curren_index >= max_index||temp_state == current_tray->initState())
         {
-            current_tray->setNeedChange(true);
+            if(state == current_tray->initState())
+                current_tray->setNeedChange(true);
             return false;
         }
         curren_index++;
@@ -143,9 +165,65 @@ int MaterialTray::getMaterialState(int column_index, int row_index,int tray_inde
 
 int MaterialTray::getMaterialState(int index, int tray_index)
 {
-    int column_index,row_index;
-    getColumnAndRowIndex(index,column_index,row_index);
-    return parameters[getTrayIndex(tray_index)]->tray_material_state[getMaterialIndex(column_index,row_index)];
+    return parameters[getTrayIndex(tray_index)]->tray_material_state[getMaterialIndex(index)];
+}
+
+QVariantMap *MaterialTray::getCurrentMaterialData(int tray_index)
+{
+    TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
+    return &current_tray->tray_material_data[current_tray->currentIndex()];
+}
+
+QVariantMap *MaterialTray::getMaterialData(int column_index, int row_index, int tray_index)
+{
+    TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
+    return &current_tray->tray_material_data[getMaterialIndex(getColumnIndex(column_index),getRowIndex(row_index))];
+}
+
+QVariantMap *MaterialTray::getMaterialData(int index, int tray_index)
+{
+    TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
+    return &current_tray->tray_material_data[getMaterialIndex(index)];
+}
+
+PrOffset MaterialTray::getTrayCurrentPrOffset(int tray_index)
+{
+    QVariantMap* temp_data = getCurrentMaterialData(tray_index);
+    PrOffset temp_offset;
+    temp_offset.X = (*temp_data)["pr_offset_x"].toDouble();
+    temp_offset.Y = (*temp_data)["pr_offset_y"].toDouble();
+    temp_offset.Theta = (*temp_data)["pr_offset_t"].toDouble();
+    qInfo("getTrayCurrentPrOffset tray_index:%d,current_index %d,pr_offset_x:%f,pr_offset_y%f",tray_index,getCurrentIndex(tray_index),temp_offset.X,temp_offset.Y);
+    return temp_offset;
+
+}
+
+PrOffset MaterialTray::getTrayPrOffset(int index, int tray_index)
+{
+    QVariantMap* temp_data = getMaterialData(index,tray_index);
+    PrOffset temp_offset;
+    temp_offset.X = (*temp_data)["pr_offset_x"].toDouble();
+    temp_offset.Y = (*temp_data)["pr_offset_y"].toDouble();
+    temp_offset.Theta = (*temp_data)["pr_offset_t"].toDouble();
+    return temp_offset;
+}
+
+void MaterialTray::setTrayCurrentPrOffset(PrOffset pr_offset, int tray_index)
+{
+    QVariantMap* temp_data = getCurrentMaterialData(tray_index);
+    (*temp_data)["pr_offset_x"] = pr_offset.X;
+    (*temp_data)["pr_offset_y"] = pr_offset.Y;
+//    (*temp_data)["pr_offset_t"] = pr_offset.Theta;
+    (*temp_data)["pr_offset_t"] = 0;
+    qInfo("setTrayCurrentPrOffset tray_index:%d,current_index %d,pr_offset_x:%f,pr_offset_y%f",tray_index,getCurrentIndex(tray_index),pr_offset.X,pr_offset.Y);
+}
+
+void MaterialTray::setTrayPrOffset(PrOffset pr_offset, int index, int tray_index)
+{
+    QVariantMap* temp_data = getMaterialData(index,tray_index);
+    (*temp_data)["pr_offset_x"] = pr_offset.X;
+    (*temp_data)["pr_offset_y"] = pr_offset.Y;
+    (*temp_data)["pr_offset_t"] = pr_offset.Theta;
 }
 
 void MaterialTray::setMaterialState(int column_index, int row_index, int state,int tray_index)
@@ -181,15 +259,50 @@ void MaterialTray::getTrayCurrent(int &column_index, int &row_index, const int t
    getColumnAndRowIndex(temp_index,column_index,row_index);
 }
 
+QString MaterialTray::getTrayName(int tray_index)
+{
+    return parameters[getTrayIndex(tray_index)]->trayName();
+}
+
+int MaterialTray::getTrayNumber(int tray_index)
+{
+    return parameters[getTrayIndex(tray_index)]->trayNumber();
+}
+
 void MaterialTray::resetTrayState(int tray_index)
 {
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
+    current_tray->setTrayNumber(current_tray->trayNumber() + 1);
     for (int i = 0; i < current_tray->tray_material_state.count(); ++i)
     {
         current_tray->tray_material_state[i] = current_tray->initState();
+        current_tray->tray_material_data[i].clear();
+        current_tray->tray_material_data[i].insert("TrayNumber",QString::number(current_tray->trayNumber()));
     }
     current_tray->setCurrentIndex(0);
     current_tray->setNeedChange(false);
+}
+
+void MaterialTray::resetAllTrayState()
+{
+    for (int i = 0; i < parameters.size(); ++i)
+        resetTrayState(i);
+}
+
+void MaterialTray::copyTrayState(int origin_tray_index, int target_tray_index)
+{
+    TrayParameter* origin_tray = parameters[getTrayIndex(origin_tray_index)];
+    TrayParameter* target_tray = parameters[getTrayIndex(target_tray_index)];
+    target_tray->setTrayNumber(origin_tray->trayNumber());
+    target_tray->setCurrentIndex(origin_tray->currentIndex());
+    target_tray->setNeedChange(origin_tray->needChange());
+    for (int i = 0; i < origin_tray->tray_material_state.count(); ++i)
+    {
+        target_tray->tray_material_state[i] = origin_tray->tray_material_state[i];
+        target_tray->tray_material_data[i].clear();
+        foreach (QString temp_key, origin_tray->tray_material_data[i].keys())
+            target_tray->tray_material_data[i].insert(temp_key,origin_tray->tray_material_data[i][temp_key]);
+    }
 }
 
 QPointF MaterialTray::getStartPosition(int tray_index)

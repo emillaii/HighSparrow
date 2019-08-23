@@ -9,8 +9,8 @@ Window {
     property bool lightState: true
     id: alarmWindow
     title: "Alarm Dialog"
-    width: 800
-    height: 400
+    width: 650
+    height: 300
 
     flags:  Qt.Window | Qt.WindowSystemMenuHint
             | Qt.WindowTitleHint | Qt.WindowMinimizeButtonHint
@@ -55,7 +55,7 @@ Window {
                     }
                 }
                 Rectangle {
-                    width:  500
+                    width:  350
                     height: 40
                     color: "black"
                     Connections{

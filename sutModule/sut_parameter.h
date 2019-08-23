@@ -281,7 +281,7 @@ private:
     QString m_updownlookUpLocationName;
     QString m_updownlookDownLocationName;
     double m_cameraTheta = 0;
-    QString m_moduleName = "SUT1Module";
+    QString m_moduleName = "Sut1Module";
     double m_yArrivedError = 10;
     double m_zArrivedEorror = 0.1;
     double m_prPosArrivedY = 10;
@@ -291,10 +291,17 @@ private:
 class SutState:public PropertyBase
 {
     Q_OBJECT
+    Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
+    Q_PROPERTY(int stationNumber READ stationNumber WRITE setStationNumber NOTIFY stationNumberChanged)
+    Q_PROPERTY(bool disableStation READ disableStation WRITE setDisableStation NOTIFY disableStationChanged)
+    Q_PROPERTY(bool handlyChangeSensor READ handlyChangeSensor WRITE setHandlyChangeSensor NOTIFY handlyChangeSensorChanged)
+    Q_PROPERTY(int sutMaterialState READ sutMaterialState WRITE setSutMaterialState NOTIFY sutMaterialStateChanged)
+
     Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
     Q_PROPERTY(bool sutHasProduct READ sutHasProduct WRITE setSutHasProduct NOTIFY sutHasProductChanged)
     Q_PROPERTY(bool sutHasNgProduct READ sutHasNgProduct WRITE setSutHasNgProduct NOTIFY sutHasNgProductChanged)
+
     Q_PROPERTY(bool allowLoadSensor READ allowLoadSensor WRITE setAllowLoadSensor NOTIFY allowLoadSensorChanged)
     Q_PROPERTY(bool loadingSensor READ loadingSensor WRITE setLoadingSensor NOTIFY loadingSensorChanged)
     Q_PROPERTY(bool waitLoading READ waitLoading WRITE setWaitLoading NOTIFY waitLoadingChanged)
@@ -333,6 +340,31 @@ public:
     bool sutHasNgProduct() const
     {
         return m_sutHasNgProduct;
+    }
+
+    int runMode() const
+    {
+        return m_runMode;
+    }
+
+    bool handlyChangeSensor() const
+    {
+        return m_handlyChangeSensor;
+    }
+
+    int stationNumber() const
+    {
+        return m_stationNumber;
+    }
+
+    bool disableStation() const
+    {
+        return m_disableStation;
+    }
+
+    int sutMaterialState() const
+    {
+        return m_sutMaterialState;
     }
 
 public slots:
@@ -399,6 +431,51 @@ public slots:
         emit sutHasNgProductChanged(m_sutHasNgProduct);
     }
 
+    void setRunMode(int runMode)
+    {
+        if (m_runMode == runMode)
+            return;
+
+        m_runMode = runMode;
+        emit runModeChanged(m_runMode);
+    }
+
+    void setHandlyChangeSensor(bool handlyChangeSensor)
+    {
+        if (m_handlyChangeSensor == handlyChangeSensor)
+            return;
+
+        m_handlyChangeSensor = handlyChangeSensor;
+        emit handlyChangeSensorChanged(m_handlyChangeSensor);
+    }
+
+    void setStationNumber(int stationNumber)
+    {
+        if (m_stationNumber == stationNumber)
+            return;
+
+        m_stationNumber = stationNumber;
+        emit stationNumberChanged(m_stationNumber);
+    }
+
+    void setDisableStation(bool disableStation)
+    {
+        if (m_disableStation == disableStation)
+            return;
+
+        m_disableStation = disableStation;
+        emit disableStationChanged(m_disableStation);
+    }
+
+    void setSutMaterialState(int sutMaterialState)
+    {
+        if (m_sutMaterialState == sutMaterialState)
+            return;
+
+        m_sutMaterialState = sutMaterialState;
+        emit sutMaterialStateChanged(m_sutMaterialState);
+    }
+
 signals:
     void sutHasSensorChanged(bool sutHasSensor);
 
@@ -414,6 +491,16 @@ signals:
 
     void sutHasNgProductChanged(bool sutHasNgProduct);
 
+    void runModeChanged(int runMode);
+
+    void handlyChangeSensorChanged(bool handlyChangeSensor);
+
+    void stationNumberChanged(int stationNumber);
+
+    void disableStationChanged(bool disableStation);
+
+    void sutMaterialStateChanged(int sutMaterialState);
+
 private:
     bool m_sutHasSensor = false;
     bool m_sutHasNgSensor = false;
@@ -422,6 +509,11 @@ private:
     bool m_loadingSensor = false;
     bool m_waitLoading = false;
     bool m_sutHasNgProduct = false;
+    int m_runMode = 0;
+    bool m_handlyChangeSensor = false;
+    int m_stationNumber = 0;
+    bool m_disableStation = false;
+    int m_sutMaterialState = 0;
 };
 
 #endif // SUT_PARAMETER_H

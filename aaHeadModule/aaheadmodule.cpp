@@ -93,13 +93,13 @@ bool AAHeadModule::moveToUplookResultPosition()
 
 void AAHeadModule::openUVTillTime(int till_time)
 { 
-    uv1->SET(1,thread_id);
-    uv2->SET(1,thread_id);
-    uv3->SET(1,thread_id);
+    uv1->SET(true,thread_id);
+    uv2->SET(true,thread_id);
+    uv3->SET(true,thread_id);
     uv4->SetOnTllTimeSpan(till_time,thread_id);
-    uv1->SET(0,thread_id);
-    uv2->SET(0,thread_id);
-    uv3->SET(0,thread_id);
+    uv1->SET(false,thread_id);
+    uv2->SET(false,thread_id);
+    uv3->SET(false,thread_id);
 
 //    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),1);
 //    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),1);
@@ -293,8 +293,6 @@ void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double
     this->offset_x = offset_x;
     this->offset_y = offset_y;
     this->offset_theta = offset_theta;
-    receive_sensor = true;
-    waiting_sensor = false;
 }
 
 bool AAHeadModule::moveToDiffrentZSync(double z)

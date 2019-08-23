@@ -130,6 +130,11 @@ public slots:
     // ThreadWorkerBase interface
 public:
     PropertyBase *getModuleState();
+
+    // ThreadWorkerBase interface
+public:
+    void receivceModuleMessage(QVariantMap module_message);
+    QMap<QString, PropertyBase *> getModuleParameter();
 };
 
 #endif // TRAYLOADERMODULE_H

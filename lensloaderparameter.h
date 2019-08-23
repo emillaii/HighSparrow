@@ -548,6 +548,8 @@ class LensPickArmModuleState:public PropertyBase
     Q_OBJECT
 public:
     LensPickArmModuleState():PropertyBase(){}
+    Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
+    Q_PROPERTY(bool handlyChangeLens READ handlyChangeLens WRITE setHandlyChangeLens NOTIFY handlyChangeLensChanged)
     Q_PROPERTY(bool hasTray READ hasTray WRITE setHasTray NOTIFY hasTrayChanged)
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool lutHasNgLens READ lutHasNgLens WRITE setLutHasNgLens NOTIFY lutHasNgLensChanged)
@@ -655,6 +657,16 @@ public:
     bool finishChangeTray() const
     {
         return m_finishChangeTray;
+    }
+
+    int runMode() const
+    {
+        return m_runMode;
+    }
+
+    bool handlyChangeLens() const
+    {
+        return m_handlyChangeLens;
     }
 
 public slots:
@@ -820,6 +832,24 @@ public slots:
         emit finishChangeTrayChanged(m_finishChangeTray);
     }
 
+    void setRunMode(int runMode)
+    {
+        if (m_runMode == runMode)
+            return;
+
+        m_runMode = runMode;
+        emit runModeChanged(m_runMode);
+    }
+
+    void setHandlyChangeLens(bool handlyChangeLens)
+    {
+        if (m_handlyChangeLens == handlyChangeLens)
+            return;
+
+        m_handlyChangeLens = handlyChangeLens;
+        emit handlyChangeLensChanged(m_handlyChangeLens);
+    }
+
 signals:
     void hasTrayChanged(bool hasTray);
 
@@ -857,6 +887,10 @@ signals:
 
     void finishChangeTrayChanged(bool finishChangeTray);
 
+    void runModeChanged(int runMode);
+
+    void handlyChangeLensChanged(bool handlyChangeLens);
+
 private:
     bool m_hasTray = true;
     bool m_lutHasLens = false;
@@ -876,6 +910,8 @@ private:
     bool m_loadingLens = false;
     bool m_waitingChangeTray = false;
     bool m_finishChangeTray = false;
+    int m_runMode = 0;
+    bool m_handlyChangeLens = false;
 };
 
 #endif // LENSPICKARMMODULEPARAMETER_H

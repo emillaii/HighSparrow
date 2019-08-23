@@ -63,20 +63,28 @@ ItemDelegate {
                 SensorHeadParameter{}
             }
             GroupBox{
-                title:qsTr("sensor 料盘1")
-                MaterialTray1{}
+                title: qsTr("SUT")
+                SensorPickArmSUT{}
             }
             GroupBox{
-                title:qsTr("sensor 料盘2")
-                MaterialTray2{}
+                title:qsTr("sensor 料盘1")
+                MaterialTray1{}
             }
             GroupBox{
                 title:qsTr("料盘规格")
                 TraySpecs{}
             }
             GroupBox{
-                title: qsTr("SUT")
-                SensorPickArmSUT{}
+                title:qsTr("sensor 料盘2")
+                MaterialTray2{}
+            }
+            GroupBox{
+                title:qsTr("Ng 盘")
+                MaterialTray3{}
+            }
+            GroupBox{
+                title:qsTr("缓存盘")
+                MaterialTray4{}
             }
         }
     }

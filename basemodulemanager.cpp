@@ -47,7 +47,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         qInfo("This sparrow is in Master mode");
         this->lut_module.openServer(19998);
         lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
-        sut_clitent = new SutClient("ws://192.168.0.251:19999");
+//        sut_clitent = new SutClient("ws://192.168.0.251:19999");
         connect(&lut_module,&LutModule::sendLoadLensRequst,&lens_loader_module,&LensLoaderModule::receiveLoadLensRequst,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendLoadLensFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendChangeTrayRequst,&tray_loader_module,&TrayLoaderModule::onTestTrayUsed,Qt::DirectConnection);
@@ -56,9 +56,9 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     else
     {
         qInfo("This sparrow is in Slave mode");
-        this->sensor_loader_module.openServer(19999);
+//        this->sensor_loader_module.openServer(19999);
         lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
-        sut_clitent = new SutClient("ws://localhost:19999");
+//        sut_clitent = new SutClient("ws://localhost:19999");
     }
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
 
@@ -72,15 +72,15 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&lens_loader_module, &LensLoaderModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::saveUnitDataToCSV, &unitlog, &Unitlog::saveUnitDataToCSV);
 
-    connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTrayRequst,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);
-    connect(&sensor_tray_loder_module,&SensorTrayLoaderModule::sendChangeTrayFinish,&sensor_loader_module,&SensorLoaderModule::receiveChangeTrayFinish,Qt::DirectConnection);
+//    connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTrayRequst,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);
+//    connect(&sensor_tray_loder_module,&SensorTrayLoaderModule::sendChangeTrayFinish,&sensor_loader_module,&SensorLoaderModule::receiveChangeTrayFinish,Qt::DirectConnection);
     if(!QDir(".//notopencamera").exists())
     {
         if(pylonUplookCamera) pylonUplookCamera->start();
         if(pylonDownlookCamera) pylonDownlookCamera->start();
         if(pylonPickarmCamera) pylonPickarmCamera->start();
     }
-    material_tray.standards_parameters.setTrayCount(3);
+    material_tray.standards_parameters.setTrayCount(5);
     unitlog.setServerAddress(configs.dataServerURL());
     setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
@@ -341,10 +341,33 @@ bool BaseModuleManager::sendMessageTest(QString title, QString content)
     }
 }
 
+void BaseModuleManager::receiveMessageFromWorkerManger(QVariantMap message)
+{
+    qInfo("receiveMessageFromWorkerManger: %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
+
+    QString message_content = message["Message"].toString();
+    if(message_content == "inquirRunParameters")
+    {
+        QVariantMap temp_param;
+        temp_param.insert("RunMode",paramters.runMode());
+        temp_param.insert("HandlyChangeLens",paramters.handlyChangeLens());
+        temp_param.insert("HandlyChangeSensor",paramters.handlyChangeSensor());
+        temp_param.insert("HandlyChangeLensTray",paramters.handlyChangeLensTray());
+        temp_param.insert("HandlyChangeSensorTray",paramters.handlyChangeSensorTray());
+        temp_param.insert("StationNumber",QString::number(getServerMode()));
+        temp_param.insert("DisableStation",paramters.disableStation());
+
+        temp_param.insert("OriginModule",message["OriginModule"]);
+        temp_param.insert("TargetModule","WorksManager");
+        temp_param.insert("Message","runParametersResp");
+        emit sendMessageToWorkerManger(temp_param);
+    }
+}
+
 bool BaseModuleManager::loadParameters()
 {
     configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
-    if(!this->paramers.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))
+    if(!this->paramters.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))
         return false;
 
     tcp_manager.loadJsonConfig(getSystermParameterDir().append(TCP_CONFIG_FILE));
@@ -402,7 +425,7 @@ bool BaseModuleManager::loadconfig()
 bool BaseModuleManager::saveParameters()
 {
     //pr文件拷贝
-    this->paramers.saveJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER);
+    this->paramters.saveJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER);
     material_tray.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
     aa_head_module.saveJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     sut_module.saveJsonConfig(getCurrentParameterDir().append(SUT_FILE));
@@ -438,6 +461,23 @@ bool BaseModuleManager::saveParameters()
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
     saveVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
+    return true;
+}
+
+bool BaseModuleManager::saveStates()
+{
+    if(ServerMode())
+    {
+        sensor_loader_module.states.saveJsonConfig(getCurrentStatesDir().append(SENSOR_LOADER_FILE),"States");
+        sensor_tray_loder_module.states.saveJsonConfig(getCurrentStatesDir().append(SENSOR_TRAY_LOADER_FILE),"States");
+    }
+    else
+    {
+        lut_module.states.saveJsonConfig(getCurrentStatesDir().append(LUT_FILE),"States");
+        lens_loader_module.states.saveJsonConfig(getCurrentStatesDir().append(LENS_LOADER_MODULE_FILE),"States");
+        tray_loader_module.states.saveJsonConfig(getCurrentStatesDir().append(TRAY_LOADER_FILE),"States");
+    }
+    sut_module.states.saveJsonConfig(getCurrentStatesDir().append(SUT_FILE),"States");
     return true;
 }
 
@@ -1052,10 +1092,19 @@ bool BaseModuleManager::saveJsonObject(QString file_name, QJsonObject &object)
 
 QString BaseModuleManager::getCurrentParameterDir()
 {
-    QString dir = QString(CONFIG_DIR).append(paramers.materialType()).append("//");
+    QString dir = QString(CONFIG_DIR).append(paramters.materialType()).append("//");
     if(!QDir(dir).exists())
         QDir().mkdir(dir);
     return dir;
+}
+
+QString BaseModuleManager::getCurrentStatesDir()
+{
+    QString dir = QString(STATES_DIR).append(getCurrentDateString()).append("//");
+    if(!QDir(dir).exists())
+        QDir().mkdir(dir);
+    return dir;
+
 }
 
 QString BaseModuleManager::getSystermParameterDir()
@@ -1067,7 +1116,7 @@ QString BaseModuleManager::getSystermParameterDir()
 bool BaseModuleManager::InitStruct()
 {
     tcp_manager.Init();
-    foreach (QVariant messager_name, paramers.respMessagerNames()) {
+    foreach (QVariant messager_name, paramters.respMessagerNames()) {
         TcpMessager* temp_messager = tcp_manager.GetAllTcpMessager(messager_name.toString());
         if(temp_messager!=nullptr)
         {
@@ -1075,7 +1124,7 @@ bool BaseModuleManager::InitStruct()
             connect(temp_messager,&TcpMessager::receiveTextMessage,this,&BaseModuleManager::tcpResp);
         }
     }
-    foreach (QVariant messager_name, paramers.cmsMessageerNames()) {
+    foreach (QVariant messager_name, paramters.cmsMessageerNames()) {
         TcpMessager* temp_messager = tcp_manager.GetAllTcpMessager(messager_name.toString());
         if(temp_messager!=nullptr)
         {
@@ -1130,13 +1179,14 @@ bool BaseModuleManager::InitStruct()
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
     }
-    sut_clitent->Init(GetVacuumByName(sut_module.parameters.vacuumName()));
+//    sut_clitent->Init(GetVacuumByName(sut_module.parameters.vacuumName()));
     sut_module.Init(&sut_carrier,sut_clitent,
                     GetVisionLocationByName(sut_module.parameters.downlookLocationName()),
                     GetVisionLocationByName(sut_module.parameters.updownlookDownLocationName()),
                     GetVisionLocationByName(sut_module.parameters.updownlookUpLocationName()),
                     GetVacuumByName(sut_module.parameters.vacuumName()),
-                    GetCylinderByName(sut_module.parameters.cylinderName()));
+                    GetCylinderByName(sut_module.parameters.cylinderName()),
+                    XtMotor::GetThreadResource());
     QVector<XtMotor *> executive_motors;
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorXName()));
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorYName()));
@@ -1166,7 +1216,8 @@ bool BaseModuleManager::InitStruct()
                                   GetVisionLocationByName(sensor_loader_module.parameters.sutLocationName()),
                                   GetVisionLocationByName(sensor_loader_module.parameters.sutSensorLocationName()),
                                   GetVisionLocationByName(sensor_loader_module.parameters.sutProductLocationName()),
-                                  GetVisionLocationByName(sensor_loader_module.parameters.calibrationGlassLocationName()));
+                                  GetVisionLocationByName(sensor_loader_module.parameters.calibrationGlassLocationName()),
+                                  XtMotor::GetThreadResource());
         //connect(&sensor_loader_module,&SensorLoaderModule::sendMsgSignal,this,&BaseModuleManager::sendMessageTest);
     }
     else
@@ -1247,7 +1298,6 @@ bool BaseModuleManager::InitStruct()
     //todo
     material_tray.resetTrayState(0);
     material_tray.resetTrayState(1);
-
     return result;
 }
 
@@ -1540,7 +1590,7 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
         setHomeState(true);
         this->aa_head_module.moveToMushroomPosition(true);
         if(ServerMode()!=0)
-            sensor_loader_module.performHandling(SensorLoaderModule::HandlePosition::SPA_STANDBY_POS);
+            sensor_loader_module.performHandling(SensorLoaderModule::HandleCameraPosition::SPA_STANDBY_POS);
         return  true;
     }
     return false;
@@ -1571,6 +1621,7 @@ void BaseModuleManager::updateParams()
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
     saveParameters();
+    //    loadParameters();
 }
 
 void BaseModuleManager::loadFlowchart(QString json, QString filename)
@@ -1978,10 +2029,10 @@ void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
     }
 }
 
-void BaseModuleManager::sendChangeSensorTray()
-{
-   emit sensor_loader_module.sendChangeTrayRequst();
-}
+//void BaseModuleManager::sendChangeSensorTray()
+//{
+//   emit sensor_loader_module.sendChangeTrayRequst();
+//}
 
 bool BaseModuleManager::initSensor()
 {

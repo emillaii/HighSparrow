@@ -322,6 +322,10 @@ private:
 class LutState:public PropertyBase
 {
     Q_OBJECT
+    Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
+    Q_PROPERTY(bool disableStation1 READ disableStation1 WRITE setDisableStation1 NOTIFY disableStation1Changed)
+    Q_PROPERTY(bool disableStation2 READ disableStation2 WRITE setDisableStation2 NOTIFY disableStation2Changed)
+    Q_PROPERTY(bool handlyChangeLens READ handlyChangeLens WRITE setHandlyChangeLens NOTIFY handlyChangeLensChanged)
     Q_PROPERTY(int lutTrayID READ lutTrayID WRITE setLutTrayID NOTIFY lutTrayIDChanged)
     Q_PROPERTY(int lutLensID READ lutLensID WRITE setLutLensID NOTIFY lutLensIDChanged)
     Q_PROPERTY(int lutNgTrayID READ lutNgTrayID WRITE setLutNgTrayID NOTIFY lutNgTrayIDChanged)
@@ -473,6 +477,26 @@ public:
     bool beExchangeMaterial() const
     {
         return m_beExchangeMaterial;
+    }
+
+    int runMode() const
+    {
+        return m_runMode;
+    }
+
+    bool disableStation1() const
+    {
+        return m_disableStation1;
+    }
+
+    bool disableStation2() const
+    {
+        return m_disableStation2;
+    }
+
+    bool handlyChangeLens() const
+    {
+        return m_handlyChangeLens;
     }
 
 public slots:
@@ -692,6 +716,42 @@ public slots:
         emit beExchangeMaterialChanged(m_beExchangeMaterial);
     }
 
+    void setRunMode(int runMode)
+    {
+        if (m_runMode == runMode)
+            return;
+
+        m_runMode = runMode;
+        emit runModeChanged(m_runMode);
+    }
+
+    void setDisableStation1(bool disableStation1)
+    {
+        if (m_disableStation1 == disableStation1)
+            return;
+
+        m_disableStation1 = disableStation1;
+        emit disableStation1Changed(m_disableStation1);
+    }
+
+    void setDisableStation2(bool disableStation2)
+    {
+        if (m_disableStation2 == disableStation2)
+            return;
+
+        m_disableStation2 = disableStation2;
+        emit disableStation2Changed(m_disableStation2);
+    }
+
+    void setHandlyChangeLens(bool handlyChangeLens)
+    {
+        if (m_handlyChangeLens == handlyChangeLens)
+            return;
+
+        m_handlyChangeLens = handlyChangeLens;
+        emit handlyChangeLensChanged(m_handlyChangeLens);
+    }
+
 signals:
     void lutTrayIDChanged(int lutTrayID);
 
@@ -743,6 +803,14 @@ signals:
 
     void beExchangeMaterialChanged(bool beExchangeMaterial);
 
+    void runModeChanged(int runMode);
+
+    void disableStation1Changed(bool disableStation1);
+
+    void disableStation2Changed(bool disableStation2);
+
+    void handlyChangeLensChanged(bool handlyChangeLens);
+
 private:
     int m_lutTrayID = -1;
     int m_lutLensID = -1;
@@ -768,6 +836,10 @@ private:
     QString m_aa1Uuid = "";
     QString m_aa2Uuid = "";
     bool m_beExchangeMaterial = false;
+    int m_runMode = 0;
+    bool m_disableStation1 = false;
+    bool m_disableStation2 = false;
+    bool m_handlyChangeLens = false;
 };
 
 #endif // LUT_PARAMERTER_H

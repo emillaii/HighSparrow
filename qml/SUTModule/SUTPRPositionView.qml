@@ -55,7 +55,8 @@ ColumnLayout {
             height: 40
             onClicked: {
                 console.log("sut move to PR Pos")
-                logicManager.sutMoveToPRPos()
+                //logicManager.sutMoveToPRPos()
+                sutModule.moveToDownlookPos()
             }
         }
         Button {

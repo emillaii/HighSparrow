@@ -639,7 +639,10 @@ class SensorTrayLoaderState:public PropertyBase
 {
     Q_OBJECT
 public:
-    SensorTrayLoaderState():PropertyBase() {}
+    SensorTrayLoaderState():PropertyBase() {init_values.insert("isFirstTray",true);}
+    Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
+    Q_PROPERTY(bool handlyChangeTray READ handlyChangeTray WRITE setHandlyChangeTray NOTIFY handlyChangeTrayChanged)
+    Q_PROPERTY(bool handlyChangeSensor READ handlyChangeSensor WRITE setHandlyChangeSensor NOTIFY handlyChangeSensorChanged)
     Q_PROPERTY(bool hasTrayToGet READ hasTrayToGet WRITE setHasTrayToGet NOTIFY hasTrayToGetChanged)
     Q_PROPERTY(bool hasVacancyTray READ hasVacancyTray WRITE setHasVacancyTray NOTIFY hasVacancyTrayChanged)
     Q_PROPERTY(bool handlePutVacancyTray READ handlePutVacancyTray WRITE setHandlePutVacancyTray NOTIFY handlePutVacancyTrayChanged)
@@ -781,6 +784,26 @@ public:
     bool hasUpTray() const
     {
         return m_hasUpTray;
+    }
+
+    int runMode() const
+    {
+        return m_runMode;
+    }
+
+    bool handlyChangeTray() const
+    {
+        return m_handlyChangeTray;
+    }
+
+    bool name() const
+    {
+        return m_handlyChangeSensor;
+    }
+
+    bool handlyChangeSensor() const
+    {
+        return m_handlyChangeSensor;
     }
 
 public slots:
@@ -999,6 +1022,33 @@ public slots:
         emit hasUpTrayChanged(m_hasUpTray);
     }
 
+    void setRunMode(int runMode)
+    {
+        if (m_runMode == runMode)
+            return;
+
+        m_runMode = runMode;
+        emit runModeChanged(m_runMode);
+    }
+
+    void setHandlyChangeTray(bool handlyChangeTray)
+    {
+        if (m_handlyChangeTray == handlyChangeTray)
+            return;
+
+        m_handlyChangeTray = handlyChangeTray;
+        emit handlyChangeTrayChanged(m_handlyChangeTray);
+    }
+
+    void setHandlyChangeSensor(bool handlyChangeSensor)
+    {
+        if (m_handlyChangeSensor == handlyChangeSensor)
+            return;
+
+        m_handlyChangeSensor = handlyChangeSensor;
+        emit handlyChangeSensorChanged(m_handlyChangeSensor);
+    }
+
 signals:
     void hasTrayToGetChanged(bool hasTrayToGet);
     void hasVacancyTrayChanged(bool hasVacancyTray);
@@ -1047,6 +1097,12 @@ signals:
 
     void hasUpTrayChanged(bool hasUpTray);
 
+    void runModeChanged(int runMode);
+
+    void handlyChangeTrayChanged(bool handlyChangeTray);
+
+    void handlyChangeSensorChanged(bool handlyChangeSensor);
+
 private:
     bool m_hasTrayToGet = false;
     bool m_hasVacancyTray = false;
@@ -1072,5 +1128,8 @@ private:
     bool m_isFirstTray = true;
     bool m_hasCarrierReady = false;
     bool m_hasUpTray = false;
+    int m_runMode = 0;
+    bool m_handlyChangeTray = false;
+    bool m_handlyChangeSensor = false;
 };
 #endif // SENSORTRAYLOADERPARAMETER_H

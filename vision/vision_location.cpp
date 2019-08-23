@@ -1,5 +1,7 @@
 #include "vision/vision_location.h"
 #include <QThread>
+#include <utils/commonutils.h>
+#define PI 3.1415926535898
 VisionLocation::VisionLocation():ErrorBase ()
 {
 }
@@ -88,7 +90,6 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
 
 bool VisionLocation::performPR()
 {
-    PRResultStruct current_pixel_result;
     current_result.ReSet();
     PrOffset offset;
     QThread::msleep(parameters.waitImageDelay());
@@ -99,14 +100,14 @@ bool VisionLocation::performPR()
         QPointF mech;
         QPointF mech_o;
         PrOffset temp_offset;
-        qInfo("Perform PR Success. PR_Result: %f %f %f %f %f", current_pixel_result.x, current_pixel_result.y, current_pixel_result.theta,current_pixel_result.ori_x,current_pixel_result.ori_y);
+        qInfo("Perform PR %s Success. PR_Result: %f %f %f %f %f",parameters.locationName().toStdString().c_str(), current_pixel_result.x, current_pixel_result.y, current_pixel_result.theta,current_pixel_result.ori_x,current_pixel_result.ori_y);
         if(mapping->CalcMechDistance(QPointF(current_pixel_result.x,current_pixel_result.y),mech)&&mapping->CalcMechDistance(QPointF(current_pixel_result.ori_x,current_pixel_result.ori_y),mech_o))
         {
             temp_offset.X = mech.x();
             temp_offset.Y = mech.y();
             temp_offset.O_X = mech_o.x();
             temp_offset.O_Y = mech_o.y();
-            if(abs(temp_offset.X)>parameters.maximumLength()||abs(temp_offset.Y)>parameters.maximumLength()||abs(temp_offset.O_X)>parameters.maximumOffset()||abs(temp_offset.O_Y)>parameters.maximumOffset())
+            if(abs(temp_offset.O_X)>parameters.maximumLength()||abs(temp_offset.O_Y)>parameters.maximumLength()||abs(temp_offset.X)>parameters.maximumOffset()||abs(temp_offset.Y)>parameters.maximumOffset())
             {
                 qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8" pr result too big"));
@@ -142,6 +143,20 @@ bool VisionLocation::performPR()
     return false;
 }
 
+bool VisionLocation::performNoMaterialPR()
+{
+    current_result.ReSet();
+    PrOffset offset;
+    QThread::msleep(parameters.waitImageDelay());
+    QString imageName;
+    imageName.append(getVisionLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".jpg");
+   bool result = saveImage(imageName);
+    QThread::msleep(parameters.performTime());
+    return result;
+}
+
 bool VisionLocation::performPR(PRResultStruct &pr_result)
 {
     QThread::msleep(parameters.waitImageDelay());
@@ -151,6 +166,12 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
           pr_result.x, pr_result.y, pr_result.theta);
 //    qInfo("camera %s perform PR result:%d name:%s",parameters.cameraName().toStdString().c_str(),temp.code,parameters.prFileName().toStdString().c_str());
     return  ErrorCode::OK == temp.code;
+}
+
+void VisionLocation::resetResult()
+{
+    current_result.ReSet();
+    current_pixel_result = PRResultStruct();
 }
 
 PrOffset VisionLocation::getCurrentResult()
@@ -168,6 +189,21 @@ PrOffset VisionLocation::getCurrentResult()
     }
     temp_offset.Theta = current_result.Theta;
     return temp_offset;
+}
+
+void VisionLocation::setCurrentResult(PrOffset pr_offset)
+{
+    if(parameters.useOrigin())
+    {
+        current_result.O_X = pr_offset.X;
+        current_result.O_Y = pr_offset.Y;
+    }
+    else
+    {
+        current_result.X = pr_offset.X;
+        current_result.Y = pr_offset.Y;
+    }
+    current_result.Theta = pr_offset.Theta;
 }
 
 PrOffset VisionLocation::getCurrentResult(bool use_origin)
@@ -189,7 +225,26 @@ PrOffset VisionLocation::getCurrentResult(bool use_origin)
 
 QPointF VisionLocation::getCurrentResultOffset()
 {
-    return QPointF(current_result.X - current_result.O_X,current_result.Y - current_result.O_Y);
+    QPointF offset;
+    double x = current_result.X - current_result.O_X;
+    double y = current_result.Y - current_result.O_Y;
+    double temp_theta = -current_result.Theta*PI/180;
+    double result_x = x*cos(temp_theta) + y*sin(temp_theta);
+    double result_y = y*cos(temp_theta) - x*sin(temp_theta);
+    offset.setX(round(result_x*1000)/1000);
+    offset.setY(round(result_y*1000)/1000);
+    return offset;
+}
+
+QPointF VisionLocation::getOffsetResult(QPoint offset)
+{
+//    QPointF offset;
+    double x = current_result.X - current_result.O_X;
+    double y = current_result.Y - current_result.O_Y;
+    double temp_theta = current_result.Theta*PI/180;
+    offset.setX(x*cos(temp_theta) + y*sin(temp_theta));
+    offset.setY(y*cos(temp_theta) - x*sin(temp_theta));
+    return offset;
 }
 
 PRResultStruct VisionLocation::getCurrentPixelResult()

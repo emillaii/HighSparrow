@@ -1,6 +1,8 @@
 ﻿#include "sutModule/sut_module.h"
 
 #include <QMessageBox>
+#include <tcpmessager.h>
+#include "materialtray.h"
 
 SutModule::SutModule()
 {
@@ -8,7 +10,7 @@ SutModule::SutModule()
     gui_thread_id = QThread::currentThreadId();
 }
 
-void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin)
+void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin,int thread_id)
 {
     this->carrier = carrier;
     parts.append(carrier);
@@ -25,6 +27,7 @@ void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocat
     this->popgpin = popgpin;
     parts.append(popgpin);
     setName(parameters.moduleName());
+    this->thread_id = thread_id;
 }
 
 void SutModule::saveJsonConfig(QString file_name)
@@ -54,16 +57,45 @@ bool SutModule::checkSutSensorOrProduct(bool check_state)
     return false;
 }
 
+bool SutModule::checkSutHasMaterialSynic()
+{
+    bool result;
+    result = vacuum->checkHasMaterielSync();
+    if(result||RunMode::NoMaterial == states.runMode())
+        return true;
+    QString error = QString(u8"sut上应有料，但真空检测到无料。");
+    AppendError(error);
+    qInfo(error.toStdString().c_str());
+    return false;
+}
+
+bool SutModule::checkSutHasMaterial()
+{
+    bool result;
+    result = vacuum->checkHasMateriel(thread_id);
+    return result;
+}
+
+bool SutModule::waitSutCheckResult(bool check_state)
+{
+    bool result;
+    result = vacuum->getHasMateriel(thread_id);
+    if(result == check_state||RunMode::NoMaterial == states.runMode())
+        return true;
+    QString error;
+    if(check_state)
+        error = QString(u8"sut上应有料，但真空检测到无料。");
+    else
+        error = QString(u8"sut上应无料，但真空检测到有料。");
+    AppendError(error);
+    qInfo(error.toStdString().c_str());
+    return false;
+}
+
 void SutModule::resetLogic()
 {
     if(is_run)return;
-    states.setSutHasSensor(false);
-    states.setSutHasNgSensor(false);
-    states.setSutHasProduct(false);
-    states.setSutHasNgProduct(false);
-    states.setAllowLoadSensor(false);
-    states.setLoadingSensor(false);
-    states.setWaitLoading(false);
+    states.reset();
     qInfo("resetLogic");
 }
 
@@ -138,7 +170,7 @@ bool SutModule::moveToLoadPos(bool check_autochthonous)
         result &= carrier->motor_z->MoveToPosSync(load_position.Z(),0.1);
         qInfo("moveToLoadPos z");
         result &= carrier->motor_y->WaitArrivedTargetPos(load_position.Y());
-        result &= vacuum->Set(true,false,false);
+        result &= vacuum->Set(false,false,false);
     }
     qInfo("moveToLoadPos");
     return result;
@@ -257,9 +289,12 @@ bool SutModule::moveToZPos(double z)
     return carrier->Move_Z_Sync(z);
 }
 
-bool SutModule::moveZToSaftyPos()
+bool SutModule::moveZToSaftyInMushroom()
 {
-    return carrier->Move_Z_Sync(carrier->parameters.SafetyZ());
+    if(carrier->GetFeedBackPos().Y < downlook_position.Y())
+        return carrier->Move_Z_Sync(carrier->parameters.SafetyZ());
+    else
+        return true;
 }
 
 void SutModule::recordCurrentPos()
@@ -277,40 +312,50 @@ bool SutModule::movetoRecordPosAddOffset(double x_offset, double y_offset, doubl
     return carrier->Move_SZ_SX_Y_X_Z_Sync(record_position.X + x_offset,record_position.Y + y_offset,record_position.Z + z_offset,check_autochthonous);
 }
 
+bool SutModule::OpenSutVacuum()
+{
+    return vacuum->Set(true);
+}
+
+bool SutModule::CloseSutVacuum()
+{
+    return vacuum->Set(false);
+}
+
 void SutModule::receiveLoadSensorRequst(int sut_state)
 {
     qInfo("receiveLoadSensorRequst %d in %d",sut_state,QThread::currentThreadId());
     if(states.allowLoadSensor())
         return;
-    if(sut_state == SUT_STATE::NO_MATERIAL)
-    {
-        states.setSutHasSensor(false);
-        states.setSutHasNgSensor(false);
-        states.setSutHasProduct(false);
-        states.setSutHasNgProduct(false);
-    }
-    else if(sut_state == SUT_STATE::HAS_NG_SENSOR)
-    {
-        states.setSutHasSensor(false);
-        states.setSutHasNgSensor(true);
-        states.setSutHasProduct(false);
-        states.setSutHasNgProduct(false);
-    }
-    else if(sut_state == SUT_STATE::HAS_PRODUCT)
-    {
-        states.setSutHasSensor(false);
-        states.setSutHasNgSensor(false);
-        states.setSutHasProduct(true);
-        states.setSutHasNgProduct(false);
-    }
-    else if(sut_state == SUT_STATE::HAS_NG_PRODUCT)
-    {
-        states.setSutHasSensor(false);
-        states.setSutHasNgSensor(false);
-        states.setSutHasProduct(false);
-        states.setSutHasNgProduct(true);
-    }
-    this->sut_state = sut_state;
+//    if(sut_state == SUT_STATE::NO_MATERIAL)
+//    {
+//        states.setSutHasSensor(false);
+//        states.setSutHasNgSensor(false);
+//        states.setSutHasProduct(false);
+//        states.setSutHasNgProduct(false);
+//    }
+//    else if(sut_state == SUT_STATE::HAS_NG_SENSOR)
+//    {
+//        states.setSutHasSensor(false);
+//        states.setSutHasNgSensor(true);
+//        states.setSutHasProduct(false);
+//        states.setSutHasNgProduct(false);
+//    }
+//    else if(sut_state == SUT_STATE::HAS_PRODUCT)
+//    {
+//        states.setSutHasSensor(false);
+//        states.setSutHasNgSensor(false);
+//        states.setSutHasProduct(true);
+//        states.setSutHasNgProduct(false);
+//    }
+//    else if(sut_state == SUT_STATE::HAS_NG_PRODUCT)
+//    {
+//        states.setSutHasSensor(false);
+//        states.setSutHasNgSensor(false);
+//        states.setSutHasProduct(false);
+//        states.setSutHasNgProduct(true);
+//    }
+//    this->sut_state = sut_state;
     states.setAllowLoadSensor(true);
     qInfo("excute LoadSensorRequst");
 }
@@ -318,41 +363,28 @@ void SutModule::receiveLoadSensorRequst(int sut_state)
 void SutModule::run(bool has_material)
 {
     is_run = true;
+    QString aa_module_name = states.stationNumber() == 0?"AA1CoreNew":"AA2CoreNew";
     while (is_run)
     {
+        QThread::msleep(10);
         if(!states.allowLoadSensor())
-        {
-            QThread::msleep(10);
             continue;
-        }
-        if((!states.sutHasSensor())&&(!states.loadingSensor()))
+        if((states.sutMaterialState() != MaterialState::IsRaw)&&(!states.waitLoading()))
         {
-            if(!moveToLoadPos(true))
+            if(states.sutMaterialState() != MaterialState::IsEmpty)
             {
-//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-//                is_run =false;
-//                break;
-//            }
-//            if(!popgpin->Set(false))
-//            {
-                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                waitMessageReturn(is_run);
-                continue;
-            }
-            states.setLoadingSensor(true);
-        }
-        if((!states.sutHasSensor())&&states.loadingSensor())
-        {
-            if(states.sutHasProduct()||states.sutHasNgSensor()||states.sutHasNgProduct())
-            {
-                if(!checkSutSensorOrProduct(true))
+                if(!moveToLoadPos())
+                {
+                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                    is_run =false;
+                    break;
+                }
+                if(!checkSutHasMaterialSynic())
                 {
                     sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                     if(waitMessageReturn(is_run))
                     {
-                        states.setSutHasProduct(false);
-                        states.setSutHasNgSensor(false);
-                        states.setSutHasNgProduct(false);
+                        states.setSutMaterialState(MaterialState::IsEmpty);
                         continue;
                     }
                     if(!is_run)break;
@@ -360,30 +392,36 @@ void SutModule::run(bool has_material)
             }
             else
             {
-                if(!checkSutSensorOrProduct(false))
+                checkSutHasMaterial();
+                if(!moveToLoadPos())
                 {
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    waitMessageReturn(is_run);
+                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+                    is_run =false;
+                    break;
+                }
+                if(!waitSutCheckResult(false))
+                {
+                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
+                    if(waitMessageReturn(is_run))
+                        continue;
                     if(!is_run)break;
                 }
             }
-            if(! sut_cilent->sendSensorRequest(is_run,sut_state))
-            {
-               AppendError(u8"等待sensor超时");
-               sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-               waitMessageReturn(is_run);
-               continue;
-           }
-           else
-           {
-               states.setSutHasSensor(true);
-               states.setLoadingSensor(false);
-           }
+            sendMessageToModule("SensorLoaderModule","SutReady");
+            states.setLoadingSensor(true);
+            states.setWaitLoading(true);
         }
-        if(states.sutHasSensor())
+
+        if(states.waitLoading()&&(!states.loadingSensor())&&(states.sutMaterialState() == MaterialState::IsEmpty))
         {
-            vacuum->Set(false);
-            if(!checkSutSensorOrProduct(true))
+            states.setAllowLoadSensor(false);
+            states.setWaitLoading(false);
+            sendMessageToModule(aa_module_name,"FinishPickRequest");
+        }
+
+        if(states.waitLoading()&&(!states.loadingSensor())&&(states.sutMaterialState() == MaterialState::IsRaw))
+        {
+            if(!checkSutHasMaterialSynic())
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
                 if(waitMessageReturn(is_run))
@@ -408,31 +446,70 @@ void SutModule::run(bool has_material)
                 {
                     continue;
                 }
-                emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta);
-                states.setAllowLoadSensor(false);
             }
             else
             {
                 DownlookPrDone = true;
-                emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta);
-                states.setAllowLoadSensor(false);
             }
+            emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta);
+//            QJsonObject param;
+//            param.insert("OffsetX",offset.X);
+//            param.insert("OffsetY",offset.Y);
+//            param.insert("OffsetT",offset.Theta);
+            states.setAllowLoadSensor(false);
+            states.setWaitLoading(false);
+            sendMessageToModule(aa_module_name,"FinishPlaceRequest");
         }
+
     }
     qInfo("sut module end of thread");
 }
 
 void SutModule::startWork(int run_mode)
 {
+    QVariantMap run_params = inquirRunParameters();
+    if(run_params.isEmpty())
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数为空.启动失败.");
+        return;
+    }
+    if(run_params.contains("RunMode"))
+    {
+        states.setRunMode(run_params["RunMode"].toInt());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数RunMode缺失.启动失败.");
+        return;
+    }
+    if(run_params.contains("HandlyChangeSensor"))
+    {
+        states.setHandlyChangeSensor(run_params["HandlyChangeSensor"].toBool());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeSensor缺失.启动失败.");
+        return;
+    }
+    if(run_params.contains("StationNumber")&&run_params.contains("DisableStation"))
+    {
+        QString local_station = run_params["StationNumber"].toString();
+        states.setStationNumber(local_station.toInt());
+        QVariantMap disable_map = run_params["DisableStation"].toMap();
+        states.setDisableStation(disable_map[local_station].toBool());
+    }
+    else
+    {
+        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数StationNumber、DisableStation缺失.启动失败.");
+        return;
+    }
+    if(states.disableStation())
+        return;
     has_material = true;
     qInfo("sut Module start run_mode :%d in %d",run_mode,QThread::currentThreadId());
-    if(run_mode == RunMode::Normal)
+    if(states.runMode() == RunMode::Normal)
         run(true);
-    else if(Name().contains("1")&&run_mode == RunMode::OnllyLeftAA)
-        run(true);
-    else if(Name().contains("2")&&run_mode == RunMode::OnlyRightAA)
-        run(true);
-    else if(run_mode == RunMode::NoMaterial)
+    else if(states.runMode() == RunMode::NoMaterial)
     {
         has_material = false;
         run(false);
@@ -455,12 +532,80 @@ void SutModule::performHandlingOperation(int cmd)
 
 void SutModule::receivceModuleMessage(QVariantMap message)
 {
-
+    qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
+    QMutexLocker temp_locker(&message_mutex);
+    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
+        this->module_message = message;
+    if(!message.contains("OriginModule"))
+    {
+        qInfo("message error! has no OriginModule.");
+        return;
+    }
+    QString aa_module_name = states.stationNumber() == 0?"AA1CoreNew":"AA2CoreNew";
+    if(message["OriginModule"].toString() == "SensorLoaderModule")
+    {
+        if(message.contains("Message"))
+        {
+            if(message["Message"].toString()=="FinishPickRequest")
+            {
+                states.setSutMaterialState(MaterialState::IsEmpty);
+                states.setLoadingSensor(false);
+            }
+            else if(message["Message"].toString()=="FinishPlaceRequest")
+            {
+                states.setSutMaterialState(MaterialState::IsRaw);
+                states.setLoadingSensor(false);
+            }
+            else
+            {
+                qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            }
+        }
+    }
+    else if(message["OriginModule"].toString()== aa_module_name)
+    {
+        if(message.contains("Message"))
+        {
+            if(message["Message"].toString()=="NoSensor")
+            {
+                states.setSutMaterialState(MaterialState::IsEmpty);
+                states.setAllowLoadSensor(true);
+            }
+            else if(message["Message"].toString()=="NgSensor")
+            {
+                states.setSutMaterialState(MaterialState::IsNgSensor);
+                states.setAllowLoadSensor(true);
+            }
+            else if(message["Message"].toString()=="NgProduct")
+            {
+                states.setSutMaterialState(MaterialState::IsNgProduct);
+                states.setAllowLoadSensor(true);
+            }
+            else if(message["Message"].toString()=="GoodProduct")
+            {
+                states.setSutMaterialState(MaterialState::IsProduct);
+                states.setAllowLoadSensor(true);
+            }
+            else
+            {
+                qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            }
+        }
+    }
+    else {
+         qInfo("module name error %s",message["OriginModule"].toString().toStdString().c_str());
+    }
 }
 
 PropertyBase *SutModule::getModuleState()
 {
     return &states;
+}
+
+QMap<QString, PropertyBase *> SutModule::getModuleParameter()
+{
+    QMap<QString, PropertyBase *> temp;
+    return temp;
 }
 
 

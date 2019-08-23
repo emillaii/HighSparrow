@@ -591,10 +591,16 @@ class TrayLoaderState : public PropertyBase{
 
     bool m_isReadyTrayPushed = false;
 
+    bool m_handlyChangeLens = false;
+
+    bool m_handlyChangeLensTray = false;
+
 public:
     TrayLoaderState():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
+    Q_PROPERTY(bool handlyChangeLens READ handlyChangeLens WRITE setHandlyChangeLens NOTIFY handlyChangeLensChanged)
     Q_PROPERTY(bool hasTrayReady READ hasTrayReady WRITE setHasTrayReady NOTIFY hasTrayReadyChanged)
+    Q_PROPERTY(bool handlyChangeLensTray READ handlyChangeLensTray WRITE setHandlyChangeLensTray NOTIFY handlyChangeLensTrayChanged)
     Q_PROPERTY(bool hasTrayUsed READ hasTrayUsed WRITE setHasTrayUsed NOTIFY hasTrayUsedChanged)
     Q_PROPERTY(bool hasPrevTrayEjected READ hasPrevTrayEjected WRITE setHasPrevTrayEjected NOTIFY hasPrevTrayEjectedChanged)
     Q_PROPERTY(bool hasEntranceTrayPulledAway READ hasEntranceTrayPulledAway WRITE setHasEntranceTrayPulledAway NOTIFY hasEntranceTrayPulledAwayChanged)
@@ -716,6 +722,16 @@ public:
     bool isReadyTrayPushed() const
     {
         return m_isReadyTrayPushed;
+    }
+
+    bool handlyChangeLens() const
+    {
+        return m_handlyChangeLens;
+    }
+
+    bool handlyChangeLensTray() const
+    {
+        return m_handlyChangeLensTray;
     }
 
 public slots:
@@ -907,6 +923,24 @@ public slots:
         emit isReadyTrayPushedChanged(m_isReadyTrayPushed);
     }
 
+    void setHandlyChangeLens(bool handlyChangeLens)
+    {
+        if (m_handlyChangeLens == handlyChangeLens)
+            return;
+
+        m_handlyChangeLens = handlyChangeLens;
+        emit handlyChangeLensChanged(m_handlyChangeLens);
+    }
+
+    void setHandlyChangeLensTray(bool handlyChangeLensTray)
+    {
+        if (m_handlyChangeLensTray == handlyChangeLensTray)
+            return;
+
+        m_handlyChangeLensTray = handlyChangeLensTray;
+        emit handlyChangeLensTrayChanged(m_handlyChangeLensTray);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayOnEntryChanged(bool hasTrayOnEntry);
@@ -930,6 +964,8 @@ signals:
     void readyToPushReadyTrayChanged(bool readyToPushReadyTray);
     void isFirstTrayChanged(bool isFirstTray);
     void isReadyTrayPushedChanged(bool isReadyTrayPushed);
+    void handlyChangeLensChanged(bool handlyChangeLens);
+    void handlyChangeLensTrayChanged(bool handlyChangeLensTray);
 };
 
 #endif // TRAYLOADERPARAMETER_H

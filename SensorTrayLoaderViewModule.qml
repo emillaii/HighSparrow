@@ -574,7 +574,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.sensorTrayLoaderModuleMovetoTrayWorkPosition()
+                                sensorTrayLoaderModule.movetoTrayWorkPosition()
                             }
                         }
                         Button{

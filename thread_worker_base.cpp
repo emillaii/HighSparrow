@@ -106,7 +106,7 @@ bool ThreadWorkerBase::waitResponseMessage(bool &is_run, QString target_message)
             QMutexLocker temp_locker(&message_mutex);
             if(message_returned)
             {
-                if(message.contains("Response")&&message["Response"] == target_message)
+                if(module_message.contains("Response")&&module_message["Response"] == target_message)
                 {
                     qInfo("wait repnonse time : %d",current_time*10);
                     return true;
@@ -121,21 +121,50 @@ void ThreadWorkerBase::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",message["Message"].toString().toStdString().c_str());
     QMutexLocker temp_locker(&message_mutex);
-    this->message = message;
+    this->module_message = message;
 }
 
-void ThreadWorkerBase::sendMessageToModule(QString module_name, QString message)
+void ThreadWorkerBase::sendMessageToModule(QString module_name, QString message,QJsonValue param)
 {
     QVariantMap message_map;
     message_map.insert("TargetModule",module_name);
     message_map.insert("Message",message);
+    message_map.insert("Params",param);
     message_map.insert("OriginModule",Name());
     emit sendModuleMessage(message_map);
 }
 
 QString ThreadWorkerBase::getModuleMessage()
 {
-    return message["Message"].toString();
+    return module_message["Message"].toString();
+}
+
+bool ThreadWorkerBase::loadJsonConfig(QString file_name)
+{
+    QMap<QString,PropertyBase*> temp_map = getModuleParameter();
+    PropertyBase::loadJsonConfig(file_name, temp_map);
+    return true;
+}
+
+void ThreadWorkerBase::saveJsonConfig(QString file_name)
+{
+    QMap<QString,PropertyBase*> temp_map = getModuleParameter();
+    PropertyBase::saveJsonConfig(file_name, temp_map);
+}
+
+QVariantMap ThreadWorkerBase::inquirRunParameters(int out_time)
+{
+    module_message.clear();
+    sendMessageToModule("WorksManager","inquirRunParameters");
+    int current_time = 0;
+    while (current_time < out_time)
+    {
+        if(!module_message.isEmpty())
+            return module_message;
+        QThread::msleep(10);
+        current_time += 10;
+    }
+    return module_message;
 }
 void ThreadWorkerBase::setName(QString Name)
 {

@@ -18,8 +18,9 @@
 #include "sfr.h"
 #define PI  3.14159265
 #include <math.h>
-#include <tcpmessager.h>
-vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY,double & error_avg,double & error_dev) {
+#include "tcpmessager.h"
+vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX,
+                        double & localMaxY, double & error_avg, double & error_dev, vector<double> & y_output) {
     size_t n = x.size();
 
     double minX = 999999;
@@ -105,6 +106,16 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
         }
     }
     qInfo("Local Maxima X : %f local maxima Y : %f", localMaxX, localMaxY);
+
+    for (size_t j = 0; j < x.size(); j++){
+        double tmp = 1; double ey = 0;
+        for (int i = 0; i <= order; ++i){
+            ey += A(i,0)*tmp;
+            tmp *= x[j];
+        }/*
+        qInfo("push value: %f %f %f", x[j], ey, y[j]);*/
+        y_output.push_back(ey);
+    }
     return ans;
 }
 
@@ -178,7 +189,7 @@ void AACoreNew::run(bool has_material)
         QThread::msleep(100);
         double temp_time = timer.elapsed();
         temp_time/=1000;
-        qInfo("circle_time :%f",temp_time);
+        qInfo("cycle_time :%f",temp_time);
         states.setCircleTime(temp_time);
         if(states.circleTime() > parameters.minCircleTime() && states.circleTime() < parameters.maxCicleTime())
         {
@@ -479,8 +490,15 @@ void AACoreNew::performHandlingOperation(int cmd)
         performOC(params);
     }
     else if (cmd == HandleTest::AA) {
+        if (currentChartDisplayChannel == 0) {
+            aaData_1.setInProgress(true);
+        } else {
+            aaData_2.setInProgress(true);
+        }
         performAA(params);
         //performAAOffline();
+        aaData_1.setInProgress(false);
+        aaData_2.setInProgress(false);
     }
     else if (cmd == HandleTest::INIT_CAMERA) {
         SetSensor();
@@ -685,12 +703,13 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
 {
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
     QString testName = properties["title"].toString();
+    runningTestName = testName;
     QJsonValue params = properties["params"];
     int retry_count = params["retry"].toInt(0);
     QJsonValue delay_in_ms_qjv = params["delay_in_ms"];
     unsigned int delay_in_ms = delay_in_ms_qjv.toInt(0);
     for (int i = 0; i <= retry_count; i++) {
-        if (testName.contains(AA_PIECE_START)) { qInfo("Performing Start"); }
+        if (testItemName.contains(AA_PIECE_START)) { qInfo("Performing Start"); }
         else if (testItemName.contains(AA_PIECE_LOAD_CAMERA)) {
             qInfo("Performing load camera");
         }
@@ -754,7 +773,14 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         }
         else if (testItemName.contains(AA_PIECE_AA)) {
             qInfo("Performing AA");
+            if (currentChartDisplayChannel == 0) {
+                aaData_1.setInProgress(true);
+            } else {
+                aaData_2.setInProgress(true);
+            }
             ret = performAA(params);
+            aaData_1.setInProgress(false);
+            aaData_2.setInProgress(false);
             qInfo("End of perform AA %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_MTF)) {
@@ -1371,7 +1397,7 @@ void AACoreNew::performAAOffline()
     QVariantMap map, stepTimerMap, dFovMap, sfrTimeElapsedMap;
     QElapsedTimer timer;
     timer.start();
-    int resize_factor = 2;
+    int resize_factor = 1;
     int sfrCount = 0;
     double step_size = 0.01, start = -20.5;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
@@ -1450,6 +1476,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     QVariantMap result, map;
     map.insert("SensorID",sensorID);
     vector<vector<Sfr_entry>> sorted_sfr_map;
+    vector<vector<double>> sorted_sfr_fit_map;
     for (size_t i = 0; i < clustered_sfr_map[0].size(); ++i)
     {
         vector<Sfr_entry> sfr_map;
@@ -1473,6 +1500,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     double maxPeakZ = -99999;
     for (size_t i = 0; i < sorted_sfr_map.size(); i++) {
         vector<double> sfr,b_sfr,t_sfr,l_sfr,r_sfr, z;
+        vector<double> sfr_fit, b_sfr_fit, t_sfr_fit, l_sfr_fit, r_sfr_fit;
         double ex = 0; double ey = 0;
         for (size_t ii=0; ii < sorted_sfr_map[i].size(); ii++) {
             //double avg_sfr = sorted_sfr_map[i][ii].sfr;
@@ -1516,10 +1544,10 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         double peak_sfr, peak_z,b_peak_z,t_peak_z,l_peak_z,r_peak_z;
 
         double error_avg,error_dev;
-        fitCurve(z, b_sfr, fitOrder, b_peak_z, peak_sfr,error_avg,error_dev);
-        fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr,error_avg,error_dev);
-        fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr,error_avg,error_dev);
-        fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr,error_avg,error_dev);
+        fitCurve(z, b_sfr, fitOrder, b_peak_z, peak_sfr,error_avg,error_dev, b_sfr_fit);
+        fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr,error_avg,error_dev, t_sfr_fit);
+        fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr,error_avg,error_dev, l_sfr_fit);
+        fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr,error_avg,error_dev, r_sfr_fit);
 
         if (b_peak_z > maxPeakZ) maxPeakZ = b_peak_z;
         if (t_peak_z > maxPeakZ) maxPeakZ = t_peak_z;
@@ -1575,7 +1603,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         default:
             break;
         }
-        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev);
+        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev, sfr_fit);
+        sorted_sfr_fit_map.push_back(sfr_fit); //Used to display the curve with fitting result
         if (i==0) {
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
             result.insert("fitCurveErrorDevCC", error_dev); map.insert("fitCurveErrorDevCC", error_dev);
@@ -1805,7 +1834,6 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     QVariantMap sfrMap;
     for(size_t i = 0; i < sorted_sfr_map[0].size(); i++)
     {
-        data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_map[0][i].sfr);
         QVariantMap s;
         s.insert("index", i);
         s.insert("px", sorted_sfr_map[0][i].px);
@@ -1819,18 +1847,15 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         s.insert("r_sfr", sorted_sfr_map[0][i].r_sfr);
         s.insert("pz", sorted_sfr_map[0][i].pz);
         sfrMap.insert(QString::number(i), s);
-        if (points_1.size() > 0) {
 
+        data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_map[0][i].sfr, sorted_sfr_fit_map[0][i]);
+        if (points_1.size() > 0) {
             for (int j = 1; j < 5; ++j) {
                 qInfo("j:%d",j);
                 double avg_sfr = parameters.WeightList().at(4*j-4+0).toDouble()*sorted_sfr_map[j+4*display_layer][i].t_sfr + parameters.WeightList().at(4*j-4+1).toDouble()*sorted_sfr_map[j+4*display_layer][i].r_sfr
                         + parameters.WeightList().at(4*j-4+2).toDouble()*sorted_sfr_map[j+4*display_layer][i].b_sfr + parameters.WeightList().at(4*j-4+3).toDouble()*sorted_sfr_map[j+4*display_layer][i].l_sfr;
-                data->addData(j,sorted_sfr_map[j+4*display_layer][i].pz*1000,avg_sfr);
+                data->addData(j,sorted_sfr_map[j+4*display_layer][i].pz*1000,avg_sfr, sorted_sfr_fit_map[j+4*display_layer][i]);
             }
-//            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, (sorted_sfr_map[1+4*display_layer][i].b_sfr+sorted_sfr_map[1+4*display_layer][i].r_sfr)/2);
-//            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, (sorted_sfr_map[j+4*display_layer][i].t_sfr+sorted_sfr_map[2+4*display_layer][i].r_sfr)/2);
-//            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, (sorted_sfr_map[3+4*display_layer][i].t_sfr+sorted_sfr_map[3+4*display_layer][i].l_sfr)/2);
-//            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, (sorted_sfr_map[4+4*display_layer][i].b_sfr+sorted_sfr_map[4+4*display_layer][i].l_sfr)/2);
         }
     }
     map.insert("CC", sfrMap);
@@ -1955,9 +1980,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         map.insert("dev_3", dev_3);
     }
     map.insert("fov_slope", current_fov_slope);
-
     emit postSfrDataToELK(runningUnit, map);
-    data->plot();
+    data->plot(runningTestName);
     return result;
 }
 
@@ -1975,7 +1999,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     sfr_tol[2] = params["05F_TOL"].toDouble(-1);
     sfr_tol[3] = params["08F_TOL"].toDouble(-1);
 
-    cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\aaData\\22-15-46-422.bmp");
+    cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\mtf_test\\MTF_recheck\\MTF_recheck\\2.bmp");
     std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, 35, 8000, parameters.MaxArea(), -1);
     vector<double> sfr_l_v, sfr_r_v, sfr_t_v, sfr_b_v;
     cv::Rect roi; roi.width = 32; roi.height = 32;

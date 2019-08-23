@@ -150,7 +150,7 @@ private:
     double mtf_oc_x = 0;
     double mtf_oc_y = 0;
     int current_dispense = 0;
-
+    QString runningTestName = "";
     QVariantMap sfrFitCurve_Advance(int resize_factor, double start_pos);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,
                                                                unsigned int & ccROIIndex,

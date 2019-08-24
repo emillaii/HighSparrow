@@ -313,11 +313,24 @@ void LogicManager::autoRun(QString json){
     setStateMessage(__FUNCTION__);moveToCmd(CommandType::MODE_AUTO_RUN);
 }
 
-void LogicManager::performOC(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::PERFORM_OC);}
+void LogicManager::performOC(){
+    setStateMessage(__FUNCTION__);moveToCmd(CommandType::PERFORM_OC);}
+
 void LogicManager::performLoopTest(int mode){
     qInfo("Loop Test Mode: %d", mode);
     setStateMessage(__FUNCTION__);
     moveToCmd(CommandType::PERFORM_LOOP_TEST);
+}
+
+void LogicManager::performUV()
+{
+    qInfo("perform UV in logic manager");
+    if(!baseModuleManage->sut_module.moveToMushroomPos())
+    {
+        int uvTime = baseModuleManage->dispense_module.parameters.uvTimeMs();
+        baseModuleManage->aa_head_module.openUVTillTime(uvTime);
+        baseModuleManage->aa_head_module.waitUVFinish();
+    }
 }
 
 void LogicManager::lensPickArmMoveToTray1Pos()
@@ -772,6 +785,11 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd)
             states.setHandlingMessage(u8"正在执行up&down相机校正……");
             baseModuleManage->performUpDnLookCalibration();
         }
+        else if (cmd == CommandType::PERFORM_UV)
+        {
+            states.setHandlingMessage(u8"正在执行UV……");
+            performUV();
+        }
     }
     else if(baseModuleManage->workers.contains(module_name))//单一模块动作
     {
@@ -864,5 +882,6 @@ void LogicManager::receiveMessageFromWorkerManger(QVariantMap message)
     else
     {
         emit sendPerformTcp(message);
+        qInfo("sendPerformTcp");
     }
 }

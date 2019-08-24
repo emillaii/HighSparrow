@@ -355,7 +355,19 @@ QString Unitlog::getCSVString(QString data_name,QVariantMap map)
     data_string.append(" \r\n");
     foreach (QString temp_name, map.keys()) {
        QVariantMap temp_data = map[temp_name].toMap();
+       data_string.append(temp_data["pz"].toString());
+       data_string.append(",");
+    }
+    data_string.append(" \r\n");
+    foreach (QString temp_name, map.keys()) {
+       QVariantMap temp_data = map[temp_name].toMap();
        data_string.append(temp_data["t_sfr"].toString());
+       data_string.append(",");
+    }
+    data_string.append(" \r\n");
+    foreach (QString temp_name, map.keys()) {
+       QVariantMap temp_data = map[temp_name].toMap();
+       data_string.append(temp_data["r_sfr"].toString());
        data_string.append(",");
     }
     data_string.append(" \r\n");
@@ -371,18 +383,7 @@ QString Unitlog::getCSVString(QString data_name,QVariantMap map)
        data_string.append(",");
     }
     data_string.append(" \r\n");
-    foreach (QString temp_name, map.keys()) {
-       QVariantMap temp_data = map[temp_name].toMap();
-       data_string.append(temp_data["r_sfr"].toString());
-       data_string.append(",");
-    }
-    data_string.append(" \r\n");
-    foreach (QString temp_name, map.keys()) {
-       QVariantMap temp_data = map[temp_name].toMap();
-       data_string.append(temp_data["pz"].toString());
-       data_string.append(",");
-    }
-    data_string.append(" \r\n");
+
     //qInfo("data_string: %s", data_string.toStdString().c_str());
     return data_string;
 }

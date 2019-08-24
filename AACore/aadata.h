@@ -58,6 +58,7 @@ public:
     AAData(QObject *parent=Q_NULLPTR);
     //i is index, x is x-axis data, y will be used for showing curve fit data, rawY will be used for showing raw data
     void addData(int i, double x, double y, double rawY);
+    void incrementData(double y1, double y2, double y3, double y4, double y5);
     void plotIntensityProfile(float minI, float maxI, std::vector<float> values);
     void clear();
     void plot(QString chartName = "Silicool AA");

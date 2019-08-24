@@ -42,7 +42,8 @@ public:
         PERFORM_SENSOR_PICKHEAD_CALIBRATION,
         PERFORM_LOCATION,
         PERFORM_OC,
-        PERFORM_LOOP_TEST
+        PERFORM_LOOP_TEST,
+        PERFORM_UV
     };
 public:
     explicit LogicManager(QObject *parent = nullptr);
@@ -94,6 +95,7 @@ public:
 
     void performOC();
     void performLoopTest(int mode);
+    void performUV();
 
     //lenpickarmModule
     void lensPickArmMoveToTray1Pos();

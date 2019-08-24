@@ -236,7 +236,8 @@ ApplicationWindow {
                   flowChartPage.webView.runJavaScript(command, function(result) {
                       command = "document.getElementById('flowchart_data').value";
                       flowChartPage.webView.runJavaScript(command, function(result) {
-                          console.log(result)
+                          baseModuleManager.loadFlowchart(result)
+//                          console.log(result)
                           file.setData(result)
                           saveFileDialog.open()
                       })
@@ -267,7 +268,7 @@ ApplicationWindow {
                icon.color: "deepskyblue"
                onClicked: {
                    baseModuleManager.updateParams()
-                   logicManager.updateParams()
+//                   logicManager.updateParams()
 //                   messageDialog.messageText.text = "Save Complete"
 //                   messageDialog.open()
                }
@@ -305,14 +306,15 @@ ApplicationWindow {
                icon.source: "icons/flowchart_1.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   var command = "document.getElementById('get_data').click()";
-                   flowChartPage.webView.runJavaScript(command, function(result) {
-                       command = "document.getElementById('flowchart_data').value";
-                       flowChartPage.webView.runJavaScript(command, function(result) {
-                           baseModuleManager.loadFlowchart(result)
-                           workersManager.startAllWorkers(4)
-                       })
-                   })
+                   workersManager.startAllWorkers(4)
+//                   var command = "document.getElementById('get_data').click()";
+//                   flowChartPage.webView.runJavaScript(command, function(result) {
+//                       command = "document.getElementById('flowchart_data').value";
+//                       flowChartPage.webView.runJavaScript(command, function(result) {
+//                           baseModuleManager.loadFlowchart(result)
+//                           workersManager.startAllWorkers(4)
+//                       })
+//                   })
                }
            }
 
@@ -338,14 +340,15 @@ ApplicationWindow {
                icon.source: "icons/auto-run.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   var command = "document.getElementById('get_data').click()";
-                   flowChartPage.webView.runJavaScript(command, function(result) {
-                       command = "document.getElementById('flowchart_data').value";
-                       flowChartPage.webView.runJavaScript(command, function(result) {
-                           baseModuleManager.loadFlowchart(result)
-                           workersManager.startAllWorkers(systerm_param.runMode)
-                       })
-                   })
+                   workersManager.startAllWorkers(moduleManagerParam.runMode)
+//                   var command = "document.getElementById('get_data').click()";
+//                   flowChartPage.webView.runJavaScript(command, function(result) {
+//                       command = "document.getElementById('flowchart_data').value";
+//                       flowChartPage.webView.runJavaScript(command, function(result) {
+//                           baseModuleManager.loadFlowchart(result)
+//                           workersManager.startAllWorkers(moduleManagerParam.runMode)
+//                       })
+//                   })
                }
            }
            ToolButton {

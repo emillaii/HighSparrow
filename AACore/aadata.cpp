@@ -76,6 +76,16 @@ void AAData::clear()
 void AAData::plot(QString chartName)
 {
     this->setChartName(chartName);
+}
+
+void AAData::incrementData(double y1, double y2, double y3, double y4, double y5)
+{
+    m_wCCValue.setX(count); m_wCCValue.setY(y1);
+    m_wULValue.setX(count); m_wULValue.setY(y2);
+    m_wURValue.setX(count); m_wURValue.setY(y3);
+    m_wLLValue.setX(count); m_wLLValue.setY(y4);
+    m_wLRValue.setX(count); m_wLRValue.setY(y5);
+    count++;
     emit wValueChanged();
 }
 

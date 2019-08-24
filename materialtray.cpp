@@ -1,4 +1,4 @@
-#include "materialtray.h"
+﻿#include "materialtray.h"
 
 MaterialTray::MaterialTray():QObject (),ErrorBase ("MateryTray")
 {
@@ -136,6 +136,11 @@ bool MaterialTray::isTrayNeedChange(int tray_index)
 int MaterialTray::getCurrentIndex(int tray_index)
 {
     return parameters[getTrayIndex(tray_index)]->currentIndex();
+}
+
+int MaterialTray::getLastIndex()
+{
+    return standards_parameters.rowCount()*standards_parameters.columnCount() - 1;
 }
 
 QPointF MaterialTray::getCurrentPosition(int tray_index)

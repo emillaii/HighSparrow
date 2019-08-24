@@ -213,7 +213,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1
-                                                           +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_PRODUCT_PR
                                                            +SensorLoaderModule.TO_PR_OFFSET)
                     }
                 }
@@ -223,7 +223,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1
-                                                           +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_PRODUCT_PR
                                                            +SensorLoaderModule.TO_PICK_PRODUCT_POS1)
                     }
                 }
@@ -233,7 +233,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1
-                                                           +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_PRODUCT_PR
                                                            +SensorLoaderModule.TO_PICK_PRODUCT_POS1
                                                            +SensorLoaderModule.PICK_PRODUCT_FROM_SUT1)
                     }
@@ -399,7 +399,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS2
-                                                           +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_PRODUCT_PR
                                                            +SensorLoaderModule.TO_PR_OFFSET)
                     }
                 }
@@ -409,7 +409,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS2
-                                                           +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_PRODUCT_PR
                                                            +SensorLoaderModule.TO_PICK_PRODUCT_POS2)
                     }
                 }
@@ -419,7 +419,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS2
-                                                           +SensorLoaderModule.PRODUCT_PR
+                                                           +SensorLoaderModule.SUT_PRODUCT_PR
                                                            +SensorLoaderModule.TO_PICK_PRODUCT_POS2
                                                            +SensorLoaderModule.PICK_PRODUCT_FROM_SUT2)
                     }

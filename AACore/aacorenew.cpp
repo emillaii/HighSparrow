@@ -178,6 +178,7 @@ void AACoreNew::run(bool has_material)
 {
     qInfo("Start AACore Thread");
     is_run = true;
+    performTerminate(); //Close camera first
 
     QElapsedTimer timer;timer.start();
     while(is_run) {
@@ -422,7 +423,7 @@ void AACoreNew::startWork( int run_mode)
             params["LL"] = 0;
             params["LR"] = 0;
             params["SFR_DEV_TOL"] = 100;
-            performMTFNew(params);
+            performMTFNew(params,true);
             QThread::msleep(200);
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
@@ -1507,21 +1508,37 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
             qInfo("sorted_sfr_map[%d][%d]: location:%d, px:%f ,py:%f",i,ii,sorted_sfr_map[i][ii].location,sorted_sfr_map[i][ii].px,sorted_sfr_map[i][ii].py);
             double avg_sfr = 0;
             if (sorted_sfr_map[i][ii].location == 1) {
+                qInfo("Weight list 0 = %f", parameters.WeightList().at(0).toDouble());
+                qInfo("Weight list 1 = %f", parameters.WeightList().at(1).toDouble());
+                qInfo("Weight list 2 = %f", parameters.WeightList().at(2).toDouble());
+                qInfo("Weight list 3 = %f", parameters.WeightList().at(3).toDouble());
                 //UL 1
                 avg_sfr = parameters.WeightList().at(0).toDouble()*sorted_sfr_map[i][ii].t_sfr + parameters.WeightList().at(1).toDouble()*sorted_sfr_map[i][ii].r_sfr
                         + parameters.WeightList().at(2).toDouble()*sorted_sfr_map[i][ii].b_sfr + parameters.WeightList().at(3).toDouble()*sorted_sfr_map[i][ii].l_sfr;
             }
             else if (sorted_sfr_map[i][ii].location == 4) {
+                qInfo("Weight list 4 = %f", parameters.WeightList().at(4).toDouble());
+                qInfo("Weight list 5 = %f", parameters.WeightList().at(5).toDouble());
+                qInfo("Weight list 6 = %f", parameters.WeightList().at(6).toDouble());
+                qInfo("Weight list 7 = %f", parameters.WeightList().at(7).toDouble());
                 //LL 2
                 avg_sfr = parameters.WeightList().at(4).toDouble()*sorted_sfr_map[i][ii].t_sfr + parameters.WeightList().at(5).toDouble()*sorted_sfr_map[i][ii].r_sfr
                         + parameters.WeightList().at(6).toDouble()*sorted_sfr_map[i][ii].b_sfr + parameters.WeightList().at(7).toDouble()*sorted_sfr_map[i][ii].l_sfr;
             }
             else if (sorted_sfr_map[i][ii].location == 3) {
+                qInfo("Weight list 8 = %f", parameters.WeightList().at(8).toDouble());
+                qInfo("Weight list 9 = %f", parameters.WeightList().at(9).toDouble());
+                qInfo("Weight list 10 = %f", parameters.WeightList().at(10).toDouble());
+                qInfo("Weight list 11 = %f", parameters.WeightList().at(11).toDouble());
                 //LR 3
                 avg_sfr = parameters.WeightList().at(8).toDouble()*sorted_sfr_map[i][ii].t_sfr + parameters.WeightList().at(9).toDouble()*sorted_sfr_map[i][ii].r_sfr
                         + parameters.WeightList().at(10).toDouble()*sorted_sfr_map[i][ii].b_sfr + parameters.WeightList().at(11).toDouble()*sorted_sfr_map[i][ii].l_sfr;
             }
             else if (sorted_sfr_map[i][ii].location == 2) {
+                qInfo("Weight list 12 = %f", parameters.WeightList().at(12).toDouble());
+                qInfo("Weight list 13 = %f", parameters.WeightList().at(13).toDouble());
+                qInfo("Weight list 14 = %f", parameters.WeightList().at(14).toDouble());
+                qInfo("Weight list 15 = %f", parameters.WeightList().at(15).toDouble());
                 //UR 4
                 avg_sfr = parameters.WeightList().at(12).toDouble()*sorted_sfr_map[i][ii].t_sfr + parameters.WeightList().at(13).toDouble()*sorted_sfr_map[i][ii].r_sfr
                         + parameters.WeightList().at(14).toDouble()*sorted_sfr_map[i][ii].b_sfr + parameters.WeightList().at(15).toDouble()*sorted_sfr_map[i][ii].l_sfr;
@@ -1856,6 +1873,10 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
                         + parameters.WeightList().at(4*j-4+2).toDouble()*sorted_sfr_map[j+4*display_layer][i].b_sfr + parameters.WeightList().at(4*j-4+3).toDouble()*sorted_sfr_map[j+4*display_layer][i].l_sfr;
                 data->addData(j,sorted_sfr_map[j+4*display_layer][i].pz*1000,avg_sfr, sorted_sfr_fit_map[j+4*display_layer][i]);
             }
+//            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, (sorted_sfr_map[1+4*display_layer][i].b_sfr+sorted_sfr_map[1+4*display_layer][i].r_sfr)/2);
+//            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, (sorted_sfr_map[j+4*display_layer][i].t_sfr+sorted_sfr_map[2+4*display_layer][i].r_sfr)/2);
+//            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, (sorted_sfr_map[3+4*display_layer][i].t_sfr+sorted_sfr_map[3+4*display_layer][i].l_sfr)/2);
+//            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, (sorted_sfr_map[4+4*display_layer][i].b_sfr+sorted_sfr_map[4+4*display_layer][i].l_sfr)/2);
         }
     }
     map.insert("CC", sfrMap);
@@ -2086,7 +2107,7 @@ double AACoreNew::performMTFInThread( cv::Mat input, int freq )
     return sfr;
 }
 
-ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params)
+ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params,bool write_log)
 {
 //    double cc_min_sfr = params["CC"].toDouble(-1);
 //    double ul_min_sfr = params["UL"].toDouble(-1);
@@ -2285,6 +2306,23 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params)
     map.insert("UR_08F_SFR_DEV",ur_08f_sfr_dev);
     map.insert("timeElapsed", timer.elapsed());
     qInfo("Time Elapsed: %d", timer.elapsed());
+    if (write_log) {
+        this->loopTestResult.append(QString::number(vec[0].avg_sfr))
+                            .append(",")
+                            .append(QString::number(vec[max_layer*4 + 1].avg_sfr))
+                            .append(",")
+                            .append(QString::number(vec[max_layer*4 + 4].avg_sfr))
+                            .append(",")
+                            .append(QString::number(vec[max_layer*4 + 2].avg_sfr))
+                            .append(",")
+                            .append(QString::number(vec[max_layer*4 + 3].avg_sfr))
+                            .append(",\n");
+        this->mtf_log.incrementData(vec[0].avg_sfr,
+                                    vec[max_layer*4 + 1].avg_sfr,
+                                    vec[max_layer*4 + 4].avg_sfr,
+                                    vec[max_layer*4 + 2].avg_sfr,
+                                    vec[max_layer*4 + 3].avg_sfr);
+    }
     if (sfr_check) {
        map.insert("result", "Pass");
        emit pushDataToUnit(runningUnit, "MTF", map);
@@ -2874,6 +2912,7 @@ ErrorCodeStruct AACoreNew::performPRToBond(int finish_delay)
     qInfo("downlook_offset(%f,%f)",aa_head->offset_x,aa_head->offset_y,aa_head->offset_theta);
     qInfo("uplook_offset(%f,%f,%f)",aa_head->uplook_x,aa_head->uplook_y,aa_head->uplook_theta);
     qInfo("up_downlook_offset(%f,%f,%f)",sut->up_downlook_offset.X(),sut->up_downlook_offset.Y(),sut->up_downlook_offset.Theta());
+    if (!sut->carrier->Move_Z_Sync(sut->carrier->parameters.SafetyZ())) {return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to SUT_Z safety position"};};
     if (!this->aa_head->moveToSZ_XYSC_Z_Sync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
     if(finish_delay>0)
         Sleep(finish_delay);

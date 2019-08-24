@@ -125,6 +125,12 @@ void WorkersManager::tcpResp(QString message)
         }
         else if(module_name == "WorkersManagerStart")
         {
+
+//            var command = "document.getElementById('get_data').click()";
+//            flowChartPage.webView.runJavaScript(command, function(result) {
+//                                                    command = "document.getElementById('flowchart_data').value";
+//                                                    flowChartPage.webView.runJavaScript(command, function(result) {
+//                                                        baseModuleManager.loadFlowchart(result)
             startWorkers(message_object["RunMode"].toInt());
         }
         else if(module_name == "WorkersManagerReset")

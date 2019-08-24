@@ -7,11 +7,15 @@ import AACoreNew 1.1
 import LogicManagerLib 1.1
 import "qml"
 ApplicationWindow {
+    id: applicationWindow
     visible: true
-    width: 1320
+    width: 1480
     height: 720
     title: qsTr("High Sparrow")
-
+//    flags: Qt.CustomizeWindowHint |
+//           Qt.WindowSystemMenuHint |
+//           Qt.WindowMinMaxButtonsHint |
+//           Qt.WindowFullscreenButtonHint
     readonly property string title_move_to: "移动"
     readonly property string title_read_encoder: "读取"
 
@@ -35,7 +39,7 @@ ApplicationWindow {
 
     property string aaCoreTestItemName: ""
     property string aaCoreTestParams: ""
-
+    property bool isWindowMaximized: false
     FileDialog {
         id: loadfileDialog
         title: qsTr("选择加载文件")
@@ -341,14 +345,6 @@ ApplicationWindow {
                icon.color: "deepskyblue"
                onClicked: {
                    workersManager.startAllWorkers(moduleManagerParam.runMode)
-//                   var command = "document.getElementById('get_data').click()";
-//                   flowChartPage.webView.runJavaScript(command, function(result) {
-//                       command = "document.getElementById('flowchart_data').value";
-//                       flowChartPage.webView.runJavaScript(command, function(result) {
-//                           baseModuleManager.loadFlowchart(result)
-//                           workersManager.startAllWorkers(moduleManagerParam.runMode)
-//                       })
-//                   })
                }
            }
            ToolButton {
@@ -364,18 +360,18 @@ ApplicationWindow {
                    logicManagerState.setIsHandling(false)
                }
            }
-
+//Main Timer
            Timer {
-               interval: 3000; running: true; repeat: true
+               id: mainTimer
+               interval: 500; running: true; repeat: true
                onTriggered: {
+                    timeString.text =  Qt.formatTime(new Date(), "现在时间: hh:mm:ss")
+                    busyDialog.updateBusyDialogStatus()
                     if (baseModuleManager.HomeState) {
                         homeSignal.color = "green"
                     }
                     else {
                         homeSignal.color = "red"
-                    }
-                    if (baseModuleManager.ServerMode == 0 && lutModule.getConnectedClient() > 1) {
-                        lutSignal.color = "green"
                     }
                     //Used for consuming the flowchart double click command
                     if (flowChartPage.webView.loadProgress == 100) {
@@ -405,13 +401,6 @@ ApplicationWindow {
                    color: "red"
                }
            }
-           RoundButton {
-               text: qsTr("LUT")
-               background: Rectangle {
-                   id: lutSignal
-                   color: "red"
-               }
-           }
            Label{
                text: qsTr("循环时间")
            }
@@ -435,6 +424,52 @@ ApplicationWindow {
                onClicked: {
                     workersManager.changeAlarmShow()
                }
+           }
+
+           MessageDialog {
+               id: closeDialog
+               text: "是否确定要退出应用?"
+               standardButtons: StandardButton.Yes|StandardButton.No
+               icon:StandardIcon.Question
+               onYes: {
+                   applicationWindow.close()
+               }
+           }
+
+           RoundButton {
+               focusPolicy: Qt.TabFocus
+               display: AbstractButton.IconOnly
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/full-screen.png"
+               icon.color: "orange"
+               onClicked: {
+                   if (!isWindowMaximized) {
+                       applicationWindow.showMaximized()
+                   }
+                   else {
+                       applicationWindow.showNormal()
+                   }
+                   isWindowMaximized = !isWindowMaximized
+               }
+           }
+           RoundButton {
+               display: AbstractButton.IconOnly
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/close_program.png"
+               icon.color: "red"
+               onClicked: {
+                   closeDialog.open()
+               }
+           }
+
+           Label{
+               id: timeString
+               color: "cyan"
+               text: qsTr("现在时间:")
+               Layout.fillWidth: true
+               Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
            }
         }
     }

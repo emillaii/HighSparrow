@@ -17,21 +17,16 @@ Window {
             | Qt.WindowMaximizeButtonHint//| Qt.WindowStaysOnTopHint
 
     modality: Qt.NonModal // no need for this as it is the default value
-    Timer {
-        interval: 500; running: true; repeat: true
-        onTriggered: {
-            if (logicManagerState.isHandling) {
-                count++;
-                stateLabel.text = logicManagerState.handlingMessage
-                timerLabel.text = Math.floor(count*0.5) + " s"
-                busyDialog.show()
-                //busyDialog.visible = true
-            } else {
-                count = -1;
-                busyDialog.close()
-                //busyDialog.visible = false
-            }
 
+    function updateBusyDialogStatus() {
+        if (logicManagerState.isHandling) {
+            count++;
+            stateLabel.text = logicManagerState.handlingMessage
+            timerLabel.text = Math.floor(count*0.5) + " s"
+            busyDialog.show()
+        } else {
+            count = -1;
+            busyDialog.close()
         }
     }
 

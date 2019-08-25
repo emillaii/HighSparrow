@@ -43,6 +43,7 @@ public:
     Q_INVOKABLE void saveImage(int channel);
     bool saveImage(QString cameraName, QString imageName);
     Q_INVOKABLE void testVision();
+
 private:
     QString last_uplook_pr_result;
     QString last_downlook_pr_result;

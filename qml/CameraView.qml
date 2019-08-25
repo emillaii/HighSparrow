@@ -172,16 +172,17 @@ Grid {
                 }
             }
             Text {
+                id: camera1Text
                 x: -12
                 y: -12
-                color: "#9ef678"
+                color: "lightGreen"
                 text: qsTr("Uplook Camera")
                 wrapMode: Text.WordWrap
                 elide: Text.ElideLeft
                 fontSizeMode: Text.Fit
                 lineHeight: 3.1
                 anchors.fill: parent
-                font.pixelSize: 12
+                font.pixelSize: 16
             }
 
             Slider {
@@ -227,6 +228,27 @@ Grid {
                         visionModule.saveImage(0)
                     }
                 }
+                Button {
+                    id: camera1OnOff
+                    x: 291
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/full-screen.png"
+                    onClicked: {
+                        if (uplookCamera.isGrabbing)
+                        {
+                            uplookCamera.close()
+                        }
+                        else
+                        {
+                            uplookCamera.open()
+                        }
+                    }
+                }
             }
 
             Connections {
@@ -234,6 +256,19 @@ Grid {
                 onCallQmlRefeshImg: {
                     image.source = ""
                     image.source = "image://uplookCameraImage"
+                    camera1Text.text = "Uplook Camera (Live)"
+                    camera1Text.color = "lightGreen"
+                    camera1OnOff.icon.color = "lightGreen"
+                }
+                onNoCameraEvent: {
+                    camera1Text.text = "Uplook Camera (Cannot detect camera)"
+                    camera1Text.color = "red"
+                    camera1OnOff.icon.color = "red"
+                }
+                onCameraCloseEvent: {
+                    camera1Text.text = "Uplook Camera (Camera closed)"
+                    camera1Text.color = "red"
+                    camera1OnOff.icon.color = "red"
                 }
             }
         }
@@ -325,6 +360,29 @@ Grid {
                         visionModule.saveImage(1)
                     }
                 }
+                Button {
+                    id: camera2OnOff
+                    x: 291
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/full-screen.png"
+                    onClicked: {
+                        if (downlookCamera.isGrabbing)
+                        {
+                            console.log("Close Button")
+                            downlookCamera.close()
+                        }
+                        else
+                        {
+                            console.log("Open Button")
+                            downlookCamera.open()
+                        }
+                    }
+                }
             }
 
             Connections {
@@ -332,18 +390,31 @@ Grid {
                 onCallQmlRefeshImg: {
                     image1.source = ""
                     image1.source = "image://downlookCameraImage"
+                    camera2Text.text = "AA Downlook Camera (Live)"
+                    camera2Text.color = "lightGreen"
+                    camera2OnOff.icon.color = "lightGreen"
+                }
+                onNoCameraEvent: {
+                    camera2Text.text = "AA Downlook Camera (Cannot detect camera)"
+                    camera2Text.color = "red"
+                    camera2OnOff.icon.color = "red"
+                }
+                onCameraCloseEvent: {
+                    camera2Text.text = "AA Downlook Camera (Camera closed)"
+                    camera2Text.color = "red"
+                    camera2OnOff.icon.color = "red"
                 }
             }
         }
 
         Text {
-            id: element1
+            id: camera2Text
             color: "#9ef678"
             text: qsTr("AA Downlook Camera")
             fontSizeMode: Text.Fit
             lineHeight: 3.1
             anchors.fill: parent
-            font.pixelSize: 12
+            font.pixelSize: 16
         }
     }
 
@@ -380,6 +451,19 @@ Grid {
                 onCallQmlRefeshImg: {
                     image2.source = ""
                     image2.source = "image://pickarmCameraImage"
+                    camera3Text.text = "Pickarm Camera (Live)"
+                    camera3Text.color = "lightGreen"
+                    camera3OnOff.icon.color = "lightGreen"
+                }
+                onNoCameraEvent: {
+                    camera3Text.text = "Pickarm Camera (Cannot detect camera)"
+                    camera3Text.color = "red"
+                    camera3OnOff.icon.color = "red"
+                }
+                onCameraCloseEvent: {
+                    camera3Text.text = "Pickarm Camera (Camera closed)"
+                    camera3Text.color = "red"
+                    camera3OnOff.icon.color = "red"
                 }
             }
 
@@ -400,6 +484,7 @@ Grid {
                 }
             }
             Text {
+                id: camera3Text
                 x: -12
                 y: -12
                 color: "#9ef678"
@@ -409,7 +494,7 @@ Grid {
                 fontSizeMode: Text.Fit
                 lineHeight: 3.1
                 anchors.fill: parent
-                font.pixelSize: 12
+                font.pixelSize: 16
             }
             Slider {
                 id: slider1
@@ -448,8 +533,28 @@ Grid {
                     icon.color: "lightGreen"
                     icon.source: "../icons/save.png"
                     onClicked: {
-                        console.log("Save Image")
                         visionModule.saveImage(2)
+                    }
+                }
+                Button {
+                    id: camera3OnOff
+                    x: 291
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/full-screen.png"
+                    onClicked: {
+                        if (pickarmCamera.isGrabbing)
+                        {
+                            pickarmCamera.close()
+                        }
+                        else
+                        {
+                            pickarmCamera.open()
+                        }
                     }
                 }
             }

@@ -5,12 +5,11 @@ BaslerPylonCamera::BaslerPylonCamera(QString name)
     : QQuickImageProvider(QQuickImageProvider::Image),
       cameraChannelName(name)
 {
-    isGrabbing = false;
     PylonInitialize();
     Init();
 }
 
-void BaslerPylonCamera::OnImageGrabbed( CInstantCamera&, const CGrabResultPtr& ptrGrabResult)
+void BaslerPylonCamera::updateImage(const CGrabResultPtr& ptrGrabResult)
 {
     if (ptrGrabResult->CheckCRC() != 0) {
         uint32_t errCode = ptrGrabResult->GetErrorCode();
@@ -30,56 +29,68 @@ void BaslerPylonCamera::OnImageGrabbed( CInstantCamera&, const CGrabResultPtr& p
 
 BaslerPylonCamera::~BaslerPylonCamera()
 {
-    if (camera.IsOpen()) camera.Close();
-    PylonTerminate();
-    this->wait();
+    close();
 }
 
-void BaslerPylonCamera::Init(){
+bool BaslerPylonCamera::Init(){
+    bool isFound = false;
     try {
         CTlFactory& tlFactory = CTlFactory::GetInstance();
         DeviceInfoList_t devices;
         if ( tlFactory.EnumerateDevices(devices) == 0 )
         {
             qCritical("No Camera Connected");
-            return;
+            emit noCameraEvent();
+            return false;
         }
         for (size_t i=0; i < devices.size(); i++)
         {
             if (devices[i].GetUserDefinedName().compare(cameraChannelName.toStdString().c_str()) == 0)
             {
+                isFound = true;
                 camera.Attach(tlFactory.CreateDevice(devices[i]));
                 camera.RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_ReplaceAll, Cleanup_Delete);
-                camera.RegisterImageEventHandler(this, RegistrationMode_Append, Cleanup_Delete);
+                imageHandler = new CSampleImageEventHandler(this);
+                camera.RegisterImageEventHandler(imageHandler, RegistrationMode_Append, Cleanup_Delete);
                 camera.Open();
             }
         }
     } catch (const GenericException &e){
         qCritical(e.GetDescription());
+        emit noCameraEvent();
+        return false;
     }
+    if (!isFound) emit noCameraEvent();
+    return isFound;
 }
 
-void BaslerPylonCamera::Close()
+void BaslerPylonCamera::close()
 {
-    PylonTerminate();
     isReady = false;
-    while(isGrabbing)
+    while(isGrabbing())
     {
         QThread::msleep(100);
     }
+    qInfo("Grabbing stopped");
     if(camera.IsOpen())
     {
+        qInfo("Camera close");
         camera.Close();
     }
+    if (imageHandler != nullptr)
+        camera.DeregisterImageEventHandler(imageHandler);
+    camera.DestroyDevice();
 }
 
-void BaslerPylonCamera::Open()
+void BaslerPylonCamera::open()
 {
-    if((!camera.IsOpen())&&(!isGrabbing))
+    bool ret = Init();
+    if (!ret) return;
+    if((!camera.IsOpen())&&(!isGrabbing()))
     {
        camera.Open();
        this->start();
-    }
+    } else this->start();
 }
 
 bool BaslerPylonCamera::IsOpend()
@@ -92,7 +103,7 @@ void BaslerPylonCamera::run(){
     {
         camera.StartGrabbing( GrabStrategy_LatestImageOnly, GrabLoop_ProvidedByInstantCamera);
         isReady = true;
-        isGrabbing = true;
+        setiIsGrabbing(true);
         while(isReady&&GrabImage()) {
             {
                 for (int cnt = 0;cnt<100;cnt++) {
@@ -105,7 +116,8 @@ void BaslerPylonCamera::run(){
                 }
             }
         }
-        isGrabbing = false;
+        setiIsGrabbing(false);
+        return;
     }
 }
 
@@ -124,6 +136,7 @@ bool BaslerPylonCamera::GrabImage()
         }
     } catch (const GenericException &e){
         qCritical(e.GetDescription());
+        setiIsGrabbing(false);
         return false;
     }
     return true;
@@ -136,7 +149,7 @@ QImage BaslerPylonCamera::getImage()
     return std::move(image_copy);
 }
 
-bool BaslerPylonCamera::isCameraGrabbing() { return isGrabbing; }
+bool BaslerPylonCamera::isCameraGrabbing() { return isGrabbing(); }
 
 void BaslerPylonCamera::CopyBufferToQImage(CGrabResultPtr pInBuffer, QImage& outImage)
 {
@@ -190,4 +203,9 @@ QImage BaslerPylonCamera::getNewImage()
     }
     qInfo("getNewImage timeout, got old one");
     return this->getImage();
+}
+
+QString BaslerPylonCamera::getCameraChannelname()
+{
+    return this->cameraChannelName;
 }

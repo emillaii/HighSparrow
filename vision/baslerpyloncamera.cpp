@@ -11,12 +11,14 @@ BaslerPylonCamera::BaslerPylonCamera(QString name)
 
 void BaslerPylonCamera::updateImage(const CGrabResultPtr& ptrGrabResult)
 {
-    if (ptrGrabResult->CheckCRC() != 0) {
-        uint32_t errCode = ptrGrabResult->GetErrorCode();
-        Pylon::String_t errDes = ptrGrabResult->GetErrorDescription();
-        qCritical("Camera : %s CRC check fail, image discard.", this->cameraChannelName.toStdString().c_str());
-        qCritical("Error code: %d, Error Description: %s", errCode, errDes.c_str());
-        return;
+    if (ptrGrabResult->HasCRC()) {
+        if (!ptrGrabResult->CheckCRC()) {
+            uint32_t errCode = ptrGrabResult->GetErrorCode();
+            Pylon::String_t errDes = ptrGrabResult->GetErrorDescription();
+            qCritical("Camera : %s CRC check fail, image discard.", this->cameraChannelName.toStdString().c_str());
+            qCritical("Error code: %d, Error Description: %s", errCode, errDes.c_str());
+            return;
+        }
     }
     QMutexLocker locker(&mutex);
     CopyBufferToQImage(ptrGrabResult, latestImage);

@@ -52,9 +52,11 @@ public:
     Q_INVOKABLE bool stepMove_Z_Sync(double step_z);
     Q_INVOKABLE bool moveToZPos(double z);
     Q_INVOKABLE bool moveZToSaftyInMushroom();
+    bool moveZToSafety();
     Q_INVOKABLE void recordCurrentPos();
     Q_INVOKABLE bool movetoRecordPos(bool check_autochthonous = false);
     Q_INVOKABLE bool movetoRecordPosAddOffset(double x_offset,double y_offset,double z_offset,bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToSafetyPos(bool check_autochthonous = false);
 
     bool OpenSutVacuum();
     bool CloseSutVacuum();
@@ -79,6 +81,7 @@ public:
     Position3D mushroom_positon;
     Position3D tool_uplook_positon;
     PositionT  up_downlook_offset;
+    Position3D safety_positon;
     MaterialCarrier* carrier;
     VisionLocation* vision_downlook_location;
     bool DownlookPrDone = false;

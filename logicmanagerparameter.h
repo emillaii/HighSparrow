@@ -40,6 +40,7 @@ public:
     Q_PROPERTY(QString currentLocationName READ currentLocationName WRITE setCurrentLocationName NOTIFY currentLocationNameChanged)
     Q_PROPERTY(bool useOriginPr READ useOriginPr WRITE setUseOriginPr NOTIFY useOriginPrChanged)
     Q_PROPERTY(QString currentCalibrationName READ currentCalibrationName WRITE setCurrentCalibrationName NOTIFY currentCalibrationNameChanged)
+    Q_PROPERTY(QString currentChannelName READ currentChannelName WRITE setCurrentChannelName NOTIFY currentChannelNameChanged)
     bool isHandling() const
     {
         return m_isHandling;
@@ -62,6 +63,11 @@ public:
     QString currentCalibrationName() const
     {
         return m_currentCalibrationName;
+    }
+
+    QString currentChannelName() const
+    {
+        return m_currentChannelName;
     }
 
 public slots:
@@ -109,6 +115,15 @@ public slots:
         emit currentCalibrationNameChanged(m_currentCalibrationName);
     }
 
+    void setCurrentChannelName(QString currentChannelName)
+    {
+        if (m_currentChannelName == currentChannelName)
+            return;
+
+        m_currentChannelName = currentChannelName;
+        emit currentChannelNameChanged(m_currentChannelName);
+    }
+
 signals:
     void isHandlingChanged(bool isHandling);
     void handlingMessageChanged(QString handlingMessage);
@@ -119,11 +134,14 @@ signals:
 
     void currentCalibrationNameChanged(QString currentCalibrationName);
 
+    void currentChannelNameChanged(QString currentChannelName);
+
 private:
     bool m_isHandling = false;
     QString m_handlingMessage = "";
     QString m_currentLocationName = "";
     bool m_useOriginPr = false;
     QString m_currentCalibrationName = "";
+    QString m_currentChannelName = "";
 };
 #endif // LOGICMANAGERPARAMETER_H

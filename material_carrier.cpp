@@ -107,7 +107,6 @@ bool MaterialCarrier::Move_SZ_SX_YS_X_Z_Sync(double x, double y, double z, bool 
     if(check_autochthonous&&CheckXYZArrived(x,y,z))
         return true;
     bool result;
-    qInfo("time label");
     if(CheckXYDistanceBigger(x,y,check_distance))
     {
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
@@ -118,16 +117,11 @@ bool MaterialCarrier::Move_SZ_SX_YS_X_Z_Sync(double x, double y, double z, bool 
             if(!result) return false;
         }
     }
-    qInfo("time label");
     result = motor_y->MoveToPosSaftySync(y);
-    qInfo("time label");
     if(!result) return false;
     result = motor_x->MoveToPosSync(x);
-    qInfo("time label");
     if(!result) return false;
-    qInfo("time label");
     result = motor_z->MoveToPosSync(z);
-    qInfo("time label");
     //    QThread::msleep(300);
     return result;
 }

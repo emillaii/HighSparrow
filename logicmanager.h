@@ -22,6 +22,7 @@ public:
         MOTION_INIT_ONLYSELF,
         MOTION_HOME_ONLYSELF,
         MOTION_STOP_HOME,     // Interrupt
+        MOTION_SINGLE_MOTOR_HOME,
         MODE_AUTO_RUN,
         AA_MOVETO_MUSHROOM_CMD,
         AA_MOVETO_PICK_LENS_CMD,

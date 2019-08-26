@@ -795,6 +795,7 @@ void SensorLoaderModule::run()
                 waitMessageReturn(is_run);
                 if(!is_run)break;
                 tray->resetTrayState(SensorPosition::NG_SENSOR_TRAY);
+                findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY);
             }
             //检查是否有料
             if(!checkPicker2HasMaterialSync())
@@ -2048,7 +2049,6 @@ bool SensorLoaderModule::checkTrayNeedChange()
                     states.picker2MaterialState()==MaterialState::IsEmpty&&states.hasSensorTray1())
             {
                 sut1_sensor_data["SensorCount"] = 0;
-                qInfo("sut SensorCount %d",sut1_sensor_data["SensorCount"].toInt());
                 return true;
             }
             if((!tray->findLastPositionOfState(MaterialState::IsEmpty,SensorPosition::SENSOR_TRAY_2))&&states.hasSensorTray1())
@@ -2061,7 +2061,8 @@ bool SensorLoaderModule::checkTrayNeedChange()
         {
             if(states.hasSensorTray1()&&
                     tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_1)&&
-                    tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_2))
+                    tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_2)&&
+                    (states.picker1MaterialState()!=MaterialState::IsProduct))
                 return true;
         }
 
@@ -2213,7 +2214,8 @@ bool SensorLoaderModule::findTrayNextEmptyPos()
         states.setCurrentTrayID(tray_index);
         return true;
     }
-    if(findTrayNextInitStatePos(SensorPosition::BUFFER_TRAY))
+    if((((SensorPosition::SENSOR_TRAY_1==tray_index)&&states.hasSensorTray1())||((SensorPosition::SENSOR_TRAY_2==tray_index)&&states.hasSensorTray2()))
+            &&findTrayNextInitStatePos(SensorPosition::BUFFER_TRAY))
     {
         states.setCurrentTrayID(SensorPosition::BUFFER_TRAY);
         return true;

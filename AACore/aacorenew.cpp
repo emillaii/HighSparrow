@@ -1379,7 +1379,6 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     }
     clustered_sfr_map.clear();
     qInfo("AA time elapsed: %d", timer.elapsed());
-    //    map.insert("DEV", dev);
     if(finish_delay>0)
         Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());

@@ -217,7 +217,8 @@ Popup {
                             }
                             RoundButton {
                                 onClicked: {
-                                    //console.log("move "+modelData);
+//                                    logicManagerState.setCurrentChannelName(modelData)
+//                                    logicManager.performHandling(logicManager.MOTION_SINGLE_MOTOR_HOME)
                                     baseModuleManager.motorSeekOrigin(modelData)
                                 }
                                 transformOrigin: Item.Center

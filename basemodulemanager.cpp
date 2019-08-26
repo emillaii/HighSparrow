@@ -1440,6 +1440,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 
     result = GetVcMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
     if (!result) return false;
+    sut_module.moveZToSafety();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();//SUT_X
     GetMotorByName(this->sut_module.parameters.motorYName())->SeekOrigin();//SUT_Y
 
@@ -1529,7 +1530,7 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->SeekOrigin();
     result = GetMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
     if(!result) return false;
-    GetMotorByName(sut_module.parameters.motorZName())->MoveToMinPosSync();
+    sut_module.moveZToSafety();
     if(!result) return false;
     GetMotorByName(sut_module.parameters.motorYName())->SeekOrigin();
 

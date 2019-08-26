@@ -757,6 +757,15 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd)
                     baseModuleManage->allMotorsSeekOrigin();
             }
         }
+        else if (cmd == CommandType::MOTION_SINGLE_MOTOR_HOME)
+        {
+            states.setHandlingMessage(u8"正在执行单轴回零……");
+            if(baseModuleManage->motors.contains(states.currentChannelName()))
+            {
+                baseModuleManage->GetMotorByName(states.currentChannelName())->SeekOrigin();
+                baseModuleManage->GetMotorByName(states.currentChannelName())->WaitSeekDone();
+            }
+        }
         else if (cmd == CommandType::PERFORM_LOCATION)
         {
             states.setHandlingMessage(u8"正在执行视觉……");

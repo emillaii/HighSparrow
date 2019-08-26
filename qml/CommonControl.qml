@@ -120,7 +120,7 @@ ItemDelegate {
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                                         //logicManager.lensPickArmMoveToTray2Pos()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1)
+                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2)
                                     }
                                 }
                                 Button{
@@ -153,16 +153,6 @@ ItemDelegate {
                             }
                             RowLayout{
                                 Button{
-                                    text:qsTr("从LUT取NGlens")
-                                    onClicked: {
-                                        //logicManager.lensPickArmMoveToPickLensFromLut()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
-                                                                         LensLoaderModule.LUT_LENS_PR+
-                                                                         LensLoaderModule.ToWork+
-                                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
-                                    }
-                                }
-                                Button{
                                     text:qsTr("放lens到LUT")
                                     onClicked: {
                                         //logicManager.lensPickArmMoveToPlaceLensToLut()
@@ -170,6 +160,16 @@ ItemDelegate {
                                                                          LensLoaderModule.RESET_PR+
                                                                          LensLoaderModule.ToWork+
                                                                          LensLoaderModule.PLACE_LENS_TO_LUT)
+                                    }
+                                }
+                                Button{
+                                    text:qsTr("从LUT取NGlens")
+                                    onClicked: {
+                                        //logicManager.lensPickArmMoveToPickLensFromLut()
+                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
+                                                                         LensLoaderModule.LUT_LENS_PR+
+                                                                         LensLoaderModule.ToWork+
+                                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
                                     }
                                 }
                             }

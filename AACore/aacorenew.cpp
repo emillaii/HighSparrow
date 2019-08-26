@@ -2853,6 +2853,7 @@ ErrorCodeStruct AACoreNew::performPRToBond(int finish_delay)
     qInfo("downlook_offset(%f,%f)",aa_head->offset_x,aa_head->offset_y,aa_head->offset_theta);
     qInfo("uplook_offset(%f,%f,%f)",aa_head->uplook_x,aa_head->uplook_y,aa_head->uplook_theta);
     qInfo("up_downlook_offset(%f,%f,%f)",sut->up_downlook_offset.X(),sut->up_downlook_offset.Y(),sut->up_downlook_offset.Theta());
+    if (!sut->moveZToSafety()) {return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to SUT_Z safety position"};};
     if (!this->aa_head->moveToSZ_XYSC_Z_Sync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
     if(finish_delay>0)
         Sleep(finish_delay);

@@ -58,6 +58,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
+                console.log("sut move to safety pos")
+                sutModule.moveToSafetyPos()
             }
         }
         Button {

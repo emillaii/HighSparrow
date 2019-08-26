@@ -75,6 +75,26 @@ ColumnLayout {
             }
         }
     }
+    RowLayout {
+        Label {
+            text: qsTr("UV时间(Ms)")
+        }
+        TextField {
+            text: dispenseParams.uvTimeMs
+            horizontalAlignment: TextInput.AlignHCenter
+            onEditingFinished: {
+                dispenseParams.setUvTimeMs(text)
+            }
+        }
+        Button {
+            text: qsTr("去UV")
+            width: 20
+            height: 40
+            onClicked: {
+                logicManager.performHandling("", LogicManager.PERFORM_UV)
+            }
+        }
+    }
     RowLayout{
         Image{
             source: "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"

@@ -1,7 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
-import LogicManagerLib 1.1
 
 ColumnLayout {
     RowLayout {
@@ -73,26 +72,6 @@ ColumnLayout {
             height: 40
             onClicked: {
                 aaNewCore.performHandlingOperation(1,"")
-            }
-        }
-    }
-    RowLayout {
-        Label {
-            text: qsTr("UV时间(Ms)")
-        }
-        TextField {
-            text: dispenseParams.uvTimeMs
-            horizontalAlignment: TextInput.AlignHCenter
-            onEditingFinished: {
-                dispenseParams.uvTimeMs(text)
-            }
-        }
-        Button {
-            text: qsTr("去UV")
-            width: 20
-            height: 40
-            onClicked: {
-                logicManager.performHandling("", LogicManager.PERFORM_UV)
             }
         }
     }

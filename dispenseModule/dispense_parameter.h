@@ -17,7 +17,6 @@ public:
     Q_PROPERTY(double dispenseZOffset READ dispenseZOffset WRITE setDispenseZOffset NOTIFY dispenseZOffsetChanged)
     Q_PROPERTY(double testForce READ testForce WRITE setTestForce NOTIFY testForceChanged)
     Q_PROPERTY(int openTime READ openTime WRITE setOpenTime NOTIFY openTimeChanged)
-    Q_PROPERTY(int uvTimeMs READ uvTimeMs WRITE setUvTimeMs NOTIFY uvTimeMsChanged)
     double initTheta() const
     {
         return m_InitTheta;
@@ -51,11 +50,6 @@ public:
     int openTime() const
     {
         return m_openTime;
-    }
-
-    int uvTimeMs() const
-    {
-        return m_uvTimeMs;
     }
 
 public slots:
@@ -127,12 +121,6 @@ public slots:
         emit openTimeChanged(m_openTime);
     }
 
-    void setUvTimeMs(int uvTimeMs)
-    {
-        m_uvTimeMs = uvTimeMs;
-        emit uvTimeMsChanged(m_uvTimeMs);
-    }
-
 signals:
     void InitThetaChanged(double initTheta);
     void dispenseXOffsetChanged(double dispenseXOffset);
@@ -147,8 +135,6 @@ signals:
 
     void openTimeChanged(int openTime);
 
-    void uvTimeMsChanged(double uvTime);
-
 private:
     double m_InitTheta = 0;
     double m_dispenseXOffset = 0;
@@ -157,6 +143,5 @@ private:
     double m_dispenseZOffset = 0;
     double m_testForce = 0;
     int m_openTime = 0;
-    int m_uvTimeMs = 0;
 };
 #endif // DISPENSE_PATHER_H

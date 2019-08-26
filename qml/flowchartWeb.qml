@@ -6,7 +6,7 @@ WebEngineView {
     anchors.centerIn: parent
     width: parent.width
     height: parent.height
-    url: moduleManagerParam.flowChartURL
+    url: systerm_param.flowChartURL
     onLoadProgressChanged: {
         if (loadProgress === 0) {
             console.log("Flowchart start to laod")

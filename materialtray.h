@@ -33,7 +33,6 @@ public:
     bool findLastPositionOfState(int state, int tray_index);
     bool isTrayNeedChange(int tray_index);
     int getCurrentIndex(int tray_index = 0);
-    int getLastIndex();
     QPointF getCurrentPosition(int tray_index = 0);
     int getCurrentMaterialState(int tray_index = 0);
     void setCurrentMaterialState(int state,int tray_index = 0);

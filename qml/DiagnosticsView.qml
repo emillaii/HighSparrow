@@ -20,10 +20,11 @@ Grid {
                 Button {
                     text: qsTr("MTF Loop Test")  //Vibration Test
                     onClicked: {
-                        workersManager.stopAllWorkers(false)
-                        workersManager.startWorker(aaCoreParams.moduleName,3)
+                        workersManager.stopWorkers(true)
+                        logicManager.stop()
+                        workersManager.startWorker("AACoreNew",3)
                         if (sensorLoderCheckBox.checked)
-                            workersManager.startWorker("SensorLoaderModule",3)
+                            workersManager.startWorker("SensorLoader",3)
                     }
                 }
                 Button {

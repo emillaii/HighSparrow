@@ -244,7 +244,6 @@ bool AAHeadModule::moveToSync(double x, double y, double z, double c)
     return result;
 }
 
-// not used
 bool AAHeadModule::moveToSZ_XYC_Z_Sync(double x, double y, double z, double c)
 {
     bool result = motor_z->MoveToPosSync(0);
@@ -264,12 +263,15 @@ bool AAHeadModule::moveToSZ_XYC_Z_Sync(double x, double y, double z, double c)
 
 bool AAHeadModule::moveToSZ_XYSC_Z_Sync(double x, double y, double z, double c)
 {
-    //bool result = motor_z->MoveToPosSync(2);
-    bool result = motor_x->MoveToPos(x);
-    result &= motor_c->MoveToPos(c);
-    result &= motor_y->MoveToPosSaftySync(y);
-    result &= motor_x->WaitArrivedTargetPos(x);
-    result &= motor_c->WaitArrivedTargetPos(c);
+    bool result = motor_z->MoveToPosSync(0);
+    if(result)
+    {
+        result &= motor_x->MoveToPos(x);
+        result &= motor_c->MoveToPos(c);
+        result &= motor_y->MoveToPosSaftySync(y);
+        result &= motor_x->WaitArrivedTargetPos(x);
+        result &= motor_c->WaitArrivedTargetPos(c);
+    }
     if(result)
         result &= motor_z->MoveToPosSync(z);
     return result;

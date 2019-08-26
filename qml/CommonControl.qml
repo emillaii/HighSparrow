@@ -59,7 +59,7 @@ ItemDelegate {
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
                                         //logicManager.lensPickArmMoveToTray1Pos()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1)
+                                        lensLoaderModule.performHandling(lensLoaderModule.LENS_TRAY1)
                                     }
                                 }
                                 Button{
@@ -508,7 +508,7 @@ ItemDelegate {
                                         //7263
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
                                                                            +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
-                                                                           +SensorLoaderModule.SUT_PRODUCT_PR
+                                                                           +SensorLoaderModule.PRODUCT_PR
                                                                            +SensorLoaderModule.SUT_POS1)
                                     }
                                 }
@@ -549,7 +549,7 @@ ItemDelegate {
                                         //7264
                                         sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
                                                                            +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
-                                                                           +SensorLoaderModule.SUT_PRODUCT_PR
+                                                                           +SensorLoaderModule.PRODUCT_PR
                                                                            +SensorLoaderModule.SUT_POS2)
                                     }
                                 }

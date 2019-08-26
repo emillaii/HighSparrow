@@ -220,29 +220,7 @@ QString BaseModuleManager::deviceResp(QString message)
                       }
                       else
                       {
-                          qInfo("tcp fail and auto retray:%s",result_json["error"].toString().toStdString().c_str());
-                          tcp_result =  sender_messagers[messger_name]->inquiryMessage(message);
-                          result_json = getJsonObjectFromString(tcp_result);
-                          if(result_json.contains("error"))
-                          {
-                              if(result_json["error"].toString() == "")
-                              {
-                                    geted = true;
-                                    result["motorPosition"] = result_json["motorPosition"];
-                                    result["motorTargetPosition"] = result_json["motorTargetPosition"];
-                                    result["error"] = "";
-                                    break;
-                              }
-                              else
-                              {
-                                  qInfo("tcp fail:%s",result_json["error"].toString().toStdString().c_str());
-
-                              }
-                          }
-                          else
-                          {
-                              qInfo("messge fail");
-                          }
+                          qInfo("tcp fail");
                       }
                   }
                   else
@@ -1462,7 +1440,6 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 
     result = GetVcMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
     if (!result) return false;
-    sut_carrier.Move_Z_Sync(sut_carrier.parameters.SafetyZ());
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();//SUT_X
     GetMotorByName(this->sut_module.parameters.motorYName())->SeekOrigin();//SUT_Y
 
@@ -1552,7 +1529,7 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->SeekOrigin();
     result = GetMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
     if(!result) return false;
-    sut_carrier.Move_Z_Sync(sut_carrier.parameters.SafetyZ());
+    GetMotorByName(sut_module.parameters.motorZName())->MoveToMinPosSync();
     if(!result) return false;
     GetMotorByName(sut_module.parameters.motorYName())->SeekOrigin();
 

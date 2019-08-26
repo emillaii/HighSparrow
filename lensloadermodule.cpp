@@ -251,8 +251,7 @@ void LensLoaderModule::run(bool has_material)
             }
             else
             {
-                //sendAlarmMessage(ErrorLevel::TipNonblock,"");
-                // TODO: Add autoprtime same as sensor loader module
+                sendAlarmMessage(ErrorLevel::TipNonblock,"");
             }
             lens_vision->CloseLight();
             pr_times = 5;

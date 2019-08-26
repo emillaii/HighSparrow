@@ -76,6 +76,7 @@ void AAData::clear()
 void AAData::plot(QString chartName)
 {
     this->setChartName(chartName);
+    emit wValueChanged();
 }
 
 void AAData::incrementData(double y1, double y2, double y3, double y4, double y5)

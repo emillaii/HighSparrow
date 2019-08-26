@@ -92,7 +92,7 @@ bool Unitlog::postDataToELK(QString uuid)
          file.write(doc.toJson());
          file.close();
          //csv
-           postUnitDataToCSV(uuid);
+         postUnitDataToCSV(uuid);
          //elk
          if (nam) {
              nam->post(request, doc.toJson());
@@ -100,6 +100,7 @@ bool Unitlog::postDataToELK(QString uuid)
          } else {
              qInfo("Post data to ELK fail");
          }
+         unit_log_list.remove(uuid);
     } else {
         qInfo("Cannot find the unit: %s", uuid.toStdString().c_str());
     }

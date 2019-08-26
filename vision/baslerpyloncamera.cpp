@@ -132,7 +132,7 @@ bool BaslerPylonCamera::GrabImage()
     trig_mutex.unlock();
 
     try {
-        if ( camera.WaitForFrameTriggerReady( 500, TimeoutHandling_ThrowException))
+        if ( camera.WaitForFrameTriggerReady( 1000, TimeoutHandling_ThrowException))
         {
              camera.ExecuteSoftwareTrigger();
         }

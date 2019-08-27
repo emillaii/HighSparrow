@@ -15,14 +15,14 @@ wchar_t BaseModuleManager::profile_path2[] = L"..\\config\\xt_motion_config.csv"
 
 BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent),
-    ErrorBase ("BaseModuleManager")
+      ErrorBase ("BaseModuleManager")
 {
     this->moveToThread(&work_thread);
     this->work_thread.start();
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
-    qInfo("Server Mode: %d", ServerMode());
+//    qInfo("Server Mode: %d", ServerMode());
     is_init = false;
     profile_loaded = false;
     if(!QDir(".//notopencamera").exists())
@@ -48,7 +48,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonDownlookCamera) pylonDownlookCamera->start();
         if(pylonPickarmCamera) pylonPickarmCamera->start();
     }
-    material_tray.standards_parameters.setTrayCount(2);
+//    material_tray.standards_parameters.setTrayCount(2);
     lens_tray.standards_parameters.setTrayCount(2);
     lens_tray.setTrayType(TrayType::LENS_TRAY);
     sensor_tray.standards_parameters.setTrayCount(2);
@@ -113,7 +113,6 @@ bool BaseModuleManager::loadParameters()
     configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
     if(!this->paramers.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))return false;
 
-    material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
     lens_tray.loadJsonConfig(getCurrentParameterDir().append(SH_LENS_TRAY_FILE));
     sensor_tray.loadJsonConfig(getCurrentParameterDir().append(SH_SENSOR_TRAY_FILE));
     reject_tray.loadJsonConfig(getCurrentParameterDir().append(SH_REJECT_TRAY_FILE));
@@ -157,7 +156,6 @@ bool BaseModuleManager::saveParameters()
 {
     //pr文件拷贝
     this->paramers.saveJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER);
-    material_tray.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
     lens_tray.saveJsonConfig(getCurrentParameterDir().append(SH_LENS_TRAY_FILE));
     sensor_tray.saveJsonConfig(getCurrentParameterDir().append(SH_SENSOR_TRAY_FILE));
     reject_tray.saveJsonConfig(getCurrentParameterDir().append(SH_REJECT_TRAY_FILE));
@@ -227,10 +225,10 @@ bool BaseModuleManager::loadProfile()
 
 bool BaseModuleManager::loadStructConfig(QString file_dir)
 {
-   bool result = loadMachineConfig(QString(file_dir).append(MACHINE_PARAM_FILE));
-   if(!result)return false;
-   //todo将和打料的型号无关的参数移入该函数
-//   configs.loadJsonConfig()
+    bool result = loadMachineConfig(QString(file_dir).append(MACHINE_PARAM_FILE));
+    if(!result)return false;
+    //todo将和打料的型号无关的参数移入该函数
+    //   configs.loadJsonConfig()
     return true;
 }
 
@@ -287,9 +285,9 @@ bool BaseModuleManager::loadMachineConfig(QString file_path)
 bool BaseModuleManager::loadVcmFile(QString file_name)
 {
     QJsonArray array;
-     qInfo("loadVcmFile：%s", file_name.toStdString().c_str());
+    qInfo("loadVcmFile：%s", file_name.toStdString().c_str());
     if(!loadJsonArray(file_name,array))return false;
-     qInfo("VCM num in json file：%d", array.count());
+    qInfo("VCM num in json file：%d", array.count());
     for (int i = 0; i < array.count(); i++)
     {
         XtVcMotor* temp_motor = new XtVcMotor();
@@ -331,7 +329,7 @@ bool BaseModuleManager::loadMotorFile(QString file_name)
     if(!loadJsonObject(file_name,param_object))return false;
     foreach (XtMotor* temp_motor, motors)
         if(param_object.contains(temp_motor->Name()))
-                temp_motor->parameters.read(param_object[temp_motor->Name()].toObject());
+            temp_motor->parameters.read(param_object[temp_motor->Name()].toObject());
     return true;
 }
 
@@ -352,7 +350,7 @@ bool BaseModuleManager::loadVacuumFiles(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-//        saveVacuumFiles(file_name);
+        //        saveVacuumFiles(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -394,7 +392,7 @@ bool BaseModuleManager::loadCylinderFiles(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-//        saveCylinderFiles(file_name);
+        //        saveCylinderFiles(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -436,7 +434,7 @@ bool BaseModuleManager::loadVisionLoactionFiles(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-//        saveVisionLoactionFiles(file_name);
+        //        saveVisionLoactionFiles(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -478,7 +476,7 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-//        saveCalibrationFiles(file_name);
+        //        saveCalibrationFiles(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -535,32 +533,32 @@ bool BaseModuleManager::loadMotorLimitFiles(QString file_name)
         temp_motor->io_limit_parameters.clear();
         if(param_object.contains(temp_motor->Name()))
         {
-           QJsonObject temp_object = param_object[temp_motor->Name()].toObject();
-           for (int i = 0; i < temp_object.size(); ++i)
-           {
-               QString temp_name = temp_object.keys()[i];
-               if(temp_name.contains("VerticalMotorLimit"))
-               {
-                   VerticalLimitParameter* temp_param = new VerticalLimitParameter();
-                   temp_param->read(temp_object[temp_name].toObject());
-                   temp_motor-> vertical_limit_parameters.append(temp_param);
-                   continue;
-               }
-               if(temp_name.contains("ParallelMotorLimit"))
-               {
-                   ParallelLimitParameter* temp_param = new ParallelLimitParameter();
-                   temp_param->read(temp_object[temp_name].toObject());
-                   temp_motor->parallel_limit_parameters.append(temp_param);
-                   continue;
-               }
-               if(temp_name.contains("IOLimit"))
-               {
-                   IOLimitParameter* temp_param = new IOLimitParameter();
-                   temp_param->read(temp_object[temp_name].toObject());
-                   temp_motor->io_limit_parameters.append(temp_param);
-                   continue;
-               }
-           }
+            QJsonObject temp_object = param_object[temp_motor->Name()].toObject();
+            for (int i = 0; i < temp_object.size(); ++i)
+            {
+                QString temp_name = temp_object.keys()[i];
+                if(temp_name.contains("VerticalMotorLimit"))
+                {
+                    VerticalLimitParameter* temp_param = new VerticalLimitParameter();
+                    temp_param->read(temp_object[temp_name].toObject());
+                    temp_motor-> vertical_limit_parameters.append(temp_param);
+                    continue;
+                }
+                if(temp_name.contains("ParallelMotorLimit"))
+                {
+                    ParallelLimitParameter* temp_param = new ParallelLimitParameter();
+                    temp_param->read(temp_object[temp_name].toObject());
+                    temp_motor->parallel_limit_parameters.append(temp_param);
+                    continue;
+                }
+                if(temp_name.contains("IOLimit"))
+                {
+                    IOLimitParameter* temp_param = new IOLimitParameter();
+                    temp_param->read(temp_object[temp_name].toObject());
+                    temp_motor->io_limit_parameters.append(temp_param);
+                    continue;
+                }
+            }
         }
         qInfo("%s loadmotorlimit motors %d limit %d",temp_motor->Name().toStdString().c_str(),temp_motor->parallel_limit_motors.count(),temp_motor->parallel_limit_parameters.count());
     }
@@ -604,7 +602,7 @@ bool BaseModuleManager::saveMotorLimitFiles(QString file_name)
                 parameters_object[temp_name] = temp_object;
         }
     }
-   return saveJsonObject(file_name,parameters_object);
+    return saveJsonObject(file_name,parameters_object);
 }
 
 bool BaseModuleManager::loadJsonArray(QString file_name,QJsonArray &array)
@@ -770,9 +768,6 @@ bool BaseModuleManager::InitStruct()
     }
 
     QVector<XtMotor *> executive_motors;
-    executive_motors.push_back(GetMotorByName(sut_module.parameters.motorXName()));
-    executive_motors.push_back(GetMotorByName(sut_module.parameters.motorYName()));
-    executive_motors.push_back(GetMotorByName(sut_module.parameters.motorZName()));
     dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,
                    GetOutputIoByName(dispenser.parameters.dispenseIo()));
 
@@ -782,41 +777,46 @@ bool BaseModuleManager::InitStruct()
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
-    if(ServerMode()==2)
-    {
-        //single_station_material_pickarm.Init();
-        single_station_material_pickarm.Init(GetMotorByName(single_station_material_pickarm.parameters.motorXName()),
-                                             GetMotorByName(single_station_material_pickarm.parameters.motorYName()),
-                                             GetMotorByName(single_station_material_pickarm.parameters.motorTh1Name()),
-                                             GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name()),
-                                             GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name()),
-                                             GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name()),
-                                             GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName()),
-                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumLensSuctionName()),
-                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumSensorSuctionName()),
-                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumLUTName()),
-                                             GetVacuumByName(single_station_material_pickarm.parameters.vacuumSUTName()),
-                                             GetCylinderByName(single_station_material_pickarm.parameters.cylinderName()));
-        single_station_material_loader_module.Init(&single_station_material_pickarm,&sensor_tray,&lens_tray,&reject_tray,
-                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.sensorVisionName()),
-                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.sensorVacancyVisionName()),
-                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.sutVisionName()),
-                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.sutSensorVisionName()),
-                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.sutProductVisionName()),
-                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.lensVisionName()),
-                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.lensVacancyVisionName()),
-                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.lutVisionName()),
-                                                   GetVisionLocationByName(single_station_material_loader_module.parameters.lutLensVisionName()),
-                                                   GetVacuumByName(single_station_material_loader_module.parameters.sutVacuumName()),
-                                                   GetVacuumByName(single_station_material_loader_module.parameters.lutVacuumName()));
-        sensor_tray.resetTrayState(0);
-        sensor_tray.resetTrayState(1);
-        lens_tray.resetTrayState(0);
-        lens_tray.resetTrayState(1);
-        reject_tray.resetTrayState(0);
-        reject_tray.resetTrayState(1);
+    single_station_material_pickarm.Init(GetMotorByName(single_station_material_pickarm.parameters.motorXName()),
+                                         GetMotorByName(single_station_material_pickarm.parameters.motorYName()),
+                                         GetMotorByName(single_station_material_pickarm.parameters.motorTh1Name()),
+                                         GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name()),
+                                         GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name()),
+                                         GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name()),
+                                         GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName()),
+                                         GetVacuumByName(single_station_material_pickarm.parameters.vacuumLensSuctionName()),
+                                         GetVacuumByName(single_station_material_pickarm.parameters.vacuumSensorSuctionName()),
+                                         GetVacuumByName(single_station_material_pickarm.parameters.vacuumLUTName()),
+                                         GetVacuumByName(single_station_material_pickarm.parameters.vacuumSUTName()),
+                                         GetCylinderByName(single_station_material_pickarm.parameters.cylinderName()));
+    single_station_material_loader_module.Init(&single_station_material_pickarm,&sensor_tray,&lens_tray,&reject_tray,
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.sensorVisionName()),
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.sensorVacancyVisionName()),
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.sutVisionName()),
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.sutSensorVisionName()),
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.sutProductVisionName()),
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.lensVisionName()),
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.lensVacancyVisionName()),
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.lutVisionName()),
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.lutLensVisionName()),
+                                               GetVacuumByName(single_station_material_loader_module.parameters.sutVacuumName()),
+                                               GetVacuumByName(single_station_material_loader_module.parameters.lutVacuumName()));
+    sensor_tray.resetTrayState(0);
+    sensor_tray.resetTrayState(1);
+    lens_tray.resetTrayState(0);
+    lens_tray.resetTrayState(1);
+    reject_tray.resetTrayState(0);
+    reject_tray.resetTrayState(1);
 
-        sh_lsut_module.Init(&sut_carrier,
+<<<<<<< .mine    sh_lsut_module.Init(&sut_carrier,
+                        GetVisionLocationByName(sh_lsut_module.parameters.sutDownLookLocationName()),
+                        GetVisionLocationByName(sh_lsut_module.parameters.mushroomLocationName()),
+                        GetVisionLocationByName(sh_lsut_module.parameters.lutGripperLoactionName()),
+                        GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()),
+                        GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()),
+                        GetOutputIoByName(sh_lsut_module.parameters.cylinderName()),
+                        &aa_head_module);
+=======        sh_lsut_module.Init(&sut_carrier,
                             GetVisionLocationByName(sh_lsut_module.parameters.sutDownLookLocationName()),
 //                            GetVisionLocationByName(sh_lsut_module.parameters.updownlookDownLocationName()),
 //                            GetVisionLocationByName(sh_lsut_module.parameters.updownlookUpLocationName()),
@@ -826,19 +826,13 @@ bool BaseModuleManager::InitStruct()
                             GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()),
                             GetOutputIoByName(sh_lsut_module.parameters.cylinderName()),
                             &aa_head_module);
-
-    }else
-        lut_carrier.Init("lut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
-                         GetMotorByName(sh_lsut_module.parameters.motorYName()),
-                         GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
-                         GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()));
+>>>>>>> .theirs
+    lut_carrier.Init("lut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
+                     GetMotorByName(sh_lsut_module.parameters.motorYName()),
+                     GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
+                     GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()));
 
     aaCoreNew.Init(&aa_head_module, &sh_lsut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog);
-//    entrance_clip.Init(u8"Sensor进料盘弹夹",&sensor_clip_stand);
-//    exit_clip.Init(u8"Sensor出料盘弹夹",&sensor_clip_stand);
-
-    material_tray.resetTrayState(0);
-    material_tray.resetTrayState(1);
     return true;
 }
 
@@ -900,7 +894,7 @@ bool BaseModuleManager::initialDevice()
         m->GetMasterAxisID();
     }
     EnableMotors();
-//    timer.start(1000);
+    //    timer.start(1000);
     return true;
 }
 
@@ -1027,15 +1021,6 @@ void BaseModuleManager::loadFlowchart(QString json)
     aaCoreNew.setFlowchartDocument(json);
 }
 
-//void BaseModuleManager::loadSensorTrayLoaderMuduleParameter()
-//{
-//    QMap<QString,PropertyBase*> temp_map;
-//    temp_map.insert("sensor_tray_loader", &sensor_tray_loder_module.parameters);
-//    temp_map.insert("sensor_clip_stand", &sensor_clip_stand);
-//    temp_map.insert("entance_clip", &entrance_clip.parameters);
-//    temp_map.insert("exit_clip", &exit_clip.parameters);
-//    PropertyBase::loadJsonConfig(SENSOR_TRAY_LOADER_FILE_NAME, temp_map);
-//}
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)
 {
@@ -1159,13 +1144,13 @@ bool BaseModuleManager::stepMove(int index, double step, bool isPositive)
 void BaseModuleManager::setMotorParamByName(QString name, double vel, double acc, double jert)
 {
     qInfo("setMotorParamByName %f, %f, %f",vel,acc,jert);
-  XtMotor* temp_motor = GetMotorByName(name);
-  if(temp_motor != nullptr)
-  {
-      temp_motor->SetVel(vel);
-      temp_motor->SetAcc(acc);
-      temp_motor->SetJerk(jert);
-  }
+    XtMotor* temp_motor = GetMotorByName(name);
+    if(temp_motor != nullptr)
+    {
+        temp_motor->SetVel(vel);
+        temp_motor->SetAcc(acc);
+        temp_motor->SetJerk(jert);
+    }
 }
 
 bool BaseModuleManager::performCalibration(QString calibration_name)
@@ -1188,9 +1173,9 @@ bool BaseModuleManager::performCalibration(QString calibration_name)
 
 bool BaseModuleManager::performLocation(QString location_name)
 {
-//    if(!emit sendMsgSignal("title","content")){
-//        return true;
-//    }
+    //    if(!emit sendMsgSignal("title","content")){
+    //        return true;
+    //    }
     qInfo("perform %s",location_name.toStdString().c_str());
     VisionLocation* temp_location = GetVisionLocationByName(location_name);
     if(temp_location == nullptr)
@@ -1220,9 +1205,9 @@ bool BaseModuleManager::performLocation(QString location_name)
     }
     if(temp_location->parameters.canMotion())
     {
-//        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"x: %1,y:%2,theta:%3,是否移动").arg(offset.X).arg(offset.Y).arg(offset.Theta))){
-//            return true;
-//        }
+        //        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"x: %1,y:%2,theta:%3,是否移动").arg(offset.X).arg(offset.Y).arg(offset.Theta))){
+        //            return true;
+        //        }
         temp_caliration->performPRResult(offset);
     }
     return true;
@@ -1340,7 +1325,7 @@ void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
 
 void BaseModuleManager::sendChangeSensorTray()
 {
-   //emit sensor_loader_module.sendChangeTrayRequst();
+    //emit sensor_loader_module.sendChangeTrayRequst();
     emit single_station_material_loader_module.sendChangeSensorTrayRequst();
 }
 
@@ -1370,11 +1355,6 @@ bool BaseModuleManager::closeSensor()
     return dothinkey->DothinkeyClose();
 }
 
-//void BaseModuleManager::loadSensorLoaderParameter()
-//{
-//    material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
-//    sensor_loader_module.loadJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
-//}
 
 double BaseModuleManager::showChartCalibrationRotation()
 {

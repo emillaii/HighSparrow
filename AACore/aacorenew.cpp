@@ -404,7 +404,7 @@ void AACoreNew::startWork( int run_mode)
     }
     if(states.disableStation())
         return;
-	emit clearHeaders();
+    emit clearHeaders();
     qInfo("startWork clearHeaders");
     if (run_mode == RunMode::Normal) run(true);
     else if (run_mode == RunMode::NoMaterial) {
@@ -2086,7 +2086,7 @@ double AACoreNew::performMTFInThread( cv::Mat input, int freq )
     return sfr;
 }
 
-ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params)
+ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
 {
 //    double cc_min_sfr = params["CC"].toDouble(-1);
 //    double ul_min_sfr = params["UL"].toDouble(-1);

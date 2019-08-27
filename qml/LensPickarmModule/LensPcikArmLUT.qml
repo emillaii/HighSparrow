@@ -161,7 +161,7 @@ ColumnLayout {
             RowLayout{
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
-                    text:qsTr("NGLens视觉")
+                    text:qsTr("NgLens视觉")
                     width:40
                     height: 40
                     onClicked: {

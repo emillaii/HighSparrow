@@ -75,33 +75,25 @@ public:
     Q_INVOKABLE void performLoopTest(int mode);
 
     //lenpickarmModule
-    Q_INVOKABLE void lensPickArmMoveToTray1Pos();
-    Q_INVOKABLE void lensPickArmMoveToTray2Pos();
-    Q_INVOKABLE void lensPickArmMoveToTray1StartPos();
-    Q_INVOKABLE void lensPickArmMoveToTray2StartPos();
-    Q_INVOKABLE void lensPickArmMoveToTray1EndPos();
-    Q_INVOKABLE void lensPickArmMoveToLutPos1();
-    Q_INVOKABLE void lensPickArmMoveToLutPos2();
-    Q_INVOKABLE void lensPickArmMoveToPickLensFromTray1();
-    Q_INVOKABLE void lensPickArmMoveToPickLensFromTray2();
-    Q_INVOKABLE void lensPickArmMoveToPickLensFromLut();
-    Q_INVOKABLE void lensPickArmMoveToPlaceLensToTray1();
-    Q_INVOKABLE void lensPickArmMoveToPlaceLensToTray2();
-    Q_INVOKABLE void lensPickArmMoveToPlaceLensToLut();
-    Q_INVOKABLE void lensPickArmLensPR();//取
-    Q_INVOKABLE void lensPickArmVacancyTrayPR();//放
-    Q_INVOKABLE void lensPickArmLUTPR();//取
-    Q_INVOKABLE void lensPickArmLensMeasureHeight();//tray lens测高
-    Q_INVOKABLE void lensPickArmLUTMeasureHeight();//lut 测高
-    Q_INVOKABLE void lensPickArmMoveToUpdownlookDownPos();
-    Q_INVOKABLE void lensPickArmMoveToUpdownlookUpPos();
+    Q_INVOKABLE void pickArmMoveToLensTray1Pos();
+    Q_INVOKABLE void pickArmMoveToLensTray2Pos();
+    Q_INVOKABLE void pickArmMoveToLensTray1StartPos();
+    Q_INVOKABLE void pickArmMoveToLensTray2StartPos();
+    Q_INVOKABLE void pickArmMoveToLensTray1EndPos();
+    Q_INVOKABLE void pickArmMoveToLutPos();
+    Q_INVOKABLE void pickArmMoveToPickLensFromTray1();
+    Q_INVOKABLE void pickArmMoveToPickLensFromTray2();
+    Q_INVOKABLE void pickArmMoveToPickLensFromLut();
+    Q_INVOKABLE void pickArmMoveToPlaceLensToTray1();
+    Q_INVOKABLE void pickArmMoveToPlaceLensToTray2();
+    Q_INVOKABLE void pickArmMoveToPlaceLensToLut();
+    Q_INVOKABLE void pickArmLensTrayLensPR();//取
+    Q_INVOKABLE void pickArmLensTrayVacancyPR();//放
+    Q_INVOKABLE void pickArmLUTVancyPR();//取
+    Q_INVOKABLE void pickArmLensMeasureHeight();//tray lens测高
+    Q_INVOKABLE void pickArmLUTMeasureHeight();//lut 测高
 
 
-    Q_INVOKABLE void sensorTrayLoaderModuleMovetoPushMotorSafePosotion();
-    Q_INVOKABLE void sensorTrayLoaderModuleMovetoDownTrayPosition();
-    Q_INVOKABLE void sensorTrayLoaderModuleMovetoGetTrayPosition();
-    Q_INVOKABLE void sensorTrayLoaderModuleMovetoTrayWorkPosition();
-    Q_INVOKABLE void sensorTrayLoaderModuleMovetoVacancyTrayPosition();
 
     int currentMode() const
     {

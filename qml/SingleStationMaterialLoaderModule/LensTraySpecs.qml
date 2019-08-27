@@ -4,20 +4,6 @@ import QtQuick.Layouts 1.11
 ColumnLayout {
     RowLayout{
         Label{
-            text:qsTr("列数")
-        }
-        TextField{
-            text:sh_lens_tray_standard_parameter.columnCount
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: IntValidator{
-                bottom:0
-            }
-
-            onEditingFinished: {
-                sh_lens_tray_standard_parameter.setColumnCount(text)
-            }
-        }
-        Label{
             text:qsTr("行数")
         }
         TextField{
@@ -31,22 +17,22 @@ ColumnLayout {
                 sh_lens_tray_standard_parameter.setRowCount(text)
             }
         }
-    }
-    RowLayout{
         Label{
-            text:qsTr("列距")
+            text:qsTr("列数")
         }
         TextField{
-            text:sh_lens_tray_standard_parameter.ColumnDelta
+            text:sh_lens_tray_standard_parameter.columnCount
             horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator {
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
+            validator: IntValidator{
+                bottom:0
             }
+
             onEditingFinished: {
-                sh_lens_tray_standard_parameter.setColumnDelta(text)
+                sh_lens_tray_standard_parameter.setColumnCount(text)
             }
         }
+    }
+    RowLayout{
         Label{
             text:qsTr("行距")
         }
@@ -59,6 +45,20 @@ ColumnLayout {
             }
             onEditingFinished: {
                 sh_lens_tray_standard_parameter.setRowDelta(text)
+            }
+        }
+        Label{
+            text:qsTr("列距")
+        }
+        TextField{
+            text:sh_lens_tray_standard_parameter.ColumnDelta
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sh_lens_tray_standard_parameter.setColumnDelta(text)
             }
         }
         Button{

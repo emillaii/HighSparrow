@@ -73,9 +73,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("aaHeadModule", &highSprrow.baseModuleManager->aa_head_module);
     engine.rootContext()->setContextProperty("dispenseModule", &highSprrow.baseModuleManager->dispense_module);
     engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
-    engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
-    engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
-    engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
     engine.rootContext()->setContextProperty("sh_materialLoaderModule",&highSprrow.baseModuleManager->single_station_material_loader_module);
     engine.rootContext()->setContextProperty("materialLoaderParameter",&highSprrow.baseModuleManager->single_station_material_loader_module.parameters);
     //Register QML - C++ ENUM
@@ -90,7 +87,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lsutLensOffset", &highSprrow.baseModuleManager->sh_lsut_module.lens_offset);
     engine.rootContext()->setContextProperty("lsutSensorOffset", &highSprrow.baseModuleManager->sh_lsut_module.sensor_offset);
     engine.rootContext()->setContextProperty("lsutMushroomPosition", &highSprrow.baseModuleManager->sh_lsut_module.mushroom_position);
-    engine.rootContext()->setContextProperty("lsutLoadPosition", &highSprrow.baseModuleManager->sh_lsut_module.load_position);
+    engine.rootContext()->setContextProperty("lsutLoadSensorPosition", &highSprrow.baseModuleManager->sh_lsut_module.load_sensor_position);
+     engine.rootContext()->setContextProperty("lsutLoadLensPosition", &highSprrow.baseModuleManager->sh_lsut_module.load_lens_position);
     engine.rootContext()->setContextProperty("lsutPRPosition", &highSprrow.baseModuleManager->sh_lsut_module.downlook_position);
     engine.rootContext()->setContextProperty("lsutGripperPosition", &highSprrow.baseModuleManager->sh_lsut_module.gripper_position);
     engine.rootContext()->setContextProperty("lsutCalibrationPosition", &highSprrow.baseModuleManager->sh_lsut_module.calibration_position);
@@ -163,13 +161,6 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("dispenserParams",&highSprrow.baseModuleManager->dispenser.parameters);
     engine.rootContext()->setContextProperty("dispenseParams",&highSprrow.baseModuleManager->dispense_module.parameters);
-    engine.rootContext()->setContextProperty("lensPickArmParams",&highSprrow.baseModuleManager->lens_pick_arm.parameters);
-//*
-    engine.rootContext()->setContextProperty("material_tray",&highSprrow.baseModuleManager->material_tray);
-    engine.rootContext()->setContextProperty("first_tray_end_position",&highSprrow.baseModuleManager->material_tray.first_tray_end_position);
-    engine.rootContext()->setContextProperty("tray_start_point1",&highSprrow.baseModuleManager->material_tray.parameters[0]->tray_start_position);
-    engine.rootContext()->setContextProperty("tray_start_point2",&highSprrow.baseModuleManager->material_tray.parameters[1]->tray_start_position);
-    engine.rootContext()->setContextProperty("tray_standard_parameter",&highSprrow.baseModuleManager->material_tray.standards_parameters);
     engine.rootContext()->setContextProperty("materialPickArmParams",&highSprrow.baseModuleManager->single_station_material_pickarm.parameters);
     engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramers);
 

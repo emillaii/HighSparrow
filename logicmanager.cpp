@@ -168,148 +168,108 @@ void LogicManager::performLoopTest(int mode)
     moveToCmd(CommandType::PERFORM_LOOP_TEST);
 }
 
-void LogicManager::lensPickArmMoveToTray1Pos()
+void LogicManager::pickArmMoveToLensTray1Pos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1);
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LENS_TRAY1);
 }
 
-void LogicManager::lensPickArmMoveToTray2Pos()
+void LogicManager::pickArmMoveToLensTray2Pos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY2);
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LENS_TRAY2);
 }
 
-void LogicManager::lensPickArmMoveToTray1StartPos()
+void LogicManager::pickArmMoveToLensTray1StartPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1_START_POS);
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LENS_TRAY1_START_POS);
 }
 
-void LogicManager::lensPickArmMoveToTray2StartPos()
+void LogicManager::pickArmMoveToLensTray2StartPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY2_START_POS);
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LENS_TRAY2_START_POS);
 }
 
-void LogicManager::lensPickArmMoveToTray1EndPos()
+void LogicManager::pickArmMoveToLensTray1EndPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1_END_POS);
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LENS_TRAY1_END_POS);
 }
 
-void LogicManager::lensPickArmMoveToLutPos1()
+void LogicManager::pickArmMoveToLutPos()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS1);
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LUT_POS1);
 }
 
-void LogicManager::lensPickArmMoveToLutPos2()
-{
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS2);
-}
 
-void LogicManager::lensPickArmMoveToPickLensFromTray1()
+void LogicManager::pickArmMoveToPickLensFromTray1()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1+
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LENS_TRAY1+
                                                            HandlePR::LENS_PR+
                                                            HandleToWorkPos::ToWork+
                                                            handlePickerAction::PICK_LENS_FROM_TRAY);
 }
 
-void LogicManager::lensPickArmMoveToPickLensFromTray2()
+void LogicManager::pickArmMoveToPickLensFromTray2()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY2+
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LENS_TRAY2+
                                                            HandlePR::LENS_PR+
                                                            HandleToWorkPos::ToWork+
                                                            handlePickerAction::PICK_LENS_FROM_TRAY);
 }
 
-void LogicManager::lensPickArmMoveToPickLensFromLut()
+void LogicManager::pickArmMoveToPickLensFromLut()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS2+
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LUT_POS2+
                                                            HandlePR::LUT_PR+
                                                            HandleToWorkPos::ToWork+
                                                            handlePickerAction::PICK_NG_LENS_FROM_LUT);
 }
 
-void LogicManager::lensPickArmMoveToPlaceLensToTray1()
+void LogicManager::pickArmMoveToPlaceLensToTray1()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY1+
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LENS_TRAY1+
                                                            HandlePR::VACANCY_PR+
                                                            HandleToWorkPos::ToWork+
                                                            handlePickerAction::PLACE_NG_LENS_TO_TRAY);
 }
 
-void LogicManager::lensPickArmMoveToPlaceLensToTray2()
+void LogicManager::pickArmMoveToPlaceLensToTray2()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LENS_TRAY2+
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LENS_TRAY2+
                                                            HandlePR::VACANCY_PR+
                                                            HandleToWorkPos::ToWork+
                                                            handlePickerAction::PLACE_NG_LENS_TO_TRAY);
 }
 
-void LogicManager::lensPickArmMoveToPlaceLensToLut()
+void LogicManager::pickArmMoveToPlaceLensToLut()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::LUT_POS1+
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePosition::LUT_POS1+
                                                            HandlePR::RESET_PR+
                                                            HandleToWorkPos::ToWork+
                                                            handlePickerAction::PLACE_LENS_TO_LUT);
 }
 
-void LogicManager::lensPickArmLensPR()
+void LogicManager::pickArmLensTrayLensPR()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePR::LENS_PR+HandleToWorkPos::ToWork);
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePR::LENS_PR+HandleToWorkPos::ToWork);
 }
 
-void LogicManager::lensPickArmVacancyTrayPR()
+void LogicManager::pickArmLensTrayVacancyPR()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePR::VACANCY_PR+HandleToWorkPos::ToWork);
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePR::VACANCY_PR+HandleToWorkPos::ToWork);
 }
 
-void LogicManager::lensPickArmLUTPR()
+void LogicManager::pickArmLUTVancyPR()
 {
-    baseModuleManage->lens_loader_module.performHandling(HandlePR::LUT_PR+HandleToWorkPos::ToWork);
+    baseModuleManage->single_station_material_loader_module.performHandling(HandlePR::LUT_PR+HandleToWorkPos::ToWork);
 }
 
-void LogicManager::lensPickArmLensMeasureHeight()
+void LogicManager::pickArmLensMeasureHeight()
 {
- baseModuleManage->lens_loader_module.performHandling( handlePickerAction::MeasureLensInTray);
+ baseModuleManage->single_station_material_loader_module.performHandling( handlePickerAction::MeasureLensInTray);
 }
 
-void LogicManager::lensPickArmLUTMeasureHeight()
+void LogicManager::pickArmLUTMeasureHeight()
 {
-    baseModuleManage->lens_loader_module.performHandling( handlePickerAction::MeasureLensInLUT);
-}
-
-void LogicManager::lensPickArmMoveToUpdownlookDownPos()
-{
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_DOWN_POS);
-}
-
-void LogicManager::lensPickArmMoveToUpdownlookUpPos()
-{
-    baseModuleManage->lens_loader_module.performHandling(HandlePosition::UPDOWNLOOK_UP_POS);
-}
-
-
-void LogicManager::sensorTrayLoaderModuleMovetoPushMotorSafePosotion()
-{
-    baseModuleManage->sensor_tray_loder_module.movetoPushMotorSafePosotion();
-}
-
-void LogicManager::sensorTrayLoaderModuleMovetoDownTrayPosition()
-{
-    baseModuleManage->sensor_tray_loder_module.movetoDownTrayPosition();
-}
-
-void LogicManager::sensorTrayLoaderModuleMovetoGetTrayPosition()
-{
-    baseModuleManage->sensor_tray_loder_module.movetoGetTrayPosition();
-}
-
-void LogicManager::sensorTrayLoaderModuleMovetoTrayWorkPosition()
-{
-    baseModuleManage->sensor_tray_loder_module.movetoTrayWorkPosition();
-}
-
-void LogicManager::sensorTrayLoaderModuleMovetoVacancyTrayPosition()
-{
-    baseModuleManage->sensor_tray_loder_module.movetoVacancyTrayPosition();
+    baseModuleManage->single_station_material_loader_module.performHandling( handlePickerAction::MeasureLensInLUT);
 }
 
 void LogicManager::receiveCommand(int cmd)

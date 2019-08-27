@@ -714,7 +714,7 @@ ItemDelegate {
                                     }
                                 }
                                 Button{
-                                    text:qsTr("lpa取NGLens");
+                                    text:qsTr("lpa取NgLens");
                                     onClicked: {
                                         logicManager.lensPickArmMoveToPickLensFromLut()
                                     }

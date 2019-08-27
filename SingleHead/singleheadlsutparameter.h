@@ -17,10 +17,6 @@ private:
     QString m_sutVacuumName;
     QString m_cylinderName;
     QString m_sutDownLookLocationName;
-    QString m_updownlookUpLocationName;
-    QString m_updownlookDownLocationName;
-    QString m_lutUplookLocationName;
-    QString m_loadlookLocationName;
     QString m_mushroomLocationName;
     QString m_lutGripperLoactionName;
 
@@ -36,10 +32,6 @@ public:
     Q_PROPERTY(QString sutVacuumName READ sutVacuumName WRITE setSutVacuumName NOTIFY sutVacuumNameChanged)
     Q_PROPERTY(QString cylinderName READ cylinderName WRITE setCylinderName NOTIFY cylinderNameChanged)
     Q_PROPERTY(QString sutDownLookLocationName READ sutDownLookLocationName WRITE setSutDownLookLocationName NOTIFY sutDownLookLocationNameChanged)
-    Q_PROPERTY(QString updownlookUpLocationName READ updownlookUpLocationName WRITE setUpdownlookUpLocationName NOTIFY updownlookUpLocationNameChanged)
-    Q_PROPERTY(QString updownlookDownLocationName READ updownlookDownLocationName WRITE setUpdownlookDownLocationName NOTIFY updownlookDownLocationNameChanged)
-    Q_PROPERTY(QString lutUplookLocationName READ lutUplookLocationName WRITE setLutUplookLocationName NOTIFY lutUplookLocationNameChanged)
-    Q_PROPERTY(QString loadlookLocationName READ loadlookLocationName WRITE setLoadlookLocationName NOTIFY loadlookLocationNameChanged)
     Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
     Q_PROPERTY(QString lutGripperLoactionName READ lutGripperLoactionName WRITE setLutGripperLoactionName NOTIFY lutGripperLoactionNameChanged)
 
@@ -91,26 +83,6 @@ QString cylinderName() const
 QString sutDownLookLocationName() const
 {
     return m_sutDownLookLocationName;
-}
-
-QString updownlookUpLocationName() const
-{
-    return m_updownlookUpLocationName;
-}
-
-QString updownlookDownLocationName() const
-{
-    return m_updownlookDownLocationName;
-}
-
-QString lutUplookLocationName() const
-{
-    return m_lutUplookLocationName;
-}
-
-QString loadlookLocationName() const
-{
-    return m_loadlookLocationName;
 }
 
 QString mushroomLocationName() const
@@ -217,42 +189,6 @@ void setSutDownLookLocationName(QString sutDownLookLocationName)
     emit sutDownLookLocationNameChanged(m_sutDownLookLocationName);
 }
 
-void setUpdownlookUpLocationName(QString updownlookUpLocationName)
-{
-    if (m_updownlookUpLocationName == updownlookUpLocationName)
-        return;
-
-    m_updownlookUpLocationName = updownlookUpLocationName;
-    emit updownlookUpLocationNameChanged(m_updownlookUpLocationName);
-}
-
-void setUpdownlookDownLocationName(QString updownlookDownLocationName)
-{
-    if (m_updownlookDownLocationName == updownlookDownLocationName)
-        return;
-
-    m_updownlookDownLocationName = updownlookDownLocationName;
-    emit updownlookDownLocationNameChanged(m_updownlookDownLocationName);
-}
-
-void setLutUplookLocationName(QString lutUplookLocationName)
-{
-    if (m_lutUplookLocationName == lutUplookLocationName)
-        return;
-
-    m_lutUplookLocationName = lutUplookLocationName;
-    emit lutUplookLocationNameChanged(m_lutUplookLocationName);
-}
-
-void setLoadlookLocationName(QString loadlookLocationName)
-{
-    if (m_loadlookLocationName == loadlookLocationName)
-        return;
-
-    m_loadlookLocationName = loadlookLocationName;
-    emit loadlookLocationNameChanged(m_loadlookLocationName);
-}
-
 void setMushroomLocationName(QString mushroomLocationName)
 {
     if (m_mushroomLocationName == mushroomLocationName)
@@ -282,10 +218,6 @@ void lutVacuumNameChanged(QString lutVacuumName);
 void sutVacuumNameChanged(QString sutVacuumName);
 void cylinderNameChanged(QString cylinderName);
 void sutDownLookLocationNameChanged(QString sutDownLookLocationName);
-void updownlookUpLocationNameChanged(QString updownlookUpLocationName);
-void updownlookDownLocationNameChanged(QString updownlookDownLocationName);
-void lutUplookLocationNameChanged(QString lutUplookLocationName);
-void loadlookLocationNameChanged(QString loadlookLocationName);
 void mushroomLocationNameChanged(QString mushroomLocationName);
 void lutGripperLoactionNameChanged(QString lutGripperLoactionName);
 };

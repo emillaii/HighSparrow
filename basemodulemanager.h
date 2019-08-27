@@ -47,11 +47,7 @@ public:
     explicit BaseModuleManager(QObject *parent = nullptr);
     ~BaseModuleManager();
     Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged)
-    Q_PROPERTY(int ServerMode READ ServerMode WRITE setServerMode NOTIFY paramsChanged)
-    Q_PROPERTY(int ServerPort READ ServerPort WRITE setServerPort NOTIFY paramsChanged)
     Q_PROPERTY(bool HomeState READ HomeState WRITE setHomeState NOTIFY paramsChanged)
-    Q_PROPERTY(QString ServerURL READ ServerURL WRITE setServerURL NOTIFY paramsChanged)
-    Q_PROPERTY(QString DataServerURL READ DataServerURL WRITE setDataServerURL NOTIFY paramsChanged)
 
     QMap<QString,XtMotor*> motors;
     QMap<QString,XtGeneralInput*> input_ios;
@@ -72,12 +68,6 @@ public:
 
     MaterialCarrier lut_carrier;
     MaterialCarrier sut_carrier;
-    MaterialPicker lens_picker;
-    LensPickArm lens_pick_arm;
-    MaterialPicker sensor_picker1;
-    MaterialPicker sensor_picker2;
-    SensorPickArm sensor_pickarm;
-    MaterialTray material_tray;
     MaterialTray sensor_tray;
     MaterialTray reject_tray;
     MaterialTray lens_tray;
@@ -87,22 +77,14 @@ public:
     SingleheadLSutModule sh_lsut_module;
     DispenseModule dispense_module;
     Dispenser dispenser;
-    LensLoaderModule lens_loader_module;
-    SensorLoaderModule sensor_loader_module;
     SfrWorkerController * sfrWorkerController;
     AACoreNew aaCoreNew;
-    TrayLoaderModule tray_loader_module;
 
     SingleHeadMachineMaterialLoaderModule single_station_material_loader_module;
     SingleHeadMachineMaterialPickArm single_station_material_pickarm;
 
 
 
-    SparrowQServer * sparrowQServer;
-    SparrowClient * sparrowQClient;
-    LutClient * lutClient;
-    SutClient * sut_clitent;
-    SensorTrayLoaderModule sensor_tray_loder_module;
 
     Unitlog unitlog;
 
@@ -141,44 +123,11 @@ public slots:
 
         emit lightPanelValueChanged(m_lightPanelLighting);
     }
-    void setServerMode(int ServerMode)
-    {
-        if (m_ServerMode == ServerMode)
-            return;
-
-        m_ServerMode = ServerMode;
-        emit paramsChanged();
-    }
-
-    void setServerPort(int ServerPort)
-    {
-        if (m_ServerPort == ServerPort)
-        return;
-
-        m_ServerPort = ServerPort;
-        emit paramsChanged();
-    }
-
-    void setServerURL(QString ServerURL)
-    {
-        if (m_ServerURL == ServerURL)
-        return;
-
-        m_ServerURL = ServerURL;
-        emit paramsChanged();
-    }
-
     void setHomeState(bool HomeState)
     {
         m_HomeState = HomeState;
     }
 
-    void setDataServerURL(QString DataServerURL)
-    {
-        if (m_DataServerURL == DataServerURL)
-            return;
-        m_DataServerURL = DataServerURL;
-    }
 public:
     ModuleManangerConfig configs;
     ModuleManagerParameter paramers;
@@ -196,13 +145,9 @@ private:
         500/*MaxVel*/,10000/*MaxAcc*/,200000/*MaxJerk*/,33/*MaxRange*/,0/*MinRange*/,10/*CanID*/,1/*dir*/,5000/*scale*/};
 private:
     bool InitStruct();
-    int m_ServerPort = 9999;
-    QString m_ServerURL = "ws://localhost:61916";
-    int m_ServerMode = 0;
 
     bool m_HomeState = false;
     QTimer timer;
-    QString m_DataServerURL;
     QThread work_thread;
 
 public:
@@ -277,7 +222,6 @@ public:
     Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString);
 
-    Q_INVOKABLE int getServerMode() { return m_ServerMode; }
 
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);
@@ -288,25 +232,9 @@ public:
     VisionLocation *GetVisionLocationByName(QString name);
     Pixel2Mech *GetPixel2MechByName(QString name);
     Calibration *GetCalibrationByName(QString name);
-    int ServerMode() const
-    {
-        return m_ServerMode;
-    }
-    int ServerPort() const
-    {
-        return m_ServerPort;
-    }
-    QString ServerURL() const
-    {
-        return m_ServerURL;
-    }
     bool HomeState() const
     {
         return m_HomeState;
-    }
-    QString DataServerURL() const
-    {
-        return m_DataServerURL;
     }
 };
 

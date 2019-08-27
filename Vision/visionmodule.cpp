@@ -187,6 +187,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
         avs::LoadObject< avl::Vector2D >( g_constData2, avl::StreamMode::Binary, g_constData3, vector2D1 );
         avs::LoadObject< avl::GrayModel >( g_constData4, avl::StreamMode::Binary, g_constData5, grayModel1 );
+
+        //
         avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.5f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
 
         if (object2D1 != atl::NIL)
@@ -195,7 +197,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             avl::Point2D point2D3;
             float real2;
             float real3;
-
+            float real4; // PR Score
             point2D1.AssignNonNil();
             point2D2.AssignNonNil();
             string1.AssignNonNil();
@@ -211,7 +213,16 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             point2D3 = object2D1.Get().Match().Origin();
             real2 = object2D1.Get().Match().Width();
             real3 = object2D1.Get().Match().Height();
+            real4 = object2D1.Get().Score();
 
+            qInfo("PR Score for pr_name: %s = %f", pr_name.toStdString().c_str(), real4);
+            //ToDo: Add the score limit in json instead of hardcode.
+            if (real4 < 0.7 ) {
+                error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                error_code.errorMessage = "PR Object Not Found. Score < 0.7";
+                qInfo("PR Error! Object Not Found. PR Score < 0.7");
+                return error_code;
+            }
             // Function AvsFilter_MakeRectangle is intended for generated code only. Consider use of proper Rectangle2D constructor instead.
             avs::AvsFilter_MakeRectangle( point2D3, real1, real2, real3, rectangle2D1.Get() );
             prResult.roi_x = point2D1.Get().x;

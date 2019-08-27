@@ -2281,23 +2281,23 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params)
     map.insert("UR_08F_SFR_DEV",ur_08f_sfr_dev);
     map.insert("timeElapsed", timer.elapsed());
     qDebug("Time Elapsed: %d", timer.elapsed());
-//    if (write_log) {
-//        this->loopTestResult.append(QString::number(vec[0].avg_sfr))
-//                            .append(",")
-//                            .append(QString::number(vec[max_layer*4 + 1].avg_sfr))
-//                            .append(",")
-//                            .append(QString::number(vec[max_layer*4 + 4].avg_sfr))
-//                            .append(",")
-//                            .append(QString::number(vec[max_layer*4 + 2].avg_sfr))
-//                            .append(",")
-//                            .append(QString::number(vec[max_layer*4 + 3].avg_sfr))
-//                            .append(",\n");
-//        this->mtf_log.incrementData(vec[0].avg_sfr,
-//                                    vec[max_layer*4 + 1].avg_sfr,
-//                                    vec[max_layer*4 + 4].avg_sfr,
-//                                    vec[max_layer*4 + 2].avg_sfr,
-//                                    vec[max_layer*4 + 3].avg_sfr);
-//    }
+    if (write_log) {
+        this->loopTestResult.append(QString::number(vec[0].avg_sfr))
+                            .append(",")
+                            .append(QString::number(vec[max_layer*4 + 1].avg_sfr))
+                            .append(",")
+                            .append(QString::number(vec[max_layer*4 + 4].avg_sfr))
+                            .append(",")
+                            .append(QString::number(vec[max_layer*4 + 2].avg_sfr))
+                            .append(",")
+                            .append(QString::number(vec[max_layer*4 + 3].avg_sfr))
+                            .append(",\n");
+        this->mtf_log.incrementData(vec[0].avg_sfr,
+                                    vec[max_layer*4 + 1].avg_sfr,
+                                    vec[max_layer*4 + 4].avg_sfr,
+                                    vec[max_layer*4 + 2].avg_sfr,
+                                    vec[max_layer*4 + 3].avg_sfr);
+    }
     if (sfr_check) {
        map.insert("result", "Pass");
        emit pushDataToUnit(runningUnit, "MTF", map);

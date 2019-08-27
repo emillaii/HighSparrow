@@ -658,7 +658,7 @@ void SensorLoaderModule::run()
             else
             {
                 pr_times = parameters.autoPrTime();
-                sendAlarmMessage(ErrorLevel::TipNonblock,"");
+                //sendAlarmMessage(ErrorLevel::TipNonblock,"");
             }
             tray_sensor_location->CloseLight();
             //走偏移值
@@ -790,7 +790,7 @@ void SensorLoaderModule::run()
             //检测NG盘是否已满
             if(!findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY))
             {
-                AppendError("请更换Ng盘后继续！");
+                AppendError(u8"请更换Ng盘后继续！");
                 sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
                 waitMessageReturn(is_run);
                 if(!is_run)break;
@@ -2036,9 +2036,10 @@ bool SensorLoaderModule::checkTrayNeedChange()
     {
         if(tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_1)&&
                 tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_2)&&
-                states.picker2MaterialState()==MaterialState::IsEmpty&&
-                states.sut1MaterialState()==MaterialState::IsEmpty&&
-                states.sut2MaterialState()==MaterialState::IsEmpty)
+                (states.picker2MaterialState()==MaterialState::IsEmpty)&&
+                (states.picker1MaterialState()==MaterialState::IsEmpty)&&
+                (states.sut1MaterialState()==MaterialState::IsEmpty)&&
+                (states.sut2MaterialState()==MaterialState::IsEmpty))
             return true;
     }
     else
@@ -2049,6 +2050,7 @@ bool SensorLoaderModule::checkTrayNeedChange()
                     states.picker2MaterialState()==MaterialState::IsEmpty&&states.hasSensorTray1())
             {
                 sut1_sensor_data["SensorCount"] = 0;
+                qInfo("sut SensorCount %d",sut1_sensor_data["SensorCount"].toInt());
                 return true;
             }
             if((!tray->findLastPositionOfState(MaterialState::IsEmpty,SensorPosition::SENSOR_TRAY_2))&&states.hasSensorTray1())
@@ -2204,13 +2206,20 @@ bool SensorLoaderModule::findTrayNextSensorPos(bool allow_change_tray)
 bool SensorLoaderModule::findTrayNextEmptyPos()
 {
     int tray_index = getTrayIndex();
-    bool result = true;
     if(SensorPosition::SENSOR_TRAY_1 == tray_index && (!states.hasSensorTray1()))
-        result = false;
+        return false;
     if(SensorPosition::SENSOR_TRAY_2 == tray_index && (!states.hasSensorTray2()))
-        result = false;
-    if(result&&tray->findLastPositionOfState(MaterialState::IsEmpty,tray_index))
+        return false;
+    if(tray->findLastPositionOfState(MaterialState::IsEmpty,tray_index))
     {
+        if((SensorPosition::SENSOR_TRAY_1 == tray_index)&&(tray->getCurrentIndex(tray_index) > (tray->getLastIndex() - 2)))//tray1最后两个
+        {
+            if(tray->findLastPositionOfState(MaterialState::IsEmpty,SensorPosition::SENSOR_TRAY_2))
+            {
+                states.setCurrentTrayID(SensorPosition::SENSOR_TRAY_2);
+                return true;
+            }
+        }
         states.setCurrentTrayID(tray_index);
         return true;
     }

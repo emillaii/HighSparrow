@@ -3,6 +3,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.11
 import QtQuick 2.11
+import LogicManagerLib 1.1
 // 2，5，0.2 0.5 0.02 0.05
 Popup {
     property double selectedStepSize: 0.1
@@ -217,9 +218,9 @@ Popup {
                             }
                             RoundButton {
                                 onClicked: {
-//                                    logicManagerState.setCurrentChannelName(modelData)
-//                                    logicManager.performHandling(logicManager.MOTION_SINGLE_MOTOR_HOME)
-                                    baseModuleManager.motorSeekOrigin(modelData)
+                                    logicManagerState.setCurrentChannelName(modelData)
+                                    logicManager.performHandling("", LogicManager.MOTION_SINGLE_MOTOR_HOME)
+                                    //baseModuleManager.motorSeekOrigin(modelData)
                                 }
                                 transformOrigin: Item.Center
                                 display: Button.IconOnly

@@ -220,7 +220,29 @@ QString BaseModuleManager::deviceResp(QString message)
                       }
                       else
                       {
-                          qInfo("tcp fail");
+                          qInfo("tcp fail and auto retray:%s",result_json["error"].toString().toStdString().c_str());
+                          tcp_result =  sender_messagers[messger_name]->inquiryMessage(message);
+                          result_json = getJsonObjectFromString(tcp_result);
+                          if(result_json.contains("error"))
+                          {
+                              if(result_json["error"].toString() == "")
+                              {
+                                    geted = true;
+                                    result["motorPosition"] = result_json["motorPosition"];
+                                    result["motorTargetPosition"] = result_json["motorTargetPosition"];
+                                    result["error"] = "";
+                                    break;
+                              }
+                              else
+                              {
+                                  qInfo("tcp fail:%s",result_json["error"].toString().toStdString().c_str());
+
+                              }
+                          }
+                          else
+                          {
+                              qInfo("messge fail");
+                          }
                       }
                   }
                   else

@@ -90,7 +90,7 @@ QString TcpMessager::inquiryMessage(QString message)
     QJsonObject result_message;
     if(result)
     {
-        is_waitting = true;
+        is_waitting = true;//多个消息的返回需要分开。。
         result = sendMessage(message);
         if(result)
         {
@@ -129,7 +129,7 @@ QString TcpMessager::inquiryMessage(QString message)
         result_message["error"] = "tryLock fail";
     is_waitting = false;
     if(!result)
-    qDebug("inquiry Result:%d in thread %d",result,QThread::currentThreadId());
+    qDebug("inquiry Result:%d in thread %d error:%s",result,QThread::currentThreadId(),result_message["error"].toString().toStdString().c_str());
     return  getStringFromJsonObject(result_message);
 }
 

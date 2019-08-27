@@ -320,6 +320,17 @@ void LogicManager::performLoopTest(int mode){
     moveToCmd(CommandType::PERFORM_LOOP_TEST);
 }
 
+void LogicManager::performUV()
+{
+    qInfo("perform UV in logic manager");
+    if(baseModuleManage->sut_module.moveToMushroomPos(true))
+    {
+        int uvTime = baseModuleManage->dispense_module.parameters.uvTimeMs();
+        baseModuleManage->aa_head_module.openUVTillTime(uvTime);
+        baseModuleManage->aa_head_module.waitUVFinish();
+    }
+}
+
 void LogicManager::lensPickArmMoveToTray1Pos()
 {
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::LENS_TRAY1);
@@ -781,6 +792,11 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd)
             states.setHandlingMessage(u8"正在执行up&down相机校正……");
             baseModuleManage->performUpDnLookCalibration();
         }
+        else if (cmd == CommandType::PERFORM_UV)
+        {
+            states.setHandlingMessage(u8"正在执行UV……");
+            performUV();
+        }
     }
     else if(baseModuleManage->workers.contains(module_name))//单一模块动作
     {
@@ -873,5 +889,6 @@ void LogicManager::receiveMessageFromWorkerManger(QVariantMap message)
     else
     {
         emit sendPerformTcp(message);
+        qInfo("sendPerformTcp");
     }
 }

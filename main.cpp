@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("left_lens_uph",&highSprrow.baseModuleManager->lut_module.left_lens_uph);
     engine.rootContext()->setContextProperty("right_lens_uph",&highSprrow.baseModuleManager->lut_module.right_lens_uph);
 
-    engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramters);
+//    engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramters);
 
     QStringList data = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames",data);

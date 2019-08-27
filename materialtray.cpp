@@ -138,6 +138,11 @@ int MaterialTray::getCurrentIndex(int tray_index)
     return parameters[getTrayIndex(tray_index)]->currentIndex();
 }
 
+int MaterialTray::getLastIndex()
+{
+    return standards_parameters.rowCount()*standards_parameters.columnCount() - 1;
+}
+
 QPointF MaterialTray::getCurrentPosition(int tray_index)
 {
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];

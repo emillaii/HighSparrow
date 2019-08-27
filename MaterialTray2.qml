@@ -117,7 +117,7 @@ ColumnLayout {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
 
                         if (baseModuleManager.getServerMode() === 0){
-                            lensLoaderModule.performHandling(lensLoaderModule.LENS_TRAY2)
+                            lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2)
                         }else{
                             sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS)
                         }

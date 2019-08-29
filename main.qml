@@ -310,15 +310,14 @@ ApplicationWindow {
                icon.source: "icons/flowchart_1.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   workersManager.startAllWorkers(4)
-//                   var command = "document.getElementById('get_data').click()";
-//                   flowChartPage.webView.runJavaScript(command, function(result) {
-//                       command = "document.getElementById('flowchart_data').value";
-//                       flowChartPage.webView.runJavaScript(command, function(result) {
-//                           baseModuleManager.loadFlowchart(result)
-//                           workersManager.startAllWorkers(4)
-//                       })
-//                   })
+                   var command = "document.getElementById('get_data').click()";
+                   flowChartPage.webView.runJavaScript(command, function(result) {
+                       command = "document.getElementById('flowchart_data').value";
+                       flowChartPage.webView.runJavaScript(command, function(result) {
+                           baseModuleManager.loadFlowchart(result)
+                           workersManager.startAllWorkers(4)
+                       })
+                   })
                }
            }
 

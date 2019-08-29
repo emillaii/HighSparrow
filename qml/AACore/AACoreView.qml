@@ -282,7 +282,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("Min Pattern Area")
+                            text: qsTr("Max Pattern Area")
                         }
                         TextField {
                             text: aaCoreParams.MaxArea
@@ -353,6 +353,19 @@ ItemDelegate {
                             }
                             onEditingFinished: {
                                 aaCoreParams.setEstimatedAAFOV(text)
+                            }
+                        }
+                    }
+                    RowLayout {
+                        Label {
+                            text: qsTr("AA Tilt Compensataion ( AA-A, AA-B ) : ")
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 300
+                            model: [ "(xTilt, yTilt)", "(xTilt, -yTilt)", "(-xTilt, yTilt)", "(-xTilt, -yTilt)","(yTilt, xTilt)", "(yTilt, -xTilt)", "(-yTilt, xTilt)", "(-yTilt, -xTilt)" ]
+                            currentIndex: 0
+                            onCurrentIndexChanged: {
+                                //aaCoreParams.setPeakProfile(currentIndex)
                             }
                         }
                     }

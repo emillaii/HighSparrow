@@ -70,11 +70,9 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
     double average = 0;
     for (size_t i = 0; i < n; ++i) {
         average += (B(i, 0) - Y(i, 0));
-        qInfo("Error Average: %f", (B(i, 0) - Y(i, 0)));
     }
-    qInfo("Error Average: %f", average);
     average = average/n;
-    qInfo("Error Average: %f", average);
+    //qInfo("Error Average: %f", average);
     error_avg = average;
 
     for (size_t i = 0; i < n; ++i) {
@@ -82,12 +80,9 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
         error +=(diff * diff);
     }
     error_dev = error;
-//    qInfo("Error deviation square: %f", error);
-
     vector<double> ans;
     for (int i = 0; i <= order; ++i) {
         ans.push_back(A(i, 0));
-        //qInfo("i: %f", A(i, 0));
     }
 
     double delta = (maxX - minX) / 300;
@@ -112,8 +107,7 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
         for (int i = 0; i <= order; ++i){
             ey += A(i,0)*tmp;
             tmp *= x[j];
-        }/*
-        qInfo("push value: %f %f %f", x[j], ey, y[j]);*/
+        }
         y_output.push_back(ey);
     }
     return ans;
@@ -1847,15 +1841,10 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_map[0][i].sfr, sorted_sfr_fit_map[0][i]);
         if (points_1.size() > 0) {
             for (int j = 1; j < 5; ++j) {
-                qInfo("j:%d",j);
                 double avg_sfr = parameters.WeightList().at(4*j-4+0).toDouble()*sorted_sfr_map[j+4*display_layer][i].t_sfr + parameters.WeightList().at(4*j-4+1).toDouble()*sorted_sfr_map[j+4*display_layer][i].r_sfr
                         + parameters.WeightList().at(4*j-4+2).toDouble()*sorted_sfr_map[j+4*display_layer][i].b_sfr + parameters.WeightList().at(4*j-4+3).toDouble()*sorted_sfr_map[j+4*display_layer][i].l_sfr;
                 data->addData(j,sorted_sfr_map[j+4*display_layer][i].pz*1000,avg_sfr, sorted_sfr_fit_map[j+4*display_layer][i]);
             }
-//            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, (sorted_sfr_map[1+4*display_layer][i].b_sfr+sorted_sfr_map[1+4*display_layer][i].r_sfr)/2);
-//            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, (sorted_sfr_map[j+4*display_layer][i].t_sfr+sorted_sfr_map[2+4*display_layer][i].r_sfr)/2);
-//            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, (sorted_sfr_map[3+4*display_layer][i].t_sfr+sorted_sfr_map[3+4*display_layer][i].l_sfr)/2);
-//            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, (sorted_sfr_map[4+4*display_layer][i].b_sfr+sorted_sfr_map[4+4*display_layer][i].l_sfr)/2);
         }
     }
     map.insert("CC", sfrMap);
@@ -1999,7 +1988,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     sfr_tol[2] = params["05F_TOL"].toDouble(-1);
     sfr_tol[3] = params["08F_TOL"].toDouble(-1);
 
-    cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\mtf_test\\MTF_recheck\\MTF_recheck\\2.bmp");
+    cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\aatest\\low.bmp");
     std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, 35, 8000, parameters.MaxArea(), -1);
     vector<double> sfr_l_v, sfr_r_v, sfr_t_v, sfr_b_v;
     cv::Rect roi; roi.width = 32; roi.height = 32;
@@ -3124,7 +3113,6 @@ void AACoreNew::aaCoreParametersChanged()
         timeout--;
     }
     vector<Sfr_entry> sv = clustered_sfr_map[0];
-    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
 
     qPainter.setFont(QFont("Times",50, QFont::Bold));
     qPainter.drawText(imageCenterX/2 , 100 , QString("DFOV: ").append(QString::number(dfov)));

@@ -1197,6 +1197,7 @@ bool BaseModuleManager::InitStruct()
         chart_calibration->Init(GetMotorByName(chart_calibration->parameters.motorXName()),
                                 GetMotorByName(chart_calibration->parameters.motorYName()),
                                 nullptr);
+        connect(chart_calibration, &Calibration::updata_aaCore_sensor_parameters_signal, &aaCoreNew, &AACoreNew::updateAACoreSensorParameters);
     }
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);

@@ -32,24 +32,9 @@ void Calibration::Init(XtMotor *motor_x, XtMotor *motor_y, VisionLocation *locat
     mRotationB = caculateRotationAngle();
 }
 
-//void Calibration::loadJsonConfig()
-//{
-//    if(PropertyBase::loadJsonConfig(file_path,name, &parameters))
-//        mapping.ChangeParameter(QMatrix(parameters.matrix11(),
-//                                        parameters.matrix12(),
-//                                        parameters.matrix21(),
-//                                        parameters.matrix22(),
-//                                        parameters.deltaX(),
-//                                        parameters.deltaY()),
-//                                QPointF(parameters.imageWidth()/2,parameters.imageHeight()/2));
-//}
-//void Calibration::saveJsonConfig()
-//{
-//    PropertyBase::saveJsonConfig(file_path,name, &parameters);
-//}
 bool Calibration::performCalibration()
 {
-    qInfo("Performing chart calibration");
+    qInfo("Performing calibration");
     if(nullptr == motor_x||nullptr == motor_y)
     {
         AppendLineError(u8"轴为空");
@@ -67,7 +52,8 @@ bool Calibration::performCalibration()
         QThread::msleep(200);
     }
     else {
-        qInfo("This is not require vision");
+        qInfo("This is not require vision, this is chart calibration");
+        return false;
     }
 
     for (int i = 1; i<=4; i++)
@@ -135,8 +121,11 @@ bool Calibration::performCalibration()
                                    parameters.deltaX(),
                                    parameters.deltaY()),
                                    QPointF(parameters.imageWidth()/2,parameters.imageHeight()/2));
-
-//        saveJs onConfig();
+        if (!location) {
+            double sensorSizeX = 0, sensorSizeY = 0, angle = 0;
+            calculateMatrixAttribute(pixelPoints, motorPoints, sensorSizeX, sensorSizeY, angle);
+            emit updata_aaCore_sensor_parameters_signal(sensorSizeX, sensorSizeY, angle);
+        }
     }
     return true;
 }
@@ -298,6 +287,40 @@ bool Calibration::GetPixelPoint(double &x, double &y)
         return  true;
     }
     return  false;
+}
+
+
+bool Calibration::calculateMatrixAttribute(QVector<QPointF> p, QVector<QPointF> m, double &scaleX, double &scaleY, double &closestAngle)
+{
+    double diff_py10 = p[1].y() - p[0].y();
+    double diff_px10 = p[1].x() - p[0].x();
+    double diff_py30 = p[3].y() - p[0].y();
+    double diff_px30 = p[3].x() - p[0].x();
+    double diff_mx10 = m[1].x() - m[0].x();
+    double diff_mx30 = m[3].x() - m[0].x();
+    double diff_my10 = m[1].y() - m[0].y();
+    double diff_my30 = m[3].y() - m[0].y();
+    double a_11 = (diff_py10 * diff_mx30 - diff_py30 * diff_mx10) / (diff_px30 * diff_py10 - diff_py30 * diff_px10);
+    double a_12 = (diff_mx10 - diff_px10 * a_11) / diff_py10;
+    double a_13 = (m[0].x() - p[0].x() * a_11 - p[0].y() * a_12);
+
+    double a_21 = (diff_py10 * diff_my30 - diff_py30 * diff_my10) / (diff_px30 * diff_py10 - diff_py30 * diff_px10);
+    double a_22 = (diff_my10 - diff_px10 * a_21) / diff_py10;
+    double a_23 = (m[0].y() - p[0].x() * a_21 - p[0].y() * a_22);
+
+    double s_x = sqrt(a_11 * a_11 + a_21 * a_21);
+    double s_y = sqrt(a_12 * a_12 + a_22 * a_22);
+    if (s_x == 0 || s_y == 0) { return false; }
+    scaleX = 1/s_x;
+    scaleY = 1/s_y;
+    double angle = acos(a_11 / s_x) * 180;
+    double steppedAngle = angle - 360*((int)((int)angle/360));
+    closestAngle = 0;
+    if (steppedAngle <= 45) { closestAngle = 0; }
+    else if (steppedAngle <= 135) { closestAngle = 90; }
+    else if (steppedAngle <= 225) { closestAngle = 180; }
+    else if (steppedAngle <= 315) { closestAngle = 270; }
+    return true;
 }
 
 

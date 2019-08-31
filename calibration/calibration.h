@@ -22,12 +22,6 @@ enum CaliType{
     caliPickarmSensor,
     caliSensorChart
 };
-//const static QPointF IMG_CENTER=QPointF(329,247);
-//const static QPointF CHART_IMG_CENTER=QPointF(3264/2,2448/2);
-
-//const static QList<QString> CaliName={ "upMush", "upDownGlass", "downSensor",
-//                                      "downLen", "dispenseTipOffset", "upLens",
-//                                      "pickarmSensor","sensorChart"};
 
 class Calibration : public QObject,public ErrorBase
 {
@@ -37,8 +31,6 @@ public:
     void Init(XtMotor* motor_x,XtMotor* motor_y,VisionLocation* location);
     Calibration(const Calibration &calibration) = delete;
     Calibration &operator=(const Calibration &calibration) = delete;
-//    void loadJsonConfig();
-//    void saveJsonConfig();
     bool performCalibration();
     bool performPRResult(PrOffset offset);
     double getRotationAngle();
@@ -53,11 +45,13 @@ public:
 
 signals:
     void vision_image_changed_signal(QImage image);
+    void updata_aaCore_sensor_parameters_signal(double sensorScaleX, double sensorScaleY, double angle);
 public slots:
 public:
     virtual bool GetPixelPoint(double &x,double &y);
 private:
     bool coordinateA2BMapping(const QVector<QPointF>& APoints, const QVector<QPointF>& BPoints);
+    bool calculateMatrixAttribute(QVector<QPointF> p, QVector<QPointF> m, double &scaleX, double &scaleY, double &closestAngle);
 public:
     CalibrationParameter parameters;
 protected:

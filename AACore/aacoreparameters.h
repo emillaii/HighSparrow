@@ -75,6 +75,8 @@ class AACoreParameters : public PropertyBase
 
     bool m_isDebug = false;
 
+    int m_SensorOrientation = 0;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -89,6 +91,7 @@ public:
     Q_PROPERTY(int MaxArea READ MaxArea WRITE setMaxArea NOTIFY paramsChanged)
     Q_PROPERTY(int SensorXRatio READ SensorXRatio WRITE setSensorXRatio NOTIFY paramsChanged)
     Q_PROPERTY(int SensorYRatio READ SensorYRatio WRITE setSensorYRatio NOTIFY paramsChanged)
+    Q_PROPERTY(int SensorOrientation READ SensorOrientation WRITE setSensorOrientation NOTIFY paramsChanged)
     Q_PROPERTY(double ROIRatio READ ROIRatio WRITE setROIRatio NOTIFY paramsChanged)
     Q_PROPERTY(QVariantList WeightList READ WeightList WRITE setWeightList NOTIFY paramsChanged)
     Q_PROPERTY(bool firstRejectSensor READ firstRejectSensor WRITE setFirstRejectSensor NOTIFY firstRejectSensorChanged)
@@ -282,6 +285,11 @@ public:
     bool isDebug() const
     {
         return m_isDebug;
+    }
+
+    int SensorOrientation() const
+    {
+        return m_SensorOrientation;
     }
 
 public slots:
@@ -577,6 +585,11 @@ public slots:
 
         m_isDebug = isDebug;
         emit isDebugChanged(m_isDebug);
+    }
+
+    void setSensorOrientation(int SensorOrientation)
+    {
+        m_SensorOrientation = SensorOrientation;
     }
 
 signals:

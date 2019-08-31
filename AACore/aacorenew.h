@@ -185,7 +185,7 @@ public slots:
     }
     void sfrImageReady(QImage);
     void aaCoreParametersChanged();
-
+    void updateAACoreSensorParameters(double scaleX, double scaleY, double angle);
     // ThreadWorkerBase interface
 public:
     PropertyBase *getModuleState();

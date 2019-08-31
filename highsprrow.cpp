@@ -12,7 +12,6 @@ HighSprrow::HighSprrow()
     baseModuleManager = new BaseModuleManager();
     baseModuleManager->loadProfile();
     worker_manager->parameters.loadJsonConfig(baseModuleManager->getSystermParameterDir().append("WorkManager.json"),"WorkManager");
-//    worker_manager->parameters.saveJsonConfig(baseModuleManager->getSystermParameterDir().append("WorkManager.json"),"WorkManager");
     logicManager = new LogicManager();
     logicManager->parameters.loadJsonConfig(baseModuleManager->getSystermParameterDir().append("LogicManager.json"),"logicManager");
     logicManager->parameters.saveJsonConfig(baseModuleManager->getSystermParameterDir().append("LogicManager.json"),"logicManager");

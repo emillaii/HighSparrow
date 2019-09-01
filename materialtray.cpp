@@ -129,7 +129,7 @@ void MaterialTray::setCurrentMaterialState(int state, int tray_index)
     } else if (trayType == PRODUCT_TRAY) {
         model = TrayMapModel::instance(TrayMapModel::ProductTray);
     } else if (trayType == REJECT_TRAY) {
-        model = TrayMapModel::instance(TrayMapModel::SensorTray);
+        model = TrayMapModel::instance(TrayMapModel::RejectTray);
     }
     if(model != Q_NULLPTR) model->setUnitStatus(current_tray->currentIndex(), unitStatus);
 }

@@ -331,8 +331,9 @@ ApplicationWindow {
            }
 
            Timer {
-               interval: 3000; running: true; repeat: true
+               interval: 500; running: true; repeat: true
                onTriggered: {
+                    timeString.text =  Qt.formatTime(new Date(), "现在时间: hh:mm:ss")
                     if (baseModuleManager.HomeState) {
                         homeSignal.color = "green"
                     }
@@ -340,21 +341,23 @@ ApplicationWindow {
                         homeSignal.color = "red"
                     }
                     //Used for consuming the flowchart double click command
+                    if (flowChartPage.webView.loadProgress == 100) {
                     var command = "document.getElementById('flowchart_running_cmd').value";
-                    flowChartPage.webView.runJavaScript(command, function(result) {
-                         command = "document.getElementById('flowchart_running_cmd').value = ''";
-                         if (result.length > 0) {
-                             var obj = JSON.parse(result)
-                             var operatorId = obj["operatorId"]
-                             aaCoreTestItemName = operatorId
-                             aaCoreTestParams = result
-                             aaCorePerformTestDialog.text = "Perform " + operatorId + "?"
-                             aaCorePerformTestDialog.open()
-                             flowChartPage.webView.runJavaScript(command, function(result) {
-                                 //This is just reset the command in flowchart js
-                             })
-                         }
-                    })
+                        flowChartPage.webView.runJavaScript(command, function(result) {
+                             command = "document.getElementById('flowchart_running_cmd').value = ''";
+                             if (result.length > 0) {
+                                 var obj = JSON.parse(result)
+                                 var operatorId = obj["operatorId"]
+                                 aaCoreTestItemName = operatorId
+                                 aaCoreTestParams = result
+                                 aaCorePerformTestDialog.text = "Perform " + operatorId + "?"
+                                 aaCorePerformTestDialog.open()
+                                 flowChartPage.webView.runJavaScript(command, function(result) {
+                                     //This is just reset the command in flowchart js
+                                 })
+                             }
+                        })
+                    }
                }
            }
 
@@ -364,6 +367,14 @@ ApplicationWindow {
                    id: homeSignal
                    color: "red"
                }
+           }
+
+           Label{
+              id: timeString
+              color: "cyan"
+              text: qsTr("现在时间:")
+              Layout.fillWidth: true
+              Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
            }
         }
     }

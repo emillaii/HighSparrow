@@ -343,7 +343,14 @@ void AACoreNew::performHandlingOperation(int cmd)
         performOC(params);
     }
     else if (cmd == HandleTest::AA) {
+        if (currentChartDisplayChannel == 0) {
+            aaData_1.setInProgress(true);
+        } else {
+            aaData_2.setInProgress(true);
+        }
         performAA(params);
+        aaData_1.setInProgress(false);
+        aaData_2.setInProgress(false);
     }
     else if (cmd == HandleTest::INIT_CAMERA) {
         performInitSensor();
@@ -591,7 +598,14 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         }
         else if (testItemName.contains(AA_PIECE_AA)) {
             qInfo("Performing AA");
+            if (currentChartDisplayChannel == 0) {
+                aaData_1.setInProgress(true);
+            } else {
+                aaData_2.setInProgress(true);
+            }
             ret = performAA(params);
+            aaData_1.setInProgress(false);
+            aaData_2.setInProgress(false);
             qInfo("End of perform AA %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_MTF)) {
@@ -991,7 +1005,7 @@ void AACoreNew::performAAOffline()
     double estimated_fov_slope = 15;
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
-    int inputImageCount = 10;
+    int inputImageCount = 15;
     for (int i = 0; i < inputImageCount -1; i++)
     {
         if (isZScanNeedToStop) {
@@ -1000,8 +1014,8 @@ void AACoreNew::performAAOffline()
         }
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
-        //QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
-        QString filename = "1\\" + QString::number(i+1) + ".bmp";
+        QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
+        //QString filename = "1\\" + QString::number(i+1) + ".bmp";
         cv::Mat img = cv::imread(filename.toStdString());
         if (!blackScreenCheck(img)) {
             return;
@@ -1250,7 +1264,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     QVariantMap sfrMap;
     for(size_t i = 0; i < sorted_sfr_map[0].size(); i++)
     {
-        data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_map[0][i].sfr);
+        data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_map[0][i].sfr, 0);
         QVariantMap s;
         s.insert("index", i);
         s.insert("px", sorted_sfr_map[0][i].px);
@@ -1266,10 +1280,10 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         sfrMap.insert(QString::number(i), s);
 
         if (points_1.size() > 0) {
-            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, sorted_sfr_map[1+4*display_layer][i].sfr);
-            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, sorted_sfr_map[4+4*display_layer][i].sfr);
-            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, sorted_sfr_map[3+4*display_layer][i].sfr);
-            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, sorted_sfr_map[2+4*display_layer][i].sfr);
+            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, sorted_sfr_map[1+4*display_layer][i].sfr, 0);
+            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, sorted_sfr_map[4+4*display_layer][i].sfr, 0);
+            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, sorted_sfr_map[3+4*display_layer][i].sfr, 0);
+            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, sorted_sfr_map[2+4*display_layer][i].sfr, 0);
         }
     }
     data->plot();
@@ -1410,7 +1424,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     this->sfrWorkerController->setSfrWorkerParams(aaPrams);
     QElapsedTimer timer;
     QVariantMap map;
-    cv::Mat img = cv::imread("1\\5.bmp");
+    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\jiexi\\3.jpg");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
     double dfov = calculateDFOV(img);
@@ -1419,9 +1433,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     cv::Mat dst;
     cv::Size size(img.cols, img.rows);
     timer.start();
-    cv::resize(img, dst, size);/*
-    double imageCenterX = dst.cols/2;
-    double imageCenterY = dst.rows/2;*/
+    cv::resize(img, dst, size);
     qInfo("img resize: %d %d time elapsed: %d", dst.cols, dst.rows, timer.elapsed());
     timer.restart();
 

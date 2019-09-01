@@ -18,6 +18,20 @@ class AAData : public QThread
     Q_PROPERTY(QPointF wLLValue READ wLLValue)
     Q_PROPERTY(QPointF wLRValue READ wLRValue)
 
+    Q_PROPERTY(QVariantList wCCList READ wCCList)
+    Q_PROPERTY(QVariantList wULList READ wULList)
+    Q_PROPERTY(QVariantList wURList READ wURList)
+    Q_PROPERTY(QVariantList wLLList READ wLLList)
+    Q_PROPERTY(QVariantList wLRList READ wLRList)
+
+    Q_PROPERTY(QVariantList wCCRealList READ wCCRealList)
+    Q_PROPERTY(QVariantList wULRealList READ wULRealList)
+    Q_PROPERTY(QVariantList wURRealList READ wURRealList)
+    Q_PROPERTY(QVariantList wLLRealList READ wLLRealList)
+    Q_PROPERTY(QVariantList wLRRealList READ wLRRealList)
+
+    Q_PROPERTY(QString chartName READ chartName WRITE setChartName)
+
     Q_PROPERTY(double minValue READ minValue)
     Q_PROPERTY(double maxValue READ maxValue)
 
@@ -29,21 +43,25 @@ class AAData : public QThread
     Q_PROPERTY(double wURPeakZ READ wURPeakZ WRITE setWURPeakZ)
     Q_PROPERTY(double wLLPeakZ READ wLLPeakZ WRITE setWLLPeakZ)
     Q_PROPERTY(double wLRPeakZ READ wLRPeakZ WRITE setWLRPeakZ)
+    Q_PROPERTY(double zPeak READ zPeak WRITE setZPeak NOTIFY zPeakChanged)
     Q_PROPERTY(QString layer0 READ layer0 WRITE setLayer0)
     Q_PROPERTY(QString layer1 READ layer1 WRITE setLayer1)
     Q_PROPERTY(QString layer2 READ layer2 WRITE setLayer2)
     Q_PROPERTY(QString layer3 READ layer3 WRITE setLayer3)
 
+    Q_PROPERTY(bool inProgress READ inProgress WRITE setInProgress)
+
     Q_PROPERTY(NOTIFY wValueClear)
     Q_PROPERTY(NOTIFY wValueChanged)
-
+    Q_PROPERTY(NOTIFY wInProgressChanged)
 public:
     AAData(QObject *parent=Q_NULLPTR);
-    void addData(int i, double x, double y);
+    //i is index, x is x-axis data, y will be used for showing curve fit data, rawY will be used for showing raw data
+    void addData(int i, double x, double y, double rawY);
     void incrementData(double y1, double y2, double y3, double y4, double y5);
     void plotIntensityProfile(float minI, float maxI, std::vector<float> values);
     void clear();
-    void plot();
+    void plot(QString chartName = "Silicool AA");
     QPointF wValue() const{
         return m_wValue;
     }
@@ -142,6 +160,71 @@ public:
         return m_maxValue;
     }
 
+    double zPeak() const
+    {
+        return m_zPeak;
+    }
+
+    QVariantList wCCList() const
+    {
+        return m_wCCList;
+    }
+
+    QVariantList wULList() const
+    {
+        return m_wULList;
+    }
+
+    QVariantList wURList() const
+    {
+        return m_wURList;
+    }
+
+    QVariantList wLLList() const
+    {
+        return m_wLLList;
+    }
+
+    QVariantList wLRList() const
+    {
+        return m_wLRList;
+    }
+
+    QString chartName() const
+    {
+        return m_chartName;
+    }
+
+    QVariantList wCCRealList() const
+    {
+        return m_wCCRealList;
+    }
+
+    QVariantList wULRealList() const
+    {
+        return m_wULRealList;
+    }
+
+    QVariantList wURRealList() const
+    {
+        return m_wURRealList;
+    }
+
+    QVariantList wLLRealList() const
+    {
+        return m_wLLRealList;
+    }
+
+    QVariantList wLRRealList() const
+    {
+        return m_wLRRealList;
+    }
+
+    bool inProgress() const
+    {
+        return m_inProgress;
+    }
+
 public slots:
     void setDev(double dev)
     {
@@ -203,9 +286,32 @@ public slots:
         m_layer3 = layer3;
     }
 
+    void setZPeak(double zPeak)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_zPeak, zPeak))
+            return;
+
+        m_zPeak = zPeak;
+        emit zPeakChanged(m_zPeak);
+    }
+
+    void setChartName(QString chartName)
+    {
+        m_chartName = chartName;
+    }
+
+    void setInProgress(bool inProgress)
+    {
+        m_inProgress = inProgress;
+        emit wInProgressChanged();
+    }
+
 signals:
     void wValueChanged();
     void wValueClear();
+    void zPeakChanged(double zPeak);
+    void wInProgressChanged();
 private slots:
     void wTimeout();
 private:
@@ -252,6 +358,32 @@ private:
     double m_minValue;
 
     double m_maxValue;
+
+    double m_zPeak;
+
+    QVariantList m_wCCList;
+
+    QVariantList m_wULList;
+
+    QVariantList m_wURList;
+
+    QVariantList m_wLLList;
+
+    QVariantList m_wLRList;
+
+    QString m_chartName;
+
+    QVariantList m_wCCRealList;
+
+    QVariantList m_wULRealList;
+
+    QVariantList m_wURRealList;
+
+    QVariantList m_wLLRealList;
+
+    QVariantList m_wLRRealList;
+
+    bool m_inProgress;
 
 protected:
     void run();

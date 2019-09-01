@@ -22,7 +22,6 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
-//    qInfo("Server Mode: %d", ServerMode());
     is_init = false;
     profile_loaded = false;
     if(!QDir(".//notopencamera").exists())
@@ -48,7 +47,6 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonDownlookCamera) pylonDownlookCamera->start();
         if(pylonPickarmCamera) pylonPickarmCamera->start();
     }
-//    material_tray.standards_parameters.setTrayCount(2);
     lens_tray.standards_parameters.setTrayCount(2);
     lens_tray.setTrayType(TrayType::LENS_TRAY);
     sensor_tray.standards_parameters.setTrayCount(2);
@@ -479,7 +477,6 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-        //        saveCalibrationFiles(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -489,7 +486,7 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
         if(data_object["calibrationName"].toString().contains("chart_calibration"))
         {
             qInfo("get chart calibration");
-            temp_calibration = chart_calibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH);
+            temp_calibration = chart_calibration = new ChartCalibration(dothinkey, aaCoreNew.parameters.MaxIntensity(), aaCoreNew.parameters.MinArea(), aaCoreNew.parameters.MaxArea(), CHART_CALIBRATION, CALIBRATION_RESULT_PATH);
         }
         else
             temp_calibration = new Calibration();

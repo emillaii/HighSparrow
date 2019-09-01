@@ -174,6 +174,14 @@ ColumnLayout {
                             sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_MEASURE_SENSOR_IN_TRAY)
                         }
                     }
+                    Button{
+                        text:qsTr("移動吸嘴")
+                        width: 40
+                        height: 40
+                        onClicked: {
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_TO_WORKPOS)
+                        }
+                    }
                 }
                 RowLayout{
                     Label{
@@ -194,6 +202,12 @@ ColumnLayout {
                         text:qsTr("测高")
                         onClicked: {
                             sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_MEASURE_PRODUCT_IN_TRAY)
+                        }
+                    }
+                    Button{
+                        text:qsTr("移動吸嘴")
+                        onClicked: {
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS)
                         }
                     }
                 }

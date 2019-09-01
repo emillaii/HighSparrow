@@ -677,6 +677,7 @@ void SensorLoaderModule::run(bool has_material)
 
                 if((states.cmd() == "unloadProductReq")&&(!states.hasPickedNgSensor())&&(!states.hasPickedProduct()))
                 {
+                    //取成品
 
                     if(!moveToSUTPRPos(isLocalHost))
                     {

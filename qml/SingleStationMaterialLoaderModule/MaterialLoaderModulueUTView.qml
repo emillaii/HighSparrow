@@ -132,11 +132,11 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(
-                                    MaterialLoaderModule.SUT_PR_POS|
-                                    MaterialLoaderModule.PRODUCT_PR|
-                                    MaterialLoaderModule.PICKER1_TO_WORKPOS|
-                                    MaterialLoaderModule.PICKER1_PICK_PRODUCT_FROM_SUT)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR_POS|
+                                                                MaterialLoaderModule.PRODUCT_PR|
+                                                                MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER1_PICK_PRODUCT_FROM_SUT)
+
                     }
                 }
                 Button{
@@ -250,6 +250,15 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_MEASURE_LENS_IN_LUT)
+                    }
+                }
+                Button{
+
+                    text:qsTr("移動吸嘴")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS)
                     }
                 }
             }

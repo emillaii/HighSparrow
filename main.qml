@@ -52,7 +52,7 @@ ApplicationWindow {
                     console.log("Load flowchart success")
                     command = "document.getElementById('set_data').click()"
                     flowChartPage.webView.runJavaScript(command)
-                    baseModuleManager.loadFlowchart(result)
+                    baseModuleManager.loadFlowchart(result, loadfileDialog.fileUrl)
                 })
             }
         }

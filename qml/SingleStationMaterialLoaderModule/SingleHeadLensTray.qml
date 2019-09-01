@@ -178,6 +178,14 @@ ColumnLayout {
                         sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_MEASURE_LENS_IN_TRAY)
                     }
                 }
+                Button{
+                    text:qsTr("移動吸嘴")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS)
+                    }
+                }
             }
             RowLayout{
                 Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
@@ -222,8 +230,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        sh_lens_tray.setTrayCurrent(t_ncol1.text-1,t_nrow1.text-1,0)
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1_PICKER2|
+                        sh_lens_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1|
                                                                 MaterialLoaderModule.LENS_VACANCY_PR|
                                                                 MaterialLoaderModule.PICKER2_TO_WORKPOS|
                                                                 MaterialLoaderModule.PICKER2_PLACE_NG_LENS_TO_TRAY)

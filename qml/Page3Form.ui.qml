@@ -1,7 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Window 2.2
-import QtWebEngine 1.4
 
 Page {
     property alias webView: webView
@@ -19,12 +18,8 @@ Page {
         y: 0
         anchors.fill: parent
         visible: true
-        WebEngineView {
+        FlowChartWeb {
             id: webView
-            anchors.centerIn: parent
-            width: parent.width
-            height: parent.height
-            url: "http://localhost:8000/flowchart.html"
         }
     }
 }

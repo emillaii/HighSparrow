@@ -62,7 +62,7 @@ public:
         PICKER2_PICK_SENSOR_FROM_TRAY =2<<16,
         //Pass
         PICKER1_PLACE_LENS_TO_LUT = 3<<16,
-        PICKER1_PICK_PRODUCT_FORM_SUT = 4<<16,
+        PICKER1_PICK_PRODUCT_FROM_SUT = 4<<16,
         PICKER2_PLACE_SENSOR_TO_SUT = 5<<16,
         PICKER1_PLACE_PRODUCT_TO_TRAY = 6<<16,
         //NG Both
@@ -73,7 +73,7 @@ public:
         PICKER1_PLACE_NG_LENS_TO_TRAY = 11<<16,
         PICKER2_PLACE_NG_SENSOR_TO_TRAY = 12<<16,
         //NG Lens
-        PICKER2_PICKER_NG_LENS_FORM_LUT = 13<<16,
+        PICKER2_PICK_NG_LENS_FROM_LUT = 13<<16,
         PICKER2_PLACE_NG_LENS_TO_TRAY = 14<<16,
         //NG Sensor
         PICKER1_PICK_NG_SENSOR_FROM_SUT = 15<<16,
@@ -89,13 +89,7 @@ public:
         PICKER2_MEASURE_SENSOR_IN_TRAY = 22<<16,
         PICKER2_MEASURE_SENSOR_IN_SUT = 23<<16,
 
-        //measure camer tip TODO
-
-        //test, remove after project finish
-        PICKER1_PLACE_SENSOR_TO_SUT = 24<<16,
-        PICKER1_PICK_SENSOR_FROM_TRAY = 25<<16,
-        PICKER2_PICK_PRODUCT_FROM_SUT = 26<<16,
-        PICKER2_PLACE_PRODUCT_TO_TRAY = 27<<16,
+        //measure camer tip
 
 
         HANDLE_PICKER_ACTION = (1<<23)-(1<<16)
@@ -154,13 +148,13 @@ private:
     bool moveToLensTrayEndPos();
 
     bool moveToNextSensorTrayPos(int tray_index);
-    bool moveToSensorTrayPos(int index,int tray_index);
+//    bool moveToSensorTrayPos(int index,int tray_index);
     bool moveToSensorTrayPos(int tray_index);
     bool moveToSensorTrayStartPos(int tray_index);
     bool moveToSensorTrayEndPos();
 
     bool moveToNextRejectTrayPos(int tray_index);
-    bool moveToRejectTrayPos(int index,int tray_index);
+//    bool moveToRejectTrayPos(int index,int tray_index);
     bool moveToRejectTrayPos(int tray_index);
     bool moveToRejectTrayStartPos(int tray_index);
     bool moveToRejectTrayEndPos();
@@ -168,48 +162,41 @@ private:
     bool moveToPicker1WorkPos(bool check_softlanding = false);
     bool moveToPicker2WorkPos(bool check_softlanding = false);
     bool moveToLUTPRPos(bool check_softlanding = false);
-    bool moveToSUTPRPos(bool is_local = true,bool check_softlanding = false);
+    bool moveToSUTPRPos(bool check_softlanding = false);
 
 
     //start
-    bool picker1PickLensFormTray(int time_out = 10000);
-    bool picker2PickSensorFormTray(int time_out = 10000);
+    bool picker1PickLensFromTray(int time_out = 10000);
+    bool picker2PickSensorFromTray(int time_out = 10000);
     //pass
     bool picker1PlaceLensToLUT(int time_out = 10000);
-    bool picker1PickProductFormSUT(QString dest, int time_out = 10000);
-    bool picker2PlaceSensorToSUT(QString dest,int time_out = 10000);
+    bool picker1PickProductFormSUT(int time_out = 10000);
+    bool picker2PlaceSensorToSUT(int time_out = 10000);
     bool picker1PlaceProductToTray(int time_out = 10000);
     //NG both
     bool picker1PlaceLensToTray(int time_out = 10000);
     bool picker2PlaceSensorToTray(int time_out = 10000);
-    bool picker1PickNGLensFormLUT(int time_out = 10000);
-    bool picker2PickNGSensorFormSUT(int time_out = 10000);
-    bool picker1PlaceNGLensToTray(int time_out = 10000);
-    bool picker2PlaceNGSensorToTray(int time_out = 10000);
+    bool picker1PickNgLensFromLUT(int time_out = 10000);
+    bool picker2PickNgSensorFromSUT(int time_out = 10000);
+    bool picker1PlaceNgLensToTray(int time_out = 10000);
+    bool picker2PlaceNgSensorToTray(int time_out = 10000);
     //NG lens
-    bool picker2PickNGLensFormLUT(int time_out = 10000);
-    bool picker2PlaceNGLensToTray(int time_out = 10000);
+    bool picker2PickNgLensFromLUT(int time_out = 10000);
+    bool picker2PlaceNgLensToTray(int time_out = 10000);
     //NG sensor
-    bool picker1PickNGSensorFormSUT(QString dest,int time_out = 10000);
-    bool picker1PlaceNGSensorToTray(int time_out = 10000);
+    bool picker1PickNgSensorFromSUT(int time_out = 10000);
+    bool picker1PlaceNgSensorToTray(int time_out = 10000);
 
     //NG product, no different like handle normal product process
 
-    //Test, remove after project done
-    bool picker2PickLensFormTray(int time_out = 10000);
-    bool picker2PlaceLensToTray(int time_out = 10000);
-    bool picker2PickProductFormSUT(QString dest, int time_out = 10000);
-    bool picker2PlaceProductToTray(int time_out = 10000);
-    bool picker1PickSensorFormTray(int time_out = 10000);
-    bool picker1PlaceSensorToSUT(QString dest,int time_out = 10000);
 
     //Picker motion
     bool picker1SearchZ(double z,bool is_open = true,int time_out = 10000,int picker = 0);
-    bool picker1SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
-    bool picker1SearchSutZ2(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
+    bool picker1SearchSutZ(double z,bool is_open = true,int time_out = 10000);
+    bool picker1SearchSutZ2(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchZ(double z,bool is_open = true,int time_out = 10000,int picker = 0);
-    bool picker2SearchSutZ(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
-    bool picker2SearchSutZ2(double z,QString dest,QString cmd,bool is_open = true,int time_out = 10000);
+    bool picker2SearchSutZ(double z,bool is_open = true,int time_out = 10000);
+    bool picker2SearchSutZ2(double z,bool is_open = true,int time_out = 10000);
     bool picker1MeasureHight(bool is_tray,bool is_product = false);
     bool picker2MeasureHight(bool is_tray,bool is_product = false);
 

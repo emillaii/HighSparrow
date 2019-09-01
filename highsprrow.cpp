@@ -82,7 +82,8 @@ void HighSprrow::performLPALensPR()
     PrOffset offset;
     if(baseModuleManager->vision_locations[PR_LENS_LPALOOK]->performPR(offset))
     {
-        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
+//        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
+        baseModuleManager->single_station_material_pickarm.stepMove_XY_Synic(offset.X,offset.Y);//to do
     }
 }
 
@@ -91,7 +92,8 @@ void HighSprrow::performLUTLensPR()
     PrOffset offset;
     if(baseModuleManager->vision_locations[PR_LENS_LUTLOOK]->performPR(offset))
     {
-        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
+//        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
+         baseModuleManager->single_station_material_pickarm.stepMove_XY_Synic(offset.X,offset.Y);//to do
     }
 }
 
@@ -100,7 +102,8 @@ void HighSprrow::performVacancyLensPR()
     PrOffset offset;
     if(baseModuleManager->vision_locations[PR_VACANCY_LPALOOK]->performPR(offset))
     {
-        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
+//        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
+         baseModuleManager->single_station_material_pickarm.stepMove_XY_Synic(offset.X,offset.Y);//to do
     }
 }
 

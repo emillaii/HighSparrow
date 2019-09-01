@@ -94,6 +94,9 @@ void BaseModuleManager::alarmChecking()
             setHomeState(false);
         }
     }
+//    XtGeneralInput *reset_button = GetInputIoByName(parameters->oneInName());
+    XtGeneralInput *reset_button = GetInputIoByName(u8"启动按钮");
+    qInfo("reset_button: %d",reset_button->Value());
     if(checked_alarm)
         emit sendAlarm(0,ErrorLevel::ErrorMustStop,GetCurrentError());
 }
@@ -808,7 +811,7 @@ bool BaseModuleManager::InitStruct()
     reject_tray.resetTrayState(0);
     reject_tray.resetTrayState(1);
 
-<<<<<<< .mine    sh_lsut_module.Init(&sut_carrier,
+    sh_lsut_module.Init(&sut_carrier,
                         GetVisionLocationByName(sh_lsut_module.parameters.sutDownLookLocationName()),
                         GetVisionLocationByName(sh_lsut_module.parameters.mushroomLocationName()),
                         GetVisionLocationByName(sh_lsut_module.parameters.lutGripperLoactionName()),
@@ -816,17 +819,6 @@ bool BaseModuleManager::InitStruct()
                         GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()),
                         GetOutputIoByName(sh_lsut_module.parameters.cylinderName()),
                         &aa_head_module);
-=======        sh_lsut_module.Init(&sut_carrier,
-                            GetVisionLocationByName(sh_lsut_module.parameters.sutDownLookLocationName()),
-//                            GetVisionLocationByName(sh_lsut_module.parameters.updownlookDownLocationName()),
-//                            GetVisionLocationByName(sh_lsut_module.parameters.updownlookUpLocationName()),
-                            GetVisionLocationByName(sh_lsut_module.parameters.mushroomLocationName()),
-                            GetVisionLocationByName(sh_lsut_module.parameters.lutGripperLoactionName()),
-                            GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()),
-                            GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()),
-                            GetOutputIoByName(sh_lsut_module.parameters.cylinderName()),
-                            &aa_head_module);
->>>>>>> .theirs
     lut_carrier.Init("lut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
                      GetMotorByName(sh_lsut_module.parameters.motorYName()),
                      GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
@@ -894,7 +886,8 @@ bool BaseModuleManager::initialDevice()
         m->GetMasterAxisID();
     }
     EnableMotors();
-    //    timer.start(1000);
+     qInfo("reset_button: %d");
+        timer.start(1000);
     return true;
 }
 
@@ -1015,9 +1008,14 @@ void BaseModuleManager::updateParams()
     //    loadParameters();
 }
 
-void BaseModuleManager::loadFlowchart(QString json)
+void BaseModuleManager::loadFlowchart(QString json, QString filename)
 {
-    qInfo("Load flowchart: %s", json.toStdString().c_str());
+    if (!filename.isEmpty()) {
+        qDebug("Flowchart filename: %s", filename.toStdString().c_str());
+        this->setFlowchartFilename(filename);
+        updateParams();
+    }
+    qDebug("Load flowchart: %s", json.toStdString().c_str());
     aaCoreNew.setFlowchartDocument(json);
 }
 

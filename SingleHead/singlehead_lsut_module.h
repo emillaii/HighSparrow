@@ -23,12 +23,13 @@ public:
     {
         MOVE_TO_MUSHROOM_POSITION = 1,
         MOVE_TO_GRIPPER_POSITION = 2,
-        MOVE_TO_LOAD_POSITION = 3,
-        MOVE_TO_PR_POSITION = 4,
-        MOVE_TO_CALIBRATION_POSITION = 5,
-        MOVE_TO_SAFETY_POSITION = 6,
-        MOVE_TO_PICK_LENS_POSITION = 7,
-        MOVE_TO_UNPICK_LENS_POSITION = 8,
+        MOVE_TO_LOAD_SENSOR_POSITION = 3,
+        MOVE_TO_LOAD_LENS_POSITION = 4,
+        MOVE_TO_PR_POSITION = 5,
+        MOVE_TO_CALIBRATION_POSITION = 6,
+        MOVE_TO_SAFETY_POSITION = 7,
+        MOVE_TO_PICK_LENS_POSITION = 8,
+        MOVE_TO_UNPICK_LENS_POSITION = 9,
     };
 
     enum HandlePR
@@ -41,10 +42,8 @@ public:
 
     enum HandleToWorkPos
     {
-        SENSOR_TO_BOND = 100,
+        LENS_TO_GRIPPER_CENTER = 100,
         LENS_TO_GRIPPER = 200,
-        LENS_TO_GRIPPER_CENTER = 300,
-        SENSOR_TO_BOND_CENTER = 400,
     };
 
     enum HandlePick
@@ -66,8 +65,6 @@ public:
     SingleheadLSutModule(QString name = "LSutModule", QObject *parent = nullptr);
     void Init(MaterialCarrier *sut_carrier,
               VisionLocation *downlook_location,
-//              VisionLocation *updownlook_down_location,
-//              VisionLocation *updownlook_up_location,
               VisionLocation *mushroom_location,
               VisionLocation * gripper_location,
               XtVacuum* sutVacuum,
@@ -78,7 +75,8 @@ public:
     MaterialCarrier* sut_carrier;
     AAHeadModule* aa_head;
     Position3D mushroom_position;
-    Position3D load_position;
+    Position3D load_sensor_position;
+    Position3D load_lens_position;
     Position3D downlook_position;
     Position3D gripper_position;
     Position3D calibration_position;
@@ -129,7 +127,8 @@ private:
     void sensor_logic();
     bool moveToMushroomPosition(bool check_autochthonous = false);
     bool moveToGripperPosition(bool check_autochthonous = false);
-    bool moveToLoadPosition(bool check_autochthonous = false);
+    bool moveToLoadSensorPosition(bool check_autochthonous = false);
+    bool moveToLoadLensPosition(bool check_autochthonous = false);
     bool moveToPRPosition(bool check_autochthonous = false);
     bool moveToCalibrationPosition(bool check_autochthonous = false);
     bool moveToSafetyPosition(bool check_autochthonous = false);
@@ -144,8 +143,6 @@ private:
     bool moveLensToGripperPos(double step_z= 0);
     bool lensGripperMeasureHight();
 
-    bool moveSensorToBondCenter();
-    bool moveSensorToBondPos();
 
 
 
@@ -153,8 +150,6 @@ private:
     bool is_run = false;
     XtGeneralOutput* pogopin = Q_NULLPTR;
     VisionLocation* vision_downlook_location = Q_NULLPTR;
-//    VisionLocation* vision_updownlook_down_location = Q_NULLPTR;
-//    VisionLocation* vision_updownlook_up_location = Q_NULLPTR;
     VisionLocation* vision_mushroom_location = Q_NULLPTR;
     VisionLocation* vision_gripper_location = Q_NULLPTR;   //Is this vision location for lens in gripper?
     XtVacuum *vacuum_lut;

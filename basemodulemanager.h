@@ -48,7 +48,7 @@ public:
     ~BaseModuleManager();
     Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged)
     Q_PROPERTY(bool HomeState READ HomeState WRITE setHomeState NOTIFY paramsChanged)
-
+    Q_PROPERTY(QString FlowchartFilename READ FlowchartFilename WRITE setFlowchartFilename NOTIFY paramsChanged)
     QMap<QString,XtMotor*> motors;
     QMap<QString,XtGeneralInput*> input_ios;
     QMap<QString,XtGeneralOutput*> output_ios;
@@ -88,6 +88,8 @@ public:
 
     Unitlog unitlog;
 
+    XtGeneralInputParameter * parameters;
+
     int lightPanelLighting() const
     {
         return m_lightPanelLighting;
@@ -126,6 +128,15 @@ public slots:
     void setHomeState(bool HomeState)
     {
         m_HomeState = HomeState;
+    }
+
+    void setFlowchartFilename(QString FlowchartFilename)
+    {
+        if (m_FlowchartFilename == FlowchartFilename)
+            return;
+
+        m_FlowchartFilename = FlowchartFilename;
+        emit paramsChanged();
     }
 
 public:
@@ -181,6 +192,8 @@ private:
     bool saveJsonObject(QString file_name,QJsonObject &object);
     QString getCurrentParameterDir();
 
+    QString m_FlowchartFilename;
+
 public:
     bool registerWorkers(WorkersManager* manager);
 
@@ -220,7 +233,7 @@ public:
     Q_INVOKABLE QString getMotorsName(int);
 
     Q_INVOKABLE void updateParams();
-    Q_INVOKABLE void loadFlowchart(QString);
+    Q_INVOKABLE void loadFlowchart(QString, QString filename = "");
 
 
     XtMotor* GetMotorByName(QString name);
@@ -235,6 +248,10 @@ public:
     bool HomeState() const
     {
         return m_HomeState;
+    }
+    QString FlowchartFilename() const
+    {
+        return m_FlowchartFilename;
     }
 };
 

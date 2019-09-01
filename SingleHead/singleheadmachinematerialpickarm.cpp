@@ -39,7 +39,7 @@ void SingleHeadMachineMaterialPickArm::Init(XtMotor *motor_x,
 
 bool SingleHeadMachineMaterialPickArm::move_Xm_Origin()
 {
-    return motor_vcmx->MoveToPosSync(-4);
+    return motor_vcmx->MoveToPosSync(-2);
 }
 
 bool SingleHeadMachineMaterialPickArm::move_XY_Synic(const QPointF position, const bool check_softlanding, int timeout)

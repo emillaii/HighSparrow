@@ -14,7 +14,7 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     double m_vcm1PickForce = 0;
     double m_vcm1Margin = 0;
     double m_vcm2Svel = 0;
- 
+
     double m_vcm2PickForce = 0;
     double m_vcm2Margin = 0;
     int m_vcm1FinishDelay = 0;
@@ -29,21 +29,21 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     QString m_lensVancyVisionName = "";
     QString m_lutVisionName = "";
     QString m_lutLensVisionName = "";
- 
-    double m_zOffset = 0;
+
+    //    double m_zOffset = 0;
     double m_escapeHeight = 0;
     double m_escapeX = 0;
     double m_escapeY = 0;
     QString m_sutVacuumName = "";
     QString m_lutVacuumName = "";
- 
+
     int m_changeTrayTimeOut = 180000;
 
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
- 
+
     Q_PROPERTY(double vcm1Svel READ vcm1Svel WRITE setVcm1Svel NOTIFY vcm1SvelChanged)
- 
+
     Q_PROPERTY(double vcm1PickForce READ vcm1PickForce WRITE setVcm1PickForce NOTIFY vcm1PickForceChanged)
     Q_PROPERTY(double vcm1Margin READ vcm1Margin WRITE setVcm1Margin NOTIFY vcm1MarginChanged)
     Q_PROPERTY(double vcm2Svel READ vcm2Svel WRITE setVcm2Svel NOTIFY vcm2SvelChanged)
@@ -61,24 +61,24 @@ public:
     Q_PROPERTY(QString lensVacancyVisionName READ lensVacancyVisionName WRITE setLensVacancyVisionName NOTIFY lensVacancyVisionNameChanged)
     Q_PROPERTY(QString lutVisionName READ lutVisionName WRITE setLutVisionName NOTIFY lutVisionNameChanged)
     Q_PROPERTY(QString lutLensVisionName READ lutLensVisionName WRITE setLutLensVisionName NOTIFY lutLensVisionNameChanged)
- 
-    Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
+
+    //    Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
     Q_PROPERTY(double escapeHeight READ escapeHeight WRITE setEscapeHeight NOTIFY escapeHeightChanged)
     Q_PROPERTY(double escapeX READ escapeX WRITE setEscapeX NOTIFY escapeXChanged)
     Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
     Q_PROPERTY(QString sutVacuumName READ sutVacuumName WRITE setSutVacuumName NOTIFY sutVacuumNameChanged)
     Q_PROPERTY(QString lutVacuumName READ lutVacuumName WRITE setLutVacuumName NOTIFY lutVacuumNameChanged)
- 
+
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
 
- 
+
 
     double vcm1Svel() const
     {
         return m_vcm1Svel;
     }
 
- 
+
 
     double vcm1PickForce() const
     {
@@ -95,7 +95,7 @@ public:
         return m_vcm2Svel;
     }
 
- 
+
 
     double vcm2PickForce() const
     {
@@ -162,12 +162,12 @@ public:
         return m_lutLensVisionName;
     }
 
-  
 
-    double zOffset() const
-    {
-        return m_zOffset;
-    }
+
+    //    double zOffset() const
+    //    {
+    //        return m_zOffset;
+    //    }
 
     double escapeHeight() const
     {
@@ -194,7 +194,7 @@ public:
         return m_lutVacuumName;
     }
 
-  
+
 
     int changeTrayTimeOut() const
     {
@@ -202,7 +202,7 @@ public:
     }
 
 public slots:
-  
+
 
     void setVcm1Svel(double vcm1Svel)
     {
@@ -245,7 +245,7 @@ public slots:
         emit vcm2SvelChanged(m_vcm2Svel);
     }
 
-  
+
 
     void setVcm2PickForce(double vcm2PickForce)
     {
@@ -366,16 +366,16 @@ public slots:
         emit lutLensVisionNameChanged(m_lutLensVisionName);
     }
 
-  
-    void setZOffset(double zOffset)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_zOffset, zOffset))
-            return;
 
-        m_zOffset = zOffset;
-        emit zOffsetChanged(m_zOffset);
-    }
+    //    void setZOffset(double zOffset)
+    //    {
+    //        qWarning("Floating point comparison needs context sanity check");
+    //        if (qFuzzyCompare(m_zOffset, zOffset))
+    //            return;
+
+    //        m_zOffset = zOffset;
+    //        emit zOffsetChanged(m_zOffset);
+    //    }
 
     void setEscapeHeight(double escapeHeight)
     {
@@ -425,7 +425,7 @@ public slots:
         emit lutVacuumNameChanged(m_lutVacuumName);
     }
 
- 
+
 
     void setChangeTrayTimeOut(int changeTrayTimeOut)
     {
@@ -437,13 +437,13 @@ public slots:
     }
 
 signals:
- 
+
     void vcm1SvelChanged(double vcm1Svel);
 
     void vcm1PickForceChanged(double vcm1PickForce);
     void vcm1MarginChanged(double vcm1Margin);
     void vcm2SvelChanged(double vcm2Svel);
- 
+
     void vcm2PickForceChanged(double vcm2PickForce);
     void vcm2MarginChanged(double vcm2Margin);
     void vcm1FinishDelayChanged(int vcm1FinishDelay);
@@ -457,14 +457,14 @@ signals:
     void lensVacancyVisionNameChanged(QString lensVacancyVisionName);
     void lutVisionNameChanged(QString lutVisionName);
     void lutLensVisionNameChanged(QString lutLensVisionName);
- 
+
     void zOffsetChanged(double zOffset);
     void escapeHeightChanged(double escapeHeight);
     void escapeXChanged(double escapeX);
     void escapeYChanged(double escapeY);
     void sutVacuumNameChanged(QString sutVacuumName);
     void lutVacuumNameChanged(QString lutVacuumName);
-  
+
     void changeTrayTimeOutChanged(double changeTrayTimeOut);
 };
 
@@ -478,9 +478,11 @@ public:
     Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
     Q_PROPERTY(bool sutHasProduct READ sutHasProduct WRITE setSutHasProduct NOTIFY sutHasProductChanged)
+
     Q_PROPERTY(bool needLoadSensor READ needLoadSensor WRITE setNeedLoadSensor NOTIFY needLoadSensorChanged)
     Q_PROPERTY(bool needChangeSensorTray READ needChangeSensorTray WRITE setNeedChangeSensorTray NOTIFY needChangeSensorTrayChanged)
     Q_PROPERTY(bool allowChangeTray READ allowChangeSensorTray WRITE setAllowChangeSensorTray NOTIFY allowChangeSensorTrayChanged)
+
     Q_PROPERTY(bool hasPickedSensor READ hasPickedSensor WRITE setHasPickedSensor NOTIFY hasPickedSensorChanged)
     Q_PROPERTY(bool hasPickedProduct READ hasPickedProduct WRITE setHasPickedProduct NOTIFY hasPickedProductChanged)
     Q_PROPERTY(bool hasPickedNgSensor READ hasPickedNgSensor WRITE setHasPickedNgSensor NOTIFY hasPickedNgSensorChanged)
@@ -495,6 +497,7 @@ public:
     Q_PROPERTY(bool needLoadLens READ needLoadLens WRITE setNeedLoadLens NOTIFY needLoadLensChanged)
     Q_PROPERTY(int currentLensTray READ currentLensTray WRITE setCurrentLensTray NOTIFY currentLensTrayChanged)
     Q_PROPERTY(int currentSensorTray READ currentSensorTray WRITE setCurrentSensorTray NOTIFY currentSensorTrayChanged)
+    Q_PROPERTY(int currentRejectTray READ currentRejectTray WRITE setCurrentRejectTray NOTIFY currentRejectTrayChanged)
     Q_PROPERTY(bool needChangeLensTray READ needChangeLensTray WRITE setNeedChangeLensTray NOTIFY needChangeLensTrayChanged)
     Q_PROPERTY(bool allowChangeLensTray READ allowChangeLensTray WRITE setAllowChangeLensTray NOTIFY allowChangeLensTrayChanged)
     Q_PROPERTY(bool hasPickedLens READ hasPickedLens WRITE setHasPickedLens NOTIFY hasPickedLensChanged)
@@ -672,6 +675,11 @@ public:
     int currentSensorTray() const
     {
         return m_currentSensorTray;
+    }
+
+    int currentRejectTray() const
+    {
+        return m_currentRejectTray;
     }
 
 public slots:
@@ -971,6 +979,15 @@ public slots:
         emit currentSensorTrayChanged(m_currentSensorTray);
     }
 
+    void setCurrentRejectTray(int currentRejectTray)
+    {
+        if (m_currentRejectTray == currentRejectTray)
+            return;
+
+        m_currentRejectTray = currentRejectTray;
+        emit currentRejectTrayChanged(m_currentRejectTray);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasSensorTrayChanged(bool hasTray);
@@ -1037,6 +1054,8 @@ signals:
 
     void currentSensorTrayChanged(int currentSensorTray);
 
+    void currentRejectTrayChanged(int currentRejectTray);
+
 private:
     int m_runMode = 0;
     bool m_hasSensorTray = false;
@@ -1059,6 +1078,7 @@ private:
     bool m_needloadLens = false;
     int m_currentLensTray = 0;
     int m_currentSensorTray = 0;
+    int m_currentRejectTray = 0;
     bool m_needChangeLensTray = false;
     bool m_allowChangeLensTray = false;
     bool m_hasPickedLens = false;
@@ -1072,6 +1092,7 @@ private:
     bool m_loadingLens = false;
     bool m_waitingChangeLensTray = false;
     bool m_finishChangeLensTray = false;
+
 };
 
 

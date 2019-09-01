@@ -72,7 +72,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
                AppendError(QString(u8"theta result too big"));
                return false;
            }
-            current_offset = offset = temp_offset;
+           current_offset = offset = temp_offset;
            qInfo("mech: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
            return true;
         } else {

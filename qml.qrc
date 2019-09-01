@@ -90,5 +90,6 @@
         <file>qml/Page6Form.ui.qml</file>
         <file>qml/Page5Form.ui.qml</file>
         <file>qml/MotionPopup.qml</file>
+        <file>qml/FlowChartWeb.qml</file>
     </qresource>
 </RCC>

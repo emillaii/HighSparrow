@@ -35,191 +35,191 @@ public:
     Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
     Q_PROPERTY(QString lutGripperLoactionName READ lutGripperLoactionName WRITE setLutGripperLoactionName NOTIFY lutGripperLoactionNameChanged)
 
-double ZOffset() const
-{
-    return m_ZOffset;
-}
+    double ZOffset() const
+    {
+        return m_ZOffset;
+    }
 
-double LensSoftlandingVel() const
-{
-    return m_LensSoftlandingVel;
-}
+    double LensSoftlandingVel() const
+    {
+        return m_LensSoftlandingVel;
+    }
 
-double LensSoftlandingForce() const
-{
-    return m_LensSoftlandingForce;
-}
+    double LensSoftlandingForce() const
+    {
+        return m_LensSoftlandingForce;
+    }
 
-QString motorXName() const
-{
-    return m_motorXName;
-}
+    QString motorXName() const
+    {
+        return m_motorXName;
+    }
 
-QString motorYName() const
-{
-    return m_motorYName;
-}
+    QString motorYName() const
+    {
+        return m_motorYName;
+    }
 
-QString motorZName() const
-{
-    return m_motorZName;
-}
+    QString motorZName() const
+    {
+        return m_motorZName;
+    }
 
-QString lutVacuumName() const
-{
-    return m_lutVacuumName;
-}
+    QString lutVacuumName() const
+    {
+        return m_lutVacuumName;
+    }
 
-QString sutVacuumName() const
-{
-    return m_sutVacuumName;
-}
+    QString sutVacuumName() const
+    {
+        return m_sutVacuumName;
+    }
 
-QString cylinderName() const
-{
-    return m_cylinderName;
-}
+    QString cylinderName() const
+    {
+        return m_cylinderName;
+    }
 
-QString sutDownLookLocationName() const
-{
-    return m_sutDownLookLocationName;
-}
+    QString sutDownLookLocationName() const
+    {
+        return m_sutDownLookLocationName;
+    }
 
-QString mushroomLocationName() const
-{
-    return m_mushroomLocationName;
-}
+    QString mushroomLocationName() const
+    {
+        return m_mushroomLocationName;
+    }
 
-QString lutGripperLoactionName() const
-{
-    return m_lutGripperLoactionName;
-}
+    QString lutGripperLoactionName() const
+    {
+        return m_lutGripperLoactionName;
+    }
 
 public slots:
-void setZOffset(double ZOffset)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_ZOffset, ZOffset))
-        return;
+    void setZOffset(double ZOffset)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_ZOffset, ZOffset))
+            return;
 
-    m_ZOffset = ZOffset;
-    emit ZOffsetChanged(m_ZOffset);
-}
+        m_ZOffset = ZOffset;
+        emit ZOffsetChanged(m_ZOffset);
+    }
 
-void setLensSoftlandingVel(double LensSoftlandingVel)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_LensSoftlandingVel, LensSoftlandingVel))
-        return;
+    void setLensSoftlandingVel(double LensSoftlandingVel)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_LensSoftlandingVel, LensSoftlandingVel))
+            return;
 
-    m_LensSoftlandingVel = LensSoftlandingVel;
-    emit LensSoftlandingVelChanged(m_LensSoftlandingVel);
-}
+        m_LensSoftlandingVel = LensSoftlandingVel;
+        emit LensSoftlandingVelChanged(m_LensSoftlandingVel);
+    }
 
-void setLensSoftlandingForce(double LensSoftlandingForce)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_LensSoftlandingForce, LensSoftlandingForce))
-        return;
+    void setLensSoftlandingForce(double LensSoftlandingForce)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_LensSoftlandingForce, LensSoftlandingForce))
+            return;
 
-    m_LensSoftlandingForce = LensSoftlandingForce;
-    emit LensSoftlandingForceChanged(m_LensSoftlandingForce);
-}
+        m_LensSoftlandingForce = LensSoftlandingForce;
+        emit LensSoftlandingForceChanged(m_LensSoftlandingForce);
+    }
 
-void setMotorXName(QString motorXName)
-{
-    if (m_motorXName == motorXName)
-        return;
+    void setMotorXName(QString motorXName)
+    {
+        if (m_motorXName == motorXName)
+            return;
 
-    m_motorXName = motorXName;
-    emit motorXNameChanged(m_motorXName);
-}
+        m_motorXName = motorXName;
+        emit motorXNameChanged(m_motorXName);
+    }
 
-void setMotorYName(QString motorYName)
-{
-    if (m_motorYName == motorYName)
-        return;
+    void setMotorYName(QString motorYName)
+    {
+        if (m_motorYName == motorYName)
+            return;
 
-    m_motorYName = motorYName;
-    emit motorYNameChanged(m_motorYName);
-}
+        m_motorYName = motorYName;
+        emit motorYNameChanged(m_motorYName);
+    }
 
-void setMotorZName(QString motorZName)
-{
-    if (m_motorZName == motorZName)
-        return;
+    void setMotorZName(QString motorZName)
+    {
+        if (m_motorZName == motorZName)
+            return;
 
-    m_motorZName = motorZName;
-    emit motorZNameChanged(m_motorZName);
-}
+        m_motorZName = motorZName;
+        emit motorZNameChanged(m_motorZName);
+    }
 
-void setLutVacuumName(QString lutVacuumName)
-{
-    if (m_lutVacuumName == lutVacuumName)
-        return;
+    void setLutVacuumName(QString lutVacuumName)
+    {
+        if (m_lutVacuumName == lutVacuumName)
+            return;
 
-    m_lutVacuumName = lutVacuumName;
-    emit lutVacuumNameChanged(m_lutVacuumName);
-}
+        m_lutVacuumName = lutVacuumName;
+        emit lutVacuumNameChanged(m_lutVacuumName);
+    }
 
-void setSutVacuumName(QString sutVacuumName)
-{
-    if (m_sutVacuumName == sutVacuumName)
-        return;
+    void setSutVacuumName(QString sutVacuumName)
+    {
+        if (m_sutVacuumName == sutVacuumName)
+            return;
 
-    m_sutVacuumName = sutVacuumName;
-    emit sutVacuumNameChanged(m_sutVacuumName);
-}
+        m_sutVacuumName = sutVacuumName;
+        emit sutVacuumNameChanged(m_sutVacuumName);
+    }
 
-void setCylinderName(QString cylinderName)
-{
-    if (m_cylinderName == cylinderName)
-        return;
+    void setCylinderName(QString cylinderName)
+    {
+        if (m_cylinderName == cylinderName)
+            return;
 
-    m_cylinderName = cylinderName;
-    emit cylinderNameChanged(m_cylinderName);
-}
+        m_cylinderName = cylinderName;
+        emit cylinderNameChanged(m_cylinderName);
+    }
 
-void setSutDownLookLocationName(QString sutDownLookLocationName)
-{
-    if (m_sutDownLookLocationName == sutDownLookLocationName)
-        return;
+    void setSutDownLookLocationName(QString sutDownLookLocationName)
+    {
+        if (m_sutDownLookLocationName == sutDownLookLocationName)
+            return;
 
-    m_sutDownLookLocationName = sutDownLookLocationName;
-    emit sutDownLookLocationNameChanged(m_sutDownLookLocationName);
-}
+        m_sutDownLookLocationName = sutDownLookLocationName;
+        emit sutDownLookLocationNameChanged(m_sutDownLookLocationName);
+    }
 
-void setMushroomLocationName(QString mushroomLocationName)
-{
-    if (m_mushroomLocationName == mushroomLocationName)
-        return;
+    void setMushroomLocationName(QString mushroomLocationName)
+    {
+        if (m_mushroomLocationName == mushroomLocationName)
+            return;
 
-    m_mushroomLocationName = mushroomLocationName;
-    emit mushroomLocationNameChanged(m_mushroomLocationName);
-}
+        m_mushroomLocationName = mushroomLocationName;
+        emit mushroomLocationNameChanged(m_mushroomLocationName);
+    }
 
-void setLutGripperLoactionName(QString lutGripperLoactionName)
-{
-    if (m_lutGripperLoactionName == lutGripperLoactionName)
-        return;
+    void setLutGripperLoactionName(QString lutGripperLoactionName)
+    {
+        if (m_lutGripperLoactionName == lutGripperLoactionName)
+            return;
 
-    m_lutGripperLoactionName = lutGripperLoactionName;
-    emit lutGripperLoactionNameChanged(m_lutGripperLoactionName);
-}
+        m_lutGripperLoactionName = lutGripperLoactionName;
+        emit lutGripperLoactionNameChanged(m_lutGripperLoactionName);
+    }
 
 signals:
-void ZOffsetChanged(double ZOffset);
-void LensSoftlandingVelChanged(double ZOffset);
-void LensSoftlandingForceChanged(double ZOffset);
-void motorXNameChanged(QString motorXName);
-void motorYNameChanged(QString motorYName);
-void motorZNameChanged(QString motorZName);
-void lutVacuumNameChanged(QString lutVacuumName);
-void sutVacuumNameChanged(QString sutVacuumName);
-void cylinderNameChanged(QString cylinderName);
-void sutDownLookLocationNameChanged(QString sutDownLookLocationName);
-void mushroomLocationNameChanged(QString mushroomLocationName);
-void lutGripperLoactionNameChanged(QString lutGripperLoactionName);
+    void ZOffsetChanged(double ZOffset);
+    void LensSoftlandingVelChanged(double ZOffset);
+    void LensSoftlandingForceChanged(double ZOffset);
+    void motorXNameChanged(QString motorXName);
+    void motorYNameChanged(QString motorYName);
+    void motorZNameChanged(QString motorZName);
+    void lutVacuumNameChanged(QString lutVacuumName);
+    void sutVacuumNameChanged(QString sutVacuumName);
+    void cylinderNameChanged(QString cylinderName);
+    void sutDownLookLocationNameChanged(QString sutDownLookLocationName);
+    void mushroomLocationNameChanged(QString mushroomLocationName);
+    void lutGripperLoactionNameChanged(QString lutGripperLoactionName);
 };
 
 class LSutState:public PropertyBase
@@ -231,16 +231,16 @@ class LSutState:public PropertyBase
     Q_PROPERTY(int lutNgLensID READ lutNgLensID WRITE setLutNgLensID NOTIFY lutNgLensIDChanged)
     Q_PROPERTY(int aaTrayID READ aaTrayID WRITE setAaTrayID NOTIFY aaTrayIDChanged)
     Q_PROPERTY(int aaLensID READ aaLensID WRITE setAaLensID NOTIFY aaLensIDChanged)
+
     Q_PROPERTY(bool waitLens READ waitLens WRITE setWaitLens NOTIFY waitLensChanged)
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool lutHasNgLens READ lutHasNgLens WRITE setLutHasNgLens NOTIFY lutHasNgLensChanged)
-    Q_PROPERTY(bool pickingLens READ pickingLens WRITE setPickingLens NOTIFY pickingLensChanged)
+    //    Q_PROPERTY(bool pickingLens READ pickingLens WRITE setPickingLens NOTIFY pickingLensChanged)
 
     Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
-    Q_PROPERTY(bool sutHasProduct READ sutHasProduct WRITE setSutHasProduct NOTIFY sutHasProductChanged)
     Q_PROPERTY(bool allowLoadSensor READ allowLoadSensor WRITE setAllowLoadSensor NOTIFY allowLoadSensorChanged)
-    Q_PROPERTY(bool loadingSensor READ loadingSensor WRITE setLoadingSensor NOTIFY loadingSensorChanged)
+    //    Q_PROPERTY(bool loadingSensor READ loadingSensor WRITE setLoadingSensor NOTIFY loadingSensorChanged)
 
     Q_PROPERTY(bool allowLoadLens READ allowLoadLens WRITE setAllowLoadLens NOTIFY allowLoadLensChanged)
 
@@ -290,10 +290,10 @@ public:
         return m_lutHasLens;
     }
 
-    bool pickingLens() const
-    {
-        return m_pickingLens;
-    }
+    //    bool pickingLens() const
+    //    {
+    //        return m_pickingLens;
+    //    }
 
     bool sutHasSensor() const
     {
@@ -305,35 +305,22 @@ public:
         return m_sutHasNgSensor;
     }
 
-    bool sutHasProduct() const
-    {
-        return m_sutHasProduct;
-    }
 
     bool allowLoadSensor() const
     {
         return m_allowLoadSensor;
     }
 
-    bool loadingSensor() const
-    {
-        return m_loadingSensor;
-    }
+    //    bool loadingSensor() const
+    //    {
+    //        return m_loadingSensor;
+    //    }
 
     bool waitLoading() const
     {
         return m_waitLoading;
     }
 
-    bool sutHasLens() const
-    {
-        return m_sutHasLens;
-    }
-
-    bool sutHasNgLens() const
-    {
-        return m_sutHasNgLens;
-    }
 
     bool allowLoadLens() const
     {
@@ -433,14 +420,14 @@ public slots:
         emit lutHasLensChanged(m_lutHasLens);
     }
 
-    void setPickingLens(bool pickingLens)
-    {
-        if (m_pickingLens == pickingLens)
-            return;
+    //    void setPickingLens(bool pickingLens)
+    //    {
+    //        if (m_pickingLens == pickingLens)
+    //            return;
 
-        m_pickingLens = pickingLens;
-        emit pickingLensChanged(m_pickingLens);
-    }
+    //        m_pickingLens = pickingLens;
+    //        emit pickingLensChanged(m_pickingLens);
+    //    }
 
     void setSutHasSensor(bool sutHasSensor)
     {
@@ -460,14 +447,6 @@ public slots:
         emit sutHasNgSensorChanged(m_sutHasNgSensor);
     }
 
-    void setSutHasProduct(bool sutHasProduct)
-    {
-        if (m_sutHasProduct == sutHasProduct)
-            return;
-
-        m_sutHasProduct = sutHasProduct;
-        emit sutHasProductChanged(m_sutHasProduct);
-    }
 
     void setAllowLoadSensor(bool allowLoadSensor)
     {
@@ -478,14 +457,14 @@ public slots:
         emit allowLoadSensorChanged(m_allowLoadSensor);
     }
 
-    void setLoadingSensor(bool loadingSensor)
-    {
-        if (m_loadingSensor == loadingSensor)
-            return;
+    //    void setLoadingSensor(bool loadingSensor)
+    //    {
+    //        if (m_loadingSensor == loadingSensor)
+    //            return;
 
-        m_loadingSensor = loadingSensor;
-        emit loadingSensorChanged(m_loadingSensor);
-    }
+    //        m_loadingSensor = loadingSensor;
+    //        emit loadingSensorChanged(m_loadingSensor);
+    //    }
 
     void setWaitLoading(bool waitLoading)
     {
@@ -494,24 +473,6 @@ public slots:
 
         m_waitLoading = waitLoading;
         emit waitLoadingChanged(m_waitLoading);
-    }
-
-    void setSutHasLens(bool sutHasLens)
-    {
-        if (m_sutHasLens == sutHasLens)
-            return;
-
-        m_sutHasLens = sutHasLens;
-        emit sutHasLensChanged(m_sutHasLens);
-    }
-
-    void setSutHasNgLens(bool sutHasNgLens)
-    {
-        if (m_sutHasNgLens == sutHasNgLens)
-            return;
-
-        m_sutHasNgLens = sutHasNgLens;
-        emit sutHasNgLensChanged(m_sutHasNgLens);
     }
 
     void setAllowLoadLens(bool allowLoadLens)
@@ -576,23 +537,17 @@ signals:
 
     void lutHasLensChanged(bool lutHasLens);
 
-    void pickingLensChanged(bool pickingLens);
+    //    void pickingLensChanged(bool pickingLens);
 
     void sutHasSensorChanged(bool sutHasSensor);
 
     void sutHasNgSensorChanged(bool sutHasNgSensor);
 
-    void sutHasProductChanged(bool sutHasProduct);
-
     void allowLoadSensorChanged(bool allowLoadSensor);
 
-    void loadingSensorChanged(bool loadingSensor);
+    //    void loadingSensorChanged(bool loadingSensor);
 
     void waitLoadingChanged(bool waitLoading);
-
-    void sutHasLensChanged(bool sutHasLens);
-
-    void sutHasNgLensChanged(bool sutHasNgLens);
 
     void allowLoadLensChanged(bool allowLoadLens);
 
@@ -613,16 +568,13 @@ private:
     int m_aaLensID = -1;
     bool m_waitLens = false;
     bool m_lutHasLens = false;
-    bool m_pickingLens = false;
+    //    bool m_pickingLens = false;
 
     bool m_sutHasSensor = false;
     bool m_sutHasNgSensor = false;
-    bool m_sutHasProduct = false;
     bool m_allowLoadSensor = false;
-    bool m_loadingSensor = false;
+    //    bool m_loadingSensor = false;
     bool m_waitLoading = false;
-    bool m_sutHasLens = false;
-    bool m_sutHasNgLens = false;
     bool m_allowLoadLens = false;
     bool m_hasProduct = false;
     bool m_lutHasNgLens = false;

@@ -884,7 +884,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 zScanCount++;
            }
     } else if (zScanMode == ZSCAN_MODE::AA_STATIONARY_SCAN_MODE){
-         double currentZ = sut->carrier->GetFeedBackPos().Z;
+         double currentZ = lsut->sut_carrier->GetFeedBackPos().Z;
          double target_z = currentZ + offset_in_um;
          for (unsigned int i = 0; i < imageCount; i++) {
              lsut->sut_carrier->Move_Z_Sync(target_z+(i*step_size));
@@ -905,7 +905,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                   current_dfov[QString::number(i)] = dfov;
              else
                   current_dfov.insert(QString::number(i),dfov);
-             qInfo("fov: %f  sut_z: %f", dfov, sut->carrier->GetFeedBackPos().Z);
+             qInfo("fov: %f  sut_z: %f", dfov, lsut->sut_carrier->GetFeedBackPos().Z);
              xsum=xsum+realZ;
              ysum=ysum+dfov;
              x2sum=x2sum+pow(realZ,2);
@@ -944,8 +944,8 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         qInfo("Disable tilt...");
     } else {
         qInfo("Enable tilt...xTilt: %f yTilt: %f", aa_result["xTilt"].toDouble(), aa_result["yTilt"].toDouble());
-        //aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
-        aa_head->stepInterpolation_AB_Sync(-aa_result["xTilt"].toDouble(), -aa_result["yTilt"].toDouble());
+        aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
+        //aa_head->stepInterpolation_AB_Sync(-aa_result["xTilt"].toDouble(), -aa_result["yTilt"].toDouble());
     }
     if (position_checking == 1){
         QThread::msleep(zSleepInMs);
@@ -2161,7 +2161,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
 
 ErrorCodeStruct AACoreNew::performInitSensor()
 {
-    if(!has_sensor) return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "has no sensor"};
+    //if(!has_sensor) return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "has no sensor"};
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
     const int channel = 0;

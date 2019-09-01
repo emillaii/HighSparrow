@@ -7,8 +7,6 @@ SingleheadLSutModule::SingleheadLSutModule(QString name, QObject * parent) : Thr
 
 void SingleheadLSutModule::Init(MaterialCarrier *sut_carrier,
                                 VisionLocation *downlook_location,
-//                                VisionLocation *updownlook_down_location,
-//                                VisionLocation *updownlook_up_location,
                                 VisionLocation *mushroom_location,
                                 VisionLocation * gripper_location,
                                 XtVacuum *sutVacuum,
@@ -20,8 +18,6 @@ void SingleheadLSutModule::Init(MaterialCarrier *sut_carrier,
     this->aa_head = aa_head;
     this->sut_carrier = sut_carrier;
     this->vision_downlook_location = downlook_location;
-//    this->vision_updownlook_down_location = updownlook_down_location;
-//    this->vision_updownlook_up_location = updownlook_up_location;
     this->vision_mushroom_location = mushroom_location;
     this->vision_gripper_location = gripper_location;
     this->vacuum_sut = sutVacuum;
@@ -33,7 +29,9 @@ void SingleheadLSutModule::loadParams(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LSUT_PARAMS",&parameters);
-    temp_map.insert("load_position",&load_position);
+//    temp_map.insert("load_position",&load_position);
+    temp_map.insert("load_sensor_position",&load_sensor_position);
+    temp_map.insert("load_lens_position",&load_lens_position);
     temp_map.insert("downlook_position",&downlook_position);
     temp_map.insert("mushroom_position",&mushroom_position);
     temp_map.insert("gripper_position",&gripper_position);
@@ -42,8 +40,6 @@ void SingleheadLSutModule::loadParams(QString file_name)
     temp_map.insert("pick_lens_position",&pick_lens_position);
     temp_map.insert("unpick_lens_position",&unpick_lens_position);
     temp_map.insert("lens_offset",&lens_offset);
-    temp_map.insert("sensor_offset",&sensor_offset);
-    temp_map.insert("up_downlook_offset", &up_downlook_offset);
     PropertyBase::loadJsonConfig(file_name,temp_map);
 }
 
@@ -51,7 +47,9 @@ void SingleheadLSutModule::saveParams(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LSUT_PARAMS",&parameters);
-    temp_map.insert("load_position",&load_position);
+//    temp_map.insert("load_position",&load_position);
+    temp_map.insert("load_sensor_position",&load_sensor_position);
+    temp_map.insert("load_lens_position",&load_lens_position);
     temp_map.insert("downlook_position",&downlook_position);
     temp_map.insert("mushroom_position",&mushroom_position);
     temp_map.insert("gripper_position",&gripper_position);
@@ -60,8 +58,6 @@ void SingleheadLSutModule::saveParams(QString file_name)
     temp_map.insert("pick_lens_position",&pick_lens_position);
     temp_map.insert("unpick_lens_position",&unpick_lens_position);
     temp_map.insert("lens_offset",&lens_offset);
-    temp_map.insert("sensor_offset",&sensor_offset);
-    temp_map.insert("up_downlook_offset", &up_downlook_offset);
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
@@ -77,7 +73,8 @@ void SingleheadLSutModule::receiveMaterialResponse(int sensor_index, int lens_in
         this->states.setLutHasLens(true);
         this->states.setLutHasNgLens(false);
         //gripLens();    // Pick lens from lut to aa head
-        moveToPRPosition();
+//        moveToPRPosition();
+        moveToGripperPosition();
     }
     this->states.setWaitLoading(false);
 
@@ -131,7 +128,8 @@ void SingleheadLSutModule::run(bool has_material){
         if (states.allowLoadLens() || states.allowLoadSensor())
         {
             pogopin->Set(true);
-            moveToLoadPosition();
+//                moveToLoadPosition();
+            moveToLoadSensorPosition();
             states.setWaitLoading(true);
             emit sendLoadMaterialRequest(states.allowLoadSensor(), states.allowLoadSensor(),
                                          states.sutHasNgSensor(), states.lutHasNgLens(),
@@ -147,66 +145,6 @@ void SingleheadLSutModule::lens_logic()
 void SingleheadLSutModule::sensor_logic()
 {
 }
-//void SingleheadLSutModule::run(bool has_material)
-//{
-//    is_run = true;
-//    while (is_run)
-//    {
-//        if(!states.allowLoadSensor())
-//        {
-//            QThread::msleep(1000);
-//            continue;
-//        }
-//        if((!states.sutHasSensor()))
-//        {
-//            if(!moveToLoadPosition())
-//            {
-//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-//                is_run =false;
-//                break;
-//            }
-//            if(!pogopin->Set(false))
-//            {
-//                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-//                waitMessageReturn(is_run);
-//                continue;
-//            }
-//            QThread::msleep(100);
-////            if(!sendSensorRequest(states.sutHasProduct(),states.sutHasNgSensor()))
-////            {
-////                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-////                waitMessageReturn(is_run);
-////                continue;
-////            }
-////            else
-////            {
-////                states.setSutHasSensor(true);
-////            }
-//            states.setSutHasSensor(true);
-//        }
-//        if(states.sutHasSensor())
-//        {
-//            if(!pogopin->Set(true))
-//            {
-//                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-//                waitMessageReturn(is_run);
-//                continue;
-//            }
-//            QThread::msleep(100);
-//            if((!moveToDownlookPR(pr_offset))&&has_material)
-//            {
-//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-//                is_run = false;
-//                break;
-//            }
-//            else
-//            {
-//                emit sendLoadSensorFinish(-pr_offset.X,-pr_offset.Y,pr_offset.Theta);
-//                states.setAllowLoadSensor(false);
-//            }
-//        }
-//    }
-//}
 
 
 void SingleheadLSutModule::startWork(int run_mode)
@@ -254,9 +192,13 @@ void SingleheadLSutModule::performHandlingOperation(int cmd)
         qInfo("LSUT move to gripper position, cmd: %d", MOVE_TO_GRIPPER_POSITION);
         result = moveToGripperPosition(true);
     }
-    else if (cmd % temp_value == HandlePosition::MOVE_TO_LOAD_POSITION) {
-        qInfo("LSUT move to load position, cmd: %d", MOVE_TO_LOAD_POSITION);
-        result = moveToLoadPosition(true);
+    else if (cmd % temp_value == HandlePosition::MOVE_TO_LOAD_SENSOR_POSITION) {
+        qInfo("LSUT move to load sensor position, cmd: %d", MOVE_TO_LOAD_SENSOR_POSITION);
+        result = moveToLoadSensorPosition(true);
+    }
+    else if (cmd % temp_value == HandlePosition::MOVE_TO_LOAD_LENS_POSITION) {
+        qInfo("LSUT move to load lens position, cmd: %d", MOVE_TO_LOAD_LENS_POSITION);
+        result = moveToLoadLensPosition(true);
     }
     else if (cmd % temp_value == HandlePosition::MOVE_TO_CALIBRATION_POSITION) {
         qInfo("LSUT move to updown downlook calibration position, cmd: %d", MOVE_TO_CALIBRATION_POSITION);
@@ -316,21 +258,14 @@ void SingleheadLSutModule::performHandlingOperation(int cmd)
     cmd =cmd/temp_value*temp_value;
 
     temp_value = 1000;
-    if(cmd % temp_value == HandleToWorkPos::SENSOR_TO_BOND) {
-        qInfo("Move sensor to bond, cmd: %d", SENSOR_TO_BOND);
-        result = moveSensorToBondPos();
+
+   if (cmd % temp_value == HandleToWorkPos::LENS_TO_GRIPPER_CENTER) {
+        qInfo("Move lens to gripper center, cmd: %d", LENS_TO_GRIPPER_CENTER);
+        result = moveLensToGripperCenter();
     }
     else if (cmd % temp_value == HandleToWorkPos::LENS_TO_GRIPPER) {
         qInfo("Move lens to gripper, cmd: %d", LENS_TO_GRIPPER);
         result = moveLensToGripperPos();
-    }
-    else if (cmd % temp_value == HandleToWorkPos::LENS_TO_GRIPPER_CENTER) {
-        qInfo("Move lens to gripper center, cmd: %d", LENS_TO_GRIPPER_CENTER);
-        result = moveLensToGripperCenter();
-    }
-    else if (cmd % temp_value == HandleToWorkPos::SENSOR_TO_BOND_CENTER) {
-        qInfo("Move sensor to bond center, cmd: %d", SENSOR_TO_BOND_CENTER);
-        result = moveSensorToBondCenter();
     }
     else {
         result = true;
@@ -394,10 +329,15 @@ bool SingleheadLSutModule::moveToGripperPosition(bool check_autochthonous)
     return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(gripper_position.X(),gripper_position.Y(),gripper_position.Z(),check_autochthonous);
 }
 
-bool SingleheadLSutModule::moveToLoadPosition(bool check_autochthonous)
+bool SingleheadLSutModule::moveToLoadSensorPosition(bool check_autochthonous)
 {
     qInfo("SUT module moveToLoadPos");
-    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous);
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(load_sensor_position.X(),load_sensor_position.Y(),load_sensor_position.Z(),check_autochthonous);
+}
+bool SingleheadLSutModule::moveToLoadLensPosition(bool check_autochthonous)
+{
+    qInfo("SUT module moveToLoadPos");
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(load_lens_position.X(),load_lens_position.Y(),load_lens_position.Z(),check_autochthonous);
 }
 
 bool SingleheadLSutModule::moveToPRPosition(bool check_autochthonous)
@@ -447,9 +387,8 @@ bool SingleheadLSutModule::performUplookGripperPR()
 bool SingleheadLSutModule::moveLensToGripperCenter()
 {
      qInfo("moveLensToGripper position");
-    return sut_carrier->StepMove_XYZ_Sync(lens_offset.X()-pr_offset.X, lens_offset.Y()-pr_offset.Y, parameters.ZOffset());
+    return sut_carrier->StepMove_XY_Sync(lens_offset.X()-pr_offset.X, lens_offset.Y()-pr_offset.Y);
 
-//    return sut_carrier->StepMove_Z(parameters.ZOffset());
 }
 
 
@@ -492,17 +431,6 @@ bool SingleheadLSutModule::moveLensToGripperPos(double step_z)
 
 }
 
-bool SingleheadLSutModule::moveSensorToBondCenter()
-{
-    return sut_carrier->StepMove_XYZ_Sync(sensor_offset.X()-pr_offset.X, sensor_offset.Y()-pr_offset.Y,parameters.ZOffset());
-}
-
-bool SingleheadLSutModule::moveSensorToBondPos()
-{
-    qInfo("move sensor to bond position");
-   return sut_carrier->StepMove_Z(parameters.ZOffset());
-
-}
 
 bool SingleheadLSutModule::lensGripperMeasureHight()
 {

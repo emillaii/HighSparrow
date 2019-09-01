@@ -154,7 +154,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         rawImageName.append(getVisionLogDir())
                     .append(getCurrentTimeString())
                     .append("_raw.jpg");
-        g_constData1 = L"test.jpg";
+        g_constData1 = L"C:\\Users\\emil\\Documents\\Projects\\HighSparrow_pure.git\\branches\\build-HighSprrowQ-Desktop_Qt_5_13_0_MSVC2017_64bit-Release\\config\\prConfig\\sensor_tray_sensor_pr.jpg";
         g_constData2 = pr_offset_name.toStdString().c_str();
         g_constData3 = L"Vector2D";
         g_constData4 = pr_name.toStdString().c_str();

@@ -97,11 +97,10 @@ void AAData::plotIntensityProfile(float minI, float maxI, std::vector<float> val
         this->terminate();
     }
     m_minValue = (int)minI; m_maxValue = (int)maxI;
-    for (unsigned i = 0; i < values.size(); i++){
-        this->m_PointsList.push_back(QPoint(i, values[i]));
+    for (unsigned i = 0; i < values.size(); i=i+10){
+        m_wCCRealList.push_back(i); m_wCCRealList.push_back(values[i]);
     }
-    plotProfile = 1;
-    this->start();
+    emit wValueChanged();
 }
 
 void AAData::run(){

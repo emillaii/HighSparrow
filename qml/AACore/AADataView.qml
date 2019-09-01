@@ -420,7 +420,9 @@ Grid {
             target: dataFromIntensityProfile
             onWValueChanged: {
                 iSeriesLabel.text = "Min: " + dataFromIntensityProfile.minValue + " Max: " + dataFromIntensityProfile.maxValue
-                iSeries.append(dataFromIntensityProfile.wValue.x, dataFromIntensityProfile.wValue.y)
+                for (var i=0; i<dataFromIntensityProfile.wCCRealList.length; i=i+2) {
+                    iSeries.append(dataFromIntensityProfile.wCCRealList[i], dataFromIntensityProfile.wCCRealList[i+1])
+                }
             }
             onWValueClear: {
                 console.log("Clear")

@@ -44,8 +44,8 @@ Item {
 
                 delegate: Rectangle {
                     id: lensCell
-                    implicitWidth: 40
-                    implicitHeight: 40
+                    implicitWidth: 20
+                    implicitHeight: 20
 
                     color:
                     {
@@ -59,7 +59,7 @@ Item {
                         }
                         else if(Status === TrayMapModel.StatusIdle)// idle
                         {
-                            "#ffff00"
+                            "#c0c0c0"
                         }
                         else if (Status === TrayMapModel.StatusInUse) //InUse
                         {
@@ -135,8 +135,8 @@ Item {
 
                 delegate: Rectangle {
                     id: sensorCell
-                    implicitWidth: 40
-                    implicitHeight: 40
+                    implicitWidth: 20
+                    implicitHeight: 20
 
                     color:
                     {
@@ -150,7 +150,7 @@ Item {
                         }
                         else if(Status === TrayMapModel.StatusIdle)// idle
                         {
-                            "#ffff00"
+                            "#c0c0c0"
                         }
                         else if (Status === TrayMapModel.StatusInUse) //InUse
                         {
@@ -226,8 +226,8 @@ Item {
 
                 delegate: Rectangle {
                     id: productCell
-                    implicitWidth: 40
-                    implicitHeight: 40
+                    implicitWidth: 20
+                    implicitHeight: 20
 
                     color:
                     {
@@ -241,7 +241,7 @@ Item {
                         }
                         else if(Status === TrayMapModel.StatusIdle)// idle
                         {
-                            "#ffff00"
+                            "#c0c0c0"
                         }
                         else if (Status === TrayMapModel.StatusInUse) //InUse
                         {
@@ -317,8 +317,8 @@ Item {
 
                 delegate: Rectangle {
                     id: rejectCell
-                    implicitWidth: 40
-                    implicitHeight: 40
+                    implicitWidth: 20
+                    implicitHeight: 20
 
                     color:
                     {
@@ -332,7 +332,7 @@ Item {
                         }
                         else if(Status === TrayMapModel.StatusIdle)// idle
                         {
-                            "#ffff00"
+                            "#c0c0c0"
                         }
                         else if (Status === TrayMapModel.StatusInUse) //InUse
                         {

@@ -141,7 +141,7 @@ bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker, double speed, d
 {
     XtVcMotor* motor_vcm = picker==0?motor_vcm1:motor_vcm2;
     XtVacuum* vacuum = picker==0?vacuum_sensor_suction:vacuum_lens_suction;
-    qInfo("SensorPickArm::ZSerchByForce timeout %d",timeout);
+    qInfo("SensorPickArm::ZSerchByForce timeout %d, force: %f limit: f",timeout);
     bool result = motor_vcm->SearchPosByForce(speed,force,limit,margin,timeout);
     if(result)
         result &= vacuum->Set(open_vacuum,true,finish_time);

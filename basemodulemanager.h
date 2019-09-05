@@ -15,8 +15,6 @@
 #include "XtMotion/XtVcMotor.h"
 #include "AAHeadModule/aaheadmodule.h"
 #include "material_carrier.h"
-#include "DualHead/lut_module.h"
-#include "DualHead/sut_module.h"
 #include "Vision/calibration.h"
 #include "ImageGrabber/dothinkey.h"
 #include "ImageGrabber/imagegrabbingworkerthread.h"
@@ -24,17 +22,9 @@
 #include "Dispense/dispense_module.h"
 #include "Vision/vision_location.h"
 #include "Vision/chart_calibration.h"
-#include "network/sparrowqserver.h"
-#include "network/sparrowqclient.h"
-#include "DualHead/lensloadermodule.h"
-#include "DualHead/lutclient.h"
 #include "workers_manager.h"
-#include "DualHead/trayloadermodule.h"
 #include "Utils/unitlog.h"
-#include "DualHead/sensorloadermodule.h"
 #include "AACore/aacorenew.h"
-#include "DualHead/sensorclip.h"
-#include "sensortrayloadermodule.h"
 #include "modulemanagerparameter.h"
 #include "SingleHead/singleheadmachinematerialloadermodule.h"
 #include "SingleHead/singlehead_lsut_module.h"
@@ -42,7 +32,7 @@
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
-    int m_lightPanelLighting;
+
 public:
     explicit BaseModuleManager(QObject *parent = nullptr);
     ~BaseModuleManager();
@@ -72,8 +62,8 @@ public:
     MaterialTray reject_tray;
     MaterialTray lens_tray;
     AAHeadModule aa_head_module;
-    LutModule lut_module;
-    SutModule sut_module;
+//    LutModule lut_module;
+//    SutModule sut_module;
     SingleheadLSutModule sh_lsut_module;
     DispenseModule dispense_module;
     Dispenser dispenser;
@@ -83,12 +73,11 @@ public:
     SingleHeadMachineMaterialLoaderModule single_station_material_loader_module;
     SingleHeadMachineMaterialPickArm single_station_material_pickarm;
 
-
-
-
     Unitlog unitlog;
 
-    XtGeneralInputParameter * parameters;
+//    XtGeneralInputParameter * parameters;
+
+    //XtGeneralInputParameter * parameters;
 
     int lightPanelLighting() const
     {
@@ -158,6 +147,7 @@ private:
     bool InitStruct();
 
     bool m_HomeState = false;
+      int m_lightPanelLighting;
     QTimer timer;
     QThread work_thread;
 

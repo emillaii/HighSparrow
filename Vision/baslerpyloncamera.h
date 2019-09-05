@@ -14,12 +14,26 @@ using namespace Pylon;
 class BaslerPylonCamera : public QThread, CImageEventHandler, public QQuickImageProvider
 {
     Q_OBJECT
+    Q_PROPERTY(bool isGrabbing READ isGrabbing WRITE setiIsGrabbing)
+    class CSampleImageEventHandler : public CImageEventHandler
+    {
+    private:
+        BaslerPylonCamera *pylonCamera;
+    public:
+        CSampleImageEventHandler(BaslerPylonCamera *pylonCamera) {
+            this->pylonCamera = pylonCamera;
+        }
+        virtual void OnImageGrabbed( CInstantCamera& camera, const CGrabResultPtr& ptrGrabResult)
+        {
+            pylonCamera->updateImage(ptrGrabResult);
+        }
+    };
 public:
     BaslerPylonCamera(QString);
     ~BaslerPylonCamera();
-    void Init();
-    void Close();
-    void Open();
+    bool Init();
+    Q_INVOKABLE void close();
+    Q_INVOKABLE void open();
     bool IsOpend();
     bool GrabImage();
     void CopyBufferToQImage(CGrabResultPtr, QImage&);
@@ -33,22 +47,36 @@ public:
     bool is_triged = false;
     bool got_new = false;
     bool need_triged = false;
+    QString getCameraChannelname();
+    void updateImage(const CGrabResultPtr& ptrGrabResult);
+    bool isGrabbing() const
+    {
+        return m_isGrabbing;
+    }
 
+public slots:
+    void setiIsGrabbing(bool isGrabbing)
+    {
+        m_isGrabbing = isGrabbing;
+        if (!isGrabbing) emit cameraCloseEvent();
+    }
 
 protected:
     void run() override;
-    void OnImageGrabbed(CInstantCamera&, const CGrabResultPtr&) override;
 private:
     CInstantCamera camera;
     QMutex mutex;
     QMutex trig_mutex;
-    bool isGrabbing;
     bool isReady;
     QString cameraChannelName;
     QImage latestImage;
+    bool m_isGrabbing = false;
+    CSampleImageEventHandler *imageHandler;
 signals:
     void imageChanged(QImage);
     void callQmlRefeshImg();
+    void noCameraEvent();
+    void cameraCloseEvent();
 };
 
 #endif // BASLERCAMERA_H

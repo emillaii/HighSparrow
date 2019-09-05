@@ -16,31 +16,6 @@
         <file>qml/DispenseModule/DispenseXYOffset.qml</file>
         <file>qml/DispenseModule/DispenseZPos.qml</file>
         <file>qml/CalibrationView.qml</file>
-        <file>qml/LensPickarmModule/LensHeadParameter.qml</file>
-        <file>qml/LensPickarmModule/LensPcikArmLUT.qml</file>
-        <file>qml/LensPickarmModule/LensPickArmModuleParameter.qml</file>
-        <file>qml/LensPickarmModule/LensPickArmModuleView.qml</file>
-        <file>qml/LensPickarmModule/LensPickArmOtherParameter.qml</file>
-        <file>qml/LUTModule/LUTAA1PickLensPosition.qml</file>
-        <file>qml/LUTModule/LUTAA1UnpickLensPosition.qml</file>
-        <file>qml/LUTModule/LUTAA1UpDownlookPosition.qml</file>
-        <file>qml/LUTModule/LUTAA1UplookPosition.qml</file>
-        <file>qml/LUTModule/LUTAA2PickLensPosition.qml</file>
-        <file>qml/LUTModule/LUTAA2UnPickLensPosition.qml</file>
-        <file>qml/LUTModule/LUTAA2UpDownlookPosition.qml</file>
-        <file>qml/LUTModule/LUTAA2UplookPosition.qml</file>
-        <file>qml/LUTModule/LUTDownlookLoadPosition.qml</file>
-        <file>qml/LUTModule/LUTDownlookUnloadPosition.qml</file>
-        <file>qml/LUTModule/LUTLoadPositionView.qml</file>
-        <file>qml/LUTModule/LUTLoadUplookPosition.qml</file>
-        <file>qml/LUTModule/LUTModuleView.qml</file>
-        <file>qml/LUTModule/LUTPick2PositionView.qml</file>
-        <file>qml/LUTModule/LUTPickPositionView.qml</file>
-        <file>qml/LUTModule/LUTPRPositionView.qml</file>
-        <file>qml/LUTModule/LUTSafetyPositionView.qml</file>
-        <file>qml/LUTModule/LUTUnloadPosition.qml</file>
-        <file>qml/LUTModule/LUTUnPick2PositionView.qml</file>
-        <file>qml/LUTModule/LUTUnPickPositionView.qml</file>
         <file>qml/SUTModule/SUTGripperPosition.qml</file>
         <file>qml/SUTModule/SUTLoadPositionView.qml</file>
         <file>qml/SUTModule/SUTModuleView.qml</file>
@@ -56,10 +31,6 @@
         <file>qml/SingleStationMaterialLoaderModule/LensTraySpecs.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/MPAHeadParameter.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/RejectTraySpecs.qml</file>
-        <file>qml/SingleStationMaterialLoaderModule/SensorHeadParameter.qml</file>
-        <file>qml/SingleStationMaterialLoaderModule/SensorLoaderModuleView.qml</file>
-        <file>qml/SingleStationMaterialLoaderModule/SensorPickArmSUT.qml</file>
-        <file>qml/SingleStationMaterialLoaderModule/SensorTrayLoaderViewModule.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/SensorTraySpecs.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/SingleHeadLensTray.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/SingleHeadRejectTray.qml</file>
@@ -74,12 +45,7 @@
         <file>qml/ImageGrabberView.qml</file>
         <file>qml/IODialog.qml</file>
         <file>qml/MotionDialog.qml</file>
-        <file>qml/MaterialTray/MaterialTray1.qml</file>
-        <file>qml/MaterialTray/MaterialTray2.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/MaterialLoaderModulueUTView.qml</file>
-        <file>qml/TrayLoader/TrayLoaderModuleView.qml</file>
-        <file>qml/TrayLoader/TrayParamater.qml</file>
-        <file>qml/TrayLoader/TraySpecs.qml</file>
         <file>qml/PopupMessageView.qml</file>
         <file>qml/SystemConfigView.qml</file>
         <file>qml/Page1Form.ui.qml</file>

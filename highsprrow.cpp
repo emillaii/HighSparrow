@@ -41,13 +41,13 @@ void HighSprrow::performLUTMushroomPR()
 void HighSprrow::performSUTDownlookPR()
 {
     PrOffset offset;
-    baseModuleManager->dispense_module.setMapPosition(baseModuleManager->sut_module.downlook_position.X(),
-                                                      baseModuleManager->sut_module.downlook_position.Y());
-    if (baseModuleManager->sut_module.moveToDownlookPR(offset, false,true))
+    baseModuleManager->dispense_module.setMapPosition(baseModuleManager->sh_lsut_module.downlook_position.X(),
+                                                      baseModuleManager->sh_lsut_module.downlook_position.Y());
+    if (baseModuleManager->sh_lsut_module.moveToDownlookPR(offset, false,true))
     {
         qInfo("Perform SUT Downlook PR OffsetX %f OffsetY %f", offset.X, offset.Y);
         baseModuleManager->dispense_module.setPRPosition(offset.X, offset.Y,offset.Theta);
-        baseModuleManager->sut_module.stepMove_XY_Sync(-offset.X, -offset.Y);
+        baseModuleManager->sh_lsut_module.stepMove_XY_Sync(-offset.X, -offset.Y);
     } else {
         qInfo("Perform SUT Downlook PR Fail");
     }
@@ -56,13 +56,13 @@ void HighSprrow::performSUTDownlookPR()
 void HighSprrow::performOnlySUTDownlookPR()
 {
     PrOffset offset;
-    baseModuleManager->dispense_module.setMapPosition(baseModuleManager->sut_module.downlook_position.X(),
-                                                      baseModuleManager->sut_module.downlook_position.Y());
+    baseModuleManager->dispense_module.setMapPosition(baseModuleManager->sh_lsut_module.downlook_position.X(),
+                                                      baseModuleManager->sh_lsut_module.downlook_position.Y());
     if (baseModuleManager->vision_locations[PR_SUT_DOWNLOOK]->performPR(offset))
     {
         qInfo("Perform SUT Downlook PR OffsetX %f OffsetY %f", offset.X, offset.Y);
         baseModuleManager->dispense_module.setPRPosition(offset.X, offset.Y,offset.Theta);
-        baseModuleManager->sut_module.stepMove_XY_Sync(-offset.X, -offset.Y);
+        baseModuleManager->sh_lsut_module.stepMove_XY_Sync(-offset.X, -offset.Y);
     } else {
         qInfo("Perform SUT Downlook PR Fail");
     }
@@ -71,7 +71,7 @@ void HighSprrow::performOnlySUTDownlookPR()
 void HighSprrow::performLUTUplookPR()
 {
     PrOffset offset;
-    if (baseModuleManager->lut_module.moveToAA1UplookPR(offset, false, true))
+    if(baseModuleManager->vision_locations[PR_AA1_LUT_UPLOOK]->performPR(offset))
     {
         baseModuleManager->aa_head_module.stepMove_XYC_Sync(-offset.X, -offset.Y,-offset.Theta);
     }
@@ -82,7 +82,6 @@ void HighSprrow::performLPALensPR()
     PrOffset offset;
     if(baseModuleManager->vision_locations[PR_LENS_LPALOOK]->performPR(offset))
     {
-//        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
         baseModuleManager->single_station_material_pickarm.stepMove_XY_Synic(offset.X,offset.Y);//to do
     }
 }
@@ -92,8 +91,7 @@ void HighSprrow::performLUTLensPR()
     PrOffset offset;
     if(baseModuleManager->vision_locations[PR_LENS_LUTLOOK]->performPR(offset))
     {
-//        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
-         baseModuleManager->single_station_material_pickarm.stepMove_XY_Synic(offset.X,offset.Y);//to do
+        baseModuleManager->single_station_material_pickarm.stepMove_XY_Synic(offset.X,offset.Y);//to do
     }
 }
 
@@ -102,8 +100,7 @@ void HighSprrow::performVacancyLensPR()
     PrOffset offset;
     if(baseModuleManager->vision_locations[PR_VACANCY_LPALOOK]->performPR(offset))
     {
-//        baseModuleManager->lens_pick_arm.stepMove_XYTp_Synic(offset,true);
-         baseModuleManager->single_station_material_pickarm.stepMove_XY_Synic(offset.X,offset.Y);//to do
+        baseModuleManager->single_station_material_pickarm.stepMove_XY_Synic(offset.X,offset.Y);//to do
     }
 }
 

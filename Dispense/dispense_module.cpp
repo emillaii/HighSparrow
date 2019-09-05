@@ -136,6 +136,7 @@ bool DispenseModule::performDispense()
        pos.append(temp_path[i].X);
        pos.append(temp_path[i].Y);
        pos.append(temp_path[i].Z);
+       qInfo("X:%f %f %f", temp_path[i].X, temp_path[i].Y, temp_path[i].Z);
        if (i == temp_path.size() - 1) type = PATH_POINT_CLOSE_VALVE;
        else if (i == 0) type = PATH_POINT_CLOSE_VALVE;
        else type = PATH_POINT_OPEN_VALVE;

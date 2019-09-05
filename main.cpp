@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sh_materialLoaderModule",&highSprrow.baseModuleManager->single_station_material_loader_module);
     engine.rootContext()->setContextProperty("materialLoaderParameter",&highSprrow.baseModuleManager->single_station_material_loader_module.parameters);
     //Register QML - C++ ENUM
-    qmlRegisterType<SensorLoaderModule>("SomeLib",1,0,"SensorLoaderModule");
+//    qmlRegisterType<SensorLoaderModule>("SomeLib",1,0,"SensorLoaderModule");
     qmlRegisterType<SingleheadLSutModule>("SingleheadLSutModuleLib",1,0,"SingleheadLSutModule");
     qmlRegisterType<SingleHeadMachineMaterialLoaderModule>("SingleHeadMaterialLoaderLib",1,0,"MaterialLoaderModule");
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");

@@ -19,12 +19,9 @@ enum CommandType{
     SUT_MOVETO_MUSHROOM_CMD,
     SUT_MOVETO_PR_CMD,
     LUT_MOVETO_LOAD_CMD,
-    LUT_MOVETO_UNLOAD_CMD,
     LUT_MOVETO_LOAD_UPLOOK_CMD,
-    LUT_MOVETO_AA1_UPLOOK_CMD,
-    LUT_MOVETO_AA2_UPLOOK_CMD,
-    LUT_PICK_LENS_TO_AA2_CMD,
-    LUT_PICK_LENS_TO_AA1_CMD,
+    LUT_MOVETO_AA_UPLOOK_CMD,
+    LUT_PICK_LENS_TO_AA_CMD,
     PERFORM_CALIBRATION,
     PERFORM_LOCATION,
     PERFORM_OC,
@@ -58,13 +55,10 @@ public:
     Q_INVOKABLE void sutMoveToPRPos();
 
     Q_INVOKABLE void lutMoveToLoadPos();
-    Q_INVOKABLE void lutMoveToUnloadPos();
     Q_INVOKABLE void lutMoveToLoadUplookPos();
-    Q_INVOKABLE void lutMoveToAA1UplookPos();
-    Q_INVOKABLE void lutMoveToAA2UplookPos();
+    Q_INVOKABLE void lutMoveToAAUplookPos();
 
-    Q_INVOKABLE void lutPickLensToAA1();
-    Q_INVOKABLE void lutPickLensToAA2();
+    Q_INVOKABLE void lutPickLensToAA();
 
     Q_INVOKABLE void performChartCalibration();
     Q_INVOKABLE void performCalibration(QString calibration_name);
@@ -74,12 +68,9 @@ public:
     Q_INVOKABLE void performOC();
     Q_INVOKABLE void performLoopTest(int mode);
 
-    //lenpickarmModule
+    //lens
     Q_INVOKABLE void pickArmMoveToLensTray1Pos();
     Q_INVOKABLE void pickArmMoveToLensTray2Pos();
-    Q_INVOKABLE void pickArmMoveToLensTray1StartPos();
-    Q_INVOKABLE void pickArmMoveToLensTray2StartPos();
-    Q_INVOKABLE void pickArmMoveToLensTray1EndPos();
     Q_INVOKABLE void pickArmMoveToLutPos();
     Q_INVOKABLE void pickArmMoveToPickLensFromTray1();
     Q_INVOKABLE void pickArmMoveToPickLensFromTray2();
@@ -87,13 +78,14 @@ public:
     Q_INVOKABLE void pickArmMoveToPlaceLensToTray1();
     Q_INVOKABLE void pickArmMoveToPlaceLensToTray2();
     Q_INVOKABLE void pickArmMoveToPlaceLensToLut();
-    Q_INVOKABLE void pickArmLensTrayLensPR();//取
-    Q_INVOKABLE void pickArmLensTrayVacancyPR();//放
-    Q_INVOKABLE void pickArmLUTVancyPR();//取
-    Q_INVOKABLE void pickArmLensMeasureHeight();//tray lens测高
-    Q_INVOKABLE void pickArmLUTMeasureHeight();//lut 测高
-
-
+    //Sensor
+    Q_INVOKABLE void pickArmMoveToSensorTrayPos();
+    Q_INVOKABLE void pickArmMoveToRejectTrayPos();
+    Q_INVOKABLE void pickArmMoveToSutPos();
+    Q_INVOKABLE void pickArmMoveToPickSensorFromTray();
+    Q_INVOKABLE void pickArmMoveToPickSensorFromSut();
+    Q_INVOKABLE void pickArmMoveToPlaceSensorToTray();
+    Q_INVOKABLE void pickArmMoveToPlaceSensorToSut();
 
     int currentMode() const
     {

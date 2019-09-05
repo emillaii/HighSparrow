@@ -568,12 +568,9 @@ private:
     int m_aaLensID = -1;
     bool m_waitLens = false;
     bool m_lutHasLens = false;
-    //    bool m_pickingLens = false;
-
     bool m_sutHasSensor = false;
     bool m_sutHasNgSensor = false;
     bool m_allowLoadSensor = false;
-    //    bool m_loadingSensor = false;
     bool m_waitLoading = false;
     bool m_allowLoadLens = false;
     bool m_hasProduct = false;

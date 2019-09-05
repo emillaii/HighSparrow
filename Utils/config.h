@@ -9,35 +9,15 @@
 #define SYSTERM_PARAM_FILE           "systermParameter.json"
 #define SYSTERM_PARAMETER            "systermParameter"
 #define MACHINE_PARAM_FILE           "xt_motion_config.csv"
-#define MATERIAL_TRAY_FILE           "materilTray.json"
 #define SH_SENSOR_TRAY_FILE          "sensorTray.json"
 #define SH_REJECT_TRAY_FILE          "rejectTray.json"
 #define SH_LENS_TRAY_FILE            "lensTray.json"
 #define AA_HEAD_FILE                 "aaHeadConfig.json"
-#define SUT_FILE                     "sutConfig.json"
 #define DOTHINGKEY_FILE              "dothinkeyConfig.json"
 #define DISPENSER_FILE               "dispenser_parameter.json"
 #define DISPENSER_PARAMETER          "dispenser_parameter"
 #define DISPENSE_MODULE_FILE         "dispense_module_parameter.json"
 #define DISPENSER_MODULE_PARAMETER   "dispense_module_parameter"
-#define TRAY_LOADER_FILE             "tray_loader_parameter.json"
-#define TRAY_LOADER_PARAMETER        "tray_loader_parameter"
-//trayclip
-#define TRAY_CLIPOUT_FILE            "tray_clipout_parameter.json"
-#define TRAY_CLIPIN_FILE            "tray_clipin_parameter.json"
-#define TRAY_CLIPIN_PARAMETER       "tray_clipin_parameter"
-#define TRAY_CLIPOUT_PARAMETER      "tray_clipout_parameter"
-#define SENSOR_LOADER_FILE          "SensorLoaderModule.json"
-#define SENSOR_PICKARM_FILE         "sensorPickArmConfig.json"
-#define SENSOR_PICKARM_PARAMETER     "sensor_pickarm"
-#define SENSOR_TRAY_LOADER_FILE     "sensorTrayLoaderConfig.json"
-#define LUT_CARRIER_FILE            "lutCarrierConfig.json"
-#define LUT_CARRIER_PARAMETER       "lut"
-#define LUT_FILE                    "lutConfig.json"
-#define LENS_LOADER_MODULE_FILE     "lensLoaderModule.json"
-#define LENS_PICKARM_FILE           "lensPickArmConfig.json"
-#define LENS_PICKARM_PARAMETER       "lens_pickarm"
-#define SUT_CARRIER_FILE             "sutCarrierConfig.json"
 #define VCM_PARAMETER_FILE          "vcm_parameter.json"
 #define MOTOR_PARAMETER_FILE       "motor_parameter.json"
 #define CYLINDER_PARAMETER_FILE     "cylinder_parameter.json"
@@ -51,54 +31,18 @@
 #define MATERIAL_PICKARM_FILE        "materialPickArmConfig.json"
 #define MATERIAL_LOADER_PARAMETER    "material_loader"
 #define MATERIAL_LOADER_FILE         "materialLoaderModule.json"
+#define SH_LSUT_FILE                 "lsut_module.json"
 
-
-#define VISION_CONFIG_DIR            "config//vision_config_1"
-#define AA_HELPER_DIR                "aa_helper_log//"
 #define BASE_LOG_DIR                 "log//"
 #define SYSTEM_LOG_DIR               "system_log//"
 #define GRABBER_DEBUG_DIR            "grabber_log//"
 #define MTF_DEBUG_DIR                "mtf_log//"
-#define UNIT_LOG_DIR                 "unit_log//"
-#define PERFORMANCE_DIR              "performance//"
-#define AA_PROCESS_DIR               "aa_process//"
-#define PRODUCE_PROCESS_DIR          "produce_process//"
 #define VISION_PR_DEBUG_DIR          "pr_log//"
 #define AA_DEBUG_DIR                 "aa_log//"
-#define AA_SAVE_IMAGE_DIR            "aa_save_image//"
-#define AA_SAVE_IMAGE_DOWNLOOK_DIR   "aa_save_image//downlook//"
-#define AA_SAVE_IMAGE_UPLOOK_DIR     "aa_save_image//uplook//"
-#define AA_SAVE_IMAGE_PICKARM_DIR    "aa_save_image//pickarm//"
-#define FLOWCHART_CONFIG_JSON        "config//flowchart//flowchart.json"
-#define POSITION_CONFIG_JSON         "config//positionConfig.json"
 #define SYSTEM_CONFIG_JSON           "config//systemConfig.json"
-#define MATERIAL_LOADING_CONFIG_JSON "config//materialLoadingConfig.json"
-#define AA_CALIBRATION_CONFIG_JSON   "config//aaCalibrationConfig.json"
-#define PR_CONFIG_JSON               "config//prConfig.json"
-#define AA_HEAD_MODULE_JSON          "config//aaHeadConfig.json"
-#define AA_CORE_MODULE_JSON          "config//aaCoreConfig.json"
-#define SUT_MODULE_JSON              "config//sutConfig.json"
-#define LUT_MODULE_JSON              "config//lutConfig.json"
 #define BASE_MODULE_JSON             "config//baseModuleConfig.json"
-#define LUT_CARRIER_FILE_NAME        "config//lutCarrierConfig.json"
-#define LENS_PICKARM_FILE_NAME        "config//lensPickArmConfig.json"
-#define SENSOR_PICKARM_FILE_NAME        "config//sensorPickArmConfig.json"
-#define SENSOR_TRAY_LOADER_FILE_NAME        "config//sensorTrayLoaderConfig.json"
-#define SUT_CARRIER_FILE_NAME        "config//sutCarrierConfig.json"
-#define VCM_PARAMETER_FILENAME       "config//vcm_parameter.json"
-#define MOTOR_PARAMETER_FILENAME       "config//motor_parameter.json"
-#define CYLINDER_PARAMETER_FILENAME  "config//cylinder_parameter.json"
-#define VACUUM_PARAMETER_FILENAME    "config//vacuum_parameter.json"
-#define VISION_LOCATION_PARAMETER_FILENAME   "config//vision_location_parameter.json"
-#define LIMIT_PARAMETER_FILENAME   "config//limit_parameter.json"
 #define LIMIT_PARAMETER_MODE_FILENAME   "demo//limit_parameter.json"
-#define CALIBRATION_PARAMETER_FILENAME   "config//calibration_parameter.json"
-#define VISION_DISPENSE_PATH         "config//vision_dispense_path//resultImageWithPath.jpg"
-#define FLOWCHART_URL                "http://127.0.0.1:8000/flowchart.html"
 
-#define SH_LSUT_FILE                 "lsut_module.json"
-
-//Title naming
 #define MOTION_DIALOG_TITLE         u8"馬達"
 #define POSITION_LEARNING_TITLE     u8"位置紀錄"
 #define FLOWCHART_TITLE             u8"流程图"
@@ -116,12 +60,6 @@
 #define UPLOOK_VISION_CAMERA            "LUT_ULCamera"
 #define PICKARM_VISION_CAMERA           "LPA_DLCamera"
 
-#define CAMERA_AA1_DL                    "AA_DLCamera1"
-#define CAMERA_AA2_DL                    "AA_DLCamera2"
-#define CAMERA_LPA_DL                    "LPA_DLCamera"
-#define CAMERA_LUT_DL                    "LUT_ULCamera"
-#define CAMERA_SPA_DL                    "SPA_DLCamera"
-
 #define CAMERA_SH_UT_UL                  "UT_ULCamera"
 #define CAMERA_SH_PA_DL                  "PA_DLCamera"
 #define CAMERA_SH_AA_DL                  "AA_DLCamera"
@@ -129,9 +67,6 @@
 #define LIGHTING_PA_DL                  0
 #define LIGHTING_AA_DL                  3
 #define LIGHTING_SUT_UL                 2
-
-#define LIGHTING_SPA_DL                 0
-#define LIGHTING_AA2_DL                 1
 
 #define CURRENT_PR_RESULT               "CurrentPRResult"
 
@@ -149,61 +84,17 @@
 #define LEARN_PR_UPLOOK_MUSHROOM_EXEC   "LearnPR_Uplook_Mushroom.avexe"
 
 //PR Learn
-#define PR_DOWNLOOK_SENSOR_FILENAME     ".//config//vision_config_1//downlook_sensor.avdata"
-#define PR_UPLOOK_MUSHROOM_FILENAME     ".//config//vision_config_1//uplook_mushroom.avdata"
-
-#define PR_DOWNLOOK_CALI_GLASS_FILENAME   ".//config//vision_config_1//downlook_calib_glass.avdata"
-#define PR_UPLOOK_CALI_GLASS_FILENAME     ".//config//vision_config_1//uplook_calib_glass.avdata"
-
-#define UpDownlook_Calibration_Glass_Region_FILENAME ".//config//vision_config_1//UpDownlook_Calibration_Glass.226f8c29.Region.avdata"
-#define UPLOOK_LENS_HOLDER_ADVANCE_REGION_FILENAME ".//config//vision_config_1//Lens.ee860be7.avdata"
-
-#define PR_ROOT                         ".//vision_pr_system"
-#define PR_M1                           "M1_V.avexe"
-#define PR_M2                           "M2_V.avexe"
-#define PR_M3                           "M3_V.avexe"
-#define PR_M4                           "M4_V.avexe"
-#define PR_M5                           "M5_V.avexe"
-
-#define DISPENSE_DIR                    "config//vision_dispense_path"
-#define DISPENSE_PATH_EXE               "DrawPath.avexe"
-#define DISPENSE_PATH_IMAGE_LOCATION    "config//vision_dispense_path//resultImageWithPath.jpg"
 #define DISPENSE_PATH_2D_POINT_FILE     "config//vision_dispense_path//resultPath.avdata"
 
-#define UPLOOK_LENS_HOLDER_IMX363_EDGE_MODEL      "config//vision_config_1//Lens.4e95ee99.avdata"
-#define DOWNLOOK_CMOS_IMX363_EDGE_MODEL           "config//vision_config_1//downlook_sensor.ad9e6e81.avdata"
 //calibration
 #define CALIBRATION_RESULT_PATH          ".//config//calibrationConfig//"
-#define LENS_PICKARM_CALIBRATION         "lens_pickarm_calibration"
-#define SENSOR_PICKARM_CALIBRATION       "sensor_pickarm_calibration"
-#define AA1_UPLOOK_CALIBRATION           "aa1_upLook_calibration"
-#define AA2_UPLOOK_CALIBRATION           "aa2_upLook_calibration"
-#define AA1_DOWNLOOK_CALIBRATION         "aa1_downLook_calibration"
-#define AA2_DOWNLOOK_CALIBRATION         "aa2_downLook_calibration"
-#define AA1_UPDownLOOK_UP_CALIBRATION    "aa1_updownLook_up_calibration"
-#define AA1_UPDownLOOK_DOWN_CALIBRATION  "aa1_updownLook_down_calibration"
-#define AA2_UPDownLOOK_UP_CALIBRATION    "aa2_updownLook_up_calibration"
-#define AA2_UPDownLOOK_DOWN_CALIBRATION  "aa2_updownLook_down_calibration"
-#define AA1_MUSHROOMHEAD_CALIBRATION     "aa1_mushroomhead_calibration"
-#define LPA_LENS_CALIBRATION               "lpa_lens_calibration"
-#define SPA_SENSOR_CALIBRATION               "spa_sensor_calibration"
-
-
 #define CHART_CALIBRATION                "chart_calibration"
-//dispenser
 
+//dispenser
 #define DISPENSER_PARAMETER_PATH        ".//config//dispenser_parameter.json"
 #define DISPENSE_MODULE_PARAMETER_PATH  ".//config//dispense_module_parameter.json"
 
-//trayloader
-#define TRAY_LOADER_PATH  ".//config//tray_loader_parameter.json"
-
-//trayclip
-#define TRAY_CLIPOUT_PATH  ".//config//tray_clipout_parameter.json"
-#define TRAY_CLIPIN_PATH  ".//config//tray_clipin_parameter.json"
 //PR
-#define PR_SENSOR_PACKAGE_IMX362        "IMX362"
-#define PR_SENSOR_PACKAGE_IMX363        "IMX363"
 #define PR_MUSHROOM_PR                  "mushroom_pr"
 #define PR_DOWNLOOK_CMOS_PR             "downlook_cmos_pr"
 #define PR_UPLOOK_LENS_HOLDER_PR        "uplook_lens_holder_pr"
@@ -226,15 +117,6 @@
 #define PR_VACANCY_LPALOOK               "pr_vacancy_lpalook"
 #define PR_LENS_LUTLOOK               "pr_lens_lutlook"
 
-
-//Lighting Config
-#define LIGHTING_UPLOOK_LENS_HOLDER_PR         "uplookLensHolderPRLighting"
-#define LIGHTING_DOWNLOOK_CMOS_PR              "downlookCmosPRLighting"
-#define LIGHTING_UPDOWNLOOK_CALIB_GLASS_PR     "updownlookCalibGlassPRLighting"
-#define LIGHTING_PICKARM_LENS_HOLDER_PR        "pickarmLensHolderPRLighting"
-#define LIGHTING_PICKARM_CMOS_PR               "pickarmCmosPRLighting"
-#define LIGHTING_PICKARM_PRODUCT_PR            "pickarmProductPRLighting"
-
 //AA Calibration Config
 #define AA_CALIBRATION       "aaCalibration"
 #define AA_CALIBRATION_A11   "a11"
@@ -245,22 +127,8 @@
 #define AA_CALIBRATION_A23   "a23"
 #define AA_CALIBRATION_THETA "theta"
 
-
 //Icon name
 #define ICON_SPARROW         ":/icons/sparrow.png"
-#define ICON_SETTING         ":/images/icon/settings_input_composite.png"
-#define ICON_POWER_ON        ":/images/icon/poweron.png"
-#define ICON_POWER_OFF        ":/images/icon/poweroff.png"
-#define ICON_STATUS_OFF      ":/images/icon/icon_status-dot-red"
-#define ICON_STATUS_ON       ":/images/icon/icon_status-dot-green"
-#define ICON_CAMERA_OFF      ":/images/icon/camera_off.png"
-#define ICON_CAMERA_ON       ":/images/icon/camera_on.png"
-#define ICON_HOME            ":/images/icon/home.png"
-#define ICON_INIT            ":/images/icon/initial.png"
-#define ICON_CALIBRATION     ":/images/icon/calibration.png"
-#define ICON_READ            ":/images/icon/read.png"
-#define ICON_MOVE            ":/images/icon/move.png"
-#define ICON_NO_IMAGE        ":/images/icon/no_image_placeholder.png"
 
 #define POS_ERROR           0.01
 

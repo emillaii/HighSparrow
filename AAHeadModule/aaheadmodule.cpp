@@ -86,12 +86,22 @@ bool AAHeadModule::moveToUplookResultPosition()
 
 void AAHeadModule::openUVTillTime(int till_time)
 {
-    int mini_time = 30;
+    int mini_time = 100;
     XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),1);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),1);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),1);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),1);
-    QThread::msleep(3000);
+    QThread::msleep(mini_time);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),0);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),0);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),0);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),0);
+    QThread::msleep(till_time);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),1);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),1);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),1);
+    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),1);
+    QThread::msleep(mini_time);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),0);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),0);
     XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),0);
@@ -101,14 +111,14 @@ void AAHeadModule::openUVTillTime(int till_time)
 void AAHeadModule::openGripper()
 {
     qInfo("open gripper is called");
-    gripper->Set(true);
+    gripper->Set(false);
     Sleep(100);
 }
 
 void AAHeadModule::closeGripper()
 {
     qInfo("close gripper is called");
-    gripper->Set(false);
+    gripper->Set(true);
     Sleep(100);
 }
 
@@ -190,14 +200,14 @@ mPoint6D AAHeadModule::GetFeedBack()
     return mPoint6D(motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos(),motor_a->GetFeedbackPos(),motor_b->GetFeedbackPos(),motor_c->GetFeedbackPos());
 }
 
-void AAHeadModule::sendSensrRequest(int sut_state)
+void AAHeadModule::sendSensorRequest(int sut_state)
 {
     qInfo("sendSensrRequest %d",sut_state);
     waiting_sensor = true;
     offset_x = 0;
     offset_y = 0;
     offset_theta = 0;
-    emit sendSensrRequestToSut(sut_state);
+    emit sendSensorRequestToSut(sut_state);
 }
 
 bool AAHeadModule::waitForLoadSensor(bool &is_run,int time_out)

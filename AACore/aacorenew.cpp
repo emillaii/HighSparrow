@@ -722,13 +722,16 @@ ErrorCodeStruct AACoreNew::performDispense()
     has_product = true;
     has_lens = false;
     has_sensor = false;
+    has_ng_lens = false;
+    has_ng_sensor = false;
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     lsut->recordCurrentPos();
     PrOffset offset;
     dispense->setMapPosition(lsut->downlook_position.X(),lsut->downlook_position.Y());
-    if(!sut->moveToDownlookPR(offset)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "downlook pr fail"};}
+    if(!lsut->moveToDownlookPR(offset)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "downlook pr fail"};}
     dispense->setPRPosition(offset.X,offset.Y,offset.Theta);
+    lsut->moveToZPos(0);
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
     if(!lsut->movetoRecordPos()){return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
     map.insert("timeElapsed", timer.elapsed());
@@ -968,7 +971,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         double expected_fov = fov_slope*aa_result["zPeak"].toDouble() + fov_intercept;
         double dfov = calculateDFOV(img);
         double diff_z = (dfov - expected_fov)/fov_slope;
-        sut->moveToZPos(beforeZ - diff_z);
+//        sut->moveToZPos(beforeZ - diff_z);
         double afterZ = lsut->sut_carrier->GetFeedBackPos().Z;
         qInfo("before z: %f after z: %f now fov: %f expected fov: %f fov slope: %f fov intercept: %f", beforeZ, afterZ, dfov, expected_fov, fov_slope, fov_intercept);
     }
@@ -1588,6 +1591,10 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     cv::resize(img, dst, size);
     qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, dst.cols, dst.rows, timer.elapsed() - start_time);
 //    timer.restart();
+    if (fov == -1) {
+        qCritical("Cannot calculate FOV from the grabbed image.");
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+    }
     start_time = timer.elapsed();
     emit sfrWorkerController->calculate(0, 0, dst, true);
     int timeout=1000;
@@ -1956,6 +1963,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
 
 ErrorCodeStruct AACoreNew::performUV(int uv_time)
 {
+    qInfo("Perform UV uv time: %d", uv_time);
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     aa_head->openUVTillTime(uv_time);
@@ -2174,6 +2182,10 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
 ErrorCodeStruct AACoreNew::performInitSensor()
 {
     //if(!has_sensor) return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "has no sensor"};
+    if (dk->DothinkeyIsGrabbing()) {
+        qInfo("Sensor have already init");
+        return ErrorCodeStruct {ErrorCode::OK, ""};
+    }
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
     const int channel = 0;
@@ -2205,17 +2217,15 @@ ErrorCodeStruct AACoreNew::performPRToBond()
 {
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
-
+    if (!lsut->gripLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
     if (!this->aa_head->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
-    PrOffset downlookPrOffset;
-    if(!lsut->moveToDownlookPR(downlookPrOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
-    qInfo("downlook Pr Offset x: %f y: %f t: %f", downlookPrOffset.X, downlookPrOffset.Y, downlookPrOffset.Theta);
-//    PrOffset uplookPrOffset;
-//    //if(!lsut->moveToGripperPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
-    double theta = lsut->up_downlook_offset.Theta() + aa_head->uplook_theta + aa_head->offset_theta;
-////    if (!this->aa_head->moveToSync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
-    this->aa_head->moveToSync(0, 0, 0, theta);
+//    PrOffset downlookPrOffset;
+//    if(!lsut->moveToDownlookPR(downlookPrOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
+//    qInfo("downlook Pr Offset x: %f y: %f t: %f", downlookPrOffset.X, downlookPrOffset.Y, downlookPrOffset.Theta);
+//    double theta = lsut->up_downlook_offset.Theta() + aa_head->uplook_theta + aa_head->offset_theta;
+//    this->aa_head->moveToSync(0, 0, 0, theta);
+    if(!this->lsut->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToMushroomPosition"}; }
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "PrToBond", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};

@@ -217,10 +217,10 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
 
             qInfo("PR Score for pr_name: %s = %f", pr_name.toStdString().c_str(), real4);
             //ToDo: Add the score limit in json instead of hardcode.
-            if (real4 < 0.7 ) {
+            if (real4 < 0.53 ) {
                 error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-                error_code.errorMessage = "PR Object Not Found. Score < 0.7";
-                qInfo("PR Error! Object Not Found. PR Score < 0.7");
+                error_code.errorMessage = "PR Object Not Found. Score < 0.53";
+                qInfo("PR Error! Object Not Found. PR Score < 0.53");
                 return error_code;
             }
             // Function AvsFilter_MakeRectangle is intended for generated code only. Consider use of proper Rectangle2D constructor instead.

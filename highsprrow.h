@@ -3,7 +3,6 @@
 #include <QObject>
 #include "Utils/errorcode.h"
 #include "AAHeadModule/aaheadmodule.h"
-#include "DualHead/sut_module.h"
 #include "logicmanager.h"
 #include "basemodulemanager.h"
 #include "STD.h"

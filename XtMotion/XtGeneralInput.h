@@ -27,30 +27,30 @@ public:
 static int count;
 };
 
-class XtGeneralInputParameter:public PropertyBase{
-    Q_OBJECT
+//class XtGeneralInputParameter:public PropertyBase{
+//    Q_OBJECT
 
-public:
-    XtGeneralInputParameter():PropertyBase(){}
-    Q_PROPERTY(QString oneInName READ oneInName WRITE setOneInName NOTIFY oneInNameChanged)
-    QString oneInName() const
-    {
-        return m_oneInName;
-    }
-public slots:
-    void setOneInName(QString oneInName)
-    {
-        if (m_oneInName == oneInName)
-            return;
+//public:
+//    XtGeneralInputParameter():PropertyBase(){}
+//    Q_PROPERTY(QString oneInName READ oneInName WRITE setOneInName NOTIFY oneInNameChanged)
+//    QString oneInName() const
+//    {
+//        return m_oneInName;
+//    }
+//public slots:
+//    void setOneInName(QString oneInName)
+//    {
+//        if (m_oneInName == oneInName)
+//            return;
 
-        m_oneInName = oneInName;
-        emit oneInNameChanged(m_oneInName);
-    }
-signals:
-    void oneInNameChanged(QString oneInName);
-private:
-    QString m_oneInName;
-};
+//        m_oneInName = oneInName;
+//        emit oneInNameChanged(m_oneInName);
+//    }
+//signals:
+//    void oneInNameChanged(QString oneInName);
+//private:
+//    QString m_oneInName;
+//};
 
 
 #endif // XTGENERALINPUT_H

@@ -15,7 +15,7 @@ ItemDelegate {
                 Button{
                     text: qsTr("生成参数")
                     onClicked: {
-                        baseModuleManager.generatefileConfigs()
+//                        baseModuleManager.generatefileConfigs()
                     }
                 }
                 Button{
@@ -114,15 +114,15 @@ ItemDelegate {
                     Button {
                         text: "放"
                         onClicked: {
-                            lutClient.sendLensRequest(false,false)
-//                            baseModuleManager.sendLoadLens(false)
+//                            lutClient.sendLensRequest(false,false)
+                            baseModuleManager.sendLoadLens(false)
                         }
                     }
                     Button {
                         text: "放 取ng"
                         onClicked: {
-                            lutClient.sendLensRequest(true,false)
-//                            baseModuleManager.sendLoadLens(true)
+//                            lutClient.sendLensRequest(true,false)
+                            baseModuleManager.sendLoadLens(true)
                         }
                     }
                     Button {
@@ -140,7 +140,7 @@ ItemDelegate {
                     Button {
                         text: "Load"
                         onClicked: {
-                            baseModuleManager.loadSensorTrayLoaderMuduleParameter()
+//                            baseModuleManager.loadSensorTrayLoaderMuduleParameter()
                         }
                     }
                     Button {
@@ -163,38 +163,38 @@ ItemDelegate {
                     }
                 }
             }
-            GroupBox{
-                visible: {
-                    return !baseModuleManager.getServerMode()
-                }
-                title:qsTr("TrayLoader")
-                RowLayout{
-                    Button{
-                        enabled: true
-                        id:start_btn
-                        text:qsTr("开始")
-                        onClicked:{
-                            workersManager.startWorker("TrayLoaderModule",systerm_param.runMode)
-                        }
-                    }
-                    Button{
-                        enabled: true
-                        id:change_tray
-                        text:qsTr("换盘")
-                        onClicked:{
-                            logicManager.trayLoaderModuleEmitTestTrayUsed()
-                        }
-                    }
-                    Button{
-                        enabled: true
-                        id:end_btn
-                        text:qsTr("结束")
-                        onClicked: {
-                            workersManager.stopWorkers()
-                        }
-                    }
-                }
-            }
+//            GroupBox{
+//                visible: {
+//                    return !baseModuleManager.getServerMode()
+//                }
+//                title:qsTr("TrayLoader")
+//                RowLayout{
+//                    Button{
+//                        enabled: true
+//                        id:start_btn
+//                        text:qsTr("开始")
+//                        onClicked:{
+//                            workersManager.startWorker("TrayLoaderModule",systerm_param.runMode)
+//                        }
+//                    }
+//                    Button{
+//                        enabled: true
+//                        id:change_tray
+//                        text:qsTr("换盘")
+//                        onClicked:{
+//                            logicManager.trayLoaderModuleEmitTestTrayUsed()
+//                        }
+//                    }
+//                    Button{
+//                        enabled: true
+//                        id:end_btn
+//                        text:qsTr("结束")
+//                        onClicked: {
+//                            workersManager.stopWorkers()
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 }

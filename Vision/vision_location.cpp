@@ -14,12 +14,12 @@ void VisionLocation::Init(VisionModule *vison,Pixel2Mech* mapping, WordopLight *
 
 void VisionLocation::loadParam()
 {
-    PropertyBase::loadJsonConfig(PR_PARAMETER_FILE_PATH,PR_AA1_TOOL_UPLOOK,&parameters);
+//    PropertyBase::loadJsonConfig(PR_PARAMETER_FILE_PATH,PR_AA1_TOOL_UPLOOK,&parameters);
 }
 
 void VisionLocation::saveParam()
 {
-    PropertyBase::saveJsonConfig(PR_PARAMETER_FILE_PATH,PR_AA1_TOOL_UPLOOK,&parameters);
+//    PropertyBase::saveJsonConfig(PR_PARAMETER_FILE_PATH,PR_AA1_TOOL_UPLOOK,&parameters);
 }
 
 bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
@@ -46,8 +46,8 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
         }
         if(mapping->CalcMechDistance(QPointF(pr_result.x,pr_result.y),mech)&&mapping->CalcMechDistance(QPointF(pr_result.roi_x,pr_result.roi_y),mech_o))
         {
-           temp_offset.X = mech_o.x();
-           temp_offset.Y = mech_o.y();
+           temp_offset.X = mech.x();
+           temp_offset.Y = mech.y();
            temp_offset.O_X = mech.x() - mech_o.x();
            temp_offset.O_Y = mech.y() - mech_o.y();
             if(abs(temp_offset.X)>parameters.maximumLength()||abs(temp_offset.Y)>parameters.maximumLength()||abs(temp_offset.O_X)>parameters.maximumLength()||abs(temp_offset.O_Y)>parameters.maximumLength())

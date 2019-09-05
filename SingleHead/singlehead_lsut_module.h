@@ -121,7 +121,7 @@ public slots:
     void performHandlingOperation(int cmd);
     void receiveMaterialResponse(int sensor_index, int lens_index);
     void receiveAAProcessResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product);
-private:
+public:
     void run(bool isProduct);
     void lens_logic();
     void sensor_logic();

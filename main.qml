@@ -152,6 +152,9 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("Y_Level") !== -1) {
                         console.log("Perform Y Level")
                         aaNewCore.performHandling(AACoreNew.Y_LEVEL, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("UV") !== -1) {
+                        console.log("Perform UV")
+                        aaNewCore.performHandling(AACoreNew.UV, aaCoreTestParams)
                     }
 
                     aaCoreTestParams = ""

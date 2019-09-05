@@ -20,64 +20,11 @@ ItemDelegate {
                 title:qsTr("常用操作")
                 ColumnLayout{
                     GroupBox{
-                        visible: baseModuleManager.getServerMode()===0
                         title: qsTr("Lens抓放")
                         ColumnLayout{
                             RowLayout{
                                 Label{
                                     text:qsTr("Lens Tray盘1位置移动")
-                                }
-                            }
-                            RowLayout{
-                                Label{
-                                    text: qsTr("目标行")
-                                }
-                                TextField{
-                                    id:t1_nrow
-                                    text: "1"
-                                    horizontalAlignment: TextInput.AlignHCenter
-                                    validator: IntValidator{
-                                        bottom: 1
-                                    }
-                                }
-                                Label{
-                                    text: qsTr("目标列")
-                                }
-                                TextField{
-                                    id:t1_ncol
-                                    text: "1"
-                                    horizontalAlignment: TextInput.AlignHCenter
-                                    validator: IntValidator{
-                                        bottom: 1
-                                    }
-                                }
-                                Button{
-                                    text:title_move_to
-                                    width: 40
-                                    height: 40
-                                    onClicked: {
-                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                                        logicManager.lensPickArmMoveToTray1Pos()
-                                    }
-                                }
-                                Button{
-                                    text:qsTr("取lens")
-                                    onClicked:{
-                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                                        logicManager.lensPickArmMoveToPickLensFromTray1()
-                                    }
-                                }
-                                Button{
-                                    text:qsTr("放lens")
-                                    onClicked: {
-                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                                        logicManager.lensPickArmMoveToPlaceLensToTray1()
-                                    }
-                                }
-                            }
-                            RowLayout{
-                                Label{
-                                    text:qsTr("Lens Tray盘2位置移动")
                                 }
                             }
                             RowLayout{
@@ -108,22 +55,74 @@ ItemDelegate {
                                     width: 40
                                     height: 40
                                     onClicked: {
-                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                                        logicManager.lensPickArmMoveToTray2Pos()
+                                        sh_lens_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                                        logicManager.pickArmMoveToLensTray1Pos()
                                     }
                                 }
                                 Button{
                                     text:qsTr("取lens")
-                                    onClicked: {
-                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                                        logicManager.lensPickArmMoveToTray2Pos()
+                                    onClicked:{
+                                        sh_lens_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                                        logicManager.pickArmMoveToPickLensFromTray1()
                                     }
                                 }
                                 Button{
                                     text:qsTr("放lens")
                                     onClicked: {
-                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                                        logicManager.lensPickArmMoveToPlaceLensToTray2()
+                                        sh_lens_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                                        logicManager.pickArmMoveToPlaceLensToTray1()
+                                    }
+                                }
+                            }
+                            RowLayout{
+                                Label{
+                                    text:qsTr("Lens Tray盘2位置移动")
+                                }
+                            }
+                            RowLayout{
+                                Label{
+                                    text: qsTr("目标行")
+                                }
+                                TextField{
+                                    id:t_nrow2
+                                    text: "1"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    validator: IntValidator{
+                                        bottom: 1
+                                    }
+                                }
+                                Label{
+                                    text: qsTr("目标列")
+                                }
+                                TextField{
+                                    id:t_ncol2
+                                    text: "1"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    validator: IntValidator{
+                                        bottom: 1
+                                    }
+                                }
+                                Button{
+                                    text:title_move_to
+                                    width: 40
+                                    height: 40
+                                    onClicked: {
+                                        sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                                        logicManager.pickArmMoveToLensTray2Pos()
+                                    }
+                                }
+                                Button{
+                                    text:qsTr("取lens")
+                                    onClicked: {
+                                        sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                                        logicManager.pickArmMoveToPickLensFromTray2()
+                                    }
+                                }
+                                Button{
+                                    text:qsTr("放lens")
+                                    onClicked: {
+                                        sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                                        logicManager.pickArmMoveToPlaceLensToTray2()
                                     }
                                 }
                             }
@@ -136,13 +135,154 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("从LUT取NGlens")
                                     onClicked: {
-                                        logicManager.lensPickArmMoveToPickLensFromLut()
+                                        logicManager.pickArmMoveToPickLensFromLut()
                                     }
                                 }
                                 Button{
                                     text:qsTr("放lens到LUT")
                                     onClicked: {
-                                        logicManager.lensPickArmMoveToPlaceLensToLut()
+                                        logicManager.pickArmMoveToPlaceLensToLut()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    GroupBox{
+                        title:qsTr("sensor抓放")
+                        ColumnLayout{
+                            RowLayout{
+                                Label{
+                                    text:qsTr("Sensor Tray Move")
+                                }
+                            }
+                            RowLayout{
+                                Label{
+                                    text: qsTr("目标行")
+                                }
+                                TextField{
+                                    id:ts_nrow
+                                    text: "1"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    validator: IntValidator{
+                                        bottom: 1
+                                    }
+                                }
+                                Label{
+                                    text: qsTr("目标列")
+                                }
+                                TextField{
+                                    id:ts_ncol
+                                    text: "1"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    validator: IntValidator{
+                                        bottom: 1
+                                    }
+                                }
+                                Button{
+                                    text:title_move_to
+                                    width: 40
+                                    height: 40
+                                    onClicked: {
+                                        sh_sensor_tray.setTrayCurrent(ts_ncol.text-1,ts_nrow.text-1,1)
+                                        logicManager.pickArmMoveToSensorTrayPos()
+                                    }
+                                }
+                            }
+                            RowLayout{
+                                Label{
+                                    text:qsTr("reject Tray Move")
+                                }
+                            }
+                            RowLayout{
+                                Label{
+                                    text: qsTr("目标行")
+                                }
+                                TextField{
+                                    id:tr_nrow
+                                    text: "1"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    validator: IntValidator{
+                                        bottom: 1
+                                    }
+                                }
+                                Label{
+                                    text: qsTr("目标列")
+                                }
+                                TextField{
+                                    id:tr_ncol
+                                    text: "1"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    validator: IntValidator{
+                                        bottom: 1
+                                    }
+                                }
+                                Button{
+                                    text:title_move_to
+                                    width: 40
+                                    height: 40
+                                    onClicked: {
+                                        sh_reject_tray.setTrayCurrent(tr_ncol.text-1,tr_nrow.text-1,1)
+                                        logicManager.pickArmMoveToRejectTrayPos()
+                                    }
+                                }
+                            }
+                            RowLayout{
+                                Label{
+                                    text:qsTr("Sensor/Product取放")
+                                }
+                            }
+                            RowLayout{
+                                Button{
+                                    text:qsTr("取Sensor")
+                                    onClicked: {
+                                        sh_sensor_tray.setTrayCurrent(ts_ncol.text-1,ts_nrow.text-1,0)
+                                        logicManager.pickArmMoveToPickSensorFromTray()
+                                    }
+                                }
+                                Button{
+                                    text:qsTr("放NgSensor")
+                                    onClicked:{
+                                        sh_reject_tray.setTrayCurrent(tr_ncol.text-1,tr_nrow.text-1,1)
+                                        logicManager.pickArmMoveToPlaceSensorToTray()
+                                    }
+                                }
+//                                Button{
+//                                    text:qsTr("放成品")
+//                                    onClicked:{
+//                                        //todo
+//                                    }
+//                                }
+                            }
+                            RowLayout{
+                                Label{
+                                    text:qsTr("SUT")
+                                }
+
+                            }
+                            RowLayout{
+
+                                Button{
+                                    text:qsTr("放sensor")
+                                    width: 40
+                                    height: 40
+                                    onClicked: {
+                                        logicManager.pickArmMoveToPlaceSensorToSut()
+                                    }
+                                }
+//                                Button{
+//                                    text:qsTr("取成品")
+//                                    width:40
+//                                    height: 40
+//                                    onClicked: {
+//                                        //todo
+//                                    }
+//                                }
+                                Button{
+                                    text:qsTr("取Ng Sensor")
+                                    width:40
+                                    height: 40
+                                    onClicked: {
+                                        logicManager.pickArmMoveToPickSensorFromSut()
                                     }
                                 }
                             }
@@ -219,7 +359,7 @@ ItemDelegate {
                             }
                             RowLayout{
                                 Label{
-                                    text:qsTr("移动到放lens位置")
+                                    text:qsTr("移动到夾lens位置")
                                 }
                                 Button{
                                     text:qsTr("移动")
@@ -335,206 +475,6 @@ ItemDelegate {
                                     }
                                     onCheckedChanged:{
                                         baseModuleManager.setOutput(text, checked)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    GroupBox{
-                        visible: baseModuleManager.getServerMode()==1
-                        title:qsTr("SPA")
-                        ColumnLayout{
-                            RowLayout{
-                                Label{
-                                    text:qsTr("Sensor Tray Move")
-                                }
-                            }
-                            RowLayout{
-                                Label{
-                                    text: qsTr("目标行")
-                                }
-                                TextField{
-                                    id:ts_nrow
-                                    text: "1"
-                                    horizontalAlignment: TextInput.AlignHCenter
-                                    validator: IntValidator{
-                                        bottom: 1
-                                    }
-                                }
-                                Label{
-                                    text: qsTr("目标列")
-                                }
-                                TextField{
-                                    id:ts_ncol
-                                    text: "1"
-                                    horizontalAlignment: TextInput.AlignHCenter
-                                    validator: IntValidator{
-                                        bottom: 1
-                                    }
-                                }
-                                Button{
-                                    text:title_move_to
-                                    width: 40
-                                    height: 40
-                                    onClicked: {
-                                        material_tray.setTrayCurrent(ts_ncol.text-1,ts_nrow.text-1,0)
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY1)
-                                    }
-                                }
-                            }
-                            RowLayout{
-                                Label{
-                                    text:qsTr("Camera Tray Move")
-                                }
-                            }
-                            RowLayout{
-                                Label{
-                                    text: qsTr("目标行")
-                                }
-                                TextField{
-                                    id:tc_nrow
-                                    text: "1"
-                                    horizontalAlignment: TextInput.AlignHCenter
-                                    validator: IntValidator{
-                                        bottom: 1
-                                    }
-                                }
-                                Label{
-                                    text: qsTr("目标列")
-                                }
-                                TextField{
-                                    id:tc_ncol
-                                    text: "1"
-                                    horizontalAlignment: TextInput.AlignHCenter
-                                    validator: IntValidator{
-                                        bottom: 1
-                                    }
-                                }
-                                Button{
-                                    text:title_move_to
-                                    width: 40
-                                    height: 40
-                                    onClicked: {
-                                        material_tray.setTrayCurrent(tc_ncol.text-1,tc_nrow.text-1,1)
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2)
-                                    }
-                                }
-                            }
-                            RowLayout{
-                                Label{
-                                    text:qsTr("Sensor/Camera取放")
-                                }
-                            }
-                            RowLayout{
-                                Button{
-                                    text:qsTr("从Sensor盘取料")
-                                    onClicked: {
-                                        material_tray.setTrayCurrent(ts_ncol.text-1,ts_nrow.text-1,0)
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_SENSOR_FROM_TRAY
-                                                                           +SensorLoaderModule.TO_PICK1
-                                                                           +SensorLoaderModule.SENSOR_PR
-                                                                           +SensorLoaderModule.SENSOR_TRAY1)
-                                    }
-                                }
-                                Button{
-                                    text:qsTr("放NgSensor到Camera盘上")
-                                    onClicked:{
-                                        material_tray.setTrayCurrent(tc_ncol.text-1,tc_nrow.text-1,1)
-                                        //6232
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY
-                                                                           +SensorLoaderModule.TO_PICK2
-                                                                           +SensorLoaderModule.VACANCY_PR
-                                                                           +SensorLoaderModule.SENSOR_TRAY2)
-                                    }
-                                }
-                                Button{
-                                    text:qsTr("到Camera盘放成品")
-                                    onClicked:{
-                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_PRODUCT_TO_TRAY
-                                                                           +SensorLoaderModule.TO_PICK2
-                                                                           +SensorLoaderModule.VACANCY_PR
-                                                                           +SensorLoaderModule.SENSOR_TRAY2)
-                                    }
-                                }
-                            }
-                            RowLayout{
-                                Label{
-                                    text:qsTr("SUT1")
-                                }
-                                Button{
-                                    text:qsTr("放sensors")
-                                    width: 40
-                                    height: 40
-                                    onClicked: {
-                                        //2110
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_SENSOR_TO_SUT1
-                                                                           +SensorLoaderModule.TO_PICK1
-                                                                           +SensorLoaderModule.RESET_PR)
-                                    }
-                                }
-                                Button{
-                                    text:qsTr("取成品")
-                                    width:40
-                                    height: 40
-                                    onClicked: {
-                                        //7263
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
-                                                                           +SensorLoaderModule.TO_PICK2
-                                                                           +SensorLoaderModule.PRODUCT_PR
-                                                                           +SensorLoaderModule.SUT_POS1)
-                                    }
-                                }
-                                Button{
-                                    text:qsTr("取Ng Sensor")
-                                    width:40
-                                    height: 40
-                                    onClicked: {
-                                        //4253
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1
-                                                                           +SensorLoaderModule.TO_PICK2
-                                                                           +SensorLoaderModule.NG_SENSOR_PR
-                                                                           +SensorLoaderModule.SUT_POS1)
-                                    }
-                                }
-                            }
-                            RowLayout{
-                                Label{
-                                    text:qsTr("SUT2")
-                                }
-                                Button{
-                                    text:qsTr("放sensors")
-                                    width:40
-                                    height: 40
-                                    onClicked: {
-                                        //2114
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_SENSOR_TO_SUT1
-                                                                           +SensorLoaderModule.TO_PICK1
-                                                                           +SensorLoaderModule.RESET_PR
-                                                                           +SensorLoaderModule.SUT_POS2)
-                                    }
-                                }
-                                Button{
-                                    text:qsTr("取成品")
-                                    width:40
-                                    height: 40
-                                    onClicked: {
-                                        //7264
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
-                                                                           +SensorLoaderModule.TO_PICK2
-                                                                           +SensorLoaderModule.PRODUCT_PR
-                                                                           +SensorLoaderModule.SUT_POS2)
-                                    }
-                                }
-                                Button{
-                                    text:qsTr("取Ng Sensor")
-                                    width:40
-                                    height: 40
-                                    onClicked: {
-                                        //254
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK2
-                                                                           +SensorLoaderModule.NG_SENSOR_PR
-                                                                           +SensorLoaderModule.SUT_POS2)
                                     }
                                 }
                             }

@@ -29,11 +29,9 @@ bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
 void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message)
 {
     qInfo("received alarm %d from sender %d in thread id :%d",level,sender_id,QThread::currentThreadId());
+    showAlarm(sender_id,level,error_message);
     if(level == ErrorLevel::ErrorMustStop)
         emit stopWorkers();
-
-    //三色灯
-    showAlarm(sender_id,level,error_message);
 }
 
 bool WorkersManager::sendMessageTest(QString title, QString content)

@@ -75,29 +75,6 @@ HEADERS += \
     Dispense/dispense_parameter.h \
     Dispense/dispenser.h \
     Dispense/dispenser_parameter.h \
-    DualHead/lensloadermodule.h \
-    DualHead/lensloaderparameter.h \
-    DualHead/lenspickarm.h \
-    DualHead/lenspickarmparameter.h \
-    DualHead/lut_module.h \
-    DualHead/lut_parameter.h \
-    DualHead/lutclient.h \
-    DualHead/material_picker.h \
-    DualHead/sensorclip.h \
-    DualHead/sensorclipparameter.h \
-    DualHead/sensorloadermodule.h \
-    DualHead/sensorloaderparameter.h \
-    DualHead/sensorpickarm.h \
-    DualHead/sensorpickarmparameter.h \
-    DualHead/sensortrayloadermodule.h \
-    DualHead/sensortrayloaderparameter.h \
-    DualHead/sut_module.h \
-    DualHead/sut_parameter.h \
-    DualHead/sutclient.h \
-    DualHead/trayclip.h \
-    DualHead/trayclipstandardsparameter.h \
-    DualHead/trayloadermodule.h \
-    DualHead/trayloaderparameter.h \
     Light/LontryLight.h \
     Matrix/Matrix.h \
     SingleHead/singlehead_lsut_module.h \
@@ -156,8 +133,6 @@ HEADERS += \
     materialtray.h \
     modulemanagerparameter.h \
     AACore/sfrworker.h \
-    network/sparrowqclient.h \
-    network/sparrowqserver.h \
     thread_worker_base.h \
     trayparameter.h \
     traystandardsparameter.h \
@@ -167,18 +142,6 @@ HEADERS += \
 SOURCES += \
     Dispense/dispense_module.cpp \
     Dispense/dispenser.cpp \
-    DualHead/lensloadermodule.cpp \
-    DualHead/lenspickarm.cpp \
-    DualHead/lut_module.cpp \
-    DualHead/lutclient.cpp \
-    DualHead/sensorclip.cpp \
-    DualHead/sensorloadermodule.cpp \
-    DualHead/sensorpickarm.cpp \
-    DualHead/sensortrayloadermodule.cpp \
-    DualHead/sut_module.cpp \
-    DualHead/sutclient.cpp \
-    DualHead/trayclip.cpp \
-    DualHead/trayloadermodule.cpp \
     Light/LontryLight.cpp \
     Matrix/Matrix.cpp \
     SingleHead/singlehead_lsut_module.cpp \
@@ -221,8 +184,6 @@ SOURCES += \
     main.cpp \
     material_carrier.cpp \
     materialtray.cpp \
-    network/sparrowqclient.cpp \
-    network/sparrowqserver.cpp \
     thread_worker_base.cpp \
     workers_manager.cpp \
     TrayMap/traymapmodel.cpp

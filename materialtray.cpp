@@ -172,6 +172,7 @@ void MaterialTray::resetTrayState(int tray_index)
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
     for (int i = 0; i < current_tray->tray_material_state.count(); ++i)
     {
+        qInfo("reset Tray State：%d", current_tray->tray_material_state[i]);
         current_tray->tray_material_state[i] = current_tray->initState();
     }
     current_tray->setCurrentIndex(0);

@@ -15,8 +15,8 @@
 #include <QMap>
 #include "AACore/aadata.h"
 #include "AAHeadModule/aaheadmodule.h"
-#include "DualHead/lut_module.h"
-#include "DualHead/sut_module.h"
+//#include "DualHead/lut_module.h"
+//#include "DualHead/sut_module.h"
 #include "SingleHead/singlehead_lsut_module.h"
 #include "ImageGrabber/dothinkey.h"
 #include "visionavadaptor.h"
@@ -24,7 +24,7 @@
 #include "Vision/chart_calibration.h"
 #include "Dispense/dispense_module.h"
 #include "aacoreparameters.h"
-#include "DualHead/lutclient.h"
+//#include "DualHead/lutclient.h"
 #include "ImageGrabber/imagegrabbingworkerthread.h"
 #include "Utils/unitlog.h"
 
@@ -108,8 +108,8 @@ private:
     int currentAAMode;
     QString runningUnit;
     AAHeadModule* aa_head;
-    LutClient* lut;
-    SutModule* sut;
+//    LutClient* lut;
+//    SutModule* sut;
     SingleheadLSutModule *lsut;
     Dothinkey* dk;
     ImageGrabbingWorkerThread* imageThread;

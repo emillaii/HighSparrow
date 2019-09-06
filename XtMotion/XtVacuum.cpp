@@ -79,3 +79,8 @@ bool XtVacuum::IsVacuum()
     }
 }
 
+bool XtVacuum::GetVacuumState()
+{
+    return this->in_io->Value();
+}
+

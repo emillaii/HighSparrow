@@ -39,6 +39,7 @@
 #define MTF_DEBUG_DIR                "mtf_log//"
 #define VISION_PR_DEBUG_DIR          "pr_log//"
 #define AA_DEBUG_DIR                 "aa_log//"
+#define DISPENSE_DIR              "dispense_log//"
 #define SYSTEM_CONFIG_JSON           "config//systemConfig.json"
 #define BASE_MODULE_JSON             "config//baseModuleConfig.json"
 #define LIMIT_PARAMETER_MODE_FILENAME   "demo//limit_parameter.json"

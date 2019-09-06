@@ -110,6 +110,7 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
     that = this;
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();
+    dispenseImageProvider = new ImageProvider();
     connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
 }
@@ -733,7 +734,18 @@ ErrorCodeStruct AACoreNew::performDispense()
     dispense->setPRPosition(offset.X,offset.Y,offset.Theta);
     lsut->moveToZPos(0);
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
+    QString imageNameAfterDispense;
+    imageNameAfterDispense.append(getDispensePrLogDir())
+                   .append(getCurrentTimeString())
+                   .append("_")
+                   .append("_after_dispense.jpg");
+    lsut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
+    QImage image(imageNameAfterDispense);
+    dispenseImageProvider->setImage(image);
+    emit callQmlRefeshImg(3);  //Emit dispense image to QML
+
     if(!lsut->movetoRecordPos()){return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
+
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
     qInfo("Finish Dispense");
@@ -957,6 +969,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Perform AA fail"};
     }
     lsut->sut_carrier->Move_Z_Sync(aa_result["zPeak"].toDouble());
+    qInfo("Expected Z Peak: %f SUT Actual Z: %f", aa_result["zPeak"].toDouble(),lsut->sut_carrier->GetFeedBackPos().Z);
     if (enableTilt == 0) {
         qInfo("Disable tilt...");
     } else {
@@ -978,7 +991,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     clustered_sfr_map.clear();
     qInfo("AA time elapsed: %d", timer.elapsed());
     map.insert("X_TILT", aa_result["xTilt"].toDouble());
-    map.insert("Y_TILT", aa_result["xTilt"].toDouble());
+    map.insert("Y_TILT", aa_result["yTilt"].toDouble());
     map.insert("Z_PEAK_CC", aa_result["zPeak"].toDouble());
 //    map.insert("Z_PEAK_UL", aa_result["zPeak"].toDouble());
 //    map.insert("Z_PEAK_UR", ur_zPeak);
@@ -1093,7 +1106,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         result.insert("OK", false);
         return result;
     }
-    int fitOrder = 6;
+    int fitOrder = 4;
     if (clustered_sfr_map[0].size() == 6) {
         qInfo("Down the curve fitting to 5 order");
         fitOrder = 5;
@@ -1604,6 +1617,10 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     }
     vector<Sfr_entry> sv = clustered_sfr_map[0];
     int max_layer = 0;
+    if(sv.size() == 0) {
+        qCritical("Cannot find any MTF");
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+    }
     for (unsigned int i = 0; i < sv.size(); i++)
     {
         qInfo("%f %f %f %f %f %f %d %d", sv.at(i).px, sv.at(i).py,
@@ -2218,6 +2235,7 @@ ErrorCodeStruct AACoreNew::performPRToBond()
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
     if (!lsut->gripLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
+    map.insert("aa_gripLens", stepTimer.elapsed()); stepTimer.restart();
     if (!this->aa_head->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
 //    PrOffset downlookPrOffset;
@@ -2226,6 +2244,7 @@ ErrorCodeStruct AACoreNew::performPRToBond()
 //    double theta = lsut->up_downlook_offset.Theta() + aa_head->uplook_theta + aa_head->offset_theta;
 //    this->aa_head->moveToSync(0, 0, 0, theta);
     if(!this->lsut->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToMushroomPosition"}; }
+    map.insert("lsut_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "PrToBond", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};

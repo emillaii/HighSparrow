@@ -104,6 +104,24 @@ void VisionModule::testVision()
     qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
 }
 
+void VisionModule::saveImage(int channel, QString filename)
+{
+    avl::Image image1; bool ret;
+    if (channel == 0)
+        ret = this->grabImageFromCamera(UPLOOK_VISION_CAMERA, image1);
+    else if (channel == 1)
+        ret = this->grabImageFromCamera(DOWNLOOK_VISION_CAMERA, image1);
+    else if (channel == 2)
+        ret = this->grabImageFromCamera(PICKARM_VISION_CAMERA, image1);
+    else return;
+    if (!ret) {
+        qInfo("Cannot save image due to camera is not running");
+        return;
+    }
+    if (!image1.Empty())
+        avl::SaveImageToJpeg( image1 , filename.toStdString().c_str(), atl::NIL, false );
+}
+
 void VisionModule::saveImage(int channel)
 {
     avl::Image image1; bool ret;

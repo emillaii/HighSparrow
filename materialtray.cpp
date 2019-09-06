@@ -172,8 +172,20 @@ void MaterialTray::resetTrayState(int tray_index)
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
     for (int i = 0; i < current_tray->tray_material_state.count(); ++i)
     {
-        qInfo("reset Tray State：%d", current_tray->tray_material_state[i]);
+        qInfo("reset Tray State:%d", current_tray->tray_material_state[i]);
         current_tray->tray_material_state[i] = current_tray->initState();
+
+        TrayMapModel *model = Q_NULLPTR;
+        if (this->trayType == SENSOR_TRAY) {
+            model = TrayMapModel::instance(TrayMapModel::SensorTray);
+        } else if (trayType == LENS_TRAY) {
+            model = TrayMapModel::instance(TrayMapModel::LensTray);
+        } else if (trayType == PRODUCT_TRAY) {
+            model = TrayMapModel::instance(TrayMapModel::ProductTray);
+        } else if (trayType == REJECT_TRAY) {
+            model = TrayMapModel::instance(TrayMapModel::RejectTray);
+        }
+        if(model != Q_NULLPTR) model->setUnitStatus(i, TrayMapModel::StatusIdle);
     }
     current_tray->setCurrentIndex(0);
 }

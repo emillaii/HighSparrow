@@ -57,15 +57,15 @@ bool Unitlog::postDataToELK(QString uuid)
     if (unit_log_list.contains(uuid))
     {
          QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
+         json["timestamp"] = QDateTime::currentDateTimeUtc().toString("yyyy-MM-ddThh:mm:ss.zzzZ");
          QJsonDocument doc(json);
-         //QUrl sfrlog_endpoint = QString("http://192.168.8.252:5044");
-         QString unitLogEndpoint = serverAddress;
-         unitLogEndpoint.append(":").append(QString::number(UNIT_LOG_PORT));
+         QString unitLogEndpoint = QString("http://35.194.139.163:8000/unitlog_richtek/unitlog");
          QNetworkRequest request(unitLogEndpoint);
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));
          if (nam) {
              nam->post(request, doc.toJson());
+             qInfo(doc.toJson().toStdString().c_str());
              qInfo("Push data to ELK success: %s", uuid.toStdString().c_str());
          } else {
              qInfo("Post data to ELK fail");

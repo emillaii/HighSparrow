@@ -71,7 +71,7 @@ void BaslerPylonCamera::close()
     isReady = false;
     while(isGrabbing())
     {
-        QThread::msleep(100);
+        QThread::msleep(300);
     }
     qInfo("Grabbing stopped");
     if(camera.IsOpen())
@@ -109,13 +109,14 @@ void BaslerPylonCamera::run(){
         while(isReady&&GrabImage()) {
             {
                 for (int cnt = 0;cnt<100;cnt++) {
-                 QThread::msleep(1);
-                 if(need_triged)
-                 {
-                     need_triged = false;
-                     break;
-                 }
+                     QThread::msleep(1);
+                     if(need_triged)
+                     {
+                         need_triged = false;
+                         break;
+                     }
                 }
+                QThread::msleep(100);
             }
         }
         setiIsGrabbing(false);

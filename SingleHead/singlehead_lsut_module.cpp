@@ -325,6 +325,17 @@ bool SingleheadLSutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting
     return result;
 }
 
+bool SingleheadLSutModule::moveToDownlookSaveImage(QString filename)
+{
+    vision_downlook_location->OpenLight();
+    bool result = moveToPRPosition(true);
+    if(result)
+    {
+        this->vision_downlook_location->saveImage(filename);
+    }
+    return result;
+}
+
 bool SingleheadLSutModule::moveToMushroomPosition(bool check_autochthonous)
 {
     qInfo("SUT module moveToMushroomPos");

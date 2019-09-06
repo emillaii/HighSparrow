@@ -22,6 +22,16 @@ void VisionLocation::saveParam()
 //    PropertyBase::saveJsonConfig(PR_PARAMETER_FILE_PATH,PR_AA1_TOOL_UPLOOK,&parameters);
 }
 
+bool VisionLocation::saveImage(QString filename)
+{
+    int channel = 0;
+    if (parameters.cameraName().contains(CAMERA_SH_AA_DL)) {channel = 1;}
+    else if (parameters.cameraName().contains(CAMERA_SH_UT_UL)) {channel = 0;}
+    else if (parameters.cameraName().contains(CAMERA_SH_PA_DL)) {channel = 2;}
+    vison->saveImage(channel, filename);
+    return true;
+}
+
 bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
 {
     offset.ReSet();

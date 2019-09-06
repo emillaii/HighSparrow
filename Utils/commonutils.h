@@ -11,6 +11,7 @@ QString getCurrentDateString();
 QString getVisionLogDir();
 QString getGrabberLogDir();
 QString getMTFLogDir();
+QString getDispensePrLogDir();
 QString getDir(QString);
 
 void writeFile(QString data, QString dir, QString filename);

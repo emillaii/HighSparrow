@@ -101,7 +101,7 @@ public:
     void recordCurrentPos();
     bool movetoRecordPos(bool check_autochthonous = false);
     bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
-
+    bool moveToDownlookSaveImage(QString filename);
     // Distance offset between lens center to uplook camera center
     Position lens_offset;
     // Distance offset between sensor center to uplook camera center

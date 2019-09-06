@@ -713,8 +713,17 @@ void SingleHeadMachineMaterialLoaderModule::run(bool has_material)
             performSUTProductPR();
             moveToPicker1WorkPos();
             picker1PickProductFormSUT();
-            this->states.setSutHasProduct(false);
-            this->states.setHasPickedProduct(true);
+            if(!pick_arm->vacuum_sensor_suction->GetVacuumState()) {
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick Product Fail.Please check");
+                int operation = waitMessageReturn(is_run);
+                qInfo("user operation: %d", operation);
+                sensorTray->setCurrentMaterialState(MaterialState::IsProduct, states.currentSensorTray());
+                this->states.setSutHasProduct(false);
+                this->states.setHasPickedProduct(false);
+            } else {
+                this->states.setSutHasProduct(false);
+                this->states.setHasPickedProduct(true);
+            }
             if(!is_run)break;
         }
 
@@ -756,13 +765,20 @@ void SingleHeadMachineMaterialLoaderModule::run(bool has_material)
             qInfo("picke lens from tray");
             moveToNextLensTrayPos(states.currentLensTray());
             pr_offset.ReSet();
-            performLensPR();
-            moveToPicker1WorkPos();
-            picker1PickLensFromTray();
-            states.setHasPickedLens(true);
-            states.setNeedLoadLens(false);
-            lensTray->setCurrentMaterialState(MaterialState::IsInUse, states.currentLensTray());
-            if(!is_run)break;
+            if(!performLensPR()){
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform Lens PR fail");
+                int operation = waitMessageReturn(is_run);
+                qInfo("user operation: %d", operation);
+                lensTray->setCurrentMaterialState(MaterialState::IsNg, states.currentLensTray());
+                continue;
+            } else {
+                moveToPicker1WorkPos();
+                picker1PickLensFromTray();
+                states.setHasPickedLens(true);
+                states.setNeedLoadLens(false);
+                lensTray->setCurrentMaterialState(MaterialState::IsInUse, states.currentLensTray());
+                if(!is_run)break;
+            }
         }
 
         if (this->states.hasPickedNgSensor()) // Place the ng sensor to tray
@@ -796,12 +812,20 @@ void SingleHeadMachineMaterialLoaderModule::run(bool has_material)
                 int operation = waitMessageReturn(is_run);
                 qInfo("user operation: %d", operation);
                 sensorTray->setCurrentMaterialState(MaterialState::IsNg, states.currentSensorTray());
+                continue;
             } else {
                 moveToPicker2WorkPos();
                 picker2PickSensorFromTray();
-                states.setHasPickedSensor(true);
-                states.setNeedLoadSensor(false);
-                sensorTray->setCurrentMaterialState(MaterialState::IsInUse, states.currentSensorTray());
+                if(!pick_arm->vacuum_sensor_suction->GetVacuumState()) {
+                    sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick sensor from sensor tray fail");
+                    int operation = waitMessageReturn(is_run);
+                    qInfo("user operation: %d", operation);
+                    sensorTray->setCurrentMaterialState(MaterialState::IsNg, states.currentSensorTray());
+                } else {
+                    states.setHasPickedSensor(true);
+                    states.setNeedLoadSensor(false);
+                    sensorTray->setCurrentMaterialState(MaterialState::IsInUse, states.currentSensorTray());
+                }
             }
             if(!is_run)break;
         }

@@ -39,6 +39,7 @@ public:
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 
+    void saveImage(int channel, QString filename);
     Q_INVOKABLE void saveImage(int channel);
     Q_INVOKABLE void testVision();
 private:

@@ -33,6 +33,8 @@ public:
     ~BaslerPylonCamera();
     bool Init();
     Q_INVOKABLE void close();
+    Q_INVOKABLE void pauseLiveView(bool pause);
+    Q_INVOKABLE void toggleLiveView();
     Q_INVOKABLE void open();
     bool IsOpend();
     bool GrabImage();
@@ -61,6 +63,11 @@ public slots:
         if (!isGrabbing) emit cameraCloseEvent();
     }
 
+    void setIsPauseLiveView(bool isPauseLiveView)
+    {
+        m_isPauseLiveView = isPauseLiveView;
+    }
+
 protected:
     void run() override;
 private:
@@ -68,6 +75,7 @@ private:
     QMutex mutex;
     QMutex trig_mutex;
     bool isReady;
+    bool m_isPauseLiveView = false;
     QString cameraChannelName;
     QImage latestImage;
     bool m_isGrabbing = false;
@@ -77,6 +85,7 @@ signals:
     void callQmlRefeshImg();
     void noCameraEvent();
     void cameraCloseEvent();
+    void cameraPauseEvent();
 };
 
 #endif // BASLERCAMERA_H

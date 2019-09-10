@@ -249,6 +249,20 @@ Grid {
                         }
                     }
                 }
+                Button {
+                    id: camera1PauseLive
+                    x: 341
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/pause.png"
+                    onClicked: {
+                        uplookCamera.toggleLiveView()
+                    }
+                }
             }
 
             Connections {
@@ -269,6 +283,10 @@ Grid {
                     camera1Text.text = "Uplook Camera (Camera closed)"
                     camera1Text.color = "red"
                     camera1OnOff.icon.color = "red"
+                }
+                onCameraPauseEvent: {
+                    camera1Text.text = "Uplook Camera (Live View Paused)"
+                    camera1Text.color = "cyan"
                 }
             }
         }
@@ -383,6 +401,20 @@ Grid {
                         }
                     }
                 }
+                Button {
+                    id: camera2PauseLive
+                    x: 341
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/pause.png"
+                    onClicked: {
+                        downlookCamera.toggleLiveView()
+                    }
+                }
             }
 
             Connections {
@@ -403,6 +435,10 @@ Grid {
                     camera2Text.text = "AA Downlook Camera (Camera closed)"
                     camera2Text.color = "red"
                     camera2OnOff.icon.color = "red"
+                }
+                onCameraPauseEvent: {
+                    camera2Text.text = "AA Downlook Camera (Live View Paused)"
+                    camera2Text.color = "cyan"
                 }
             }
         }
@@ -464,6 +500,10 @@ Grid {
                     camera3Text.text = "Pickarm Camera (Camera closed)"
                     camera3Text.color = "red"
                     camera3OnOff.icon.color = "red"
+                }
+                onCameraPauseEvent: {
+                    camera3Text.text = "Pickarm Camera (Live View Paused)"
+                    camera3Text.color = "cyan"
                 }
             }
 
@@ -555,6 +595,20 @@ Grid {
                         {
                             pickarmCamera.open()
                         }
+                    }
+                }
+                Button {
+                    id: camera3PauseLive
+                    x: 341
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/pause.png"
+                    onClicked: {
+                        pickarmCamera.toggleLiveView()
                     }
                 }
             }

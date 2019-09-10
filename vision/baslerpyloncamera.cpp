@@ -84,6 +84,22 @@ void BaslerPylonCamera::close()
     camera.DestroyDevice();
 }
 
+void BaslerPylonCamera::pauseLiveView(bool pause)
+{
+    setIsPauseLiveView(pause);
+    if (m_isPauseLiveView) {
+        emit cameraPauseEvent();
+    }
+}
+
+void BaslerPylonCamera::toggleLiveView()
+{
+    setIsPauseLiveView(!this->m_isPauseLiveView);
+    if (m_isPauseLiveView) {
+        emit cameraPauseEvent();
+    }
+}
+
 void BaslerPylonCamera::open()
 {
     bool ret = Init();
@@ -93,6 +109,7 @@ void BaslerPylonCamera::open()
        camera.Open();
        this->start();
     } else this->start();
+    setIsPauseLiveView(false);
 }
 
 bool BaslerPylonCamera::IsOpend()
@@ -106,15 +123,21 @@ void BaslerPylonCamera::run(){
         camera.StartGrabbing( GrabStrategy_LatestImageOnly, GrabLoop_ProvidedByInstantCamera);
         isReady = true;
         setiIsGrabbing(true);
-        while(isReady&&GrabImage()) {
-            {
-                for (int cnt = 0;cnt<100;cnt++) {
-                 QThread::msleep(1);
-                 if(need_triged)
-                 {
-                     need_triged = false;
-                     break;
-                 }
+        while(isReady) {
+            if (m_isPauseLiveView) {
+                //qDebug("%s Camera Pause Live View", cameraChannelName.toStdString().c_str());
+                QThread::msleep(1000);
+            } else {
+                if (GrabImage())
+                {
+                    for (int cnt = 0;cnt<100;cnt++) {
+                      QThread::msleep(1);
+                      if(need_triged)
+                      {
+                         need_triged = false;
+                         break;
+                      }
+                    }
                 }
             }
         }

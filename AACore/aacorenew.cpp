@@ -178,6 +178,8 @@ void AACoreNew::run(bool has_material)
         qInfo("AACore is running");
         timer.restart();
         runningUnit = this->unitlog->createUnit();
+        //Reset some previous result
+        oc_fov = -1;
         runFlowchartTest();
         emit postDataToELK(this->runningUnit);
         QThread::msleep(100);
@@ -918,15 +920,6 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
         dispense->setPRPosition(this->aa_head->offset_x,this->aa_head->offset_y,this->aa_head->offset_theta);
     }
 
-//    // Capture image before dispense
-//    QString imageNameBeforeDispense;
-//    imageNameBeforeDispense.append(getDispensePrLogDir())
-//                    .append(getCurrentTimeString())
-//                    .append("_")
-//                    .append(dk->readSensorID())
-//                    .append("_before_dispense.jpg");
-//    sut->moveToDownlookSaveImage(imageNameBeforeDispense); // For save image only
-
     // Perform dispense
     if(!dispense->performDispense()) { NgProduct(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
 
@@ -1064,31 +1057,38 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
          }
       } else if (zScanMode == ZSCAN_MODE::AA_DFOV_MODE){
            step_move_timer.start();
-           sut->moveToZPos(start);
-           QThread::msleep(zSleepInMs);
-           step_move_time += step_move_timer.elapsed();
-           grab_timer.start();
-           cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
-           grab_time += grab_timer.elapsed();
+           double dfov = -1;
+           if (oc_fov > 0) {
+               sut->moveToZPos(start);
+               QThread::msleep(zSleepInMs);
+               step_move_time += step_move_timer.elapsed();
+               grab_timer.start();
+               cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+               grab_time += grab_timer.elapsed();
 
-           if (!grabRet) {
-               qInfo("AA Cannot grab image.");
-               map["Result"] = "AA Cannot grab image.";
-               emit pushDataToUnit(runningUnit, "AA", map);
-               NgSensor();
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
-           }
-           if (!blackScreenCheck(img)) {
-               NgSensor();
-               map["Result"] = "AA Detect black screen";
-               emit pushDataToUnit(runningUnit, "AA", map);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
-           }
-           double dfov = calculateDFOV(img);
-           if (dfov <= -1) {
-               qInfo("Cannot find the target FOV!");
-               LogicNg(current_aa_ng_time);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+               if (!grabRet) {
+                   qInfo("AA Cannot grab image.");
+                   map["Result"] = "AA Cannot grab image.";
+                   emit pushDataToUnit(runningUnit, "AA", map);
+                   NgSensor();
+                   return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
+               }
+               if (!blackScreenCheck(img)) {
+                   NgSensor();
+                   map["Result"] = "AA Detect black screen";
+                   emit pushDataToUnit(runningUnit, "AA", map);
+                   return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
+               }
+               dfov = calculateDFOV(img);
+               if (dfov <= -1) {
+                   qInfo("Cannot find the target FOV!");
+                   LogicNg(current_aa_ng_time);
+                   return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+               }
+           } else {
+               qInfo("Use the result FOV in previous OC. FOV = %f", oc_fov);
+               dfov = this->oc_fov;
+               oc_fov = -1;
            }
            double estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
            double target_z = estimated_aa_z + offset_in_um;
@@ -2697,6 +2697,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         NgSensor();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "OC Cannot Grab Image"};
     }
+    oc_fov = calculateDFOV(img);
     if (!blackScreenCheck(img)) {
         NgSensor();
         map["Result"] = "OC Detect black screen";
@@ -2721,9 +2722,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         emit callQmlRefeshImg(1);
         if( vector.size()<1 || ccIndex > 9 )
         {
-//            NgLens();
             NgSensor();
-//            LogicNg(current_oc_ng_time);
             map.insert("result", "OC Cannot find enough pattern");
             map.insert("timeElapsed", timer.elapsed());
             emit pushDataToUnit(this->runningUnit, "OC", map);
@@ -2738,9 +2737,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage))
         {
-//            NgLens();
             NgSensor();
-//            LogicNg(current_oc_ng_time);
             map.insert("result", "OC Cannot calculate OC");
             map.insert("timeElapsed", timer.elapsed());
             emit pushDataToUnit(this->runningUnit, "OC", map);
@@ -2764,9 +2761,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         qInfo("xy step: %f %f ", stepX, stepY);
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
-//            NgLens();
             NgSensor();
-//            LogicNg(current_oc_ng_time);
             qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
             map.insert("result", "OC result too big");
             map.insert("timeElapsed", timer.elapsed());

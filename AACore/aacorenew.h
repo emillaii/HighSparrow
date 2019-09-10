@@ -160,6 +160,7 @@ private:
                                                                unsigned int & urROIIndex,
                                                                unsigned int & llROIIndex,
                                                                unsigned int & lrROIIndex);
+    double oc_fov = -1;
 public slots:
     //ThreadWorkerBase
     void startWork(int run_mode);

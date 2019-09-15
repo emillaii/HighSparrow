@@ -1734,8 +1734,12 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
             result.insert("zPeak", point_0.z); map.insert("zPeak", point_0.z);
         }
     }
-
-    result.insert("OK", true);
+    if (result["zPeak"].toDouble(0) < start_pos) {
+        qCritical("AA zPeak is smaller than z scan start position. Error!");
+        result.insert("OK", false);
+    } else {
+        result.insert("OK", true);
+    }
     if (validLayer == 1) {
         result.insert("xTilt", xTilt_1);
         result.insert("yTilt", yTilt_1);

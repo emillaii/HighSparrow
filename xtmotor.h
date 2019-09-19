@@ -70,12 +70,14 @@ public:
 
 
     virtual void SetVel(double vel,int thread = -1);
+    virtual void ResetVel(int thread = -1);
     virtual void SetAcc(double vel, int thread = -1);
     virtual void SetJerk(double jerk,int thread = -1);
     virtual void SetPostiveRange(double range);
     virtual void SetNegativeRange(double range);
     virtual void Home(int thread = -1);
-
+    bool setTrig(bool reverse_trig, double trig_pos,int io_id, bool trig_state);
+    bool clearTrig();
     bool SGO(double pos, int thread = -1);
     void TILLSTOP(int thread = -1);
     void TILLTIME(int ms, int thread = -1);
@@ -84,6 +86,7 @@ public:
     virtual bool SlowMoveToPos(double pos,double low_vel, int thread = -1);
     virtual bool WaitMoveStop(int timeout = 30000);
     bool WaitArrivedTargetPos(double target_position,int timeout=10000);
+    bool WaitLessThanTargetPos(double target_position,int timeout= 10000);
     bool WaitArrivedTargetPos(double target_position,double arived_error,int timeout=10000);
     bool WaitArrivedTargetPos(int timeout = 10000);
     virtual bool MoveToPosSync(double pos,int thread = -1,int time_out = 30000);

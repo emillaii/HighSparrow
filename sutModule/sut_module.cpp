@@ -10,7 +10,7 @@ SutModule::SutModule()
     gui_thread_id = QThread::currentThreadId();
 }
 
-void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin,int thread_id)
+void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin,XtGeneralOutput* camera_trig,int thread_id)
 {
     this->carrier = carrier;
     parts.append(carrier);
@@ -26,37 +26,28 @@ void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocat
     parts.append(vacuum);
     this->popgpin = popgpin;
     parts.append(popgpin);
+    this->camera_trig = camera_trig;
+    parts.append(camera_trig);
     setName(parameters.moduleName());
     this->thread_id = thread_id;
 }
 
 void SutModule::saveJsonConfig(QString file_name)
 {
-    QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("SUT_PARAMS", &this->parameters);
-//    temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
-    temp_map.insert("LOAD_POSITION", &this->load_position);
-    temp_map.insert("DOWNLOOK_POSITION", &this->downlook_position);
-    temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
-    temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
-    temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
-    temp_map.insert("UP_DOWNLOOK_POSITION", &this->up_downlook_offset);
-    temp_map.insert("SAFETY_POSITION", &this->safety_positon);
-//    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
-//    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
+    QMap<QString,PropertyBase*> temp_map = getModuleParameter();
     PropertyBase::saveJsonConfig(file_name, temp_map);
 }
 
-bool SutModule::checkSutSensorOrProduct(bool check_state)
-{
-    bool result = vacuum->checkHasMaterielSync();
-    if(result == check_state)
-        return true;
-    QString error = QString(u8"SUT上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
-    AppendError(error);
-    qInfo(error.toStdString().c_str());
-    return false;
-}
+//bool SutModule::checkSutSensorOrProduct(bool check_state)
+//{
+//    bool result = vacuum->checkHasMaterielSync();
+//    if(result == check_state)
+//        return true;
+//    QString error = QString(u8"SUT上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
+//    AppendError(error);
+//    qInfo(error.toStdString().c_str());
+//    return false;
+//}
 
 bool SutModule::checkSutHasMaterialSynic()
 {
@@ -102,18 +93,7 @@ void SutModule::resetLogic()
 
 void SutModule::loadParams(QString file_name)
 {
-    QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("SUT_PARAMS", &parameters);
-//    temp_map.insert("SUT_CARRIER_PARAMS", &this->carrier->parameters);
-    temp_map.insert("LOAD_POSITION", &this->load_position);
-    temp_map.insert("DOWNLOOK_POSITION", &this->downlook_position);
-    temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
-    temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
-    temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
-    temp_map.insert("UP_DOWNLOOK_POSITION", &this->up_downlook_offset);
-    temp_map.insert("SAFETY_POSITION", &this->safety_positon);
-//    temp_map.insert("VISION_DOWNLOOK_LOCATION", &this->vision_downlook_location->parameters);
-//    temp_map.insert("VISION_UPDOWNLOOK_LOCATION", &this->vision_updownlook_location->parameters);
+    QMap<QString,PropertyBase*> temp_map = getModuleParameter();
     PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
@@ -123,8 +103,8 @@ bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check
     bool result = moveToDownlookPos(check_autochthonous);
     if(result)
     {
-        if(has_material)
-        result = vision_downlook_location->performPR(offset);
+        result = performDownLookPR();
+        offset = vision_downlook_location->getCurrentResult();
     }
     if(close_lighting)
         vision_downlook_location->CloseLight();
@@ -201,6 +181,48 @@ bool SutModule::moveToUpDwonlookPR(PrOffset &offset,bool close_lighting,bool che
     if(close_lighting)
         vision_updownlook_down_location->CloseLight();
     return false;
+}
+
+bool SutModule::moveToDownLookFlyPr()
+{
+    if(carrier->motor_y->GetFeedbackPos()<parameters.downlookFlyStartPosition())
+    {
+        AppendError(u8"Sut_Y位于飞拍减速位置之前，无法进行飞拍");
+        return false;
+    }
+    //开始移动
+    bool result = carrier->motor_y->setTrig(true,parameters.downlookFlyPrPosition(),camera_trig->GetID(),true);
+    result &= carrier->motor_y->setTrig(true,parameters.downlookFlyPrPosition()+1,camera_trig->GetID(),false);
+    qInfo("wwd %d",result);
+    result &= carrier->Move_SZ_XY_ToPos(down_look_fly_end_position.X(),down_look_fly_end_position.Y());
+    qInfo("wwd %d",result);
+    if(!result)
+        return false;
+    qInfo("wwd1");
+    //到达飞拍起点变速
+    result = carrier->motor_y->WaitLessThanTargetPos(parameters.downlookFlyStartPosition());
+    if(!result)
+        return false;
+    qInfo("wwd2");
+    carrier->motor_y->SetVel(parameters.downlookFlyVelocity());
+    result = carrier->motor_y->MoveToPos(down_look_fly_end_position.Y());
+    if(!result)
+    {
+        carrier->motor_y->ResetVel();
+        return false;
+    }
+    qInfo("wwd3");
+    //到达飞排点
+    result = carrier->motor_y->WaitLessThanTargetPos(parameters.downlookFlyPrPosition()+1);
+    if(!result)
+    {
+        carrier->motor_y->ResetVel();
+        return false;
+    }
+    qInfo("wwd");
+    carrier->motor_y->clearTrig();
+    carrier->motor_y->ResetVel();
+    return true;
 }
 
 bool SutModule::toolDownlookPR(PrOffset &offset, bool close_lighting, bool motion)
@@ -322,17 +344,36 @@ bool SutModule::movetoRecordPosAddOffset(double x_offset, double y_offset, doubl
 bool SutModule::moveToSafetyPos(bool check_autochthonous)
 {
     popgpin->Set(true);
-    return carrier->Move_SZ_SX_YS_X_Z_Sync(safety_positon.X(),safety_positon.Y(),safety_positon.Z(),check_autochthonous);
+    return carrier->Move_SZ_SX_YS_X_Z_Sync(carrier->parameters.SafetyX(),carrier->parameters.SafetyY(),carrier->parameters.SafetyZ(),check_autochthonous);
+}
+
+bool SutModule::performDownLookPR()
+{
+    qInfo("performDownLookPR");
+    bool result;
+    if(states.runMode() == RunMode::NoMaterial)
+        result= vision_downlook_location->performNoMaterialPR();
+    else
+        result = vision_downlook_location->performPR();
+    if(!result)
+        AppendError(QString(u8"执行SUT DownLook视觉失败!"));
+    return  result;
 }
 
 bool SutModule::OpenSutVacuum()
 {
-    return vacuum->Set(true);
+    if(states.runMode() == RunMode::NoMaterial)
+        return vacuum->SetSimulation(true);
+    else
+        return vacuum->Set(true);
 }
 
 bool SutModule::CloseSutVacuum()
 {
-    return vacuum->Set(false);
+    if(states.runMode() == RunMode::NoMaterial)
+        return vacuum->SetSimulation(false);
+    else
+        return vacuum->Set(false);
 }
 
 void SutModule::receiveLoadSensorRequst(int sut_state)
@@ -388,19 +429,24 @@ void SutModule::run(bool has_material)
             {
                 if(!moveToLoadPos())
                 {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run =false;
-                    break;
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 if(!checkSutHasMaterialSynic())
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                    if(waitMessageReturn(is_run))
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(REJECT_OPERATION == operation)
                     {
                         states.setSutMaterialState(MaterialState::IsEmpty);
                         continue;
                     }
-                    if(!is_run)break;
+                    else if(RETRY_OPERATION == operation)
+                        continue;
                 }
             }
             else
@@ -408,16 +454,19 @@ void SutModule::run(bool has_material)
                 checkSutHasMaterial();
                 if(!moveToLoadPos())
                 {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run =false;
-                    break;
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 if(!waitSutCheckResult(false))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                        continue;
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
                 }
             }
             sendMessageToModule("SensorLoaderModule","SutReady");
@@ -436,29 +485,34 @@ void SutModule::run(bool has_material)
         {
             if(!checkSutHasMaterialSynic())
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
                     states.setSutHasSensor(false);
                     continue;
                 }
-                if(!is_run)break;
+                else if(RETRY_OPERATION == operation)
+                    continue;
             }
 
             if(!popgpin->Set(true))
             {
-                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                waitMessageReturn(is_run);
-                continue;
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
             QThread::msleep(100);
             if((!moveToDownlookPR(offset))&&has_material)
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
                     continue;
-                }
             }
             else
             {
@@ -475,6 +529,7 @@ void SutModule::run(bool has_material)
         }
 
     }
+    states.setRunMode(RunMode::Normal);
     qInfo("sut module end of thread");
 }
 
@@ -483,7 +538,7 @@ void SutModule::startWork(int run_mode)
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数为空.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数为空.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("RunMode"))
@@ -492,7 +547,7 @@ void SutModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数RunMode缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数RunMode缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("HandlyChangeSensor"))
@@ -501,7 +556,7 @@ void SutModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeSensor缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数HandlyChangeSensor缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("StationNumber")&&run_params.contains("DisableStation"))
@@ -513,7 +568,7 @@ void SutModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数StationNumber、DisableStation缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数StationNumber、DisableStation缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(states.disableStation())
@@ -537,18 +592,22 @@ void SutModule::stopWork(bool wait_finish)
 
 void SutModule::performHandlingOperation(int cmd)
 {
+    bool result = true;
     if(cmd == 1)
-        if(!moveToDownlookPR(false,true))
-            sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        result = moveToDownlookPR(false,true);
+    else if(cmd == 2)
+        result = moveToDownLookFlyPr();
+    if(!result)
+        sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
     is_handling = false;
 }
 
 void SutModule::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-    QMutexLocker temp_locker(&message_mutex);
-    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-        this->module_message = message;
+//    QMutexLocker temp_locker(&message_mutex);
+//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
+//        this->module_message = message;
     if(!message.contains("OriginModule"))
     {
         qInfo("message error! has no OriginModule.");
@@ -617,8 +676,17 @@ PropertyBase *SutModule::getModuleState()
 
 QMap<QString, PropertyBase *> SutModule::getModuleParameter()
 {
-    QMap<QString, PropertyBase *> temp;
-    return temp;
+    QMap<QString,PropertyBase*> temp_map;
+//    temp_map.insert("sut", &this->carrier->parameters);
+    temp_map.insert("SUT_PARAMS", &this->parameters);
+    temp_map.insert("LOAD_POSITION", &this->load_position);
+    temp_map.insert("DOWNLOOK_POSITION", &this->downlook_position);
+    temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
+    temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
+    temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);
+    temp_map.insert("UP_DOWNLOOK_POSITION", &this->up_downlook_offset);
+    temp_map.insert("DOWNLOOK_FLY_END_POSITION", &this->down_look_fly_end_position);
+    return temp_map;
 }
 
 

@@ -262,7 +262,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             if (real4 < object_score) {
                 is_object_score_pass = false;
                 qInfo("PR oject score is too low: %f < object_socr: %f", object2D1.Get().Score(), object_score);
-                return PR_Generic_NCC_Template_Matching_Retay(camera_name, pr_name,prResult,object_score);
+                QThread::msleep(500);
+                return PR_Generic_NCC_Template_Matching_Retry(camera_name, pr_name,prResult,object_score);
             }
             avl::RealToString( real4, string3 );
             avs::AvsFilter_ConcatenateStrings( g_constData6, string2, g_constData10, string3, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string1.Get() );
@@ -288,7 +289,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
             error_code.errorMessage = "PR Object Not Found";
             qInfo("PR Error! Object Not Found");
-            return error_code;
+            QThread::msleep(500);
+            return PR_Generic_NCC_Template_Matching_Retry(camera_name, pr_name,prResult,object_score);
         }
 
         stringArray1.Resize(1);
@@ -320,7 +322,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
     return error_code;
 }
 
-ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching_Retay(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score)
+ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching_Retry(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score)
 {
     //if(is_debug)return ErrorCodeStruct{ OK, "" };
     if (pr_name.contains("_edgeModel")) {
@@ -356,11 +358,11 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching_Retay(QString cam
         QString imageName;
         imageName.append(getVisionLogDir())
                         .append(getCurrentTimeString())
-                        .append(".jpg");
+                        .append("_retry.jpg");
         QString rawImageName;
         rawImageName.append(getVisionLogDir())
                     .append(getCurrentTimeString())
-                    .append("_raw.jpg");
+                    .append("_retry_raw.jpg");
         g_constData1 = L"test.jpg";
         g_constData2 = pr_offset_name.toStdString().c_str();
         g_constData3 = L"Vector2D";

@@ -202,7 +202,6 @@ bool Unitlog::postUnitDataToCSV(QString uuid)
             content.append("\n");
         }
     }
-
     foreach (QString temp_header, headers) {
         QStringList temp_names = temp_header.split(".");
         if(data_map.contains(temp_names[0]))

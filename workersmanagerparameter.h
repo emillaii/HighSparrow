@@ -14,6 +14,7 @@ public:
     Q_PROPERTY(QString stationName READ stationName WRITE setStationName NOTIFY stationNameChanged)
     Q_PROPERTY(QVariantList respMessagerNames READ respMessagerNames WRITE setRespMessagerNames NOTIFY respMessagerNamesChanged)
     Q_PROPERTY(QVariantList cmsMessagerNames READ cmsMessagerNames WRITE setCmsMessagerNames NOTIFY cmsMessagerNamesChanged)
+    Q_PROPERTY(bool showAlarm READ showAlarm WRITE setShowAlarm NOTIFY showAlarmChanged)
     int runMode() const
     {
         return m_runMode;
@@ -31,6 +32,11 @@ public:
     QVariantList cmsMessagerNames() const
     {
         return m_cmsMessageerNames;
+    }
+
+    bool showAlarm() const
+    {
+        return m_showAlarm;
     }
 
 public slots:
@@ -69,6 +75,15 @@ public slots:
         emit cmsMessagerNamesChanged(m_cmsMessageerNames);
     }
 
+    void setShowAlarm(bool showAlarm)
+    {
+        if (m_showAlarm == showAlarm)
+            return;
+
+        m_showAlarm = showAlarm;
+        emit showAlarmChanged(m_showAlarm);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void stationNameChanged(QString stationName);
@@ -77,11 +92,14 @@ signals:
 
     void cmsMessagerNamesChanged(QVariantList cmsMessagerNames);
 
+    void showAlarmChanged(bool showAlarm);
+
 private:
     int m_runMode = 0;
     QString m_stationName = "LeftStation";
     QVariantList m_respMessagerNames;
     QVariantList m_cmsMessageerNames;
+    bool m_showAlarm = false;
 };
 
 #endif // WORKERMANAGERPARAMETER_H

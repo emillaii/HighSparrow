@@ -58,8 +58,8 @@ bool SensorPickArm::move_XYT1_Synic(const double x, const double y, const double
     motor_y->MoveToPos(y);
     picker1->motor_t->MoveToPosSync(t - 2);
     picker1->motor_t->MoveToPos(t);
-    bool resut = motor_x->WaitArrivedTargetPos(x,timeout);
-    resut &= motor_y->WaitArrivedTargetPos(y,timeout);
+    bool resut = motor_x->WaitArrivedTargetPos(x,parameters.processPositionError(),timeout);
+    resut &= motor_y->WaitArrivedTargetPos(y,parameters.processPositionError(),timeout);
     resut &= picker1->motor_t->WaitArrivedTargetPos(t,timeout);
     return resut;
 
@@ -97,9 +97,35 @@ bool SensorPickArm::move_XYT2_Synic(const double x, const double y, const double
     motor_y->MoveToPos(y);
     picker2->motor_t->MoveToPosSync(t - 2);
     picker2->motor_t->MoveToPos(t);
+    bool resut = motor_x->WaitArrivedTargetPos(x,parameters.processPositionError(),timeout);
+    resut &= motor_y->WaitArrivedTargetPos(y,parameters.processPositionError(),timeout);
+    resut &= picker2->motor_t->WaitArrivedTargetPos(t,timeout);
+    return resut;
+}
+
+bool SensorPickArm::checkXYT1T2Arrived(const double x, const double y, const double t1, const double t2)
+{
+    return motor_x->CheckArrivedTargetPos(x)&&motor_y->CheckArrivedTargetPos(y)&&picker1->motor_t->CheckArrivedTargetPos(t1)&&picker2->motor_t->CheckArrivedTargetPos(t2);
+}
+
+bool SensorPickArm::move_XYT1T2_Synic(const double x, const double y, const double t1, const double t2, const bool check_arrived, const bool check_softlanding, int timeout)
+{
+    if(check_softlanding)
+    {
+        if(!picker1->motor_z->resetSoftLanding(timeout))return false;
+        if(!picker2->motor_z->resetSoftLanding(timeout))return false;
+    }
+    if(check_arrived&&checkXYT1T2Arrived(x,y,t1,t2))return true;
+    motor_x->MoveToPos(x);
+    motor_y->MoveToPos(y);
+    picker1->motor_t->MoveToPosSync(t1 - 2);
+    picker2->motor_t->MoveToPosSync(t2 - 2);
+    picker1->motor_t->MoveToPos(t1);
+    picker2->motor_t->MoveToPos(t2);
     bool resut = motor_x->WaitArrivedTargetPos(x,timeout);
     resut &= motor_y->WaitArrivedTargetPos(y,timeout);
-    resut &= picker2->motor_t->WaitArrivedTargetPos(t,timeout);
+    resut &= picker1->motor_t->WaitArrivedTargetPos(t1,timeout);
+    resut &= picker2->motor_t->WaitArrivedTargetPos(t2,timeout);
     return resut;
 }
 
@@ -251,11 +277,11 @@ bool SensorPickArm::stepMove_XYT2_Synic(const double step_x, const double step_y
     double target_x = motor_x->GetFeedbackPos() + step_x;
     double target_y = motor_y->GetFeedbackPos() + step_y;
     double target_t = picker2->motor_t->GetFeedbackPos() + step_t2;
-    motor_x->MoveToPos(step_x);
-    motor_y->MoveToPos(step_y);
+    motor_x->MoveToPos(target_x);
+    motor_y->MoveToPos(target_y);
     picker2->motor_t->MoveToPosSync(target_t - 2);
     picker2->motor_t->MoveToPos(target_t);
-    bool resut = motor_x->WaitArrivedTargetPos(target_x);
+    bool resut = motor_x->WaitArrivedTargetPos(target_x,timeout);
     resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
     resut &= picker2->motor_t->WaitArrivedTargetPos(target_t,timeout);
     return resut;
@@ -283,43 +309,28 @@ bool SensorPickArm::wait_XYT2_Arrived(int timeout)
     return result;
 }
 
-bool SensorPickArm::Z1MoveToPick(double target, bool open_vacuum,bool need_return, bool check_softlanding, int timeout)
+bool SensorPickArm::MoveZ1Synic(double target, int timeout)
 {
-    if(check_softlanding)if(!picker1->motor_z->resetSoftLanding(timeout))return false;
-    bool result = picker1->motor_z->MoveToPosSync(target);
-    result &= picker1->vacuum->Set(open_vacuum);
-    if(need_return)
-    picker1->motor_z->MoveToPosSync(0);
-    return result;
+    return picker1->motor_z->MoveToPosSync(target,-1,timeout);
 }
 
-bool SensorPickArm::Z1SerchByForce(double speed, double force, bool check_softlanding, int timeout)
+bool SensorPickArm::Z1MeasureHeight(double speed, double force,int hold_time, int timeout)
 {
-    if(check_softlanding)if(!picker1->motor_z->resetSoftLanding(timeout))return false;
+    if(!picker1->motor_z->resetSoftLanding(timeout))return false;
     bool result = picker1->motor_z->SearchPosByForce(speed,force);
-    QThread::msleep(200);
+    if(hold_time > 0)
+        QThread::msleep(hold_time);
     softlanding_position = picker1->motor_z->GetFeedbackPos();
-    result &= picker1->motor_z->DoSoftLandingReturn();
-    result &= picker1->motor_z->WaitSoftLandingDone(timeout);
+    result &= picker1->motor_z->resetSoftLanding(timeout);
     return result;
 }
 
-bool SensorPickArm::Z1SerchByForce(double speed, double force, double limit, double margin, int finish_time, bool open_vacuum,bool need_return, int timeout)
+bool SensorPickArm::Z1SearchByForce(double speed,double force,double limit,double margin,int timeout)
 {
-    qInfo("SensorPickArm::ZSerchByForce timeout %d",timeout);
-    bool result = picker1->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
-    if(result)
-        result &= picker1->vacuum->Set(open_vacuum);
-    softlanding_position = picker1->motor_z->GetFeedbackPos();
-    if(need_return)
-    {
-        result &= picker1->motor_z->DoSoftLandingReturn();
-        result &= picker1->motor_z->WaitSoftLandingDone(timeout);
-    }
-    return result;
+    return picker1->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
 }
 
-bool SensorPickArm::ZSerchReturn(int timeout)
+bool SensorPickArm::Z1SerchReturn(int timeout)
 {
     return picker1->motor_z->resetSoftLanding(timeout);
 }
@@ -334,55 +345,41 @@ bool SensorPickArm::MoveZ2ToSafeHeighSync()
     return picker2->motor_z->MoveToPosSync(parameters.motor2SafeHeight());
 }
 
-double SensorPickArm::GetSoftladngPosition(bool get_current)
+double SensorPickArm::GetZ1MeasuredHeight(bool get_current)
 {
     if(get_current)
         return picker1->motor_z->GetFeedbackPos();
     return softlanding_position;
 }
 
-bool SensorPickArm::Z2MoveToPick(double target, bool open_vacuum,bool need_return, bool check_softlanding, int timeout)
+bool SensorPickArm::MoveZ2Synic(double target, int out_time)
 {
-    if(check_softlanding)if(!picker2->motor_z->resetSoftLanding(timeout))return false;
-    bool result = picker2->motor_z->MoveToPosSync(target);
-    result &= picker2->vacuum->Set(open_vacuum);
-    if(need_return)
-        MoveZ2ToSafeHeighSync();
-    return result;
+    return picker2->motor_z->MoveToPosSync(target,-1,out_time);
 }
 
-bool SensorPickArm::Z2SerchByForce(double speed, double force, bool check_softlanding, int timeout)
+bool SensorPickArm::Z2MeasureHeight(double speed, double force,int hold_time, int out_time)
 {
-    if(check_softlanding)if(!picker2->motor_z->resetSoftLanding(timeout))return false;
+    if(!picker2->motor_z->resetSoftLanding(out_time))return false;
     bool result = picker2->motor_z->SearchPosByForce(speed,force);
-    QThread::msleep(200);
+    if(hold_time > 0)
+    QThread::msleep(hold_time);
     softlanding_position = picker2->motor_z->GetFeedbackPos();
-    result &= picker2->motor_z->DoSoftLandingReturn();
-    result &= picker2->motor_z->WaitSoftLandingDone(timeout);
+    result &= picker2->motor_z->resetSoftLanding(out_time);
     return result;
 
 }
 
-bool SensorPickArm::Z2SerchByForce(double speed, double force, double limit, double margin, int finish_time, bool open_vacuum,bool need_return, int timeout)
+bool SensorPickArm::Z2SerchByForce(double speed,double force,double limit,double margin, int timeout)
 {
-    bool result = picker2->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
-    if(result)
-        result &= picker2->vacuum->Set(open_vacuum);
-    softlanding_position = picker2->motor_z->GetFeedbackPos();
-    if(need_return)
-    {
-        result &= picker2->motor_z->DoSoftLandingReturn();
-        result &= picker2->motor_z->WaitSoftLandingDone(timeout);
-    }
-    return result;
+    return picker2->motor_z->SearchPosByForce(speed,force,limit,margin,timeout);
 }
 
-bool SensorPickArm::ZSerchReturn2(int timeout)
+bool SensorPickArm::Z2SerchReturn(int timeout)
 {
     return picker2->motor_z->resetSoftLanding(timeout);
 }
 
-double SensorPickArm::GetSoftladngPosition2(bool get_current)
+double SensorPickArm::GetZ2MeasuredHeight(bool get_current)
 {
     if(get_current)
         return picker1->motor_z->GetFeedbackPos();

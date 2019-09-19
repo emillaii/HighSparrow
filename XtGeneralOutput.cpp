@@ -53,11 +53,11 @@ int XtGeneralOutput::GetID()
     return output_id;
 }
 
-void XtGeneralOutput::Set(bool value, int thread)
+bool XtGeneralOutput::Set(bool value, int thread)
 {
-    if(is_debug)return;
+    if(is_debug)return true;
     if(output_id<0)
-        return;
+        return false;
     if(thread<0)
     {
         XT_Controler_Extend::DigitOut_PreciousTrig_SetCurIoOutput(output_id,value?1:0);

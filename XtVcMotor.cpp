@@ -55,6 +55,7 @@ void XtVcMotor::ChangeDiretion(bool befor_seek)
 void XtVcMotor::Init()
 {
     name = parameters.motorName();
+    setName(name);
     origin.Init(name+"_O");
     origin2.Init(name+"_O2");
     max_vel = 100;
@@ -136,6 +137,7 @@ void XtVcMotor::Enable()
     if(!is_init)
         return;
     is_enable = true;
+    SetServoOnOff(vcm_id,is_enable);
 }
 
 void XtVcMotor::Disable()
@@ -143,6 +145,7 @@ void XtVcMotor::Disable()
     if(!is_init)
         return;
     is_enable = false;
+    SetServoOnOff(vcm_id,is_enable);
     states.setSeekedOrigin(false);
 }
 
@@ -395,20 +398,6 @@ bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int
     return res;
 }
 
-double XtVcMotor::SearchPosByForceOnyDown(double speed, double force, int timeout)
-{
-    if(!is_init)
-        return 0.0;
-    double start_pos = GetOutpuPos();
-    SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.1);
-    bool res;
-    res = DoSoftLanding();
-    res &= WaitSoftLandingDone(timeout);
-    if(res)
-        return  GetFeedbackPos();
-    return start_pos;
-}
-
 void XtVcMotor::RestoreForce()
 {
     if(!is_init)
@@ -429,7 +418,7 @@ void XtVcMotor::SetSoftLanding(double slow_speed, double slow_acc, double force,
     if(!is_init)
         return;
     qInfo("slow_speed:%f start_pos: %f,force:%f,target_pos:%f,margin:%f",slow_speed,start_pos,force,target_pos,margin);
-    QMutexLocker l(&setSoftLanding_mutex);
+    QMutexLocker locker(&setSoftLanding_mutex);
     SetFastSpeed(vcm_id,max_vel);
     SetFastAcc(vcm_id, max_acc);
     SetSlowSpeed(vcm_id, slow_speed);

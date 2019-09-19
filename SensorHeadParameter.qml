@@ -227,31 +227,61 @@ ColumnLayout {
     }
     RowLayout{
         Label{
-            text:qsTr("吸头1初始角度")
+            text:qsTr("吸头1吸料角度")
         }
         TextField{
-            text:sensorLoaderParameter.picker1ThetaOffset
+            text:sensorLoaderParameter.picker1PickTheta
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sensorLoaderParameter.setPicker1ThetaOffset(text)
+                sensorLoaderParameter.setPicker1PickTheta(text)
             }
         }
         Label{
-            text:qsTr("吸头2初始角度")
+            text:qsTr("吸头1放料角度")
         }
         TextField{
-            text:sensorLoaderParameter.picker2ThetaOffset
+            text:sensorLoaderParameter.picker1PlaceTheta
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sensorLoaderParameter.setPicker2ThetaOffset(text)
+                sensorLoaderParameter.setPicker1PlaceTheta(text)
+            }
+        }
+    }
+    RowLayout{
+        Label{
+            text:qsTr("吸头2吸料角度")
+        }
+        TextField{
+            text:sensorLoaderParameter.picker2PickTheta
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPicker2PickTheta(text)
+            }
+        }
+        Label{
+            text:qsTr("吸头2放料角度")
+        }
+        TextField{
+            text:sensorLoaderParameter.picker2PlaceTheta
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPicker2PlaceTheta(text)
             }
         }
     }

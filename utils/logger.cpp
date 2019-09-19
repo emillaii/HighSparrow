@@ -6,6 +6,7 @@
 #include <QThread>
 #include <iostream>
 #include <QMutex>
+#include <qtextcodec.h>
 // declear a motion logging category:
 // QLoggingCategory motionLog("motion");
 
@@ -37,6 +38,7 @@ void initLoggingSystem()
     if(logFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
     {
         logStream.setDevice(&logFile);
+        logStream.setCodec(QTextCodec::codecForName("utf8"));
     }
 }
 
@@ -71,7 +73,8 @@ void messageLogger(QtMsgType type, const QMessageLogContext &context, const QStr
     fileName = fileName.mid(index + 1);
     QString log = qFormatLogMessage(type, context, msg);
 
-    std::cout << log.toStdString().c_str() << std::endl; // print to system console
+    QTextCodec *gbk = QTextCodec::codecForName("gbk");
+    std::cout << gbk->fromUnicode(log).toStdString().c_str() << std::endl; // print to system console
     //LogModel::instance()->addLog(log); // add to log model
     logStream << log << endl; // stream to log file
     LogModel::instance()->addLog(log); // add to log model

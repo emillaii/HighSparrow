@@ -85,5 +85,47 @@
         <file>qml/FlowchartWeb.qml</file>
         <file>MaterialTray3.qml</file>
         <file>MaterialTray4.qml</file>
+        <file>Page7Form.ui.qml</file>
+        <file>TCPMachineConfigListView.qml</file>
+        <file>qml/TCPAAHeadModule/TCPAAHeadMushroomPosition.qml</file>
+        <file>qml/TCPAAHeadModule/TCPAAHeadPickLensPosition.qml</file>
+        <file>qml/TCPAAHeadModule/TCPAAHeadModuleView.qml</file>
+        <file>qml/TCPAAHeadModule/TCPAAHeadOCPosition.qml</file>
+        <file>qml/TCPSUTModule/TCPSUTLoadPositionView.qml</file>
+        <file>qml/TCPSUTModule/TCPSUTModuleView.qml</file>
+        <file>qml/TCPSUTModule/TCPSUTMushroomPosition.qml</file>
+        <file>qml/TCPSUTModule/TCPSUTOCPositionView.qml</file>
+        <file>qml/TCPSUTModule/TCPSUTPRPositionView.qml</file>
+        <file>qml/TCPSUTModule/TCPSUTSafetyPositionView.qml</file>
+        <file>qml/TCPSUTModule/TCPSUTToollookPosition.qml</file>
+        <file>qml/TCPSUTModule/TCPSUTToolUplookPosition.qml</file>
+        <file>qml/TCPDispenseModule/TCPDispenseModuleView.qml</file>
+        <file>qml/TCPDispenseModule/TCPDispenseParam.qml</file>
+        <file>qml/TCPDispenseModule/TCPDispenserParam.qml</file>
+        <file>qml/TCPDispenseModule/TCPDispenseXYOffset.qml</file>
+        <file>qml/TCPDispenseModule/TCPDispenseZPos.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTAA1PickLensPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTAA1UnpickLensPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTAA1UpDownlookPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTAA1UplookPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTAA2PickLensPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTAA2UnPickLensPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTAA2UpDownlookPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTAA2UplookPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTDownlookLoadPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTDownlookUnloadPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTLoadPositionView.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTLoadUplookPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTModuleView.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTPick2PositionView.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTPickPositionView.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTPRPositionView.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTSafetyPositionView.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTUnloadPosition.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTUnPick2PositionView.qml</file>
+        <file>qml/TCPLUTModule/TCPLUTUnPickPositionView.qml</file>
+        <file>qml/TCPTrayLoaderModule/TCPTrayLoaderModuleView.qml</file>
+        <file>qml/TCPSensorTrayLoaderModule/TCPSensorTrayLoaderViewModule.qml</file>
+        <file>qml/SUTModule/SUTDownlookFlyPositionView.qml</file>
     </qresource>
 </RCC>

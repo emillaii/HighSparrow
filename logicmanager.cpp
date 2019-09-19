@@ -313,7 +313,9 @@ void LogicManager::autoRun(QString json){
     setStateMessage(__FUNCTION__);moveToCmd(CommandType::MODE_AUTO_RUN);
 }
 
-void LogicManager::performOC(){setStateMessage(__FUNCTION__);moveToCmd(CommandType::PERFORM_OC);}
+void LogicManager::performOC(){
+    setStateMessage(__FUNCTION__);moveToCmd(CommandType::PERFORM_OC);}
+
 void LogicManager::performLoopTest(int mode){
     qInfo("Loop Test Mode: %d", mode);
     setStateMessage(__FUNCTION__);
@@ -669,12 +671,12 @@ bool LogicManager::trayLoaderModuleCheckLTLXSetPos(double x)
 
 void LogicManager::trayLoaderModuleLTLXPickUpTray()
 {
-    baseModuleManage->tray_loader_module.onTestLTLXPickUpTray();
+//    baseModuleManage->tray_loader_module.onTestLTLXPickUpTray();
 }
 
 void LogicManager::trayLoaderModuleLTLXPutDownTray()
 {
-    baseModuleManage->tray_loader_module.onTestLTLXPutDownTray();
+//    baseModuleManage->tray_loader_module.onTestLTLXPutDownTray();
 }
 
 void LogicManager::sensorTrayLoaderModuleSTIEMovetoColumnIndex(int n)
@@ -797,11 +799,152 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd)
             states.setHandlingMessage(u8"正在执行UV……");
             performUV();
         }
+        else if (cmd == CommandType::LOAD_LENS_FROM_TRAY_1_AND_PICK_TO_AA1)
+        {
+            states.setHandlingMessage(u8"正在执行从盘1上Lens到AA1……");
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY1+
+                                                                 baseModuleManage->lens_loader_module.LENS_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PICK_LENS_FROM_TRAY);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS1+
+                                                                 baseModuleManage->lens_loader_module.RESET_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PLACE_LENS_TO_LUT);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lut_module.moveToAA1PickLens(false,false,true);
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            qInfo("LOAD_LENS_FROM_TRAY_1_AND_PICK_TO_AA1 complete!");
+        }
+        else if (cmd == CommandType::LOAD_LENS_FROM_TRAY_2_AND_PICK_TO_AA1)
+        {
+            states.setHandlingMessage(u8"正在执行从盘2上Lens到AA1……");
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY2+
+                                                                 baseModuleManage->lens_loader_module.LENS_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PICK_LENS_FROM_TRAY);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS1+
+                                                                 baseModuleManage->lens_loader_module.RESET_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PLACE_LENS_TO_LUT);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lut_module.moveToAA1PickLens(false,false,true);
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            qInfo("LOAD_LENS_FROM_TRAY_2_AND_PICK_TO_AA1 complete!");
+        }
+        else if (cmd == CommandType::LOAD_LENS_FROM_TRAY_1_AND_PICK_TO_AA2)
+        {
+            states.setHandlingMessage(u8"正在执行从盘1上Lens到AA2……");
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY1+
+                                                                 baseModuleManage->lens_loader_module.LENS_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PICK_LENS_FROM_TRAY);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS1+
+                                                                 baseModuleManage->lens_loader_module.RESET_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PLACE_LENS_TO_LUT);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lut_module.moveToAA2PickLens(false,false,true);
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            qInfo("LOAD_LENS_FROM_TRAY_1_AND_PICK_TO_AA2 complete!");
+        }
+        else if (cmd == CommandType::LOAD_LENS_FROM_TRAY_2_AND_PICK_TO_AA2)
+        {
+            states.setHandlingMessage(u8"正在执行从盘2上Lens到AA1……");
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY2+
+                                                                 baseModuleManage->lens_loader_module.LENS_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PICK_LENS_FROM_TRAY);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS1+
+                                                                 baseModuleManage->lens_loader_module.RESET_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PLACE_LENS_TO_LUT);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lut_module.moveToAA2PickLens(false,false,true);
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            qInfo("LOAD_LENS_FROM_TRAY_2_AND_PICK_TO_AA2 complete!");
+        }
+        else if (cmd == CommandType::UNPICK_LENS_FROM_AA1_AND_PLACE_TO_TRAY1)
+        {
+            states.setHandlingMessage(u8"正在执行从AA1取Lens到盘1……");
+            baseModuleManage->lut_module.moveToAA1UnPickLens(true,true);
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS2+
+                                                                 baseModuleManage->lens_loader_module.LUT_LENS_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY1+
+                                                                 baseModuleManage->lens_loader_module.VACANCY_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PLACE_NG_LENS_TO_TRAY);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            qInfo("UNPICK_LENS_FROM_AA1_AND_PLACE_TO_TRAY1 complete!");
+        }
+        else if (cmd == CommandType::UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY1)
+        {
+            states.setHandlingMessage(u8"正在执行从AA2取Lens到盘1……");
+            baseModuleManage->lut_module.moveToAA2UnPickLens(true,true);
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS2+
+                                                                 baseModuleManage->lens_loader_module.LUT_LENS_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY1+
+                                                                 baseModuleManage->lens_loader_module.VACANCY_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PLACE_NG_LENS_TO_TRAY);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            qInfo("UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY1 complete!");
+        }
+        else if (cmd == CommandType::UNPICK_LENS_FROM_AA1_AND_PLACE_TO_TRAY2)
+        {
+            states.setHandlingMessage(u8"正在执行从AA1取Lens到盘2……");
+            baseModuleManage->lut_module.moveToAA1UnPickLens(true,true);
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS2+
+                                                                 baseModuleManage->lens_loader_module.LUT_LENS_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY2+
+                                                                 baseModuleManage->lens_loader_module.VACANCY_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PLACE_NG_LENS_TO_TRAY);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            qInfo("UNPICK_LENS_FROM_AA1_AND_PLACE_TO_TRAY2 complete!");
+        }
+        else if (cmd == CommandType::UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY2)
+        {
+            states.setHandlingMessage(u8"正在执行从AA2取Lens到盘2……");
+            baseModuleManage->lut_module.moveToAA2UnPickLens(true,true);
+            baseModuleManage->lut_module.moveToLoadPos(true, false);
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS2+
+                                                                 baseModuleManage->lens_loader_module.LUT_LENS_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY2+
+                                                                 baseModuleManage->lens_loader_module.VACANCY_PR+
+                                                                 baseModuleManage->lens_loader_module.ToWork+
+                                                                 baseModuleManage->lens_loader_module.PLACE_NG_LENS_TO_TRAY);
+            baseModuleManage->lens_loader_module.waitPerformHandling();
+            qInfo("UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY2 complete!");
+        }
     }
     else if(baseModuleManage->workers.contains(module_name))//单一模块动作
     {
         baseModuleManage->workers[module_name]->performHandling(cmd);
     }
+    qInfo("LogicManager performHandlingOperation complete!");
     is_handling = false;
     states.setIsHandling(false);
 }

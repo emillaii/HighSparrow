@@ -74,7 +74,7 @@ public slots:
     void receiveChangeTrayFinish();
 private:
     void run(bool has_material);
-    void runTest();
+//    void runTest();
 
     bool moveToNextTrayPos(int tray_index);
     bool moveToLUTPRPos1(bool check_softlanding = false);
@@ -121,6 +121,12 @@ private:
     Q_INVOKABLE void clearNumber();
     void updateNumber();
     double getHourSpace(QTime time_label);
+
+    //真空操作
+    bool openLoadVacuum();
+    bool closeLoadVacuum();
+    bool openUnloadVacuum();
+    bool closeUnloadVacuum();
 
     bool isRunning();
     // ThreadWorkerBase interface

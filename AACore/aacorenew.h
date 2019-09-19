@@ -44,7 +44,10 @@ public:
         UV = 8,
         OTP = 9,
         UNLOAD_CAMERA = 10,
-        Z_OFFSET = 11
+        Z_OFFSET = 11,
+        LENS_VCM_POS =12,
+        MOVE_LENS = 13,
+        INIT_VCM =14
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
@@ -53,13 +56,13 @@ public:
     void performAAOffline();
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
+    ErrorCodeStruct performVCMInit(QJsonValue params);
     ErrorCodeStruct performInitSensor(int finish_delay = 0,bool check_map = false);
     ErrorCodeStruct performPRToBond(int finish_delay);
     ErrorCodeStruct performLoadMaterial(int finish_delay);
     ErrorCodeStruct performAA(QJsonValue params);
     ErrorCodeStruct performOC(QJsonValue params);
     ErrorCodeStruct performMTFNew(QJsonValue params,bool write_log = false);
-    //ErrorCodeStruct performMTFNew(QJsonValue params);
     ErrorCodeStruct performMTF(QJsonValue params);
     ErrorCodeStruct performMTFOffline(QJsonValue params);
     ErrorCodeStruct performZOffset(QJsonValue params);
@@ -96,6 +99,8 @@ public:
     ImageProvider * aaCoreTuningProvider;
     AACoreParameters parameters;
     AACoreStates states;
+    AAHeadModule* aa_head;
+    DispenseModule* dispense;
 private:
     bool is_run = false;
     QMutex lut_mutex;
@@ -118,13 +123,11 @@ private:
     QString loopTestResult;
     int currentAAMode;
     QString runningUnit;
-    AAHeadModule* aa_head;
     LutClient* lut;
     SutModule* sut;
     Dothinkey* dk;
     ImageGrabbingWorkerThread* imageThread;
     ChartCalibration* chartCalibration;
-    DispenseModule* dispense;
     Unitlog *unitlog;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;

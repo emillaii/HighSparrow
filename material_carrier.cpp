@@ -243,22 +243,12 @@ void MaterialCarrier::Move_XY_ToPos(double x, double y)
 
 bool MaterialCarrier::ZSerchByForce(const double speed,const double force,const double search_limit,const int vacuum_state,XtVacuum* excute_vacuum)
 {
-    qInfo("ZSerchByForce Start");
     if(nullptr != excute_vacuum)vacuum = excute_vacuum;
-    qInfo("CP 1");
     bool result  = motor_z->SearchPosByForce(speed,force);
-    qInfo("CP 2");
     if(!result)
     {
         motor_z->resetSoftLanding();
-        qInfo("CP 3");
-        motor_z->RestoreForce();
-        qInfo("CP 4");
     }
-    //    if(result && vacuum_state > -1&&vacuum != nullptr)
-    //        result &= vacuum->Set(vacuum_state > 0);
-    //    result &= motor_z->DoSoftLandingReturn();
-    //    result &= motor_z->WaitSoftLandingDone();
     return result;
 }
 

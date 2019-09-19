@@ -91,7 +91,8 @@ SOURCES += \
     tcpservermessager.cpp \ 
     uiControl/edge.cpp \
     uiControl/graphwidget.cpp \
-    uiControl/node.cpp
+    uiControl/node.cpp \
+    alarmmessageshower.cpp
 
 RESOURCES += myqml.qrc
 RESOURCES += icons.qrc
@@ -245,7 +246,9 @@ HEADERS += \
     uiControl/edge.h \
     uiControl/graphwidget.h \
     uiControl/node.h \
-    logicmanagerparameter.h
+    logicmanagerparameter.h \
+    alarmmessageshower.h \
+    ipcclient.h
 
 DISTFILES += \
     icons/index.theme

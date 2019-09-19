@@ -1,4 +1,4 @@
-#include "tcpmessager.h"
+ï»¿#include "tcpmessager.h"
 
 #include <qjsondocument.h>
 #include <qthread.h>
@@ -90,7 +90,7 @@ QString TcpMessager::inquiryMessage(QString message)
     QJsonObject result_message;
     if(result)
     {
-        is_waitting = true;//¶à¸öÏûÏ¢µÄ·µ»ØÐèÒª·Ö¿ª¡£¡£
+        is_waitting = true;//å¤šä¸ªæ¶ˆæ¯çš„è¿”å›žéœ€è¦åˆ†å¼€ã€‚ã€‚
         result = sendMessage(message);
         if(result)
         {
@@ -158,17 +158,9 @@ bool TcpMessager::onSendTextMessage(QString message)
     if (parameters.needQInfo())
         qDebug("%s tcp WebSocket send %s in thread %d",parameters.messagerName().toStdString().c_str(),message.toStdString().c_str(),QThread::currentThreadId());
      qint64 result = m_webSocket->sendTextMessage(message);
-
      if (parameters.needQInfo())
-         qDebug("%s tcp WebSocket send message size %d in thread %d",parameters.messagerName().toStdString().c_str(),message.size(),QThread::currentThreadId());
-     if(result != message.size())
-     {
-         QThread::msleep(1);
-         result = m_webSocket->sendTextMessage(message);
-         if (parameters.needQInfo())
-             qDebug("%s tcp WebSocket retry send message size %d in thread %d",parameters.messagerName().toStdString().c_str(),message.size(),QThread::currentThreadId());
-     }
-     return result == message.size();
+         qDebug("%s tcp WebSocket send result %d message size %d in thread %d",parameters.messagerName().toStdString().c_str(),result,message.size(),QThread::currentThreadId());
+     return result > 0;
 }
 
 void TcpMessager::onReceiveTextMessage(QString message)

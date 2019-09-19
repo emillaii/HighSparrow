@@ -16,6 +16,7 @@ $(document).ready(function () {
   var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0 };
   var init_save_image = { type: 0, lighting: 100 };
   var init_grr_params ={ change_lens: 1, change_sensor: 0, repeat_time: 10,change_time: 11};
+  var init_lens_params = { target_position: 70,delay_in_ms: 0 }
   var latestCreatedLinkId;
   var $linkProperties = $('#link_properties');
   var $operatorTitle = $('#operator_title');
@@ -42,6 +43,8 @@ $(document).ready(function () {
   var $y_level_operator_properties = $('#y_level_operator_properties');
   var $mtf_table = $('#mtf_table');
   var $linkColor = $('#link_color');
+  var $init_lens_operator_title = $('#init_lens_operator_title');
+  var $init_lens_operator_properties = $('#init_lens_operator_properties');
 
   //Init the table 
   $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button></div></div></div>");
@@ -97,6 +100,9 @@ $(document).ready(function () {
   
   $uv_operator_properties.append("<div style=\"margin-top:20px\">Enable OTP: <select id=\"uv_enable_OTP\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $uv_operator_properties.append("<div style=\"margin-top:20px\">UV time: <input type=\"number\" id=\"uv_time_in_ms\" value=3000></div>"); 
+  
+  $init_lens_operator_properties.append("<div style=\"margin-top:20px\">Target Position: <input type=\"number\" id=\"init_lens_target_position\" value=70></div>");
+  $init_lens_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"init_lens_delay_in_ms\" value=0></div>"); 
   // Apply the plugin on a standard, empty div...
   var $flowchart = $('#example_7');
   $mtf_table.hide();
@@ -120,6 +126,7 @@ $(document).ready(function () {
 	  $mtf_table.hide();
 	  $y_level_operator_properties.hide();
 	  $uv_operator_properties.hide();
+	  $init_lens_operator_properties.hide();
       if (operatorId.includes("AA_")) {
         $aa_operator_properties.show();
         $aa_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -198,7 +205,7 @@ $(document).ready(function () {
 				var cell3 = row.insertCell(2);
 				var select_position = document.createElement('select');
 				var sfr_score = document.createElement('input');
-				select_position.innerHTML = "<option value=CC>CC</option><option value=UL>UL</option><option value=UR>UR</option><option value=LL>LL</option><option value=LR>LR</option><option value=SFR_DEV_TOL>08F ROI SFR MIN DEV</option><option value=CC_TOL>CC MIN SFR</option><option value=03F_TOL>03F MIN SFR</option><option value=05F_TOL>05F MIN SFR</option><option value=08F_TOL>08F MIN SFR</option>";
+				select_position.innerHTML = "<option value=CC>CC</option><option value=UL>UL</option><option value=UR>UR</option><option value=LL>LL</option><option value=LR>LR</option><option value=SFR_DEV_TOL>SFR_DEV_TOL</option><option value=CC_TOL>CC_TOL</option><option value=03F_TOL>03F_TOL</option><option value=05F_TOL>05F_TOL</option><option value=08F_TOL>08F_TOL</option>";
 				select_position.value = key;
 				cell1.appendChild(select_position);
 				sfr_score.value = params[key]; sfr_score.type="number"; 
@@ -225,6 +232,11 @@ $(document).ready(function () {
 		$uv_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
 		$('#uv_time_in_ms').val(params["time_in_ms"]);
         $('#uv_enable_OTP').val(params["enable_OTP"]);
+	  }else if (operatorId.includes("Init_Lens")) {
+		$init_lens_operator_properties.show();
+		$init_lens_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+        $('#init_lens_target_position').val(params["target_position"]);
+		$('#init_lens_delay_in_ms').val(params["delay_in_ms"]);
 	  }
 	  else {
         $operator_properties.show();
@@ -247,6 +259,7 @@ $(document).ready(function () {
 	  $mtf_table.hide();
 	  $y_level_operator_properties.hide();
 	  $uv_operator_properties.hide();
+	  $init_lens_operator_properties.hide();
       return true;
     },
 	onOperatorCreate: function (operatorId, operatorData, fullElement) {
@@ -420,7 +433,13 @@ $(document).ready(function () {
 	  enable_OTP:  Number($('#uv_enable_OTP').val())
 	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
-    }else {
+    } else if (selectedOperatorId.includes("Init_Lens")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#init_lens_operator_title').val());
+	  var params = { delay_in_ms: Number($('#init_lens_delay_in_ms').val()),
+	  target_position:  Number($('#init_lens_target_position').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+    } else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()),
 	  delay_in_ms: Number($('#basic_delay').val())
@@ -474,7 +493,10 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr_params);
 	}else if (operatorId.includes("UV")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_uv_params);
-	}else {
+	}else if (operatorId.includes("Init_Lens")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_lens_params);
+	}
+	else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
     }
   }
@@ -527,7 +549,10 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr_params);
 	}else if (operatorId.includes("UV")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_uv_params);
-	}else {
+	}else if (operatorId.includes("Init_Lens")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_lens_params);
+	}
+	else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
     }
   }
@@ -769,6 +794,12 @@ $(document).ready(function () {
 	  enable_OTP:  Number($('#uv_enable_OTP').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    } else if (selectedOperatorId.includes("Init_Lens")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#init_lens_operator_title').val());
+	  var params = { delay_in_ms: Number($('#init_lens_delay_in_ms').val()),
+	  target_position:  Number($('#init_lens_target_position').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     }else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()),
@@ -829,7 +860,7 @@ $(document).ready(function () {
 		var cell1 = row.insertCell(0);
 		var cell2 = row.insertCell(1);
 		var cell3 = row.insertCell(2);
-		cell1.innerHTML = "<select><option value=CC>CC</option><option value=UL>UL</option><option value=UR>UR</option><option value=LL>LL</option><option value=LR>LR</option><option value=SFR_DEV_TOL>08F ROI SFR MIN DEV</option><option value=CC_TOL>CC MIN SFR</option><option value=03F_TOL>03F MIN SFR</option><option value=05F_TOL>05F MIN SFR</option><option value=08F_TOL>08F MIN SFR</option></select>";
+		cell1.innerHTML = "<select><option value=CC>CC</option><option value=UL>UL</option><option value=UR>UR</option><option value=LL>LL</option><option value=LR>LR</option><option value=SFR_DEV_TOL>SFR_DEV_TOL</option><option value=CC_TOL>CC_TOL</option><option value=03F_TOL>03F_TOL</option><option value=05F_TOL>05F_TOL</option><option value=08F_TOL>08F_TOL</option></select>";
 		cell2.innerHTML = "<input value=50 type=\"number\" min=0 max=100>";
 		var delete_btn = document.createElement('button');
 		delete_btn.className = "btn-danger";
@@ -871,6 +902,7 @@ $(document).ready(function () {
   $('#create_save_image').click(function () { addOperationWidget("Save Image"); });
   $('#create_disp').click(function () { addMultipleOperationWidget("Dispense"); });
   $('#create_uv').click(function () { addMultipleOperationWidget("UV"); });
+  $('#create_init_lens').click(function () { addMultipleOperationWidget("Init_Lens"); });
   $('#create_delay').click(function () { addOperationWidget("Delay"); });
   $('#create_accept').click(function () { addEndWidget("Accept"); });
   $('#create_reject').click(function () { addEndWidget("Reject"); });
@@ -1009,7 +1041,13 @@ $(document).ready(function () {
 	  enable_OTP:  Number($('#uv_enable_OTP').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-    }else {
+    } else if (selectedOperatorId.includes("Init_Lens")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#init_lens_operator_title').val());
+	  var params = { delay_in_ms: Number($('#init_lens_delay_in_ms').val()),
+	  target_position:  Number($('#init_lens_target_position').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    } else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()),
 	  delay_in_ms: Number($('#basic_delay').val())

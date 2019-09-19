@@ -27,11 +27,7 @@ struct ErrorCodeStruct
 typedef enum {
     TipNonblock = 0,
     WarningBlock = 1,
-    ContinueOrReject = 2,
-    ContinueOrRetry = 3,
-    RetryOrStop = 4,
-    ErrorMustStop = 5,
-    RetryOrReject = 6
+    ErrorMustStop = 2
 } ErrorLevel;
 
 
@@ -40,9 +36,9 @@ class ErrorBase
 public:
     ErrorBase(QString name = "Unnaming");
 private:
-    ErrorLevel error_level;
-    QString error_source;
-    QString error_content;
+    ErrorLevel error_level = TipNonblock;
+    QString error_source = "";
+    QString error_content = "";
 protected:
     QList<ErrorBase*> parts;
 public:
@@ -51,6 +47,6 @@ public:
     void setName(QString name);
     void AppendError(QString error);
     void AppendLineError(QString error = "");
-    QString GetCurrentError();
+    QString GetCurrentError(int layer = 0);
 };
 #endif // ERRORCODE_H

@@ -173,5 +173,5 @@ bool DispenseModule::performDispense()
    if( dispenser->Dispense(dispense_path))
        return dispenser->WaitForFinish();
     qInfo("Dispense fail");
-   return false;
+    return false;
 }

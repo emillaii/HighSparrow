@@ -1,5 +1,6 @@
 #include "vision/vision_location.h"
 #include <QThread>
+#include <qelapsedtimer.h>
 #include <utils/commonutils.h>
 #define PI 3.1415926535898
 VisionLocation::VisionLocation():ErrorBase ()
@@ -90,6 +91,8 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
 
 bool VisionLocation::performPR()
 {
+    QElapsedTimer timer; timer.start();
+    OpenLight();
     current_result.ReSet();
     PrOffset offset;
     QThread::msleep(parameters.waitImageDelay());
@@ -131,6 +134,9 @@ bool VisionLocation::performPR()
             }
             current_result = offset = temp_offset;
             qInfo("mech: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
+            CloseLight();
+            parameters.setPerformTime(timer.elapsed());
+            qInfo("PerformTime %d",parameters.performTime());
             return true;
         } else {
             qInfo("CalcMechDistance Fail");

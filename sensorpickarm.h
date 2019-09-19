@@ -19,6 +19,8 @@ public:
     bool move_XYT1_Pos(const double x,const double y,const double t,const bool check_arrived = false,const bool check_softlanding = false,int timeout = 10000);
     bool checkXYT2Arrived(const double x,const double y,const double t);
     bool move_XYT2_Synic(const double x,const double y,const double t,const bool check_arrived = false,const bool check_softlanding = false,int timeout = 10000);
+    bool checkXYT1T2Arrived(const double x,const double y,const double t1,const double t2);
+    bool move_XYT1T2_Synic(const double x,const double y,const double t1,const double t2,const bool check_arrived = false,const bool check_softlanding = false,int timeout = 10000);
     bool move_XYT2_Pos(const double x,const double y,const double t,const bool check_arrived = false,const bool check_softlanding = false,int timeout = 10000);
     bool move_XeYe_Z1_XY(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
     bool move_XeYe_Z2(double z, double escape_x,double escape_y, const bool check_softlanding = false,int timeout = 10000);
@@ -30,20 +32,20 @@ public:
     bool stepMove_XYT2_Pos(const double step_x,const double step_y,const double step_t2,const bool check_softlanding = false,int timeout = 10000);
     bool wait_XYT2_Arrived(int timeout = 10000);
 
-    bool Z1MoveToPick(double target,bool open_vacuum,bool need_return,bool check_softlanding = false,int timeout = 10000);
-    bool Z1SerchByForce(double speed,double force,bool check_softlanding = false,int timeout = 10000);
-    bool Z1SerchByForce(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);
-    bool ZSerchReturn(int timeout = 10000);
+    bool MoveZ1Synic(double target,int timeout = 10000);
+    bool Z1MeasureHeight(double speed,double force,int hold_time = 200,int timeout = 10000);
+    bool Z1SearchByForce(double speed,double force,double limit,double margin,int timeout = 10000);
+    bool Z1SerchReturn(int timeout = 10000);
     bool MoveZ1ToSafeHeighSync();
+    double GetZ1MeasuredHeight(bool get_current = false);
+
+
+    bool MoveZ2Synic(double target,int timeout = 10000);
+    bool Z2MeasureHeight(double speed,double force,int hold_time = 200,int outtime = 10000);
+    bool Z2SerchByForce(double speed,double force,double limit,double margin, int timeout = 10000);
+    bool Z2SerchReturn(int timeout = 10000);
     bool MoveZ2ToSafeHeighSync();
-    double GetSoftladngPosition(bool get_current = false);
-
-
-    bool Z2MoveToPick(double target,bool open_vacuum,bool need_return,bool check_softlanding = false,int timeout = 10000);
-    bool Z2SerchByForce(double speed,double force,bool check_softlanding = false,int timeout = 10000);
-    bool Z2SerchByForce(double speed,double force,double limit,double margin,int finish_time,bool open_vacuum = true,bool need_return = true, int timeout = 10000);
-    bool ZSerchReturn2(int timeout = 10000);
-    double GetSoftladngPosition2(bool get_current = false);
+    double GetZ2MeasuredHeight(bool get_current = false);
 private:
 public:
     SensorPickArmParameter parameters;

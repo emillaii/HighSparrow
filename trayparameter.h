@@ -14,8 +14,8 @@ public:
     Q_PROPERTY(bool needChange READ needChange WRITE setNeedChange NOTIFY needChangeChanged)
     Q_PROPERTY(QString trayName READ trayName WRITE setTrayName NOTIFY trayNameChanged)
     Q_PROPERTY(int trayNumber READ trayNumber WRITE setTrayNumber NOTIFY trayNumberChanged)
-    QList<QVariantMap> tray_material_data;
-    QList<int> tray_material_state;
+    Q_PROPERTY(QVariantList trayMaterialData READ trayMaterialData WRITE setTrayMaterialData NOTIFY trayMaterialDataChanged)
+    Q_PROPERTY(QVariantList trayMaterialState READ trayMaterialState WRITE setTrayMaterialState NOTIFY trayMaterialStateChanged)
     Position tray_start_position;
     int currentIndex() const
     {
@@ -41,20 +41,43 @@ public:
         return m_trayNumber;
     }
 
+    QVariantList trayMaterialData() const
+    {
+        return m_trayMaterialData;
+    }
+
+    QVariantMap trayMaterialData(int index) const
+    {
+        if(index >= m_trayMaterialData.count())
+            return QVariantMap();
+        return m_trayMaterialData[index].toMap();
+    }
+
+    QVariantList trayMaterialState() const
+    {
+        return m_trayMaterialState;
+    }
+
+    int trayMaterialState(int index) const
+    {
+        if(index >= m_trayMaterialState.count())
+            return -1;
+        return m_trayMaterialState[index].toInt();
+    }
 public slots:
     void changeTrayCount(int count)
     {
-        while (count != tray_material_state.count()) {
+        while (count != m_trayMaterialState.count()) {
 
-            if(count > tray_material_state.count())
+            if(count > m_trayMaterialState.count())
             {
-                tray_material_state.append(m_initState);
-                tray_material_data.append(QVariantMap());
+                m_trayMaterialData.append(QVariantMap());
+                m_trayMaterialState.append(m_initState);
             }
             else
             {
-                tray_material_state.removeLast();
-                tray_material_data.removeLast();
+                m_trayMaterialData.removeLast();
+                m_trayMaterialState.removeLast();
             }
         }
     }
@@ -102,6 +125,41 @@ public slots:
         emit trayNumberChanged(m_trayNumber);
     }
 
+    void setTrayMaterialData(QVariantList trayMaterialData)
+    {
+        if (m_trayMaterialData == trayMaterialData)
+            return;
+
+        m_trayMaterialData = trayMaterialData;
+        emit trayMaterialDataChanged(m_trayMaterialData);
+    }
+
+    void setTrayMaterialData(int index,QVariantMap trayMaterialData)
+    {
+        if (index >= m_trayMaterialData.count())
+            return;
+        m_trayMaterialData[index] = trayMaterialData;
+        emit trayMaterialDataChanged(m_trayMaterialData);
+    }
+
+    void setTrayMaterialState(QVariantList trayMaterialState)
+    {
+        if (m_trayMaterialState == trayMaterialState)
+            return;
+
+        m_trayMaterialState = trayMaterialState;
+        emit trayMaterialStateChanged(m_trayMaterialState);
+    }
+
+    void setTrayMaterialState(int index,int trayMaterialState)
+    {
+        if (index >= m_trayMaterialState.count())
+            return;
+
+        m_trayMaterialState[index] = trayMaterialState;
+        emit trayMaterialStateChanged(m_trayMaterialState);
+    }
+
 signals:
     void currentIndexChanged(int currentIndex);
     void initStateChanged(int initState);
@@ -112,12 +170,18 @@ signals:
 
     void trayNumberChanged(int trayNumber);
 
+    void trayMaterialDataChanged(QVariantList trayMaterialData);
+
+    void trayMaterialStateChanged(QVariantList trayMaterialState);
+
 private:
     int m_currentIndex = 0;
     int m_initState = 0;
     bool m_needChange = false;
     QString m_trayName = u8"1号Sensor盘";
     int m_trayNumber = 0;
+    QVariantList m_trayMaterialData;
+    QVariantList m_trayMaterialState;
 };
 
 #endif // MATERRIALTRAY_PARAMETER_H

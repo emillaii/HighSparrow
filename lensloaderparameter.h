@@ -11,6 +11,7 @@ class LensLoaderModuleParameter:public PropertyBase
 public:
     LensLoaderModuleParameter():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
+    Q_PROPERTY(bool handlyChangeLens READ handlyChangeLens WRITE setHandlyChangeLens NOTIFY handlyChangeLensChanged)
     Q_PROPERTY(double vcmWorkForce READ vcmWorkForce WRITE setVcmWorkForce NOTIFY vcmWorkForceChanged)
     Q_PROPERTY(double vcmWorkSpeed READ vcmWorkSpeed WRITE setVcmWorkSpeed NOTIFY vcmWorkSpeedChanged)
     Q_PROPERTY(double vcmMargin READ vcmMargin WRITE setVcmMargin NOTIFY vcmMarginChanged)
@@ -180,6 +181,11 @@ public:
     bool openTimeLog() const
     {
         return m_openTimeLog;
+    }
+
+    bool handlyChangeLens() const
+    {
+        return m_handlyChangeLens;
     }
 
 public slots:
@@ -453,6 +459,15 @@ public slots:
         emit openTimeLogChanged(m_openTimeLog);
     }
 
+    void setHandlyChangeLens(bool handlyChangeLens)
+    {
+        if (m_handlyChangeLens == handlyChangeLens)
+            return;
+
+        m_handlyChangeLens = handlyChangeLens;
+        emit handlyChangeLensChanged(m_handlyChangeLens);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -510,6 +525,8 @@ signals:
 
     void openTimeLogChanged(bool openTimeLog);
 
+    void handlyChangeLensChanged(bool handlyChangeLens);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -541,6 +558,7 @@ private:
     int m_testLensCount = 10;
     bool m_staticTest = false;
     bool m_openTimeLog = false;
+    bool m_handlyChangeLens = false;
 };
 
 class LensPickArmModuleState:public PropertyBase

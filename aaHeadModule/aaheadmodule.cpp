@@ -384,3 +384,12 @@ bool AAHeadModule::XYZAB_Interpolation(double x, double y, double z, double a, d
     return false;
 }
 
+QMap<QString, PropertyBase *> AAHeadModule::getModuleParameter()
+{
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("AA_HEAD_PARAMS", &parameters);
+    temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
+    temp_map.insert("AA_PICK_LENS_POSITION", &this->pick_lens_position);
+    return temp_map;
+}
+

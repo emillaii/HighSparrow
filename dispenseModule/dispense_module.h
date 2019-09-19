@@ -21,6 +21,7 @@ public:
     Q_INVOKABLE void moveToDispenseDot(bool record_z = true);
     Q_INVOKABLE void calulateOffset(int digit = 4);
     Q_INVOKABLE bool performDispense();
+    Dispenser* dispenser = Q_NULLPTR;
 private:
     QVector<mPoint3D> getDispensePath();
 private:
@@ -34,7 +35,6 @@ private:
     double pr_x = 0;
     double pr_y = 0;
     double pr_theta = 0;
-    Dispenser* dispenser = Q_NULLPTR;
     VisionModule* vision = Q_NULLPTR;
     MaterialCarrier* carrier = Q_NULLPTR;
     XtGeneralOutput* dispense_io = Q_NULLPTR;

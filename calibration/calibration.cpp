@@ -52,8 +52,7 @@ bool Calibration::performCalibration()
         QThread::msleep(200);
     }
     else {
-        qInfo("This is not require vision, this is chart calibration");
-        return false;
+        qInfo("This is not require vision");
     }
 
     for (int i = 1; i<=4; i++)

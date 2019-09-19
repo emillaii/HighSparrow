@@ -5,8 +5,8 @@
 
 WorkersManager::WorkersManager(QObject *parent):QObject (parent)
 {
-//    this->moveToThread(&work_thread);
-//    this->work_thread.start();
+    this->moveToThread(&work_thread);
+    this->work_thread.start();
 }
 
 void WorkersManager::Init(QList<TcpMessager*> senders,QList<TcpMessager*> receivers)
@@ -21,6 +21,8 @@ void WorkersManager::Init(QList<TcpMessager*> senders,QList<TcpMessager*> receiv
         receive_messagers.insert(temp_messager->parameters.messagerName(),temp_messager);
         connect(temp_messager,&TcpMessager::receiveTextMessage,this,&WorkersManager::tcpResp);
     }
+    connect(this,&WorkersManager::showAlarm,&alarm_shower,&AlarmMessageShower::appendAlarmMessage);
+    connect(&alarm_shower,&AlarmMessageShower::feedbackOperation,this,&WorkersManager::feedbackOperation);
     qInfo("receive_messagers size %d",receive_messagers.size());
 }
 
@@ -33,31 +35,14 @@ bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
         connect(this,&WorkersManager::stopWorkersSignal,worker,&ThreadWorkerBase::stopWork,Qt::DirectConnection);
         connect(this,&WorkersManager::resetLogicsSignal,worker,&ThreadWorkerBase::resetLogic);
         connect(worker,&ThreadWorkerBase::sendHandlingOperation,worker,&ThreadWorkerBase::performHandlingOperation);
-        connect(worker,&ThreadWorkerBase::sendErrorMessage,this,&WorkersManager::receiveAlarm);
-        connect(this,&WorkersManager::feedbackOperation,worker,&ThreadWorkerBase::receiveOperation,Qt::DirectConnection);
         connect(worker,&ThreadWorkerBase::sendMsgSignal,this,&WorkersManager::sendMessageTest,Qt::BlockingQueuedConnection);
-        connect(worker,&ThreadWorkerBase::sendModuleMessage,this,&WorkersManager::receiveModuleMessage,Qt::DirectConnection);
-        worker->setAlarmId(workers.count());
+        connect(worker,&ThreadWorkerBase::sendModuleMessage,this,&WorkersManager::receiveModuleMessage);
         qInfo("registerWorker :%s",worker->Name().toStdString().c_str());
         return true;
     }
     return false;
 }
 
-void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message)
-{
-    qInfo("received alarm %d from sender %d in thread id :%d",level,sender_id,QThread::currentThreadId());
-    if(level == ErrorLevel::ErrorMustStop)
-        emit stopWorkers();
-
-    qInfo("show alarm %s",error_message.toStdString().c_str());
-
-    this->setShowAlarmDialog(true);
-    this->workersState.insert(sender_id, level);
-    this->workersError.insert(sender_id, error_message);
-    //三色灯
-    //    showAlarm(sender_id,level,error_message);
-}
 void WorkersManager::tcpResp(QString message)
 {
     qInfo("receive tcp module message %s", message.toStdString().c_str());
@@ -67,7 +52,7 @@ void WorkersManager::tcpResp(QString message)
         QString module_name = message_object["TargetModule"].toString();
         if(workers.contains(module_name))
         {
-           workers[module_name]->receivceModuleMessage(message_object.toVariantMap());
+           workers[module_name]->receivceModuleMessageBase(message_object.toVariantMap());
         }
         else if(module_name == logic_manager_name||module_name == "LogicManager")
         {
@@ -82,7 +67,7 @@ void WorkersManager::tcpResp(QString message)
             QString message_content = message_object["Message"].toString();
             if(message_content == "inquirRunParameters")
             {
-                sendMessageToDevicesManager(message_object.toVariantMap());
+               emit sendMessageToDevicesManager(message_object.toVariantMap());
             }
             else if(message_content == "runParametersResp")
             {
@@ -97,30 +82,21 @@ void WorkersManager::tcpResp(QString message)
 
                 QString target_module = message_map["OriginModule"].toString();
                 qInfo("OriginModule:%s",target_module.toStdString().c_str());
-                if(workers.contains(target_module))
+                if(workers.contains(target_module)&&run_parameter.size() >= 2)
                 {
-                    qInfo("resdds %d ",run_parameter.size());
-                    if(run_parameter.size() >= 2)
-                    {
-                        QVariantMap temp_map;
-                        foreach (QString temp_station, run_parameter.keys()) {
-                            temp_map.insert(temp_station,run_parameter[temp_station]["DisableStation"]);
-                        }
-                        QVariantMap temp_message;
-                        foreach (QString temp_key, run_parameter["1"].keys()) {
-                            temp_message.insert(temp_key,run_parameter["1"][temp_key]);
-                        }
-                        temp_message["StationNumber"] = local_run_parameter["StationNumber"];
-                        temp_message["OriginModule"] = target_module;
-                        temp_message["DisableStation"] = temp_map;
-                        workers[target_module]->receivceModuleMessage(temp_message);
-                    }
+                    getRunParameters(target_module);
                 }
                 else
                 {
-//                    sendTcpMessage(message_map);
                     qInfo("module name error!");
                 }
+            }
+            else if(message_content == "AlamMessage")
+            {
+                showAlarmMessage(message_object.toVariantMap());
+            }
+            else {
+                qInfo("message error!");
             }
         }
         else if(module_name == "WorkersManagerStart")
@@ -139,6 +115,17 @@ void WorkersManager::tcpResp(QString message)
             qInfo("module name error");
         }
     }
+}
+
+void WorkersManager::feedbackOperation(const QString module_name,const int alarm_id, const QString operation)
+{
+    QVariantMap message;
+    message.insert("TargetModule",module_name);
+    message.insert("Message","feedbackOperation");
+    message.insert("AlarmId",alarm_id);
+    message.insert("Operation",operation);
+    message.insert("OriginModule","AlarmModule");
+    receiveModuleMessage(message);
 }
 
 bool WorkersManager::sendMessageTest(QString title, QString content)
@@ -160,7 +147,7 @@ void WorkersManager::receiveModuleMessage(QVariantMap message)
         QString target_module = message["TargetModule"].toString();
         if(workers.contains(target_module))
         {
-            workers[target_module]->receivceModuleMessage(message);
+            workers[target_module]->receivceModuleMessageBase(message);
         }
         else if(target_module == logic_manager_name)
         {
@@ -179,44 +166,37 @@ void WorkersManager::receiveModuleMessage(QVariantMap message)
             }
             else if(message_content == "inquirRunParameters")
             {
-                emit sendMessageToDevicesManager(message);
-                sendTcpMessage(message);
+                QString target_module = message["OriginModule"].toString();
+                if(workers.contains(target_module)&&run_parameter.size() >= 2)
+                {
+                    qInfo("target_module %s skip inquirRunParameters",target_module.toStdString().c_str());
+                    getRunParameters(target_module);
+                }
+                else
+                {
+                    emit sendMessageToDevicesManager(message);
+                    sendTcpMessage(message);
+                }
             }
             else if(message_content == "runParametersResp")
             {
                 QString station_number =  message["StationNumber"].toString();
-                qInfo("station_number %s",station_number.toStdString().c_str());
+                 qInfo("station_number %s",station_number.toStdString().c_str());
                 if(!run_parameter.contains(station_number))
                 {
-                    qInfo("station_number %s",station_number.toStdString().c_str());
                     run_parameter.insert(station_number,message);
-                    local_run_parameter = message;
+                    local_station_number = station_number;
                 }
 
                 QString target_module = message["OriginModule"].toString();
-                if(workers.contains(target_module))
-                {
-                    qInfo("resdds %d ",run_parameter.size());
-                    if(run_parameter.size() >= 2)
-                    {
-                        QVariantMap temp_map;
-                        foreach (QString temp_station, run_parameter.keys()) {
-                            temp_map.insert(temp_station,run_parameter[temp_station]["DisableStation"]);
-                        }
-                        QVariantMap temp_message;
-                        foreach (QString temp_key, run_parameter["1"].keys()) {
-                                temp_message.insert(temp_key,run_parameter["1"][temp_key]);
-                        }
-                        temp_message["StationNumber"] = local_run_parameter["StationNumber"];
-                        temp_message["OriginModule"] = target_module;
-                        temp_message["DisableStation"] = temp_map;
-                        workers[target_module]->receivceModuleMessage(temp_message);
-                    }
-                }
+                if(workers.contains(target_module)&&run_parameter.size() >= 2)
+                    getRunParameters(target_module);
                 else
-                {
                     sendTcpMessage(message);
-                }
+            }
+            else if(message_content == "AlamMessage"&&parameters.showAlarm())
+            {
+                showAlarmMessage(message);
             }
             else
             {
@@ -234,25 +214,101 @@ void WorkersManager::receiveModuleMessage(QVariantMap message)
     }
 }
 
-//void WorkersManager::receiveMessageFromLogicManger(QVariantMap message)
-//{
-
-//}
-
-void WorkersManager::showAlarm(const int sender_id, const int level, const QString error_message)
-{
-    qInfo("ShowAlarm sender_id: %d level: %d", sender_id, level);
-    this->setShowAlarmDialog(true);
-    this->workersState.insert(sender_id, level);
-    this->workersError.insert(sender_id, error_message);
-}
-
 void WorkersManager::sendTcpMessage(QVariantMap message)
 {
     foreach (TcpMessager* temp_messager, send_messagers) {
          temp_messager->sendMessage(TcpMessager::getStringFromQvariantMap(message));
      }
 }
+
+void WorkersManager::getRunParameters(QString target_module)
+{
+    qInfo("getRunParameters target_module %s",target_module.toStdString().c_str());
+    QVariantMap temp_message;
+    QVariantMap station_disable;
+    QVariantMap station_task;
+    foreach (QString temp_station, run_parameter.keys()) {
+        foreach (QString temp_key, run_parameter[temp_station].keys()) {
+            if(temp_key == "DisableStation")
+                station_disable.insert(run_parameter[temp_station]["StationNumber"].toString(),run_parameter[temp_station][temp_key]);
+            else if(temp_key == "StationTask")
+                station_task.insert(run_parameter[temp_station]["StationNumber"].toString(),run_parameter[temp_station][temp_key]);
+            else
+                temp_message.insert(temp_key,run_parameter[temp_station][temp_key]);
+        }
+    }
+    temp_message["StationNumber"] = local_station_number;
+    temp_message["OriginModule"] = target_module;
+    temp_message["DisableStation"] = station_disable;
+    temp_message["StationTask"] = station_task;
+    workers[target_module]->receivceModuleMessageBase(temp_message);
+}
+
+void WorkersManager::showAlarmMessage(QVariantMap message)
+{
+    int error_level  = message["ErrorLevel"].toInt();
+    if(error_level == ErrorLevel::ErrorMustStop)
+        stopAllWorkers(true);
+    if(!alarm_shower.startShow())
+    {
+        qInfo("alarm mutex fail");
+        return;
+    }
+    QString error_tips = message["ErrorTips"].toString();
+    if(error_tips.contains('|'))
+    {
+        QStringList tips = error_tips.split('|');
+        if(tips.size() == 2)
+        {
+            alarm_shower.current_message.choose_tip1 = tips[0];
+            alarm_shower.current_message.feed_back1 = true;
+            alarm_shower.current_message.choose_tip2 = tips[1];
+            alarm_shower.current_message.feed_back2 = true;
+            alarm_shower.current_message.feed_back3 = false;
+            alarm_shower.current_message.feed_back4 = false;
+        }
+        else if(tips.size() == 3)
+        {
+            alarm_shower.current_message.choose_tip1 = tips[0];
+            alarm_shower.current_message.feed_back1 = true;
+            alarm_shower.current_message.choose_tip2 = tips[1];
+            alarm_shower.current_message.feed_back2 = true;
+            alarm_shower.current_message.choose_tip3 = tips[2];
+            alarm_shower.current_message.feed_back3 = true;
+            alarm_shower.current_message.feed_back4 = false;
+        }
+        else
+        {
+            alarm_shower.current_message.choose_tip1 = tips[0];
+            alarm_shower.current_message.feed_back1 = true;
+            alarm_shower.current_message.choose_tip2 = tips[1];
+            alarm_shower.current_message.feed_back2 = true;
+            alarm_shower.current_message.choose_tip3 = tips[2];
+            alarm_shower.current_message.feed_back3 = true;
+            alarm_shower.current_message.choose_tip4 = tips[3];
+            alarm_shower.current_message.feed_back4 = true;
+        }
+    }
+    else
+    {
+        alarm_shower.current_message.choose_tip1 = error_tips;
+        alarm_shower.current_message.feed_back1 = true;
+        alarm_shower.current_message.feed_back2 = false;
+        alarm_shower.current_message.feed_back3 = false;
+        alarm_shower.current_message.feed_back4 = false;
+    }
+    if(error_level == 1)
+        alarm_shower.current_message.alarm_color = "orange";
+    else if(error_level == 2)
+        alarm_shower.current_message.alarm_color = "red";
+    else
+        alarm_shower.current_message.alarm_color = "lightGreen";
+    alarm_shower.current_message.alarm_id = message["AlarmId"].toInt();
+    alarm_shower.current_message.module_name = message["OriginModule"].toString();
+    alarm_shower.current_message.message_content = message["ErrorMessage"].toString();
+    emit showAlarm();
+}
+
 
 void WorkersManager::startAllWorkers(int run_mode)
 {
@@ -296,7 +352,6 @@ void WorkersManager::stopAllWorkers(bool wait_finish)
 void WorkersManager::startWorkers(int run_mode)
 {
     run_parameter.clear();
-    local_run_parameter.clear();
     qInfo("startSelfWorkers");
     emit startWorkersSignal(run_mode);
 }
@@ -304,11 +359,9 @@ void WorkersManager::startWorkers(int run_mode)
 void WorkersManager::stopWorkers(bool wait_finish)
 {
     run_parameter.clear();
-    local_run_parameter.clear();
     qInfo("stop all worker");
     emit stopWorkersSignal(wait_finish);
 }
-
 void WorkersManager::resetLogics()
 {
     qInfo("reset all logics");
@@ -355,51 +408,4 @@ void WorkersManager::resetLogic(QString name)
 QList<QString> WorkersManager::getWorkersNames()
 {
     return workers.keys();
-}
-
-QString WorkersManager::getAlarmMessage(QString workerName)
-{
-    if (workers.contains(workerName)){
-        int sender_id = workers[workerName]->getAlarmId();
-        return workersError[sender_id];
-    } else {
-        return "";
-    }
-}
-
-int WorkersManager::getAlarmState(QString workerName)
-{
-    if (workers.contains(workerName)){
-        int sender_id = workers[workerName]->getAlarmId();
-        return workersState[sender_id];
-    } else {
-        return 0;
-    }
-}
-
-void WorkersManager::sendOperation(QString workerName, int operation_type)
-{
-    qInfo("Workername: %s operationType: %d", workerName.toStdString().c_str(), operation_type);
-    //ToDo: Send back to worker for handling the user response
-    emit feedbackOperation(workers[workerName]->getAlarmId(),operation_type);
-    int sender_id = workers[workerName]->getAlarmId();
-    workersState.remove(sender_id);
-    workersError.remove(sender_id);
-    if(!checkHasAlarm())
-        this->setShowAlarmDialog(false);
-}
-
-void WorkersManager::changeAlarmShow()
-{
-    this->setShowAlarmDialog(!ShowAlarmDialog());
-}
-
-bool WorkersManager::checkHasAlarm()
-{
-    bool has_alarm = false;
-    foreach (QString temp_name, workers.keys()) {
-        if(0 != getAlarmState(temp_name))
-            has_alarm = true;
-    }
-    return has_alarm;
 }

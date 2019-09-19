@@ -147,6 +147,7 @@ private:
 //    bool moveToNgTrayNextPos();
     //状态机条件检测
     bool checkTrayNeedChange();
+    int checkForceChageStation();
     bool checkNeedPickSensor();
     bool checkSut1WaitCondition();
     bool checkSut2WaitCondition();
@@ -206,7 +207,9 @@ private:
     bool checkPicker2HasMaterialSync();
     bool checkPicker2HasMateril();
     bool waitPicker2CheckResult(bool check_state);
-
+    //真空动作
+    bool setPicker1Vacuum(bool state);
+    bool setPicker2Vacuum(bool state);
     //手动特殊操作
     bool moveToStartPos(int tray_index);
     bool moveToTray1EndPos();

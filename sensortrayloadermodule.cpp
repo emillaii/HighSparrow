@@ -63,7 +63,7 @@ void SensorTrayLoaderModule::startWork(int run_mode)
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数为空.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数为空.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("RunMode"))
@@ -72,7 +72,7 @@ void SensorTrayLoaderModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数RunMode缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数RunMode缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("HandlyChangeSensorTray"))
@@ -81,7 +81,7 @@ void SensorTrayLoaderModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeSensorTray缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数HandlyChangeSensorTray缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("HandlyChangeSensor"))
@@ -90,7 +90,7 @@ void SensorTrayLoaderModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeSensor缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数HandlyChangeSensor缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(states.handlyChangeSensor())
@@ -115,10 +115,10 @@ void SensorTrayLoaderModule::startWork(int run_mode)
 void SensorTrayLoaderModule::stopWork(bool wait_finish)
 {
     qInfo("Sensor Loader stop");
-//    if(wait_finish)
-//        finish_stop = true;
-//    else
-        is_run = false;
+    //    if(wait_finish)
+    //        finish_stop = true;
+    //    else
+    is_run = false;
 }
 
 void SensorTrayLoaderModule::performHandlingOperation(int cmd)
@@ -151,29 +151,20 @@ void SensorTrayLoaderModule:: run(bool has_material)
             if((!moveToUpReadyTray(states.hasReadyTray(),has_material)&&has_material))
             {
                 AppendError(u8"去顶起空盘失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
                     states.setHasReadyTray(false);
                     states.setHasUpTray(false);
                     continue;
                 }
-                else
-                {
-                    if(states.hasReadyTray())
-                        states.setHasUpTray(true);
-                    states.setHasReadyTray(false);
-                    states.setHasCarrierReady(true);
-                }
-                if(!is_run)break;
             }
-            else
-            {
-                if(states.hasReadyTray())
-                    states.setHasUpTray(true);
-                states.setHasReadyTray(false);
-                states.setHasCarrierReady(true);
-            }
+            if(states.hasReadyTray())
+                states.setHasUpTray(true);
+            states.setHasReadyTray(false);
+            states.setHasCarrierReady(true);
         }
         //夹盘
         if(states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasKickReady())&&(!states.hasWorkTray())&&(!states.hasKickTray())&&(!states.hasReadyTray())&&states.entranceClipReady())
@@ -181,37 +172,23 @@ void SensorTrayLoaderModule:: run(bool has_material)
             if((!moveToPullNextTray(has_material))&&has_material)
             {
                 AppendError(u8"去拉入空盘失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
                     states.setEntranceClipReady(false);
                     states.setHasCarrierReady(false);
                     continue;
                 }
-                else
-                {
-                    states.setHasCarrierReady(false);
-                    states.setHasReadyTray(true);
-                    states.setEntranceClipReady(false);
-                    if(states.isFirstTray()&&states.hasUpTray())
-                    {
-                        states.setIsFirstTray(false);
-                        states.setHasWorkTray(true);
-                    }
-
-                }
-                if(!is_run)break;
             }
-            else
+            states.setHasCarrierReady(false);
+            states.setHasReadyTray(true);
+            states.setEntranceClipReady(false);
+            if(states.isFirstTray()&&states.hasUpTray())
             {
-                states.setHasCarrierReady(false);
-                states.setHasReadyTray(true);
-                states.setEntranceClipReady(false);
-                if(states.isFirstTray()&&states.hasUpTray())
-                {
-                    states.setIsFirstTray(false);
-                    states.setHasWorkTray(true);
-                }
+                states.setIsFirstTray(false);
+                states.setHasWorkTray(true);
             }
         }
         //放下第一个盘
@@ -220,12 +197,11 @@ void SensorTrayLoaderModule:: run(bool has_material)
             if((!moveToPutFirstTray())&&has_material)
             {
                 AppendError(u8"去放空盘失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    continue;
-                }
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
         }
         //去准备推盘位置
@@ -235,26 +211,15 @@ void SensorTrayLoaderModule:: run(bool has_material)
             if((!moveToDownTrayAndReadyToPush(has_material))&&has_material)
             {
                 AppendError(u8"去放工作盘位置失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    continue;
-                }
-                else
-                {
-                    states.setIsFirstTray(true);
-                    states.setHasWorkTray(false);
-                    states.setHasKickTray(true);
-                    states.setHasKickReady(true);
-                }
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
-            else
-            {
-                states.setHasWorkTray(false);
-                states.setHasKickTray(true);
-                states.setHasKickReady(true);
-            }
+            states.setHasWorkTray(false);
+            states.setHasKickTray(true);
+            states.setHasKickReady(true);
         }
         //去空盘位置
         //去顶盘
@@ -263,68 +228,42 @@ void SensorTrayLoaderModule:: run(bool has_material)
             if((!moveToChangeVacancyTrayAndUpReadyTray(states.hasProductTray(),has_material))&&has_material)
             {
                 AppendError(u8"换空盘并顶盘失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    continue;
-                }
-                else
-                {
-                    if(states.hasReadyTray())
-                        states.setHasUpTray(true);
-                    states.setHasReadyTray(false);
-                    states.setHasKickTray(false);
-                    states.setHasVacancyTray(true);
-                    states.setHasCarrierReady(true);
-                }
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
-            else
-            {
-                if(states.hasReadyTray())
-                    states.setHasUpTray(true);
-                states.setHasReadyTray(false);
-                states.setHasKickTray(false);
-                states.setHasVacancyTray(true);
-                states.setHasCarrierReady(true);
-            }
+            if(states.hasReadyTray())
+                states.setHasUpTray(true);
+            states.setHasReadyTray(false);
+            states.setHasKickTray(false);
+            states.setHasVacancyTray(true);
+            states.setHasCarrierReady(true);
         }
         //夹盘
         //推出成品盘
-        if(states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasWorkTray())&&(!states.hasKickTray())&&states.hasVacancyTray()&&(!states.hasReadyTray())&&states.hasKickReady()&&states.entranceClipReady()&&states.exitClipReay())
+        if(states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasWorkTray())&&(!states.hasKickTray())&&states.hasVacancyTray()&&(!states.hasReadyTray())&&states.hasKickReady()&&states.entranceClipReady()&&states.exitClipReady())
         {
             if((!moveToPullNextTrayAndPushOutTray(states.hasProductTray(),has_material))&&has_material)
             {
                 AppendError(u8"取盘失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(!waitMessageReturn(is_run))
-                {
-                    if(states.hasProductTray())
-                    {
-                        states.setExitClipReady(false);
-                        states.setHasProductTray(false);
-                    }
-                    states.setHasCarrierReady(false);
-                    states.setHasReadyTray(true);
-                    states.setEntranceClipReady(false);
-                    states.setHasKickReady(false);
-                    sendMessageToModule("SensorLoaderModule","finishChangeTray2");
-                }
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
-            else
+            if(states.hasProductTray())
             {
-                if(states.hasProductTray())
-                {
-                    states.setExitClipReady(false);
-                    states.setHasProductTray(false);
-                }
-                states.setHasCarrierReady(false);
-                states.setHasReadyTray(true);
-                states.setEntranceClipReady(false);
-                states.setHasKickReady(false);
-                sendMessageToModule("SensorLoaderModule","finishChangeTray2");
+                states.setExitClipReady(false);
+                states.setHasProductTray(false);
             }
+            states.setHasCarrierReady(false);
+            states.setHasReadyTray(true);
+            states.setEntranceClipReady(false);
+            states.setHasKickReady(false);
+            sendMessageToModule("SensorLoaderModule","finishChangeTray2");
         }
         //去工作位置
         if(states.needChangeTray()&&(!states.hasWorkTray())&&states.hasVacancyTray()&&states.hasReadyTray()&&states.hasUpTray()&&(!states.hasKickReady()))
@@ -332,26 +271,36 @@ void SensorTrayLoaderModule:: run(bool has_material)
             if(!moveToWorkPos(has_material))
             {
                 AppendError(u8"去工作位置失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
                     hold_tray->Set(true);
                     states.setHasUpTray(false);
                     continue;
                 }
-                if(!is_run)break;
             }
             states.setHasUpTray(false);
             states.setNeedChangeTray(false);
             states.setHasWorkTray(true);
-//            emit sendChangeTrayFinish();
             sendMessageToModule("SensorLoaderModule","finishChangeTray1");
             states.setChangingTray(false);
         }
 
         //检测换进料弹夹
+        if (entrance_clip->getChangeState())
+        {
+            int alarm_id = sendAlarmMessage(u8"已放好",u8"请确认芯片入料备用弹夹放置后继续!");
+            waitMessageReturn(is_run,alarm_id);
+        }
 
         //检测换出料弹夹
+        if (exit_clip->getChangeState())
+        {
+            int alarm_id = sendAlarmMessage(u8"已放好",u8"请确认芯片出料备用弹夹放置后继续!");
+            waitMessageReturn(is_run,alarm_id);
+        }
 
         //进盘弹夹到位
         if(!states.entranceClipReady())
@@ -359,46 +308,32 @@ void SensorTrayLoaderModule:: run(bool has_material)
             if((!moveToEntranceClipNextPos())&&has_material)
             {
                 AppendError(u8"进盘弹夹到位失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    continue;
-                }
-                else
-                {
-                    states.setEntranceClipReady(true);
-                }
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
-            else
-            {
-                states.setEntranceClipReady(true);
-            }
+            states.setEntranceClipReady(true);
         }
         //出盘弹夹到位
-        if(!states.exitClipReay())
+        if(!states.exitClipReady())
         {
             if((!moveToExitClipNextPos())&&has_material)
             {
                 AppendError(u8"出盘弹夹到位失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    continue;
-                }
-                else
-                {
-                    states.setExitClipReady(true);
-                }
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
             else
-            {
                 states.setExitClipReady(true);
-            }
         }
         //todo提示换盘
     }
+    states.setRunMode(RunMode::Normal);
     qInfo("sensor tray loader end of thread");
 }
 
@@ -407,59 +342,72 @@ void SensorTrayLoaderModule::runHandly()
     qInfo("runHandly");
     is_run = true;
     while (is_run) {
-        QThread::msleep(1000);
-        if(states.needChangeTray())
+        if(!states.needChangeTray())
+        {
+            QThread::msleep(1000);
+            continue;
+        }
+        if(states.needChangeTray()&&(!states.hasWorkTray()))
         {
             if(!moveToWorkPos(false))
             {
                 AppendError(u8"去工作位置失败！");
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
-           bool result = hold_tray->Set(true);
+            bool result = hold_tray->Set(true);
             result &= hold_vacancy->Set(true);
             if(!result)
             {
                 AppendError(u8"放下料盘失败");
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    continue;
-                }
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
-
-            sendAlarmMessage(ErrorLevel::TipNonblock,u8"请手动更换sensor料盘和空盘，谢谢配合!");
-            waitMessageReturn(is_run);
+            states.setHasWorkTray(true);
+        }
+        if(states.needChangeTray())
+        {
+            int alarm_id = sendAlarmMessage(u8"已换盘",u8"请手动更换1号sensor料盘和2号sensor料盘，谢谢配合!");
+            waitMessageReturn(is_run,alarm_id);
             if(!is_run)break;
-
-            result = hold_tray->Set(false);
+        }
+        if(states.needChangeTray()&&states.hasWorkTray())
+        {
+            bool result = hold_tray->Set(false);
             result &= hold_vacancy->Set(false);
             result &= kick1->Set(true);
             if(!result)
             {
                 AppendError(u8"顶起料盘失败");
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    continue;
-                }
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
             if(!moveToWorkPos(true))
             {
                 AppendError(u8"去工作位置失败！");
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
                     continue;
             }
+            states.setHasWorkTray(false);
             states.setNeedChangeTray(false);
-            sendMessageToModule("SensorLoaderModule","finishChangeTray2");
-            sendMessageToModule("SensorLoaderModule","finishChangeTray1");
+            sendMessageToModule("SensorLoaderModule","finishChangeTray");
             states.setChangingTray(false);
         }
     }
+    states.setRunMode(RunMode::Normal);
+     qInfo("sensor tray loader end of thread");
 }
 
 void SensorTrayLoaderModule::resetLogic()
@@ -573,8 +521,8 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         result &= motor_tray->MoveToPosSync(parameters.getTrayPosition());
     if(result)
     {
-       result &= hold_tray->Set(false);
-       result &= gripper->Set(false);
+        result &= hold_tray->Set(false);
+        result &= gripper->Set(false);
     }
     if(kick_result)
         kick_result &= motor_kick->WaitArrivedTargetPos(parameters.vacancyTrayPosition());
@@ -593,19 +541,19 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
 
 bool SensorTrayLoaderModule::moveToUpReadyTray(bool has_tray,bool need_check)
 {
-//    bool check_result = true;
-//    if(need_check)
-//        check_result &= checkReadyTray(has_tray);
-     bool result =checkEntanceTray(false);
+    //    bool check_result = true;
+    //    if(need_check)
+    //        check_result &= checkReadyTray(has_tray);
+    bool result =checkEntanceTray(false);
     if(result)
-    result &= motor_tray->MoveToPosSync(parameters.getTrayPosition());
+        result &= motor_tray->MoveToPosSync(parameters.getTrayPosition());
     if(result)
     {
         result &= hold_tray->Set(false);
         result &= gripper->Set(false);
     }
     if(result&&need_check&has_tray)
-       result &= checkSensorTray(true);
+        result &= checkSensorTray(true);
     qInfo(u8"去取备用盘，返回值%d",result);
     return result;
 }
@@ -615,8 +563,8 @@ bool SensorTrayLoaderModule::moveToWaitHandleTray()
     bool result = motor_tray->MoveToPosSync(parameters.waitVacancyTrayPosition());
     if(result)
     {
-       result &= hold_tray->Set(false);
-       result &= gripper->Set(false);
+        result &= hold_tray->Set(false);
+        result &= gripper->Set(false);
     }
     qInfo(u8"去等手动放盘，返回值%d",result);
     return result;
@@ -749,7 +697,7 @@ bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
 
     bool result;
     if(states.useSpareEntanceClip())
-       result = entrance_clip_push->Set(true);
+        result = entrance_clip_push->Set(true);
     else
         result = entrance_clip_push->Set(false);
     //check clip
@@ -769,7 +717,7 @@ bool SensorTrayLoaderModule::moveToExitClipNextPos()
 
     bool result;
     if(states.useSpareExitClip())
-       result = exit_clip_push->Set(true);
+        result = exit_clip_push->Set(true);
     else
         result = exit_clip_push->Set(false);
     result &= motor_stoe->MoveToPosSync(exit_clip->getNextPosition());
@@ -783,7 +731,7 @@ bool SensorTrayLoaderModule::moveToExitClipNextPos()
 
 bool SensorTrayLoaderModule::checkEntanceTray(bool check_state)
 {
-    if(entrance_tray_check_io->Value() == check_state)
+    if(entrance_tray_check_io->Value() == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString logic_state = check_state?u8"有":u8"无";
     QString checked_state = check_state?u8"无":u8"有";
@@ -794,7 +742,7 @@ bool SensorTrayLoaderModule::checkEntanceTray(bool check_state)
 
 bool SensorTrayLoaderModule::checkSensorTray(bool check_state)
 {
-    if(sensor_tray_check_io->Value() == check_state)
+    if(sensor_tray_check_io->Value() == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString logic_state = check_state?u8"有":u8"无";
     QString checked_state = check_state?u8"无":u8"有";
@@ -805,7 +753,7 @@ bool SensorTrayLoaderModule::checkSensorTray(bool check_state)
 
 bool SensorTrayLoaderModule::checkKickTray(bool check_state)
 {
-    if(kick_tray_check_io->Value() == check_state)
+    if(kick_tray_check_io->Value() == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString logic_state = check_state?u8"有":u8"无";
     QString checked_state = check_state?u8"无":u8"有";
@@ -816,7 +764,7 @@ bool SensorTrayLoaderModule::checkKickTray(bool check_state)
 
 bool SensorTrayLoaderModule::checkReadyTray(bool check_state)
 {
-    if(ready_tray_check_io->Value() == check_state)
+    if(ready_tray_check_io->Value() == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString logic_state = check_state?u8"有":u8"无";
     QString checked_state = check_state?u8"无":u8"有";
@@ -827,7 +775,7 @@ bool SensorTrayLoaderModule::checkReadyTray(bool check_state)
 
 bool SensorTrayLoaderModule::checkVacancyTray(bool check_state)
 {
-    if(vacancy_tray_check_io->Value() == check_state)
+    if(vacancy_tray_check_io->Value() == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString logic_state = check_state?u8"有":u8"无";
     QString checked_state = check_state?u8"无":u8"有";
@@ -838,7 +786,7 @@ bool SensorTrayLoaderModule::checkVacancyTray(bool check_state)
 
 bool SensorTrayLoaderModule::checkExitTray(bool check_state)
 {
-    if(exit_tray_check_io->Value() == check_state)
+    if(exit_tray_check_io->Value() == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString logic_state = check_state?u8"有":u8"无";
     QString checked_state = check_state?u8"无":u8"有";
@@ -855,9 +803,9 @@ PropertyBase *SensorTrayLoaderModule::getModuleState()
 void SensorTrayLoaderModule::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-    QMutexLocker temp_locker(&message_mutex);
-    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-        this->module_message = message;
+//    QMutexLocker temp_locker(&message_mutex);
+//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
+//        this->module_message = message;
     if(!message.contains("OriginModule"))
     {
         qInfo("message error! has no OriginModule.");

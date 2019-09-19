@@ -2,7 +2,7 @@
 #include <utility>
 //#include "xtmotion.h"
 #include "XtVacuum.h"
-
+bool XtVacuum::no_material = false;
 XtVacuum::XtVacuum():ErrorBase ()
 {
 }
@@ -20,12 +20,27 @@ void XtVacuum::Init(XtGeneralOutput *output_io, XtGeneralInput *input_io, XtGene
 
 bool XtVacuum::Set(bool new_state, bool wait_done, bool open_break)
 {
+    qInfo("%s set value %d",parameters.vacuumName().toStdString().c_str(),new_state);
+    if(no_material)
+    {
+        QThread::msleep(parameters.excuteTime());
+        return true;
+    }
     out_io->Set(parameters.reserveValue()?(!new_state):new_state);
     if(open_break&&(nullptr != break_io)&&(!new_state))
         break_io->Set(true);
     if(!wait_done)
         return true;
     return Wait(new_state);
+}
+
+bool XtVacuum::SetSimulation(bool new_state,bool open_io)
+{
+    bool result = true;
+    if(open_io)
+        result = out_io->Set(parameters.reserveValue()?(!new_state):new_state);
+    QThread::msleep(parameters.excuteTime());
+    return result;
 }
 
 void XtVacuum::SET(int thread, bool new_state)
@@ -42,11 +57,11 @@ bool XtVacuum::Wait(bool target_state)
         if (in_io == nullptr||in_io->Value() == target_state)
         {
             int temp_time = parameters.outTime() - count;
-            qInfo("%s wait time %d",parameters.vacuumName().toStdString().c_str(),temp_time);
             if(parameters.finishDelay()>0)
                 QThread::msleep(parameters.finishDelay());
             if((nullptr != break_io)&&(!target_state))
                 break_io->Set(false);
+            qInfo("%s wait time %d",parameters.vacuumName().toStdString().c_str(),temp_time);
             return true;
         }
         count-=10;
@@ -61,6 +76,8 @@ bool XtVacuum::Wait(bool target_state)
 
 bool XtVacuum::checkHasMaterielSync()
 {
+    if(no_material)
+        return true;
     bool enable_value = parameters.reserveValue()?false:true;
     if(out_io->Value() == enable_value)
     {

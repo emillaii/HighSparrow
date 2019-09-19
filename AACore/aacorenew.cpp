@@ -17,6 +17,7 @@
 #include <QtConcurrent/QtConcurrent>
 #include "sfr.h"
 #define PI  3.14159265
+#include <ipcclient.h>
 #include <math.h>
 #include "tcpmessager.h"
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX,
@@ -172,6 +173,7 @@ void AACoreNew::run(bool has_material)
 {
     qInfo("Start AACore Thread");
     is_run = true;
+    performTerminate(); //Close camera first
 
     QElapsedTimer timer;timer.start();
     while(is_run) {
@@ -198,6 +200,7 @@ void AACoreNew::run(bool has_material)
             states.setCircleAverageTime(temp_average);
         }
     }
+    states.setRunMode(RunMode::Normal);
     qInfo("End of thread");
 }
 
@@ -374,7 +377,7 @@ void AACoreNew::startWork( int run_mode)
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数为空.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数为空.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("RunMode"))
@@ -383,19 +386,37 @@ void AACoreNew::startWork( int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数RunMode缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数RunMode缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
-    if(run_params.contains("StationNumber")&&run_params.contains("DisableStation"))
+    if(run_params.contains("StationNumber"))
     {
         QString local_station = run_params["StationNumber"].toString();
         states.setStationNumber(local_station.toInt());
-        QVariantMap disable_map = run_params["DisableStation"].toMap();
-        states.setDisableStation(disable_map[local_station].toBool());
+        if(run_params.contains("DisableStation"))
+        {
+            QVariantMap disable_map = run_params["DisableStation"].toMap();
+            states.setDisableStation(disable_map[local_station].toBool());
+        }
+        else
+        {
+            sendAlarmMessage(OK_OPERATION,u8"启动参数DisableStation缺失.启动失败.",ErrorLevel::ErrorMustStop);
+            return;
+        }
+        if(run_params.contains("StationTask"))
+        {
+            QVariantMap task_map = run_params["StationTask"].toMap();
+            states.setStationTask(task_map[local_station].toInt());
+        }
+        else
+        {
+            sendAlarmMessage(OK_OPERATION,u8"启动参数StationTask缺失.启动失败.",ErrorLevel::ErrorMustStop);
+            return;
+        }
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数StationNumber、DisableStation缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数StationNumber缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(states.disableStation())
@@ -418,7 +439,7 @@ void AACoreNew::startWork( int run_mode)
             params["LL"] = 0;
             params["LR"] = 0;
             params["SFR_DEV_TOL"] = 100;
-            performMTFNew(params);
+            performMTFNew(params,true);
             QThread::msleep(200);
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
@@ -431,14 +452,6 @@ void AACoreNew::startWork( int run_mode)
         temp_time/=1000;
         qInfo("circle_time :%f",temp_time);
         states.setCircleTime(temp_time);
-    }
-    else if(run_mode == RunMode::OnllyLeftAA&&aa_head->parameters.moduleName().contains("1"))
-    {
-        run(true);
-    }
-    else if(run_mode == RunMode::OnlyRightAA&&aa_head->parameters.moduleName().contains("2"))
-    {
-        run(true);
     }
 }
 
@@ -514,6 +527,19 @@ void AACoreNew::performHandlingOperation(int cmd)
     else if (cmd == HandleTest::UNLOAD_CAMERA) {
         int finish_delay = params["delay_in_ms"].toInt(0);
         performCameraUnload(finish_delay);
+    }
+    else if (cmd == HandleTest::MOVE_LENS) {
+        performVCMInit(params);
+    }
+    else if (cmd == HandleTest::INIT_VCM) {
+        QJsonObject temp_params;
+        temp_params["target_position"] = -1;
+        performVCMInit(temp_params);
+    }
+    else if (cmd == HandleTest::LENS_VCM_POS) {
+        QJsonObject temp_params;
+        temp_params["target_position"] = parameters.lensVcmWorkPosition();
+        performVCMInit(temp_params);
     }
     handlingParams = "";
     emit postDataToELK(this->runningUnit);
@@ -706,6 +732,13 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         if (testItemName.contains(AA_PIECE_START)) { qInfo("Performing Start"); }
         else if (testItemName.contains(AA_PIECE_LOAD_CAMERA)) {
             qInfo("Performing load camera");
+        }
+        else if (testItemName.contains(AA_PIECE_INIT_LENS)) {
+            int finish_delay = params["delay_in_ms"].toInt(0);
+            double target_position = params["target_position"].toDouble();
+            qInfo("Performing init lens :%d position %f",finish_delay,target_position);
+            ret = performVCMInit(params);
+            qInfo("End of init camera %s",ret.errorMessage.toStdString().c_str());
         }
         else if (testItemName.contains(AA_PIECE_INIT_CAMERA)) {
             int finish_delay = params["delay_in_ms"].toInt(0);
@@ -936,19 +969,20 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
                             .append(dk->readSensorID())
                             .append("_after_dispense.jpg");
 
-            current_dispense = parameters.checkDispenseCount();
             sut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
             //ToDo: return QImage from this function
             QImage image(imageNameAfterDispense);
             dispenseImageProvider->setImage(image);
             emit callQmlRefeshImg(3);  //Emit dispense image to QML
 
-            sendAlarmMessage(ErrorLevel::ContinueOrReject, u8"画胶检查");
-            if (waitMessageReturn(is_run))
+            int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"画胶检查");
+            QString operation = waitMessageReturn(is_run,alarm_id);
+            if (u8"抛料" == operation)
             {
                 NgSensor();
                 return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, u8"画胶检查"};
             }
+            current_dispense = parameters.checkDispenseCount();
         }
     }
     SetProduct();
@@ -1058,7 +1092,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
       } else if (zScanMode == ZSCAN_MODE::AA_DFOV_MODE){
            step_move_timer.start();
            double dfov = -1;
-           if (oc_fov > 0) {
+           if (oc_fov < 0) {
                sut->moveToZPos(start);
                QThread::msleep(zSleepInMs);
                step_move_time += step_move_timer.elapsed();
@@ -1252,7 +1286,26 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     } else {
         qInfo("Enable tilt...xTilt: %f yTilt: %f", aa_result["xTilt"].toDouble(), aa_result["yTilt"].toDouble());
         step_move_timer.start();
-        aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
+        double tilt_a,tilt_b;
+        int index;
+        if(parameters.tiltRelationship() < 4)
+        {
+            tilt_a = aa_result["xTilt"].toDouble();
+            tilt_b = aa_result["yTilt"].toDouble();
+            index = parameters.tiltRelationship();
+        }
+        else
+        {
+            tilt_a = aa_result["yTilt"].toDouble();
+            tilt_b = aa_result["xTilt"].toDouble();
+            index = parameters.tiltRelationship() - 4;
+        }
+        if(index > 1)
+            tilt_a = -tilt_a;
+        if(parameters.tiltRelationship()%2 == 1)
+            tilt_b = -tilt_b;
+        qInfo("xTilt %f yTilt %f aTilt %f bTilt %f ",aa_result["xTilt"].toDouble(),aa_result["yTilt"].toDouble(),tilt_a,tilt_b);
+        aa_head->stepInterpolation_AB_Sync(tilt_a, tilt_b);
         wait_tilt_time += step_move_timer.elapsed();
     }
     double zpeak_dev = getzPeakDev_um(3,aa_result["zPeak_cc"].toDouble(),aa_result["zPeak_05"].toDouble(),aa_result["zPeak_08"].toDouble());
@@ -1266,24 +1319,24 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     double zPeakDiff08Max = parameters.zPeakDiff08Max();
     double zPeakDiff05F = 1000 * fabs((aa_result["zPeak_2_UL"].toDouble()+aa_result["zPeak_2_LR"].toDouble())/2 - (aa_result["zPeak_2_LL"].toDouble()+aa_result["zPeak_2_UR"].toDouble())/2);
     double zPeakDiff08F = 1000 * fabs((aa_result["zPeak_3_UL"].toDouble()+aa_result["zPeak_3_LR"].toDouble())/2 - (aa_result["zPeak_3_LL"].toDouble()+aa_result["zPeak_3_UR"].toDouble())/2);
-    map["zPeak_05F_Diff_um"] = zPeakDiff05F;
-    map["zPeak_08F_Diff_um"] = zPeakDiff08F;
+    map["zPeak_05F_Diff_um"] = round(zPeakDiff05F*1000)/1000;
+    map["zPeak_08F_Diff_um"] = round(zPeakDiff08F*1000)/1000;
     qInfo("Check 05F zPeak %f", zPeakDiff05F);
     qInfo("Check 08F zPeak %f", zPeakDiff08F);
 
-    map.insert("CC_Zpeak_Dev", aa_result["CC_Zpeak_Dev"].toDouble());
-    map.insert("UL_03F_Zpeak_Dev", aa_result["UL_03F_Zpeak_Dev"].toDouble());
-    map.insert("UR_03F_Zpeak_Dev", aa_result["UR_03F_Zpeak_Dev"].toDouble());
-    map.insert("LR_03F_Zpeak_Dev", aa_result["LR_03F_Zpeak_Dev"].toDouble());
-    map.insert("LL_03F_Zpeak_Dev", aa_result["LL_03F_Zpeak_Dev"].toDouble());
-    map.insert("UL_05F_Zpeak_Dev", aa_result["UL_05F_Zpeak_Dev"].toDouble());
-    map.insert("UR_05F_Zpeak_Dev", aa_result["UR_05F_Zpeak_Dev"].toDouble());
-    map.insert("LR_05F_Zpeak_Dev", aa_result["LR_05F_Zpeak_Dev"].toDouble());
-    map.insert("LL_05F_Zpeak_Dev", aa_result["LL_05F_Zpeak_Dev"].toDouble());
-    map.insert("UL_08F_Zpeak_Dev", aa_result["UL_08F_Zpeak_Dev"].toDouble());
-    map.insert("UR_08F_Zpeak_Dev", aa_result["UR_08F_Zpeak_Dev"].toDouble());
-    map.insert("LR_08F_Zpeak_Dev", aa_result["LR_08F_Zpeak_Dev"].toDouble());
-    map.insert("LL_08F_Zpeak_Dev", aa_result["LL_08F_Zpeak_Dev"].toDouble());
+    map.insert("CC_Zpeak_Dev", round(aa_result["CC_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UL_03F_Zpeak_Dev", round(aa_result["UL_03F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UR_03F_Zpeak_Dev", round(aa_result["UR_03F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LR_03F_Zpeak_Dev", round(aa_result["LR_03F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LL_03F_Zpeak_Dev", round(aa_result["LL_03F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UL_05F_Zpeak_Dev", round(aa_result["UL_05F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UR_05F_Zpeak_Dev", round(aa_result["UR_05F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LR_05F_Zpeak_Dev", round(aa_result["LR_05F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LL_05F_Zpeak_Dev", round(aa_result["LL_05F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UL_08F_Zpeak_Dev", round(aa_result["UL_08F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UR_08F_Zpeak_Dev", round(aa_result["UR_08F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LR_08F_Zpeak_Dev", round(aa_result["LR_08F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LL_08F_Zpeak_Dev", round(aa_result["LL_08F_Zpeak_Dev"].toDouble()*1000)/1000);
     map.insert("Mode", zScanMode);
     map.insert("START_POS", start);
     map.insert("STOP_POS", stop);
@@ -1293,18 +1346,18 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     map.insert("GRAB_TIME", grab_time);
     map.insert("SFR_WAIT_TIME", sfr_wait_time);
     map.insert("TILT_WAIT_TIME", wait_tilt_time);
-    map.insert("X_TILT", aa_result["xTilt"].toDouble());
-    map.insert("Y_TILT", aa_result["yTilt"].toDouble());
-    map.insert("Z_PEAK_CC", aa_result["zPeak_cc"].toDouble());
-    map.insert("Z_PEAK_03",aa_result["zPeak_03"].toDouble());
-    map.insert("Z_PEAK_05",aa_result["zPeak_05"].toDouble());
-    map.insert("Z_PEAK_08",aa_result["zPeak_08"].toDouble());
-    map.insert("Z_PEAK",z_peak);
-    map.insert("Z_PEAK_DEV_CC_05_um",zpeak_dev_cc_05);
-    map.insert("Z_PEAK_DEV_CC_08_um",zpeak_dev_cc_08);
-    map.insert("Z_PEAK_DEV_um",zpeak_dev);
-    map.insert("FOV_SLOPE", fov_slope);
-    map.insert("FOV_INTERCEPT", fov_intercept);
+    map.insert("X_TILT", round(aa_result["xTilt"].toDouble()*1000)/1000);
+    map.insert("Y_TILT", round(aa_result["yTilt"].toDouble()*1000)/1000);
+    map.insert("Z_PEAK_CC_um", round((aa_result["zPeak_cc"].toDouble()*1000)*1000)/1000);
+    map.insert("Z_PEAK_03_um", round((aa_result["zPeak_03"].toDouble()*1000)*1000)/1000);
+    map.insert("Z_PEAK_05_um", round((aa_result["zPeak_05"].toDouble()*1000)*1000)/1000);
+    map.insert("Z_PEAK_08_um", round((aa_result["zPeak_08"].toDouble()*1000)*1000)/1000);
+    map.insert("Z_PEAK_um", round((z_peak*1000)*1000)/1000);
+    map.insert("Z_PEAK_DEV_CC_05_um", round(zpeak_dev_cc_05*1000)/1000);
+    map.insert("Z_PEAK_DEV_CC_08_um", round(zpeak_dev_cc_08*1000)/1000);
+    map.insert("Z_PEAK_DEV_um", round(zpeak_dev*1000)/1000);
+    map.insert("FOV_SLOPE", round(fov_slope*1000)/1000);
+    map.insert("FOV_INTERCEPT", round(fov_intercept*1000)/1000);
     if (position_checking == 1){
         double maxZPeak = aa_result["maxZPeak"].toDouble();
         if ( fabs(zScanStopPosition - maxZPeak) < 0.001 ) {
@@ -1362,7 +1415,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         double diff_z = (dfov - expected_fov)/fov_slope;
         sut->moveToZPos(beforeZ - diff_z);
         double afterZ = sut->carrier->GetFeedBackPos().Z;
-        map.insert("Z_PEAK_Checked",-diff_z);
+        map.insert("Z_PEAK_Checked",round(-diff_z*1000)/1000);
         map.insert("Final_X", sut->carrier->GetFeedBackPos().X);
         map.insert("Final_Y", sut->carrier->GetFeedBackPos().Y);
         map.insert("Final_Z", sut->carrier->GetFeedBackPos().Z);
@@ -1734,12 +1787,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
             result.insert("zPeak", point_0.z); map.insert("zPeak", point_0.z);
         }
     }
-    if (result["zPeak"].toDouble(0) < start_pos) {
-        qCritical("AA zPeak is smaller than z scan start position. Error!");
-        result.insert("OK", false);
-    } else {
-        result.insert("OK", true);
-    }
+
+    result.insert("OK", true);
     if (validLayer == 1) {
         result.insert("xTilt", xTilt_1);
         result.insert("yTilt", yTilt_1);
@@ -1845,10 +1894,15 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_map[0][i].sfr, sorted_sfr_fit_map[0][i]);
         if (points_1.size() > 0) {
             for (int j = 1; j < 5; ++j) {
+                qInfo("j:%d",j);
                 double avg_sfr = parameters.WeightList().at(4*j-4+0).toDouble()*sorted_sfr_map[j+4*display_layer][i].t_sfr + parameters.WeightList().at(4*j-4+1).toDouble()*sorted_sfr_map[j+4*display_layer][i].r_sfr
                         + parameters.WeightList().at(4*j-4+2).toDouble()*sorted_sfr_map[j+4*display_layer][i].b_sfr + parameters.WeightList().at(4*j-4+3).toDouble()*sorted_sfr_map[j+4*display_layer][i].l_sfr;
                 data->addData(j,sorted_sfr_map[j+4*display_layer][i].pz*1000,avg_sfr, sorted_sfr_fit_map[j+4*display_layer][i]);
             }
+//            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, (sorted_sfr_map[1+4*display_layer][i].b_sfr+sorted_sfr_map[1+4*display_layer][i].r_sfr)/2);
+//            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, (sorted_sfr_map[j+4*display_layer][i].t_sfr+sorted_sfr_map[2+4*display_layer][i].r_sfr)/2);
+//            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, (sorted_sfr_map[3+4*display_layer][i].t_sfr+sorted_sfr_map[3+4*display_layer][i].l_sfr)/2);
+//            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, (sorted_sfr_map[4+4*display_layer][i].b_sfr+sorted_sfr_map[4+4*display_layer][i].l_sfr)/2);
         }
     }
     map.insert("CC", sfrMap);
@@ -2182,26 +2236,26 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     sfrImageReady(std::move(qImage));
 
     for(int i = 0; i <= max_layer; i++) {
-        map.insert(QString("UL_T_SFR_").append(QString::number(i+1)), vec[i*4 + 1].t_sfr);
-        map.insert(QString("UL_R_SFR_").append(QString::number(i+1)), vec[i*4 + 1].r_sfr);
-        map.insert(QString("UL_B_SFR_").append(QString::number(i+1)), vec[i*4 + 1].b_sfr);
-        map.insert(QString("UL_L_SFR_").append(QString::number(i+1)), vec[i*4 + 1].l_sfr);
-        map.insert(QString("UL_SFR_").append(QString::number(i+1)), vec[i*4 + 1].avg_sfr);
-        map.insert(QString("LL_T_SFR_").append(QString::number(i+1)), vec[i*4 + 2].t_sfr);
-        map.insert(QString("LL_R_SFR_").append(QString::number(i+1)), vec[i*4 + 2].r_sfr);
-        map.insert(QString("LL_B_SFR_").append(QString::number(i+1)), vec[i*4 + 2].b_sfr);
-        map.insert(QString("LL_L_SFR_").append(QString::number(i+1)), vec[i*4 + 2].l_sfr);
-        map.insert(QString("LL_SFR_").append(QString::number(i+1)), vec[i*4 + 2].avg_sfr);
-        map.insert(QString("LR_T_SFR_").append(QString::number(i+1)), vec[i*4 + 3].t_sfr);
-        map.insert(QString("LR_R_SFR_").append(QString::number(i+1)), vec[i*4 + 3].r_sfr);
-        map.insert(QString("LR_B_SFR_").append(QString::number(i+1)), vec[i*4 + 3].b_sfr);
-        map.insert(QString("LR_L_SFR_").append(QString::number(i+1)), vec[i*4 + 3].l_sfr);
-        map.insert(QString("LR_SFR_").append(QString::number(i+1)), vec[i*4 + 3].avg_sfr);
-        map.insert(QString("UR_T_SFR_").append(QString::number(i+1)), vec[i*4 + 4].t_sfr);
-        map.insert(QString("UR_R_SFR_").append(QString::number(i+1)), vec[i*4 + 4].r_sfr);
-        map.insert(QString("UR_B_SFR_").append(QString::number(i+1)), vec[i*4 + 4].b_sfr);
-        map.insert(QString("UR_L_SFR_").append(QString::number(i+1)), vec[i*4 + 4].l_sfr);
-        map.insert(QString("UR_SFR_").append(QString::number(i+1)), vec[i*4 + 4].avg_sfr);
+        map.insert(QString("UL_T_SFR_").append(QString::number(i+1)), round(vec[i*4 + 1].t_sfr*1000)/1000);
+        map.insert(QString("UL_R_SFR_").append(QString::number(i+1)), round(vec[i*4 + 1].r_sfr*1000)/1000);
+        map.insert(QString("UL_B_SFR_").append(QString::number(i+1)), round(vec[i*4 + 1].b_sfr*1000)/1000);
+        map.insert(QString("UL_L_SFR_").append(QString::number(i+1)), round(vec[i*4 + 1].l_sfr*1000)/1000);
+        map.insert(QString("UL_SFR_").append(QString::number(i+1)), round(vec[i*4 + 1].avg_sfr*1000)/1000);
+        map.insert(QString("LL_T_SFR_").append(QString::number(i+1)), round(vec[i*4 + 2].t_sfr*1000)/1000);
+        map.insert(QString("LL_R_SFR_").append(QString::number(i+1)), round(vec[i*4 + 2].r_sfr*1000)/1000);
+        map.insert(QString("LL_B_SFR_").append(QString::number(i+1)), round(vec[i*4 + 2].b_sfr*1000)/1000);
+        map.insert(QString("LL_L_SFR_").append(QString::number(i+1)), round(vec[i*4 + 2].l_sfr*1000)/1000);
+        map.insert(QString("LL_SFR_").append(QString::number(i+1)), round(vec[i*4 + 2].avg_sfr*1000)/1000);
+        map.insert(QString("LR_T_SFR_").append(QString::number(i+1)), round(vec[i*4 + 3].t_sfr*1000)/1000);
+        map.insert(QString("LR_R_SFR_").append(QString::number(i+1)), round(vec[i*4 + 3].r_sfr*1000)/1000);
+        map.insert(QString("LR_B_SFR_").append(QString::number(i+1)), round(vec[i*4 + 3].b_sfr*1000)/1000);
+        map.insert(QString("LR_L_SFR_").append(QString::number(i+1)), round(vec[i*4 + 3].l_sfr*1000)/1000);
+        map.insert(QString("LR_SFR_").append(QString::number(i+1)), round(vec[i*4 + 3].avg_sfr*1000)/1000);
+        map.insert(QString("UR_T_SFR_").append(QString::number(i+1)), round(vec[i*4 + 4].t_sfr*1000)/1000);
+        map.insert(QString("UR_R_SFR_").append(QString::number(i+1)), round(vec[i*4 + 4].r_sfr*1000)/1000);
+        map.insert(QString("UR_B_SFR_").append(QString::number(i+1)), round(vec[i*4 + 4].b_sfr*1000)/1000);
+        map.insert(QString("UR_L_SFR_").append(QString::number(i+1)), round(vec[i*4 + 4].l_sfr*1000)/1000);
+        map.insert(QString("UR_SFR_").append(QString::number(i+1)), round(vec[i*4 + 4].avg_sfr*1000)/1000);
         //Check each 4 ROI in 03F, 05F, 08F if each 4 SFR score is lower than tolerance
         if (vec[i*4+1].t_sfr < sfr_tol[i+1] || vec[i*4+1].r_sfr < sfr_tol[i+1] || vec[i*4+1].b_sfr < sfr_tol[i+1] || vec[i*4+1].l_sfr < sfr_tol[i+1]
                 || vec[i*4+2].t_sfr < sfr_tol[i+1] || vec[i*4+2].r_sfr < sfr_tol[i+1] || vec[i*4+2].b_sfr < sfr_tol[i+1] || vec[i*4+2].l_sfr < sfr_tol[i+1]
@@ -2238,40 +2292,40 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         error.append("08F SFR corner dev fail.");
     }
     map.insert("SensorID", dk->readSensorID());
-    map.insert("FOV",fov);
-    map.insert("zPeak",sut->carrier->GetFeedBackPos().Z);
-    map.insert("CC_T_SFR", vec[0].t_sfr);
-    map.insert("CC_R_SFR", vec[0].r_sfr);
-    map.insert("CC_B_SFR", vec[0].b_sfr);
-    map.insert("CC_L_SFR", vec[0].l_sfr);
-    map.insert("CC_SFR", (vec[0].t_sfr + vec[0].r_sfr + vec[0].b_sfr + vec[0].l_sfr)/4);
-    map.insert("UL_T_SFR", vec[max_layer*4 + 1].t_sfr);
-    map.insert("UL_R_SFR", vec[max_layer*4 + 1].r_sfr);
-    map.insert("UL_B_SFR", vec[max_layer*4 + 1].b_sfr);
-    map.insert("UL_L_SFR", vec[max_layer*4 + 1].l_sfr);
-    map.insert("UL_SFR", vec[max_layer*4 + 1].avg_sfr);
-    map.insert("LL_T_SFR", vec[max_layer*4 + 2].t_sfr);
-    map.insert("LL_R_SFR", vec[max_layer*4 + 2].r_sfr);
-    map.insert("LL_B_SFR", vec[max_layer*4 + 2].b_sfr);
-    map.insert("LL_L_SFR", vec[max_layer*4 + 2].l_sfr);
-    map.insert("LL_SFR", vec[max_layer*4 + 2].avg_sfr);
-    map.insert("LR_T_SFR", vec[max_layer*4 + 3].t_sfr);
-    map.insert("LR_R_SFR", vec[max_layer*4 + 3].r_sfr);
-    map.insert("LR_B_SFR", vec[max_layer*4 + 3].b_sfr);
-    map.insert("LR_L_SFR", vec[max_layer*4 + 3].l_sfr);
-    map.insert("LR_SFR", vec[max_layer*4 + 3].avg_sfr);
-    map.insert("UR_T_SFR", vec[max_layer*4 + 4].t_sfr);
-    map.insert("UR_R_SFR", vec[max_layer*4 + 4].r_sfr);
-    map.insert("UR_B_SFR", vec[max_layer*4 + 4].b_sfr);
-    map.insert("UR_L_SFR", vec[max_layer*4 + 4].l_sfr);
-    map.insert("UR_SFR", vec[max_layer*4 + 4].avg_sfr);
-    map.insert("OC_OFFSET_X_IN_PIXEL", mtf_oc_x);
-    map.insert("OC_OFFSET_Y_IN_PIXEL", mtf_oc_y);
+    map.insert("FOV",round(fov*1000)/1000);
+    map.insert("zPeak",round(sut->carrier->GetFeedBackPos().Z*1000)/1000);
+    map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);
+    map.insert("CC_R_SFR", round(vec[0].r_sfr*1000)/1000);
+    map.insert("CC_B_SFR", round(vec[0].b_sfr*1000)/1000);
+    map.insert("CC_L_SFR", round(vec[0].l_sfr*1000)/1000);
+    map.insert("CC_SFR", round(((vec[0].t_sfr + vec[0].r_sfr + vec[0].b_sfr + vec[0].l_sfr)/4)*1000)/1000);
+    map.insert("UL_T_SFR", round(vec[max_layer*4 + 1].t_sfr*1000)/1000);
+    map.insert("UL_R_SFR", round(vec[max_layer*4 + 1].r_sfr*1000)/1000);
+    map.insert("UL_B_SFR", round(vec[max_layer*4 + 1].b_sfr*1000)/1000);
+    map.insert("UL_L_SFR", round(vec[max_layer*4 + 1].l_sfr*1000)/1000);
+    map.insert("UL_SFR", round(vec[max_layer*4 + 1].avg_sfr*1000)/1000);
+    map.insert("LL_T_SFR", round(vec[max_layer*4 + 2].t_sfr*1000)/1000);
+    map.insert("LL_R_SFR", round(vec[max_layer*4 + 2].r_sfr*1000)/1000);
+    map.insert("LL_B_SFR", round(vec[max_layer*4 + 2].b_sfr*1000)/1000);
+    map.insert("LL_L_SFR", round(vec[max_layer*4 + 2].l_sfr*1000)/1000);
+    map.insert("LL_SFR", round(vec[max_layer*4 + 2].avg_sfr*1000)/1000);
+    map.insert("LR_T_SFR", round(vec[max_layer*4 + 3].t_sfr*1000)/1000);
+    map.insert("LR_R_SFR", round(vec[max_layer*4 + 3].r_sfr*1000)/1000);
+    map.insert("LR_B_SFR", round(vec[max_layer*4 + 3].b_sfr*1000)/1000);
+    map.insert("LR_L_SFR", round(vec[max_layer*4 + 3].l_sfr*1000)/1000);
+    map.insert("LR_SFR", round(vec[max_layer*4 + 3].avg_sfr*1000)/1000);
+    map.insert("UR_T_SFR", round(vec[max_layer*4 + 4].t_sfr*1000)/1000);
+    map.insert("UR_R_SFR", round(vec[max_layer*4 + 4].r_sfr*1000)/1000);
+    map.insert("UR_B_SFR", round(vec[max_layer*4 + 4].b_sfr*1000)/1000);
+    map.insert("UR_L_SFR", round(vec[max_layer*4 + 4].l_sfr*1000)/1000);
+    map.insert("UR_SFR", round(vec[max_layer*4 + 4].avg_sfr*1000)/1000);
+    map.insert("OC_OFFSET_X_IN_PIXEL", round(mtf_oc_x*1000)/1000);
+    map.insert("OC_OFFSET_Y_IN_PIXEL", round(mtf_oc_y*1000)/1000);
 //    map.insert("SFR_DEV",max_sfr_deviation);
-    map.insert("UL_08F_SFR_DEV",ul_08f_sfr_dev);
-    map.insert("LL_08F_SFR_DEV",ll_08f_sfr_dev);
-    map.insert("LR_08F_SFR_DEV",lr_08f_sfr_dev);
-    map.insert("UR_08F_SFR_DEV",ur_08f_sfr_dev);
+    map.insert("UL_08F_SFR_DEV",round(ul_08f_sfr_dev*1000)/1000);
+    map.insert("LL_08F_SFR_DEV",round(ll_08f_sfr_dev*1000)/1000);
+    map.insert("LR_08F_SFR_DEV",round(lr_08f_sfr_dev*1000)/1000);
+    map.insert("UR_08F_SFR_DEV",round(ur_08f_sfr_dev*1000)/1000);
     map.insert("timeElapsed", timer.elapsed());
     qDebug("Time Elapsed: %d", timer.elapsed());
     if (write_log) {
@@ -2511,8 +2565,8 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
     map.insert("UR_B_SFR", sv[max_layer*4 + 4].b_sfr);
     map.insert("UR_L_SFR", sv[max_layer*4 + 4].l_sfr);
     map.insert("UR_SFR", (sv[max_layer*4 + 4].t_sfr + sv[max_layer*4 + 4].r_sfr + sv[max_layer*4 + 4].b_sfr + sv[max_layer*4 + 4].l_sfr)/4);
-    map.insert("OC_OFFSET_X_IN_PIXEL", mtf_oc_x);
-    map.insert("OC_OFFSET_Y_IN_PIXEL", mtf_oc_y);
+    map.insert("OC_OFFSET_X_IN_PIXEL", round(mtf_oc_x*1000)/1000);
+    map.insert("OC_OFFSET_Y_IN_PIXEL", round(mtf_oc_y*1000)/1000);
     map.insert("SFR_DEV",max_sfr_deviation);
     map.insert("UL_08F_SFR_DEV",ul_08f_sfr_dev);
     map.insert("LL_08F_SFR_DEV",ll_08f_sfr_dev);
@@ -2543,7 +2597,11 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
     if (enable_OTP)
     {
         // OTP
-      result = dk->DothinkeyOTP(serverMode);
+        result = dk->DothinkeyOTP(serverMode);
+        if (result != true)
+        {
+            result = dk->DothinkeyOTP(serverMode);  //retry OTP
+        }
     }
     aa_head->waitUVFinish();
     map.insert("timeElapsed", timer.elapsed());
@@ -2581,6 +2639,10 @@ ErrorCodeStruct AACoreNew::performAccept()
     current_aa_ng_time = 0;
     current_oc_ng_time = 0;
     current_mtf_ng_time = 0;
+    parameters.setCurrentTask(parameters.currentTask() + 1);
+    states.setCurrentTask(states.currentTask() + 1);
+    if(states.finishSensorTask()&&states.finishLensTask())
+        is_run = false;
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -2606,10 +2668,10 @@ ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int re
    {
        grr_repeat_time = 0;
        grr_change_time++;
-       if(grr_change_time >= change_time)
+       if(change_time>0&&grr_change_time >= change_time)
        {
            grr_change_time = 0;
-           sendAlarmMessage(ErrorLevel::ErrorMustStop,"GRR Finished!");
+           sendAlarmMessage(OK_OPERATION,u8"GRR finish.",ErrorLevel::ErrorMustStop);
        }
        if(change_lens&&HasLens())
            NgLens();
@@ -2735,8 +2797,8 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
         offsetY = vector[ccIndex].center.y() - (vector[ccIndex].height/2);
         qInfo("OC OffsetX: %f %f", offsetX, offsetY);
-        map.insert("OC_OFFSET_X_IN_PIXEL", offsetX);
-        map.insert("OC_OFFSET_Y_IN_PIXEL", offsetY);
+        map.insert("OC_OFFSET_X_IN_PIXEL", round(offsetX*1000)/1000);
+        map.insert("OC_OFFSET_Y_IN_PIXEL", round(offsetY*1000)/1000);
     } else {
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage))
@@ -2760,8 +2822,8 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         qInfo("y pixel Ratio: %f %f ", y_ratio.x(), y_ratio.y());
         double stepX = offsetX * x_ratio.x() + offsetY * y_ratio.x();
         double stepY = offsetX * x_ratio.y() + offsetY * y_ratio.y();
-        map.insert("OC_OFFSET_X_IN_MM", stepX);
-        map.insert("OC_OFFSET_Y_IN_MM", stepY);
+        map.insert("OC_OFFSET_X_IN_UM", round(stepX*1000*1000)/1000);
+        map.insert("OC_OFFSET_Y_IN_UM", round(stepY*1000*1000)/1000);
         qInfo("xy step: %f %f ", stepX, stepY);
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
@@ -2783,6 +2845,62 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     return ret;
 }
 
+ErrorCodeStruct AACoreNew::performVCMInit(QJsonValue params)
+{
+    QElapsedTimer timer;timer.start();
+    QVariantMap map;
+    double target_position = params["target_position"].toDouble();
+    int delay = params["delay_in_ms"].toInt();
+    map.insert("target_position", target_position);
+//    QProcess *p = new QProcess(this);
+//    qInfo("Perform VCM Init Start");
+//    QString temp_cmd = parameters.lensVcmPath().split("///")[1];
+//    temp_cmd.append(" ");
+//    temp_cmd.append(QString::number(target_position));
+//    qInfo("VCM Init cmd %s",temp_cmd.toStdString().c_str());
+//    p->start(temp_cmd);
+//    p->waitForFinished();
+    CClient client;
+    QVariantMap json;
+    if(target_position < 0)
+    {
+        json["cmd"] = "init";
+        json["delay"] = delay;
+    }
+    else
+    {
+        json["cmd"] = "move";
+        json["pos"] = target_position;
+        json["delay"] = delay;
+    }
+
+    QString jsonString = QString(QJsonDocument(QJsonObject::fromVariantMap(json)).toJson());
+    qInfo(jsonString.toStdString().c_str());
+    client.ConnectToServer("localserver-test");
+    client.sendMessage(jsonString);
+
+    QString respond = client.waitRespond();
+    if(respond.contains("success"))
+        qInfo(respond.toStdString().c_str());
+    else
+    {
+       int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,respond);
+       QString opertion = waitMessageReturn(is_run,alarm_id);
+       if(opertion == REJECT_OPERATION)
+       {
+           NgLens();
+           map.insert("result", respond);
+           emit pushDataToUnit(runningUnit, "VCMInit", map);
+           return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, respond};
+       }
+    }
+//    if(delay>0)
+//        QThread::msleep(delay);
+    map.insert("timeElapsed", timer.elapsed());
+    map.insert("result", "OK");
+    emit pushDataToUnit(runningUnit, "VCMInit", map);
+    return ErrorCodeStruct {ErrorCode::OK, ""};
+}
 ErrorCodeStruct AACoreNew::performInitSensor(int finish_delay,bool check_map)
 {
     if (dk->DothinkeyIsGrabbing()) {
@@ -2880,6 +2998,11 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
     }
     if((!has_sensor)&&(!send_sensor_request))
     {
+        if(states.finishSensorTask())
+        {
+            states.setFinishSensorTask(false);
+            sendMessageToModule("SensorLoaderModule","NormalMode");
+        }
         qInfo("need sensor has_product %d  has_ng_product %d has_ng_sensor %d",has_product,has_ng_product,has_ng_sensor);
         QString sut_module_name = states.stationNumber()==0?"Sut1Module":"Sut2Module";
         if(has_product)
@@ -2909,6 +3032,11 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
 
     if((!has_lens)&&(!send_lens_request))
     {
+        if(states.finishLensTask())
+        {
+            states.setFinishLensTask(false);
+            sendMessageToModule("LensLoaderModule","NormalMode");
+        }
         this->lut->sendLensRequest(has_ng_lens);
         qInfo("need lens has_ng_lens %d",has_ng_lens);
         if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
@@ -2926,6 +3054,36 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
             send_lens_request = false;
             aa_head->receive_lens = false;
             aa_head->receive_lens = false;
+            if(parameters.enableLensVcm())
+            {
+                QJsonObject temp_params;
+                temp_params["target_position"] = -1;
+                ErrorCodeStruct temp_result = performVCMInit(temp_params);
+                if(temp_result.code != ErrorCode::OK)
+                {
+                    NgLens();
+                    result.code = temp_result.code;
+                    result.errorMessage.append(temp_result.errorMessage);
+                }
+                temp_params["target_position"] = parameters.lensVcmWorkPosition();
+                temp_result = performVCMInit(temp_params);
+                if(temp_result.code != ErrorCode::OK)
+                {
+                    NgLens();
+                    result.code = temp_result.code;
+                    result.errorMessage.append(temp_result.errorMessage);
+                }
+            }
+
+            if(states.stationTask()>0&&(!states.finishLensTask()))
+            {
+                if((parameters.taskAccumulate()&&parameters.currentTask() >= states.stationTask())||
+                        (parameters.taskAccumulate()&&states.currentTask() >= states.stationTask()))
+                {
+                    states.setFinishLensTask(true);
+                    sendMessageToModule("LensLoaderModule","UnloadMode");
+                }
+            }
         }
         else
         {
@@ -2943,6 +3101,15 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
             {
                 qInfo("wait For LoadSensor succeed.");
                 SetSensor();
+                if(states.stationTask()>0&&(!states.finishSensorTask()))
+                {
+                    if((parameters.taskAccumulate()&&parameters.currentTask() >= states.stationTask())||
+                            (parameters.taskAccumulate()&&states.currentTask() >= states.stationTask()))
+                    {
+                        states.setFinishSensorTask(true);
+                        sendMessageToModule("SensorLoaderModule","UnloadMode");
+                    }
+                }
                 break;
             }
             QThread::msleep(10);
@@ -3112,6 +3279,7 @@ void AACoreNew::aaCoreParametersChanged()
         timeout--;
     }
     vector<Sfr_entry> sv = clustered_sfr_map[0];
+    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
 
     qPainter.setFont(QFont("Times",50, QFont::Bold));
     qPainter.drawText(imageCenterX/2 , 100 , QString("DFOV: ").append(QString::number(dfov)));
@@ -3171,9 +3339,9 @@ PropertyBase *AACoreNew::getModuleState()
 void AACoreNew::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-    QMutexLocker temp_locker(&message_mutex);
-    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-        this->module_message = message;
+//    QMutexLocker temp_locker(&message_mutex);
+//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
+//        this->module_message = message;
     if(!message.contains("OriginModule"))
     {
         qInfo("message error! has no OriginModule.");
@@ -3213,7 +3381,12 @@ void AACoreNew::receivceModuleMessage(QVariantMap message)
 
 QMap<QString, PropertyBase *> AACoreNew::getModuleParameter()
 {
-
-    QMap<QString, PropertyBase *> temp;
-    return temp;
+    QMap<QString, PropertyBase *> temp_map;
+    temp_map.insert("AA_HEAD_PARAMS", &aa_head->parameters);
+    temp_map.insert("AA_HEAD_POSITION", &aa_head->mushroom_position);
+    temp_map.insert("AA_PICK_LENS_POSITION", &aa_head->pick_lens_position);
+    temp_map.insert("AA_CORE_PARAMS", &this->parameters);
+    temp_map.insert(DISPENSER_MODULE_PARAMETER,  &this->dispense->parameters);
+    temp_map.insert(DISPENSER_PARAMETER, &this->dispense->dispenser->parameters);
+    return temp_map;
 }

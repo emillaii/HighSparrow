@@ -11,6 +11,7 @@ public:
     XtVacuum();
     void Init(XtGeneralOutput *output_io, XtGeneralInput *input_io,XtGeneralOutput *output_break_io);
     bool Set(bool new_state, bool wait_done = true, bool open_break = true);
+    bool SetSimulation(bool new_state,bool open_io = false);
     void SET(int thread, bool new_state);
     bool Wait(bool target_state);
     bool checkHasMaterielSync();
@@ -19,6 +20,7 @@ public:
     bool checkState(bool check_state);
 public:
     XtVacuumParameter parameters;
+    static bool no_material;
 private:
     XtGeneralInput *in_io;
     XtGeneralOutput *out_io;

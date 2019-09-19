@@ -24,7 +24,16 @@ ScrollView {
             visible: sutModuleViewSwitch.checked
         }
 
-        Switch {id: lutModuleViewSwitch; text:"LUT 配置"}
+        Switch {
+            id: lutModuleViewSwitch
+            text:"LUT 配置"
+            visible: {
+                if (baseModuleManager.getServerMode() === 0)
+                    lutModuleViewSwitch.checked
+                else
+                    false
+            }
+        }
         LUTModuleView{
             Layout.fillWidth: true
             visible: {
@@ -72,7 +81,16 @@ ScrollView {
             visible: materialLoderViewSwitch.checked
         }
 
-        Switch {id: trayLoderViewSwitch; text:"TrayLoader 配置"}
+        Switch {
+            id: trayLoderViewSwitch;
+
+            text:{
+                if (baseModuleManager.getServerMode() === 0)
+                    return "Lens TrayLoader 配置"
+                else
+                    return "Sensor TrayLoader 配置"
+            }
+        }
         Loader{
             source: {
                 if (baseModuleManager.getServerMode() === 0)

@@ -63,4 +63,47 @@ ColumnLayout {
             }
         }
     }
+    RowLayout{
+        Label{
+            text:qsTr("picker_offset")
+        }
+    }
+    RowLayout{
+        Label{
+            text:qsTr("X")
+        }
+        TextField{
+            text:picker_offset.X
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                picker_offset.setX(text)
+                lpa_picker_offset.setX(text)
+            }
+        }
+        Label{
+            text:qsTr("Y")
+        }
+        TextField{
+            text:picker_offset.Y
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                picker_offset.setY(text)
+                lpa_picker_offset.setY(text)
+            }
+        }
+        Button{
+            text: qsTr("测量")
+            onClicked: {
+//                lensLoaderModule.performLensUpDnLookCalibration
+            }
+        }
+    }
 }

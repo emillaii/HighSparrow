@@ -16,12 +16,17 @@ public:
     Q_PROPERTY(QString downlookLocationName READ downlookLocationName WRITE setDownlookLocationName NOTIFY downlookLocationNameChanged)
     Q_PROPERTY(QString updownlookUpLocationName READ updownlookUpLocationName WRITE setUpdownlookUpLocationName NOTIFY updownlookUpLocationNameChanged)
     Q_PROPERTY(QString updownlookDownLocationName READ updownlookDownLocationName WRITE setUpdownlookDownLocationName NOTIFY updownlookDownLocationNameChanged)
+    Q_PROPERTY(QString downlookFlyIoName READ downlookFlyIoName WRITE setDownlookFlyIoName NOTIFY downlookFlyIoNameChanged)
     Q_PROPERTY(double cameraTheta READ cameraTheta WRITE setCameraTheta NOTIFY cameraThetaChanged)
     Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
     Q_PROPERTY(double loadPosArrivedY READ loadPosArrivedY WRITE setLoadPosArriedY NOTIFY loadPosArrivedYChanged)
     Q_PROPERTY(double prPosArrivedY READ prPosArrivedY WRITE setPrPosArrivedY NOTIFY prPosArrivedYChanged)
     Q_PROPERTY(double mushroomPosArrivedY READ mushroomPosArrivedY WRITE setMushroomPosArrivedY NOTIFY mushroomPosArrivedYChanged)
     Q_PROPERTY(double zArrivedEorror READ zArrivedEorror WRITE setzArrivedEorror NOTIFY zArrivedEorrorChanged)
+    Q_PROPERTY(double downlookFlyStartPosition READ downlookFlyStartPosition WRITE setDownlookFlyStartPosition NOTIFY downlookFlyStartPositionChanged)
+    Q_PROPERTY(double downlookFlyPrPosition READ downlookFlyPrPosition WRITE setDownlookFlyPrPosition NOTIFY downlookFlyPrPositionChanged)
+    Q_PROPERTY(double downlookFlyVelocity READ downlookFlyVelocity WRITE setDownlookFlyVelocity NOTIFY downlookFlyVelocityChanged)
+    Q_PROPERTY(double downlookCameraExposureTime READ downlookCameraExposureTime WRITE setDownlookCameraExposureTime NOTIFY downlookCameraExposureTimeChanged)
     double Force() const
     {
         return m_Force;
@@ -94,6 +99,31 @@ public:
     double mushroomPosArrivedY() const
     {
         return m_mushroomPosArrivedY;
+    }
+
+    double downlookFlyPrPosition() const
+    {
+        return m_downlookFlyPrPosition;
+    }
+
+    double downlookFlyStartPosition() const
+    {
+        return m_downlookFlyStartPosition;
+    }
+
+    double downlookFlyVelocity() const
+    {
+        return m_downlookFlyVelocity;
+    }
+
+    QString downlookFlyIoName() const
+    {
+        return m_downlookFlyIoName;
+    }
+
+    double downlookCameraExposureTime() const
+    {
+        return m_downlookCameraExposureTime;
     }
 
 public slots:
@@ -237,6 +267,55 @@ public slots:
         emit mushroomPosArrivedYChanged(m_mushroomPosArrivedY);
     }
 
+    void setDownlookFlyPrPosition(double downlookFlyPrPosition)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_downlookFlyPrPosition, downlookFlyPrPosition))
+            return;
+
+        m_downlookFlyPrPosition = downlookFlyPrPosition;
+        emit downlookFlyPrPositionChanged(m_downlookFlyPrPosition);
+    }
+
+    void setDownlookFlyStartPosition(double downlookFlyStartPosition)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_downlookFlyStartPosition, downlookFlyStartPosition))
+            return;
+
+        m_downlookFlyStartPosition = downlookFlyStartPosition;
+        emit downlookFlyStartPositionChanged(m_downlookFlyStartPosition);
+    }
+
+    void setDownlookFlyVelocity(double downlookFlyVelocity)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_downlookFlyVelocity, downlookFlyVelocity))
+            return;
+
+        m_downlookFlyVelocity = downlookFlyVelocity;
+        emit downlookFlyVelocityChanged(m_downlookFlyVelocity);
+    }
+
+    void setDownlookFlyIoName(QString downlookFlyIoName)
+    {
+        if (m_downlookFlyIoName == downlookFlyIoName)
+            return;
+
+        m_downlookFlyIoName = downlookFlyIoName;
+        emit downlookFlyIoNameChanged(m_downlookFlyIoName);
+    }
+
+    void setDownlookCameraExposureTime(double downlookCameraExposureTime)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_downlookCameraExposureTime, downlookCameraExposureTime))
+            return;
+
+        m_downlookCameraExposureTime = downlookCameraExposureTime;
+        emit downlookCameraExposureTimeChanged(m_downlookCameraExposureTime);
+    }
+
 signals:
     void paramsChanged(double Force);
 
@@ -270,6 +349,16 @@ signals:
 
     void mushroomPosArrivedYChanged(double mushroomPosArrivedY);
 
+    void downlookFlyPrPositionChanged(double downlookFlyPrPosition);
+
+    void downlookFlyStartPositionChanged(double downlookFlyStartPosition);
+
+    void downlookFlyVelocityChanged(double downlookFlyVelocity);
+
+    void downlookFlyIoNameChanged(QString downlookFlyIoName);
+
+    void downlookCameraExposureTimeChanged(double downlookCameraExposureTime);
+
 private:
     double m_Force = 0;
     QString m_motorXName = "SUT_X";
@@ -286,6 +375,11 @@ private:
     double m_zArrivedEorror = 0.1;
     double m_prPosArrivedY = 10;
     double m_mushroomPosArrivedY = 1;
+    double m_downlookFlyPrPosition = 0;
+    double m_downlookFlyStartPosition = 0;
+    double m_downlookFlyVelocity = 1;
+    QString m_downlookFlyIoName = "CAMERA_TRIG";
+    double m_downlookCameraExposureTime;
 };
 
 class SutState:public PropertyBase

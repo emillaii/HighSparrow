@@ -58,6 +58,8 @@ public:
     UPHHelper lens_uph;
     UPHHelper left_lens_uph;
     UPHHelper right_lens_uph;
+
+    MaterialCarrier* carrier;
 signals:
     void sendMessageToClient(QString destAddress, QString module_message);
     void sendLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
@@ -75,7 +77,6 @@ public slots:
     LUTState getLUTState();
 private:
     SutModule* sut;
-    MaterialCarrier* carrier;
     VisionLocation* uplook_location;
     VisionLocation* load_location;
     VisionLocation* mushroom_location;
@@ -96,7 +97,7 @@ private:
     int check_thread = 0;
 
     void run(bool has_material);
-    void runTest();
+//    void runTest();
     bool isActionEmpty();
     QString servingIP = "";
     void sendEvent(const QString event);
@@ -139,9 +140,16 @@ public:
 
     bool checkLutLensSync(bool check_state);
     bool checkLutNgLensSync(bool check_state);
-    bool checkLutLens(bool check_state);
-    bool checkLutNgLens(bool check_state);
+    bool waitLutLensCheckResult(bool check_state);
+    bool waitLutNgLensCheckResult(bool check_state);
     bool stepMove_XY_Sync(double x,double y);
+    //PR
+    bool performUpLookPR();
+    //真空操作
+    bool openLoadVacuum();
+    bool closeLoadVacuum();
+    bool openUnloadVacuum();
+    bool closeUnloadVacuum();
 
     double updateAccumulatedHour(bool calculate = true);
     double getHourSpace(QTime time_label);

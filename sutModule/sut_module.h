@@ -26,11 +26,11 @@ public:
     SutModule();
     void Init(MaterialCarrier* carrier,SutClient* sut_cilent,
               VisionLocation* vision_downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn,
-              XtVacuum *vacuum,XtCylinder* popgpin,int thread_id);
+              XtVacuum *vacuum,XtCylinder* popgpin,XtGeneralOutput* camera_trig,int thread_id);
     void loadParams(QString file_name);
     void saveJsonConfig(QString file_name);
 
-    bool checkSutSensorOrProduct(bool check_state);
+//    bool checkSutSensorOrProduct(bool check_state);
     bool checkSutHasMaterialSynic();
     bool checkSutHasMaterial();
     bool waitSutCheckResult(bool check_state);
@@ -42,6 +42,7 @@ public:
     bool moveToDownlookSaveImage(QString imageName,bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToReadyPos();
     Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    bool moveToDownLookFlyPr();
     Q_INVOKABLE bool toolDownlookPR(PrOffset &offset,bool close_lighting = true,bool motion = false);
     Q_INVOKABLE bool toolUplookPR(PrOffset &offset,bool close_lighting = true,bool motion = false);
     Q_INVOKABLE bool toolDownlookPR(bool close_lighting = true,bool motion = false);
@@ -57,6 +58,9 @@ public:
     Q_INVOKABLE bool movetoRecordPos(bool check_autochthonous = false);
     Q_INVOKABLE bool movetoRecordPosAddOffset(double x_offset,double y_offset,double z_offset,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToSafetyPos(bool check_autochthonous = false);
+
+    //PR
+    bool performDownLookPR();
 
     bool OpenSutVacuum();
     bool CloseSutVacuum();
@@ -80,10 +84,11 @@ public:
     Position3D tool_downlook_position;
     Position3D mushroom_positon;
     Position3D tool_uplook_positon;
+    Position down_look_fly_end_position;
     PositionT  up_downlook_offset;
-    Position3D safety_positon;
     MaterialCarrier* carrier;
     VisionLocation* vision_downlook_location;
+    XtGeneralOutput* camera_trig;
     bool DownlookPrDone = false;
 private:
     VisionLocation* vision_updownlook_down_location;

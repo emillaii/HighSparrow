@@ -52,6 +52,7 @@ ItemDelegate {
                         text: qsTr("重复次数")
                     }
                     TextField{
+                        horizontalAlignment: TextInput.AlignHCenter
                         text: lens_loader_parameter.repeatTime
                         onEditingFinished: {
                             lens_loader_parameter.setRepeatTime(text)
@@ -62,6 +63,7 @@ ItemDelegate {
                         text: qsTr("测试个数")
                     }
                     TextField{
+                        horizontalAlignment: TextInput.AlignHCenter
                         text: lens_loader_parameter.testLensCount
                         onEditingFinished: {
                             lens_loader_parameter.setTestLensCount(text)
@@ -111,10 +113,13 @@ ItemDelegate {
                         Label {
                             text: qsTr("运行模式")
                         }
-                        TextField {
-                            text: moduleManagerParam.runMode
-                            onEditingFinished: {
-                                moduleManagerParam.setRunMode(text);
+                        ComboBox {
+                            id: aaCoreProfile
+                            Layout.preferredWidth: 200
+                            model: [ qsTr("常规模式"), qsTr("空跑模式"), qsTr("振动测试模式"), "流程图测试模式" ]
+                            currentIndex: moduleManagerParam.runMode
+                            onCurrentIndexChanged: {
+                                moduleManagerParam.setRunMode(currentIndex)
                             }
                         }
                         Button{
@@ -134,23 +139,92 @@ ItemDelegate {
                             }
                         }
                         CheckBox {
-                            visible: baseModuleManager.getServerMode() === 1
+                            visible: baseModuleManager.getServerMode() === 0
                             text: qsTr("手动换Lens盘");
-                            checked: moduleManagerParam.handlyChangeLensTray
+                            checked: tray_loader_module_parameters.handlyChangeLensTray
                             onClicked: {
-                                moduleManagerParam.setHandlyChangeLensTray(checked)
+                                tray_loader_module_parameters.setHandlyChangeLensTray(checked)
                             }
                         }
                         CheckBox {
                             visible: baseModuleManager.getServerMode() === 1
                             text: qsTr("手动换Sensor盘");
-                            checked: moduleManagerParam.handlyChangeSensorTray
+                            checked: sensor_tray_loader_module_parameter.handlyChangeSensorTray
                             onClicked: {
-                                moduleManagerParam.setHandlyChangeSensorTray(checked)
+                                sensor_tray_loader_module_parameter.setHandlyChangeSensorTray(checked)
                             }
                         }
                     }
-
+                    RowLayout {
+                        visible: baseModuleManager.getServerMode() === 1
+                        CheckBox {
+                            text: qsTr("任务累计计数");
+                            checked: aaCoreParams.taskAccumulate
+                            onClicked: {
+                                aaCoreParams.setTaskAccumulate(checked)
+                            }
+                        }
+                    }
+                    RowLayout {
+                        visible: baseModuleManager.getServerMode() === 1
+                        RadioButton
+                        {
+                            id:fsj_task
+                            text: qsTr("一次首件")
+                            checked: aaCoreParams.taskMode === 1
+                            onClicked: {
+                                if(checked)
+                                    aaCoreParams.setTaskMode(1);
+                            }
+                        }
+                        TextField {
+                            horizontalAlignment: TextInput.AlignHCenter
+                            text: aaCoreParams.taskNumberFSJ
+                            onEditingFinished: {
+                                aaCoreParams.setTaskNumberFSJ(text);
+                            }
+                        }
+                    }
+                    RowLayout {
+                        visible: baseModuleManager.getServerMode() === 1
+                        RadioButton
+                        {
+                            id:ssj_task
+                            text: qsTr("多次首件")
+                            checked: aaCoreParams.taskMode === 2
+                            onClicked: {
+                                if(checked)
+                                    aaCoreParams.setTaskMode(2);
+                            }
+                        }
+                        TextField {
+                            horizontalAlignment: TextInput.AlignHCenter
+                            text: aaCoreParams.taskNumberSSJ
+                            onEditingFinished: {
+                                aaCoreParams.setTaskNumberSSJ(text);
+                            }
+                        }
+                    }
+                    RowLayout {
+                        visible: baseModuleManager.getServerMode() === 1
+                        RadioButton
+                        {
+                            id:normal_task
+                            text: qsTr("一般打料")
+                            checked: aaCoreParams.taskMode === 3
+                            onClicked: {
+                                if(checked)
+                                    aaCoreParams.setTaskMode(3);
+                            }
+                        }
+                        TextField {
+                            horizontalAlignment: TextInput.AlignHCenter
+                            text: aaCoreParams.taskNumber
+                            onEditingFinished: {
+                                aaCoreParams.setTaskNumber(text);
+                            }
+                        }
+                    }
                 }
             }
             GroupBox
@@ -303,66 +377,70 @@ ItemDelegate {
                     }
                 }
             }
-            GroupBox{
-                title:qsTr("消息路由测试")
-                RowLayout{
-                    TextField{
-                        id:module_name
-                        width: 100
-                        text: "Sut1Module"
-                    }
+//            GroupBox{
+//                title:qsTr("消息路由测试")
+//                RowLayout{
+//                    TextField{
+//                        horizontalAlignment: TextInput.AlignHCenter
+//                        id:module_name
+//                        width: 100
+//                        text: "Sut1Module"
+//                    }
 
-                    TextField{
-                        id:target_module_name
-                        width: 100
-                        text: "AA1CoreNew"
-                    }
+//                    TextField{
+//                        horizontalAlignment: TextInput.AlignHCenter
+//                        id:target_module_name
+//                        width: 100
+//                        text: "AA1CoreNew"
+//                    }
 
-                    Button{
-                        text: qsTr("发送")
-                        onClicked: {
-                            if(module_name.text === "Sut1Module")
-                            {
-                                sutModule.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
-                            }
-                            else if(module_name.text === "AA1CoreNew")
-                            {
-                                aaNewCore.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
-                            }
-                            else if(module_name.text === "AA2CoreNew")
-                            {
-                                aaNewCore.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
-                            }
-                            else if(module_name.text === "SUT2Module")
-                            {
-                                aaNewCore.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
-                            }
-                        }
-                    }
-                    Button{
-                        text: qsTr("读取")
-                        onClicked: {
-                            if(target_module_name.text === "Sut1Module")
-                                receive_message.text = sutModule.getModuleMessage()
-                            else if(target_module_name.text === "AA1CoreNew")
-                                receive_message.text = aaNewCore.getModuleMessage()
-                            else if(module_name.text === "AA2CoreNew")
-                            {
-                                receive_message.text = aaNewCore.getModuleMessage()
-                            }
-                            else if(module_name.text === "Sut2Module")
-                            {
-                                receive_message.text = sutModule.getModuleMessage()
-                            }
-                        }
-                    }
-                    Label
-                    {
-                        id:receive_message
-                        text: "无"
-                    }
-                }
-            }
+//                    Button{
+//                        text: qsTr("发送")
+//                        onClicked: {
+//                            if(module_name.text === "Sut1Module")
+//                            {
+//                                sutModule.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
+//                            }
+//                            else if(module_name.text === "AA1CoreNew")
+//                            {
+//                                aaNewCore.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
+//                            }
+//                            else if(module_name.text === "AA2CoreNew")
+//                            {
+//                                aaNewCore.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
+//                            }
+//                            else if(module_name.text === "SUT2Module")
+//                            {
+//                                aaNewCore.sendMessageToModule(target_module_name.text,module_name.text+"TestMessage")
+//                            }
+//                        }
+//                    }
+//                    Button{
+//                        text: qsTr("读取")
+//                        onClicked: {
+//                            if(target_module_name.text === "Sut1Module")
+//                                receive_message.text = sutModule.getModuleMessage()
+//                            else if(target_module_name.text === "AA1CoreNew")
+//                                receive_message.text = aaNewCore.getModuleMessage()
+//                            else if(module_name.text === "AA2CoreNew")
+//                            {
+//                                receive_message.text = aaNewCore.getModuleMessage()
+//                            }
+//                            else if(module_name.text === "Sut2Module")
+//                            {
+//                                receive_message.text = sutModule.getModuleMessage()
+//                            }
+//                        }
+//                    }
+//                    Label
+//                    {
+//                        id:receive_message
+//                        text: "无"
+//                    }
+//                }
+//            }
+
+
             UPHView{}
         }
     }

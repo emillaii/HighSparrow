@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
 import SomeLib 1.1
+import LogicManagerLib 1.1
 
 ItemDelegate {
     width: parent.width
@@ -22,11 +23,12 @@ ItemDelegate {
                 ColumnLayout{
                     GroupBox{
                         visible: baseModuleManager.getServerMode()===0
-                        title: qsTr("Lens抓放")
+                        title: qsTr("Lens取放")
                         ColumnLayout{
                             RowLayout{
                                 Label{
                                     text:qsTr("Lens Tray盘1位置移动")
+                                    font.bold: true
                                 }
                             }
                             RowLayout{
@@ -87,7 +89,41 @@ ItemDelegate {
                             }
                             RowLayout{
                                 Label{
+                                    text: qsTr("组合动作:")
+                                }
+                                Button{
+                                    text:qsTr("AA1 Pick Lens")
+                                    onClicked: {
+                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                                        logicManager.performHandling("", LogicManager.LOAD_LENS_FROM_TRAY_1_AND_PICK_TO_AA1)
+                                    }
+                                }
+                                Button{
+                                    text:qsTr("AA2 Pick Lens")
+                                    onClicked: {
+                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                                        logicManager.performHandling("", LogicManager.LOAD_LENS_FROM_TRAY_1_AND_PICK_TO_AA2)
+                                    }
+                                }
+                                Button{
+                                    text:qsTr("AA1 Unpick Lens")
+                                    onClicked: {
+                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                                        logicManager.performHandling("", LogicManager.UNPICK_LENS_FROM_AA1_AND_PLACE_TO_TRAY1)
+                                    }
+                                }
+                                Button{
+                                    text:qsTr("AA2 Unpick Lens")
+                                    onClicked: {
+                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                                        logicManager.performHandling("", LogicManager.UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY1)
+                                    }
+                                }
+                            }
+                            RowLayout{
+                                Label{
                                     text:qsTr("Lens Tray盘2位置移动")
+                                    font.bold: true
                                 }
                             }
                             RowLayout{
@@ -148,7 +184,41 @@ ItemDelegate {
                             }
                             RowLayout{
                                 Label{
+                                    text: qsTr("组合动作:")
+                                }
+                                Button{
+                                    text:qsTr("AA1 Pick Lens")
+                                    onClicked: {
+                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                                        logicManager.performHandling("", LogicManager.LOAD_LENS_FROM_TRAY_2_AND_PICK_TO_AA1)
+                                    }
+                                }
+                                Button{
+                                    text:qsTr("AA2 Pick Lens")
+                                    onClicked: {
+                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                                        logicManager.performHandling("", LogicManager.LOAD_LENS_FROM_TRAY_2_AND_PICK_TO_AA2)
+                                    }
+                                }
+                                Button{
+                                    text:qsTr("AA1 Unpick Lens")
+                                    onClicked: {
+                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                                        logicManager.performHandling("", LogicManager.UNPICK_LENS_FROM_AA1_AND_PLACE_TO_TRAY2)
+                                    }
+                                }
+                                Button{
+                                    text:qsTr("AA2 Unpick Lens")
+                                    onClicked: {
+                                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                                        logicManager.performHandling("", LogicManager.UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY2)
+                                    }
+                                }
+                            }
+                            RowLayout{
+                                Label{
                                     text:qsTr("LUT取放lens")
+                                    font.bold: true
                                 }
                             }
                             RowLayout{
@@ -156,6 +226,7 @@ ItemDelegate {
                                     text:qsTr("放lens到LUT")
                                     onClicked: {
                                         //logicManager.lensPickArmMoveToPlaceLensToLut()
+                                        lutModule.moveToLoadPos(false,true)
                                         lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1+
                                                                          LensLoaderModule.RESET_PR+
                                                                          LensLoaderModule.ToWork+
@@ -166,6 +237,7 @@ ItemDelegate {
                                     text:qsTr("从LUT取NGlens")
                                     onClicked: {
                                         //logicManager.lensPickArmMoveToPickLensFromLut()
+                                        lutModule.moveToLoadPos(false,true)
                                         lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
                                                                          LensLoaderModule.LUT_LENS_PR+
                                                                          LensLoaderModule.ToWork+
@@ -302,13 +374,40 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("开启")
                                     onClicked: {
-
+                                        console.log("server mode: "+baseModuleManager.getServerMode)
+                                        if (baseModuleManager.getServerMode() === 0)
+                                        {
+                                            baseModuleManager.setOutput("AA1_UV1", true)
+                                            baseModuleManager.setOutput("AA1_UV2", true)
+                                            baseModuleManager.setOutput("AA1_UV3", true)
+                                            baseModuleManager.setOutput("AA1_UV4", true)
+                                        }
+                                        else
+                                        {
+                                            baseModuleManager.setOutput("AA2_UV1", true)
+                                            baseModuleManager.setOutput("AA2_UV2", true)
+                                            baseModuleManager.setOutput("AA2_UV3", true)
+                                            baseModuleManager.setOutput("AA2_UV4", true)
+                                        }
                                     }
                                 }
                                 Button{
                                     text:qsTr("关闭")
                                     onClicked: {
-
+                                        if (baseModuleManager.getServerMode() === 0)
+                                        {
+                                            baseModuleManager.setOutput("AA1_UV1", false)
+                                            baseModuleManager.setOutput("AA1_UV2", false)
+                                            baseModuleManager.setOutput("AA1_UV3", false)
+                                            baseModuleManager.setOutput("AA1_UV4", false)
+                                        }
+                                        else
+                                        {
+                                            baseModuleManager.setOutput("AA2_UV1", false)
+                                            baseModuleManager.setOutput("AA2_UV2", false)
+                                            baseModuleManager.setOutput("AA2_UV3", false)
+                                            baseModuleManager.setOutput("AA2_UV4", false)
+                                        }
                                     }
                                 }
                             }
@@ -319,13 +418,27 @@ ItemDelegate {
                                 Button{
                                     text:qsTr("开启")
                                     onClicked: {
-                                        baseModuleManager.setOutput("AA1_GripON",true)
+                                        if (baseModuleManager.getServerMode() === 0)
+                                        {
+                                            baseModuleManager.setOutput("AA1_GripON",true)
+                                        }
+                                        else
+                                        {
+                                            baseModuleManager.setOutput("AA2_GripON",true)
+                                        }
                                     }
                                 }
                                 Button{
                                     text:qsTr("关闭")
                                     onClicked: {
-                                        baseModuleManager.setOutput("AA1_GripON",false)
+                                        if (baseModuleManager.getServerMode() === 0)
+                                        {
+                                            baseModuleManager.setOutput("AA1_GripON",false)
+                                        }
+                                        else
+                                        {
+                                            baseModuleManager.setOutput("AA2_GripON",false)
+                                        }
                                     }
                                 }
                             }
@@ -350,7 +463,7 @@ ItemDelegate {
                             RowLayout{
                                 Switch {
                                     id:sut_vacuum
-                                    text: baseModuleManager.getServerMode()==0?qsTr("SUT1吸真空"):qsTr("SUT2吸真空")
+                                    text: baseModuleManager.getServerMode()===0?qsTr("SUT1吸真空"):qsTr("SUT2吸真空")
                                     Connections{
                                         target: timer
                                         onTriggered: {
@@ -368,7 +481,7 @@ ItemDelegate {
                         }
                     }
                     GroupBox{
-                        visible: baseModuleManager.getServerMode()==1
+                        visible: baseModuleManager.getServerMode()===1
                         title:qsTr("SPA")
                         ColumnLayout{
                             RowLayout{

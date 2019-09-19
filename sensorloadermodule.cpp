@@ -44,7 +44,7 @@ void SensorLoaderModule::startWork(int run_mode)
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数为空.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数为空.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("RunMode"))
@@ -53,7 +53,7 @@ void SensorLoaderModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数RunMode缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数RunMode缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("DisableStation"))
@@ -65,7 +65,19 @@ void SensorLoaderModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数DisableStation缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数DisableStation缺失.启动失败.",ErrorLevel::ErrorMustStop);
+        return;
+    }
+    if(run_params.contains("StationTask"))
+    {
+        QVariantMap task_map = run_params["StationTask"].toMap();
+        states.setTaskOfStation1(task_map["0"].toInt());
+        states.setTaskOfStation2(task_map["1"].toInt());
+        qInfo("taskOfStation1:%d,taskOfStation2:%d",states.taskOfStation1(),states.taskOfStation2());
+    }
+    else
+    {
+        sendAlarmMessage(OK_OPERATION,u8"启动参数StationTask缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("HandlyChangeSensorTray"))
@@ -74,7 +86,7 @@ void SensorLoaderModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeSensorTray缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数HandlyChangeSensorTray缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("HandlyChangeSensor"))
@@ -83,7 +95,7 @@ void SensorLoaderModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeSensor缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数HandlyChangeSensor缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(states.handlyChangeSensor())
@@ -155,7 +167,7 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     cmd =cmd/temp_value*temp_value;
     if(!result)
     {
-        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
         is_handling = false;
         return;
     }
@@ -218,7 +230,7 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
         result = true;
     if(!result)
     {
-        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
         is_handling = false;
         return;
     }
@@ -284,7 +296,7 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
     }
     if(!result)
     {
-        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
         is_handling = false;
         return;
     }
@@ -422,7 +434,7 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
         result = true;
     if(!result)
     {
-        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
         is_handling = false;
         return;
     }
@@ -465,9 +477,9 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
 void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-    QMutexLocker temp_locker(&message_mutex);
-    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-        this->module_message = message;
+//    QMutexLocker temp_locker(&message_mutex);
+//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
+//        this->module_message = message;
     if(!message.contains("OriginModule"))
     {
         qInfo("message error! has no OriginModule.");
@@ -519,6 +531,10 @@ void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
             {
                 states.setStation1Unload(true);
             }
+            else if(message["Message"].toString()=="NormalMode")
+            {
+                states.setStation1Unload(false);
+            }
             else
             {
                 qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
@@ -557,6 +573,10 @@ void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
             {
                 states.setStation2Unload(true);
             }
+            else if(message["Message"].toString()=="NormalMode")
+            {
+                states.setStation2Unload(false);
+            }
             else
             {
                 qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
@@ -583,6 +603,14 @@ void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
         {
             tray->resetTrayState(SensorPosition::SENSOR_TRAY_1);
             states.setHasSensorTray1(true);
+        }
+        else if(message["Message"].toString()=="finishChangeTray")
+        {
+            tray->resetTrayState(SensorPosition::SENSOR_TRAY_1);
+            tray->resetTrayState(SensorPosition::SENSOR_TRAY_2);
+            states.setHasSensorTray2(true);
+            states.setHasSensorTray1(true);
+            states.setFinishChangeTray(true);
         }
         else
         {
@@ -631,9 +659,11 @@ void SensorLoaderModule::run()
             tray_sensor_location->OpenLight();
             if(!moveCameraToTrayCurrentPos(states.currentTrayID()))
             {
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
             if((!performTraySensorPR()))
             {
@@ -642,17 +672,18 @@ void SensorLoaderModule::run()
                     pr_times--;
                     tray->setCurrentMaterialState(MaterialState::IsNgSensor,states.currentTrayID());
                     AppendError(u8"自动重试.");
-                    sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+                    sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
                     continue;
                 }
                 else
                 {
                     pr_times = parameters.autoPrTime();
                     AppendError(u8"pr连续失败五次");
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    waitMessageReturn(is_run);
+                    int alarm_id = sendAlarmMessage(CONTINUE_SKIP_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
-                    continue;
+                    if(SKIP_OPERATION != operation)
+                        continue;
                 }
             }
             else
@@ -665,14 +696,18 @@ void SensorLoaderModule::run()
             checkPicker1HasMateril();
             if(!movePicker1ToTrayCurrentPos(states.currentTrayID()))
             {
-                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                waitMessageReturn(is_run);
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
             if(!waitPicker1CheckResult(false))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
                     states.setPicker1MaterialState(MaterialState::IsRaw);
                     continue;
@@ -682,12 +717,16 @@ void SensorLoaderModule::run()
             //取sensor
             if((!pickSensorFromTray(states.currentTrayID())))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
                     tray->setCurrentMaterialState(MaterialState::IsNgSensor,states.currentTrayID());
                     continue;
                 }
+                else if(RETRY_OPERATION == operation)
+                    continue;
             }
             tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTrayID());
             states.setPicker1MaterialState(MaterialState::IsRaw);
@@ -707,17 +746,24 @@ void SensorLoaderModule::run()
                 tray_empty_location->OpenLight();
                 if(!moveCameraToTrayCurrentPos(states.currentTrayID()))
                 {
-                    continue;
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 if((!performTrayEmptyPR()))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                    if(waitMessageReturn(is_run))
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_NEXT_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(NEXT_OPERATION == operation)
                     {
                         tray->setCurrentMaterialState(MaterialState::IsNgSensor,states.currentTrayID());
                         continue;
                     }
-                    if(!is_run)break;
+                    else if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 tray_empty_location->CloseLight();
                 if(is_buffer_tray)
@@ -740,31 +786,41 @@ void SensorLoaderModule::run()
             //走偏移值
             if(!movePicker2ToTrayCurrentPos(states.currentTrayID()))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
                     continue;
-                }
                 if(!is_run)break;
             }
             if(!is_run)break;
             //检查是否有料
             if(!checkPicker2HasMaterialSync())
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
                     states.setPicker2MaterialState(MaterialState::IsEmpty);
                     continue;
                 }
-                if(!is_run)break;
             }
             if(!is_run)break;
             //放下成品
             if((!placeProductToTray(states.currentTrayID())))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
+                {
+                    picker2_senseor_data["WorkStation"] = BusyState::IDLE;
+                    tray->setCurrentMaterialState(MaterialState::IsNgSensor,states.currentTrayID());
+                    states.setPicker2MaterialState(MaterialState::IsEmpty);
+                    continue;
+                }
+                else if(RETRY_OPERATION == operation)
                     continue;
             }
             picker2_senseor_data["WorkStation"] = BusyState::IDLE;
@@ -776,32 +832,51 @@ void SensorLoaderModule::run()
         //检测是否更换Buffer盘
         if(!findTrayNextInitStatePos(SensorPosition::BUFFER_TRAY))
         {
+            if(!moveToStartPos(SensorPosition::BUFFER_TRAY))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
+            }
             AppendError("请更换缓存盘后继续！");
-            sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-            waitMessageReturn(is_run);
+            int alarm_id = sendAlarmMessage(u8"已换盘",GetCurrentError());
+            waitMessageReturn(is_run,alarm_id);
             if(!is_run)break;
             tray->resetTrayState(SensorPosition::BUFFER_TRAY);
+            states.setHasBufferTrayPrOffset(false);
         }
 
         //放Ng成品/NgSensor
-        if((!states.allowChangeTray())&&((MaterialState::IsNgProduct == states.picker2MaterialState())||
-                                         (MaterialState::IsNgSensor == states.picker2MaterialState())))
+        if(((MaterialState::IsNgProduct == states.picker2MaterialState())||(MaterialState::IsNgSensor == states.picker2MaterialState())))
         {
             //检测NG盘是否已满
             if(!findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY))
             {
+                if(!moveCameraToStandbyPos(true))
+                {
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
+                }
                 AppendError(u8"请更换Ng盘后继续！");
-                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                waitMessageReturn(is_run);
+                int alarm_id = sendAlarmMessage(u8"已换盘",GetCurrentError());
+                waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
                 tray->resetTrayState(SensorPosition::NG_SENSOR_TRAY);
                 findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY);
+                states.setHasNgTrayPrOffset(false);
             }
             //检查是否有料
             if(!checkPicker2HasMaterialSync())
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
                     states.setPicker2MaterialState(MaterialState::IsEmpty);
                     continue;
@@ -814,18 +889,24 @@ void SensorLoaderModule::run()
                 tray_empty_location->OpenLight();
                 if(!moveCameraToTrayCurrentPos(SensorPosition::NG_SENSOR_TRAY))
                 {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 if((!performTrayEmptyPR()))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                    if(waitMessageReturn(is_run))
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_NEXT_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(NEXT_OPERATION == operation)
                     {
-                        tray->setCurrentMaterialState(MaterialState::IsNgProduct,SensorPosition::NG_SENSOR_TRAY);
+                        tray->setCurrentMaterialState(MaterialState::IsNgProduct,states.currentTrayID());
                         continue;
                     }
+                    else if(RETRY_OPERATION == operation)
+                        continue;
                     if(!is_run)break;
                 }
                 tray_empty_location->CloseLight();
@@ -842,20 +923,21 @@ void SensorLoaderModule::run()
             //走偏移值
             if(!movePicker2ToTrayCurrentPos(SensorPosition::NG_SENSOR_TRAY))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    continue;
-                }
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
             //放NG成品/NgSensor
             if(states.picker2MaterialState() == MaterialState::IsNgSensor)
             {
                 if((!placeNgProductToTray()))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    if(waitMessageReturn(is_run))
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
                         continue;
                 }
                 tray->setCurrentMaterialState(MaterialState::IsNgSensor,states.currentTrayID());
@@ -864,8 +946,10 @@ void SensorLoaderModule::run()
             {
                 if((!placeNgSensorToTray()))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    if(waitMessageReturn(is_run))
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
                         continue;
                 }
                 tray->setCurrentMaterialState(MaterialState::IsNgProduct,states.currentTrayID());
@@ -882,9 +966,11 @@ void SensorLoaderModule::run()
             tray_sensor_location->OpenLight();
             if(!moveCameraToTrayCurrentPos(states.currentTrayID()))
             {
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
             if((!performTraySensorPR()))
             {
@@ -893,52 +979,60 @@ void SensorLoaderModule::run()
                     pr_times--;
                     tray->setCurrentMaterialState(MaterialState::IsNgSensor,states.currentTrayID());
                     AppendError(u8"自动重试.");
-                    sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+                    sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
                     continue;
                 }
                 else
                 {
                     pr_times = parameters.autoPrTime();
                     AppendError(u8"pr连续失败五次");
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    waitMessageReturn(is_run);
+                    int alarm_id = sendAlarmMessage(CONTINUE_SKIP_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
-                    continue;
+                    if(SKIP_OPERATION != operation)
+                        continue;
                 }
             }
             else
             {
                 pr_times = parameters.autoPrTime();
-                sendAlarmMessage(ErrorLevel::TipNonblock,"");
+                //sendAlarmMessage(ErrorLevel::TipNonblock,"");
             }
             tray_sensor_location->CloseLight();
             //走偏移值
             checkPicker1HasMateril();
             if(!movePicker1ToTrayCurrentPos(states.currentTrayID()))
             {
-                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                waitMessageReturn(is_run);
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
             if(!waitPicker1CheckResult(false))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
                     states.setPicker1MaterialState(MaterialState::IsRaw);
                     continue;
                 }
-                if(!is_run)break;
             }
             //取sensor
             if((!pickSensorFromTray(states.currentTrayID())))
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
                     tray->setCurrentMaterialState(MaterialState::IsNgSensor,states.currentTrayID());
                     continue;
                 }
+                else if(RETRY_OPERATION == operation)
+                    continue;
             }
             tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTrayID());
             states.setPicker1MaterialState(MaterialState::IsRaw);
@@ -950,6 +1044,13 @@ void SensorLoaderModule::run()
         {
             if((!states.hasSensorTray2())||checkTrayNeedChange())
                 states.setAllowChangeTray(true);
+            else
+            {
+                int force_state = checkForceChageStation();
+                if(force_state>0)
+                    states.setBusyState(force_state);
+            }
+
         }
 
         //sut任务分配
@@ -974,8 +1075,8 @@ void SensorLoaderModule::run()
             {
                 if(!movePicker1ToSUTPos(false))
                 {
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    waitMessageReturn(is_run);
+                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                    waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
                 }
             }
@@ -986,8 +1087,8 @@ void SensorLoaderModule::run()
             {
                 if(!movePicker2ToSUTPos(false,states.sut1MaterialState() != MaterialState::IsNgSensor))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    waitMessageReturn(is_run);
+                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                    waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
                 }
             }
@@ -1004,9 +1105,9 @@ void SensorLoaderModule::run()
                 }
                 if(!moveCameraToSUTPRPos(false,true))
                 {
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    is_run = false;
-                    break;
+                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                    waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
                 }
             }
         }
@@ -1016,8 +1117,8 @@ void SensorLoaderModule::run()
             {
                 if(!movePicker1ToSUTPos(true))
                 {
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    waitMessageReturn(is_run);
+                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                    waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
                 }
             }
@@ -1028,8 +1129,8 @@ void SensorLoaderModule::run()
             {
                 if(!movePicker2ToSUTPos(true,states.sut1MaterialState() != MaterialState::IsNgSensor))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    waitMessageReturn(is_run);
+                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                    waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
                 }
             }
@@ -1046,9 +1147,9 @@ void SensorLoaderModule::run()
                 }
                 if(!moveCameraToSUTPRPos(true,true))
                 {
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    is_run = false;
-                    break;
+                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                    waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
                 }
             }
         }
@@ -1056,9 +1157,9 @@ void SensorLoaderModule::run()
         {
             if(!moveCameraToStandbyPos(true))
             {
-                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                is_run = false;
-                break;
+                int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
             }
         }
 
@@ -1085,11 +1186,16 @@ void SensorLoaderModule::run()
                     if(change_tray_time_out<=0)
                     {
                         AppendError(QString(u8"等待换盘超时，超时时间%d,请选择是继续等待或者重新换盘").arg(parameters.changeTrayTimeOut()));
-                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                        if(waitMessageReturn(is_run))
-                            states.setWaitingChangeTray(false);
-                        else
+
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                        if(RETRY_OPERATION == operation)
+                        {
                             change_tray_time_out = parameters.changeTrayTimeOut();
+                            continue;
+                        }
+                        states.setWaitingChangeTray(false);
                     }
                 }
             }
@@ -1119,17 +1225,46 @@ void SensorLoaderModule::run()
                     sut_product_location->OpenLight();
                     if(!moveCameraToSUTPRPos(is_local))
                     {
-                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                        is_run = false;
-                        break;
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                        if(RETRY_OPERATION == operation)
+                            continue;
                     }
                     if((!performSUTProductPR()))
                     {
-                        AppendError(u8"成品视觉失败！");
-                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                        if(waitMessageReturn(is_run))
-                            continue;
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
                         if(!is_run)break;
+                        if(REJECT_OPERATION == operation)
+                        {
+                            if(is_local)
+                                states.setSut2MaterialState(MaterialState::IsEmpty);
+                            else
+                                states.setSut1MaterialState(MaterialState::IsEmpty);
+                            //uph统计
+                            product_uph.addCurrentNumber(updateAccumulatedHour());
+                            if(has_product)
+                                product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                            comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                            if(is_local)
+                            {
+                                right_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                                if(has_product)
+                                    right_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                                right_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                            }
+                            else
+                            {
+                                left_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                                if(has_product)
+                                    left_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                                left_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                            }
+                            continue;
+                        }
+                        else if(RETRY_OPERATION == operation)
+                            continue;
                     }
                     sut_product_location->CloseLight();
                 }
@@ -1141,26 +1276,44 @@ void SensorLoaderModule::run()
                 checkPicker2HasMateril();
                 if(!movePicker2ToSUTPos(is_local,true))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                    {
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
                         continue;
-                    }
                     if(!is_run)break;
                 }
                 if(!waitPicker2CheckResult(false))
                 {
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    waitMessageReturn(is_run);
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 if(!pickProductFromSut(is_local))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    if(waitMessageReturn(is_run))
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(CONTINUE_OPERATION == operation)
                     {
-                        continue;
+                        if(has_product)
+                            states.setPicker2MaterialState(MaterialState::IsProduct);
+                        else
+                            states.setPicker2MaterialState(MaterialState::IsNgProduct);
+                        picker2_senseor_data["WorkStation"] = states.busyState();
                     }
+                    else if(RETRY_OPERATION == operation)
+                        continue;
+                }
+                else
+                {
+                    if(has_product)
+                        states.setPicker2MaterialState(MaterialState::IsProduct);
+                    else
+                        states.setPicker2MaterialState(MaterialState::IsNgProduct);
+                    picker2_senseor_data["WorkStation"] = states.busyState();
                 }
                 if(states.crossTrayPlaceProduct()&&(!is_local))
                 {
@@ -1169,11 +1322,7 @@ void SensorLoaderModule::run()
                     sut1_sensor_data["SensorCount"] = sut1_sensor_data["SensorCount"].toInt() + 1;
                     qInfo("sut SensorCount %d",sut1_sensor_data["SensorCount"].toInt());
                 }
-                picker2_senseor_data["WorkStation"] = states.busyState();
-                if(has_product)
-                    states.setPicker2MaterialState(MaterialState::IsProduct);
-                else
-                    states.setPicker2MaterialState(MaterialState::IsNgProduct);
+
                 if(is_local)
                     states.setSut2MaterialState(MaterialState::IsEmpty);
                 else
@@ -1209,17 +1358,33 @@ void SensorLoaderModule::run()
                     sut_sensor_location->OpenLight();
                     if(!moveCameraToSUTPRPos(is_local))
                     {
-                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                        is_run = false;
-                        break;
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                        if(RETRY_OPERATION == operation)
+                            continue;
                     }
                     if((!performSUTSensorPR()))
                     {
-                        AppendError(u8"成品视觉失败！");
-                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                        if(waitMessageReturn(is_run))
-                            continue;
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
                         if(!is_run)break;
+                        if(REJECT_OPERATION == operation)
+                        {
+                            if(is_local)
+                                states.setSut2MaterialState(MaterialState::IsEmpty);
+                            else
+                                states.setSut1MaterialState(MaterialState::IsEmpty);
+                            //uph统计
+                            sensor_uph.addCurrentReslutNumber(updateAccumulatedHour());
+                            if(isLocalHost)
+                                right_sensor_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                            else
+                                left_sensor_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                            continue;
+                        }
+                        if(RETRY_OPERATION == operation)
+                            continue;
                     }
                     sut_sensor_location->CloseLight();
                 }
@@ -1231,26 +1396,37 @@ void SensorLoaderModule::run()
                 checkPicker2HasMateril();
                 if(!movePicker2ToSUTPos(is_local,true))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                    {
-                        continue;
-                    }
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 if(!waitPicker2CheckResult(false))
                 {
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    waitMessageReturn(is_run);
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 if(!pickNgSensorFromSut(is_local))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    if(waitMessageReturn(is_run))
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(CONTINUE_OPERATION == operation)
                     {
-                        continue;
+                        picker2_senseor_data["WorkStation"] = states.busyState();
+                        states.setPicker2MaterialState(MaterialState::IsNgSensor);
                     }
+                    else if(RETRY_OPERATION == operation)
+                        continue;
+                }
+                else
+                {
+                    picker2_senseor_data["WorkStation"] = states.busyState();
+                    states.setPicker2MaterialState(MaterialState::IsNgSensor);
                 }
                 if(states.crossTrayPlaceProduct()&&(!is_local))
                 {
@@ -1259,8 +1435,6 @@ void SensorLoaderModule::run()
                     sut1_sensor_data["SensorCount"] = sut1_sensor_data["SensorCount"].toInt() + 1;
                     qInfo("sut SensorCount %d",sut1_sensor_data["SensorCount"].toInt());
                 }
-                picker2_senseor_data["WorkStation"] = states.busyState();
-                states.setPicker2MaterialState(MaterialState::IsNgSensor);
                 if(is_local)
                     states.setSut2MaterialState(MaterialState::IsEmpty);
                 else
@@ -1299,18 +1473,24 @@ void SensorLoaderModule::run()
                 sut_empty_location->resetResult();
                 if(!movePicker1ToSUTPos(is_local))
                 {
-                    sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                    is_run = false;
-                    break;
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 if(!placeSensorToSUT(is_local))
                 {
-                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                    if(waitMessageReturn(is_run))
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(REJECT_OPERATION == operation)
                     {
                         states.setPicker1MaterialState(MaterialState::IsEmpty);
                         continue;
                     }
+                    else if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 states.setPicker1MaterialState(MaterialState::IsEmpty);
                 if(is_local)
@@ -1345,6 +1525,7 @@ void SensorLoaderModule::run()
             }
         }
     }
+    states.setRunMode(RunMode::Normal);
     qInfo("sensor Loader Module stoped");
 }
 
@@ -1353,7 +1534,7 @@ void SensorLoaderModule::resetLogic()
 {
     if(is_run)
     {
-        sendAlarmMessage(ErrorLevel::TipNonblock,u8"程序自动模式移动中，禁止重置逻辑.");
+        sendAlarmMessage(OK_OPERATION,u8"程序自动模式运行中，禁止重置逻辑.",ErrorLevel::TipNonblock);
         return;
     }
     tray->resetAllTrayState();
@@ -1364,8 +1545,9 @@ void SensorLoaderModule::resetLogic()
 void SensorLoaderModule::cameraTipOffsetCalibration(int pickhead)
 {
     qInfo("Start camera tip offset calibration: %d", pickhead);
-    moveToStartPos(1);
-    QThread::msleep(1000);
+//    moveToStartPos(1);
+//    QThread::msleep(1000);
+
     PrOffset offset;
     this->sensor_pickarm_calibration_glass_location->performPR(offset);
     std::vector<cv::Point2d> points;
@@ -1380,21 +1562,31 @@ void SensorLoaderModule::cameraTipOffsetCalibration(int pickhead)
             qInfo("PR offset: %f %f", offset.X, offset.Y);
             points.push_back(cv::Point2d(offset.X, offset.Y));
             this->pick_arm->stepMove_XYT1_Synic(picker1_offset.X(), picker1_offset.Y(), 0);
-            bool result = pick_arm->Z1SerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),true,true,30000);
+            bool result = pick_arm->Z1MeasureHeight(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),parameters.holdTime());
             QThread::msleep(1000);
-            result &= pick_arm->ZSerchReturn(30000);
+            result &= pick_arm->Z1SerchReturn(30000);
             this->pick_arm->stepMove_XYT1_Synic(0, 0, 20);
-            result = pick_arm->Z1SerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),15,parameters.vcmMargin(),parameters.finishDelay(),false,true,30000);
+            result = pick_arm->Z1MeasureHeight(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),parameters.holdTime());
             QThread::msleep(1000);
-            result &= pick_arm->ZSerchReturn(30000);
+            result &= pick_arm->Z1SerchReturn(30000);
             this->pick_arm->stepMove_XYT1_Synic(-picker1_offset.X(), -picker1_offset.Y(), 0);
         }
-        this->pick_arm->stepMove_XYT1_Synic(0,0, -100);
+        {//放回去
+            this->pick_arm->stepMove_XYT1_Synic(picker1_offset.X(), picker1_offset.Y(), 0);
+            bool result = pick_arm->Z1MeasureHeight(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),parameters.holdTime());
+            QThread::msleep(1000);
+            result &= pick_arm->Z1SerchReturn(30000);
+            this->pick_arm->stepMove_XYT1_Synic(0, 0, -50);
+            result = pick_arm->Z1MeasureHeight(parameters.vcmWorkSpeed(),parameters.vcmWorkForce());
+            QThread::msleep(1000);
+            result &= pick_arm->Z1SerchReturn(30000);
+            this->pick_arm->stepMove_XYT2_Synic(-picker1_offset.X(), -picker1_offset.Y(), 0);
+        }
         cv::Point2d center; double radius;
         fitCircle(points, center, radius);
         qInfo("Fit cicle: x: %f y: %f r:%f", center.x, center.y, radius);
-        this->picker1_offset.setX(picker1_offset.X() + center.x);
-        this->picker1_offset.setY(picker1_offset.Y() + center.y);
+        this->picker1_offset.setX(round(1000*(picker1_offset.X() + center.x))/1000);
+        this->picker1_offset.setY(round(1000*(picker1_offset.Y() + center.y))/1000);
     } else {
         this->pick_arm->stepMove_XYT2_Synic(-offset.X,-offset.Y, -50);
         for (int i = 0; i < 5; i++)
@@ -1405,21 +1597,31 @@ void SensorLoaderModule::cameraTipOffsetCalibration(int pickhead)
             qInfo("PR offset: %f %f", offset.X, offset.Y);
             points.push_back(cv::Point2d(offset.X, offset.Y));
             this->pick_arm->stepMove_XYT2_Synic(picker2_offset.X(), picker2_offset.Y(), 0);
-            bool result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),parameters.pickProductForce(),15,parameters.vcmMargin(),parameters.finishDelay(),true,true,30000);
+            bool result = pick_arm->Z2MeasureHeight(parameters.vcmWorkSpeed(),parameters.pickProductForce(),parameters.holdTime());
             QThread::msleep(1000);
-            result &= pick_arm->ZSerchReturn2(30000);
+            result &= pick_arm->Z2SerchReturn(30000);
             this->pick_arm->stepMove_XYT2_Synic(0, 0, 20);
-            result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),parameters.pickProductForce(),15,parameters.vcmMargin(),parameters.finishDelay(),false,true,30000);
+            result = pick_arm->Z2MeasureHeight(parameters.vcmWorkSpeed(),parameters.pickProductForce(),parameters.holdTime());
             QThread::msleep(1000);
-            result &= pick_arm->ZSerchReturn2(30000);
+            result &= pick_arm->Z2SerchReturn(30000);
             this->pick_arm->stepMove_XYT2_Synic(-picker2_offset.X(), -picker2_offset.Y(), 0);
         }
-        this->pick_arm->stepMove_XYT2_Synic(0,0, -100);
+        {//放回去
+            this->pick_arm->stepMove_XYT2_Synic(picker2_offset.X(), picker2_offset.Y(), 0);
+            bool result = pick_arm->Z2MeasureHeight(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),parameters.holdTime());
+            QThread::msleep(1000);
+            result &= pick_arm->Z1SerchReturn(30000);
+            this->pick_arm->stepMove_XYT2_Synic(0, 0, -50);
+            result = pick_arm->Z2MeasureHeight(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),parameters.holdTime());
+            QThread::msleep(1000);
+            result &= pick_arm->Z1SerchReturn(30000);
+            this->pick_arm->stepMove_XYT2_Synic(-picker2_offset.X(), -picker2_offset.Y(), 0);
+        }
         cv::Point2d center; double radius;
         fitCircle(points, center, radius);
         qInfo("Fit cicle: x: %f y: %f r:%f", center.x, center.y, radius);
-        this->picker2_offset.setX(picker2_offset.X() + center.x);
-        this->picker2_offset.setY(picker2_offset.Y() + center.y);
+        this->picker2_offset.setX(round(1000*(picker2_offset.X() + center.x))/1000);
+        this->picker2_offset.setY(round(1000*(picker2_offset.Y() + center.y))/1000);
     }
 }
 
@@ -2049,8 +2251,8 @@ bool SensorLoaderModule::checkTrayNeedChange()
             if(sut1_sensor_data["SensorCount"].toInt() >= 2 &&
                     states.picker2MaterialState()==MaterialState::IsEmpty&&states.hasSensorTray1())
             {
-                sut1_sensor_data["SensorCount"] = 0;
                 qInfo("sut SensorCount %d",sut1_sensor_data["SensorCount"].toInt());
+                sut1_sensor_data["SensorCount"] = 0;
                 return true;
             }
             if((!tray->findLastPositionOfState(MaterialState::IsEmpty,SensorPosition::SENSOR_TRAY_2))&&states.hasSensorTray1())
@@ -2064,12 +2266,30 @@ bool SensorLoaderModule::checkTrayNeedChange()
             if(states.hasSensorTray1()&&
                     tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_1)&&
                     tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_2)&&
-                    (states.picker1MaterialState()!=MaterialState::IsProduct))
+                    (states.picker1MaterialState() != MaterialState::IsProduct))
                 return true;
         }
 
     }
     return false;
+}
+
+int SensorLoaderModule::checkForceChageStation()
+{
+    if(states.handlyChangeTray())
+    {
+        if(tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_1)&&
+                tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_2)&&
+                (states.picker2MaterialState()==MaterialState::IsEmpty)&&
+                (states.picker1MaterialState()==MaterialState::IsEmpty))
+        {
+            if((states.busyState() == BusyState::SUT1)&&states.sut2Ready()&&states.station2HasRequest()&&(states.sut2MaterialState()!=MaterialState::IsEmpty)&&(states.sut2MaterialState()!=MaterialState::IsRaw))
+                return BusyState::SUT2;
+            if((states.busyState() == BusyState::SUT2)&&states.sut1Ready()&&states.station1HasRequest()&&(states.sut1MaterialState()!=MaterialState::IsEmpty)&&(states.sut1MaterialState()!=MaterialState::IsRaw))
+                return BusyState::SUT1;
+        }
+    }
+    return BusyState::IDLE;
 }
 
 bool SensorLoaderModule::checkNeedPickSensor()
@@ -2212,7 +2432,7 @@ bool SensorLoaderModule::findTrayNextEmptyPos()
         return false;
     if(tray->findLastPositionOfState(MaterialState::IsEmpty,tray_index))
     {
-        if((SensorPosition::SENSOR_TRAY_1 == tray_index)&&(tray->getCurrentIndex(tray_index) > (tray->getLastIndex() - 2)))//tray1最后两个
+        if((!states.handlyChangeTray())&&(SensorPosition::SENSOR_TRAY_1 == tray_index)&&(tray->getCurrentIndex(tray_index) > (tray->getLastIndex() - 2)))//tray1最后两个
         {
             if(tray->findLastPositionOfState(MaterialState::IsEmpty,SensorPosition::SENSOR_TRAY_2))
             {
@@ -2223,7 +2443,7 @@ bool SensorLoaderModule::findTrayNextEmptyPos()
         states.setCurrentTrayID(tray_index);
         return true;
     }
-    if((((SensorPosition::SENSOR_TRAY_1==tray_index)&&states.hasSensorTray1())||((SensorPosition::SENSOR_TRAY_2==tray_index)&&states.hasSensorTray2()))
+    if(((states.picker1MaterialState()!=MaterialState::IsEmpty)||(states.station1Unload()&&states.station2Unload()))
             &&findTrayNextInitStatePos(SensorPosition::BUFFER_TRAY))
     {
         states.setCurrentTrayID(SensorPosition::BUFFER_TRAY);
@@ -2262,7 +2482,7 @@ bool SensorLoaderModule::moveCameraToSUTPRPos(bool is_local,bool check_softlandi
         temp_pos =  sut2_pr_position.ToPointF();
     else
         temp_pos =  sut1_pr_position.ToPointF();
-    result = pick_arm->move_XYT2_Synic(temp_pos.x(),temp_pos.y(),parameters.picker2ThetaOffset(),true,check_softlanding);
+    result = pick_arm->move_XYT1T2_Synic(temp_pos.x(),temp_pos.y(),parameters.picker1PlaceTheta(),parameters.picker2PickTheta(),true,check_softlanding);
     if(result)return true;
     int sut_i = is_local?2:1;
     AppendError(QString(u8"移动SPA相机SUT%1位置失败").arg(sut_i));
@@ -2274,17 +2494,10 @@ bool SensorLoaderModule::movePicker1ToSUTPos(bool is_local,bool check_softlandin
 {
     bool result;
     QPointF temp_pos;
-    double theta = parameters.picker1ThetaOffset();
     if(is_local)
-    {
         temp_pos =  sut2_pr_position.ToPointF();
-        theta += parameters.sut2Theta();
-    }
     else
-    {
         temp_pos =  sut1_pr_position.ToPointF();
-        theta += parameters.sut1Theta();
-    }
     double x = temp_pos.x() + picker1_offset.X();
     double y = temp_pos.y() + picker1_offset.Y();
     if(sut_empty_location->parameters.useOrigin())
@@ -2293,7 +2506,7 @@ bool SensorLoaderModule::movePicker1ToSUTPos(bool is_local,bool check_softlandin
         x-=temp_offset.x();
         y-=temp_offset.y();
     }
-    result = pick_arm->move_XYT1_Synic(x,y,theta,true,check_softlanding);
+    result = pick_arm->move_XYT1_Synic(x,y,parameters.picker1PlaceTheta(),true,check_softlanding);
     if(result) return true;
     int sut_i = is_local?2:1;
     AppendError(QString(u8"移动sensor吸头到SUT%1位置失败").arg(sut_i));
@@ -2312,7 +2525,7 @@ bool SensorLoaderModule::movePicker2ToSUTPos(bool is_local,bool is_product,bool 
     PrOffset temp_pr = is_product?sut_product_location->getCurrentResult():sut_sensor_location->getCurrentResult();
     double x = temp_pos.x() + picker2_offset.X() - temp_pr.X;
     double y = temp_pos.y() + picker2_offset.Y() - temp_pr.Y;
-    double theta = parameters.picker2ThetaOffset()  -  temp_pr.Theta;
+    double theta = parameters.picker2PickTheta()  -  temp_pr.Theta;
     bool temp_origin = is_product?sut_product_location->parameters.useOrigin():sut_sensor_location->parameters.useOrigin();
     if(temp_origin)
     {
@@ -2425,7 +2638,7 @@ bool SensorLoaderModule::movePicker1ToTrayCurrentPos(int tray_index,bool check_s
     PrOffset temp_pr = tray_sensor_location->getCurrentResult();
     double x = next_pos.x() + picker1_offset.X() - temp_pr.X;
     double y = next_pos.y() + picker1_offset.Y() - temp_pr.Y;
-    double t = parameters.picker1ThetaOffset() - temp_pr.Theta;
+    double t = parameters.picker1PickTheta() - temp_pr.Theta;
     if(tray_sensor_location->parameters.useOrigin())
     {
         QPointF temp_offset = getPickerResultOffset(temp_pr.Theta);
@@ -2445,7 +2658,7 @@ bool SensorLoaderModule::movePicker2ToTrayCurrentPos(int tray_index,bool check_s
     PrOffset temp_pr = tray_empty_location->getCurrentResult();
     double x = next_pos.x() + picker2_offset.X() - temp_pr.X;
     double y = next_pos.y() + picker2_offset.Y() - temp_pr.Y;
-    double t = parameters.picker2ThetaOffset() - temp_pr.Theta;
+    double t = parameters.picker2PlaceTheta() - temp_pr.Theta;
     if(tray_empty_location->parameters.useOrigin())
     {
         QPointF temp_offset = getPickerResultOffset(temp_pr.Theta);
@@ -2465,15 +2678,16 @@ bool SensorLoaderModule:: picker1PickFromTray(double z, int time_out)
         qInfo("picker1PickFromTray z %f time_out %d",z,time_out);
     bool result = true;
     if(parameters.disablePickFromTrayForceLimit())
-        result = pick_arm->Z1MoveToPick(z - parameters.pickFromTrayMargin(),true,false);
+        result = pick_arm->MoveZ1Synic(z - parameters.pickFromTrayMargin(),time_out);
     else
-        result = pick_arm->Z1SerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),true,false,time_out);
+        result = pick_arm->Z1SearchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),time_out);
     if(parameters.openTimeLog())
         qInfo("picker2PlaceToTray pick result %d",result);
+    setPicker1Vacuum(true);
     if(parameters.disablePickFromTrayForceLimit())
         result &= pick_arm->MoveZ1ToSafeHeighSync();
     else
-        result &= pick_arm->ZSerchReturn(time_out);
+        result &= pick_arm->Z1SerchReturn(time_out);
     if(parameters.openTimeLog())
         qInfo("picker1PickFromTray return result %d",result);
     return result;
@@ -2485,15 +2699,16 @@ bool SensorLoaderModule::picker1BackToTray(double z, int time_out)
         qInfo("picker1BackToTray z %f time_out %d",z,time_out);
     bool result = true;
     if(parameters.disableBackToTrayForceLimit())
-        result = pick_arm->Z1MoveToPick(z - parameters.backToTrayMargin(),false,false);
+        result = pick_arm->MoveZ1Synic(z - parameters.backToTrayMargin(),time_out);
         else
-        result = pick_arm->Z1SerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),false,false,time_out);
+        result = pick_arm->Z1SearchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),time_out);
     if(parameters.openTimeLog())
         qInfo("picker1BackToTray place result %d",result);
+    setPicker1Vacuum(false);
     if(parameters.disableBackToTrayForceLimit())
         result &= pick_arm->MoveZ1ToSafeHeighSync();
     else
-        result &= pick_arm->ZSerchReturn(time_out);
+        result &= pick_arm->Z1SerchReturn(time_out);
     if(parameters.openTimeLog())
         qInfo("picker1BackToTray return result %d",result);
     return result;
@@ -2513,19 +2728,20 @@ bool SensorLoaderModule::picker1PlaceToSut(double z, bool is_local, int time_out
     if(result)
     {
         if(parameters.disablePlaceToSutForceLimmit())
-            result = pick_arm->Z1MoveToPick(z - parameters.placeToSutMargin(),false,false);
+            result = pick_arm->MoveZ1Synic(z - parameters.placeToSutMargin(),time_out);
         else
-            result = pick_arm->Z1SerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),parameters.finishDelay(),false,false,time_out);
+            result = pick_arm->Z1SearchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),time_out);
         if(parameters.openTimeLog())
             qInfo("picker1PlaceToSut pick result %d",result);
         is_local?openSut2Vacuum():openSut1Vacuum();
+        setPicker1Vacuum(false);
         result &= waitSutVacuumFinish();
         if(parameters.openTimeLog())
             qInfo("picker1PlaceToSut vacuum result %d",result);
-        if(parameters.disablePlaceToSutForceLimmit())
+        if(parameters.disablePlaceToSutForceLimmit()&&(!parameters.enableEscape()))
             result &= pick_arm->MoveZ1ToSafeHeighSync();
         else
-        result &= pick_arm->ZSerchReturn(time_out);
+            result &= pick_arm->Z1SerchReturn(time_out);
         if(parameters.openTimeLog())
             qInfo("picker1PlaceToSut return result %d",result);
     }
@@ -2545,7 +2761,7 @@ bool SensorLoaderModule::picker2PickFromSut(double z,double force, bool is_local
     is_local?closeSut2Vacuum():closeSut1Vacuum();
     pick_arm->picker2->vacuum->Set(true,false);
     bool result = true;
-    if(parameters.enableEscape())
+    if(parameters.enableEscape()&&(!parameters.disablePickFromSutForceLimit()))
     {
         result = pick_arm->picker2->motor_z->MoveToPosSync(z - parameters.escapeHeight());
         if(parameters.openTimeLog())
@@ -2554,18 +2770,23 @@ bool SensorLoaderModule::picker2PickFromSut(double z,double force, bool is_local
     if(result)
     {
         if(parameters.disablePickFromSutForceLimit())
-            result = pick_arm->Z2MoveToPick(z - parameters.pickFromSutMargin(),true,false);
+            result &= pick_arm->MoveZ2Synic(z - parameters.pickFromSutMargin(),time_out);
         else
-            result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z,parameters.vcmMargin(),parameters.finishDelay(),true,false,time_out);
+            result &= pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z,parameters.vcmMargin(),time_out);
         result &= waitSutVacuumFinish();
 
         if(parameters.openTimeLog())
             qInfo("motor_z move to %f result %d",z,result);
-
+        setPicker2Vacuum(true);
         if(parameters.disablePickFromSutForceLimit())
-            result &= pick_arm->MoveZ2ToSafeHeighSync();
+        {
+            if(parameters.enableEscape())
+                result = pick_arm->picker2->motor_z->MoveToPosSync(z - parameters.escapeHeight());
+            else
+                result &= pick_arm->MoveZ2ToSafeHeighSync();
+        }
         else
-            result &= pick_arm->ZSerchReturn2(time_out);
+            result &= pick_arm->Z2SerchReturn(time_out);
 
         if(parameters.openTimeLog())
             qInfo("motor_z move return result %d",result);
@@ -2586,15 +2807,16 @@ bool SensorLoaderModule::picker2PlaceToTray(double z,double force,bool is_produc
     bool disable = is_product?parameters.disablePlaceToGoodTrayForceLimit():parameters.disablePlaceToNgTrayForceLimit();
     double margin = is_product?parameters.placeToGoodTrayMargin():parameters.placeToNgTrayMargin();
     if(disable)
-        result = pick_arm->Z2MoveToPick(z - margin,false,false);
+        result = pick_arm->MoveZ2Synic(z - margin,time_out);
     else
-        result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z,parameters.vcmMargin(),parameters.finishDelay(),false,false,time_out);
+        result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z,parameters.vcmMargin(),time_out);
     if(parameters.openTimeLog())
         qInfo("picker2PlaceToTray pick result %d",result);
+    setPicker2Vacuum(false);
     if(disable)
         result &= pick_arm->MoveZ2ToSafeHeighSync();
     else
-        result &= pick_arm->ZSerchReturn2(time_out);
+        result &= pick_arm->Z2SerchReturn(time_out);
     if(parameters.openTimeLog())
         qInfo("picker2PlaceToTray return result %d",result);
     return result;
@@ -2726,6 +2948,22 @@ bool SensorLoaderModule::waitPicker2CheckResult(bool check_state)
     return false;
 }
 
+bool SensorLoaderModule::setPicker1Vacuum(bool state)
+{
+    if(states.runMode() == RunMode::NoMaterial)
+        return pick_arm->picker1->vacuum->SetSimulation(state);
+    else
+        return pick_arm->picker1->vacuum->Set(state);
+}
+
+bool SensorLoaderModule::setPicker2Vacuum(bool state)
+{
+    if(states.runMode() == RunMode::NoMaterial)
+        return pick_arm->picker2->vacuum->SetSimulation(state);
+    else
+        return pick_arm->picker2->vacuum->Set(state);
+}
+
 bool SensorLoaderModule::checkPicker1HasMateril()
 {
     if(parameters.openTimeLog())
@@ -2844,18 +3082,18 @@ bool SensorLoaderModule::placeProductToBuferr(int time_out)
 bool SensorLoaderModule::picker1MeasureHight(int tray_id)
 {
     qInfo("picker1MeasureHight tray_id %d",tray_id);
-    if(pick_arm->Z1SerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
+    if(pick_arm->Z1MeasureHeight(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),parameters.holdTime()))
     {
         QThread::msleep(100);
-        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetSoftladngPosition()))){
+        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetZ1MeasuredHeight()))){
             return true;
         }
         if(tray_id == SensorPosition::SUT_SENSOR)
-            parameters.setPlaceSensorZ(pick_arm->GetSoftladngPosition());
+            parameters.setPlaceSensorZ(pick_arm->GetZ1MeasuredHeight());
         else if(tray_id == SensorPosition::SENSOR_TRAY_1)
-            parameters.setPickSensorZ(pick_arm->GetSoftladngPosition());
+            parameters.setPickSensorZ(pick_arm->GetZ1MeasuredHeight());
         else if(tray_id == SensorPosition::SENSOR_TRAY_2)
-            parameters.setPickSensorZ2(pick_arm->GetSoftladngPosition());
+            parameters.setPickSensorZ2(pick_arm->GetZ1MeasuredHeight());
         else
         {
             AppendError("测量类型错误！");
@@ -2870,10 +3108,10 @@ bool SensorLoaderModule::picker1MeasureHight(int tray_id)
 bool SensorLoaderModule::picker2MeasureHight(int tray_id)
 {
     qInfo("picker2MeasureHight tray_id %d",tray_id);
-    if(pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),parameters.pickProductForce(),true))
+    if(pick_arm->Z2MeasureHeight(parameters.vcmWorkSpeed(),parameters.pickProductForce(),parameters.holdTime()))
     {
         QThread::msleep(100);
-        double temp_z = pick_arm->GetSoftladngPosition2();
+        double temp_z = pick_arm->GetZ2MeasuredHeight();
         if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(temp_z))){
             return true;
         }
@@ -2911,12 +3149,12 @@ bool SensorLoaderModule::measureZOffset()
         AppendError(QString(u8"测量SUT台高度差失败"));
         return false;
     }
-    if(!pick_arm->Z1SerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
+    if(!pick_arm->Z1MeasureHeight(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),parameters.holdTime()))
     {
         AppendError(QString(u8"测量SUT台高度差失败"));
         return false;
     }
-    sut1_height = pick_arm->GetSoftladngPosition();
+    sut1_height = pick_arm->GetZ1MeasuredHeight();
     temp_point.setX(sut2_pr_position.X()+picker1_offset.X());
     temp_point.setY(sut2_pr_position.Y()+picker1_offset.Y());
     if(!pick_arm->move_XY_Synic(temp_point,true))
@@ -2924,17 +3162,19 @@ bool SensorLoaderModule::measureZOffset()
         AppendError(QString(u8"测量SUT台高度差失败"));
         return false;
     }
-    if(!pick_arm->Z1SerchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),true))
+    if(!pick_arm->Z1MeasureHeight(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),parameters.holdTime()))
 
     {
         AppendError(QString(u8"测量SUT台高度差失败"));
         return false;
     }
-    double z_offset = pick_arm->GetSoftladngPosition()-sut1_height;
+    double z_offset = pick_arm->GetZ1MeasuredHeight()-sut1_height;
     if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此数值:%1").arg(z_offset))){
         return true;
     }
-    parameters.setZOffset(z_offset);
+    QJsonObject param;
+    param.insert("ZOffset",z_offset);
+    sendMessageToModule("Sut1Module","ZOffset",param);
     return true;
 }
 

@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("workerNameList",workerNameList);
     engine.rootContext()->setContextProperty("baseModuleManager", highSprrow.baseModuleManager);
-    engine.rootContext()->setContextProperty("moduleManagerParam", &highSprrow.baseModuleManager->paramters);
+    engine.rootContext()->setContextProperty("moduleManagerParam", &highSprrow.baseModuleManager->parameters);
 
     engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);
     engine.rootContext()->setContextProperty("logicManagerState", &highSprrow.logicManager->states);
@@ -115,9 +115,11 @@ int main(int argc, char *argv[])
     //Module
     engine.rootContext()->setContextProperty("sutModule", &highSprrow.baseModuleManager->sut_module);
     engine.rootContext()->setContextProperty("lutModule", &highSprrow.baseModuleManager->lut_module);
+    engine.rootContext()->setContextProperty("picker_offset", &highSprrow.baseModuleManager->lens_loader_module.camera_to_picker_offset);
     engine.rootContext()->setContextProperty("aaHeadModule", &highSprrow.baseModuleManager->aa_head_module);
     engine.rootContext()->setContextProperty("dispenseModule", &highSprrow.baseModuleManager->dispense_module);
     engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
+    engine.rootContext()->setContextProperty("alarmShower", &highSprrow.worker_manager->alarm_shower);
     qmlRegisterType<LensLoaderModule>("SomeLib",1,1,"LensLoaderModule");
     qmlRegisterType<SensorLoaderModule>("SomeLib",1,1,"SensorLoaderModule");
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
@@ -127,34 +129,109 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
     engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
     engine.rootContext()->setContextProperty("dothinkey", highSprrow.baseModuleManager->dothinkey);
-
-
+    engine.rootContext()->setContextProperty("tray_loader_module",&highSprrow.baseModuleManager->tray_loader_module);
 
     //Position
-    engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);
-    engine.rootContext()->setContextProperty("aaHeadPickLensPosition", &highSprrow.baseModuleManager->aa_head_module.pick_lens_position);
-    engine.rootContext()->setContextProperty("sutLoadPosition", &highSprrow.baseModuleManager->sut_module.load_position);
+    {   //Local AA Head Position
+        engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);
+        engine.rootContext()->setContextProperty("aaHeadPickLensPosition", &highSprrow.baseModuleManager->aa_head_module.pick_lens_position);
 
-    engine.rootContext()->setContextProperty("sutToolUplookPosition", &highSprrow.baseModuleManager->sut_module.tool_uplook_positon);
-    engine.rootContext()->setContextProperty("sutToollookPosition", &highSprrow.baseModuleManager->sut_module.tool_downlook_position);
-    engine.rootContext()->setContextProperty("sutDownlookPosition", &highSprrow.baseModuleManager->sut_module.downlook_position);
-    engine.rootContext()->setContextProperty("sutMushroomPosition", &highSprrow.baseModuleManager->sut_module.mushroom_positon);
+        //Remote AA Head Position
+        engine.rootContext()->setContextProperty("tcpAAHeadMushroomPosition", &highSprrow.baseModuleManager->tcp_aaHeadModule.mushroom_position);
+        engine.rootContext()->setContextProperty("tcpAAHeadPickLensPosition", &highSprrow.baseModuleManager->tcp_aaHeadModule.pick_lens_position);
+    }
 
-    engine.rootContext()->setContextProperty("lutLoadPosition", &highSprrow.baseModuleManager->lut_module.load_position);
-    engine.rootContext()->setContextProperty("lutUnloadPosition", &highSprrow.baseModuleManager->lut_module.lut_downlook_unload_position);
-    engine.rootContext()->setContextProperty("lutLoadUplookPosition", &highSprrow.baseModuleManager->lut_module.load_uplook_position);
-    engine.rootContext()->setContextProperty("lutDownlookLoadPosition", &highSprrow.baseModuleManager->lut_module.lut_downlook_load_position);
-    engine.rootContext()->setContextProperty("lutDownlookUnloadPosition", &highSprrow.baseModuleManager->lut_module.lut_downlook_unload_position);
+    {   //Local SUT Position
+        engine.rootContext()->setContextProperty("sutLoadPosition", &highSprrow.baseModuleManager->sut_module.load_position);
+        engine.rootContext()->setContextProperty("sutToolUplookPosition", &highSprrow.baseModuleManager->sut_module.tool_uplook_positon);
+        engine.rootContext()->setContextProperty("sutToollookPosition", &highSprrow.baseModuleManager->sut_module.tool_downlook_position);
+        engine.rootContext()->setContextProperty("sutDownlookPosition", &highSprrow.baseModuleManager->sut_module.downlook_position);
+        engine.rootContext()->setContextProperty("sutMushroomPosition", &highSprrow.baseModuleManager->sut_module.mushroom_positon);
+        engine.rootContext()->setContextProperty("sutDownlookFlyEndPosition", &highSprrow.baseModuleManager->sut_module.down_look_fly_end_position);
 
-    engine.rootContext()->setContextProperty("lutUpDownlookPositionAA1", &highSprrow.baseModuleManager->lut_module.aa1_updownlook_position);
-    engine.rootContext()->setContextProperty("lutPickLensPositionAA1", &highSprrow.baseModuleManager->lut_module.aa1_picklens_position);
-    engine.rootContext()->setContextProperty("lutUnPickLensPositionAA1", &highSprrow.baseModuleManager->lut_module.aa1_unpicklens_position);
-    engine.rootContext()->setContextProperty("lutUplookPositionAA1", &highSprrow.baseModuleManager->lut_module.aa1_uplook_position);
 
-    engine.rootContext()->setContextProperty("lutUpDownlookPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_updownlook_position);
-    engine.rootContext()->setContextProperty("lutPickLensPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_picklens_position);
-    engine.rootContext()->setContextProperty("lutUnPickLensPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_unpicklens_position);
-    engine.rootContext()->setContextProperty("lutUplookPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_uplook_position);
+        //Local SUT Params
+        engine.rootContext()->setContextProperty("sutParams", &highSprrow.baseModuleManager->sut_module.parameters);
+        engine.rootContext()->setContextProperty("sutCarrierParams",  &highSprrow.baseModuleManager->sut_carrier.parameters);
+
+        //Remote SUT Position
+        engine.rootContext()->setContextProperty("tcpSUTLoadPosition", &highSprrow.baseModuleManager->tcp_sut.load_position);
+        engine.rootContext()->setContextProperty("tcpSUTToolUplookPosition", &highSprrow.baseModuleManager->tcp_sut.tool_uplook_positon);
+        engine.rootContext()->setContextProperty("tcpSUTToollookPosition", &highSprrow.baseModuleManager->tcp_sut.tool_downlook_position);
+        engine.rootContext()->setContextProperty("tcpSUTDownlookPosition", &highSprrow.baseModuleManager->tcp_sut.downlook_position);
+        engine.rootContext()->setContextProperty("tcpSUTMushroomPosition", &highSprrow.baseModuleManager->tcp_sut.mushroom_positon);
+
+        //Remote SUT Params
+        engine.rootContext()->setContextProperty("tcpSUTParams", &highSprrow.baseModuleManager->tcp_sut.parameters);
+        engine.rootContext()->setContextProperty("tcpSUTCarrierParams",  &highSprrow.baseModuleManager->tcp_sut_carrier.parameters);
+
+    }
+
+    {   //Dispense Params
+        engine.rootContext()->setContextProperty("dispenserParams",&highSprrow.baseModuleManager->dispenser.parameters);
+        engine.rootContext()->setContextProperty("dispenseParams",&highSprrow.baseModuleManager->dispense_module.parameters);
+
+        //Remote Dispense Params
+        engine.rootContext()->setContextProperty("tcpDispenserParams",&highSprrow.baseModuleManager->tcp_dispenser.parameters);
+        engine.rootContext()->setContextProperty("tcpDispenseParams",&highSprrow.baseModuleManager->tcp_dispenseModule.parameters);
+    }
+
+    {
+        //Local LUT Position
+        engine.rootContext()->setContextProperty("lutLoadPosition", &highSprrow.baseModuleManager->lut_module.load_position);
+        engine.rootContext()->setContextProperty("lutUnloadPosition", &highSprrow.baseModuleManager->lut_module.lut_downlook_unload_position);
+        engine.rootContext()->setContextProperty("lutLoadUplookPosition", &highSprrow.baseModuleManager->lut_module.load_uplook_position);
+        engine.rootContext()->setContextProperty("lutDownlookLoadPosition", &highSprrow.baseModuleManager->lut_module.lut_downlook_load_position);
+        engine.rootContext()->setContextProperty("lutDownlookUnloadPosition", &highSprrow.baseModuleManager->lut_module.lut_downlook_unload_position);
+
+        engine.rootContext()->setContextProperty("lutUpDownlookPositionAA1", &highSprrow.baseModuleManager->lut_module.aa1_updownlook_position);
+        engine.rootContext()->setContextProperty("lutPickLensPositionAA1", &highSprrow.baseModuleManager->lut_module.aa1_picklens_position);
+        engine.rootContext()->setContextProperty("lutUnPickLensPositionAA1", &highSprrow.baseModuleManager->lut_module.aa1_unpicklens_position);
+        engine.rootContext()->setContextProperty("lutUplookPositionAA1", &highSprrow.baseModuleManager->lut_module.aa1_uplook_position);
+
+        engine.rootContext()->setContextProperty("lutUpDownlookPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_updownlook_position);
+        engine.rootContext()->setContextProperty("lutPickLensPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_picklens_position);
+        engine.rootContext()->setContextProperty("lutUnPickLensPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_unpicklens_position);
+        engine.rootContext()->setContextProperty("lutUplookPositionAA2", &highSprrow.baseModuleManager->lut_module.aa2_uplook_position);
+
+        //Local LUT Params
+        engine.rootContext()->setContextProperty("lutParams", &highSprrow.baseModuleManager->lut_module.parameters);
+        engine.rootContext()->setContextProperty("lutCarrierParams", &highSprrow.baseModuleManager->lut_carrier.parameters);
+
+        //Remote LUT Position
+        engine.rootContext()->setContextProperty("tcpLUTLoadPosition", &highSprrow.baseModuleManager->tcp_lutModule.load_position);
+        engine.rootContext()->setContextProperty("tcpLUTUnloadPosition", &highSprrow.baseModuleManager->tcp_lutModule.lut_downlook_unload_position);
+        engine.rootContext()->setContextProperty("tcpLUTLoadUplookPosition", &highSprrow.baseModuleManager->tcp_lutModule.load_uplook_position);
+        engine.rootContext()->setContextProperty("tcpLUTDownlookLoadPosition", &highSprrow.baseModuleManager->tcp_lutModule.lut_downlook_load_position);
+        engine.rootContext()->setContextProperty("tcpLUTDownlookUnloadPosition", &highSprrow.baseModuleManager->tcp_lutModule.lut_downlook_unload_position);
+
+        engine.rootContext()->setContextProperty("tcpLUTUpDownlookPositionAA1", &highSprrow.baseModuleManager->tcp_lutModule.aa1_updownlook_position);
+        engine.rootContext()->setContextProperty("tcpLUTPickLensPositionAA1", &highSprrow.baseModuleManager->tcp_lutModule.aa1_picklens_position);
+        engine.rootContext()->setContextProperty("tcpLUTUnPickLensPositionAA1", &highSprrow.baseModuleManager->tcp_lutModule.aa1_unpicklens_position);
+        engine.rootContext()->setContextProperty("tcpLUTUplookPositionAA1", &highSprrow.baseModuleManager->tcp_lutModule.aa1_uplook_position);
+
+        engine.rootContext()->setContextProperty("tcpLUTUpDownlookPositionAA2", &highSprrow.baseModuleManager->tcp_lutModule.aa2_updownlook_position);
+        engine.rootContext()->setContextProperty("tcpLUTPickLensPositionAA2", &highSprrow.baseModuleManager->tcp_lutModule.aa2_picklens_position);
+        engine.rootContext()->setContextProperty("tcpLUTUnPickLensPositionAA2", &highSprrow.baseModuleManager->tcp_lutModule.aa2_unpicklens_position);
+        engine.rootContext()->setContextProperty("tcpLUTUplookPositionAA2", &highSprrow.baseModuleManager->tcp_lutModule.aa2_uplook_position);
+
+        //Remote LUT Params
+        engine.rootContext()->setContextProperty("tcpLUTParams", &highSprrow.baseModuleManager->tcp_lutModule.parameters);
+        engine.rootContext()->setContextProperty("tcpLUTCarrierParams", &highSprrow.baseModuleManager->tcp_lutCarrier.parameters);
+    }
+
+    {
+        //Local lens tray loader
+        engine.rootContext()->setContextProperty("tray_clipin_parameter",&highSprrow.baseModuleManager->trayClipIn.standards_parameters);
+        engine.rootContext()->setContextProperty("tray_clipout_parameter",&highSprrow.baseModuleManager->trayClipOut.standards_parameters);
+        engine.rootContext()->setContextProperty("tray_loader_module_parameters",&highSprrow.baseModuleManager->tray_loader_module.parameters);
+
+        //Remote lens tray loader
+        engine.rootContext()->setContextProperty("tcp_tray_clipin_parameter",&highSprrow.baseModuleManager->tcp_lensTrayClipIn.standards_parameters);
+        engine.rootContext()->setContextProperty("tcp_tray_clipout_parameter",&highSprrow.baseModuleManager->tcp_lensTrayClipOut.standards_parameters);
+        engine.rootContext()->setContextProperty("tcp_tray_loader_module_parameters",&highSprrow.baseModuleManager->tcp_lensTrayLoaderModule.parameters);
+
+    }
 
     QString dirPath = app.applicationDirPath();
     dirPath += "/..";
@@ -171,30 +248,16 @@ int main(int argc, char *argv[])
     for(QString key:vision_locations_list){
         vl_parameter_list<<&(highSprrow.baseModuleManager->vision_locations[key]->parameters);
     }
-    //QStringList calibrations_list = highSprrow.baseModuleManager->calibrations.keys();
-    //engine.rootContext()->setContextProperty("vision_locations_list",QVariant::fromValue(vision_locations_list));
+
     engine.rootContext()->setContextProperty("vl_parameter_list",QVariant::fromValue(vl_parameter_list));
-    engine.rootContext()->setContextProperty("tray_clipin_parameter",&highSprrow.baseModuleManager->trayClipIn.standards_parameters);
-    engine.rootContext()->setContextProperty("tray_clipout_parameter",&highSprrow.baseModuleManager->trayClipOut.standards_parameters);
-    //engine.rootContext()->setContextProperty("tray_clipout_parameter",&highSprrow.baseModuleManager->tray_loader_module.tray_clip_out->standards_parameters);
-    //qDebug()<<highSprrow.baseModuleManager->tray_loader_module.parameters.ltlPressPos();
-    engine.rootContext()->setContextProperty("tray_loader_module_parameters",&highSprrow.baseModuleManager->tray_loader_module.parameters);
-    engine.rootContext()->setContextProperty("tray_loader_module",&highSprrow.baseModuleManager->tray_loader_module);
 
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);
     engine.rootContext()->setContextProperty("aaCoreParams", &highSprrow.baseModuleManager->aaCoreNew.parameters);
     engine.rootContext()->setContextProperty("aaCoreStates", &highSprrow.baseModuleManager->aaCoreNew.states);
 
-    engine.rootContext()->setContextProperty("sutParams", &highSprrow.baseModuleManager->sut_module.parameters);
-    engine.rootContext()->setContextProperty("sutCarrierParams",  &highSprrow.baseModuleManager->sut_carrier.parameters);
-
-    engine.rootContext()->setContextProperty("lutParams", &highSprrow.baseModuleManager->lut_module.parameters);
-    engine.rootContext()->setContextProperty("lutCarrierParams", &highSprrow.baseModuleManager->lut_carrier.parameters);
-    engine.rootContext()->setContextProperty("dispenserParams",&highSprrow.baseModuleManager->dispenser.parameters);
-    engine.rootContext()->setContextProperty("dispenseParams",&highSprrow.baseModuleManager->dispense_module.parameters);
     engine.rootContext()->setContextProperty("lensPickArmParams",&highSprrow.baseModuleManager->lens_pick_arm.parameters);
-//*
+
     engine.rootContext()->setContextProperty("material_tray",&highSprrow.baseModuleManager->material_tray);
     engine.rootContext()->setContextProperty("first_tray_end_position",&highSprrow.baseModuleManager->material_tray.first_tray_end_position);
     engine.rootContext()->setContextProperty("tray_start_point1",&highSprrow.baseModuleManager->material_tray.parameters[0]->tray_start_position);

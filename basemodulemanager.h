@@ -113,6 +113,24 @@ public:
 
     GraphWidget *machineMap;
 
+    //Remote module
+    Dispenser tcp_dispenser;
+    DispenseModule tcp_dispenseModule;
+    SutModule tcp_sut;
+    MaterialCarrier tcp_sut_carrier;
+    AACoreNew tcp_aaCoreNew;
+    AAHeadModule tcp_aaHeadModule;
+
+    TrayLoaderModule tcp_lensTrayLoaderModule;
+    TrayClip tcp_lensTrayClipIn;
+    TrayClip tcp_lensTrayClipOut;
+
+    SensorTrayLoaderModule tcp_sensorTrayLoaderModule;
+    SensorLoaderModule tcp_sensorLoaderModule;
+    LensLoaderModule tcp_lensLoaderModule;
+    LutModule tcp_lutModule;
+    MaterialCarrier tcp_lutCarrier;
+
     int lightPanelLighting() const
     {
         return m_lightPanelLighting;
@@ -195,7 +213,7 @@ public slots:
 
 public:
     ModuleManangerConfig configs;
-    ModuleManagerParameter paramters;
+    ModuleManagerParameter parameters;
     ModuleManagerState states;
 private:
     bool is_init;
@@ -220,6 +238,8 @@ private:
     QThread work_thread;
 
     void inquiryTcpModule();
+    void inquiryTcpModuleState(QString moduleName);
+    void inquiryTcpModuleParameter(QString moduleName);
     QString m_FlowchartFilename;
 
 public:

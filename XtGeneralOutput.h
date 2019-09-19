@@ -19,7 +19,7 @@ public:
     operator int();
     XtGeneralOutput &operator =(const bool &b );
     int GetID();
-    void Set(bool value,int thread = -1);
+    bool Set(bool value,int thread = -1);
     void SetOnTllTimeSpan(int time_span, int thread);
     bool SET(bool value,int thread);
     void SetOnTillTimeSpan(int time_span, int thread);

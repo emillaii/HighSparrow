@@ -10,6 +10,7 @@ class SensorTrayLoaderParameter:public PropertyBase
     Q_OBJECT
 public:
     SensorTrayLoaderParameter():PropertyBase(){}
+    Q_PROPERTY(bool handlyChangeSensorTray READ handlyChangeSensorTray WRITE setHandlyChangeSensorTray NOTIFY handlyChangeSensorTrayChanged)
     Q_PROPERTY(QString motorTrayName READ motorTrayName WRITE setMotorTrayName NOTIFY motorTrayNameChanged)
     Q_PROPERTY(QString motorSTIEName READ motorSTIEName WRITE setMotorSTIEName NOTIFY motorSTIENameChanged)
     Q_PROPERTY(QString motorSTKName READ motorSTKName WRITE setMotorSTKName NOTIFY motorSTKNameChanged)
@@ -211,6 +212,11 @@ public:
     bool isHandly() const
     {
         return m_isHandly;
+    }
+
+    bool handlyChangeSensorTray() const
+    {
+        return m_handlyChangeSensorTray;
     }
 
 public slots:
@@ -531,6 +537,15 @@ public slots:
         emit isHandlyChanged(m_isHandly);
     }
 
+    void setHandlyChangeSensorTray(bool handlyChangeSensorTray)
+    {
+        if (m_handlyChangeSensorTray == handlyChangeSensorTray)
+            return;
+
+        m_handlyChangeSensorTray = handlyChangeSensorTray;
+        emit handlyChangeSensorTrayChanged(m_handlyChangeSensorTray);
+    }
+
 signals:
     void motorTrayNameChanged(QString motorTrayName);
     void motorSTIENameChanged(QString motorSTIEName);
@@ -599,6 +614,8 @@ signals:
 
     void isHandlyChanged(bool isHandly);
 
+    void handlyChangeSensorTrayChanged(bool handlyChangeSensorTray);
+
 private:
     QString m_motorTrayName = "";
     QString m_motorSTIEName = "";
@@ -634,6 +651,7 @@ private:
     QString m_entanceTrayChcekIoName = "";
     QString m_exitTrayCheckIoName = "";
     bool m_isHandly = false;
+    bool m_handlyChangeSensorTray = false;
 };
 class SensorTrayLoaderState:public PropertyBase
 {
@@ -650,7 +668,7 @@ public:
     Q_PROPERTY(bool needChangeTray READ needChangeTray WRITE setNeedChangeTray NOTIFY needChangeTrayChanged)
     Q_PROPERTY(bool changingTray READ changingTray WRITE setChangingTray NOTIFY changingTrayChanged)
     Q_PROPERTY(bool entranceClipReady READ entranceClipReady WRITE setEntranceClipReady NOTIFY entranceClipReadyChanged)
-    Q_PROPERTY(bool exitClipReay READ exitClipReay WRITE setExitClipReady NOTIFY exitClipReadyChanged)
+    Q_PROPERTY(bool exitClipReady READ exitClipReady WRITE setExitClipReady NOTIFY exitClipReadyChanged)
     Q_PROPERTY(bool hasGetedTray READ hasGetedTray WRITE setHasGetedTray NOTIFY hasGetedTrayChanged)
     Q_PROPERTY(bool hasWorkTray READ hasWorkTray WRITE setHasWorkTray NOTIFY hasWorkTrayChanged)
     Q_PROPERTY(bool hasKickTray READ hasKickTray WRITE setHasKickTray NOTIFY hasKickTrayChanged)
@@ -701,7 +719,7 @@ public:
         return m_entranceClipReady;
     }
 
-    bool exitClipReay() const
+    bool exitClipReady() const
     {
         return m_exitClipReady;
     }
@@ -1063,7 +1081,7 @@ signals:
 
     void entranceClipReadyChanged(bool entranceClipReady);
 
-    void exitClipReadyChanged(bool exitClipReay);
+    void exitClipReadyChanged(bool exitClipReady);
 
     void hasGetedTrayChanged(bool hasGetedTray);
 

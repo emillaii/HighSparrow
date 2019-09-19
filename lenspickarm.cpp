@@ -135,8 +135,7 @@ bool LensPickArm::ZSerchByForce(double speed, double force,bool check_softlandin
     bool result = picker->motor_z->SearchPosByForce(speed,force);
     QThread::msleep(200);
     softlanding_position = picker->motor_z->GetFeedbackPos();
-    result &= picker->motor_z->DoSoftLandingReturn();
-    result &= picker->motor_z->WaitSoftLandingDone(timeout);
+    result &= picker->motor_z->resetSoftLanding(timeout);
     return result;
 }
 
@@ -144,15 +143,14 @@ bool LensPickArm::ZSerchByForce(double speed, double force, double limit, double
 {
     bool result = picker->motor_z->SearchPosByForce(speed,force,limit,margin, timeout);
     if(result)
-        result &= picker->vacuum->Set(open_vacuum);
+        picker->vacuum->Set(open_vacuum);
     else {
         qInfo("SearchPosByForce fail");
     }
     softlanding_position = picker->motor_z->GetFeedbackPos();
     if (need_z_return)
     {
-        result &= picker->motor_z->DoSoftLandingReturn();
-        result &= picker->motor_z->WaitSoftLandingDone(timeout);
+        result &= picker->motor_z->resetSoftLanding(timeout);
     }
     return result;
 }

@@ -54,11 +54,14 @@ private:
 
     QString m_workTrayCheckIoName = "";
 
+    bool m_handlyChangeLensTray = false;
+
 signals:
     void testTrayTest();
     void trayReady();
 public:
     TrayLoaderModuleParameter():PropertyBase(){}
+    Q_PROPERTY(bool handlyChangeLensTray READ handlyChangeLensTray WRITE setHandlyChangeLensTray NOTIFY handlyChangeLensTrayChanged)
     Q_PROPERTY(double ltkx1RelayPos READ ltkx1RelayPos WRITE setLtkx1RelayPos NOTIFY ltkx1RelayPosChanged)
     Q_PROPERTY(double ltkx1PressPos READ ltkx1PressPos WRITE setLtkx1PressPos NOTIFY ltkx1PressPosChanged)
     Q_PROPERTY(double ltkx1ReleasePos READ ltkx1ReleasePos WRITE setLtkx1ReleasePos NOTIFY ltkx1ReleasePosChanged)
@@ -238,6 +241,11 @@ public:
     QString workTrayCheckIoName() const
     {
         return m_workTrayCheckIoName;
+    }
+
+    bool handlyChangeLensTray() const
+    {
+        return m_handlyChangeLensTray;
     }
 
 public slots:
@@ -522,6 +530,15 @@ public slots:
         emit workTrayCheckIoNameChanged(m_workTrayCheckIoName);
     }
 
+    void setHandlyChangeLensTray(bool handlyChangeLensTray)
+    {
+        if (m_handlyChangeLensTray == handlyChangeLensTray)
+            return;
+
+        m_handlyChangeLensTray = handlyChangeLensTray;
+        emit handlyChangeLensTrayChanged(m_handlyChangeLensTray);
+    }
+
 signals:
     void motorTLIENameChanged(QString motorLTIEName);
     void motorLTOENameChanged(QString motorLTOEName);
@@ -553,6 +570,7 @@ signals:
     void exitClipCheckIoNameChanged(QString exitClipCheckIoName);
     void readyTrayCheckIoNameChanged(QString readyTrayCheckIoName);
     void workTrayCheckIoNameChanged(QString workTrayCheckIoName);
+    void handlyChangeLensTrayChanged(bool handlyChangeLensTray);
 };
 
 class TrayLoaderState : public PropertyBase{

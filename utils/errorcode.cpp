@@ -18,16 +18,22 @@ void ErrorBase::AppendError(QString error)
 void ErrorBase::AppendLineError(QString error)
 {
     error_content.append(error);
-    error_content.append("\r\n");
+//    error_content.append("\r\n");
 }
 
-QString ErrorBase::GetCurrentError()
+QString ErrorBase::GetCurrentError(int layer)
 {
+    layer++;
     foreach (ErrorBase* temp_error, parts) {
         if (temp_error) {
-            QString temp_message = temp_error->GetCurrentError();
+            QString temp_message = temp_error->GetCurrentError(layer);
             if(temp_message != "")
-                AppendLineError();
+            {
+                AppendError("\r\n");
+                for (int i = 0; i < layer; ++i)
+                    AppendError("   ");
+                AppendLineError(temp_message);
+            }
         }
     }
 

@@ -12,10 +12,7 @@ ApplicationWindow {
     width: 1480
     height: 720
     title: qsTr("High Sparrow")
-//    flags: Qt.CustomizeWindowHint |
-//           Qt.WindowSystemMenuHint |
-//           Qt.WindowMinMaxButtonsHint |
-//           Qt.WindowFullscreenButtonHint
+
     readonly property string title_move_to: "移动"
     readonly property string title_read_encoder: "读取"
 
@@ -150,6 +147,9 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("AA") !== -1) {
                         console.log("Perform AA")
                         aaNewCore.performHandling(AACoreNew.AA, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Init_Lens") !== -1) {
+                        console.log("Perform Init LENS")
+                        aaNewCore.performHandling(AACoreNew.MOVE_LENS, aaCoreTestParams)
                     } else if (aaCoreTestItemName.indexOf("Init Camera") !== -1) {
                         console.log("Perform Init Camera")
                         aaNewCore.performHandling(AACoreNew.INIT_CAMERA, aaCoreTestParams)
@@ -310,14 +310,15 @@ ApplicationWindow {
                icon.source: "icons/flowchart_1.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   var command = "document.getElementById('get_data').click()";
-                   flowChartPage.webView.runJavaScript(command, function(result) {
-                       command = "document.getElementById('flowchart_data').value";
-                       flowChartPage.webView.runJavaScript(command, function(result) {
-                           baseModuleManager.loadFlowchart(result)
-                           workersManager.startAllWorkers(4)
-                       })
-                   })
+                   workersManager.startAllWorkers(4)
+//                   var command = "document.getElementById('get_data').click()";
+//                   flowChartPage.webView.runJavaScript(command, function(result) {
+//                       command = "document.getElementById('flowchart_data').value";
+//                       flowChartPage.webView.runJavaScript(command, function(result) {
+//                           baseModuleManager.loadFlowchart(result)
+//                           workersManager.startAllWorkers(4)
+//                       })
+//                   })
                }
            }
 
@@ -343,9 +344,6 @@ ApplicationWindow {
                icon.source: "icons/auto-run.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   uplookCamera.pauseLiveView(true)
-                   downlookCamera.pauseLiveView(true)
-                   pickarmCamera.pauseLiveView(true)
                    workersManager.startAllWorkers(moduleManagerParam.runMode)
                }
            }
@@ -358,9 +356,6 @@ ApplicationWindow {
                icon.source: "icons/stop.png"
                icon.color: "red"
                onClicked: {
-                   uplookCamera.pauseLiveView(false)
-                   downlookCamera.pauseLiveView(false)
-                   pickarmCamera.pauseLiveView(false)
                    workersManager.stopAllWorkers(true)
                    logicManagerState.setIsHandling(false)
                }
@@ -487,7 +482,18 @@ ApplicationWindow {
 
         Page1Form {
             featureButton.onClicked: {
-                //visionModule.testVision()
+                highSprrow.callQProcess("GenericNCCavproj.avexe")
+            }
+            navigationFeatureButton.onClicked: {
+                highSprrow.callQProcess("EdgeFinder.avexe")
+            }
+            drawPathButton.onClicked: {
+                highSprrow.callQProcess("DrawPath.avexe")
+            }
+        }
+
+        Page7Form {
+            featureButton.onClicked: {
                 highSprrow.callQProcess("GenericNCCavproj.avexe")
             }
             navigationFeatureButton.onClicked: {
@@ -512,8 +518,13 @@ ApplicationWindow {
         currentIndex: swipeView.currentIndex
 
         TabButton {
-            text: qsTr("Main Page")
+            text: qsTr("Setting 1")
         }
+
+        TabButton {
+            text: qsTr("Setting 2")
+        }
+
         TabButton {
             text: qsTr("Data")
         }

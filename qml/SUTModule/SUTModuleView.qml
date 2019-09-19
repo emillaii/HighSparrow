@@ -69,6 +69,10 @@ ItemDelegate {
                 title: qsTr("Safety Position")
                 SUTSafetyPositionView {}
             }
+            GroupBox{
+                title: qsTr("Downlook OTF")
+                SUTDownlookFlyPositionView {}
+            }
             RowLayout {
                 GroupBox {
                     title: qsTr("Updownlook Camera Offset")

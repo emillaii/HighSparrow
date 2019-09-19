@@ -18,7 +18,9 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent),
     ErrorBase ("BaseModuleManager")
 {
+    qInfo(u8"中文测试");
     qInfo("main thread id :%d",QThread::currentThreadId());
+    work_thread.setObjectName("device manager");
     this->moveToThread(&work_thread);
     this->work_thread.start();
     QMap<QString,PropertyBase*> temp_map;
@@ -88,8 +90,17 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(this,&BaseModuleManager::sendHandlingOperation,this,&BaseModuleManager::performHandlingOperation);
     connect(&state_geter,&DeviceStatesGeter::sendGetDeviceState,this,&BaseModuleManager::deviceResp,Qt::DirectConnection);
 
+    //Remote module initialization
+    tcp_sut.carrier = &tcp_sut_carrier;
+    tcp_lutModule.carrier = &tcp_lutCarrier;
+    tcp_aaCoreNew.aa_head = &tcp_aaHeadModule;
+    tcp_dispenseModule.dispenser = &tcp_dispenser;
+    tcp_aaCoreNew.dispense = &tcp_dispenseModule;
+    tcp_lensTrayLoaderModule.tray_clip = &tcp_lensTrayClipIn;
+    tcp_lensTrayLoaderModule.tray_clip_out = &tcp_lensTrayClipOut;
+
     //Machine Map Initialization
-//    machineMap = new GraphWidget;
+    //machineMap = new GraphWidget;
     //machineMap->show();
 }
 
@@ -124,7 +135,7 @@ void BaseModuleManager::tcpResp(QString message)
         else if(cmd == "inquiryModuleState")
         {
             QString module_name = message_object["moduleName"].toString();
-            qDebug()<<"qure motor pos :"<< module_name<<"thread id:"<<QThread::currentThreadId();
+            qDebug()<<"inquiry module state :"<< module_name<<"thread id:"<<QThread::currentThreadId();
             if(workers.contains(module_name))
             {
                 QJsonObject result;
@@ -133,6 +144,24 @@ void BaseModuleManager::tcpResp(QString message)
                 QJsonObject module_state;
                 workers[module_name]->getModuleState()->write(module_state);
                 result["moduleState"] = module_state;
+                receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+            }
+        }
+        else if(cmd == "inquiryModuleParameter")
+        {
+            QString module_name = message_object["moduleName"].toString();
+            qDebug()<<"inquiry module parameter :"<< module_name<<"thread id:"<<QThread::currentThreadId();
+            if(workers.contains(module_name))
+            {
+                QJsonObject result;
+                result["resp"] = "moduleParameter";
+                result["moduleName"] = module_name;
+                QMap<QString, PropertyBase *> map = workers[module_name]->getModuleParameter();
+                foreach (QString param_name, map.keys()) {
+                    QJsonObject module_parameter;
+                    map[param_name]->write(module_parameter);
+                    result[param_name] = module_parameter;
+                }
                 receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
             }
         }
@@ -154,27 +183,48 @@ void BaseModuleManager::tcpResp(QString message)
             if(tcp_workers.contains(module_name))
             {
                 QJsonObject module_state = TcpMessager::getJsonObjectFromString(message_object["moduleState"].toString());
-                tcp_workers[module_name]->getModuleState()->write(module_state);
+                tcp_workers[module_name]->getModuleState()->read(module_state);
             }
+        }
+        else if(resp == "moduleParameter")
+        {
+            QString module_name = message_object["moduleName"].toString();
+            qDebug()<<"resp moduleState :"<< module_name<<"thread id:"<<QThread::currentThreadId();
+            if(tcp_workers.contains(module_name))
+            {
+                QMap<QString, PropertyBase *> map = tcp_workers[module_name]->getModuleParameter();
+                foreach (QString param_name, map.keys()) {
+                    QJsonObject parameter_json = message_object[param_name].toObject();
+                    map[param_name]->read(parameter_json);
+                }
+            }
+            qInfo("moduleParameter resp: %s", message.toStdString().c_str());
         }
         else if(resp == "moduleNames")
         {
             QJsonArray module_names = message_object["moduleNames"].toArray();
             qDebug()<<"resp moduleState :"<< module_names<<"thread id:"<<QThread::currentThreadId();
-
             foreach (QJsonValue temp_name, module_names) {
                 //todo 构建相应的模块对象//仅仅包含参数和状态、可以暂时用原来的类
+                qInfo("inquiryModuleNames moduleName: %s", temp_name.toString().toStdString().c_str());
                 if(temp_name.toString().contains("AA"))
                 {
-//                    AACoreNew* tcp_aa = new AACoreNew();
-//                    tcp_workers.insert(temp_name.toString(),tcp_aa);
+                    tcp_workers.insert(temp_name.toString(), &tcp_aaCoreNew);
                 }
-                else if(temp_name.toString().contains("SUT"))
+                else if(temp_name.toString().contains("Sut"))
                 {
-                    SutModule* tcp_sut = new SutModule();
-                    tcp_workers.insert(temp_name.toString(),tcp_sut);
+                    tcp_workers.insert(temp_name.toString(), &tcp_sut);
                 }
-                //todo
+                else if (temp_name.toString().contains("LUTModule"))
+                {
+                    tcp_workers.insert(temp_name.toString(), &tcp_lutModule);
+                }
+                else if (temp_name.toString().contains("TrayLoaderModule"))
+                {
+                    tcp_workers.insert(temp_name.toString(), &tcp_lensTrayLoaderModule);
+                }
+                inquiryTcpModuleState(temp_name.toString());
+                inquiryTcpModuleParameter(temp_name.toString());
             }
         }
     }
@@ -371,13 +421,27 @@ void BaseModuleManager::receiveMessageFromWorkerManger(QVariantMap message)
     if(message_content == "inquirRunParameters")
     {
         QVariantMap temp_param;
-        temp_param.insert("RunMode",paramters.runMode());
-        temp_param.insert("HandlyChangeLens",paramters.handlyChangeLens());
-        temp_param.insert("HandlyChangeSensor",paramters.handlyChangeSensor());
-        temp_param.insert("HandlyChangeLensTray",paramters.handlyChangeLensTray());
-        temp_param.insert("HandlyChangeSensorTray",paramters.handlyChangeSensorTray());
+        if(getServerMode() == 1)
+        {
+            temp_param.insert("RunMode",parameters.runMode());
+            temp_param.insert("HandlyChangeSensor",sensor_loader_module.parameters.handlyChangeSensor());
+            temp_param.insert("HandlyChangeSensorTray",sensor_tray_loder_module.parameters.handlyChangeSensorTray());
+        }
+        else
+        {
+            temp_param.insert("HandlyChangeLens",lens_loader_module.parameters.handlyChangeLens());
+            temp_param.insert("HandlyChangeLensTray",tray_loader_module.parameters.handlyChangeLensTray());
+        }
         temp_param.insert("StationNumber",QString::number(getServerMode()));
-        temp_param.insert("DisableStation",paramters.disableStation());
+        if(aaCoreNew.parameters.taskMode() == 1)
+            temp_param.insert("StationTask",aaCoreNew.parameters.taskNumberFSJ());
+        else if(aaCoreNew.parameters.taskMode() == 2)
+            temp_param.insert("StationTask",aaCoreNew.parameters.taskNumberSSJ());
+        else if(aaCoreNew.parameters.taskMode() == 3)
+            temp_param.insert("StationTask",aaCoreNew.parameters.taskNumber());
+        else
+            temp_param.insert("StationTask",0);
+        temp_param.insert("DisableStation",parameters.disableStation());
 
         temp_param.insert("OriginModule",message["OriginModule"]);
         temp_param.insert("TargetModule","WorksManager");
@@ -389,7 +453,7 @@ void BaseModuleManager::receiveMessageFromWorkerManger(QVariantMap message)
 bool BaseModuleManager::loadParameters()
 {
     configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
-    if(!this->paramters.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))
+    if(!this->parameters.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))
         return false;
 
     tcp_manager.loadJsonConfig(getSystermParameterDir().append(TCP_CONFIG_FILE));
@@ -447,7 +511,7 @@ bool BaseModuleManager::loadconfig()
 bool BaseModuleManager::saveParameters()
 {
     //pr文件拷贝
-    this->paramters.saveJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER);
+    this->parameters.saveJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER);
     material_tray.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
     aa_head_module.saveJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     sut_module.saveJsonConfig(getCurrentParameterDir().append(SUT_FILE));
@@ -891,7 +955,7 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
         if(data_object["calibrationName"].toString().contains("chart_calibration"))
         {
             qInfo("get chart calibration");
-            temp_calibration = chart_calibration = new ChartCalibration(dothinkey, AA_MAX_INTENSITY, AA_MIN_AREA, AA_MAX_AREA, CHART_CALIBRATION, CALIBRATION_RESULT_PATH);
+            temp_calibration = chart_calibration = new ChartCalibration(dothinkey, aaCoreNew.parameters.MaxIntensity(), aaCoreNew.parameters.MinArea(),  aaCoreNew.parameters.MaxArea(), CHART_CALIBRATION, CALIBRATION_RESULT_PATH);
         }
         else
             temp_calibration = new Calibration();
@@ -1114,7 +1178,7 @@ bool BaseModuleManager::saveJsonObject(QString file_name, QJsonObject &object)
 
 QString BaseModuleManager::getCurrentParameterDir()
 {
-    QString dir = QString(CONFIG_DIR).append(paramters.materialType()).append("//");
+    QString dir = QString(CONFIG_DIR).append(parameters.materialType()).append("//");
     if(!QDir(dir).exists())
         QDir().mkdir(dir);
     return dir;
@@ -1138,7 +1202,7 @@ QString BaseModuleManager::getSystermParameterDir()
 bool BaseModuleManager::InitStruct()
 {
     tcp_manager.Init();
-    foreach (QVariant messager_name, paramters.respMessagerNames()) {
+    foreach (QVariant messager_name, parameters.respMessagerNames()) {
         TcpMessager* temp_messager = tcp_manager.GetAllTcpMessager(messager_name.toString());
         if(temp_messager!=nullptr)
         {
@@ -1146,7 +1210,7 @@ bool BaseModuleManager::InitStruct()
             connect(temp_messager,&TcpMessager::receiveTextMessage,this,&BaseModuleManager::tcpResp);
         }
     }
-    foreach (QVariant messager_name, paramters.cmsMessageerNames()) {
+    foreach (QVariant messager_name, parameters.cmsMessageerNames()) {
         TcpMessager* temp_messager = tcp_manager.GetAllTcpMessager(messager_name.toString());
         if(temp_messager!=nullptr)
         {
@@ -1197,7 +1261,6 @@ bool BaseModuleManager::InitStruct()
         chart_calibration->Init(GetMotorByName(chart_calibration->parameters.motorXName()),
                                 GetMotorByName(chart_calibration->parameters.motorYName()),
                                 nullptr);
-        connect(chart_calibration, &Calibration::updata_aaCore_sensor_parameters_signal, &aaCoreNew, &AACoreNew::updateAACoreSensorParameters);
     }
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
@@ -1209,6 +1272,7 @@ bool BaseModuleManager::InitStruct()
                     GetVisionLocationByName(sut_module.parameters.updownlookUpLocationName()),
                     GetVacuumByName(sut_module.parameters.vacuumName()),
                     GetCylinderByName(sut_module.parameters.cylinderName()),
+                    GetOutputIoByName(sut_module.parameters.downlookFlyIoName()),
                     XtMotor::GetThreadResource());
     QVector<XtMotor *> executive_motors;
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorXName()));
@@ -1328,6 +1392,26 @@ void BaseModuleManager::inquiryTcpModule()
 {
     QJsonObject message;
     message["cmd"] = "inquiryModuleNames";
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
+}
+
+void BaseModuleManager::inquiryTcpModuleState(QString moduleName)
+{
+    QJsonObject message;
+    message["cmd"] = "inquiryModuleState";
+    message["moduleName"] = moduleName;
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
+}
+
+void BaseModuleManager::inquiryTcpModuleParameter(QString moduleName)
+{
+    QJsonObject message;
+    message["cmd"] = "inquiryModuleParameter";
+    message["moduleName"] = moduleName;
     foreach (TcpMessager* temp_messager, sender_messagers) {
         temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
     }
@@ -1543,7 +1627,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 bool BaseModuleManager::allMotorsSeekOriginal2()
 {
     qInfo("allMotorsSeekOriginal2 Start");
-    GetOutputIoByName(u8"夹爪稳压阀")->Set(1);
+//    GetOutputIoByName(u8"夹爪稳压阀")->Set(1);
     //推料氣缸復位
     bool result;
     if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))

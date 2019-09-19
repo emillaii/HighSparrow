@@ -131,7 +131,7 @@
 #define UPLOOK_VISION_CAMERA_WIDTH      659
 #define UPLOOK_VISION_CAMERA_HEIGHT     494
 
-#define CONSTANT_REFERENCE 2304
+#define CONSTANT_REFERENCE 2448.0
 
 //PR Execuatable for HMI
 #define SAVE_IMAGE_FROM_BASLER_EXEC     "SaveImage.avexe"
@@ -257,6 +257,7 @@
 //Flowchart Params
 #define AA_PIECE_START "Start"
 #define AA_PIECE_LOAD_CAMERA "Load Camera"
+#define AA_PIECE_INIT_LENS "Init_Lens"
 #define AA_PIECE_INIT_CAMERA "Init Camera"
 #define AA_PIECE_PR_TO_BOND "PR To Bond"
 #define AA_PIECE_INITIAL_TILT "Initial Tilt"

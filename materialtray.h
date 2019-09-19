@@ -40,9 +40,13 @@ public:
     int getMaterialState(int column_index,int row_index,int tray_index);
     int getMaterialState(int index,int tray_index);
     void setMaterialState(int column_index,int row_index,int state,int tray_index);
-    QVariantMap *getCurrentMaterialData(int tray_index = 0);
-    QVariantMap *getMaterialData(int column_index,int row_index,int tray_index);
-    QVariantMap *getMaterialData(int index,int tray_index);
+    void setMaterialState(int index,int state,int tray_index);
+    QVariantMap getCurrentMaterialData(int tray_index = 0);
+    void setCurrentMaterialData(int tray_index,QVariantMap material_data);
+    QVariantMap getMaterialData(int column_index,int row_index,int tray_index);
+    void setMaterialData(int column_index,int row_index,int tray_index,QVariantMap material_data);
+    QVariantMap getMaterialData(int index,int tray_index);
+    void setMaterialData(int index,int tray_index,QVariantMap material_data);
     PrOffset getTrayCurrentPrOffset(int tray_index);
     PrOffset getTrayPrOffset(int index,int tray_index);
     void setTrayCurrentPrOffset(PrOffset pr_offset,int tray_index);

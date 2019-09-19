@@ -1,4 +1,4 @@
-#ifndef WORKER_BASE_H
+﻿#ifndef WORKER_BASE_H
 #define WORKER_BASE_H
 
 #include "utils/errorcode.h"
@@ -9,6 +9,23 @@
 #include <QVariantMap>
 #include <qmutex.h>
 #include <qthread.h>
+#define OK_OPERATION u8"确定"
+#define CONTINUE_OPERATION u8"继续"
+#define RETRY_OPERATION u8"重试"
+#define REJECT_OPERATION u8"人工抛料"
+#define ACCEPT_OPERATION u8"有料"
+#define AUTOREJECT_OPERATION u8"自动抛料"
+#define SKIP_OPERATION u8"跳过"
+#define NEXT_OPERATION u8"下一个"
+#define CONTINUE_RETRY_OPERATION u8"继续|重试"
+#define CONTINUE_SKIP_OPERATION u8"继续|跳过"
+#define CONTINUE_REJECT_OPERATION u8"继续|人工抛料"
+#define CONTINUE_ACCEPT_OPERATION u8"继续|有料"
+#define CONTINUE_NEXT_OPERATION u8"继续|下一个"
+#define CONTINUE_RETRY_REJECT_OPERATION u8"继续|重试|人工抛料"
+#define CONTINUE_RETRY_NEXT_OPERATION u8"继续|重试|下一个"
+#define CONTINUE_RETRY_AUTOREJECT_REJECT_OPERATION u8"继续|重试|自动抛料|人工抛料"
+
 enum AlarmOperation
 {
     Continue = 0,
@@ -18,14 +35,9 @@ enum AlarmOperation
 enum RunMode
 {
     Normal = 0,
-    ChangeType = 1,
-    NoMaterial = 2,
-    VibrationTest = 3,
-    AAFlowChartTest = 4,
-    OnllyLeftAA = 5,
-    OnlyRightAA = 6,
-    MachineTest = 7,
-    DispensTest = 8
+    NoMaterial = 1,
+    VibrationTest = 2,
+    AAFlowChartTest = 3
 };
 enum FinishedType
 {
@@ -47,12 +59,12 @@ public:
     Q_PROPERTY(QString Name READ Name WRITE setName NOTIFY NameChanged)
 
     QString Name() const;
-    void setAlarmId(int id);
-    int getAlarmId();
-    void sendAlarmMessage(int error_level,QString error_message);
-    int waitMessageReturn(bool &interruput);
+    void setName(QString Name);
+    int sendAlarmMessage(QString error_tips,QString error_message,int error_level = 1);
+    QString waitMessageReturn(bool &interruput,int alarm_id);
     bool waitResponseMessage(bool &is_run,QString target_message);
-    virtual void receivceModuleMessage(QVariantMap module_message) = 0;
+    void receivceModuleMessageBase(QVariantMap message);
+    virtual void receivceModuleMessage(QVariantMap message) = 0;
     virtual PropertyBase* getModuleState() = 0;
     virtual QMap<QString,PropertyBase*> getModuleParameter() = 0;
     Q_INVOKABLE void performHandling(int cmd);
@@ -62,26 +74,25 @@ public:
     Q_INVOKABLE bool loadJsonConfig(QString file_name);
     Q_INVOKABLE void saveJsonConfig(QString file_name);
     QVariantMap inquirRunParameters(int out_time = 1000);
+private:
+    int getAlarmId();
+
 signals:
-    void sendErrorMessage(int alarm_id,int error_level,QString error_message);
     void sendHandlingOperation(int cmd);
     void NameChanged(QString Name);
     bool sendMsgSignal(QString,QString);
     void sendModuleMessage(QVariantMap module_message);
 
 public slots:
+    void clearAlarm();
     virtual void startWork(int run_mode) = 0;
     virtual void stopWork(bool wait_finish = true) = 0;
     virtual void resetLogic() = 0;
     virtual void performHandlingOperation(int cmd) = 0;
-    void receiveOperation(const int sender_id,const int operation_type);
-public:
-    void setName(QString Name);
-//    virtual void receiveModuleMessage(QVariantMap messsage) = 0;
 private:
     QThread work_thread;
     QString m_Name;
-    int operation_type = 0;
+    QMap<int,QString> choosed_operations;
     bool message_returned = false;
     int alarm_id = 0;
 protected:

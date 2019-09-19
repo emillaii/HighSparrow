@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
+import AACoreNew 1.1
 
 ItemDelegate {
     width: parent.width
@@ -223,6 +224,65 @@ ItemDelegate {
                         }
                     }
                     RowLayout {
+                        CheckBox{
+                            text: qsTr("启用Lens VCM")
+                            checked: aaCoreParams.enableLensVcm
+                            onClicked:
+                            {
+                                aaCoreParams.setEnableLensVcm(checked)
+                            }
+                        }
+                        Label {
+                            text: qsTr("VCM文件路径：")
+                        }FileDialog{
+                            id:file_dialog
+                            title:"选择加载PR文件"
+                            selectExisting: true
+                            selectFolder: false
+                            selectMultiple: false
+
+                            nameFilters: ["VCM文件 (*.exe)"]
+                            onAccepted:{
+                                aaCoreParams.setLensVcmPath(fileUrl)
+                            }
+                        }
+                        TextField{
+                            text: aaCoreParams.lensVcmPath
+                        }
+                        Button{
+                            text:qsTr("选取文件")
+                            onClicked: {
+                                file_dialog.open()
+                            }
+                        }
+                        Button{
+                            text:qsTr("初始化")
+                            onClicked: {
+                                aaNewCore.performHandling(AACoreNew.INIT_VCM,0)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Lens AA位置")
+                        }
+                        TextField {
+                            text: aaCoreParams.lensVcmWorkPosition
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setLensVcmWorkPosition(text)
+                            }
+                        }
+                        Button{
+                            text:qsTr("移动")
+                            onClicked: {
+                                aaNewCore.performHandling(AACoreNew.LENS_VCM_POS,0)
+                            }
+                        }
+                    }
+                    RowLayout {
                         Label {
                             text: qsTr("EFL")
                         }
@@ -363,9 +423,9 @@ ItemDelegate {
                         ComboBox {
                             Layout.preferredWidth: 300
                             model: [ "(xTilt, yTilt)", "(xTilt, -yTilt)", "(-xTilt, yTilt)", "(-xTilt, -yTilt)","(yTilt, xTilt)", "(yTilt, -xTilt)", "(-yTilt, xTilt)", "(-yTilt, -xTilt)" ]
-                            currentIndex: 0
+                            currentIndex: aaCoreParams.tiltRelationship
                             onCurrentIndexChanged: {
-                                //aaCoreParams.setPeakProfile(currentIndex)
+                               aaCoreParams.setTiltRelationship(currentIndex)
                             }
                         }
                     }

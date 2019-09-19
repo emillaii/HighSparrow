@@ -197,17 +197,19 @@ void LutModule::run(bool has_material)
                     if(!checkLutNgLensSync(false))
                     {
                         AppendError("请人工拿走多LUT上NG位置多余物料并检测真空状态！");
-                        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                        waitMessageReturn(is_run);
+                        int alarm_id = sendAlarmMessage(u8"已取走",GetCurrentError());
+                        waitMessageReturn(is_run,alarm_id);
                         if(!is_run)break;
                     }
                     bool action_result;
                     isLocalHost ?action_result = moveToAA1UnPickLens() : action_result = moveToAA2UnPickLens();
                     if((!action_result)&&has_material)
                     {
-                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                        is_run = false;
-                        break;
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                        if(RETRY_OPERATION == operation)
+                            continue;
                     }
                     else
                     {
@@ -247,21 +249,26 @@ void LutModule::run(bool has_material)
                     qInfo("states.pickedLens %d",states.pickedLens());
                     if(!checkLutLensSync(true))
                     {
-                        sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                        if(waitMessageReturn(is_run))
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                        if(REJECT_OPERATION == operation)
                         {
                             state = NO_LENS;
                             break;
                         }
-                        if(!is_run)break;
+                        else if(RETRY_OPERATION == operation)
+                            continue;
                     }
                     bool action_result;
                     isLocalHost ?action_result = moveToAA1PickLens() : action_result = moveToAA2PickLens();
                     if((!action_result)&&has_material)
                     {
-                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                        is_run = false;
-                        break;
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                        if(RETRY_OPERATION == operation)
+                            continue;
                     }
                     else
                     {
@@ -300,8 +307,10 @@ void LutModule::run(bool has_material)
                     if((!action_result)&&has_material)
                     {
                         AppendError(u8"uplook PR 失败！");
-                        sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                        if(waitMessageReturn(is_run))
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_AUTOREJECT_REJECT_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                        if(AUTOREJECT_OPERATION == operation)
                         {
                             state = NO_LENS;
                             states.setPickedLens(false);
@@ -309,7 +318,15 @@ void LutModule::run(bool has_material)
                             states.setCmd("unpickNgLensReq");
                             continue;
                         }
-                        if(!is_run)break;
+                        else if(REJECT_OPERATION == operation)
+                        {
+                            state = NO_LENS;
+                            states.setPickedLens(false);
+                            states.setCmd("pickLensReq");
+                            continue;
+                        }
+                        else if(RETRY_OPERATION == operation)
+                            continue;
                     }
                     else
                     {
@@ -347,13 +364,14 @@ void LutModule::run(bool has_material)
                 {
                     if(!(checkLutLensSync(true)&&checkLutNgLensSync(false)))
                     {
-                        sendAlarmMessage(ErrorLevel::RetryOrReject,GetCurrentError());
-                        if(waitMessageReturn(is_run))
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                        if(RETRY_OPERATION == operation)
                         {
                             states.setWaitingLens(false);
                             continue;
                         }
-                        if(!is_run)break;
                     }
                     qInfo("LUT Module has lens");
                     {
@@ -371,9 +389,11 @@ void LutModule::run(bool has_material)
                     if(!action_result)
                     {
                         AppendError("move to ready pos fail");
-                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                        is_run = false;
-                        break;
+                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                        QString operation = waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                        if(RETRY_OPERATION == operation)
+                            continue;
                     }
                 }
                 else
@@ -385,9 +405,11 @@ void LutModule::run(bool has_material)
             {
                 if(!moveToLoadPosAndCheckMaterial(false,states.lutNgLensID()>=0,true))
                 {
-                    sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                    waitMessageReturn(is_run);
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
                 }
                 qInfo("LUT Module is not waiting lens");
                 QMutexLocker temp_locker(&loader_mutext);
@@ -397,188 +419,189 @@ void LutModule::run(bool has_material)
             }
         }
     }
+    states.setRunMode(RunMode::Normal);
     qInfo("LUT Module end of thread");
 }
 
-void LutModule::runTest()
-{
-    qInfo("Start Lut Module Thread");
-    is_run = true;
-    bool has_task = true;
-    int current_time = parameters.repeatTime();
-    int current_count = parameters.testLensCount();
-    bool finished = false;
-    isLocalHost = true;
-    while(is_run){
-//        if(!has_task)
-            QThread::msleep(1);
-        has_task = false;
-        //取lens请求
-        if((!states.waitingLens())&&(!states.lutHasLens())&&(!states.lutLoadReady()))
-        {
-            has_task = true;
-            if(!moveToLoadPosAndCheckMaterial(false,states.lutNgLensID()>=0,true))
-            {
-                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                waitMessageReturn(is_run);
-                if(!is_run)break;
-            }
-            qInfo("LUT Module is waiting lens");
-            emit sendLoadLensRequst(true,states.lutNgLensID(),states.lutNgTrayID());
-            states.setWaitingLens(true);
-        }
-        //等待lens
-        if(states.waitingLens()&&states.finishWaitLens())
-        {
-            if(!(checkLutLensSync(true)&&checkLutNgLensSync(false)))
-            {
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    states.setWaitingLens(false);
-                    continue;
-                }
-                if(!is_run)break;
-            }
-            qInfo("LUT Module has lens");
-            bool action_result;
-            isLocalHost ?action_result = moveToAA1ReadyPos():action_result = moveToAA2ReadyPos();
-            if(!action_result)
-            {
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
-            }
-            states.setWaitingLens(false);
-            states.setFinishWaitLens(false);
-            states.setLutHasLens(true);
-            states.setLutLoadReady(true);
-            states.setLutNgLensID(-1);
-            states.setLutNgTrayID(-1);
-            states.setLutHasNgLens(false);
-        }
-        //AA头上lens
-        if(states.lutHasLens()&&(!states.aaPickedLens()))
-        {
-            has_task = true;
-            if(!checkLutLensSync(true))
-            {
-                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-                if(waitMessageReturn(is_run))
-                {
-                    state = NO_LENS;
-                    break;
-                }
-                if(!is_run)break;
-            }
-            bool action_result;
-            isLocalHost ?action_result = moveToAA1PickLens() : action_result = moveToAA2PickLens();
-            if((!action_result))
-            {
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
-            }
-            isLocalHost?states.setAa1LensID(states.lutLensID()):states.setAa2LensID(states.lutLensID());
-            isLocalHost?states.setAa1TrayID(states.lutTrayID()):states.setAa2TrayID(states.lutTrayID());
-            states.setAaPickedLens(true);
-            states.setNeedUplookPr(true);
-        }
-        //uplookpr
-        if(states.aaPickedLens()&&states.needUplookPr())
-        {
-            bool action_result;
-            if(parameters.staticTest())
-                current_time = parameters.repeatTime();
-            while (current_time>0)
-            {
-                isLocalHost ?action_result = moveToAA1UplookPR(pr_offset,false) : action_result = moveToAA2UplookPR(pr_offset,false);
-                if((!action_result))
-                {
-                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-                    if(waitMessageReturn(is_run))
-                    {
-                        continue;
-                    }
-                    if(!is_run)break;
-                }
-                recordAALensPr(getUuid(finished,current_count,current_time));
-                if(!parameters.staticTest())
-                    break;
-                current_time--;
-            }
-            uplook_location->CloseLight();
-            if(!is_run)break;
-            states.setNeedUplookPr(false);
-        }
-        //AA头卸Lens
-        if(states.aaPickedLens()&&(!states.needUplookPr())&&(!states.lutHasNgLens()))
-        {
-            has_task = true;
-            if(!checkLutNgLensSync(false))
-            {
-                AppendError("请人工拿走多LUT上NG位置多余物料并检测真空状态！");
-                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-                waitMessageReturn(is_run);
-                if(!is_run)break;
-            }
-            bool action_result;
-            isLocalHost ?action_result = moveToAA1UnPickLens() : action_result = moveToAA2UnPickLens();
-            if(!action_result)
-            {
-                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-                is_run = false;
-                break;
-            }
-            else
-            {
-                states.setLutNgLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
-                states.setLutNgTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
-                states.setAaPickedLens(false);
-                states.setLutHasNgLens(true);
-                states.setLutLoadReady(false);
-                states.setLutHasLens(false);
-                if(parameters.staticTest())
-                {
-                    current_count--;
-                    if(current_count<=0)
-                    {
-                        if(finished)
-                            break;
-                        else
-                        {
-                            finished  = true;
-                            isLocalHost = !isLocalHost;
-                            current_count = parameters.testLensCount();
-                        }
-                    }
-                }
-                else
-                {
-                    current_count--;
-                    if(current_count<=0)
-                    {
-                        current_count = parameters.testLensCount();
-                        current_time--;
-                        if(current_time<=0)
-                        {
-                            if(finished)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                isLocalHost = !isLocalHost;
-                                current_time = parameters.repeatTime();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    qInfo("LUT Module end of thread");
-}
+//void LutModule::runTest()
+//{
+//    qInfo("Start Lut Module Thread");
+//    is_run = true;
+//    bool has_task = true;
+//    int current_time = parameters.repeatTime();
+//    int current_count = parameters.testLensCount();
+//    bool finished = false;
+//    isLocalHost = true;
+//    while(is_run){
+////        if(!has_task)
+//            QThread::msleep(1);
+//        has_task = false;
+//        //取lens请求
+//        if((!states.waitingLens())&&(!states.lutHasLens())&&(!states.lutLoadReady()))
+//        {
+//            has_task = true;
+//            if(!moveToLoadPosAndCheckMaterial(false,states.lutNgLensID()>=0,true))
+//            {
+//                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+//                waitMessageReturn(is_run);
+//                if(!is_run)break;
+//            }
+//            qInfo("LUT Module is waiting lens");
+//            emit sendLoadLensRequst(true,states.lutNgLensID(),states.lutNgTrayID());
+//            states.setWaitingLens(true);
+//        }
+//        //等待lens
+//        if(states.waitingLens()&&states.finishWaitLens())
+//        {
+//            if(!(checkLutLensSync(true)&&checkLutNgLensSync(false)))
+//            {
+//                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
+//                if(waitMessageReturn(is_run))
+//                {
+//                    states.setWaitingLens(false);
+//                    continue;
+//                }
+//                if(!is_run)break;
+//            }
+//            qInfo("LUT Module has lens");
+//            bool action_result;
+//            isLocalHost ?action_result = moveToAA1ReadyPos():action_result = moveToAA2ReadyPos();
+//            if(!action_result)
+//            {
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                is_run = false;
+//                break;
+//            }
+//            states.setWaitingLens(false);
+//            states.setFinishWaitLens(false);
+//            states.setLutHasLens(true);
+//            states.setLutLoadReady(true);
+//            states.setLutNgLensID(-1);
+//            states.setLutNgTrayID(-1);
+//            states.setLutHasNgLens(false);
+//        }
+//        //AA头上lens
+//        if(states.lutHasLens()&&(!states.aaPickedLens()))
+//        {
+//            has_task = true;
+//            if(!checkLutLensSync(true))
+//            {
+//                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
+//                if(waitMessageReturn(is_run))
+//                {
+//                    state = NO_LENS;
+//                    break;
+//                }
+//                if(!is_run)break;
+//            }
+//            bool action_result;
+//            isLocalHost ?action_result = moveToAA1PickLens() : action_result = moveToAA2PickLens();
+//            if((!action_result))
+//            {
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                is_run = false;
+//                break;
+//            }
+//            isLocalHost?states.setAa1LensID(states.lutLensID()):states.setAa2LensID(states.lutLensID());
+//            isLocalHost?states.setAa1TrayID(states.lutTrayID()):states.setAa2TrayID(states.lutTrayID());
+//            states.setAaPickedLens(true);
+//            states.setNeedUplookPr(true);
+//        }
+//        //uplookpr
+//        if(states.aaPickedLens()&&states.needUplookPr())
+//        {
+//            bool action_result;
+//            if(parameters.staticTest())
+//                current_time = parameters.repeatTime();
+//            while (current_time>0)
+//            {
+//                isLocalHost ?action_result = moveToAA1UplookPR(pr_offset,false) : action_result = moveToAA2UplookPR(pr_offset,false);
+//                if((!action_result))
+//                {
+//                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
+//                    if(waitMessageReturn(is_run))
+//                    {
+//                        continue;
+//                    }
+//                    if(!is_run)break;
+//                }
+//                recordAALensPr(getUuid(finished,current_count,current_time));
+//                if(!parameters.staticTest())
+//                    break;
+//                current_time--;
+//            }
+//            uplook_location->CloseLight();
+//            if(!is_run)break;
+//            states.setNeedUplookPr(false);
+//        }
+//        //AA头卸Lens
+//        if(states.aaPickedLens()&&(!states.needUplookPr())&&(!states.lutHasNgLens()))
+//        {
+//            has_task = true;
+//            if(!checkLutNgLensSync(false))
+//            {
+//                AppendError("请人工拿走多LUT上NG位置多余物料并检测真空状态！");
+//                sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
+//                waitMessageReturn(is_run);
+//                if(!is_run)break;
+//            }
+//            bool action_result;
+//            isLocalHost ?action_result = moveToAA1UnPickLens() : action_result = moveToAA2UnPickLens();
+//            if(!action_result)
+//            {
+//                sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
+//                is_run = false;
+//                break;
+//            }
+//            else
+//            {
+//                states.setLutNgLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
+//                states.setLutNgTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
+//                states.setAaPickedLens(false);
+//                states.setLutHasNgLens(true);
+//                states.setLutLoadReady(false);
+//                states.setLutHasLens(false);
+//                if(parameters.staticTest())
+//                {
+//                    current_count--;
+//                    if(current_count<=0)
+//                    {
+//                        if(finished)
+//                            break;
+//                        else
+//                        {
+//                            finished  = true;
+//                            isLocalHost = !isLocalHost;
+//                            current_count = parameters.testLensCount();
+//                        }
+//                    }
+//                }
+//                else
+//                {
+//                    current_count--;
+//                    if(current_count<=0)
+//                    {
+//                        current_count = parameters.testLensCount();
+//                        current_time--;
+//                        if(current_time<=0)
+//                        {
+//                            if(finished)
+//                            {
+//                                break;
+//                            }
+//                            else
+//                            {
+//                                isLocalHost = !isLocalHost;
+//                                current_time = parameters.repeatTime();
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    qInfo("LUT Module end of thread");
+//}
 
 bool LutModule::isActionEmpty()
 {
@@ -614,7 +637,7 @@ void LutModule::startWork(int run_mode)
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数为空.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数为空.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("RunMode"))
@@ -623,7 +646,7 @@ void LutModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数RunMode缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数RunMode缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("DisableStation"))
@@ -634,7 +657,7 @@ void LutModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数DisableStation缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数DisableStation缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
     if(run_params.contains("HandlyChangeLens"))
@@ -643,23 +666,23 @@ void LutModule::startWork(int run_mode)
     }
     else
     {
-        sendAlarmMessage(ErrorLevel::ErrorMustStop,u8"启动参数HandlyChangeLens缺失.启动失败.");
+        sendAlarmMessage(OK_OPERATION,u8"启动参数HandlyChangeLens缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
 
     this->has_material = true;
     qInfo("Lut Module start work in run mode: %d", run_mode);
-    if(run_mode == RunMode::Normal||run_mode == RunMode::OnllyLeftAA||run_mode == RunMode::OnlyRightAA)
+    if(run_mode == RunMode::Normal)
         run(true);
     else if(run_mode == RunMode::NoMaterial)
     {
         this->has_material = false;
         run(false);
     }
-    else if(run_mode == RunMode::MachineTest)
-    {
-        runTest();
-    }
+//    else if(run_mode == RunMode::MachineTest)
+//    {
+//        runTest();
+//    }
 }
 
 void LutModule::stopWork(bool wait_finish)
@@ -689,7 +712,7 @@ void LutModule::performHandlingOperation(int cmd)
     }
     if(!result)
     {
-        sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
+        sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
         is_handling = false;
         return;
     }
@@ -801,8 +824,8 @@ bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting,bool che
     bool result = moveToAA1UplookPos(check_autochthonous, check_softlanding);
     if(result)
     {
-        if(has_material)
-            result = uplook_location->performPR(offset);
+       result = performUpLookPR();
+       offset = uplook_location->getCurrentResult();
     }
     if(close_lighting)
         uplook_location->CloseLight();
@@ -840,8 +863,8 @@ bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting,bool che
     bool result = moveToAA2UplookPos(check_autochthonous,check_softlanding);
     if(result)
     {
-        if(has_material)
-            result = uplook_location->performPR(offset);
+        result = performUpLookPR();
+        offset = uplook_location->getCurrentResult();
     }
     if(close_lighting)
         uplook_location->CloseLight();
@@ -876,8 +899,8 @@ bool LutModule::moveToLoadPosAndCheckMaterial(bool has_lens,bool has_ng_lens,boo
     bool result = load_vacuum->checkHasMateriel(check_thread);
     result &= unload_vacuum->checkHasMateriel(check_thread);
     result &= carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous,check_softlanding);
-    result &=  checkLutLens(has_lens);
-    result &=  checkLutNgLens(has_ng_lens);
+    result &=  waitLutLensCheckResult(has_lens);
+    result &=  waitLutNgLensCheckResult(has_ng_lens);
     return result;
 }
 
@@ -941,7 +964,7 @@ bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous,bool
             qInfo("moveToAA1PickLens Finish ZSerchByForce");
         }
         sendCmd("::1","gripperOffReq");
-        load_vacuum->Set(false);
+        result &= closeLoadVacuum();
         Sleep(parameters.gripperDelay());
         if(need_return)
             result &= carrier->ZSerchReturn();
@@ -965,6 +988,10 @@ bool LutModule::moveToAA1PickLensPos(bool check_autochthonous,bool check_softlan
 
 bool LutModule::moveToAAMeasurePickHeight(bool ishost, bool check_autochthonous,bool check_softlanding)
 {
+    if(ishost)
+        sendCmd("::1","gripperOnReq");
+    else
+        sendCmd("remote","gripperOnReq");
     bool result = true;
     if(ishost)
         result &= carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),0,check_autochthonous,check_softlanding);
@@ -986,7 +1013,7 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous,bool check_softland
         result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_picklens_position.Z(),parameters.lensHeight());
         qInfo("moveToAA1UnPickLens Start ZSerchByForce");
         sendCmd("::1","gripperOnReq");
-        this->unload_vacuum->Set(true);
+        result &= openUnloadVacuum();
         Sleep(parameters.gripperDelay());
         result &= carrier->ZSerchReturn();
     }
@@ -1024,7 +1051,7 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous,boo
             qInfo("moveToAA1PickLens Finish ZSerchByForce");
         }
         sendCmd("remote","gripperOffReq");
-        load_vacuum->Set(false);
+        result &= closeLoadVacuum();
         Sleep(parameters.gripperDelay());
         if(need_return)
             result &= carrier->ZSerchReturn();
@@ -1043,7 +1070,7 @@ bool LutModule::moveToAA2UnPickLens(bool check_autochthonous,bool check_softland
         result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa2_picklens_position.Z(),parameters.lensHeight());
         qInfo("moveToAA2UnPickLens Finish ZSerchByForce");
         sendCmd("remote","gripperOnReq");
-        this->unload_vacuum->Set(true);
+        result &= openUnloadVacuum();
         Sleep(parameters.gripperDelay());
         result &= carrier->motor_z->resetSoftLanding();
     }
@@ -1089,7 +1116,7 @@ bool LutModule::checkLutLensSync(bool check_state)
     if(!has_material)
         return true;
     bool result = load_vacuum->checkHasMaterielSync();
-    if(result == check_state)
+    if(result == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString error = QString(u8"LUT放Lens位置上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
     AppendError(error);
@@ -1102,7 +1129,7 @@ bool LutModule::checkLutNgLensSync(bool check_state)
     if(!has_material)
         return true;
     bool result = unload_vacuum->checkHasMaterielSync();
-    if(result == check_state)
+    if(result == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString error = QString(u8"LUT放NgLens位置逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
     AppendError(error);
@@ -1110,10 +1137,10 @@ bool LutModule::checkLutNgLensSync(bool check_state)
     return false;
 }
 
-bool LutModule::checkLutLens(bool check_state)
+bool LutModule::waitLutLensCheckResult(bool check_state)
 {
     bool result = load_vacuum->getHasMateriel(check_thread);
-    if(result == check_state)
+    if(result == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString error = QString(u8"LUT放Lens位置上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
     AppendError(error);
@@ -1121,10 +1148,10 @@ bool LutModule::checkLutLens(bool check_state)
     return false;
 }
 
-bool LutModule::checkLutNgLens(bool check_state)
+bool LutModule::waitLutNgLensCheckResult(bool check_state)
 {
     bool result = unload_vacuum->getHasMateriel(check_thread);
-    if(result == check_state)
+    if(result == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString error = QString(u8"LUT放NgLens位置逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
     AppendError(error);
@@ -1135,6 +1162,51 @@ bool LutModule::checkLutNgLens(bool check_state)
 bool LutModule::stepMove_XY_Sync(double x, double y)
 {
     return carrier->StepMove_XY_Sync(x,y);
+}
+
+bool LutModule::performUpLookPR()
+{
+    qInfo("performUpLookPR");
+    bool result;
+    if(states.runMode() == RunMode::NoMaterial)
+        result = uplook_location->performNoMaterialPR();
+    else
+        result= uplook_location->performPR();
+    if(!result)
+        AppendError(QString(u8"执行uplook视觉失败!"));
+    return  result;
+}
+
+bool LutModule::openLoadVacuum()
+{
+    if(states.runMode() == RunMode::NoMaterial)
+        return load_vacuum->SetSimulation(true);
+    else
+        return load_vacuum->Set(true);
+}
+
+bool LutModule::closeLoadVacuum()
+{
+    if(states.runMode() == RunMode::NoMaterial)
+        return load_vacuum->SetSimulation(false);
+    else
+        return load_vacuum->Set(false);
+}
+
+bool LutModule::openUnloadVacuum()
+{
+    if(states.runMode() == RunMode::NoMaterial)
+        return unload_vacuum->SetSimulation(true);
+    else
+        return unload_vacuum->Set(true);
+}
+
+bool LutModule::closeUnloadVacuum()
+{
+    if(states.runMode() == RunMode::NoMaterial)
+        return unload_vacuum->SetSimulation(false);
+    else
+        return unload_vacuum->Set(false);
 }
 
 double LutModule::updateAccumulatedHour(bool calculate)
@@ -1193,9 +1265,9 @@ void LutModule::recordAALensPr(QString uuid)
 void LutModule::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-    QMutexLocker temp_locker(&message_mutex);
-    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-        this->module_message = message;
+//    QMutexLocker temp_locker(&message_mutex);
+//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
+//        this->module_message = message;
 }
 
 PropertyBase *LutModule::getModuleState()
@@ -1205,8 +1277,27 @@ PropertyBase *LutModule::getModuleState()
 
 QMap<QString, PropertyBase *> LutModule::getModuleParameter()
 {
-    QMap<QString, PropertyBase *> temp;
-    return temp;
+    QMap<QString,PropertyBase*> temp_map;
+    temp_map.insert("LUT_PARAMS", &parameters);
+    temp_map.insert("LOAD_POSITION", &load_position);
+    temp_map.insert("LUT_DOWNLOOK_LOAD_POSITION", &lut_downlook_load_position);
+    temp_map.insert("LUT_DOWNLOOK_UNLOAD_POSITION", &lut_downlook_unload_position);
+    temp_map.insert("LOAD_UPLOOK_POSITION", &load_uplook_position);
+    temp_map.insert("AA1_UPDOWNLOOK_POSITION", &aa1_updownlook_position);
+    temp_map.insert("AA1_PICKLENS_POSITION", &aa1_picklens_position);
+    temp_map.insert("AA1_UNPICKLENS_POSITION", &aa1_unpicklens_position);
+    temp_map.insert("AA1_UPLOOK_POSITION", &aa1_uplook_position);
+    temp_map.insert("AA1_Ready_POSITION", &aa1_ready_position);
+    temp_map.insert("AA2_UPDOWNLOOK_POSITION", &aa2_updownlook_position);
+    temp_map.insert("AA2_PICKLENS_POSITION", &aa2_picklens_position);
+    temp_map.insert("AA2_UNPICKLENS_POSITION", &aa2_unpicklens_position);
+    temp_map.insert("AA2_UPLOOK_POSITION", &aa2_uplook_position);
+    temp_map.insert("AA2_Ready_POSITION", &aa2_ready_position);
+    temp_map.insert("LPA_CAMERA_TO_PICKER_POSITION", &lpa_camera_to_picker_offset);
+    temp_map.insert("lens_uph", &lens_uph);
+    temp_map.insert("left_lens_uph", &left_lens_uph);
+    temp_map.insert("right_lens_uph", &right_lens_uph);
+    return temp_map;
 }
 
 void LutModule::receiveToolUpPRRequest(PrOffset &offset)

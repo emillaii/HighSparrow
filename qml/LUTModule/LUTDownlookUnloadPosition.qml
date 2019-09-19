@@ -54,7 +54,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToLutDownlookUnloadPos(false,true)
+               lutModule.performHandling(6)
             }
         }
         Button {

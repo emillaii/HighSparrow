@@ -22,32 +22,32 @@ public:
     TrayLoaderState states;
     bool startUp();
 
-    bool moveToNextTrayPos();
+//    bool moveToNextTrayPos();
     bool ejectTray();
 
     bool motorInPress();
-    bool moveToReadyFirstKick();
-    bool moveToFirstKick();
-    bool moveToReadySecondKick();
+//    bool moveToReadyFirstKick();
+//    bool moveToFirstKick();
+//    bool moveToReadySecondKick();
     bool moveToLtkx1GetPos();
     bool moveToLtkx1RelayPos();
     bool moveToLtkx1SetPos();
     bool motorInRelease();
 
     bool moveToLtlGetPos();
-    bool moveToSafePos();
+//    bool moveToSafePos();
     bool motorWorkPress();
     bool moveToLtlSetPos();
     bool motorWorkRelease();
-    bool moveToTrayOutHandOverPos();
-    bool moveToTrayInHandOverPos();
+//    bool moveToTrayOutHandOverPos();
+//    bool moveToTrayInHandOverPos();
 
     bool moveToLtkx2GetPos();
     bool motorOutPress();
     bool moveToLtkx2SetPos();
     bool motorOutRelease();
 
-    bool moveToNextEmptyPos();
+//    bool moveToNextEmptyPos();
 
     bool moveToChangeClipPos();
 
@@ -73,6 +73,10 @@ private:
     bool resumeState();
     void runHandle();
 
+    //传感器检测
+    bool checkWorkTray(bool check_state);
+    bool checkEntranceTray(bool check_state);
+
     bool is_run = false;
     QMutex tray_mutex;
     XtMotor* motor_clip_in = Q_NULLPTR;  //LTIE
@@ -94,18 +98,18 @@ private:
     XtGeneralInput* ready_tray_check_io = Q_NULLPTR;
 
 signals:
-    void nextTrayPos();
-    void ltkx1Pickup();
-    void ltlxPickup();
-    void ltlxPutdown();
-    void ltkx2Pickup();
-    void nextEmptyPos();
+//    void nextTrayPos();
+//    void ltkx1Pickup();
+//    void ltlxPickup();
+//    void ltlxPutdown();
+//    void ltkx2Pickup();
+//    void nextEmptyPos();
     void trayReady();
     void testTrayUsed();
 
-    void testLTLXPickUpTray();
-    void testLTLXPutDownTray();
-    void reset();
+//    void testLTLXPickUpTray();
+//    void testLTLXPutDownTray();
+//    void reset();
 
 public slots:
     void startWork(int run_mode);
@@ -113,17 +117,17 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
 
-    void onNextTrayPos();
-    void onLtkx1Pickup();
-    void onLtlxPickup();
-    void onLtlxPutdown();
-    void onLtkx2Pickup();
-    void onNextEmptyPos();
+//    void onNextTrayPos();
+//    void onLtkx1Pickup();
+//    void onLtlxPickup();
+//    void onLtlxPutdown();
+//    void onLtkx2Pickup();
+//    void onNextEmptyPos();
 
     void onTestTrayUsed();
-    void onTestLTLXPickUpTray();
-    void onTestLTLXPutDownTray();
-    void onReset();
+//    void onTestLTLXPickUpTray();
+//    void onTestLTLXPutDownTray();
+//    void onReset();
 
 
 

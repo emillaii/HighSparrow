@@ -1,6 +1,8 @@
 ﻿#include "vision/baslerpyloncamera.h"
 #include <QElapsedTimer>
 #include <QPixmap>
+using namespace Pylon;
+using namespace GenApi;
 BaslerPylonCamera::BaslerPylonCamera(QString name)
     : QQuickImageProvider(QQuickImageProvider::Image),
       cameraChannelName(name)
@@ -29,6 +31,117 @@ void BaslerPylonCamera::updateImage(const CGrabResultPtr& ptrGrabResult)
     emit callQmlRefeshImg();
 }
 
+void BaslerPylonCamera::setCamera(BaslerPylonCamera::BaslerCameraControl_Type index, double tmpValue)
+{
+    INodeMap &cameraNodeMap = camera.GetNodeMap();
+    switch (index) {
+    case Type_Basler_Freerun: {
+        CEnumerationPtr  ptrTriggerSel = cameraNodeMap.GetNode ("TriggerSelector");
+        ptrTriggerSel->FromString("FrameStart");
+        CEnumerationPtr  ptrTrigger  = cameraNodeMap.GetNode ("TriggerMode");
+        #ifdef Real_Freerun
+                ptrTrigger->SetIntValue(0);
+        #else //Software
+                ptrTrigger->SetIntValue(1);
+                CEnumerationPtr  ptrTriggerSource = cameraNodeMap.GetNode ("TriggerSource");
+                ptrTriggerSource->FromString("Software");
+        #endif
+    } break;
+    case Type_Basler_Line1: {
+        CEnumerationPtr  ptrTriggerSel = cameraNodeMap.GetNode ("TriggerSelector");
+        ptrTriggerSel->FromString("FrameStart");
+        CEnumerationPtr  ptrTrigger  = cameraNodeMap.GetNode ("TriggerMode");
+        ptrTrigger->SetIntValue(1);
+        CEnumerationPtr  ptrTriggerSource = cameraNodeMap.GetNode ("TriggerSource");
+        ptrTriggerSource->FromString("Line1");
+    } break;
+    case Type_Basler_ExposureTimeAbs: {
+        const CFloatPtr exposureTime = cameraNodeMap.GetNode("ExposureTimeAbs");
+        exposureTime->SetValue(tmpValue);
+    } break;
+    case Type_Basler_GainRaw: {
+        const CIntegerPtr cameraGen = cameraNodeMap.GetNode("GainRaw");
+        cameraGen->SetValue(tmpValue);
+    } break;
+    case Type_Basler_AcquisitionFrameRateAbs: {
+        const CBooleanPtr frameRate = cameraNodeMap.GetNode("AcquisitionFrameRateEnable");
+        frameRate->SetValue(TRUE);
+        const CFloatPtr frameRateABS = cameraNodeMap.GetNode("AcquisitionFrameRateAbs");
+        frameRateABS->SetValue(tmpValue);
+    } break;
+    case Type_Basler_Width: {
+        const CIntegerPtr widthPic = cameraNodeMap.GetNode("Width");
+        widthPic->SetValue(tmpValue);
+    } break;
+    case Type_Basler_Height: {
+        const CIntegerPtr heightPic = cameraNodeMap.GetNode("Height");
+        heightPic->SetValue(tmpValue);
+    } break;
+    case Type_Basler_LineSource: {
+        CEnumerationPtr  ptrLineSource = cameraNodeMap.GetNode ("LineSource");
+        ptrLineSource->SetIntValue(2);
+    } break;
+    default:
+        break;
+    }
+}
+
+double BaslerPylonCamera::getCameraParam(BaslerPylonCamera::BaslerCameraControl_Type index)
+{
+    INodeMap &cameraNodeMap = camera.GetNodeMap();
+    switch (index) {
+    case Type_Basler_ExposureTimeAbs: {
+        const CFloatPtr exposureTime = cameraNodeMap.GetNode("ExposureTimeAbs");
+        return exposureTime->GetValue();
+    } break;
+    case Type_Basler_GainRaw: {
+        const CIntegerPtr cameraGen = cameraNodeMap.GetNode("GainRaw");
+        return cameraGen->GetValue();
+    } break;
+    case Type_Basler_AcquisitionFrameRateAbs: {
+        const CBooleanPtr frameRate = cameraNodeMap.GetNode("AcquisitionFrameRateEnable");
+        frameRate->SetValue(TRUE);
+        const CFloatPtr frameRateABS = cameraNodeMap.GetNode("AcquisitionFrameRateAbs");
+        return frameRateABS->GetValue();
+    } break;
+    case Type_Basler_Width: {
+        const CIntegerPtr widthPic = cameraNodeMap.GetNode("Width");
+        return widthPic->GetValue();
+    } break;
+    case Type_Basler_Height: {
+        const CIntegerPtr heightPic = cameraNodeMap.GetNode("Height");
+        return heightPic->GetValue();
+    } break;
+    default:
+        return -1;
+        break;
+    }
+}
+
+void BaslerPylonCamera::setFeatureTriggerSourceType(QString type)
+{
+    if(type == "Freerun") {
+        setCamera(Type_Basler_Freerun);
+    } else if(type == "Line1"){
+        setCamera(Type_Basler_Line1);
+    }
+}
+
+QString BaslerPylonCamera::getFeatureTriggerSourceType()
+{
+    INodeMap &cameraNodeMap = camera.GetNodeMap();
+    CEnumerationPtr  ptrTriggerSel = cameraNodeMap.GetNode("TriggerSelector");
+    ptrTriggerSel->FromString("FrameStart");
+    CEnumerationPtr  ptrTrigger  = cameraNodeMap.GetNode("TriggerMode");
+    //ptrTrigger->SetIntValue(1);
+    CEnumerationPtr  ptrTriggerSource = cameraNodeMap.GetNode("TriggerSource");
+    String_t str = ptrTriggerSource->ToString();
+    m_currentMode = QString::fromLocal8Bit(str.c_str());
+    double exposureTime = getCameraParam(Type_Basler_ExposureTimeAbs);
+    qInfo("Camera : %s running in %s mode, exposureTime: %f", cameraChannelName.toStdString().c_str(), m_currentMode.toStdString().c_str(), exposureTime);
+    return m_currentMode;
+}
+
 BaslerPylonCamera::~BaslerPylonCamera()
 {
     close();
@@ -51,10 +164,15 @@ bool BaslerPylonCamera::Init(){
             {
                 isFound = true;
                 camera.Attach(tlFactory.CreateDevice(devices[i]));
-                camera.RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_ReplaceAll, Cleanup_Delete);
                 imageHandler = new CSampleImageEventHandler(this);
                 camera.RegisterImageEventHandler(imageHandler, RegistrationMode_Append, Cleanup_Delete);
                 camera.Open();
+                if (cameraChannelName.contains(CAMERA_AA1_DL) || cameraChannelName.contains(CAMERA_AA2_DL)) {
+                    setFeatureTriggerSourceType("Line1");
+                } else {
+                    camera.RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_ReplaceAll, Cleanup_Delete);
+                }
+                getFeatureTriggerSourceType();
             }
         }
     } catch (const GenericException &e){
@@ -81,23 +199,7 @@ void BaslerPylonCamera::close()
     }
     if (imageHandler != nullptr)
         camera.DeregisterImageEventHandler(imageHandler);
-    camera.DestroyDevice();
-}
-
-void BaslerPylonCamera::pauseLiveView(bool pause)
-{
-    setIsPauseLiveView(pause);
-    if (m_isPauseLiveView) {
-        emit cameraPauseEvent();
-    }
-}
-
-void BaslerPylonCamera::toggleLiveView()
-{
-    setIsPauseLiveView(!this->m_isPauseLiveView);
-    if (m_isPauseLiveView) {
-        emit cameraPauseEvent();
-    }
+    //camera.DestroyDevice();
 }
 
 void BaslerPylonCamera::open()
@@ -107,9 +209,16 @@ void BaslerPylonCamera::open()
     if((!camera.IsOpen())&&(!isGrabbing()))
     {
        camera.Open();
+       getFeatureTriggerSourceType();
        this->start();
     } else this->start();
-    setIsPauseLiveView(false);
+}
+
+void BaslerPylonCamera::setCameraExposureTime(double value)
+{
+    qInfo("Set Camera %s Exposure Time: %f", cameraChannelName.toStdString().c_str(), value);
+    setCamera(Type_Basler_ExposureTimeAbs, value);
+    getFeatureTriggerSourceType();
 }
 
 bool BaslerPylonCamera::IsOpend()
@@ -120,24 +229,25 @@ bool BaslerPylonCamera::IsOpend()
 void BaslerPylonCamera::run(){
     if (camera.CanWaitForFrameTriggerReady())
     {
-        camera.StartGrabbing( GrabStrategy_LatestImageOnly, GrabLoop_ProvidedByInstantCamera);
+        if(m_currentMode == "Freerun")  {
+            camera.StartGrabbing(GrabStrategy_LatestImageOnly,GrabLoop_ProvidedByInstantCamera);
+        } else if(m_currentMode == "Software") {
+            camera.StartGrabbing(GrabStrategy_LatestImageOnly,GrabLoop_ProvidedByInstantCamera);
+        } else if(m_currentMode == "Line1") {
+            camera.StartGrabbing(GrabStrategy_OneByOne,GrabLoop_ProvidedByInstantCamera);
+            return;
+        }
         isReady = true;
         setiIsGrabbing(true);
-        while(isReady) {
-            if (m_isPauseLiveView) {
-                //qDebug("%s Camera Pause Live View", cameraChannelName.toStdString().c_str());
-                QThread::msleep(1000);
-            } else {
-                if (GrabImage())
-                {
-                    for (int cnt = 0;cnt<100;cnt++) {
-                      QThread::msleep(1);
-                      if(need_triged)
-                      {
-                         need_triged = false;
-                         break;
-                      }
-                    }
+        while(isReady&&GrabImage()) {
+            {
+                for (int cnt = 0;cnt<100;cnt++) {
+                 QThread::msleep(1);
+                 if(need_triged)
+                 {
+                     need_triged = false;
+                     break;
+                 }
                 }
             }
         }
@@ -148,12 +258,10 @@ void BaslerPylonCamera::run(){
 
 bool BaslerPylonCamera::GrabImage()
 {
-
     trig_mutex.lock();
     is_triged = true;
     got_new = false;
     trig_mutex.unlock();
-
     try {
         if ( camera.WaitForFrameTriggerReady( 1000, TimeoutHandling_ThrowException))
         {
@@ -210,6 +318,8 @@ QImage BaslerPylonCamera::getNewImage()
     bool already_trig,has_new_img;
     trig_mutex.lock();
     already_trig = is_triged;
+    if(!already_trig)
+        got_new = false;
     trig_mutex.unlock();
 
     if(!already_trig)

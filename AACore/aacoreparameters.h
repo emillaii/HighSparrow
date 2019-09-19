@@ -75,7 +75,27 @@ class AACoreParameters : public PropertyBase
 
     bool m_isDebug = false;
 
-    int m_SensorOrientation = 0;
+    int m_taskMode = 0;
+
+    int m_taskNumberFSJ = 10;
+
+    int m_taskNumberSSJ = 20;
+
+    int m_taskNumber = 100;
+
+    bool m_enableLensVcm = false;
+
+    QString m_lensVcmPath ="";
+
+    double m_lensVcmWorkPosition = 140;
+
+    bool m_taskAccumulate = false;
+
+    int m_currentTask = 0;
+
+    int m_tiltRelationship = 0;
+
+    int m_SensorOrientation;
 
 public:
     explicit AACoreParameters(){
@@ -85,6 +105,12 @@ public:
         }
     }
     Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
+    Q_PROPERTY(int taskMode READ taskMode WRITE setTaskMode NOTIFY taskModeChanged)
+    Q_PROPERTY(int taskNumberFSJ READ taskNumberFSJ WRITE setTaskNumberFSJ NOTIFY taskNumberFSJChanged)
+    Q_PROPERTY(int taskNumberSSJ READ taskNumberSSJ WRITE setTaskNumberSSJ NOTIFY taskNumberSSJChanged)
+    Q_PROPERTY(int taskNumber READ taskNumber WRITE setTaskNumber NOTIFY taskNumberChanged)
+    Q_PROPERTY(bool taskAccumulate READ taskAccumulate WRITE setTaskAccumulate NOTIFY taskAccumulateChanged)
+    Q_PROPERTY(int currentTask READ currentTask WRITE setCurrentTask NOTIFY currentTaskChanged)
     Q_PROPERTY(double EFL READ EFL WRITE setEFL NOTIFY paramsChanged)
     Q_PROPERTY(int MaxIntensity READ MaxIntensity WRITE setMaxIntensity NOTIFY paramsChanged)
     Q_PROPERTY(int MinArea READ MinArea WRITE setMinArea NOTIFY paramsChanged)
@@ -118,6 +144,11 @@ public:
     Q_PROPERTY(double CC08MinDev READ CC08MinDev WRITE setCC08MinDev NOTIFY CC08MinDevChanged)
     Q_PROPERTY(double CC08MaxDev READ CC08MaxDev WRITE setCC08MaxDev NOTIFY CC08MaxDevChanged)
     Q_PROPERTY(bool isDebug READ isDebug WRITE setIsDebug NOTIFY isDebugChanged)
+    Q_PROPERTY(bool enableLensVcm READ enableLensVcm WRITE setEnableLensVcm NOTIFY enableLensVcmChanged)
+    Q_PROPERTY(QString lensVcmPath READ lensVcmPath WRITE setLensVcmPath NOTIFY lensVcmPathChanged)
+    Q_PROPERTY(double lensVcmWorkPosition READ lensVcmWorkPosition WRITE setLensVcmWorkPosition NOTIFY lensVcmWorkPositionChanged)
+    Q_PROPERTY(int tiltRelationship READ tiltRelationship WRITE setTiltRelationship NOTIFY tiltRelationshipChanged)
+
     double EFL() const
     {
         return m_EFL;
@@ -285,6 +316,56 @@ public:
     bool isDebug() const
     {
         return m_isDebug;
+    }
+
+    int taskMode() const
+    {
+        return m_taskMode;
+    }
+
+    int taskNumberFSJ() const
+    {
+        return m_taskNumberFSJ;
+    }
+
+    int taskNumberSSJ() const
+    {
+        return m_taskNumberSSJ;
+    }
+
+    int taskNumber() const
+    {
+        return m_taskNumber;
+    }
+
+    bool enableLensVcm() const
+    {
+        return m_enableLensVcm;
+    }
+
+    QString lensVcmPath() const
+    {
+        return m_lensVcmPath;
+    }
+
+    double lensVcmWorkPosition() const
+    {
+        return m_lensVcmWorkPosition;
+    }
+
+    bool taskAccumulate() const
+    {
+        return m_taskAccumulate;
+    }
+
+    int currentTask() const
+    {
+        return m_currentTask;
+    }
+
+    int tiltRelationship() const
+    {
+        return m_tiltRelationship;
     }
 
     int SensorOrientation() const
@@ -587,9 +668,104 @@ public slots:
         emit isDebugChanged(m_isDebug);
     }
 
+    void setTaskMode(int taskMode)
+    {
+        if (m_taskMode == taskMode)
+            return;
+
+        m_taskMode = taskMode;
+        emit taskModeChanged(m_taskMode);
+    }
+
+    void setTaskNumberFSJ(int taskNumberFSJ)
+    {
+        if (m_taskNumberFSJ == taskNumberFSJ)
+            return;
+
+        m_taskNumberFSJ = taskNumberFSJ;
+        emit taskNumberFSJChanged(m_taskNumberFSJ);
+    }
+
+    void setTaskNumberSSJ(int taskNumberSSJ)
+    {
+        if (m_taskNumberSSJ == taskNumberSSJ)
+            return;
+
+        m_taskNumberSSJ = taskNumberSSJ;
+        emit taskNumberSSJChanged(m_taskNumberSSJ);
+    }
+
+    void setTaskNumber(int taskNumber)
+    {
+        if (m_taskNumber == taskNumber)
+            return;
+
+        m_taskNumber = taskNumber;
+        emit taskNumberChanged(m_taskNumber);
+    }
+
+    void setEnableLensVcm(bool enableLensVcm)
+    {
+        if (m_enableLensVcm == enableLensVcm)
+            return;
+
+        m_enableLensVcm = enableLensVcm;
+        emit enableLensVcmChanged(m_enableLensVcm);
+    }
+
+    void setLensVcmPath(QString lensVcmPath)
+    {
+        if (m_lensVcmPath == lensVcmPath)
+            return;
+
+        m_lensVcmPath = lensVcmPath;
+        emit lensVcmPathChanged(m_lensVcmPath);
+    }
+
+    void setLensVcmWorkPosition(double lensVcmWorkPosition)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_lensVcmWorkPosition, lensVcmWorkPosition))
+            return;
+
+        m_lensVcmWorkPosition = lensVcmWorkPosition;
+        emit lensVcmWorkPositionChanged(m_lensVcmWorkPosition);
+    }
+
+    void setTaskAccumulate(bool taskAccumulate)
+    {
+        if (m_taskAccumulate == taskAccumulate)
+            return;
+
+        m_taskAccumulate = taskAccumulate;
+        emit taskAccumulateChanged(m_taskAccumulate);
+    }
+
+    void setCurrentTask(int currentTask)
+    {
+        if (m_currentTask == currentTask)
+            return;
+
+        m_currentTask = currentTask;
+        emit currentTaskChanged(m_currentTask);
+    }
+
+    void setTiltRelationship(int tiltRelationship)
+    {
+        if (m_tiltRelationship == tiltRelationship)
+            return;
+
+        m_tiltRelationship = tiltRelationship;
+        emit tiltRelationshipChanged(m_tiltRelationship);
+    }
+
     void setSensorOrientation(int SensorOrientation)
     {
+        if (m_SensorOrientation == SensorOrientation)
+            return;
+
         m_SensorOrientation = SensorOrientation;
+        emit paramsChanged();
     }
 
 signals:
@@ -616,6 +792,16 @@ signals:
     void CC08MinDevChanged(double CC08MinDev);
     void CC08MaxDevChanged(double CC08MaxDev);
     void isDebugChanged(bool isDebug);
+    void taskModeChanged(int taskMode);
+    void taskNumberFSJChanged(int taskNumberFSJ);
+    void taskNumberSSJChanged(int taskNumberSSJ);
+    void taskNumberChanged(int taskNumber);
+    void enableLensVcmChanged(bool enableLensVcm);
+    void lensVcmPathChanged(QString lensVcmPath);
+    void lensVcmWorkPositionChanged(double lensVcmWorkPosition);
+    void taskAccumulateChanged(bool taskAccumulate);
+    void currentTaskChanged(int currentTask);
+    void tiltRelationshipChanged(int tiltRelationship);
 };
 class AACoreStates: public PropertyBase
 {
@@ -628,6 +814,10 @@ public:
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(int stationNumber READ stationNumber WRITE setStationNumber NOTIFY stationNumberChanged)
     Q_PROPERTY(bool disableStation READ disableStation WRITE setDisableStation NOTIFY disableStationChanged)
+    Q_PROPERTY(int stationTask READ stationTask WRITE setStationTask NOTIFY stationTaskChanged)
+    Q_PROPERTY(int currentTask READ currentTask WRITE setCurrentTask NOTIFY currentTaskChanged)
+    Q_PROPERTY(bool finishSensorTask READ finishSensorTask WRITE setFinishSensorTask NOTIFY finishSensorTaskChanged)
+    Q_PROPERTY(bool finishLensTask READ finishLensTask WRITE setFinishLensTask NOTIFY finishLensTaskChanged)
     Q_PROPERTY(bool isWaitingLens READ isWaitingLens WRITE setIsWaitingLens NOTIFY isWaitingLensChanged)
     Q_PROPERTY(bool isWaitingSensor READ isWaitingSensor WRITE setIsWaitingSensor NOTIFY isWaitingSensorChanged)
     Q_PROPERTY(bool hasLens READ hasLens WRITE setHasLens NOTIFY hasLensChanged)
@@ -707,6 +897,26 @@ public:
     int stationNumber() const
     {
         return m_stationNumber;
+    }
+
+    int stationTask() const
+    {
+        return m_stationTask;
+    }
+
+    int currentTask() const
+    {
+        return m_currentTask;
+    }
+
+    bool finishSensorTask() const
+    {
+        return m_finishSensorTask;
+    }
+
+    bool finishLensTask() const
+    {
+        return m_finishLensTask;
     }
 
 public slots:
@@ -837,6 +1047,42 @@ public slots:
         emit stationNumberChanged(m_stationNumber);
     }
 
+    void setStationTask(int stationTask)
+    {
+        if (m_stationTask == stationTask)
+            return;
+
+        m_stationTask = stationTask;
+        emit stationTaskChanged(m_stationTask);
+    }
+
+    void setCurrentTask(int currentTask)
+    {
+        if (m_currentTask == currentTask)
+            return;
+
+        m_currentTask = currentTask;
+        emit currentTaskChanged(m_currentTask);
+    }
+
+    void setFinishSensorTask(bool finishSensorTask)
+    {
+        if (m_finishSensorTask == finishSensorTask)
+            return;
+
+        m_finishSensorTask = finishSensorTask;
+        emit finishSensorTaskChanged(m_finishSensorTask);
+    }
+
+    void setFinishLensTask(bool finishLensTask)
+    {
+        if (m_finishLensTask == finishLensTask)
+            return;
+
+        m_finishLensTask = finishLensTask;
+        emit finishLensTaskChanged(m_finishLensTask);
+    }
+
 signals:
     void isWaitingLensChanged(bool isWaitingLens);
     void isWaitingSensorChanged(bool isWaitingSensor);
@@ -865,6 +1111,14 @@ signals:
 
     void stationNumberChanged(int stationNumber);
 
+    void stationTaskChanged(int stationTask);
+
+    void currentTaskChanged(int currentTask);
+
+    void finishSensorTaskChanged(bool finishSensorTask);
+
+    void finishLensTaskChanged(bool finishLensTask);
+
 private:
     bool m_isWaitingLens = false;
     bool m_isWaitingSensor = false;
@@ -880,6 +1134,10 @@ private:
     int m_runMode = 0;
     bool m_disableStation = false;
     int m_stationNumber = 0;
+    int m_stationTask = 0;
+    int m_currentTask = 0;
+    bool m_finishSensorTask = false;
+    bool m_finishLensTask = false;
 };
 
 #endif // AACOREPARAMETERS_H

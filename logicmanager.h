@@ -44,7 +44,15 @@ public:
         PERFORM_LOCATION,
         PERFORM_OC,
         PERFORM_LOOP_TEST,
-        PERFORM_UV
+        PERFORM_UV,
+        LOAD_LENS_FROM_TRAY_1_AND_PICK_TO_AA1,
+        LOAD_LENS_FROM_TRAY_1_AND_PICK_TO_AA2,
+        LOAD_LENS_FROM_TRAY_2_AND_PICK_TO_AA1,
+        LOAD_LENS_FROM_TRAY_2_AND_PICK_TO_AA2,
+        UNPICK_LENS_FROM_AA1_AND_PLACE_TO_TRAY1,
+        UNPICK_LENS_FROM_AA1_AND_PLACE_TO_TRAY2,
+        UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY1,
+        UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY2
     };
 public:
     explicit LogicManager(QObject *parent = nullptr);
@@ -62,8 +70,8 @@ public:
 
     void init();
     void home();
-     void init_only_self();
-     void home_only_self();
+    void init_only_self();
+    void home_only_self();
     void stopHome();
     void stop();
 

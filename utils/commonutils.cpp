@@ -122,3 +122,8 @@ QString getPerformanceLogDir(){ return getDir(PERFORMANCE_DIR); }
 QString getAAProcessLogDir(){ return getDir(AA_PROCESS_DIR); }
 
 QString getProduceProcessLogDir(){ return getDir(PRODUCE_PROCESS_DIR); }
+
+QString getStringFromQvariantMap(const QVariantMap &qvariantMap)
+{
+    return QString(QJsonDocument(QJsonObject::fromVariantMap(qvariantMap)).toJson());
+}

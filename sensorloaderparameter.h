@@ -10,6 +10,7 @@ class SensorLoaderParameter:public PropertyBase
     Q_OBJECT
 public:
     SensorLoaderParameter():PropertyBase (){}
+    Q_PROPERTY(bool handlyChangeSensor READ handlyChangeSensor WRITE setHandlyChangeSensor NOTIFY handlyChangeSensorChanged)
     Q_PROPERTY(double vcmWorkForce READ vcmWorkForce WRITE setVcmWorkForce NOTIFY vcmWorkForceChanged)
     Q_PROPERTY(double vcmWorkSpeed READ vcmWorkSpeed WRITE setVcmWorkSpeed NOTIFY vcmWorkSpeedChanged)
     Q_PROPERTY(double vcmMargin READ vcmMargin WRITE setVcmMargin NOTIFY vcmMarginChanged)
@@ -55,8 +56,10 @@ public:
     Q_PROPERTY(double escapeX READ escapeX WRITE setEscapeX NOTIFY escapeXChanged)
     Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
-    Q_PROPERTY(double picker1ThetaOffset READ picker1ThetaOffset WRITE setPicker1ThetaOffset NOTIFY picker1ThetaOffsetChanged)
-    Q_PROPERTY(double picker2ThetaOffset READ picker2ThetaOffset WRITE setPicker2ThetaOffset NOTIFY picker2ThetaOffsetChanged)
+    Q_PROPERTY(double picker1PickTheta READ picker1PickTheta WRITE setPicker1PickTheta NOTIFY picker1PickThetaChanged)
+    Q_PROPERTY(double picker2PickTheta READ picker2PickTheta WRITE setPicker2PickTheta NOTIFY picker2PickThetaChanged)
+    Q_PROPERTY(double picker1PlaceTheta READ picker1PlaceTheta WRITE setPicker1PlaceTheta NOTIFY picker1PlaceThetaChanged)
+    Q_PROPERTY(double picker2PlaceTheta READ picker2PlaceTheta WRITE setPicker2PlaceTheta NOTIFY picker2PlaceThetaChanged)
     Q_PROPERTY(double pickProductForce READ pickProductForce WRITE setPickProductForce NOTIFY pickProductForceChanged)
     Q_PROPERTY(bool useSensorOffset READ useSensorOffset WRITE setUseSensorOffset NOTIFY useSensorOffsetChanged)
     Q_PROPERTY(double sensorOffsetX READ sensorOffsetX WRITE setSensorOffsetX NOTIFY sensorOffsetXChanged)
@@ -82,6 +85,7 @@ public:
     Q_PROPERTY(double sut2Theta READ sut2Theta WRITE setSut2Theta NOTIFY sut2ThetaChanged)
     Q_PROPERTY(bool openTimeLog READ openTimeLog WRITE setOpenTimeLog NOTIFY openTimeLogChanged)
     Q_PROPERTY(int vacuumOperationOutTime READ vacuumOperationOutTime WRITE setVacuumOperationOutTime NOTIFY vacuumOperationOutTimeChanged)
+    Q_PROPERTY(int holdTime READ holdTime WRITE setHoldTime NOTIFY holdTimeChanged)
     double vcmWorkForce() const
     {
         return m_vcmWorkForce;
@@ -185,16 +189,6 @@ public:
     int changeTrayTimeOut() const
     {
         return m_changeTrayTimeOut;
-    }
-
-    double picker1ThetaOffset() const
-    {
-        return m_picker1ThetaOffset;
-    }
-
-    double picker2ThetaOffset() const
-    {
-        return m_picker2ThetaOffset;
     }
 
     bool usePlan() const
@@ -415,6 +409,37 @@ public:
         return m_enableBufferProductPr;
     }
 
+
+    double picker1PickTheta() const
+    {
+        return m_picker1PickTheta;
+    }
+
+    double picker2PickTheta() const
+    {
+        return m_picker2PickTheta;
+    }
+
+    double picker1PlaceTheta() const
+    {
+        return m_picker1PlaceTheta;
+    }
+
+    double picker2PlaceTheta() const
+    {
+        return m_picker2PlaceTheta;
+    }
+	
+    bool handlyChangeSensor() const
+    {
+        return m_handlyChangeSensor;
+    }
+
+    int holdTime() const
+    {
+        return m_holdTime;
+    }
+
 public slots:
     void setVcmWorkForce(double vcmWorkForce)
     {
@@ -616,27 +641,6 @@ public slots:
         m_changeTrayTimeOut = changeTrayTimeOut;
         emit changeTrayTimeOutChanged(m_changeTrayTimeOut);
     }
-
-    void setPicker1ThetaOffset(double pick1ThetaOffset)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_picker1ThetaOffset, pick1ThetaOffset))
-            return;
-
-        m_picker1ThetaOffset = pick1ThetaOffset;
-        emit picker1ThetaOffsetChanged(m_picker1ThetaOffset);
-    }
-
-    void setPicker2ThetaOffset(double picker2ThetaOffset)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_picker2ThetaOffset, picker2ThetaOffset))
-            return;
-
-        m_picker2ThetaOffset = picker2ThetaOffset;
-        emit picker2ThetaOffsetChanged(m_picker2ThetaOffset);
-    }
-
     void setUsePlan(bool usePlan)
     {
         if (m_usePlan == usePlan)
@@ -1051,6 +1055,64 @@ public slots:
         emit vacuumOperationOutTimeChanged(m_vacuumOperationOutTime);
     }
 
+    void setPicker1PickTheta(double picker1PickTheta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_picker1PickTheta, picker1PickTheta))
+            return;
+
+        m_picker1PickTheta = picker1PickTheta;
+        emit picker1PickThetaChanged(m_picker1PickTheta);
+    }
+
+    void setPicker2PickTheta(double picker2PickTheta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_picker2PickTheta, picker2PickTheta))
+            return;
+
+        m_picker2PickTheta = picker2PickTheta;
+        emit picker2PickThetaChanged(m_picker2PickTheta);
+    }
+
+    void setPicker1PlaceTheta(double picker1PlaceTheta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_picker1PlaceTheta, picker1PlaceTheta))
+            return;
+
+        m_picker1PlaceTheta = picker1PlaceTheta;
+        emit picker1PlaceThetaChanged(m_picker1PlaceTheta);
+    }
+
+    void setPicker2PlaceTheta(double picker2PlaceTheta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_picker2PlaceTheta, picker2PlaceTheta))
+            return;
+
+        m_picker2PlaceTheta = picker2PlaceTheta;
+        emit picker2PlaceThetaChanged(m_picker2PlaceTheta);
+    }
+
+    void setHandlyChangeSensor(bool handlyChangeSensor)
+    {
+        if (m_handlyChangeSensor == handlyChangeSensor)
+            return;
+
+        m_handlyChangeSensor = handlyChangeSensor;
+        emit handlyChangeSensorChanged(m_handlyChangeSensor);
+    }
+
+    void setHoldTime(int holdTime)
+    {
+        if (m_holdTime == holdTime)
+            return;
+
+        m_holdTime = holdTime;
+        emit holdTimeChanged(m_holdTime);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -1094,10 +1156,6 @@ signals:
 
 
     void changeTrayTimeOutChanged(int changeTrayTimeOut);
-
-    void picker1ThetaOffsetChanged(double picker1ThetaOffset);
-
-    void picker2ThetaOffsetChanged(double picker2ThetaOffset);
 
     void usePlanChanged(bool usePlan);
 
@@ -1187,6 +1245,18 @@ signals:
 
     void enableBufferProductPrChanged(bool enableBufferProductPr);
 
+    void picker1PickThetaChanged(double picker1PickTheta);
+
+    void picker2PickThetaChanged(double picker2PickTheta);
+
+    void picker1PlaceThetaChanged(double picker1PlaceTheta);
+
+    void picker2PlaceThetaChanged(double picker2PlaceTheta);
+
+    void handlyChangeSensorChanged(bool handlyChangeSensor);
+
+    void holdTimeChanged(int holdTime);
+
 private:
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
@@ -1209,8 +1279,6 @@ private:
     double m_escapeX = 5;
     double m_escapeY = 0;
     int m_changeTrayTimeOut = 180000;
-    double m_picker1ThetaOffset = 0;
-    double m_picker2ThetaOffset = 0;
     bool m_usePlan = false;
     int m_planNumber = 0;
     double m_accumulatedHour = 0;
@@ -1255,6 +1323,12 @@ private:
     double m_placeToGoodTrayMargin = 0;
     double m_placeToNgTrayMargin = 0;
     bool m_enableBufferProductPr = false;
+    double m_picker1PickTheta = 0;
+    double m_picker2PickTheta = 0;
+    double m_picker1PlaceTheta = 0;
+    double m_picker2PlaceTheta = 0;
+    bool m_handlyChangeSensor = false;
+    int m_holdTime = 200;
 };
 class SensorLoaderState:public PropertyBase
 {
@@ -1264,6 +1338,8 @@ public:
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(bool disableStation1 READ disableStation1 WRITE setDisableStation1 NOTIFY disableStation1Changed)
     Q_PROPERTY(bool disableStation2 READ disableStation2 WRITE setDisableStation2 NOTIFY disableStation2Changed)
+    Q_PROPERTY(int taskOfStation1 READ taskOfStation1 WRITE setTaskOfStation1 NOTIFY taskOfStation1Changed)
+    Q_PROPERTY(int taskOfStation2 READ taskOfStation2 WRITE setTaskOfStation2 NOTIFY taskOfStation2Changed)
     Q_PROPERTY(bool handlyChangeSensor READ handlyChangeSensor WRITE setHandlyChangeSensor NOTIFY handlyChangeSensorChanged)
     Q_PROPERTY(bool hasSensorTray1 READ hasSensorTray1 WRITE setHasSensorTray1 NOTIFY hasSensorTray1Changed)
     Q_PROPERTY(bool hasSensorTray2 READ hasSensorTray2 WRITE setHasSensorTray2 NOTIFY hasSensorTray2Changed)
@@ -1451,6 +1527,16 @@ public:
     bool handlyChangeSensor() const
     {
         return m_handlyChangeSensor;
+    }
+
+    int taskOfStation1() const
+    {
+        return m_taskOfStation1;
+    }
+
+    int taskOfStation2() const
+    {
+        return m_taskOfStation2;
     }
 
 public slots:
@@ -1742,6 +1828,24 @@ public slots:
         emit handlyChangeSensorChanged(m_handlyChangeSensor);
     }
 
+    void setTaskOfStation1(int taskOfStation1)
+    {
+        if (m_taskOfStation1 == taskOfStation1)
+            return;
+
+        m_taskOfStation1 = taskOfStation1;
+        emit taskOfStation1Changed(m_taskOfStation1);
+    }
+
+    void setTaskOfStation2(int taskOfStation2)
+    {
+        if (m_taskOfStation2 == taskOfStation2)
+            return;
+
+        m_taskOfStation2 = taskOfStation2;
+        emit taskOfStation2Changed(m_taskOfStation2);
+    }
+
 signals:
     void runModeChanged(int runMode);
 
@@ -1807,6 +1911,10 @@ signals:
 
     void handlyChangeSensorChanged(bool handlyChangeSensor);
 
+    void taskOfStation1Changed(int taskOfStation1);
+
+    void taskOfStation2Changed(int taskOfStation2);
+
 private:
     int m_runMode = 0;
     bool m_hasSensorTray1 = false;
@@ -1840,6 +1948,8 @@ private:
     bool m_disableStation1 = false;
     bool m_disableStation2 = false;
     bool m_handlyChangeSensor = false;
+    int m_taskOfStation1 = 0;
+    int m_taskOfStation2 = 0;
 };
 
 #endif // SENSORLOADERPARAMETER_H

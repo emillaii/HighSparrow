@@ -356,12 +356,6 @@ ApplicationWindow {
                onTriggered: {
                     timeString.text =  Qt.formatTime(new Date(), "现在时间: hh:mm:ss")
                     busyDialog.updateBusyDialogStatus()
-                    if (baseModuleManager.HomeState) {
-                        homeSignal.color = "green"
-                    }
-                    else {
-                        homeSignal.color = "red"
-                    }
                     //Used for consuming the flowchart double click command
                     if (flowChartPage.webView.loadProgress == 100) {
                         var command = "document.getElementById('flowchart_running_cmd').value";

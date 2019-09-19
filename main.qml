@@ -101,16 +101,16 @@ ApplicationWindow {
     header:
         ToolBar {
             id: toolBar
-            height: 60
+            height: 50
             background: Rectangle {
                 color: "black"
             }
 
         RowLayout {
-            ToolButton {
+            RoundButton {
                 text: qsTr("初始化")
                 transformOrigin: Item.Center
-                display: Button.TextUnderIcon
+                display: Button.TextBesideIcon
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/initial.png"
@@ -185,11 +185,11 @@ ApplicationWindow {
                 }
             }
 
-            ToolButton {
+            RoundButton {
                 objectName: "HomeButtonObject"
                 text: qsTr("Home")
                 transformOrigin: Item.Center
-                display: Button.TextUnderIcon
+                display: Button.TextBesideIcon
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/home.png"
@@ -199,25 +199,25 @@ ApplicationWindow {
                     //logicManager.sendMessageTest()
                 }
             }
-            ToolButton {
-               id: stopHomeButton
-               objectName: "StopHomeButtonObject"
-               text: qsTr("停Home")
-               transformOrigin: Item.Center
-               display: Button.TextUnderIcon
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/home.png"
-               icon.color: "red"
-               onClicked: {
-                   logicManager.stopHome()
-               }
-           }
-           ToolButton {
+//            ToolButton {
+//               id: stopHomeButton
+//               objectName: "StopHomeButtonObject"
+//               text: qsTr("停Home")
+//               transformOrigin: Item.Center
+//               display: Button.TextUnderIcon
+//               icon.width: 30
+//               icon.height: 30
+//               icon.source: "icons/home.png"
+//               icon.color: "red"
+//               onClicked: {
+//                   logicManager.stopHome()
+//               }
+//           }
+           RoundButton {
                 id: loadFlowChartButton
                 text: qsTr("加载流程图")
                 transformOrigin: Item.Center
-                display: Button.TextUnderIcon
+                display: Button.TextBesideIcon
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/flowchart.png"
@@ -226,11 +226,11 @@ ApplicationWindow {
                     loadfileDialog.open()
                 }
            }
-           ToolButton {
+           RoundButton {
               id: saveFlowChart
               text: qsTr("保存流程图")
               transformOrigin: Item.Center
-              display: Button.TextUnderIcon
+              display: Button.TextBesideIcon
               icon.width: 30
               icon.height: 30
               icon.source: "icons/save.png"
@@ -248,11 +248,11 @@ ApplicationWindow {
                   })
               }
            }
-           ToolButton {
+           RoundButton {
                 id: loadParamsButton
                 text: qsTr("加载参数")
                 transformOrigin: Item.Center
-                display: Button.TextUnderIcon
+                display: Button.TextBesideIcon
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/flowchart.png"
@@ -261,26 +261,23 @@ ApplicationWindow {
                     baseModuleManager.loadconfig()
                 }
            }
-           ToolButton {
+           RoundButton {
                id: saveParams
                text: qsTr("保存参数")
                transformOrigin: Item.Center
-               display: Button.TextUnderIcon
+               display: Button.TextBesideIcon
                icon.width: 30
                icon.height: 30
                icon.source: "icons/save.png"
                icon.color: "deepskyblue"
                onClicked: {
                    baseModuleManager.updateParams()
-//                   logicManager.updateParams()
-//                   messageDialog.messageText.text = "Save Complete"
-//                   messageDialog.open()
                }
            }
-           ToolButton {
+           RoundButton {
                text: qsTr("电机")
                transformOrigin: Item.Center
-               display: Button.TextUnderIcon
+               display: Button.TextBesideIcon
                icon.width: 30
                icon.height: 30
                icon.source: "icons/machine.png"
@@ -289,10 +286,10 @@ ApplicationWindow {
                    motionDialog.open()
                }
            }
-           ToolButton {
+           RoundButton {
                text: qsTr("IO")
                transformOrigin: Item.Center
-               display: Button.TextUnderIcon
+               display: Button.TextBesideIcon
                icon.width: 30
                icon.height: 30
                icon.source: "icons/settings_input_composite.png"
@@ -301,44 +298,36 @@ ApplicationWindow {
                    ioDialog.open()
                }
            }
-           ToolButton {
+           RoundButton {
                text: qsTr("运行流程图")
                transformOrigin: Item.Center
-               display: Button.TextUnderIcon
+               display: Button.TextBesideIcon
                icon.width: 30
                icon.height: 30
                icon.source: "icons/flowchart_1.png"
                icon.color: "deepskyblue"
                onClicked: {
                    workersManager.startAllWorkers(4)
-//                   var command = "document.getElementById('get_data').click()";
-//                   flowChartPage.webView.runJavaScript(command, function(result) {
-//                       command = "document.getElementById('flowchart_data').value";
-//                       flowChartPage.webView.runJavaScript(command, function(result) {
-//                           baseModuleManager.loadFlowchart(result)
-//                           workersManager.startAllWorkers(4)
-//                       })
-//                   })
                }
            }
 
-           ToolButton {
-               text: qsTr("Map")
-               transformOrigin: Item.Center
-               display: Button.TextUnderIcon
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/machine.png"
-               icon.color: "yellow"
-               onClicked: {
-                   baseModuleManager.showMachineMap()
-               }
-           }
+//           ToolButton {
+//               text: qsTr("Map")
+//               transformOrigin: Item.Center
+//               display: Button.TextUnderIcon
+//               icon.width: 30
+//               icon.height: 30
+//               icon.source: "icons/machine.png"
+//               icon.color: "yellow"
+//               onClicked: {
+//                   baseModuleManager.showMachineMap()
+//               }
+//           }
 
-           ToolButton {
+           RoundButton {
                text: qsTr("Auto")
                transformOrigin: Item.Center
-               display: Button.TextUnderIcon
+               display: Button.TextBesideIcon
                icon.width: 30
                icon.height: 30
                icon.source: "icons/auto-run.png"
@@ -347,10 +336,10 @@ ApplicationWindow {
                    workersManager.startAllWorkers(moduleManagerParam.runMode)
                }
            }
-           ToolButton {
+           RoundButton {
                text: qsTr("Stop")
                transformOrigin: Item.Center
-               display: Button.TextUnderIcon
+               display: Button.TextBesideIcon
                icon.width: 30
                icon.height: 30
                icon.source: "icons/stop.png"
@@ -394,13 +383,13 @@ ApplicationWindow {
                }
            }
 
-           RoundButton {
-               text: qsTr("Home")
-               background: Rectangle {
-                   id: homeSignal
-                   color: "red"
-               }
-           }
+//           RoundButton {
+//               text: qsTr("Home")
+//               background: Rectangle {
+//                   id: homeSignal
+//                   color: "red"
+//               }
+//           }
            Label{
                text: qsTr("循环时间")
            }

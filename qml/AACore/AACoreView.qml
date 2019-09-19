@@ -418,7 +418,7 @@ ItemDelegate {
                     }
                     RowLayout {
                         Label {
-                            text: qsTr("AA Tilt Compensataion ( AA-A, AA-B ) : ")
+                            text: qsTr("AA Tilt Compensation ( AA-A, AA-B ) : ")
                         }
                         ComboBox {
                             Layout.preferredWidth: 300

@@ -1328,7 +1328,7 @@ void TrayLoaderModule::runHandle()
         has_task = false;
         {
             QMutexLocker temp_locker(&tray_mutex);
-            allow_change_tray =states.allowChangeTray();
+            allow_change_tray = states.allowChangeTray();
         }
         if(allow_change_tray)
         {

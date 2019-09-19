@@ -2764,6 +2764,8 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "OC Cannot Grab Image"};
     }
     oc_fov = calculateDFOV(img);
+    qInfo("DFOV in OC: %f", oc_fov);
+    map.insert("DFOV", oc_fov);
     if (!blackScreenCheck(img)) {
         NgSensor();
         map["Result"] = "OC Detect black screen";

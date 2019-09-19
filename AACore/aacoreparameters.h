@@ -95,7 +95,7 @@ class AACoreParameters : public PropertyBase
 
     int m_tiltRelationship = 0;
 
-    int m_SensorOrientation;
+    int m_SensorOrientation = 0;
 
 public:
     explicit AACoreParameters(){

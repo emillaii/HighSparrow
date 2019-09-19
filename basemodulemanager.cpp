@@ -1997,8 +1997,8 @@ bool BaseModuleManager::performLocation(QString location_name,bool use_origin)
     }
     else
     {
-        temp_location->OpenLight();
-        QThread::msleep(200);
+//        temp_location->OpenLight();
+//        QThread::msleep(200);
         if(!temp_location->performPR())
             return false;
         offset = temp_location->getCurrentResult(use_origin);

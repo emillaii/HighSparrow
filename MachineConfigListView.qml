@@ -68,7 +68,15 @@ ScrollView {
             visible: {systemViewSwitch.checked}
         }
 
-        Switch {id: materialLoderViewSwitch; text:"MaterialLoder 配置"}
+        Switch {
+            id: materialLoderViewSwitch;
+            text: {
+                if (baseModuleManager.getServerMode() === 0)
+                    return "Lens Material Loader 配置"
+                else
+                    return "Sensor Material Loader 配置"
+            }
+        }
         Loader{
             source: {
                 if (baseModuleManager.getServerMode() === 0)
@@ -77,7 +85,6 @@ ScrollView {
                     return "SensorLoaderModuleView.qml"
 
             }
-
             visible: materialLoderViewSwitch.checked
         }
 

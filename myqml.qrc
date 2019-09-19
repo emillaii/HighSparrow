@@ -127,5 +127,12 @@
         <file>qml/TCPTrayLoaderModule/TCPTrayLoaderModuleView.qml</file>
         <file>qml/TCPSensorTrayLoaderModule/TCPSensorTrayLoaderViewModule.qml</file>
         <file>qml/SUTModule/SUTDownlookFlyPositionView.qml</file>
+        <file>qml/TCPLensPickArmModule/TCPLensPickArmModuleParameter.qml</file>
+        <file>qml/TCPLensPickArmModule/TCPLensPickArmModuleView.qml</file>
+        <file>qml/TCPLensPickArmModule/TCPLensPickArmOtherParameter.qml</file>
+        <file>qml/TCPLensPickArmModule/TCPMaterialTray1.qml</file>
+        <file>qml/TCPLensPickArmModule/TCPMaterialTray2.qml</file>
+        <file>qml/TCPLensPickArmModule/TCPMaterialTray3.qml</file>
+        <file>qml/TCPLensPickArmModule/TCPMaterialTray4.qml</file>
     </qresource>
 </RCC>

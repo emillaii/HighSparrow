@@ -463,7 +463,6 @@ ApplicationWindow {
         currentIndex: tabBar.currentIndex
         //interactive: false
 
-
         Page1Form {
             featureButton.onClicked: {
                 highSprrow.callQProcess("GenericNCCavproj.avexe")
@@ -502,27 +501,35 @@ ApplicationWindow {
         currentIndex: swipeView.currentIndex
 
         TabButton {
-            text: qsTr("Setting 1")
+            text: {
+                if (baseModuleManager.getServerMode() === 1)
+                   return "右工位"
+                else
+                   return "左工位"
+            }
         }
-
         TabButton {
-            text: qsTr("Setting 2")
+            text: {
+                if (baseModuleManager.getServerMode() === 1)
+                   return "左工位"
+                else
+                   return "右工位"
+            }
         }
-
         TabButton {
-            text: qsTr("Data")
+            text: qsTr("数据")
         }
         TabButton {
             text: qsTr("流程图")
         }
         TabButton {
-            text: qsTr("AA Data")
+            text: qsTr("AA 数据")
         }
         TabButton {
             text: qsTr("MTF")
         }
         TabButton {
-            text: qsTr("AA Core")
+            text: qsTr("AA 核心")
         }
     }
 }

@@ -12,7 +12,10 @@ ScrollView {
     width: 600
 
     ColumnLayout{
-        Switch {id: aaViewSwitch; text:"AA 头机器配置"}
+        Switch {
+            id: aaViewSwitch
+            text:"AA 头机器配置"
+        }
         TCPAAHeadModuleView{
             Layout.fillWidth: true
             visible: aaViewSwitch.checked
@@ -32,18 +35,37 @@ ScrollView {
             Layout.fillWidth: true
             visible: {
                 if (baseModuleManager.getServerMode() === 1)
-                    lutModuleViewSwitch.checked
+                    return lutModuleViewSwitch.checked
                 else
-                    false
+                    return false
             }
+        }
+        Switch {
+            id: materialLoderViewSwitch;
+            text: {
+                if (baseModuleManager.getServerMode() === 1)
+                    return "Lens Material Loader 配置"
+                else
+                    return "Sensor Material Loader 配置"
+            }
+        }
+        Loader{
+            source: {
+                if (baseModuleManager.getServerMode() === 1)
+                    return "./qml/TCPLensPickArmModule/TCPLensPickArmModuleView.qml"
+//                else
+//                    return "SensorLoaderModuleView.qml"
+
+            }
+            visible: materialLoderViewSwitch.checked
         }
         Switch {
             id: trayLoderViewSwitch;
             text:{
                 if (baseModuleManager.getServerMode() === 1)
-                    return "Lens TrayLoader 配置"
+                    return "Lens Tray Loader 配置"
                 else
-                    return "Sensor TrayLoader 配置"
+                    return "Sensor Tray Loader 配置"
             }
         }
         Loader{

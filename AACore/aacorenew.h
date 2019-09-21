@@ -26,7 +26,7 @@
 #include "lutModule/lutclient.h"
 #include "imageGrabber/imagegrabbingworkerthread.h"
 #include "utils/unitlog.h"
-
+#include <QProcess>
 class AACoreNew : public ThreadWorkerBase
 {
     Q_OBJECT
@@ -164,6 +164,7 @@ private:
                                                                unsigned int & llROIIndex,
                                                                unsigned int & lrROIIndex);
     double oc_fov = -1;
+    QProcess vcmCmdServer;
 public slots:
     //ThreadWorkerBase
     void startWork(int run_mode);

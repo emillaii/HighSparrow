@@ -45,6 +45,8 @@ public:
     Q_INVOKABLE void close();
     Q_INVOKABLE void open();
     Q_INVOKABLE void setCameraExposureTime(double);
+    Q_INVOKABLE void pauseLiveView(bool pause);
+    Q_INVOKABLE void toggleLiveView();
     bool IsOpend();
     bool GrabImage();
     void CopyBufferToQImage(CGrabResultPtr, QImage&);
@@ -68,6 +70,10 @@ public:
     double getCameraParam(BaslerPylonCamera::BaslerCameraControl_Type index); // 获取各种参数
     void setFeatureTriggerSourceType(QString type); // 设置种类
     QString getFeatureTriggerSourceType(); // 获取种类：软触发、外触发等
+    void setIsPauseLiveView(bool isPauseLiveView)
+    {
+        m_isPauseLiveView = isPauseLiveView;
+    }
 public slots:
     void setiIsGrabbing(bool isGrabbing)
     {
@@ -84,6 +90,7 @@ private:
     bool isReady;
     QString cameraChannelName;
     QImage latestImage;
+    bool m_isPauseLiveView = false;
     bool m_isGrabbing = false;
     CSampleImageEventHandler *imageHandler;
     QString m_currentMode;
@@ -92,6 +99,7 @@ signals:
     void callQmlRefeshImg();
     void noCameraEvent();
     void cameraCloseEvent();
+    void cameraPauseEvent();
 };
 
 #endif // BASLERCAMERA_H

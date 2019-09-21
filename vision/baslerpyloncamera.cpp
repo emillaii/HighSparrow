@@ -133,7 +133,7 @@ QString BaslerPylonCamera::getFeatureTriggerSourceType()
     CEnumerationPtr  ptrTriggerSel = cameraNodeMap.GetNode("TriggerSelector");
     ptrTriggerSel->FromString("FrameStart");
     CEnumerationPtr  ptrTrigger  = cameraNodeMap.GetNode("TriggerMode");
-    //ptrTrigger->SetIntValue(1);
+    ptrTrigger->SetIntValue(1);
     CEnumerationPtr  ptrTriggerSource = cameraNodeMap.GetNode("TriggerSource");
     String_t str = ptrTriggerSource->ToString();
     m_currentMode = QString::fromLocal8Bit(str.c_str());
@@ -204,6 +204,7 @@ void BaslerPylonCamera::close()
 
 void BaslerPylonCamera::open()
 {
+    qInfo("Camera open");
     bool ret = Init();
     if (!ret) return;
     if((!camera.IsOpen())&&(!isGrabbing()))
@@ -212,6 +213,7 @@ void BaslerPylonCamera::open()
        getFeatureTriggerSourceType();
        this->start();
     } else this->start();
+    setIsPauseLiveView(false);
 }
 
 void BaslerPylonCamera::setCameraExposureTime(double value)
@@ -239,15 +241,20 @@ void BaslerPylonCamera::run(){
         }
         isReady = true;
         setiIsGrabbing(true);
-        while(isReady&&GrabImage()) {
-            {
-                for (int cnt = 0;cnt<100;cnt++) {
-                 QThread::msleep(1);
-                 if(need_triged)
-                 {
-                     need_triged = false;
-                     break;
-                 }
+        while(isReady) {
+            if (m_isPauseLiveView) {
+                QThread::msleep(1000);
+            } else {
+                if (GrabImage())
+                {
+                    for (int cnt = 0;cnt<100;cnt++) {
+                      QThread::msleep(1);
+                      if(need_triged)
+                      {
+                         need_triged = false;
+                         break;
+                      }
+                    }
                 }
             }
         }
@@ -343,4 +350,22 @@ QImage BaslerPylonCamera::getNewImage()
 QString BaslerPylonCamera::getCameraChannelname()
 {
     return this->cameraChannelName;
+}
+
+void BaslerPylonCamera::pauseLiveView(bool pause)
+{
+    qInfo("Set pause live view: %d", pause);
+    setIsPauseLiveView(pause);
+    if (m_isPauseLiveView) {
+        emit cameraPauseEvent();
+    }
+}
+
+void BaslerPylonCamera::toggleLiveView()
+{
+    setIsPauseLiveView(!this->m_isPauseLiveView);
+    qInfo("Pause live view: %d", m_isPauseLiveView);
+    if (m_isPauseLiveView) {
+        emit cameraPauseEvent();
+    }
 }

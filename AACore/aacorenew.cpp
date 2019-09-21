@@ -2854,14 +2854,14 @@ ErrorCodeStruct AACoreNew::performVCMInit(QJsonValue params)
     double target_position = params["target_position"].toDouble();
     int delay = params["delay_in_ms"].toInt();
     map.insert("target_position", target_position);
-//    QProcess *p = new QProcess(this);
-//    qInfo("Perform VCM Init Start");
-//    QString temp_cmd = parameters.lensVcmPath().split("///")[1];
-//    temp_cmd.append(" ");
-//    temp_cmd.append(QString::number(target_position));
-//    qInfo("VCM Init cmd %s",temp_cmd.toStdString().c_str());
-//    p->start(temp_cmd);
-//    p->waitForFinished();
+    if (!this->vcmCmdServer.isOpen()) {
+        QStringList arguments;
+        arguments << "/c" << ".\\i2c_test\\i2c_test.exe";
+        vcmCmdServer.setWorkingDirectory(QDir::currentPath());
+        vcmCmdServer.startDetached("cmd.exe", arguments);
+        vcmCmdServer.waitForStarted();
+        QThread::msleep(1000);
+    }
     CClient client;
     QVariantMap json;
     if(target_position < 0)

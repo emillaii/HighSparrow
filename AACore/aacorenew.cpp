@@ -2878,7 +2878,13 @@ ErrorCodeStruct AACoreNew::performVCMInit(QJsonValue params)
 
     QString jsonString = QString(QJsonDocument(QJsonObject::fromVariantMap(json)).toJson());
     qInfo(jsonString.toStdString().c_str());
-    client.ConnectToServer("localserver-test");
+    if (!client.ConnectToServer("localserver-test")) {   //If the i2c client cannot connect the i2c server
+        QString respond = "i2c server connect fail";
+        NgLens();
+        map.insert("result", respond);
+        emit pushDataToUnit(runningUnit, "VCMInit", map);
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, respond};
+    }
     client.sendMessage(jsonString);
 
     QString respond = client.waitRespond();

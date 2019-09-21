@@ -24,14 +24,15 @@ public:
     }
 
 public:
-    void ConnectToServer(const QString &strServerName)
+    bool ConnectToServer(const QString &strServerName)
     {
         // 服务端的serverNewConnectionHandler成员方法将被调用
         m_socket->connectToServer("localserver-test");
         if (m_socket->waitForConnected())
         {
-            // TODO:
+            return true;
         }
+        return false;
     }
 
     void sendMessage(const QString &msg)

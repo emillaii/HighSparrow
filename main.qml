@@ -13,6 +13,8 @@ ApplicationWindow {
     height: 720
     title: qsTr("High Sparrow")
 
+    readonly property string version: "1.0.1"
+
     readonly property string title_move_to: "移动"
     readonly property string title_read_encoder: "读取"
 
@@ -392,24 +394,7 @@ ApplicationWindow {
 //                   color: "red"
 //               }
 //           }
-           Label{
-               text: qsTr("循环时间")
-           }
-           Label{
-               text:aaCoreStates.circleTime
-           }
-           Label{
-               text: qsTr("_")
-           }
-           Label{
-               text:aaCoreStates.circleCount
-           }
-           Label{
-               text: qsTr("_")
-           }
-           Label{
-               text:aaCoreStates.circleAverageTime
-           }
+
            Button{
                text: "报警信息"
                onClicked: {
@@ -456,7 +441,7 @@ ApplicationWindow {
            }
 
            Label{
-               text: qsTr("硅酷科技")
+               text: qsTr("硅酷科技 版本:" + version)
                font.pointSize: 18
                color: "white"
                Layout.fillWidth: true

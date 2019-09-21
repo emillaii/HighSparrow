@@ -660,6 +660,26 @@ Grid {
                     font.pointSize: 25
                 }
             }
+            RowLayout {
+                Label{
+                    text: qsTr("循环时间")
+                }
+                Label{
+                    text:aaCoreStates.circleTime
+                }
+                Label{
+                    text: qsTr(" 循环计数")
+                }
+                Label{
+                    text:aaCoreStates.circleCount
+                }
+                Label{
+                    text: qsTr(" 循环平均时间")
+                }
+                Label{
+                    text:aaCoreStates.circleAverageTime
+                }
+            }
 
             GroupBox{
                 title: ("左工位")

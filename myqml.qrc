@@ -26,7 +26,6 @@
         <file>SensorPickArmSUT.qml</file>
         <file>MotionPopup.qml</file>
         <file>SensorTrayLoaderViewModule.qml</file>
-        <file>LogView.qml</file>
         <file>TrayMapView.qml</file>
         <file>Page6Form.ui.qml</file>
         <file>qml/AACore/AACoreView.qml</file>
@@ -134,6 +133,7 @@
         <file>qml/TCPLensPickArmModule/TCPMaterialTray2.qml</file>
         <file>qml/TCPLensPickArmModule/TCPMaterialTray3.qml</file>
         <file>qml/TCPLensPickArmModule/TCPMaterialTray4.qml</file>
-        <file>LogLevelSelectionView.qml</file>
+        <file>qml/Log/LogLevelSelectionView.qml</file>
+        <file>qml/Log/LogView.qml</file>
     </qresource>
 </RCC>

@@ -4,7 +4,7 @@ import QtCharts 2.0
 import QtQuick.Layouts 1.12
 import QtCharts 2.0
 import Qt.labs.calendar 1.0
-
+import "qml/Log"
 Page {
 
     readonly property string downlookCameraName: "AA_DLCamera1"

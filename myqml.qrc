@@ -134,5 +134,6 @@
         <file>qml/TCPLensPickArmModule/TCPMaterialTray2.qml</file>
         <file>qml/TCPLensPickArmModule/TCPMaterialTray3.qml</file>
         <file>qml/TCPLensPickArmModule/TCPMaterialTray4.qml</file>
+        <file>LogLevelSelectionView.qml</file>
     </qresource>
 </RCC>

@@ -10,13 +10,13 @@ FileContent::FileContent(QObject *parent) :
 
 QString FileContent::read()
 {
-    qInfo(mSource.toStdString().c_str());
+    qDebug(mSource.toStdString().c_str());
     if (mSource.isEmpty()){
         emit error("source is empty");
         return QString();
     }
     QUrl url(mSource);
-    qInfo(url.path().toStdString().c_str());
+    qDebug(url.path().toStdString().c_str());
     QFile file(url.path().remove(0,1));
     QString fileContent;
     if ( file.open(QIODevice::ReadOnly) ) {
@@ -41,7 +41,7 @@ bool FileContent::write()
         return false;
 
     QUrl url(mSource);
-    qInfo(url.path().toStdString().c_str());
+    qDebug(url.path().toStdString().c_str());
     QFile file(url.path().remove(0,1));
     if (!file.open(QFile::WriteOnly | QFile::Truncate))
         return false;

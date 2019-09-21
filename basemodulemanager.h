@@ -39,6 +39,7 @@
 #include "tcpmanager.h"
 #include "devicestatesgeter.h"
 #include "uiControl/graphwidget.h"
+#include "utils/logger.h"
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
@@ -50,6 +51,12 @@ public:
     Q_PROPERTY(int ServerMode READ ServerMode WRITE setServerMode NOTIFY paramsChanged)
     Q_PROPERTY(int ServerPort READ ServerPort WRITE setServerPort NOTIFY paramsChanged)
     Q_PROPERTY(bool HomeState READ HomeState WRITE setHomeState NOTIFY paramsChanged)
+    Q_PROPERTY(bool QtDebugMsgDisplay READ QtDebugMsgDisplay WRITE setQtDebugMsgDisplay NOTIFY paramsChanged)
+    Q_PROPERTY(bool QtWarningMsgDisplay READ QtWarningMsgDisplay WRITE setQtWarningMsgDisplay NOTIFY paramsChanged)
+    Q_PROPERTY(bool QtCriticalMsgDisplay READ QtCriticalMsgDisplay WRITE setQtCriticalMsgDisplay NOTIFY paramsChanged)
+    Q_PROPERTY(bool QtFatalMsgDisplay READ QtFatalMsgDisplay WRITE setQtFatalMsgDisplay NOTIFY paramsChanged)
+    Q_PROPERTY(bool QtInfoMsgDisplay READ QtInfoMsgDisplay WRITE setQtInfoMsgDisplay NOTIFY paramsChanged)
+
     Q_PROPERTY(QString ServerURL READ ServerURL WRITE setServerURL NOTIFY paramsChanged)
     Q_PROPERTY(QString DataServerURL READ DataServerURL WRITE setDataServerURL NOTIFY paramsChanged)
     Q_PROPERTY(QString FlowchartFilename READ FlowchartFilename WRITE setFlowchartFilename NOTIFY paramsChanged)
@@ -211,10 +218,51 @@ public slots:
         emit paramsChanged();
     }
 
+    void setQtDebugMsgDisplay(bool QtDebugMsgDisplay)
+    {
+        m_QtDebugMsgDisplay = QtDebugMsgDisplay;
+        setLoggerDisplayLog(QtMsgType::QtDebugMsg, m_QtDebugMsgDisplay);
+        emit paramsChanged();
+    }
+
+    void setQtWarningMsgDisplay(bool QtWarningMsgDisplay)
+    {
+        m_QtWarningMsgDisplay = QtWarningMsgDisplay;
+        setLoggerDisplayLog(QtMsgType::QtWarningMsg, m_QtWarningMsgDisplay);
+        emit paramsChanged();
+    }
+
+    void setQtCriticalMsgDisplay(bool QtCriticalMsgDisplay)
+    {
+        m_QtCriticalMsgDisplay = QtCriticalMsgDisplay;
+        setLoggerDisplayLog(QtMsgType::QtCriticalMsg, m_QtCriticalMsgDisplay);
+        emit paramsChanged();
+    }
+
+    void setQtFatalMsgDisplay(bool QtFatalMsgDisplay)
+    {
+        m_QtFatalMsgDisplay = QtFatalMsgDisplay;
+        setLoggerDisplayLog(QtMsgType::QtFatalMsg, m_QtFatalMsgDisplay);
+        emit paramsChanged();
+    }
+
+    void setQtInfoMsgDisplay(bool QtInfoMsgDisplay)
+    {
+        qInfo("setQtInfoMsgDisplay : %d", QtInfoMsgDisplay);
+        m_QtInfoMsgDisplay = QtInfoMsgDisplay;
+        setLoggerDisplayLog(QtMsgType::QtInfoMsg, m_QtInfoMsgDisplay);
+        emit paramsChanged();
+    }
+
 public:
     ModuleManangerConfig configs;
     ModuleManagerParameter parameters;
     ModuleManagerState states;
+    bool m_QtDebugMsgDisplay = false;
+    bool m_QtWarningMsgDisplay = false;
+    bool m_QtCriticalMsgDisplay = true;
+    bool m_QtFatalMsgDisplay = true;
+    bool m_QtInfoMsgDisplay = true;
 private:
     bool is_init;
     bool profile_loaded;
@@ -320,8 +368,6 @@ public:
     bool allMotorsSeekOriginal2();
     void stopSeeking();
 
-
-
     Q_INVOKABLE int getNumberOfMotors();
     Q_INVOKABLE QString getMotorsName(int);
 
@@ -364,6 +410,26 @@ public:
     QString FlowchartFilename() const
     {
         return m_FlowchartFilename;
+    }
+    bool QtDebugMsgDisplay() const
+    {
+        return m_QtDebugMsgDisplay;
+    }
+    bool QtWarningMsgDisplay() const
+    {
+        return m_QtWarningMsgDisplay;
+    }
+    bool QtCriticalMsgDisplay() const
+    {
+        return m_QtCriticalMsgDisplay;
+    }
+    bool QtFatalMsgDisplay() const
+    {
+        return m_QtFatalMsgDisplay;
+    }
+    bool QtInfoMsgDisplay() const
+    {
+        return m_QtInfoMsgDisplay;
     }
 };
 

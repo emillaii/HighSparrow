@@ -31,7 +31,7 @@ void SparrowClient::onConnected()
 void SparrowClient::onClosed()
 {
     m_is_connected = false;
-    qInfo("sparrow client disconnect..Going to retry the connection :%s", m_url.url().toStdString().c_str());
+    qDebug("sparrow client disconnect..Going to retry the connection :%s", m_url.url().toStdString().c_str());
       m_webSocket.open(QUrl(m_url));
 }
 
@@ -60,10 +60,10 @@ int SparrowClient::commandQueueSize()
 void SparrowClient::sendMessage(QString message)
 {
     if(m_is_connected) {
-        qInfo("SparrowClient::sendMessage: %s",message.toStdString().c_str());
+        qDebug("SparrowClient::sendMessage: %s",message.toStdString().c_str());
         m_webSocket.sendTextMessage(message);
     } else {
-        qInfo("SparrowClient::sendMessage fail due to socket is ot connected");
+        qDebug("SparrowClient::sendMessage fail due to socket is ot connected");
     }
 }
 

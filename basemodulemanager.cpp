@@ -18,15 +18,14 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent),
     ErrorBase ("BaseModuleManager")
 {
-    qInfo(u8"中文测试");
-    qInfo("main thread id :%d",QThread::currentThreadId());
+    qDebug("main thread id :%d",QThread::currentThreadId());
     work_thread.setObjectName("device manager");
     this->moveToThread(&work_thread);
     this->work_thread.start();
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
-    qInfo("Server Mode: %d", ServerMode());
+    qDebug("Server Mode: %d", ServerMode());
     is_init = false;
     profile_loaded = false;
     if(!QDir(".//notopencamera").exists())
@@ -46,10 +45,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
     if (ServerMode() == 0) {
-        qInfo("This sparrow is in Master mode");
         this->lut_module.openServer(19998);
         lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
-//        sut_clitent = new SutClient("ws://192.168.0.251:19999");
         connect(&lut_module,&LutModule::sendLoadLensRequst,&lens_loader_module,&LensLoaderModule::receiveLoadLensRequst,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendLoadLensFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendChangeTrayRequst,&tray_loader_module,&TrayLoaderModule::onTestTrayUsed,Qt::DirectConnection);
@@ -57,10 +54,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     }
     else
     {
-        qInfo("This sparrow is in Slave mode");
-//        this->sensor_loader_module.openServer(19999);
         lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
-//        sut_clitent = new SutClient("ws://localhost:19999");
     }
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
 
@@ -73,9 +67,6 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&lut_module, &LutModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::saveUnitDataToCSV, &unitlog, &Unitlog::saveUnitDataToCSV);
-
-//    connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTrayRequst,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);
-//    connect(&sensor_tray_loder_module,&SensorTrayLoaderModule::sendChangeTrayFinish,&sensor_loader_module,&SensorLoaderModule::receiveChangeTrayFinish,Qt::DirectConnection);
     if(!QDir(".//notopencamera").exists())
     {
         if(pylonUplookCamera) pylonUplookCamera->start();
@@ -198,7 +189,7 @@ void BaseModuleManager::tcpResp(QString message)
                     map[param_name]->read(parameter_json);
                 }
             }
-            qInfo("moduleParameter resp: %s", message.toStdString().c_str());
+            qDebug("moduleParameter resp: %s", message.toStdString().c_str());
         }
         else if(resp == "moduleNames")
         {
@@ -206,7 +197,7 @@ void BaseModuleManager::tcpResp(QString message)
             qDebug()<<"resp moduleState :"<< module_names<<"thread id:"<<QThread::currentThreadId();
             foreach (QJsonValue temp_name, module_names) {
                 //todo 构建相应的模块对象//仅仅包含参数和状态、可以暂时用原来的类
-                qInfo("inquiryModuleNames moduleName: %s", temp_name.toString().toStdString().c_str());
+                qDebug("inquiryModuleNames moduleName: %s", temp_name.toString().toStdString().c_str());
                 if(temp_name.toString().contains("AA"))
                 {
                     tcp_workers.insert(temp_name.toString(), &tcp_aaCoreNew);
@@ -232,7 +223,6 @@ void BaseModuleManager::tcpResp(QString message)
 
 QString BaseModuleManager::deviceResp(QString message)
 {
-//    qInfo("deviceResp %s in thread %d",message.toStdString().c_str(),QThread::currentThreadId());
     QJsonObject message_object = getJsonObjectFromString(message);
     QJsonObject result;
     if(message_object.contains("cmd"))
@@ -270,7 +260,7 @@ QString BaseModuleManager::deviceResp(QString message)
                       }
                       else
                       {
-                          qInfo("tcp fail and auto retray:%s",result_json["error"].toString().toStdString().c_str());
+                          qCritical("tcp fail and auto retray:%s",result_json["error"].toString().toStdString().c_str());
                           tcp_result =  sender_messagers[messger_name]->inquiryMessage(message);
                           result_json = getJsonObjectFromString(tcp_result);
                           if(result_json.contains("error"))
@@ -285,19 +275,19 @@ QString BaseModuleManager::deviceResp(QString message)
                               }
                               else
                               {
-                                  qInfo("tcp fail:%s",result_json["error"].toString().toStdString().c_str());
+                                  qCritical("tcp fail:%s",result_json["error"].toString().toStdString().c_str());
 
                               }
                           }
                           else
                           {
-                              qInfo("messge fail");
+                              qCritical("messge fail");
                           }
                       }
                   }
                   else
                   {
-                      qInfo("messge fail");
+                      qCritical("messge fail");
                   }
                 }
             }
@@ -669,7 +659,7 @@ bool BaseModuleManager::loadMachineConfig(QString file_path)
             temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoIn_Name(i));
             if(temp_name == ""||input_ios.contains(temp_name))
             {
-                qInfo("this already has an input io : %s",temp_name.toStdString().c_str());
+                qDebug("this already has an input io : %s",temp_name.toStdString().c_str());
                 continue;
             }
             XtGeneralInput* input_io = new XtGeneralInput(temp_name,i);
@@ -681,7 +671,7 @@ bool BaseModuleManager::loadMachineConfig(QString file_path)
             temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_IoOut_Name(i));
             if(temp_name == ""||output_ios.contains(temp_name))
             {
-                qInfo("this already has an output io : %s",temp_name.toStdString().c_str());
+                qDebug("this already has an output io : %s",temp_name.toStdString().c_str());
                 continue;
             }
             XtGeneralOutput* output_io = new XtGeneralOutput(temp_name,i);
@@ -693,7 +683,7 @@ bool BaseModuleManager::loadMachineConfig(QString file_path)
             temp_name = QString::fromStdWString(XT_Controler_Extend::Profile_Get_Axis_Name(i));
             if(temp_name == ""||motors.contains(temp_name))
             {
-                qInfo("this already has an motor io : %s",temp_name.toStdString().c_str());
+                qDebug("this already has an motor io : %s",temp_name.toStdString().c_str());
                 continue;
             }
             XtMotor* motor = new XtMotor();
@@ -720,7 +710,7 @@ bool BaseModuleManager::loadVcmFile(QString file_name)
             motors.insert(temp_motor->parameters.motorName(),temp_motor);
         else
         {
-            qInfo("vcm motor param name(%s)repeat!",temp_motor->parameters.motorName().toStdString().c_str());
+            qDebug("vcm motor param name(%s)repeat!",temp_motor->parameters.motorName().toStdString().c_str());
             delete temp_motor;
         }
     }
@@ -954,7 +944,6 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
         Calibration* temp_calibration;
         if(data_object["calibrationName"].toString().contains("chart_calibration"))
         {
-            qInfo("get chart calibration");
             temp_calibration = chart_calibration = new ChartCalibration(dothinkey, aaCoreNew.parameters.MaxIntensity(), aaCoreNew.parameters.MinArea(),  aaCoreNew.parameters.MaxArea(), CHART_CALIBRATION, CALIBRATION_RESULT_PATH);
         }
         else
@@ -966,7 +955,7 @@ bool BaseModuleManager::loadCalibrationFiles(QString file_name)
             calibrations.insert(temp_calibration->parameters.calibrationName(),temp_calibration);
         else
         {
-            qInfo("vcm motor param name(%s)repeat!",temp_calibration->parameters.calibrationName().toStdString().c_str());
+            qDebug("vcm motor param name(%s)repeat!",temp_calibration->parameters.calibrationName().toStdString().c_str());
             delete temp_calibration;
         }
     }
@@ -2033,12 +2022,12 @@ void BaseModuleManager::setOutput(QString name, bool on)
     if(name=="SUT1吸真空")
         on = !on;
     if (this->output_ios.contains(name)){
-        qInfo("set output : %s %d", name.toStdString().c_str(), on);
+        qDebug("set output : %s %d", name.toStdString().c_str(), on);
         output_ios[name]->Set(on);
     }
     else
     {
-        qInfo(u8"Cannot find output IO with name: %s", name.toStdString().c_str());
+        qDebug(u8"Cannot find output IO with name: %s", name.toStdString().c_str());
     }
 }
 
@@ -2145,7 +2134,7 @@ void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
 bool BaseModuleManager::initSensor()
 {
     if (dothinkey->DothinkeyIsGrabbing()) {
-        qInfo("Dothinkey is already init and grabbing image.");
+        qDebug("Dothinkey is already init and grabbing image.");
         return true;
     }
     const int channel = 0;

@@ -103,6 +103,13 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("workerNameList",workerNameList);
     engine.rootContext()->setContextProperty("baseModuleManager", highSprrow.baseModuleManager);
+    { //Display Log Level
+        engine.rootContext()->setContextProperty("displayDebugLog", highSprrow.baseModuleManager->m_QtDebugMsgDisplay);
+        engine.rootContext()->setContextProperty("displayWarningLog", highSprrow.baseModuleManager->m_QtWarningMsgDisplay);
+        engine.rootContext()->setContextProperty("displayCriticalLog", highSprrow.baseModuleManager->m_QtCriticalMsgDisplay);
+        engine.rootContext()->setContextProperty("displayFatalLog", highSprrow.baseModuleManager->m_QtFatalMsgDisplay);
+        engine.rootContext()->setContextProperty("displayInfoLog", highSprrow.baseModuleManager->m_QtInfoMsgDisplay);
+    }
     engine.rootContext()->setContextProperty("moduleManagerParam", &highSprrow.baseModuleManager->parameters);
 
     engine.rootContext()->setContextProperty("logicManager", highSprrow.logicManager);

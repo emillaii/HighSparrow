@@ -15,7 +15,7 @@ void WorkersManager::Init(QList<TcpMessager*> senders,QList<TcpMessager*> receiv
     foreach (TcpMessager* temp_messager, senders) {
         send_messagers.insert(temp_messager->parameters.messagerName(),temp_messager);
     }
-    qInfo("send_messagers size %d",send_messagers.size());
+    qDebug("send_messagers size %d",send_messagers.size());
     receive_messagers.clear();
     foreach (TcpMessager* temp_messager, receivers) {
         receive_messagers.insert(temp_messager->parameters.messagerName(),temp_messager);
@@ -23,7 +23,7 @@ void WorkersManager::Init(QList<TcpMessager*> senders,QList<TcpMessager*> receiv
     }
     connect(this,&WorkersManager::showAlarm,&alarm_shower,&AlarmMessageShower::appendAlarmMessage);
     connect(&alarm_shower,&AlarmMessageShower::feedbackOperation,this,&WorkersManager::feedbackOperation);
-    qInfo("receive_messagers size %d",receive_messagers.size());
+    qDebug("receive_messagers size %d",receive_messagers.size());
 }
 
 bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
@@ -88,7 +88,7 @@ void WorkersManager::tcpResp(QString message)
                 }
                 else
                 {
-                    qInfo("module name error!");
+                    qCritical("module name error!");
                 }
             }
             else if(message_content == "AlamMessage")

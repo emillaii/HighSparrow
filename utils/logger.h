@@ -15,6 +15,7 @@
 // extern QLoggingCategory motionLog;
 
 void initLoggingSystem();
+void setLoggerDisplayLog(QtMsgType type, bool on);
 void messageLogger(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 void setLoggingEnabled(QLoggingCategory& cat, bool enable);
 bool isLoggingEnabled(QLoggingCategory& cat);

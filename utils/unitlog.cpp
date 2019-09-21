@@ -96,9 +96,9 @@ bool Unitlog::postDataToELK(QString uuid)
          //elk
          if (nam) {
              nam->post(request, doc.toJson());
-             qInfo("Push data to ELK success: %s", uuid.toStdString().c_str());
+             qDebug("Push data to ELK success: %s", uuid.toStdString().c_str());
          } else {
-             qInfo("Post data to ELK fail");
+             qDebug("Post data to ELK fail");
          }
          unit_log_list.remove(uuid);
     } else {
@@ -111,7 +111,7 @@ bool Unitlog::postUnitDataToCSV(QString uuid)
 {
     if(!unit_log_list.contains(uuid))
     {
-        qInfo("can not find uuid %s",uuid.toStdString().c_str());
+        qDebug("can not find uuid %s",uuid.toStdString().c_str());
         return false;
     }
     QString file_name = "";

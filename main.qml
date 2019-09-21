@@ -456,9 +456,17 @@ ApplicationWindow {
            }
 
            Label{
+               text: qsTr("硅酷科技")
+               font.pointSize: 18
+               color: "white"
+               Layout.fillWidth: true
+               Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+           }
+
+           Label{
                id: timeString
                color: "cyan"
-               text: qsTr("现在时间:")
+               text: qsTr(" 现在时间:")
                Layout.fillWidth: true
                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
            }

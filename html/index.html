@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  padding: 3rem;
+  font-size: 16px;
+}
+
+textarea {
+  width: 30%;
+  min-height: 30rem;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<title>Page Title</title>
+</head>
+<body>
+
+<h1>Data Reporting</h1>
+
+<div>
+	<textarea name="" id="myTextarea" cols="30" rows="10"></textarea>
+</div>
+
+</body>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+<script type="text/javascript">
+	var myData = {
+    "AA_1": {
+        "X_TILT": 0.44,
+        "Y_TILT": 1.129,
+        "Z_PEAK_03_um": -20430.125,
+        "Z_PEAK_05_um": -20432.125,
+        "Z_PEAK_08_um": null,
+        "Z_PEAK_CC_um": -20422
+    },
+    "AA_2": {
+        "X_TILT": 0.44,
+        "Y_TILT": 1.129,
+        "Z_PEAK_03_um": -20430.125,
+        "Z_PEAK_05_um": -20432.125,
+        "Z_PEAK_08_um": null,
+        "Z_PEAK_CC_um": -20422
+    },
+    "FlowChart_StartTime_1": {
+        "Time": "20-16-59-247"
+    },
+    "FlowChart_TerminateTime_1": {
+        "Time": "20-17-04-441"
+    },
+    "MTF_1": {
+        "CC_B_SFR": 54.185,
+        "CC_L_SFR": 39.478,
+        "CC_R_SFR": 42.5,
+        "CC_SFR": 45.282,
+        "CC_T_SFR": 44.967,
+        "LL_B_SFR": 42.893,
+        "LL_L_SFR": 48.534,
+        "LL_R_SFR": 39.55,
+        "LL_SFR": 44.094,
+        "LL_T_SFR": 45.398,
+        "LR_B_SFR": 49.016,
+        "LR_L_SFR": 43.136,
+        "LR_R_SFR": 42.63,
+        "LR_SFR": 45.32,
+        "LR_T_SFR": 46.5,
+        "UL_B_SFR": 48.747,
+        "UL_L_SFR": 48.187,
+        "UL_R_SFR": 46.556,
+        "UL_SFR": 48.597,
+        "UL_T_SFR": 50.897,
+        "UR_B_SFR": 0,
+        "UR_L_SFR": 0,
+        "UR_R_SFR": 0,
+        "UR_SFR": 0,
+        "UR_T_SFR": 0
+    }};
+	
+	var table = document.getElementById("myTable");
+
+	for (var operatorName in myData) {
+	    var title = document.createElement("h1");
+		title.innerHTML = operatorName;
+		document.body.appendChild(title);
+	    var x = document.createElement("table");
+	    x.setAttribute("id", "table_"+operatorName);
+	    document.body.appendChild(x);
+		var row = x.insertRow();
+		var row1 = x.insertRow(-1);
+		var count = 0; 
+		for (var attr in myData[operatorName]) {
+			var cell1 = row.insertCell(count);
+			var cell2 = row1.insertCell(count);
+			count++;
+			cell1.innerHTML = attr;
+			cell2.innerHTML = myData[operatorName][attr]
+		}
+	}
+	var textedJson = JSON.stringify(myData, undefined, 4);
+	$('#myTextarea').text(textedJson);
+</script>
+
+</html>

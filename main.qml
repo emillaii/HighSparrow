@@ -495,6 +495,7 @@ ApplicationWindow {
         Page4FormForm {}
         Page5Form {}
         Page6Form {}
+        Page8Form {}
     }
 
     footer: TabBar {
@@ -531,6 +532,9 @@ ApplicationWindow {
         }
         TabButton {
             text: qsTr("AA 核心参数")
+        }
+        TabButton {
+            text: qsTr("Report")
         }
     }
 }

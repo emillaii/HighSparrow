@@ -251,4 +251,5 @@ HEADERS += \
     ipcclient.h
 
 DISTFILES += \
-    icons/index.theme
+    icons/index.theme \
+    index.html

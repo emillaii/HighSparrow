@@ -33,12 +33,14 @@ RowLayout {
                     RoundButton {
                         text: operatorTitle
                         onClicked: {
-                            console.log(aaCoreTestString)
                             var obj = JSON.parse(aaCoreTestString)
                             var params = JSON.stringify(obj["operators"][operatorName]["properties"]["params"])
                             if (operatorName.indexOf("AA") !== -1) {
-                                console.log("Perform AA")
                                 aaNewCore.performHandling(AACoreNew.AA, params)
+                            } else if (operatorName.indexOf("Init_Lens") !== -1) {
+                                aaNewCore.performHandling(AACoreNew.MOVE_LENS, params)
+                            } else if (operatorName.indexOf("UV") !== -1) {
+                                aaNewCore.performHandling(AACoreNew.UV, params)
                             }
                         }
                     }
@@ -53,7 +55,7 @@ RowLayout {
            }
        }
     }
-    function loadFlowchartSetting(target){
+    function loadFlowchartSetting(target, check){
         console.log("load flowchart setting is called")
         var command = "document.getElementById('get_data').click()";
         flowChartPage.webView.runJavaScript(command, function(result) {
@@ -145,6 +147,9 @@ RowLayout {
         icon.height: 30
         icon.source: "../../icons/move-vertical.png"
         icon.color: "lightGreen"
+        onClicked: {
+            loadFlowchartSetting("Init_Lens")
+        }
     }
     RoundButton {
         text: "UV"
@@ -155,7 +160,7 @@ RowLayout {
         icon.source: "../../icons/LC_icon_light_line.png"
         icon.color: "lightGreen"
         onClicked: {
-            aaNewCore.performHandling(AACoreNew.UV, "")
+            loadFlowchartSetting("UV")
         }
     }
 }

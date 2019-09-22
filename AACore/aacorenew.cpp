@@ -490,8 +490,8 @@ void AACoreNew::performHandlingOperation(int cmd)
         performPRToBond(0);
     }
     else if (cmd == HandleTest::MTF) {
-        //performMTFNew(params);
-        performMTFOffline(params);
+        performMTFNew(params);
+        //performMTFOffline(params);
     }
     else if (cmd == HandleTest::OC) {
         performOC(params);

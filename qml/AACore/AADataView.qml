@@ -188,6 +188,22 @@ Grid {
             source: "../../icons/sparrow.png"
             fillMode: Image.PreserveAspectFit
             cache: false
+            Rectangle {
+                color: "pink"
+                opacity: 0.8
+                x: (image3.width - image3.paintedWidth)/2
+                y: image3.height/2
+                width: image3.paintedWidth
+                height: 1
+            }
+            Rectangle {
+                color: "pink"
+                opacity: 0.8
+                x: image3.width/2
+                y: (image3.height - image3.paintedHeight)/2
+                width: 1
+                height: image3.paintedHeight
+            }
             TextEdit {
                 id: sensorIDLabel
                 text: qsTr("SensorID: ") + dothinkey.currentSensorID

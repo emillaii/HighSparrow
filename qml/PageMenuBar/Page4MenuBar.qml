@@ -6,6 +6,8 @@ import AACoreNew 1.1
 
 
 RowLayout {
+    property string aaCoreTestString : ""
+
     Popup {
        id: aaCoreTestPopup
        x: 200
@@ -29,7 +31,16 @@ RowLayout {
            delegate: ColumnLayout {
                 RowLayout {
                     RoundButton {
-                        text: operatorName
+                        text: operatorTitle
+                        onClicked: {
+                            console.log(aaCoreTestString)
+                            var obj = JSON.parse(aaCoreTestString)
+                            var params = JSON.stringify(obj["operators"][operatorName]["properties"]["params"])
+                            if (operatorName.indexOf("AA") !== -1) {
+                                console.log("Perform AA")
+                                aaNewCore.performHandling(AACoreNew.AA, params)
+                            }
+                        }
                     }
                 }
            }
@@ -48,15 +59,15 @@ RowLayout {
         flowChartPage.webView.runJavaScript(command, function(result) {
             command = "document.getElementById('flowchart_data').value";
             flowChartPage.webView.runJavaScript(command, function(result) {
-                //console.log(result)
                 var obj = JSON.parse(result)
+                aaCoreTestString = result
                 for( var link in obj["links"] ) {
                     console.log(obj["links"][link]["toOperator"])
                     var operatorName = obj["links"][link]["toOperator"]
                     if (operatorName.includes(target)) {
-                       console.log("Appending aaCoreTestMode: " + operatorName)
                        aaCoreTestModel.append({
-                            "operatorName": obj["operators"][operatorName]["properties"]["title"]
+                            "operatorTitle": obj["operators"][operatorName]["properties"]["title"],
+                            "operatorName": operatorName
                        })
                     }
                 }

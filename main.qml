@@ -309,7 +309,7 @@ ApplicationWindow {
                icon.source: "icons/flowchart_1.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   workersManager.startAllWorkers(4)
+                   workersManager.startAllWorkers(3)
                }
            }
 

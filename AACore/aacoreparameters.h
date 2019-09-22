@@ -97,6 +97,8 @@ class AACoreParameters : public PropertyBase
 
     int m_SensorOrientation = 0;
 
+    QString m_aaCoreRunningTest;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -148,7 +150,7 @@ public:
     Q_PROPERTY(QString lensVcmPath READ lensVcmPath WRITE setLensVcmPath NOTIFY lensVcmPathChanged)
     Q_PROPERTY(double lensVcmWorkPosition READ lensVcmWorkPosition WRITE setLensVcmWorkPosition NOTIFY lensVcmWorkPositionChanged)
     Q_PROPERTY(int tiltRelationship READ tiltRelationship WRITE setTiltRelationship NOTIFY tiltRelationshipChanged)
-
+    Q_PROPERTY(QString aaCoreRunningTest READ aaCoreRunningTest WRITE setAACoreRunningTest NOTIFY aaCoreRunningTestChanged)
     double EFL() const
     {
         return m_EFL;
@@ -371,6 +373,11 @@ public:
     int SensorOrientation() const
     {
         return m_SensorOrientation;
+    }
+
+    QString aaCoreRunningTest() const
+    {
+        return m_aaCoreRunningTest;
     }
 
 public slots:
@@ -768,6 +775,12 @@ public slots:
         emit paramsChanged();
     }
 
+    void setAACoreRunningTest(QString aaCoreRunningTest)
+    {
+        m_aaCoreRunningTest = aaCoreRunningTest;
+        emit aaCoreRunningTestChanged(m_aaCoreRunningTest);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -802,6 +815,7 @@ signals:
     void taskAccumulateChanged(bool taskAccumulate);
     void currentTaskChanged(int currentTask);
     void tiltRelationshipChanged(int tiltRelationship);
+    void aaCoreRunningTestChanged(QString aaCoreRunningTest);
 };
 class AACoreStates: public PropertyBase
 {

@@ -163,4 +163,9 @@ RowLayout {
             loadFlowchartSetting("UV")
         }
     }
+
+    Label {
+        text: aaCoreParams.aaCoreRunningTest
+        font.pointSize: 20
+    }
 }

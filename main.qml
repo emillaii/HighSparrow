@@ -524,13 +524,13 @@ ApplicationWindow {
             text: qsTr("流程图")
         }
         TabButton {
-            text: qsTr("AA 数据")
+            text: qsTr("AA 控制面板")
         }
         TabButton {
             text: qsTr("MTF")
         }
         TabButton {
-            text: qsTr("AA 核心")
+            text: qsTr("AA 核心参数")
         }
     }
 }

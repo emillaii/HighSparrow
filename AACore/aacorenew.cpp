@@ -465,7 +465,6 @@ void AACoreNew::stopWork(bool wait_finish)
 void AACoreNew::performHandlingOperation(int cmd)
 {
     emit clearHeaders();
-    qInfo("performHandlingOperation clearHeaders");
     qInfo("AACore perform command: %d parmas :%s", cmd, handlingParams.toStdString().c_str());
     QJsonDocument jsonDoc = QJsonDocument::fromJson(handlingParams.toLocal8Bit().data());
     QJsonValue params = jsonDoc.object();
@@ -491,7 +490,8 @@ void AACoreNew::performHandlingOperation(int cmd)
         performPRToBond(0);
     }
     else if (cmd == HandleTest::MTF) {
-        performMTFNew(params);
+        //performMTFNew(params);
+        performMTFOffline(params);
     }
     else if (cmd == HandleTest::OC) {
         performOC(params);
@@ -2047,7 +2047,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     sfr_tol[3] = params["08F_TOL"].toDouble(-1);
 
     cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\aatest\\low.bmp");
-    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, 35, 8000, parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
     vector<double> sfr_l_v, sfr_r_v, sfr_t_v, sfr_b_v;
     cv::Rect roi; roi.width = 32; roi.height = 32;
     double rect_width = 0;

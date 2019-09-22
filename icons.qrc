@@ -17,5 +17,12 @@
         <file>icons/close_program.png</file>
         <file>icons/full-screen.png</file>
         <file>icons/pause.png</file>
+        <file>icons/target.png</file>
+        <file>icons/alignment.png</file>
+        <file>icons/calculate.png</file>
+        <file>icons/draw.png</file>
+        <file>icons/LC_icon_light_line.png</file>
+        <file>icons/move-vertical.png</file>
+        <file>icons/camera.png</file>
     </qresource>
 </RCC>

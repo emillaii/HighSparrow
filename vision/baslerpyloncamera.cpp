@@ -289,7 +289,10 @@ QImage BaslerPylonCamera::getImage()
     return std::move(image_copy);
 }
 
-bool BaslerPylonCamera::isCameraGrabbing() { return isGrabbing(); }
+bool BaslerPylonCamera::isCameraGrabbing() {
+    if (m_currentMode == "Line") return true;
+    return isGrabbing();
+}
 
 void BaslerPylonCamera::CopyBufferToQImage(CGrabResultPtr pInBuffer, QImage& outImage)
 {
@@ -322,6 +325,9 @@ QImage BaslerPylonCamera::requestImage(const QString &id, QSize *size, const QSi
 
 QImage BaslerPylonCamera::getNewImage()
 {
+    if (m_currentMode == "Line1") {  //If the camera is set to hardware trigger mode, return the latest image.
+       return this->getImage();
+    }
     bool already_trig,has_new_img;
     trig_mutex.lock();
     already_trig = is_triged;

@@ -729,6 +729,7 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
     QJsonValue delay_in_ms_qjv = params["delay_in_ms"];
     unsigned int delay_in_ms = delay_in_ms_qjv.toInt(0);
     for (int i = 0; i <= retry_count; i++) {
+        parameters.setAACoreRunningTest("Running test: " + testItemName);
         if (testItemName.contains(AA_PIECE_START)) { qInfo("Performing Start"); }
         else if (testItemName.contains(AA_PIECE_LOAD_CAMERA)) {
             qInfo("Performing load camera");
@@ -875,6 +876,7 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             int lighting = params["lighting"].toInt();
         }
     }
+    parameters.setAACoreRunningTest("");
     return ret;
 }
 
@@ -1486,7 +1488,7 @@ void AACoreNew::performAAOffline()
         dst.release();
         sfrCount++;
     }
-    int timeout=1000;
+    int timeout=2000;
     while(this->clustered_sfr_map.size() != sfrCount && timeout > 0) {
         Sleep(10);
         timeout--;
@@ -1497,9 +1499,16 @@ void AACoreNew::performAAOffline()
     }
     qInfo("clustered sfr map pattern size: %d clustered_sfr_map size: %d", clustered_sfr_map[0].size(), clustered_sfr_map.size());
     QVariantMap aa_result = sfrFitCurve_Advance(resize_factor, start);
+    map.insert("X_TILT", round(aa_result["xTilt"].toDouble()*1000)/1000);
+    map.insert("Y_TILT", round(aa_result["yTilt"].toDouble()*1000)/1000);
+    map.insert("Z_PEAK_CC_um", round((aa_result["zPeak_cc"].toDouble()*1000)*1000)/1000);
+    map.insert("Z_PEAK_03_um", round((aa_result["zPeak_03"].toDouble()*1000)*1000)/1000);
+    map.insert("Z_PEAK_05_um", round((aa_result["zPeak_05"].toDouble()*1000)*1000)/1000);
+    map.insert("Z_PEAK_08_um", round((aa_result["zPeak_08"].toDouble()*1000)*1000)/1000);
     qInfo("MaxPeakZ: %f", aa_result["maxPeakZ"].toDouble());
     clustered_sfr_map.clear();
     qInfo("[PerformAAOffline] time elapsed: %d", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "AA", map);
 }
 
 void AACoreNew::performHandling(int cmd, QString params)
@@ -2027,13 +2036,15 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         map.insert("dev_3", dev_3);
     }
     map.insert("fov_slope", current_fov_slope);
-    emit postSfrDataToELK(runningUnit, map);
+    emit pushDataToUnit(runningUnit, "SFR", map);
+    //emit postSfrDataToELK(runningUnit, map);
     data->plot(runningTestName);
     return result;
 }
 
 ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
 {
+    QVariantMap map;
     double cc_min_sfr = params["CC"].toDouble(-1);
     double ul_min_sfr = params["UL"].toDouble(-1);
     double ur_min_sfr = params["UR"].toDouble(-1);
@@ -2124,6 +2135,34 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     }
     qPainter.end();
     sfrImageReady(std::move(qImage));
+    int max_layer = 0;
+    map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);
+    map.insert("CC_R_SFR", round(vec[0].r_sfr*1000)/1000);
+    map.insert("CC_B_SFR", round(vec[0].b_sfr*1000)/1000);
+    map.insert("CC_L_SFR", round(vec[0].l_sfr*1000)/1000);
+    map.insert("CC_SFR", round(((vec[0].t_sfr + vec[0].r_sfr + vec[0].b_sfr + vec[0].l_sfr)/4)*1000)/1000);
+    map.insert("UL_T_SFR", round(vec[max_layer*4 + 1].t_sfr*1000)/1000);
+    map.insert("UL_R_SFR", round(vec[max_layer*4 + 1].r_sfr*1000)/1000);
+    map.insert("UL_B_SFR", round(vec[max_layer*4 + 1].b_sfr*1000)/1000);
+    map.insert("UL_L_SFR", round(vec[max_layer*4 + 1].l_sfr*1000)/1000);
+    map.insert("UL_SFR", round(vec[max_layer*4 + 1].avg_sfr*1000)/1000);
+    map.insert("LL_T_SFR", round(vec[max_layer*4 + 2].t_sfr*1000)/1000);
+    map.insert("LL_R_SFR", round(vec[max_layer*4 + 2].r_sfr*1000)/1000);
+    map.insert("LL_B_SFR", round(vec[max_layer*4 + 2].b_sfr*1000)/1000);
+    map.insert("LL_L_SFR", round(vec[max_layer*4 + 2].l_sfr*1000)/1000);
+    map.insert("LL_SFR", round(vec[max_layer*4 + 2].avg_sfr*1000)/1000);
+    map.insert("LR_T_SFR", round(vec[max_layer*4 + 3].t_sfr*1000)/1000);
+    map.insert("LR_R_SFR", round(vec[max_layer*4 + 3].r_sfr*1000)/1000);
+    map.insert("LR_B_SFR", round(vec[max_layer*4 + 3].b_sfr*1000)/1000);
+    map.insert("LR_L_SFR", round(vec[max_layer*4 + 3].l_sfr*1000)/1000);
+    map.insert("LR_SFR", round(vec[max_layer*4 + 3].avg_sfr*1000)/1000);
+    map.insert("UR_T_SFR", round(vec[max_layer*4 + 4].t_sfr*1000)/1000);
+    map.insert("UR_R_SFR", round(vec[max_layer*4 + 4].r_sfr*1000)/1000);
+    map.insert("UR_B_SFR", round(vec[max_layer*4 + 4].b_sfr*1000)/1000);
+    map.insert("UR_L_SFR", round(vec[max_layer*4 + 4].l_sfr*1000)/1000);
+    map.insert("UR_SFR", round(vec[max_layer*4 + 4].avg_sfr*1000)/1000);
+
+    emit pushDataToUnit(this->runningUnit, "MTF", map);
     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
 }
 

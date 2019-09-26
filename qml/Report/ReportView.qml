@@ -45,7 +45,11 @@ RowLayout {
         id: reportWebview
         Layout.fillHeight: true
         Layout.fillWidth: true
-        url: "http://localhost:8000/unitReport.html"
+        url: {
+            var url = moduleManagerParam.flowChartURL
+            url = url.replace('flowchart', 'unitReport')
+            return url
+        }
     }
 }
 

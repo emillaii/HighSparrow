@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  padding: 3rem;
+  font-size: 16px;
+}
+
+textarea {
+  width: 30%;
+  min-height: 30rem;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<title>Page Title</title>
+</head>
+<body>
+
+<h1>Silicool Data Reporting</h1>
+<h2 id="sensorID"></h2>
+<!---
+<input type="file" id="files" name="files[]" multiple />
+<output id="list"></output>
+--->
+<div id="timeContainer"></div>
+<div id="container"></div>
+<div id="container1"></div>
+
+</body>
+<script type="text/javascript" src="echarts.min.js"></script>
+<script src="js/jquery-2.2.4.min.js"></script>
+<script type="text/javascript">
+
+    function handleFileSelect(evt) {
+		var files = evt.target.files; // FileList object
+
+		// files is a FileList of File objects. List some properties.
+		var output = [];
+		for (var i = 0, f; f = files[i]; i++) {
+		    output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+					  f.size, ' bytes, last modified: ',
+					  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+					  '</li>');
+		    var reader = new FileReader();
+			reader.readAsText(f, "UTF-8");
+			 reader.onload = function (evt) {
+				displayData(evt.target.result);
+			}
+			reader.onerror = function (evt) {
+				console.log("error in reading file");
+			}
+		}
+		document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+	}
+	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+	//load local file 
+	function getFiles(){
+		var inp = document.getElementById("get-files");
+		console.log(inp);
+		for (i = 0; i < inp.files.length; i++) {
+			let file = inp.files[i];
+			console.log(file);
+		}
+	}
+	
+	//End of load local file
+	var sfr_count = 0;
+	//Draw SFR chart
+	function drawSFRCurve(operatorName, dataSeries) {
+	    
+		if (operatorName.indexOf("SFR") !== -1) {
+			var container;  
+			if (sfr_count === 0) 
+				container = document.getElementById("container");
+			if (sfr_count === 1) 
+				container = document.getElementById("container1");
+			sfr_count++;
+			container.style.height = "500px"
+			var myChart = echarts.init(container);
+			var app = {};
+			//document.body.appendChild(container);
+			console.log(operatorName);
+			app.title = operatorName;
+			option = {
+			    title: {
+					text: operatorName,
+					left: 'left'
+				},
+				legend: {
+					data:['CC', 'UL', 'UR', 'LL', 'LR']
+				},
+				xAxis: {
+					type: 'category',
+					data: dataSeries["CC"].z,
+					axisTick: {
+						alignWithLabel: true
+					},
+					axisPointer: {
+						label: {
+							formatter: function (params) {
+								var message = "";
+								for (var m in params.seriesData) {
+									message +=  params.seriesData[m].seriesName + ":" + params.seriesData[m].data.toFixed(2) + " \n"
+								}
+								return message;
+							}
+						}
+					}
+				},
+				yAxis: {
+					type: 'value'
+				},
+				tooltip: {
+					trigger: 'none',
+					axisPointer: {
+						type: 'cross'
+					}
+				},
+				series: [{
+						name:'CC',
+						data: dataSeries["CC"].sfr,
+						type: 'line',
+						smooth: true,
+					}
+				]
+			};
+			
+			if (dataSeries["UL_3"] !== undefined) {
+				var ulDataSeries = {}, urDataSeries = {}, llDataSeries = {}, lrDataSeries = {};
+				ulDataSeries.name = 'UL'; ulDataSeries.data = dataSeries["UL_3"].sfr; ulDataSeries.type = 'line'; ulDataSeries.smooth = true;
+				urDataSeries.name = 'UR'; urDataSeries.data = dataSeries["UR_3"].sfr; urDataSeries.type = 'line'; urDataSeries.smooth = true;
+				llDataSeries.name = 'LL'; llDataSeries.data = dataSeries["LL_3"].sfr; llDataSeries.type = 'line'; llDataSeries.smooth = true;
+				lrDataSeries.name = 'LR'; lrDataSeries.data = dataSeries["LR_3"].sfr; lrDataSeries.type = 'line'; lrDataSeries.smooth = true;				
+				option.series.push(ulDataSeries); option.series.push(urDataSeries); option.series.push(llDataSeries); option.series.push(lrDataSeries);
+			} else if (dataSeries["UL_2"] !== undefined) {
+				var ulDataSeries = {}, urDataSeries = {}, llDataSeries = {}, lrDataSeries = {};
+				ulDataSeries.name = 'UL'; ulDataSeries.data = dataSeries["UL_2"].sfr; ulDataSeries.type = 'line'; ulDataSeries.smooth = true;
+				urDataSeries.name = 'UR'; urDataSeries.data = dataSeries["UR_2"].sfr; urDataSeries.type = 'line'; urDataSeries.smooth = true;
+				llDataSeries.name = 'LL'; llDataSeries.data = dataSeries["LL_2"].sfr; llDataSeries.type = 'line'; llDataSeries.smooth = true;
+				lrDataSeries.name = 'LR'; lrDataSeries.data = dataSeries["LR_2"].sfr; lrDataSeries.type = 'line'; lrDataSeries.smooth = true;				
+				option.series.push(ulDataSeries); option.series.push(urDataSeries); option.series.push(llDataSeries); option.series.push(lrDataSeries);
+			} else if (dataSeries["UL_1"] !== undefined) {
+				var ulDataSeries = {}, urDataSeries = {}, llDataSeries = {}, lrDataSeries = {};
+				ulDataSeries.name = 'UL'; ulDataSeries.data = dataSeries["UL_1"].sfr; ulDataSeries.type = 'line'; ulDataSeries.smooth = true;
+				urDataSeries.name = 'UR'; urDataSeries.data = dataSeries["UR_1"].sfr; urDataSeries.type = 'line'; urDataSeries.smooth = true;
+				llDataSeries.name = 'LL'; llDataSeries.data = dataSeries["LL_1"].sfr; llDataSeries.type = 'line'; llDataSeries.smooth = true;
+				lrDataSeries.name = 'LR'; lrDataSeries.data = dataSeries["LR_1"].sfr; lrDataSeries.type = 'line'; lrDataSeries.smooth = true;				
+				option.series.push(ulDataSeries); option.series.push(urDataSeries); option.series.push(llDataSeries); option.series.push(lrDataSeries);
+			}
+
+			if (option && typeof option === "object") {
+				myChart.setOption(option, true);
+			}
+		}
+	}
+	//End of Draw SFR Chart
+	
+	//Draw Time chart
+	function drawTimeChart(map) {
+		var container = document.getElementById("timeContainer");
+		container.style.height = "900px"
+		var myChart = echarts.init(container);
+		var app = {};
+		option = null;
+		app.title = 'Time Pie Chart';
+
+		option = {
+			tooltip: {
+				trigger: 'item',
+				formatter: "{a} <br/>{b}: {c} ({d}%)"
+			},
+			legend: {
+				orient: 'vertical',
+				x: 'left',
+				data:[]
+			},
+			series: [
+				{
+					name:'Time Pie Chart',
+					type:'pie',
+					selectedMode: 'single',
+					radius: [0, '70%'],
+
+					label: {
+						 normal: {
+							formatter: ' {b|{b}} {c}ms {per|{d}%}',
+							backgroundColor: '#eee',
+							borderColor: '#aaa',
+							borderWidth: 1,
+							borderRadius: 4,
+							rich: {
+								a: {
+									color: '#999',
+									lineHeight: 22,
+									align: 'center'
+								},
+								hr: {
+									borderColor: '#aaa',
+									width: '100%',
+									borderWidth: 0.5,
+									height: 0
+								},
+								b: {
+									fontSize: 16,
+									lineHeight: 33
+								},
+								per: {
+									color: '#eee',
+									backgroundColor: '#334455',
+									padding: [2, 4],
+									borderRadius: 2
+								}
+							}
+						}
+					},
+					data:[
+					]
+				}
+			]
+		};
+		for (var t in map) {
+			var d = {};
+			d.name = map[t].name;
+			d.value = map[t].timeElapsed;
+			option.series[0].data.push(d);
+			option.legend.data.push(map[t].name);
+		}
+		if (option && typeof option === "object") {
+			myChart.setOption(option, true);
+		}
+	}
+	//End of Draw Time chart
+	function displayData(inputData) {
+		sfr_count = 0;
+		//var myData = JSON.parse($('#myTextarea').val());
+		var myData = JSON.parse(inputData);
+		var table = document.getElementById("myTable");
+		option = null;
+		var colors = ['#5793f3', '#d14a61', '#675bba'];
+		var timeMap = [];
+		for (var operatorName in myData) {
+			var title = document.createElement("h1");
+			title.innerHTML = operatorName;
+			document.body.appendChild(title);
+			var x = document.createElement("table");
+			x.setAttribute("id", "table_"+operatorName);
+			document.body.appendChild(x);
+			var row = x.insertRow();
+			var row1 = x.insertRow(-1);
+			var count = 0;
+			var dataSeries = {};
+			for (var attr in myData[operatorName]) {
+				var cell1 = row.insertCell(count);
+				var cell2 = row1.insertCell(count);
+				count++;
+				cell1.innerHTML = attr;
+				cell2.innerHTML = myData[operatorName][attr];
+				if (attr === "timeElapsed") {
+					var t = {};
+					t.name = operatorName;
+					t.timeElapsed = myData[operatorName][attr];
+					timeMap.push(t);
+				}
+				if (attr === "sensorID") {
+					document.getElementById("sensorID").innerHTML = "Sensor ID: " + myData[operatorName][attr]
+				}
+				if (operatorName.indexOf("SFR") !== -1 && (attr === "CC" || attr === "UL_2" || attr === "UR_2" || attr === "LL_2" || attr === "LR_2")){
+					var dataX = [], dataY = [];  var data = [];
+					for (var z in myData[operatorName][attr]) {
+						var sfr = myData[operatorName][attr][z]["sfr"];
+						dataX.push(z);
+						dataY.push(sfr);
+					}
+					data.name = attr;
+					data.z = dataX;
+					data.sfr = dataY;
+					dataSeries[attr] = data;
+				}
+			}
+			drawSFRCurve(operatorName, dataSeries);
+		}
+		drawTimeChart(timeMap);
+		var textedJson = JSON.stringify(myData, undefined, 4);
+		$('#myTextarea').text(textedJson);
+	}
+</script>
+
+</html>

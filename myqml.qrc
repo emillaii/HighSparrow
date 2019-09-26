@@ -138,6 +138,5 @@
         <file>qml/PageMenuBar/Page4MenuBar.qml</file>
         <file>qml/Report/ReportView.qml</file>
         <file>Page8Form.ui.qml</file>
-        <file>html/index.html</file>
     </qresource>
 </RCC>

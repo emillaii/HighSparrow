@@ -11,12 +11,6 @@ Page {
     width: 1580
     height: 720
 
-    header: RowLayout {
-        Button {
-            text: "Load file"
-        }
-    }
-
     Frame {
         x: 0
         y: 0

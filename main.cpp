@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<LogicManager>("LogicManagerLib",1,1,"LogicManager");
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
     engine.rootContext()->setContextProperty("lensLoaderModule", &highSprrow.baseModuleManager->lens_loader_module);
-    engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
+//    engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
     engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
     engine.rootContext()->setContextProperty("dothinkey", highSprrow.baseModuleManager->dothinkey);
     engine.rootContext()->setContextProperty("tray_loader_module",&highSprrow.baseModuleManager->tray_loader_module);

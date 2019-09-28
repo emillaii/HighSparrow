@@ -232,33 +232,11 @@ ItemDelegate {
                                 aaCoreParams.setEnableLensVcm(checked)
                             }
                         }
-                        Label {
-                            text: qsTr("VCM文件路径：")
-                        }FileDialog{
-                            id:file_dialog
-                            title:"选择加载PR文件"
-                            selectExisting: true
-                            selectFolder: false
-                            selectMultiple: false
-
-                            nameFilters: ["VCM文件 (*.exe)"]
-                            onAccepted:{
-                                aaCoreParams.setLensVcmPath(fileUrl)
-                            }
-                        }
-                        TextField{
-                            text: aaCoreParams.lensVcmPath
-                        }
-                        Button{
-                            text:qsTr("选取文件")
-                            onClicked: {
-                                file_dialog.open()
-                            }
-                        }
                         Button{
                             text:qsTr("初始化")
                             onClicked: {
-                                aaNewCore.performHandling(AACoreNew.INIT_VCM,0)
+//                                aaNewCore.performHandling(AACoreNew.INIT_VCM,0)
+                                logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.INIT_VCM)
                             }
                         }
                         Label {
@@ -278,7 +256,8 @@ ItemDelegate {
                         Button{
                             text:qsTr("移动")
                             onClicked: {
-                                aaNewCore.performHandling(AACoreNew.LENS_VCM_POS,0)
+//                                aaNewCore.performHandling(AACoreNew.LENS_VCM_POS,0)
+                                logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.LENS_VCM_POS)
                             }
                         }
                     }

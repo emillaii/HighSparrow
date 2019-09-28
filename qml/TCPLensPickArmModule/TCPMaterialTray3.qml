@@ -43,7 +43,8 @@ ColumnLayout {
                         if (baseModuleManager.getServerMode() === 0){
                             logicManager.lensPickArmMoveToTray2StartPos()
                         }else{
-                            sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_START_POS)
+//                            sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_START_POS)
+                            logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.NG_SENSOR_TRAY_START_POS)
                         }
                     }
                 }
@@ -105,7 +106,8 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
-                        sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.NG_SENSOR_TRAY_POS)
                     }
                 }
             }
@@ -155,7 +157,8 @@ ColumnLayout {
                 Button{
                     text:qsTr("测高")
                     onClicked: {
-                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_PRODUCT_IN_TRAY)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_PRODUCT_IN_TRAY)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.MEASURE_NG_PRODUCT_IN_TRAY)
                     }
                 }
             }
@@ -178,7 +181,8 @@ ColumnLayout {
                 Button{
                     text:qsTr("测高")
                     onClicked: {
-                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_SENSOR_IN_TRAY)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_SENSOR_IN_TRAY)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.MEASURE_NG_SENSOR_IN_TRAY)
                     }
                 }
             }
@@ -191,9 +195,12 @@ ColumnLayout {
                     height: 40
                     onClicked:{
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
-                        sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS
-                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-                                                           +SensorLoaderModule.TO_PR_OFFSET)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS
+//                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+//                                                           +SensorLoaderModule.TO_PR_OFFSET)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.NG_SENSOR_TRAY_POS
+                                                     +SensorLoaderModule.TRAY_EMPTY_PR
+                                                     +SensorLoaderModule.TO_PR_OFFSET)
                     }
                 }
 
@@ -203,9 +210,12 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
-                        sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS
-                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-                                                           +SensorLoaderModule.TO_PLACE_NG_POS)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS
+//                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+//                                                           +SensorLoaderModule.TO_PLACE_NG_POS)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.NG_SENSOR_TRAY_POS
+                                                     +SensorLoaderModule.TRAY_EMPTY_PR
+                                                     +SensorLoaderModule.TO_PLACE_NG_POS)
                     }
                 }
 
@@ -221,10 +231,14 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
-                        sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS
-                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-                                                           +SensorLoaderModule.TO_PLACE_NG_POS
-                                                           +SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS
+//                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+//                                                           +SensorLoaderModule.TO_PLACE_NG_POS
+//                                                           +SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.NG_SENSOR_TRAY_POS
+                                                     +SensorLoaderModule.TRAY_EMPTY_PR
+                                                     +SensorLoaderModule.TO_PLACE_NG_POS
+                                                     +SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY)
                     }
                 }
 
@@ -240,10 +254,14 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
-                        sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS
-                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-                                                           +SensorLoaderModule.TO_PLACE_NG_POS
-                                                           +SensorLoaderModule.PLACE_NG_PRODUCT_TO_TRAY)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS
+//                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+//                                                           +SensorLoaderModule.TO_PLACE_NG_POS
+//                                                           +SensorLoaderModule.PLACE_NG_PRODUCT_TO_TRAY)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.NG_SENSOR_TRAY_POS
+                                                     +SensorLoaderModule.TRAY_EMPTY_PR
+                                                     +SensorLoaderModule.TO_PLACE_NG_POS
+                                                     +SensorLoaderModule.PLACE_NG_PRODUCT_TO_TRAY)
                     }
                 }
             }

@@ -216,7 +216,25 @@ Popup {
                                    color:"white"
                                 }
                             }
+                            RoundButton{
+                                id:motorOnOffButton
+                                text:"off"
+                                onClicked: {
+                                    if(motorOnOffButton.text === "off")
+                                        baseModuleManager.enableMotor(modelData)
+                                    else
+                                        baseModuleManager.disableMotor(modelData)
+                                }
+                                Connections{
+                                   target: timer
+                                   onTriggered:{
+                                       if(motorOnOffButton.visible)
+                                           motorOnOffButton.text = baseModuleManager.getMotorEnableState(modelData)? "on":"off"
+                                   }
+                                }
+                            }
                             RoundButton {
+                                id:homeButton
                                 onClicked: {
                                     logicManagerState.setCurrentChannelName(modelData)
                                     logicManager.performHandling("", LogicManager.MOTION_SINGLE_MOTOR_HOME)
@@ -226,6 +244,13 @@ Popup {
                                 display: Button.IconOnly
                                 icon.source: "icons/home.png"
                                 icon.color: "cyan"
+                                Connections{
+                                   target: timer
+                                   onTriggered:{
+                                       if(homeButton.visible)
+                                        homeButton.icon.color = baseModuleManager.getMotorHomeState(modelData)?"green":"cyan"
+                                   }
+                                }
                             }
                             RoundButton{
                                 text:"-"

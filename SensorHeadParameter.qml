@@ -41,7 +41,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        sensorLoaderModule.performHandling(SensorLoaderModule.SPA_STANDBY_POS)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.SPA_STANDBY_POS)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SPA_STANDBY_POS)
                     }
                 }
                 Button{
@@ -138,7 +139,8 @@ ColumnLayout {
         Button{
             text: qsTr("测量")
             onClicked: {
-                sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_Z_OFFSET);
+//                sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_Z_OFFSET);
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.MEASURE_Z_OFFSET)
             }
         }
     }

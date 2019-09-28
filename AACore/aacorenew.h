@@ -50,7 +50,7 @@ public:
         INIT_VCM =14
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
-    void Init(AAHeadModule* aa_head,LutClient* lut,SutModule* sut,Dothinkey *dk,
+    void Init(AAHeadModule* aa_head,SutModule* sut,Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog, int serverMode);
     void performAAOffline();
@@ -112,6 +112,7 @@ private:
     bool HasSensorOrProduct();
     void NgProduct();
     void SetLens();
+    void SetNoLens();
     void SetSensor();
     void SetNoSensor();
     void SetProduct();
@@ -143,7 +144,9 @@ private:
     bool has_ng_sensor = false;
     bool has_sensor = false;
     bool send_lens_request = false;
+    bool finish_lens_request = false;
     bool send_sensor_request = false;
+    bool finish_sensor_request = false;
     bool has_lens = false;
 
     int current_aa_ng_time = 0;
@@ -164,6 +167,7 @@ private:
                                                                unsigned int & llROIIndex,
                                                                unsigned int & lrROIIndex);
     double oc_fov = -1;
+    double oc_z = 0;
     QProcess vcmCmdServer;
 public slots:
     //ThreadWorkerBase

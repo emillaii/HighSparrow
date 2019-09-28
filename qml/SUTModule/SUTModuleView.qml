@@ -82,7 +82,7 @@ ItemDelegate {
                                 text:qsTr("UpDn Calib")
                                 onClicked: {
                                     //logicManager.performUpDnLookCalibration()
-                                    logicManager.performHandling(LogicManager.PERFORM_UPDNLOOK_CALIBRATION)
+                                    logicManager.performHandling("",LogicManager.PERFORM_UPDNLOOK_CALIBRATION)
                                 }
                             }
                             Label {

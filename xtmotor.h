@@ -130,9 +130,6 @@ protected:
     int axis_id;
     int axis_sub_id;
 
-
-    bool is_enable;
-
     int out_en_id;
     int out_clr_id;
 

@@ -34,7 +34,7 @@ public slots:
     void resetLogic();
 //    void receiveChangeTray();
 private:
-    void run(bool has_material);
+    void run();
     void runHandly();
 public:
     SensorTrayLoaderParameter parameters;
@@ -77,15 +77,15 @@ public:
 
 private:
     bool is_run = false;
-    bool moveToDownTrayAndReadyToPush(bool need_check);
-    bool moveToUpReadyTray(bool has_tray,bool need_check);
+    bool moveToDownTrayAndReadyToPush();
+    bool moveToUpReadyTray(bool has_tray);
     bool moveToWaitHandleTray();
-    bool moveToChangeVacancyTrayAndUpReadyTray(bool has_vacancy_tray,bool need_check);
-    bool moveToPullNextTray(bool need_check);
-    bool moveToPullNextTrayAndPushOutTray(bool has_vacancy_tray,bool need_check);
+    bool moveToChangeVacancyTrayAndUpReadyTray(bool has_vacancy_tray);
+    bool moveToPullNextTray();
+    bool moveToPullNextTray1();
     bool moveToPutFirstTray();
     bool moveToPutTray();
-    bool moveToWorkPos(bool need_check);
+    bool moveToWorkPos(bool has_tray = true);
     bool moveToEntranceClipNextPos();
     bool moveToExitClipNextPos();
 

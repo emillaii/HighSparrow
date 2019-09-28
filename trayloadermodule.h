@@ -10,66 +10,32 @@
 class TrayLoaderModule : public ThreadWorkerBase{
     Q_OBJECT
 public:
-    TrayLoaderModule(QString name="TrayLoaderModule");
+    TrayLoaderModule(QString name="LensTrayLoaderModule");
     void Init(XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtCylinder*,XtCylinder*,XtCylinder*,XtCylinder*,TrayClip*,TrayClip*,
               XtGeneralInput *work_tray_check_io,XtGeneralInput* entrance_tray_check_io,XtGeneralInput* exit_tray_check_io,
               XtGeneralInput* entrance_clip_check_io,XtGeneralInput* exit_clip_check_io,XtGeneralInput* ready_tray_check_io);
-    void performHandling(int cmd);
 
     TrayClip* tray_clip = Q_NULLPTR;
     TrayClip* tray_clip_out = Q_NULLPTR;
     TrayLoaderModuleParameter parameters;
     TrayLoaderState states;
-    bool startUp();
 
-//    bool moveToNextTrayPos();
-    bool ejectTray();
-
-    bool motorInPress();
-//    bool moveToReadyFirstKick();
-//    bool moveToFirstKick();
-//    bool moveToReadySecondKick();
-    bool moveToLtkx1GetPos();
-    bool moveToLtkx1RelayPos();
-    bool moveToLtkx1SetPos();
-    bool motorInRelease();
-
-    bool moveToLtlGetPos();
-//    bool moveToSafePos();
-    bool motorWorkPress();
-    bool moveToLtlSetPos();
-    bool motorWorkRelease();
-//    bool moveToTrayOutHandOverPos();
-//    bool moveToTrayInHandOverPos();
-
-    bool moveToLtkx2GetPos();
-    bool motorOutPress();
-    bool moveToLtkx2SetPos();
-    bool motorOutRelease();
-
-//    bool moveToNextEmptyPos();
-
-    bool moveToChangeClipPos();
-
-    bool LTIEMovetoColumnIndex(int);
-    bool LTOEMovetoColumnIndex(int);
-
-    bool sendoutAndReayPushOutEmptyTray(bool check_tray);
-    bool moveToGetAndPushInNewTrayAndPushOutTray(bool check_tray);
-    bool moveToGetAndPushInNewTray(bool check_tray);
+    bool sendoutAndReayPushOutEmptyTray();
+    bool moveToGetAndPushInNewTrayAndPushOutTray();
+    bool moveToGetAndPushInNewTray();
     bool moveToPushOutTray();
     bool moveToWorkPosAndReayPullNewTray();
     bool entranceClipMoveToNextPos();
     bool moveToReayPullNewTray();
     bool moveToPushReadyTray();
-    bool clipPushoutTray(bool check_tray);
-//    bool moveToReadyPushTray();
+    bool clipPushoutTray();
     bool existClipMoveToNextPos();
 
     bool moveToChangeChangeHandlly();
     bool moveToWorkPos();
+    bool moveToChangeClipPos();
 private:
-    void run(bool has_tray);
+    void run();
     bool resumeState();
     void runHandle();
 
@@ -97,40 +63,11 @@ private:
     XtGeneralInput* exit_clip_check_io = Q_NULLPTR;
     XtGeneralInput* ready_tray_check_io = Q_NULLPTR;
 
-signals:
-//    void nextTrayPos();
-//    void ltkx1Pickup();
-//    void ltlxPickup();
-//    void ltlxPutdown();
-//    void ltkx2Pickup();
-//    void nextEmptyPos();
-    void trayReady();
-    void testTrayUsed();
-
-//    void testLTLXPickUpTray();
-//    void testLTLXPutDownTray();
-//    void reset();
-
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
     void resetLogic();
     void performHandlingOperation(int cmd);
-
-//    void onNextTrayPos();
-//    void onLtkx1Pickup();
-//    void onLtlxPickup();
-//    void onLtlxPutdown();
-//    void onLtkx2Pickup();
-//    void onNextEmptyPos();
-
-    void onTestTrayUsed();
-//    void onTestLTLXPickUpTray();
-//    void onTestLTLXPutDownTray();
-//    void onReset();
-
-
-
     // ThreadWorkerBase interface
 public:
     PropertyBase *getModuleState();

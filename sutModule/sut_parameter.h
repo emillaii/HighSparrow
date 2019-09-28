@@ -390,6 +390,7 @@ class SutState:public PropertyBase
     Q_PROPERTY(bool disableStation READ disableStation WRITE setDisableStation NOTIFY disableStationChanged)
     Q_PROPERTY(bool handlyChangeSensor READ handlyChangeSensor WRITE setHandlyChangeSensor NOTIFY handlyChangeSensorChanged)
     Q_PROPERTY(int sutMaterialState READ sutMaterialState WRITE setSutMaterialState NOTIFY sutMaterialStateChanged)
+    Q_PROPERTY(bool stationUnload READ stationUnload WRITE setStationUnload NOTIFY stationUnloadChanged)
 
     Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
@@ -459,6 +460,11 @@ public:
     int sutMaterialState() const
     {
         return m_sutMaterialState;
+    }
+
+    bool stationUnload() const
+    {
+        return m_stationUnload;
     }
 
 public slots:
@@ -570,6 +576,15 @@ public slots:
         emit sutMaterialStateChanged(m_sutMaterialState);
     }
 
+    void setStationUnload(bool stationUnload)
+    {
+        if (m_stationUnload == stationUnload)
+            return;
+
+        m_stationUnload = stationUnload;
+        emit stationUnloadChanged(m_stationUnload);
+    }
+
 signals:
     void sutHasSensorChanged(bool sutHasSensor);
 
@@ -595,6 +610,8 @@ signals:
 
     void sutMaterialStateChanged(int sutMaterialState);
 
+    void stationUnloadChanged(bool stationUnload);
+
 private:
     bool m_sutHasSensor = false;
     bool m_sutHasNgSensor = false;
@@ -608,6 +625,7 @@ private:
     int m_stationNumber = 0;
     bool m_disableStation = false;
     int m_sutMaterialState = 0;
+    bool m_stationUnload = false;
 };
 
 #endif // SUT_PARAMETER_H

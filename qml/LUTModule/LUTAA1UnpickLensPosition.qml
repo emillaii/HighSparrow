@@ -76,7 +76,8 @@ ColumnLayout {
             height: 40
             onClicked: {
                 //logicManager.lutPickLensToAA1()
-                lutModule.performHandling(3);
+//                lutModule.performHandling(3);
+                logicManager.performHandling(lutParams.moduleName,3)
 //                lutModule.moveToAA1UnPickLens()
 //                lutModule.moveToAA1PickLens(false,true)
             }

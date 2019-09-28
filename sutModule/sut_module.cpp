@@ -6,15 +6,14 @@
 
 SutModule::SutModule()
 {
-    setName("SutModule");
     gui_thread_id = QThread::currentThreadId();
 }
 
-void SutModule::Init(MaterialCarrier *carrier,SutClient* sut_cilent, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin,XtGeneralOutput* camera_trig,int thread_id)
+void SutModule::Init(MaterialCarrier *carrier, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin,XtGeneralOutput* camera_trig,int thread_id)
 {
     this->carrier = carrier;
     parts.append(carrier);
-    this->sut_cilent = sut_cilent;
+//    this->sut_cilent = sut_cilent;
 //    parts.append(sut_cilent);
     this->vision_downlook_location = downlook_location;
     parts.append(vision_downlook_location);
@@ -131,9 +130,7 @@ bool SutModule::moveToDownlookSaveImage(QString imageName,bool close_lighting,bo
     bool result = moveToDownlookPos(check_autochthonous);
     if(result)
     {
-        if(has_material)
-            QThread::msleep(80);
-            result = vision_downlook_location->saveImage(imageName);
+        result = vision_downlook_location->saveImage(imageName);
     }
     if(close_lighting)
         vision_downlook_location->CloseLight();
@@ -192,34 +189,30 @@ bool SutModule::moveToDownLookFlyPr()
     }
     //开始移动
     bool result = carrier->motor_y->setTrig(true,parameters.downlookFlyPrPosition(),camera_trig->GetID(),true);
-    result &= carrier->motor_y->setTrig(true,parameters.downlookFlyPrPosition()+1,camera_trig->GetID(),false);
-    qInfo("wwd %d",result);
-    result &= carrier->Move_SZ_XY_ToPos(down_look_fly_end_position.X(),down_look_fly_end_position.Y());
-    qInfo("wwd %d",result);
+    result &= carrier->motor_y->setTrig(true,parameters.downlookFlyPrPosition()-1,camera_trig->GetID(),false);
+    result &= carrier->motor_x->SGO(down_look_fly_end_position.X());
+    result &= carrier->motor_y->SGO(down_look_fly_end_position.Y());
+//    result &= carrier->Move_SZ_XY_ToPos(down_look_fly_end_position.X(),down_look_fly_end_position.Y());
     if(!result)
         return false;
-    qInfo("wwd1");
     //到达飞拍起点变速
     result = carrier->motor_y->WaitLessThanTargetPos(parameters.downlookFlyStartPosition());
     if(!result)
         return false;
-    qInfo("wwd2");
     carrier->motor_y->SetVel(parameters.downlookFlyVelocity());
-    result = carrier->motor_y->MoveToPos(down_look_fly_end_position.Y());
+    result = carrier->motor_y->SGO(down_look_fly_end_position.Y());
     if(!result)
     {
         carrier->motor_y->ResetVel();
         return false;
     }
-    qInfo("wwd3");
-    //到达飞排点
-    result = carrier->motor_y->WaitLessThanTargetPos(parameters.downlookFlyPrPosition()+1);
+    //到达飞排点进行飞拍
+    result = carrier->motor_y->WaitArrivedTargetPos(parameters.downlookFlyPrPosition()+1);
     if(!result)
     {
         carrier->motor_y->ResetVel();
         return false;
     }
-    qInfo("wwd");
     carrier->motor_y->clearTrig();
     carrier->motor_y->ResetVel();
     return true;
@@ -352,7 +345,7 @@ bool SutModule::performDownLookPR()
     qInfo("performDownLookPR");
     bool result;
     if(states.runMode() == RunMode::NoMaterial)
-        result= vision_downlook_location->performNoMaterialPR();
+        result = vision_downlook_location->performNoMaterialPR();
     else
         result = vision_downlook_location->performPR();
     if(!result)
@@ -414,7 +407,7 @@ void SutModule::receiveLoadSensorRequst(int sut_state)
     qInfo("excute LoadSensorRequst");
 }
 
-void SutModule::run(bool has_material)
+void SutModule::run()
 {
     is_run = true;
     QString aa_module_name = states.stationNumber() == 0?"AA1CoreNew":"AA2CoreNew";
@@ -423,7 +416,8 @@ void SutModule::run(bool has_material)
         QThread::msleep(10);
         if(!states.allowLoadSensor())
             continue;
-        if((states.sutMaterialState() != MaterialState::IsRaw)&&(!states.waitLoading()))
+        //去load位置
+        if((states.sutMaterialState() != MaterialState::IsRawSensor)&&(!states.waitLoading()))
         {
             if(states.sutMaterialState() != MaterialState::IsEmpty)
             {
@@ -473,15 +467,17 @@ void SutModule::run(bool has_material)
             states.setLoadingSensor(true);
             states.setWaitLoading(true);
         }
-
+        //等待卸料完成
         if(states.waitLoading()&&(!states.loadingSensor())&&(states.sutMaterialState() == MaterialState::IsEmpty))
         {
             states.setAllowLoadSensor(false);
             states.setWaitLoading(false);
-            sendMessageToModule(aa_module_name,"FinishPickRequest");
+            QJsonObject param;
+            param.insert("SutMaterialState",MaterialTray::getMaterialStateName(states.sutMaterialState()));
+            sendMessageToModule(aa_module_name,"FinishLoadSensor",param);
         }
-
-        if(states.waitLoading()&&(!states.loadingSensor())&&(states.sutMaterialState() == MaterialState::IsRaw))
+        //等待卸料+上料完成
+        if(states.waitLoading()&&(!states.loadingSensor())&&(states.sutMaterialState() == MaterialState::IsRawSensor))
         {
             if(!checkSutHasMaterialSynic())
             {
@@ -506,7 +502,7 @@ void SutModule::run(bool has_material)
                     continue;
             }
             QThread::msleep(100);
-            if((!moveToDownlookPR(offset))&&has_material)
+            if(!moveToDownlookPR(offset))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -519,13 +515,14 @@ void SutModule::run(bool has_material)
                 DownlookPrDone = true;
             }
             emit sendLoadSensorFinish(offset.X,offset.Y,offset.Theta);
-//            QJsonObject param;
-//            param.insert("OffsetX",offset.X);
-//            param.insert("OffsetY",offset.Y);
-//            param.insert("OffsetT",offset.Theta);
             states.setAllowLoadSensor(false);
             states.setWaitLoading(false);
-            sendMessageToModule(aa_module_name,"FinishPlaceRequest");
+            QJsonObject param;
+            //            param.insert("OffsetX",offset.X);
+            //            param.insert("OffsetY",offset.Y);
+            //            param.insert("OffsetT",offset.Theta);
+            param.insert("SutMaterialState",MaterialTray::getMaterialStateName(states.sutMaterialState()));
+            sendMessageToModule(aa_module_name,"FinishLoadSensor",param);
         }
 
     }
@@ -573,16 +570,9 @@ void SutModule::startWork(int run_mode)
     }
     if(states.disableStation())
         return;
-    has_material = true;
     qInfo("sut Module start run_mode :%d in %d",run_mode,QThread::currentThreadId());
-    if(states.runMode() == RunMode::Normal)
-        run(true);
-    else if(states.runMode() == RunMode::NoMaterial)
-    {
-        has_material = false;
-        run(false);
-    }
-
+    if(states.runMode() == RunMode::Normal||states.runMode() == RunMode::NoMaterial)
+        run();
 }
 
 void SutModule::stopWork(bool wait_finish)
@@ -605,9 +595,6 @@ void SutModule::performHandlingOperation(int cmd)
 void SutModule::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-//    QMutexLocker temp_locker(&message_mutex);
-//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-//        this->module_message = message;
     if(!message.contains("OriginModule"))
     {
         qInfo("message error! has no OriginModule.");
@@ -618,14 +605,9 @@ void SutModule::receivceModuleMessage(QVariantMap message)
     {
         if(message.contains("Message"))
         {
-            if(message["Message"].toString()=="FinishPickRequest")
+            if(message["Message"].toString()=="FinishLoadSensor")
             {
-                states.setSutMaterialState(MaterialState::IsEmpty);
-                states.setLoadingSensor(false);
-            }
-            else if(message["Message"].toString()=="FinishPlaceRequest")
-            {
-                states.setSutMaterialState(MaterialState::IsRaw);
+                states.setSutMaterialState(MaterialTray::getMaterialStateFromName(message["MaterialState"].toString()));
                 states.setLoadingSensor(false);
             }
             else
@@ -638,25 +620,18 @@ void SutModule::receivceModuleMessage(QVariantMap message)
     {
         if(message.contains("Message"))
         {
-            if(message["Message"].toString()=="NoSensor")
+            if(message["Message"].toString()=="LoadSensorRequest")
             {
-                states.setSutMaterialState(MaterialState::IsEmpty);
+                states.setSutMaterialState(MaterialTray::getMaterialStateFromName(message["MaterialState"].toString()));
                 states.setAllowLoadSensor(true);
             }
-            else if(message["Message"].toString()=="NgSensor")
+            else if(message["Message"].toString()=="UnloadMode")
             {
-                states.setSutMaterialState(MaterialState::IsNgSensor);
-                states.setAllowLoadSensor(true);
+                states.setStationUnload(true);
             }
-            else if(message["Message"].toString()=="NgProduct")
+            else if(message["Message"].toString()=="NormalMode")
             {
-                states.setSutMaterialState(MaterialState::IsNgProduct);
-                states.setAllowLoadSensor(true);
-            }
-            else if(message["Message"].toString()=="GoodProduct")
-            {
-                states.setSutMaterialState(MaterialState::IsProduct);
-                states.setAllowLoadSensor(true);
+                states.setStationUnload(false);
             }
             else
             {

@@ -37,76 +37,6 @@ ItemDelegate {
                 }
             }
             GroupBox{
-                title: qsTr("测试参数")
-                visible: baseModuleManager.getServerMode() === 0
-                RowLayout{
-                    CheckBox {
-                        text: qsTr("静态测试")
-                        checked: lens_loader_parameter.staticTest
-                        onClicked: {
-                            lens_loader_parameter.setStaticTest(checked)
-                            lutParams.setStaticTest(checked)
-                        }
-                    }
-                    Label{
-                        text: qsTr("重复次数")
-                    }
-                    TextField{
-                        horizontalAlignment: TextInput.AlignHCenter
-                        text: lens_loader_parameter.repeatTime
-                        onEditingFinished: {
-                            lens_loader_parameter.setRepeatTime(text)
-                            lutParams.setRepeatTime(text)
-                        }
-                    }
-                    Label{
-                        text: qsTr("测试个数")
-                    }
-                    TextField{
-                        horizontalAlignment: TextInput.AlignHCenter
-                        text: lens_loader_parameter.testLensCount
-                        onEditingFinished: {
-                            lens_loader_parameter.setTestLensCount(text)
-                            lutParams.setTestLensCount(text)
-                        }
-                    }
-                }
-            }
-            //            GroupBox{
-            //                title: qsTr("测试参数")
-            //                visible: baseModuleManager.getServerMode() !== 0
-            //                ColumnLayout{
-            //                    CheckBox {
-            //                        text: qsTr("静态测试")
-            //                        checked: lens_loader_parameter.staticTest
-            //                        onClicked: {
-            //                            sensorLoaderParameter.setStaticTest(checked)
-            //                            sutParams.setStaticTest(checked)
-            //                        }
-            //                    }
-            //                    Label{
-            //                        text: qsTr("重复次数")
-            //                    }
-            //                    TextField{
-            //                        text: sensorLoaderParameter.repeatTime
-            //                        onEditingFinished: {
-            //                            sensorLoaderParameter.setRepeatTime(text)
-            //                            sutParams.setRepeatTime(text)
-            //                        }
-            //                    }
-            //                    Label{
-            //                        text: qsTr("测试个数")
-            //                    }
-            //                    TextField{
-            //                        text: sensorLoaderParameter.testLensCount
-            //                        onEditingFinished: {
-            //                            sensorLoaderParameter.setTestLensCount(text)
-            //                            sutParams.setTestLensCount(text)
-            //                        }
-            //                    }
-            //                }
-            //            }
-            GroupBox{
                 title:qsTr("系统操作")
                 ColumnLayout {
                     RowLayout {
@@ -156,7 +86,6 @@ ItemDelegate {
                         }
                     }
                     RowLayout {
-                        visible: baseModuleManager.getServerMode() === 1
                         CheckBox {
                             text: qsTr("任务累计计数");
                             checked: aaCoreParams.taskAccumulate
@@ -166,7 +95,6 @@ ItemDelegate {
                         }
                     }
                     RowLayout {
-                        visible: baseModuleManager.getServerMode() === 1
                         RadioButton
                         {
                             id:fsj_task
@@ -186,7 +114,6 @@ ItemDelegate {
                         }
                     }
                     RowLayout {
-                        visible: baseModuleManager.getServerMode() === 1
                         RadioButton
                         {
                             id:ssj_task
@@ -206,7 +133,6 @@ ItemDelegate {
                         }
                     }
                     RowLayout {
-                        visible: baseModuleManager.getServerMode() === 1
                         RadioButton
                         {
                             id:normal_task
@@ -282,21 +208,21 @@ ItemDelegate {
                         text: "开始"
                         onClicked: {
                             workersManager.startWorker("TrayLoaderModule",moduleManagerParam.runMode)
-                            workersManager.startWorker("LensPickArmModule",moduleManagerParam.runMode)
+                            workersManager.startWorker("LensLoaderModule",moduleManagerParam.runMode)
                             workersManager.startWorker("LUTModule",moduleManagerParam.runMode)
                         }
                     }
                     Button {
                         text: "放"
                         onClicked: {
-                            lutClient.sendLensRequest(false,false)
+//                            lutClient.sendLensRequest(false,false)
                             //                            baseModuleManager.sendLoadLens(false)
                         }
                     }
                     Button {
                         text: "放 取ng"
                         onClicked: {
-                            lutClient.sendLensRequest(true,false)
+//                            lutClient.sendLensRequest(true,false)
                             //                            baseModuleManager.sendLoadLens(true)
                         }
                     }

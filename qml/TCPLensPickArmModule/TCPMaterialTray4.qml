@@ -40,7 +40,8 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        sensorLoaderModule.performHandling(SensorLoaderModule.BUFFER_TRAY_START_POS)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.BUFFER_TRAY_START_POS)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.BUFFER_TRAY_START_POS)
                     }
                 }
                 Button{
@@ -92,7 +93,8 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,3)
-                        sensorLoaderModule.performHandling(SensorLoaderModule.BUFFER_TRAY_POS)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.BUFFER_TRAY_POS)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.BUFFER_TRAY_POS)
                     }
                 }
             }
@@ -141,7 +143,8 @@ ColumnLayout {
                 Button{
                     text:qsTr("测高")
                     onClicked: {
-                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_PRODUCT_IN_TRAY2)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_PRODUCT_IN_TRAY2)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.MEASURE_PRODUCT_IN_TRAY2)
                     }
                 }
             }
@@ -154,9 +157,12 @@ ColumnLayout {
                     height: 40
                     onClicked:{
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,3)
-                        sensorLoaderModule.performHandling(SensorLoaderModule.BUFFER_TRAY_POS
-                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-                                                           +SensorLoaderModule.TO_PR_OFFSET)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.BUFFER_TRAY_POS
+//                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+//                                                           +SensorLoaderModule.TO_PR_OFFSET)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.BUFFER_TRAY_POS
+                                                     +SensorLoaderModule.TRAY_EMPTY_PR
+                                                     +SensorLoaderModule.TO_PR_OFFSET)
                     }
                 }
 
@@ -166,9 +172,12 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,3)
-                        sensorLoaderModule.performHandling(SensorLoaderModule.BUFFER_TRAY_POS
-                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-                                                           +SensorLoaderModule.TO_PLACE_BUFFER_POS)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.BUFFER_TRAY_POS
+//                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+//                                                           +SensorLoaderModule.TO_PLACE_BUFFER_POS)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.BUFFER_TRAY_POS
+                                                     +SensorLoaderModule.TRAY_EMPTY_PR
+                                                     +SensorLoaderModule.TO_PLACE_BUFFER_POS)
                     }
                 }
 
@@ -184,10 +193,14 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,3)
-                        sensorLoaderModule.performHandling(SensorLoaderModule.BUFFER_TRAY_POS
-                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-                                                           +SensorLoaderModule.TO_PLACE_BUFFER_POS
-                                                           +SensorLoaderModule.PLACE_PRODUCT_TO_BUFFER_TRAY)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.BUFFER_TRAY_POS
+//                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+//                                                           +SensorLoaderModule.TO_PLACE_BUFFER_POS
+//                                                           +SensorLoaderModule.PLACE_PRODUCT_TO_BUFFER_TRAY)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.BUFFER_TRAY_POS
+                                                     +SensorLoaderModule.TRAY_EMPTY_PR
+                                                     +SensorLoaderModule.TO_PLACE_BUFFER_POS
+                                                     +SensorLoaderModule.PLACE_PRODUCT_TO_BUFFER_TRAY)
                     }
                 }
             }

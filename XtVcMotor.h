@@ -102,7 +102,7 @@ private:
     bool is_softlanding = false;
     bool is_softlanded = false;
     bool is_returning = false;
-    LONG64 error_code;
+    LONG64 error_code = 0;
 public:
     VCM_Resource_struct vcm_resource;
     static int vcm_count;

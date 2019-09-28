@@ -251,8 +251,8 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     Sleep(30);
     WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0001, pSensor->mode);
     Sleep(30);
-    USHORT start = 0x0a17;
-    USHORT end = 0x0a21;
+    USHORT start = 0x0a21;
+    USHORT end = 0x0a29;
     QString temp = "";
     QString senser_id = "";
     for (USHORT i = start; i <= end; ++i) {
@@ -273,7 +273,7 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
     pSensor = &(m_CameraChannels[0].current_sensor);
 //    byte uAddr = pSensor->SlaveID;
     bool result_otp = true;
-    byte uAddr = 0xA0;
+    byte uAddr = 0xA2;
     int result = WriteSensorReg(uAddr, 0x8000, 0x00, pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x8000,0x00,result);
@@ -285,14 +285,14 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
     memcpy(byte.data(), &number, sizeof(int));
     USHORT value = byte[0];
     // 机台号
-    WriteSensorReg(uAddr, 0x1F00, value, pSensor->mode);
+    WriteSensorReg(uAddr, 0x1E00, value, pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1F00, value,result);
     if(result != 1)
         result_otp = false;
     // 工位号
     value = byte[1];
-    WriteSensorReg(uAddr, 0x1F01, value, pSensor->mode);
+    WriteSensorReg(uAddr, 0x1E01, value, pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1F01, value,result);
     if(result != 1)
@@ -300,7 +300,7 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
 
     // 镜头标志位
     USHORT lens_label = 0x00;
-    WriteSensorReg(uAddr, 0x1F03, lens_label, pSensor->mode);
+    WriteSensorReg(uAddr, 0x1E03, lens_label, pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1F03, lens_label,result);
     if(result != 1)
@@ -313,38 +313,38 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
     byte.resize(sizeof(int));
     memcpy(byte.data(), &year, sizeof(int));
     value = byte[0];
-    WriteSensorReg(uAddr, 0x1F04, value, pSensor->mode);
+    WriteSensorReg(uAddr, 0x1E04, value, pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1F04, value,result);
     if(result != 1)
         result_otp = false;
     value = byte[1];
-    WriteSensorReg(uAddr, 0x1F05, value, pSensor->mode);
+    WriteSensorReg(uAddr, 0x1E05, value, pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1F05,value,result);
     if(result != 1)
         result_otp = false;
-    WriteSensorReg(uAddr, 0x1F06, date.month(), pSensor->mode);
+    WriteSensorReg(uAddr, 0x1E06, date.month(), pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1F06, date.month(),result);
     if(result != 1)
         result_otp = false;
-    WriteSensorReg(uAddr, 0x1F07, date.day(), pSensor->mode);
+    WriteSensorReg(uAddr, 0x1E07, date.day(), pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1F07, date.day(),result);
     if(result != 1)
         result_otp = false;
-    WriteSensorReg(uAddr, 0x1F08, time.hour(), pSensor->mode);
+    WriteSensorReg(uAddr, 0x1E08, time.hour(), pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1F08, time.hour(),result);
     if(result != 1)
         result_otp = false;
-    WriteSensorReg(uAddr, 0x1F09, time.minute(), pSensor->mode);
+    WriteSensorReg(uAddr, 0x1E09, time.minute(), pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1F09, time.minute(),result);
     if(result != 1)
         result_otp = false;
-    WriteSensorReg(uAddr, 0x1F0A, time.second(), pSensor->mode);
+    WriteSensorReg(uAddr, 0x1E0A, time.second(), pSensor->mode);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1F0A, time.second(),result);
     if(result != 1)
@@ -352,7 +352,7 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
 
     // 检查镜头标志位 0 or 1
     value = 0;
-    ReadSensorReg(uAddr, 0x1F03, &value, pSensor->mode);
+    ReadSensorReg(uAddr, 0x1E03, &value, pSensor->mode);
     qInfo("Read reg %X  value %02X",uAddr, value);
     if ((value != lens_label)||(!result_otp))
     {

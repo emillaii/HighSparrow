@@ -830,7 +830,7 @@ public:
     Q_PROPERTY(bool disableStation READ disableStation WRITE setDisableStation NOTIFY disableStationChanged)
     Q_PROPERTY(int stationTask READ stationTask WRITE setStationTask NOTIFY stationTaskChanged)
     Q_PROPERTY(int currentTask READ currentTask WRITE setCurrentTask NOTIFY currentTaskChanged)
-    Q_PROPERTY(bool finishSensorTask READ finishSensorTask WRITE setFinishSensorTask NOTIFY finishSensorTaskChanged)
+    Q_PROPERTY(bool finishStationTask READ finishStationTask WRITE setFinishSensorTask NOTIFY finishSensorTaskChanged)
     Q_PROPERTY(bool finishLensTask READ finishLensTask WRITE setFinishLensTask NOTIFY finishLensTaskChanged)
     Q_PROPERTY(bool isWaitingLens READ isWaitingLens WRITE setIsWaitingLens NOTIFY isWaitingLensChanged)
     Q_PROPERTY(bool isWaitingSensor READ isWaitingSensor WRITE setIsWaitingSensor NOTIFY isWaitingSensorChanged)
@@ -923,7 +923,7 @@ public:
         return m_currentTask;
     }
 
-    bool finishSensorTask() const
+    bool finishStationTask() const
     {
         return m_finishSensorTask;
     }
@@ -1129,7 +1129,7 @@ signals:
 
     void currentTaskChanged(int currentTask);
 
-    void finishSensorTaskChanged(bool finishSensorTask);
+    void finishSensorTaskChanged(bool finishStationTask);
 
     void finishLensTaskChanged(bool finishLensTask);
 

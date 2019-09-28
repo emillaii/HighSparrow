@@ -55,7 +55,7 @@ public:
     };
 
 public:
-    LensLoaderModule(QString name = "LensPickArmModule");
+    LensLoaderModule(QString name = "LensLoaderModule");
     void Init(LensPickArm *pick_arm,MaterialTray *tray,MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision,
               VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision);
@@ -137,7 +137,7 @@ public slots:
     void performHandlingOperation(int cmd);
 public:
     LensLoaderModuleParameter parameters;
-    LensPickArmModuleState states;
+    LensLoaderModuleState states;
     Position lut_pr_position1;
     Position lut_pr_position2;
     Position lut_camera_position;
@@ -189,7 +189,8 @@ public:
 public:
     void receivceModuleMessage(QVariantMap module_message);
     PropertyBase *getModuleState();
-
+private:
+    bool checkNeedPickLens();
     // ThreadWorkerBase interface
 public:
     QMap<QString, PropertyBase *> getModuleParameter();

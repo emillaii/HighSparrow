@@ -196,7 +196,7 @@ $(document).ready(function () {
 		$('#mtf_operator_title').val($flowchart.flowchart('getOperatorTitle', operatorId));
 		Object.keys(params).forEach(function(key) {
 			console.log('Key : ' + key + ', Value : ' + params[key])
-			if (key == "CC" || key == "UL" || key == "UR" || key == "LL" || key == "LR" || key == "SFR_DEV_TOL" || key == "CC_TOL" || key == "03F_TOL" || key == "05F_TOL" || key == "08F_TOL"){
+			if (key == "SFR_DEV_TOL" || key == "CC_MIN" || key == "CC_MAX" || key == "03F_MIN" || key == "03F_MAX" || key == "05F_MIN" || key == "05F_MAX" || key == "08F_MIN" || key == "08F_MAX"){
 				var table = document.getElementById("mtf_table_form");
 				var row = table.insertRow(table.rows.length);
 				var row_number = table.rows.length;
@@ -205,7 +205,7 @@ $(document).ready(function () {
 				var cell3 = row.insertCell(2);
 				var select_position = document.createElement('select');
 				var sfr_score = document.createElement('input');
-				select_position.innerHTML = "<option value=CC>CC</option><option value=UL>UL</option><option value=UR>UR</option><option value=LL>LL</option><option value=LR>LR</option><option value=SFR_DEV_TOL>SFR_DEV_TOL</option><option value=CC_TOL>CC_TOL</option><option value=03F_TOL>03F_TOL</option><option value=05F_TOL>05F_TOL</option><option value=08F_TOL>08F_TOL</option>";
+				select_position.innerHTML = "<option value=SFR_DEV_TOL>SFR_DEV_TOL</option><option value=CC_MIN>CC_MIN</option><option value=CC_MAX>CC_MAX</option><option value=03F_MIN>03F_MIN</option><option value=03F_MAX>03F_MAX</option><option value=05F_MIN>05F_MIN</option><option value=05F_MAX>05F_MAX</option><option value=08F_MIN>08F_MIN</option><option value=08F_MAX>08F_MAX</option><option value=05F_TOL>05F_TOL</option><option value=08F_TOL>08F_TOL</option>";
 				select_position.value = key;
 				cell1.appendChild(select_position);
 				sfr_score.value = params[key]; sfr_score.type="number"; 
@@ -543,7 +543,7 @@ $(document).ready(function () {
 	} else if (operatorId.includes("Y_Level")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
 	} else if (operatorId.includes("MTF")) {
-	  var params = { CC: 0, UL: 0, UR: 0, LR: 0, LL: 0, SFR_DEV_TOL: 100, CC_TOL: 0, "03F_TOL": 0, "05F_TOL": 0, "08F_TOL": 0}
+	  var params = { SFR_DEV_TOL: 100, CC_MIN: 0, CC_MAX: 100, "03F_MIN": 0, "03F_MAX": 100, "05F_MIN": 0, "05F_MAX": 100, "08F_MIN": 0, "08F_MAX": 100}
 	  $flowchart.flowchart('setOperatorParams', operatorId, params);
 	}else if (operatorId.includes("GRR")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr_params);
@@ -860,7 +860,7 @@ $(document).ready(function () {
 		var cell1 = row.insertCell(0);
 		var cell2 = row.insertCell(1);
 		var cell3 = row.insertCell(2);
-		cell1.innerHTML = "<select><option value=CC>CC</option><option value=UL>UL</option><option value=UR>UR</option><option value=LL>LL</option><option value=LR>LR</option><option value=SFR_DEV_TOL>SFR_DEV_TOL</option><option value=CC_TOL>CC_TOL</option><option value=03F_TOL>03F_TOL</option><option value=05F_TOL>05F_TOL</option><option value=08F_TOL>08F_TOL</option></select>";
+		cell1.innerHTML = "<select><option value=SFR_DEV_TOL>SFR_DEV_TOL</option><option value=CC_MIN>CC_MIN</option><option value=CC_MAX>CC_MAX</option><option value=03F_MIN>03F_MIN</option><option value=03F_MAX>03F_MAX</option><option value=05F_MIN>05F_MIN</option><option value=05F_MAX>05F_MAX</option><option value=08F_MIN>08F_MIN</option><option value=08F_MAX>08F_MAX</option><option value=05F_TOL>05F_TOL</option><option value=08F_TOL>08F_TOL</option></select>";
 		cell2.innerHTML = "<input value=50 type=\"number\" min=0 max=100>";
 		var delete_btn = document.createElement('button');
 		delete_btn.className = "btn-danger";

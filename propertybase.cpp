@@ -27,7 +27,7 @@ void PropertyBase::read(const QJsonObject &json)
         const char *name = metaproperty.name();
         if(json.contains(name))
         {
-            this->setProperty(name,json[name]);
+            this->setProperty(name,json[name].toVariant());
         }
     }
 }
@@ -69,6 +69,10 @@ void PropertyBase::write(QJsonObject &json) const
             const char *name = metaproperty.name();
             json[name] = QJsonArray::fromStringList(this->property(name).toStringList());
         }
+        else if (temp_type == QVariant::Type::Map) {
+            const char *name = metaproperty.name();
+            json[name] = QJsonObject::fromVariantMap(this->property(name).toMap());
+        }
         else {
             qInfo("write parameter error,unrecognized type : %d : %s",temp_type,metaproperty.name());
         }
@@ -93,6 +97,8 @@ void PropertyBase::reset()
             this->setProperty(name,false);
         else if (metaproperty.type() == QVariant::Type::String)
             this->setProperty(name,"");
+        else if (metaproperty.type() == QVariant::Type::Map)
+            this->property(name).clear();
         else
             qInfo("reset parameter %s error,unrecognized type : %d : %s",metaproperty.name(),metaproperty.type());
     }

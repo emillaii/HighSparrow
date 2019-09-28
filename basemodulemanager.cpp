@@ -46,15 +46,13 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
     if (ServerMode() == 0) {
         this->lut_module.openServer(19998);
-        lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
+//        lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
         connect(&lut_module,&LutModule::sendLoadLensRequst,&lens_loader_module,&LensLoaderModule::receiveLoadLensRequst,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendLoadLensFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
-        connect(&lens_loader_module,&LensLoaderModule::sendChangeTrayRequst,&tray_loader_module,&TrayLoaderModule::onTestTrayUsed,Qt::DirectConnection);
-        connect(&tray_loader_module,&TrayLoaderModule::trayReady,&lens_loader_module,&LensLoaderModule::receiveChangeTrayFinish,Qt::DirectConnection);
     }
     else
     {
-        lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
+//        lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
     }
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
 
@@ -442,7 +440,7 @@ void BaseModuleManager::receiveMessageFromWorkerManger(QVariantMap message)
 
 bool BaseModuleManager::loadParameters()
 {
-    configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
+//    configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
     if(!this->parameters.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))
         return false;
 
@@ -1250,12 +1248,13 @@ bool BaseModuleManager::InitStruct()
         chart_calibration->Init(GetMotorByName(chart_calibration->parameters.motorXName()),
                                 GetMotorByName(chart_calibration->parameters.motorYName()),
                                 nullptr);
+        connect(chart_calibration, &Calibration::updata_aaCore_sensor_parameters_signal, &aaCoreNew, &AACoreNew::updateAACoreSensorParameters);
     }
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
     }
 //    sut_clitent->Init(GetVacuumByName(sut_module.parameters.vacuumName()));
-    sut_module.Init(&sut_carrier,sut_clitent,
+    sut_module.Init(&sut_carrier,
                     GetVisionLocationByName(sut_module.parameters.downlookLocationName()),
                     GetVisionLocationByName(sut_module.parameters.updownlookDownLocationName()),
                     GetVisionLocationByName(sut_module.parameters.updownlookUpLocationName()),
@@ -1347,7 +1346,7 @@ bool BaseModuleManager::InitStruct()
 
     sfrWorkerController = new SfrWorkerController(&aaCoreNew);
     aaCoreNew.setSfrWorkerController(sfrWorkerController);
-    aaCoreNew.Init(&aa_head_module, lutClient, &sut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog, ServerMode());
+    aaCoreNew.Init(&aa_head_module, &sut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog, ServerMode());
     entrance_clip.Init(u8"Sensor进料盘弹夹",&sensor_clip_stand);
     exit_clip.Init(u8"Sensor出料盘弹夹",&sensor_clip_stand);
     sensor_tray_loder_module.Init(GetMotorByName(sensor_tray_loder_module.parameters.motorTrayName()),
@@ -1463,7 +1462,7 @@ bool BaseModuleManager::initialDevice()
     foreach (XtMotor *m, motors.values()) {
         m->GetMasterAxisID();
     }
-    EnableMotors();
+    enableMotors();
 
     if (ServerMode() == 1)
     {
@@ -1490,7 +1489,13 @@ bool BaseModuleManager::generateConfigFiles()
     return result;
 }
 
-void BaseModuleManager::EnableMotors()
+void BaseModuleManager::enableMotor(QString motorName)
+{
+    if (is_init)
+        GetMotorByName(motorName)->Enable();
+}
+
+void BaseModuleManager::enableMotors()
 {
     if(is_init) {
         foreach (XtMotor *m, motors.values()) {
@@ -1499,7 +1504,13 @@ void BaseModuleManager::EnableMotors()
     }
 }
 
-void BaseModuleManager::DisableAllMotors()
+void BaseModuleManager::disableMotor(QString motorName)
+{
+    if (is_init)
+        GetMotorByName(motorName)->Disable();
+}
+
+void BaseModuleManager::disableAllMotors()
 {
     if(is_init) {
         foreach (XtMotor *m, motors.values()) {
@@ -1547,8 +1558,8 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
     GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
 
-    result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
-    if(!result)return false;
+//    result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
+//    if(!result)return false;
 
 //    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();//AA_X
 //    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();//AA_Z
@@ -1616,7 +1627,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 bool BaseModuleManager::allMotorsSeekOriginal2()
 {
     qInfo("allMotorsSeekOriginal2 Start");
-//    GetOutputIoByName(u8"夹爪稳压阀")->Set(1);
+    GetOutputIoByName(u8"夹爪稳压阀")->Set(1);
     //推料氣缸復位
     bool result;
     if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
@@ -1906,7 +1917,7 @@ bool BaseModuleManager::performUpDnLookCalibration()
 {
     qInfo("performUpDnLookCalibration");
     //ToDo: Move the lut movement in LUT Client.
-    lutClient->sendLUTMoveToPos(0); //Unload Pos
+//    lutClient->sendLUTMoveToPos(0); //Unload Pos
     PrOffset offset1, offset2;
     sut_module.moveToToolDownlookPos(true);
     if (!sut_module.toolDownlookPR(offset1,true,false)) {
@@ -1916,10 +1927,10 @@ bool BaseModuleManager::performUpDnLookCalibration()
     qInfo("UpDnlook Down PR: %f %f %f", offset1.X, offset1.Y, offset1.Theta);
     sut_module.moveToToolUplookPos(true);
     if (ServerMode() == 0) {
-        lutClient->sendLUTMoveToPos(1); //AA 1 Pos
-        lutClient->requestToolUpPRResult(offset2); //Do uplook PR
+//        lutClient->sendLUTMoveToPos(1); //AA 1 Pos
+//        lutClient->requestToolUpPRResult(offset2); //Do uplook PR
     } else {
-        lutClient->sendLUTMoveToPos(2); //AA 2 Pos
+//        lutClient->sendLUTMoveToPos(2); //AA 2 Pos
     }
     double offsetT = offset1.Theta - offset2.Theta;
     qInfo("UpDnlook Up PR: %f %f %f", offset2.X, offset2.Y, offset2.Theta);
@@ -1929,7 +1940,7 @@ bool BaseModuleManager::performUpDnLookCalibration()
     sut_module.up_downlook_offset.setTheta(offset1.Theta - offset2.Theta);
     qInfo("updownlook offset %f,%f,%f",sut_module.up_downlook_offset.X(),sut_module.up_downlook_offset.Y(),sut_module.up_downlook_offset.Theta());
     sut_module.parameters.setCameraTheta(offsetT);
-    lutClient->sendLUTMoveToPos(0); //AA 1 Pos
+//    lutClient->sendLUTMoveToPos(0); //AA 1 Pos
     return true;
 }
 bool BaseModuleManager::performLensUpDnLookCalibration()
@@ -2080,12 +2091,28 @@ double BaseModuleManager::getPROffsetY(QString location_name)
     return  GetVisionLocationByName(location_name)->getCurrentOffset().y();
 }
 
+bool BaseModuleManager::getMotorEnableState(QString name)
+{
+    if (motors.contains(name)) {
+        return motors[name]->states.isEnabled();
+    }
+    return false;
+}
+
 double BaseModuleManager::getMotorFeedbackPos(QString name)
 {
     if (motors.contains(name)) {
         return motors[name]->GetFeedbackPos();
     }
     return 0;
+}
+
+bool BaseModuleManager::getMotorHomeState(QString name)
+{
+    if (motors.contains(name)) {
+        return motors[name]->states.seekedOrigin();
+    }
+    return false;
 }
 
 double BaseModuleManager::getMotorFeedbackPos(int index)

@@ -3,6 +3,8 @@
 
 #include "propertybase.h"
 
+#include <QVariantMap>
+
 
 
 class LensLoaderModuleParameter:public PropertyBase
@@ -10,6 +12,7 @@ class LensLoaderModuleParameter:public PropertyBase
     Q_OBJECT
 public:
     LensLoaderModuleParameter():PropertyBase(){}
+    Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(bool handlyChangeLens READ handlyChangeLens WRITE setHandlyChangeLens NOTIFY handlyChangeLensChanged)
     Q_PROPERTY(double vcmWorkForce READ vcmWorkForce WRITE setVcmWorkForce NOTIFY vcmWorkForceChanged)
@@ -41,6 +44,7 @@ public:
     Q_PROPERTY(int testLensCount READ testLensCount WRITE setTestLensCount NOTIFY testLensCountChanged)
     Q_PROPERTY(bool staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
     Q_PROPERTY(bool openTimeLog READ openTimeLog WRITE setOpenTimeLog NOTIFY openTimeLogChanged)
+    Q_PROPERTY(double readyTrayPercent READ readyTrayPercent WRITE setReadyTrayPercent NOTIFY readyTrayPercentChanged)
     int runMode() const
     {
         return m_runMode;
@@ -186,6 +190,16 @@ public:
     bool handlyChangeLens() const
     {
         return m_handlyChangeLens;
+    }
+	
+	    QString moduleName() const
+    {
+        return m_moduleName;
+    }
+
+    double readyTrayPercent() const
+    {
+        return m_readyTrayPercent;
     }
 
 public slots:
@@ -467,6 +481,25 @@ public slots:
         m_handlyChangeLens = handlyChangeLens;
         emit handlyChangeLensChanged(m_handlyChangeLens);
     }
+	
+	    void setModuleName(QString moduleName)
+    {
+        if (m_moduleName == moduleName)
+            return;
+
+        m_moduleName = moduleName;
+        emit moduleNameChanged(m_moduleName);
+    }
+
+    void setReadyTrayPercent(double readyTrayPercent)
+    {
+    	qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_readyTrayPercent, readyTrayPercent))
+        	return;
+
+        m_readyTrayPercent = readyTrayPercent;
+        emit readyTrayPercentChanged(m_readyTrayPercent);
+    }
 
 signals:
     void runModeChanged(int runMode);
@@ -526,6 +559,10 @@ signals:
     void openTimeLogChanged(bool openTimeLog);
 
     void handlyChangeLensChanged(bool handlyChangeLens);
+	
+	void moduleNameChanged(QString moduleName);
+
+    void readyTrayPercentChanged(double readyTrayPercent);
 
 private:
     int m_runMode = 0;
@@ -559,15 +596,19 @@ private:
     bool m_staticTest = false;
     bool m_openTimeLog = false;
     bool m_handlyChangeLens = false;
+    QString m_moduleName = "LensLoaderModule";
+    double m_readyTrayPercent = 0;
 };
 
-class LensPickArmModuleState:public PropertyBase
+class LensLoaderModuleState:public PropertyBase
 {
     Q_OBJECT
 public:
-    LensPickArmModuleState():PropertyBase(){}
+    LensLoaderModuleState():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(bool handlyChangeLens READ handlyChangeLens WRITE setHandlyChangeLens NOTIFY handlyChangeLensChanged)
+    Q_PROPERTY(int taskOfStations READ taskOfStations WRITE setTaskOfStations NOTIFY taskOfStationsChanged)
+    Q_PROPERTY(bool stationsUnload READ stationsUnload WRITE setStationsUnload NOTIFY stationsUnloadChanged)
     Q_PROPERTY(bool hasTray READ hasTray WRITE setHasTray NOTIFY hasTrayChanged)
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool lutHasNgLens READ lutHasNgLens WRITE setLutHasNgLens NOTIFY lutHasNgLensChanged)
@@ -575,6 +616,11 @@ public:
     Q_PROPERTY(int currentTray READ currentTray WRITE setCurrentTray NOTIFY currentTrayChanged)
     Q_PROPERTY(bool needChangTray READ needChangTray WRITE setNeedChangTray NOTIFY needChangTrayChanged)
     Q_PROPERTY(bool allowChangeTray READ allowChangeTray WRITE setAllowChangeTray NOTIFY allowChangeTrayChanged)
+    Q_PROPERTY(int pickerMaterialState READ pickerMaterialState WRITE setPickerMaterialState NOTIFY pickerMaterialStateChanged)
+    Q_PROPERTY(QVariantMap lutLensData READ lutLensData WRITE setLutLensData NOTIFY lutLensDataChanged)
+    Q_PROPERTY(QVariantMap lutNgLensData READ lutNgLensData WRITE setLutNgLensData NOTIFY lutNgLensDataChanged)
+    Q_PROPERTY(QVariantMap pickerLensData READ pickerLensData WRITE setPickerLensData NOTIFY pickerLensDataChanged)
+
     Q_PROPERTY(bool hasPickedLens READ hasPickedLens WRITE setHasPickedLens NOTIFY hasPickedLensChanged)
     Q_PROPERTY(bool hasPickedNgLens READ hasPickedNgLens WRITE setHasPickedNgLens NOTIFY hasPickedNgLensChanged)
     Q_PROPERTY(int lutTrayID READ lutTrayID WRITE setLutTrayID NOTIFY lutTrayIDChanged)
@@ -583,6 +629,7 @@ public:
     Q_PROPERTY(int pickedLensID READ pickedLensID WRITE setPickedLensID NOTIFY pickedLensIDChanged)
     Q_PROPERTY(int lutNgTrayID READ lutNgTrayID WRITE setLutNgTrayID NOTIFY lutNgTrayIDChanged)
     Q_PROPERTY(int lutNgLensID READ lutNgLensID WRITE setLutNgLensID NOTIFY lutNgLensIDChanged)
+
     Q_PROPERTY(bool loadingLens READ loadingLens WRITE setLoadingLens NOTIFY loadingLensChanged)
     Q_PROPERTY(bool waitingChangeTray READ waitingChangeTray WRITE setWaitingChangeTray NOTIFY waitingChangeTrayChanged)
     Q_PROPERTY(bool finishChangeTray READ finishChangeTray WRITE setFinishChangeTray NOTIFY finishChangeTrayChanged)
@@ -685,6 +732,36 @@ public:
     bool handlyChangeLens() const
     {
         return m_handlyChangeLens;
+    }
+
+    QVariantMap lutLensData() const
+    {
+        return m_lutLensData;
+    }
+
+    int pickerMaterialState() const
+    {
+        return m_pickerMaterialState;
+    }
+
+    QVariantMap lutNgLensData() const
+    {
+        return m_lutNgLensData;
+    }
+
+    QVariantMap pickerLensData() const
+    {
+        return m_pickerLensData;
+    }
+
+    int taskOfStations() const
+    {
+        return m_taskOfStations;
+    }
+
+    bool stationsUnload() const
+    {
+        return m_stationsUnload;
     }
 
 public slots:
@@ -868,6 +945,117 @@ public slots:
         emit handlyChangeLensChanged(m_handlyChangeLens);
     }
 
+    void setLutLensData(QVariantMap lutLensData)
+    {
+        if (m_lutLensData == lutLensData)
+            return;
+
+        m_lutLensData = lutLensData;
+        emit lutLensDataChanged(m_lutLensData);
+    }
+
+    void setLutLensData(QString key,QVariant value)
+    {
+        m_lutLensData[key] = value;
+        emit lutLensDataChanged(m_lutLensData);
+    }
+
+    void copyInLutLensData(QVariantMap lutLensData)
+    {
+        foreach (QString param_name, lutLensData.keys())
+            m_lutLensData[param_name] = lutLensData[param_name];
+        emit lutLensDataChanged(m_lutLensData);
+    }
+
+    void clearLutLensData()
+    {
+        m_lutLensData.clear();
+        emit lutLensDataChanged(m_lutLensData);
+    }
+
+    void setPickerMaterialState(int pickerMaterialState)
+    {
+        if (m_pickerMaterialState == pickerMaterialState)
+            return;
+
+        m_pickerMaterialState = pickerMaterialState;
+        emit pickerMaterialStateChanged(m_pickerMaterialState);
+    }
+
+    void setLutNgLensData(QVariantMap lutNgLensData)
+    {
+        if (m_lutNgLensData == lutNgLensData)
+            return;
+
+        m_lutNgLensData = lutNgLensData;
+        emit lutNgLensDataChanged(m_lutNgLensData);
+    }
+
+    void setLutNgLensData(QString key,QVariant value)
+    {
+        m_lutNgLensData[key] = value;
+        emit lutNgLensDataChanged(m_lutNgLensData);
+    }
+
+    void copyInLutNgLensData(QVariantMap lutNgLensData)
+    {
+        foreach (QString param_name, lutNgLensData.keys())
+            m_lutNgLensData[param_name] = lutNgLensData[param_name];
+        emit lutNgLensDataChanged(m_lutNgLensData);
+    }
+
+    void clearLutNgLensData()
+    {
+        m_lutNgLensData.clear();
+        emit lutNgLensDataChanged(m_lutNgLensData);
+    }
+
+    void setPickerLensData(QVariantMap pickerLensData)
+    {
+        if (m_pickerLensData == pickerLensData)
+            return;
+
+        m_pickerLensData = pickerLensData;
+        emit pickerLensDataChanged(m_pickerLensData);
+    }
+
+    void setPickerLensData(QString key,QVariant value)
+    {
+        m_pickerLensData[key] = value;
+        emit pickerLensDataChanged(m_pickerLensData);
+    }
+
+    void copyInPickerLensData(QVariantMap pickerLensData)
+    {
+        foreach (QString param_name, pickerLensData.keys())
+            m_pickerLensData[param_name] = pickerLensData[param_name];
+        emit pickerLensDataChanged(m_pickerLensData);
+    }
+
+    void clearPickerLensData()
+    {
+        m_pickerLensData.clear();
+        emit pickerLensDataChanged(m_pickerLensData);
+    }
+
+    void setTaskOfStations(int taskOfStations)
+    {
+        if (m_taskOfStations == taskOfStations)
+            return;
+
+        m_taskOfStations = taskOfStations;
+        emit taskOfStationsChanged(m_taskOfStations);
+    }
+
+    void setStationsUnload(bool stationsUnload)
+    {
+        if (m_stationsUnload == stationsUnload)
+            return;
+
+        m_stationsUnload = stationsUnload;
+        emit stationsUnloadChanged(m_stationsUnload);
+    }
+
 signals:
     void hasTrayChanged(bool hasTray);
 
@@ -909,6 +1097,18 @@ signals:
 
     void handlyChangeLensChanged(bool handlyChangeLens);
 
+    void lutLensDataChanged(QVariantMap lutLensData);
+
+    void pickerMaterialStateChanged(int pickerMaterialState);
+
+    void lutNgLensDataChanged(QVariantMap lutNgLensData);
+
+    void pickerLensDataChanged(QVariantMap pickerLensData);
+
+    void taskOfStationsChanged(int taskOfStations);
+
+    void stationsUnloadChanged(bool stationsUnload);
+
 private:
     bool m_hasTray = true;
     bool m_lutHasLens = false;
@@ -930,6 +1130,12 @@ private:
     bool m_finishChangeTray = false;
     int m_runMode = 0;
     bool m_handlyChangeLens = false;
+    QVariantMap m_lutLensData;
+    int m_pickerMaterialState = 0;
+    QVariantMap m_lutNgLensData;
+    QVariantMap m_pickerLensData;
+    int m_taskOfStations = 0;
+    bool m_stationsUnload = false;
 };
 
 #endif // LENSPICKARMMODULEPARAMETER_H

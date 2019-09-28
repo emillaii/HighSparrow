@@ -24,7 +24,7 @@ class SutModule : public ThreadWorkerBase
     Q_OBJECT
 public:
     SutModule();
-    void Init(MaterialCarrier* carrier,SutClient* sut_cilent,
+    void Init(MaterialCarrier* carrier,
               VisionLocation* vision_downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn,
               XtVacuum *vacuum,XtCylinder* popgpin,XtGeneralOutput* camera_trig,int thread_id);
     void loadParams(QString file_name);
@@ -69,7 +69,7 @@ signals:
 public slots:
     void receiveLoadSensorRequst(int sut_state);
 private:
-    void run(bool has_material);
+    void run();
     // ThreadWorkerBase interface
 public slots:
     void startWork(int run_mode);
@@ -95,12 +95,11 @@ private:
     VisionLocation* vision_updownlook_up_location;
     XtVacuum* vacuum;
     XtCylinder *popgpin;
-    SutClient* sut_cilent;
+//    SutClient* sut_cilent;
     int thread_id;
     mPoint3D record_position;
     PrOffset offset;
     bool is_run = false;
-    bool has_material = true;
 
     int sut_state = 0;
     bool has_raw_sensor = false;

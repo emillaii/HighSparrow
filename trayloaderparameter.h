@@ -613,12 +613,15 @@ class TrayLoaderState : public PropertyBase{
 
     bool m_handlyChangeLensTray = false;
 
+    bool m_allowReadyTray = false;
+
 public:
     TrayLoaderState():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
     Q_PROPERTY(bool handlyChangeLens READ handlyChangeLens WRITE setHandlyChangeLens NOTIFY handlyChangeLensChanged)
     Q_PROPERTY(bool hasTrayReady READ hasTrayReady WRITE setHasTrayReady NOTIFY hasTrayReadyChanged)
     Q_PROPERTY(bool handlyChangeLensTray READ handlyChangeLensTray WRITE setHandlyChangeLensTray NOTIFY handlyChangeLensTrayChanged)
+
     Q_PROPERTY(bool hasTrayUsed READ hasTrayUsed WRITE setHasTrayUsed NOTIFY hasTrayUsedChanged)
     Q_PROPERTY(bool hasPrevTrayEjected READ hasPrevTrayEjected WRITE setHasPrevTrayEjected NOTIFY hasPrevTrayEjectedChanged)
     Q_PROPERTY(bool hasEntranceTrayPulledAway READ hasEntranceTrayPulledAway WRITE setHasEntranceTrayPulledAway NOTIFY hasEntranceTrayPulledAwayChanged)
@@ -626,10 +629,11 @@ public:
     Q_PROPERTY(bool hasLTKX1ReadytoPull READ hasLTKX1ReadytoPull WRITE setHasLTKX1ReadytoPull NOTIFY hasLTKX1ReadytoPullChanged)
     Q_PROPERTY(bool hasTrayOutHandOverReady READ hasTrayOutHandOverReady WRITE setHasTrayOutHandOverReady NOTIFY hasTrayOutHandOverReadyChanged)
     Q_PROPERTY(bool isExchangeTray READ isExchangeTray WRITE setIsExchangeTray NOTIFY isExchangeTrayChanged)
+
     Q_PROPERTY(bool hasEntranceClipEmpty READ hasEntranceClipEmpty WRITE setHasEntranceClipEmpty NOTIFY hasEntranceClipEmptyChanged)
     Q_PROPERTY(bool hasExitClipFull READ hasExitClipFull WRITE setHasExitClipFull NOTIFY hasExitClipFullChanged)
-
     Q_PROPERTY(bool allowChangeTray READ allowChangeTray WRITE setAllowChangeTray NOTIFY allowChangeTrayChanged)
+    Q_PROPERTY(bool allowReadyTray READ allowReadyTray WRITE setallowReadyTray NOTIFY allowReadyTrayChanged)
     Q_PROPERTY(bool hasReadyTray READ hasReadyTray WRITE setHasReadyTray NOTIFY hasReadyTrayChanged)
     Q_PROPERTY(bool hasWorkTray READ hasWorkTray WRITE setHasWorkTray NOTIFY hasWorkTrayChanged)
     Q_PROPERTY(bool hasPulledTray READ hasPulledTray WRITE setHasPulledTray NOTIFY hasPulledTrayChanged)
@@ -750,6 +754,11 @@ public:
     bool handlyChangeLensTray() const
     {
         return m_handlyChangeLensTray;
+    }
+
+    bool allowReadyTray() const
+    {
+        return m_allowReadyTray;
     }
 
 public slots:
@@ -959,6 +968,15 @@ public slots:
         emit handlyChangeLensTrayChanged(m_handlyChangeLensTray);
     }
 
+    void setallowReadyTray(bool allowReadyTray)
+    {
+        if (m_allowReadyTray == allowReadyTray)
+            return;
+
+        m_allowReadyTray = allowReadyTray;
+        emit allowReadyTrayChanged(m_allowReadyTray);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayOnEntryChanged(bool hasTrayOnEntry);
@@ -984,6 +1002,7 @@ signals:
     void isReadyTrayPushedChanged(bool isReadyTrayPushed);
     void handlyChangeLensChanged(bool handlyChangeLens);
     void handlyChangeLensTrayChanged(bool handlyChangeLensTray);
+    void allowReadyTrayChanged(bool allowReadyTray);
 };
 
 #endif // TRAYLOADERPARAMETER_H

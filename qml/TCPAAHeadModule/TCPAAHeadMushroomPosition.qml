@@ -87,7 +87,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.performHandling(1);
+//                lutModule.performHandling(1);
+                logicManager.performHandling(lutParams.moduleName,1)
             }
         }
         Button {
@@ -96,7 +97,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.performHandling(2);
+//                lutModule.performHandling(2);
+                logicManager.performHandling(lutParams.moduleName,2)
             }
         }
         Button {
@@ -104,7 +106,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                sutModule.performHandling(1);
+//                sutModule.performHandling(1);
+                logicManager.performHandling(sutParams.moduleName,1)
             }
         }
         Button {
@@ -112,7 +115,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                aaNewCore.performHandling(2, "");
+//                aaNewCore.performHandling(2, "");
+                logicManager.performHandling(aaCoreParams.moduleName,2)
             }
         }
     }

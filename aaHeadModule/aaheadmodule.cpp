@@ -117,15 +117,15 @@ void AAHeadModule::waitUVFinish()
     uv1->WaitForFinish(thread_id);
 }
 
-void AAHeadModule::openGripper()
+bool AAHeadModule::openGripper()
 {
-    gripper->Set(true);
+    return  gripper->Set(true);
 //    Sleep(200);
 }
 
-void AAHeadModule::closeGripper()
+bool AAHeadModule::closeGripper()
 {
-    gripper->Set(false);
+    return gripper->Set(false);
 //    Sleep(200);
 }
 

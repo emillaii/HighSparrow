@@ -140,7 +140,8 @@ void ThreadWorkerBase::sendMessageToModule(QString module_name, QString message,
     QVariantMap message_map;
     message_map.insert("TargetModule",module_name);
     message_map.insert("Message",message);
-    message_map.insert("Params",param);
+    foreach (QString param_name, param.toObject().keys())
+        message_map.insert(param_name,param[param_name].toVariant());
     message_map.insert("OriginModule",Name());
     emit sendModuleMessage(message_map);
 }

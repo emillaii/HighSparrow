@@ -61,7 +61,8 @@ ItemDelegate {
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
                                         //logicManager.lensPickArmMoveToTray1Pos()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1)
+//                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1)
+                                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY1)
                                     }
                                 }
                                 Button{
@@ -69,10 +70,14 @@ ItemDelegate {
                                     onClicked:{
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
                                         //logicManager.lensPickArmMoveToPickLensFromTray1()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1+
-                                                                         LensLoaderModule.LENS_PR+
-                                                                         LensLoaderModule.ToWork+
-                                                                         LensLoaderModule.PICK_LENS_FROM_TRAY)
+//                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1+
+//                                                                         LensLoaderModule.LENS_PR+
+//                                                                         LensLoaderModule.ToWork+
+//                                                                         LensLoaderModule.PICK_LENS_FROM_TRAY)
+                                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY1+
+                                                                     LensLoaderModule.LENS_PR+
+                                                                     LensLoaderModule.ToWork+
+                                                                     LensLoaderModule.PICK_LENS_FROM_TRAY)
                                     }
                                 }
                                 Button{
@@ -80,10 +85,14 @@ ItemDelegate {
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
                                         //logicManager.lensPickArmMoveToPlaceLensToTray1()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1+
-                                                                         LensLoaderModule.VACANCY_PR+
-                                                                         LensLoaderModule.ToWork+
-                                                                         LensLoaderModule.PLACE_NG_LENS_TO_TRAY)
+//                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY1+
+//                                                                         LensLoaderModule.VACANCY_PR+
+//                                                                         LensLoaderModule.ToWork+
+//                                                                         LensLoaderModule.PLACE_NG_LENS_TO_TRAY)
+                                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY1+
+                                                                     LensLoaderModule.VACANCY_PR+
+                                                                     LensLoaderModule.ToWork+
+                                                                     LensLoaderModule.PLACE_NG_LENS_TO_TRAY)
                                     }
                                 }
                             }
@@ -156,7 +165,8 @@ ItemDelegate {
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                                         //logicManager.lensPickArmMoveToTray2Pos()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2)
+//                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2)
+                                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY2)
                                     }
                                 }
                                 Button{
@@ -164,10 +174,14 @@ ItemDelegate {
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                                         //logicManager.lensPickArmMoveToPickLensFromTray2()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2+
-                                                                         LensLoaderModule.LENS_PR+
-                                                                         LensLoaderModule.ToWork+
-                                                                         LensLoaderModule.PICK_LENS_FROM_TRAY)
+//                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2+
+//                                                                         LensLoaderModule.LENS_PR+
+//                                                                         LensLoaderModule.ToWork+
+//                                                                         LensLoaderModule.PICK_LENS_FROM_TRAY)
+                                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY2+
+                                                                     LensLoaderModule.LENS_PR+
+                                                                     LensLoaderModule.ToWork+
+                                                                     LensLoaderModule.PICK_LENS_FROM_TRAY)
                                     }
                                 }
                                 Button{
@@ -175,10 +189,14 @@ ItemDelegate {
                                     onClicked: {
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                                         //logicManager.lensPickArmMoveToPlaceLensToTray2()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2+
-                                                                         LensLoaderModule.VACANCY_PR+
-                                                                         LensLoaderModule.ToWork+
-                                                                         LensLoaderModule.PLACE_NG_LENS_TO_TRAY)
+//                                        lensLoaderModule.performHandling(LensLoaderModule.LENS_TRAY2+
+//                                                                         LensLoaderModule.VACANCY_PR+
+//                                                                         LensLoaderModule.ToWork+
+//                                                                         LensLoaderModule.PLACE_NG_LENS_TO_TRAY)
+                                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY2+
+                                                                     LensLoaderModule.VACANCY_PR+
+                                                                     LensLoaderModule.ToWork+
+                                                                     LensLoaderModule.PLACE_NG_LENS_TO_TRAY)
                                     }
                                 }
                             }
@@ -227,10 +245,14 @@ ItemDelegate {
                                     onClicked: {
                                         //logicManager.lensPickArmMoveToPlaceLensToLut()
                                         lutModule.moveToLoadPos(false,true)
-                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1+
-                                                                         LensLoaderModule.RESET_PR+
-                                                                         LensLoaderModule.ToWork+
-                                                                         LensLoaderModule.PLACE_LENS_TO_LUT)
+//                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1+
+//                                                                         LensLoaderModule.RESET_PR+
+//                                                                         LensLoaderModule.ToWork+
+//                                                                         LensLoaderModule.PLACE_LENS_TO_LUT)
+                                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS1+
+                                                                     LensLoaderModule.RESET_PR+
+                                                                     LensLoaderModule.ToWork+
+                                                                     LensLoaderModule.PLACE_LENS_TO_LUT)
                                     }
                                 }
                                 Button{
@@ -238,10 +260,14 @@ ItemDelegate {
                                     onClicked: {
                                         //logicManager.lensPickArmMoveToPickLensFromLut()
                                         lutModule.moveToLoadPos(false,true)
-                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
-                                                                         LensLoaderModule.LUT_LENS_PR+
-                                                                         LensLoaderModule.ToWork+
-                                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
+//                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
+//                                                                         LensLoaderModule.LUT_LENS_PR+
+//                                                                         LensLoaderModule.ToWork+
+//                                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
+                                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2+
+                                                                     LensLoaderModule.LUT_LENS_PR+
+                                                                     LensLoaderModule.ToWork+
+                                                                     LensLoaderModule.PICK_NG_LENS_FROM_LUT)
                                     }
                                 }
                             }
@@ -298,7 +324,8 @@ ItemDelegate {
                                     width: 20
                                     height: 40
                                     onClicked: {
-                                        aaNewCore.performHandlingOperation(1,"")
+//                                        aaNewCore.performHandling(1,"")
+                                        logicManager.performHandling(aaCoreParams.moduleName,1)
                                     }
                                 }
                             }
@@ -518,7 +545,8 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         material_tray.setTrayCurrent(ts_ncol.text-1,ts_nrow.text-1,0)
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS)
                                     }
                                 }
                             }
@@ -556,7 +584,8 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         material_tray.setTrayCurrent(tc_ncol.text-1,tc_nrow.text-1,1)
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY2)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY2)
                                     }
                                 }
                             }
@@ -570,10 +599,14 @@ ItemDelegate {
                                     text:qsTr("从Sensor盘取料")
                                     onClicked: {
                                         material_tray.setTrayCurrent(ts_ncol.text-1,ts_nrow.text-1,0)
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_SENSOR_FROM_TRAY
-                                                                           +SensorLoaderModule.TO_PICK1
-                                                                           +SensorLoaderModule.TRAY_SENSOR_PR
-                                                                           +SensorLoaderModule.SENSOR_TRAY_1_POS)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_SENSOR_FROM_TRAY
+//                                                                           +SensorLoaderModule.TO_PICK1
+//                                                                           +SensorLoaderModule.TRAY_SENSOR_PR
+//                                                                           +SensorLoaderModule.SENSOR_TRAY_1_POS)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.PICK_SENSOR_FROM_TRAY
+                                                                     +SensorLoaderModule.TO_PICK1
+                                                                     +SensorLoaderModule.TRAY_SENSOR_PR
+                                                                     +SensorLoaderModule.SENSOR_TRAY_1_POS)
                                     }
                                 }
                                 Button{
@@ -581,20 +614,28 @@ ItemDelegate {
                                     onClicked:{
                                         material_tray.setTrayCurrent(tc_ncol.text-1,tc_nrow.text-1,1)
                                         //6232
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY
-                                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
-                                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-                                                                           +SensorLoaderModule.SENSOR_TRAY2)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY
+//                                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
+//                                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+//                                                                           +SensorLoaderModule.SENSOR_TRAY2)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY
+                                                                     +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
+                                                                     +SensorLoaderModule.TRAY_EMPTY_PR
+                                                                     +SensorLoaderModule.SENSOR_TRAY2)
                                     }
                                 }
                                 Button{
                                     text:qsTr("到Camera盘放成品")
                                     onClicked:{
                                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_PRODUCT_TO_TRAY
-                                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
-                                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-                                                                           +SensorLoaderModule.SENSOR_TRAY2)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_PRODUCT_TO_TRAY
+//                                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
+//                                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+//                                                                           +SensorLoaderModule.SENSOR_TRAY2)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.PLACE_PRODUCT_TO_TRAY
+                                                                     +SensorLoaderModule.TO_PLACE_PRODUCT_OFFSET
+                                                                     +SensorLoaderModule.TRAY_EMPTY_PR
+                                                                     +SensorLoaderModule.SENSOR_TRAY2)
                                     }
                                 }
                             }
@@ -608,9 +649,12 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         //2110
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_SENSOR_TO_SUT1
-                                                                           +SensorLoaderModule.TO_PLACE_SENSOR_OFFSET
-                                                                           +SensorLoaderModule.RESET_PR)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_SENSOR_TO_SUT1
+//                                                                           +SensorLoaderModule.TO_PLACE_SENSOR_OFFSET
+//                                                                           +SensorLoaderModule.RESET_PR)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.PLACE_SENSOR_TO_SUT1
+                                                                     +SensorLoaderModule.TO_PLACE_SENSOR_OFFSET
+                                                                     +SensorLoaderModule.RESET_PR)
                                     }
                                 }
                                 Button{
@@ -619,10 +663,14 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         //7263
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
-                                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
-                                                                           +SensorLoaderModule.SUT_PRODUCT_PR
-                                                                           +SensorLoaderModule.SUT_POS1)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
+//                                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
+//                                                                           +SensorLoaderModule.SUT_PRODUCT_PR
+//                                                                           +SensorLoaderModule.SUT_POS1)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
+                                                                     +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
+                                                                     +SensorLoaderModule.SUT_PRODUCT_PR
+                                                                     +SensorLoaderModule.SUT_POS1)
                                     }
                                 }
                                 Button{
@@ -631,10 +679,14 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         //4253
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1
-                                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
-                                                                           +SensorLoaderModule.NG_SENSOR_PR
-                                                                           +SensorLoaderModule.SUT_POS1)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1
+//                                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
+//                                                                           +SensorLoaderModule.NG_SENSOR_PR
+//                                                                           +SensorLoaderModule.SUT_POS1)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1
+                                                                     +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
+                                                                     +SensorLoaderModule.NG_SENSOR_PR
+                                                                     +SensorLoaderModule.SUT_POS1)
                                     }
                                 }
                             }
@@ -648,10 +700,14 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         //2114
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_SENSOR_TO_SUT1
-                                                                           +SensorLoaderModule.TO_PLACE_SENSOR_OFFSET
-                                                                           +SensorLoaderModule.RESET_PR
-                                                                           +SensorLoaderModule.SUT_POS2)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.PLACE_SENSOR_TO_SUT1
+//                                                                           +SensorLoaderModule.TO_PLACE_SENSOR_OFFSET
+//                                                                           +SensorLoaderModule.RESET_PR
+//                                                                           +SensorLoaderModule.SUT_POS2)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.PLACE_SENSOR_TO_SUT1
+                                                                     +SensorLoaderModule.TO_PLACE_SENSOR_OFFSET
+                                                                     +SensorLoaderModule.RESET_PR
+                                                                     +SensorLoaderModule.SUT_POS2)
                                     }
                                 }
                                 Button{
@@ -660,10 +716,14 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         //7264
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
-                                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
-                                                                           +SensorLoaderModule.SUT_PRODUCT_PR
-                                                                           +SensorLoaderModule.SUT_POS2)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
+//                                                                           +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
+//                                                                           +SensorLoaderModule.SUT_PRODUCT_PR
+//                                                                           +SensorLoaderModule.SUT_POS2)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.PICK_PRODUCT_FROM_SUT1
+                                                                     +SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
+                                                                     +SensorLoaderModule.SUT_PRODUCT_PR
+                                                                     +SensorLoaderModule.SUT_POS2)
                                     }
                                 }
                                 Button{
@@ -672,9 +732,12 @@ ItemDelegate {
                                     height: 40
                                     onClicked: {
                                         //254
-                                        sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
-                                                                           +SensorLoaderModule.NG_SENSOR_PR
-                                                                           +SensorLoaderModule.SUT_POS2)
+//                                        sensorLoaderModule.performHandling(SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
+//                                                                           +SensorLoaderModule.NG_SENSOR_PR
+//                                                                           +SensorLoaderModule.SUT_POS2)
+                                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.TO_PICK_PRODUCT_OFFSET
+                                                                     +SensorLoaderModule.NG_SENSOR_PR
+                                                                     +SensorLoaderModule.SUT_POS2)
                                     }
                                 }
                             }

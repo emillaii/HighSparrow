@@ -36,8 +36,9 @@ void XtVcMotor::ConfigVCM()
         MapCurrent2Force(vcm_id,current,force,4);
     }
     is_init = true;
-    is_enable = true;
+    states.setIsEnabled(true);
     error_code = get_motor_error(vcm_id);
+    qInfo("%s init error code %d",name.toStdString().c_str(),error_code);
 }
 
 void XtVcMotor::ChangeDiretion(bool befor_seek)
@@ -136,16 +137,16 @@ void XtVcMotor::Enable()
 {
     if(!is_init)
         return;
-    is_enable = true;
-    SetServoOnOff(vcm_id,is_enable);
+    states.setIsEnabled(true);
+    SetServoOnOff(vcm_id,states.isEnabled());
 }
 
 void XtVcMotor::Disable()
 {
     if(!is_init)
         return;
-    is_enable = false;
-    SetServoOnOff(vcm_id,is_enable);
+    states.setIsEnabled(false);
+    SetServoOnOff(vcm_id,states.isEnabled());
     states.setSeekedOrigin(false);
 }
 
@@ -482,7 +483,7 @@ bool XtVcMotor::WaitSoftLandingDone(int timeout)
     if(is_debug)return true;
     if(!checkState(false))return false;
     int out_time = timeout;
-    while(timeout > 0)
+    while(out_time > 0)
     {
         int res = CheckPosReady(vcm_id);
         if (res == 1)
@@ -490,10 +491,10 @@ bool XtVcMotor::WaitSoftLandingDone(int timeout)
             is_softlanded = is_softlanding;
             is_softlanding = false;
             is_returning = false;
-            qInfo("%s WaitSoftLandingDone %d",name.toStdString().c_str(),out_time - timeout);
+            qInfo("%s WaitSoftLandingDone %d",name.toStdString().c_str(),timeout - out_time);
             return true;
         }
-        timeout-=10;
+        out_time-=10;
         QThread::msleep(10);
     }
 

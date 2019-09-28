@@ -56,7 +56,9 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
+                //dispensePath.update()
                 dispenseModule.updatePath()
+                //dispensePath.source = "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
             }
         }
         Button {
@@ -72,7 +74,8 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                aaNewCore.performHandlingOperation(1,"")
+//                aaNewCore.performHandling(1,"")
+                logicManager.performHandling(aaCoreParams.moduleName,1)
             }
         }
     }
@@ -98,6 +101,7 @@ ColumnLayout {
     }
     RowLayout{
         Image{
+            id:dispensePath
             source: "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
         }
     }

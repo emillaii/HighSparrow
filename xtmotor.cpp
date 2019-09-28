@@ -28,10 +28,12 @@ void XtMotor::WaitSync(int thread)
 int XtMotor::GetCurveResource()
 {
     return curve_resource++;
+    qInfo("current curve Resource %d",thread_resource);
 }
 
 int XtMotor::GetThreadResource()
 {
+    qInfo("current thread Resource %d",thread_resource);
     return thread_resource++;
 }
 
@@ -113,7 +115,7 @@ void XtMotor::Init(const QString& moter_name)
     encoder_ratio = 1.0;
     max_range = Profile_Get_Axis_MaxPos(axis_id);
     min_range = Profile_Get_Axis_MinPos(axis_id);
-    is_enable = false;
+    states.setIsEnabled(false);
     is_init = true;
 
 }
@@ -161,7 +163,7 @@ void XtMotor::Enable()
     XT_Controler::SetCurIoOutput(out_en_id,1);
     if(GetFeedbackPos()!=GetOutpuPos())
         ChangeCurPos(GetFeedbackPos());
-    is_enable = true;
+    states.setIsEnabled(true);
 }
 
 void XtMotor::Disable()
@@ -169,7 +171,8 @@ void XtMotor::Disable()
     if(!is_init)
         return;
     XT_Controler::SetCurIoOutput(out_en_id,0);
-    is_enable = false;
+    states.setIsEnabled(false);
+    states.setSeekedOrigin(false);
 }
 
 QString XtMotor::Name() const
@@ -400,13 +403,13 @@ bool XtMotor::clearTrig()
 bool XtMotor::MoveToPos(double pos,int thread)
 {
     if(is_debug) return true;
-//    if(parameters.firstCheckArrived()&&fabs(pos - GetFeedbackPos())<parameters.positionError())
-//            return true;
+    if(parameters.firstCheckArrived()&&fabs(pos - GetFeedbackPos())<parameters.positionError())
+            return true;
     if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
     if(thread==-1)
         thread = default_using_thread;
     XT_Controler::SGO(thread, axis_id, pos);
-//    XT_Controler::TILLSTOP(thread, axis_id);
+    XT_Controler::TILLSTOP(thread, axis_id);
     current_target = pos;
     return true;
 }
@@ -595,7 +598,8 @@ bool XtMotor::MoveToPosSafty(double pos,int thread)
         return false;
     if(thread==-1)
         thread = default_using_thread;
-    XT_Controler::SGO(thread, axis_id, limit_pos);
+    if(abs(current_target -limit_pos)> 0.000001)
+        XT_Controler::SGO(thread, axis_id, limit_pos);
     current_target = limit_pos;
     return true;
 }
@@ -758,7 +762,7 @@ bool XtMotor::WaitSeekDone(int thread,int timeout)
     XT_Controler::ClearInsBuffer(thread);
     XT_Controler::STOP_S(thread, axis_id);
     current_target = GetOutpuPos();
-    qInfo("axis %s seek origin fail！",name.toStdString().c_str());
+    qInfo("axis %s seek origin fail!",name.toStdString().c_str());
     return false;
 }
 
@@ -787,7 +791,7 @@ bool XtMotor::SearchPosByADC(double vel, double search_limit, double threshold, 
     if(is_debug)return true;
     if(!is_init)
         return false;
-    if(!is_enable)
+    if(!states.isEnabled())
         return false;
     int timeout = 100;
     double adc_value;
@@ -841,7 +845,7 @@ bool XtMotor::SearchPosByIO(double vel, double search_limit, bool search_rise, i
     if(is_debug)return true;
     if(!is_init)
         return false;
-    if(!is_enable)
+    if(!states.isEnabled())
         return false;
     int thread = default_using_thread;
     int timeout = 30000;
@@ -936,7 +940,7 @@ bool XtMotor::checkState(bool check_seeked_origin)
         AppendError(u8"轴未初始化");
         return false;
     }
-    if(!is_enable)
+    if(!states.isEnabled())
     {
         qInfo(u8"%s轴未使能",name.toStdString().c_str());
         AppendError(u8"轴未使能");

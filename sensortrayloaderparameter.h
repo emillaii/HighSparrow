@@ -685,6 +685,10 @@ public:
     Q_PROPERTY(bool isFirstTray READ isFirstTray WRITE setIsFirstTray NOTIFY isFirstTrayChanged)
     Q_PROPERTY(bool hasCarrierReady READ hasCarrierReady WRITE setHasCarrierReady NOTIFY hasCarrierReadyChanged)
     Q_PROPERTY(bool hasUpTray READ hasUpTray WRITE setHasUpTray NOTIFY hasUpTrayChanged)
+    Q_PROPERTY(bool hasAuxiliaryEntranceClip READ hasAuxiliaryEntranceClip WRITE setHasAuxiliaryEntranceClip NOTIFY hasAuxiliaryEntranceClipChanged)
+    Q_PROPERTY(bool hasAuxiliaryExitClip READ hasAuxiliaryExitClip WRITE setHasAuxiliaryExitClip NOTIFY hasAuxiliaryExitClipChanged)
+    Q_PROPERTY(bool hasEntranceClip READ hasEntranceClip WRITE setHasEntranceClip NOTIFY hasEntranceClipChanged)
+    Q_PROPERTY(bool hasExitClip READ hasExitClip WRITE setHasExitClip NOTIFY hasExitClipChanged)
     bool hasTrayToGet() const
     {
         return m_hasTrayToGet;
@@ -822,6 +826,26 @@ public:
     bool handlyChangeSensor() const
     {
         return m_handlyChangeSensor;
+    }
+
+    bool hasAuxiliaryEntranceClip() const
+    {
+        return m_hasAuxiliaryEntranceClip;
+    }
+
+    bool hasAuxiliaryExitClip() const
+    {
+        return m_hasAuxiliaryExitClip;
+    }
+
+    bool hasEntranceClip() const
+    {
+        return m_hasEntranceClip;
+    }
+
+    bool hasExitClip() const
+    {
+        return m_hasExitClip;
     }
 
 public slots:
@@ -1067,6 +1091,42 @@ public slots:
         emit handlyChangeSensorChanged(m_handlyChangeSensor);
     }
 
+    void setHasAuxiliaryEntranceClip(bool hasAuxiliaryEntranceClip)
+    {
+        if (m_hasAuxiliaryEntranceClip == hasAuxiliaryEntranceClip)
+            return;
+
+        m_hasAuxiliaryEntranceClip = hasAuxiliaryEntranceClip;
+        emit hasAuxiliaryEntranceClipChanged(m_hasAuxiliaryEntranceClip);
+    }
+
+    void setHasAuxiliaryExitClip(bool hasAuxiliaryExitClip)
+    {
+        if (m_hasAuxiliaryExitClip == hasAuxiliaryExitClip)
+            return;
+
+        m_hasAuxiliaryExitClip = hasAuxiliaryExitClip;
+        emit hasAuxiliaryExitClipChanged(m_hasAuxiliaryExitClip);
+    }
+
+    void setHasEntranceClip(bool hasEntranceClip)
+    {
+        if (m_hasEntranceClip == hasEntranceClip)
+            return;
+
+        m_hasEntranceClip = hasEntranceClip;
+        emit hasEntranceClipChanged(m_hasEntranceClip);
+    }
+
+    void setHasExitClip(bool hasExitClip)
+    {
+        if (m_hasExitClip == hasExitClip)
+            return;
+
+        m_hasExitClip = hasExitClip;
+        emit hasExitClipChanged(m_hasExitClip);
+    }
+
 signals:
     void hasTrayToGetChanged(bool hasTrayToGet);
     void hasVacancyTrayChanged(bool hasVacancyTray);
@@ -1121,6 +1181,14 @@ signals:
 
     void handlyChangeSensorChanged(bool handlyChangeSensor);
 
+    void hasAuxiliaryEntranceClipChanged(bool hasAuxiliaryEntranceClip);
+
+    void hasAuxiliaryExitClipChanged(bool hasAuxiliaryExitClip);
+
+    void hasEntranceClipChanged(bool hasEntranceClip);
+
+    void hasExitClipChanged(bool hasExitClip);
+
 private:
     bool m_hasTrayToGet = false;
     bool m_hasVacancyTray = false;
@@ -1149,5 +1217,9 @@ private:
     int m_runMode = 0;
     bool m_handlyChangeTray = false;
     bool m_handlyChangeSensor = false;
+    bool m_hasAuxiliaryEntranceClip = false;
+    bool m_hasAuxiliaryExitClip = false;
+    bool m_hasEntranceClip = false;
+    bool m_hasExitClip = false;
 };
 #endif // SENSORTRAYLOADERPARAMETER_H

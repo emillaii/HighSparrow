@@ -1,16 +1,18 @@
 ﻿#include "lutModule/lut_module.h"
 #include "utils/commonutils.h"
-
+#include "materialtray.h"
 #include <tcpmessager.h>
 
-LutModule::LutModule(QString name, QObject *parent):ThreadWorkerBase (name)
+enum BusyState
+{
+    IDLE,
+    STATION1,
+    STATION2
+};
+LutModule::LutModule(QString name, QObject *parent):ThreadWorkerBase (name,parent)
 {
 }
 
-LUTState LutModule::getLUTState()
-{
-    return state;
-}
 
 void LutModule::openServer(int port)
 {
@@ -113,8 +115,6 @@ void LutModule::receiveLoadLensRequstFinish(int lens, int lens_tray)
         return;
     }
     qInfo("LutModule set has lens");
-    states.setLutLensID(lens);
-    states.setLutTrayID(lens_tray);
     qInfo("LutModule loaded lens id: %d tray id: %d", lens, lens_tray);
     states.setFinishWaitLens(true);
 }
@@ -126,297 +126,256 @@ void LutModule::run(bool has_material)
     bool has_task = true;
     time_label = QTime::currentTime();
     while(is_run){
-        has_task = false;
-//        if(!has_task)
-            QThread::msleep(10);
-        has_task = false;
-        if (state == HAS_LENS&&(!states.beExchangeMaterial())) {
-            tcp_mutex.lock();
-            if((!requestQueue.isEmpty())) {
-                has_task = true;
-                state = BUSY;
-                QJsonObject obj = requestQueue.dequeue();
-                tcp_mutex.unlock();
-                qInfo("Start to consume request: %s", getStringFromJsonObject(obj).toStdString().c_str());
-                QString client_ip = obj["client_ip"].toString("");
-                servingIP = client_ip;
-                QString cmd = obj["cmd"].toString("");
-                if(client_ip == "::1")
-                {
-                    qInfo("This command come from localhost");
-                    isLocalHost = true;
-                }
-                else
-                {
-                    qInfo("This command come from anther computer");
-                    isLocalHost = false;
-                }
-
-                if (cmd == "lensReq")
-                {
-                    qInfo("start commincate whit %s",servingIP.toStdString().c_str());
-                    //                actionQueue.clear();
-                    sendEvent("lensResp");
-                    states.setBeExchangeMaterial(true);
-                }
-            }
-            else
-            {
-                tcp_mutex.unlock();
-            }
-        }
-        else if (state != NO_LENS&&states.beExchangeMaterial()) {
-            has_task = true;
-            while(states.beExchangeMaterial())
-            {
-                if(isActionEmpty())
-                {
-                    QThread::msleep(1);
-                    if(states.cmd() == "")
-                        continue;
-                    if(!is_run)
-                        break;
-                }
-                if(states.cmd() == "")
-                {
-                    QMutexLocker locker(&tcp_mutex);
-                    QJsonObject obj = actionQueue.dequeue();
-                    qInfo("Start to consume action request: %s", getStringFromJsonObject(obj).toStdString().c_str());
-                    QString client_ip = obj["client_ip"].toString("");
-                    states.setCmd(obj["cmd"].toString(""));
-                }
-
-                if(states.cmd() == "unpickNgLensReq"&&(!states.unpickedNgLens()))
-                {
-                    if(states.lutHasNgLens())
-                    {
-                        qInfo("lut Has already has Lens");
-                        break;
-                    }
-                    qInfo("start to unpickNgLensReq");
-                    if(!checkLutNgLensSync(false))
-                    {
-                        AppendError("请人工拿走多LUT上NG位置多余物料并检测真空状态！");
-                        int alarm_id = sendAlarmMessage(u8"已取走",GetCurrentError());
-                        waitMessageReturn(is_run,alarm_id);
-                        if(!is_run)break;
-                    }
-                    bool action_result;
-                    isLocalHost ?action_result = moveToAA1UnPickLens() : action_result = moveToAA2UnPickLens();
-                    if((!action_result)&&has_material)
-                    {
-                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                        QString operation = waitMessageReturn(is_run,alarm_id);
-                        if(!is_run)break;
-                        if(RETRY_OPERATION == operation)
-                            continue;
-                    }
-                    else
-                    {
-                        sendEvent("unpickNgLensResp");
-                        states.setCmd("");
-                        states.setLutNgLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
-                        states.setLutNgTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
-                        states.setUnpickedNgLens(true);
-                        states.setLutHasNgLens(true);
-                        lens_uph.addCurrentReslutNumber(updateAccumulatedHour());
-                        if(isLocalHost)
-                            left_lens_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                        else
-                            right_lens_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                        qInfo("unpicked ng lens index %d tary_index %d",states.lutNgLensID(),states.lutNgTrayID());
-                    }
-                }
-                else if (states.cmd() == "unpickNgLensReq"&&states.unpickedNgLens())
-                {
-                    sendEvent("unpickNgLensResp");
-                    states.setCmd("");
-                    states.setLutNgLensID(isLocalHost?states.aa1LensID():states.aa2LensID());
-                    states.setLutNgTrayID(isLocalHost?states.aa1TrayID():states.aa2TrayID());
-                    lens_uph.addCurrentReslutNumber(updateAccumulatedHour());
-                    if(isLocalHost)
-                        left_lens_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                    else
-                        right_lens_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                    qInfo("unpicked ng lens index %d tary_index %d",states.lutNgLensID(),states.lutNgTrayID());
-                }
-                else if (states.cmd() == "pickLensReq"&&(!states.pickedLens())) {
-                    if(!states.lutHasLens())
-                    {
-                        qInfo("lut Has no Lens");
-                        break;
-                    }
-                    qInfo("states.pickedLens %d",states.pickedLens());
-                    if(!checkLutLensSync(true))
-                    {
-                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
-                        QString operation = waitMessageReturn(is_run,alarm_id);
-                        if(!is_run)break;
-                        if(REJECT_OPERATION == operation)
-                        {
-                            state = NO_LENS;
-                            break;
-                        }
-                        else if(RETRY_OPERATION == operation)
-                            continue;
-                    }
-                    bool action_result;
-                    isLocalHost ?action_result = moveToAA1PickLens() : action_result = moveToAA2PickLens();
-                    if((!action_result)&&has_material)
-                    {
-                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                        QString operation = waitMessageReturn(is_run,alarm_id);
-                        if(!is_run)break;
-                        if(RETRY_OPERATION == operation)
-                            continue;
-                    }
-                    else
-                    {
-                        sendEvent("pickLensResp");
-                        states.setCmd("");
-                        states.setPickedLens(true);
-                        states.setLutHasLens(false);
-                        isLocalHost?states.setAa1LensID(states.lutLensID()):states.setAa2LensID(states.lutLensID());
-                        isLocalHost?states.setAa1TrayID(states.lutTrayID()):states.setAa2TrayID(states.lutTrayID());
-                        lens_uph.addCurrentNumber(updateAccumulatedHour());
-                        if(isLocalHost)
-                            left_lens_uph.addCurrentNumber(updateAccumulatedHour(false));
-                        else
-                            right_lens_uph.addCurrentNumber(updateAccumulatedHour(false));
-                    }
-                }
-                else if (states.cmd() == "pickLensReq"&&states.pickedLens())
-                {
-                    qInfo("states.pickedLens %d",states.pickedLens());
-                    sendEvent("pickLensResp");
-                    states.setCmd("");
-                    isLocalHost?states.setAa1LensID(states.lutLensID()):states.setAa2LensID(states.lutLensID());
-                    isLocalHost?states.setAa1TrayID(states.lutTrayID()):states.setAa2TrayID(states.lutTrayID());
-                    lens_uph.addCurrentNumber(updateAccumulatedHour());
-                    if(isLocalHost)
-                        left_lens_uph.addCurrentNumber(updateAccumulatedHour(false));
-                    else
-                        right_lens_uph.addCurrentNumber(updateAccumulatedHour(false));
-                }
-                else if (states.cmd() == "prReq") {
-                    qInfo("perform PR start");
-                    bool action_result;
-                    PrOffset pr_offset;
-                    isLocalHost ?action_result = moveToAA1UplookPR(pr_offset): action_result = moveToAA2UplookPR(pr_offset);
-                    qInfo("prReq Uplook PR Result %d", action_result);
-                    if((!action_result)&&has_material)
-                    {
-                        AppendError(u8"uplook PR 失败！");
-                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_AUTOREJECT_REJECT_OPERATION,GetCurrentError());
-                        QString operation = waitMessageReturn(is_run,alarm_id);
-                        if(!is_run)break;
-                        if(AUTOREJECT_OPERATION == operation)
-                        {
-                            state = NO_LENS;
-                            states.setPickedLens(false);
-                            states.setUnpickedNgLens(false);
-                            states.setCmd("unpickNgLensReq");
-                            continue;
-                        }
-                        else if(REJECT_OPERATION == operation)
-                        {
-                            state = NO_LENS;
-                            states.setPickedLens(false);
-                            states.setCmd("pickLensReq");
-                            continue;
-                        }
-                        else if(RETRY_OPERATION == operation)
-                            continue;
-                    }
-                    else
-                    {
-                        sendPrEvent(pr_offset);
-                        states.setCmd("");
-                    }
-                }
-                else if (states.cmd() == "lutLeaveReq") {
-//                    bool action_result;
-//                    isLocalHost ?action_result = moveToAA1ReturnPos(): action_result = moveToAA2ReturnPos();
-//                    if((!action_result)&&has_material)
-//                    {
-//                        sendAlarmMessage(ErrorLevel::ErrorMustStop,GetCurrentError());
-//                        is_run = false;
-//                        break;
-//                    }
-//                    else
-                    {
-                        sendEvent("lutLeaveResp");
-                        states.setCmd("");
-                        states.setPickedLens(false);
-                        states.setUnpickedNgLens(false);
-                        states.setBeExchangeMaterial(false);
-                        state = NO_LENS;
-                    }
-                }
-            }
-        }
-        else  if (state == NO_LENS)
+        QThread::msleep(10);
+        //分配任务
+        if(states.busyState() == BusyState::IDLE)
         {
-            has_task = true;
-            if(states.waitingLens()&&is_run)
+            if(states.station1HasRequest())
             {
-                if(states.finishWaitLens())
+                states.setBusyState(BusyState::STATION1);
+                states.setLastState(states.busyState());
+            }
+            else if(states.station2HasRequest())
+            {
+                states.setBusyState(BusyState::STATION2);
+                states.setLastState(states.busyState());
+            }
+        }
+        //AA1卸NG料
+        if((!states.waitingLens())&&(states.busyState() == BusyState::STATION1)&&(states.aa1HeadMaterialState() == MaterialState::IsNgLens)&&(!states.lutHasNgLens()))
+        {
+            if(!moveToAA1UnPickLens())
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            states.setLutHasNgLens(true);
+            states.setAa1HeadMaterialState(MaterialState::IsEmpty);
+            states.copyInNgLensData(states.aa1LensData());
+        }
+        //AA2卸NG料
+        if((!states.waitingLens())&&(states.busyState() == BusyState::STATION2)&&(states.aa2HeadMaterialState() == MaterialState::IsNgLens)&&(!states.lutHasNgLens()))
+        {
+            if(!moveToAA2UnPickLens())
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            states.setLutHasNgLens(true);
+            states.setAa2HeadMaterialState(MaterialState::IsEmpty);
+            states.copyInNgLensData(states.aa2LensData());
+        }
+        //AA1上料
+        if((!states.waitingLens())&&(states.busyState() == BusyState::STATION1)&&(states.aa1HeadMaterialState() == MaterialState::IsEmpty)&&states.station1NeedLens()&&states.lutHasLens())
+        {
+            if(!checkLutLensSync(true))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
-                    if(!(checkLutLensSync(true)&&checkLutNgLensSync(false)))
-                    {
-                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                        QString operation = waitMessageReturn(is_run,alarm_id);
-                        if(!is_run)break;
-                        if(RETRY_OPERATION == operation)
-                        {
-                            states.setWaitingLens(false);
-                            continue;
-                        }
-                    }
-                    qInfo("LUT Module has lens");
-                    {
-                        QMutexLocker temp_locker(&loader_mutext);
-                        states.setWaitingLens(false);
-                        states.setFinishWaitLens(false);
-                    }
-                    states.setLutNgLensID(-1);
-                    states.setLutNgTrayID(-1);
-                    state = HAS_LENS;
-                    states.setLutHasLens(true);
-                    states.setLutHasNgLens(false);
-                    bool action_result;
-                    isLocalHost ?action_result = moveToAA2ReadyPos(): action_result = moveToAA1ReadyPos();
-                    if(!action_result)
-                    {
-                        AppendError("move to ready pos fail");
-                        int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                        QString operation = waitMessageReturn(is_run,alarm_id);
-                        if(!is_run)break;
-                        if(RETRY_OPERATION == operation)
-                            continue;
-                    }
+                    states.setLutHasLens(false);
+                    break;
                 }
-                else
+                else if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            if(!moveToAA1PickLens())
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            states.setLutHasLens(false);
+            states.setStation1NeedLens(false);
+            states.setAa1HeadMaterialState(MaterialState::IsRawLens);
+            states.copyInAa1LensData(states.lensData());
+        }
+        //AA2上料
+        if((!states.waitingLens())&&(states.busyState() == BusyState::STATION2)&&(states.aa2HeadMaterialState() == MaterialState::IsEmpty)&&states.station2NeedLens()&&states.lutHasLens())
+        {
+            if(!checkLutLensSync(true))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(REJECT_OPERATION == operation)
                 {
-                    QThread::msleep(100);
+                    states.setLutHasLens(false);
+                    break;
+                }
+                else if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            if(!moveToAA2PickLens())
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            states.setLutHasLens(false);
+            states.setStation2NeedLens(false);
+            states.setAa2HeadMaterialState(MaterialState::IsRawLens);
+            states.copyInAa2LensData(states.lensData());
+        }
+        //AA1视觉
+        if((!states.waitingLens())&&states.station1HasRequest()&&(!states.station1NeedLens())&&(states.aa1HeadMaterialState() != MaterialState::IsNgLens))
+        {
+            if((states.aa1HeadMaterialState() == MaterialState::IsRawLens)&&(!moveToAA1UplookPR()))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_AUTOREJECT_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(AUTOREJECT_OPERATION == operation)
+                {
+                    states.setAa1HeadMaterialState(MaterialState::IsNgLens);
+                    states.setStation1NeedLens(true);
+                    continue;
+                }
+                else if(REJECT_OPERATION == operation)
+                {
+                    states.setAa1HeadMaterialState(MaterialState::IsEmpty);
+                    states.setStation1NeedLens(true);
+                    continue;
+                }
+                else if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            states.setStation1HasRequest(false);
+            states.setBusyState(BusyState::IDLE);
+            QJsonObject param;
+            param.insert("AAMaterialState",MaterialTray::getMaterialStateName(states.aa1HeadMaterialState()));
+            param.insert("MaterialData",QJsonObject::fromVariantMap(states.aa1LensData()));
+            sendMessageToModule("AA1CoreNew","FinishLoadLens",param);
+        }
+        //AA2视觉
+        if((!states.waitingLens())&&states.station2HasRequest()&&(!states.station2NeedLens())&&(states.aa2HeadMaterialState() != MaterialState::IsNgLens))
+        {
+            if((states.aa2HeadMaterialState() == MaterialState::IsRawLens)&&(!moveToAA2UplookPR()))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_AUTOREJECT_REJECT_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(AUTOREJECT_OPERATION == operation)
+                {
+                    states.setAa2HeadMaterialState(MaterialState::IsNgLens);
+                    states.setStation2NeedLens(true);
+                    continue;
+                }
+                else if(REJECT_OPERATION == operation)
+                {
+                    states.setAa2HeadMaterialState(MaterialState::IsEmpty);
+                    states.setStation2NeedLens(true);
+                    continue;
+                }
+                else if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            states.setStation2HasRequest(false);
+            states.setBusyState(BusyState::IDLE);
+            QJsonObject param;
+            param.insert("AAMaterialState",MaterialTray::getMaterialStateName(states.aa2HeadMaterialState()));
+            param.insert("MaterialData",QJsonObject::fromVariantMap(states.aa2LensData()));
+            sendMessageToModule("AA2CoreNew","FinishLoadLens",param);
+        }
+        //无任务无料去等料位置
+        if((!states.waitingLens())&&(!states.lutHasLens())&&(!checkNeedLens())&&(!states.lutHasNgLens())&&(!states.waitingTask()))
+        {
+            if(!moveToLoadPosAndCheckMaterial(states.lutHasLens(),states.lutHasNgLens(),true))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            states.setWaitingTask(true);
+        }
+        //请求Lens
+        if((!states.waitingLens())&&(states.lutHasNgLens()||checkNeedLens()))
+        {
+            if(states.station1Unload()&&states.station2Unload())
+                sendMessageToModule("LensLoaderModule","UnloadMode");
+            if(!moveToLoadPosAndCheckMaterial(states.lutHasLens(),states.lutHasNgLens(),true))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            qInfo("LUT Module is waiting lens");
+            QMutexLocker temp_locker(&loader_mutext);
+            QJsonObject param;
+            if(states.lutHasNgLens())
+                param.insert("LutNgLensData",QJsonObject::fromVariantMap(states.ngLensData()));
+            param.insert("LutHasLens",states.lutHasLens());
+            param.insert("NeedLoadLens",checkNeedLens());
+            int temp_number = states.taskOfStation1() + states.taskOfStation2();
+            if(!states.station1NeedLens())
+                temp_number--;
+            if(!states.station2NeedLens())
+                temp_number--;
+            if(temp_number > 0)
+                param.insert("TaskNumber",temp_number);
+            sendMessageToModule("LensLoaderModule","LoadLensRequest",param);
+            states.setWaitingLens(true);
+            states.setWaitingTask(false);
+        }
+        //等待Lens
+        if(states.waitingLens()&&states.finishWaitLens())
+        {
+            if(!checkLutLensSync(states.lutHasLens()))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                {
+                    continue;
                 }
             }
+            if(!checkLutNgLensSync(states.lutHasNgLens()))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                {
+                    continue;
+                }
+            }
+
+            bool action_result;
+
+            if((states.busyState() == BusyState::STATION2)
+                    ||((!states.disableStation2())&&(states.busyState() == BusyState::IDLE)&&(states.lastState() == BusyState::STATION1))
+                    ||states.disableStation1())
+                action_result = moveToAA2ReadyPos();
             else
+                action_result = action_result = moveToAA1ReadyPos();
+            if(!action_result)
             {
-                if(!moveToLoadPosAndCheckMaterial(false,states.lutNgLensID()>=0,true))
-                {
-                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                    QString operation = waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
-                    if(RETRY_OPERATION == operation)
-                        continue;
-                }
-                qInfo("LUT Module is not waiting lens");
-                QMutexLocker temp_locker(&loader_mutext);
-                states.setLutHasLens(false);
-                emit sendLoadLensRequst(true,states.lutNgLensID(),states.lutNgTrayID());
-                states.setWaitingLens(true);
+                AppendError("move to ready pos fail");
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
+            states.setWaitingLens(false);
+            states.setFinishWaitLens(false);
         }
     }
     states.setRunMode(RunMode::Normal);
@@ -722,25 +681,7 @@ void LutModule::performHandlingOperation(int cmd)
 void LutModule::resetLogic()
 {
     if(is_run)return;
-    actionQueue.clear();
-    requestQueue.clear();
-    state = LUTState::NO_LENS;
     states.reset();
-    states.setLutTrayID(-1);
-    states.setLutLensID(-1);
-    states.setLutNgTrayID(-1);
-    states.setLutNgLensID(-1);
-    states.setAa1TrayID(-1);
-    states.setAa1LensID(-1);
-    states.setAa2TrayID(-1);
-    states.setAa2LensID(-1);
-    states.setWaitingLens(false);
-    states.setServingIP("");
-    states.setLutHasLens(false);
-    states.setPickingLens(false);
-    states.setCmd("");
-    states.setUnpickedNgLens(false);
-    states.setPickedLens(false);
 }
 
 void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location, XtVacuum *load_vacuum, XtVacuum *unload_vacuum,XtGeneralOutput *gripper, SutModule *sut,int check_thread)
@@ -944,7 +885,7 @@ double LutModule::getLoadUplookPRY()
 
 bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous,bool check_softlanding)
 {
-    sendCmd("::1","gripperOnReq");
+    openAA1Griper();
     bool result = true;
     if(parameters.enablePickForce())
     {
@@ -963,7 +904,7 @@ bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous,bool
             result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_picklens_position.Z(),parameters.lensHeight());
             qInfo("moveToAA1PickLens Finish ZSerchByForce");
         }
-        sendCmd("::1","gripperOffReq");
+        closeAA1Griper();
         result &= closeLoadVacuum();
         Sleep(parameters.gripperDelay());
         if(need_return)
@@ -989,9 +930,9 @@ bool LutModule::moveToAA1PickLensPos(bool check_autochthonous,bool check_softlan
 bool LutModule::moveToAAMeasurePickHeight(bool ishost, bool check_autochthonous,bool check_softlanding)
 {
     if(ishost)
-        sendCmd("::1","gripperOnReq");
+        openAA1Griper();
     else
-        sendCmd("remote","gripperOnReq");
+        openAA2Griper();
     bool result = true;
     if(ishost)
         result &= carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),0,check_autochthonous,check_softlanding);
@@ -1012,7 +953,7 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous,bool check_softland
 //        result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,1,unload_vacuum);
         result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_picklens_position.Z(),parameters.lensHeight());
         qInfo("moveToAA1UnPickLens Start ZSerchByForce");
-        sendCmd("::1","gripperOnReq");
+        openAA1Griper();
         result &= openUnloadVacuum();
         Sleep(parameters.gripperDelay());
         result &= carrier->ZSerchReturn();
@@ -1031,7 +972,7 @@ bool LutModule::moveToAA2PickLensPos(bool check_autochthonous,bool check_softlan
 bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous,bool check_softlanding)
 {
     qInfo("moveToAA2PickLens");
-    sendCmd("remote","gripperOnReq");
+   openAA2Griper();
     bool result = true;
     if(parameters.enablePickForce())
     {
@@ -1045,12 +986,12 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous,boo
     {
         if(parameters.enablePickForce())
         {
-            qInfo("moveToAA1PickLens Start ZSerchByForce");
+            qInfo("moveToAA2PickLens Start ZSerchByForce");
 //            result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,0,load_vacuum);
             result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa2_picklens_position.Z(),parameters.lensHeight());
-            qInfo("moveToAA1PickLens Finish ZSerchByForce");
+            qInfo("moveToAA2PickLens Finish ZSerchByForce");
         }
-        sendCmd("remote","gripperOffReq");
+        closeAA2Griper();
         result &= closeLoadVacuum();
         Sleep(parameters.gripperDelay());
         if(need_return)
@@ -1069,7 +1010,7 @@ bool LutModule::moveToAA2UnPickLens(bool check_autochthonous,bool check_softland
 //        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
         result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa2_picklens_position.Z(),parameters.lensHeight());
         qInfo("moveToAA2UnPickLens Finish ZSerchByForce");
-        sendCmd("remote","gripperOnReq");
+        openAA2Griper();
         result &= openUnloadVacuum();
         Sleep(parameters.gripperDelay());
         result &= carrier->motor_z->resetSoftLanding();
@@ -1237,6 +1178,59 @@ void LutModule::clearNumber()
     parameters.setAccumulatedHour(0);
 }
 
+bool LutModule::checkNeedLens()
+{
+    if(states.lutHasLens())
+        return false;
+    if((states.taskOfStation1() == 1)&&(!states.station1NeedLens())&&(states.taskOfStation2() == 1)&&(!states.station2NeedLens()))
+        return false;
+    return true;
+}
+
+void LutModule::openAA1Griper()
+{
+    states.setGriperOperationResult(0);
+    sendMessageToModule("LogicManager1","OpenGripper");
+}
+
+void LutModule::closeAA1Griper()
+{
+
+    states.setGriperOperationResult(0);
+    sendMessageToModule("LogicManager1","CloseGripper");
+}
+
+void LutModule::openAA2Griper()
+{
+
+    states.setGriperOperationResult(0);
+    sendMessageToModule("LogicManager2","OpenGripper");
+}
+
+void LutModule::closeAA2Griper()
+{
+
+    states.setGriperOperationResult(0);
+    sendMessageToModule("LogicManager2","CloseGripper");
+}
+
+bool LutModule::waitGripermFinish()
+{
+    int current_time = 0;
+    while (current_time < parameters.griperOperationOutTime())
+    {
+        if(states.griperOperationResult() != 0)
+        {
+            qInfo("waitSutVacuumFinish time %d",current_time);
+            return (states.griperOperationResult() > 0||states.runMode()== RunMode::NoMaterial);
+        }
+        current_time +=10;
+        QThread::msleep(10);
+    }
+    qInfo("waitGripermFinish fail ,out time %d",parameters.griperOperationOutTime());
+    return false;
+}
+
 QString LutModule::getUuid(bool is_right, int current_count, int current_time)
 {
     QString uuid = "";
@@ -1253,7 +1247,7 @@ QString LutModule::getUuid(bool is_right, int current_count, int current_time)
 void LutModule::recordAALensPr(QString uuid)
 {
     qInfo("recordAALensPr");
-    QString lensId = QString::number(states.lutLensID());
+//    QString lensId = QString::number(states.lutLensID());
     QVariantMap temp_map;
     temp_map.insert("4_uplook_offset.x",pr_offset.X);
     temp_map.insert("4_uplook_offset.y",pr_offset.Y);
@@ -1265,9 +1259,106 @@ void LutModule::recordAALensPr(QString uuid)
 void LutModule::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-//    QMutexLocker temp_locker(&message_mutex);
-//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-//        this->module_message = message;
+    if(!message.contains("OriginModule"))
+    {
+        qInfo("message error! has no OriginModule.");
+        return;
+    }
+    QString origin_module = message["OriginModule"].toString();
+
+    if(message["OriginModule"].toString().contains("LogicManager"))
+    {
+        if(message.contains("Message"))
+        {
+            if(message["Message"].toString().contains("GripperSuccess"))
+            {
+                states.setGriperOperationResult(1);
+            }
+            else if(message["Message"].toString().contains("GripperFail"))
+            {
+                states.setGriperOperationResult(-1);
+            }
+        }
+    }
+    else if(origin_module == "AA1CoreNew")
+    {
+        if(message.contains("Message"))
+        {
+            if(message["Message"].toString() == "LoadLensRequest")
+            {
+                if(message.contains("MaterialState"))
+                    states.setAa1HeadMaterialState(MaterialTray::getMaterialStateFromName(message["MaterialState"].toString()));
+                else
+                    qInfo("message MaterialState miss");
+                if(message.contains("TaskNumber"))
+                    states.setTaskOfStation1(message["TaskNumber"].toInt());
+                if(!states.station1Unload())
+                    states.setStation1NeedLens(true);
+                states.setStation1HasRequest(true);
+            }
+            else if(message["Message"].toString()=="UnloadMode")
+            {
+                states.setStation1Unload(true);
+            }
+            else if(message["Message"].toString()=="NormalMode")
+            {
+                states.setStation1Unload(false);
+            }
+            else
+            {
+                qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            }
+        }
+    }
+    else if(origin_module == "AA2CoreNew")
+    {
+        if(message.contains("Message"))
+        {
+            if(message["Message"].toString() == "LoadLensRequest")
+            {
+                if(message.contains("MaterialState"))
+                    states.setAa2HeadMaterialState(MaterialTray::getMaterialStateFromName(message["MaterialState"].toString()));
+                else
+                    qInfo("message MaterialState miss");
+                if(message.contains("TaskNumber"))
+                    states.setTaskOfStation2(message["TaskNumber"].toInt());
+                if(!states.station2Unload())
+                    states.setStation2NeedLens(true);
+                states.setStation2HasRequest(true);
+            }
+            else if(message["Message"].toString()=="UnloadMode")
+            {
+                states.setStation2Unload(true);
+            }
+            else if(message["Message"].toString()=="NormalMode")
+            {
+                states.setStation2Unload(false);
+            }
+            else
+            {
+                qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            }
+        }
+    }
+    else if(origin_module == "LensLoaderModule")
+    {
+        if(message.contains("Message"))
+        {
+            if(message["Message"].toString().contains("FinishLoadLens"))
+            {
+                if(message.contains("LutHasLens"))
+                    states.setLutHasLens(message["LutHasLens"].toBool());
+                else
+                    qInfo("message LutHasLens miss");
+                if(message.contains("LutLensData"))
+                    states.copyInLensData(message["LutLensData"].toMap());
+                else
+                    qInfo("message LutLensData miss");
+                states.setLutHasNgLens(false);
+                states.setFinishWaitLens(true);
+            }
+        }
+    }
 }
 
 PropertyBase *LutModule::getModuleState()

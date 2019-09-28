@@ -11,10 +11,12 @@
 enum MaterialState
 {
     IsEmpty = 0,
-    IsRaw = 1,
-    IsNgSensor = 2,
-    IsProduct = 3,
-    IsNgProduct = 4
+    IsRawLens = 1,
+    IsNgLens = 2,
+    IsRawSensor = 3,
+    IsNgSensor = 4,
+    IsGoodProduct = 5,
+    IsNgProduct = 6
 };
 
 
@@ -26,12 +28,14 @@ public:
     Q_INVOKABLE void calculateDelta();
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
-    QString getMaterialStateName(int material_state);
+    static QString getMaterialStateName(int material_state);
+    static int getMaterialStateFromName(QString name);
     QPointF getPosition(int column_index,int row_index,int tray_index = 0);
     QPointF getPositionByIndex(int index,int tray_index = 0);
     bool findNextPositionOfInitState(int tray_index = 0);
     bool findLastPositionOfState(int state, int tray_index);
     bool isTrayNeedChange(int tray_index);
+    bool checkFinishPercent(int tray_index,double percent);
     int getCurrentIndex(int tray_index = 0);
     int getLastIndex();
     QPointF getCurrentPosition(int tray_index = 0);

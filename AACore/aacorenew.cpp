@@ -20,6 +20,7 @@
 #include <ipcclient.h>
 #include <math.h>
 #include "tcpmessager.h"
+#include "materialtray.h"
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX,
                         double & localMaxY, double & error_avg, double & error_dev, vector<double> & y_output) {
     size_t n = x.size();
@@ -126,12 +127,12 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 {
     Q_UNUSED(name)
     Q_UNUSED(parent)
-    that = this;
 }
 
-void AACoreNew::Init(AAHeadModule *aa_head, LutClient *lut, SutModule *sut, Dothinkey *dk, ChartCalibration *chartCalibration,
+void AACoreNew::Init(AAHeadModule *aa_head, SutModule *sut, Dothinkey *dk, ChartCalibration *chartCalibration,
                      DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog, int serverMode)
 {
+    that = this;
     setName(parameters.moduleName());
     this->aa_head = aa_head;
     this->lut = lut;
@@ -292,6 +293,12 @@ void AACoreNew::NgProduct()
 void AACoreNew::SetLens()
 {
     has_lens = true;
+    has_ng_lens = false;
+}
+
+void AACoreNew::SetNoLens()
+{
+    has_lens = false;
     has_ng_lens = false;
 }
 
@@ -491,7 +498,6 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::MTF) {
         performMTFNew(params);
-        //performMTFOffline(params);
     }
     else if (cmd == HandleTest::OC) {
         performOC(params);
@@ -549,6 +555,7 @@ void AACoreNew::performHandlingOperation(int cmd)
 void AACoreNew::resetLogic()
 {
     if(is_run)return;
+    states.reset();
     has_product = false;
     has_ng_product = false;
     has_ng_lens = false;
@@ -556,7 +563,9 @@ void AACoreNew::resetLogic()
     has_sensor = false;
     has_lens = false;
     send_lens_request = false;
+    finish_lens_request = false;
     send_sensor_request = false;
+    finish_sensor_request = false;
     aa_head->receive_sensor = false;
     aa_head->waiting_sensor = false;
     aa_head->receive_lens = false;
@@ -1036,6 +1045,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     double zScanStopPosition = 0;
     QElapsedTimer step_move_timer;
     QElapsedTimer grab_timer;
+    double estimated_aa_z = 0;
     if(zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
         unsigned int count = (int)fabs((start - stop)/step_size);
         for (unsigned int i = 0; i < count; i++)
@@ -1121,12 +1131,14 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                    LogicNg(current_aa_ng_time);
                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
                }
+               estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
            } else {
                qInfo("Use the result FOV in previous OC. FOV = %f", oc_fov);
                dfov = this->oc_fov;
+               estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + oc_z;
                oc_fov = -1;
+               oc_z = 0;
            }
-           double estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
            double target_z = estimated_aa_z + offset_in_um;
            qInfo("The estimated target z is: %f dfov is %f", target_z, dfov);
            if (target_z >= stop) {
@@ -1900,18 +1912,13 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         s.insert("pz", sorted_sfr_map[0][i].pz);
         sfrMap.insert(QString::number(i), s);
 
-        data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_map[0][i].sfr, sorted_sfr_fit_map[0][i]);
+        data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_fit_map[0][i], sorted_sfr_map[0][i].sfr);
         if (points_1.size() > 0) {
             for (int j = 1; j < 5; ++j) {
-                qInfo("j:%d",j);
                 double avg_sfr = parameters.WeightList().at(4*j-4+0).toDouble()*sorted_sfr_map[j+4*display_layer][i].t_sfr + parameters.WeightList().at(4*j-4+1).toDouble()*sorted_sfr_map[j+4*display_layer][i].r_sfr
                         + parameters.WeightList().at(4*j-4+2).toDouble()*sorted_sfr_map[j+4*display_layer][i].b_sfr + parameters.WeightList().at(4*j-4+3).toDouble()*sorted_sfr_map[j+4*display_layer][i].l_sfr;
-                data->addData(j,sorted_sfr_map[j+4*display_layer][i].pz*1000,avg_sfr, sorted_sfr_fit_map[j+4*display_layer][i]);
+                data->addData(j,sorted_sfr_map[j+4*display_layer][i].pz*1000, sorted_sfr_fit_map[j+4*display_layer][i],avg_sfr);
             }
-//            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, (sorted_sfr_map[1+4*display_layer][i].b_sfr+sorted_sfr_map[1+4*display_layer][i].r_sfr)/2);
-//            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, (sorted_sfr_map[j+4*display_layer][i].t_sfr+sorted_sfr_map[2+4*display_layer][i].r_sfr)/2);
-//            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, (sorted_sfr_map[3+4*display_layer][i].t_sfr+sorted_sfr_map[3+4*display_layer][i].l_sfr)/2);
-//            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, (sorted_sfr_map[4+4*display_layer][i].b_sfr+sorted_sfr_map[4+4*display_layer][i].l_sfr)/2);
         }
     }
     map.insert("CC", sfrMap);
@@ -2037,7 +2044,6 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     }
     map.insert("fov_slope", current_fov_slope);
     emit pushDataToUnit(runningUnit, "SFR", map);
-    //emit postSfrDataToELK(runningUnit, map);
     data->plot(runningTestName);
     return result;
 }
@@ -2180,11 +2186,15 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
 //    double ll_min_sfr = params["LL"].toDouble(-1);
 //    double lr_min_sfr = params["LR"].toDouble(-1);
     double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
-    double sfr_tol[4] = {0};
-    sfr_tol[0] = params["CC_TOL"].toDouble(-1);
-    sfr_tol[1] = params["03F_TOL"].toDouble(-1);
-    sfr_tol[2] = params["05F_TOL"].toDouble(-1);
-    sfr_tol[3] = params["08F_TOL"].toDouble(-1);
+    double sfr_tol[8] = {0};
+    sfr_tol[0] = params["CC_MIN"].toDouble(0);
+    sfr_tol[1] = params["03F_MIN"].toDouble(0);
+    sfr_tol[2] = params["05F_MIN"].toDouble(0);
+    sfr_tol[3] = params["08F_MIN"].toDouble(0);
+    sfr_tol[4] = params["CC_MAX"].toDouble(100);
+    sfr_tol[5] = params["03F_MAX"].toDouble(100);
+    sfr_tol[6] = params["05F_MAX"].toDouble(100);
+    sfr_tol[7] = params["08F_MIN"].toDouble(100);
     QString error = "";
     QElapsedTimer timer;timer.start();
     QVariantMap map;
@@ -2274,6 +2284,13 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     qPainter.end();
     sfrImageReady(std::move(qImage));
 
+    // Check 4 lines in CC if each SFR score is lower than min or larger than max
+    if (vec[0].t_sfr < sfr_tol[0] || vec[0].r_sfr < sfr_tol[0] || vec[0].b_sfr < sfr_tol[0] || vec[0].l_sfr < sfr_tol[0]
+             || vec[0].t_sfr > sfr_tol[4] || vec[0].r_sfr > sfr_tol[4] || vec[0].b_sfr > sfr_tol[4] || vec[0].l_sfr > sfr_tol[4])
+    {
+        error.append("CC fail.");
+        sfr_check = false;
+    }
     for(int i = 0; i <= max_layer; i++) {
         map.insert(QString("UL_T_SFR_").append(QString::number(i+1)), round(vec[i*4 + 1].t_sfr*1000)/1000);
         map.insert(QString("UL_R_SFR_").append(QString::number(i+1)), round(vec[i*4 + 1].r_sfr*1000)/1000);
@@ -2295,11 +2312,15 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         map.insert(QString("UR_B_SFR_").append(QString::number(i+1)), round(vec[i*4 + 4].b_sfr*1000)/1000);
         map.insert(QString("UR_L_SFR_").append(QString::number(i+1)), round(vec[i*4 + 4].l_sfr*1000)/1000);
         map.insert(QString("UR_SFR_").append(QString::number(i+1)), round(vec[i*4 + 4].avg_sfr*1000)/1000);
-        //Check each 4 ROI in 03F, 05F, 08F if each 4 SFR score is lower than tolerance
+        //Check each 4 ROI in 03F, 05F, 08F if each 4 SFR score is lower than min or larger than max
         if (vec[i*4+1].t_sfr < sfr_tol[i+1] || vec[i*4+1].r_sfr < sfr_tol[i+1] || vec[i*4+1].b_sfr < sfr_tol[i+1] || vec[i*4+1].l_sfr < sfr_tol[i+1]
                 || vec[i*4+2].t_sfr < sfr_tol[i+1] || vec[i*4+2].r_sfr < sfr_tol[i+1] || vec[i*4+2].b_sfr < sfr_tol[i+1] || vec[i*4+2].l_sfr < sfr_tol[i+1]
                 || vec[i*4+3].t_sfr < sfr_tol[i+1] || vec[i*4+3].r_sfr < sfr_tol[i+1] || vec[i*4+3].b_sfr < sfr_tol[i+1] || vec[i*4+3].l_sfr < sfr_tol[i+1]
-                || vec[i*4+4].t_sfr < sfr_tol[i+1] || vec[i*4+4].r_sfr < sfr_tol[i+1] || vec[i*4+4].b_sfr < sfr_tol[i+1] || vec[i*4+4].l_sfr < sfr_tol[i+1])
+                || vec[i*4+4].t_sfr < sfr_tol[i+1] || vec[i*4+4].r_sfr < sfr_tol[i+1] || vec[i*4+4].b_sfr < sfr_tol[i+1] || vec[i*4+4].l_sfr < sfr_tol[i+1]
+                || vec[i*4+1].t_sfr > sfr_tol[i+5] || vec[i*4+1].r_sfr > sfr_tol[i+1] || vec[i*4+1].b_sfr > sfr_tol[i+1] || vec[i*4+1].l_sfr > sfr_tol[i+1]
+                || vec[i*4+2].t_sfr > sfr_tol[i+5] || vec[i*4+2].r_sfr > sfr_tol[i+1] || vec[i*4+2].b_sfr > sfr_tol[i+1] || vec[i*4+2].l_sfr > sfr_tol[i+1]
+                || vec[i*4+3].t_sfr > sfr_tol[i+5] || vec[i*4+3].r_sfr > sfr_tol[i+1] || vec[i*4+3].b_sfr > sfr_tol[i+1] || vec[i*4+3].l_sfr > sfr_tol[i+1]
+                || vec[i*4+4].t_sfr > sfr_tol[i+5] || vec[i*4+4].r_sfr > sfr_tol[i+1] || vec[i*4+4].b_sfr > sfr_tol[i+1] || vec[i*4+4].l_sfr > sfr_tol[i+1])
         {
             if (i == 0)
             {
@@ -2680,8 +2701,6 @@ ErrorCodeStruct AACoreNew::performAccept()
     current_mtf_ng_time = 0;
     parameters.setCurrentTask(parameters.currentTask() + 1);
     states.setCurrentTask(states.currentTask() + 1);
-    if(states.finishSensorTask()&&states.finishLensTask())
-        is_run = false;
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -2803,6 +2822,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "OC Cannot Grab Image"};
     }
     oc_fov = calculateDFOV(img);
+    oc_z = aa_head->GetFeedBack().Z;
     qInfo("DFOV in OC: %f", oc_fov);
     map.insert("DFOV", oc_fov);
     if (!blackScreenCheck(img)) {
@@ -2895,9 +2915,9 @@ ErrorCodeStruct AACoreNew::performVCMInit(QJsonValue params)
     map.insert("target_position", target_position);
     if (!this->vcmCmdServer.isOpen()) {
         QStringList arguments;
-        arguments << "/c" << ".\\i2c_test\\i2c_test.exe";
+        arguments << "/c" << ".\\config\\i2c_test\\i2c_test.exe";
         vcmCmdServer.setWorkingDirectory(QDir::currentPath());
-        vcmCmdServer.startDetached("cmd.exe", arguments);
+        vcmCmdServer.start("cmd.exe", arguments);
         vcmCmdServer.waitForStarted();
         QThread::msleep(1000);
     }
@@ -2929,18 +2949,18 @@ ErrorCodeStruct AACoreNew::performVCMInit(QJsonValue params)
     QString respond = client.waitRespond();
     if(respond.contains("success"))
         qInfo(respond.toStdString().c_str());
-    else
-    {
-       int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,respond);
-       QString opertion = waitMessageReturn(is_run,alarm_id);
-       if(opertion == REJECT_OPERATION)
-       {
-           NgLens();
-           map.insert("result", respond);
-           emit pushDataToUnit(runningUnit, "VCMInit", map);
-           return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, respond};
-       }
-    }
+//    else
+//    {
+//       int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,respond);
+//       QString opertion = waitMessageReturn(is_run,alarm_id);
+//       if(opertion == REJECT_OPERATION)
+//       {
+//           NgLens();
+//           map.insert("result", respond);
+//           emit pushDataToUnit(runningUnit, "VCMInit", map);
+//           return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, respond};
+//       }
+//    }
 //    if(delay>0)
 //        QThread::msleep(delay);
     map.insert("timeElapsed", timer.elapsed());
@@ -3005,7 +3025,7 @@ ErrorCodeStruct AACoreNew::performInitSensor(int finish_delay,bool check_map)
 
 ErrorCodeStruct AACoreNew::performPRToBond(int finish_delay)
 {
-    if((!has_sensor)||(!has_lens)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
+    if((!has_sensor)||(!has_lens)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA no sensor or no lens"};}
     //if (!this->lut->moveToUnloadPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT cannot move to unload Pos"};}
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
@@ -3038,6 +3058,17 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
     QVariantMap map;
     ErrorCodeStruct result = ErrorCodeStruct {ErrorCode::OK, ""};
 
+    if(states.stationTask() > 0)
+    {
+        if((!states.finishStationTask())&&(states.currentTask() >= states.stationTask()))
+        {
+            states.setFinishSensorTask(true);
+            sendMessageToModule("SensorLoaderModule","UnloadMode");
+            sendMessageToModule(states.stationNumber()==0?"Sut1Module":"Sut2Module","UnloadMode");
+            sendMessageToModule("LUTModule","UnloadMode");
+        }
+    }
+
     if(!(has_sensor&&has_lens))
     {
         if (!this->sut->moveZToSaftyInMushroom()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to saft Pos"};}
@@ -3045,117 +3076,120 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
     }
     if((!has_sensor)&&(!send_sensor_request))
     {
-        if(states.finishSensorTask())
-        {
-            states.setFinishSensorTask(false);
-            sendMessageToModule("SensorLoaderModule","NormalMode");
-        }
         qInfo("need sensor has_product %d  has_ng_product %d has_ng_sensor %d",has_product,has_ng_product,has_ng_sensor);
         QString sut_module_name = states.stationNumber()==0?"Sut1Module":"Sut2Module";
+        int sensor_state;
         if(has_product)
-        {
-            sendMessageToModule(sut_module_name,"GoodProduct");
-            sendMessageToModule("SensorLoaderModule","GoodProduct");
-        }
+            sensor_state = MaterialState::IsGoodProduct;
         else if(has_ng_product)
-        {
-            sendMessageToModule(sut_module_name,"NgProduct");
-            sendMessageToModule("SensorLoaderModule","NgProduct");
-        }
+            sensor_state = MaterialState::IsNgProduct;
         else if(has_ng_sensor)
-        {
-            sendMessageToModule(sut_module_name,"NgSensor");
-            sendMessageToModule("SensorLoaderModule","NgSensor");
-        }
+            sensor_state = MaterialState::IsNgSensor;
         else
-        {
-            sendMessageToModule(sut_module_name,"NoSensor");
-            sendMessageToModule("SensorLoaderModule","NoSensor");
-        }
+            sensor_state = MaterialState::IsEmpty;
+        QJsonObject param;
+        param.insert("MaterialState",MaterialTray::getMaterialStateName(sensor_state));
+        if((states.stationTask() > 0) && (states.stationTask() > states.currentTask()))
+            param.insert("TaskNumber",states.stationTask() - states.currentTask());
+        sendMessageToModule(sut_module_name,"LoadSensorRequest",param);
+        sendMessageToModule("SensorLoaderModule","LoadSensorRequest",param);
+        finish_sensor_request = false;
         send_sensor_request = true;
         if(has_lens)
             if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
     }
 
-    if((!has_lens)&&(!send_lens_request))
+    if((!states.finishStationTask())&&(!has_lens)&&(!send_lens_request))
     {
-        if(states.finishLensTask())
-        {
-            states.setFinishLensTask(false);
-            sendMessageToModule("LensLoaderModule","NormalMode");
-        }
-        this->lut->sendLensRequest(has_ng_lens);
+        int lens_state;
+        if(has_ng_lens)
+            lens_state = MaterialState::IsNgLens;
+        else if(has_lens)
+            lens_state = MaterialState::IsRawLens;
+        else
+            lens_state = MaterialState::IsEmpty;
+        QJsonObject param;
+        param.insert("MaterialState",MaterialTray::getMaterialStateName(lens_state));
+        if((states.stationTask() > 0) && (states.stationTask() > states.currentTask()))
+            param.insert("TaskNumber",states.stationTask() - states.currentTask());
+        sendMessageToModule("LUTModule","LoadLensRequest",param);
+
         qInfo("need lens has_ng_lens %d",has_ng_lens);
         if (!this->aa_head->moveToPickLensPosition()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to picklens Pos"};}
+        finish_lens_request = false;
         send_lens_request = true;
         if(has_sensor)
             if (!this->sut->moveToDownlookPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "SUT cannot move to downlook Pos"};}
     }
-    if((!has_lens)&&send_lens_request)
+    if((!states.finishStationTask())&&send_lens_request)
     {
-        lut->waitLensRespond(is_run);
-        if (aa_head->receive_lens)
-        {
-            qInfo("wait lens suceess");
-            SetLens();
-            send_lens_request = false;
-            aa_head->receive_lens = false;
-            aa_head->receive_lens = false;
-            if(parameters.enableLensVcm())
+        int time_out = 0;
+        while (is_run) {
+            if(finish_lens_request)
             {
-                QJsonObject temp_params;
-                temp_params["target_position"] = -1;
-                ErrorCodeStruct temp_result = performVCMInit(temp_params);
-                if(temp_result.code != ErrorCode::OK)
+                finish_lens_request = false;
+                send_lens_request = false;
+                qInfo("wait For LoadLens succeed.");
+                if(parameters.enableLensVcm())
                 {
-                    NgLens();
-                    result.code = temp_result.code;
-                    result.errorMessage.append(temp_result.errorMessage);
+                    QJsonObject temp_params;
+                    temp_params["target_position"] = -1;
+                    ErrorCodeStruct temp_result = performVCMInit(temp_params);
+                    if(temp_result.code != ErrorCode::OK)
+                    {
+                        int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,temp_result.errorMessage);
+                        QString opertion = waitMessageReturn(is_run,alarm_id);
+                        if(opertion == REJECT_OPERATION)
+                        {
+                            NgLens();
+                            result.code = temp_result.code;
+                            result.errorMessage.append(temp_result.errorMessage);
+                        }
+                    }
+                    temp_params["target_position"] = parameters.lensVcmWorkPosition();
+                    temp_result = performVCMInit(temp_params);
+                    if(temp_result.code != ErrorCode::OK)
+                    {
+                        int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,temp_result.errorMessage);
+                        QString opertion = waitMessageReturn(is_run,alarm_id);
+                        if(opertion == REJECT_OPERATION)
+                        {
+                            NgLens();
+                            result.code = temp_result.code;
+                            result.errorMessage.append(temp_result.errorMessage);
+                        }
+                    }
                 }
-                temp_params["target_position"] = parameters.lensVcmWorkPosition();
-                temp_result = performVCMInit(temp_params);
-                if(temp_result.code != ErrorCode::OK)
-                {
-                    NgLens();
-                    result.code = temp_result.code;
-                    result.errorMessage.append(temp_result.errorMessage);
-                }
+                break;
             }
-
-            if(states.stationTask()>0&&(!states.finishLensTask()))
-            {
-                if((parameters.taskAccumulate()&&parameters.currentTask() >= states.stationTask())||
-                        (parameters.taskAccumulate()&&states.currentTask() >= states.stationTask()))
-                {
-                    states.setFinishLensTask(true);
-                    sendMessageToModule("LensLoaderModule","UnloadMode");
-                }
-            }
+            QThread::msleep(10);
+            time_out ++;
         }
-        else
+        if(!is_run)
         {
+            qInfo("wait For load lens interrupt.");
             result.code = ErrorCode::GENERIC_ERROR;
-            result.errorMessage.append("lens request fail.");
+            result.errorMessage.append("sensor request fail.");
         }
     }
-    if((!has_sensor)&&send_sensor_request)
+    if(send_sensor_request)
     {
         qInfo("wait sensor has_product %d has_ng_sensor %d",has_product,has_ng_sensor);
 
         int time_out = 0;
         while (is_run) {
-            if(!send_sensor_request)
+            if(finish_sensor_request)
             {
+                finish_sensor_request = false;
+                send_sensor_request = false;
                 qInfo("wait For LoadSensor succeed.");
-                SetSensor();
-                if(states.stationTask()>0&&(!states.finishSensorTask()))
+                if(states.finishStationTask())
                 {
-                    if((parameters.taskAccumulate()&&parameters.currentTask() >= states.stationTask())||
-                            (parameters.taskAccumulate()&&states.currentTask() >= states.stationTask()))
-                    {
-                        states.setFinishSensorTask(true);
-                        sendMessageToModule("SensorLoaderModule","UnloadMode");
+                    while (is_run&&states.finishStationTask()) {
+                        QThread::msleep(1000);
                     }
+                    states.setFinishSensorTask(false);
+                    states.setCurrentTask(0);
                 }
                 break;
             }
@@ -3169,7 +3203,7 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
             result.errorMessage.append("sensor request fail.");
         }
     }
-    if(finish_delay>0)
+    if(finish_delay > 0)
         Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "AA_Load_Material", map);
@@ -3386,9 +3420,6 @@ PropertyBase *AACoreNew::getModuleState()
 void AACoreNew::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-//    QMutexLocker temp_locker(&message_mutex);
-//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-//        this->module_message = message;
     if(!message.contains("OriginModule"))
     {
         qInfo("message error! has no OriginModule.");
@@ -3403,15 +3434,39 @@ void AACoreNew::receivceModuleMessage(QVariantMap message)
             return;
         }
 
-        if(message["Message"].toString()=="FinishPlaceRequest")
+        if(message["Message"].toString()=="FinishLoadSensor")
         {
-            SetSensor();
-            send_sensor_request = false;
+            int temp_state = MaterialTray::getMaterialStateFromName(message["SutMaterialState"].toString());
+            if(temp_state == MaterialState::IsRawSensor)
+                SetSensor();
+            else
+                SetNoSensor();
+            //todo MaterialData
+            finish_sensor_request = true;
         }
-        else if(message["Message"].toString()=="FinishPickRequest")
+        else
         {
-            SetNoSensor();
-            send_sensor_request = false;
+            qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            return;
+        }
+    }
+    else if(message["OriginModule"].toString() == "LUTModule")
+    {
+        if(!message.contains("Message"))
+        {
+            qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            return;
+        }
+
+        if(message["Message"].toString() == "FinishLoadLens")
+        {
+            int temp_state = MaterialTray::getMaterialStateFromName(message["AAMaterialState"].toString());
+            if(temp_state == MaterialState::IsRawLens)
+                SetLens();
+            else
+                SetNoLens();
+//            message["MaterialState"]
+            finish_lens_request = true;
         }
         else
         {

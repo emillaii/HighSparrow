@@ -137,7 +137,7 @@ void LensLoaderModule::run(bool has_material)
             has_task = true;
             vacancy_vision->OpenLight();
             int result_tray = 0;
-            if(!moveToTrayEmptyPos(states.pickedLensID(),states.pickedTrayID(),result_tray))
+            if(!moveToTrayEmptyPos(states.pickerLensData()["LensId"].toInt(),states.pickerLensData()["TrayId"].toInt(),result_tray))
             {
                 AppendError(u8"请手动拿走LPA上的NG Lens后继续!");
                 int alarm_id = sendAlarmMessage(u8"已拿走",GetCurrentError());
@@ -181,7 +181,7 @@ void LensLoaderModule::run(bool has_material)
                 else if(RETRY_OPERATION == operation)
                     continue;
             }
-            tray->setCurrentMaterialState(MaterialState::IsNgSensor,result_tray);
+            tray->setCurrentMaterialState(MaterialState::IsNgLens,result_tray);
             states.setHasPickedNgLens(false);
         }
         if(!is_run)break;
@@ -192,7 +192,7 @@ void LensLoaderModule::run(bool has_material)
                 states.setAllowChangeTray(true);
         }
         //取料
-        if((!finish_stop)&&states.hasTray()&&(!states.allowChangeTray())&&(!states.lutHasNgLens())&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
+        if(states.hasTray()&&(!states.allowChangeTray())&&checkNeedPickLens()&&(!states.lutHasNgLens())&&(!states.hasPickedNgLens())&&(!states.hasPickedLens()))
         {
             has_task = true;
             if(tray->isTrayNeedChange(states.currentTray()))
@@ -206,6 +206,10 @@ void LensLoaderModule::run(bool has_material)
                     is_run = false;
                     break;
                 }
+            }
+            if((parameters.readyTrayPercent()>0)&&(states.currentTray() == 1)&&tray->checkFinishPercent(1,parameters.readyTrayPercent()))
+            {
+                sendMessageToModule("LensTrayLoaderModule","ReadyTrayResquest");
             }
             lens_vision->OpenLight();
             if(!moveToNextTrayPos(states.currentTray()))
@@ -269,8 +273,9 @@ void LensLoaderModule::run(bool has_material)
             states.setHasPickedLens(true);
             addCurrentNumber();
             tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
-            states.setPickedTrayID(states.currentTray());
-            states.setPickedLensID(tray->getCurrentIndex(states.currentTray()));
+            states.setPickerLensData("TrayId",states.currentTray());
+            states.setPickerLensData("TrayNumber",tray->getTrayNumber(states.currentTray()));
+            states.setPickerLensData("LensId",tray->getCurrentIndex(states.currentTray()));
             qInfo("picked lens index %d, tray_index %d",states.pickedLensID(),states.pickedTrayID());
         }
         if(!is_run)break;
@@ -329,7 +334,7 @@ void LensLoaderModule::run(bool has_material)
                 {
                     QMutexLocker temp_locker(&tray_mutex);
                     states.setFinishChangeTray(false);
-                    emit sendChangeTrayRequst();
+                    sendMessageToModule("LensTrayLoaderModule","ChangeTrayResquest");
                     states.setWaitingChangeTray(true);
                 }
                 change_tray_time_out = parameters.changeTrayTimeOut();
@@ -363,14 +368,10 @@ void LensLoaderModule::run(bool has_material)
                 else if(RETRY_OPERATION == operation)
                     continue;
             }
-                need_load_lens = false;
                 states.setHasPickedLens(false);
-            {
-                QMutexLocker temp_locker(&lut_mutex);
-                states.setNeedLoadLens(need_load_lens);
-                states.setLutTrayID(states.pickedTrayID());
-                states.setLutLensID(states.pickedLensID());
-            }
+                states.setNeedLoadLens(false);
+                states.setLutHasLens(true);
+                states.copyInLutLensData(states.pickerLensData());
         }
         if(!is_run)break;
         //取NGlens
@@ -426,8 +427,7 @@ void LensLoaderModule::run(bool has_material)
             {
                 QMutexLocker temp_locker(&lut_mutex);
                 states.setLutHasNgLens(false);
-                states.setPickedTrayID(states.lutNgTrayID());
-                states.setPickedLensID(states.lutNgLensID());
+                states.copyInPickerLensData(states.lutNgLensData());
                 qInfo("picked ng lens index %d, tray_id %d",states.pickedLensID(),states.pickedTrayID());
             }
         }
@@ -437,10 +437,11 @@ void LensLoaderModule::run(bool has_material)
         {
             if(states.loadingLens())
             {
-                has_task = true;
                 QMutexLocker temp_locker(&lut_mutex);
-                emit sendLoadLensFinish(states.lutLensID(),states.lutTrayID());
-                qInfo("sendLoadLensFinish lutLensID %d lutTrayID %d",states.lutLensID(),states.lutTrayID());
+                QJsonObject param;
+                param.insert("LutHasLens",states.lutHasLens());
+                param.insert("LutLensData",QJsonObject::fromVariantMap(states.lutLensData()));
+                sendMessageToModule("LUTModule","FinishLoadLens",param);
                 states.setLoadingLens(false);
             }
         }
@@ -1546,14 +1547,93 @@ void LensLoaderModule::recordNgLensPr(QString uuid)
 void LensLoaderModule::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-//    QMutexLocker temp_locker(&message_mutex);
-//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-//        this->module_message = message;
+
+    QString origin_module = message["OriginModule"].toString();
+    if(origin_module == "LUTModule")
+    {
+        if(message.contains("Message"))
+        {
+            if(message["Message"].toString() == "LoadLensRequest")
+            {
+                if(states.loadingLens())
+                {
+                    qInfo("repeat lens request!");
+                    return;
+                }
+                if(message.contains("LutHasLens"))
+                    states.setLutHasLens(message["LutHasLens"].toBool());
+                else
+                    qInfo("message LutHasLens miss.");
+                if(message.contains("NeedLoadLens"))
+                    states.setNeedLoadLens(message["NeedLoadLens"].toBool());
+                else
+                    qInfo("message NeedLoadLens miss.");
+                if(message.contains("LutNgLensData"))
+                {
+                    states.setLutHasNgLens(true);
+                    states.copyInLutNgLensData(message["MaterialData"].toMap());
+                }
+                if(message.contains("TaskNumber"))
+                    states.setTaskOfStations(message["TaskNumber"].toInt());
+                states.setLoadingLens(true);
+                qInfo("lens requst take effect NeedLoadLens %d LutHasNgLens %d LutNgLensID %d LutNgTrayID %d",
+                      states.needLoadLens(),states.lutHasNgLens(),states.lutNgLensID(),states.lutNgTrayID());
+            }
+            else if(message["Message"].toString()=="UnloadMode")
+            {
+                states.setStationsUnload(true);
+            }
+            else if(message["Message"].toString()=="NormalMode")
+            {
+                states.setStationsUnload(false);
+            }
+            else
+            {
+                qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            }
+        }
+    }
+    else if(origin_module == "LensTrayLoaderModule")
+    {
+        if(message.contains("Message"))
+        {
+            if(message["Message"].toString() == "FinishChangeTray")
+            {
+                if(!states.waitingChangeTray())
+                {
+                    qInfo("receive message FinishChangeTray when not changing tray.");
+                    return;
+                }
+                states.setFinishChangeTray(true);
+            }
+            else if(message["Message"].toString()=="UnloadMode")
+            {
+                states.setStationsUnload(true);
+            }
+            else if(message["Message"].toString()=="NormalMode")
+            {
+                states.setStationsUnload(false);
+            }
+            else
+            {
+                qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            }
+        }
+    }
 }
 
 PropertyBase *LensLoaderModule::getModuleState()
 {
     return &states;
+}
+
+bool LensLoaderModule::checkNeedPickLens()
+{
+    if(states.stationsUnload())
+        return false;
+    if((states.taskOfStations() == 1)&&(!states.needLoadLens()))
+        return false;
+    return true;
 }
 
 QMap<QString, PropertyBase *> LensLoaderModule::getModuleParameter()

@@ -7,6 +7,7 @@ class LutParameter:public PropertyBase
     Q_OBJECT
 public:
     LutParameter():PropertyBase(){}
+    Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
     Q_PROPERTY(double pickForce READ pickForce WRITE setPickForce NOTIFY paramsChanged)
     Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
@@ -24,6 +25,7 @@ public:
     Q_PROPERTY(bool enablePickForce READ enablePickForce WRITE setEnablePickForce NOTIFY enablePickForceChanged)
     Q_PROPERTY(bool staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
     Q_PROPERTY(int testLensCount READ testLensCount WRITE setTestLensCount NOTIFY testLensCountChanged)
+    Q_PROPERTY(int griperOperationOutTime READ griperOperationOutTime WRITE setGriperOperationOutTime NOTIFY griperOperationOutTimeChanged)
 
     double pickForce() const
     {
@@ -108,6 +110,16 @@ public:
     int testLensCount() const
     {
         return m_testLensCount;
+    }
+
+    QString moduleName() const
+    {
+        return m_moduleName;
+    }
+
+    int griperOperationOutTime() const
+    {
+        return m_griperOperationOutTime;
     }
 
 public slots:
@@ -263,6 +275,24 @@ public slots:
         emit testLensCountChanged(m_testLensCount);
     }
 
+    void setModuleName(QString moduleName)
+    {
+        if (m_moduleName == moduleName)
+            return;
+
+        m_moduleName = moduleName;
+        emit moduleNameChanged(m_moduleName);
+    }
+
+    void setGriperOperationOutTime(int griperOperationOutTime)
+    {
+        if (m_griperOperationOutTime == griperOperationOutTime)
+            return;
+
+        m_griperOperationOutTime = griperOperationOutTime;
+        emit griperOperationOutTimeChanged(m_griperOperationOutTime);
+    }
+
 signals:
     void paramsChanged();
 
@@ -299,6 +329,10 @@ signals:
 
     void testLensCountChanged(int testLensCount);
 
+    void moduleNameChanged(QString moduleName);
+
+    void griperOperationOutTimeChanged(int griperOperationOutTime);
+
 private:
     double m_PickForce = 0;
     QString m_motorXName = "LUT_X";
@@ -317,6 +351,8 @@ private:
     bool m_enablePickForce = false;
     bool m_staticTest = false;
     int m_testLensCount = 10;
+    QString m_moduleName = "LUTModule";
+    int m_griperOperationOutTime = 1000;
 };
 
 class LutState:public PropertyBase
@@ -326,159 +362,33 @@ class LutState:public PropertyBase
     Q_PROPERTY(bool disableStation1 READ disableStation1 WRITE setDisableStation1 NOTIFY disableStation1Changed)
     Q_PROPERTY(bool disableStation2 READ disableStation2 WRITE setDisableStation2 NOTIFY disableStation2Changed)
     Q_PROPERTY(bool handlyChangeLens READ handlyChangeLens WRITE setHandlyChangeLens NOTIFY handlyChangeLensChanged)
-    Q_PROPERTY(int lutTrayID READ lutTrayID WRITE setLutTrayID NOTIFY lutTrayIDChanged)
-    Q_PROPERTY(int lutLensID READ lutLensID WRITE setLutLensID NOTIFY lutLensIDChanged)
-    Q_PROPERTY(int lutNgTrayID READ lutNgTrayID WRITE setLutNgTrayID NOTIFY lutNgTrayIDChanged)
-    Q_PROPERTY(int lutNgLensID READ lutNgLensID WRITE setLutNgLensID NOTIFY lutNgLensIDChanged)
-    Q_PROPERTY(int aa1TrayID READ aa1TrayID WRITE setAa1TrayID NOTIFY aa1TrayIDChanged)
-    Q_PROPERTY(int aa1LensID READ aa1LensID WRITE setAa1LensID NOTIFY aa1LensIDChanged)
-    Q_PROPERTY(int aa2TrayID READ aa2TrayID WRITE setAa2TrayID NOTIFY aa2TrayIDChanged)
-    Q_PROPERTY(int aa2LensID READ aa2LensID WRITE setAa2LensID NOTIFY aa2LensIDChanged)
+
     Q_PROPERTY(bool waitingLens READ waitingLens WRITE setWaitingLens NOTIFY waitLensChanged)
-    Q_PROPERTY(QString servingIP READ servingIP WRITE setServingIP NOTIFY servingIPChanged)
-    Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
-    Q_PROPERTY(bool pickingLens READ pickingLens WRITE setPickingLens NOTIFY pickingLensChanged)
-    Q_PROPERTY(QString cmd READ cmd WRITE setCmd NOTIFY cmdChanged)
-    Q_PROPERTY(bool pickedLens READ pickedLens WRITE setPickedLens NOTIFY pickedLensChanged)
-    Q_PROPERTY(bool unpickedNgLens READ unpickedNgLens WRITE setUnpickedNgLens NOTIFY unpickedNgLensChanged)
     Q_PROPERTY(bool finishWaitLens READ finishWaitLens WRITE setFinishWaitLens NOTIFY finishWaitLensChanged)
+    Q_PROPERTY(int busyState READ busyState WRITE setBusyState NOTIFY busyStateChanged)
+    Q_PROPERTY(int lastState READ lastState WRITE setLastState NOTIFY lastStateChanged)
+    Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool lutHasNgLens READ lutHasNgLens WRITE setLutHasNgLens NOTIFY lutHasNgLensChanged)
-    Q_PROPERTY(bool aaPickedLens READ aaPickedLens WRITE setAaPickedLens NOTIFY aaPickedLensChanged)
-    Q_PROPERTY(bool lutLoadReady READ lutLoadReady WRITE setLutLoadReady NOTIFY lutLensReadyChanged)
-    Q_PROPERTY(bool needUplookPr READ needUplookPr WRITE setNeedUplookPr NOTIFY needUplookPrChanged)
-    Q_PROPERTY(QString lutUuid READ lutUuid WRITE setLutUuid NOTIFY lutUuidChanged)
-    Q_PROPERTY(QString aa1Uuid READ aa1Uuid WRITE setAa1Uuid NOTIFY aa1UuidChanged)
-    Q_PROPERTY(QString aa2Uuid READ aa2Uuid WRITE setAa2Uuid NOTIFY aa2UuidChanged)
-    Q_PROPERTY(bool beExchangeMaterial READ beExchangeMaterial WRITE setBeExchangeMaterial NOTIFY beExchangeMaterialChanged)
+    Q_PROPERTY(bool station1NeedLens READ station1NeedLens WRITE setStation1NeedLens NOTIFY station1NeedLensChanged)
+    Q_PROPERTY(bool station2NeedLens READ station2NeedLens WRITE setStation2NeedLens NOTIFY station2NeedLensChanged)
+    Q_PROPERTY(int aa1HeadMaterialState READ aa1HeadMaterialState WRITE setAa1HeadMaterialState NOTIFY aa1HeadMaterialStateChanged)
+    Q_PROPERTY(int aa2HeadMaterialState READ aa2HeadMaterialState WRITE setAa2HeadMaterialState NOTIFY aa2HeadMaterialStateChanged)
+    Q_PROPERTY(QVariantMap lensData READ lensData WRITE setLensData NOTIFY lensDataChanged)
+    Q_PROPERTY(QVariantMap ngLensData READ ngLensData WRITE setNgLensData NOTIFY ngLensDataChanged)
+    Q_PROPERTY(QVariantMap aa1LensData READ aa1LensData WRITE setAa1LensData NOTIFY aa1LensDataChanged)
+    Q_PROPERTY(QVariantMap aa2LensData READ aa2LensData WRITE setAa2LensData NOTIFY aa2LensDataChanged)
+    Q_PROPERTY(bool station1HasRequest READ station1HasRequest WRITE setStation1HasRequest NOTIFY station1HasRequestChanged)
+    Q_PROPERTY(bool station2HasRequest READ station2HasRequest WRITE setStation2HasRequest NOTIFY station2HasRequestChanged)
+    Q_PROPERTY(int taskOfStation1 READ taskOfStation1 WRITE setTaskOfStation1 NOTIFY taskOfStation1Changed)
+    Q_PROPERTY(int taskOfStation2 READ taskOfStation2 WRITE setTaskOfStation2 NOTIFY taskOfStation2Changed)
+
+    Q_PROPERTY(bool finishStation1Task READ finishStation1Task WRITE setFinishStation1Task NOTIFY finishStation1TaskChanged)
+    Q_PROPERTY(bool finishStation2Task READ finishStation2Task WRITE setFinishStation2Task NOTIFY finishStation2TaskChanged)
+    Q_PROPERTY(bool station1Unload READ station1Unload WRITE setStation1Unload NOTIFY station1UnloadChanged)
+    Q_PROPERTY(bool station2Unload READ station2Unload WRITE setStation2Unload NOTIFY station2UnloadChanged)
+    Q_PROPERTY(bool waitingTask READ waitingTask WRITE setWaitingTask NOTIFY waitingTaskChanged)
+    Q_PROPERTY(int griperOperationResult READ griperOperationResult WRITE setGriperOperationResult NOTIFY griperOperationResultChanged)
 public:
-    LutState():PropertyBase()
-    {
-        init_values.insert("lutTrayID",-1);
-        init_values.insert("lutLensID",-1);
-        init_values.insert("lutNgTrayID",-1);
-        init_values.insert("lutTrayID",-1);
-        init_values.insert("lutTrayID",-1);
-    }
-    int lutTrayID() const
-    {
-        return m_lutTrayID;
-    }
-
-    int lutLensID() const
-    {
-        return m_lutLensID;
-    }
-
-    int lutNgTrayID() const
-    {
-        return m_lutNgTrayID;
-    }
-
-    int lutNgLensID() const
-    {
-        return m_lutNgLensID;
-    }
-
-    int aa1TrayID() const
-    {
-        return m_aa1TrayID;
-    }
-
-    int aa1LensID() const
-    {
-        return m_aa1LensID;
-    }
-
-    int aa2TrayID() const
-    {
-        return m_aa2TrayID;
-    }
-
-    int aa2LensID() const
-    {
-        return m_aa2LensID;
-    }
-
-    bool waitingLens() const
-    {
-        return m_waitingLens;
-    }
-
-    QString servingIP() const
-    {
-        return m_serviceIP;
-    }
-
-    bool lutHasLens() const
-    {
-        return m_lutHasLens;
-    }
-
-    bool pickingLens() const
-    {
-        return m_pickingLens;
-    }
-
-    QString cmd() const
-    {
-        return m_cmd;
-    }
-
-    bool pickedLens() const
-    {
-        return m_pickedLens;
-    }
-
-    bool unpickedNgLens() const
-    {
-        return m_unpickedNgLens;
-    }
-
-    bool finishWaitLens() const
-    {
-        return m_finishWaitLens;
-    }
-
-    bool lutHasNgLens() const
-    {
-        return m_lutHasNgLens;
-    }
-
-    bool aaPickedLens() const
-    {
-        return m_aaPickedLens;
-    }
-
-    bool lutLoadReady() const
-    {
-        return m_lutloadReady;
-    }
-
-    bool needUplookPr() const
-    {
-        return m_needUplookPr;
-    }
-
-    QString lutUuid() const
-    {
-        return m_lutUuid;
-    }
-
-    QString aa1Uuid() const
-    {
-        return m_aa1Uuid;
-    }
-
-    QString aa2Uuid() const
-    {
-        return m_aa2Uuid;
-    }
-
-    bool beExchangeMaterial() const
-    {
-        return m_beExchangeMaterial;
-    }
-
     int runMode() const
     {
         return m_runMode;
@@ -499,223 +409,147 @@ public:
         return m_handlyChangeLens;
     }
 
+    bool waitingLens() const
+    {
+        return m_waitingLens;
+    }
+
+    bool finishWaitLens() const
+    {
+        return m_finishWaitLens;
+    }
+
+    int busyState() const
+    {
+        return m_busyState;
+    }
+
+    bool lutHasLens() const
+    {
+        return m_lutHasLens;
+    }
+
+    bool lutHasNgLens() const
+    {
+        return m_lutHasNgLens;
+    }
+
+    QVariantMap lensData() const
+    {
+        return m_lensData;
+    }
+
+    QVariant lensData(QString key) const
+    {
+        return m_lensData[key];
+    }
+
+    QVariantMap ngLensData() const
+    {
+        return m_ngLensData;
+    }
+
+    QVariant ngLensData(QString key) const
+    {
+        return m_ngLensData[key];
+    }
+
+    QVariantMap aa1LensData() const
+    {
+        return m_aa1LensData;
+    }
+
+    QVariant aa1LensData(QString key) const
+    {
+        return m_aa1LensData[key];
+    }
+
+    QVariantMap aa2LensData() const
+    {
+        return m_aa2LensData;
+    }
+
+    QVariant aa2LensData(QString key) const
+    {
+        return m_aa2LensData[key];
+    }
+
+    bool station1HasRequest() const
+    {
+        return m_station1HasRequest;
+    }
+
+    bool station2HasRequest() const
+    {
+        return m_station2HasRequest;
+    }
+
+    bool finishStation1Task() const
+    {
+        return m_finishStation1Task;
+    }
+
+    bool finishStation2Task() const
+    {
+        return m_finishStation2Task;
+    }
+
+    int aa1HeadMaterialState() const
+    {
+        return m_aa1HeadMaterialState;
+    }
+
+    int aa2HeadMaterialState() const
+    {
+        return m_aa2HeadMaterialState;
+    }
+
+    int lastState() const
+    {
+        return m_lastState;
+    }
+
+    bool station1Unload() const
+    {
+        return m_station1Unload;
+    }
+
+    bool station2Unload() const
+    {
+        return m_station2Unload;
+    }
+
+    bool station1NeedLens() const
+    {
+        return m_station1NeedLens;
+    }
+
+    bool station2NeedLens() const
+    {
+        return m_station2NeedLens;
+    }
+
+    int taskOfStation1() const
+    {
+        return m_taskOfStation1;
+    }
+
+    int taskOfStation2() const
+    {
+        return m_taskOfStation2;
+    }
+
+    bool waitingTask() const
+    {
+        return m_waitingTask;
+    }
+
+    int griperOperationResult() const
+    {
+        return m_griperOperationResult;
+    }
+
 public slots:
-    void setLutTrayID(int lutTrayID)
-    {
-        if (m_lutTrayID == lutTrayID)
-            return;
-
-        m_lutTrayID = lutTrayID;
-        emit lutTrayIDChanged(m_lutTrayID);
-    }
-
-    void setLutLensID(int lutLensID)
-    {
-        if (m_lutLensID == lutLensID)
-            return;
-
-        m_lutLensID = lutLensID;
-        emit lutLensIDChanged(m_lutLensID);
-    }
-
-    void setLutNgTrayID(int lutNgTrayID)
-    {
-        if (m_lutNgTrayID == lutNgTrayID)
-            return;
-
-        m_lutNgTrayID = lutNgTrayID;
-        emit lutNgTrayIDChanged(m_lutNgTrayID);
-    }
-
-    void setLutNgLensID(int lutNgLensID)
-    {
-        if (m_lutNgLensID == lutNgLensID)
-            return;
-
-        m_lutNgLensID = lutNgLensID;
-        emit lutNgLensIDChanged(m_lutNgLensID);
-    }
-
-    void setAa1TrayID(int aa1TrayID)
-    {
-        if (m_aa1TrayID == aa1TrayID)
-            return;
-
-        m_aa1TrayID = aa1TrayID;
-        emit aa1TrayIDChanged(m_aa1TrayID);
-    }
-
-    void setAa1LensID(int aa1LensID)
-    {
-        if (m_aa1LensID == aa1LensID)
-            return;
-
-        m_aa1LensID = aa1LensID;
-        emit aa1LensIDChanged(m_aa1LensID);
-    }
-
-    void setAa2TrayID(int aa2TrayID)
-    {
-        if (m_aa2TrayID == aa2TrayID)
-            return;
-
-        m_aa2TrayID = aa2TrayID;
-        emit aa2TrayIDChanged(m_aa2TrayID);
-    }
-
-    void setAa2LensID(int aa2LensID)
-    {
-        if (m_aa2LensID == aa2LensID)
-            return;
-
-        m_aa2LensID = aa2LensID;
-        emit aa2LensIDChanged(m_aa2LensID);
-    }
-
-    void setWaitingLens(bool waitLens)
-    {
-        if (m_waitingLens == waitLens)
-            return;
-
-        m_waitingLens = waitLens;
-        emit waitLensChanged(m_waitingLens);
-    }
-
-    void setServingIP(QString serviceIP)
-    {
-        if (m_serviceIP == serviceIP)
-            return;
-
-        m_serviceIP = serviceIP;
-        emit servingIPChanged(m_serviceIP);
-    }
-
-    void setLutHasLens(bool lutHasLens)
-    {
-        if (m_lutHasLens == lutHasLens)
-            return;
-
-        m_lutHasLens = lutHasLens;
-        emit lutHasLensChanged(m_lutHasLens);
-    }
-
-    void setPickingLens(bool pickingLens)
-    {
-        if (m_pickingLens == pickingLens)
-            return;
-
-        m_pickingLens = pickingLens;
-        emit pickingLensChanged(m_pickingLens);
-    }
-
-    void setCmd(QString cmd)
-    {
-        if (m_cmd == cmd)
-            return;
-
-        m_cmd = cmd;
-        emit cmdChanged(m_cmd);
-    }
-
-    void setPickedLens(bool pickedLens)
-    {
-        if (m_pickedLens == pickedLens)
-            return;
-
-        m_pickedLens = pickedLens;
-        emit pickedLensChanged(m_pickedLens);
-    }
-
-    void setUnpickedNgLens(bool unpickedNgLens)
-    {
-        if (m_unpickedNgLens == unpickedNgLens)
-            return;
-
-        m_unpickedNgLens = unpickedNgLens;
-        emit unpickedNgLensChanged(m_unpickedNgLens);
-    }
-
-    void setFinishWaitLens(bool finishWaitLens)
-    {
-        if (m_finishWaitLens == finishWaitLens)
-            return;
-
-        m_finishWaitLens = finishWaitLens;
-        emit finishWaitLensChanged(m_finishWaitLens);
-    }
-
-    void setLutHasNgLens(bool lutHasNgLens)
-    {
-        if (m_lutHasNgLens == lutHasNgLens)
-            return;
-
-        m_lutHasNgLens = lutHasNgLens;
-        emit lutHasNgLensChanged(m_lutHasNgLens);
-    }
-
-    void setAaPickedLens(bool aaPickedLens)
-    {
-        if (m_aaPickedLens == aaPickedLens)
-            return;
-
-        m_aaPickedLens = aaPickedLens;
-        emit aaPickedLensChanged(m_aaPickedLens);
-    }
-
-    void setLutLoadReady(bool lutLensReady)
-    {
-        if (m_lutloadReady == lutLensReady)
-            return;
-
-        m_lutloadReady = lutLensReady;
-        emit lutLensReadyChanged(m_lutloadReady);
-    }
-
-    void setNeedUplookPr(bool finishUplookPr)
-    {
-        if (m_needUplookPr == finishUplookPr)
-            return;
-
-        m_needUplookPr = finishUplookPr;
-        emit needUplookPrChanged(m_needUplookPr);
-    }
-
-    void setLutUuid(QString lutUuid)
-    {
-        if (m_lutUuid == lutUuid)
-            return;
-
-        m_lutUuid = lutUuid;
-        emit lutUuidChanged(m_lutUuid);
-    }
-
-    void setAa1Uuid(QString aa1Uuid)
-    {
-        if (m_aa1Uuid == aa1Uuid)
-            return;
-
-        m_aa1Uuid = aa1Uuid;
-        emit aa1UuidChanged(m_aa1Uuid);
-    }
-
-    void setAa2Uuid(QString aa2Uuid)
-    {
-        if (m_aa2Uuid == aa2Uuid)
-            return;
-
-        m_aa2Uuid = aa2Uuid;
-        emit aa2UuidChanged(m_aa2Uuid);
-    }
-
-    void setBeExchangeMaterial(bool beExchangeMaterial)
-    {
-        if (m_beExchangeMaterial == beExchangeMaterial)
-            return;
-
-        m_beExchangeMaterial = beExchangeMaterial;
-        emit beExchangeMaterialChanged(m_beExchangeMaterial);
-    }
-
     void setRunMode(int runMode)
     {
         if (m_runMode == runMode)
@@ -752,57 +586,299 @@ public slots:
         emit handlyChangeLensChanged(m_handlyChangeLens);
     }
 
+    void setWaitingLens(bool waitingLens)
+    {
+        if (m_waitingLens == waitingLens)
+            return;
+
+        m_waitingLens = waitingLens;
+        emit waitLensChanged(m_waitingLens);
+    }
+
+    void setFinishWaitLens(bool finishWaitLens)
+    {
+        if (m_finishWaitLens == finishWaitLens)
+            return;
+
+        m_finishWaitLens = finishWaitLens;
+        emit finishWaitLensChanged(m_finishWaitLens);
+    }
+
+    void setBusyState(int busyState)
+    {
+        if (m_busyState == busyState)
+            return;
+
+        m_busyState = busyState;
+        emit busyStateChanged(m_busyState);
+    }
+
+    void setLutHasLens(bool lutHasLens)
+    {
+        if (m_lutHasLens == lutHasLens)
+            return;
+
+        m_lutHasLens = lutHasLens;
+        emit lutHasLensChanged(m_lutHasLens);
+    }
+
+    void setLutHasNgLens(bool lutHasNgLens)
+    {
+        if (m_lutHasNgLens == lutHasNgLens)
+            return;
+
+        m_lutHasNgLens = lutHasNgLens;
+        emit lutHasNgLensChanged(m_lutHasNgLens);
+    }
+
+    void setLensData(QVariantMap lensData)
+    {
+        if (m_lensData == lensData)
+            return;
+
+        m_lensData = lensData;
+        emit lensDataChanged(m_lensData);
+    }
+
+    void setLensData(QString key,QVariant value)
+    {
+        m_lensData[key] = value;
+        emit lensDataChanged(m_lensData);
+    }
+
+    void copyInLensData(QVariantMap lensData)
+    {
+        foreach (QString param_name, lensData.keys())
+            m_lensData[param_name] = lensData[param_name];
+        emit lensDataChanged(m_lensData);
+    }
+
+    void clearLensData()
+    {
+        m_lensData.clear();
+        emit lensDataChanged(m_lensData);
+    }
+
+    void setNgLensData(QVariantMap ngLensData)
+    {
+        if (m_ngLensData == ngLensData)
+            return;
+
+        m_ngLensData = ngLensData;
+        emit ngLensDataChanged(m_ngLensData);
+    }
+
+    void setNgLensData(QString key,QVariant value)
+    {
+        m_ngLensData[key] = value;
+        emit ngLensDataChanged(m_ngLensData);
+    }
+
+    void copyInNgLensData(QVariantMap ngLensData)
+    {
+        foreach (QString param_name, ngLensData.keys())
+            m_ngLensData[param_name] = ngLensData[param_name];
+        emit ngLensDataChanged(m_ngLensData);
+    }
+
+    void clearNgLensData()
+    {
+        m_ngLensData.clear();
+        emit ngLensDataChanged(m_ngLensData);
+    }
+
+    void setAa1LensData(QVariantMap aa1LensData)
+    {
+        if (m_aa1LensData == aa1LensData)
+            return;
+
+        m_aa1LensData = aa1LensData;
+        emit aa1LensDataChanged(m_aa1LensData);
+    }
+
+    void setAa1LensData(QString key,QVariant value)
+    {
+        m_aa1LensData[key] = value;
+        emit aa1LensDataChanged(m_aa1LensData);
+    }
+
+    void copyInAa1LensData(QVariantMap aa1LensData)
+    {
+        foreach (QString param_name, aa1LensData.keys())
+            m_aa1LensData[param_name] = aa1LensData[param_name];
+        emit aa1LensDataChanged(m_aa1LensData);
+    }
+
+    void clearAa1LensData()
+    {
+        m_aa1LensData.clear();
+        emit aa1LensDataChanged(m_aa1LensData);
+    }
+
+    void setAa2LensData(QVariantMap aa2LensData)
+    {
+        if (m_aa2LensData == aa2LensData)
+            return;
+
+        m_aa2LensData = aa2LensData;
+        emit aa2LensDataChanged(m_aa2LensData);
+    }
+
+    void setAa2LensData(QString key,QVariant value)
+    {
+        m_aa2LensData[key] = value;
+        emit aa2LensDataChanged(m_aa2LensData);
+    }
+
+    void copyInAa2LensData(QVariantMap aa2LensData)
+    {
+        foreach (QString param_name, aa2LensData.keys())
+            m_aa2LensData[param_name] = aa2LensData[param_name];
+        emit aa2LensDataChanged(m_aa2LensData);
+    }
+
+    void clearAa2LensData()
+    {
+        m_aa2LensData.clear();
+        emit aa2LensDataChanged(m_aa2LensData);
+    }
+
+    void setStation1HasRequest(bool station1HasRequest)
+    {
+        if (m_station1HasRequest == station1HasRequest)
+            return;
+
+        m_station1HasRequest = station1HasRequest;
+        emit station1HasRequestChanged(m_station1HasRequest);
+    }
+
+    void setStation2HasRequest(bool station2HasRequest)
+    {
+        if (m_station2HasRequest == station2HasRequest)
+            return;
+
+        m_station2HasRequest = station2HasRequest;
+        emit station2HasRequestChanged(m_station2HasRequest);
+    }
+
+    void setFinishStation1Task(bool finishStation1Task)
+    {
+        if (m_finishStation1Task == finishStation1Task)
+            return;
+
+        m_finishStation1Task = finishStation1Task;
+        emit finishStation1TaskChanged(m_finishStation1Task);
+    }
+
+    void setFinishStation2Task(bool finishStation2Task)
+    {
+        if (m_finishStation2Task == finishStation2Task)
+            return;
+
+        m_finishStation2Task = finishStation2Task;
+        emit finishStation2TaskChanged(m_finishStation2Task);
+    }
+
+    void setAa1HeadMaterialState(int aa1HeadMaterialState)
+    {
+        if (m_aa1HeadMaterialState == aa1HeadMaterialState)
+            return;
+
+        m_aa1HeadMaterialState = aa1HeadMaterialState;
+        emit aa1HeadMaterialStateChanged(m_aa1HeadMaterialState);
+    }
+
+    void setAa2HeadMaterialState(int aa2HeadMaterialState)
+    {
+        if (m_aa2HeadMaterialState == aa2HeadMaterialState)
+            return;
+
+        m_aa2HeadMaterialState = aa2HeadMaterialState;
+        emit aa2HeadMaterialStateChanged(m_aa2HeadMaterialState);
+    }
+
+    void setLastState(int lastState)
+    {
+        if (m_lastState == lastState)
+            return;
+
+        m_lastState = lastState;
+        emit lastStateChanged(m_lastState);
+    }
+
+    void setStation1Unload(bool station1Unload)
+    {
+        if (m_station1Unload == station1Unload)
+            return;
+
+        m_station1Unload = station1Unload;
+        emit station1UnloadChanged(m_station1Unload);
+    }
+
+    void setStation2Unload(bool station2Unload)
+    {
+        if (m_station2Unload == station2Unload)
+            return;
+
+        m_station2Unload = station2Unload;
+        emit station2UnloadChanged(m_station2Unload);
+    }
+
+    void setStation1NeedLens(bool station1NeedLens)
+    {
+        if (m_station1NeedLens == station1NeedLens)
+            return;
+
+        m_station1NeedLens = station1NeedLens;
+        emit station1NeedLensChanged(m_station1NeedLens);
+    }
+
+    void setStation2NeedLens(bool station2NeedLens)
+    {
+        if (m_station2NeedLens == station2NeedLens)
+            return;
+
+        m_station2NeedLens = station2NeedLens;
+        emit station2NeedLensChanged(m_station2NeedLens);
+    }
+
+    void setTaskOfStation1(int taskOfStation1)
+    {
+        if (m_taskOfStation1 == taskOfStation1)
+            return;
+
+        m_taskOfStation1 = taskOfStation1;
+        emit taskOfStation1Changed(m_taskOfStation1);
+    }
+
+    void setTaskOfStation2(int taskOfStation2)
+    {
+        if (m_taskOfStation2 == taskOfStation2)
+            return;
+
+        m_taskOfStation2 = taskOfStation2;
+        emit taskOfStation2Changed(m_taskOfStation2);
+    }
+
+    void setWaitingTask(bool waitingTask)
+    {
+        if (m_waitingTask == waitingTask)
+            return;
+
+        m_waitingTask = waitingTask;
+        emit waitingTaskChanged(m_waitingTask);
+    }
+
+    void setGriperOperationResult(int griperOperationResult)
+    {
+        if (m_griperOperationResult == griperOperationResult)
+            return;
+
+        m_griperOperationResult = griperOperationResult;
+        emit griperOperationResultChanged(m_griperOperationResult);
+    }
+
 signals:
-    void lutTrayIDChanged(int lutTrayID);
-
-    void lutLensIDChanged(int lutLensID);
-
-    void lutNgTrayIDChanged(int lutNgTrayID);
-
-    void lutNgLensIDChanged(int lutNgLensID);
-
-    void aa1TrayIDChanged(int aa1TrayID);
-
-    void aa1LensIDChanged(int aa1LensID);
-
-    void aa2TrayIDChanged(int aa2TrayID);
-
-    void aa2LensIDChanged(int aa2LensID);
-
-    void waitLensChanged(bool waitingLens);
-
-    void servingIPChanged(QString servingIP);
-
-    void lutHasLensChanged(bool lutHasLens);
-
-    void pickingLensChanged(bool pickingLens);
-
-
-    void cmdChanged(QString cmd);
-
-
-    void pickedLensChanged(bool pickedLens);
-
-    void unpickedNgLensChanged(bool unpickedNgLens);
-
-    void finishWaitLensChanged(bool finishWaitLens);
-
-    void lutHasNgLensChanged(bool lutHasNgLens);
-
-    void aaPickedLensChanged(bool aaPickedLens);
-
-    void lutLensReadyChanged(bool lutLoadReady);
-
-    void needUplookPrChanged(bool needUplookPr);
-
-    void lutUuidChanged(QString lutUuid);
-
-    void aa1UuidChanged(QString aa1Uuid);
-
-    void aa2UuidChanged(QString aa2Uuid);
-
-    void beExchangeMaterialChanged(bool beExchangeMaterial);
-
     void runModeChanged(int runMode);
 
     void disableStation1Changed(bool disableStation1);
@@ -811,35 +887,84 @@ signals:
 
     void handlyChangeLensChanged(bool handlyChangeLens);
 
+    void waitLensChanged(bool waitingLens);
+
+    void finishWaitLensChanged(bool finishWaitLens);
+
+    void busyStateChanged(int busyState);
+
+    void lutHasLensChanged(bool lutHasLens);
+
+    void lutHasNgLensChanged(bool lutHasNgLens);
+
+    void lensDataChanged(QVariantMap lensData);
+
+    void ngLensDataChanged(QVariantMap ngLensData);
+
+    void aa1LensDataChanged(QVariantMap aa1LensData);
+
+    void aa2LensDataChanged(QVariantMap aa2LensData);
+
+    void station1HasRequestChanged(bool station1HasRequest);
+
+    void station2HasRequestChanged(bool station2HasRequest);
+
+    void finishStation1TaskChanged(bool finishStation1Task);
+
+    void finishStation2TaskChanged(bool finishStation2Task);
+
+    void aa1HeadMaterialStateChanged(int aa1HeadMaterialState);
+
+    void aa2HeadMaterialStateChanged(int aa2HeadMaterialState);
+
+    void lastStateChanged(int lastState);
+
+    void station1UnloadChanged(bool station1Unload);
+
+    void station2UnloadChanged(bool station2Unload);
+
+    void station1NeedLensChanged(bool station1NeedLens);
+
+    void station2NeedLensChanged(bool station2NeedLens);
+
+    void taskOfStation1Changed(int taskOfStation1);
+
+    void taskOfStation2Changed(int taskOfStation2);
+
+    void waitingTaskChanged(bool waitingTask);
+
+
+    void griperOperationResultChanged(int griperOperationResult);
+
 private:
-    int m_lutTrayID = -1;
-    int m_lutLensID = -1;
-    int m_lutNgTrayID = -1;
-    int m_lutNgLensID = -1;
-    int m_aa1TrayID = -1;
-    int m_aa1LensID = -1;
-    int m_aa2TrayID = -1;
-    int m_aa2LensID = -1;
-    bool m_waitingLens = false;
-    QString m_serviceIP = "";
-    bool m_lutHasLens = false;
-    bool m_pickingLens = false;
-    QString m_cmd = "";
-    bool m_pickedLens = false;
-    bool m_unpickedNgLens = false;
-    bool m_finishWaitLens = false;
-    bool m_lutHasNgLens = false;
-    bool m_aaPickedLens = false;
-    bool m_lutloadReady = false;
-    bool m_needUplookPr = false;
-    QString m_lutUuid = "";
-    QString m_aa1Uuid = "";
-    QString m_aa2Uuid = "";
-    bool m_beExchangeMaterial = false;
     int m_runMode = 0;
     bool m_disableStation1 = false;
     bool m_disableStation2 = false;
     bool m_handlyChangeLens = false;
+    bool m_waitingLens = false;
+    bool m_finishWaitLens = false;
+    int m_busyState = 0;
+    bool m_lutHasLens = false;
+    bool m_lutHasNgLens = false;
+    QVariantMap m_lensData;
+    QVariantMap m_ngLensData;
+    QVariantMap m_aa1LensData;
+    QVariantMap m_aa2LensData;
+    bool m_station1HasRequest = false;
+    bool m_station2HasRequest = false;
+    bool m_finishStation1Task = false;
+    bool m_finishStation2Task = false;
+    int m_aa1HeadMaterialState = 0;
+    int m_aa2HeadMaterialState = 0;
+    int m_lastState = 0;
+    bool m_station1Unload = false;
+    bool m_station2Unload = false;
+    bool m_station1NeedLens = false;
+    bool m_station2NeedLens = false;
+    int m_taskOfStation1 = 0;
+    int m_taskOfStation2 = 0;
+    bool m_waitingTask = false;
+    int m_griperOperationResult = 0;
 };
 
 #endif // LUT_PARAMERTER_H

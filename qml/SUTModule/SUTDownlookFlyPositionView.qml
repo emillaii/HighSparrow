@@ -103,7 +103,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                sutModule.performHandling(2)
+//                sutModule.performHandling(2)
+                logicManager.performHandling(sutParams.moduleName,2)
             }
         }
         Button {

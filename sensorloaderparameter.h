@@ -10,6 +10,7 @@ class SensorLoaderParameter:public PropertyBase
     Q_OBJECT
 public:
     SensorLoaderParameter():PropertyBase (){}
+	Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
     Q_PROPERTY(bool handlyChangeSensor READ handlyChangeSensor WRITE setHandlyChangeSensor NOTIFY handlyChangeSensorChanged)
     Q_PROPERTY(double vcmWorkForce READ vcmWorkForce WRITE setVcmWorkForce NOTIFY vcmWorkForceChanged)
     Q_PROPERTY(double vcmWorkSpeed READ vcmWorkSpeed WRITE setVcmWorkSpeed NOTIFY vcmWorkSpeedChanged)
@@ -439,6 +440,11 @@ public:
     {
         return m_holdTime;
     }
+	
+    QString moduleName() const
+    {
+        return m_moduleName;
+    }	
 
 public slots:
     void setVcmWorkForce(double vcmWorkForce)
@@ -1113,6 +1119,15 @@ public slots:
         emit holdTimeChanged(m_holdTime);
     }
 
+    void setModuleName(QString moduleName)
+    {
+        if (m_moduleName == moduleName)
+            return;
+
+        m_moduleName = moduleName;
+        emit moduleNameChanged(m_moduleName);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -1257,7 +1272,10 @@ signals:
 
     void holdTimeChanged(int holdTime);
 
+    void moduleNameChanged(QString moduleName);
+
 private:
+    QString m_moduleName = "SensorLoaderModule";
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
     double m_vcmMargin = 0;
@@ -1352,8 +1370,8 @@ public:
     Q_PROPERTY(int picker2MaterialState READ picker2MaterialState WRITE setPicker2MaterialState NOTIFY picker2MaterialStateChanged)
     Q_PROPERTY(int busyState READ busyState WRITE setBusyState NOTIFY busyStateChanged)
     Q_PROPERTY(int lastState READ lastState WRITE setLastState NOTIFY lastStateChanged)
-    Q_PROPERTY(bool sut1NeedLoadSensor READ sut1NeedLoadSensor WRITE setSut1NeedLoadSensor NOTIFY sut1NeedLoadSensorChanged)
-    Q_PROPERTY(bool sut2NeedLoadSensor READ sut2NeedLoadSensor WRITE setSut2NeedLoadSensor NOTIFY sut2NeedLoadSensorChanged)
+    Q_PROPERTY(bool station1NeedSensor READ station1NeedSensor WRITE setStation1NeedSensor NOTIFY station1NeedSensorChanged)
+    Q_PROPERTY(bool station2NeedSensor READ station2NeedSensor WRITE setStation2NeedSensor NOTIFY station2NeedSensorChanged)
     Q_PROPERTY(bool station1HasRequest READ station1HasRequest WRITE setStation1HasRequest NOTIFY station1HasRequestChanged)
     Q_PROPERTY(bool station2HasRequest READ station2HasRequest WRITE setStation2HasRequest NOTIFY station2HasRequestChanged)
     Q_PROPERTY(bool finishStation1Task READ finishStation1Task WRITE setFinishStation1Task NOTIFY finishStation1TaskChanged)
@@ -1424,14 +1442,14 @@ public:
         return m_busyState;
     }
 
-    bool sut1NeedLoadSensor() const
+    bool station1NeedSensor() const
     {
-        return m_sut1NeedLoadSensor;
+        return m_station1NeedSensor;
     }
 
-    bool sut2NeedLoadSensor() const
+    bool station2NeedSensor() const
     {
-        return m_sut2NeedLoadSensor;
+        return m_station2NeedSensor;
     }
 
     bool station1HasRequest() const
@@ -1639,22 +1657,22 @@ public slots:
         emit busyStateChanged(m_busyState);
     }
 
-    void setSut1NeedLoadSensor(bool sut1NeedLoadSensor)
+    void setStation1NeedSensor(bool station1NeedSensor)
     {
-        if (m_sut1NeedLoadSensor == sut1NeedLoadSensor)
+        if (m_station1NeedSensor == station1NeedSensor)
             return;
 
-        m_sut1NeedLoadSensor = sut1NeedLoadSensor;
-        emit sut1NeedLoadSensorChanged(m_sut1NeedLoadSensor);
+        m_station1NeedSensor = station1NeedSensor;
+        emit station1NeedSensorChanged(m_station1NeedSensor);
     }
 
-    void setSut2NeedLoadSensor(bool sut2NeedLoadSensor)
+    void setStation2NeedSensor(bool station2NeedSensor)
     {
-        if (m_sut2NeedLoadSensor == sut2NeedLoadSensor)
+        if (m_station2NeedSensor == station2NeedSensor)
             return;
 
-        m_sut2NeedLoadSensor = sut2NeedLoadSensor;
-        emit sut2NeedLoadSensorChanged(m_sut2NeedLoadSensor);
+        m_station2NeedSensor = station2NeedSensor;
+        emit station2NeedSensorChanged(m_station2NeedSensor);
     }
 
     void setStation1HasRequest(bool station1HasRequest)
@@ -1869,9 +1887,9 @@ signals:
 
     void busyStateChanged(int busyState);
 
-    void sut1NeedLoadSensorChanged(bool sut1NeedLoadSensor);
+    void station1NeedSensorChanged(bool station1NeedSensor);
 
-    void sut2NeedLoadSensorChanged(bool sut2NeedLoadSensor);
+    void station2NeedSensorChanged(bool station2NeedSensor);
 
     void station1HasRequestChanged(bool station1HasRequest);
 
@@ -1927,8 +1945,8 @@ private:
     int m_picker1MaterialState = 0;
     int m_picker2MaterialState = 0;
     int m_busyState = 0;
-    bool m_sut1NeedLoadSensor = false;
-    bool m_sut2NeedLoadSensor = false;
+    bool m_station1NeedSensor = false;
+    bool m_station2NeedSensor = false;
     bool m_station1HasRequest = false;
     bool m_station2HasRequest = false;
     bool m_finishStation1Task = false;

@@ -27,45 +27,35 @@ ScrollView {
         Switch {
             id: lutModuleViewSwitch
             text:"LUT 配置"
-            visible: {
-                if (baseModuleManager.getServerMode() === 0)
-                    lutModuleViewSwitch.checked
-                else
-                    false
-            }
+            visible: baseModuleManager.getServerMode() === 0
         }
         LUTModuleView{
             Layout.fillWidth: true
-            visible: {
-                if (baseModuleManager.getServerMode() === 0)
-                    lutModuleViewSwitch.checked
-                else
-                    false
-            }
+            visible: lutModuleViewSwitch.checked
         }
 
         Switch {id: dispensViewSwitch; text:"Dispense 配置"}
         DispenseModuleView{
             Layout.fillWidth: true
-            visible: {dispensViewSwitch.checked}
+            visible: dispensViewSwitch.checked
         }
 
         Switch {id: imgGrabberViewSwitch; text:"Image Grabber 配置"}
         ImageGrabberView{
             Layout.fillWidth: true
-            visible: {imgGrabberViewSwitch.checked}
+            visible: imgGrabberViewSwitch.checked
         }
 
         Switch {id: calibrationViewSwitch; text:"Calibration 配置"}
         CalibrationView{
             Layout.fillWidth: true
-            visible: {calibrationViewSwitch.checked}
+            visible: calibrationViewSwitch.checked
         }
 
         Switch {id: systemViewSwitch; text:"System 配置"}
         SystemConfigView{
             Layout.fillWidth: true
-            visible: {systemViewSwitch.checked}
+            visible: systemViewSwitch.checked
         }
 
         Switch {

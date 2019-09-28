@@ -477,9 +477,6 @@ void SensorLoaderModule::performHandlingOperation(int cmd)
 void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-//    QMutexLocker temp_locker(&message_mutex);
-//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-//        this->module_message = message;
     if(!message.contains("OriginModule"))
     {
         qInfo("message error! has no OriginModule.");
@@ -503,29 +500,17 @@ void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
     {
         if(message.contains("Message"))
         {
-            if(message["Message"].toString()=="NoSensor")
+            if(message["Message"].toString()=="LoadSensorRequest")
             {
-                states.setSut1MaterialState(MaterialState::IsEmpty);
+                if(message.contains("MaterialState"))
+                    states.setSut1MaterialState(MaterialTray::getMaterialStateFromName(message["MaterialState"].toString()));
+                else
+                    qInfo("message MaterialState miss.");
+                if(message.contains("TaskNumber"))
+                    states.setTaskOfStation1(message["TaskNumber"].toInt());
+                if(!states.station1Unload())
+                    states.setStation2NeedSensor(true);
                 states.setStation1HasRequest(true);
-            }
-            else if(message["Message"].toString()=="NgSensor")
-            {
-                states.setSut1MaterialState(MaterialState::IsNgSensor);
-                states.setStation1HasRequest(true);
-            }
-            else if(message["Message"].toString()=="NgProduct")
-            {
-                states.setSut1MaterialState(MaterialState::IsNgProduct);
-                states.setStation1HasRequest(true);
-            }
-            else if(message["Message"].toString()=="GoodProduct")
-            {
-                states.setSut1MaterialState(MaterialState::IsProduct);
-                states.setStation1HasRequest(true);
-            }
-            else if(message["Message"].toString()=="TaskFinish")
-            {
-                states.setFinishStation1Task(true);
             }
             else if(message["Message"].toString()=="UnloadMode")
             {
@@ -545,29 +530,17 @@ void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
     {
         if(message.contains("Message"))
         {
-            if(message["Message"].toString()=="NoSensor")
+            if(message["Message"].toString()=="LoadSensorRequest")
             {
-                states.setSut2MaterialState(MaterialState::IsEmpty);
+                if(message.contains("MaterialState"))
+                    states.setSut2MaterialState(MaterialTray::getMaterialStateFromName(message["MaterialState"].toString()));
+                else
+                    qInfo("message MaterialState miss.");
+                if(message.contains("TaskNumber"))
+                    states.setTaskOfStation2(message["TaskNumber"].toInt());
+                if(!states.station2Unload())
+                    states.setStation2NeedSensor(true);
                 states.setStation2HasRequest(true);
-            }
-            else if(message["Message"].toString()=="NgSensor")
-            {
-                states.setSut2MaterialState(MaterialState::IsNgSensor);
-                states.setStation2HasRequest(true);
-            }
-            else if(message["Message"].toString()=="NgProduct")
-            {
-                states.setSut2MaterialState(MaterialState::IsNgProduct);
-                states.setStation2HasRequest(true);
-            }
-            else if(message["Message"].toString()=="GoodProduct")
-            {
-                states.setSut2MaterialState(MaterialState::IsProduct);
-                states.setStation2HasRequest(true);
-            }
-            else if(message["Message"].toString()=="TaskFinish")
-            {
-                states.setFinishStation2Task(true);
             }
             else if(message["Message"].toString()=="UnloadMode")
             {
@@ -585,7 +558,7 @@ void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
     }
     else if(message["OriginModule"].toString()=="SensorTrayLoaderModule")
     {
-        if(message["Message"].toString()=="finishChangeTray2")
+        if(message["Message"].toString()=="FinishChangeTray2")
         {
             if(states.waitingChangeTray())
             {
@@ -599,12 +572,12 @@ void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
                 qInfo("%s receivceModuleMessage but not effective",Name().toStdString().c_str());
             }
         }
-        else if(message["Message"].toString()=="finishChangeTray1")
+        else if(message["Message"].toString()=="FinishChangeTray1")
         {
             tray->resetTrayState(SensorPosition::SENSOR_TRAY_1);
             states.setHasSensorTray1(true);
         }
-        else if(message["Message"].toString()=="finishChangeTray")
+        else if(message["Message"].toString()=="FinishChangeTray")
         {
             tray->resetTrayState(SensorPosition::SENSOR_TRAY_1);
             tray->resetTrayState(SensorPosition::SENSOR_TRAY_2);
@@ -709,7 +682,7 @@ void SensorLoaderModule::run()
                 if(!is_run)break;
                 if(REJECT_OPERATION == operation)
                 {
-                    states.setPicker1MaterialState(MaterialState::IsRaw);
+                    states.setPicker1MaterialState(MaterialState::IsRawSensor);
                     continue;
                 }
                 if(!is_run)break;
@@ -729,12 +702,12 @@ void SensorLoaderModule::run()
                     continue;
             }
             tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTrayID());
-            states.setPicker1MaterialState(MaterialState::IsRaw);
+            states.setPicker1MaterialState(MaterialState::IsRawSensor);
             if(!is_run)break;
         }
 
         //放成品
-        if((!states.allowChangeTray())&&(MaterialState::IsProduct == states.picker2MaterialState())&&findTrayNextEmptyPos())
+        if((!states.allowChangeTray())&&(MaterialState::IsGoodProduct == states.picker2MaterialState())&&findTrayNextEmptyPos())
         {
             bool enable_pr = parameters.enablePlaceProdcutPr();
             bool is_buffer_tray = states.currentTrayID() == SensorPosition::BUFFER_TRAY;
@@ -824,7 +797,7 @@ void SensorLoaderModule::run()
                     continue;
             }
             picker2_senseor_data["WorkStation"] = BusyState::IDLE;
-            tray->setCurrentMaterialState(MaterialState::IsProduct,states.currentTrayID());
+            tray->setCurrentMaterialState(MaterialState::IsGoodProduct,states.currentTrayID());
             states.setPicker2MaterialState(MaterialState::IsEmpty);
             if(!is_run)break;
         }
@@ -1016,7 +989,7 @@ void SensorLoaderModule::run()
                 if(!is_run)break;
                 if(REJECT_OPERATION == operation)
                 {
-                    states.setPicker1MaterialState(MaterialState::IsRaw);
+                    states.setPicker1MaterialState(MaterialState::IsRawSensor);
                     continue;
                 }
             }
@@ -1035,7 +1008,7 @@ void SensorLoaderModule::run()
                     continue;
             }
             tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTrayID());
-            states.setPicker1MaterialState(MaterialState::IsRaw);
+            states.setPicker1MaterialState(MaterialState::IsRawSensor);
             if(!is_run)break;
         }
 
@@ -1071,7 +1044,7 @@ void SensorLoaderModule::run()
         //去等待位置
         if(checkSut1WaitCondition())
         {
-            if((states.picker1MaterialState() == MaterialState::IsRaw)&&(states.sut1MaterialState() == MaterialState::IsEmpty))
+            if((states.picker1MaterialState() == MaterialState::IsRawSensor)&&(states.sut1MaterialState() == MaterialState::IsEmpty))
             {
                 if(!movePicker1ToSUTPos(false))
                 {
@@ -1081,9 +1054,9 @@ void SensorLoaderModule::run()
                 }
             }
             else if(((states.sut1MaterialState() == MaterialState::IsNgProduct)&&(!parameters.enableNgProductPr()))||
-                    ((states.sut1MaterialState() == MaterialState::IsProduct)&&(!parameters.enableProductPr()))||
+                    ((states.sut1MaterialState() == MaterialState::IsGoodProduct)&&(!parameters.enableProductPr()))||
                     ((states.sut1MaterialState() == MaterialState::IsNgSensor)&&(!parameters.enableNgSensorPr()))||
-                    ((states.sut1MaterialState() == MaterialState::IsRaw)&&(!parameters.enableProductPr())))
+                    ((states.sut1MaterialState() == MaterialState::IsRawSensor)&&(!parameters.enableProductPr())))
             {
                 if(!movePicker2ToSUTPos(false,states.sut1MaterialState() != MaterialState::IsNgSensor))
                 {
@@ -1095,7 +1068,7 @@ void SensorLoaderModule::run()
             else
             {
                 if(((states.sut1MaterialState() == MaterialState::IsNgProduct)&&parameters.enableNgProductPr())||
-                                    ((states.sut1MaterialState() == MaterialState::IsProduct)&&parameters.enableProductPr()))
+                                    ((states.sut1MaterialState() == MaterialState::IsGoodProduct)&&parameters.enableProductPr()))
                 {
                     sut_product_location->OpenLight();
                 }
@@ -1113,7 +1086,7 @@ void SensorLoaderModule::run()
         }
         else if(checkSut2WaitCondition())
         {
-            if((states.picker1MaterialState() == MaterialState::IsRaw)&&(states.sut2MaterialState() == MaterialState::IsEmpty))
+            if((states.picker1MaterialState() == MaterialState::IsRawSensor)&&(states.sut2MaterialState() == MaterialState::IsEmpty))
             {
                 if(!movePicker1ToSUTPos(true))
                 {
@@ -1123,9 +1096,9 @@ void SensorLoaderModule::run()
                 }
             }
             else if(((states.sut2MaterialState() == MaterialState::IsNgProduct)&&(!parameters.enableNgProductPr()))||
-                    ((states.sut2MaterialState() == MaterialState::IsProduct)&&(!parameters.enableProductPr()))||
+                    ((states.sut2MaterialState() == MaterialState::IsGoodProduct)&&(!parameters.enableProductPr()))||
                     ((states.sut2MaterialState() == MaterialState::IsNgSensor)&&(!parameters.enableNgSensorPr()))||
-                    ((states.sut2MaterialState() == MaterialState::IsRaw)&&(!parameters.enableProductPr())))
+                    ((states.sut2MaterialState() == MaterialState::IsRawSensor)&&(!parameters.enableProductPr())))
             {
                 if(!movePicker2ToSUTPos(true,states.sut1MaterialState() != MaterialState::IsNgSensor))
                 {
@@ -1137,7 +1110,7 @@ void SensorLoaderModule::run()
             else
             {
                 if(((states.sut2MaterialState() == MaterialState::IsNgProduct)&&parameters.enableNgProductPr())||
-                        ((states.sut2MaterialState() == MaterialState::IsProduct)&&parameters.enableProductPr()))
+                        ((states.sut2MaterialState() == MaterialState::IsGoodProduct)&&parameters.enableProductPr()))
                 {
                     sut_product_location->OpenLight();
                 }
@@ -1163,6 +1136,17 @@ void SensorLoaderModule::run()
             }
         }
 
+        //无料无任务停机
+        if(states.station1Unload()&&states.station2Unload()
+                &&(states.sut1MaterialState()== MaterialState::IsEmpty)
+                &&(states.sut2MaterialState()== MaterialState::IsEmpty)
+                &&(states.picker1MaterialState()== MaterialState::IsEmpty)
+                &&(states.picker2MaterialState()== MaterialState::IsEmpty))
+        {
+            sendAlarmMessage(OK_OPERATION,u8"打料任务完成，自动停机！",ErrorLevel::ErrorMustStop);
+            is_run = false;
+            break;
+        }
         //执行换盘
         if(states.allowChangeTray())
         {
@@ -1214,7 +1198,7 @@ void SensorLoaderModule::run()
         {
             bool is_local = states.busyState() == BusyState::SUT2;
             //取成品/NG成品
-            bool has_product = is_local?states.sut2MaterialState()==MaterialState::IsProduct:states.sut1MaterialState()==MaterialState::IsProduct;
+            bool has_product = is_local?states.sut2MaterialState()==MaterialState::IsGoodProduct:states.sut1MaterialState()==MaterialState::IsGoodProduct;
             bool has_ng_product = is_local?states.sut2MaterialState()==MaterialState::IsNgProduct:states.sut1MaterialState()==MaterialState::IsNgProduct;
             if((has_product||has_ng_product)&&(states.picker2MaterialState() == MaterialState::IsEmpty))
             {
@@ -1299,7 +1283,7 @@ void SensorLoaderModule::run()
                     if(CONTINUE_OPERATION == operation)
                     {
                         if(has_product)
-                            states.setPicker2MaterialState(MaterialState::IsProduct);
+                            states.setPicker2MaterialState(MaterialState::IsGoodProduct);
                         else
                             states.setPicker2MaterialState(MaterialState::IsNgProduct);
                         picker2_senseor_data["WorkStation"] = states.busyState();
@@ -1310,7 +1294,7 @@ void SensorLoaderModule::run()
                 else
                 {
                     if(has_product)
-                        states.setPicker2MaterialState(MaterialState::IsProduct);
+                        states.setPicker2MaterialState(MaterialState::IsGoodProduct);
                     else
                         states.setPicker2MaterialState(MaterialState::IsNgProduct);
                     picker2_senseor_data["WorkStation"] = states.busyState();
@@ -1455,19 +1439,23 @@ void SensorLoaderModule::run()
                 {
                     states.setStation2HasRequest(false);
                     states.setSut2Ready(false);
-                    sendMessageToModule("Sut2Module","FinishPickRequest");
+                    QJsonObject param;
+                    param.insert("MaterialState",MaterialTray::getMaterialStateName(states.sut2MaterialState()));
+                    sendMessageToModule("Sut2Module","FinishLoadSensor",param);
                 }
                 else
                 {
                     states.setStation1HasRequest(false);
                     states.setSut1Ready(false);
-                    sendMessageToModule("Sut1Module","FinishPickRequest");
+                    QJsonObject param;
+                    param.insert("MaterialState",MaterialTray::getMaterialStateName(states.sut1MaterialState()));
+                    sendMessageToModule("Sut1Module","FinishLoadSensor",param);
                 }
                 states.setBusyState(BusyState::IDLE);
                 continue;
             }
             bool sut_empty = is_local?states.sut2MaterialState()==MaterialState::IsEmpty:states.sut1MaterialState()==MaterialState::IsEmpty;
-            if(sut_empty&&(states.picker1MaterialState() == MaterialState::IsRaw))
+            if(sut_empty&&(states.picker1MaterialState() == MaterialState::IsRawSensor))
             {
                 //放sensor到SUT
                 sut_empty_location->resetResult();
@@ -1495,17 +1483,25 @@ void SensorLoaderModule::run()
                 states.setPicker1MaterialState(MaterialState::IsEmpty);
                 if(is_local)
                 {
-                    states.setSut2MaterialState(MaterialState::IsRaw);
+                    states.setSut2MaterialState(MaterialState::IsRawSensor);
+                    states.setStation2NeedSensor(false);
                     states.setStation2HasRequest(false);
                     states.setSut2Ready(false);
-                    sendMessageToModule("Sut2Module","FinishPlaceRequest");
+                    QJsonObject param;
+                    param.insert("MaterialState",MaterialTray::getMaterialStateName(states.sut2MaterialState()));
+                    qInfo("sut2MaterialState %s",MaterialTray::getMaterialStateName(states.sut2MaterialState()).toStdString().c_str());
+                    sendMessageToModule("Sut2Module","FinishLoadSensor",param);
                 }
                 else
                 {
-                    states.setSut1MaterialState(MaterialState::IsRaw);
+                    states.setSut1MaterialState(MaterialState::IsRawSensor);
+                    states.setStation1NeedSensor(false);
                     states.setStation1HasRequest(false);
                     states.setSut1Ready(false);
-                    sendMessageToModule("Sut1Module","FinishPlaceRequest");
+                    QJsonObject param;
+                    param.insert("MaterialState",MaterialTray::getMaterialStateName(states.sut1MaterialState()));
+                    qInfo("sut1MaterialState %s",MaterialTray::getMaterialStateName(states.sut2MaterialState()).toStdString().c_str());
+                    sendMessageToModule("Sut1Module","FinishLoadSensor",param);
                 }
                 states.setBusyState(BusyState::IDLE);
                 //uph 统计
@@ -2266,7 +2262,7 @@ bool SensorLoaderModule::checkTrayNeedChange()
             if(states.hasSensorTray1()&&
                     tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_1)&&
                     tray->isTrayNeedChange(SensorPosition::SENSOR_TRAY_2)&&
-                    (states.picker1MaterialState() != MaterialState::IsProduct))
+                    (states.picker1MaterialState() != MaterialState::IsGoodProduct))
                 return true;
         }
 
@@ -2283,9 +2279,9 @@ int SensorLoaderModule::checkForceChageStation()
                 (states.picker2MaterialState()==MaterialState::IsEmpty)&&
                 (states.picker1MaterialState()==MaterialState::IsEmpty))
         {
-            if((states.busyState() == BusyState::SUT1)&&states.sut2Ready()&&states.station2HasRequest()&&(states.sut2MaterialState()!=MaterialState::IsEmpty)&&(states.sut2MaterialState()!=MaterialState::IsRaw))
+            if((states.busyState() == BusyState::SUT1)&&states.sut2Ready()&&states.station2HasRequest()&&(states.sut2MaterialState()!=MaterialState::IsEmpty)&&(states.sut2MaterialState()!=MaterialState::IsRawSensor))
                 return BusyState::SUT2;
-            if((states.busyState() == BusyState::SUT2)&&states.sut1Ready()&&states.station1HasRequest()&&(states.sut1MaterialState()!=MaterialState::IsEmpty)&&(states.sut1MaterialState()!=MaterialState::IsRaw))
+            if((states.busyState() == BusyState::SUT2)&&states.sut1Ready()&&states.station1HasRequest()&&(states.sut1MaterialState()!=MaterialState::IsEmpty)&&(states.sut1MaterialState()!=MaterialState::IsRawSensor))
                 return BusyState::SUT1;
         }
     }
@@ -2296,7 +2292,7 @@ bool SensorLoaderModule::checkNeedPickSensor()
 {
     if(states.station1Unload()&&states.station2Unload())
         return false;
-    if(states.finishStation1Task()&&(!states.station1HasRequest())&&states.finishStation2Task()&&(!states.station2HasRequest()))
+    if((states.taskOfStation1() == 1)&&(!states.station1NeedSensor())&&(states.taskOfStation2() == 1)&&(!states.station2NeedSensor()))
         return false;
     return true;
 }
@@ -2443,7 +2439,9 @@ bool SensorLoaderModule::findTrayNextEmptyPos()
         states.setCurrentTrayID(tray_index);
         return true;
     }
-    if(((states.picker1MaterialState()!=MaterialState::IsEmpty)||(states.station1Unload()&&states.station2Unload()))
+    if(((states.picker1MaterialState() != MaterialState::IsEmpty)
+        ||((SensorPosition::SENSOR_TRAY_1 == tray_index)&&states.station1Unload())
+        ||((SensorPosition::SENSOR_TRAY_2 == tray_index)&&states.station2Unload()))
             &&findTrayNextInitStatePos(SensorPosition::BUFFER_TRAY))
     {
         states.setCurrentTrayID(SensorPosition::BUFFER_TRAY);

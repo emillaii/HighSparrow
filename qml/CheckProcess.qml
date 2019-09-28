@@ -540,7 +540,8 @@ ItemDelegate {
                                             text:title_move_to
                                             onClicked: {
                                                 //logicManager.lensPickArmMoveToUpdownlookDownPos()
-                                                lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_DOWN_POS)
+//                                                lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_DOWN_POS)
+                                                logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.UPDOWNLOOK_DOWN_POS)
                                             }
                                         }
                                         Button{
@@ -654,7 +655,8 @@ ItemDelegate {
                                             text:title_move_to
                                             onClicked: {
                                                 //logicManager.lensPickArmMoveToUpdownlookUpPos()
-                                                lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_UP_POS)
+//                                                lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_UP_POS)
+                                                logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.UPDOWNLOOK_UP_POS)
                                             }
                                         }
                                         Button{
@@ -758,20 +760,28 @@ ItemDelegate {
                                     text:qsTr("lpa取NGLens");
                                     onClicked: {
                                         //logicManager.lensPickArmMoveToPickLensFromLut()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
-                                                                         LensLoaderModule.LUT_LENS_PR+
-                                                                         LensLoaderModule.ToWork+
-                                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
+//                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
+//                                                                         LensLoaderModule.LUT_LENS_PR+
+//                                                                         LensLoaderModule.ToWork+
+//                                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
+                                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2+
+                                                                     LensLoaderModule.LUT_LENS_PR+
+                                                                     LensLoaderModule.ToWork+
+                                                                     LensLoaderModule.PICK_NG_LENS_FROM_LUT)
                                     }
                                 }
                                 Button{
                                     text:qsTr("lpa放lens")
                                     onClicked: {
                                         //logicManager.lensPickArmMoveToPlaceLensToLut()
-                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1+
-                                                                         LensLoaderModule.RESET_PR+
-                                                                         LensLoaderModule.ToWork+
-                                                                         LensLoaderModule.PLACE_LENS_TO_LUT)
+//                                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1+
+//                                                                         LensLoaderModule.RESET_PR+
+//                                                                         LensLoaderModule.ToWork+
+//                                                                         LensLoaderModule.PLACE_LENS_TO_LUT)
+                                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS1+
+                                                                     LensLoaderModule.RESET_PR+
+                                                                     LensLoaderModule.ToWork+
+                                                                     LensLoaderModule.PLACE_LENS_TO_LUT)
                                     }
                                 }
                             }

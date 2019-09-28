@@ -109,8 +109,8 @@ public:
 
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;
-    LutClient * lutClient;
-    SutClient * sut_clitent;
+//    LutClient * lutClient;
+//    SutClient * sut_clitent;
     SensorClip entrance_clip;
     SensorClip exit_clip;
     SensorClipStandParameter sensor_clip_stand;
@@ -348,7 +348,9 @@ public:
     Q_INVOKABLE double getPROffsetX(QString location_name);
     Q_INVOKABLE double getPROffsetY(QString location_name);
 
+    Q_INVOKABLE bool getMotorEnableState(QString name);
     Q_INVOKABLE double getMotorFeedbackPos(QString name);
+    Q_INVOKABLE bool getMotorHomeState(QString name);
     Q_INVOKABLE double getMotorFeedbackPos(int index);
     Q_INVOKABLE void setLightingBrightness(QString location_name);
     Q_INVOKABLE void sendLoadLens(bool has_ng);
@@ -361,8 +363,10 @@ public:
     Q_INVOKABLE void loadLensTrayLoaderParameter();
     Q_INVOKABLE double showChartCalibrationRotation();
     Q_INVOKABLE void testPRTest();
-    void EnableMotors();
-    void DisableAllMotors();
+    Q_INVOKABLE void enableMotor(QString motorName);
+    Q_INVOKABLE void enableMotors();
+    Q_INVOKABLE void disableMotor(QString motorName);
+    Q_INVOKABLE void disableAllMotors();
     Q_INVOKABLE bool allMotorsSeekOrigin();
     bool allMotorsSeekOriginal1();
     bool allMotorsSeekOriginal2();

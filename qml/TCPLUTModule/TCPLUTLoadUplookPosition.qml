@@ -54,7 +54,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.performHandling(5)
+//                lutModule.performHandling(5)
+                logicManager.performHandling(lutParams.moduleName,5)
             }
         }
         Button {

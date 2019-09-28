@@ -83,463 +83,7 @@ void TrayLoaderModule::resetLogic()
     states.setReadyToPushEmptyTray(false);
 }
 
-void TrayLoaderModule::performHandling(int cmd)
-{
-    emit sendHandlingOperation(cmd);
-}
-
-bool TrayLoaderModule::startUp()
-{
-    if(!moveToLtlSetPos()){
-        qDebug()<<"LTL_X move to setpos failed";
-        return false;
-    }
-//    onReset();
-    return true;
-}
-
-//void TrayLoaderModule::run(bool has_tray)
-//{
-//    is_run = true;
-//    while(is_run){
-//        QThread::msleep(100);
-
-//        bool result = false;
-//        if(!states.hasTrayReady()){
-//            result = motorOutRelease();
-//            if(!result){
-//                AppendError(tr(u8"LTK_X2释放失败,是否继续移动LTLX"));
-//                sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-//                result = waitMessageReturn(is_run);
-//                if(!result){
-//                    is_run = false;
-//                    continue;
-//                }
-//            }
-//            result = moveToSafePos();
-//            if(!result){
-//                AppendError(tr(u8"LTL_X未移动到工作位置，是否出盘"));
-//                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-//                result = waitMessageReturn(is_run);
-//                if(result){
-//                    states.setHasTrayReadyPosClear(true);
-//                }else{
-//                    continue;
-//                }
-//            }else{
-//                states.setHasTrayReadyPosClear(true);
-//            }
-//            if(!is_run)continue;
-
-//            result = ejectTray();
-//            if(!result){
-//                AppendError(tr(u8"发射tray盘失败，是否继续"));
-//                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-//                result = waitMessageReturn(is_run);
-//                if(result){
-//                    states.setHasPrevTrayEjected(true);
-//                    states.setHasEntranceTrayPulledAway(false);
-//                }else{
-//                    continue;
-//                }
-//            }else{
-//                states.setHasPrevTrayEjected(true);
-//                states.setHasEntranceTrayPulledAway(false);
-//            }
-//            if(!is_run)continue;
-
-//            if(states.hasTrayReadyPosClear()){
-//                if(!motorInRelease()){
-//                    AppendError(tr(u8"LTK_X1释放失败,是否继续移动LTk_X1"));
-//                    sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-//                    result = waitMessageReturn(is_run);
-//                    if(!result){
-//                        is_run = false;
-//                        continue;
-//                    }
-//                }
-//                if(!moveToReadyFirstKick()){
-//                    AppendError(tr(u8"LTK_X1拉tray盘就位失败，是否继续"));
-//                    sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-//                    result = waitMessageReturn(is_run);
-//                    if(result){
-//                        states.setHasLTKX1ReadytoPull(true);
-//                    }else{
-//                        continue;
-//                    }
-//                }else{
-//                    states.setHasLTKX1ReadytoPull(true);
-//                }
-//                if(!is_run)continue;
-
-//                if(states.hasLTKX1ReadytoPull()){
-//                    result = moveToFirstKick();
-//                    if(!motorInRelease()){
-//                        AppendError(tr(u8"LTK_X1释放失败,是否继续移动LTk_X1"));
-//                        sendAlarmMessage(ErrorLevel::ContinueOrReject,GetCurrentError());
-//                        result = waitMessageReturn(is_run);
-//                        if(!result){
-//                            is_run = false;
-//                            continue;
-//                        }
-//                    }
-//                    result &= moveToReadySecondKick();
-//                    if(!result){
-//                        AppendError(tr(u8"tray盘到准备位置失败，是否继续"));
-//                        sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-//                        result = waitMessageReturn(is_run);
-//                        if(result){
-//                            states.setHasTrayReady(true);
-//                            states.setHasLTKX1ReadytoPull(false);
-//                            states.setHasEntranceTrayPulledAway(true);
-//                        }else{
-//                            continue;
-//                        }
-//                    }else{
-//                        states.setHasTrayReady(true);
-//                        states.setHasLTKX1ReadytoPull(false);
-//                        states.setHasEntranceTrayPulledAway(true);
-//                    }
-//                }
-//                if(!is_run)continue;
-//                //moveToNextTrayPos();
-//            }
-//            if(!is_run)break;
-//        }
-//        if(states.hasTrayUsed()){
-//            result = motorOutRelease();
-//            if(!result){
-//                AppendError(tr("LTK_X2释放失败，是否继续？"));
-//                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-//                if(waitMessageReturn(is_run)){
-//                    is_run = false;
-//                    continue;
-//                }
-//            }
-//            if(!moveToTrayOutHandOverPos()){
-//                AppendError(tr(u8"tray盘到准备位置失败，是否继续"));
-//                sendAlarmMessage(ErrorLevel::ContinueOrRetry,GetCurrentError());
-//                result = waitMessageReturn(is_run);
-//                if(result){
-//                    states.setHasTrayOutHandOverReady(true);
-//                }else{
-//                    continue;
-//                }
-//            }else{
-//                states.setHasTrayOutHandOverReady(true);
-//            }
-//            if(!is_run)continue;
-//            if(states.hasTrayOutHandOverReady()){
-//                if(!motorWorkRelease()){
-//                    AppendError(tr("LTL_X释放失败，是否继续？"));
-//                    sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-//                    if(waitMessageReturn(is_run)){
-//                        is_run = false;
-//                        continue;
-//                    }
-//                }
-//                if(!motorOutPress()){
-//                    AppendError(tr("LTk_X2下压失败，是否继续？"));
-//                    sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-//                    if(waitMessageReturn(is_run)){
-//                        is_run = false;
-//                        continue;
-//                    }
-//                }
-//                states.setHasTrayOutHandOverReady(false);
-//            }
-//            if(!is_run)continue;
-//            result = moveToTrayInHandOverPos();
-//            if(!motorInRelease()){
-//                AppendError(tr(u8"LTK_X1释放失败，是否继续？"));
-//                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-//                if(waitMessageReturn(is_run)){
-//                    is_run = false;
-//                    continue;
-//                }
-//            }
-//            result &= motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
-//            motorWorkPress();
-//            //
-//            result &= moveToSafePos();
-//            if(!result){
-//                AppendError(tr(u8"换盘失败，是否继续？"));
-//                sendAlarmMessage(ErrorLevel::RetryOrStop,GetCurrentError());
-//                if(waitMessageReturn(is_run)){
-//                    is_run = false;
-//                    continue;
-//                }
-//            }
-//            emit trayReady();
-//            //emit parameters.trayReady();
-
-//            result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
-//            motorOutRelease();
-
-//            moveToNextEmptyPos();
-//            states.setHasTrayReady(false);
-//            states.setHasTrayUsed(false);
-//            if(!is_run)break;
-//        }
-//        if(states.hasPrevTrayEjected()&&states.hasEntranceTrayPulledAway()){
-//            moveToNextTrayPos();
-//            states.setHasPrevTrayEjected(false);
-//        }
-//    }
-
-//}
-
-//bool TrayLoaderModule::moveToNextTrayPos()
-//{
-//    //    if(!tray_entry_input->Value()){
-//    //        //qDebug()<<"入口处检测到有盘";
-//    //        AppendError(u8"入口处检测到有盘,请把盘拿走");
-//    //        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-//    //        waitMessageReturn(is_run);
-//    //        return false;
-//    //    }
-//    double pos = tray_clip->getCurrentPosition();
-//    motor_clip_in->MoveToPos(pos);
-//    bool result = motor_clip_in->WaitArrivedTargetPos(pos);
-//    if(result){
-//        if(tray_clip->standards_parameters.currentIndex()+1<tray_clip->standards_parameters.columnCount())
-//            tray_clip->standards_parameters.setCurrentIndex(tray_clip->standards_parameters.currentIndex()+1);
-//        else{
-//            AppendError(tr(u8"进盘弹夹已用完，请更换弹夹后继续下一步操作"));
-//            sendAlarmMessage(ErrorLevel::WarningBlock,tr(u8"更换完毕后点击继续"));
-//            waitMessageReturn(is_run);
-//            tray_clip->standards_parameters.setCurrentIndex(0);
-//        }
-//    }
-//    return result;
-//}
-
-bool TrayLoaderModule::ejectTray()
-{
-    bool res = cylinder_clip->Set(true);
-    if(!res){
-        qDebug()<<"弹出失败";
-    }
-    //cylinder_clip->Set(true);
-    res &= cylinder_clip->Set(false);
-    if(!res){
-        qDebug()<<"retraction failed";
-    }
-    return res;
-}
-
-bool TrayLoaderModule::motorInPress()
-{
-    int res = cylinder_ltk1->Set(true);
-    return res;
-}
-
-//bool TrayLoaderModule::moveToReadyFirstKick()
-//{
-//    bool result = motor_in->MoveToPosSync(parameters.ltkx1PressPos());
-//    result &= motorInPress();
-//    return result;
-//}
-
-//bool TrayLoaderModule::moveToFirstKick()
-//{
-//    return motor_in->MoveToPosSync(parameters.ltkx1ReleasePos());
-//}
-
-//bool TrayLoaderModule::moveToReadySecondKick()
-//{
-//    bool result = motor_in->MoveToPosSync(parameters.ltkx1RelayPos());
-//    result &= motorInPress();
-//    return result;
-//}
-
-bool TrayLoaderModule::moveToLtkx1GetPos()
-{
-    if(!cylinder_tray->Value()){
-        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"检测到tray盘升起状态，是否继续操作？"))){
-            return true;
-        }
-    }
-    motor_in->MoveToPos(parameters.ltkx1PressPos());
-    bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1PressPos());
-    return result;
-}
-
-bool TrayLoaderModule::moveToLtkx1RelayPos()
-{
-    if(!cylinder_tray->Value()){
-        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"检测到tray盘升起状态，是否继续操作？"))){
-            return true;
-        }
-    }
-    motor_in->MoveToPos(parameters.ltkx1RelayPos());
-    bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1RelayPos());
-    return result;
-}
-
-bool TrayLoaderModule::moveToLtkx1SetPos()
-{
-    motor_in->MoveToPos(parameters.ltkx1ReleasePos());
-    bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
-    return result;
-}
-
-bool TrayLoaderModule::motorInRelease()
-{
-    int res =cylinder_ltk1->Set(false);
-    return res;
-    /*
-    int res = cylinder_ltk1->Value();
-    if(res){
-        res = cylinder_ltk1->Set(false);
-        return res;
-    }
-    return 1;
-//*/
-}
-
-bool TrayLoaderModule::moveToLtlGetPos()
-{
-    motor_work->MoveToPos(parameters.ltlPressPos());
-    bool result = motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
-    return result;
-}
-
-//bool TrayLoaderModule::moveToSafePos()
-//{
-//    return motor_work->MoveToPosSync(parameters.ltlPressPos()+200);
-//}
-
-bool TrayLoaderModule::motorWorkPress()
-{
-    int res = cylinder_tray->Value();
-    if(res){
-        res = cylinder_tray->Set(false);
-        return res;
-    }
-    return 1;
-}
-
-bool TrayLoaderModule::moveToLtlSetPos()
-{
-    motor_work->MoveToPos(parameters.ltlReleasePos());
-    bool result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos(),10000);
-    return result;
-}
-
-bool TrayLoaderModule::motorWorkRelease()
-{
-    int res = cylinder_tray->Set(true);
-    return true;
-}
-
-//bool TrayLoaderModule::moveToTrayOutHandOverPos()
-//{
-//    motor_out->MoveToPos(parameters.ltkx2PressPos());
-//    motor_work->MoveToPos(parameters.ltlReleasePos());
-//    bool result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
-//    result &= motor_out->WaitArrivedTargetPos(parameters.ltkx2PressPos());
-//    return result;
-//}
-
-//bool TrayLoaderModule::moveToTrayInHandOverPos()
-//{
-//    bool result;
-//    motor_out->MoveToPos(parameters.ltkx2ReleasePos());
-//    motor_in->MoveToPos(parameters.ltkx1ReleasePos());
-//    motor_work->MoveToPos(parameters.ltlPressPos());
-//    result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
-//    return result;
-//}
-
-bool TrayLoaderModule::moveToLtkx2GetPos()
-{
-    motor_out->MoveToPos(parameters.ltkx2PressPos());
-    bool result = motor_out->WaitArrivedTargetPos(parameters.ltkx2PressPos());
-    return result;
-}
-
-bool TrayLoaderModule::motorOutPress()
-{
-    int res = cylinder_ltk2->Set(true);
-    return res;
-}
-
-bool TrayLoaderModule::moveToLtkx2SetPos()
-{
-    motor_out->MoveToPos(parameters.ltkx2ReleasePos());
-    bool result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
-    return result;
-}
-
-bool TrayLoaderModule::motorOutRelease()
-{
-    int res = cylinder_ltk2->Set(false);
-    return res;
-}
-
-//bool TrayLoaderModule::moveToNextEmptyPos()
-//{
-//    if(exit_tray_check_io->Value()){
-//        qDebug()<<"出口处检测到有盘";
-//        AppendError(QString(u8"出口处有盘，请把盘移走"));
-//        sendAlarmMessage(ErrorLevel::WarningBlock,GetCurrentError());
-//        waitMessageReturn(is_run);
-//        return false;
-//    }
-//    double pos = tray_clip_out->getCurrentPosition();
-//    motor_clip_out->MoveToPos(pos);
-//    bool result = motor_clip_out->WaitArrivedTargetPos(pos);
-//    if(result){
-//        if(tray_clip_out->standards_parameters.currentIndex()+1<tray_clip_out->standards_parameters.columnCount())
-//            tray_clip_out->standards_parameters.setCurrentIndex(tray_clip_out->standards_parameters.currentIndex()+1);
-//        else{
-//            AppendError(tr(u8"出盘弹夹已装满，请更换弹夹后继续"));
-//            sendAlarmMessage(Continue,tr(u8"更换完毕后点击继续"));
-//            waitMessageReturn(is_run);
-//            tray_clip_out->standards_parameters.setCurrentIndex(0);
-//        }
-//    }
-//    return result;
-//}
-
-bool TrayLoaderModule::moveToChangeClipPos()
-{
-    qInfo("moveToChangeClipPos");
-    motor_clip_in->MoveToPos(tray_clip->standards_parameters.changeClipPos());
-    bool result = motor_clip_in->WaitArrivedTargetPos(tray_clip->standards_parameters.changeClipPos());
-    if (result)
-    {
-        AppendError(tr(u8"移动到换料位置失败！"));
-    }
-    return result;
-}
-
-bool TrayLoaderModule::LTIEMovetoColumnIndex(int col)
-{
-    if(col<tray_clip->standards_parameters.columnCount()){
-        double pos = tray_clip->standards_parameters.firstTrayPos() + col*tray_clip->standards_parameters.columnDelta();
-        motor_clip_in->MoveToPos(pos);
-        int res = motor_clip_in->WaitArrivedTargetPos(pos);
-        return res;
-    }else{
-        return false;
-    }
-}
-
-bool TrayLoaderModule::LTOEMovetoColumnIndex(int col)
-{
-    if(col<tray_clip_out->standards_parameters.columnCount()){
-        double pos = tray_clip_out->standards_parameters.firstTrayPos() + col*tray_clip_out->standards_parameters.columnDelta();
-        motor_clip_out->MoveToPos(pos);
-        int res = motor_clip_out->WaitArrivedTargetPos(pos);
-        return res;
-    }else{
-        return false;
-    }
-}
-
-bool TrayLoaderModule::sendoutAndReayPushOutEmptyTray(bool check_tray)
+bool TrayLoaderModule::sendoutAndReayPushOutEmptyTray()
 {
     bool result = cylinder_ltk2->Set(false);
     if(!result)return false;
@@ -548,13 +92,11 @@ bool TrayLoaderModule::sendoutAndReayPushOutEmptyTray(bool check_tray)
     result &= motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
     if(result)
         result &= cylinder_tray->Set(true);
-    if(result&&check_tray)
-    {
-        result &= checkWorkTray(true);
-        if(!result)
-            AppendError(u8"盘托上未检测到料盘！");
+    if(parameters.openQinfo())
         qInfo(u8"盘托上料盘检测！%d",result);
-    }
+    result &= checkWorkTray(true);
+    if(!result)
+        AppendError(u8"盘托上未检测到料盘！");
     result &= motor_out->WaitArrivedTargetPos(parameters.ltkx2PressPos());
     if(!result)
         AppendError(QString(u8"放出空盘并准备推空盘失败"));
@@ -563,7 +105,7 @@ bool TrayLoaderModule::sendoutAndReayPushOutEmptyTray(bool check_tray)
     return result;
 }
 
-bool TrayLoaderModule::moveToGetAndPushInNewTrayAndPushOutTray(bool check_tray)
+bool TrayLoaderModule::moveToGetAndPushInNewTrayAndPushOutTray()
 {
     bool result = cylinder_tray->Set(true);
     bool out_result = false;
@@ -593,7 +135,7 @@ bool TrayLoaderModule::moveToGetAndPushInNewTrayAndPushOutTray(bool check_tray)
     return result&&out_result&&in_result;
 }
 
-bool TrayLoaderModule::moveToGetAndPushInNewTray(bool check_tray)
+bool TrayLoaderModule::moveToGetAndPushInNewTray()
 {
     bool result = cylinder_tray->Set(true);
     if(result)
@@ -632,7 +174,7 @@ bool TrayLoaderModule::moveToPushOutTray()
 bool TrayLoaderModule::moveToWorkPosAndReayPullNewTray()
 {
     bool in_result = cylinder_ltk1->Set(false);
-    int result = true;
+    bool result = true;
     if(in_result)
     {
         in_result &= motor_in->MoveToPos(parameters.ltkx1PressPos());
@@ -685,20 +227,19 @@ bool TrayLoaderModule::moveToPushReadyTray()
     return result;
 }
 
-bool TrayLoaderModule::clipPushoutTray(bool check_tray)
+bool TrayLoaderModule::clipPushoutTray()
 {
     bool result = cylinder_ltk1->Set(false);
     if(result)
         result &= cylinder_clip->Set(true);
     if(result)
         result &= cylinder_clip->Set(false);
-    if(result&&check_tray)
-    {
-        result &= checkEntranceTray(true);
-        if(!result)
-            AppendError(u8"入料口未检测到料盘！");
+    result &= checkEntranceTray(true);
+    if(parameters.openQinfo())
         qInfo(u8"入料口料盘检测 %d",result);
-    }
+    if(!result)
+        AppendError(u8"入料口未检测到料盘.");
+
     bool in_result = cylinder_ltk1->Set(true);
     if(in_result)
         in_result &= motor_in->SlowMoveToPosSync(parameters.ltkx1ReleasePos(),parameters.pushVelocity());
@@ -748,6 +289,17 @@ bool TrayLoaderModule::moveToWorkPos()
     return result;
 }
 
+bool TrayLoaderModule::moveToChangeClipPos()
+{
+    qInfo("moveToChangeClipPos");
+    motor_clip_in->MoveToPos(tray_clip->standards_parameters.changeClipPos());
+    bool result = motor_clip_in->WaitArrivedTargetPos(tray_clip->standards_parameters.changeClipPos());
+    if (result)
+    {
+        AppendError(tr(u8"移动到换料位置失败！"));
+    }
+    return result;
+}
 void TrayLoaderModule::startWork(int run_mode)
 {
     QVariantMap run_params = inquirRunParameters();
@@ -786,19 +338,13 @@ void TrayLoaderModule::startWork(int run_mode)
     }
     if(states.handlyChangeLens())
         return;
-    if(run_mode == RunMode::Normal)
+
+    if(run_mode == RunMode::Normal||run_mode == RunMode::NoMaterial)
     {
         if(states.handlyChangeLensTray())
             runHandle();
         else
-            run(true);
-    }
-    else if(run_mode == RunMode::NoMaterial)
-    {
-        if(states.handlyChangeLensTray())
-            runHandle();
-        else
-            run(false);
+            run();
     }
 }
 
@@ -813,225 +359,6 @@ void TrayLoaderModule::performHandlingOperation(int cmd)
     is_handling = false;
 }
 
-//void TrayLoaderModule::onNextTrayPos()
-//{
-//    moveToNextTrayPos();
-//    ejectTray();
-//}
-
-//void TrayLoaderModule::onLtkx1Pickup()
-//{
-//    if(!motorInPress()){
-//        return;
-//    }
-//    if(!moveToLtkx1SetPos()){
-//        qDebug()<<"LTK_X1 move to setpos false";
-//        return;
-//    }
-//    if(!motorInRelease()){
-//        qDebug()<<"LTK_X1 realease false";
-//        return;
-//    }
-//    if(!moveToLtkx1RelayPos()){
-//        return;
-//    }
-//    if(!motorInPress()){
-//        return;
-//    }
-//    if(!moveToLtkx1SetPos()){
-//        return;
-//    }
-//    Sleep(rand()%5000);
-//    qDebug()<<"2.ltk_x1 has picked up prev tray,emit nextTrayPos signal eject next one";
-//    emit nextTrayPos();
-//    if(!motorInRelease()){
-//        return;
-//    }
-//    if(!moveToLtkx1GetPos()){
-//        return;
-//    }
-//}
-
-//void TrayLoaderModule::onLtlxPickup()
-//{
-//    if(!moveToLtlGetPos()){
-//        return;
-//    }
-//    if(!motorWorkPress()){
-//        return;
-//    }
-//    qDebug()<<"3.emit trayReady signal to start working";
-//    emit parameters.trayReady();//debug
-//    //emit trayReady();
-//}
-
-//void TrayLoaderModule::onLtlxPutdown()
-//{
-//    if(!moveToLtlSetPos()){
-//        qDebug()<<"LTLX move to setpos false";
-//        return;
-//    }
-//    if(!motorWorkRelease()){
-//        qDebug()<<"LTLX Release false";
-//        return;
-//    }
-//    Sleep(rand()%5000);
-//    qDebug()<<"4.ltl_x put down prev tray, emit ltkx2Pickup signal and ltlxPickup signal";
-//    emit ltkx2Pickup();
-//    emit ltlxPickup();
-//}
-
-//void TrayLoaderModule::onLtkx2Pickup()
-//{
-//    //*
-//    if(!motorOutPress()){
-//        return;
-//    }
-//    if(!moveToLtkx2SetPos()){
-//        return;
-//    }
-//    if(!motorOutRelease()){
-//        return;
-//    }
-//    if(!moveToLtkx2GetPos()){
-//        return;
-//    }
-//    //*/
-//    qDebug()<<"5.recieve a tray,move to next empty pos";
-//    emit nextEmptyPos();
-//}
-
-//void TrayLoaderModule::onNextEmptyPos()
-//{
-//    moveToNextEmptyPos();
-//}
-
-void TrayLoaderModule::onTestTrayUsed()
-{
-    //LTL_X 与 LTK_X2 会合
-    /*
-    motorOutRelease();
-    motor_work->MoveToPos(parameters.ltlReleasePos());
-    motor_out->MoveToPos(parameters.ltkx2PressPos());
-    bool result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
-    result &= motor_out->WaitArrivedTargetPos(parameters.ltkx2PressPos());
-    if(!result){
-        return;
-    }
-    if(!motorWorkRelease()){
-        return;
-    }
-    if(!motorOutPress()){
-        return;
-    }
-    //LTL_X 与 LTK_X1 会合，LTK_X2出盘
-    motor_out->MoveToPos(parameters.ltkx2ReleasePos());
-    motor_in->MoveToPos(parameters.ltkx1ReleasePos());
-    motor_work->MoveToPos(parameters.ltlPressPos());
-    result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
-    result &= motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
-    if(!result){
-        return;
-    }
-    if(!motorInRelease()){
-        return;
-    }
-    if(!motorWorkPress()){
-        return;
-    }
-    result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
-    if(!result){
-        return;
-    }
-    if(!motorOutRelease()){
-        return;
-    }
-    qDebug()<<"trayReady.....";
-    if(!moveToLtlSetPos()){
-        return;
-    }
-    emit parameters.trayReady();
-    emit onReset();
-//*/
-    states.setHasTrayUsed(true);
-    qInfo("receive change tray");
-    QMutexLocker temp_locker(&tray_mutex);
-    if(states.isExchangeTray())
-        return;
-    states.setAllowChangeTray(true);
-    states.setIsExchangeTray(true);
-}
-
-//void TrayLoaderModule::onTestLTLXPickUpTray()
-//{
-//    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"测试前先将轨道上tray盘拿走，是否开始测试？"))){
-//        return;
-//    }
-//    motorInRelease();
-//    motorWorkRelease();
-//    ejectTray();
-//    moveToNextTrayPos();
-//    motor_in->MoveToPos(parameters.ltkx1PressPos());
-//    motor_in->WaitArrivedTargetPos(parameters.ltkx1PressPos());
-//    motorInPress();
-//    motor_in->MoveToPos(parameters.ltkx1ReleasePos());
-//    motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
-//    motorInRelease();
-//    motor_in->MoveToPos(parameters.ltkx1RelayPos());
-//    motor_in->WaitArrivedTargetPos(parameters.ltkx1RelayPos());
-//    motorInPress();
-//    motor_in->MoveToPos(parameters.ltkx1ReleasePos());
-//    motor_work->MoveToPos(parameters.ltlPressPos());
-//    bool result = motor_in->WaitArrivedTargetPos(parameters.ltkx1ReleasePos());
-//    result &= motor_work->WaitArrivedTargetPos(parameters.ltlPressPos());
-//    if(result){
-//        motorInRelease();
-//        motorWorkPress();
-//    }
-//}
-//void TrayLoaderModule::onTestLTLXPutDownTray()
-//{
-//    if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"测试前先将轨道上多余tray盘拿走，是否开始测试？"))){
-//        return;
-//    }
-//    motorOutRelease();
-//    motor_work->MoveToPos(parameters.ltlReleasePos());
-//    motor_out->MoveToPos(parameters.ltkx2PressPos());
-//    int result = motor_work->WaitArrivedTargetPos(parameters.ltlReleasePos());
-//    result &= motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
-//    if(result){
-//        motorWorkRelease();
-//        motorOutPress();
-//    }
-//    motor_out->MoveToPos(parameters.ltkx2ReleasePos());
-//    result = motor_out->WaitArrivedTargetPos(parameters.ltkx2ReleasePos());
-//    moveToNextEmptyPos();
-//}
-
-//void TrayLoaderModule::onReset(){
-//    onNextTrayPos();
-//    onNextEmptyPos();
-//    if(!moveToLtkx1GetPos()){
-//        return;
-//    }
-//    if(!motorInPress()){
-//        return;
-//    }
-//    if(!moveToLtkx1SetPos()){
-//        return;
-//    }
-//    if(!motorInRelease()){
-//        return;
-//    }
-//    if(!moveToLtkx1RelayPos()){
-//        return;
-//    }
-//    if(!motorInPress()){
-//        return;
-//    }
-//    qDebug()<<"Reset completete...";
-//}
-
 PropertyBase *TrayLoaderModule::getModuleState()
 {
     return &states;
@@ -1040,9 +367,45 @@ PropertyBase *TrayLoaderModule::getModuleState()
 void TrayLoaderModule::receivceModuleMessage(QVariantMap message)
 {
     qInfo("receive module message %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str());
-//    QMutexLocker temp_locker(&message_mutex);
-//    if(message.contains("TargetModule")&&message["TargetModule"].toString() == "WorksManager")
-//        this->module_message = message;
+    if(!message.contains("OriginModule"))
+    {
+        qInfo("message error! has no OriginModule.");
+        return;
+    }
+    if(message["OriginModule"].toString() == "LensLoaderModule")
+    {
+        if(message.contains("Message"))
+        {
+            if(message["Message"].toString()=="ChangeTrayResquest")
+            {
+                if(states.allowChangeTray())
+                {
+                    qInfo("receive ChangeTrayResquest in changingTray");
+                    return;
+                }
+                states.setAllowChangeTray(true);
+            }
+            else if(message["Message"].toString()=="ReadyTrayResquest")
+            {
+                if(states.allowChangeTray())
+                {
+                    qInfo("receive ReadyTrayResquest in changingTray");
+                    return;
+                }
+                states.setallowReadyTray(true);
+            }
+        }
+        else
+        {
+            qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            return;
+        }
+    }
+    else
+    {
+        qInfo("module name error %s",message["OriginModule"].toString().toStdString().c_str());
+        return;
+    }
 }
 
 QMap<QString, PropertyBase *> TrayLoaderModule::getModuleParameter()
@@ -1056,7 +419,7 @@ QMap<QString, PropertyBase *> TrayLoaderModule::getModuleParameter()
 
 
 
-void TrayLoaderModule::run(bool has_tray)
+void TrayLoaderModule::run()
 {
     if(!resumeState())
     {
@@ -1067,7 +430,6 @@ void TrayLoaderModule::run(bool has_tray)
     bool has_task = false;
     bool allow_change_tray;
     while(is_run){
-//        if(!has_task)
             QThread::msleep(100);
         has_task = false;
         {
@@ -1079,8 +441,7 @@ void TrayLoaderModule::run(bool has_tray)
         //准备推出空盘
         if(allow_change_tray&&states.hasReadyTray()&&states.hasWorkTray()&&(!states.readyToPushEmptyTray()))
         {
-            has_task = true;
-            if((!sendoutAndReayPushOutEmptyTray(has_tray))&&has_tray)
+            if((!sendoutAndReayPushOutEmptyTray()))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -1098,7 +459,7 @@ void TrayLoaderModule::run(bool has_tray)
         if(allow_change_tray&&states.hasReadyTray()&&(!states.isReadyTrayPushed())&&(!states.hasWorkTray())&&states.readyToPushReadyTray()&&states.readyToPushEmptyTray()&&states.exitClipReady())
         {
             has_task = true;
-            if((!moveToGetAndPushInNewTrayAndPushOutTray(has_tray))&&has_tray)
+            if((!moveToGetAndPushInNewTrayAndPushOutTray()))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -1116,7 +477,7 @@ void TrayLoaderModule::run(bool has_tray)
         if(allow_change_tray&&states.hasReadyTray()&&(!states.isReadyTrayPushed())&&(!states.hasWorkTray())&&states.readyToPushReadyTray())
         {
             has_task = true;
-            if(!moveToGetAndPushInNewTray(has_tray)&&has_tray)
+            if(!moveToGetAndPushInNewTray())
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -1134,7 +495,7 @@ void TrayLoaderModule::run(bool has_tray)
         if(allow_change_tray&&states.hasReadyTray()&&states.isReadyTrayPushed()&&(!states.hasWorkTray())&&(!states.readyToPushEmptyTray()))
         {
             has_task = true;
-            if((!moveToWorkPosAndReayPullNewTray())&&has_tray)
+            if((!moveToWorkPosAndReayPullNewTray()))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_NEXT_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -1152,7 +513,7 @@ void TrayLoaderModule::run(bool has_tray)
                 states.setAllowChangeTray(false);
                 states.setIsExchangeTray(false);
             }
-            emit trayReady();
+            sendMessageToModule("LensLoaderModule","FinishChangeTray");
             if(states.isFirstTray())
                 states.setIsFirstTray(false);
             states.setHasReadyTray(false);
@@ -1201,7 +562,7 @@ void TrayLoaderModule::run(bool has_tray)
         if((!states.hasEntranceClipEmpty())&&(!states.entanceClipReady()))
         {
             has_task = true;
-            if((!entranceClipMoveToNextPos())&&has_tray)
+            if((!entranceClipMoveToNextPos()))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -1221,7 +582,7 @@ void TrayLoaderModule::run(bool has_tray)
         if((!states.readyToPushReadyTray()))
         {
             has_task = true;
-            if((!moveToReayPullNewTray())&&has_tray)
+            if((!moveToReayPullNewTray()))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -1238,10 +599,9 @@ void TrayLoaderModule::run(bool has_tray)
         }
         if(!is_run)break;
         //弹夹出盘并拉盘到拉备用位置
-        if((!states.hasReadyTray())&&(!states.hasPulledTray())&&states.entanceClipReady()&&states.readyToPushReadyTray())
+        if((states.allowChangeTray()||states.allowReadyTray())&&(!states.hasReadyTray())&&(!states.hasPulledTray())&&states.entanceClipReady()&&states.readyToPushReadyTray())
         {
-            has_task = true;
-            if((!clipPushoutTray(has_task))&&has_tray)
+            if((!clipPushoutTray()))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -1255,6 +615,7 @@ void TrayLoaderModule::run(bool has_tray)
             states.setReadyToPusReadyTray(false);
             states.setEntanceClipReady(false);
             states.setHasPulledTray(true);
+            states.setallowReadyTray(false);
         }
         if(!is_run)break;
         //提示换入料弹夹
@@ -1279,7 +640,7 @@ void TrayLoaderModule::run(bool has_tray)
         if((!states.hasExitClipFull())&&(!states.exitClipReady()))
         {
             has_task = true;
-            if((!existClipMoveToNextPos())&&has_tray)
+            if((!existClipMoveToNextPos()))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -1357,7 +718,7 @@ void TrayLoaderModule::runHandle()
                 states.setAllowChangeTray(false);
                 states.setIsExchangeTray(false);
             }
-            emit trayReady();
+            sendMessageToModule("LensLoaderModule","FinishChangeTray");
         }
     }
 }

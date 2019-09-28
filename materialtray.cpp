@@ -46,17 +46,42 @@ QString MaterialTray::getMaterialStateName(int material_state)
 {
     switch (material_state) {
     case MaterialState::IsEmpty:
-        return u8"空位";
-    case MaterialState::IsRaw:
-        return u8"新料";
+        return "Empty";
+    case MaterialState::IsRawLens:
+        return "RawLens";
+    case MaterialState::IsNgLens:
+        return "NgLens";
+    case MaterialState::IsRawSensor:
+        return "RawSensor";
     case MaterialState::IsNgSensor:
-        return u8"NG料";
-    case MaterialState::IsProduct:
-        return u8"成品料";
+        return "NgSensor";
+    case MaterialState::IsGoodProduct:
+        return "GoodProduct";
     case MaterialState::IsNgProduct:
-        return u8"NG成品料";
+        return "NgProduct";
     default:
         return "";
+    }
+}
+
+int MaterialTray::getMaterialStateFromName(QString name)
+{
+    if(name == "Empty")
+        return MaterialState::IsEmpty;
+    else if(name =="RawLens")
+        return MaterialState::IsRawLens;
+    else if(name == "NgLens")
+        return MaterialState::IsNgLens;
+    else if(name == "RawSensor")
+        return MaterialState::IsRawSensor;
+    else if(name == "NgSensor")
+        return MaterialState::IsNgSensor;
+    else if(name == "GoodProduct")
+        return MaterialState::IsGoodProduct;
+    else if(name == "NgProduct")
+        return MaterialState::IsNgProduct;
+    else {
+        return -1;
     }
 }
 
@@ -89,7 +114,7 @@ bool MaterialTray::findNextPositionOfInitState(int tray_index)
             if(curren_index == max_index)
                 current_tray->setNeedChange(true);
             current_tray->setCurrentIndex(curren_index);
-            qInfo("findNextPositionOfInitState find index %d tray %d",curren_index,tray_index);
+//            qInfo("findNextPositionOfInitState find index %d tray %d",curren_index,tray_index);
             return true;
         }
         if(curren_index >= max_index)
@@ -114,7 +139,7 @@ bool MaterialTray::findLastPositionOfState(int state, int tray_index)
             if(curren_index == max_index && state == current_tray->initState())
                 current_tray->setNeedChange(true);
             current_tray->setCurrentIndex(curren_index);
-            qInfo("findLastPositionOfState find index %d tray %d",curren_index,tray_index);
+//            qInfo("findLastPositionOfState find index %d tray %d",curren_index,tray_index);
             return true;
         }
         if(curren_index >= max_index||temp_state == current_tray->initState())
@@ -131,6 +156,17 @@ bool MaterialTray::isTrayNeedChange(int tray_index)
 {
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
     return current_tray->needChange();
+}
+
+bool MaterialTray::checkFinishPercent(int tray_index, double percent)
+{
+    double current = getCurrentIndex(tray_index);
+    double max_count = standards_parameters.rowCount()*standards_parameters.columnCount();
+    double current_percent = current/max_count;
+    if(current_percent>percent)
+        return true;
+    return false;
+
 }
 
 int MaterialTray::getCurrentIndex(int tray_index)

@@ -58,7 +58,6 @@ public:
     UPHHelper lens_uph;
     UPHHelper left_lens_uph;
     UPHHelper right_lens_uph;
-
     MaterialCarrier* carrier;
 signals:
     void sendMessageToClient(QString destAddress, QString module_message);
@@ -74,7 +73,6 @@ public slots:
     void receiveRequestMessage(QString module_message, QString client_ip);
     void receiveLoadLensRequstFinish(int lens,int lens_tray);
     void receiveToolUpPRRequest(PrOffset &offset);
-    LUTState getLUTState();
 private:
     SutModule* sut;
     VisionLocation* uplook_location;
@@ -87,7 +85,6 @@ private:
     QMutex tcp_mutex;
     QQueue<QJsonObject> requestQueue;
     QQueue<QJsonObject> actionQueue;
-    LUTState state = NO_LENS;
     bool is_run = false;
     bool isLocalHost = false;
     QTime time_label;
@@ -145,6 +142,13 @@ public:
     bool stepMove_XY_Sync(double x,double y);
     //PR
     bool performUpLookPR();
+    bool checkNeedLens();
+    //Gripper操作
+    void openAA1Griper();
+    void closeAA1Griper();
+    void openAA2Griper();
+    void closeAA2Griper();
+    bool waitGripermFinish();
     //真空操作
     bool openLoadVacuum();
     bool closeLoadVacuum();

@@ -27,6 +27,7 @@ void VisionLocation::saveParam()
 
 bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
 {
+    OpenLight();
     offset.ReSet();
     current_result.ReSet();
     PRResultStruct pr_result;
@@ -45,6 +46,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
             offset.Theta = pr_result.theta;
             offset.W = pr_result.width;
             offset.H = pr_result.height;
+            CloseLight();
             return true;
         }
         if(mapping->CalcMechDistance(QPointF(pr_result.x,pr_result.y),mech)&&mapping->CalcMechDistance(QPointF(pr_result.ori_x,pr_result.ori_y),mech_o))
@@ -57,6 +59,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
             {
                 qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8" pr result too big"));
+                CloseLight();
                 return false;
             }
             if(abs(pr_result.theta) < parameters.maximunAngle())
@@ -73,10 +76,12 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
             {
                 qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8"theta result too big"));
+                CloseLight();
                 return false;
             }
             current_result = offset = temp_offset;
             qInfo("mech: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
+            CloseLight();
             return true;
         } else {
             qInfo("CalcMechDistance Fail");
@@ -86,6 +91,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
         qInfo("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
     }
     AppendError(QString(u8"Perform PR Fail"));
+    CloseLight();
     return false;
 }
 
@@ -114,6 +120,7 @@ bool VisionLocation::performPR()
             {
                 qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8" pr result too big"));
+                CloseLight();
                 return false;
             }
             if(abs(current_pixel_result.theta) < parameters.maximunAngle())
@@ -130,6 +137,7 @@ bool VisionLocation::performPR()
             {
                 qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8"theta result too big"));
+                CloseLight();
                 return false;
             }
             current_result = offset = temp_offset;
@@ -146,6 +154,7 @@ bool VisionLocation::performPR()
         qInfo("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
     }
     AppendError(QString(u8"Perform PR (%1) Fail").arg(parameters.cameraName()));
+    CloseLight();
     return false;
 }
 
@@ -165,12 +174,14 @@ bool VisionLocation::performNoMaterialPR()
 
 bool VisionLocation::performPR(PRResultStruct &pr_result)
 {
+    OpenLight();
     QThread::msleep(parameters.waitImageDelay());
     ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
     last_image_name = pr_result.imageName;
     qInfo("CameraName: %s prFilename: %s PR_Result: %f %f %f",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str(),
           pr_result.x, pr_result.y, pr_result.theta);
 //    qInfo("camera %s perform PR result:%d name:%s",parameters.cameraName().toStdString().c_str(),temp.code,parameters.prFileName().toStdString().c_str());
+    CloseLight();
     return  ErrorCode::OK == temp.code;
 }
 
@@ -282,5 +293,6 @@ QString VisionLocation::getLastImageName()
 
 bool VisionLocation::saveImage(QString imageName)
 {
+    QThread::msleep(parameters.waitImageDelay());
     return vison->saveImage(parameters.cameraName(), imageName);
 }

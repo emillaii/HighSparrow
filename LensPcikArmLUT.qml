@@ -41,7 +41,8 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //logicManager.lensPickArmMoveToLutPos1()
-                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1)
+//                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1)
+                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS1)
                     }
                 }
                 Button{
@@ -94,7 +95,8 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //logicManager.lensPickArmLUTMeasureHeight()
-                        lensLoaderModule.performHandling(LensLoaderModule.MeasureLensInLUT)
+                        //lensLoaderModule.performHandling(LensLoaderModule.MeasureLensInLUT)
+                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.MeasureLensInLUT)
                     }
                 }
                 Button{
@@ -103,10 +105,14 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //logicManager.lensPickArmMoveToPlaceLensToLut()
-                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1+
-                                                         LensLoaderModule.RESET_PR+
-                                                         LensLoaderModule.ToWork+
-                                                         LensLoaderModule.PLACE_LENS_TO_LUT)
+//                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS1+
+//                                                         LensLoaderModule.RESET_PR+
+//                                                         LensLoaderModule.ToWork+
+//                                                         LensLoaderModule.PLACE_LENS_TO_LUT)
+                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS1+
+                                                     LensLoaderModule.RESET_PR+
+                                                     LensLoaderModule.ToWork+
+                                                     LensLoaderModule.PLACE_LENS_TO_LUT)
                     }
                 }
             }
@@ -150,7 +156,8 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //logicManager.lensPickArmMoveToLutPos2()
-                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2)
+//                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2)
+                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2)
                     }
                 }
                 Button{
@@ -174,8 +181,10 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //logicManager.lensPickArmLUTPR()
-                        lensLoaderModule.performHandling(LensLoaderModule.LUT_PR+
-                                                         LensLoaderModule.ToWork)
+//                        lensLoaderModule.performHandling(LensLoaderModule.LUT_PR+
+//                                                         LensLoaderModule.ToWork)
+                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_PR+
+                                                     LensLoaderModule.ToWork)
                     }
                 }
                 Button{
@@ -184,10 +193,14 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         //logicManager.lensPickArmMoveToPickLensFromLut()
-                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
-                                                         LensLoaderModule.LUT_LENS_PR+
-                                                         LensLoaderModule.ToWork+
-                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
+//                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
+//                                                         LensLoaderModule.LUT_LENS_PR+
+//                                                         LensLoaderModule.ToWork+
+//                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
+                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2+
+                                                     LensLoaderModule.LUT_LENS_PR+
+                                                     LensLoaderModule.ToWork+
+                                                     LensLoaderModule.PICK_NG_LENS_FROM_LUT)
                     }
                 }
             }
@@ -232,7 +245,8 @@ ColumnLayout {
                     text:title_move_to
                     onClicked: {
                         //logicManager.lensPickArmMoveToUpdownlookDownPos()
-                        lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_DOWN_POS)
+                        //lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_DOWN_POS)
+                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.UPDOWNLOOK_DOWN_POS)
                     }
                 }
                 Button{
@@ -301,7 +315,8 @@ ColumnLayout {
                     text:title_move_to
                     onClicked: {
                         //logicManager.lensPickArmMoveToUpdownlookUpPos()
-                        lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_UP_POS)
+//                        lensLoaderModule.performHandling(LensLoaderModule.UPDOWNLOOK_UP_POS)
+                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.UPDOWNLOOK_UP_POS)
                     }
                 }
                 Button{

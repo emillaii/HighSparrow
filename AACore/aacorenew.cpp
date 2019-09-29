@@ -1755,6 +1755,16 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         layerDetected++;
         peak_08 += points_3[i].z;
     }
+    //Layer checking
+    if ((points_1.size() > 0 && points_1.size() < 4) ||
+        (points_2.size() > 0 && points_2.size() < 4) ||
+        (points_3.size() > 0 && points_3.size() < 4))
+    {
+        qCritical("AA pattern layer checking fail.");
+        result.insert("OK", false);
+        emit postSfrDataToELK(runningUnit, map);
+        return result;
+    }
     peak_08 /= points_3.size();
     qInfo("Peak 0.8F : %f", peak_05);
     threeDPoint weighted_vector_1 = planeFitting(points_1);

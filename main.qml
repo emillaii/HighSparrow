@@ -108,17 +108,29 @@ ApplicationWindow {
                 color: "black"
             }
 
+        Timer {
+            id:timer
+            interval: 600; running: true; repeat: true
+        }
+
         RowLayout {
             RoundButton {
+                id: initButton
                 text: qsTr("初始化")
                 transformOrigin: Item.Center
                 display: Button.TextBesideIcon
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/initial.png"
-                icon.color: "deepskyblue"
+                icon.color: "red"
                 onClicked: {
                     logicManager.performHandling("",LogicManager.MOTION_INIT)
+                }
+                Connections{
+                   target: timer
+                   onTriggered:{
+                       initButton.icon.color = baseModuleManager.InitState?"deepskyblue":"red"
+                   }
                 }
             }
 
@@ -176,6 +188,9 @@ ApplicationWindow {
                     }else if (aaCoreTestItemName.indexOf("Z Offset") !== -1) {
                         console.log("Perform Z Offset")
                         aaNewCore.performHandling(AACoreNew.Z_OFFSET, aaCoreTestParams)
+                    }else if (aaCoreTestItemName.indexOf("XY Offset") !== -1) {
+                        console.log("Perform XY Offset")
+                        aaNewCore.performHandling(AACoreNew.XY_OFFSET, aaCoreTestParams)
                     }
 
                     aaCoreTestParams = ""
@@ -188,6 +203,7 @@ ApplicationWindow {
             }
 
             RoundButton {
+                id: homeAllButton
                 objectName: "HomeButtonObject"
                 text: qsTr("Home")
                 transformOrigin: Item.Center
@@ -195,10 +211,16 @@ ApplicationWindow {
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/home.png"
-                icon.color: "deepskyblue"
+                icon.color: "red"
                 onClicked: {
                     qmessageDialog.open()
                     //logicManager.sendMessageTest()
+                }
+                Connections{
+                   target: timer
+                   onTriggered:{
+                       homeAllButton.icon.color = baseModuleManager.HomeState?"deepskyblue":"red"
+                   }
                 }
             }
 //            ToolButton {

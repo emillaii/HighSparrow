@@ -308,10 +308,15 @@ void MaterialTray::setTrayFirst(const int column_index, const int row_index, con
 {
     for (int i = getMaterialIndex(getColumnIndex(column_index),getRowIndex(row_index)) -1; i >= 0; --i)
     {
-        if(getMaterialState(i,tray_index) == 1)
+        if(getMaterialState(i,tray_index) == MaterialState::IsRawLens)
         {
             setTrayCurrent(i,tray_index);
-            setCurrentMaterialState(2,tray_index);
+            setCurrentMaterialState(MaterialState::IsNgLens,tray_index);
+        }
+        else if(getMaterialState(i,tray_index) == MaterialState::IsRawSensor)
+        {
+            setTrayCurrent(i,tray_index);
+            setCurrentMaterialState(MaterialState::IsRawSensor,tray_index);
         }
     }
 }
@@ -380,6 +385,22 @@ QPointF MaterialTray::getStartPosition(int tray_index)
 QPointF MaterialTray::getEndPosition()
 {
     return first_tray_end_position.ToPointF();
+}
+
+void MaterialTray::setTrayCurrentNg(const int tray_index)
+{
+    for (int i = getCurrentIndex(tray_index); i <= getLastIndex(); ++i)
+    {
+        if(getMaterialState(i,tray_index) == MaterialState::IsRawLens)
+        {
+            setCurrentMaterialState(MaterialState::IsNgLens,tray_index);
+        }
+        else if(getMaterialState(i,tray_index) == MaterialState::IsRawSensor)
+        {
+            setCurrentMaterialState(MaterialState::IsRawSensor,tray_index);
+        }
+    }
+    setTrayCurrent(getLastIndex(),tray_index);
 }
 
 void MaterialTray::changeTrayCount(int trayCount)

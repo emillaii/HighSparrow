@@ -123,7 +123,6 @@ public slots:
 
     void setMinRange(double minRange)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_minRange, minRange))
             return;
 
@@ -133,7 +132,6 @@ public slots:
 
     void setMaxRange(double maxRange)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_maxRange, maxRange))
             return;
 
@@ -143,7 +141,6 @@ public slots:
 
     void setScale(double scale)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_scale, scale))
             return;
 
@@ -153,7 +150,6 @@ public slots:
 
     void setMaxVel(double maxVel)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_maxVel, maxVel))
             return;
 
@@ -163,7 +159,6 @@ public slots:
 
     void setMaxAcc(double maxAcc)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_maxAcc, maxAcc))
             return;
 
@@ -173,7 +168,6 @@ public slots:
 
     void setMaxJerk(double MaxJerk)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_MaxJerk, MaxJerk))
             return;
 
@@ -183,7 +177,6 @@ public slots:
 
     void setFindOriginCurrent(double LimitCurrent)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_LimitCurrent, LimitCurrent))
             return;
 
@@ -193,7 +186,6 @@ public slots:
 
     void setTouchDistance(double TouchDistance)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_TouchDistance, TouchDistance))
             return;
 
@@ -212,7 +204,6 @@ public slots:
 
     void setOriginOffset(double originOffset)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_originOffset, originOffset))
             return;
 

@@ -153,7 +153,6 @@ public:
 public slots:
     void setLimitDistance(double LimitDistance)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_LimitDistance, LimitDistance))
             return;
 

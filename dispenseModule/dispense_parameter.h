@@ -61,7 +61,6 @@ public:
 public slots:
     void setInitTheta(double InitTheta)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_InitTheta, InitTheta))
             return;
 
@@ -70,7 +69,6 @@ public slots:
     }
     void setDispenseXOffset(double dispenseXOffset)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_dispenseXOffset, dispenseXOffset))
             return;
 
@@ -80,7 +78,6 @@ public slots:
 
     void setDispenseYOffset(double dispenseYOffset)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_dispenseYOffset, dispenseYOffset))
             return;
 
@@ -90,7 +87,6 @@ public slots:
 
     void setDispenseZPos(double dispenseZPos)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_dispenseZPos, dispenseZPos))
             return;
 
@@ -100,7 +96,6 @@ public slots:
 
     void setDispenseZOffset(double dispenseZOffset)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_dispenseZOffset, dispenseZOffset))
             return;
 
@@ -110,7 +105,6 @@ public slots:
 
     void setTestForce(double testForce)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_testForce, testForce))
             return;
 

@@ -302,7 +302,6 @@ public slots:
 
     void setPushoutPosition(double pushoutPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_pushoutPosition, pushoutPosition))
             return;
 
@@ -312,7 +311,6 @@ public slots:
 
     void setGetTrayPosition(double getTrayPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_getTrayPosition, getTrayPosition))
             return;
 
@@ -322,7 +320,6 @@ public slots:
 
     void setPutTrayPosition(double putTrayPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_putTrayPosition, putTrayPosition))
             return;
 
@@ -332,7 +329,6 @@ public slots:
 
     void setStartKickTrayPosition(double startKickTrayPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_startKickTrayPosition, startKickTrayPosition))
             return;
 
@@ -342,7 +338,6 @@ public slots:
 
     void setVacancyTrayPosition(double vacancyTrayPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_vacancyTrayPosition, vacancyTrayPosition))
             return;
 
@@ -352,7 +347,6 @@ public slots:
 
     void setFinishKickTrayPosition(double finishKickTrayPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_finishKickTrayPosition, finishKickTrayPosition))
             return;
 
@@ -362,7 +356,6 @@ public slots:
 
     void setTrayWorkPosition(double trayWorkPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_trayWorkPosition, trayWorkPosition))
             return;
 
@@ -372,7 +365,6 @@ public slots:
 
     void setDownTrayPosition(double downTrayPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_downTrayPosition, downTrayPosition))
             return;
 
@@ -382,7 +374,6 @@ public slots:
 
     void setBackDistance(double backDistance)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_backDistance, backDistance))
             return;
 
@@ -392,7 +383,6 @@ public slots:
 
     void setPushMotorSafePosition(double pushMotorSafePosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_pushMotorSafePosition, pushMotorSafePosition))
             return;
 
@@ -438,7 +428,6 @@ public slots:
 
     void setWaitVacancyTrayPosition(double waitVacancyTrayPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_waitVacancyTrayPosition, waitVacancyTrayPosition))
             return;
 
@@ -448,7 +437,6 @@ public slots:
 
     void setPushVelocity(double pushVelocity)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_pushVelocity, pushVelocity))
             return;
 

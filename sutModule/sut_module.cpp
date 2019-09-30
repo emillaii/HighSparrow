@@ -158,7 +158,7 @@ bool SutModule::moveToLoadPos(bool check_autochthonous)
 bool SutModule::moveToDownlookPos(bool check_autochthonous)
 {
     qInfo("moveToDownlookPos");
-    popgpin->Set(true);
+    popgpin->Set(true,false);
     return carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),downlook_position.Z(),check_autochthonous);
 }
 

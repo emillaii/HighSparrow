@@ -226,22 +226,28 @@ void LensLoaderModule::run(bool has_material)
                 {
                     pr_times--;
                     tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
-                    states.setPickedTrayID(states.currentTray());
-                    states.setPickedLensID(tray->getCurrentIndex(states.currentTray()));
-
-                    AppendError(u8"自动重试.");
-                    sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
+//                    AppendError(u8"自动重试.");
+//                    sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
+                    GetCurrentError();
                     continue;
                 }
                 else
                 {
                     pr_times = 5;
                     AppendError(u8"执行lens视觉连续失败5次!");
-                    int alarm_id = sendAlarmMessage(CONTINUE_SKIP_OPERATION,GetCurrentError());
+                    int alarm_id = sendAlarmMessage(CONTINUE_BLIND_SKIPTRAY_OPERATION,GetCurrentError());
                     QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
-                    if(SKIP_OPERATION != operation)
+                    if(CONTINUE_OPERATION == operation)
+                    {
+                        tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTray());
                         continue;
+                    }
+                    else if (SKIPTRAY_OPERATION == operation)
+                    {
+                        tray->setTrayCurrentNg(states.currentTray());
+                        continue;
+                    }
                 }
             }
             else

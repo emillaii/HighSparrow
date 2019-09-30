@@ -29,7 +29,6 @@ public:
 public slots:
     void setX(double X)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_X, X))
             return;
 
@@ -38,7 +37,6 @@ public slots:
     }
     void setY(double Y)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_Y, Y))
             return;
 
@@ -90,7 +88,6 @@ public:
 public slots:
     void setX(double X)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_X, X))
             return;
 
@@ -99,7 +96,6 @@ public slots:
     }
     void setY(double Y)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_Y, Y))
             return;
 
@@ -108,7 +104,6 @@ public slots:
     }
     void setTheta(double Theta)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_Theta, Theta))
             return;
 

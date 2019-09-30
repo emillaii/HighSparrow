@@ -243,12 +243,12 @@ Popup {
                                 transformOrigin: Item.Center
                                 display: Button.IconOnly
                                 icon.source: "icons/home.png"
-                                icon.color: "cyan"
+                                icon.color: "red"
                                 Connections{
                                    target: timer
                                    onTriggered:{
                                        if(homeButton.visible)
-                                        homeButton.icon.color = baseModuleManager.getMotorHomeState(modelData)?"green":"cyan"
+                                        homeButton.icon.color = baseModuleManager.getMotorHomeState(modelData)?"cyan":"red"
                                    }
                                 }
                             }

@@ -402,6 +402,7 @@ bool XtMotor::clearTrig()
 
 bool XtMotor::MoveToPos(double pos,int thread)
 {
+    if (!is_init) return false;
     if(is_debug) return true;
     if(parameters.firstCheckArrived()&&fabs(pos - GetFeedbackPos())<parameters.positionError())
             return true;

@@ -302,7 +302,7 @@ void LutModule::run(bool has_material)
             }
             states.setWaitingTask(true);
         }
-        //请求Lens
+        //请求上下料
         if((!states.waitingLens())&&(states.lutHasNgLens()||checkNeedLens()))
         {
             if(states.station1Unload()&&states.station2Unload())
@@ -322,10 +322,14 @@ void LutModule::run(bool has_material)
                 param.insert("LutNgLensData",QJsonObject::fromVariantMap(states.ngLensData()));
             param.insert("LutHasLens",states.lutHasLens());
             param.insert("NeedLoadLens",checkNeedLens());
-            int temp_number = states.taskOfStation1() + states.taskOfStation2();
-            if(!states.station1NeedLens())
+            int temp_number = 0;
+            if (!states.disableStation1())
+                temp_number += states.taskOfStation1();
+            if (!states.disableStation2())
+                temp_number += states.taskOfStation2();
+            if((!states.disableStation1())&&(!states.station1NeedLens()))
                 temp_number--;
-            if(!states.station2NeedLens())
+            if((!states.disableStation2())&&(!states.station2NeedLens()))
                 temp_number--;
             if(temp_number > 0)
                 param.insert("TaskNumber",temp_number);
@@ -1181,6 +1185,10 @@ void LutModule::clearNumber()
 bool LutModule::checkNeedLens()
 {
     if(states.lutHasLens())
+        return false;
+    if(states.disableStation1()&&(states.taskOfStation2() == 1)&&(!states.station2NeedLens()))
+        return false;
+    if(states.disableStation2()&&(states.taskOfStation1() == 1)&&(!states.station1NeedLens()))
         return false;
     if((states.taskOfStation1() == 1)&&(!states.station1NeedLens())&&(states.taskOfStation2() == 1)&&(!states.station2NeedLens()))
         return false;

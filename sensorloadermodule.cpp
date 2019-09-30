@@ -644,19 +644,28 @@ void SensorLoaderModule::run()
                 {
                     pr_times--;
                     tray->setCurrentMaterialState(MaterialState::IsNgSensor,states.currentTrayID());
-                    AppendError(u8"自动重试.");
-                    sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
+//                    AppendError(u8"自动重试.");
+//                    sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
+                    GetCurrentError();
                     continue;
                 }
                 else
                 {
                     pr_times = parameters.autoPrTime();
                     AppendError(u8"pr连续失败五次");
-                    int alarm_id = sendAlarmMessage(CONTINUE_SKIP_OPERATION,GetCurrentError());
+                    int alarm_id = sendAlarmMessage(CONTINUE_BLIND_SKIPTRAY_OPERATION,GetCurrentError());
                     QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
-                    if(SKIP_OPERATION != operation)
+                    if(CONTINUE_OPERATION == operation)
+                    {
+                        tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTrayID());
                         continue;
+                    }
+                    else if (SKIPTRAY_OPERATION == operation)
+                    {
+                        tray->setTrayCurrentNg(states.currentTrayID());
+                        continue;
+                    }
                 }
             }
             else
@@ -951,19 +960,28 @@ void SensorLoaderModule::run()
                 {
                     pr_times--;
                     tray->setCurrentMaterialState(MaterialState::IsNgSensor,states.currentTrayID());
-                    AppendError(u8"自动重试.");
-                    sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
+//                    AppendError(u8"自动重试.");
+//                    sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
+                    GetCurrentError();
                     continue;
                 }
                 else
                 {
                     pr_times = parameters.autoPrTime();
                     AppendError(u8"pr连续失败五次");
-                    int alarm_id = sendAlarmMessage(CONTINUE_SKIP_OPERATION,GetCurrentError());
+                    int alarm_id = sendAlarmMessage(CONTINUE_BLIND_SKIPTRAY_OPERATION,GetCurrentError());
                     QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
-                    if(SKIP_OPERATION != operation)
+                    if(CONTINUE_OPERATION == operation)
+                    {
+                        tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTrayID());
                         continue;
+                    }
+                    else if (SKIPTRAY_OPERATION == operation)
+                    {
+                        tray->setTrayCurrentNg(states.currentTrayID());
+                        continue;
+                    }
                 }
             }
             else
@@ -2291,6 +2309,10 @@ int SensorLoaderModule::checkForceChageStation()
 bool SensorLoaderModule::checkNeedPickSensor()
 {
     if(states.station1Unload()&&states.station2Unload())
+        return false;
+    if(states.disableStation1()&&(states.taskOfStation2() == 1)&&(!states.station2NeedSensor()))
+        return false;
+    if(states.disableStation2()&&(states.taskOfStation1() == 1)&&(!states.station1NeedSensor()))
         return false;
     if((states.taskOfStation1() == 1)&&(!states.station1NeedSensor())&&(states.taskOfStation2() == 1)&&(!states.station2NeedSensor()))
         return false;

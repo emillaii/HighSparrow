@@ -333,7 +333,6 @@ public slots:
 
     void setLtkx1PressPos(double ltkx1GetPos)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_ltkx1GetPos, ltkx1GetPos))
             return;
 
@@ -343,7 +342,6 @@ public slots:
 
     void setLtkx1ReleasePos(double ltkx1SetPos)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_ltkx1SetPos, ltkx1SetPos))
             return;
 
@@ -353,7 +351,6 @@ public slots:
 
     void setLtlPressPos(double ltlGetPos)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_ltlGetPos, ltlGetPos))
             return;
 
@@ -363,7 +360,6 @@ public slots:
 
     void setLtlReleasePos(double ltlSetPos)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_ltlSetPos, ltlSetPos))
             return;
 
@@ -373,7 +369,6 @@ public slots:
 
     void setLtkx2PressPos(double ltkx2GetPos)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_ltkx2GetPos, ltkx2GetPos))
             return;
 
@@ -383,7 +378,6 @@ public slots:
 
     void setLtkx2ReleasePos(double ltkx2SetPos)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_ltkx2SetPos, ltkx2SetPos))
             return;
 
@@ -393,7 +387,6 @@ public slots:
 
     void setLtkx1RelayPos(double ltkx1RelayPos)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_ltkx1RelayPos, ltkx1RelayPos))
             return;
 
@@ -421,7 +414,6 @@ public slots:
 
     void setLtkx2SafeDistance(double ltkx2SafeDistance)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_ltkx2SafeDistance, ltkx2SafeDistance))
             return;
 
@@ -431,7 +423,6 @@ public slots:
 
     void setLtlWorkPos(double ltlWorkPos)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_ltlWorkPos, ltlWorkPos))
             return;
 
@@ -468,7 +459,6 @@ public slots:
 
     void setPushVelocity(double pushVelocity)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_pushVelocity, pushVelocity))
             return;
 

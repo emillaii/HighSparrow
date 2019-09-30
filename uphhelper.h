@@ -72,7 +72,6 @@ public slots:
 
     void setAccumulatedYeild(double accumulatedYeild)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_accumulatedYeild, accumulatedYeild))
             return;
 

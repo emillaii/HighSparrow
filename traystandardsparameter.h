@@ -78,7 +78,6 @@ public slots:
 
     void setColumnDeta(double columnDeta)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_columnDeta, columnDeta))
             return;
 
@@ -88,7 +87,6 @@ public slots:
 
     void setRowDelta(double rowDelta)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_rowDelta, rowDelta))
             return;
 

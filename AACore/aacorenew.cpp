@@ -547,6 +547,9 @@ void AACoreNew::performHandlingOperation(int cmd)
         temp_params["target_position"] = parameters.lensVcmWorkPosition();
         performVCMInit(temp_params);
     }
+    else if (cmd == HandleTest::XY_OFFSET) {
+        performXYOffset(params);
+    }
     handlingParams = "";
     emit postDataToELK(this->runningUnit);
     is_handling = false;
@@ -1282,6 +1285,36 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     qInfo("Layer 1 xTilt : %f yTilt: %f ", aa_result["xTilt_1"].toDouble(), aa_result["yTilt_1"].toDouble());
     qInfo("Layer 2 xTilt : %f yTilt: %f ", aa_result["xTilt_2"].toDouble(), aa_result["yTilt_2"].toDouble());
     qInfo("Layer 3 xTilt : %f yTilt: %f ", aa_result["xTilt_3"].toDouble(), aa_result["yTilt_3"].toDouble());
+    map.insert("CC_Zpeak_Dev", round(aa_result["CC_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UL_03F_Zpeak_Dev", round(aa_result["UL_03F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UR_03F_Zpeak_Dev", round(aa_result["UR_03F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LR_03F_Zpeak_Dev", round(aa_result["LR_03F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LL_03F_Zpeak_Dev", round(aa_result["LL_03F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UL_05F_Zpeak_Dev", round(aa_result["UL_05F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UR_05F_Zpeak_Dev", round(aa_result["UR_05F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LR_05F_Zpeak_Dev", round(aa_result["LR_05F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LL_05F_Zpeak_Dev", round(aa_result["LL_05F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UL_08F_Zpeak_Dev", round(aa_result["UL_08F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("UR_08F_Zpeak_Dev", round(aa_result["UR_08F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LR_08F_Zpeak_Dev", round(aa_result["LR_08F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("LL_08F_Zpeak_Dev", round(aa_result["LL_08F_Zpeak_Dev"].toDouble()*1000)/1000);
+    map.insert("Mode", zScanMode);
+    map.insert("START_POS", start);
+    map.insert("STOP_POS", stop);
+    map.insert("STEP_SIZE", step_size);
+    map.insert("IMAGE_COUNT", imageCount);
+    map.insert("STEP_MOVE_TIME", step_move_time);
+    map.insert("GRAB_TIME", grab_time);
+    map.insert("SFR_WAIT_TIME", sfr_wait_time);
+    map.insert("TILT_WAIT_TIME", wait_tilt_time);
+    map.insert("X_TILT", round(aa_result["xTilt"].toDouble()*1000)/1000);
+    map.insert("Y_TILT", round(aa_result["yTilt"].toDouble()*1000)/1000);
+    map.insert("Z_PEAK_CC_um", round((aa_result["zPeak_cc"].toDouble()*1000)*1000)/1000);
+    map.insert("Z_PEAK_03_um", round((aa_result["zPeak_03"].toDouble()*1000)*1000)/1000);
+    map.insert("Z_PEAK_05_um", round((aa_result["zPeak_05"].toDouble()*1000)*1000)/1000);
+    map.insert("Z_PEAK_08_um", round((aa_result["zPeak_08"].toDouble()*1000)*1000)/1000);
+    map.insert("FOV_SLOPE", round(fov_slope*1000)/1000);
+    map.insert("FOV_INTERCEPT", round(fov_intercept*1000)/1000);
     bool aaResult = aa_result["OK"].toBool();
     if (!aaResult) {
         LogicNg(current_aa_ng_time);
@@ -1338,40 +1371,10 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     qInfo("Check 05F zPeak %f", zPeakDiff05F);
     qInfo("Check 08F zPeak %f", zPeakDiff08F);
 
-    map.insert("CC_Zpeak_Dev", round(aa_result["CC_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("UL_03F_Zpeak_Dev", round(aa_result["UL_03F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("UR_03F_Zpeak_Dev", round(aa_result["UR_03F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("LR_03F_Zpeak_Dev", round(aa_result["LR_03F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("LL_03F_Zpeak_Dev", round(aa_result["LL_03F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("UL_05F_Zpeak_Dev", round(aa_result["UL_05F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("UR_05F_Zpeak_Dev", round(aa_result["UR_05F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("LR_05F_Zpeak_Dev", round(aa_result["LR_05F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("LL_05F_Zpeak_Dev", round(aa_result["LL_05F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("UL_08F_Zpeak_Dev", round(aa_result["UL_08F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("UR_08F_Zpeak_Dev", round(aa_result["UR_08F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("LR_08F_Zpeak_Dev", round(aa_result["LR_08F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("LL_08F_Zpeak_Dev", round(aa_result["LL_08F_Zpeak_Dev"].toDouble()*1000)/1000);
-    map.insert("Mode", zScanMode);
-    map.insert("START_POS", start);
-    map.insert("STOP_POS", stop);
-    map.insert("STEP_SIZE", step_size);
-    map.insert("IMAGE_COUNT", imageCount);
-    map.insert("STEP_MOVE_TIME", step_move_time);
-    map.insert("GRAB_TIME", grab_time);
-    map.insert("SFR_WAIT_TIME", sfr_wait_time);
-    map.insert("TILT_WAIT_TIME", wait_tilt_time);
-    map.insert("X_TILT", round(aa_result["xTilt"].toDouble()*1000)/1000);
-    map.insert("Y_TILT", round(aa_result["yTilt"].toDouble()*1000)/1000);
-    map.insert("Z_PEAK_CC_um", round((aa_result["zPeak_cc"].toDouble()*1000)*1000)/1000);
-    map.insert("Z_PEAK_03_um", round((aa_result["zPeak_03"].toDouble()*1000)*1000)/1000);
-    map.insert("Z_PEAK_05_um", round((aa_result["zPeak_05"].toDouble()*1000)*1000)/1000);
-    map.insert("Z_PEAK_08_um", round((aa_result["zPeak_08"].toDouble()*1000)*1000)/1000);
     map.insert("Z_PEAK_um", round((z_peak*1000)*1000)/1000);
     map.insert("Z_PEAK_DEV_CC_05_um", round(zpeak_dev_cc_05*1000)/1000);
     map.insert("Z_PEAK_DEV_CC_08_um", round(zpeak_dev_cc_08*1000)/1000);
     map.insert("Z_PEAK_DEV_um", round(zpeak_dev*1000)/1000);
-    map.insert("FOV_SLOPE", round(fov_slope*1000)/1000);
-    map.insert("FOV_INTERCEPT", round(fov_intercept*1000)/1000);
     if (position_checking == 1){
         double maxZPeak = aa_result["maxZPeak"].toDouble();
         if ( fabs(zScanStopPosition - maxZPeak) < 0.001 ) {
@@ -2053,7 +2056,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         map.insert("dev_3", dev_3);
     }
     map.insert("fov_slope", current_fov_slope);
-    emit pushDataToUnit(runningUnit, "SFR", map);
+    //emit pushDataToUnit(runningUnit, "SFR", map);
+	emit postSfrDataToELK(runningUnit, map);
     data->plot(runningTestName);
     return result;
 }
@@ -2204,7 +2208,7 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     sfr_tol[4] = params["CC_MAX"].toDouble(100);
     sfr_tol[5] = params["03F_MAX"].toDouble(100);
     sfr_tol[6] = params["05F_MAX"].toDouble(100);
-    sfr_tol[7] = params["08F_MIN"].toDouble(100);
+    sfr_tol[7] = params["08F_MAX"].toDouble(100);
     QString error = "";
     QElapsedTimer timer;timer.start();
     QVariantMap map;
@@ -2327,10 +2331,10 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
                 || vec[i*4+2].t_sfr < sfr_tol[i+1] || vec[i*4+2].r_sfr < sfr_tol[i+1] || vec[i*4+2].b_sfr < sfr_tol[i+1] || vec[i*4+2].l_sfr < sfr_tol[i+1]
                 || vec[i*4+3].t_sfr < sfr_tol[i+1] || vec[i*4+3].r_sfr < sfr_tol[i+1] || vec[i*4+3].b_sfr < sfr_tol[i+1] || vec[i*4+3].l_sfr < sfr_tol[i+1]
                 || vec[i*4+4].t_sfr < sfr_tol[i+1] || vec[i*4+4].r_sfr < sfr_tol[i+1] || vec[i*4+4].b_sfr < sfr_tol[i+1] || vec[i*4+4].l_sfr < sfr_tol[i+1]
-                || vec[i*4+1].t_sfr > sfr_tol[i+5] || vec[i*4+1].r_sfr > sfr_tol[i+1] || vec[i*4+1].b_sfr > sfr_tol[i+1] || vec[i*4+1].l_sfr > sfr_tol[i+1]
-                || vec[i*4+2].t_sfr > sfr_tol[i+5] || vec[i*4+2].r_sfr > sfr_tol[i+1] || vec[i*4+2].b_sfr > sfr_tol[i+1] || vec[i*4+2].l_sfr > sfr_tol[i+1]
-                || vec[i*4+3].t_sfr > sfr_tol[i+5] || vec[i*4+3].r_sfr > sfr_tol[i+1] || vec[i*4+3].b_sfr > sfr_tol[i+1] || vec[i*4+3].l_sfr > sfr_tol[i+1]
-                || vec[i*4+4].t_sfr > sfr_tol[i+5] || vec[i*4+4].r_sfr > sfr_tol[i+1] || vec[i*4+4].b_sfr > sfr_tol[i+1] || vec[i*4+4].l_sfr > sfr_tol[i+1])
+                || vec[i*4+1].t_sfr > sfr_tol[i+5] || vec[i*4+1].r_sfr > sfr_tol[i+5] || vec[i*4+1].b_sfr > sfr_tol[i+5] || vec[i*4+1].l_sfr > sfr_tol[i+5]
+                || vec[i*4+2].t_sfr > sfr_tol[i+5] || vec[i*4+2].r_sfr > sfr_tol[i+5] || vec[i*4+2].b_sfr > sfr_tol[i+5] || vec[i*4+2].l_sfr > sfr_tol[i+5]
+                || vec[i*4+3].t_sfr > sfr_tol[i+5] || vec[i*4+3].r_sfr > sfr_tol[i+5] || vec[i*4+3].b_sfr > sfr_tol[i+5] || vec[i*4+3].l_sfr > sfr_tol[i+5]
+                || vec[i*4+4].t_sfr > sfr_tol[i+5] || vec[i*4+4].r_sfr > sfr_tol[i+5] || vec[i*4+4].b_sfr > sfr_tol[i+5] || vec[i*4+4].l_sfr > sfr_tol[i+5])
         {
             if (i == 0)
             {
@@ -2349,8 +2353,13 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
             }
             sfr_check = false;
         }
+        qInfo("UL %f %f %f %f", vec[i*4 + 1].t_sfr, vec[i*4 + 1].r_sfr, vec[i*4 + 1].b_sfr, vec[i*4 + 1].l_sfr);
+        qInfo("UR %f %f %f %f", vec[i*4 + 2].t_sfr, vec[i*4 + 2].r_sfr, vec[i*4 + 2].b_sfr, vec[i*4 + 2].l_sfr);
+        qInfo("LR %f %f %f %f", vec[i*4 + 3].t_sfr, vec[i*4 + 3].r_sfr, vec[i*4 + 3].b_sfr, vec[i*4 + 3].l_sfr);
+        qInfo("LL %f %f %f %f", vec[i*4 + 4].t_sfr, vec[i*4 + 4].r_sfr, vec[i*4 + 4].b_sfr, vec[i*4 + 4].l_sfr);
+        qInfo("MIN %f", sfr_tol[i+1]);
+        qInfo("MAX %f", sfr_tol[i+5]);
     }
-    qInfo("%f %f %f %f", vec[max_layer*4 + 1].t_sfr, vec[max_layer*4 + 1].r_sfr, vec[max_layer*4 + 1].b_sfr, vec[max_layer*4 + 1].l_sfr);
     double ul_08f_sfr_dev = getSFRDev_mm(4,vec[max_layer*4 + 1].t_sfr,vec[max_layer*4 + 1].r_sfr,vec[max_layer*4 + 1].b_sfr,vec[max_layer*4 + 1].l_sfr);
     double ll_08f_sfr_dev = getSFRDev_mm(4,vec[max_layer*4 + 2].t_sfr,vec[max_layer*4 + 2].r_sfr,vec[max_layer*4 + 2].b_sfr,vec[max_layer*4 + 2].l_sfr);
     double lr_08f_sfr_dev = getSFRDev_mm(4,vec[max_layer*4 + 3].t_sfr,vec[max_layer*4 + 3].r_sfr,vec[max_layer*4 + 3].b_sfr,vec[max_layer*4 + 3].l_sfr);

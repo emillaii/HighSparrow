@@ -66,6 +66,7 @@ public:
     void copyTrayState(int origin_tray_index,int target_tray_index);
     QPointF getStartPosition(int tray_index);
     QPointF getEndPosition();
+    void setTrayCurrentNg(const int tray_index);
 public slots:
     void changeTrayCount(int trayCount);
 private:

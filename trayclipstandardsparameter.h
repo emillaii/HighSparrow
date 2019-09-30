@@ -94,7 +94,6 @@ void setFromTop(bool fromTop)
 
 void setColumnDelta(double columnDelta)
 {
-    qWarning("Floating point comparison needs context sanity check");
     if (qFuzzyCompare(m_columnDelta, columnDelta))
         return;
 
@@ -104,7 +103,6 @@ void setColumnDelta(double columnDelta)
 
 void setChangeClipPos(double changeClipPos)
 {
-    qWarning("Floating point comparison needs context sanity check");
     if (qFuzzyCompare(m_changeClipPos, changeClipPos))
         return;
 
@@ -114,7 +112,6 @@ void setChangeClipPos(double changeClipPos)
 
 void setFirstTrayPos(double firstTrayPos)
 {
-    qWarning("Floating point comparison needs context sanity check");
     if (qFuzzyCompare(m_firstTrayPos, firstTrayPos))
         return;
 
@@ -124,7 +121,6 @@ void setFirstTrayPos(double firstTrayPos)
 
 void setLastTrayPos(double lastTrayPos)
 {
-    qWarning("Floating point comparison needs context sanity check");
     if (qFuzzyCompare(m_lastTrayPos, lastTrayPos))
         return;
 

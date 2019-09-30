@@ -226,7 +226,6 @@ public slots:
 
     void setCalibrationStep(double calibrationStep)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_calibrationStep, calibrationStep))
             return;
 

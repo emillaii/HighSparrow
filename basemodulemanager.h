@@ -50,6 +50,7 @@ public:
     Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged)
     Q_PROPERTY(int ServerMode READ ServerMode WRITE setServerMode NOTIFY paramsChanged)
     Q_PROPERTY(int ServerPort READ ServerPort WRITE setServerPort NOTIFY paramsChanged)
+    Q_PROPERTY(bool InitState READ InitState WRITE setInitState NOTIFY InitStateChanged)
     Q_PROPERTY(bool HomeState READ HomeState WRITE setHomeState NOTIFY paramsChanged)
     Q_PROPERTY(bool QtDebugMsgDisplay READ QtDebugMsgDisplay WRITE setQtDebugMsgDisplay NOTIFY paramsChanged)
     Q_PROPERTY(bool QtWarningMsgDisplay READ QtWarningMsgDisplay WRITE setQtWarningMsgDisplay NOTIFY paramsChanged)
@@ -155,6 +156,8 @@ signals:
     bool sendMsgSignal(QString,QString);
     void sendAlarm(int sender_id,int level, QString error_message);
     void sendMessageToWorkerManger(QVariantMap message);
+    void InitStateChanged(bool InitState);
+
 public slots:
     void tcpResp(QString message);
     QString deviceResp(QString message);
@@ -254,6 +257,15 @@ public slots:
         emit paramsChanged();
     }
 
+    void setInitState(bool InitState)
+    {
+        if (m_InitState == InitState)
+            return;
+
+        m_InitState = InitState;
+        emit InitStateChanged(m_InitState);
+    }
+
 public:
     ModuleManangerConfig configs;
     ModuleManagerParameter parameters;
@@ -264,7 +276,7 @@ public:
     bool m_QtFatalMsgDisplay = true;
     bool m_QtInfoMsgDisplay = true;
 private:
-    bool is_init;
+    bool m_InitState = false;
     bool profile_loaded;
     static wchar_t ip[];
     static wchar_t profile_path1[];
@@ -434,6 +446,10 @@ public:
     bool QtInfoMsgDisplay() const
     {
         return m_QtInfoMsgDisplay;
+    }
+    bool InitState() const
+    {
+        return m_InitState;
     }
 };
 

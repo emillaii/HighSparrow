@@ -68,7 +68,6 @@ public slots:
 
     void setStopTime(double StopTime)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_StopTime, StopTime))
             return;
 

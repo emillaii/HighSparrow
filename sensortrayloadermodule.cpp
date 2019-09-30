@@ -447,7 +447,10 @@ bool SensorTrayLoaderModule::movetoDownTrayPosition()
 
 bool SensorTrayLoaderModule::movetoGetTrayPosition()
 {
-    return motor_tray->MoveToPosSync(parameters.getTrayPosition());
+    bool result = gripper->Set(true);
+    if(result)
+        result &= motor_tray->MoveToPosSync(parameters.getTrayPosition());
+    return result;
 }
 
 bool SensorTrayLoaderModule::movetoFinishKickTrayPosition()
@@ -495,6 +498,7 @@ bool SensorTrayLoaderModule:: moveToDownTrayAndReadyToPush()
     if(result)
     {
         result &= hold_tray->Set(true);
+        result &= gripper->Set(true);
         if(result)
             motor_tray->MoveToPos(parameters.getTrayPosition());//提前动作
     }
@@ -566,6 +570,7 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
 bool SensorTrayLoaderModule::moveToUpReadyTray(bool has_tray)
 {
     bool result =checkEntanceTray(false);
+    result &= gripper->Set(true);
     if(result)
         result &= motor_tray->MoveToPosSync(parameters.getTrayPosition());
     if(result)

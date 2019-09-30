@@ -9,6 +9,7 @@
 #include <QVariantMap>
 #include <qmutex.h>
 #include <qthread.h>
+
 #define OK_OPERATION u8"确定"
 #define CONTINUE_OPERATION u8"继续"
 #define RETRY_OPERATION u8"重试"
@@ -17,13 +18,19 @@
 #define AUTOREJECT_OPERATION u8"自动抛料"
 #define SKIP_OPERATION u8"跳过"
 #define NEXT_OPERATION u8"下一个"
+#define BLIND_OPERATION u8"盲取/放"
+#define SKIPTRAY_OPERATION u8"跳过整盘"
+
 #define CONTINUE_RETRY_OPERATION u8"继续|重试"
 #define CONTINUE_SKIP_OPERATION u8"继续|跳过"
 #define CONTINUE_REJECT_OPERATION u8"继续|人工抛料"
 #define CONTINUE_ACCEPT_OPERATION u8"继续|有料"
 #define CONTINUE_NEXT_OPERATION u8"继续|下一个"
+
 #define CONTINUE_RETRY_REJECT_OPERATION u8"继续|重试|人工抛料"
 #define CONTINUE_RETRY_NEXT_OPERATION u8"继续|重试|下一个"
+#define CONTINUE_BLIND_SKIPTRAY_OPERATION u8"继续|盲取/放|跳过整盘"
+
 #define CONTINUE_RETRY_AUTOREJECT_REJECT_OPERATION u8"继续|重试|自动抛料|人工抛料"
 
 enum AlarmOperation

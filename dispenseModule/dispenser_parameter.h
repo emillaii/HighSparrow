@@ -60,7 +60,6 @@ public:
 public slots:
     void setOpenOffset(double openOffset)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_openOffset, openOffset))
             return;
 
@@ -69,7 +68,6 @@ public slots:
     }
     void setCloseOffset(double closeOffset)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_closeOffset, closeOffset))
             return;
 
@@ -79,7 +77,6 @@ public slots:
 
     void setMaximumSpeed(double maximumSpeed)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_maximumSpeed, maximumSpeed))
             return;
 
@@ -89,7 +86,6 @@ public slots:
 
     void setEndSpeed(double endSpeed)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_endSpeed, endSpeed))
             return;
 
@@ -99,7 +95,6 @@ public slots:
 
 //    void setTheta(double theta)
 //    {
-//        qWarning("Floating point comparison needs context sanity check");
 //        if (qFuzzyCompare(m_theta, theta))
 //            return;
 

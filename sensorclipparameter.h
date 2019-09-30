@@ -46,7 +46,6 @@ public:
 public slots:
     void setStartPosition(double startPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_startPosition, startPosition))
             return;
 
@@ -55,7 +54,6 @@ public slots:
     }
     void setEndPosition(double endPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_endPosition, endPosition))
             return;
 
@@ -140,7 +138,6 @@ public:
 public slots:
     void setCount(double count)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_count, count))
             return;
 
@@ -149,7 +146,6 @@ public slots:
     }
     void setDelta(double delta)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_delta, delta))
             return;
 

@@ -139,6 +139,7 @@ bool VisionModule::saveImage(QString cameraName, QString imageName)
 
     if (!image1.Empty())
         avl::SaveImageToJpeg(image1 , imageName.toStdString().c_str(), atl::NIL, false);
+    return ret;
 }
 
 ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score)

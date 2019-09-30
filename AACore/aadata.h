@@ -288,7 +288,6 @@ public slots:
 
     void setZPeak(double zPeak)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_zPeak, zPeak))
             return;
 

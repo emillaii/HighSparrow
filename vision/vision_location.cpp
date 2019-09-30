@@ -162,13 +162,15 @@ bool VisionLocation::performNoMaterialPR()
 {
     current_result.ReSet();
     PrOffset offset;
-    QThread::msleep(parameters.waitImageDelay());
+    if(parameters.waitImageDelay()>0)
+        QThread::msleep(parameters.waitImageDelay());
     QString imageName;
     imageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
-   bool result = saveImage(imageName);
-    QThread::msleep(parameters.performTime());
+            .append(getCurrentTimeString())
+            .append(".jpg");
+    bool result = saveImage(imageName);
+    if(parameters.performTime()>0)
+        QThread::msleep(parameters.performTime());
     return result;
 }
 

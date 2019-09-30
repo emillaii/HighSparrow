@@ -26,7 +26,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
     qDebug("Server Mode: %d", ServerMode());
-    is_init = false;
+    setInitState(false);
     profile_loaded = false;
     if(!QDir(".//notopencamera").exists())
     {
@@ -1407,7 +1407,7 @@ void BaseModuleManager::inquiryTcpModuleParameter(QString moduleName)
 
 bool BaseModuleManager::initialDevice()
 {
-    if(is_init)
+    if(InitState())
         return true;
     if(!profile_loaded)
         return false;
@@ -1457,8 +1457,8 @@ bool BaseModuleManager::initialDevice()
     }
     XT_Controler_Extend::Start_Buffer_Sync(-1);
 
-    is_init = true;
-    //this must after "is_init = true;!!!"
+    setInitState(true);
+    //this must after "setInitState(true);!!!"
     foreach (XtMotor *m, motors.values()) {
         m->GetMasterAxisID();
     }
@@ -1491,13 +1491,13 @@ bool BaseModuleManager::generateConfigFiles()
 
 void BaseModuleManager::enableMotor(QString motorName)
 {
-    if (is_init)
+    if (InitState())
         GetMotorByName(motorName)->Enable();
 }
 
 void BaseModuleManager::enableMotors()
 {
-    if(is_init) {
+    if(InitState()) {
         foreach (XtMotor *m, motors.values()) {
             m->Enable();
         }
@@ -1506,13 +1506,13 @@ void BaseModuleManager::enableMotors()
 
 void BaseModuleManager::disableMotor(QString motorName)
 {
-    if (is_init)
+    if (InitState())
         GetMotorByName(motorName)->Disable();
 }
 
 void BaseModuleManager::disableAllMotors()
 {
-    if(is_init) {
+    if(InitState()) {
         foreach (XtMotor *m, motors.values()) {
             m->Disable();
         }
@@ -1706,7 +1706,7 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
 
 void BaseModuleManager::stopSeeking()
 {
-    if(is_init)
+    if(InitState())
         foreach (XtMotor *m, motors.values()) {
             m->StopSeeking();
             m->Disable();

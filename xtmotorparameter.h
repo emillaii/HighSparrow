@@ -52,7 +52,6 @@ public slots:
 
     void setPositionError(double positionError)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_positionError, positionError))
             return;
 

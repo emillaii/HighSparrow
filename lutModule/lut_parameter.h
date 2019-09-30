@@ -203,7 +203,6 @@ public slots:
 
     void setAccumulatedHour(double accumulatedHour)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_accumulatedHour, accumulatedHour))
             return;
 
@@ -213,7 +212,6 @@ public slots:
 
     void setLensHeight(double lensHeight)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_lensHeight, lensHeight))
             return;
 
@@ -223,7 +221,6 @@ public slots:
 
     void setPickSpeed(double pickSpeed)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_pickSpeed, pickSpeed))
             return;
 

@@ -47,7 +47,8 @@ public:
         Z_OFFSET = 11,
         LENS_VCM_POS =12,
         MOVE_LENS = 13,
-        INIT_VCM =14
+        INIT_VCM =14,
+        XY_OFFSET = 15
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,SutModule* sut,Dothinkey *dk,

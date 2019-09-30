@@ -253,3 +253,5 @@ HEADERS += \
 DISTFILES += \
     icons/index.theme \
     index.html
+
+RC_ICONS= icons/sparrow.ico

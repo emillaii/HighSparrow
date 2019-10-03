@@ -254,6 +254,7 @@ int main(int argc, char *argv[])
     QList<QObject*> vl_parameter_list;
     for(QString key:vision_locations_list){
         vl_parameter_list<<&(highSprrow.baseModuleManager->vision_locations[key]->parameters);
+        engine.rootContext()->setContextProperty(key, &(highSprrow.baseModuleManager->vision_locations[key]->parameters));
     }
 
     engine.rootContext()->setContextProperty("vl_parameter_list",QVariant::fromValue(vl_parameter_list));

@@ -46,7 +46,16 @@ ColumnLayout {
         Layout.minimumWidth: 300
         Layout.maximumWidth: 300
         width: 300
+        onClicked: {
+            lensPickAndPlacePRSettingRow.visible = !lensPickAndPlacePRSettingRow.visible
+        }
     }
+    RowLayout{
+        id: lensPickAndPlacePRSettingRow
+        visible: false
+        LenPickAndPlacePRSetting {}
+    }
+
     Button {
         text: qsTr("Lens Pick And Place Setting")
         Layout.minimumWidth: 300

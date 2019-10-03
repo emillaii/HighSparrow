@@ -24,5 +24,7 @@
         <file>icons/LC_icon_light_line.png</file>
         <file>icons/move-vertical.png</file>
         <file>icons/camera.png</file>
+        <file>icons/lock.png</file>
+        <file>icons/unlock.png</file>
     </qresource>
 </RCC>

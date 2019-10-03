@@ -143,5 +143,6 @@
         <file>qml/MarcoControl/LensPickFromTray/LensPickFromTrayView.qml</file>
         <file>qml/MarcoControl/LensPickFromTray/LensTrayInfoSettingRowView.qml</file>
         <file>qml/MarcoControl/LensPickFromTray/LensTrayInputAndOutputRowView.qml</file>
+        <file>qml/MarcoControl/LensPickFromTray/LenPickAndPlacePRSetting.qml</file>
     </qresource>
 </RCC>

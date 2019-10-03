@@ -486,6 +486,10 @@ ApplicationWindow {
         currentIndex: tabBar.currentIndex
         //interactive: false
 
+        Page9Form {
+
+        }
+
         Page1Form {
             featureButton.onClicked: {
                 highSprrow.callQProcess("GenericNCCavproj.avexe")
@@ -523,6 +527,10 @@ ApplicationWindow {
     footer: TabBar {
         id: tabBar
         currentIndex: swipeView.currentIndex
+
+        TabButton {
+            text: qsTr("操作")
+        }
 
         TabButton {
             text: {

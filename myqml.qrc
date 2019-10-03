@@ -138,5 +138,10 @@
         <file>qml/PageMenuBar/Page4MenuBar.qml</file>
         <file>qml/Report/ReportView.qml</file>
         <file>Page8Form.ui.qml</file>
+        <file>Page9Form.ui.qml</file>
+        <file>qml/MarcoControl/MainPage.qml</file>
+        <file>qml/MarcoControl/LensPickFromTray/LensPickFromTrayView.qml</file>
+        <file>qml/MarcoControl/LensPickFromTray/LensTrayInfoSettingRowView.qml</file>
+        <file>qml/MarcoControl/LensPickFromTray/LensTrayInputAndOutputRowView.qml</file>
     </qresource>
 </RCC>

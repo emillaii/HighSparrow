@@ -61,17 +61,13 @@ ColumnLayout {
         Layout.minimumWidth: 300
         Layout.maximumWidth: 300
         width: 300
+        onClicked: { lensPickAndPlaceSettingRow.visible = !lensPickAndPlaceSettingRow.visible }
     }
-    Button {
-        text: qsTr("Operation")
-        Layout.minimumWidth: 300
-        Layout.maximumWidth: 300
-        width: 300
-    }
-    Button {
-        text: qsTr("Operation")
-        Layout.minimumWidth: 300
-        Layout.maximumWidth: 300
-        width: 300
+    RowLayout{
+        id: lensPickAndPlaceSettingRow
+        visible: false
+        GroupBox {
+            LensPickAndPlaceSetting {}
+        }
     }
 }

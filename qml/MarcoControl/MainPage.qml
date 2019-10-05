@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
 import "./LensPickFromTray"
+import "./LensPlaceToLUT"
 import "./AAHeadPickLens"
 ScrollView {
     id: machineConfigListView
@@ -27,7 +28,20 @@ ScrollView {
             id: lensPickFromTrayView
             visible: false
         }
-        Button {id: lensPlaceToLUTViewSwitch; text:"Lens Place To LUT";Layout.fillWidth: true}
+
+        Button {
+            id: lensPlaceToLUTViewSwitch;
+            text:"Lens Place To LUT";
+            Layout.fillWidth: true
+            onClicked: {
+                lensPlaceToLUTView.visible = !lensPlaceToLUTView.visible
+            }
+        }
+        LensPlaceToLUTView{
+            id: lensPlaceToLUTView
+            visible: false
+        }
+
         Button {
             id: aaHeadPickLensViewSwitch
             text:"AA Head Pick Lens"

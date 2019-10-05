@@ -147,5 +147,9 @@
         <file>qml/MarcoControl/LensPickFromTray/LensPickAndPlaceSetting.qml</file>
         <file>qml/MarcoControl/AAHeadPickLens/AAHeadPickLensView.qml</file>
         <file>qml/MarcoControl/AAHeadPickLens/AAHeadPickAndPlaceLensSettingView.qml</file>
+        <file>qml/MarcoControl/LensPlaceToLUT/LensPlaceToLUTView.qml</file>
+        <file>qml/MarcoControl/LensPlaceToLUT/LUTLoadAndPRPositionSettingView.qml</file>
+        <file>qml/MarcoControl/LensPlaceToLUT/LUTPocketAndUplookPRSettingView.qml</file>
+        <file>qml/MarcoControl/LensPlaceToLUT/LensPickAndPlaceSetting.qml</file>
     </qresource>
 </RCC>

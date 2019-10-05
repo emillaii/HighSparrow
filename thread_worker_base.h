@@ -74,6 +74,7 @@ public:
     virtual void receivceModuleMessage(QVariantMap message) = 0;
     virtual PropertyBase* getModuleState() = 0;
     virtual QMap<QString,PropertyBase*> getModuleParameter() = 0;
+    virtual void setModuleParameter(QMap<QString, PropertyBase*> parameters) = 0;
     Q_INVOKABLE void performHandling(int cmd);
     bool waitPerformHandling();
     Q_INVOKABLE void sendMessageToModule(QString module_name,QString module_message,QJsonValue param = 0);

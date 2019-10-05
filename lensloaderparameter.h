@@ -213,7 +213,7 @@ public slots:
     }
     void setVcmWorkForce(double vcmWorkForce)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_vcmWorkForce, vcmWorkForce))
             return;
 
@@ -223,7 +223,7 @@ public slots:
 
     void setVcmWorkSpeed(double vcmWorkSpeed)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_vcmWorkSpeed, vcmWorkSpeed))
             return;
 
@@ -233,7 +233,7 @@ public slots:
 
     void setVcmMargin(double vcmMargin)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_vcmMargin, vcmMargin))
             return;
 
@@ -243,7 +243,7 @@ public slots:
 
     void setPickLensZ(double pickLensZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_pickLensZ, pickLensZ))
             return;
 
@@ -253,7 +253,7 @@ public slots:
 
     void setPlaceLensZ(double placeLensZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeLensZ, placeLensZ))
             return;
 
@@ -263,7 +263,7 @@ public slots:
 
     void setVisonPositionX(double visonPositionX)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_visonPositionX, visonPositionX))
             return;
 
@@ -336,7 +336,7 @@ public slots:
 
     void setPlaceTheta(double placeTheta)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeTheta, placeTheta))
             return;
 
@@ -346,7 +346,7 @@ public slots:
 
     void setPickTheta(double pickTheta)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_pickTheta, pickTheta))
             return;
 
@@ -410,7 +410,7 @@ public slots:
 
     void setLensYield(double lensYield)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_lensYield, lensYield))
             return;
 
@@ -420,7 +420,7 @@ public slots:
 
     void setAccumulatredHour(double accumulatredHour)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_accumulatredHour, accumulatredHour))
             return;
 
@@ -493,7 +493,7 @@ public slots:
 
     void setReadyTrayPercent(double readyTrayPercent)
     {
-    	qWarning("Floating point comparison needs context sanity check");
+    	
         if (qFuzzyCompare(m_readyTrayPercent, readyTrayPercent))
         	return;
 

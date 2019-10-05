@@ -1399,6 +1399,11 @@ QMap<QString, PropertyBase *> LutModule::getModuleParameter()
     return temp_map;
 }
 
+void LutModule::setModuleParameter(QMap<QString, PropertyBase *>)
+{
+
+}
+
 void LutModule::receiveToolUpPRRequest(PrOffset &offset)
 {
     sut->toolUplookPR(offset, true, false);

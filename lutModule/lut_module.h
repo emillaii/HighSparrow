@@ -172,6 +172,7 @@ public:
     // ThreadWorkerBase interface
 public:
     QMap<QString, PropertyBase *> getModuleParameter();
+    void setModuleParameter(QMap<QString, PropertyBase *>);
 };
 
 #endif // LUT_MODULE_H

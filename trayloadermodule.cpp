@@ -417,7 +417,10 @@ QMap<QString, PropertyBase *> TrayLoaderModule::getModuleParameter()
     return temp_map;
 }
 
+void TrayLoaderModule::setModuleParameter(QMap<QString, PropertyBase *>)
+{
 
+}
 
 void TrayLoaderModule::run()
 {

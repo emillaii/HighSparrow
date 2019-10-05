@@ -148,7 +148,7 @@ void AACoreNew::Init(AAHeadModule *aa_head, SutModule *sut, Dothinkey *dk, Chart
     dispenseImageProvider = new ImageProvider();
     connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
-    connect(&this->parameters, &AACoreParameters::paramsChanged, this, &AACoreNew::aaCoreParametersChanged);
+    //connect(&this->parameters, &AACoreParameters::paramsChanged, this, &AACoreNew::aaCoreParametersChanged);
     this->serverMode = serverMode;
 }
 
@@ -3510,4 +3510,11 @@ QMap<QString, PropertyBase *> AACoreNew::getModuleParameter()
     temp_map.insert(DISPENSER_MODULE_PARAMETER,  &this->dispense->parameters);
     temp_map.insert(DISPENSER_PARAMETER, &this->dispense->dispenser->parameters);
     return temp_map;
+}
+
+void AACoreNew::setModuleParameter(QMap<QString, PropertyBase *> parameters)
+{
+    qInfo("Set module parameter is called");
+    PropertyBase::saveJsonConfig("test_aa.json", parameters);
+    //loadJsonConfig("test_aa.json");
 }

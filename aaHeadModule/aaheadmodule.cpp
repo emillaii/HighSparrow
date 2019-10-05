@@ -393,3 +393,6 @@ QMap<QString, PropertyBase *> AAHeadModule::getModuleParameter()
     return temp_map;
 }
 
+void AAHeadModule::setModuleParameter(QMap<QString, PropertyBase *> parameters)
+{
+}

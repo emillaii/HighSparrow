@@ -116,7 +116,7 @@ public slots:
 
     void setProcessPositionError(double processPositionError)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_processPositionError, processPositionError))
             return;
 
@@ -126,7 +126,7 @@ public slots:
 
     void setMotorZSafeHeight(double motorZSafeHeight)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_motorZSafeHeight, motorZSafeHeight))
             return;
 

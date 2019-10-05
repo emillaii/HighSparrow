@@ -194,6 +194,7 @@ private:
     // ThreadWorkerBase interface
 public:
     QMap<QString, PropertyBase *> getModuleParameter();
+    void setModuleParameter(QMap<QString, PropertyBase *>);
 };
 
 #endif // LENSPICKARMMODULE_H

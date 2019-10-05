@@ -1664,3 +1664,7 @@ QMap<QString, PropertyBase *> LensLoaderModule::getModuleParameter()
     return temp_map;
 }
 
+void LensLoaderModule::setModuleParameter(QMap<QString, PropertyBase *> parameters)
+{
+
+}

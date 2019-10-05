@@ -161,6 +161,25 @@ void BaseModuleManager::tcpResp(QString message)
             result["moduleNames"] = QJsonArray::fromStringList(workers.keys());
             receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
         }
+        else if (cmd == "setModuleParameter")
+        {
+            QString module_name = message_object["moduleName"].toString();
+            qDebug()<<"Set module parameter :"<< module_name;
+            if(workers.contains(module_name))
+            {
+                QJsonObject result;
+                result["resp"] = "moduleParameter";
+                result["moduleName"] = module_name;
+                QMap<QString, PropertyBase *> parameters = workers[module_name]->getModuleParameter();
+                for (QMap<QString, PropertyBase*>::const_iterator i = parameters.constBegin(); i != parameters.constEnd(); ++i) {
+                    if(message_object.contains(i.key()))
+                    {
+                       i.value()->read(message_object.value(i.key()).toObject());
+                    }
+                }
+                this->aaCoreNew.setModuleParameter(parameters);
+            }
+        }
     }
     else if(message_object.contains("resp"))
     {
@@ -198,6 +217,7 @@ void BaseModuleManager::tcpResp(QString message)
                 qDebug("inquiryModuleNames moduleName: %s", temp_name.toString().toStdString().c_str());
                 if(temp_name.toString().contains("AA"))
                 {
+                    tcp_aaCoreNew.setName(temp_name.toString());
                     tcp_workers.insert(temp_name.toString(), &tcp_aaCoreNew);
                 }
                 else if(temp_name.toString().contains("Sut"))
@@ -1405,6 +1425,23 @@ void BaseModuleManager::inquiryTcpModuleParameter(QString moduleName)
     }
 }
 
+void BaseModuleManager::setTcpModuleParameter(QString moduleName)
+{
+    QJsonObject message;
+    message["cmd"] = "setModuleParameter";
+    message["moduleName"] = moduleName;
+
+    QMap<QString, PropertyBase *> map = tcp_aaCoreNew.getModuleParameter();
+    foreach (QString param_name, map.keys()) {
+        QJsonObject module_parameter;
+        map[param_name]->write(module_parameter);
+        message[param_name] = module_parameter;
+    }
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
+}
+
 bool BaseModuleManager::initialDevice()
 {
     if(InitState())
@@ -1729,7 +1766,10 @@ void BaseModuleManager::updateParams()
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
     saveParameters();
-    //    loadParameters();
+    if (this->m_InitState)
+    {
+        setTcpModuleParameter(tcp_aaCoreNew.Name());
+    }
 }
 
 void BaseModuleManager::loadFlowchart(QString json, QString filename)

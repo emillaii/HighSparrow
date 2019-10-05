@@ -449,7 +449,7 @@ public:
 public slots:
     void setVcmWorkForce(double vcmWorkForce)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_vcmWorkForce, vcmWorkForce))
             return;
 
@@ -458,7 +458,7 @@ public slots:
     }
     void setVcmWorkSpeed(double vcmWorkSpeed)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_vcmWorkSpeed, vcmWorkSpeed))
             return;
 
@@ -468,7 +468,7 @@ public slots:
 
     void setVcmMargin(double vcmMargin)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_vcmMargin, vcmMargin))
             return;
 
@@ -532,7 +532,7 @@ public slots:
 
     void setPickProductZ(double pickProductZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_pickProductZ, pickProductZ))
             return;
 
@@ -542,7 +542,7 @@ public slots:
 
     void setPlaceProductZ(double placeProductZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeProductZ, placeProductZ))
             return;
 
@@ -552,7 +552,7 @@ public slots:
 
     void setPickSensorZ(double pickSensorZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_pickSensorZ, pickSensorZ))
             return;
 
@@ -562,7 +562,7 @@ public slots:
 
     void setPlaceSensorZ(double placeSensorZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeSensorZ, placeSensorZ))
             return;
 
@@ -572,7 +572,7 @@ public slots:
 
     void setZOffset(double zOffset)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_zOffset, zOffset))
             return;
 
@@ -582,7 +582,7 @@ public slots:
 
     void setPickNgSensorZ(double pickNgSensorZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_pickNgSensorZ, pickNgSensorZ))
             return;
 
@@ -592,7 +592,7 @@ public slots:
 
     void setPlaceNgSensorZ(double placeNgSensorZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeNgSensorZ, placeNgSensorZ))
             return;
 
@@ -611,7 +611,7 @@ public slots:
 
     void setEscapeHeight(double escapeHeight)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_escapeHeight, escapeHeight))
             return;
 
@@ -621,7 +621,7 @@ public slots:
 
     void setEscapeX(double escapeX)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_escapeX, escapeX))
             return;
 
@@ -631,7 +631,7 @@ public slots:
 
     void setEscapeY(double escapeY)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_escapeY, escapeY))
             return;
 
@@ -667,7 +667,7 @@ public slots:
 
     void setAccumulatedHour(double accumulatedHour)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_accumulatedHour, accumulatedHour))
             return;
 
@@ -677,7 +677,7 @@ public slots:
 
     void setPlaceNgProductZ(double placeNgProductZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeNgProductZ, placeNgProductZ))
             return;
 
@@ -687,7 +687,7 @@ public slots:
 
     void setPickProductForce(double pickProductForce)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_pickProductForce, pickProductForce))
             return;
 
@@ -706,7 +706,7 @@ public slots:
 
     void setSensorOffsetX(double sensorOffsetX)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_sensorOffsetX, sensorOffsetX))
             return;
 
@@ -716,7 +716,7 @@ public slots:
 
     void setSensorOffsetY(double sensorOffsetY)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_sensorOffsetY, sensorOffsetY))
             return;
 
@@ -843,7 +843,7 @@ public slots:
 
     void setSut1Theta(double sut1Theta)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_sut1Theta, sut1Theta))
             return;
 
@@ -853,7 +853,7 @@ public slots:
 
     void setSut2Theta(double sut2Theta)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_sut2Theta, sut2Theta))
             return;
 
@@ -872,7 +872,7 @@ public slots:
 
     void setPlaceTrayMargin(double placeTrayMargin)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeTrayMargin, placeTrayMargin))
             return;
 
@@ -882,7 +882,7 @@ public slots:
 
     void setSutMargin(double sutMargin)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_sutMargin, sutMargin))
             return;
 
@@ -901,7 +901,7 @@ public slots:
 
     void setPickSensorZ2(double pickSensorZ2)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_pickSensorZ2, pickSensorZ2))
             return;
 
@@ -911,7 +911,7 @@ public slots:
 
     void setPlaceProductZ2(double placeProductZ2)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeProductZ2, placeProductZ2))
             return;
 
@@ -921,7 +921,7 @@ public slots:
 
     void setPlaceBufferProductZ(double placeBufferProductZ)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeBufferProductZ, placeBufferProductZ))
             return;
 
@@ -985,7 +985,7 @@ public slots:
 
     void setPickFromTrayMargin(double pickFromTrayMargin)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_pickFromTrayMargin, pickFromTrayMargin))
             return;
 
@@ -995,7 +995,7 @@ public slots:
 
     void setBackToTrayMargin(double backToTrayMargin)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_backToTrayMargin, backToTrayMargin))
             return;
 
@@ -1005,7 +1005,7 @@ public slots:
 
     void setPlaceToSutMargin(double placeToSutMargin)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeToSutMargin, placeToSutMargin))
             return;
 
@@ -1015,7 +1015,7 @@ public slots:
 
     void setPickFromSutMargin(double pickFromSutMargin)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_pickFromSutMargin, pickFromSutMargin))
             return;
 
@@ -1025,7 +1025,7 @@ public slots:
 
     void setPlaceToGoodTrayMargin(double placeToGoodTrayMargin)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeToGoodTrayMargin, placeToGoodTrayMargin))
             return;
 
@@ -1035,7 +1035,7 @@ public slots:
 
     void setPlaceToNgTrayMargin(double placeToNgTrayMargin)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_placeToNgTrayMargin, placeToNgTrayMargin))
             return;
 
@@ -1063,7 +1063,7 @@ public slots:
 
     void setPicker1PickTheta(double picker1PickTheta)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_picker1PickTheta, picker1PickTheta))
             return;
 
@@ -1073,7 +1073,7 @@ public slots:
 
     void setPicker2PickTheta(double picker2PickTheta)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_picker2PickTheta, picker2PickTheta))
             return;
 
@@ -1083,7 +1083,7 @@ public slots:
 
     void setPicker1PlaceTheta(double picker1PlaceTheta)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_picker1PlaceTheta, picker1PlaceTheta))
             return;
 
@@ -1093,7 +1093,7 @@ public slots:
 
     void setPicker2PlaceTheta(double picker2PlaceTheta)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_picker2PlaceTheta, picker2PlaceTheta))
             return;
 

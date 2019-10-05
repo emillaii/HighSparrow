@@ -664,4 +664,7 @@ QMap<QString, PropertyBase *> SutModule::getModuleParameter()
     return temp_map;
 }
 
+void SutModule::setModuleParameter(QMap<QString, PropertyBase *> parameters)
+{
 
+}

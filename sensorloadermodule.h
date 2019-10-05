@@ -128,6 +128,7 @@ public:
     void receivceModuleMessage(QVariantMap module_message);
     PropertyBase *getModuleState();
     QMap<QString,PropertyBase*> getModuleParameter();
+    void setModuleParameter(QMap<QString, PropertyBase *>);
 signals:
     void sendMessageToClient(QString destAddress, QString module_message);
     void sendChangeTrayRequst();

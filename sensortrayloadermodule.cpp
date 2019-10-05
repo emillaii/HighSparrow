@@ -864,8 +864,11 @@ void SensorTrayLoaderModule::receivceModuleMessage(QVariantMap message)
 
 QMap<QString, PropertyBase *> SensorTrayLoaderModule::getModuleParameter()
 {
-
     QMap<QString, PropertyBase *> temp;
     return temp;
 }
 
+void SensorTrayLoaderModule::setModuleParameter(QMap<QString, PropertyBase *>)
+{
+
+}

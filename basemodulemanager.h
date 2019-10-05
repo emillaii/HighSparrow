@@ -300,6 +300,7 @@ private:
     void inquiryTcpModule();
     void inquiryTcpModuleState(QString moduleName);
     void inquiryTcpModuleParameter(QString moduleName);
+    void setTcpModuleParameter(QString moduleName);
     QString m_FlowchartFilename;
 
 public:

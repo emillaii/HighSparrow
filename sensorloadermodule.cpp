@@ -3428,3 +3428,7 @@ QMap<QString,PropertyBase*> SensorLoaderModule::getModuleParameter()
     return temp_map;
 }
 
+void SensorLoaderModule::setModuleParameter(QMap<QString, PropertyBase *>)
+{
+
+}

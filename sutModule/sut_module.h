@@ -114,6 +114,7 @@ public:
     // ThreadWorkerBase interface
 public:
     QMap<QString, PropertyBase *> getModuleParameter();
+    void setModuleParameter(QMap<QString, PropertyBase *>);
 };
 
 #endif // SUT_MODULE_H

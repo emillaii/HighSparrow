@@ -106,6 +106,7 @@ public:
 public:
     void receivceModuleMessage(QVariantMap module_message);
     QMap<QString, PropertyBase *> getModuleParameter();
+    void setModuleParameter(QMap<QString, PropertyBase *>);
 };
 
 #endif // SENSORTRAYLOADERMODULE_H

@@ -129,7 +129,7 @@ public:
 public slots:
     void setForce(double Force)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_Force, Force))
             return;
 
@@ -210,7 +210,7 @@ public slots:
     }
     void setCameraTheta(double cameraTheta)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_cameraTheta, cameraTheta))
             return;
 
@@ -229,7 +229,7 @@ public slots:
 
     void setLoadPosArriedY(double yArrivedError)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_yArrivedError, yArrivedError))
             return;
 
@@ -239,7 +239,7 @@ public slots:
 
     void setzArrivedEorror(double zArrivedEorror)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_zArrivedEorror, zArrivedEorror))
             return;
 
@@ -249,7 +249,7 @@ public slots:
 
     void setPrPosArrivedY(double prPosArrivedY)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_prPosArrivedY, prPosArrivedY))
             return;
 
@@ -259,7 +259,7 @@ public slots:
 
     void setMushroomPosArrivedY(double mushroomPosArrivedY)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_mushroomPosArrivedY, mushroomPosArrivedY))
             return;
 
@@ -269,7 +269,7 @@ public slots:
 
     void setDownlookFlyPrPosition(double downlookFlyPrPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_downlookFlyPrPosition, downlookFlyPrPosition))
             return;
 
@@ -279,7 +279,7 @@ public slots:
 
     void setDownlookFlyStartPosition(double downlookFlyStartPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_downlookFlyStartPosition, downlookFlyStartPosition))
             return;
 
@@ -289,7 +289,7 @@ public slots:
 
     void setDownlookFlyVelocity(double downlookFlyVelocity)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_downlookFlyVelocity, downlookFlyVelocity))
             return;
 
@@ -308,7 +308,7 @@ public slots:
 
     void setDownlookCameraExposureTime(double downlookCameraExposureTime)
     {
-        qWarning("Floating point comparison needs context sanity check");
+        
         if (qFuzzyCompare(m_downlookCameraExposureTime, downlookCameraExposureTime))
             return;
 

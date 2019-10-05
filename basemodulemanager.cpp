@@ -88,6 +88,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     tcp_lensTrayLoaderModule.tray_clip = &tcp_lensTrayClipIn;
     tcp_lensTrayLoaderModule.tray_clip_out = &tcp_lensTrayClipOut;
 
+    tcp_lens_tray.standards_parameters.setTrayCount(5);
+    tcp_lensLoaderModule.tray = &tcp_lens_tray;
     //Machine Map Initialization
     //machineMap = new GraphWidget;
     //machineMap->show();
@@ -177,7 +179,7 @@ void BaseModuleManager::tcpResp(QString message)
                        i.value()->read(message_object.value(i.key()).toObject());
                     }
                 }
-                this->aaCoreNew.setModuleParameter(parameters);
+                saveParameters();
             }
         }
     }
@@ -222,15 +224,22 @@ void BaseModuleManager::tcpResp(QString message)
                 }
                 else if(temp_name.toString().contains("Sut"))
                 {
+                    tcp_sut.setName(temp_name.toString());
                     tcp_workers.insert(temp_name.toString(), &tcp_sut);
                 }
                 else if (temp_name.toString().contains("LUTModule"))
                 {
                     tcp_workers.insert(temp_name.toString(), &tcp_lutModule);
                 }
-                else if (temp_name.toString().contains("TrayLoaderModule"))
+                else if (temp_name.toString().contains("LensTrayLoaderModule"))
                 {
+                    tcp_lensTrayLoaderModule.setName(temp_name.toString());
                     tcp_workers.insert(temp_name.toString(), &tcp_lensTrayLoaderModule);
+                }
+                else if (temp_name.toString().contains("LensLoaderModule"))
+                {
+                    tcp_lensLoaderModule.setName(temp_name.toString());
+                    tcp_workers.insert(temp_name.toString(), &tcp_lensLoaderModule);
                 }
                 inquiryTcpModuleState(temp_name.toString());
                 inquiryTcpModuleParameter(temp_name.toString());
@@ -1431,7 +1440,18 @@ void BaseModuleManager::setTcpModuleParameter(QString moduleName)
     message["cmd"] = "setModuleParameter";
     message["moduleName"] = moduleName;
 
-    QMap<QString, PropertyBase *> map = tcp_aaCoreNew.getModuleParameter();
+    QMap<QString, PropertyBase *> map;
+    if (moduleName.contains("Sut")){
+        map = tcp_sut.getModuleParameter();
+    }else if (moduleName.contains("LensLoaderModule")){
+        map = tcp_lensLoaderModule.getModuleParameter();
+    }else if (moduleName.contains("LensTrayLoaderModule")){
+        map = tcp_lensTrayLoaderModule.getModuleParameter();
+    }else if (moduleName.contains("AA")){
+        map = tcp_aaCoreNew.getModuleParameter();
+    }else if (moduleName.contains("LUTModule")){
+        map = tcp_lutModule.getModuleParameter();
+    }
     foreach (QString param_name, map.keys()) {
         QJsonObject module_parameter;
         map[param_name]->write(module_parameter);
@@ -1769,6 +1789,10 @@ void BaseModuleManager::updateParams()
     if (this->m_InitState)
     {
         setTcpModuleParameter(tcp_aaCoreNew.Name());
+        setTcpModuleParameter(tcp_sut.Name());
+        setTcpModuleParameter(tcp_lensTrayLoaderModule.Name());
+        setTcpModuleParameter(tcp_lutModule.Name());
+        setTcpModuleParameter(tcp_lensLoaderModule.Name());
     }
 }
 

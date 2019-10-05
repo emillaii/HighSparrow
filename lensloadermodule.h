@@ -144,9 +144,9 @@ public:
     Position lut_picker_position;
     Position lens_updnlook_offset;
     Position camera_to_picker_offset;
+    MaterialTray *tray = Q_NULLPTR;
 private:
     LensPickArm *pick_arm = Q_NULLPTR;
-    MaterialTray *tray = Q_NULLPTR;
     MaterialCarrier *lut_carrier = Q_NULLPTR;
     XtVacuum* load_vacuum = Q_NULLPTR;
     XtVacuum* unload_vacuum = Q_NULLPTR;
@@ -184,7 +184,6 @@ public:
     void recordTrayLensPr(QString uuid);
     void recordTrayVacancyPr(QString uuid);
     void recordNgLensPr(QString uuid);
-
     // ThreadWorkerBase interface
 public:
     void receivceModuleMessage(QVariantMap module_message);

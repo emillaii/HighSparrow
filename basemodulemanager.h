@@ -135,7 +135,10 @@ public:
 
     SensorTrayLoaderModule tcp_sensorTrayLoaderModule;
     SensorLoaderModule tcp_sensorLoaderModule;
+
     LensLoaderModule tcp_lensLoaderModule;
+    MaterialTray tcp_lens_tray;
+
     LutModule tcp_lutModule;
     MaterialCarrier tcp_lutCarrier;
 

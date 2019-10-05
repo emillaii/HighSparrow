@@ -470,7 +470,7 @@ public slots:
 
     void setMinCircleTime(double minCircleTime)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_minCircleTime, minCircleTime))
             return;
 
@@ -480,7 +480,7 @@ public slots:
 
     void setMaxCicleTime(double maxCicleTime)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_maxCicleTime, maxCicleTime))
             return;
 
@@ -518,7 +518,7 @@ public slots:
     void setZpeakccCoefficient(double zpeakccCoefficient)
     {
         if(zpeakccCoefficient<0)return;
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_zpeakccCoefficient, zpeakccCoefficient))
             return;
 
@@ -529,7 +529,7 @@ public slots:
     void setZpeak03Coefficient(double zpeak03Coefficient)
     {
         if(zpeak03Coefficient<0)return;
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_zpeak03Coefficient, zpeak03Coefficient))
             return;
 
@@ -540,7 +540,7 @@ public slots:
     void setZpeak05Coefficient(double zpeak05Coefficient)
     {
         if(zpeak05Coefficient<0)return;
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_zpeak05Coefficient, zpeak05Coefficient))
             return;
 
@@ -551,7 +551,7 @@ public slots:
     void setZpeak08Coefficient(double zpeak08Coefficient)
     {
         if(zpeak08Coefficient<0)return;
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_zpeak08Coefficient, zpeak08Coefficient))
             return;
 
@@ -561,7 +561,7 @@ public slots:
 
     void setMaxDev(double maxDev)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_maxDev, maxDev))
             return;
 
@@ -571,7 +571,7 @@ public slots:
 
     void setMinDev(double minDev)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_minDev, minDev))
             return;
 
@@ -608,7 +608,7 @@ public slots:
 
     void setZPeakDiff05Max(double zPeakDiff05Max)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_zPeakDiff05Max, zPeakDiff05Max))
             return;
 
@@ -618,7 +618,7 @@ public slots:
 
     void setZPeakDiff08Max(double zPeakDiff08Max)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_zPeakDiff08Max, zPeakDiff08Max))
             return;
 
@@ -628,7 +628,7 @@ public slots:
 
     void setCC05MinDev(double CC05MinDev)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_CC05MinDev, CC05MinDev))
             return;
 
@@ -638,7 +638,7 @@ public slots:
 
     void setCC05MaxDev(double CC05MaxDev)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_CC05MaxDev, CC05MaxDev))
             return;
 
@@ -648,7 +648,7 @@ public slots:
 
     void setCC08MinDev(double CC08MinDev)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_CC08MinDev, CC08MinDev))
             return;
 
@@ -658,7 +658,7 @@ public slots:
 
     void setCC08MaxDev(double CC08MaxDev)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_CC08MaxDev, CC08MaxDev))
             return;
 
@@ -731,7 +731,7 @@ public slots:
 
     void setLensVcmWorkPosition(double lensVcmWorkPosition)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_lensVcmWorkPosition, lensVcmWorkPosition))
             return;
 
@@ -1007,7 +1007,7 @@ public slots:
 
     void setCircleTime(double circleTime)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_circleTime, circleTime))
             return;
 
@@ -1026,7 +1026,7 @@ public slots:
 
     void setCircleAverageTime(double circleAverageTime)
     {
-        qWarning("Floating point comparison needs context sanity check");
+
         if (qFuzzyCompare(m_circleAverageTime, circleAverageTime))
             return;
 

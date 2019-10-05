@@ -3514,7 +3514,5 @@ QMap<QString, PropertyBase *> AACoreNew::getModuleParameter()
 
 void AACoreNew::setModuleParameter(QMap<QString, PropertyBase *> parameters)
 {
-    qInfo("Set module parameter is called");
-    PropertyBase::saveJsonConfig("test_aa.json", parameters);
-    //loadJsonConfig("test_aa.json");
+
 }

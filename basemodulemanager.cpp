@@ -199,16 +199,16 @@ void BaseModuleManager::tcpResp(QString message)
         else if(resp == "moduleParameter")
         {
             QString module_name = message_object["moduleName"].toString();
-            qDebug()<<"resp moduleState :"<< module_name<<"thread id:"<<QThread::currentThreadId();
             if(tcp_workers.contains(module_name))
             {
+                qDebug()<<"resp moduleParameter :"<< module_name ;
                 QMap<QString, PropertyBase *> map = tcp_workers[module_name]->getModuleParameter();
                 foreach (QString param_name, map.keys()) {
                     QJsonObject parameter_json = message_object[param_name].toObject();
+                    QString jsonString = getStringFromJsonObject(parameter_json);
                     map[param_name]->read(parameter_json);
                 }
             }
-            qDebug("moduleParameter resp: %s", message.toStdString().c_str());
         }
         else if(resp == "moduleNames")
         {

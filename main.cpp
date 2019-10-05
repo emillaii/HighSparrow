@@ -122,7 +122,6 @@ int main(int argc, char *argv[])
     //Module
     engine.rootContext()->setContextProperty("sutModule", &highSprrow.baseModuleManager->sut_module);
     engine.rootContext()->setContextProperty("lutModule", &highSprrow.baseModuleManager->lut_module);
-    engine.rootContext()->setContextProperty("picker_offset", &highSprrow.baseModuleManager->lens_loader_module.camera_to_picker_offset);
     engine.rootContext()->setContextProperty("aaHeadModule", &highSprrow.baseModuleManager->aa_head_module);
     engine.rootContext()->setContextProperty("dispenseModule", &highSprrow.baseModuleManager->dispense_module);
     engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
@@ -240,6 +239,27 @@ int main(int argc, char *argv[])
 
     }
 
+    {
+        //Local lens loader
+        engine.rootContext()->setContextProperty("lensPickArmModuleParameter", &highSprrow.baseModuleManager->lens_loader_module.parameters);
+        engine.rootContext()->setContextProperty("lut_pr_position1",&highSprrow.baseModuleManager->lens_loader_module.lut_pr_position1);
+        engine.rootContext()->setContextProperty("lut_pr_position2",&highSprrow.baseModuleManager->lens_loader_module.lut_pr_position2);
+        engine.rootContext()->setContextProperty("lut_camera_position",&highSprrow.baseModuleManager->lens_loader_module.lut_camera_position);
+        engine.rootContext()->setContextProperty("lut_picker_position",&highSprrow.baseModuleManager->lens_loader_module.lut_picker_position);
+        engine.rootContext()->setContextProperty("lens_loader_parameter",&highSprrow.baseModuleManager->lens_loader_module.parameters);
+
+        engine.rootContext()->setContextProperty("picker_offset", &highSprrow.baseModuleManager->lens_loader_module.camera_to_picker_offset);
+        //Remote lens loader
+        engine.rootContext()->setContextProperty("tcpLensPickArmModuleParameter", &highSprrow.baseModuleManager->tcp_lensLoaderModule.parameters);
+        engine.rootContext()->setContextProperty("tcp_lut_pr_position1",&highSprrow.baseModuleManager->tcp_lensLoaderModule.lut_pr_position1);
+        engine.rootContext()->setContextProperty("tcp_lut_pr_position2",&highSprrow.baseModuleManager->tcp_lensLoaderModule.lut_pr_position2);
+        engine.rootContext()->setContextProperty("tcp_lut_camera_position",&highSprrow.baseModuleManager->tcp_lensLoaderModule.lut_camera_position);
+        engine.rootContext()->setContextProperty("tcp_lut_picker_position",&highSprrow.baseModuleManager->tcp_lensLoaderModule.lut_picker_position);
+        engine.rootContext()->setContextProperty("tcp_lens_loader_parameter",&highSprrow.baseModuleManager->tcp_lensLoaderModule.parameters);
+
+        engine.rootContext()->setContextProperty("tcp_picker_offset", &highSprrow.baseModuleManager->tcp_lensLoaderModule.camera_to_picker_offset);
+    }
+
     QString dirPath = app.applicationDirPath();
     dirPath += "/..";
     engine.rootContext()->setContextProperty("dirPath",dirPath);
@@ -276,19 +296,7 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("tray_start_point4",&highSprrow.baseModuleManager->material_tray.parameters[3]->tray_start_position);
     }
     engine.rootContext()->setContextProperty("tray_standard_parameter",&highSprrow.baseModuleManager->material_tray.standards_parameters);
-    engine.rootContext()->setContextProperty("lensPickArmModuleParameter",
-                                             &highSprrow.baseModuleManager->lens_loader_module.parameters);
-    engine.rootContext()->setContextProperty("lut_pr_position1",
-                                             &highSprrow.baseModuleManager->lens_loader_module.lut_pr_position1);
-    engine.rootContext()->setContextProperty("lut_pr_position2",
-                                             &highSprrow.baseModuleManager->lens_loader_module.lut_pr_position2);
-    engine.rootContext()->setContextProperty("lut_camera_position",
-                                             &highSprrow.baseModuleManager->lens_loader_module.lut_camera_position);
-    engine.rootContext()->setContextProperty("lut_picker_position",
-                                             &highSprrow.baseModuleManager->lens_loader_module.lut_picker_position);
 
-    engine.rootContext()->setContextProperty("lens_loader_parameter",
-                                             &highSprrow.baseModuleManager->lens_loader_module.parameters);
 
     engine.rootContext()->setContextProperty("sensorPickArmParams",&highSprrow.baseModuleManager->sensor_pickarm.parameters);
     engine.rootContext()->setContextProperty("sensorLoaderParameter",

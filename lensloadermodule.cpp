@@ -1653,13 +1653,13 @@ QMap<QString, PropertyBase *> LensLoaderModule::getModuleParameter()
     temp_map.insert("LUT_PICKE_POSITION1", &lut_picker_position);
     temp_map.insert("LENS_UPDNLOOK_OFFSET", &lens_updnlook_offset);
     temp_map.insert("CAMERA_TO_PICKER_OFFSET", &camera_to_picker_offset);
-    temp_map.insert("LENS_PICKARM_PARAMS", &this->tray->standards_parameters);
-    temp_map.insert("END_POSITION", &this->tray->first_tray_end_position);
-    for (int i = 0; i < this->tray->standards_parameters.trayCount(); ++i)
-    {
-        temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_PARAMETER"), this->tray->parameters[i]);
-        temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_START_POSITION"), &this->tray->parameters[i]->tray_start_position);
-    }
+//    temp_map.insert("LENS_PICKARM_PARAMS", &this->tray->standards_parameters);
+//    temp_map.insert("END_POSITION", &this->tray->first_tray_end_position);
+//    for (int i = 0; i < this->tray->standards_parameters.trayCount(); ++i)
+//    {
+//        temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_PARAMETER"), this->tray->parameters[i]);
+//        temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_START_POSITION"), &this->tray->parameters[i]->tray_start_position);
+//    }
 
     return temp_map;
 }

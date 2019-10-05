@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
 import "./LensPickFromTray"
+import "./AAHeadPickLens"
 ScrollView {
     id: machineConfigListView
     width: 1200
@@ -27,7 +28,18 @@ ScrollView {
             visible: false
         }
         Button {id: lensPlaceToLUTViewSwitch; text:"Lens Place To LUT";Layout.fillWidth: true}
-        Button {id: aaHeadPickLensViewSwitch; text:"AA Head Pick Lens";Layout.fillWidth: true}
+        Button {
+            id: aaHeadPickLensViewSwitch
+            text:"AA Head Pick Lens"
+            Layout.fillWidth: true
+            onClicked: {
+                aaHeadPickLensView.visible = !aaHeadPickLensView.visible
+            }
+        }
+        AAHeadPickLensView {
+            id: aaHeadPickLensView
+            visible: false
+        }
         Button {id: sensorPickFromCarrierViewSwitch; text:"Sensor Pick From Carrier";Layout.fillWidth: true}
         Button {id: sensorPlaceToSUTViewSwitch; text:"Sensor Place To SUT";Layout.fillWidth: true}
         Button {id: sensorDispensingViewSwitch; text:"Sensor Dispensing";Layout.fillWidth: true}

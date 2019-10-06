@@ -1376,7 +1376,7 @@ void LensLoaderModule::resetLogic()
     tray->resetTrayState(1);
 }
 
-void LensLoaderModule::performHandlingOperation(int cmd)
+void LensLoaderModule::performHandlingOperation(int cmd,QVariant param)
 {
     qInfo("performHandling %d",cmd);
     bool result;

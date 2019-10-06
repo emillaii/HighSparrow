@@ -580,7 +580,7 @@ void SutModule::stopWork(bool wait_finish)
   is_run = false;
 }
 
-void SutModule::performHandlingOperation(int cmd)
+void SutModule::performHandlingOperation(int cmd,QVariant param)
 {
     bool result = true;
     if(cmd == 1)

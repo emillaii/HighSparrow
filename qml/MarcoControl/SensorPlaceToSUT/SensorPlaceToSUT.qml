@@ -26,4 +26,20 @@ ColumnLayout {
         }
     }
 
+    Button {
+        text: qsTr("Sensor Pick & Place To SUT Setting")
+        Layout.minimumWidth: 400
+        Layout.maximumWidth: 400
+        width: 400
+        onClicked: { sensorPickAndPlaceToSUTSettingRow.visible = !sensorPickAndPlaceToSUTSettingRow.visible }
+    }
+
+    RowLayout{
+        GroupBox {
+            id: sensorPickAndPlaceToSUTSettingRow
+            visible: false
+            SensorPickAndPlaceToSUTSetting {}
+        }
+    }
+
 }

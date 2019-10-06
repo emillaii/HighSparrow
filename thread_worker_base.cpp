@@ -14,6 +14,7 @@ ThreadWorkerBase::ThreadWorkerBase(QString name,QObject *parent) : QObject(paren
     this->moveToThread(&work_thread);
 //    connect(&work_thread, SIGNAL(finished()), this, SLOT(deleteLater()));
     work_thread.start();
+    connect(this,&ThreadWorkerBase::sendHandlingOperation,this,&ThreadWorkerBase::performHandlingOperation);
 }
 
 ThreadWorkerBase::~ThreadWorkerBase()
@@ -75,7 +76,7 @@ QString ThreadWorkerBase::waitMessageReturn(bool &interruput,int alarm_id)
     return "";
 }
 
-void ThreadWorkerBase::performHandling(int cmd)
+void ThreadWorkerBase::performHandling(int cmd,QVariant param)
 {
     if(is_handling)
     {
@@ -84,7 +85,7 @@ void ThreadWorkerBase::performHandling(int cmd)
     }
     is_handling = true;
     is_error = false;
-    emit sendHandlingOperation(cmd);
+    emit sendHandlingOperation(cmd,param);
 }
 
 bool ThreadWorkerBase::waitPerformHandling()

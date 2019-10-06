@@ -68,7 +68,7 @@ public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
     void resetLogic();
-    void performHandlingOperation(int cmd);
+    void performHandlingOperation(int cmd,QVariant param);
     //End of ThreadWorkerBase
     void receiveRequestMessage(QString module_message, QString client_ip);
     void receiveLoadLensRequstFinish(int lens,int lens_tray);

@@ -24,6 +24,18 @@ public:
         MOTION_STOP_HOME,     // Interrupt
         MOTION_SINGLE_MOTOR_HOME,
         MODE_AUTO_RUN,
+
+        HANDLING_ORIGIN_LOCATION,
+        HANDLING_OFFSET_LOCATION,
+        HANDLING_CALIBRATION,
+        HANDLING_OPEN_CYLINDER,
+        HANDLING_CLOSE_CYLINDER,
+        HANDLING_OPEN_OUTPUT,
+        HANDLING_CLOSE_OUTPUT,
+        HANDLING_OPEN_VACUUM,
+        HANDLING_CLOSE_VACUUM,
+
+
         AA_MOVETO_MUSHROOM_CMD,
         AA_MOVETO_PICK_LENS_CMD,
         AA_MOVETO_OC_CMD,
@@ -37,11 +49,13 @@ public:
         LUT_PICK_LENS_TO_AA2_CMD,
         LUT_PICK_LENS_TO_AA1_CMD,
         LUT_PICK_LENS_TO_AA1_CMD1,
+
         PERFORM_CALIBRATION,
         PERFORM_UPDNLOOK_CALIBRATION,
         PERFORM_LENS_UPDNLOOK_CALIBRATION,
         PERFORM_SENSOR_PICKHEAD_CALIBRATION,
         PERFORM_LOCATION,
+
         PERFORM_OC,
         PERFORM_LOOP_TEST,
         PERFORM_UV,
@@ -58,8 +72,8 @@ public:
     explicit LogicManager(QObject *parent = nullptr);
     void init(BaseModuleManager* device_manager);
 //    bool registerWorker(ThreadWorkerBase* worker);
-    Q_INVOKABLE void performHandling(QString module_name,int cmd);
-    Q_INVOKABLE void performHandling(int cmd);
+    Q_INVOKABLE void performHandling(QString module_name,int cmd,QVariant param = 0);
+    Q_INVOKABLE void performHandling(int cmd,QVariant param = 0);
 private:
 public:
     LogicManagerParameter parameters;
@@ -95,12 +109,12 @@ public:
     void lutPickLensToAA2();
 
     void performChartCalibration();
-    void performCalibration(QString calibration_name);
+//    void performCalibration(QString calibration_name);
     void performUpDnLookCalibration();
     void performLensUpDnLookCalibration();
     void performSensorPickheadCalibration();
 
-    void performLocation(QString location_name,bool use_origin);
+//    void performLocation(QString location_name,bool use_origin);
 
     void performOC();
     void performLoopTest(int mode);
@@ -189,7 +203,7 @@ public:
 
      void sendLogicManangerName();
 public slots:
-    void performHandlingOperation(QString module_name,int cmd);
+    void performHandlingOperation(QString module_name,int cmd,QVariant param);
     void performTcpOperation(QVariantMap message);
     void receiveMessageFromWorkerManger(QVariantMap message);
 
@@ -206,7 +220,7 @@ public slots:
     void receiveCommand(int cmd);
 
 signals:
-    void sendPerformHandling(QString module_name,int cmd);
+    void sendPerformHandling(QString module_name,int cmd,QVariant param);
     void sendPerformTcp(QVariantMap message);
     void sendMessageToWorkerManger(QVariantMap message);
 
@@ -239,6 +253,11 @@ private:
     void sendRespMessage(QVariantMap message,bool result);
     void sendMessageToModule(QString module_name, QString message);
     bool waitReturnMessage();
+    bool performLocation(QString location_name,bool use_origin);
+    bool performCalibration(QString location_name);
+    bool performCylinderOperation(QString cylinder_name,bool state);
+    bool performOutputOperation(QString output_name,bool state);
+    bool performVacuumOperation(QString vacuum_name,bool state);
 };
 
 #endif // LOGICMANAGER_H

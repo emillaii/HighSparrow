@@ -56,6 +56,8 @@ private:
 
     bool m_handlyChangeLensTray = false;
 
+    QString m_moduleName = "LensTrayLoaderModule";
+
 signals:
     void testTrayTest();
     void trayReady();
@@ -71,6 +73,7 @@ public:
     Q_PROPERTY(double ltkx2ReleasePos READ ltkx2ReleasePos WRITE setLtkx2ReleasePos NOTIFY ltkx2ReleasePosChanged)
     Q_PROPERTY(double ltkx2SafeDistance READ ltkx2SafeDistance WRITE setLtkx2SafeDistance NOTIFY ltkx2SafeDistanceChanged)
     Q_PROPERTY(double ltlWorkPos READ ltlWorkPos WRITE setLtlWorkPos NOTIFY ltlWorkPosChanged)
+    Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
     Q_PROPERTY(QString motorLTIEName READ motorLTIEName WRITE setMotorLTIEName NOTIFY motorTLIENameChanged)
     Q_PROPERTY(QString motorLTOEName READ motorLTOEName WRITE setMotorLTOEName NOTIFY motorLTOENameChanged)
     Q_PROPERTY(QString motorLTKX1Name READ motorLTKX1Name WRITE setMotorLTKX1Name NOTIFY motorLTKX1NameChanged)
@@ -246,6 +249,11 @@ public:
     bool handlyChangeLensTray() const
     {
         return m_handlyChangeLensTray;
+    }
+
+    QString moduleName() const
+    {
+        return m_moduleName;
     }
 
 public slots:
@@ -529,6 +537,15 @@ public slots:
         emit handlyChangeLensTrayChanged(m_handlyChangeLensTray);
     }
 
+    void setModuleName(QString moduleName)
+    {
+        if (m_moduleName == moduleName)
+            return;
+
+        m_moduleName = moduleName;
+        emit moduleNameChanged(m_moduleName);
+    }
+
 signals:
     void motorTLIENameChanged(QString motorLTIEName);
     void motorLTOENameChanged(QString motorLTOEName);
@@ -561,6 +578,7 @@ signals:
     void readyTrayCheckIoNameChanged(QString readyTrayCheckIoName);
     void workTrayCheckIoNameChanged(QString workTrayCheckIoName);
     void handlyChangeLensTrayChanged(bool handlyChangeLensTray);
+    void moduleNameChanged(QString moduleName);
 };
 
 class TrayLoaderState : public PropertyBase{

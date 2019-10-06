@@ -46,7 +46,7 @@ void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
     parts.append(this->cylinder_ltk2);
     this->cylinder_tray = _cylinder_tray;
     parts.append(this->cylinder_tray);
-    this->tray_clip = trayClipIn;
+    this->tray_clip_in = trayClipIn;
     this->tray_clip_out = trayClipOut;
 
     this->work_tray_check_io = work_tray_check_io;
@@ -74,7 +74,7 @@ void TrayLoaderModule::resetLogic()
     states.setIsExchangeTray(false);
     states.setAllowChangeTray(false);
     states.setHasExitClipFull(false);
-    tray_clip->reset();
+    tray_clip_in->reset();
     states.setHasEntranceClipEmpty(false);
     tray_clip_out->reset();
     states.setEntanceClipReady(false);
@@ -193,7 +193,7 @@ bool TrayLoaderModule::moveToWorkPosAndReayPullNewTray()
 
 bool TrayLoaderModule::entranceClipMoveToNextPos()
 {
-    bool result = motor_clip_in->MoveToPosSync(tray_clip->getCurrentPosition());
+    bool result = motor_clip_in->MoveToPosSync(tray_clip_in->getCurrentPosition());
     if(!result)
         AppendError(QString(u8"移动进料弹夹失败"));
     if(parameters.openQinfo())
@@ -292,8 +292,8 @@ bool TrayLoaderModule::moveToWorkPos()
 bool TrayLoaderModule::moveToChangeClipPos()
 {
     qInfo("moveToChangeClipPos");
-    motor_clip_in->MoveToPos(tray_clip->standards_parameters.changeClipPos());
-    bool result = motor_clip_in->WaitArrivedTargetPos(tray_clip->standards_parameters.changeClipPos());
+    motor_clip_in->MoveToPos(tray_clip_in->standards_parameters.changeClipPos());
+    bool result = motor_clip_in->WaitArrivedTargetPos(tray_clip_in->standards_parameters.changeClipPos());
     if (result)
     {
         AppendError(tr(u8"移动到换料位置失败！"));
@@ -353,10 +353,49 @@ void TrayLoaderModule::stopWork(bool wait_finish)
     is_run = false;
 }
 
-void TrayLoaderModule::performHandlingOperation(int cmd)
+void TrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
 {
-
+    bool result = true;
+    if(cmd == HandlePosition::ENTRANCE_CLIP_POS)
+    {
+        int layer_index = param.toInt();
+        result = moveEntranceClipToPos(layer_index);
+    }
+    else if(cmd == HandlePosition::ENTRANCE_CLIP_WAIT_POS)
+        result = moveEntranceClipToWaitPos();
+    else if(cmd == HandlePosition::ENTRANCE_CLIP_TOP)
+        result = moveEntranceClipToTop();
+    else if(cmd == HandlePosition::ENTRANCE_CLIP_BOTTOM)
+        result = moveEntranceClipToBottom();
+    else if(cmd == HandlePosition::EXIT_CLIP_POS)
+    {
+        int layer_index = param.toInt();
+        result = moveExitClipToPos(layer_index);
+    }
+    else if(cmd == HandlePosition::EXIT_CLIP_TOP)
+        result = moveExitClipToTop();
+    else if(cmd == HandlePosition::EXIT_CLIP_BOTTOM)
+        result = moveExitClipToBottom();
+    else if(cmd == HandlePosition::ENTRANCE_KICK_READY_POS)
+        result = moveEntranceKickToReadyPos();
+    else if(cmd == HandlePosition::ENTRANCE_KICK_PULL_POS)
+        result = moveEntranceKickToPullPos();
+    else if(cmd == HandlePosition::ENTRANCE_KICK_PUSH_POS)
+        result = moveEntranceKickToPushPos();
+    else if(cmd == HandlePosition::EXIT_KICK_READY_POS)
+        result = moveExitKickToReadyPos();
+    else if(cmd == HandlePosition::EXIT_KICK_PUSH_POS)
+        result = moveExitKickToPushPos();
+    else if(cmd == HandlePosition::LOADER_WAIT_POS)
+        result = moveTrayLoaderToWaitPos();
+    else if(cmd == HandlePosition::LOADER_WORK_POS)
+        result = moveTrayLoaderToWorkPos();
+    else if(cmd == HandlePosition::LOADER_RELEASE_POS)
+        result = moveTrayLoaderToReleasePos();
+    if(!result)
+        sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
     is_handling = false;
+    is_error = !result;
 }
 
 PropertyBase *TrayLoaderModule::getModuleState()
@@ -412,7 +451,7 @@ QMap<QString, PropertyBase *> TrayLoaderModule::getModuleParameter()
 {
     QMap<QString, PropertyBase *> temp_map;
     temp_map.insert(TRAY_LOADER_PARAMETER, &parameters);
-    temp_map.insert(TRAY_CLIPIN_PARAMETER, &tray_clip->standards_parameters);
+    temp_map.insert(TRAY_CLIPIN_PARAMETER, &tray_clip_in->standards_parameters);
     temp_map.insert(TRAY_CLIPOUT_PARAMETER, &tray_clip_out->standards_parameters);
     return temp_map;
 }
@@ -575,7 +614,7 @@ void TrayLoaderModule::run()
             }
             else
             {
-                if(!tray_clip->updateCurrentIndex())
+                if(!tray_clip_in->updateCurrentIndex())
                     states.setHasEntranceClipEmpty(true);
                 states.setEntanceClipReady(true);
             }
@@ -724,6 +763,166 @@ void TrayLoaderModule::runHandle()
             sendMessageToModule("LensLoaderModule","FinishChangeTray");
         }
     }
+}
+
+bool TrayLoaderModule::moveEntranceClipToPos(int layer_index)
+{
+    bool result = motor_clip_in->MoveToPosSync(tray_clip_in->getPosition(layer_index));
+    if(!result)
+        AppendError(QString(u8"移动进料弹夹去%1层失败").arg(layer_index));
+    if(parameters.openQinfo())
+        qInfo(u8"移动进料弹夹去%d层 %d",layer_index,result);
+    return result;
+}
+
+bool TrayLoaderModule::moveEntranceClipToWaitPos()
+{
+    bool result = motor_clip_in->MoveToPosSync(tray_clip_in->standards_parameters.changeClipPos());
+    if(!result)
+        AppendError(QString(u8"移动进料弹夹去换弹夹位置失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动进料弹夹去换弹夹位置 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveEntranceClipToTop()
+{
+    bool result = motor_clip_in->MoveToPosSync(tray_clip_in->standards_parameters.firstTrayPos());
+    if(!result)
+        AppendError(QString(u8"移动进料弹夹去起始层失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动进料弹夹去起始层 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveEntranceClipToBottom()
+{
+    bool result = motor_clip_in->MoveToPosSync(tray_clip_in->standards_parameters.lastTrayPos());
+    if(!result)
+        AppendError(QString(u8"移动进料弹夹去结束层失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动进料弹夹去结束层 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveExitClipToPos(int layer_index)
+{
+    bool result = motor_clip_out->MoveToPosSync(tray_clip_out->getPosition(layer_index));
+    if(!result)
+        AppendError(QString(u8"移动出料弹夹去%1层失败").arg(layer_index));
+    if(parameters.openQinfo())
+        qInfo(u8"移动出料弹夹去%d层 %d",layer_index,result);
+    return result;
+}
+
+bool TrayLoaderModule::moveExitClipToTop()
+{
+    bool result = motor_clip_out->MoveToPosSync(tray_clip_out->standards_parameters.firstTrayPos());
+    if(!result)
+        AppendError(QString(u8"移动出料弹夹去起始层失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动出料弹夹去起始层 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveExitClipToBottom()
+{
+    bool result = motor_clip_out->MoveToPosSync(tray_clip_out->standards_parameters.firstTrayPos());
+    if(!result)
+        AppendError(QString(u8"移动出料弹夹去结束层失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动出料弹夹去结束层 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveEntranceKickToReadyPos()
+{
+    bool result = cylinder_ltk1->Set(false);
+    if(result)
+        result &= motor_in->MoveToPosSync(parameters.ltkx1PressPos());
+    if(!result)
+        AppendError(QString(u8"移动入口钩到准备位置失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动入口钩到准备位置 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveEntranceKickToPullPos()
+{
+    bool result = motor_in->SlowMoveToPosSync(parameters.ltkx1ReleasePos(),parameters.pushVelocity());
+    result &= cylinder_ltk1->Set(false);
+    if(!result)
+        AppendError(QString(u8"移动入口钩到拉盘结束位置失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动入口钩到拉盘结束位置 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveEntranceKickToPushPos()
+{
+    bool result = motor_in->SlowMoveToPosSync(parameters.ltkx1RelayPos(),parameters.pushVelocity());
+    result &= cylinder_ltk1->Set(false);
+    if(!result)
+        AppendError(QString(u8"移动入口钩到推盘结束位置失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动入口钩到推盘结束位置 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveExitKickToReadyPos()
+{
+    bool result = cylinder_ltk2->Set(false);
+    if(result)
+        result &= motor_out->MoveToPosSync(parameters.ltkx2PressPos());
+    if(!result)
+        AppendError(QString(u8"移动出口钩到准备位置失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动出口钩到准备位置 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveExitKickToPushPos()
+{
+    bool result = motor_out->SlowMoveToPosSync(parameters.ltkx2ReleasePos(),parameters.pushVelocity());
+    result &= cylinder_ltk2->Set(false);
+    if(!result)
+        AppendError(QString(u8"移动出口钩到推盘结束位置失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动出口钩到推盘结束位置 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveTrayLoaderToWaitPos()
+{
+    bool result = cylinder_tray->Set(true);
+    if(result)
+        result &= motor_work->MoveToPosSync(parameters.ltlPressPos());
+    if(!result)
+        AppendError(QString(u8"移动载盘到等待位置失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动载盘到等待位置 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveTrayLoaderToWorkPos()
+{
+    bool result = motor_work->MoveToPosSync(parameters.ltlPressPos());
+    if(!result)
+        AppendError(QString(u8"移动载盘到工作位置失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动载盘到工作位置 %d",result);
+    return result;
+}
+
+bool TrayLoaderModule::moveTrayLoaderToReleasePos()
+{
+    bool result = motor_work->MoveToPosSync(parameters.ltlReleasePos());
+    result &= cylinder_tray->Set(true);
+    if(!result)
+        AppendError(QString(u8"移动载盘到放盘位置失败"));
+    if(parameters.openQinfo())
+        qInfo(u8"移动载盘到放盘位置 %d",result);
+    return result;
 }
 
 bool TrayLoaderModule::checkWorkTray(bool check_state)

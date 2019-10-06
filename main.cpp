@@ -130,6 +130,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<SensorLoaderModule>("SomeLib",1,1,"SensorLoaderModule");
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
     qmlRegisterType<LogicManager>("LogicManagerLib",1,1,"LogicManager");
+    qmlRegisterType<TrayLoaderModule>("TrayLoaderModuleLib",1,1,"TrayLoaderModule");
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
     engine.rootContext()->setContextProperty("lensLoaderModule", &highSprrow.baseModuleManager->lens_loader_module);
 //    engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);

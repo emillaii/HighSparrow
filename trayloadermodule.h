@@ -9,13 +9,33 @@
 
 class TrayLoaderModule : public ThreadWorkerBase{
     Q_OBJECT
+    Q_ENUMS(HandlePosition)
 public:
+    enum HandlePosition
+    {
+        ENTRANCE_CLIP_POS,
+        ENTRANCE_CLIP_WAIT_POS,
+        ENTRANCE_CLIP_TOP,
+        ENTRANCE_CLIP_BOTTOM,
+        EXIT_CLIP_POS,
+        EXIT_CLIP_TOP,
+        EXIT_CLIP_BOTTOM,
+        ENTRANCE_KICK_READY_POS,
+        ENTRANCE_KICK_PULL_POS,
+        ENTRANCE_KICK_PUSH_POS,
+        EXIT_KICK_READY_POS,
+        EXIT_KICK_PUSH_POS,
+        LOADER_WAIT_POS,
+        LOADER_WORK_POS,
+        LOADER_RELEASE_POS
+
+    };
     TrayLoaderModule(QString name="LensTrayLoaderModule");
     void Init(XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtCylinder*,XtCylinder*,XtCylinder*,XtCylinder*,TrayClip*,TrayClip*,
               XtGeneralInput *work_tray_check_io,XtGeneralInput* entrance_tray_check_io,XtGeneralInput* exit_tray_check_io,
               XtGeneralInput* entrance_clip_check_io,XtGeneralInput* exit_clip_check_io,XtGeneralInput* ready_tray_check_io);
 
-    TrayClip* tray_clip = Q_NULLPTR;
+    TrayClip* tray_clip_in = Q_NULLPTR;
     TrayClip* tray_clip_out = Q_NULLPTR;
     TrayLoaderModuleParameter parameters;
     TrayLoaderState states;
@@ -38,6 +58,22 @@ private:
     void run();
     bool resumeState();
     void runHandle();
+
+    bool moveEntranceClipToPos(int layer_index);
+    bool moveEntranceClipToWaitPos();
+    bool moveEntranceClipToTop();
+    bool moveEntranceClipToBottom();
+    bool moveExitClipToPos(int layer_index);
+    bool moveExitClipToTop();
+    bool moveExitClipToBottom();
+    bool moveEntranceKickToReadyPos();
+    bool moveEntranceKickToPullPos();
+    bool moveEntranceKickToPushPos();
+    bool moveExitKickToReadyPos();
+    bool moveExitKickToPushPos();
+    bool moveTrayLoaderToWaitPos();
+    bool moveTrayLoaderToWorkPos();
+    bool moveTrayLoaderToReleasePos();
 
     //传感器检测
     bool checkWorkTray(bool check_state);
@@ -67,7 +103,7 @@ public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
     void resetLogic();
-    void performHandlingOperation(int cmd);
+    void performHandlingOperation(int cmd,QVariant param);
     // ThreadWorkerBase interface
 public:
     PropertyBase *getModuleState();

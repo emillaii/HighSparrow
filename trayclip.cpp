@@ -21,7 +21,16 @@ void TrayClip::calculateDelta()
 
 double TrayClip::getPosition(int column_index)
 {
-    return column_index*standards_parameters.columnDelta() + standards_parameters.firstTrayPos();
+    return getLayerIndex(column_index)*standards_parameters.columnDelta() + standards_parameters.firstTrayPos();
+}
+
+int TrayClip::getLayerIndex(int layer_index)
+{
+    if(layer_index >= standards_parameters.columnCount())
+        return standards_parameters.columnCount() - 1;
+    if(layer_index < 0)
+        return 0;
+    return layer_index;
 }
 
 int TrayClip::getCurrentIndex()

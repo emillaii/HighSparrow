@@ -111,7 +111,7 @@ void SensorTrayLoaderModule::stopWork(bool wait_finish)
     is_run = false;
 }
 
-void SensorTrayLoaderModule::performHandlingOperation(int cmd)
+void SensorTrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
 {
     is_handling = false;
 

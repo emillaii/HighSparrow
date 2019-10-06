@@ -155,7 +155,7 @@ private:
     int current_mtf_ng_time = 0;
     int grr_repeat_time = 0;
     int grr_change_time = 0;
-    QString handlingParams = "";
+//    QString handlingParams = "";
     double mtf_oc_x = 0;
     double mtf_oc_y = 0;
     int current_dispense = 0;
@@ -175,7 +175,7 @@ public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
     void resetLogic();
-    void performHandlingOperation(int cmd);
+    void performHandlingOperation(int cmd,QVariant param);
     //End of ThreadWorkerBase
 signals:
     void sfrResultsReady(unsigned int, vector<Sfr_entry>, int);

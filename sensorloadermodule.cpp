@@ -121,7 +121,7 @@ void SensorLoaderModule::stopWork(bool wait_finish)
     is_run = false;
 }
 
-void SensorLoaderModule::performHandlingOperation(int cmd)
+void SensorLoaderModule::performHandlingOperation(int cmd,QVariant param)
 {
     qInfo("performHandling %d",cmd);
     bool result = false;

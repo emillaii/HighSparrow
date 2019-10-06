@@ -134,7 +134,7 @@ public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
     void resetLogic();
-    void performHandlingOperation(int cmd);
+    void performHandlingOperation(int cmd,QVariant param);
 public:
     LensLoaderModuleParameter parameters;
     LensLoaderModuleState states;

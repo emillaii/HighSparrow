@@ -469,11 +469,11 @@ void AACoreNew::stopWork(bool wait_finish)
     return;
 }
 
-void AACoreNew::performHandlingOperation(int cmd)
+void AACoreNew::performHandlingOperation(int cmd,QVariant param)
 {
     emit clearHeaders();
-    qInfo("AACore perform command: %d parmas :%s", cmd, handlingParams.toStdString().c_str());
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(handlingParams.toLocal8Bit().data());
+    qInfo("AACore perform command: %d parmas :%s", cmd, param.toString().toStdString().c_str());
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(param.toString().toLocal8Bit().data());
     QJsonValue params = jsonDoc.object();
 
     runningUnit = this->unitlog->createUnit();
@@ -550,7 +550,7 @@ void AACoreNew::performHandlingOperation(int cmd)
     else if (cmd == HandleTest::XY_OFFSET) {
         performXYOffset(params);
     }
-    handlingParams = "";
+//    handlingParams = "";
     emit postDataToELK(this->runningUnit);
     is_handling = false;
 }
@@ -1529,8 +1529,8 @@ void AACoreNew::performAAOffline()
 void AACoreNew::performHandling(int cmd, QString params)
 {
     qInfo("performHandling: %d %s", cmd, params.toStdString().c_str());
-    handlingParams = params;
-    emit sendHandlingOperation(cmd);
+//    handlingParams = params;
+    emit sendHandlingOperation(cmd,params);
 }
 
 bool zPeakComp(const threeDPoint & p1, const threeDPoint & p2)

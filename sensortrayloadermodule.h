@@ -30,7 +30,7 @@ signals:
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
-    void performHandlingOperation(int cmd);
+    void performHandlingOperation(int cmd,QVariant param);
     void resetLogic();
 //    void receiveChangeTray();
 private:

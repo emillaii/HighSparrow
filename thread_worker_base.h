@@ -75,7 +75,7 @@ public:
     virtual PropertyBase* getModuleState() = 0;
     virtual QMap<QString,PropertyBase*> getModuleParameter() = 0;
     virtual void setModuleParameter(QMap<QString, PropertyBase*> parameters) = 0;
-    Q_INVOKABLE void performHandling(int cmd);
+    Q_INVOKABLE void performHandling(int cmd,QVariant param = 0);
     bool waitPerformHandling();
     Q_INVOKABLE void sendMessageToModule(QString module_name,QString module_message,QJsonValue param = 0);
     Q_INVOKABLE QString getModuleMessage();
@@ -86,7 +86,7 @@ private:
     int getAlarmId();
 
 signals:
-    void sendHandlingOperation(int cmd);
+    void sendHandlingOperation(int cmd,QVariant param);
     void NameChanged(QString Name);
     bool sendMsgSignal(QString,QString);
     void sendModuleMessage(QVariantMap module_message);
@@ -96,7 +96,7 @@ public slots:
     virtual void startWork(int run_mode) = 0;
     virtual void stopWork(bool wait_finish = true) = 0;
     virtual void resetLogic() = 0;
-    virtual void performHandlingOperation(int cmd) = 0;
+    virtual void performHandlingOperation(int cmd,QVariant param) = 0;
 private:
     QThread work_thread;
     QString m_Name;

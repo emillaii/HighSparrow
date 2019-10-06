@@ -655,7 +655,7 @@ void LutModule::stopWork(bool wait_finish)
     return;
 }
 
-void LutModule::performHandlingOperation(int cmd)
+void LutModule::performHandlingOperation(int cmd,QVariant param)
 {
     if(is_run)
     {

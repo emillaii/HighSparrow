@@ -34,7 +34,7 @@ bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
         connect(this,&WorkersManager::startWorkersSignal,worker,&ThreadWorkerBase::startWork);
         connect(this,&WorkersManager::stopWorkersSignal,worker,&ThreadWorkerBase::stopWork,Qt::DirectConnection);
         connect(this,&WorkersManager::resetLogicsSignal,worker,&ThreadWorkerBase::resetLogic);
-        connect(worker,&ThreadWorkerBase::sendHandlingOperation,worker,&ThreadWorkerBase::performHandlingOperation);
+//        connect(worker,&ThreadWorkerBase::sendHandlingOperation,worker,&ThreadWorkerBase::performHandlingOperation);
         connect(worker,&ThreadWorkerBase::sendMsgSignal,this,&WorkersManager::sendMessageTest,Qt::BlockingQueuedConnection);
         connect(worker,&ThreadWorkerBase::sendModuleMessage,this,&WorkersManager::receiveModuleMessage);
         qInfo("registerWorker :%s",worker->Name().toStdString().c_str());

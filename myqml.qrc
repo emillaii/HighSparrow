@@ -171,5 +171,9 @@
         <file>qml/MarcoControl/SensorPickFromCarrier/SensorPickAndPlaceFromCarrierParameterView.qml</file>
         <file>qml/MarcoControl/SensorPlaceToSUT/SensorPlaceToSUT.qml</file>
         <file>qml/MarcoControl/SensorPlaceToSUT/SUTLoadPosition.qml</file>
+        <file>qml/MarcoControl/SensorPlaceToSUT/SensorPickAndPlaceToSUTSetting.qml</file>
+        <file>qml/MarcoControl/SensorPlaceToSUT/SensorPickAndPlaceParameter.qml</file>
+        <file>qml/MarcoControl/SensorPlaceToSUT/SPAPickAndPlacePosition.qml</file>
+        <file>qml/MarcoControl/SensorPlaceToSUT/SensorPickAndPlaceSUTTestOperation.qml</file>
     </qresource>
 </RCC>

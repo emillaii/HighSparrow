@@ -85,7 +85,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     tcp_aaCoreNew.aa_head = &tcp_aaHeadModule;
     tcp_dispenseModule.dispenser = &tcp_dispenser;
     tcp_aaCoreNew.dispense = &tcp_dispenseModule;
-    tcp_lensTrayLoaderModule.tray_clip = &tcp_lensTrayClipIn;
+    tcp_lensTrayLoaderModule.tray_clip_in = &tcp_lensTrayClipIn;
     tcp_lensTrayLoaderModule.tray_clip_out = &tcp_lensTrayClipOut;
 
     tcp_lens_tray.standards_parameters.setTrayCount(5);

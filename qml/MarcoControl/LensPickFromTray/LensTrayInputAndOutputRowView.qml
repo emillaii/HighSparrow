@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import TrayLoaderModuleLib 1.1
 ColumnLayout{
     RowLayout{ Label { text: qsTr("进盘弹夹") } }
     RowLayout{
@@ -8,50 +9,50 @@ ColumnLayout{
         Button{
             text: qsTr("起始位置")
             onClicked: {
-                logicManager.trayLoaderModuleLTIEMovetoFirstPos()
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_TOP)
             }
         }
         TextField{
-            text:tray_clipin_parameter.firstTrayPos
+            text:tcp_tray_clipin_parameter.firstTrayPos
             horizontalAlignment:TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tray_clipin_parameter.setFirstTrayPos(text);
+                tcp_tray_clipin_parameter.setFirstTrayPos(text);
             }
         }
         Button{
             text:title_read_encoder
             onClicked: {
                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTIEName)
-                tray_clipin_parameter.setFirstTrayPos(x)
+                tcp_tray_clipin_parameter.setFirstTrayPos(x)
             }
         }
         //-------------------------------------------------------------------
         Button{
             text: qsTr("结束位置")
             onClicked: {
-                logicManager.trayLoaderModuleLTIEMovetoLastPos()
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_BOTTOM)
             }
         }
         TextField{
-            text:tray_clipin_parameter.lastTrayPos
+            text:tcp_tray_clipin_parameter.lastTrayPos
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tray_clipin_parameter.setLastTrayPos(text)
+                tcp_tray_clipin_parameter.setLastTrayPos(text)
             }
         }
         Button{
             text:title_read_encoder
             onClicked: {
                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTIEName)
-                tray_clipin_parameter.setLastTrayPos(x)
+                tcp_tray_clipin_parameter.setLastTrayPos(x)
             }
         }
         //-------------------------------------------------------------------
@@ -59,20 +60,20 @@ ColumnLayout{
             text:qsTr("列数")
         }
         TextField{
-            text:tray_clipin_parameter.columnCount
+            text:tcp_tray_clipin_parameter.columnCount
             validator: IntValidator{
                 bottom: 2
             }
             horizontalAlignment: TextInput.AlignHCenter
             onEditingFinished: {
-                tray_clipin_parameter.setColumnCount(text)
+                tcp_tray_clipin_parameter.setColumnCount(text)
             }
         }
         Label{
             text:qsTr("列距")
         }
         TextField{
-            text:tray_clipin_parameter.columnDelta
+            text:tcp_tray_clipin_parameter.columnDelta
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
@@ -87,21 +88,21 @@ ColumnLayout{
             }
         }
         TextField{
-            text:tray_clipin_parameter.changeClipPos
+            text:tcp_tray_clipin_parameter.changeClipPos
             horizontalAlignment:TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tray_clipin_parameter.setChangeClipPos(text);
+                tcp_tray_clipin_parameter.setChangeClipPos(text);
             }
         }
         Button{
             text:title_read_encoder
             onClicked: {
                 var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTIEName)
-                tray_clipin_parameter.setChangeClipPos(x)
+                tcp_tray_clipin_parameter.setChangeClipPos(x)
             }
         }
     }

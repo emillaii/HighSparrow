@@ -13,6 +13,7 @@ public:
     void Init();
     void calculateDelta();
     double getPosition(int column_index);
+    int getLayerIndex(int layer_index);
     int getCurrentIndex();
     double getCurrentPosition();
     bool updateCurrentIndex();

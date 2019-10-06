@@ -26,4 +26,20 @@ ColumnLayout {
         }
     }
 
+    Button {
+        text: qsTr("AA Head Up Look PR Setting")
+        Layout.minimumWidth: 300
+        Layout.maximumWidth: 300
+        width: 300
+        onClicked: { aaHeadUplookPRSettingRow.visible = !aaHeadUplookPRSettingRow.visible }
+    }
+
+    RowLayout{
+        GroupBox {
+            id: aaHeadUplookPRSettingRow
+            visible: false
+            AAHeadUplookPRSetting {}
+        }
+    }
+
 }

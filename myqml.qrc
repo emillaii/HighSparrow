@@ -157,5 +157,6 @@
         <file>qml/MarcoControl/AAHeadPickLens/AAPlaceParameter.qml</file>
         <file>qml/MarcoControl/AAHeadPickLens/AA1TestOperation.qml</file>
         <file>qml/MarcoControl/AAHeadPickLens/AA2TestOperation.qml</file>
+        <file>qml/MarcoControl/AAHeadPickLens/AAHeadUplookPRSetting.qml</file>
     </qresource>
 </RCC>

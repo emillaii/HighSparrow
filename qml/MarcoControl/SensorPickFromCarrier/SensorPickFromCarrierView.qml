@@ -24,6 +24,7 @@ ColumnLayout {
             InputAndOutputMagazineAndCarrierPosition {}
         }
     }
+
     Button {
         text: qsTr("Sensor Carrier Info& Position Setting")
         Layout.minimumWidth: 400
@@ -36,6 +37,36 @@ ColumnLayout {
             id: sensorCarrierInfoAndPositionSettingRow
             visible: false
             SensorCarrierInfoAndPositionSetting {}
+        }
+    }
+
+    Button {
+        text: qsTr("Sensor Carrier PR Setting")
+        Layout.minimumWidth: 400
+        Layout.maximumWidth: 400
+        width: 300
+        onClicked: { sensorCarrierPRSettingRow.visible = !sensorCarrierPRSettingRow.visible }
+    }
+    RowLayout{
+        GroupBox {
+            id: sensorCarrierPRSettingRow
+            visible: false
+            SensorCarrierPRSettingView {}
+        }
+    }
+
+    Button {
+        text: qsTr("Sensor Pick And Place Setting")
+        Layout.minimumWidth: 400
+        Layout.maximumWidth: 400
+        width: 300
+        onClicked: { sensorPickAndPlaceSettingRow.visible = !sensorPickAndPlaceSettingRow.visible }
+    }
+    RowLayout{
+        GroupBox {
+            id: sensorPickAndPlaceSettingRow
+            visible: false
+            SensorPickAndPlaceSettingView {}
         }
     }
 }

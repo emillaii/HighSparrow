@@ -7,6 +7,7 @@ import "./LensPickFromTray"
 import "./LensPlaceToLUT"
 import "./AAHeadPickLens"
 import "./SensorPickFromCarrier"
+import "./SensorPlaceToSUT"
 ScrollView {
     id: machineConfigListView
     width: 1200
@@ -68,7 +69,19 @@ ScrollView {
             visible: false
         }
 
-        Button {id: sensorPlaceToSUTViewSwitch; text:"Sensor Place To SUT";Layout.fillWidth: true}
+        Button {
+            id: sensorPlaceToSUTViewSwitch;
+            text:"Sensor Place To SUT";
+            Layout.fillWidth: true
+            onClicked: {
+                sensorPlaceToSUTView.visible = !sensorPlaceToSUTView.visible
+            }
+        }
+        SensorPlaceToSUT {
+            id: sensorPlaceToSUTView
+            visible: false
+        }
+
         Button {id: sensorDispensingViewSwitch; text:"Sensor Dispensing";Layout.fillWidth: true}
         Button {id: activeAlignmentViewSwitch; text:"Active Alignment";Layout.fillWidth: true}
         Button {id: cameraPickFromSUTViewSwitch; text:"Camera Pick From SUT";Layout.fillWidth: true}

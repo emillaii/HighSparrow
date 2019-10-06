@@ -51,7 +51,7 @@ ItemDelegate {
                             text:qsTr("起始位置")
                         }
                         TextField{
-                            text: 0
+                            text:sensor_entrance_clip_parameter.startPosition
                             horizontalAlignment:TextInput.AlignHCenter
                             validator: DoubleValidator{
                                 decimals: 6
@@ -76,102 +76,102 @@ ItemDelegate {
                         }
                     }
                     RowLayout{
-//                        Label{
-//                            text:qsTr("结束位置")
-//                        }
-//                        TextField{
-//                            text:sensor_entrance_clip_parameter.endPosition
-//                            horizontalAlignment: TextInput.AlignHCenter
-//                            validator: DoubleValidator{
-//                                decimals: 6
-//                                notation: DoubleValidator.StandardNotation
-//                            }
-//                            onEditingFinished: {
-//                                sensor_entrance_clip_parameter.setEndPosition(text)
-//                            }
-//                        }
-//                        Button{
-//                            text:title_move_to
-//                            onClicked: {
-//                                logicManager.sensorTrayLoaderModuleSTIEMovetoColumnIndex(sensor_clip_standard_parameter.count-1);
-//                            }
-//                        }
-//                        Button{
-//                            text:title_read_encoder
-//                            onClicked: {
-//                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTOEName)
-//                                sensor_entrance_clip_parameter.setEndPosition(x)
-//                            }
-//                        }
+                        Label{
+                            text:qsTr("结束位置")
+                        }
+                        TextField{
+                            text:sensor_entrance_clip_parameter.endPosition
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator{
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                sensor_entrance_clip_parameter.setEndPosition(text)
+                            }
+                        }
+                        Button{
+                            text:title_move_to
+                            onClicked: {
+                                logicManager.sensorTrayLoaderModuleSTIEMovetoColumnIndex(sensor_clip_standard_parameter.count-1);
+                            }
+                        }
+                        Button{
+                            text:title_read_encoder
+                            onClicked: {
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTOEName)
+                                sensor_entrance_clip_parameter.setEndPosition(x)
+                            }
+                        }
                     }
                     RowLayout{
-//                        Label{
-//                            text:qsTr("列数")
-//                        }
-//                        TextField{
-//                            text:sensor_clip_standard_parameter.count
-//                            validator: IntValidator{
-//                                bottom: 2
-//                            }
-//                            horizontalAlignment: TextInput.AlignHCenter
-//                            onEditingFinished: {
-//                                tray_clipin_parameter.setColumnCount(text)
-//                            }
-//                        }
-//                        Label{
-//                            text:qsTr("列距")
-//                        }
-//                        TextField{
-//                            text:sensor_clip_standard_parameter.delta
-//                            validator: DoubleValidator{
-//                                decimals: 6
-//                                notation: DoubleValidator.StandardNotation
-//                            }
-//                            horizontalAlignment: TextInput.AlignHCenter
-//                        }
-//                        Button{
-//                            visible: false
-//                            text:qsTr("计算")
-//                            onClicked: {
-//                                var y1 = sensor_entrance_clip_parameter.startPosition;
-//                                var y2 = sensor_entrance_clip_parameter.startPosition;
-//                                var delta = (y2-y1)/(sensor_clip_standard_parameter.count-1);
-//                                tray_clipin_parameter.setColumnDelta(delta);
-//                            }
-//                        }
+                        Label{
+                            text:qsTr("列数")
+                        }
+                        TextField{
+                            text:sensor_clip_standard_parameter.count
+                            validator: IntValidator{
+                                bottom: 2
+                            }
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                tray_clipin_parameter.setColumnCount(text)
+                            }
+                        }
+                        Label{
+                            text:qsTr("列距")
+                        }
+                        TextField{
+                            text:sensor_clip_standard_parameter.delta
+                            validator: DoubleValidator{
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            horizontalAlignment: TextInput.AlignHCenter
+                        }
+                        Button{
+                            visible: false
+                            text:qsTr("计算")
+                            onClicked: {
+                                var y1 = sensor_entrance_clip_parameter.startPosition;
+                                var y2 = sensor_entrance_clip_parameter.startPosition;
+                                var delta = (y2-y1)/(sensor_clip_standard_parameter.count-1);
+                                tray_clipin_parameter.setColumnDelta(delta);
+                            }
+                        }
                     }
                     RowLayout{
-//                        Label{
-//                            text:qsTr("目标位置")
-//                        }
-//                        TextField{
-//                            id:col_in
-//                            text:sensor_entrance_clip_parameter.currentIndex+1
-//                            validator: IntValidator{
-//                                bottom: 1
-//                            }
-//                            horizontalAlignment: TextInput.AlignHCenter
-//                            onEditingFinished: {
-//                                var idx = text-1
-//                                sensor_entrance_clip_parameter.setCurrentIndex(idx)
-//                            }
-//                        }
-//                        Button{
-//                            text:title_move_to
-//                            onClicked: {
-//                                logicManager.sensorTrayLoaderModuleSTIEMovetoColumnIndex(col_in.text-1)
-//                            }
-//                        }
-//                        Button{
-//                            text:qsTr("弹出")
-//                            onClicked: {
-//                                //logicManager.trayLoaderModuleEjectTray()
-//                            }
-//                        }
+                        Label{
+                            text:qsTr("目标位置")
+                        }
+                        TextField{
+                            id:col_in
+                            text:sensor_entrance_clip_parameter.currentIndex+1
+                            validator: IntValidator{
+                                bottom: 1
+                            }
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                var idx = text-1
+                                sensor_entrance_clip_parameter.setCurrentIndex(idx)
+                            }
+                        }
+                        Button{
+                            text:title_move_to
+                            onClicked: {
+                                logicManager.sensorTrayLoaderModuleSTIEMovetoColumnIndex(col_in.text-1)
+                            }
+                        }
+                        Button{
+                            text:qsTr("弹出")
+                            onClicked: {
+                                //logicManager.trayLoaderModuleEjectTray()
+                            }
+                        }
                     }
                 }
             }
-            /*GroupBox{
+            GroupBox{
                 title: qsTr("出盘弹夹")
                 ColumnLayout{
                     RowLayout{
@@ -292,10 +292,42 @@ ItemDelegate {
                         }
                     }
                 }
-            }*/
-            /*GroupBox{
+            }
+            GroupBox{
                 title:qsTr("tray轨道")
                 ColumnLayout{
+/*
+                    RowLayout{
+                        Label{
+                            text:qsTr("pushMotorSafePosotion")
+                        }
+                        TextField{
+                            text:sensor_tray_loader_module_parameter.pushMotorSafePosition
+                            validator: DoubleValidator{
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                sensor_tray_loader_module_parameter.setPushMotorSafePosition(text)
+                            }
+                        }
+                        Button{
+                            text:title_move_to
+                            onClicked: {
+                                logicManager.sensorTrayLoaderModuleMovetoPushMotorSafePosotion()
+                            }
+                        }
+                        Button{
+                            text:title_read_encoder
+                            onClicked: {
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorTrayName)
+                                sensor_tray_loader_module_parameter.setPushMotorSafePosition(x)
+                            }
+                        }
+                    }
+//*/
+//*
                     RowLayout{
                         Label{
                             text:qsTr("放空盘位置")
@@ -325,6 +357,39 @@ ItemDelegate {
                             }
                         }
                     }
+//*/
+/*
+                    RowLayout{
+                        Label{
+                            text:qsTr("LTK_X1 放盘位置")
+                        }
+                        TextField{
+                            text:tray_loader_module_parameters.ltkx1ReleasePos
+                            validator: DoubleValidator{
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                tray_loader_module_parameters.setLtkx1ReleasePos(text)
+                            }
+                        }
+                        Button{
+                            text:title_move_to
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTKX1MovetoSetPos()
+                            }
+                        }
+                        Button{
+                            text:title_read_encoder
+                            onClicked: {
+                                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX1Name)
+                                tray_loader_module_parameters.setLtkx1ReleasePos(x)
+                            }
+                        }
+                    }
+//*/
+//*
                     RowLayout{
                         Label{
                             text:qsTr("取盘位置")
@@ -354,6 +419,8 @@ ItemDelegate {
                             }
                         }
                     }
+//*/
+//*
                     RowLayout{
                         Label{
                             text:qsTr("推盘结束位置")
@@ -383,6 +450,24 @@ ItemDelegate {
                             }
                         }
                     }
+//*/
+/*
+                    RowLayout{
+                        Layout.alignment: Qt.AlignRight
+                        Button{
+                            text: qsTr("夹紧")
+                            onClicked: {
+                                logicManager.trayLoaderModuleLTKX2CylinderOn()
+                            }
+                        }
+                        Button{
+                            text:qsTr("松开")
+                            onClicked:{
+                                logicManager.trayLoaderModuleLTKX2CylinderOff();
+                            }
+                        }
+                    }
+//*/
                     RowLayout{
                         Label{
                             text:qsTr("弹夹推盘位置")
@@ -532,7 +617,7 @@ ItemDelegate {
                     }
                 }
             }
-        }*/
+
+        }
     }
-}
 }

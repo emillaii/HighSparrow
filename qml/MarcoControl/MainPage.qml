@@ -6,6 +6,7 @@ import QtQuick.Dialogs 1.2
 import "./LensPickFromTray"
 import "./LensPlaceToLUT"
 import "./AAHeadPickLens"
+import "./SensorPickFromCarrier"
 ScrollView {
     id: machineConfigListView
     width: 1200
@@ -54,7 +55,19 @@ ScrollView {
             id: aaHeadPickLensView
             visible: false
         }
-        Button {id: sensorPickFromCarrierViewSwitch; text:"Sensor Pick From Carrier";Layout.fillWidth: true}
+        Button {
+            id: sensorPickFromCarrierViewSwitch;
+            text:"Sensor Pick From Carrier";
+            Layout.fillWidth: true
+            onClicked: {
+                sensorPickFromCarrierView.visible = !sensorPickFromCarrierView.visible
+            }
+        }
+        SensorPickFromCarrierView {
+            id: sensorPickFromCarrierView
+            visible: false
+        }
+
         Button {id: sensorPlaceToSUTViewSwitch; text:"Sensor Place To SUT";Layout.fillWidth: true}
         Button {id: sensorDispensingViewSwitch; text:"Sensor Dispensing";Layout.fillWidth: true}
         Button {id: activeAlignmentViewSwitch; text:"Active Alignment";Layout.fillWidth: true}

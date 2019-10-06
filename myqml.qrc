@@ -158,5 +158,11 @@
         <file>qml/MarcoControl/AAHeadPickLens/AA1TestOperation.qml</file>
         <file>qml/MarcoControl/AAHeadPickLens/AA2TestOperation.qml</file>
         <file>qml/MarcoControl/AAHeadPickLens/AAHeadUplookPRSetting.qml</file>
+        <file>qml/MarcoControl/SensorPickFromCarrier/SensorPickFromCarrierView.qml</file>
+        <file>qml/MarcoControl/SensorPickFromCarrier/InputAndOutputMagazineAndCarrierPosition.qml</file>
+        <file>qml/MarcoControl/SensorPickFromCarrier/STLESetting.qml</file>
+        <file>qml/MarcoControl/SensorPickFromCarrier/STLSetting.qml</file>
+        <file>qml/MarcoControl/SensorPickFromCarrier/STKSetting.qml</file>
+        <file>qml/MarcoControl/SensorPickFromCarrier/SensorCarrierInputAndOutputTestOperation.qml</file>
     </qresource>
 </RCC>

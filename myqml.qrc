@@ -164,5 +164,7 @@
         <file>qml/MarcoControl/SensorPickFromCarrier/STLSetting.qml</file>
         <file>qml/MarcoControl/SensorPickFromCarrier/STKSetting.qml</file>
         <file>qml/MarcoControl/SensorPickFromCarrier/SensorCarrierInputAndOutputTestOperation.qml</file>
+        <file>qml/MarcoControl/SensorPickFromCarrier/SensorCarrierInfoAndPositionSetting.qml</file>
+        <file>qml/MarcoControl/SensorPickFromCarrier/SensorCarrierInfoAndPositionTestOperation.qml</file>
     </qresource>
 </RCC>

@@ -6,14 +6,14 @@ ColumnLayout {
     width: 300
     Button {
         text: qsTr("Operation")
-        Layout.minimumWidth: 300
-        Layout.maximumWidth: 300
+        Layout.minimumWidth: 400
+        Layout.maximumWidth: 400
         width: 300
     }
     Button {
         text: qsTr("Input/Output Magazine And Carrier Position")
-        Layout.minimumWidth: 300
-        Layout.maximumWidth: 300
+        Layout.minimumWidth: 400
+        Layout.maximumWidth: 400
         width: 300
         onClicked: { inputAndOutputMagazineAndCarrierPositionRow.visible = !inputAndOutputMagazineAndCarrierPositionRow.visible }
     }
@@ -22,6 +22,20 @@ ColumnLayout {
             id: inputAndOutputMagazineAndCarrierPositionRow
             visible: false
             InputAndOutputMagazineAndCarrierPosition {}
+        }
+    }
+    Button {
+        text: qsTr("Sensor Carrier Info& Position Setting")
+        Layout.minimumWidth: 400
+        Layout.maximumWidth: 400
+        width: 300
+        onClicked: { sensorCarrierInfoAndPositionSettingRow.visible = !sensorCarrierInfoAndPositionSettingRow.visible }
+    }
+    RowLayout{
+        GroupBox {
+            id: sensorCarrierInfoAndPositionSettingRow
+            visible: false
+            SensorCarrierInfoAndPositionSetting {}
         }
     }
 }

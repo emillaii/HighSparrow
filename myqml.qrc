@@ -184,5 +184,7 @@
         <file>qml/MarcoControl/Dispense/AA2DispensingSetting.qml</file>
         <file>qml/MarcoControl/ActiveAlignment/ActiveAlignmentView.qml</file>
         <file>qml/MarcoControl/ActiveAlignment/AABondPositionSetting.qml</file>
+        <file>qml/MarcoControl/ActiveAlignment/AA1OperationTest.qml</file>
+        <file>qml/MarcoControl/ActiveAlignment/AA2OperationTest.qml</file>
     </qresource>
 </RCC>

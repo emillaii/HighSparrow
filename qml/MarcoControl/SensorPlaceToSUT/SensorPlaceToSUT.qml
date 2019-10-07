@@ -27,7 +27,7 @@ ColumnLayout {
     }
 
     Button {
-        text: qsTr("Sensor Pick & Place To SUT Setting")
+        text: qsTr("Sensor Pick And Place To SUT Setting")
         Layout.minimumWidth: 400
         Layout.maximumWidth: 400
         width: 400

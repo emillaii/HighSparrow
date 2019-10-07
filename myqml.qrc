@@ -175,5 +175,14 @@
         <file>qml/MarcoControl/SensorPlaceToSUT/SensorPickAndPlaceParameter.qml</file>
         <file>qml/MarcoControl/SensorPlaceToSUT/SPAPickAndPlacePosition.qml</file>
         <file>qml/MarcoControl/SensorPlaceToSUT/SensorPickAndPlaceSUTTestOperation.qml</file>
+        <file>qml/MarcoControl/Dispense/DispenseView.qml</file>
+        <file>qml/MarcoControl/Dispense/Operation.qml</file>
+        <file>qml/MarcoControl/Dispense/SensorDownlookPositionSetting.qml</file>
+        <file>qml/MarcoControl/Dispense/SensorDispensingGluePRSetting.qml</file>
+        <file>qml/MarcoControl/Dispense/SensorDispensingGlueSetting.qml</file>
+        <file>qml/MarcoControl/Dispense/AA1DispensingSetting.qml</file>
+        <file>qml/MarcoControl/Dispense/AA2DispensingSetting.qml</file>
+        <file>qml/MarcoControl/ActiveAlignment/ActiveAlignmentView.qml</file>
+        <file>qml/MarcoControl/ActiveAlignment/AABondPositionSetting.qml</file>
     </qresource>
 </RCC>

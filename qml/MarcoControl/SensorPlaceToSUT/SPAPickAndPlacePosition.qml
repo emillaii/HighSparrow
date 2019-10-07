@@ -6,7 +6,7 @@ import LogicManagerLib 1.1
 import SomeLib 1.1
 
 ColumnLayout{
-    RowLayout { Label { text: qsTr("SPA Pick & Place Position") }}
+    RowLayout { Label { text: qsTr("SPA Pick And Place Position") }}
     RowLayout {
         Label { text: qsTr("SPA Pick & Place SUT1 Position") }
         Label {

@@ -52,9 +52,8 @@ Column{
         Button {
             text: qsTr("Place")
         }
-    }
 
-    RowLayout {
+        //-------------------
         Label {
             text: qsTr("料盘2")
         }
@@ -100,4 +99,56 @@ Column{
         }
     }
 
+    RowLayout {
+        Button {
+            text: qsTr("SUT 1 Place Sensor")
+        }
+        Button {
+            text: qsTr("SUT 1 Pick Sensor")
+        }
+        Button {
+            text: qsTr("SUT 1 Clamp")
+        }
+        RoundButton{
+            background: Rectangle {
+                radius: 6
+                color: "red"
+            }
+        }
+        Button {
+            text: qsTr("SUT 1 VAC")
+        }
+        RoundButton{
+            background: Rectangle {
+                radius: 6
+                color: "red"
+            }
+        }
+    }
+    RowLayout {
+        Button {
+            text: qsTr("SUT 2 Place Sensor")
+        }
+        Button {
+            text: qsTr("SUT 2 Pick Sensor")
+        }
+        Button {
+            text: qsTr("SUT 2 Clamp")
+        }
+        RoundButton{
+            background: Rectangle {
+                radius: 6
+                color: "red"
+            }
+        }
+        Button {
+            text: qsTr("SUT 2 VAC")
+        }
+        RoundButton{
+            background: Rectangle {
+                radius: 6
+                color: "red"
+            }
+        }
+    }
 }

@@ -8,6 +8,9 @@ import "./LensPlaceToLUT"
 import "./AAHeadPickLens"
 import "./SensorPickFromCarrier"
 import "./SensorPlaceToSUT"
+import "./Dispense"
+import "./ActiveAlignment"
+
 ScrollView {
     id: machineConfigListView
     width: 1200
@@ -82,8 +85,34 @@ ScrollView {
             visible: false
         }
 
-        Button {id: sensorDispensingViewSwitch; text:"Sensor Dispensing";Layout.fillWidth: true}
-        Button {id: activeAlignmentViewSwitch; text:"Active Alignment";Layout.fillWidth: true}
+        Button {
+            id: sensorDispensingViewSwitch;
+            text:"Sensor Dispensing";
+            Layout.fillWidth: true
+            onClicked: {
+                sensorDispensingView.visible = !sensorDispensingView.visible
+            }
+        }
+
+        DispenseView {
+            id: sensorDispensingView
+            visible: false
+        }
+
+        Button {
+            id: activeAlignmentViewSwitch;
+            text:"Active Alignment";
+            Layout.fillWidth: true
+            onClicked: {
+                activeAlignmentView.visible = !activeAlignmentView.visible
+            }
+        }
+
+        ActiveAlignmentView {
+            id: activeAlignmentView
+            visible: false
+        }
+
         Button {id: cameraPickFromSUTViewSwitch; text:"Camera Pick From SUT";Layout.fillWidth: true}
         Button {id: cameraPlaceToCarrierViewSwitch; text:"Camera Place To Carrier";Layout.fillWidth: true}
         Button {id: bufferAndRejectCarrierViewSwitch; text:"Buffer & Reject Carrier";Layout.fillWidth: true}

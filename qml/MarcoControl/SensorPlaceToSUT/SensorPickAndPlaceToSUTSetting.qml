@@ -12,4 +12,5 @@ ColumnLayout {
     SensorPickAndPlaceParameter {}
     SPAPickAndPlacePosition {}
     SensorPickAndPlaceSUTTestOperation {}
+
 }

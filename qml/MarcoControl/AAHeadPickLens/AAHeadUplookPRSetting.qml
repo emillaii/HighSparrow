@@ -155,4 +155,40 @@ ColumnLayout{
             Layout.preferredWidth: 600
         }
     }
+    RowLayout {
+        FileDialog{
+            id:aa_uplook_location_file_dialog
+            title:"选择加载PR文件"
+            selectExisting: true
+            selectFolder: false
+            selectMultiple: false
+
+            nameFilters: ["avdata文件 (*.avdata)"]
+            onAccepted:{
+                aa_uplook_location.setPrFileName(fileUrl)
+            }
+        }
+        Button{
+            text:qsTr("读取PR文件")
+            onClicked: {
+                aa_uplook_location_file_dialog.open()
+            }
+        }
+        Button{
+            text:qsTr("执行PR")
+            onClicked:{
+                logicManagerState.setCurrentLocationName(aa_uplook_location.locationName)
+                logicManagerState.setUseOriginPr(true)
+                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+            }
+        }
+        Button{
+            text:qsTr("执行PR偏移")
+            onClicked:{
+                logicManagerState.setCurrentLocationName(aa_uplook_location.locationName)
+                logicManagerState.setUseOriginPr(false)
+                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+            }
+        }
+    }
 }

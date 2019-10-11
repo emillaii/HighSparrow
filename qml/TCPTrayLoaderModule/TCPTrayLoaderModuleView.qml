@@ -3,6 +3,8 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
+import SomeLib 1.1
+import TrayLoaderModuleLib 1.1
 import "../.."
 ItemDelegate {
     width: parent.width
@@ -64,7 +66,6 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTIEMovetoChangeClipPos()
                             }
                         }
                         Button{
@@ -93,7 +94,9 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTIEMovetoFirstPos()
+                                console.log("Module name: " + tcp_tray_loader_module_parameters.moduleName + " TrayLoaderModule.ENTRANCE_CLIP_POS")
+                                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.ENTRANCE_CLIP_POS)
+                                //logicManager.trayLoaderModuleLTIEMovetoFirstPos()
                             }
                         }
                         Button{

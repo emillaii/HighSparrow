@@ -10,10 +10,11 @@ import "./SensorPickFromCarrier"
 import "./SensorPlaceToSUT"
 import "./Dispense"
 import "./ActiveAlignment"
+import "./CameraPickFromSUT"
 
 ScrollView {
     id: machineConfigListView
-    width: 1200
+    width: 1600
     anchors.bottom: parent.bottom
     anchors.top: parent.top
     anchors.topMargin: 10
@@ -22,8 +23,8 @@ ScrollView {
     ColumnLayout{
         width: 1200
         Button {
-            id: lensPickFromTrayViewSwitch;
-            text:"Lens Pick From Tray";
+            id: lensPickFromTrayViewSwitch
+            text:"Lens Pick From Tray"
             Layout.fillWidth: true
             onClicked: {
                 lensPickFromTrayView.visible = !lensPickFromTrayView.visible
@@ -35,8 +36,8 @@ ScrollView {
         }
 
         Button {
-            id: lensPlaceToLUTViewSwitch;
-            text:"Lens Place To LUT";
+            id: lensPlaceToLUTViewSwitch
+            text:"Lens Place To LUT"
             Layout.fillWidth: true
             onClicked: {
                 lensPlaceToLUTView.visible = !lensPlaceToLUTView.visible
@@ -60,8 +61,8 @@ ScrollView {
             visible: false
         }
         Button {
-            id: sensorPickFromCarrierViewSwitch;
-            text:"Sensor Pick From Carrier";
+            id: sensorPickFromCarrierViewSwitch
+            text:"Sensor Pick From Carrier"
             Layout.fillWidth: true
             onClicked: {
                 sensorPickFromCarrierView.visible = !sensorPickFromCarrierView.visible
@@ -73,8 +74,8 @@ ScrollView {
         }
 
         Button {
-            id: sensorPlaceToSUTViewSwitch;
-            text:"Sensor Place To SUT";
+            id: sensorPlaceToSUTViewSwitch
+            text:"Sensor Place To SUT"
             Layout.fillWidth: true
             onClicked: {
                 sensorPlaceToSUTView.visible = !sensorPlaceToSUTView.visible
@@ -100,8 +101,8 @@ ScrollView {
         }
 
         Button {
-            id: activeAlignmentViewSwitch;
-            text:"Active Alignment";
+            id: activeAlignmentViewSwitch
+            text:"Active Alignment"
             Layout.fillWidth: true
             onClicked: {
                 activeAlignmentView.visible = !activeAlignmentView.visible
@@ -113,7 +114,20 @@ ScrollView {
             visible: false
         }
 
-        Button {id: cameraPickFromSUTViewSwitch; text:"Camera Pick From SUT";Layout.fillWidth: true}
+        Button {
+            id: cameraPickFromSUTViewSwitch
+            text:"Camera Pick From SUT"
+            Layout.fillWidth: true
+            onClicked: {
+                cameraPickFromSUTView.visible = !cameraPickFromSUTView.visible
+            }
+        }
+
+        CameraPickFromSUTView {
+            id: cameraPickFromSUTView
+            visible: false
+        }
+
         Button {id: cameraPlaceToCarrierViewSwitch; text:"Camera Place To Carrier";Layout.fillWidth: true}
         Button {id: bufferAndRejectCarrierViewSwitch; text:"Buffer & Reject Carrier";Layout.fillWidth: true}
     }

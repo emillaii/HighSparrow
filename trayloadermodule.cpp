@@ -355,6 +355,7 @@ void TrayLoaderModule::stopWork(bool wait_finish)
 
 void TrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
 {
+    qInfo("performHandlingOperation cmd: %d", cmd);
     bool result = true;
     if(cmd == HandlePosition::ENTRANCE_CLIP_POS)
     {
@@ -395,6 +396,7 @@ void TrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
     if(!result)
         sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
     is_handling = false;
+    qInfo("performHandlingOperation cmd:%d finished", cmd);
     is_error = !result;
 }
 

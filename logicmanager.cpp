@@ -202,6 +202,7 @@ void LogicManager::sendCmdMessage(QVariantMap message,int cmd)
 {
     message.insert("TargetModule","LogicManager");
     message.insert("performHandling",cmd);
+    message.insert("OriginModule",parameters.moduleName());
     emit sendMessageToWorkerManger(message);
 }
 
@@ -1203,13 +1204,17 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
     }
     else if(baseModuleManage->workers.contains(module_name))//单一模块动作
     {
+        states.setHandlingMessage(module_name);
         baseModuleManage->workers[module_name]->performHandling(cmd);
     }
     else {
+        states.setHandlingMessage(module_name);
         QVariantMap message;
         message.insert("ModuleName", module_name);
+        qDebug("sendCmdMessage");
         sendCmdMessage(message,cmd);
         waitReturnMessage();
+        qDebug("Wait return message success");
     }
     qInfo("LogicManager performHandlingOperation complete!");
     is_handling = false;

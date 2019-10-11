@@ -69,7 +69,16 @@ ApplicationWindow {
         nameFilters: ["json文件 (*.json)"]
         onAccepted: {
             file.setSource(saveFileDialog.fileUrl)
-            file.write()
+            var command = "document.getElementById('get_data').click()";
+            flowChartPage.webView.runJavaScript(command, function(result) {
+                command = "document.getElementById('flowchart_data').value";
+                flowChartPage.webView.runJavaScript(command, function(result) {
+                    baseModuleManager.loadFlowchart(result, saveFileDialog.fileUrl)
+                    file.setData(result)
+                    file.write()
+                })
+            })
+
         }
     }
 
@@ -223,20 +232,6 @@ ApplicationWindow {
                    }
                 }
             }
-//            ToolButton {
-//               id: stopHomeButton
-//               objectName: "StopHomeButtonObject"
-//               text: qsTr("停Home")
-//               transformOrigin: Item.Center
-//               display: Button.TextUnderIcon
-//               icon.width: 30
-//               icon.height: 30
-//               icon.source: "icons/home.png"
-//               icon.color: "red"
-//               onClicked: {
-//                   logicManager.stopHome()
-//               }
-//           }
            RoundButton {
                 id: loadFlowChartButton
                 text: qsTr("加载流程图")
@@ -260,16 +255,7 @@ ApplicationWindow {
               icon.source: "icons/save.png"
               icon.color: "deepskyblue"
               onClicked: {
-                  var command = "document.getElementById('get_data').click()";
-                  flowChartPage.webView.runJavaScript(command, function(result) {
-                      command = "document.getElementById('flowchart_data').value";
-                      flowChartPage.webView.runJavaScript(command, function(result) {
-                          baseModuleManager.loadFlowchart(result)
-//                          console.log(result)
-                          file.setData(result)
-                          saveFileDialog.open()
-                      })
-                  })
+                   saveFileDialog.open()
               }
            }
            RoundButton {
@@ -472,6 +458,7 @@ ApplicationWindow {
 
            Label{
                id: timeString
+               font.pointSize: 18
                color: "cyan"
                text: qsTr(" 现在时间:")
                Layout.fillWidth: true
@@ -484,8 +471,6 @@ ApplicationWindow {
         id: swipeView
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
-        //interactive: false
-
         Page9Form {
 
         }
@@ -527,9 +512,23 @@ ApplicationWindow {
     footer: TabBar {
         id: tabBar
         currentIndex: swipeView.currentIndex
-
+        Component.onCompleted: {
+            if (baseModuleManager.getServerMode() === 1) {
+               tabBar.currentIndex = 0
+            }
+            else
+            {
+               tabBar.currentIndex = 1
+            }
+        }
         TabButton {
             text: qsTr("操作")
+            enabled: {
+                if (baseModuleManager.getServerMode() === 1)
+                   return true
+                else
+                   return false
+            }
         }
 
         TabButton {
@@ -546,6 +545,12 @@ ApplicationWindow {
                    return "左工位"
                 else
                    return "右工位"
+            }
+            enabled: {
+                if (baseModuleManager.getServerMode() === 1)
+                   return true
+                else
+                   return false
             }
         }
         TabButton {

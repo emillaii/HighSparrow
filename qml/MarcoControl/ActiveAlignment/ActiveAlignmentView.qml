@@ -10,7 +10,17 @@ ColumnLayout {
         Layout.minimumWidth: 400
         Layout.maximumWidth: 400
         width: 300
+        onClicked: { aaOperationRow.visible = !aaOperationRow.visible }
     }
+
+    RowLayout{
+        GroupBox {
+            id: aaOperationRow
+            visible: false
+            ActiveAlignmentOperation {}
+        }
+    }
+
 
     Button {
         text: qsTr("AA Bond Position Setting")

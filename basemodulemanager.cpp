@@ -182,6 +182,11 @@ void BaseModuleManager::tcpResp(QString message)
                 saveParameters();
             }
         }
+        else if (cmd == "needUpdateParameter")
+        {
+            qInfo("Receive need update parameter");
+            inquiryTcpModuleParameter(tcp_aaCoreNew.Name());
+        }
     }
     else if(message_object.contains("resp"))
     {
@@ -1434,6 +1439,15 @@ void BaseModuleManager::inquiryTcpModuleParameter(QString moduleName)
     }
 }
 
+void BaseModuleManager::sendTcpUpdateParameterRequest()
+{
+    QJsonObject message;
+    message["cmd"] = "needUpdateParameter";
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
+}
+
 void BaseModuleManager::setTcpModuleParameter(QString moduleName)
 {
     QJsonObject message;
@@ -1587,6 +1601,7 @@ bool BaseModuleManager::allMotorsSeekOrigin()
 
 bool BaseModuleManager::allMotorsSeekOriginal1()
 {
+    qInfo("allMotorsSeekOriginal1 Start");
     bool result;
     GetVcMotorByName(this->lut_module.parameters.motorZName())->resetSoftLanding();
     if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
@@ -1684,7 +1699,10 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 bool BaseModuleManager::allMotorsSeekOriginal2()
 {
     qInfo("allMotorsSeekOriginal2 Start");
-    GetOutputIoByName(u8"夹爪稳压阀")->Set(1);
+
+    XtGeneralOutput *gripperIo = GetOutputIoByName(u8"夹爪稳压阀");
+    if (gripperIo)
+        gripperIo->Set(1);
     //推料氣缸復位
     bool result;
     if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
@@ -1786,13 +1804,15 @@ void BaseModuleManager::updateParams()
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
     saveParameters();
-    if (this->m_InitState)
+    if (this->m_InitState && ServerMode() == 1)  //If this is AA2, set the remote tcp parameter to AA1 parameter
     {
         setTcpModuleParameter(tcp_aaCoreNew.Name());
         setTcpModuleParameter(tcp_sut.Name());
         setTcpModuleParameter(tcp_lensTrayLoaderModule.Name());
         setTcpModuleParameter(tcp_lutModule.Name());
         setTcpModuleParameter(tcp_lensLoaderModule.Name());
+    } else if (this->m_InitState && ServerMode() == 0){  // If this is AA1, send the need update parameter request to AA2, and then AA2 will inquiry tcp parameter
+        sendTcpUpdateParameterRequest();
     }
 }
 

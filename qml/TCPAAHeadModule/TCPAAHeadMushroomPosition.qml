@@ -1,7 +1,9 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
-
+import SomeLib 1.1
+import LogicManagerLib 1.1
+import AACoreNew 1.1
 ColumnLayout {
     RowLayout {
         Label {
@@ -56,6 +58,7 @@ ColumnLayout {
             onClicked: {
                 //logicManager.aaMoveToMushroomPos()
                 //aaHeadModule.moveToMushroomPosition()
+                logicManager.performHandling(tcpAACoreParams.moduleName, AACoreNew.MOVE_LENS);
             }
         }
         Button {

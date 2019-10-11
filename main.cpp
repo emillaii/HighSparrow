@@ -283,6 +283,8 @@ int main(int argc, char *argv[])
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);
     engine.rootContext()->setContextProperty("aaCoreParams", &highSprrow.baseModuleManager->aaCoreNew.parameters);
+
+    engine.rootContext()->setContextProperty("tcpAACoreParams", &highSprrow.baseModuleManager->tcp_aaCoreNew.parameters);
     engine.rootContext()->setContextProperty("aaCoreStates", &highSprrow.baseModuleManager->aaCoreNew.states);
 
     engine.rootContext()->setContextProperty("lensPickArmParams",&highSprrow.baseModuleManager->lens_pick_arm.parameters);

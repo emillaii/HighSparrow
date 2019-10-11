@@ -55,9 +55,11 @@ ItemDelegate {
                         TextField {
                             text: aaCoreParams.zpeakccCoefficient
                             horizontalAlignment: TextInput.AlignHCenter
+
                             validator: DoubleValidator {
                                 decimals: 2
                                 notation: DoubleValidator.StandardNotation
+
                             }
                             onEditingFinished: {
                                 aaCoreParams.setZpeakccCoefficient(text)

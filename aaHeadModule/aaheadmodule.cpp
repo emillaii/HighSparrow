@@ -119,12 +119,14 @@ void AAHeadModule::waitUVFinish()
 
 bool AAHeadModule::openGripper()
 {
+    if (!gripper) return true; // For do not have gripper case
     return  gripper->Set(true);
 //    Sleep(200);
 }
 
 bool AAHeadModule::closeGripper()
 {
+    if (!gripper) return true; // For do not have gripper case
     return gripper->Set(false);
 //    Sleep(200);
 }

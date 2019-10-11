@@ -167,11 +167,11 @@ bool BaslerPylonCamera::Init(){
                 imageHandler = new CSampleImageEventHandler(this);
                 camera.RegisterImageEventHandler(imageHandler, RegistrationMode_Append, Cleanup_Delete);
                 camera.Open();
-                if (cameraChannelName.contains(CAMERA_AA1_DL) || cameraChannelName.contains(CAMERA_AA2_DL)) {
-                    setFeatureTriggerSourceType("Line1");
-                } else {
-                    camera.RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_ReplaceAll, Cleanup_Delete);
-                }
+//                if (cameraChannelName.contains(CAMERA_AA1_DL) || cameraChannelName.contains(CAMERA_AA2_DL)) {
+//                    setFeatureTriggerSourceType("Line1");
+//                } else {
+//                    camera.RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_ReplaceAll, Cleanup_Delete);
+//                }
                 getFeatureTriggerSourceType();
             }
         }

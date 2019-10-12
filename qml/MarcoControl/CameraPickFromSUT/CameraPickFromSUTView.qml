@@ -10,7 +10,14 @@ ColumnLayout {
         Layout.minimumWidth: 400
         Layout.maximumWidth: 400
         width: 300
-        onClicked: { cameraPickAndPlacePRSettingRow.visible = !cameraPickAndPlacePRSettingRow.visible }
+        onClicked: { operation.visible = !operation.visible }
+    }
+    RowLayout{
+        GroupBox {
+            id: operation
+            visible: false
+            Operation {}
+        }
     }
 
 

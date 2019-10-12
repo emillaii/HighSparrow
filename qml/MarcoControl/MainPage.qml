@@ -11,6 +11,8 @@ import "./SensorPlaceToSUT"
 import "./Dispense"
 import "./ActiveAlignment"
 import "./CameraPickFromSUT"
+import "./CameraPlaceToCarrier"
+import "./BufferAndRejectCarrier"
 
 ScrollView {
     id: machineConfigListView
@@ -128,7 +130,30 @@ ScrollView {
             visible: false
         }
 
-        Button {id: cameraPlaceToCarrierViewSwitch; text:"Camera Place To Carrier";Layout.fillWidth: true}
-        Button {id: bufferAndRejectCarrierViewSwitch; text:"Buffer & Reject Carrier";Layout.fillWidth: true}
+        Button {
+            id: cameraPlaceToCarrierViewSwitch
+            text:"Camera Place To Carrier"
+            Layout.fillWidth: true
+            onClicked: {
+                cameraPlaceToCarrierView.visible = !cameraPlaceToCarrierView.visible
+            }
+        }
+        CameraPlaceToCarrierView{
+            id: cameraPlaceToCarrierView
+            visible: false
+        }
+
+        Button {
+            id: bufferAndRejectCarrierViewSwitch
+            text:"Buffer & Reject Carrier"
+            Layout.fillWidth: true
+            onClicked: {
+                bufferAndRejectCarrierView.visible = !bufferAndRejectCarrierView.visible
+            }
+        }
+        BufferAndRejectCarrierView{
+            id: bufferAndRejectCarrierView
+            visible: false
+        }
     }
 }

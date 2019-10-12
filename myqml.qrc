@@ -197,5 +197,13 @@
         <file>qml/MarcoControl/SensorPickFromCarrier/Operation.qml</file>
         <file>qml/MarcoControl/SensorPlaceToSUT/Operation.qml</file>
         <file>qml/MarcoControl/ActiveAlignment/Operation.qml</file>
+        <file>qml/MarcoControl/CameraPickFromSUT/Operation.qml</file>
+        <file>qml/MarcoControl/BaseUIModule/BaseSut1UI.qml</file>
+        <file>qml/MarcoControl/BaseUIModule/BaseSut2UI.qml</file>
+        <file>qml/MarcoControl/CameraPlaceToCarrier/CameraPlaceToCarrierView.qml</file>
+        <file>qml/MarcoControl/BufferAndRejectCarrier/BufferAndRejectCarrierView.qml</file>
+        <file>qml/MarcoControl/BufferAndRejectCarrier/Operation.qml</file>
+        <file>qml/MarcoControl/CameraPlaceToCarrier/Operation.qml</file>
+        <file>qml/MarcoControl/BaseUIModule/RowColSelector.qml</file>
     </qresource>
 </RCC>

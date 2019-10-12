@@ -2,32 +2,15 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import TrayLoaderModuleLib 1.1
+import "../BaseUIModule"
+
 ColumnLayout{
     RowLayout{ Label { text: qsTr("取放操作") } }
     RowLayout{
         Button{
             text: qsTr("Sensor料盘1位置")
         }
-        Label{
-            text: qsTr("Row")
-        }
-        TextField{
-            text: "1"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: IntValidator{
-
-            }
-        }
-        Label{
-            text: qsTr("COL")
-        }
-        TextField{
-            text: "1"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: IntValidator{
-
-            }
-        }
+       RowColSelector{}
         Button{
             text: qsTr("Pick")
         }
@@ -38,26 +21,7 @@ ColumnLayout{
         Button{
             text: qsTr("Sensor料盘2位置")
         }
-        Label{
-            text: qsTr("Row")
-        }
-        TextField{
-            text: "1"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: IntValidator{
-
-            }
-        }
-        Label{
-            text: qsTr("COL")
-        }
-        TextField{
-            text: "1"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: IntValidator{
-
-            }
-        }
+       RowColSelector{}
         Button{
             text: qsTr("Pick")
         }
@@ -71,26 +35,7 @@ ColumnLayout{
         Button{
             text: qsTr("Lens料盘1位置")
         }
-        Label{
-            text: qsTr("Row")
-        }
-        TextField{
-            text: "1"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: IntValidator{
-
-            }
-        }
-        Label{
-            text: qsTr("COL")
-        }
-        TextField{
-            text: "1"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: IntValidator{
-
-            }
-        }
+        RowColSelector{}
         Button{
             text: qsTr("Pick")
         }
@@ -101,26 +46,7 @@ ColumnLayout{
         Button{
             text: qsTr("Lens料盘2位置")
         }
-        Label{
-            text: qsTr("Row")
-        }
-        TextField{
-            text: "1"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: IntValidator{
-
-            }
-        }
-        Label{
-            text: qsTr("COL")
-        }
-        TextField{
-            text: "1"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: IntValidator{
-
-            }
-        }
+       RowColSelector{}
         Button{
             text: qsTr("Pick")
         }
@@ -211,24 +137,7 @@ ColumnLayout{
             }
         }
 
-        Button{
-            text: qsTr("SUT1 Clamp")
-        }
-        RoundButton{
-            background: Rectangle {
-                radius: 6
-                color: "red"
-            }
-        }
-
-        Button{
-            text: qsTr("SUT1 VAC")
-        }
-        RoundButton{
-            background: Rectangle {
-                radius: 6
-                color: "red"
-            }
+        BaseSut1UI{
         }
 
         Button{
@@ -268,24 +177,8 @@ ColumnLayout{
             }
         }
 
-        Button{
-            text: qsTr("SUT2 Clamp")
-        }
-        RoundButton{
-            background: Rectangle {
-                radius: 6
-                color: "red"
-            }
-        }
+        BaseSut2UI{
 
-        Button{
-            text: qsTr("SUT2 VAC")
-        }
-        RoundButton{
-            background: Rectangle {
-                radius: 6
-                color: "red"
-            }
         }
 
         Button{

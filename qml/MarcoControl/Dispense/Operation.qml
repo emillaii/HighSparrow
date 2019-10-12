@@ -2,6 +2,8 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import TrayLoaderModuleLib 1.1
+import "../BaseUIModule"
+
 ColumnLayout{
     RowLayout{ Label { text: qsTr("点胶操作") } }
     RowLayout{
@@ -14,24 +16,7 @@ ColumnLayout{
         Button{
             text: qsTr("SUT1 Load POS")
         }
-        Button{
-            text: qsTr("SUT1 VAC")
-        }
-        RoundButton{
-            background: Rectangle {
-                radius: 6
-                color: "red"
-            }
-        }
-        Button{
-            text: qsTr("SUT1 Clamp")
-        }
-        RoundButton{
-            background: Rectangle {
-                radius: 6
-                color: "red"
-            }
-        }
+        BaseSut1UI{}
     }
     RowLayout{
         Button{
@@ -43,24 +28,7 @@ ColumnLayout{
         Button{
             text: qsTr("SUT2 Load POS")
         }
-        Button{
-            text: qsTr("SUT2 VAC")
-        }
-        RoundButton{
-            background: Rectangle {
-                radius: 6
-                color: "red"
-            }
-        }
-        Button{
-            text: qsTr("SUT2 Clamp")
-        }
-        RoundButton{
-            background: Rectangle {
-                radius: 6
-                color: "red"
-            }
-        }
+        BaseSut2UI{}
     }
 
     RowLayout{ Label { text: qsTr("AA1点胶调试") } }

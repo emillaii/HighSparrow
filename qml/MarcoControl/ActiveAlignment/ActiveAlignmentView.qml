@@ -13,7 +13,7 @@ ColumnLayout {
         onClicked: {
             operation.visible = !operation.visible
         }
-        onClicked: { aaOperationRow.visible = !aaOperationRow.visible }
+        //onClicked: { aaOperationRow.visible = !aaOperationRow.visible }
     }
     RowLayout{
         GroupBox {

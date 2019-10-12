@@ -9,7 +9,18 @@ ColumnLayout {
         Layout.minimumWidth: 300
         Layout.maximumWidth: 300
         width: 300
+        onClicked: {
+            operation.visible = !operation.visible
+        }
     }
+    RowLayout{
+        GroupBox{
+            id: operation
+            visible: false
+            Operation{}
+        }
+    }
+
     Button {
         text: qsTr("LUT Load And PR Position Setting")
         Layout.minimumWidth: 300

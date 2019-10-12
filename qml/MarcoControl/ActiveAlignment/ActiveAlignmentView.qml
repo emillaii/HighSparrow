@@ -9,8 +9,18 @@ ColumnLayout {
         text: qsTr("Operation")
         Layout.minimumWidth: 400
         Layout.maximumWidth: 400
-        width: 300
+        width: 400
+        onClicked: {
+            operation.visible = !operation.visible
+        }
         onClicked: { aaOperationRow.visible = !aaOperationRow.visible }
+    }
+    RowLayout{
+        GroupBox {
+            id: operation
+            visible: false
+            Operation {}
+        }
     }
 
     RowLayout{

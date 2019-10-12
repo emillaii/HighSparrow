@@ -9,7 +9,18 @@ ColumnLayout {
         Layout.minimumWidth: 400
         Layout.maximumWidth: 400
         width: 400
+        onClicked: {
+            operation.visible = !operation.visible
+        }
     }
+    RowLayout{
+        GroupBox {
+            id: operation
+            visible: false
+            Operation {}
+        }
+    }
+
     Button {
         text: qsTr("Sensor Down Look Position Setting")
         Layout.minimumWidth: 400

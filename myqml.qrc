@@ -187,9 +187,15 @@
         <file>qml/MarcoControl/ActiveAlignment/AA1OperationTest.qml</file>
         <file>qml/MarcoControl/ActiveAlignment/AA2OperationTest.qml</file>
         <file>qml/MarcoControl/ActiveAlignment/ActiveAlignmentOperation.qml</file>
+        <file>qml/MarcoControl/LensPickFromTray/Operation.qml</file>
         <file>qml/MarcoControl/CameraPickFromSUT/CameraPickFromSUTView.qml</file>
         <file>qml/MarcoControl/CameraPickFromSUT/CameraPickPRSetting.qml</file>
         <file>qml/MarcoControl/CameraPickFromSUT/CameraPickFromSUTTestOperation.qml</file>
         <file>qml/MarcoControl/CameraPickFromSUT/CameraPickAndPlaceSetting.qml</file>
+        <file>qml/MarcoControl/LensPlaceToLUT/Operation.qml</file>
+        <file>qml/MarcoControl/AAHeadPickLens/Operation.qml</file>
+        <file>qml/MarcoControl/SensorPickFromCarrier/Operation.qml</file>
+        <file>qml/MarcoControl/SensorPlaceToSUT/Operation.qml</file>
+        <file>qml/MarcoControl/ActiveAlignment/Operation.qml</file>
     </qresource>
 </RCC>

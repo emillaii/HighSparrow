@@ -9,6 +9,14 @@ ColumnLayout {
         Layout.minimumWidth: 400
         Layout.maximumWidth: 400
         width: 300
+        onClicked: { operation.visible = !operation.visible }
+    }
+    RowLayout{
+        GroupBox {
+            id: operation
+            visible: false
+            Operation {}
+        }
     }
     Button {
         text: qsTr("Input/Output Magazine And Carrier Position")

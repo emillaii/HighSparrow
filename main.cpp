@@ -225,6 +225,11 @@ int main(int argc, char *argv[])
         //Remote LUT Params
         engine.rootContext()->setContextProperty("tcpLUTParams", &highSprrow.baseModuleManager->tcp_lutModule.parameters);
         engine.rootContext()->setContextProperty("tcpLUTCarrierParams", &highSprrow.baseModuleManager->tcp_lutCarrier.parameters);
+
+        //LUT State
+        engine.rootContext()->setContextProperty("lutState", &highSprrow.baseModuleManager->lut_module.states);
+        //Remote LUT State
+        engine.rootContext()->setContextProperty("tcpLUTState", &highSprrow.baseModuleManager->tcp_lutModule.states);
     }
 
     {

@@ -201,14 +201,20 @@ ColumnLayout {
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (tcpLUTState.tcpVaccum1State) return "lightGreen"
+                    else return "red"
+                }
             }
         }
         Button{ text: qsTr("LUT Pocket2 VAC") }
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (tcpLUTState.tcpVaccum2State) return "lightGreen"
+                    else return "red"
+                }
             }
         }
     }

@@ -93,6 +93,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     //Machine Map Initialization
     //machineMap = new GraphWidget;
     //machineMap->show();
+    //timer.start(1000);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -186,6 +187,21 @@ void BaseModuleManager::tcpResp(QString message)
         {
             qInfo("Receive need update parameter");
             inquiryTcpModuleParameter(tcp_aaCoreNew.Name());
+        }
+        else if (cmd == "inquiryOutputIoState")
+        {
+            qInfo("inquiryOutputIoState: %s", message.toStdString().c_str());
+            QString outputIo_name = message_object["outputIoName"].toString();
+            XtGeneralOutput* temp_io = GetOutputIoByName(outputIo_name);
+            QJsonObject result;
+            result["outputIoName"] = outputIo_name;
+            if(temp_io == nullptr)
+                result["error"] =QString("can not find ").append(outputIo_name);
+            else {
+                result["IoValue"] = temp_io->Value();
+                result["error"] = "";
+            }
+            receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
         }
     }
     else if(message_object.contains("resp"))
@@ -377,9 +393,11 @@ QString BaseModuleManager::deviceResp(QString message)
             {
                 result["error"] = QString("can not find input io ").append(temp_name);
                 bool geted = false;
-                foreach (QString messger_name, receive_messagers.keys())
+                foreach (QString messger_name, sender_messagers.keys())
                 {
-                  QString tcp_result =  receive_messagers[messger_name]->inquiryMessage(message);
+                  //QString tcp_result =  receive_messagers[messger_name]->inquiryMessage(message);
+                  QString tcp_result =  sender_messagers[messger_name]->inquiryMessage(message);
+
                   QJsonObject result_json = getJsonObjectFromString(tcp_result);
                   if(result_json.contains("error"))
                   {
@@ -410,19 +428,36 @@ QString BaseModuleManager::deviceResp(QString message)
 void BaseModuleManager::alarmChecking()
 {
     bool checked_alarm = false;
-    foreach (XtMotor* temp_motor, motors)
+//    foreach (XtMotor* temp_motor, motors)
+//    {
+//        if(temp_motor->states.seekedOrigin()&&temp_motor->checkAlarm())
+//        {
+//            checked_alarm = true;
+//            AppendError(temp_motor->GetCurrentError());
+//            temp_motor->states.setSeekedOrigin(false);
+//            states.setSeekedOrigin(false);
+//            setHomeState(false);
+//        }
+//    }
+//    if(checked_alarm)
+//        emit sendAlarm(0,ErrorLevel::ErrorMustStop,GetCurrentError());
+    if (ServerMode() == 1) //Testing code (Incomplete)
     {
-        if(temp_motor->states.seekedOrigin()&&temp_motor->checkAlarm())
-        {
-            checked_alarm = true;
-            AppendError(temp_motor->GetCurrentError());
-            temp_motor->states.setSeekedOrigin(false);
-            states.setSeekedOrigin(false);
-            setHomeState(false);
-        }
+        qInfo("tcp_lutModule.parameters.vacuum1Name(): %s", tcp_lutModule.parameters.vacuum1Name().toStdString().c_str());
+        QJsonArray array;
+        array.push_back(tcp_lutModule.parameters.vacuum1Name());
+        array.push_back(tcp_lutModule.parameters.vacuum2Name());
+        array.push_back(tcp_lensTrayLoaderModule.parameters.cylinderTrayName());
+        QJsonObject data;
+        data.insert("IoNames", array);
+        QString jsonString = getStringFromJsonObject(data);
+        qInfo("jsonString %s", jsonString.toStdString().c_str());
+        tcp_lutModule.states.setTcpVaccum1State(!tcp_lutModule.states.tcpVaccum1State());
+        tcp_lutModule.states.setTcpVaccum2State(!tcp_lutModule.states.tcpVaccum2State());
+//      DeviceStatesGeter::IoState state = state_geter.getOutputIoState(tcp_lutModule.parameters.vacuum1Name());
+
+//        qInfo("tcp_lutModule: %d", state.current_state);
     }
-    if(checked_alarm)
-        emit sendAlarm(0,ErrorLevel::ErrorMustStop,GetCurrentError());
 }
 
 bool BaseModuleManager::sendMessageTest(QString title, QString content)
@@ -1482,7 +1517,6 @@ bool BaseModuleManager::initialDevice()
         return true;
     if(!profile_loaded)
         return false;
-    timer.stop();
     qInfo("Init module manager");
     LPWSTR pTarget = ip;
     XT_Controler::InitDevice_PC_Local_Controler(0);
@@ -1539,7 +1573,6 @@ bool BaseModuleManager::initialDevice()
     {
         setOutput(u8"三色报警指示灯_绿", true);
     }
-//    timer.start(1000);
     inquiryTcpModule();
     return true;
 }

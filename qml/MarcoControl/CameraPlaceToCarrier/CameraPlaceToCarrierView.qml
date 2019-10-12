@@ -18,4 +18,34 @@ ColumnLayout {
             Operation {}
         }
     }
+
+    Button {
+        text: qsTr("Camera Pick And Place PR Setting")
+        Layout.minimumWidth: 400
+        Layout.maximumWidth: 400
+        width: 300
+        onClicked: { cameraPickAndPlacePRSetting.visible = !cameraPickAndPlacePRSetting.visible }
+    }
+    RowLayout{
+        GroupBox {
+            id: cameraPickAndPlacePRSetting
+            visible: false
+            CameraPickAndPlacePRSetting {}
+        }
+    }
+
+    Button {
+        text: qsTr("Camera Place Setting")
+        Layout.minimumWidth: 400
+        Layout.maximumWidth: 400
+        width: 300
+        onClicked: { cameraPlaceSetting.visible = !cameraPlaceSetting.visible }
+    }
+    RowLayout{
+        GroupBox {
+            id: cameraPlaceSetting
+            visible: false
+            CameraPlaceSetting {}
+        }
+    }
 }

@@ -26,12 +26,12 @@ ColumnLayout {
         Layout.minimumWidth: 400
         Layout.maximumWidth: 400
         width: 300
-        onClicked: { cameraPickAndPlacePRSettingRow.visible = !cameraPickAndPlacePRSettingRow.visible }
+        onClicked: { cameraPickPRSettingRow.visible = !cameraPickPRSettingRow.visible }
     }
 
     RowLayout{
         GroupBox {
-            id: cameraPickAndPlacePRSettingRow
+            id: cameraPickPRSettingRow
             visible: false
             CameraPickPRSetting {}
         }
@@ -42,7 +42,17 @@ ColumnLayout {
         Layout.minimumWidth: 400
         Layout.maximumWidth: 400
         width: 300
+        onClicked: {
+            cameraPickAndPlacePRSettingRow.visible = !cameraPickAndPlacePRSettingRow.visible
+        }
     }
 
+    RowLayout{
+        GroupBox {
+            id: cameraPickAndPlacePRSettingRow
+            visible: false
+            CameraPickAndPlaceSetting {}
+        }
+    }
 
 }

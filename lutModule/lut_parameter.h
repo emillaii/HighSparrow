@@ -385,6 +385,9 @@ class LutState:public PropertyBase
     Q_PROPERTY(bool station2Unload READ station2Unload WRITE setStation2Unload NOTIFY station2UnloadChanged)
     Q_PROPERTY(bool waitingTask READ waitingTask WRITE setWaitingTask NOTIFY waitingTaskChanged)
     Q_PROPERTY(int griperOperationResult READ griperOperationResult WRITE setGriperOperationResult NOTIFY griperOperationResultChanged)
+    //TCP remote module device state
+    Q_PROPERTY(bool tcpVaccum1State READ tcpVaccum1State WRITE setTcpVaccum1State NOTIFY tcpVaccum1StateChanged)
+    Q_PROPERTY(bool tcpVaccum2State READ tcpVaccum2State WRITE setTcpVaccum2State NOTIFY tcpVaccum2StateChanged)
 public:
     int runMode() const
     {
@@ -544,6 +547,16 @@ public:
     int griperOperationResult() const
     {
         return m_griperOperationResult;
+    }
+
+    bool tcpVaccum1State() const
+    {
+        return m_tcpVaccum1State;
+    }
+
+    bool tcpVaccum2State() const
+    {
+        return m_tcpVaccum2State;
     }
 
 public slots:
@@ -875,6 +888,24 @@ public slots:
         emit griperOperationResultChanged(m_griperOperationResult);
     }
 
+    void setTcpVaccum1State(bool tcpVaccum1State)
+    {
+        if (m_tcpVaccum1State == tcpVaccum1State)
+            return;
+
+        m_tcpVaccum1State = tcpVaccum1State;
+        emit tcpVaccum1StateChanged(m_tcpVaccum1State);
+    }
+
+    void setTcpVaccum2State(bool tcpVaccum2State)
+    {
+        if (m_tcpVaccum2State == tcpVaccum2State)
+            return;
+
+        m_tcpVaccum2State = tcpVaccum2State;
+        emit tcpVaccum2StateChanged(m_tcpVaccum2State);
+    }
+
 signals:
     void runModeChanged(int runMode);
 
@@ -933,6 +964,10 @@ signals:
 
     void griperOperationResultChanged(int griperOperationResult);
 
+    void tcpVaccum1StateChanged(bool tcpVaccum1State);
+
+    void tcpVaccum2StateChanged(bool tcpVaccum2State);
+
 private:
     int m_runMode = 0;
     bool m_disableStation1 = false;
@@ -962,6 +997,8 @@ private:
     int m_taskOfStation2 = 0;
     bool m_waitingTask = false;
     int m_griperOperationResult = 0;
+    bool m_tcpVaccum1State = false;
+    bool m_tcpVaccum2State;
 };
 
 #endif // LUT_PARAMERTER_H

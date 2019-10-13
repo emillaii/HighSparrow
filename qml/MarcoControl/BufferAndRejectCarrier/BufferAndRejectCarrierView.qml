@@ -18,4 +18,33 @@ ColumnLayout {
             Operation {}
         }
     }
+    Button {
+        text: qsTr("Buffer Carrier Setting")
+        Layout.minimumWidth: 400
+        Layout.maximumWidth: 400
+        width: 300
+        onClicked: { bufferCarrierSetting.visible = !bufferCarrierSetting.visible }
+    }
+    RowLayout{
+        GroupBox {
+            id: bufferCarrierSetting
+            visible: false
+            BufferCarrierSetting {}
+        }
+    }
+    Button {
+        text: qsTr("Reject Carrier Setting")
+        Layout.minimumWidth: 400
+        Layout.maximumWidth: 400
+        width: 300
+        onClicked: { rejectCarrierSetting.visible = !rejectCarrierSetting.visible }
+    }
+    RowLayout{
+        GroupBox {
+            id: rejectCarrierSetting
+            visible: false
+            Operation {}
+        }
+    }
 }
+

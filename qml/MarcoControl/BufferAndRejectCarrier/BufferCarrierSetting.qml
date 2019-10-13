@@ -109,4 +109,70 @@ Column {
             }
         }
     }
+
+    RowLayout {
+        Label { text: qsTr("Buffer Place Offset") }
+        Label { text: qsTr("X") }
+        TextField{
+           horizontalAlignment: TextInput.AlignHCenter
+           validator: DoubleValidator{
+               decimals: 6
+               notation: DoubleValidator.StandardNotation
+           }
+           onEditingFinished: {
+           }
+        }
+        Label { text: qsTr("Y") }
+        TextField{
+           horizontalAlignment: TextInput.AlignHCenter
+           validator: DoubleValidator{
+               decimals: 6
+               notation: DoubleValidator.StandardNotation
+           }
+           onEditingFinished: {
+           }
+        }
+        Label { text: qsTr("Theta") }
+        TextField{
+           horizontalAlignment: TextInput.AlignHCenter
+           validator: DoubleValidator{
+               decimals: 6
+               notation: DoubleValidator.StandardNotation
+           }
+           onEditingFinished: {
+           }
+        }
+        Button {
+            text: title_read_encoder
+        }
+        Button {
+            text: title_move_to
+        }
+    }
+
+    RowLayout {
+        Label { text: qsTr("Buffer Place高度") }
+        TextField{
+           horizontalAlignment: TextInput.AlignHCenter
+           validator: DoubleValidator{
+               decimals: 6
+               notation: DoubleValidator.StandardNotation
+           }
+           onEditingFinished: {
+           }
+        }
+        Button {
+            text: qsTr("视觉")
+        }
+        Button {
+            text: qsTr("移动到取放位置")
+        }
+        Button {
+            text: qsTr("测高")
+        }
+    }
+
+    RowLayout {
+        BufferCarrierTestOperation {}
+    }
 }

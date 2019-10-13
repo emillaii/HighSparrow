@@ -210,5 +210,7 @@
         <file>qml/MarcoControl/CameraPlaceToCarrier/CameraPlaceSetting.qml</file>
         <file>qml/MarcoControl/CameraPlaceToCarrier/CameraPlaceSettingTestOperation.qml</file>
         <file>qml/MarcoControl/BufferAndRejectCarrier/BufferCarrierSetting.qml</file>
+        <file>qml/MarcoControl/BufferAndRejectCarrier/BufferCarrierTestOperation.qml</file>
+        <file>qml/MarcoControl/BufferAndRejectCarrier/RejectCarrierSetting.qml</file>
     </qresource>
 </RCC>

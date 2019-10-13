@@ -47,18 +47,12 @@ ItemDelegate {
                         single_station_material_loader_motions.open()
                     }
                 }
-//                Button{
-//                    text: qsTr("load")
-//                    onClicked: {
-//                        baseModuleManager.loadSensorLoaderParameter()
-//                    }
-//                }
                 Button{
-                    text:qsTr("音圈标定")
+                    text:qsTr("换盘位置")
                     width: 40
                     height: 40
                     onClicked: {
-                        baseModuleManager.showSetting()
+                         sh_materialLoaderModule.moveToChangeTrayPos()
                     }
                 }
             }

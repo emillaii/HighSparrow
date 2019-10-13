@@ -189,7 +189,7 @@ SOURCES += \
     TrayMap/traymapmodel.cpp
 
 
-
+RC_ICONS= icons/sparrow.ico
 
 
 

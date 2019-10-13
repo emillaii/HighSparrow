@@ -73,6 +73,11 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&this->aaCoreNew, &AACoreNew::sendAAProcessResponse,
             &this->sh_lsut_module, &SingleheadLSutModule::receiveAAProcessResponse, Qt::DirectConnection);
     //timer.start(1000);
+    //change tray
+    connect (&this->single_station_material_loader_module,&SingleHeadMachineMaterialLoaderModule::sendChangeLensTrayRequst,
+             &this->single_station_material_loader_module,&SingleHeadMachineMaterialLoaderModule::receiveChangeLensTrayRequest,Qt::DirectConnection);
+    connect (&this->single_station_material_loader_module,&SingleHeadMachineMaterialLoaderModule::sendChangeSensorTrayRequst,
+             &this->single_station_material_loader_module,&SingleHeadMachineMaterialLoaderModule::receiveChangeSensorTrayRequest,Qt::DirectConnection);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -809,6 +814,7 @@ bool BaseModuleManager::InitStruct()
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.lensVacancyVisionName()),
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.lutVisionName()),
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.lutLensVisionName()),
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.cameraToPickerOffsetVisionName()),
                                                GetVacuumByName(single_station_material_loader_module.parameters.sutVacuumName()),
                                                GetVacuumByName(single_station_material_loader_module.parameters.lutVacuumName()));
     sensor_tray.resetTrayState(0);
@@ -894,6 +900,7 @@ bool BaseModuleManager::initialDevice()
     }
     EnableMotors();
     GetOutputIoByName(u8"TL_上下平台")->Set(true);
+    GetOutputIoByName(u8"SUT_气缸")->Set(true);
     return true;
 }
 
@@ -1212,6 +1219,31 @@ bool BaseModuleManager::performLocation(QString location_name)
     return true;
 }
 
+bool BaseModuleManager::performLensUpDownLookCalibration()
+{
+    //ToDo: This is the calibration glass width and height in mm
+    double realWidth = 7, realHeight = 7;
+    PrOffset offset1, offset2;
+//    this->lens_loader_module.performUpdowlookUpPR(offset1);
+    offset1.X /= offset1.W/realWidth;
+    offset1.Y /= offset1.H/realHeight;
+    qInfo("Lens loader UpDnlook up PR: %f %f %f %f %f", offset1.X, offset1.Y, offset1.Theta, offset1.W, offset1.H);
+//    this->lens_loader_module.performUpDownlookDownPR(offset2);
+    offset2.X /= offset2.W/realWidth;
+    offset2.Y /= offset2.H/realHeight;
+    qInfo("Lens loader UpDnlook down PR: %f %f %f %f %f", offset2.X, offset2.Y, offset2.Theta, offset2.W, offset2.H);
+    double offsetX = offset1.X - offset2.X;
+    double offsetY = offset1.Y - offset2.Y;
+    this->single_station_material_loader_module.camera_to_picker1_offset.setX(offsetX);
+    this->single_station_material_loader_module.camera_to_picker1_offset.setY(offsetY);
+//    this->lut_module.lpa_camera_to_picker_offset.setX(-offsetX);
+//    this->lut_module.lpa_camera_to_picker_offset.setY(-offsetY);
+    this->single_station_material_loader_module.camera_to_picker2_offset.setX(-offsetX);
+    this->single_station_material_loader_module.camera_to_picker2_offset.setY(-offsetY);
+
+    qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", offsetX,offsetY);
+    return true;
+}
 QString BaseModuleManager::getCalibrationParam(QString calibration_name)
 {
     Calibration* temp_caliration = GetCalibrationByName(calibration_name);
@@ -1297,10 +1329,12 @@ void BaseModuleManager::sendLoadLens(bool has_ng)
     aa_head_module.moveToPickLensPosition();
     if(has_ng)
         //emit lut_module.sendLoadLensRequst(true,0,0);
-        emit sh_lsut_module.sendLoadLensRequst(true,0,0);
+//        emit sh_lsut_module.sendLoadLensRequst(true,0,0);
+        emit sh_lsut_module.sendLoadMaterialRequest(true,true,false,true,false);
     else
         //emit lut_module.sendLoadLensRequst(true,-1,-1);
-        emit sh_lsut_module.sendLoadLensRequst(true,-1,-1);
+//        emit sh_lsut_module.sendLoadLensRequst(true,-1,-1);
+        emit sh_lsut_module.sendLoadMaterialRequest(true,true,false,false,false);
 }
 
 void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
@@ -1308,16 +1342,19 @@ void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
     if(has_product)
     {
 //        emit  aa_head_module.sendSensorRequestToSut(SUT_STATE::HAS_PRODUCT);
+        emit sh_lsut_module.sendLoadMaterialRequest(true,true,false,false,true);
         qInfo("sendSensrRequestToSut 2 in %d",QThread::currentThreadId());
     }
     else if(has_ng)
     {
 //        emit  aa_head_module.sendSensorRequestToSut(SUT_STATE::HAS_NG_SENSOR);
+        emit sh_lsut_module.sendLoadMaterialRequest(true,true,true,false,false);
         qInfo("sendSensrRequestToSut 1 in %d",QThread::currentThreadId());
     }
     else
     {
 //        emit  aa_head_module.sendSensorRequestToSut(SUT_STATE::NO_MATERIAL);
+        emit sh_lsut_module.sendLoadMaterialRequest(true,true,false,false,false);
         qInfo("sendSensrRequestToSut 0 in %d",QThread::currentThreadId());
     }
 }

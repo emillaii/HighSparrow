@@ -131,7 +131,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_PR_POS1)
+                      sh_materialLoaderModule.cameraTipOffsetCalibration(0)
                     }
                 }
             }
@@ -175,6 +175,7 @@ ColumnLayout {
                     height: 40
                     onClicked: {
 //                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_PR_POS1)
+                        sh_materialLoaderModule.cameraTipOffsetCalibration(1)
                     }
                 }
             }

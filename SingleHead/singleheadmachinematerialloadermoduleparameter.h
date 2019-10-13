@@ -39,6 +39,10 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
 
     int m_changeTrayTimeOut = 180000;
 
+
+
+    QString m_cameraToPickerOffsetVisionName = "";
+
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
 
@@ -61,6 +65,8 @@ public:
     Q_PROPERTY(QString lensVacancyVisionName READ lensVacancyVisionName WRITE setLensVacancyVisionName NOTIFY lensVacancyVisionNameChanged)
     Q_PROPERTY(QString lutVisionName READ lutVisionName WRITE setLutVisionName NOTIFY lutVisionNameChanged)
     Q_PROPERTY(QString lutLensVisionName READ lutLensVisionName WRITE setLutLensVisionName NOTIFY lutLensVisionNameChanged)
+    Q_PROPERTY(QString cameraToPickerOffsetVisionName READ cameraToPickerOffsetVisionName WRITE setCameraToPickerOffsetVisionName NOTIFY cameraToPickerOffsetVisionNameChanged)
+
 
     //    Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
     Q_PROPERTY(double escapeHeight READ escapeHeight WRITE setEscapeHeight NOTIFY escapeHeightChanged)
@@ -68,7 +74,6 @@ public:
     Q_PROPERTY(double escapeY READ escapeY WRITE setEscapeY NOTIFY escapeYChanged)
     Q_PROPERTY(QString sutVacuumName READ sutVacuumName WRITE setSutVacuumName NOTIFY sutVacuumNameChanged)
     Q_PROPERTY(QString lutVacuumName READ lutVacuumName WRITE setLutVacuumName NOTIFY lutVacuumNameChanged)
-
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
 
 
@@ -199,6 +204,12 @@ public:
     int changeTrayTimeOut() const
     {
         return m_changeTrayTimeOut;
+    }
+
+
+    QString cameraToPickerOffsetVisionName() const
+    {
+        return m_cameraToPickerOffsetVisionName;
     }
 
 public slots:
@@ -436,6 +447,17 @@ public slots:
         emit changeTrayTimeOutChanged(m_changeTrayTimeOut);
     }
 
+
+
+    void setCameraToPickerOffsetVisionName(QString cameraToPickerOffsetVisionName)
+    {
+        if (m_cameraToPickerOffsetVisionName == cameraToPickerOffsetVisionName)
+            return;
+
+        m_cameraToPickerOffsetVisionName = cameraToPickerOffsetVisionName;
+        emit cameraToPickerOffsetVisionNameChanged(m_cameraToPickerOffsetVisionName);
+    }
+
 signals:
 
     void vcm1SvelChanged(double vcm1Svel);
@@ -466,6 +488,7 @@ signals:
     void lutVacuumNameChanged(QString lutVacuumName);
 
     void changeTrayTimeOutChanged(double changeTrayTimeOut);
+    void cameraToPickerOffsetVisionNameChanged(QString cameraToPickerOffsetVisionName);
 };
 
 class MaterialLoaderState:public PropertyBase
@@ -511,6 +534,9 @@ public:
     Q_PROPERTY(bool loadingLens READ loadingLens WRITE setLoadingLens NOTIFY loadingLensChanged)
     Q_PROPERTY(bool waitingChangeLensTray READ waitingChangeLensTray WRITE setWaitingChangeLensTray NOTIFY waitingChangeLensTrayChanged)
     Q_PROPERTY(bool finishChangeLensTray READ finishChangeLensTray WRITE setFinishChangeLensTray NOTIFY finishChangeLensTrayChanged)
+
+
+    Q_PROPERTY(bool allowChangeRejectTray READ allowChangeRejectTray WRITE setAllowChangeRejectTray NOTIFY allowChangeRejectTrayChanged)
 
     int runMode() const
     {
@@ -680,6 +706,11 @@ public:
     int currentRejectTray() const
     {
         return m_currentRejectTray;
+    }
+
+    bool allowChangeRejectTray() const
+    {
+        return m_allowChangeRejectTray;
     }
 
 public slots:
@@ -988,6 +1019,15 @@ public slots:
         emit currentRejectTrayChanged(m_currentRejectTray);
     }
 
+    void setAllowChangeRejectTray(bool allowChangeRejectTray)
+    {
+        if (m_allowChangeRejectTray == allowChangeRejectTray)
+            return;
+
+        m_allowChangeRejectTray = allowChangeRejectTray;
+        emit allowChangeRejectTrayChanged(m_allowChangeRejectTray);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasSensorTrayChanged(bool hasTray);
@@ -1056,6 +1096,8 @@ signals:
 
     void currentRejectTrayChanged(int currentRejectTray);
 
+    void allowChangeRejectTrayChanged(bool allowChangeRejectTray);
+
 private:
     int m_runMode = 0;
     bool m_hasSensorTray = false;
@@ -1093,6 +1135,7 @@ private:
     bool m_waitingChangeLensTray = false;
     bool m_finishChangeLensTray = false;
 
+    bool m_allowChangeRejectTray = false;
 };
 
 

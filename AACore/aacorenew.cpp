@@ -184,36 +184,40 @@ void AACoreNew::LogicNg(int &ng_time)
         has_product = false;
         return;
     }
-    if(parameters.firstRejectSensor())
-    {
-        if(ng_time >= parameters.rejectTimes())
-        {
-            ng_time = 0;
-            has_ng_lens = true;
-            has_lens = false;
-        }
-        else
-        {
-            has_ng_sensor = true;
-            has_sensor = false;
-            ng_time++;
-        }
-    }
-    else
-    {
-        if(ng_time >= parameters.rejectTimes())
-        {
-            ng_time = 0;
-            has_ng_sensor = true;
-            has_sensor = false;
-        }
-        else
-        {
-            has_ng_lens = true;
-            has_lens = false;
-            ng_time++;
-        }
-    }
+    has_ng_lens = true;
+    has_ng_sensor = true;
+    has_lens = false;
+    has_sensor = false;
+//    if(parameters.firstRejectSensor())
+//    {
+//        if(ng_time >= parameters.rejectTimes())
+//        {
+//            ng_time = 0;
+//            has_ng_lens = true;
+//            has_lens = false;
+//        }
+//        else
+//        {
+//            has_ng_sensor = true;
+//            has_sensor = false;
+//            ng_time++;
+//        }
+//    }
+//    else
+//    {
+//        if(ng_time >= parameters.rejectTimes())
+//        {
+//            ng_time = 0;
+//            has_ng_sensor = true;
+//            has_sensor = false;
+//        }
+//        else
+//        {
+//            has_ng_lens = true;
+//            has_lens = false;
+//            ng_time++;
+//        }
+//    }
 }
 
 void AACoreNew::NgLens()
@@ -688,6 +692,14 @@ bool AACoreNew::performThreadTest(vector<QString> testList, QJsonValue params)
         } else if (testName.contains(AA_PIECE_UV)) {
             int uv_time = params["delay_in_ms"].toInt();
             ret = that->performUV(uv_time);
+        } else if (testName.contains(AA_PIECE_INIT_CAMERA)) {
+            qInfo("Performing init camera");
+            ret = that->performInitSensor();
+            qInfo("End performInitSensor %s",ret.errorMessage.toStdString().c_str());
+        } else if (testName.contains(AA_PIECE_PR_TO_BOND)) {
+            qInfo("Performing PR To Bond");
+            ret = that->performPRToBond();
+            qInfo("End performPRToBond %s",ret.errorMessage.toStdString().c_str());
         }
     }
     if (ret.code == ErrorCode::OK)
@@ -713,6 +725,8 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
     if (ret) {
         return ErrorCodeStruct {ErrorCode::OK, ""};
     } else {
+        NgSensor();
+        NgLens();
         return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""};
     }
 }
@@ -1168,6 +1182,18 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         qInfo("Layer 3: x: %f y: %f z: %f", points_3[i].x, points_3[i].y, points_3[i].z);
         layerDetected++;
     }
+
+    //Layer checking
+    if ((points_1.size() > 0 && points_1.size() < 4) ||
+        (points_2.size() > 0 && points_2.size() < 4) ||
+        (points_3.size() > 0 && points_3.size() < 4))
+    {
+        qCritical("AA pattern layer checking fail.");
+        result.insert("OK", false);
+        emit postSfrDataToELK(runningUnit, map);
+        return result;
+    }
+
     threeDPoint weighted_vector_1 = planeFitting(points_1);
     threeDPoint weighted_vector_2 = planeFitting(points_2);
     threeDPoint weighted_vector_3 = planeFitting(points_3);
@@ -1763,7 +1789,9 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     if (sfr_check) {
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-       LogicNg(current_mtf_ng_time);
+      // LogicNg(current_mtf_ng_time);
+        NgLens();
+        NgSensor();
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
@@ -2218,9 +2246,9 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
     if (!res) { qCritical("Cannot start camera");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "4"}; }
 
-    QString sensorID = dk->readSensorID();
-    qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());
-    map.insert("sensorID", sensorID);
+//    QString sensorID = dk->readSensorID();
+//    qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());
+//    map.insert("sensorID", sensorID);
     if (!imageThread->isRunning())
         imageThread->start();
     map.insert("timeElapsed", timer.elapsed());

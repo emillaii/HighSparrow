@@ -62,8 +62,6 @@ public:
     MaterialTray reject_tray;
     MaterialTray lens_tray;
     AAHeadModule aa_head_module;
-//    LutModule lut_module;
-//    SutModule sut_module;
     SingleheadLSutModule sh_lsut_module;
     DispenseModule dispense_module;
     Dispenser dispenser;
@@ -75,9 +73,6 @@ public:
 
     Unitlog unitlog;
 
-//    XtGeneralInputParameter * parameters;
-
-    //XtGeneralInputParameter * parameters;
 
     int lightPanelLighting() const
     {
@@ -195,6 +190,7 @@ public:
     Q_INVOKABLE void setMotorParamByName(QString name,double vel,double acc,double jert);
     bool performCalibration(QString calibration_name);
     bool performLocation(QString location_name);
+    bool performLensUpDownLookCalibration();
     Q_INVOKABLE QString getCalibrationParam(QString calibration_name);
     Q_INVOKABLE void setOutput(QString name, bool on);
     Q_INVOKABLE bool getOutput(QString name);

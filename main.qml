@@ -319,6 +319,7 @@ ApplicationWindow {
                    })
                }
            }
+
            ToolButton {
                text: qsTr("Stop")
                transformOrigin: Item.Center

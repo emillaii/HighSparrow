@@ -43,7 +43,7 @@ ColumnLayout {
         GroupBox {
             id: rejectCarrierSetting
             visible: false
-            Operation {}
+            RejectCarrierSetting {}
         }
     }
 }

@@ -212,5 +212,6 @@
         <file>qml/MarcoControl/BufferAndRejectCarrier/BufferCarrierSetting.qml</file>
         <file>qml/MarcoControl/BufferAndRejectCarrier/BufferCarrierTestOperation.qml</file>
         <file>qml/MarcoControl/BufferAndRejectCarrier/RejectCarrierSetting.qml</file>
+        <file>qml/MarcoControl/BufferAndRejectCarrier/RejectCarrierTestOperation.qml</file>
     </qresource>
 </RCC>

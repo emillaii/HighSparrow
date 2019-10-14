@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.11
 Column {
     RowLayout { Label { text: qsTr("测试") } }
     RowLayout {
-        Label { text: qsTr("Buffer盘位置") }
+        Label { text: qsTr("Rejectr盘位置") }
         Label { text: qsTr("Row") }
         TextField{
            horizontalAlignment: TextInput.AlignHCenter
@@ -43,4 +43,5 @@ Column {
             }
         }
     }
+
 }

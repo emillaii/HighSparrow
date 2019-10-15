@@ -163,7 +163,6 @@ void AACoreNew::run(bool has_material)
     is_run = true;
     QElapsedTimer timer;timer.start();
     while(is_run) {
-        qInfo("AACore is running");
 		timer.restart();
         if (start_process)
         {

@@ -43,6 +43,8 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
 
     QString m_cameraToPickerOffsetVisionName = "";
 
+    double m_sutPlaceSensorAngle = 90;
+
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
 
@@ -75,6 +77,7 @@ public:
     Q_PROPERTY(QString sutVacuumName READ sutVacuumName WRITE setSutVacuumName NOTIFY sutVacuumNameChanged)
     Q_PROPERTY(QString lutVacuumName READ lutVacuumName WRITE setLutVacuumName NOTIFY lutVacuumNameChanged)
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
+    Q_PROPERTY(double sutPlaceSensorAngle READ sutPlaceSensorAngle WRITE setSutPlaceSensorAngle NOTIFY sutPlaceSensorAngleChanged)
 
 
 
@@ -210,6 +213,11 @@ public:
     QString cameraToPickerOffsetVisionName() const
     {
         return m_cameraToPickerOffsetVisionName;
+    }
+
+    double sutPlaceSensorAngle() const
+    {
+        return m_sutPlaceSensorAngle;
     }
 
 public slots:
@@ -458,6 +466,16 @@ public slots:
         emit cameraToPickerOffsetVisionNameChanged(m_cameraToPickerOffsetVisionName);
     }
 
+    void setSutPlaceSensorAngle(double sutPlaceSensorAngle)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_sutPlaceSensorAngle, sutPlaceSensorAngle))
+            return;
+
+        m_sutPlaceSensorAngle = sutPlaceSensorAngle;
+        emit sutPlaceSensorAngleChanged(m_sutPlaceSensorAngle);
+    }
+
 signals:
 
     void vcm1SvelChanged(double vcm1Svel);
@@ -489,6 +507,7 @@ signals:
 
     void changeTrayTimeOutChanged(double changeTrayTimeOut);
     void cameraToPickerOffsetVisionNameChanged(QString cameraToPickerOffsetVisionName);
+    void sutPlaceSensorAngleChanged(double sutPlaceSensorAngle);
 };
 
 class MaterialLoaderState:public PropertyBase
@@ -501,6 +520,8 @@ public:
     Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
     Q_PROPERTY(bool sutHasProduct READ sutHasProduct WRITE setSutHasProduct NOTIFY sutHasProductChanged)
+
+    Q_PROPERTY(bool sutIsReadyToLoadMaterial READ sutIsReadyToLoadMaterial WRITE setSutIsReadyToLoadMaterial NOTIFY sutIsReadyToLoadMaterialChanged)
 
     Q_PROPERTY(bool needLoadSensor READ needLoadSensor WRITE setNeedLoadSensor NOTIFY needLoadSensorChanged)
     Q_PROPERTY(bool needChangeSensorTray READ needChangeSensorTray WRITE setNeedChangeSensorTray NOTIFY needChangeSensorTrayChanged)
@@ -711,6 +732,11 @@ public:
     bool allowChangeRejectTray() const
     {
         return m_allowChangeRejectTray;
+    }
+
+    bool sutIsReadyToLoadMaterial() const
+    {
+        return m_sutIsReadyToLoadMaterial;
     }
 
 public slots:
@@ -1028,6 +1054,15 @@ public slots:
         emit allowChangeRejectTrayChanged(m_allowChangeRejectTray);
     }
 
+    void setSutIsReadyToLoadMaterial(bool sutIsReadyToLoadMaterial)
+    {
+        if (m_sutIsReadyToLoadMaterial == sutIsReadyToLoadMaterial)
+            return;
+
+        m_sutIsReadyToLoadMaterial = sutIsReadyToLoadMaterial;
+        emit setSutIsReadyToLoadMaterial(m_sutIsReadyToLoadMaterial);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasSensorTrayChanged(bool hasTray);
@@ -1098,6 +1133,8 @@ signals:
 
     void allowChangeRejectTrayChanged(bool allowChangeRejectTray);
 
+    void sutIsReadyToLoadMaterialChanged(bool sutIsReadyToLoadMaterial);
+
 private:
     int m_runMode = 0;
     bool m_hasSensorTray = false;
@@ -1136,6 +1173,7 @@ private:
     bool m_finishChangeLensTray = false;
 
     bool m_allowChangeRejectTray = false;
+    bool m_sutIsReadyToLoadMaterial = false;
 };
 
 

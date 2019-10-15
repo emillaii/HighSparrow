@@ -112,7 +112,7 @@ public:
 signals:
 //    void sendLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
 //    void sendLoadSensorFinish(double offset_x,double offset_y,double offset_z);
-    void sendLoadMaterialRequest(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product);
+    void sendLoadMaterialRequest(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial);
     void sendStartAAProcessRequest();
 public slots:
     void startWork(int run_mode);

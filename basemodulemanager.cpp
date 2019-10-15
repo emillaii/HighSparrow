@@ -1023,7 +1023,10 @@ void BaseModuleManager::updateParams()
 
 void BaseModuleManager::loadFlowchart(QString json, QString filename)
 {
-    qInfo("Load flowchart: %s", json.toStdString().c_str());
+    if (!filename.isEmpty()){
+        setFlowchartFilename(filename);
+        updateParams();
+    }
     aaCoreNew.setFlowchartDocument(json);
 }
 
@@ -1326,37 +1329,10 @@ void BaseModuleManager::setLightingBrightness(QString location_name)
 
 void BaseModuleManager::sendLoadLens(bool has_ng)
 {
-    aa_head_module.moveToPickLensPosition();
-    if(has_ng)
-        //emit lut_module.sendLoadLensRequst(true,0,0);
-//        emit sh_lsut_module.sendLoadLensRequst(true,0,0);
-        emit sh_lsut_module.sendLoadMaterialRequest(true,true,false,true,false);
-    else
-        //emit lut_module.sendLoadLensRequst(true,-1,-1);
-//        emit sh_lsut_module.sendLoadLensRequst(true,-1,-1);
-        emit sh_lsut_module.sendLoadMaterialRequest(true,true,false,false,false);
 }
 
 void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
 {
-    if(has_product)
-    {
-//        emit  aa_head_module.sendSensorRequestToSut(SUT_STATE::HAS_PRODUCT);
-        emit sh_lsut_module.sendLoadMaterialRequest(true,true,false,false,true);
-        qInfo("sendSensrRequestToSut 2 in %d",QThread::currentThreadId());
-    }
-    else if(has_ng)
-    {
-//        emit  aa_head_module.sendSensorRequestToSut(SUT_STATE::HAS_NG_SENSOR);
-        emit sh_lsut_module.sendLoadMaterialRequest(true,true,true,false,false);
-        qInfo("sendSensrRequestToSut 1 in %d",QThread::currentThreadId());
-    }
-    else
-    {
-//        emit  aa_head_module.sendSensorRequestToSut(SUT_STATE::NO_MATERIAL);
-        emit sh_lsut_module.sendLoadMaterialRequest(true,true,false,false,false);
-        qInfo("sendSensrRequestToSut 0 in %d",QThread::currentThreadId());
-    }
 }
 
 void BaseModuleManager::sendChangeSensorTray()

@@ -127,6 +127,22 @@ ColumnLayout {
                 }
             }
             RowLayout{
+                Label{
+                    text:qsTr("sensor角度")
+                }
+                TextField{
+                    text:materialLoaderParameter.sutPlaceSensorAngle
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialLoaderParameter.setSutPlaceSensorAngle()
+                    }
+                }
+            }
+            RowLayout{
                 Button{
                     text:qsTr("picker1取Product")
                     width:40

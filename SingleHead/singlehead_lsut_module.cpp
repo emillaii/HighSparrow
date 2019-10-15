@@ -98,19 +98,35 @@ void SingleheadLSutModule::receiveAAProcessResponse(bool has_ng_sensor, bool has
     this->states.setHasProduct(has_product);
     this->states.setHasNgProduct(has_ng_product);
     if (has_ng_lens) {
-        unpickLens();   // unpick the lens from aa head to lut
+        //unpickLens();   // unpick the lens from aa head to lut
+        //Go to lens reject bin
+        sut_carrier->Move_SZ_SX_Y_X_Z_Sync(30, this->unpick_lens_position.Y(), this->unpick_lens_position.Z());
+        aa_head->openGripper();
+        QThread::msleep(200);
     }
     this->states.setWaitAAProcess(false);
+    pogopin->Set(false);
+    moveToLoadSensorPosition();
+    emit sendLoadMaterialRequest(states.allowLoadSensor(), states.allowLoadSensor(),
+                                 states.sutHasNgSensor(), states.lutHasNgLens(),
+                                 states.hasProduct(), true);
 }
 
 void SingleheadLSutModule::run(bool has_material){
     is_run = true;
     while (is_run) {
         if (states.waitLoading() || states.waitAAProcess()) { //Waiting Material or AA Process
+            if (!states.waitLoading()) { //Pickarm is very free
+                states.setWaitLoading(true);
+                states.setAllowLoadLens(true);
+                states.setAllowLoadSensor(true);
+                emit sendLoadMaterialRequest(states.allowLoadSensor(), states.allowLoadSensor(),
+                                             false, false, false, false);
+            }
             QThread::msleep(100);
             continue;
         }
-        if (!this->states.lutHasLens())          //LUT Not lens
+        if (!this->states.lutHasLens())          //LUT No lens
         {
             states.setWaitLoading(true);
             states.setAllowLoadLens(true);
@@ -135,7 +151,7 @@ void SingleheadLSutModule::run(bool has_material){
             states.setWaitLoading(true);
             emit sendLoadMaterialRequest(states.allowLoadSensor(), states.allowLoadSensor(),
                                          states.sutHasNgSensor(), states.lutHasNgLens(),
-                                         states.hasProduct());
+                                         states.hasProduct(), true);
         }
     }
 }
@@ -475,27 +491,12 @@ bool SingleheadLSutModule::gripLens()
 {
     qInfo("GripLens Start SUT is going to zOffset: %f", parameters.ZOffset());
     aa_head->openGripper();
-//    if(!moveToGripperPosition(true)) {
-//        qInfo("Move lens to gripper  fail");
-//        return false;
-//    }
-//    if(!moveLensToGripperCenter()) {
-//        qInfo("Move lens to gripper center fail");
-//        return false;
-//    }
-//    if(!moveLensToGripperPos()) {
-//        qInfo("Move lens to gripper z pos fail");
-//        return false;
-//    }
     if(!moveToPickLensPosition()) {
           qInfo("Move to pick lens pos fail");
           return false;
       }
     aa_head->closeGripper();
-    if (!this->vacuum_lut->Set(false)) {
-        qInfo("vacuum_lut set to true error");
-        return false;
-    }
+    this->vacuum_lut->Set(false, false);  //First do not check the state.
     qInfo("GripLens finished");
     return true;
 }

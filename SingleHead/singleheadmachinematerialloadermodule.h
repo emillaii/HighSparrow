@@ -227,7 +227,7 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
 
-    void receiveLoadMaterialRequest(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product);
+    void receiveLoadMaterialRequest(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial);
     void receiveChangeLensTrayRequest();
     void receiveChangeSensorTrayRequest();
 private:

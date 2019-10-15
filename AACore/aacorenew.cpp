@@ -161,16 +161,22 @@ void AACoreNew::run(bool has_material)
 {
     qInfo("Start AACore Thread");
     is_run = true;
+    QElapsedTimer timer;timer.start();
     while(is_run) {
+        qInfo("AACore is running");
+		timer.restart();
         if (start_process)
         {
             runningUnit = this->unitlog->createUnit();
             runFlowchartTest();
             start_process = false;
             emit postDataToELK(this->runningUnit);
+			QThread::msleep(100);
+			double temp_time = timer.elapsed();
+			temp_time/=1000;
+			qInfo("cycle_time :%f",temp_time);
             emit sendAAProcessResponse(has_ng_sensor, has_ng_lens, has_product, has_ng_product);
         }
-        QThread::msleep(100);
     }
     qInfo("End of thread");
 }
@@ -302,9 +308,13 @@ void AACoreNew::startWork( int run_mode)
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
     } else if (run_mode == RunMode::AAFlowChartTest) {
+        QElapsedTimer timer;timer.start();
         runningUnit = this->unitlog->createUnit();
         runFlowchartTest();
         emit postDataToELK(this->runningUnit);
+		double temp_time = timer.elapsed();
+        temp_time/=1000;
+        qInfo("circle_time :%f",temp_time);
     }
     else if(run_mode == RunMode::OnlyLeftAA&&aa_head->parameters.moduleName().contains("1"))
     {
@@ -407,6 +417,10 @@ bool AACoreNew::runFlowchartTest()
            if (value["fromOperator"].toString() == currentPointer
             && value["fromConnector"].toString() == "success") {
                if (currentPointer == "start") {
+                   QVariantMap map;
+                   map.insert("Time", getCurrentTimeString());
+                   emit pushDataToUnit(runningUnit, "FlowChart_StartTime", map);    //Add a_ to make it first in map sorting
+
                    qInfo(QString("Move from " + currentPointer + " to " + value["toOperator"].toString()).toStdString().c_str());
                    currentPointer = value["toOperator"].toString();
                    if (links.size() == 1) {
@@ -529,6 +543,11 @@ bool AACoreNew::runFlowchartTest()
            }
        }
     }
+
+    QVariantMap map;
+    map.insert("Time", getCurrentTimeString());
+    emit pushDataToUnit(runningUnit, "FlowChart_TerminateTime", map);   //Add a_ to make it the first one in map sorting
+
     return true;
 }
 
@@ -791,11 +810,19 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     QPointF prev_point = {0, 0};
     double prev_fov_slope = 0;
     bool grabRet = true;
+    int grab_time = 0;
+    int step_move_time = 0;
+    int sfr_wait_time = 0;
+    int wait_tilt_time = 0;
+    QElapsedTimer step_move_timer;
+    QElapsedTimer grab_timer;
+    double estimated_aa_z = 0;
     if(zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
         qInfo("z scan mode");
         unsigned int count = (int)fabs((start - stop)/step_size);
         for (unsigned int i = 0; i < count; i++)
         {
+           step_move_timer.start();
            double target = start + i*step_size;
            qInfo("target: %f",target);
            this->lsut->sut_carrier->Move_Z_Sync(start+(i*step_size));
@@ -803,12 +830,12 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            qInfo("Getting feedback position from lsut");
            double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
            qInfo("Z scan start from %f, real: %f", start+(i*step_size), realZ);
-           QElapsedTimer grabTimer; grabTimer.start();
+           grab_timer.start();
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
-           qInfo("Grab time elapsed: %d", grabTimer.elapsed());
+           qInfo("Grab time elapsed: %d", grab_timer.elapsed());
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
-               map["Result"] = "AA Cannot grab image.";
+               map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                emit pushDataToUnit(runningUnit, "AA", map);
                LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
@@ -843,16 +870,23 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            dst.release();
          }
       } else if (zScanMode == ZSCAN_MODE::AA_DFOV_MODE){
+           step_move_timer.start();
            lsut->sut_carrier->Move_Z_Sync(start);
            QThread::msleep(zSleepInMs);
+           step_move_time += step_move_timer.elapsed();
+           grab_timer.start();
            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
+               map["Result"] = "AA Cannot grab image.";
+               emit pushDataToUnit(runningUnit, "AA", map);
                LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
                LogicNg(current_aa_ng_time);
+               map["Result"] = "AA Detect black screen";
+               emit pushDataToUnit(runningUnit, "AA", map);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
            }
            double dfov = calculateDFOV(img);
@@ -861,7 +895,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                LogicNg(current_aa_ng_time);
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
            }
-           double estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
+           estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
            double target_z = estimated_aa_z + offset_in_um;
            qInfo("The estimated target z is: %f dfov is %f", target_z, dfov);
            if (target_z >= stop) {
@@ -872,9 +906,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
            }
            for (unsigned int i = 0; i < imageCount; i++) {
+                step_move_timer.start();
                 lsut->sut_carrier->Move_Z_Sync(target_z+(i*step_size));
                 QThread::msleep(zSleepInMs);
+                step_move_time += step_move_timer.elapsed();
+                grab_timer.start();
                 cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+                grab_time += grab_timer.elapsed();
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
                     LogicNg(current_aa_ng_time);
@@ -930,16 +968,24 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
          double currentZ = lsut->sut_carrier->GetFeedBackPos().Z;
          double target_z = currentZ + offset_in_um;
          for (unsigned int i = 0; i < imageCount; i++) {
+             step_move_timer.start();
              lsut->sut_carrier->Move_Z_Sync(target_z+(i*step_size));
              QThread::msleep(zSleepInMs);
+             step_move_time += step_move_timer.elapsed();
+             grab_timer.start();
              cv::Mat img = dk->DothinkeyGrabImageCV(0,grabRet);
+             grab_time += grab_timer.elapsed();
              if (!grabRet) {
                  qInfo("AA Cannot grab image.");
                  LogicNg(current_aa_ng_time);
+                 map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                 emit pushDataToUnit(runningUnit, "AA", map);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
              }
              if (!blackScreenCheck(img)) {
                  LogicNg(current_aa_ng_time);
+                 map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                 emit pushDataToUnit(runningUnit, "AA", map);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
              }
              double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
@@ -963,10 +1009,12 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
          }
     }
     int timeout=1000;
+    QElapsedTimer sfr_wait_timer; sfr_wait_timer.start();
     while(this->clustered_sfr_map.size() != zScanCount && timeout >0) {
           Sleep(10);
           timeout--;
     }
+    sfr_wait_time += sfr_wait_timer.elapsed();
     double fov_slope     = (zScanCount*xysum-xsum*ysum)/(zScanCount*x2sum-xsum*xsum);       //calculate slope
     double fov_intercept = (x2sum*ysum-xsum*xysum)/(x2sum*zScanCount-xsum*xsum);            //calculate intercept
     current_fov_slope = fov_slope;
@@ -977,19 +1025,38 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     qInfo("Layer 1 xTilt : %f yTilt: %f ", aa_result["xTilt_1"].toDouble(), aa_result["yTilt_1"].toDouble());
     qInfo("Layer 2 xTilt : %f yTilt: %f ", aa_result["xTilt_2"].toDouble(), aa_result["yTilt_2"].toDouble());
     qInfo("Layer 3 xTilt : %f yTilt: %f ", aa_result["xTilt_3"].toDouble(), aa_result["yTilt_3"].toDouble());
+    map.insert("Mode", zScanMode);
+    map.insert("START_POS", start);
+    map.insert("STOP_POS", stop);
+    map.insert("STEP_SIZE", step_size);
+    map.insert("IMAGE_COUNT", imageCount);
+    map.insert("STEP_MOVE_TIME", step_move_time);
+    map.insert("GRAB_TIME", grab_time);
+    map.insert("SFR_WAIT_TIME", sfr_wait_time);
+    map.insert("X_TILT", round(aa_result["xTilt"].toDouble()*1000)/1000);
+    map.insert("Y_TILT", round(aa_result["yTilt"].toDouble()*1000)/1000);
+    map.insert("FOV_SLOPE", round(fov_slope*1000)/1000);
+    map.insert("FOV_INTERCEPT", round(fov_intercept*1000)/1000);
     bool aaResult = aa_result["OK"].toBool();
     if (!aaResult) {
         LogicNg(current_aa_ng_time);
+        map["Result"] = QString("sfrFitCurve_Advance fail");
+        emit pushDataToUnit(runningUnit, "AA", map);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Perform AA fail"};
     }
+    step_move_timer.start();
     lsut->sut_carrier->Move_Z_Sync(aa_result["zPeak"].toDouble());
     qInfo("Expected Z Peak: %f SUT Actual Z: %f", aa_result["zPeak"].toDouble(),lsut->sut_carrier->GetFeedBackPos().Z);
+    step_move_time += step_move_timer.elapsed();
     if (enableTilt == 0) {
         qInfo("Disable tilt...");
     } else {
         qInfo("Enable tilt...xTilt: %f yTilt: %f", aa_result["xTilt"].toDouble(), aa_result["yTilt"].toDouble());
+        step_move_timer.start();
         aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
         //aa_head->stepInterpolation_AB_Sync(-aa_result["xTilt"].toDouble(), -aa_result["yTilt"].toDouble());
+        wait_tilt_time += step_move_timer.elapsed();
+        map.insert("WAIT_TILT_TIME", wait_tilt_time);
     }
     if (position_checking == 1){
         QThread::msleep(zSleepInMs);
@@ -1000,19 +1067,20 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         double diff_z = (dfov - expected_fov)/fov_slope;
 //        sut->moveToZPos(beforeZ - diff_z);
         double afterZ = lsut->sut_carrier->GetFeedBackPos().Z;
+        map.insert("Final_X", lsut->sut_carrier->GetFeedBackPos().X);
+        map.insert("Final_Y", lsut->sut_carrier->GetFeedBackPos().Y);
+        map.insert("Final_Z", lsut->sut_carrier->GetFeedBackPos().Z);
         qInfo("before z: %f after z: %f now fov: %f expected fov: %f fov slope: %f fov intercept: %f", beforeZ, afterZ, dfov, expected_fov, fov_slope, fov_intercept);
     }
     clustered_sfr_map.clear();
     qInfo("AA time elapsed: %d", timer.elapsed());
-    map.insert("X_TILT", aa_result["xTilt"].toDouble());
-    map.insert("Y_TILT", aa_result["yTilt"].toDouble());
     map.insert("Z_PEAK_CC", aa_result["zPeak"].toDouble());
 //    map.insert("Z_PEAK_UL", aa_result["zPeak"].toDouble());
 //    map.insert("Z_PEAK_UR", ur_zPeak);
 //    map.insert("Z_PEAK_LL", ll_zPeak);
 //    map.insert("Z_PEAK_LR", lr_zPeak);
-    map.insert("FOV_SLOPE", fov_slope);
-    map.insert("FOV_INTERCEPT", fov_intercept);
+//    map.insert("FOV_SLOPE", fov_slope);
+//    map.insert("FOV_INTERCEPT", fov_intercept);
 //    map.insert("DEV", dev);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "AA", map);
@@ -2013,6 +2081,7 @@ ErrorCodeStruct AACoreNew::performUV(int uv_time)
     QVariantMap map;
     aa_head->openUVTillTime(uv_time);
     map.insert("timeElapsed", timer.elapsed());
+    map.insert("result", "ok");
     emit pushDataToUnit(this->runningUnit, "UV", map);
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
@@ -2252,7 +2321,7 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     if (!imageThread->isRunning())
         imageThread->start();
     map.insert("timeElapsed", timer.elapsed());
-    map.insert("success", res);
+    map.insert("result", "OK");
     emit pushDataToUnit(runningUnit, "InitSensor", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }

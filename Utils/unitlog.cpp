@@ -3,6 +3,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QFile>
+#include <qfileinfo.h>
 #include "Utils/config.h"
 #include "Utils/commonutils.h"
 Unitlog::Unitlog(QObject * parent) : QObject(parent)
@@ -52,6 +53,14 @@ bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap map)
     return false;
 }
 
+void Unitlog::clearHeaders()
+{
+    qInfo("clearHeaders");
+    temp_file_name = "";
+    headers_length = 0;
+    headers.clear();
+}
+
 bool Unitlog::postDataToELK(QString uuid)
 {
     if (unit_log_list.contains(uuid))
@@ -63,6 +72,19 @@ bool Unitlog::postDataToELK(QString uuid)
          QNetworkRequest request(unitLogEndpoint);
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));
+         //json log
+//         qInfo(doc.toJson().toStdString().c_str());
+         QString filename = "";
+         filename.append(getUnitLogDir())
+                         .append(getCurrentTimeString())
+                         .append(".json");
+         QFile file(filename);
+         file.open(QIODevice::WriteOnly | QIODevice::Text);
+         file.write(doc.toJson());
+         file.close();
+         //csv
+         postUnitDataToCSV(uuid);
+         //elk
          if (nam) {
              nam->post(request, doc.toJson());
              qInfo(doc.toJson().toStdString().c_str());
@@ -73,6 +95,118 @@ bool Unitlog::postDataToELK(QString uuid)
     } else {
         qInfo("Cannot find the unit: %s", uuid.toStdString().c_str());
     }
+    return true;
+}
+
+bool Unitlog::postUnitDataToCSV(QString uuid)
+{
+    if(!unit_log_list.contains(uuid))
+    {
+        qDebug("can not find uuid %s",uuid.toStdString().c_str());
+        return false;
+    }
+    QString file_name = "";
+    file_name.append(getProduceProcessLogDir())
+                    .append(getCurrentDateString());
+    QVariantMap data_map =  unit_log_list[uuid];
+    if(data_map.size() == 1)
+    {
+        file_name.append("_");
+        file_name.append(data_map.keys()[0]);
+    }
+    file_name.append(".csv");
+    QFile file(file_name);
+    QFileInfo fileInfo(file_name);
+    QString content = "";
+    if(!fileInfo.isFile())
+    {
+        headers_length = headers.length();
+        foreach (QString temp_name, headers)
+        {
+            content.append(temp_name);
+            content.append(",");
+        }
+        content.remove(content.lastIndexOf(","),1);
+        content.append("\n");
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        file.write(content.toStdString().c_str());
+        file.close();
+    }
+    else if(headers_length < headers.length()||headers_length == 0)
+    {
+        headers_length = headers.length();
+        foreach (QString temp_name, headers)
+        {
+            content.append(temp_name);
+            content.append(",");
+        }
+        content.remove(content.lastIndexOf(","),1);
+        content.append("\n");
+        bool result = file.open(QIODevice::Append | QIODevice::Text);
+        int count = 0;
+        while (!result) {
+            if(count>10)
+                break;
+            file.setFileName(file_name.append("_temp.csv"));
+            result = file.open(QIODevice::Append | QIODevice::Text);
+        }
+        file.write(content.toStdString().c_str());
+        file.close();
+    }
+
+    content = "";
+    bool result = file.open(QIODevice::Append | QIODevice::Text);
+
+    if(!result)
+    {
+        int count = 0;
+        while (!result) {
+            if(count>10)
+                return false;
+            file.setFileName(file_name.append("_temp.csv"));
+            result = file.open(QIODevice::Append | QIODevice::Text);
+        }
+        if(temp_file_name == file_name)
+        {
+            if(headers_length < headers.length()||headers_length == 0)
+            {
+                headers_length = headers.length();
+                foreach (QString temp_name, headers)
+                {
+                    content.append(temp_name);
+                    content.append(",");
+                }
+                content.remove(content.lastIndexOf(","),1);
+                content.append("\n");
+            }
+        }
+        else
+        {
+            temp_file_name = file_name;
+            headers_length = headers.length();
+            foreach (QString temp_name, headers)
+            {
+                content.append(temp_name);
+                content.append(",");
+            }
+            content.remove(content.lastIndexOf(","),1);
+            content.append("\n");
+        }
+    }
+    foreach (QString temp_header, headers) {
+        QStringList temp_names = temp_header.split(".");
+        if(data_map.contains(temp_names[0]))
+        {
+            QVariantMap temp_data = data_map[temp_names[0]].toMap();
+            content.append(temp_data[temp_names[1]].toString());
+        }
+        content.append(",");
+    }
+    content.remove(content.lastIndexOf(","),1);
+    content.append("\n");
+    file.write(content.toStdString().c_str());
+    file.close();
+    qInfo("postUnitDataToCSV success. uuid: %s",uuid.toStdString().c_str());
     return true;
 }
 

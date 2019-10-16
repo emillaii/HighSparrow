@@ -115,13 +115,12 @@ QPointF VisionLocation::getCurrentOffset()
 void VisionLocation::OpenLight()
 {
     lighting->setBrightness(parameters.lightChannel(),parameters.lightBrightness());
-    QThread::msleep(30);
+    QThread::msleep(10);
 }
 
 void VisionLocation::CloseLight()
 {
     lighting->setBrightness(parameters.lightChannel(),0);
-    QThread::msleep(30);
 }
 
 QString VisionLocation::getLastImageName()

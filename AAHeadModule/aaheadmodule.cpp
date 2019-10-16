@@ -112,7 +112,7 @@ void AAHeadModule::openGripper()
 {
     qInfo("open gripper is called");
     gripper->Set(false);
-    Sleep(100);
+    Sleep(250);
 }
 
 void AAHeadModule::closeGripper()

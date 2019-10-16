@@ -84,3 +84,8 @@ bool XtVacuum::GetVacuumState()
     return this->in_io->Value();
 }
 
+QString XtVacuum::GetName()
+{
+    return name;
+}
+

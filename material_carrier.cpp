@@ -47,7 +47,7 @@ bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool ch
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-    Sleep(300);
+    //Sleep(300);
     return result;
 }
 
@@ -72,7 +72,7 @@ bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool ch
     result = motor_y->MoveToPosSync(y);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-    Sleep(300);
+    //Sleep(300);
     return result;
 }
 

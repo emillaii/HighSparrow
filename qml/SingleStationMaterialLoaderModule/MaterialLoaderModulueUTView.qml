@@ -138,7 +138,7 @@ ColumnLayout {
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        materialLoaderParameter.setSutPlaceSensorAngle()
+                        materialLoaderParameter.setSutPlaceSensorAngle(text)
                     }
                 }
             }

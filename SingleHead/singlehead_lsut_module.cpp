@@ -107,7 +107,7 @@ void SingleheadLSutModule::receiveAAProcessResponse(bool has_ng_sensor, bool has
     this->states.setWaitAAProcess(false);
     pogopin->Set(false);
     moveToLoadSensorPosition();
-    emit sendLoadMaterialRequest(states.allowLoadSensor(), states.allowLoadSensor(),
+    emit sendLoadMaterialRequest(states.allowLoadSensor(), states.allowLoadLens(),
                                  states.sutHasNgSensor(), states.lutHasNgLens(),
                                  states.hasProduct(), true);
 }
@@ -120,7 +120,7 @@ void SingleheadLSutModule::run(bool has_material){
                 states.setWaitLoading(true);
                 states.setAllowLoadLens(true);
                 states.setAllowLoadSensor(true);
-                emit sendLoadMaterialRequest(states.allowLoadSensor(), states.allowLoadSensor(),
+                emit sendLoadMaterialRequest(states.allowLoadSensor(), states.allowLoadLens(),
                                              false, false, false, false);
             }
             QThread::msleep(100);
@@ -149,7 +149,7 @@ void SingleheadLSutModule::run(bool has_material){
             pogopin->Set(false);
             moveToLoadSensorPosition();
             states.setWaitLoading(true);
-            emit sendLoadMaterialRequest(states.allowLoadSensor(), states.allowLoadSensor(),
+            emit sendLoadMaterialRequest(states.allowLoadSensor(), states.allowLoadLens(),
                                          states.sutHasNgSensor(), states.lutHasNgLens(),
                                          states.hasProduct(), true);
         }

@@ -18,6 +18,7 @@ public:
     bool Wait(bool target_state,int timeout = VACUUM_TIMEOUT,int finish_delay = VACUUM_FINISH_DELAY,int input_null_delay = VACUUM_INPUT_NULL_DELAY);
     bool IsVacuum();
     bool GetVacuumState();
+    QString GetName();
 public:
     XtVacuumParameter parameters;
 private:

@@ -211,6 +211,39 @@ ColumnLayout {
                         }
                     }
                 }
+
+                RowLayout{
+                    Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
+                    Label{
+                        text: qsTr("Picker1放Product Offset X:")
+                    }
+                    TextField{
+                        text: materialLoaderParameter.picker1PlaceOkProductOffsetX
+                        horizontalAlignment: TextInput.AlignHCenter
+                        validator: DoubleValidator{
+                            decimals: 6
+                            notation: DoubleValidator.StandardNotation
+                        }
+                        onEditingFinished: {
+                           materialLoaderParameter.setPicker1PlaceOkProductOffsetX(text)
+                        }
+                    }
+                    Label{
+                        text: qsTr("Y:")
+                    }
+                    TextField{
+                        text: materialLoaderParameter.picker1PlaceOkProductOffsetY
+                        horizontalAlignment: TextInput.AlignHCenter
+                        validator: DoubleValidator{
+                            decimals: 6
+                            notation: DoubleValidator.StandardNotation
+                        }
+                        onEditingFinished: {
+                           materialLoaderParameter.setPicker1PlaceOkProductOffsetY(text)
+                        }
+                    }
+                }
+
                 RowLayout{
                     Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                     Button{
@@ -233,6 +266,7 @@ ColumnLayout {
                             sh_sensor_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
                             sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TRAY|
                                                                     MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                    MaterialLoaderModule.PICKER1_PLACE_OK_PROCUDE_TO_TRAY_PR_OFFSET|
                                                                     MaterialLoaderModule.PICKER1_TO_WORKPOS|
                                                                     MaterialLoaderModule.PICKER1_PLACE_PRODUCT_TO_TRAY)
                         }

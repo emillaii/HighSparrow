@@ -18,6 +18,8 @@ class SingleHeadMachineMaterialLoaderModule:public ThreadWorkerBase
     Q_ENUMS(HandlePR)
     Q_ENUMS(HandleToWorkPos)
     Q_ENUMS(HandlePickerAction)
+    Q_ENUMS(HandlePROffset)
+
 public:
     enum HandlePosition{
         LENS_TRAY1 = 1,
@@ -50,6 +52,8 @@ public:
 
         HANDLE_PR = (1<<11) - (1<<6)
     };
+
+
     enum HandleToWorkPos{
 
         PICKER1_TO_WORKPOS = 1<<11,
@@ -95,6 +99,13 @@ public:
 
 
         HANDLE_PICKER_ACTION = (1<<23)-(1<<16)
+    };
+
+    enum HandlePROffset
+    {
+        PICKER1_PLACE_OK_PROCUDE_TO_TRAY_PR_OFFSET = 1 << 23,
+
+        HANDLE_PR_OFFSET = (1 << 27) - (1 << 23)
     };
 
     SingleHeadMachineMaterialLoaderModule(QString name = "SingleHeadMachineMaterialLoaderModule");
@@ -202,6 +213,7 @@ private:
     bool picker2SearchZ(double z,bool is_open = true,int time_out = 10000,int picker = 0);
     bool picker2SearchSutZ(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchSutZ2(double z,bool is_open = true,int time_out = 10000);
+    bool picker2SearchSutZ2Revert(double z,bool is_open = true,int time_out = 10000);
     bool picker1MeasureHight(bool is_tray,bool is_product = false);
     bool picker2MeasureHight(bool is_tray,bool is_product = false);
 

@@ -422,7 +422,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PlaceSensorToSUT(int time_out
 bool SingleHeadMachineMaterialLoaderModule::picker2PickNgSensorFromSUT(int time_out)
 {
     qInfo("picker2PickNgSensorFromSUT time_out %d",time_out);
-    bool result = picker2SearchSutZ(pick_arm->parameters.placeSensorZ(),true,time_out);
+    bool result = picker2SearchSutZ2Revert(pick_arm->parameters.placeSensorZ(),true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT取NGsenor失败"));
     return result;
@@ -430,7 +430,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PickNgSensorFromSUT(int time_
 bool SingleHeadMachineMaterialLoaderModule::picker1PickNgSensorFromSUT(int time_out)
 {
     qInfo("pickSUTSensor  time_out %d",time_out);
-    bool result = picker1SearchSutZ(pick_arm->parameters.placeSensorZ(),true,time_out);
+    bool result = picker1SearchSutZ2(pick_arm->parameters.placeSensorZ(),true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取NGsenor失败"));
     return result;
@@ -439,7 +439,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PickNgSensorFromSUT(int time_
 bool SingleHeadMachineMaterialLoaderModule::picker1PickProductFormSUT(int time_out)
 {
     qInfo("pickSUTProduct time_out %d",time_out);
-    bool result = picker1SearchSutZ(pick_arm->parameters.pickProductZ(),true,time_out);
+    bool result = picker1SearchSutZ2(pick_arm->parameters.pickProductZ(),true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取成品失败"));
     return result;
@@ -569,7 +569,6 @@ bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ(double z, bool is_
 {
     qInfo("picker2SearchSutZ2 z %f is_open %d time_out %d",z,is_open,time_out);
     bool result = pick_arm->motor_vcm2->MoveToPosSync(z-parameters.escapeHeight());
-
     if(result)
     {
         sut_vacuum->Set(0);
@@ -591,27 +590,48 @@ bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ2(double z,  bool i
     if(result)
     {
         result =pick_arm->motor_th2->MoveToPosSync(parameters.sutPlaceSensorAngle());
+        result = pick_arm->motor_vcmx->StepMoveSync(parameters.escapeX());
         result &= pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open,false,time_out);
         sut_vacuum->Set(true);
-        //QThread::msleep(200);
         result &= pick_arm->ZSerchReturn(1,time_out);
         result &= pick_arm->motor_vcm2->MoveToPosSync(0);
     }
     result &= pick_arm ->motor_th2->MoveToPos(0);
     return result;
 }
-bool SingleHeadMachineMaterialLoaderModule::picker1SearchSutZ2(double z,bool is_open, int time_out)
+
+bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ2Revert(double z, bool is_open, int time_out)
 {
-    qInfo("picker1SearchSutZ2 z %f dest %s cmd %s is_open %d time_out %d",z,is_open,time_out);
-    bool result = pick_arm->motor_vcm1->MoveToPosSync(z-parameters.escapeHeight());
+    qInfo("picker2SearchSutZ2Revert z %f is_open %d time_out %d sutPlaceSensorAngle: %f",z,is_open,time_out, parameters.sutPlaceSensorAngle());
+    bool result = pick_arm->motor_vcm2->MoveToPosSync(z-parameters.escapeHeight());
+
     if(result)
     {
-        result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
-        sut_vacuum->Set(1);
-        QThread::msleep(100);
-        result &= pick_arm->ZSerchReturn(0,time_out);
+        sut_vacuum->Set(false);
+        result &= pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open,false,time_out);
+        result &= pick_arm->ZSerchReturn(1,time_out);
+        pick_arm->motor_vcm2->MoveToPosSync(z-parameters.escapeHeight());
+        QThread::msleep(200);
+        result = pick_arm->motor_vcmx->StepMoveSync(-parameters.escapeX());
+        result &= pick_arm->motor_vcm2->MoveToPosSync(0);
     }
-    result &= pick_arm->move_XmY_Z1_XmY(0,parameters.escapeX(),parameters.escapeY());
+    return result;
+}
+bool SingleHeadMachineMaterialLoaderModule::picker1SearchSutZ2(double z,bool is_open, int time_out)
+{
+    qInfo("picker1SearchSutZ2 z %f is_open %d time_out %d",z,is_open,time_out);
+    bool result = pick_arm->motor_vcm1->MoveToPosSync(z-parameters.escapeHeight());
+
+    if(result)
+    {
+        sut_vacuum->Set(false);
+        result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+        result &= pick_arm->ZSerchReturn(0,time_out);
+        pick_arm->motor_vcm1->MoveToPosSync(z-parameters.escapeHeight());
+        QThread::msleep(200);
+        result = pick_arm->motor_vcmx->StepMoveSync(-parameters.escapeX());
+        result &= pick_arm->motor_vcm1->MoveToPosSync(0);
+    }
     return result;
 }
 
@@ -1393,6 +1413,18 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
         return;
     }
+
+    int handlePROffset = cmd & HANDLE_PR_OFFSET;
+    switch(handlePROffset){
+    case PICKER1_PLACE_OK_PROCUDE_TO_TRAY_PR_OFFSET:
+    {
+        qInfo("Apply PICKER1_PLACE_OK_PROCUDE_TO_TRAY, X: %f, Y: %f", parameters.picker1PlaceOkProductOffsetX(), parameters.picker1PlaceOkProductOffsetY());
+        pr_offset.X += parameters.picker1PlaceOkProductOffsetX();
+        pr_offset.Y += parameters.picker1PlaceOkProductOffsetY();
+    }
+        break;
+    }
+
     int handleToWorkPos = cmd&HANDLE_TO_WORKPOS;
     switch (handleToWorkPos) {
     case PICKER1_TO_WORKPOS:

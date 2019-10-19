@@ -155,6 +155,9 @@ private:
     bool performLUTPR();
     bool performLUTLensPR();
 
+    //PR Offset
+    void applyPicker1PlaceOkProductOffset();
+
     //pickArm and trayloder動作
     bool moveToNextLensTrayPos(int tray_index);
     bool moveToLensTrayEmptyPos(int index,int tray_index);

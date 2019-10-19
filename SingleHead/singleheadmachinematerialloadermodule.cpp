@@ -402,6 +402,12 @@ bool SingleHeadMachineMaterialLoaderModule::performLUTLensPR()
     return lut_lens_vision->performPR(pr_offset);
 }
 
+void SingleHeadMachineMaterialLoaderModule::applyPicker1PlaceOkProductOffset()
+{
+    pr_offset.X += parameters.picker1PlaceOkProductOffsetX();
+    pr_offset.Y += parameters.picker1PlaceOkProductOffsetY();
+}
+
 bool SingleHeadMachineMaterialLoaderModule::picker2PickSensorFromTray(int time_out)
 {
     qInfo("pickTraySensor time_out %d",time_out);
@@ -1017,6 +1023,7 @@ void SingleHeadMachineMaterialLoaderModule::run(bool has_material)
             {
                 pr_offset.ReSet();
                 performSensorVacancyPR();
+                applyPicker1PlaceOkProductOffset();
                 moveToPicker1WorkPos();
                 picker1PlaceProductToTray();
                 states.setHasPickedProduct(false);
@@ -1419,8 +1426,7 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
     case PICKER1_PLACE_OK_PROCUDE_TO_TRAY_PR_OFFSET:
     {
         qInfo("Apply PICKER1_PLACE_OK_PROCUDE_TO_TRAY, X: %f, Y: %f", parameters.picker1PlaceOkProductOffsetX(), parameters.picker1PlaceOkProductOffsetY());
-        pr_offset.X += parameters.picker1PlaceOkProductOffsetX();
-        pr_offset.Y += parameters.picker1PlaceOkProductOffsetY();
+        applyPicker1PlaceOkProductOffset();
     }
         break;
     }

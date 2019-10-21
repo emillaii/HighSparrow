@@ -358,6 +358,8 @@ void XtMotor::Home(int thread)
 
 bool XtMotor::MoveToPos(double pos,int thread)
 {
+    qInfo("Axis %s move to %f",name.toStdString().c_str(), pos);
+
     if(is_debug) return true;
     if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
     if(thread==-1)
@@ -524,16 +526,16 @@ bool XtMotor::StepMoveSync(double step, int thread)
     double targetPos = currPos+step;
     StepMove(step, thread);
     int count = 10000;
-    while ( fabs(currPos - targetPos) >= 0.001)
+    while ( fabs(currPos - targetPos) >= 0.005)
     {
-        currPos = GetFeedbackPos();
-        Sleep(10);
-        count-=10;
         if (count == 0) {
             qInfo("Motion Timeout. id %d init %d,targetPos %f currPos %f",axis_sub_id,is_init,targetPos,currPos);
             current_target = currPos;
             return false;
         }
+        Sleep(10);
+        count-=10;
+        currPos = GetFeedbackPos();
     }
     current_target = currPos;
     return true;

@@ -6,6 +6,7 @@
 #include <QQuickImageProvider>
 #include <AVL.h>
 #include "utils/imageprovider.h"
+#include "thread_worker_base.h"
 class BaslerPylonCamera;
 
 struct PRResultStruct {
@@ -26,11 +27,13 @@ struct PRResultStruct {
     QString imageName;
 };
 
-class VisionModule: public QObject, public QQuickImageProvider
+class VisionModule: public ThreadWorkerBase,public QQuickImageProvider
 {
     Q_OBJECT
 public:
-    VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera);
+    VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera,
+                 BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
+                 BaslerPylonCamera* sensorPickarmCamera, QString name);
     QVector<QPoint> VisionModule::Read_Dispense_Path();
     /*
      * Use the most generic NCC template matching
@@ -54,14 +57,28 @@ private:
     BaslerPylonCamera * downlookCamera;
     BaslerPylonCamera * uplookCamera;
     BaslerPylonCamera * pickarmCamera;
+    BaslerPylonCamera * aa2DownlookCamera;
+    BaslerPylonCamera * sensorPickarmCamera;
     ImageProvider downlookCameraPrResultImageProvider;
     ImageProvider uplookCameraPrResultImageProvider;
     ImageProvider pickarmCameraPrResultImageProvider;
     ImageProvider glueInspectionResultImageProvider;
+    QMutex mutex;
 signals :
     void callQmlRefeshImg();
 public:
     bool is_debug = false;
+//ThreadWorkerBase Interface
+public slots:
+    void startWork(int run_mode) override;
+    void stopWork(bool wait_finish) override;
+    void resetLogic() override;
+    void performHandlingOperation(int cmd, QVariant params);
+public:
+    PropertyBase *getModuleState() override;
+    void receivceModuleMessage(QVariantMap module_message) override;
+    QMap<QString, PropertyBase *> getModuleParameter() override;
+    void setModuleParameter(QMap<QString, PropertyBase *>) override;
 };
 
 #endif // VISIONMODULE_H

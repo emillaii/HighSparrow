@@ -96,6 +96,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("uplookCamera", highSprrow.baseModuleManager->pylonUplookCamera);
     engine.rootContext()->setContextProperty("downlookCamera", highSprrow.baseModuleManager->pylonDownlookCamera);
     engine.rootContext()->setContextProperty("pickarmCamera", highSprrow.baseModuleManager->pylonPickarmCamera);
+    engine.rootContext()->setContextProperty("aa2DownlookCamera", highSprrow.baseModuleManager->pylonAA2DownlookCamera);
+    engine.rootContext()->setContextProperty("sensorPickarmCamera", highSprrow.baseModuleManager->pylonSensorPickarmCamera);
     QStringList workerNameList;
     for(QString output:highSprrow.worker_manager->getWorkersNames()){
         workerNameList<<output;
@@ -126,11 +128,15 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dispenseModule", &highSprrow.baseModuleManager->dispense_module);
     engine.rootContext()->setContextProperty("workersManager", highSprrow.worker_manager);
     engine.rootContext()->setContextProperty("alarmShower", &highSprrow.worker_manager->alarm_shower);
+    //QML Library Module
+    qmlRegisterType<LutModule>("LutModuleLib",1,1,"LutModule");
     qmlRegisterType<LensLoaderModule>("SomeLib",1,1,"LensLoaderModule");
     qmlRegisterType<SensorLoaderModule>("SomeLib",1,1,"SensorLoaderModule");
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
     qmlRegisterType<LogicManager>("LogicManagerLib",1,1,"LogicManager");
     qmlRegisterType<TrayLoaderModule>("TrayLoaderModuleLib",1,1,"TrayLoaderModule");
+
+    //
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
     engine.rootContext()->setContextProperty("lensLoaderModule", &highSprrow.baseModuleManager->lens_loader_module);
 //    engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
@@ -264,6 +270,30 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("tcp_lens_loader_parameter",&highSprrow.baseModuleManager->tcp_lensLoaderModule.parameters);
 
         engine.rootContext()->setContextProperty("tcp_picker_offset", &highSprrow.baseModuleManager->tcp_lensLoaderModule.camera_to_picker_offset);
+
+        //Remote lens loader state
+        engine.rootContext()->setContextProperty("tcpLensLoaderModuleState", &highSprrow.baseModuleManager->tcp_lensLoaderModule.states);
+    }
+
+    {
+        //Material Tray
+        engine.rootContext()->setContextProperty("material_tray",&highSprrow.baseModuleManager->material_tray);
+        engine.rootContext()->setContextProperty("first_tray_end_position",&highSprrow.baseModuleManager->material_tray.first_tray_end_position);
+        engine.rootContext()->setContextProperty("tray_start_point1",&highSprrow.baseModuleManager->material_tray.parameters[0]->tray_start_position);
+        engine.rootContext()->setContextProperty("tray_start_point2",&highSprrow.baseModuleManager->material_tray.parameters[1]->tray_start_position);
+        if(highSprrow.baseModuleManager->getServerMode()==1)
+        {
+            engine.rootContext()->setContextProperty("tray_start_point3",&highSprrow.baseModuleManager->material_tray.parameters[2]->tray_start_position);
+            engine.rootContext()->setContextProperty("tray_start_point4",&highSprrow.baseModuleManager->material_tray.parameters[3]->tray_start_position);
+        }
+        engine.rootContext()->setContextProperty("tray_standard_parameter",&highSprrow.baseModuleManager->material_tray.standards_parameters);
+
+        //Remote Material Tray
+        engine.rootContext()->setContextProperty("tcp_material_tray",&highSprrow.baseModuleManager->tcp_lens_tray);
+        engine.rootContext()->setContextProperty("tcp_first_tray_end_position",&highSprrow.baseModuleManager->tcp_lens_tray.first_tray_end_position);
+        engine.rootContext()->setContextProperty("tcp_tray_start_point1",&highSprrow.baseModuleManager->tcp_lens_tray.parameters[0]->tray_start_position);
+        engine.rootContext()->setContextProperty("tcp_tray_start_point2",&highSprrow.baseModuleManager->tcp_lens_tray.parameters[1]->tray_start_position);
+        engine.rootContext()->setContextProperty("tcp_tray_standard_parameter",&highSprrow.baseModuleManager->tcp_lens_tray.standards_parameters);
     }
 
     QString dirPath = app.applicationDirPath();
@@ -293,18 +323,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("aaCoreStates", &highSprrow.baseModuleManager->aaCoreNew.states);
 
     engine.rootContext()->setContextProperty("lensPickArmParams",&highSprrow.baseModuleManager->lens_pick_arm.parameters);
-
-    engine.rootContext()->setContextProperty("material_tray",&highSprrow.baseModuleManager->material_tray);
-    engine.rootContext()->setContextProperty("first_tray_end_position",&highSprrow.baseModuleManager->material_tray.first_tray_end_position);
-    engine.rootContext()->setContextProperty("tray_start_point1",&highSprrow.baseModuleManager->material_tray.parameters[0]->tray_start_position);
-    engine.rootContext()->setContextProperty("tray_start_point2",&highSprrow.baseModuleManager->material_tray.parameters[1]->tray_start_position);
-    if(highSprrow.baseModuleManager->getServerMode()==1)
-    {
-        engine.rootContext()->setContextProperty("tray_start_point3",&highSprrow.baseModuleManager->material_tray.parameters[2]->tray_start_position);
-        engine.rootContext()->setContextProperty("tray_start_point4",&highSprrow.baseModuleManager->material_tray.parameters[3]->tray_start_position);
-    }
-    engine.rootContext()->setContextProperty("tray_standard_parameter",&highSprrow.baseModuleManager->material_tray.standards_parameters);
-
 
     engine.rootContext()->setContextProperty("sensorPickArmParams",&highSprrow.baseModuleManager->sensor_pickarm.parameters);
     engine.rootContext()->setContextProperty("sensorLoaderParameter",
@@ -392,6 +410,8 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);
     engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);
     engine.addImageProvider(QLatin1String("pickarmCameraImage"), highSprrow.baseModuleManager->pylonPickarmCamera);
+    engine.addImageProvider(QLatin1String("aa2DownlookCameraImage"), highSprrow.baseModuleManager->pylonAA2DownlookCamera);
+    engine.addImageProvider(QLatin1String("sensorPickarmCameraImage"), highSprrow.baseModuleManager->pylonSensorPickarmCamera);
     engine.addImageProvider(QLatin1String("preview1"), highSprrow.baseModuleManager->visionModule);
     engine.addImageProvider(QLatin1String("imageGrabberLiveImage"), highSprrow.baseModuleManager->imageGrabberThread->m_pImgProvider);
     engine.addImageProvider(QLatin1String("ocImage1"), highSprrow.baseModuleManager->aaCoreNew.ocImageProvider_1);

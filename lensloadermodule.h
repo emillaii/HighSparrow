@@ -6,7 +6,7 @@
 #include "lenspickarm.h"
 #include "thread_worker_base.h"
 #include "utils/unitlog.h"
-
+#include "utils/commonutils.h"
 //namespace LensPickArmEnum {
 
 class LensLoaderModule:public ThreadWorkerBase
@@ -37,7 +37,8 @@ public:
         LUT_PR = 40,
         LUT_LENS_PR = 50,
         UPDOWNLOOK_DOWN_PR = 60,
-        PICKER_PR = 70
+        PICKER_PR = 70,
+        LUT_NG_SLOT_PR = 80
     };
     enum HandleToWorkPos
     {
@@ -58,7 +59,8 @@ public:
     LensLoaderModule(QString name = "LensLoaderModule");
     void Init(LensPickArm *pick_arm,MaterialTray *tray,MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision,
-              VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision);
+              VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision,
+              VisionLocation * lut_ng_slow_vision);
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     bool performUpDownlookDownPR(PrOffset &offset);
@@ -87,6 +89,7 @@ private:
     bool performLensPR();
     bool performVacancyPR();
     bool performLUTPR();
+    bool performLUTNGSlotPR();
     bool performLUTLensPR();
     bool performPickerPR();
 
@@ -157,6 +160,7 @@ private:
     VisionLocation * lpa_picker_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_up_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_down_vision = Q_NULLPTR;
+    VisionLocation * lut_ng_slot_vision = Q_NULLPTR;
     QMutex lut_mutex;
     QMutex tray_mutex;
     bool is_run = false;

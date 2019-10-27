@@ -25,7 +25,22 @@ enum LUTState
 class LutModule : public ThreadWorkerBase
 {
     Q_OBJECT
+    Q_ENUMS(HandlePosition)
 public:
+    enum HandlePosition
+    {
+        LOAD_POS = 1,
+        UNLOAD_POS = 2,
+        LOAD_UPLOOK_POS = 3,
+        DOWNLOOK_LOAD_POS = 4,
+        DOWNLOOK_UNLOAD_POS = 5,
+        AA1_UPLOOK_POS = 6,
+        AA1_PICK_LENS_POS = 7,
+        AA1_UNPICK_LENS_POS = 8,
+        AA2_UPLOOK_POS =9,
+        AA2_PICK_LENS_POS = 7,
+        AA2_UNPICK_LENS_POS = 8
+    };
     explicit LutModule(QString name = "LUTModule", QObject * parent = nullptr);
     void Init(MaterialCarrier* carrier,
               VisionLocation* uplook_location,VisionLocation* load_location,VisionLocation* mushroom_location,

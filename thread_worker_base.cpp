@@ -1,6 +1,7 @@
 #include "thread_worker_base.h"
 #include <utils/commonutils.h>
-
+#include "config.h"
+#include <QFile>
 ThreadWorkerBase::ThreadWorkerBase(QString name,QObject *parent) : QObject(parent),ErrorBase (name)
 {
     static int auto_id = 0;
@@ -119,6 +120,32 @@ bool ThreadWorkerBase::waitResponseMessage(bool &is_run, QString target_message)
     return false;
 }
 
+//ToDo: check the thread tcp response instead of checking file existence
+bool ThreadWorkerBase::waitVisionResponseMessage(QString filename)
+{
+    int current_time = 0;
+    while (current_time < 10)
+    {
+        current_time++;
+        QThread::msleep(100);
+        {
+            QFile mFile(filename);
+            if(mFile.exists())
+            {
+                qInfo("wait repnonse time : %d filename: %s",current_time*10, filename.toStdString().c_str());
+                return true;
+            }
+            //QMutexLocker temp_locker(&message_mutex);
+//            if(vision_operations.contains(cameraName))
+//            {
+//                qInfo("wait repnonse time : %d cameraName: %s",current_time*10, cameraName.toStdString().c_str());
+//                return true;
+//            }
+        }
+    }
+    return false;
+}
+
 void ThreadWorkerBase::receivceModuleMessageBase(QVariantMap message)
 {
     qInfo("%s receive module message %s",Name().toStdString().c_str(),getStringFromQvariantMap(message).toStdString().c_str());
@@ -132,6 +159,11 @@ void ThreadWorkerBase::receivceModuleMessageBase(QVariantMap message)
     {
         qInfo("receive AlarmModule message");
         choosed_operations.insert(message["AlarmId"].toInt(),message["Operation"].toString());
+    } else if (message["TargetModule"].toString() == VISION_MODULE_2) {
+        QString cameraName = message["cameraName"].toString();
+        QString filename = message["filename"].toString();
+        qInfo("Receive vision module message cameraName: %s filename: %s", cameraName.toStdString().c_str(), filename.toStdString().c_str());
+        //this->vision_operations.insert(cameraName, filename);
     }
     receivceModuleMessage(message);
 }

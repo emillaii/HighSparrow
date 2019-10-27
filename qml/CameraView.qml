@@ -3,9 +3,10 @@ import QtQuick.Controls 2.2
 
 Grid {
     id: grid
-    columns: 2
-    width: 800
-    height: 800
+    columns: 3
+    rows: 2
+    width: 1200
+    height: 1200
 
     function calculateOffset(w, h, px, py, rw, rh)
     {
@@ -17,8 +18,8 @@ Grid {
 
     Frame {
         id: frame3
-        width: grid.width/2
-        height: grid.height/2
+        width: grid.width/grid.columns
+        height: grid.height/grid.rows
         Image {
             id: image3
             anchors.fill: parent
@@ -127,8 +128,8 @@ Grid {
 
     Frame {
         id: frame
-        width: grid.width/2
-        height: grid.height/2
+        width: grid.width/grid.columns
+        height: grid.height/grid.rows
 
         Image {
             id: image
@@ -294,8 +295,8 @@ Grid {
 
     Frame {
         id: frame1
-        width: grid.width/2
-        height: grid.height/2
+        width: grid.width/grid.columns
+        height: grid.height/grid.rows
 
         Image {
             id: image1
@@ -454,11 +455,10 @@ Grid {
         }
     }
 
-
     Frame {
         id: frame2
-        width: grid.width/2
-        height: grid.height/2
+        width: grid.width/grid.columns
+        height: grid.height/grid.rows
         Image {
             id: image2
             anchors.fill: parent
@@ -615,4 +615,301 @@ Grid {
         }
     }
 
+    Frame {
+        id: frame4
+        width: grid.width/grid.columns
+        height: grid.height/grid.rows
+        Image {
+            id: image4
+            anchors.fill: parent
+            source: "../icons/sparrow.png"
+            fillMode: Image.PreserveAspectFit
+            cache: false
+            Rectangle {
+                color: "springgreen"
+                opacity: 0.8
+                x: (image.width - image.paintedWidth)/2
+                y: image.height/2
+                width: image.paintedWidth
+                height: 1
+            }
+            Rectangle {
+                color: "springgreen"
+                opacity: 0.8
+                x: image.width/2
+                y: (image.height - image.paintedHeight)/2
+                width: 1
+                height: image.paintedHeight
+            }
+
+            Connections {
+                target: aa2DownlookCamera
+                onCallQmlRefeshImg: {
+                    image4.source = ""
+                    image4.source = "image://aa2DownlookCameraImage"
+                    camera4Text.text = "AA2 Downlook Camera (Live)"
+                    camera4Text.color = "lightGreen"
+                    camera4OnOff.icon.color = "lightGreen"
+                }
+                onNoCameraEvent: {
+                    camera4Text.text = "AA2 Downlook Camera (Cannot detect camera)"
+                    camera4Text.color = "red"
+                    camera4OnOff.icon.color = "red"
+                }
+                onCameraCloseEvent: {
+                    camera4Text.text = "AA2 Downlook Camera (Camera closed)"
+                    camera4Text.color = "red"
+                    camera4OnOff.icon.color = "red"
+                }
+                onCameraPauseEvent: {
+                    camera4Text.text = "AA2 Downlook Camera (Live View Paused)"
+                    camera4Text.color = "cyan"
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                }
+            }
+            Text {
+                id: camera4Text
+                x: -12
+                y: -12
+                color: "#9ef678"
+                text: qsTr("AA2 Downlook Camera")
+                wrapMode: Text.WordWrap
+                elide: Text.ElideLeft
+                fontSizeMode: Text.Fit
+                lineHeight: 3.1
+                anchors.fill: parent
+                font.pixelSize: 16
+            }
+            Slider {
+                id: slider4
+                y: 250
+                width: 120
+                height: 48
+                stepSize: 1
+                to: 255
+                from: 0
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: -22
+                anchors.left: parent.left
+                anchors.leftMargin: -5
+                value: lightingController.aa2DownlookLighting
+                onValueChanged: {
+                    lightingController.setAA2DownlookLighting(value)
+                }
+                Label {
+                    y: 10
+                    color: "#46eb46"
+                    text: lightingController.aa2DownlookLighting
+                    font.pointSize: 20
+                    font.family: "Times New Roman"
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 8
+                    anchors.left: parent.left
+                    anchors.leftMargin: 117
+                }
+                Button {
+                    x: 190
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "lightGreen"
+                    icon.source: "../icons/save.png"
+                    onClicked: {
+                        visionModule.saveImage(3)
+                    }
+                }
+                Button {
+                    id: camera4OnOff
+                    x: 240
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/full-screen.png"
+                    onClicked: {
+                        if (aa2DownlookCamera.isGrabbing)
+                        {
+                            aa2DownlookCamera.close()
+                        }
+                        else
+                        {
+                            aa2DownlookCamera.open()
+                        }
+                    }
+                }
+                Button {
+                    id: camera4PauseLive
+                    x: 290
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/pause.png"
+                    onClicked: {
+                        aa2DownlookCamera.toggleLiveView()
+                    }
+                }
+            }
+        }
+    }
+
+    Frame {
+        id: frame5
+        width: grid.width/grid.columns
+        height: grid.height/grid.rows
+        Image {
+            id: image5
+            anchors.fill: parent
+            source: "../icons/sparrow.png"
+            fillMode: Image.PreserveAspectFit
+            cache: false
+            Rectangle {
+                color: "springgreen"
+                opacity: 0.8
+                x: (image.width - image.paintedWidth)/2
+                y: image.height/2
+                width: image.paintedWidth
+                height: 1
+            }
+            Rectangle {
+                color: "springgreen"
+                opacity: 0.8
+                x: image.width/2
+                y: (image.height - image.paintedHeight)/2
+                width: 1
+                height: image.paintedHeight
+            }
+
+            Connections {
+                target: sensorPickarmCamera
+                onCallQmlRefeshImg: {
+                    image5.source = ""
+                    image5.source = "image://sensorPickarmCameraImage"
+                    camera5Text.text = "Sensor Pickarm Camera (Live)"
+                    camera5Text.color = "lightGreen"
+                    camera5OnOff.icon.color = "lightGreen"
+                }
+                onNoCameraEvent: {
+                    camera5Text.text = "Sensor Pickarm Camera (Cannot detect camera)"
+                    camera4Text.color = "red"
+                    camera4OnOff.icon.color = "red"
+                }
+                onCameraCloseEvent: {
+                    camera5Text.text = "Sensor Pickarm Camera (Camera closed)"
+                    camera5Text.color = "red"
+                    camera5OnOff.icon.color = "red"
+                }
+                onCameraPauseEvent: {
+                    camera5Text.text = "Sensor Pickarm Camera (Live View Paused)"
+                    camera5Text.color = "cyan"
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                }
+            }
+            Text {
+                id: camera5Text
+                x: -12
+                y: -12
+                color: "#9ef678"
+                text: qsTr("Sensor Pickarm Camera")
+                wrapMode: Text.WordWrap
+                elide: Text.ElideLeft
+                fontSizeMode: Text.Fit
+                lineHeight: 3.1
+                anchors.fill: parent
+                font.pixelSize: 16
+            }
+            Slider {
+                id: slider5
+                y: 250
+                width: 120
+                height: 48
+                stepSize: 1
+                to: 255
+                from: 0
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: -22
+                anchors.left: parent.left
+                anchors.leftMargin: -5
+                value: lightingController.sensorPickarmLighting
+                onValueChanged: {
+                    lightingController.setSensorPickarmLighting(value)
+                }
+                Label {
+                    y: 10
+                    color: "#46eb46"
+                    text: lightingController.sensorPickarmLighting
+                    font.pointSize: 20
+                    font.family: "Times New Roman"
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 8
+                    anchors.left: parent.left
+                    anchors.leftMargin: 117
+                }
+                Button {
+                    x: 190
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "lightGreen"
+                    icon.source: "../icons/save.png"
+                    onClicked: {
+                        visionModule.saveImage(4)
+                    }
+                }
+                Button {
+                    id: camera5OnOff
+                    x: 240
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/full-screen.png"
+                    onClicked: {
+                        if (sensorPickarmCamera.isGrabbing)
+                        {
+                            sensorPickarmCamera.close()
+                        }
+                        else
+                        {
+                            sensorPickarmCamera.open()
+                        }
+                    }
+                }
+                Button {
+                    id: camera5PauseLive
+                    x: 290
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/pause.png"
+                    onClicked: {
+                        sensorPickarmCamera.toggleLiveView()
+                    }
+                }
+            }
+        }
+    }
 }

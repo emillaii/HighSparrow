@@ -664,7 +664,10 @@ void LutModule::performHandlingOperation(int cmd,QVariant param)
     }
     qInfo("Lut Module perform command: %d", cmd);
     bool result = true;
-    if(cmd == 1)
+    if (cmd == HandlePosition::LOAD_POS) {
+        result = moveToLoadPos();
+    }
+    else if(cmd == 1)
         result = moveToAA1UplookPR(false,true,true);
     else if(cmd == 2)
         result = moveToAA2UplookPR(false,true,true);

@@ -81,6 +81,8 @@ public:
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonPickarmCamera = Q_NULLPTR;
+    BaslerPylonCamera * pylonAA2DownlookCamera = Q_NULLPTR;
+    BaslerPylonCamera * pylonSensorPickarmCamera = Q_NULLPTR;
     VisionModule * visionModule = Q_NULLPTR;
     WordopLight * lightingModule = Q_NULLPTR;
     LontryLight * lightPanel = Q_NULLPTR;
@@ -372,6 +374,7 @@ public:
     Q_INVOKABLE void setLightingBrightness(QString location_name);
     Q_INVOKABLE void sendLoadLens(bool has_ng);
     Q_INVOKABLE void sendLoadSensor(bool has_product,bool has_ng);
+    Q_INVOKABLE void toogleIoState(QString io_name);
 //    Q_INVOKABLE void sendChangeSensorTray();
 
     Q_INVOKABLE bool initSensor();

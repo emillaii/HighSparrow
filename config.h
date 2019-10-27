@@ -90,6 +90,7 @@
 #define CALIBRATION_PARAMETER_FILENAME   "config//calibration_parameter.json"
 #define VISION_DISPENSE_PATH         "config//vision_dispense_path//resultImageWithPath.jpg"
 #define FLOWCHART_URL                "http://127.0.0.1:8000/flowchart.html"
+#define SHARE_DIR                   "\\\\AA1\\share\\temp\\"
 
 
 //Title naming
@@ -323,6 +324,11 @@
 
 #define UNIT_LOG_PORT 5044
 #define SFR_LOG_PORT 5045
+
+#define VISION_MODULE_1 "VisionModule_1"
+#define VISION_MODULE_2 "VisionModule_2"
+#define LIGHTING_CONTROLLER_1 "LightController_1"
+#define LIGHTING_CONTROLLER_2 "LightController_2"
 
 #endif
 // CONFIG_H

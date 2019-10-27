@@ -86,3 +86,25 @@ DeviceStatesGeter::IoState DeviceStatesGeter::getOutputIoState(QString output_io
     state.result = true;
     return state;
 }
+
+void DeviceStatesGeter::toggleOutputIoState(QString output_io_name)
+{
+    QJsonObject temp_json;
+    temp_json["cmd"] = "toggleOutputIoState";
+    temp_json["outputIoName"] = output_io_name;
+    QString result = emit sendGetDeviceState(getStringFromJsonObject(temp_json));
+    QJsonObject result_json = getJsonObjectFromString(result);
+    IoState state;
+
+    if((!result_json.contains("outputIoName"))||result_json["outputIoName"].toString() != output_io_name)
+        return;
+
+    if(!result_json.contains("IoValue"))
+        return;
+    state.current_state = result_json["IoValue"].toBool();
+
+    if((!result_json.contains("error"))||result_json["error"].toString() != "")
+        return;
+    state.result = true;
+    return;
+}

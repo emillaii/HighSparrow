@@ -16,6 +16,7 @@ QString getDispensePrLogDir();
 QString getPerformanceLogDir();
 QString getAAProcessLogDir();
 QString getProduceProcessLogDir();
+QString getShareDir();
 QString getDir(QString);
 
 void writeFile(QString data, QString dir, QString filename);

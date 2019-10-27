@@ -14,13 +14,16 @@
 #include <config.h>
 #include <utils/commonutils.h>
 #include "vision/baslerpyloncamera.h"
-
-VisionModule:: VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera)
-             :QQuickImageProvider(QQuickImageProvider::Image)
+VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera,
+                            BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
+                            BaslerPylonCamera* sensorPickarmCamera, QString name)
+             :QQuickImageProvider(QQuickImageProvider::Image), ThreadWorkerBase (name)
 {
     this->downlookCamera = downlookCamera;
     this->uplookCamera = uplookCamera;
     this->pickarmCamera = pickarmCamera;
+    this->aa2DownlookCamera = aa2DownlookCamera;
+    this->sensorPickarmCamera = sensorPickarmCamera;
 }
 QVector<QPoint> VisionModule::Read_Dispense_Path()
 {
@@ -40,7 +43,7 @@ QVector<QPoint> VisionModule::Read_Dispense_Path()
         {
             float x = point2DArray1[j].x;
             float y = point2DArray1[j].y;
-            qInfo(" %d : x: %f y: %f", j, x, y);
+            qDebug(" %d : x: %f y: %f", j, x, y);
             results.push_back(QPoint(x, y));
         }
     }
@@ -49,27 +52,53 @@ QVector<QPoint> VisionModule::Read_Dispense_Path()
 
 bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 {
-    BaslerPylonCamera *camera = Q_NULLPTR;
-    if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
-    else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
-    else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
-    else if (cameraName.contains(CAMERA_AA2_DL)) { camera = downlookCamera; }
-    else if (cameraName.contains(CAMERA_SPA_DL)) { camera = pickarmCamera; }
-    if (camera == Q_NULLPTR) {
-        qInfo("Cannot find camera %s", cameraName.toStdString().c_str());
-        return false;
+    QMutexLocker locker(&mutex);
+    if (this->Name() == VISION_MODULE_2) { //If vision module 2, need to ask vision module 1 to get image
+        QJsonObject params;
+        QString imageName;
+        imageName.append(SHARE_DIR)
+                        .append(cameraName)
+                        .append("_")
+                        .append(getCurrentTimeString())
+                        .append(".jpg");
+        params.insert("cameraName", cameraName);
+        params.insert("imageName", imageName);
+        sendMessageToModule(VISION_MODULE_1, "GrabImage", params);
+        if(this->waitVisionResponseMessage(imageName)){
+            qInfo("got vision photo: %s", imageName.toStdString().c_str());
+            QPixmap p = QPixmap::fromImage(QImage(imageName));
+            QImage q2 = p.toImage();
+            q2 = q2.convertToFormat(QImage::Format_RGB888);
+            avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+            image = image2;
+            QFile file; file.remove(imageName);
+            //ToDo: Delete the file in temp file
+        } else {
+            qCritical("grabImageFromCamera fail");
+            return false;
+        }
+    } else {
+        BaslerPylonCamera *camera = Q_NULLPTR;
+        if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
+        else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
+        else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
+        else if (cameraName.contains(CAMERA_AA2_DL)) { camera = aa2DownlookCamera; }
+        else if (cameraName.contains(CAMERA_SPA_DL)) { camera = sensorPickarmCamera; }
+        if (camera == Q_NULLPTR) {
+            qInfo("Cannot find camera %s", cameraName.toStdString().c_str());
+            return false;
+        }
+        if (!camera->isCameraGrabbing())
+        {
+            qInfo("camera grabbing fail %s", cameraName.toStdString().c_str());
+            return false;
+        }
+        QPixmap p = QPixmap::fromImage(camera->getNewImage());
+        QImage q2 = p.toImage();
+        q2 = q2.convertToFormat(QImage::Format_RGB888);
+        avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+        image = image2;
     }
-    if (!camera->isCameraGrabbing())
-    {
-        qInfo("camera grabbing fail %s", cameraName.toStdString().c_str());
-        return false;
-    }
-    //QPixmap p = QPixmap::fromImage(camera->getImage());
-    QPixmap p = QPixmap::fromImage(camera->getNewImage());
-    QImage q2 = p.toImage();
-    q2 = q2.convertToFormat(QImage::Format_RGB888);
-    avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-    image = image2;
     return true;
 }
 
@@ -83,6 +112,31 @@ bool VisionModule::saveImageAndCheck(avl::Image image1, QString imageName)
         return false;
     }
     return true;
+}
+
+void VisionModule::startWork(int run_mode)
+{
+    qDebug("startWork");
+}
+
+void VisionModule::stopWork(bool wait_finish)
+{
+    qDebug("stopWork");
+}
+
+void VisionModule::resetLogic()
+{
+    qDebug("resetLogic");
+}
+
+void VisionModule::performHandlingOperation(int cmd, QVariant params)
+{
+    qDebug("performHandlingOperation");
+}
+
+PropertyBase *VisionModule::getModuleState()
+{
+    return Q_NULLPTR;
 }
 
 void VisionModule::diffenenceImage(QImage image1, QImage image2)
@@ -104,28 +158,6 @@ void VisionModule::testVision()
     //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
     this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
     qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
-}
-
-void VisionModule::saveImage(int channel)
-{
-    avl::Image image1; bool ret;
-    if (channel == 0)
-        ret = this->grabImageFromCamera(UPLOOK_VISION_CAMERA, image1);
-    else if (channel == 1)
-        ret = this->grabImageFromCamera(DOWNLOOK_VISION_CAMERA, image1);
-    else if (channel == 2)
-        ret = this->grabImageFromCamera(PICKARM_VISION_CAMERA, image1);
-    else return;
-    if (!ret) {
-        qInfo("Cannot save image due to camera is not running");
-        return;
-    }
-    QString imageName;
-    imageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
-    if (!image1.Empty())
-        avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
 }
 
 bool VisionModule::saveImage(QString cameraName, QString imageName)
@@ -673,4 +705,62 @@ QImage VisionModule::requestImage(const QString &id, QSize *size, const QSize &r
         return QImage(last_pickarm_pr_result);
     }
     return QImage();
+}
+
+void VisionModule::receivceModuleMessage(QVariantMap message)
+{
+    if (message["TargetModule"].toString() == this->Name() && message["Message"].toString() == "GrabImage"){
+        qInfo("target module: %s", message["TargetModule"].toString().toStdString().c_str());
+        QString cameraName = message["cameraName"].toString();
+        QString imageName = message["imageName"].toString();
+        avl::Image image1;
+        this->grabImageFromCamera(cameraName, image1);
+        if (!image1.Empty()) {
+            avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+            QJsonObject params;
+            params.insert("cameraName", cameraName);
+            params.insert("filename", imageName);
+            emit sendMessageToModule(message["OriginModule"].toString(), "Response", params);
+        }
+    }
+}
+
+void VisionModule::saveImage(int channel)
+{
+    avl::Image image1; bool ret;
+    if (channel == 0)
+        ret = this->grabImageFromCamera(UPLOOK_VISION_CAMERA, image1);
+    else if (channel == 1)
+        ret = this->grabImageFromCamera(DOWNLOOK_VISION_CAMERA, image1);
+    else if (channel == 2)
+        ret = this->grabImageFromCamera(PICKARM_VISION_CAMERA, image1);
+    else if (channel == 3)
+        ret = this->grabImageFromCamera(CAMERA_AA2_DL, image1);
+    else if (channel == 4)
+        ret = this->grabImageFromCamera(CAMERA_SPA_DL, image1);
+    else return;
+    if (!ret) {
+        qInfo("Cannot save image due to camera is not running");
+        return;
+    }
+    QString imageName;
+    imageName.append(getVisionLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".jpg");
+    if (!image1.Empty())
+    {
+        qInfo("Save image: %s", imageName.toStdString().c_str());
+        avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+    }
+}
+
+QMap<QString, PropertyBase *> VisionModule::getModuleParameter()
+{
+    QMap<QString, PropertyBase *> map;
+    return map;
+}
+
+void VisionModule::setModuleParameter(QMap<QString, PropertyBase *> params)
+{
+
 }

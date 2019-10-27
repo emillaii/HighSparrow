@@ -34,14 +34,22 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
             pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
             pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
             pylonPickarmCamera = new BaslerPylonCamera(PICKARM_VISION_CAMERA);
-        } else{
-            pylonDownlookCamera = new BaslerPylonCamera(CAMERA_AA2_DL);
-            pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SPA_DL);
+            pylonAA2DownlookCamera = new BaslerPylonCamera(CAMERA_AA2_DL);
+            pylonSensorPickarmCamera = new BaslerPylonCamera(CAMERA_SPA_DL);
         }
     }
-
-    lightingModule = new WordopLight(ServerMode());
-    visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
+    if (this->ServerMode() == 0) {
+        lightingModule = new WordopLight(ServerMode(), LIGHTING_CONTROLLER_1);
+        visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera,
+                                        pylonPickarmCamera, pylonAA2DownlookCamera,
+                                        pylonSensorPickarmCamera, VISION_MODULE_1);
+    }
+    else {
+        lightingModule = new WordopLight(ServerMode(), LIGHTING_CONTROLLER_2);
+        visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera,
+                                        pylonPickarmCamera, pylonAA2DownlookCamera,
+                                        pylonSensorPickarmCamera, VISION_MODULE_2);
+    }
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
     if (ServerMode() == 0) {
@@ -65,11 +73,13 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&lut_module, &LutModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::saveUnitDataToCSV, &unitlog, &Unitlog::saveUnitDataToCSV);
-    if(!QDir(".//notopencamera").exists())
+    if(!QDir(".//notopencamera").exists() && ServerMode() == 0)
     {
         if(pylonUplookCamera) pylonUplookCamera->start();
         if(pylonDownlookCamera) pylonDownlookCamera->start();
         if(pylonPickarmCamera) pylonPickarmCamera->start();
+        if(pylonAA2DownlookCamera) pylonAA2DownlookCamera->start();
+        if(pylonSensorPickarmCamera) pylonSensorPickarmCamera->start();
     }
     material_tray.standards_parameters.setTrayCount(5);
     unitlog.setServerAddress(configs.dataServerURL());
@@ -93,7 +103,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     //Machine Map Initialization
     //machineMap = new GraphWidget;
     //machineMap->show();
-    //timer.start(1000);
+    timer.start(3000);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -128,6 +138,7 @@ void BaseModuleManager::tcpResp(QString message)
         {
             QString module_name = message_object["moduleName"].toString();
             qDebug()<<"inquiry module state :"<< module_name<<"thread id:"<<QThread::currentThreadId();
+            if(module_name.contains("LightController") || module_name.contains("VisionModule")) return;
             if(workers.contains(module_name))
             {
                 QJsonObject result;
@@ -143,12 +154,14 @@ void BaseModuleManager::tcpResp(QString message)
         {
             QString module_name = message_object["moduleName"].toString();
             qDebug()<<"inquiry module parameter :"<< module_name<<"thread id:"<<QThread::currentThreadId();
+            if(module_name.contains("LightController") || module_name.contains("VisionModule")) return;
             if(workers.contains(module_name))
             {
                 QJsonObject result;
                 result["resp"] = "moduleParameter";
                 result["moduleName"] = module_name;
                 QMap<QString, PropertyBase *> map = workers[module_name]->getModuleParameter();
+                if (map.size() == 0) { return; }
                 foreach (QString param_name, map.keys()) {
                     QJsonObject module_parameter;
                     map[param_name]->write(module_parameter);
@@ -187,6 +200,10 @@ void BaseModuleManager::tcpResp(QString message)
         {
             qInfo("Receive need update parameter");
             inquiryTcpModuleParameter(tcp_aaCoreNew.Name());
+            inquiryTcpModuleParameter(tcp_sut.Name());
+            inquiryTcpModuleParameter(tcp_lensTrayLoaderModule.Name());
+            inquiryTcpModuleParameter(tcp_lutModule.Name());
+            inquiryTcpModuleParameter(tcp_lensLoaderModule.Name());
         }
         else if (cmd == "inquiryOutputIoState")
         {
@@ -198,6 +215,36 @@ void BaseModuleManager::tcpResp(QString message)
             if(temp_io == nullptr)
                 result["error"] =QString("can not find ").append(outputIo_name);
             else {
+                result["IoValue"] = temp_io->Value();
+                result["error"] = "";
+            }
+            receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+        }
+        else if (cmd == "inquiryInputIoState")
+        {
+            qInfo("inquiryInputIoState: %s", message.toStdString().c_str());
+            QString inputIo_name = message_object["inputIoName"].toString();
+            XtGeneralInput* temp_io = GetInputIoByName(inputIo_name);
+            QJsonObject result;
+            result["inputIoName"] = inputIo_name;
+            if(temp_io == nullptr)
+                result["error"] =QString("can not find ").append(inputIo_name);
+            else {
+                result["IoValue"] = temp_io->Value();
+                result["error"] = "";
+            }
+            receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+        }
+        else if (cmd == "toggleOutputIoState")
+        {
+            QString outputIo_name = message_object["outputIoName"].toString();
+            XtGeneralOutput* temp_io = GetOutputIoByName(outputIo_name);
+            QJsonObject result;
+            result["outputIoName"] = outputIo_name;
+            if(temp_io == nullptr)
+                result["error"] =QString("can not find ").append(outputIo_name);
+            else {
+                temp_io->Set(!temp_io->Value());
                 result["IoValue"] = temp_io->Value();
                 result["error"] = "";
             }
@@ -357,9 +404,11 @@ QString BaseModuleManager::deviceResp(QString message)
             {
                 result["error"] = QString("can not find input io ").append(temp_name);
                 bool geted = false;
-                foreach (QString messger_name, receive_messagers.keys())
+                foreach (QString messger_name, sender_messagers.keys())
                 {
-                  QString tcp_result =  receive_messagers[messger_name]->inquiryMessage(message);
+                  //QString tcp_result =  receive_messagers[messger_name]->inquiryMessage(message);
+                  QString tcp_result =  sender_messagers[messger_name]->inquiryMessage(message);
+
                   QJsonObject result_json = getJsonObjectFromString(tcp_result);
                   if(result_json.contains("error"))
                   {
@@ -420,6 +469,44 @@ QString BaseModuleManager::deviceResp(QString message)
             }
             return getStringFromJsonObject(result);
         }
+        else if(cmd == "toggleOutputIoState")
+        {
+            QString temp_name = message_object["outputIoName"].toString();
+            qDebug()<<"inquiry output io state :"<< temp_name<<"thread id:"<<QThread::currentThreadId();
+            QJsonObject result;
+            result["outputIoName"] = temp_name;
+            XtGeneralOutput* temp_io = GetOutputIoByName(temp_name);
+            if(temp_io == nullptr)
+            {
+                result["error"] = QString("can not find input io ").append(temp_name);
+                bool geted = false;
+                foreach (QString messger_name, sender_messagers.keys())
+                {
+                  QString tcp_result =  sender_messagers[messger_name]->inquiryMessage(message);
+
+                  QJsonObject result_json = getJsonObjectFromString(tcp_result);
+                  if(result_json.contains("error"))
+                  {
+                      if(result_json["error"].toString() == "")
+                      {
+                            geted = true;
+                            result["IoValue"] = result_json["IoValue"];
+                            result["error"] = "";
+                            break;
+                      }
+                  }
+                }
+                if(!geted)
+                    result["error"] = QString("tcp cannot find input io ").append(temp_name);
+            }
+            else {
+                temp_io->Set(!temp_io->Value());
+                result["IoValue"] = temp_io->Value();
+                result["error"] = "";
+
+            }
+            return getStringFromJsonObject(result);
+        }
     }
     result["error"] = "cmd error";
     return getStringFromJsonObject(result);
@@ -441,9 +528,8 @@ void BaseModuleManager::alarmChecking()
 //    }
 //    if(checked_alarm)
 //        emit sendAlarm(0,ErrorLevel::ErrorMustStop,GetCurrentError());
-    if (ServerMode() == 1) //Testing code (Incomplete)
+    if (ServerMode() == 1 && this->m_InitState) //Testing code (Incomplete)
     {
-        qInfo("tcp_lutModule.parameters.vacuum1Name(): %s", tcp_lutModule.parameters.vacuum1Name().toStdString().c_str());
         QJsonArray array;
         array.push_back(tcp_lutModule.parameters.vacuum1Name());
         array.push_back(tcp_lutModule.parameters.vacuum2Name());
@@ -451,12 +537,9 @@ void BaseModuleManager::alarmChecking()
         QJsonObject data;
         data.insert("IoNames", array);
         QString jsonString = getStringFromJsonObject(data);
-        qInfo("jsonString %s", jsonString.toStdString().c_str());
-        tcp_lutModule.states.setTcpVaccum1State(!tcp_lutModule.states.tcpVaccum1State());
-        tcp_lutModule.states.setTcpVaccum2State(!tcp_lutModule.states.tcpVaccum2State());
-//      DeviceStatesGeter::IoState state = state_geter.getOutputIoState(tcp_lutModule.parameters.vacuum1Name());
-
-//        qInfo("tcp_lutModule: %d", state.current_state);
+        tcp_lutModule.states.setTcpVaccum1State(state_geter.getOutputIoState(tcp_lutModule.parameters.vacuum1Name()).current_state);
+        tcp_lutModule.states.setTcpVaccum2State(state_geter.getOutputIoState(tcp_lutModule.parameters.vacuum2Name()).current_state);
+        tcp_lensLoaderModule.states.setTcpVaccumState(state_geter.getInputIoState(tcp_lensLoaderModule.parameters.pickarmVaccumSensorName()).current_state);
     }
 }
 
@@ -671,6 +754,10 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
     workers.insert(sut_module.Name(),&sut_module);
     result &= manager->registerWorker(&aaCoreNew);
     workers.insert(aaCoreNew.Name(),&aaCoreNew);
+    result &= manager->registerWorker(visionModule);
+    workers.insert(visionModule->Name(),visionModule);
+    result &= manager->registerWorker(lightingModule);
+    workers.insert(lightingModule->Name(),lightingModule);
     return result;
 }
 
@@ -1393,7 +1480,8 @@ bool BaseModuleManager::InitStruct()
                                 GetVisionLocationByName(lens_loader_module.parameters.lutLensLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUplookPickerLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookUpLocationName()),
-                                GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()));
+                                GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()),
+                                GetVisionLocationByName(lens_loader_module.parameters.lutNgSlotLocationName()));
 
     }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
@@ -1856,7 +1944,6 @@ void BaseModuleManager::loadFlowchart(QString json, QString filename)
         this->setFlowchartFilename(filename);
         updateParams();
     }
-    qDebug("Load flowchart: %s", json.toStdString().c_str());
     aaCoreNew.setFlowchartDocument(json);
 }
 
@@ -2220,8 +2307,10 @@ double BaseModuleManager::getMotorFeedbackPos(QString name)
 {
     if (motors.contains(name)) {
         return motors[name]->GetFeedbackPos();
+    } else {
+        DeviceStatesGeter::motorState motor_state = state_geter.getMotorState(name);
+        return motor_state.current_position;
     }
-    return 0;
 }
 
 bool BaseModuleManager::getMotorHomeState(QString name)
@@ -2268,6 +2357,11 @@ void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
         emit  aa_head_module.sendSensrRequestToSut(SUT_STATE::NO_MATERIAL);
         qInfo("sendSensrRequestToSut 0 in %d",QThread::currentThreadId());
     }
+}
+
+void BaseModuleManager::toogleIoState(QString io_name)
+{
+    state_geter.toggleOutputIoState(io_name);
 }
 
 //void BaseModuleManager::sendChangeSensorTray()

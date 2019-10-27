@@ -6,7 +6,10 @@ LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 
 }
 
-void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision, VisionLocation *lut_lens_vision,VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision)
+void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier,XtVacuum* load_vacuum,
+                            XtVacuum* unload_vacuum, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision,
+                            VisionLocation *lut_lens_vision,VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision,
+                            VisionLocation *lpa_updownlook_down_vision, VisionLocation *lut_ng_slot_vision)
 {
     parts.clear();
     this->pick_arm = pick_arm;
@@ -21,6 +24,8 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     parts.append(this->unload_vacuum);
     this->lens_vision = lens_vision;
     parts.append(this->lens_vision);
+    this->lut_ng_slot_vision = lut_ng_slot_vision;
+    parts.append(this->lut_ng_slot_vision);
     this->vacancy_vision = vacancy_vision;
     parts.append(this->vacancy_vision);
     this->lut_vision = lut_vision;
@@ -33,6 +38,15 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     parts.append(this->lpa_updownlook_up_vision);
     this->lpa_updownlook_down_vision = lpa_updownlook_down_vision;
     parts.append(this->lpa_updownlook_down_vision);
+    //Some pickarm parameter need to sync with lensLoaderModule
+    parameters.setPickarmVaccumName(this->pick_arm->picker->vacuum->parameters.outIoName());
+    parameters.setPickarmVaccumSensorName(this->pick_arm->picker->vacuum->parameters.inIoName());
+    //Align the motor name to lens loader module
+    parameters.setMotorTName(this->pick_arm->picker->motor_t->Name());
+    parameters.setMotorTrayName(this->pick_arm->motor_x_tray->Name());
+    parameters.setMotorXName(this->pick_arm->motor_x->Name());
+    parameters.setMotorYName(this->pick_arm->motor_y->Name());
+    parameters.setMotorZName(this->pick_arm->picker->motor_z->Name());
 }
 
 void LensLoaderModule::loadJsonConfig(QString file_name)
@@ -935,6 +949,22 @@ bool LensLoaderModule::performLUTPR()
     return result;
 }
 
+bool LensLoaderModule::performLUTNGSlotPR()
+{
+    qInfo("performLUTNGSlotPR");
+    bool result;
+    if(states.runMode() == RunMode::NoMaterial)
+        result= lut_ng_slot_vision->performNoMaterialPR();
+    else
+        result = lut_ng_slot_vision->performPR();
+    pr_offset = lut_ng_slot_vision->getCurrentResult();
+
+    if(!result)
+        AppendError(QString(u8"执行LUT NG SLOT 空位视觉失败"));
+    qInfo(u8"执行LUT NG SLOT 空位视觉,返回值%d",result);
+    return result;
+}
+
 bool LensLoaderModule::performLUTLensPR()
 {
     qInfo("performLUTLensPR");
@@ -1378,7 +1408,16 @@ void LensLoaderModule::resetLogic()
 
 void LensLoaderModule::performHandlingOperation(int cmd,QVariant param)
 {
-    qInfo("performHandling %d",cmd);
+    qInfo("performHandling %d %s",cmd, param.toString().toStdString().c_str());
+    QJsonObject paramJson = getJsonObjectFromString(param.toString());
+    int col = paramJson["col"].toInt(-1);
+    int row = paramJson["row"].toInt(-1);
+    int tray_index = paramJson["tray_index"].toInt(-1);
+    bool skip_dialog = paramJson["skip_dialog"].toBool(false);
+    if (tray_index >= 0 && col >=0 && row >= 0 )  {
+        qInfo("Params col: %d row: %d tray_index:%d", col, row, tray_index);
+        this->tray->setTrayCurrent(col, row, tray_index);
+    }
     bool result;
     int temp_value = 10;
     if(cmd%temp_value == HandlePosition::LUT_POS1)
@@ -1421,6 +1460,8 @@ void LensLoaderModule::performHandlingOperation(int cmd,QVariant param)
         result = performLUTLensPR();
     else if(cmd%temp_value == HandlePR::PICKER_PR)
         result = performPickerPR();
+    else if(cmd%temp_value == HandlePR::LUT_NG_SLOT_PR)
+        result = performLUTNGSlotPR();
     else
         result = true;
     if(!result)
@@ -1447,22 +1488,34 @@ void LensLoaderModule::performHandlingOperation(int cmd,QVariant param)
     cmd =cmd/temp_value*temp_value;
     temp_value = 10000;
     if(cmd%temp_value == HandlePickerAction::PICK_LENS_FROM_TRAY){
-        if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
+        if (skip_dialog){
+            result = pickTrayLens();
+        }
+        else if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
             result = pickTrayLens();
         }
     }
     else if(cmd%temp_value == HandlePickerAction::PLACE_LENS_TO_LUT){
-        if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
+        if (skip_dialog){
+            result = placeLensToLUT();
+        }
+        else if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
             result = placeLensToLUT();
         }
     }
     else if(cmd%temp_value == HandlePickerAction::PICK_NG_LENS_FROM_LUT){
-        if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
+        if (skip_dialog){
+            result = pickLUTLens();
+        }
+        else if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
             result = pickLUTLens();
         }
     }
     else if(cmd%temp_value == HandlePickerAction::PLACE_NG_LENS_TO_TRAY){
-        if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
+        if (skip_dialog){
+            result = placeLensToTray();
+        }
+        else if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
             result = placeLensToTray();
         }
     }
@@ -1653,13 +1706,12 @@ QMap<QString, PropertyBase *> LensLoaderModule::getModuleParameter()
     temp_map.insert("LUT_PICKE_POSITION1", &lut_picker_position);
     temp_map.insert("LENS_UPDNLOOK_OFFSET", &lens_updnlook_offset);
     temp_map.insert("CAMERA_TO_PICKER_OFFSET", &camera_to_picker_offset);
-//    temp_map.insert("LENS_PICKARM_PARAMS", &this->tray->standards_parameters);
-//    temp_map.insert("END_POSITION", &this->tray->first_tray_end_position);
-//    for (int i = 0; i < this->tray->standards_parameters.trayCount(); ++i)
-//    {
-//        temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_PARAMETER"), this->tray->parameters[i]);
-//        temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_START_POSITION"), &this->tray->parameters[i]->tray_start_position);
-//    }
+    temp_map.insert("END_POSITION", &this->tray->first_tray_end_position);
+    for (int i = 0; i < this->tray->standards_parameters.trayCount(); ++i)
+    {
+        temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_PARAMETER"), this->tray->parameters[i]);
+        temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_START_POSITION"), &this->tray->parameters[i]->tray_start_position);
+    }
 
     return temp_map;
 }

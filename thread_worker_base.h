@@ -72,6 +72,7 @@ public:
     bool waitResponseMessage(bool &is_run,QString target_message);
     void receivceModuleMessageBase(QVariantMap message);
     virtual void receivceModuleMessage(QVariantMap message) = 0;
+    bool waitVisionResponseMessage(QString cameraName);
     virtual PropertyBase* getModuleState() = 0;
     virtual QMap<QString,PropertyBase*> getModuleParameter() = 0;
     virtual void setModuleParameter(QMap<QString, PropertyBase*> parameters) = 0;
@@ -109,6 +110,7 @@ protected:
     bool handling_finish = false;
     QMutex message_mutex;
     QVariantMap module_message;
+    QMap<QString, QString> vision_operations;
 };
 
 #endif // WORKER_BASE_H

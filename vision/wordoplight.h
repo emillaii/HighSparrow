@@ -5,17 +5,21 @@
 #include <QObject>
 #include <qmutex.h>
 #include "config.h"
+#include "thread_worker_base.h"
+
 typedef enum {
     LIGHTING_UPLOOK,
     LIGHTING_DOWNLOOK,
     LIGHTING_PICKARM,
 } LIGHTING_CHANNEL;
 
-class WordopLight: public QObject
+class WordopLight: public QObject, public ThreadWorkerBase
 {
     Q_PROPERTY(int downlookLighting READ downlookLighting WRITE setDownlookLighting NOTIFY paramsChanged)
     Q_PROPERTY(int uplookLighting READ uplookLighting WRITE setUplookLighting NOTIFY paramsChanged)
     Q_PROPERTY(int pickarmLighting READ pickarmLighting WRITE setPickarmLighting NOTIFY paramsChanged)
+    Q_PROPERTY(int aa2DownlookLighting READ aa2DownlookLighting WRITE setAA2DownlookLighting NOTIFY paramsChanged)
+    Q_PROPERTY(int sensorPickarmLighting READ sensorPickarmLighting WRITE setSensorPickarmLighting NOTIFY paramsChanged)
     Q_OBJECT
 
     struct LongCommand
@@ -42,7 +46,7 @@ class WordopLight: public QObject
     };
 
 public:
-    WordopLight(int mode);
+    WordopLight(int mode, QString name);
     ~WordopLight();
 
     bool Init(const QString &com_port);
@@ -68,6 +72,17 @@ public:
     void setPickarmCmosSensorPRLighting(int val);
     void setPickarmProductPRLighting(int value);
 
+    void sendMessageToNextModule(int channel, double value){
+        QJsonObject params;
+        params.insert("channel", channel);
+        params.insert("value", value);
+        if (mode == 0)
+            emit sendMessageToModule(LIGHTING_CONTROLLER_2, "ChangeLighting", params);
+        else {
+            emit sendMessageToModule(LIGHTING_CONTROLLER_1, "ChangeLighting", params);
+        }
+    }
+
     int downlookLighting() const
     {
         return m_downlookLighting;
@@ -81,6 +96,16 @@ public:
     int pickarmLighting() const
     {
         return m_pickarmLighting;
+    }
+
+    int aa2DownlookLighting() const
+    {
+        return m_aa2DownlookLighting;
+    }
+
+    int sensorPickarmLighting() const
+    {
+        return m_sensorPickarmLighting;
     }
 
 signals:
@@ -101,10 +126,12 @@ void setDownlookLighting(int downlookLighting)
 
     m_downlookLighting = downlookLighting;
     emit paramsChanged(m_downlookLighting);
-    if (mode == 0)
+    if (mode == 0){
         setBrightness(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
+    }
     else {
-        setBrightness(LIGHTING_AA2_DL, (uint8_t)downlookLighting);
+        sendMessageToNextModule(LIGHTING_AA2_DL, (uint8_t)downlookLighting);
+        //setBrightness(LIGHTING_AA2_DL, (uint8_t)downlookLighting);
     }
 }
 
@@ -116,7 +143,11 @@ void setUplookLighting(int uplookLighting)
 
     m_uplookLighting = uplookLighting;
     emit paramsChanged(m_uplookLighting);
-    setBrightness(LIGHTING_LUT_UL, (uint8_t)uplookLighting);
+    if (mode==0){
+        setBrightness(LIGHTING_LUT_UL, (uint8_t)uplookLighting);
+    } else {
+        sendMessageToNextModule(LIGHTING_LUT_UL, (uint8_t)uplookLighting);
+    }
 }
 
 void setPickarmLighting(int pickarmLighting)
@@ -127,10 +158,42 @@ void setPickarmLighting(int pickarmLighting)
 
     m_pickarmLighting = pickarmLighting;
     emit paramsChanged(m_pickarmLighting);
-    if (mode == 0)
+    if (mode == 0){
         setBrightness(LIGHTING_LPA_DL, (uint8_t)pickarmLighting);
+    }
     else {
-        setBrightness(LIGHTING_SPA_DL, (uint8_t)pickarmLighting);
+        sendMessageToNextModule(LIGHTING_LPA_DL, (uint8_t)pickarmLighting);
+    }
+}
+
+void setAA2DownlookLighting(int aa2DownlookLighting)
+{
+    qInfo("Set AA2 Downlook lighting %d", aa2DownlookLighting);
+    if (m_aa2DownlookLighting == aa2DownlookLighting)
+        return;
+
+    m_aa2DownlookLighting = aa2DownlookLighting;
+    emit paramsChanged(m_aa2DownlookLighting);
+    if (mode == 0){
+        sendMessageToNextModule(LIGHTING_AA2_DL, (uint8_t)aa2DownlookLighting);
+    }
+    else {
+        setBrightness(LIGHTING_AA2_DL, (uint8_t)aa2DownlookLighting);
+    }
+}
+
+void setSensorPickarmLighting(int sensorPickarmLighting)
+{
+    if (m_sensorPickarmLighting == sensorPickarmLighting)
+        return;
+
+    m_sensorPickarmLighting = sensorPickarmLighting;
+    emit paramsChanged(m_sensorPickarmLighting);
+    if (mode == 0){
+        sendMessageToNextModule(LIGHTING_SPA_DL, (uint8_t)sensorPickarmLighting);
+    }
+    else {
+        setBrightness(LIGHTING_SPA_DL, (uint8_t)sensorPickarmLighting);
     }
 }
 
@@ -184,8 +247,24 @@ private:
 
     int m_pickarmLighting = 0;
 
+    int m_aa2DownlookLighting;
+
+    int m_sensorPickarmLighting;
+
 private slots:
     void readyReadSlot();
+
+//ThreadWorkerBase Interface
+public slots:
+    void startWork(int run_mode) override;
+    void stopWork(bool wait_finish) override;
+    void resetLogic() override;
+    void performHandlingOperation(int cmd, QVariant param) override;
+public:
+    PropertyBase *getModuleState() override;
+    void receivceModuleMessage(QVariantMap module_message) override;
+    QMap<QString, PropertyBase *> getModuleParameter() override;
+    void setModuleParameter(QMap<QString, PropertyBase *>) override;
 };
 
 #endif // WORDOPLIGHT_H

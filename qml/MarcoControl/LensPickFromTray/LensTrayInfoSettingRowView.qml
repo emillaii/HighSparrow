@@ -1,7 +1,9 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
-import "../../../"
+import "../../"
+import SomeLib 1.1
+
 ColumnLayout{
     RowLayout{
         Label { text: qsTr("料盘信息") }
@@ -10,39 +12,35 @@ ColumnLayout{
         Button{
            text:qsTr("料盘1起点")
            onClicked: {
-               if (baseModuleManager.getServerMode() === 0){
-                   logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY1_START_POS)
-               }else{
-                   logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_START_POS)
-               }
+               logicManager.performHandling(tcp_lens_loader_parameter.moduleName, LensLoaderModule.LENS_TRAY1_START_POS)
            }
        }
        Label{
             text: qsTr("X")
        }
        TextField{
-            text: tray_start_point1.X
+            text: tcp_tray_start_point1.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tray_start_point1.setX(text)
+                tcp_tray_start_point1.setX(text)
             }
        }
        Label{
             text: qsTr("Y")
        }
        TextField{
-            text: tray_start_point1.Y
+            text: tcp_tray_start_point1.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tray_start_point1.setY(text)
+                tcp_tray_start_point1.setY(text)
             }
        }
        Button{
@@ -50,81 +48,56 @@ ColumnLayout{
            width: 40
            height: 40
            onClicked: {
-               var x =0;
-               var x1 =0;
-               var y=0;
-               if (baseModuleManager.getServerMode() === 0){
-                   x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
-                   x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
-                   y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
-                   tray_start_point1.setX(x + lensPickArmModuleParameter.visonPositionX - x1);
-                   tray_start_point1.setY(y);
-               }else{
-
-                   x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
-                   y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
-                   tray_start_point1.setX(x);
-                   tray_start_point1.setY(y);
-               }
+               //ToDo: Get the motor name from parameters
+               var x  = baseModuleManager.getMotorFeedbackPos("LTL_X")
+               var x1 = baseModuleManager.getMotorFeedbackPos("LPA_X")
+               var y = baseModuleManager.getMotorFeedbackPos("LPA_Y");
+               tcp_tray_start_point1.setX(x);
+               tcp_tray_start_point1.setY(y);
            }
        }
        Button{
            text: qsTr("料盘1终点")
            onClicked: {
-               if (baseModuleManager.getServerMode() === 0){
-                   logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY1_END_POS)
-               }else{
-                   logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_END_POS)
-               }
+               logicManager.performHandling(tcp_lens_loader_parameter.moduleName, LensLoaderModule.LENS_TRAY1_END_POS)
            }
        }
        Label{
            text: qsTr("X")
        }
        TextField{
-           text: first_tray_end_position.X
+           text: tcp_first_tray_end_position.X
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator {
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
-               first_tray_end_position.setX(text)
+               tcp_first_tray_end_position.setX(text)
            }
        }
        Label{
            text: qsTr("Y")
        }
        TextField{
-           text: first_tray_end_position.Y
+           text: tcp_first_tray_end_position.Y
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator {
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
-               first_tray_end_position.setY(text)
+               tcp_first_tray_end_position.setY(text)
            }
        }
        Button{
            text:title_read_encoder
            onClicked: {
-               var x =0;
-               var x1 =0;
-               var y=0;
-               if (baseModuleManager.getServerMode() === 0){
-                   x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
-                   x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
-                   y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
-                   first_tray_end_position.setX(x + lensPickArmModuleParameter.visonPositionX - x1);
-                   first_tray_end_position.setY(y);
-               }else{
-
-                   x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
-                   y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
-                   first_tray_end_position.setX(x);
-                   first_tray_end_position.setY(y);
-               }
+               var x  = baseModuleManager.getMotorFeedbackPos("LTL_X")
+               var x1 = baseModuleManager.getMotorFeedbackPos("LPA_X")
+               var y = baseModuleManager.getMotorFeedbackPos("LPA_Y");
+               tcp_first_tray_end_position.setX(x);
+               tcp_first_tray_end_position.setY(y);
            }
        }
     }
@@ -132,39 +105,35 @@ ColumnLayout{
         Button{
             text:qsTr("料盘2起点")
             onClicked: {
-                if (baseModuleManager.getServerMode() === 0){
-                    logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY2_START_POS)
-                }else{
-                    logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_START_POS)
-                }
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName, LensLoaderModule.LENS_TRAY2_START_POS)
             }
         }
         Label{
             text: qsTr("X")
         }
         TextField{
-            text: tray_start_point2.X
+            text: tcp_tray_start_point2.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tray_start_point2.setX(text)
+                tcp_tray_start_point2.setX(text)
             }
         }
         Label{
             text: qsTr("Y")
         }
         TextField{
-            text: tray_start_point2.Y
+            text: tcp_tray_start_point2.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tray_start_point2.setY(text)
+                tcp_tray_start_point2.setY(text)
             }
         }
         Button{
@@ -172,26 +141,15 @@ ColumnLayout{
             width: 40
             height: 40
             onClicked: {
-                var x =0;
-                var y =0;
-                if (baseModuleManager.getServerMode() === 0){
-                    x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
-                    var x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
-                    y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
-                    tray_start_point2.setX(x + lensPickArmModuleParameter.visonPositionX - x1);
-                    tray_start_point2.setY(y);
-                }else{
-
-                    x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
-                    y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
-                    tray_start_point2.setX(x);
-                    tray_start_point2.setY(y);
-                }
+                var x  = baseModuleManager.getMotorFeedbackPos("LTL_X")
+                var y = baseModuleManager.getMotorFeedbackPos("LPA_Y");
+                tcp_tray_start_point2.setX(x);
+                tcp_tray_start_point2.setY(y);
             }
         }
     }
     RowLayout{
-        TraySpecs {}
+        TCPTraySpec {}
     }
     RowLayout{
         Label { text: qsTr("测试") }
@@ -225,12 +183,13 @@ ColumnLayout{
             width: 40
             height: 40
             onClicked: {
-                material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                if (baseModuleManager.getServerMode() === 0){
-                    logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY1)
-                }else{
-                    logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS)
-                }
+                tcp_material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                var param = {}
+                param["col"] = t_ncol.text-1
+                param["row"] = t_nrow.text-1
+                param["tray_index"] = 0
+                console.log(param)
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY1, JSON.stringify(param))
             }
         }
     }
@@ -263,13 +222,8 @@ ColumnLayout{
             width: 40
             height: 40
             onClicked: {
-                material_tray.setTrayCurrent(t_ncol_2.text-1,t_nrow_2.text-1,1)
-
-                if (baseModuleManager.getServerMode() === 0){
-                    logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY2)
-                }else{
-                    logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_POS)
-                }
+                tcp_material_tray.setTrayCurrent(t_ncol_2.text-1,t_nrow_2.text-1,1)
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY2)
             }
         }
     }

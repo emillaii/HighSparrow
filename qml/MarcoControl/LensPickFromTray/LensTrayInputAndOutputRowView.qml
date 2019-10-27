@@ -6,11 +6,8 @@ ColumnLayout{
     RowLayout{ Label { text: qsTr("进盘弹夹") } }
     RowLayout{
         //-------------------------------------------------------------------
-        Button{
+        Label{
             text: qsTr("起始位置")
-            onClicked: {
-                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_TOP)
-            }
         }
         TextField{
             text:tcp_tray_clipin_parameter.firstTrayPos
@@ -31,11 +28,8 @@ ColumnLayout{
             }
         }
         //-------------------------------------------------------------------
-        Button{
+        Label{
             text: qsTr("结束位置")
-            onClicked: {
-                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_BOTTOM)
-            }
         }
         TextField{
             text:tcp_tray_clipin_parameter.lastTrayPos
@@ -338,13 +332,11 @@ ColumnLayout{
         }
         Button{
             text:qsTr("LTK_X1取Tray盘")
-            enabled: false
             onClicked: {
             }
         }
         Button{
             text:qsTr("LTL取盘")
-            enabled: false
             onClicked: {
             }
         }
@@ -373,21 +365,17 @@ ColumnLayout{
         }
         Button{
             text:qsTr("LTL放盘")
-            enabled: false
         }
     }
     RowLayout{
         Button{
             text:qsTr("进盘动作测试")
-            enabled: false
         }
         Button{
             text:qsTr("出盘动作测试")
-            enabled: false
         }
         Button{
             text:qsTr("进出盘循环测试")
-            enabled: false
         }
     }
 }

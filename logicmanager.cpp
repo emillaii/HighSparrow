@@ -30,6 +30,7 @@ void LogicManager::init(BaseModuleManager *device_manager)
 
 void LogicManager::performHandling(QString module_name,int cmd,QVariant param)
 {
+    qInfo("performHandling: %s", param.toString().toStdString().c_str());
     emit sendPerformHandling(module_name,cmd,param);
 }
 
@@ -1211,6 +1212,7 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
         states.setHandlingMessage(module_name);
         QVariantMap message;
         message.insert("ModuleName", module_name);
+        message.insert("Params", param);
         qDebug("sendCmdMessage");
         sendCmdMessage(message,cmd);
         waitReturnMessage();
@@ -1266,11 +1268,12 @@ void LogicManager::performTcpOperation(QVariantMap message)
         states.setIsHandling(true);
         bool result = true;
 
-        qInfo("receiveMessageFromWorkerManger performHandling %d",message["performHandling"].toInt());
+        qInfo("receiveMessageFromWorkerManger performHandling %d Params: %s",message["performHandling"].toInt(), message["Paramsss"].toString().toStdString().c_str());
         QString module_name = message["ModuleName"].toString();
         if(baseModuleManage->workers.contains(module_name))
         {
-            baseModuleManage->workers[module_name]->performHandling(message["performHandling"].toInt());
+            QString params = message["Params"].toString();
+            baseModuleManage->workers[module_name]->performHandling(message["performHandling"].toInt(), QVariant(params));
             result = baseModuleManage->workers[module_name]->waitPerformHandling();
             QVariantMap  return_message;
             return_message.insert("TargetModule",message["OriginModule"]);

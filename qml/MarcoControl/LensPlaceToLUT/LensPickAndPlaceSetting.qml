@@ -12,36 +12,42 @@ ColumnLayout {
     RowLayout {
         Label { text: qsTr("取料力度") }
         TextField{
+            text: tcp_lens_loader_parameter.vcmWorkForce
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcp_lens_loader_parameter.setVcmWorkForce(text)
             }
         }
         Label{
             text:qsTr("速度")
         }
         TextField{
+            text: tcp_lens_loader_parameter.vcmWorkSpeed
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcp_lens_loader_parameter.setVcmWorkSpeed(text)
             }
         }
         Label{
             text:qsTr("限力区间")
         }
         TextField{
+            text: tcp_lens_loader_parameter.vcmMargin
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcp_lens_loader_parameter.setVcmMargin(text)
             }
         }
     }
@@ -49,67 +55,40 @@ ColumnLayout {
         Label { text: qsTr("取放LUT1 Pocket Lens 位置") }
     }
     RowLayout {
-        Label { text: qsTr("LPA Position") }
         Label{
-            text:qsTr("X")
+            text:qsTr("物料高度")
         }
         TextField{
-            text: "0"
+            text:tcp_lens_loader_parameter.placeLensZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-            }
-        }
-        Label{
-            text:qsTr("Y")
-        }
-        TextField{
-            text: "0"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-            }
-        }
-        Label{
-            text:qsTr("Z")
-        }
-        TextField{
-            text: "0"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
+                tcp_lens_loader_parameter.setPlaceLensZ(text)
             }
         }
         Label{
             text:qsTr("Theta")
         }
         TextField{
-            text: "0"
+            text:tcp_lens_loader_parameter.placeTheta
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcp_lens_loader_parameter.setPlaceTheta(text)
             }
         }
-        Button {
-            text: title_read_encoder
+        Button{
+            text:qsTr("测高")
+            width: 40
+            height: 40
             onClicked: {
-            }
-        }
-        Button {
-            text: qsTr("测高")
-            onClicked: {
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.MeasureLensInLUT)
             }
         }
     }
@@ -185,16 +164,78 @@ ColumnLayout {
         Label { text: qsTr("测试") }
     }
     RowLayout {
-        Button { text: qsTr("移动到LUT1 Pocket视觉位置") }
-        Button { text: qsTr("执行视觉") }
-        Button { text: qsTr("LUT1 Pocket Place") }
-        Button { text: qsTr("LUT1 Pocket Pick") }
+        Button {
+            text: qsTr("移动到LUT1 Pocket视觉位置")
+            onClicked: {
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS1)
+            }
+        }
+        Button {
+            text: qsTr("执行视觉")
+            onClicked: {
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS1+
+                                             lensLoaderModule.LENS_PR)
+            }
+        }
+        Button {
+            text: qsTr("LUT1 Pocket Place")
+            onClicked: {
+                var param = {}
+                param["skip_dialog"] = true
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS1+
+                                             LensLoaderModule.LUT_PR+
+                                             LensLoaderModule.ToWork+
+                                             LensLoaderModule.PLACE_LENS_TO_LUT, JSON.stringify(param))
+            }
+        }
+        Button {
+            text: qsTr("LUT1 Pocket Pick")
+            onClicked: {
+                var param = {}
+                param["skip_dialog"] = true
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS1+
+                                             LensLoaderModule.LUT_LENS_PR+
+                                             LensLoaderModule.ToWork+
+                                             LensLoaderModule.PICK_NG_LENS_FROM_LUT, JSON.stringify(param))
+            }
+        }
     }
     RowLayout {
-        Button { text: qsTr("移动到LUT2 Pocket视觉位置") }
-        Button { text: qsTr("执行视觉") }
-        Button { text: qsTr("LUT2 Pocket Place") }
-        Button { text: qsTr("LUT2 Pocket Pick") }
+        Button {
+            text: qsTr("移动到LUT2 Pocket视觉位置")
+            onClicked: {
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2)
+            }
+        }
+        Button {
+            text: qsTr("执行视觉")
+            onClicked: {
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2
+                                             +lensLoaderModule.LUT_PR)
+            }
+        }
+        Button {
+            text: qsTr("LUT2 Pocket Place")
+            onClicked: {
+                var param = {}
+                param["skip_dialog"] = true
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2+
+                                             LensLoaderModule.LUT_NG_SLOT_PR+
+                                             LensLoaderModule.ToWork+
+                                             LensLoaderModule.PLACE_LENS_TO_LUT, JSON.stringify(param))
+            }
+        }
+        Button {
+            text: qsTr("LUT2 Pocket Pick")
+            onClicked: {
+                var param = {}
+                param["skip_dialog"] = true
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2+
+                                             LensLoaderModule.LUT_PR+
+                                             LensLoaderModule.ToWork+
+                                             LensLoaderModule.PICK_NG_LENS_FROM_LUT, JSON.stringify(param))
+            }
+        }
     }
     RowLayout {
         Button{ text: qsTr("LUT Pocket1 VAC") }

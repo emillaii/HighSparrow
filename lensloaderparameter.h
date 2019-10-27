@@ -29,6 +29,7 @@ public:
     Q_PROPERTY(QString lutLensLocationName READ lutLensLocationName WRITE setLutLensLocationName NOTIFY lutLensLocationNameChanged)
     Q_PROPERTY(QString lpaUpdownlookUpLocationName READ lpaUpdownlookUpLocationName WRITE setLpaUpdownlookUpLocation NOTIFY lpaUpdownlookUpkLocationChanged)
     Q_PROPERTY(QString lpaUpdownlookDownLocationName READ lpaUpdownlookDownLocationName WRITE setLpaupdownlookDownLocationName NOTIFY lpaUpdownlookDownLocaationNameChanged)
+    Q_PROPERTY(QString lutNgSlotLocationName READ lutNgSlotLocationName WRITE setLutNgSlotLocationName NOTIFY lutNgSlotLocationNameChanged)
     Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
     Q_PROPERTY(QString lpaUplookPickerLocationName READ lpaUplookPickerLocationName WRITE setLpaUplookPickerLocationName NOTIFY lpaUplookPickerLocationNameChanged)
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
@@ -45,6 +46,14 @@ public:
     Q_PROPERTY(bool staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
     Q_PROPERTY(bool openTimeLog READ openTimeLog WRITE setOpenTimeLog NOTIFY openTimeLogChanged)
     Q_PROPERTY(double readyTrayPercent READ readyTrayPercent WRITE setReadyTrayPercent NOTIFY readyTrayPercentChanged)
+    Q_PROPERTY(QString pickarmVaccumName READ pickarmVaccumName WRITE setPickarmVaccumName NOTIFY pickarmVaccumNameChanged)
+    Q_PROPERTY(QString pickarmVaccumSensorName READ pickarmVaccumSensorName WRITE setPickarmVaccumSensorName NOTIFY pickarmVaccumSensorNameChanged)
+    Q_PROPERTY(QString motorTName READ motorTName WRITE setMotorTName NOTIFY motorTNameChanged)
+    Q_PROPERTY(QString motorTrayName READ motorTrayName WRITE setMotorTrayName NOTIFY motorTrayNameChanged)
+    Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
+    Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
+    Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
+
     int runMode() const
     {
         return m_runMode;
@@ -200,6 +209,47 @@ public:
     double readyTrayPercent() const
     {
         return m_readyTrayPercent;
+    }
+
+
+    QString pickarmVaccumName() const
+    {
+        return m_pickarmVaccumName;
+    }
+
+    QString pickarmVaccumSensorName() const
+    {
+        return m_pickarmVaccumSensorName;
+    }
+
+    QString motorTName() const
+    {
+        return m_motorTName;
+    }
+
+    QString motorTrayName() const
+    {
+        return m_motorTrayName;
+    }
+
+    QString motorXName() const
+    {
+        return m_motorXName;
+    }
+
+    QString motorYName() const
+    {
+        return m_motorYName;
+    }
+
+    QString motorZName() const
+    {
+        return m_motorZName;
+    }
+
+    QString lutNgSlotLocationName() const
+    {
+        return m_lutNgSlotLocationName;
     }
 
 public slots:
@@ -501,6 +551,78 @@ public slots:
         emit readyTrayPercentChanged(m_readyTrayPercent);
     }
 
+    void setPickarmVaccumName(QString pickarmVaccumName)
+    {
+        if (m_pickarmVaccumName == pickarmVaccumName)
+            return;
+
+        m_pickarmVaccumName = pickarmVaccumName;
+        emit pickarmVaccumNameChanged(m_pickarmVaccumName);
+    }
+
+    void setPickarmVaccumSensorName(QString pickarmVaccumSensorName)
+    {
+        if (m_pickarmVaccumSensorName == pickarmVaccumSensorName)
+            return;
+
+        m_pickarmVaccumSensorName = pickarmVaccumSensorName;
+        emit pickarmVaccumSensorNameChanged(m_pickarmVaccumSensorName);
+    }
+
+    void setMotorTName(QString motorTName)
+    {
+        if (m_motorTName == motorTName)
+            return;
+
+        m_motorTName = motorTName;
+        emit motorTNameChanged(m_motorTName);
+    }
+
+    void setMotorTrayName(QString motorTrayName)
+    {
+        if (m_motorTrayName == motorTrayName)
+            return;
+
+        m_motorTrayName = motorTrayName;
+        emit motorTrayNameChanged(m_motorTrayName);
+    }
+
+    void setMotorXName(QString motorXName)
+    {
+        if (m_motorXName == motorXName)
+            return;
+
+        m_motorXName = motorXName;
+        emit motorXNameChanged(m_motorXName);
+    }
+
+    void setMotorYName(QString motorYName)
+    {
+        if (m_motorYName == motorYName)
+            return;
+
+        m_motorYName = motorYName;
+        emit motorYNameChanged(m_motorYName);
+    }
+
+    void setMotorZName(QString motorZName)
+    {
+        if (m_motorZName == motorZName)
+            return;
+
+        m_motorZName = motorZName;
+        emit motorZNameChanged(m_motorZName);
+    }
+
+    void setLutNgSlotLocationName(QString lutNgSlotLocationName)
+    {
+        if (m_lutNgSlotLocationName == lutNgSlotLocationName)
+            return;
+
+        m_lutNgSlotLocationName = lutNgSlotLocationName;
+        emit lutNgSlotLocationNameChanged(m_lutNgSlotLocationName);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void vcmWorkForceChanged(double vcmWorkForce);
@@ -564,6 +686,22 @@ signals:
 
     void readyTrayPercentChanged(double readyTrayPercent);
 
+    void pickarmVaccumNameChanged(QString pickarmVaccumName);
+
+    void pickarmVaccumSensorNameChanged(QString pickarmVaccumSensorName);
+
+    void motorTNameChanged(QString motorTName);
+
+    void motorTrayNameChanged(QString motorTrayName);
+
+    void motorXNameChanged(QString motorXName);
+
+    void motorYNameChanged(QString motorYName);
+
+    void motorZNameChanged(QString motorZName);
+
+    void lutNgSlotLocationNameChanged(QString lutNgSlotLocationName);
+
 private:
     int m_runMode = 0;
     double m_vcmWorkForce = 0;
@@ -598,6 +736,14 @@ private:
     bool m_handlyChangeLens = false;
     QString m_moduleName = "LensLoaderModule";
     double m_readyTrayPercent = 0;
+    QString m_pickarmVaccumName = "";
+    QString m_pickarmVaccumSensorName;
+    QString m_motorTName;
+    QString m_motorTrayName;
+    QString m_motorXName;
+    QString m_motorYName;
+    QString m_motorZName;
+    QString m_lutNgSlotLocationName;
 };
 
 class LensLoaderModuleState:public PropertyBase
@@ -633,6 +779,8 @@ public:
     Q_PROPERTY(bool loadingLens READ loadingLens WRITE setLoadingLens NOTIFY loadingLensChanged)
     Q_PROPERTY(bool waitingChangeTray READ waitingChangeTray WRITE setWaitingChangeTray NOTIFY waitingChangeTrayChanged)
     Q_PROPERTY(bool finishChangeTray READ finishChangeTray WRITE setFinishChangeTray NOTIFY finishChangeTrayChanged)
+
+    Q_PROPERTY(bool tcpVaccumState READ tcpVaccumState WRITE setTcpVaccumState NOTIFY finishTcpVaccumStateChanged)
 public:
     bool hasTray() const
     {
@@ -762,6 +910,11 @@ public:
     bool stationsUnload() const
     {
         return m_stationsUnload;
+    }
+
+    bool tcpVaccumState() const
+    {
+        return m_tcpVaccumState;
     }
 
 public slots:
@@ -1056,6 +1209,15 @@ public slots:
         emit stationsUnloadChanged(m_stationsUnload);
     }
 
+    void setTcpVaccumState(bool tcpVaccumState)
+    {
+        if (m_tcpVaccumState == tcpVaccumState)
+            return;
+
+        m_tcpVaccumState = tcpVaccumState;
+        emit finishTcpVaccumStateChanged(m_tcpVaccumState);
+    }
+
 signals:
     void hasTrayChanged(bool hasTray);
 
@@ -1109,6 +1271,8 @@ signals:
 
     void stationsUnloadChanged(bool stationsUnload);
 
+    void finishTcpVaccumStateChanged(bool tcpVaccumState);
+
 private:
     bool m_hasTray = true;
     bool m_lutHasLens = false;
@@ -1136,6 +1300,7 @@ private:
     QVariantMap m_pickerLensData;
     int m_taskOfStations = 0;
     bool m_stationsUnload = false;
+    bool m_tcpVaccumState;
 };
 
 #endif // LENSPICKARMMODULEPARAMETER_H

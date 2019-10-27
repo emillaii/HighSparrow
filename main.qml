@@ -343,10 +343,10 @@ ApplicationWindow {
                icon.source: "icons/auto-run.png"
                icon.color: "deepskyblue"
                onClicked: {
-                   if (baseModuleManager.getServerMode() === 0)
-                       uplookCamera.pauseLiveView(true)
-                   downlookCamera.pauseLiveView(true)
-                   pickarmCamera.pauseLiveView(true)
+//                   if (baseModuleManager.getServerMode() === 0)
+//                       uplookCamera.pauseLiveView(true)
+//                   downlookCamera.pauseLiveView(true)
+//                   pickarmCamera.pauseLiveView(true)
                    workersManager.startAllWorkers(moduleManagerParam.runMode)
                }
            }

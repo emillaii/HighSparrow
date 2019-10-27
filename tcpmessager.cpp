@@ -167,7 +167,7 @@ void TcpMessager::onReceiveTextMessage(QString message)
 {
     if (parameters.needQInfo())
         qDebug("%s tcp WebSocket receive %s in thread %d",parameters.messagerName().toStdString().c_str(),message.toStdString().c_str(),QThread::currentThreadId());
-     bool try_result = message_mutex.tryLock(parameters.outTime());
+    bool try_result = message_mutex.tryLock(parameters.outTime());
     if(try_result)
     {
         received_message = message;

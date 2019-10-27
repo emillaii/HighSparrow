@@ -1,8 +1,8 @@
 ﻿#include "vision/wordoplight.h"
 #include <QMutexLocker>
 #include <QThread>
-
-WordopLight::WordopLight(int mode)
+#include "utils/commonutils.h"
+WordopLight::WordopLight(int mode, QString name):ThreadWorkerBase(name)
 {
     this->mode = mode;
     port_name = "";
@@ -11,8 +11,8 @@ WordopLight::WordopLight(int mode)
     OnOff(1, true);
     OnOff(2, true);
     OnOff(3, true);
-    connect(this,&WordopLight::ChangeBrightnessSignal,this,&WordopLight::ChangeBrightness,Qt::QueuedConnection);
-    connect(this,&WordopLight::ChangeDoneSignal,this,&WordopLight::ChangeDone,Qt::QueuedConnection);
+    //connect(this,&WordopLight::ChangeBrightnessSignal,this,&WordopLight::ChangeBrightness,Qt::QueuedConnection);
+    //connect(this,&WordopLight::ChangeDoneSignal,this,&WordopLight::ChangeDone,Qt::QueuedConnection);
 }
 
 WordopLight::~WordopLight()
@@ -66,7 +66,9 @@ bool WordopLight::setBrightness(int ch, uint8_t brightness)
     QMutexLocker locker(&cmd_mutex);
     change_result = false;
     change_done = false;
-    emit ChangeBrightnessSignal(ch,brightness);
+
+    ChangeBrightness(ch,brightness);
+    //emit ChangeBrightnessSignal(ch,brightness);
     return true;
     int timeout = 1000;
     while(timeout>0)
@@ -275,4 +277,46 @@ void WordopLight::setUplookLensHolderPRLighting(int val)
 void WordopLight::setUpdownlookCalibGlassPRLighting(int val)
 {
     updownlookCalibGlassPRLighting = val;
+}
+
+void WordopLight::startWork(int run_mode)
+{
+}
+
+void WordopLight::stopWork(bool wait_finish)
+{
+}
+
+void WordopLight::resetLogic()
+{
+}
+
+PropertyBase *WordopLight::getModuleState()
+{
+    return Q_NULLPTR;
+}
+
+QMap<QString, PropertyBase *> WordopLight::getModuleParameter()
+{
+    QMap<QString, PropertyBase *> map;
+    return map;
+}
+
+void WordopLight::receivceModuleMessage(QVariantMap message)
+{
+    if (message["TargetModule"].toString() == this->Name()){
+        int channel = message["channel"].toInt(0);
+        int value = message["value"].toInt(0);
+        qDebug("Set: %d %d", channel, value);
+        setBrightness(channel, (uint8_t)value);
+    }
+}
+
+
+void WordopLight::setModuleParameter(QMap<QString, PropertyBase *> params){
+
+}
+
+void WordopLight::performHandlingOperation(int cmd, QVariant param){
+
 }

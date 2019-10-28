@@ -75,6 +75,7 @@ HEADERS += \
     Dispense/dispense_parameter.h \
     Dispense/dispenser.h \
     Dispense/dispenser_parameter.h \
+    Foundation/rollbackfile.h \
     Light/LontryLight.h \
     Matrix/Matrix.h \
     SingleHead/singlehead_lsut_module.h \
@@ -137,11 +138,13 @@ HEADERS += \
     trayparameter.h \
     traystandardsparameter.h \
     workers_manager.h \
-    TrayMap/traymapmodel.h
+    TrayMap/traymapmodel.h\
+    Foundation/languagemanager.h
 
 SOURCES += \
     Dispense/dispense_module.cpp \
     Dispense/dispenser.cpp \
+    Foundation/rollbackfile.cpp \
     Light/LontryLight.cpp \
     Matrix/Matrix.cpp \
     SingleHead/singlehead_lsut_module.cpp \
@@ -186,7 +189,8 @@ SOURCES += \
     materialtray.cpp \
     thread_worker_base.cpp \
     workers_manager.cpp \
-    TrayMap/traymapmodel.cpp
+    TrayMap/traymapmodel.cpp\
+    Foundation/languagemanager.cpp
 
 
 RC_ICONS= icons/sparrow.ico

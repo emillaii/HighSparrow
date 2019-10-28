@@ -48,7 +48,10 @@ public:
         LENS_VCM_POS =12,
         MOVE_LENS = 13,
         INIT_VCM =14,
-        XY_OFFSET = 15
+        XY_OFFSET = 15,
+        HOME_TILT = 16,
+        AA_HEAD_MOVE_TO_MUSHROOM = 17,
+        AA_HEAD_MOVE_TO_PICK_LENS = 18
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,SutModule* sut,Dothinkey *dk,

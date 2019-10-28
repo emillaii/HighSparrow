@@ -277,6 +277,14 @@ bool AAHeadModule::moveToSZ_XYSC_Z_Sync(double x, double y, double z, double c)
     return result;
 }
 
+bool AAHeadModule::homeTilt()
+{
+    motor_a->Home();
+    motor_b->Home();
+    motor_c->Home();
+    return true;
+}
+
 void AAHeadModule::receiveLensFromLut(double offset_x, double offset_y, double offset_theta)
 {
     qInfo("receiveSensorFromSut %f %f %f",offset_x,offset_y,offset_theta);

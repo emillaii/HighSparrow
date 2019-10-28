@@ -10,42 +10,42 @@ RowLayout{
         text: qsTr("AA 1 放置速度")
     }
     TextField {
-        text: lutParams.pickSpeed
+        text: tcpLUTParams.pickSpeed
         horizontalAlignment: TextInput.AlignHCenter
         validator: DoubleValidator {
             decimals: 6
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
-            lutParams.setPickSpeed(text)
+            tcpLUTParams.setPickSpeed(text)
         }
     }
     Label {
         text: qsTr("AA 1 压力")
     }
     TextField {
-        text: lutParams.pickForce
+        text: tcpLUTParams.pickForce
         horizontalAlignment: TextInput.AlignHCenter
         validator: DoubleValidator {
             decimals: 6
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
-            lutParams.setPickForce(text)
+            tcpLUTParams.setPickForce(text)
         }
     }
     Label {
         text: qsTr("AA 1 关爪延时")
     }
     TextField {
-        text: lutParams.gripperDelay
+        text: tcpLUTParams.gripperDelay
         horizontalAlignment: TextInput.AlignHCenter
         validator: DoubleValidator {
             decimals: 6
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
-            lutParams.setGripperDelay(text)
+            tcpLUTParams.setGripperDelay(text)
         }
     }
     Label {

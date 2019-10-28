@@ -550,7 +550,15 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
     else if (cmd == HandleTest::XY_OFFSET) {
         performXYOffset(params);
     }
-//    handlingParams = "";
+    else if (cmd == HandleTest::HOME_TILT) {
+        this->aa_head->homeTilt();
+    }
+    else if (cmd == HandleTest::AA_HEAD_MOVE_TO_MUSHROOM) {
+        this->aa_head->moveToMushroomPosition();
+    }
+    else if (cmd == HandleTest::AA_HEAD_MOVE_TO_PICK_LENS) {
+        this->aa_head->moveToPickLensPosition();
+    }
     emit postDataToELK(this->runningUnit);
     is_handling = false;
 }

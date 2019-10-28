@@ -26,6 +26,8 @@ class LutModule : public ThreadWorkerBase
 {
     Q_OBJECT
     Q_ENUMS(HandlePosition)
+    Q_ENUMS(HandlePR)
+    Q_ENUMS(HandlerAction)
 public:
     enum HandlePosition
     {
@@ -38,8 +40,24 @@ public:
         AA1_PICK_LENS_POS = 7,
         AA1_UNPICK_LENS_POS = 8,
         AA2_UPLOOK_POS =9,
-        AA2_PICK_LENS_POS = 7,
-        AA2_UNPICK_LENS_POS = 8
+        AA2_PICK_LENS_POS = 10,
+        AA2_UNPICK_LENS_POS = 11
+    };
+    enum HandlePR
+    {
+        RESET_PR = 10,
+        AA1_UPLOOK_PR = 20,
+        AA2_UPLOOK_PR = 30
+    };
+    enum HandlerAction
+    {
+        Measure_AA1_PICK_POS = 100,
+        Measure_AA2_PICK_POS = 200,
+        HOME_TILT = 300,
+        AA1_PICK_LENS = 400,
+        AA2_PICK_LENS = 500,
+        AA1_UNPICK_LENS = 600,
+        AA2_UNPICK_LENS = 700
     };
     explicit LutModule(QString name = "LUTModule", QObject * parent = nullptr);
     void Init(MaterialCarrier* carrier,
@@ -144,6 +162,9 @@ public:
     Q_INVOKABLE bool moveToAA2UnPickLens(bool check_autochthonous = false, bool check_softlanding = false);
     Q_INVOKABLE bool moveToAA1MushroomLens(bool check_autochthonous = false, bool check_softlanding = false);
     Q_INVOKABLE bool moveToAA2MushroomLens(bool check_autochthonous = false, bool check_softlanding = false);
+
+    Q_INVOKABLE bool moveToAA1UnPickLensPos(bool check_autochthonous = false, bool check_softlanding = false);
+    Q_INVOKABLE bool moveToAA2UnPickLensPos(bool check_autochthonous = false, bool check_softlanding = false);
 
     bool moveToAA1ReturnPos(bool check_autochthonous = false, bool check_softlanding = false);
     bool moveToAA2ReturnPos(bool check_autochthonous = false, bool check_softlanding = false);

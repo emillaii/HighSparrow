@@ -52,6 +52,7 @@ public:
     bool moveToSync(double x, double y, double z,double c);
     bool moveToSZ_XYC_Z_Sync(double x, double y, double z,double c);
     bool moveToSZ_XYSC_Z_Sync(double x, double y, double z,double c);
+    bool homeTilt();
 signals:
     void sendSensrRequestToSut(int sut_state);
 public slots:

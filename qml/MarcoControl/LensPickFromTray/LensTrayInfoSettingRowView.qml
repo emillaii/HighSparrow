@@ -49,9 +49,8 @@ ColumnLayout{
            height: 40
            onClicked: {
                //ToDo: Get the motor name from parameters
-               var x  = baseModuleManager.getMotorFeedbackPos("LTL_X")
-               var x1 = baseModuleManager.getMotorFeedbackPos("LPA_X")
-               var y = baseModuleManager.getMotorFeedbackPos("LPA_Y");
+               var x  = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorTrayName)
+               var y = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorYName);
                tcp_tray_start_point1.setX(x);
                tcp_tray_start_point1.setY(y);
            }
@@ -93,9 +92,8 @@ ColumnLayout{
        Button{
            text:title_read_encoder
            onClicked: {
-               var x  = baseModuleManager.getMotorFeedbackPos("LTL_X")
-               var x1 = baseModuleManager.getMotorFeedbackPos("LPA_X")
-               var y = baseModuleManager.getMotorFeedbackPos("LPA_Y");
+               var x  = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorTrayName)
+               var y = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorYName);
                tcp_first_tray_end_position.setX(x);
                tcp_first_tray_end_position.setY(y);
            }

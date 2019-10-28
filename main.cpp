@@ -145,7 +145,16 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("tray_loader_module",&highSprrow.baseModuleManager->tray_loader_module);
 
     //Position
-    {   //Local AA Head Position
+    {
+        engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);
+        engine.rootContext()->setContextProperty("aaCoreParams", &highSprrow.baseModuleManager->aaCoreNew.parameters);
+        engine.rootContext()->setContextProperty("aaCoreStates", &highSprrow.baseModuleManager->aaCoreNew.states);
+
+        engine.rootContext()->setContextProperty("tcpAAHeadParams", &highSprrow.baseModuleManager->tcp_aaHeadModule.parameters);
+        engine.rootContext()->setContextProperty("tcpAACoreParams", &highSprrow.baseModuleManager->tcp_aaCoreNew.parameters);
+        engine.rootContext()->setContextProperty("tcpAACoreStates", &highSprrow.baseModuleManager->tcp_aaCoreNew.states);
+
+        //Local AA Head Position
         engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);
         engine.rootContext()->setContextProperty("aaHeadPickLensPosition", &highSprrow.baseModuleManager->aa_head_module.pick_lens_position);
 
@@ -316,12 +325,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("vl_parameter_list",QVariant::fromValue(vl_parameter_list));
 
     //Params
-    engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);
-    engine.rootContext()->setContextProperty("aaCoreParams", &highSprrow.baseModuleManager->aaCoreNew.parameters);
-
-    engine.rootContext()->setContextProperty("tcpAACoreParams", &highSprrow.baseModuleManager->tcp_aaCoreNew.parameters);
-    engine.rootContext()->setContextProperty("aaCoreStates", &highSprrow.baseModuleManager->aaCoreNew.states);
-
     engine.rootContext()->setContextProperty("lensPickArmParams",&highSprrow.baseModuleManager->lens_pick_arm.parameters);
 
     engine.rootContext()->setContextProperty("sensorPickArmParams",&highSprrow.baseModuleManager->sensor_pickarm.parameters);

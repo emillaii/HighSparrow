@@ -14,6 +14,10 @@ public:
     Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
     Q_PROPERTY(QString vacuum1Name READ vacuum1Name WRITE setVacuum1Name NOTIFY vacuum1NameChanged)
     Q_PROPERTY(QString vacuum2Name READ vacuum2Name WRITE setVacuum2Name NOTIFY vacuum2NameChanged)
+    Q_PROPERTY(QString lutVacuum1Name READ lutVacuum1Name WRITE setLutVacuum1Name NOTIFY lutVacuumSensor1Changed)
+    Q_PROPERTY(QString lutVacuum2Name READ lutVacuum2Name WRITE setLutVacuum2Name NOTIFY lutVacuumSensor2Changed)
+    Q_PROPERTY(QString lutVacuumSensor1Name READ lutVacuumSensor1Name WRITE setLutVacuumSensor1Name NOTIFY lutVacuumSensor1NameChanged)
+    Q_PROPERTY(QString lutVacuumSensor2Name READ lutVacuumSensor2Name WRITE setLutVacuumSensor2Name NOTIFY lutVacuumSensor2NameChanged)
     Q_PROPERTY(QString uplookLocationName READ uplookLocationName WRITE setUplookLocationName NOTIFY uplookLocationNameChanged)
     Q_PROPERTY(QString loadlookLocationName READ loadlookLocationName WRITE setLoadlookLocationName NOTIFY loadlookLocationNameChanged)
     Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
@@ -120,6 +124,26 @@ public:
     int griperOperationOutTime() const
     {
         return m_griperOperationOutTime;
+    }
+
+    QString lutVacuumSensor1Name() const
+    {
+        return m_lutVacuumSensor1Name;
+    }
+
+    QString lutVacuumSensor2Name() const
+    {
+        return m_lutVacuumSensor2Name;
+    }
+
+    QString lutVacuum1Name() const
+    {
+        return m_lutVacuum1Name;
+    }
+
+    QString lutVacuum2Name() const
+    {
+        return m_lutVacuum2Name;
     }
 
 public slots:
@@ -290,6 +314,42 @@ public slots:
         emit griperOperationOutTimeChanged(m_griperOperationOutTime);
     }
 
+    void setLutVacuumSensor1Name(QString lutVacuumSensor1Name)
+    {
+        if (m_lutVacuumSensor1Name == lutVacuumSensor1Name)
+            return;
+
+        m_lutVacuumSensor1Name = lutVacuumSensor1Name;
+        emit lutVacuumSensor1NameChanged(m_lutVacuumSensor1Name);
+    }
+
+    void setLutVacuumSensor2Name(QString lutVacuumSensor2Name)
+    {
+        if (m_lutVacuumSensor2Name == lutVacuumSensor2Name)
+            return;
+
+        m_lutVacuumSensor2Name = lutVacuumSensor2Name;
+        emit lutVacuumSensor2NameChanged(m_lutVacuumSensor2Name);
+    }
+
+    void setLutVacuum1Name(QString lutVacuum1Name)
+    {
+        if (m_lutVacuum1Name == lutVacuum1Name)
+            return;
+
+        m_lutVacuum1Name = lutVacuum1Name;
+        emit lutVacuumSensor1Changed(m_lutVacuum1Name);
+    }
+
+    void setLutVacuum2Name(QString lutVacuum2Name)
+    {
+        if (m_lutVacuum2Name == lutVacuum2Name)
+            return;
+
+        m_lutVacuum2Name = lutVacuum2Name;
+        emit lutVacuumSensor2Changed(m_lutVacuum2Name);
+    }
+
 signals:
     void paramsChanged();
 
@@ -330,6 +390,14 @@ signals:
 
     void griperOperationOutTimeChanged(int griperOperationOutTime);
 
+    void lutVacuumSensor1NameChanged(QString lutVacuumSensor1Name);
+
+    void lutVacuumSensor2NameChanged(QString lutVacuumSensor2Name);
+
+    void lutVacuumSensor1Changed(QString lutVacuum1Name);
+
+    void lutVacuumSensor2Changed(QString lutVacuum2Name);
+
 private:
     double m_PickForce = 0;
     QString m_motorXName = "LUT_X";
@@ -350,6 +418,10 @@ private:
     int m_testLensCount = 10;
     QString m_moduleName = "LUTModule";
     int m_griperOperationOutTime = 1000;
+    QString m_lutVacuumSensor1Name;
+    QString m_lutVacuumSensor2Name;
+    QString m_lutVacuum1Name;
+    QString m_lutVacuum2Name;
 };
 
 class LutState:public PropertyBase

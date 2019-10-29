@@ -22,36 +22,42 @@ ColumnLayout{
             text: qsTr("X")
         }
         TextField {
+            text: tcpLUTCarrierParams.SafetyX
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcpLUTCarrierParams.setSafetyX(text)
             }
         }
         Label {
             text: qsTr("Y")
         }
         TextField {
+            text: tcpLUTCarrierParams.SafetyY
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcpLUTCarrierParams.setSafetyY(text)
             }
         }
         Label {
             text: qsTr("Z")
         }
         TextField {
+            text: tcpLUTCarrierParams.SafetyZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcpLUTCarrierParams.setSafetyZ(text)
             }
         }
     }

@@ -12,34 +12,43 @@ ColumnLayout{
             text: qsTr("X")
         }
         TextField {
+            text: spa_standby_position.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                spa_standby_position.setX(text)
             }
         }
         Label {
             text: qsTr("Y")
         }
         TextField {
+            text: spa_standby_position.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                spa_standby_position.setY(text)
             }
         }
         Button {
             text: title_read_encoder
             onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                spa_standby_position.setX(x);
+                spa_standby_position.setY(y);
             }
         }
         Button {
             text: title_move_to
             onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SPA_STANDBY_POS)
             }
         }
     }

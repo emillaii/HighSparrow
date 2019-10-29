@@ -162,42 +162,42 @@ Column{
             text: qsTr("X")
         }
         TextField {
-            text: tcpLUTPickLensPositionAA2.X
+            text: tcpLUTUnPickLensPositionAA2.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tcpLUTPickLensPositionAA2.setX(text)
+                tcpLUTUnPickLensPositionAA2.setX(text)
             }
         }
         Label {
             text: qsTr("Y")
         }
         TextField {
-            text: tcpLUTPickLensPositionAA2.Y
+            text: tcpLUTUnPickLensPositionAA2.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tcpLUTPickLensPositionAA2.setY(text)
+                tcpLUTUnPickLensPositionAA2.setY(text)
             }
         }
         Label {
             text: qsTr("Z")
         }
         TextField {
-            text: tcpLUTPickLensPositionAA2.Z
+            text: tcpLUTUnPickLensPositionAA2.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                tcpLUTPickLensPositionAA2.setZ(text)
+                tcpLUTUnPickLensPositionAA2.setZ(text)
             }
         }
         Button {

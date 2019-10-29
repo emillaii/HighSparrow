@@ -277,6 +277,10 @@ void BaseModuleManager::tcpResp(QString message)
                     map[param_name]->read(parameter_json);
                 }
             }
+            if (module_name.contains("LensLoaderModule")){
+                QPointF point = tcp_lensLoaderModule.tray->getStartPosition(0);
+                qInfo("point 1: %f %f ", point.x(), point.y());
+            }
         }
         else if(resp == "moduleNames")
         {
@@ -1602,67 +1606,70 @@ void BaseModuleManager::setTcpModuleParameter(QString moduleName)
 
 bool BaseModuleManager::initialDevice()
 {
-    if(InitState())
-        return true;
-    if(!profile_loaded)
-        return false;
-    qInfo("Init module manager");
-    LPWSTR pTarget = ip;
-    XT_Controler::InitDevice_PC_Local_Controler(0);
-    int res = XT_Controler::beCurConnectServerAndInterfaceBoard();
-    if (1 != res) {
-        res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
-        if (1 != res)
-        {
-            qInfo("Motion control server cannot connect");
-            return false;
-        }
-    }
 
-    XT_Controler::ReBuildSystem();
-
-    QTime tic;
-    tic.start();
-    while(tic.elapsed()<300);
-
-    res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
-
-    if (1 != res)
-    {
-        qInfo("Motion control server cannot connect");
-        return false;
-    }
-
-    res = XT_Controler_Extend::Profile_Init_Controller(1);
-
-    if (1 != res)
-    {
-        qInfo("Motion control server cannot connect");
-        return false;
-    }
-    XT_Controler_Extend::Stop_Buffer_Sync();
-
-    XtVcMotor::InitAllVCM();
-    XtVcMotor* temp_motor;
-    foreach (QString mator_name, motors.keys()) {
-        temp_motor = GetVcMotorByName(mator_name);
-        if(temp_motor!= nullptr)
-            temp_motor->ConfigVCM();
-    }
-    XT_Controler_Extend::Start_Buffer_Sync(-1);
-
-    setInitState(true);
-    //this must after "setInitState(true);!!!"
-    foreach (XtMotor *m, motors.values()) {
-        m->GetMasterAxisID();
-    }
-    enableMotors();
-
-    if (ServerMode() == 1)
-    {
-        setOutput(u8"三色报警指示灯_绿", true);
-    }
     inquiryTcpModule();
+    setInitState(true);
+//    if(InitState())
+//        return true;
+//    if(!profile_loaded)
+//        return false;
+//    qInfo("Init module manager");
+//    LPWSTR pTarget = ip;
+//    XT_Controler::InitDevice_PC_Local_Controler(0);
+//    int res = XT_Controler::beCurConnectServerAndInterfaceBoard();
+//    if (1 != res) {
+//        res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
+//        if (1 != res)
+//        {
+//            qInfo("Motion control server cannot connect");
+//            return false;
+//        }
+//    }
+
+//    XT_Controler::ReBuildSystem();
+
+//    QTime tic;
+//    tic.start();
+//    while(tic.elapsed()<300);
+
+//    res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
+
+//    if (1 != res)
+//    {
+//        qInfo("Motion control server cannot connect");
+//        return false;
+//    }
+
+//    res = XT_Controler_Extend::Profile_Init_Controller(1);
+
+//    if (1 != res)
+//    {
+//        qInfo("Motion control server cannot connect");
+//        return false;
+//    }
+//    XT_Controler_Extend::Stop_Buffer_Sync();
+
+//    XtVcMotor::InitAllVCM();
+//    XtVcMotor* temp_motor;
+//    foreach (QString mator_name, motors.keys()) {
+//        temp_motor = GetVcMotorByName(mator_name);
+//        if(temp_motor!= nullptr)
+//            temp_motor->ConfigVCM();
+//    }
+//    XT_Controler_Extend::Start_Buffer_Sync(-1);
+
+//    setInitState(true);
+//    //this must after "setInitState(true);!!!"
+//    foreach (XtMotor *m, motors.values()) {
+//        m->GetMasterAxisID();
+//    }
+//    enableMotors();
+
+//    if (ServerMode() == 1)
+//    {
+//        setOutput(u8"三色报警指示灯_绿", true);
+//    }
+//    inquiryTcpModule();
     return true;
 }
 

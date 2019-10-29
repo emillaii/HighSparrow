@@ -763,6 +763,11 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     parts.append(mushroom_location);
     this->sut = sut;
     this->check_thread = check_thread;
+    //Align some parameters name in lut params for the ease of access
+    this->parameters.setLutVacuum1Name(load_vacuum->parameters.outIoName());
+    this->parameters.setLutVacuum2Name(unload_vacuum->parameters.outIoName());
+    this->parameters.setLutVacuumSensor1Name(load_vacuum->parameters.inIoName());
+    this->parameters.setLutVacuumSensor2Name(unload_vacuum->parameters.inIoName());
 }
 
 void LutModule::saveJsonConfig(QString file_name)

@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.2
 import LogicManagerLib 1.1
 import SomeLib 1.1
-
+import LutModuleLib 1.1
 ColumnLayout{
     RowLayout {
         Label { text: qsTr("AA Up Look PR Position") }
@@ -15,46 +15,59 @@ ColumnLayout{
             text: qsTr("X")
         }
         TextField {
+            text: tcpLUTUplookPositionAA1.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcpLUTUplookPositionAA1.setX(text)
             }
         }
         Label {
             text: qsTr("Y")
         }
         TextField {
+            text: tcpLUTUplookPositionAA1.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcpLUTUplookPositionAA1.setY(text)
             }
         }
         Label {
             text: qsTr("Z")
         }
         TextField {
+            text: tcpLUTUplookPositionAA1.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcpLUTUplookPositionAA1.setZ(text)
             }
         }
         Button {
             text: title_read_encoder
             onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(tcpLUTParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(tcpLUTParams.motorYName)
+                var z = baseModuleManager.getMotorFeedbackPos(tcpLUTParams.motorZName)
+                tcpLUTPickLensPositionAA1.setX(x)
+                tcpLUTPickLensPositionAA1.setY(y)
+                tcpLUTPickLensPositionAA1.setZ(z)
             }
         }
         Button {
             text: title_move_to
             onClicked: {
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_UPLOOK_POS)
             }
         }
     }
@@ -64,46 +77,59 @@ ColumnLayout{
             text: qsTr("X")
         }
         TextField {
+            text: tcpLUTUplookPositionAA2.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcpLUTUplookPositionAA2.setX(text)
             }
         }
         Label {
             text: qsTr("Y")
         }
         TextField {
+            text: tcpLUTUplookPositionAA2.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcpLUTUplookPositionAA2.setY(text)
             }
         }
         Label {
             text: qsTr("Z")
         }
         TextField {
+            text: tcpLUTUplookPositionAA2.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcpLUTUplookPositionAA2.setZ(text)
             }
         }
         Button {
             text: title_read_encoder
             onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(tcpLUTParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(tcpLUTParams.motorYName)
+                var z = baseModuleManager.getMotorFeedbackPos(tcpLUTParams.motorZName)
+                tcpLUTPickLensPositionAA2.setX(x)
+                tcpLUTPickLensPositionAA2.setY(y)
+                tcpLUTPickLensPositionAA2.setZ(z)
             }
         }
         Button {
             text: title_move_to
             onClicked: {
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_UPLOOK_POS)
             }
         }
     }

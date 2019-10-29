@@ -238,7 +238,12 @@ ColumnLayout {
         }
     }
     RowLayout {
-        Button{ text: qsTr("LUT Pocket1 VAC") }
+        Button{
+            text: qsTr("LUT Pocket1 VAC")
+            onClicked: {
+                baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum1Name)
+            }
+        }
         RoundButton{
             background: Rectangle {
                 radius: 6
@@ -248,7 +253,12 @@ ColumnLayout {
                 }
             }
         }
-        Button{ text: qsTr("LUT Pocket2 VAC") }
+        Button{
+            text: qsTr("LUT Pocket2 VAC")
+            onClicked: {
+                baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum2Name)
+            }
+        }
         RoundButton{
             background: Rectangle {
                 radius: 6

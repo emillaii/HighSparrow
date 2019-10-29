@@ -3,7 +3,8 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
-
+import SomeLib 1.1
+import LogicManagerLib 1.1
 Column{
     RowLayout {
         Label {
@@ -13,6 +14,8 @@ Column{
             text: qsTr("Row")
         }
         TextField {
+            text: "1"
+            id: t_nrow_1
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
@@ -25,6 +28,8 @@ Column{
             text: qsTr("Col")
         }
         TextField {
+            text: "1"
+            id: t_ncol_1
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
@@ -38,7 +43,8 @@ Column{
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToAA2PickLensPos(false,true)
+                material_tray.setTrayCurrent(t_ncol_1.text-1,t_nrow_1.text-1,0)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS)
             }
         }
     }
@@ -50,6 +56,8 @@ Column{
             text: qsTr("Row")
         }
         TextField {
+            text: "1"
+            id: t_nrow_2
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
@@ -62,6 +70,8 @@ Column{
             text: qsTr("Col")
         }
         TextField {
+            text: "1"
+            id: t_ncol_2
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
@@ -75,7 +85,8 @@ Column{
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToAA2PickLensPos(false,true)
+                material_tray.setTrayCurrent(t_ncol_2.text-1,t_nrow_2.text-1,0)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_POS)
             }
         }
     }

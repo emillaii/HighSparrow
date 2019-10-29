@@ -34,7 +34,7 @@ ColumnLayout {
     }
 
     Button {
-        text: qsTr("Sensor Carrier Info& Position Setting")
+        text: qsTr("Sensor Carrier Info And Position Setting")
         Layout.minimumWidth: 400
         Layout.maximumWidth: 400
         width: 300

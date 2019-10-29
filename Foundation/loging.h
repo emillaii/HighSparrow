@@ -7,6 +7,17 @@
 #include "Utils/config.h"
 
 
+//Log规范
+//所有调试信息，如最底层的log信息，使用qDebug,程序运行稳定后，将配置文件中的logLevel改为1，将过滤掉debug信息，减少log量
+//所有程序运行日志，使用qInfo，方便出问题时检查log上下文
+//所有报警，-----必须-----使用qWarning或qCritical，方便快速定位异常
+//所有异常信息（指捕获到的异常），-----必须------使用qCritical，方便快速定位异常
+
+
+//Warning消息和Critical消息会额外输出到额外的文件，方便快速定位异常
+
+
+
 class LogParameter:public PropertyBase
 {
     Q_OBJECT

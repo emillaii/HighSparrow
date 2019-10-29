@@ -74,7 +74,7 @@ void PropertyBase::write(QJsonObject &json) const
             json[name] = QJsonObject::fromVariantMap(this->property(name).toMap());
         }
         else {
-            qInfo("write parameter error,unrecognized type : %d : %s",temp_type,metaproperty.name());
+            qWarning("write parameter error,unrecognized type : %d : %s",temp_type,metaproperty.name());
         }
     }
 }
@@ -100,7 +100,7 @@ void PropertyBase::reset()
         else if (metaproperty.type() == QVariant::Type::Map)
             this->property(name).clear();
         else
-            qInfo("reset parameter %s error,unrecognized type : %d : %s",metaproperty.name(),metaproperty.type());
+            qWarning("reset parameter %s error,unrecognized type : %d : %s",metaproperty.name(),metaproperty.type());
     }
 }
 
@@ -184,7 +184,7 @@ bool PropertyBase::loadJsonConfig(QString file_name, QMap<QString, PropertyBase*
     file.setFileName(file_name);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        qInfo("load parameter from %s fail",file_name.toStdString().c_str());
+        qWarning("load parameter from %s fail",file_name.toStdString().c_str());
         return false;
     }
     val = file.readAll();
@@ -227,7 +227,6 @@ bool PropertyBase::loadJsonArray(QString file_name,QJsonArray &array)
     file.setFileName(file_name);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-//        AppendError(QString(u8"加载参数文件失败，文件名 %1").arg(file_name));
         qWarning("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return false;
     }
@@ -245,8 +244,7 @@ bool PropertyBase::loadJsonArray(QString file_name,QJsonArray &array)
         return true;
     else
     {
-//        AppendError(QString(u8"解析参数文件失败，文件名 %1").arg(file_name));
-        qInfo("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
+        qWarning("load parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return false;
     }
 }
@@ -256,7 +254,6 @@ bool PropertyBase::saveJsonArray(QString file_name,QJsonArray &array)
     QFile file;
     file.setFileName(file_name);
     if(!file.open(QFile::WriteOnly)){
-//        AppendError(QString(u8"保存参数文件失败，文件名 %1").arg(file_name));
         qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
         return false;
     }
@@ -288,7 +285,7 @@ bool PropertyBase::loadJsonObject(QString file_name, QJsonObject &object)
             return true;
         }
     }
-    qInfo("load parameters to %s failed, load file error:%s.",file_name.toStdString().data(),error.errorString().toStdString().c_str());
+    qWarning("load parameters to %s failed, load file error:%s.",file_name.toStdString().data(),error.errorString().toStdString().c_str());
     return false;
 }
 

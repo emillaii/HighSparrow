@@ -5,6 +5,7 @@
 #define CONFIG_DIR                   "config//"
 #define PR_CONFIG_DIR                "config//prConfig"
 #define SYSTERM_PARAM_DIR            "config//systermParameter//"
+#define LOG_PARAM_FILE               "logParameter.json"
 #define SYSTERM_CONGIF_FILE           "systermConfig.json"
 #define SYSTERM_PARAM_FILE           "systermParameter.json"
 #define SYSTERM_PARAMETER            "systermParameter"

@@ -1,16 +1,25 @@
 #include "rollbackfile.h"
 
 
-RollbackFile::RollbackFile(QString& folder, QString& fileName, qint64 maxSize, int nBackupFile, bool flushImmediately):
-    folder(folder), fileName(fileName), maxSize(maxSize), nBackupFile(nBackupFile), flushImmediately(flushImmediately)
+RollbackFile::RollbackFile()
 {
+
+}
+
+void RollbackFile::init(QString &folder, QString &fileName, qint64 maxSize, int nBackupFile, bool flushImmediately)
+{
+    this->folder = folder;
+    this->fileName = fileName;
+    this->maxSize = maxSize;
+    this->nBackupFile = nBackupFile;
+    this->flushImmediately = flushImmediately;
     dateForLogFolderName = QDateTime::currentDateTime();
     initFileStream();
     stream.setDevice(&file);
     stream.setCodec(QTextCodec::codecForName("utf8"));
 }
 
-void RollbackFile::appendLine(QString& s)
+void RollbackFile::appendLine(QString s)
 {
     QMutexLocker tmpLocker(&locker);
 
@@ -51,7 +60,7 @@ void RollbackFile::initFileStream()
     else {
         currentSize = 0;
         if(!dir.exists()){
-            dir.mkpath(fullPath);
+            dir.mkpath(dir.absolutePath());
         }
     }
     file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);

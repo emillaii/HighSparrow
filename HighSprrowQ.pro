@@ -75,6 +75,8 @@ HEADERS += \
     Dispense/dispense_parameter.h \
     Dispense/dispenser.h \
     Dispense/dispenser_parameter.h \
+    Foundation/loging.h \
+    Foundation/propertybase.h \
     Foundation/rollbackfile.h \
     Light/LontryLight.h \
     Matrix/Matrix.h \
@@ -144,6 +146,8 @@ HEADERS += \
 SOURCES += \
     Dispense/dispense_module.cpp \
     Dispense/dispenser.cpp \
+    Foundation/loging.cpp \
+    Foundation/propertybase.cpp \
     Foundation/rollbackfile.cpp \
     Light/LontryLight.cpp \
     Matrix/Matrix.cpp \

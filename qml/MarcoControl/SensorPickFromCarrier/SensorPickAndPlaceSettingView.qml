@@ -85,9 +85,9 @@ ColumnLayout {
         }
         CheckBox{
             text: qsTr("不限力")
-            checked: sensorLoaderParameter.disablePlaceToSutForceLimmit
+            checked: sensorLoaderParameter.disablePickFromSutForceLimit
             onCheckedChanged: {
-                sensorLoaderParameter.setDisablePlaceToSutForceLimmit(checked)
+                sensorLoaderParameter.setisablePickFromSutForceLimit(checked)
             }
         }
     }

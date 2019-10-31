@@ -205,7 +205,7 @@ Column{
             width: 40
             height: 40
             onClicked: {
-                logicManager.performHandling(aaCoreParams.moduleName, AACoreNew.AA_HEAD_MOVE_TO_PICK_LENS)
+                logicManager.performHandling(tcpLUTParams.moduleName, LutModule.AA2_UNPICK_LENS_POS)
             }
         }
         Button {

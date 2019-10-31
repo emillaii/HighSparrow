@@ -664,7 +664,7 @@ void LutModule::performHandlingOperation(int cmd,QVariant param)
     }
     qInfo("Lut Module perform command: %d", cmd);
     bool result = true;
-    int temp_value = 10;
+    int temp_value = 20;
     if (cmd%temp_value == HandlePosition::LOAD_POS) {
         result = moveToLoadPos();
     }

@@ -27,6 +27,8 @@ public:
     Q_PROPERTY(double downlookFlyPrPosition READ downlookFlyPrPosition WRITE setDownlookFlyPrPosition NOTIFY downlookFlyPrPositionChanged)
     Q_PROPERTY(double downlookFlyVelocity READ downlookFlyVelocity WRITE setDownlookFlyVelocity NOTIFY downlookFlyVelocityChanged)
     Q_PROPERTY(double downlookCameraExposureTime READ downlookCameraExposureTime WRITE setDownlookCameraExposureTime NOTIFY downlookCameraExposureTimeChanged)
+    Q_PROPERTY(QString tcpSUTVaccumName READ tcpSUTVaccumName WRITE setTcpSUTVaccumName NOTIFY tcpSUTVaccumNameChanged)
+    Q_PROPERTY(QString tcpSUTPOGOPINName READ tcpSUTPOGOPINName WRITE setTcpSUTPOGOPINName NOTIFY tcpSUTPOGOPINNameChanged)
     double Force() const
     {
         return m_Force;
@@ -124,6 +126,16 @@ public:
     double downlookCameraExposureTime() const
     {
         return m_downlookCameraExposureTime;
+    }
+
+    QString tcpSUTVaccumName() const
+    {
+        return m_tcpSUTVaccumName;
+    }
+
+    QString tcpSUTPOGOPINName() const
+    {
+        return m_tcpSUTPOGOPINName;
     }
 
 public slots:
@@ -316,6 +328,24 @@ public slots:
         emit downlookCameraExposureTimeChanged(m_downlookCameraExposureTime);
     }
 
+    void setTcpSUTVaccumName(QString tcpSUTVaccumName)
+    {
+        if (m_tcpSUTVaccumName == tcpSUTVaccumName)
+            return;
+
+        m_tcpSUTVaccumName = tcpSUTVaccumName;
+        emit tcpSUTVaccumNameChanged(m_tcpSUTVaccumName);
+    }
+
+    void setTcpSUTPOGOPINName(QString tcpSUTPOGOPINName)
+    {
+        if (m_tcpSUTPOGOPINName == tcpSUTPOGOPINName)
+            return;
+
+        m_tcpSUTPOGOPINName = tcpSUTPOGOPINName;
+        emit tcpSUTPOGOPINNameChanged(m_tcpSUTPOGOPINName);
+    }
+
 signals:
     void paramsChanged(double Force);
 
@@ -359,6 +389,10 @@ signals:
 
     void downlookCameraExposureTimeChanged(double downlookCameraExposureTime);
 
+    void tcpSUTVaccumNameChanged(QString tcpSUTVaccumName);
+
+    void tcpSUTPOGOPINNameChanged(QString tcpSUTPOGOPINName);
+
 private:
     double m_Force = 0;
     QString m_motorXName = "SUT_X";
@@ -380,6 +414,8 @@ private:
     double m_downlookFlyVelocity = 1;
     QString m_downlookFlyIoName = "CAMERA_TRIG";
     double m_downlookCameraExposureTime;
+    QString m_tcpSUTVaccumName;
+    QString m_tcpSUTPOGOPINName;
 };
 
 class SutState:public PropertyBase

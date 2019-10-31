@@ -87,11 +87,12 @@ DeviceStatesGeter::IoState DeviceStatesGeter::getOutputIoState(QString output_io
     return state;
 }
 
-void DeviceStatesGeter::toggleOutputIoState(QString output_io_name)
+void DeviceStatesGeter::toggleOutputIoState(QString output_io_name, int input_state)
 {
     QJsonObject temp_json;
     temp_json["cmd"] = "toggleOutputIoState";
     temp_json["outputIoName"] = output_io_name;
+    temp_json["inputState"] = input_state;
     QString result = emit sendGetDeviceState(getStringFromJsonObject(temp_json));
     QJsonObject result_json = getJsonObjectFromString(result);
     IoState state;

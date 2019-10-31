@@ -18,7 +18,7 @@ RowLayout {
     Button {
         text: qsTr("Pick Pocket2 Position")
         onClicked: {
-            logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_PICK_LENS_POS)
+            logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_UNPICK_LENS_POS)
         }
     }
     Button {
@@ -29,20 +29,22 @@ RowLayout {
     }
     Button {
         text: qsTr("Place Lens Pocket 1")
+        enabled: false
         onClicked: {
             logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_UNPICK_LENS_POS)
         }
     }
     Button {
         text: qsTr("Pick Lens Pocket 2")
+        enabled: false
         onClicked: {
-            logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_PICK_LENS)
+            logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_PICK_LENS)
         }
     }
     Button {
         text: qsTr("Place Lens Pocket 2")
         onClicked: {
-            logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_UNPICK_LENS_POS)
+            logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_UNPICK_LENS)
         }
     }
 }

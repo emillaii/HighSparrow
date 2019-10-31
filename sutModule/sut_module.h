@@ -22,7 +22,20 @@ enum SUT_STATE
 class SutModule : public ThreadWorkerBase
 {
     Q_OBJECT
+    Q_ENUMS(HandlePosition)
+    Q_ENUMS(HandlePR)
+    Q_ENUMS(HandlerAction)
 public:
+    enum HandlePosition
+    {
+        DOWNLOOK_PR_POS = 1,
+        DOWNLOOK_ON_THE_FLY_POS = 2
+    };
+    enum HandlePR{
+    };
+    enum HandlerAction
+    {
+    };
     SutModule();
     void Init(MaterialCarrier* carrier,
               VisionLocation* vision_downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn,

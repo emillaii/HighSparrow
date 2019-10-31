@@ -9,12 +9,10 @@ SutModule::SutModule()
     gui_thread_id = QThread::currentThreadId();
 }
 
-void SutModule::Init(MaterialCarrier *carrier, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* popgpin,XtGeneralOutput* camera_trig,int thread_id)
+void SutModule::Init(MaterialCarrier *carrier, VisionLocation* downlook_location,VisionLocation* updownlook_down_location,VisionLocation* updownlook_up_locationn, XtVacuum *vacuum,XtCylinder* pogopin,XtGeneralOutput* camera_trig,int thread_id)
 {
     this->carrier = carrier;
     parts.append(carrier);
-//    this->sut_cilent = sut_cilent;
-//    parts.append(sut_cilent);
     this->vision_downlook_location = downlook_location;
     parts.append(vision_downlook_location);
     this->vision_updownlook_down_location = updownlook_down_location;
@@ -23,12 +21,16 @@ void SutModule::Init(MaterialCarrier *carrier, VisionLocation* downlook_location
     parts.append(vision_updownlook_up_location);
     this->vacuum = vacuum;
     parts.append(vacuum);
-    this->popgpin = popgpin;
+    this->popgpin = pogopin;
     parts.append(popgpin);
     this->camera_trig = camera_trig;
     parts.append(camera_trig);
     setName(parameters.moduleName());
     this->thread_id = thread_id;
+    if (vacuum)
+        this->parameters.setTcpSUTVaccumName(vacuum->parameters.outIoName());
+    if (pogopin)
+        this->parameters.setTcpSUTPOGOPINName(pogopin->parameters.oneOutName());
 }
 
 void SutModule::saveJsonConfig(QString file_name)
@@ -583,9 +585,9 @@ void SutModule::stopWork(bool wait_finish)
 void SutModule::performHandlingOperation(int cmd,QVariant param)
 {
     bool result = true;
-    if(cmd == 1)
+    if(cmd == HandlePosition::DOWNLOOK_PR_POS)
         result = moveToDownlookPR(false,true);
-    else if(cmd == 2)
+    else if(cmd == HandlePosition::DOWNLOOK_ON_THE_FLY_POS)
         result = moveToDownLookFlyPr();
     if(!result)
         sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);

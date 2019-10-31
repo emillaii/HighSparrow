@@ -36,14 +36,16 @@ Column {
         }
     }
     RowLayout {
-        Label { text: qsTr("SUT1 放料区间") }
+        Label { text: qsTr("SUT 1 放料区间") }
         TextField{
+           text:sensorLoaderParameter.placeToSutMargin
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sensorLoaderParameter.setPlaceToSutMargin(text)
            }
         }
         CheckBox{

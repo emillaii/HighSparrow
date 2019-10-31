@@ -25,7 +25,7 @@ public:
     IoState getInputIoState(QString input_io_name);
     IoState getOutputIoState(QString output_io_name);
     QJsonArray getOutputIoState(QJsonArray io_name_array);
-    void toggleOutputIoState(QString output_io_name);
+    void toggleOutputIoState(QString output_io_name, int input_state = -1);
 signals:
     QString sendGetDeviceState(QString motor_name);
 public slots:

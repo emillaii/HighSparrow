@@ -3,6 +3,8 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
+import LogicManagerLib 1.1
+import SomeLib 1.1
 
 Column{
     RowLayout {
@@ -17,24 +19,24 @@ Column{
             text: qsTr("Row")
         }
         TextField {
+            id:t_nrow1
+            text: "1"
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
             }
         }
         Label {
             text: qsTr("Col")
         }
         TextField {
+            text: "1"
+            id:t_ncol1
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
             }
         }
         Button {
@@ -42,6 +44,9 @@ Column{
             width: 40
             height: 40
             onClicked: {
+                material_tray.setTrayCurrent(t_ncol1.text-1,t_nrow1.text-1,0)
+                sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS)
             }
         }
 
@@ -53,7 +58,6 @@ Column{
             text: qsTr("Place")
         }
 
-        //-------------------
         Label {
             text: qsTr("料盘2")
         }
@@ -61,6 +65,8 @@ Column{
             text: qsTr("Row")
         }
         TextField {
+            text: "1"
+            id:t_nrow2
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
@@ -73,6 +79,8 @@ Column{
             text: qsTr("Col")
         }
         TextField {
+            text: "1"
+            id:t_ncol2
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
@@ -108,6 +116,9 @@ Column{
         }
         Button {
             text: qsTr("SUT 1 Clamp")
+            onClicked: {
+                baseModuleManager.toogleIoState(tcpSUTParams.tcpSUTPOGOPINName)
+            }
         }
         RoundButton{
             background: Rectangle {
@@ -117,6 +128,9 @@ Column{
         }
         Button {
             text: qsTr("SUT 1 VAC")
+            onClicked: {
+                baseModuleManager.toogleIoState(tcpSUTParams.tcpSUTVaccumName)
+            }
         }
         RoundButton{
             background: Rectangle {
@@ -134,6 +148,9 @@ Column{
         }
         Button {
             text: qsTr("SUT 2 Clamp")
+            onClicked: {
+                baseModuleManager.toogleIoState(sutParams.tcpSUTPOGOPINName)
+            }
         }
         RoundButton{
             background: Rectangle {
@@ -143,6 +160,9 @@ Column{
         }
         Button {
             text: qsTr("SUT 2 VAC")
+            onClicked: {
+                baseModuleManager.toogleIoState(sutParams.tcpSUTVaccumName)
+            }
         }
         RoundButton{
             background: Rectangle {

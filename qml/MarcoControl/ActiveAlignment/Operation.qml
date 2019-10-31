@@ -142,11 +142,18 @@ ColumnLayout{
 
         Button{
             text: qsTr("LUT Pocket1 VAC")
+            onClicked: {
+                baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum1Name)
+            }
         }
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (tcpLUTState.tcpVaccum1State) return "lightGreen"
+                    else return "red"
+                }
+
             }
         }
     }
@@ -183,11 +190,17 @@ ColumnLayout{
 
         Button{
             text: qsTr("LUT Pocket1 VAC")
+            onClicked: {
+                baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum2Name)
+            }
         }
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (tcpLUTState.tcpVaccum1State) return "lightGreen"
+                    else return "red"
+                }
             }
         }
     }

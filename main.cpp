@@ -130,6 +130,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("alarmShower", &highSprrow.worker_manager->alarm_shower);
     //QML Library Module
     qmlRegisterType<LutModule>("LutModuleLib",1,1,"LutModule");
+    qmlRegisterType<SutModule>("SutModuleLib",1,1,"SutModule");
     qmlRegisterType<LensLoaderModule>("SomeLib",1,1,"LensLoaderModule");
     qmlRegisterType<SensorLoaderModule>("SomeLib",1,1,"SensorLoaderModule");
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");

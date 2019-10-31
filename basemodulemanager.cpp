@@ -103,7 +103,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     //Machine Map Initialization
     //machineMap = new GraphWidget;
     //machineMap->show();
-    timer.start(3000);
+    //timer.start(3000);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -238,13 +238,18 @@ void BaseModuleManager::tcpResp(QString message)
         else if (cmd == "toggleOutputIoState")
         {
             QString outputIo_name = message_object["outputIoName"].toString();
+            int inputState = message_object["inputState"].toInt(-1);
             XtGeneralOutput* temp_io = GetOutputIoByName(outputIo_name);
             QJsonObject result;
             result["outputIoName"] = outputIo_name;
             if(temp_io == nullptr)
                 result["error"] =QString("can not find ").append(outputIo_name);
             else {
-                temp_io->Set(!temp_io->Value());
+                if (inputState == -1) //toggle state
+                    temp_io->Set(!temp_io->Value());
+                else {
+                    temp_io->Set(inputState);
+                }
                 result["IoValue"] = temp_io->Value();
                 result["error"] = "";
             }
@@ -476,6 +481,7 @@ QString BaseModuleManager::deviceResp(QString message)
         else if(cmd == "toggleOutputIoState")
         {
             QString temp_name = message_object["outputIoName"].toString();
+            int inputState = message_object["inputState"].toInt(-1);
             qDebug()<<"inquiry output io state :"<< temp_name<<"thread id:"<<QThread::currentThreadId();
             QJsonObject result;
             result["outputIoName"] = temp_name;
@@ -504,10 +510,12 @@ QString BaseModuleManager::deviceResp(QString message)
                     result["error"] = QString("tcp cannot find input io ").append(temp_name);
             }
             else {
-                temp_io->Set(!temp_io->Value());
+                if (inputState == -1)
+                    temp_io->Set(!temp_io->Value());
+                else
+                    temp_io->Set(inputState);
                 result["IoValue"] = temp_io->Value();
                 result["error"] = "";
-
             }
             return getStringFromJsonObject(result);
         }
@@ -1606,70 +1614,67 @@ void BaseModuleManager::setTcpModuleParameter(QString moduleName)
 
 bool BaseModuleManager::initialDevice()
 {
+    if(InitState())
+        return true;
+    if(!profile_loaded)
+        return false;
+    qInfo("Init module manager");
+    LPWSTR pTarget = ip;
+    XT_Controler::InitDevice_PC_Local_Controler(0);
+    int res = XT_Controler::beCurConnectServerAndInterfaceBoard();
+    if (1 != res) {
+        res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
+        if (1 != res)
+        {
+            qInfo("Motion control server cannot connect");
+            return false;
+        }
+    }
 
-    inquiryTcpModule();
+    XT_Controler::ReBuildSystem();
+
+    QTime tic;
+    tic.start();
+    while(tic.elapsed()<300);
+
+    res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
+
+    if (1 != res)
+    {
+        qInfo("Motion control server cannot connect");
+        return false;
+    }
+
+    res = XT_Controler_Extend::Profile_Init_Controller(1);
+
+    if (1 != res)
+    {
+        qInfo("Motion control server cannot connect");
+        return false;
+    }
+    XT_Controler_Extend::Stop_Buffer_Sync();
+
+    XtVcMotor::InitAllVCM();
+    XtVcMotor* temp_motor;
+    foreach (QString mator_name, motors.keys()) {
+        temp_motor = GetVcMotorByName(mator_name);
+        if(temp_motor!= nullptr)
+            temp_motor->ConfigVCM();
+    }
+    XT_Controler_Extend::Start_Buffer_Sync(-1);
+
     setInitState(true);
-//    if(InitState())
-//        return true;
-//    if(!profile_loaded)
-//        return false;
-//    qInfo("Init module manager");
-//    LPWSTR pTarget = ip;
-//    XT_Controler::InitDevice_PC_Local_Controler(0);
-//    int res = XT_Controler::beCurConnectServerAndInterfaceBoard();
-//    if (1 != res) {
-//        res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
-//        if (1 != res)
-//        {
-//            qInfo("Motion control server cannot connect");
-//            return false;
-//        }
-//    }
+    //this must after "setInitState(true);!!!"
+    foreach (XtMotor *m, motors.values()) {
+        m->GetMasterAxisID();
+    }
+    enableMotors();
 
-//    XT_Controler::ReBuildSystem();
-
-//    QTime tic;
-//    tic.start();
-//    while(tic.elapsed()<300);
-
-//    res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
-
-//    if (1 != res)
-//    {
-//        qInfo("Motion control server cannot connect");
-//        return false;
-//    }
-
-//    res = XT_Controler_Extend::Profile_Init_Controller(1);
-
-//    if (1 != res)
-//    {
-//        qInfo("Motion control server cannot connect");
-//        return false;
-//    }
-//    XT_Controler_Extend::Stop_Buffer_Sync();
-
-//    XtVcMotor::InitAllVCM();
-//    XtVcMotor* temp_motor;
-//    foreach (QString mator_name, motors.keys()) {
-//        temp_motor = GetVcMotorByName(mator_name);
-//        if(temp_motor!= nullptr)
-//            temp_motor->ConfigVCM();
-//    }
-//    XT_Controler_Extend::Start_Buffer_Sync(-1);
-
-//    setInitState(true);
-//    //this must after "setInitState(true);!!!"
-//    foreach (XtMotor *m, motors.values()) {
-//        m->GetMasterAxisID();
-//    }
-//    enableMotors();
-
-//    if (ServerMode() == 1)
-//    {
-//        setOutput(u8"三色报警指示灯_绿", true);
-//    }
-//    inquiryTcpModule();
+    if (ServerMode() == 1)
+    {
+        setOutput(u8"三色报警指示灯_绿", true);
+    }
+    inquiryTcpModule();
     return true;
 }
 
@@ -1738,11 +1743,10 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     //if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
     //    return false;
     GetMotorByName(this->lut_module.parameters.motorZName())->SeekOrigin();//LUT_Z
-//    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();//AA_Y
     GetVcMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
-    GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
+//    GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
 
-    result = GetMotorByName(this->lut_module.parameters.motorZName())->WaitSeekDone();
+//    result = GetMotorByName(this->lut_module.parameters.motorZName())->WaitSeekDone();
     if(!result)return false;
     GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
 
@@ -1752,18 +1756,13 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();//SUT_X
     GetMotorByName(this->sut_module.parameters.motorYName())->SeekOrigin();//SUT_Y
 
-    result = GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->WaitSeekDone();
-    if(!result)return false;
-
-    GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->SeekOrigin();//LPA_X
-    GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
-    GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
-
-//    result = GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
+//    result = GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->WaitSeekDone();
 //    if(!result)return false;
 
-//    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();//AA_X
-//    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();//AA_Z
+//    GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->SeekOrigin();//LPA_X
+//    GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
+//    GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
+
     GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();//AA_A
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();//AA_B
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();//AA_C
@@ -1773,48 +1772,45 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->lut_module.parameters.motorXName())->SeekOrigin();//LUT_X
 
     //缩回气缸
-    GetCylinderByName(this->tray_loader_module.parameters.cylinderClipName())->Set(0);
+//    GetCylinderByName(this->tray_loader_module.parameters.cylinderClipName())->Set(0);
 
-    GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->SeekOrigin();//LTIE
+//    GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->SeekOrigin();//LTIE
 
-    GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->SeekOrigin();//LTOE
+//    GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->SeekOrigin();//LTOE
 
 
 
-    result = GetMotorByName(this->lens_pick_arm.parameters.motorYName())->WaitSeekDone();
+//    result = GetMotorByName(this->lens_pick_arm.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
     //升起气缸,降下托盘
     //
-    GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->SeekOrigin();//LTL
+//    GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->SeekOrigin();//LTL
 
 
     GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK1Name())->Set(0);
     GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(0);
-    GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->SeekOrigin();//LTK1
-    GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->SeekOrigin();//LTK2
+//    GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->SeekOrigin();//LTK1
+//    GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->SeekOrigin();//LTK2
 
 
     result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->sut_module.parameters.motorYName())->WaitSeekDone();
 
-    result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
-    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
+//    result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
+//    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
 
-
-//    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
-//    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
 
     result &= GetMotorByName(this->lut_module.parameters.motorXName())->WaitSeekDone();
 
-    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->WaitSeekDone();
+//    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->WaitSeekDone();
 
-    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->WaitSeekDone();
-    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->WaitSeekDone();
-    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->WaitSeekDone();
-    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->WaitSeekDone();
+//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->WaitSeekDone();
+//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->WaitSeekDone();
+//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->WaitSeekDone();
+//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->WaitSeekDone();
     if(result)
     {
         qInfo("all motors seeked origin success!");
@@ -1865,21 +1861,19 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
-
-//    result = GetMotorByName(this->sensor_pickarm.parameters.motorXName())->WaitSeekDone();
 //    if(!result)return false;
     GetMotorByName(this->sensor_pickarm.parameters.motorYName())->SeekOrigin();
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
     result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
     if(!result)return false;
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->SeekOrigin();
-    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();
+//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();
 
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
     //升起氣缸
-    GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->SeekOrigin();
-    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->SeekOrigin();
+//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->SeekOrigin();
+//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->SeekOrigin();
 
 
 //    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
@@ -1892,9 +1886,9 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorTName())->WaitSeekDone();
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->WaitSeekDone();
     result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->WaitSeekDone();
-    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->WaitSeekDone();
-    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->WaitSeekDone();
-    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->WaitSeekDone();
 
     if(result)
     {
@@ -2367,9 +2361,9 @@ void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
     }
 }
 
-void BaseModuleManager::toogleIoState(QString io_name)
+void BaseModuleManager::toogleIoState(QString io_name, int inputState)
 {
-    state_geter.toggleOutputIoState(io_name);
+    state_geter.toggleOutputIoState(io_name, inputState);
 }
 
 //void BaseModuleManager::sendChangeSensorTray()

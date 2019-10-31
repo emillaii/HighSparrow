@@ -9,48 +9,56 @@ Column {
     RowLayout {
         Label { text: qsTr("取料力度") }
         TextField{
+            text:sensorLoaderParameter.vcmWorkForce
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setVcmWorkForce(text)
             }
         }
         Label{
             text:qsTr("速度")
         }
         TextField{
+            text:sensorLoaderParameter.vcmWorkSpeed
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setVcmWorkSpeed(text)
             }
         }
         Label{
             text:qsTr("限力区间")
         }
         TextField{
+            text:sensorLoaderParameter.vcmMargin
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setVcmMargin(text)
             }
         }
     }
     RowLayout {
         Label { text: qsTr("SUT 1 放料区间") }
         TextField{
+            text:sensorLoaderParameter.placeToSutMargin
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setPlaceToSutMargin(text)
             }
         }
         CheckBox{
@@ -63,30 +71,34 @@ Column {
             text:qsTr("SUT 1 取料区间")
         }
         TextField{
+            text:sensorLoaderParameter.pickFromSutMargin
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setPickFromSutMargin(text)
             }
         }
         CheckBox{
             text: qsTr("不限力")
-            checked: sensorLoaderParameter.disablePlaceToSutForceLimmit
+            checked: sensorLoaderParameter.disablePickFromSutForceLimit
             onCheckedChanged:
-                sensorLoaderParameter.setDisablePlaceToSutForceLimmit(checked)
+                sensorLoaderParameter.setDisablePickFromSutForceLimit(checked)
         }
     }
     RowLayout {
         Label { text: qsTr("SUT 2 放料区间") }
         TextField{
+            text:sensorLoaderParameter.placeToSutMargin
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setPlaceToSutMargin(text)
             }
         }
         CheckBox{

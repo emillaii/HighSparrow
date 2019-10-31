@@ -13,46 +13,43 @@ ColumnLayout{
             text: qsTr("X")
         }
         TextField {
+            text: sut_pr_position1.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sut_pr_position1.setX(text)
             }
         }
         Label {
             text: qsTr("Y")
         }
         TextField {
+            text: sut_pr_position1.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-            }
-        }
-        Label {
-            text: qsTr("Z")
-        }
-        TextField {
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator {
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
+                sut_pr_position1.setY(text)
             }
         }
         Button {
             text: title_read_encoder
             onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                sut_pr_position1.setX(x);
+                sut_pr_position1.setY(y);
             }
         }
         Button {
             text: title_move_to
             onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1)
             }
         }
     }
@@ -64,46 +61,43 @@ ColumnLayout{
             text: qsTr("X")
         }
         TextField {
+            text: sut_pr_position2.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sut_pr_position2.setX(text)
             }
         }
         Label {
             text: qsTr("Y")
         }
         TextField {
+            text: sut_pr_position2.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-            }
-        }
-        Label {
-            text: qsTr("Z")
-        }
-        TextField {
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator {
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
+                sut_pr_position2.setY(text)
             }
         }
         Button {
             text: title_read_encoder
             onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                sut_pr_position2.setX(x);
+                sut_pr_position2.setY(y);
             }
         }
         Button {
             text: title_move_to
             onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2)
             }
         }
     }

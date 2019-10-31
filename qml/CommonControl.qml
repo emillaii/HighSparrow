@@ -5,7 +5,6 @@ import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
 import SomeLib 1.1
 import LogicManagerLib 1.1
-
 ItemDelegate {
     width: parent.width
 

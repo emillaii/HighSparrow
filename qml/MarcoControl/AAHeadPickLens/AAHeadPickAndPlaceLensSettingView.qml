@@ -66,25 +66,60 @@ ColumnLayout{
     AA2TestOperation {}
 
     RowLayout {
-        Button{ text: qsTr("LUT Pocket 1 VAC") }
+        Button{
+            text: qsTr("LUT Pocket 1 VAC")
+            onClicked: {
+                 baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum1Name)
+            }
+        }
+        RoundButton{
+            background: Rectangle {
+                radius: 6
+                color: {
+                    if (tcpLUTState.tcpVaccum1State) return "lightGreen"
+                    else return "red"
+                }
+            }
+        }
+        Button{
+            text: qsTr("LUT Pocket 2 VAC")
+            onClicked: {
+                 baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum2Name)
+            }
+        }
+        RoundButton{
+            background: Rectangle {
+                radius: 6
+                color: {
+                    if (tcpLUTState.tcpVaccum2State) return "lightGreen"
+                    else return "red"
+                }
+            }
+        }
+        Button{
+            text: qsTr("AA1 Gripper Open/Closed")
+            onClicked: {
+                 baseModuleManager.toogleIoState(tcpAAHeadParams.gripperName)
+            }
+        }
         RoundButton{
             background: Rectangle {
                 radius: 6
                 color: "red"
             }
         }
-        Button{ text: qsTr("LUT Pocket 2 VAC") }
-        RoundButton{
-            background: Rectangle {
-                radius: 6
-                color: "red"
+        Button{
+            text: qsTr("AA2 Gripper Open/Closed")
+            onClicked: {
+                 baseModuleManager.toogleIoState(aaHeadParams.gripperName)
             }
         }
-        Button{ text: qsTr("Gripper Open/Closed") }
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    "red"
+                }
             }
         }
     }

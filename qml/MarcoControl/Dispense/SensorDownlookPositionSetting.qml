@@ -86,41 +86,53 @@ Column {
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sutDownlookPosition.setX(text)
            }
         }
         Label{
            text:qsTr("Y")
         }
         TextField{
+           text: sutDownlookPosition.Y
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sutDownlookPosition.setY(text)
            }
         }
         Label{
            text:qsTr("Z")
         }
         TextField{
+           text: sutDownlookPosition.Z
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sutDownlookPosition.setZ(text)
            }
         }
         Button{
            text:title_read_encoder
            onClicked: {
+               var x = baseModuleManager.getMotorFeedbackPos(sutParams.motorXName)
+               var y = baseModuleManager.getMotorFeedbackPos(sutParams.motorYName)
+               var z = baseModuleManager.getMotorFeedbackPos(sutParams.motorZName)
+               sutDownlookPosition.setX(x)
+               sutDownlookPosition.setY(y)
+               sutDownlookPosition.setZ(z)
            }
         }
 
         Button{
            text:title_move_to
            onClicked: {
+               logicManager.performHandling(sutParams.moduleName, SutModule.DOWNLOOK_PR_POS)
            }
         }
     }

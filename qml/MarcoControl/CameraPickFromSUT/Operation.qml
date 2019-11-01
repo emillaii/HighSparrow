@@ -15,7 +15,7 @@ ColumnLayout {
             text: { qsTr("SUT1 Load Position")}
             }
         Button{
-            text: { qsTr("CPA Pick & Place SUT1 PR Position")}
+            text: { qsTr("CPA Pick And Place SUT1 PR Position")}
             }
         Button{
             text: { qsTr("SUT1 Place Camera")}
@@ -30,7 +30,7 @@ ColumnLayout {
             text: { qsTr("SUT2 Load Position")}
             }
         Button{
-            text: { qsTr("CPA Pick & Place SUT2 PR Position")}
+            text: { qsTr("CPA Pick And Place SUT2 PR Position")}
             }
         Button{
             text: { qsTr("SUT2 Place Camera")}

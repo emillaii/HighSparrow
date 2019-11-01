@@ -5,6 +5,9 @@ import QtQuick.Layouts 1.3
 RowLayout{
     Button{
         text: qsTr("SUT1 Clamp")
+        onClicked: {
+            baseModuleManager.toogleIoState(tcpSUTParams.tcpSUTPOGOPINName)
+        }
     }
     RoundButton{
         background: Rectangle {
@@ -15,6 +18,9 @@ RowLayout{
 
     Button{
         text: qsTr("SUT1 VAC")
+        onClicked: {
+            baseModuleManager.toogleIoState(tcpSUTParams.tcpSUTVaccumName)
+        }
     }
     RoundButton{
         background: Rectangle {

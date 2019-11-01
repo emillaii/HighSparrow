@@ -6,39 +6,45 @@ Column {
     RowLayout {
         Label { text: qsTr("取料压力") }
         TextField{
+           text: sensorLoaderParameter.pickProductForce
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sensorLoaderParameter.setPickProductForce(text)
            }
         }
         Label { text: qsTr("速度") }
         TextField{
+           text: sensorLoaderParameter.vcmWorkSpeed
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sensorLoaderParameter.setVcmWorkSpeed(text)
            }
         }
         Label { text: qsTr("限力区间") }
-        TextField{
+        TextField{            
+           text:sensorLoaderParameter.vcmMargin
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sensorLoaderParameter.setVcmMargin(text)
            }
         }
     }
     RowLayout {
         Label { text: qsTr("SUT 1 放料区间") }
         TextField{
-           text:sensorLoaderParameter.placeToSutMargin
+           text: sensorLoaderParameter.placeToSutMargin
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
@@ -50,54 +56,68 @@ Column {
         }
         CheckBox{
             text: qsTr("不限力")
+            checked: sensorLoaderParameter.disablePlaceToSutForceLimmit
             onCheckedChanged: {
+                sensorLoaderParameter.setDisablePlaceToSutForceLimmit(checked)
             }
         }
         Label { text: qsTr("SUT1 取料区间") }
         TextField{
+           text: sensorLoaderParameter.pickFromSutMargin
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sensorLoaderParameter.setPickFromSutMargin(text)
            }
         }
         CheckBox{
             text: qsTr("不限力")
+            checked: sensorLoaderParameter.disablePickFromSutForceLimit
             onCheckedChanged: {
+                sensorLoaderParameter.setDisablePickFromSutForceLimit(checked)
             }
         }
     }
     RowLayout {
         Label { text: qsTr("SUT2 放料区间") }
         TextField{
+           text: sensorLoaderParameter.placeToSutMargin
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sensorLoaderParameter.setPlaceToSutMargin(text)
            }
         }
         CheckBox{
             text: qsTr("不限力")
+            checked: sensorLoaderParameter.disablePlaceToSutForceLimmit
             onCheckedChanged: {
+                sensorLoaderParameter.setDisablePlaceToSutForceLimmit(checked)
             }
         }
         Label { text: qsTr("SUT2 取料区间") }
         TextField{
+           text: sensorLoaderParameter.pickFromSutMargin
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               text: sensorLoaderParameter.setPickFromSutMargin
            }
         }
         CheckBox{
             text: qsTr("不限力")
+            checked: sensorLoaderParameter.disablePickFromSutForceLimit
             onCheckedChanged: {
+                sensorLoaderParameter.setDisablePickFromSutForceLimit(checked)
             }
         }
     }

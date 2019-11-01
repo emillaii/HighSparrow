@@ -170,6 +170,9 @@ public slots:
     void performHandlingOperation(int cmd);
     bool sendMessageTest(QString title,QString content);
     void receiveMessageFromWorkerManger(QVariantMap message);
+    void receiveNeedUpdateTcpParameter(){
+        this->sendTcpUpdateParameterRequest();
+    }
     void setLightPanelLighting(int lightPanelLighting)
     {
         if (m_lightPanelLighting == lightPanelLighting)

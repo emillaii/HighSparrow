@@ -214,6 +214,5 @@
         <file>qml/MarcoControl/BufferAndRejectCarrier/RejectCarrierSetting.qml</file>
         <file>qml/MarcoControl/BufferAndRejectCarrier/RejectCarrierTestOperation.qml</file>
         <file>qml/TCPTraySpec.qml</file>
-        <file>visionServer.qml</file>
     </qresource>
 </RCC>

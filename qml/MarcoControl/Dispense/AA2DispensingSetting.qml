@@ -4,7 +4,8 @@ import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.2
 import LogicManagerLib 1.1
 import SomeLib 1.1
-
+import SutModuleLib 1.1
+import AACoreNew 1.1
 Column {
     RowLayout {
         Label { text : qsTr("AA2 点胶设置") }
@@ -115,33 +116,56 @@ Column {
                 dispenseParams.setDispenseYOffset(text)
             }
         }
-        Button {
-            text: qsTr("视觉")
-            onClicked: {
-                logicManager.performHandling(tcpSUTParams.moduleName, SutModule.DOWNLOOK_PR_POS)
-            }
-        }
-        Button {
-            text: qsTr("喷胶")
-        }
-        Button {
-            text: qsTr("读取")
-        }
-    }
-
-    RowLayout {
-        Label { text : qsTr("点胶高度 SUT Z") }
+        Label { text : qsTr("Purge Time") }
         TextField{
+            text: dispenseParams.openTime
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                dispenseParams.setOpenTime(text)
+            }
+        }
+        Button {
+            text: qsTr("视觉")
+            onClicked: {
+                logicManager.performHandling(sutParams.moduleName, SutModule.DOWNLOOK_PR_POS+SutModule.DOWNLOOK_PR)
+            }
+        }
+        Button {
+            text: qsTr("喷胶")
+            onClicked: {
+                logicManager.performHandling(aaCoreParams.moduleName, AACoreNew.DISPENSE_XY_OFFSET_TEST)
+            }
+        }
+        Button {
+            text: qsTr("读取")
+            onClicked: {
+                dispenseModule.calulateOffset()
+            }
+        }
+    }
+
+    RowLayout {
+        Label { text : qsTr("点胶高度 SUT Z") }
+        TextField{
+            text: dispenseParams.dispenseZPos
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                dispenseParams.setDispenseZPos(text)
             }
         }
         Button {
             text: qsTr("测高")
+            onClicked: {
+                dispenseModule.moveToDispenseDot()
+            }
         }
     }
 }

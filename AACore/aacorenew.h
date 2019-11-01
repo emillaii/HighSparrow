@@ -51,7 +51,9 @@ public:
         XY_OFFSET = 15,
         HOME_TILT = 16,
         AA_HEAD_MOVE_TO_MUSHROOM = 17,
-        AA_HEAD_MOVE_TO_PICK_LENS = 18
+        AA_HEAD_MOVE_TO_PICK_LENS = 18,
+        DISPENSE_XY_OFFSET_TEST = 19,
+        DISPENSE_Z_TEST = 20,
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,SutModule* sut,Dothinkey *dk,
@@ -189,6 +191,7 @@ signals:
     void postDataToELK(QString);
     void postSfrDataToELK(QString, QVariantMap);
     void sendLensRequestToLut();
+    void needUpdateParameterInTcpModule();
 public slots:
     void triggerGripperOn(bool isOn);
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);

@@ -45,19 +45,19 @@ public:
     };
     enum HandlePR
     {
-        RESET_PR = 10,
-        AA1_UPLOOK_PR = 20,
-        AA2_UPLOOK_PR = 30
+        RESET_PR = 100,
+        AA1_UPLOOK_PR = 200,
+        AA2_UPLOOK_PR = 300
     };
     enum HandlerAction
     {
-        Measure_AA1_PICK_POS = 100,
-        Measure_AA2_PICK_POS = 200,
-        HOME_TILT = 300,
-        AA1_PICK_LENS = 400,
-        AA2_PICK_LENS = 500,
-        AA1_UNPICK_LENS = 600,
-        AA2_UNPICK_LENS = 700
+        Measure_AA1_PICK_POS = 1000,
+        Measure_AA2_PICK_POS = 2000,
+        HOME_TILT = 3000,
+        AA1_PICK_LENS = 4000,
+        AA2_PICK_LENS = 5000,
+        AA1_UNPICK_LENS = 6000,
+        AA2_UNPICK_LENS = 7000
     };
     explicit LutModule(QString name = "LUTModule", QObject * parent = nullptr);
     void Init(MaterialCarrier* carrier,

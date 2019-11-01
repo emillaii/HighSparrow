@@ -664,7 +664,7 @@ void LutModule::performHandlingOperation(int cmd,QVariant param)
     }
     qInfo("Lut Module perform command: %d", cmd);
     bool result = true;
-    int temp_value = 20;
+    int temp_value = 100;
     if (cmd%temp_value == HandlePosition::LOAD_POS) {
         result = moveToLoadPos();
     }
@@ -689,7 +689,7 @@ void LutModule::performHandlingOperation(int cmd,QVariant param)
         result = true;
     }
     cmd = cmd/temp_value*temp_value;
-    temp_value = 100;
+    temp_value = 1000;
     if(!result)
     {
         sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
@@ -697,7 +697,7 @@ void LutModule::performHandlingOperation(int cmd,QVariant param)
         return;
     }
     //Handle PR
-    if (cmd%temp_value == HandlePR::AA1_UPLOOK_PR) {
+    if (cmd%temp_value == HandlePR::AA1_UPLOOK_PR || cmd%temp_value == HandlePR::AA2_UPLOOK_PR) {
         result = performUpLookPR();
     } else {
         result = true;
@@ -710,7 +710,7 @@ void LutModule::performHandlingOperation(int cmd,QVariant param)
     }
     //Action
     cmd = cmd/temp_value*temp_value;
-    temp_value = 1000;
+    temp_value = 10000;
     if (cmd%temp_value == HandlerAction::Measure_AA1_PICK_POS) {
         result = moveToAAMeasurePickHeight(true);
     }

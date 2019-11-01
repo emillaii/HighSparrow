@@ -108,7 +108,10 @@ bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check
         offset = vision_downlook_location->getCurrentResult();
     }
     if(close_lighting)
+    {
+        qInfo("close lighting");
         vision_downlook_location->CloseLight();
+    }
     if(!result)
         AppendError(u8"执行downlook pr 失败");
     return result;
@@ -585,10 +588,26 @@ void SutModule::stopWork(bool wait_finish)
 void SutModule::performHandlingOperation(int cmd,QVariant param)
 {
     bool result = true;
-    if(cmd == HandlePosition::DOWNLOOK_PR_POS)
-        result = moveToDownlookPR(false,true);
-    else if(cmd == HandlePosition::DOWNLOOK_ON_THE_FLY_POS)
+    int temp_value = 10;
+    qInfo("performHandlingOperation cmd: %d", cmd);
+    if(cmd%temp_value == HandlePosition::DOWNLOOK_PR_POS)
+        result = moveToDownlookPos();
+    else if(cmd%temp_value == HandlePosition::DOWNLOOK_ON_THE_FLY_POS)
         result = moveToDownLookFlyPr();
+    else if(cmd%temp_value == HandlePosition::LOAD_POS)
+        result = moveToLoadPos();
+    else if(cmd%temp_value == HandlePosition::MUSHROOM_POS)
+        result = moveToMushroomPos();
+    if(!result)
+        sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
+    cmd = cmd/temp_value*temp_value;
+    temp_value = 100;
+    if(cmd%temp_value == HandlePR::DOWNLOOK_PR)
+    {
+        PrOffset offset(0, 0, 0);
+        moveToDownlookPR(offset, false);
+        stepMove_XY_Sync(-offset.X, -offset.Y);
+    }
     if(!result)
         sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
     is_handling = false;

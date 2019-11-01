@@ -559,6 +559,13 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
     else if (cmd == HandleTest::AA_HEAD_MOVE_TO_PICK_LENS) {
         this->aa_head->moveToPickLensPosition();
     }
+    else if (cmd == HandleTest::DISPENSE_XY_OFFSET_TEST) {
+        this->dispense->moveToDispenseDot(false);
+    }
+    else if (cmd == HandleTest::DISPENSE_Z_TEST) {
+        this->dispense->moveToDispenseDot();
+        emit needUpdateParameterInTcpModule();
+    }
     emit postDataToELK(this->runningUnit);
     is_handling = false;
 }
@@ -2677,8 +2684,8 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    int uv_time = params["time_in_ms"].toInt();
-    bool enable_OTP = params["enable_OTP"].toInt();
+    int uv_time = params["time_in_ms"].toInt(3000);
+    bool enable_OTP = params["enable_OTP"].toInt(0);
     aa_head->openUVTillTime(uv_time);
     bool result = true;
     if (enable_OTP)

@@ -29,9 +29,12 @@ public:
     enum HandlePosition
     {
         DOWNLOOK_PR_POS = 1,
-        DOWNLOOK_ON_THE_FLY_POS = 2
+        DOWNLOOK_ON_THE_FLY_POS = 2,
+        LOAD_POS = 3,
+        MUSHROOM_POS = 4
     };
     enum HandlePR{
+        DOWNLOOK_PR = 10
     };
     enum HandlerAction
     {

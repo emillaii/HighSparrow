@@ -170,7 +170,8 @@ bool BaslerPylonCamera::Init(){
 //                if (cameraChannelName.contains(CAMERA_AA1_DL) || cameraChannelName.contains(CAMERA_AA2_DL)) {
 //                    setFeatureTriggerSourceType("Line1");
 //                } else {
-//                    camera.RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_ReplaceAll, Cleanup_Delete);
+                   camera.RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_ReplaceAll, Cleanup_Delete);
+                   setFeatureTriggerSourceType("Freerun");
 //                }
                 getFeatureTriggerSourceType();
             }

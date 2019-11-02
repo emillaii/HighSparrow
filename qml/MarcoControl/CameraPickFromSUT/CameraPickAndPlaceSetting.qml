@@ -126,52 +126,41 @@ Column {
         Label { text: qsTr("CPA Pick And Place SUT1 Position") }
         Label { text: qsTr("X") }
         TextField{
+           text: sut_pr_position1.X
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sut_pr_position1.setX(text)
            }
         }
         Label { text: qsTr("Y") }
         TextField{
+            text: sut_pr_position1.Y
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
-           }
-        }
-        Label { text: qsTr("Z") }
-        TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
-        }
-        Label { text: qsTr("Theta") }
-        TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
+               sut_pr_position1.setY(text)
            }
         }
         Button{
            text: title_read_encoder
-           onClicked: {
+           onClicked: {          
+               var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+               var y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+               sut_pr_position1.setX(x);
+               sut_pr_position1.setY(y);
            }
         }
         Button{
            text: title_move_to
            onClicked: {
+               logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1)
            }
         }
         Button{
@@ -195,52 +184,41 @@ Column {
         Label { text: qsTr("CPA Pick And Place SUT2 Position") }
         Label { text: qsTr("X") }
         TextField{
+           text: sut_pr_position2.X
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sut_pr_position2.setX(text)
            }
         }
         Label { text: qsTr("Y") }
         TextField{
+           text: sut_pr_position2.Y
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
-           }
-        }
-        Label { text: qsTr("Z") }
-        TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
-        }
-        Label { text: qsTr("Theta") }
-        TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
+               sut_pr_position2.setY(text)
            }
         }
         Button{
            text: title_read_encoder
            onClicked: {
+               var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+               var y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+               sut_pr_position2.setX(x);
+               sut_pr_position2.setY(y);
            }
         }
         Button{
            text: title_move_to
            onClicked: {
+               logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2)
            }
         }
         Button{
@@ -261,69 +239,127 @@ Column {
     }
 
     RowLayout {
-        Label { text: qsTr("SUT1 Escape") }
-        Label { text: qsTr("X") }
-        TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+        Label{
+            text:qsTr("sensor高度")
         }
-        Label { text: qsTr("Y") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            text:sensorLoaderParameter.placeSensorZ
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPlaceSensorZ(text)
+            }
         }
-        Label { text: qsTr("Z") }
+        Button{
+            text:qsTr("测高")
+            width: 40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_SENSOR_IN_SUT)
+            }
+        }
+    }
+
+    RowLayout{
+        Label{
+            text:qsTr("product高度")
+        }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            text:sensorLoaderParameter.pickProductZ
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPickProductZ(text)
+            }
+        }
+        Button{
+            text:qsTr("测高")
+            width: 40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_PRODUCT_IN_SUT)
+            }
+        }
+        CheckBox{
+            text: qsTr("使能视觉")
+            checked: sensorLoaderParameter.enableProductPr
+            onCheckedChanged:
+                sensorLoaderParameter.setEnableProductPr(checked)
+        }
+    }
+    RowLayout{
+        Label{
+            text:qsTr("NG sensor高度")
+        }
+        TextField{
+            text:sensorLoaderParameter.pickNgSensorZ
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPickNgSensorZ(text)
+            }
+        }
+        Button{
+            text:qsTr("测高")
+            width: 40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT)
+            }
+        }
+        CheckBox{
+            text: qsTr("使能视觉")
+            checked: sensorLoaderParameter.enableNgSensorPr
+            onCheckedChanged:
+                sensorLoaderParameter.setEnableNgSensorPr(checked)
         }
     }
 
     RowLayout {
-        Label { text: qsTr("SUT2 Escape") }
+        Label { text: qsTr("SUT Escape") }
         Label { text: qsTr("X") }
         TextField{
+           text: sensorLoaderParameter.escapeX
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sensorLoaderParameter.setEscapeX(text)
            }
         }
         Label { text: qsTr("Y") }
         TextField{
+           text: sensorLoaderParameter.escapeY
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sensorLoaderParameter.setEscapeY(text)
            }
         }
         Label { text: qsTr("Z") }
         TextField{
+           text: sensorLoaderParameter.escapeHeight
            horizontalAlignment: TextInput.AlignHCenter
            validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sensorLoaderParameter.setEscapeHeight(text)
            }
         }
     }

@@ -265,9 +265,6 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1
-//                                                           +SensorLoaderModule.SUT_SENSOR_PR
-//                                                           +SensorLoaderModule.TO_PR_OFFSET)
                         logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
                                                      +SensorLoaderModule.SUT_SENSOR_PR
                                                      +SensorLoaderModule.TO_PR_OFFSET)
@@ -278,9 +275,6 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1
-//                                                           +SensorLoaderModule.SUT_SENSOR_PR
-//                                                           +SensorLoaderModule.TO_PICK_NG_SENSOR_POS1)
                         logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
                                                      +SensorLoaderModule.SUT_SENSOR_PR
                                                      +SensorLoaderModule.TO_PICK_NG_SENSOR_POS1)
@@ -291,10 +285,6 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS1
-//                                                           +SensorLoaderModule.SUT_SENSOR_PR
-//                                                           +SensorLoaderModule.TO_PICK_NG_SENSOR_POS1
-//                                                           +SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1)
                         logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
                                                      +SensorLoaderModule.SUT_SENSOR_PR
                                                      +SensorLoaderModule.TO_PICK_NG_SENSOR_POS1
@@ -396,10 +386,6 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-                        //3114
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS2
-//                                                           +SensorLoaderModule.TO_PLACE_SENSOR_POS2
-//                                                           +SensorLoaderModule.PLACE_SENSOR_TO_SUT2)
                         logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
                                                      +SensorLoaderModule.TO_PLACE_SENSOR_POS2
                                                      +SensorLoaderModule.PLACE_SENSOR_TO_SUT2)
@@ -433,9 +419,6 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS2
-//                                                           +SensorLoaderModule.SUT_PRODUCT_PR
-//                                                           +SensorLoaderModule.TO_PR_OFFSET)
                         logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
                                                      +SensorLoaderModule.SUT_PRODUCT_PR
                                                      +SensorLoaderModule.TO_PR_OFFSET)
@@ -446,9 +429,6 @@ ColumnLayout {
                     width:40
                     height: 40
                     onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_POS2
-//                                                           +SensorLoaderModule.SUT_PRODUCT_PR
-//                                                           +SensorLoaderModule.TO_PICK_PRODUCT_POS2)
                         logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
                                                      +SensorLoaderModule.SUT_PRODUCT_PR
                                                      +SensorLoaderModule.TO_PICK_PRODUCT_POS2)

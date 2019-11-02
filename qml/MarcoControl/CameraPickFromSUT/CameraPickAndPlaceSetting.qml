@@ -1,6 +1,10 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import LogicManagerLib 1.1
+import SomeLib 1.1
+import AACoreNew 1.1
+import SutModuleLib 1.1
 Column {
     RowLayout { Label { text: qsTr("取放参数") } }
     RowLayout {
@@ -164,19 +168,62 @@ Column {
            }
         }
         Button{
-           text: qsTr("Camera视觉")
+           text: qsTr("成品视觉")
            onClicked: {
+               logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
+                                            +SensorLoaderModule.SUT_PRODUCT_PR
+                                            +SensorLoaderModule.TO_PR_OFFSET)
            }
         }
         Button{
-           text: qsTr("移动到取放位置")
+           text: qsTr("移动到取放成品位置")
            onClicked: {
+               logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
+                                            +SensorLoaderModule.SUT_PRODUCT_PR
+                                            +SensorLoaderModule.TO_PICK_PRODUCT_POS1)
            }
         }
         Button{
-           text: qsTr("测高")
-           onClicked: {
-           }
+            text:qsTr("取成品")
+            width:40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
+                                             +SensorLoaderModule.SUT_PRODUCT_PR
+                                             +SensorLoaderModule.TO_PICK_PRODUCT_POS1
+                                             +SensorLoaderModule.PICK_PRODUCT_FROM_SUT1)
+            }
+        }
+        Button{
+            text:qsTr("NG sesor视觉")
+            width:40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
+                                             +SensorLoaderModule.SUT_SENSOR_PR
+                                             +SensorLoaderModule.TO_PR_OFFSET)
+            }
+        }
+        Button{
+             text: qsTr("移动到取放NG SENSOR位置")
+            width:40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
+                                             +SensorLoaderModule.SUT_SENSOR_PR
+                                             +SensorLoaderModule.TO_PICK_NG_SENSOR_POS1)
+            }
+        }
+        Button{
+            text:qsTr("取NG sensor")
+            width:40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
+                                             +SensorLoaderModule.SUT_SENSOR_PR
+                                             +SensorLoaderModule.TO_PICK_NG_SENSOR_POS1
+                                             +SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1)
+            }
         }
     }
 
@@ -222,25 +269,68 @@ Column {
            }
         }
         Button{
-           text: qsTr("Camera视觉")
+           text: qsTr("成品视觉")
            onClicked: {
+               logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                            +SensorLoaderModule.SUT_PRODUCT_PR
+                                            +SensorLoaderModule.TO_PR_OFFSET)
            }
         }
         Button{
-           text: qsTr("移动到取放位置")
+           text: qsTr("移动到取放成品位置")
            onClicked: {
+               logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                            +SensorLoaderModule.SUT_PRODUCT_PR
+                                            +SensorLoaderModule.TO_PICK_PRODUCT_POS2)
            }
         }
         Button{
-           text: qsTr("测高")
-           onClicked: {
-           }
+            text:qsTr("取成品")
+            width:40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.SUT_PRODUCT_PR
+                                             +SensorLoaderModule.TO_PICK_PRODUCT_POS2
+                                             +SensorLoaderModule.PICK_PRODUCT_FROM_SUT2)
+            }
+        }
+        Button{
+            text:qsTr("NG sesor视觉")
+            width:40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.SUT_SENSOR_PR
+                                             +SensorLoaderModule.TO_PR_OFFSET)
+            }
+        }
+        Button{
+             text: qsTr("移动到取放NG SENSOR位置")
+            width:40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.SUT_SENSOR_PR
+                                             +SensorLoaderModule.TO_PICK_NG_SENSOR_POS2)
+            }
+        }
+        Button{
+            text:qsTr("取NG sensor")
+            width:40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.SUT_SENSOR_PR
+                                             +SensorLoaderModule.TO_PICK_NG_SENSOR_POS2
+                                             +SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT2)
+            }
         }
     }
 
     RowLayout {
         Label{
-            text:qsTr("sensor高度")
+            text:qsTr("picker1 放料高度")
         }
         TextField{
             text:sensorLoaderParameter.placeSensorZ
@@ -265,7 +355,7 @@ Column {
 
     RowLayout{
         Label{
-            text:qsTr("product高度")
+            text:qsTr("picker2 取成品高度")
         }
         TextField{
             text:sensorLoaderParameter.pickProductZ
@@ -295,7 +385,7 @@ Column {
     }
     RowLayout{
         Label{
-            text:qsTr("NG sensor高度")
+            text:qsTr("picker2 取NG sensor高度")
         }
         TextField{
             text:sensorLoaderParameter.pickNgSensorZ

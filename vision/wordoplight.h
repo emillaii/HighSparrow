@@ -130,8 +130,7 @@ void setDownlookLighting(int downlookLighting)
         setBrightness(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
     }
     else {
-        sendMessageToNextModule(LIGHTING_AA2_DL, (uint8_t)downlookLighting);
-        //setBrightness(LIGHTING_AA2_DL, (uint8_t)downlookLighting);
+        sendMessageToNextModule(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
     }
 }
 

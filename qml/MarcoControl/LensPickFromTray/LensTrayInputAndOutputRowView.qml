@@ -5,7 +5,6 @@ import TrayLoaderModuleLib 1.1
 ColumnLayout{
     RowLayout{ Label { text: qsTr("进盘弹夹") } }
     RowLayout{
-        //-------------------------------------------------------------------
         Label{
             text: qsTr("起始位置")
         }
@@ -102,11 +101,8 @@ ColumnLayout{
     }
     RowLayout{ Label { text: qsTr("出盘弹夹") } }
     RowLayout{
-        Button{
+        Label{
             text:qsTr("起始位置")
-            onClicked: {
-                logicManager.trayLoaderModuleLTOEMovetoFirstPos()
-            }
         }
         TextField{
             text:tray_clipout_parameter.firstTrayPos
@@ -175,13 +171,10 @@ ColumnLayout{
             horizontalAlignment: TextInput.AlignHCenter
         }
     }
-    RowLayout{ Label { text: qsTr("Tray导轨") } }
+    RowLayout{ Label { text: qsTr("Tray 导轨") } }
     RowLayout{
-        Button{
+        Label{
             text:qsTr("LTK_X1 接盘位置")
-            onClicked: {
-                logicManager.trayLoaderModuleLTKX1MovetoGetPos()
-            }
         }
         TextField{
            text:tray_loader_module_parameters.ltkx1PressPos
@@ -193,7 +186,7 @@ ColumnLayout{
            onEditingFinished: {
                tray_loader_module_parameters.setLtkx1PressPos(text)
            }
-       }
+        }
         Button{
             text:title_read_encoder
             onClicked: {
@@ -201,11 +194,117 @@ ColumnLayout{
                 tray_loader_module_parameters.setLtkx1PressPos(x)
             }
         }
+        Label{
+            text:qsTr("LTK_X1 Relay位置")
+        }
+        TextField{
+           text:tray_loader_module_parameters.ltkx1RelayPos
+           validator: DoubleValidator{
+               decimals: 6
+               notation: DoubleValidator.StandardNotation
+           }
+           horizontalAlignment: TextInput.AlignHCenter
+           onEditingFinished: {
+               tray_loader_module_parameters.ltkx1RelayPos(text)
+           }
+        }
         Button{
-            text:qsTr("LTL 接盘位置")
+            text:title_read_encoder
             onClicked: {
-                logicManager.trayLoaderModuleLTLMovetoGetPos()
+                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX1Name)
+                tray_loader_module_parameters.setLtkx1RelayPos(x)
             }
+        }
+        Label{
+            text:qsTr("LTK_X1 Release位置")
+        }
+        TextField{
+           text:tray_loader_module_parameters.ltkx1ReleasePos
+           validator: DoubleValidator{
+               decimals: 6
+               notation: DoubleValidator.StandardNotation
+           }
+           horizontalAlignment: TextInput.AlignHCenter
+           onEditingFinished: {
+               tray_loader_module_parameters.setLtkx1ReleasePos(text)
+           }
+        }
+        Button{
+            text:title_read_encoder
+            onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX1Name)
+                tray_loader_module_parameters.setLtkx1ReleasePos(x)
+            }
+        }
+    }
+    RowLayout{
+        Label{
+            text:qsTr("LTK_X2 接盘位置")
+        }
+        TextField{
+           text:tray_loader_module_parameters.ltkx2PressPos
+           validator: DoubleValidator{
+               decimals: 6
+               notation: DoubleValidator.StandardNotation
+           }
+           horizontalAlignment: TextInput.AlignHCenter
+           onEditingFinished: {
+               tray_loader_module_parameters.setLtkx2PressPos(text)
+           }
+        }
+        Button{
+            text:title_read_encoder
+            onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX2Name)
+                tray_loader_module_parameters.setLtkx2PressPos(x)
+            }
+        }
+        Label{
+            text:qsTr("LTK_X2 Relay位置")
+        }
+        TextField{
+           text:tray_loader_module_parameters.ltkx2RelayPos
+           validator: DoubleValidator{
+               decimals: 6
+               notation: DoubleValidator.StandardNotation
+           }
+           horizontalAlignment: TextInput.AlignHCenter
+           onEditingFinished: {
+               tray_loader_module_parameters.ltkx2RelayPos(text)
+           }
+        }
+        Button{
+            text:title_read_encoder
+            onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX2Name)
+                tray_loader_module_parameters.setLtkx2RelayPos(x)
+            }
+        }
+        Label{
+            text:qsTr("LTK_X2 Release位置")
+        }
+        TextField{
+           text:tray_loader_module_parameters.ltkx2ReleasePos
+           validator: DoubleValidator{
+               decimals: 6
+               notation: DoubleValidator.StandardNotation
+           }
+           horizontalAlignment: TextInput.AlignHCenter
+           onEditingFinished: {
+               tray_loader_module_parameters.setLtkx2ReleasePos(text)
+           }
+        }
+        Button{
+            text:title_read_encoder
+            onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(tray_loader_module_parameters.motorLTKX2Name)
+                tray_loader_module_parameters.setLtkx2ReleasePos(x)
+            }
+        }
+    }
+    RowLayout {
+        Label{
+            text:qsTr("LTL 接盘位置")
         }
         TextField{
             text:tray_loader_module_parameters.ltlPressPos
@@ -278,6 +377,7 @@ ColumnLayout{
             }
         }
     }
+
     RowLayout{
         Button{ text: qsTr("推杆气缸") }
         RoundButton{

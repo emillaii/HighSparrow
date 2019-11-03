@@ -554,6 +554,7 @@ void BaseModuleManager::alarmChecking()
         tcp_lutModule.states.setTcpVaccum2State(state_geter.getOutputIoState(tcp_lutModule.parameters.vacuum2Name()).current_state);
         tcp_aaCoreNew.states.setTcpAAGripperState(state_geter.getOutputIoState(tcp_aaHeadModule.parameters.gripperName()).current_state);
         tcp_lensLoaderModule.states.setTcpVaccumState(state_geter.getInputIoState(tcp_lensLoaderModule.parameters.pickarmVaccumSensorName()).current_state);
+
     }
 }
 

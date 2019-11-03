@@ -508,8 +508,8 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
         } else {
             aaData_2.setInProgress(true);
         }
-        //performAA(params);
-        performAAOffline();
+        performAA(params);
+        //performAAOffline();
         aaData_1.setInProgress(false);
         aaData_2.setInProgress(false);
     }

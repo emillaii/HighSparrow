@@ -22,11 +22,19 @@ Column {
         }
         Button {
             text: qsTr("Place Sensor To SUT 2")
-            enabled: false
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.TO_PLACE_SENSOR_POS2
+                                             +SensorLoaderModule.PLACE_SENSOR_TO_SUT2)
+            }
         }
         Button {
             text: qsTr("Pick Sensor From SUT 2")
-            enabled: false
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.TO_PICK_NG_SENSOR_POS2
+                                             +SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT2)
+            }
         }
         Button {
             text: qsTr("AA 2 Head Pick Lens Position")

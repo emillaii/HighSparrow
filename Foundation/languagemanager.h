@@ -21,7 +21,7 @@
 #include <QQmlApplicationEngine>
 
 
-class LanguageManager
+class LanguageManager: public QObject
 {
     Q_OBJECT
 

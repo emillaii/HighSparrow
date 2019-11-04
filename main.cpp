@@ -4,7 +4,6 @@
 #include <QQmlContext>
 #include <highsprrow.h>
 #include <QIcon>
-#include "Utils/logger.h"
 #include "Utils/filecontent.h"
 #include <QtWebEngine/QtWebEngine>
 

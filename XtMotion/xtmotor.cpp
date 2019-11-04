@@ -3,7 +3,6 @@
 #include "XtMotion/xtmotor.h"
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
-#include "Utils/logger.h"
 #include "Utils/config.h"
 
 using namespace XT_Controler_Extend;

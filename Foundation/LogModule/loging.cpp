@@ -1,14 +1,30 @@
 #include "loging.h"
 
 
+QString LogManager::folder("log/system_log");
+QString LogManager::allLogFileName("HighSparrowQ");
+QString LogManager::warnLogFileName("HighSparrowQWarn");
+QString LogManager::logConfigFileName("logParameter.json");
+RollbackFile LogManager::allLogFile;
+RollbackFile LogManager::warnLogFile;
+LogParameter LogManager::logParameter;
+QMap<QtMsgType, int> LogManager::msgTypeToLevel;
+QMutex LogManager::stdoutLocker;
+LogBuffer LogManager::logBuffer;
+LogModel LogManager::logModel;
 
-void initLogSystem()
+void LogManager::initLogSystem()
 {
     msgTypeToLevel[QtDebugMsg] = 0;
     msgTypeToLevel[QtInfoMsg] = 1;
     msgTypeToLevel[QtWarningMsg] = 2;
     msgTypeToLevel[QtCriticalMsg] = 3;
     msgTypeToLevel[QtFatalMsg] = 4;
+
+    qRegisterMetaType<QList<LogItem*>>();
+
+    logBuffer.startThd();
+    connect(&logBuffer, &LogBuffer::logBufferChanged, &logModel, &LogModel::onLogBufferChanged);
 
     if(QFile::exists(logConfigFileName) &&
             logParameter.loadJsonConfig(logConfigFileName, QString("LogParameter")))
@@ -24,7 +40,12 @@ void initLogSystem()
     qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{type}] %{file}:%{line}(%{function}):%{message}");
 }
 
-void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void LogManager::disposeLogSystem()
+{
+    logBuffer.stopThd();
+}
+
+void LogManager::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     if(msgTypeToLevel[type] < logParameter.logLevel())
         return;
@@ -42,10 +63,5 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
     {
         warnLogFile.appendLine(log);
     }
-}
-
-void changeLogLevel(int level)
-{
-    logParameter.setLogLevel(level);
-    logParameter.saveJsonConfig(logConfigFileName, QString("LogParameter"));
+    logBuffer.addLog(msgTypeToLevel[type], log);
 }

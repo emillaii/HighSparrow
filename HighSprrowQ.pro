@@ -75,9 +75,11 @@ HEADERS += \
     Dispense/dispense_parameter.h \
     Dispense/dispenser.h \
     Dispense/dispenser_parameter.h \
-    Foundation/loging.h \
+    Foundation/LogModule/loging.h \
+    Foundation/LogModule/logmodel.h \
+    Foundation/LogModule/rollbackfile.h \
     Foundation/propertybase.h \
-    Foundation/rollbackfile.h \
+    Foundation/silicolexception.h \
     Light/LontryLight.h \
     Matrix/Matrix.h \
     SingleHead/singlehead_lsut_module.h \
@@ -91,7 +93,6 @@ HEADERS += \
     Utils/errorcode.h \
     Utils/filecontent.h \
     Utils/iniparser.h \
-    Utils/logger.h \
     Utils/position_define.h \
     Utils/propertybase.h \
     Utils/unitlog.h \
@@ -146,9 +147,11 @@ HEADERS += \
 SOURCES += \
     Dispense/dispense_module.cpp \
     Dispense/dispenser.cpp \
-    Foundation/loging.cpp \
+    Foundation/LogModule/loging.cpp \
+    Foundation/LogModule/logmodel.cpp \
+    Foundation/LogModule/rollbackfile.cpp \
     Foundation/propertybase.cpp \
-    Foundation/rollbackfile.cpp \
+    Foundation/silicolexception.cpp \
     Light/LontryLight.cpp \
     Matrix/Matrix.cpp \
     SingleHead/singlehead_lsut_module.cpp \
@@ -158,7 +161,6 @@ SOURCES += \
     Utils/errorcode.cpp \
     Utils/filecontent.cpp \
     Utils/iniparser.cpp \
-    Utils/logger.cpp \
     Utils/propertybase.cpp \
     Utils/unitlog.cpp \
     Vision/baslerpyloncamera.cpp \

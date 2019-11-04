@@ -2,20 +2,11 @@
 #define LOGING_H
 
 #include "rollbackfile.h"
-#include "propertybase.h"
+#include "../propertybase.h"
+#include "logmodel.h"
 #include <iostream>
-#include "Utils/config.h"
-
-
-//Log规范
-//所有调试信息，如最底层的log信息，使用qDebug,程序运行稳定后，将配置文件中的logLevel改为1，将过滤掉debug信息，减少log量
-//所有程序运行日志，使用qInfo，方便出问题时检查log上下文
-//所有报警，-----必须-----使用qWarning或qCritical，方便快速定位异常
-//所有异常信息（指捕获到的异常），-----必须------使用qCritical，方便快速定位异常
-
-
-//Warning消息和Critical消息会额外输出到额外的文件，方便快速定位异常
-
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
 
 
 class LogParameter:public PropertyBase
@@ -82,22 +73,52 @@ public slots:
 };
 
 
-static QString folder(QString(BASE_LOG_DIR) + QString(SYSTEM_LOG_DIR));
-static QString allLogFileName("HighSparrowQ");
-static QString warnLogFileName("HighSparrowQWarn");
+class LogManager: public QObject
+{
+    Q_OBJECT
 
-static RollbackFile allLogFile;
-static RollbackFile warnLogFile;
-static LogParameter logParameter;
-static QString logConfigFileName(QString(CONFIG_DIR) + QString(LOG_PARAM_FILE));
-static QMap<QtMsgType, int> msgTypeToLevel;
-static QMutex stdoutLocker;
+public:
+    static void initLogSystem();
+    static void disposeLogSystem();
+    static void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
+    Q_PROPERTY(int logLevel READ logLevel WRITE setLogLevel NOTIFY logLevelChanged)
 
-void initLogSystem();
-void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
-void changeLogLevel(int level);
+public:
+    int logLevel() const
+    {
+        return logParameter.logLevel();
+    }
 
+signals:
+    void logLevelChanged(int logLevel);
+
+public slots:
+    void setLogLevel(int logLevel)
+    {
+        if(logLevel != logParameter.logLevel())
+        {
+            logParameter.setLogLevel(logLevel);
+            logParameter.saveJsonConfig(logConfigFileName, QString("LogParameter"));
+            emit logLevelChanged(logLevel);
+        }
+    }
+
+public:
+    static LogModel logModel;
+
+private:
+    static QString folder;
+    static QString allLogFileName;
+    static QString warnLogFileName;
+    static QString logConfigFileName;
+    static RollbackFile allLogFile;
+    static RollbackFile warnLogFile;
+    static LogParameter logParameter;
+    static QMap<QtMsgType, int> msgTypeToLevel;
+    static QMutex stdoutLocker;
+    static LogBuffer logBuffer;
+};
 
 
 #endif // LOGING_H

@@ -24,33 +24,22 @@ Page {
         padding: 10
     }
 
-    Row {
-        id: row
-        width: 450
-        height: 300
-
-        Frame {
-            id: frame1
-            width: 300
-            height: 300
-        }
-
-        LogLevelSelectionView{}
-    }
-
-    LogView {
+    LogView{
         id: logView
-        anchors.top: row.top
-        anchors.left: row.right
-        anchors.bottom: row.bottom
-        anchors.right: parent.right
-    }
-
-    TrayMapView {
-        id: trayMapView
-        anchors.top: row.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        anchors.top: parent.top
+        anchors.margins: 3
+
+        height: parent.height * 0.6
     }
+    TrayMapView {
+        id: trayMapView
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: logView.bottom
+        anchors.bottom: parent.bottom
+        anchors.margins: 3
+    }
+
 }

@@ -1,38 +1,118 @@
-﻿import QtQuick 2.12
-import QtQuick.Controls 2.5
-
+import QtQuick 2.0
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.0
 
 Rectangle {
-    id: rectangle
-    border.color: "#000000"
-    color: "#ffffff"
+    Layout.fillHeight: true
+    Layout.fillWidth: true
 
-    TableView {
-        id: tableView
-        clip: true
-        anchors.fill: parent
-        anchors.margins: 5
+    color: "#303030"
 
-        ScrollBar.vertical: ScrollBar{
-            contentItem: Rectangle {
-                implicitWidth: 6
-                radius: width / 2
-                color: "gray"
+    Rectangle{
+        id: loglevelSelector
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.margins: 3
+
+        border.width: 1
+        width: 80
+        color: "#303030"
+
+        ColumnLayout{
+            anchors.fill: parent
+
+            RadioButton{
+                text: qsTr("Debug")
+                checked: logManager.logLevel == 0
+
+                onClicked: {
+                    logManager.setLogLevel(0)
+                }
             }
-        }
-
-        ScrollBar.horizontal: ScrollBar{
-            contentItem: Rectangle {
-                implicitWidth: 6
-                radius: width / 2
-                color: "gray"
+            RadioButton{
+                text: qsTr("Info")
+                checked: logManager.logLevel== 1
+                onClicked: {
+                    logManager.setLogLevel(1)
+                }
             }
-        }
-
-        model: logModel
-
-        delegate: Text {
-            text: logString
+            RadioButton{
+                text: qsTr("Warn")
+                checked: logManager.logLevel == 2
+                onClicked: {
+                    logManager.setLogLevel(2)
+                }
+            }
         }
     }
+
+    Rectangle{
+        anchors.left: loglevelSelector.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.margins: 3
+
+        border.width: 1
+        color: "#303030"
+
+        ListView{
+            id: logView
+            anchors.fill: parent
+            model: logModel
+
+            clip: true
+
+            delegate: Text {
+                width: parent.width - 3
+                color: logColor
+                text: logStr
+                wrapMode: Text.Wrap
+                lineHeight: 1.2
+                lineHeightMode: Text.ProportionalHeight
+            }
+
+            MouseArea{
+                z: 1
+                anchors.fill: parent
+                onDoubleClicked: {
+                    logModel.onClearLog()
+                }
+            }
+
+            ScrollBar.vertical: ScrollBar {
+                id: scrollBar
+                z: 2
+                width: 15
+            }
+
+            MouseArea{
+                id: logViewMouseArea
+                z: 3
+                anchors.fill: parent
+                hoverEnabled: true
+                onPressed: {
+                    mouse.accepted = false
+                }
+            }
+        }
+    }
+
+    Timer {
+        id: scrollTimer;
+        repeat: true;
+        interval: 200;
+        onTriggered: {
+            if(!logViewMouseArea.containsMouse)
+            {
+                logView.positionViewAtEnd()
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        scrollTimer.start()
+    }
 }
+

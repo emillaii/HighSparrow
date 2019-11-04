@@ -22,15 +22,16 @@ DEFINES += QT_MESSAGELOGCONTEXT
 
 SOURCES += \
     devicestatesgeter.cpp \
-    logmodel.cpp \
     main.cpp \
+    utils/loging/loging.cpp \
+    utils/loging/logmodel.cpp \
+    utils/loging/rollbackfile.cpp \
     vision/baslerpyloncamera.cpp \
     highsprrow.cpp \
     utils/errorcode.cpp \
     aaHeadModule/aaheadmodule.cpp \
     traymapmodel.cpp \
     utils/commonutils.cpp \
-    utils/logger.cpp \
     motorspositionmodel.cpp \
     propertybase.cpp \
     basemodule.cpp \
@@ -141,17 +142,18 @@ INCLUDEPATH += $$PWD/../libs/DTCCM2_SDK
 DEPENDPATH += $$PWD/../libs/DTCCM2_SDK/X64_Lib
 
 HEADERS += \
+    utils/loging/loging.h \
+    utils/loging/logmodel.h \
+    utils/loging/rollbackfile.h \
     vision/baslerpyloncamera.h \
     config.h \
     devicestatesgeter.h \
     highsprrow.h \
     utils/errorcode.h \
     aaHeadModule/aaheadmodule.h \
-    logmodel.h \
     traymapmodel.h \
     vision/visionmodule.h \
     utils/commonutils.h \
-    utils/logger.h \
     motorspositionmodel.h \
     propertybase.h \
     basemodule.h \

@@ -133,7 +133,6 @@
         <file>qml/TCPLensPickArmModule/TCPMaterialTray2.qml</file>
         <file>qml/TCPLensPickArmModule/TCPMaterialTray3.qml</file>
         <file>qml/TCPLensPickArmModule/TCPMaterialTray4.qml</file>
-        <file>qml/Log/LogLevelSelectionView.qml</file>
         <file>qml/Log/LogView.qml</file>
         <file>qml/PageMenuBar/Page4MenuBar.qml</file>
         <file>qml/Report/ReportView.qml</file>

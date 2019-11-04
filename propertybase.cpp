@@ -45,32 +45,31 @@ void PropertyBase::write(QJsonObject &json) const
         {
             index = temp_type;
         }
+        const char *name = metaproperty.name();
         if(temp_type == QVariant::Type::Double){
-            const char *name = metaproperty.name();
             json[name] = this->property(name).toDouble();
         }
-        else if (temp_type == QVariant::Type::Int) {
-            const char *name = metaproperty.name();
+        else if (temp_type == QVariant::Type::Int ||
+                 temp_type == QVariant::Type::UInt) {
             json[name] = this->property(name).toInt();
         }
+        else if (temp_type == QVariant::Type::LongLong ||
+                 temp_type == QVariant::Type::ULongLong) {
+            json[name] = this->property(name).toLongLong();
+        }
         else if (temp_type == QVariant::Type::Bool) {
-            const char *name = metaproperty.name();
             json[name] = this->property(name).toBool();
         }
         else if (temp_type == QVariant::Type::String) {
-            const char *name = metaproperty.name();
             json[name] = this->property(name).toString();
         }
         else if (temp_type == QVariant::Type::List) {
-            const char *name = metaproperty.name();
             json[name] = QJsonArray::fromVariantList(this->property(name).toList());
         }
         else if (temp_type == QVariant::Type::StringList) {
-            const char *name = metaproperty.name();
             json[name] = QJsonArray::fromStringList(this->property(name).toStringList());
         }
         else if (temp_type == QVariant::Type::Map) {
-            const char *name = metaproperty.name();
             json[name] = QJsonObject::fromVariantMap(this->property(name).toMap());
         }
         else {

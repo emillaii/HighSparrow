@@ -4,15 +4,14 @@
 #include <QQmlContext>
 #include <highsprrow.h>
 #include <QIcon>
-#include <utils/logger.h>
 #include "utils/filecontent.h"
 #include <QtWebEngine/QtWebEngine>
 
-#include <QDebug>
+#include "utils/loging/loging.h"
+#include "utils/loging/logmodel.h"
 
 #include "AACore/aadata.h"
 #include "checkprocessmodel.h"
-#include "logmodel.h"
 #include "traymapmodel.h"
 
 #include <QtWidgets/QApplication>
@@ -68,20 +67,19 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QApplication::setApplicationName("High Sparrow");
     app.setOrganizationName("Silicool");
-    app.setOrganizationDomain("silicool.com");
-
-    // initialize logging system
-    initLoggingSystem();
-    qInstallMessageHandler(messageLogger);
-    //qInstallMessageHandler(sparrowLogOutput);
-    qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{type}] %{file}:%{line}(%{function}):%{message}");
-
+    app.setOrganizationDomain("silicool.com");   
     app.setWindowIcon(QIcon(ICON_SPARROW));
 
     HighSprrow highSprrow;
 
     QtWebEngine::initialize();
     QQmlApplicationEngine engine;
+
+    // initialize logging system
+    LogManager logManager;
+    logManager.initLogSystem();
+    engine.rootContext()->setContextProperty("logManager", &logManager);
+    engine.rootContext()->setContextProperty("logModel", &logManager.logModel);
 
     qmlRegisterUncreatableType<TrayMapModel>("HighSprrow.Models", 1, 0, "TrayMapModel", "Tray map model should only be created in cpp code");
 
@@ -90,7 +88,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sensorTrayModel", TrayMapModel::instance(TrayMapModel::SensorTray));
     engine.rootContext()->setContextProperty("productTrayModel", TrayMapModel::instance(TrayMapModel::ProductTray));
     engine.rootContext()->setContextProperty("rejectTrayModel", TrayMapModel::instance(TrayMapModel::RejectTray));
-    engine.rootContext()->setContextProperty("logModel", LogModel::instance());
     engine.rootContext()->setContextProperty("highSprrow", &highSprrow);
     engine.rootContext()->setContextProperty("visionModule", highSprrow.baseModuleManager->visionModule);
     engine.rootContext()->setContextProperty("uplookCamera", highSprrow.baseModuleManager->pylonUplookCamera);
@@ -448,5 +445,7 @@ int main(int argc, char *argv[])
     model->setUnitStatus(27, TrayMapModel::StatusGood);
     model->setUnitStatus(34, TrayMapModel::StatusNG);
 
-    return app.exec();
+    int res = app.exec();
+    logManager.disposeLogSystem();
+    return res;
 }

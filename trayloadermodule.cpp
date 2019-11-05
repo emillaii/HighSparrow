@@ -61,6 +61,27 @@ void TrayLoaderModule::Init(XtMotor *_motor_clip_in,
     parts.append(this->exit_clip_check_io);
     this->ready_tray_check_io = ready_tray_check_io;
     parts.append(this->ready_tray_check_io);
+    //Set some IO name in parameters for the ease of access in tcp channel
+    if (cylinder_clip)
+    {
+        parameters.setTcpCylinderClipIOName(cylinder_clip->parameters.oneOutName());
+        parameters.setTcpCylinderClipSensorName(cylinder_clip->parameters.oneInName());
+    }
+    if (cylinder_ltk1)
+    {
+        parameters.setTcpCylinderLTKX1IOName(cylinder_ltk1->parameters.oneOutName());
+        parameters.setTcpCylinderLTKX1SensorName(cylinder_ltk1->parameters.oneInName());
+    }
+    if (cylinder_ltk2)
+    {
+        parameters.setTcpCylinderLTKX2IOName(cylinder_ltk2->parameters.oneOutName());
+        parameters.setTcpCylinderLTKX2SensorName(cylinder_ltk2->parameters.oneInName());
+    }
+    if (cylinder_tray)
+    {
+        parameters.setTcpCylinderLTLIOName(cylinder_tray->parameters.oneOutName());
+        parameters.setTcpCylinderLTLSensorName(cylinder_tray->parameters.oneInName());
+    }
 }
 
 void TrayLoaderModule::resetLogic()

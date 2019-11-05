@@ -106,8 +106,6 @@ public:
 
     SparrowQServer * sparrowQServer;
     SparrowClient * sparrowQClient;
-//    LutClient * lutClient;
-//    SutClient * sut_clitent;
     SensorClip entrance_clip;
     SensorClip exit_clip;
     SensorClipStandParameter sensor_clip_stand;
@@ -137,6 +135,9 @@ public:
 
     LutModule tcp_lutModule;
     MaterialCarrier tcp_lutCarrier;
+
+    //Remote vision location
+    VisionLocation *tcp_vision_location_aa1_downlook;
 
     int lightPanelLighting() const
     {
@@ -264,6 +265,7 @@ private:
     QThread work_thread;
 
     void inquiryTcpModule();
+    void inquiryTcpVisionLocations();
     void inquiryTcpModuleState(QString moduleName);
     void inquiryTcpModuleParameter(QString moduleName);
     void sendTcpUpdateParameterRequest();            //Send the need update parameter signal from real module to tcp remote module

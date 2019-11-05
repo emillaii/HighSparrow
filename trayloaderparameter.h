@@ -58,6 +58,22 @@ private:
 
     QString m_moduleName = "LensTrayLoaderModule";
 
+    QString m_tcpCylinderClipIOName;
+
+    QString m_tcpCylinderLTKX1IOName;
+
+QString m_tcpCylinderLTKX2IOName;
+
+QString m_tcpCylinderLTLIOName;
+
+QString m_tcpCylinderClipSensorName;
+
+QString m_tcpCylinderLTKX1SensorName;
+
+QString m_tcpCylinderLTKX2SensorName;
+
+QString m_tcpCylinderLTLSensorName;
+
 signals:
     void testTrayTest();
     void trayReady();
@@ -95,7 +111,14 @@ public:
     Q_PROPERTY(QString exitClipCheckIoName READ exitClipCheckIoName WRITE setExitClipCheckIoName NOTIFY exitClipCheckIoNameChanged)
     Q_PROPERTY(QString readyTrayCheckIoName READ readyTrayCheckIoName WRITE setReadyTrayCheckIoName NOTIFY readyTrayCheckIoNameChanged)
     Q_PROPERTY(QString workTrayCheckIoName READ workTrayCheckIoName WRITE setWorkTrayCheckIoName NOTIFY workTrayCheckIoNameChanged)
-
+    Q_PROPERTY(QString tcpCylinderClipIOName READ tcpCylinderClipIOName WRITE setTcpCylinderClipIOName NOTIFY tcpCylinderClipIONameChanged)
+    Q_PROPERTY(QString tcpCylinderLTKX1IOName READ tcpCylinderLTKX1IOName WRITE setTcpCylinderLTKX1IOName NOTIFY tcpCylinderLTKX1IONameChanged)
+    Q_PROPERTY(QString tcpCylinderLTKX2IOName READ tcpCylinderLTKX2IOName WRITE setTcpCylinderLTKX2IOName NOTIFY tcpCylinderLTKX2IONameChanged)
+    Q_PROPERTY(QString tcpCylinderLTLIOName READ tcpCylinderLTLIOName WRITE setTcpCylinderLTLIOName NOTIFY tcpCylinderLTLIONameChanged)
+    Q_PROPERTY(QString tcpCylinderClipSensorName READ tcpCylinderClipSensorName WRITE setTcpCylinderClipSensorName NOTIFY tcpCylinderClipSensorNameChanged)
+    Q_PROPERTY(QString tcpCylinderLTKX1SensorName READ tcpCylinderLTKX1SensorName WRITE setTcpCylinderLTKX1SensorName NOTIFY tcpCylinderLTKX1SensorNameChanged)
+    Q_PROPERTY(QString tcpCylinderLTKX2SensorName READ tcpCylinderLTKX2SensorName WRITE setTcpCylinderLTKX2SensorName NOTIFY tcpCylinderLTKX2SensorNameChanged)
+    Q_PROPERTY(QString tcpCylinderLTLSensorName READ tcpCylinderLTLSensorName WRITE setTcpCylinderLTLSensorName NOTIFY tcpCylinderLTLSensorNameChanged)
     QString motorLTIEName() const
     {
         return m_motorLTIEName;
@@ -254,6 +277,46 @@ public:
     QString moduleName() const
     {
         return m_moduleName;
+    }
+
+    QString tcpCylinderClipIOName() const
+    {
+        return m_tcpCylinderClipIOName;
+    }
+
+    QString tcpCylinderLTKX1IOName() const
+    {
+        return m_tcpCylinderLTKX1IOName;
+    }
+
+    QString tcpCylinderLTKX2IOName() const
+    {
+        return m_tcpCylinderLTKX2IOName;
+    }
+
+    QString tcpCylinderLTLIOName() const
+    {
+        return m_tcpCylinderLTLIOName;
+    }
+
+    QString tcpCylinderClipSensorName() const
+    {
+        return m_tcpCylinderClipSensorName;
+    }
+
+    QString tcpCylinderLTKX1SensorName() const
+    {
+        return m_tcpCylinderLTKX1SensorName;
+    }
+
+    QString tcpCylinderLTKX2SensorName() const
+    {
+        return m_tcpCylinderLTKX2SensorName;
+    }
+
+    QString tcpCylinderLTLSensorName() const
+    {
+        return m_tcpCylinderLTLSensorName;
     }
 
 public slots:
@@ -546,6 +609,78 @@ public slots:
         emit moduleNameChanged(m_moduleName);
     }
 
+    void setTcpCylinderClipIOName(QString tcpCylinderClipIOName)
+    {
+        if (m_tcpCylinderClipIOName == tcpCylinderClipIOName)
+            return;
+
+        m_tcpCylinderClipIOName = tcpCylinderClipIOName;
+        emit tcpCylinderClipIONameChanged(m_tcpCylinderClipIOName);
+    }
+
+    void setTcpCylinderLTKX1IOName(QString tcpCylinderLTKX1IOName)
+    {
+        if (m_tcpCylinderLTKX1IOName == tcpCylinderLTKX1IOName)
+            return;
+
+        m_tcpCylinderLTKX1IOName = tcpCylinderLTKX1IOName;
+        emit tcpCylinderLTKX1IONameChanged(m_tcpCylinderLTKX1IOName);
+    }
+
+    void setTcpCylinderLTKX2IOName(QString tcpCylinderLTKX2IOName)
+    {
+        if (m_tcpCylinderLTKX2IOName == tcpCylinderLTKX2IOName)
+            return;
+
+        m_tcpCylinderLTKX2IOName = tcpCylinderLTKX2IOName;
+        emit tcpCylinderLTKX2IONameChanged(m_tcpCylinderLTKX2IOName);
+    }
+
+    void setTcpCylinderLTLIOName(QString tcpCylinderLTLIOName)
+    {
+        if (m_tcpCylinderLTLIOName == tcpCylinderLTLIOName)
+            return;
+
+        m_tcpCylinderLTLIOName = tcpCylinderLTLIOName;
+        emit tcpCylinderLTLIONameChanged(m_tcpCylinderLTLIOName);
+    }
+
+    void setTcpCylinderClipSensorName(QString tcpCylinderClipSensorName)
+    {
+        if (m_tcpCylinderClipSensorName == tcpCylinderClipSensorName)
+            return;
+
+        m_tcpCylinderClipSensorName = tcpCylinderClipSensorName;
+        emit tcpCylinderClipSensorNameChanged(m_tcpCylinderClipSensorName);
+    }
+
+    void setTcpCylinderLTKX1SensorName(QString tcpCylinderLTKX1SensorName)
+    {
+        if (m_tcpCylinderLTKX1SensorName == tcpCylinderLTKX1SensorName)
+            return;
+
+        m_tcpCylinderLTKX1SensorName = tcpCylinderLTKX1SensorName;
+        emit tcpCylinderLTKX1SensorNameChanged(m_tcpCylinderLTKX1SensorName);
+    }
+
+    void setTcpCylinderLTKX2SensorName(QString tcpCylinderLTKX2SensorName)
+    {
+        if (m_tcpCylinderLTKX2SensorName == tcpCylinderLTKX2SensorName)
+            return;
+
+        m_tcpCylinderLTKX2SensorName = tcpCylinderLTKX2SensorName;
+        emit tcpCylinderLTKX2SensorNameChanged(m_tcpCylinderLTKX2SensorName);
+    }
+
+    void setTcpCylinderLTLSensorName(QString tcpCylinderLTLSensorName)
+    {
+        if (m_tcpCylinderLTLSensorName == tcpCylinderLTLSensorName)
+            return;
+
+        m_tcpCylinderLTLSensorName = tcpCylinderLTLSensorName;
+        emit tcpCylinderLTLSensorNameChanged(m_tcpCylinderLTLSensorName);
+    }
+
 signals:
     void motorTLIENameChanged(QString motorLTIEName);
     void motorLTOENameChanged(QString motorLTOEName);
@@ -579,6 +714,14 @@ signals:
     void workTrayCheckIoNameChanged(QString workTrayCheckIoName);
     void handlyChangeLensTrayChanged(bool handlyChangeLensTray);
     void moduleNameChanged(QString moduleName);
+    void tcpCylinderClipIONameChanged(QString tcpCylinderClipIOName);
+    void tcpCylinderLTKX1IONameChanged(QString tcpCylinderLTKX1IOName);
+    void tcpCylinderLTKX2IONameChanged(QString tcpCylinderLTKX2IOName);
+    void tcpCylinderLTLIONameChanged(QString tcpCylinderLTLIOName);
+    void tcpCylinderClipSensorNameChanged(QString tcpCylinderClipSensorName);
+    void tcpCylinderLTKX1SensorNameChanged(QString tcpCylinderLTKX1SensorName);
+    void tcpCylinderLTKX2SensorNameChanged(QString tcpCylinderLTKX2SensorName);
+    void tcpCylinderLTLSensorNameChanged(QString tcpCylinderLTLSensorName);
 };
 
 class TrayLoaderState : public PropertyBase{
@@ -623,6 +766,22 @@ class TrayLoaderState : public PropertyBase{
 
     bool m_allowReadyTray = false;
 
+    bool m_tcpCylinderClipSensorName;
+
+    bool m_tcpCylinderLTK1SensorName;
+
+bool m_tcpCylinderLTK2SensorName;
+
+bool m_tcpCylinderLTLSensorName;
+
+bool m_tcpCylinderClipSensorState;
+
+bool m_tcpCylinderLTK1SensorState;
+
+bool m_tcpCylinderLTK2SensorState;
+
+bool m_tcpCylinderLTLSensorState;
+
 public:
     TrayLoaderState():PropertyBase(){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
@@ -651,6 +810,11 @@ public:
     Q_PROPERTY(bool exitClipReady READ exitClipReady WRITE setExitClipReady NOTIFY exitClipReadyChanged)
     Q_PROPERTY(bool isFirstTray READ isFirstTray WRITE setIsFirstTray NOTIFY isFirstTrayChanged)
     Q_PROPERTY(bool isReadyTrayPushed READ isReadyTrayPushed WRITE setIsReadyTrayPushed NOTIFY isReadyTrayPushedChanged)
+    Q_PROPERTY(bool tcpCylinderClipSensorState READ tcpCylinderClipSensorState WRITE setTcpCylinderClipSensorState NOTIFY tcpCylinderClipSensorStateChanged)
+    Q_PROPERTY(bool tcpCylinderLTK1SensorState READ tcpCylinderLTK1SensorState WRITE setTcpCylinderLTK1SensorState NOTIFY tcpCylinderLTK1SensorStateChanged)
+    Q_PROPERTY(bool tcpCylinderLTK2SensorState READ tcpCylinderLTK2SensorState WRITE setTcpCylinderLTK2SensorState NOTIFY tcpCylinderLTK2SensorStateChanged)
+    Q_PROPERTY(bool tcpCylinderLTLSensorState READ tcpCylinderLTLSensorState WRITE setTcpCylinderLTLSensorState NOTIFY tcpCylinderLTLSensorStateChanged)
+
     int runMode() const
     {
         return m_runMode;
@@ -767,6 +931,46 @@ public:
     bool allowReadyTray() const
     {
         return m_allowReadyTray;
+    }
+
+    bool tcpCylinderClipSensorName() const
+    {
+        return m_tcpCylinderClipSensorName;
+    }
+
+    bool tcpCylinderLTK1SensorName() const
+    {
+        return m_tcpCylinderLTK1SensorName;
+    }
+
+    bool tcpCylinderLTK2SensorName() const
+    {
+        return m_tcpCylinderLTK2SensorName;
+    }
+
+    bool tcpCylinderLTLSensorName() const
+    {
+        return m_tcpCylinderLTLSensorName;
+    }
+
+    bool tcpCylinderClipSensorState() const
+    {
+        return m_tcpCylinderClipSensorState;
+    }
+
+    bool tcpCylinderLTK1SensorState() const
+    {
+        return m_tcpCylinderLTK1SensorState;
+    }
+
+    bool tcpCylinderLTK2SensorState() const
+    {
+        return m_tcpCylinderLTK2SensorState;
+    }
+
+    bool tcpCylinderLTLSensorState() const
+    {
+        return m_tcpCylinderLTLSensorState;
     }
 
 public slots:
@@ -985,6 +1189,78 @@ public slots:
         emit allowReadyTrayChanged(m_allowReadyTray);
     }
 
+    void setTcpCylinderClipSensorName(bool tcpCylinderClipSensorName)
+    {
+        if (m_tcpCylinderClipSensorName == tcpCylinderClipSensorName)
+            return;
+
+        m_tcpCylinderClipSensorName = tcpCylinderClipSensorName;
+        emit tcpCylinderClipSensorNameChanged(m_tcpCylinderClipSensorName);
+    }
+
+    void setTcpCylinderLTK1SensorName(bool tcpCylinderLTK1SensorName)
+    {
+        if (m_tcpCylinderLTK1SensorName == tcpCylinderLTK1SensorName)
+            return;
+
+        m_tcpCylinderLTK1SensorName = tcpCylinderLTK1SensorName;
+        emit tcpCylinderLTK1SensorNameChanged(m_tcpCylinderLTK1SensorName);
+    }
+
+    void setTcpCylinderLTK2SensorName(bool tcpCylinderLTK2SensorName)
+    {
+        if (m_tcpCylinderLTK2SensorName == tcpCylinderLTK2SensorName)
+            return;
+
+        m_tcpCylinderLTK2SensorName = tcpCylinderLTK2SensorName;
+        emit tcpCylinderLTK2SensorNameChanged(m_tcpCylinderLTK2SensorName);
+    }
+
+    void setTcpCylinderLTLSensorName(bool tcpCylinderLTLSensorName)
+    {
+        if (m_tcpCylinderLTLSensorName == tcpCylinderLTLSensorName)
+            return;
+
+        m_tcpCylinderLTLSensorName = tcpCylinderLTLSensorName;
+        emit tcpCylinderLTLSensorNameChanged(m_tcpCylinderLTLSensorName);
+    }
+
+    void setTcpCylinderClipSensorState(bool tcpCylinderClipSensorState)
+    {
+        if (m_tcpCylinderClipSensorState == tcpCylinderClipSensorState)
+            return;
+
+        m_tcpCylinderClipSensorState = tcpCylinderClipSensorState;
+        emit tcpCylinderClipSensorStateChanged(m_tcpCylinderClipSensorState);
+    }
+
+    void setTcpCylinderLTK1SensorState(bool tcpCylinderLTK1SensorState)
+    {
+        if (m_tcpCylinderLTK1SensorState == tcpCylinderLTK1SensorState)
+            return;
+
+        m_tcpCylinderLTK1SensorState = tcpCylinderLTK1SensorState;
+        emit tcpCylinderLTK1SensorStateChanged(m_tcpCylinderLTK1SensorState);
+    }
+
+    void setTcpCylinderLTK2SensorState(bool tcpCylinderLTK2SensorState)
+    {
+        if (m_tcpCylinderLTK2SensorState == tcpCylinderLTK2SensorState)
+            return;
+
+        m_tcpCylinderLTK2SensorState = tcpCylinderLTK2SensorState;
+        emit tcpCylinderLTK2SensorStateChanged(m_tcpCylinderLTK2SensorState);
+    }
+
+    void setTcpCylinderLTLSensorState(bool tcpCylinderLTLSensorState)
+    {
+        if (m_tcpCylinderLTLSensorState == tcpCylinderLTLSensorState)
+            return;
+
+        m_tcpCylinderLTLSensorState = tcpCylinderLTLSensorState;
+        emit tcpCylinderLTLSensorStateChanged(m_tcpCylinderLTLSensorState);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void hasTrayOnEntryChanged(bool hasTrayOnEntry);
@@ -1011,6 +1287,14 @@ signals:
     void handlyChangeLensChanged(bool handlyChangeLens);
     void handlyChangeLensTrayChanged(bool handlyChangeLensTray);
     void allowReadyTrayChanged(bool allowReadyTray);
+    void tcpCylinderClipSensorNameChanged(bool tcpCylinderClipSensorName);
+    void tcpCylinderLTK1SensorNameChanged(bool tcpCylinderLTK1SensorName);
+    void tcpCylinderLTK2SensorNameChanged(bool tcpCylinderLTK2SensorName);
+    void tcpCylinderLTLSensorNameChanged(bool tcpCylinderLTLSensorName);
+    void tcpCylinderClipSensorStateChanged(bool tcpCylinderClipSensorState);
+    void tcpCylinderLTK1SensorStateChanged(bool tcpCylinderLTK1SensorState);
+    void tcpCylinderLTK2SensorStateChanged(bool tcpCylinderLTK2SensorState);
+    void tcpCylinderLTLSensorStateChanged(bool tcpCylinderLTLSensorState);
 };
 
 #endif // TRAYLOADERPARAMETER_H

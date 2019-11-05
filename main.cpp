@@ -255,7 +255,7 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("tcp_tray_clipin_parameter",&highSprrow.baseModuleManager->tcp_lensTrayClipIn.standards_parameters);
         engine.rootContext()->setContextProperty("tcp_tray_clipout_parameter",&highSprrow.baseModuleManager->tcp_lensTrayClipOut.standards_parameters);
         engine.rootContext()->setContextProperty("tcp_tray_loader_module_parameters",&highSprrow.baseModuleManager->tcp_lensTrayLoaderModule.parameters);
-
+        engine.rootContext()->setContextProperty("tcp_tray_loader_module_states",&highSprrow.baseModuleManager->tcp_lensTrayLoaderModule.states);
     }
 
     {

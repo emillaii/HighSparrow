@@ -104,7 +104,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     //Machine Map Initialization
     //machineMap = new GraphWidget;
     //machineMap->show();
-    //timer.start(3000);
+    timer.start(3000);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -178,6 +178,18 @@ void BaseModuleManager::tcpResp(QString message)
             result["moduleNames"] = QJsonArray::fromStringList(workers.keys());
             receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
         }
+        else if(cmd == "inquiryVisionLocations")
+        {
+            QJsonObject result;
+            result["resp"] = "visionLocations";
+            for(QString key: vision_locations.keys()){
+                QJsonObject vision_location_parameter;
+                vision_locations[key]->parameters.write(vision_location_parameter);
+                result[key] = vision_location_parameter;
+            }
+            qInfo("vision location: %s", getStringFromJsonObject(result).toStdString().c_str());
+            receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+        }
         else if (cmd == "setModuleParameter")
         {
             QString module_name = message_object["moduleName"].toString();
@@ -208,7 +220,7 @@ void BaseModuleManager::tcpResp(QString message)
         }
         else if (cmd == "inquiryOutputIoState")
         {
-            qInfo("inquiryOutputIoState: %s", message.toStdString().c_str());
+            //qInfo("inquiryOutputIoState: %s", message.toStdString().c_str());
             QString outputIo_name = message_object["outputIoName"].toString();
             XtGeneralOutput* temp_io = GetOutputIoByName(outputIo_name);
             QJsonObject result;
@@ -223,7 +235,7 @@ void BaseModuleManager::tcpResp(QString message)
         }
         else if (cmd == "inquiryInputIoState")
         {
-            qInfo("inquiryInputIoState: %s", message.toStdString().c_str());
+            //qInfo("inquiryInputIoState: %s", message.toStdString().c_str());
             QString inputIo_name = message_object["inputIoName"].toString();
             XtGeneralInput* temp_io = GetInputIoByName(inputIo_name);
             QJsonObject result;
@@ -322,6 +334,13 @@ void BaseModuleManager::tcpResp(QString message)
                 inquiryTcpModuleState(temp_name.toString());
                 inquiryTcpModuleParameter(temp_name.toString());
             }
+        }
+        else if (resp == "visionLocations") {
+            qInfo("receive visionLocations resp");
+            QJsonArray vision_locations_names = message_object["visionLocations"].toArray();
+            QString vision_location_message = getStringFromJsonObject(message_object);
+
+            qInfo("receive visionLocations resp: %s", vision_location_message.toStdString().c_str());
         }
     }
 }
@@ -554,7 +573,10 @@ void BaseModuleManager::alarmChecking()
         tcp_lutModule.states.setTcpVaccum2State(state_geter.getOutputIoState(tcp_lutModule.parameters.vacuum2Name()).current_state);
         tcp_aaCoreNew.states.setTcpAAGripperState(state_geter.getOutputIoState(tcp_aaHeadModule.parameters.gripperName()).current_state);
         tcp_lensLoaderModule.states.setTcpVaccumState(state_geter.getInputIoState(tcp_lensLoaderModule.parameters.pickarmVaccumSensorName()).current_state);
-
+        tcp_lensTrayLoaderModule.states.setTcpCylinderClipSensorState(state_geter.getInputIoState(tcp_lensTrayLoaderModule.parameters.tcpCylinderClipSensorName()).current_state);
+        tcp_lensTrayLoaderModule.states.setTcpCylinderLTK1SensorState(state_geter.getInputIoState(tcp_lensTrayLoaderModule.parameters.tcpCylinderLTKX1SensorName()).current_state);
+        tcp_lensTrayLoaderModule.states.setTcpCylinderLTK2SensorState(state_geter.getInputIoState(tcp_lensTrayLoaderModule.parameters.tcpCylinderLTKX2SensorName()).current_state);
+        tcp_lensTrayLoaderModule.states.setTcpCylinderLTLSensorState(state_geter.getInputIoState(tcp_lensTrayLoaderModule.parameters.tcpCylinderLTLSensorName()).current_state);
     }
 }
 
@@ -1023,21 +1045,6 @@ bool BaseModuleManager::saveCylinderFiles(QString file_name)
     }
     if(array.size() > 0)
         return  saveJsonArray(file_name,array);
-//    else
-//    {
-//        XtCylinderParameter temp_param;
-//        QString vcauum_name = temp_param.cylinderName();
-//        QJsonArray json;
-//        for (int i = 0; i < 6; ++i) {
-//            QJsonObject temp_object;
-//            QString temp_name = vcauum_name;
-//            temp_name.append(QString::number(i));
-//            temp_param.setCylinderName(temp_name);
-//            temp_param.write(temp_object);
-//            json.append(temp_object);
-//        }
-//        return  saveJsonArray(file_name,json);
-//    }
     return  false;
 }
 
@@ -1046,7 +1053,6 @@ bool BaseModuleManager::loadVisionLoactionFiles(QString file_name)
     QJsonArray array;
     if(!loadJsonArray(file_name,array))
     {
-//        saveVisionLoactionFiles(file_name);
         return false;
     }
     for (int i = 0; i < array.count(); i++)
@@ -1060,10 +1066,10 @@ bool BaseModuleManager::loadVisionLoactionFiles(QString file_name)
         else
         {
             vision_locations[temp_location->parameters.locationName()]->parameters.read(temp_object);
-//            qInfo("vision location param name(%s)repeat!",temp_location->parameters.locationName().toStdString().c_str());
             delete temp_location;
         }
     }
+
     return true;
 }
 
@@ -1557,6 +1563,15 @@ void BaseModuleManager::inquiryTcpModule()
     }
 }
 
+void BaseModuleManager::inquiryTcpVisionLocations()
+{
+    QJsonObject message;
+    message["cmd"] = "inquiryVisionLocations";
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
+}
+
 void BaseModuleManager::inquiryTcpModuleState(QString moduleName)
 {
     QJsonObject message;
@@ -1677,6 +1692,7 @@ bool BaseModuleManager::initialDevice()
         setOutput(u8"三色报警指示灯_绿", true);
     }
     inquiryTcpModule();
+    inquiryTcpVisionLocations();
     return true;
 }
 
@@ -1989,7 +2005,7 @@ XtGeneralInput *BaseModuleManager::GetInputIoByName(QString name)
     if(input_ios.contains(name))
         return input_ios[name];
     else
-        qInfo("can not find input io %s",name.toStdString().c_str());
+        qDebug("can not find input io %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -1999,7 +2015,7 @@ XtVacuum *BaseModuleManager::GetVacuumByName(QString name)
     if(vacuums.contains(name))
         return vacuums[name];
     else
-        qInfo("can not find vacuum io %s",name.toStdString().c_str());
+        qDebug("can not find vacuum io %s",name.toStdString().c_str());
     return nullptr;
 }
 

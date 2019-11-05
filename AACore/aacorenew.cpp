@@ -144,7 +144,6 @@ void AACoreNew::Init(AAHeadModule *aa_head, SutModule *sut, Dothinkey *dk, Chart
     this->unitlog = unitlog;
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();
-    aaCoreTuningProvider = new ImageProvider();
     dispenseImageProvider = new ImageProvider();
     connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
@@ -3362,79 +3361,22 @@ void AACoreNew::sfrImageReady(QImage img)
 
 void AACoreNew::captureLiveImage()
 {
-    if(!dk->DothinkeyIsGrabbing()) {
-        qInfo("Image Grabber is not ON");
-        return;
-    }
-    bool grabRet = false;
-    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
-    if (!grabRet) {
-        qInfo("AA Cannot grab image.");
-        return;
-    }
-    cv::imwrite("livePhoto.bmp", img);
+//    if(!dk->DothinkeyIsGrabbing()) {
+//        qInfo("Image Grabber is not ON");
+//        return;
+//    }
+//    bool grabRet = false;
+//    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+//    if (!grabRet) {
+//        qWarning("AA Cannot grab image.");
+//        return;
+//    }
+//    cv::imwrite("livePhoto.bmp", img);
+
 }
 
 void AACoreNew::aaCoreParametersChanged()
 {
-    qInfo("AA Core parameters changed");
-    QVariantMap map;
-    cv::Mat img = cv::imread("livePhoto.bmp");
-    QImage outImage = imageThread->cvMat2QImage(img);
-    double dfov = calculateDFOV(img);
-    double imageCenterX = img.cols/2;
-    double imageCenterY = img.rows/2;
-    QPainter qPainter(&outImage);
-    qPainter.setBrush(Qt::NoBrush);
-    qPainter.setPen(QPen(Qt::red, 4.0));
-    emit sfrWorkerController->calculate(0, 0, img, true);
-    int timeout=1000;
-    while(this->clustered_sfr_map.size() != 1 && timeout >0) {
-        Sleep(10);
-        timeout--;
-    }
-    vector<Sfr_entry> sv = clustered_sfr_map[0];
-    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
-
-    qPainter.setFont(QFont("Times",50, QFont::Bold));
-    qPainter.drawText(imageCenterX/2 , 100 , QString("DFOV: ").append(QString::number(dfov)));
-    for (unsigned int i = 0; i < sv.size(); i++)
-    {
-        double roi_width = sqrt(sv[i].area)*this->parameters.ROIRatio();
-        qInfo("%f %f %f %f %f %f %d %d", sv.at(i).px, sv.at(i).py,
-              sv.at(i).t_sfr, sv.at(i).r_sfr, sv.at(i).b_sfr, sv.at(i).l_sfr,
-              sv.at(i).layer, sv.at(i).location);
-        double radius = sqrt(pow(sv[i].px - imageCenterX, 2) + pow(sv[i].py - imageCenterY, 2));
-
-        if (sv[i].layer == 0) {
-            qPainter.setPen(QPen(Qt::red, 4.0));
-        }
-        else if (sv[i].layer == 1) {
-            qPainter.setPen(QPen(QColor(102, 0, 204), 4.0)); //Purple
-        }
-        else if (sv[i].layer == 2) {
-            qPainter.setPen(QPen(Qt::blue, 4.0));
-        }
-        else if (sv[i].layer == 3) {
-            qPainter.setPen(QPen(Qt::yellow, 4.0));
-        }
-        double w_t = parameters.WeightList()[0 + sv[i].layer*4].toDouble();
-        double w_r = parameters.WeightList()[1 + sv[i].layer*4].toDouble();
-        double w_b = parameters.WeightList()[2 + sv[i].layer*4].toDouble();
-        double w_l = parameters.WeightList()[3 + sv[i].layer*4].toDouble();
-
-        qPainter.drawRect(QRectF(sv[i].px-roi_width/2, sv[i].py-roi_width/2, roi_width, roi_width));
-        qPainter.drawEllipse(QPoint(imageCenterX, imageCenterY), (int)(radius), (int)(radius));
-
-        qPainter.drawText(sv[i].px - 50 , sv[i].py - roi_width/2, QString("").append(QString::number(w_t)));
-        qPainter.drawText(sv[i].px - 50 + roi_width/2, sv[i].py,  QString("").append(QString::number(w_r)));
-        qPainter.drawText(sv[i].px - 50, sv[i].py + roi_width/2,  QString("").append(QString::number(w_b)));
-        qPainter.drawText(sv[i].px - roi_width/2 - 50, sv[i].py,  QString("").append(QString::number(w_l)));
-    }
-    clustered_sfr_map.clear();
-    qPainter.end();
-    aaCoreTuningProvider->setImage(outImage);
-    emit callQmlRefeshImg(2);
 }
 
 void AACoreNew::updateAACoreSensorParameters(double scaleX, double scaleY, double angle)

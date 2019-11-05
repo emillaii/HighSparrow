@@ -102,7 +102,6 @@ public:
     ImageProvider * ocImageProvider_1;
     ImageProvider * sfrImageProvider;
     ImageProvider * dispenseImageProvider;
-    ImageProvider * aaCoreTuningProvider;
     AACoreParameters parameters;
     AACoreStates states;
     AAHeadModule* aa_head;

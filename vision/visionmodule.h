@@ -7,6 +7,7 @@
 #include <AVL.h>
 #include "utils/imageprovider.h"
 #include "thread_worker_base.h"
+#include "utils/imageprovider.h"
 class BaslerPylonCamera;
 
 struct PRResultStruct {
@@ -41,11 +42,13 @@ public:
     ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.8);
     ErrorCodeStruct PR_Generic_NCC_Template_Matching_Retry(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score);
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
+    Q_INVOKABLE void aaDebugImage(QString input_filename, int threshold, int min_area, int max_area);
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 
     Q_INVOKABLE void saveImage(int channel);
     bool saveImage(QString cameraName, QString imageName);
     Q_INVOKABLE void testVision();
+    ImageProvider *aaDebugImageProvider;
 private:
     QString last_uplook_pr_result;
     QString last_downlook_pr_result;
@@ -65,7 +68,7 @@ private:
     ImageProvider glueInspectionResultImageProvider;
     QMutex mutex;
 signals :
-    void callQmlRefeshImg();
+    void callQmlRefeshImg(int);
 public:
     bool is_debug = false;
 //ThreadWorkerBase Interface

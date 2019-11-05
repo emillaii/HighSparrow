@@ -24,6 +24,7 @@ VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera 
     this->pickarmCamera = pickarmCamera;
     this->aa2DownlookCamera = aa2DownlookCamera;
     this->sensorPickarmCamera = sensorPickarmCamera;
+    aaDebugImageProvider = new ImageProvider();
 }
 QVector<QPoint> VisionModule::Read_Dispense_Path()
 {
@@ -678,6 +679,105 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
     return error_code;
 }
 
+void VisionModule::aaDebugImage(QString input_filename, int threshold, int min_area, int max_area)
+{
+    qInfo("aaDebugImage is called: %s intensity_threshold: %d min_area: %d max_area: %d", input_filename.toStdString().c_str(), threshold, min_area, max_area);
+    static atl::String g_emptyString;
+    avl::Image image1;
+    atl::String file1;
+    atl::String string1;
+    avl::Region region1;
+    avl::Image image2;
+    avl::Image image3;
+    atl::Array< avl::Region > regionArray1;
+    atl::Array< atl::Conditional< avl::Point2D > > point2DArray1;
+    atl::Array< atl::Conditional< atl::String > > stringArray1;
+    atl::Array< atl::Conditional< avl::Location > > locationArray1;
+    atl::String string2;
+    atl::String string3;
+    avl::Image image4;
+    avl::Image image5;
+    avl::Image image6;
+    avl::Image image7;
+    atl::Array< avl::Image > imageArray1;
+    atl::Array< avl::Image > imageArray2;
+    avl::Image image8;
+    avl::Image image9;
+    avl::Image image10;
+
+    int integer1;
+    int integer2;
+    float real1;
+    float real2;
+    avl::Line2D line2D1;
+    avl::Line2D line2D2;
+    try  {
+        avl::LoadImage( input_filename.toStdString().c_str(), false, image1 );
+        avl::ThresholdToRegion( image1, atl::NIL, 0.0f, threshold, 0.0f, region1 );
+        avl::RegionToImage( region1, image2 );
+        avl::ConvertToMultichannel( image2, atl::NIL, 3, image3 );
+        avl::SplitRegionIntoBlobs( region1, avl::RegionConnectivity::EightDirections, min_area, max_area, true, regionArray1, atl::Dummy< atl::Array< int > >().Get() );
+        point2DArray1.Resize(regionArray1.Size());
+        stringArray1.Resize(regionArray1.Size());
+        locationArray1.Resize(regionArray1.Size());
+        for( int i = 0; i < regionArray1.Size(); ++i )
+        {
+            int integer3;
+
+            avl::RegionMassCenter_OrNil( regionArray1[i], point2DArray1[i] );
+            avl::RegionArea( regionArray1[i], integer3 );
+            avl::IntegerToString( integer3, string2 );
+
+            // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
+            avs::AvsFilter_ConcatenateStrings( string2, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string3 );
+            stringArray1[i].AssignNonNil();
+            stringArray1[i].Get() = string3;
+
+            if (point2DArray1[i] != atl::NIL)
+            {
+                locationArray1[i].AssignNonNil();
+
+                avl::Point2DToLocation( point2DArray1[i].Get(), locationArray1[i].Get() );
+            }
+            else
+            {
+                locationArray1[i] = atl::NIL;
+            }
+        }
+
+        avs::DrawPoints_SingleColor( image1, point2DArray1, atl::NIL, avl::Pixel(255.0f, 1.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 9.0f, false, avl::PointShape::Cross, 52.0f), true, image4 );
+        integer1 = image1.Width();
+        integer2 = image1.Height();
+        real1 = _avfml_st_real(_avfml_ld_real(static_cast<float>(integer1)) / 2.0);
+        real2 = _avfml_st_real(_avfml_ld_real(static_cast<float>(integer2)) / 2.0);
+
+        // Function AvsFilter_MakeLine is intended for generated code only. Consider use of proper Line2D constructor instead.
+        avs::AvsFilter_MakeLine( -1.0f, 0.0f, real1, line2D1 );
+
+        // Function AvsFilter_MakeLine is intended for generated code only. Consider use of proper Line2D constructor instead.
+        avs::AvsFilter_MakeLine( 0.0f, -1.0f, real2, line2D2 );
+        avs::DrawLines_SingleColor( image4, atl::ToArray< atl::Conditional< avl::Line2D > >(line2D1), atl::NIL, avl::Pixel(255.0f, 192.0f, 128.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 10.0f, false, atl::NIL, 4.0f), true, image5 );
+        avs::DrawLines_SingleColor( image5, atl::ToArray< atl::Conditional< avl::Line2D > >(line2D2), atl::NIL, avl::Pixel(255.0f, 192.0f, 128.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 10.0f, false, atl::NIL, 1.0f), true, image6 );
+        avs::DrawStrings_SingleColor( image6, stringArray1, locationArray1, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(255.0f, 128.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 100.0f), 150.0f, 0.0f, true, atl::NIL, image7 );
+
+        // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
+        avs::AvsFilter_CreateArray< avl::Image >( image1, image3, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, imageArray1 );
+        // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
+        avs::AvsFilter_CreateArray< avl::Image >( image6, image7, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, imageArray2 );
+        avl::JoinImages_OfArray( imageArray1, avl::JoinDirection::Horizontal, image8 );
+        avl::JoinImages_OfArray( imageArray2, avl::JoinDirection::Horizontal, image9 );
+        avl::JoinImages( image8, image9, avl::JoinDirection::Vertical, image10 );
+        avl::SaveImageToJpeg(image10 , "AA_debug.jpg", atl::NIL, false);
+        QImage image("AA_debug.jpg");
+        aaDebugImageProvider->setImage(image);
+        emit callQmlRefeshImg(4);
+    }catch(const atl::Error& error) {
+        qWarning(error.Message());
+        return;
+    }
+    return;
+}
+
 void VisionModule::displayPRResult(const QString camera_name, const PRResultStruct prResult)
 {
     if (camera_name.contains(DOWNLOOK_VISION_CAMERA)) {
@@ -689,7 +789,7 @@ void VisionModule::displayPRResult(const QString camera_name, const PRResultStru
     else if (camera_name.contains(PICKARM_VISION_CAMERA)) {
         last_pickarm_pr_result = prResult.imageName;
     }
-    emit callQmlRefeshImg();
+    emit callQmlRefeshImg(0);
 }
 
 QImage VisionModule::requestImage(const QString &id, QSize *size, const QSize &requestedSize)

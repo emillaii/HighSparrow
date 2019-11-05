@@ -657,6 +657,7 @@ ItemDelegate {
                             text: qsTr("Take Photo")
                             onClicked: {
                                 aaNewCore.captureLiveImage()
+                                visionModule.aaDebugImage("livePhoto.bmp", aaCoreParams.MaxIntensity, aaCoreParams.MinArea, aaCoreParams.MaxArea)
                             }
                         }
 
@@ -686,7 +687,7 @@ ItemDelegate {
                     target: highSprrow
                     onDisplayAACoreTuningImageInUI: {
                         image1.source = ""
-                        image1.source = "image://dispenseImage"
+                        image1.source = "image://aaDebugImage"
                     }
                 }
             }

@@ -49,6 +49,7 @@ public slots:
         else if (type == 1) emit displayOCImageInUI();
         else if (type == 2) emit displayAACoreTuningImageInUI();
         else if (type == 3) emit displayGlueInspectImageInUI();
+        else if (type == 4) emit displayAACoreTuningImageInUI();
     };
 };
 

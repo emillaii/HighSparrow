@@ -10,8 +10,11 @@ ItemDelegate {
     contentItem: ColumnLayout {
         ColumnLayout {
             RowLayout {
-                Label {
-                    text: qsTr("")
+                Button {
+                    text: qsTr("点胶机调试软件")
+                    onClicked: {
+                        highSprrow.callQProcess("ML808FX_UI.exe")
+                    }
                 }
             }
             GroupBox{

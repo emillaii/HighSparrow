@@ -125,7 +125,7 @@ void HighSprrow::callQProcess(QString arg)
     arguments << "/c" << arg.toStdString().c_str();
     QProcess process;
     process.setWorkingDirectory(QDir::currentPath());
-    qInfo("Learn PR %s,current directory:%s", arg.toStdString().c_str(),QDir::currentPath().toStdString().c_str());
+    qInfo("Start process %s,current directory:%s", arg.toStdString().c_str(),QDir::currentPath().toStdString().c_str());
     process.startDetached("cmd.exe", arguments);
     process.waitForStarted();
 }

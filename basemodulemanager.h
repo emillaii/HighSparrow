@@ -39,6 +39,7 @@
 #include "tcpmanager.h"
 #include "devicestatesgeter.h"
 #include "uiControl/graphwidget.h"
+#include "Drivers/LightSourceController/sciencalightsourcecontroller.h"
 
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
@@ -135,6 +136,7 @@ public:
 
     LutModule tcp_lutModule;
     MaterialCarrier tcp_lutCarrier;
+    SciencaLightSourceController chartBackgroundLightSourceController;
 
     //Remote vision location
     VisionLocation *tcp_vision_location_aa1_downlook;

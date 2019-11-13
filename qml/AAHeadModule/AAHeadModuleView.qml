@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
 import "../../"
+import "../Drivers/LightSourceController"
+
 ItemDelegate {
     contentItem: ColumnLayout {
         spacing: 0
@@ -32,6 +34,9 @@ ItemDelegate {
         MotionPopup{
             id:aa_head_motions
         }
+        SciencaLightSourceControllerView{
+            id: slsc
+        }
 
         ColumnLayout {
             RowLayout {
@@ -42,6 +47,12 @@ ItemDelegate {
                     text:qsTr("手动操作")
                     onClicked:{
                         aa_head_motions.open()
+                    }
+                }
+                Button{
+                    text:qsTr("背光板操作")
+                    onClicked:{
+                        slsc.open()
                     }
                 }
             }

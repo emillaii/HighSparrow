@@ -25,6 +25,7 @@ public:
     Q_PROPERTY(double objectScore READ objectScore WRITE setObjectScore NOTIFY objectScoreChanged)
     Q_PROPERTY(bool useOrigin READ useOrigin WRITE setUseOrigin NOTIFY useOriginChanged)
     Q_PROPERTY(int performTime READ performTime WRITE setPerformTime NOTIFY performTimeChanged)
+    Q_PROPERTY(int prismPRType READ prismPRType WRITE setPrismPRType NOTIFY prismPRTypeChanged)
     QString prFileName() const
     {
         return m_prFileName;
@@ -109,6 +110,11 @@ public:
     int performTime() const
     {
         return m_performTime;
+    }
+
+    int prismPRType() const
+    {
+        return m_prismPRType;
     }
 
 public slots:
@@ -265,6 +271,15 @@ public slots:
         emit performTimeChanged(m_performTime);
     }
 
+    void setPrismPRType(int prismPRType)
+    {
+        if (m_prismPRType == prismPRType)
+            return;
+
+        m_prismPRType = prismPRType;
+        emit prismPRTypeChanged(m_prismPRType);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -300,6 +315,8 @@ signals:
 
     void performTimeChanged(int performTime);
 
+    void prismPRTypeChanged(int prismPRType);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -318,6 +335,7 @@ private:
     double m_objectScore = 0.7;
     bool m_useOrigin = false;
     int m_performTime = 0;
+    int m_prismPRType = 0;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

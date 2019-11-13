@@ -115,7 +115,7 @@ QString TcpMessager::inquiryMessage(QString message)
                 }
                 current_time --;
                 if (parameters.needQInfo())
-                    qInfo("current_time: %d",current_time);
+                    qDebug("current_time: %d",current_time);
                 QThread::msleep(1);
             }
             if(result_message.keys().count()<= 0)

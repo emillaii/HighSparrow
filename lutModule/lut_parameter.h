@@ -14,10 +14,6 @@ public:
     Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
     Q_PROPERTY(QString vacuum1Name READ vacuum1Name WRITE setVacuum1Name NOTIFY vacuum1NameChanged)
     Q_PROPERTY(QString vacuum2Name READ vacuum2Name WRITE setVacuum2Name NOTIFY vacuum2NameChanged)
-    Q_PROPERTY(QString lutVacuum1Name READ lutVacuum1Name WRITE setLutVacuum1Name NOTIFY lutVacuumSensor1Changed)
-    Q_PROPERTY(QString lutVacuum2Name READ lutVacuum2Name WRITE setLutVacuum2Name NOTIFY lutVacuumSensor2Changed)
-    Q_PROPERTY(QString lutVacuumSensor1Name READ lutVacuumSensor1Name WRITE setLutVacuumSensor1Name NOTIFY lutVacuumSensor1NameChanged)
-    Q_PROPERTY(QString lutVacuumSensor2Name READ lutVacuumSensor2Name WRITE setLutVacuumSensor2Name NOTIFY lutVacuumSensor2NameChanged)
     Q_PROPERTY(QString uplookLocationName READ uplookLocationName WRITE setUplookLocationName NOTIFY uplookLocationNameChanged)
     Q_PROPERTY(QString loadlookLocationName READ loadlookLocationName WRITE setLoadlookLocationName NOTIFY loadlookLocationNameChanged)
     Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
@@ -30,7 +26,10 @@ public:
     Q_PROPERTY(bool staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
     Q_PROPERTY(int testLensCount READ testLensCount WRITE setTestLensCount NOTIFY testLensCountChanged)
     Q_PROPERTY(int griperOperationOutTime READ griperOperationOutTime WRITE setGriperOperationOutTime NOTIFY griperOperationOutTimeChanged)
-
+    Q_PROPERTY(QString tcpLutVacuum1Name READ tcpLutVacuum1Name WRITE setTcpLutVacuum1Name NOTIFY tcpLutVacuumSensor1Changed)
+    Q_PROPERTY(QString tcpLutVacuum2Name READ tcpLutVacuum2Name WRITE setTcpLutVacuum2Name NOTIFY tcpLutVacuumSensor2Changed)
+    Q_PROPERTY(QString tcpLutVacuumSensor1Name READ tcpLutVacuumSensor1Name WRITE setTcpLutVacuumSensor1Name NOTIFY tcpLutVacuumSensor1NameChanged)
+    Q_PROPERTY(QString tcpLutVacuumSensor2Name READ tcpLutVacuumSensor2Name WRITE setTcpLutVacuumSensor2Name NOTIFY tcpLutVacuumSensor2NameChanged)
     double pickForce() const
     {
         return m_PickForce;
@@ -126,24 +125,24 @@ public:
         return m_griperOperationOutTime;
     }
 
-    QString lutVacuumSensor1Name() const
+    QString tcpLutVacuum1Name() const
     {
-        return m_lutVacuumSensor1Name;
+        return m_tcpLutVacuum1Name;
     }
 
-    QString lutVacuumSensor2Name() const
+    QString tcpLutVacuum2Name() const
     {
-        return m_lutVacuumSensor2Name;
+        return m_tcpLutVacuum2Name;
     }
 
-    QString lutVacuum1Name() const
+    QString tcpLutVacuumSensor1Name() const
     {
-        return m_lutVacuum1Name;
+        return m_tcpLutVacuumSensor1Name;
     }
 
-    QString lutVacuum2Name() const
+    QString tcpLutVacuumSensor2Name() const
     {
-        return m_lutVacuum2Name;
+        return m_tcpLutVacuumSensor2Name;
     }
 
 public slots:
@@ -314,40 +313,40 @@ public slots:
         emit griperOperationOutTimeChanged(m_griperOperationOutTime);
     }
 
-    void setLutVacuumSensor1Name(QString lutVacuumSensor1Name)
+    void setTcpLutVacuum1Name(QString tcpLutVacuum1Name)
     {
-        if (m_lutVacuumSensor1Name == lutVacuumSensor1Name)
+        if (m_tcpLutVacuum1Name == tcpLutVacuum1Name)
             return;
 
-        m_lutVacuumSensor1Name = lutVacuumSensor1Name;
-        emit lutVacuumSensor1NameChanged(m_lutVacuumSensor1Name);
+        m_tcpLutVacuum1Name = tcpLutVacuum1Name;
+        emit tcpLutVacuumSensor1Changed(m_tcpLutVacuum1Name);
     }
 
-    void setLutVacuumSensor2Name(QString lutVacuumSensor2Name)
+    void setTcpLutVacuum2Name(QString tcpLutVacuum2Name)
     {
-        if (m_lutVacuumSensor2Name == lutVacuumSensor2Name)
+        if (m_tcpLutVacuum2Name == tcpLutVacuum2Name)
             return;
 
-        m_lutVacuumSensor2Name = lutVacuumSensor2Name;
-        emit lutVacuumSensor2NameChanged(m_lutVacuumSensor2Name);
+        m_tcpLutVacuum2Name = tcpLutVacuum2Name;
+        emit tcpLutVacuumSensor2Changed(m_tcpLutVacuum2Name);
     }
 
-    void setLutVacuum1Name(QString lutVacuum1Name)
+    void setTcpLutVacuumSensor1Name(QString tcpLutVacuumSensor1Name)
     {
-        if (m_lutVacuum1Name == lutVacuum1Name)
+        if (m_tcpLutVacuumSensor1Name == tcpLutVacuumSensor1Name)
             return;
 
-        m_lutVacuum1Name = lutVacuum1Name;
-        emit lutVacuumSensor1Changed(m_lutVacuum1Name);
+        m_tcpLutVacuumSensor1Name = tcpLutVacuumSensor1Name;
+        emit tcpLutVacuumSensor1NameChanged(m_tcpLutVacuumSensor1Name);
     }
 
-    void setLutVacuum2Name(QString lutVacuum2Name)
+    void setTcpLutVacuumSensor2Name(QString tcpLutVacuumSensor2Name)
     {
-        if (m_lutVacuum2Name == lutVacuum2Name)
+        if (m_tcpLutVacuumSensor2Name == tcpLutVacuumSensor2Name)
             return;
 
-        m_lutVacuum2Name = lutVacuum2Name;
-        emit lutVacuumSensor2Changed(m_lutVacuum2Name);
+        m_tcpLutVacuumSensor2Name = tcpLutVacuumSensor2Name;
+        emit tcpLutVacuumSensor2NameChanged(m_tcpLutVacuumSensor2Name);
     }
 
 signals:
@@ -390,13 +389,13 @@ signals:
 
     void griperOperationOutTimeChanged(int griperOperationOutTime);
 
-    void lutVacuumSensor1NameChanged(QString lutVacuumSensor1Name);
+    void tcpLutVacuumSensor1Changed(QString tcpLutVacuum1Name);
 
-    void lutVacuumSensor2NameChanged(QString lutVacuumSensor2Name);
+    void tcpLutVacuumSensor2Changed(QString tcpLutVacuum2Name);
 
-    void lutVacuumSensor1Changed(QString lutVacuum1Name);
+    void tcpLutVacuumSensor1NameChanged(QString tcpLutVacuumSensor1Name);
 
-    void lutVacuumSensor2Changed(QString lutVacuum2Name);
+    void tcpLutVacuumSensor2NameChanged(QString tcpLutVacuumSensor2Name);
 
 private:
     double m_PickForce = 0;
@@ -418,10 +417,10 @@ private:
     int m_testLensCount = 10;
     QString m_moduleName = "LUTModule";
     int m_griperOperationOutTime = 1000;
-    QString m_lutVacuumSensor1Name;
-    QString m_lutVacuumSensor2Name;
-    QString m_lutVacuum1Name;
-    QString m_lutVacuum2Name;
+    QString m_tcpLutVacuum1Name;
+    QString m_tcpLutVacuum2Name;
+    QString m_tcpLutVacuumSensor1Name;
+    QString m_tcpLutVacuumSensor2Name;
 };
 
 class LutState:public PropertyBase

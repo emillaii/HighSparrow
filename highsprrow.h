@@ -35,6 +35,8 @@ public:
     Q_INVOKABLE void callQProcess(QString arg);
     Q_INVOKABLE void aa_A_Inter(double step);
     Q_INVOKABLE void aa_B_Inter(double step);
+    Q_INVOKABLE void tcp_aa_A_Inter(double step);
+    Q_INVOKABLE void tcp_aa_B_Inter(double step);
 
 signals:
     void displaySfrImageInUI();

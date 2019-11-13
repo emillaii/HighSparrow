@@ -86,6 +86,10 @@ ApplicationWindow {
         id: motionDialog
     }
 
+    TcpMotionDialog {
+        id: tcpMotionDialog
+    }
+
     IODialog {
         id: ioDialog
     }
@@ -134,6 +138,7 @@ ApplicationWindow {
                 icon.color: "red"
                 onClicked: {
                     logicManager.performHandling("",LogicManager.MOTION_INIT)
+                    //visionModule.testVision()
                 }
                 Connections{
                    target: timer
@@ -284,14 +289,43 @@ ApplicationWindow {
                    baseModuleManager.updateParams()
                }
            }
+
            RoundButton {
-               text: qsTr("电机")
+               text: qsTr("AA1电机")
+               visible: {
+                   if (baseModuleManager.getServerMode() === 0) return false
+                   else return true
+               }
+
                transformOrigin: Item.Center
                display: Button.TextBesideIcon
                icon.width: 30
                icon.height: 30
                icon.source: "icons/machine.png"
-               icon.color: "deepskyblue"
+               icon.color: "yellow"
+               onClicked: {
+                   tcpMotionDialog.open()
+               }
+           }
+
+           RoundButton {
+               text: {
+                   if (baseModuleManager.getServerMode() === 0)
+                       return qsTr("AA1电机")
+                   else
+                       return qsTr("AA2电机")
+               }
+               transformOrigin: Item.Center
+               display: Button.TextBesideIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "icons/machine.png"
+               icon.color: {
+                   if (baseModuleManager.getServerMode() === 0)
+                        return "yellow"
+                   else
+                       return "lightGreen"
+               }
                onClicked: {
                    motionDialog.open()
                }
@@ -374,6 +408,7 @@ ApplicationWindow {
                onTriggered: {
                     timeString.text =  Qt.formatTime(new Date(), "现在时间: hh:mm:ss")
                     busyDialog.updateBusyDialogStatus()
+                    //messageDialog.updateDialogStatus()
                     //Used for consuming the flowchart double click command
                     if (flowChartPage.webView.loadProgress == 100) {
                         var command = "document.getElementById('flowchart_running_cmd').value";
@@ -450,7 +485,7 @@ ApplicationWindow {
 
            Label{
                text: qsTr("硅酷科技 版本:" + version)
-               font.pointSize: 18
+               font.pointSize: 14
                color: "white"
                Layout.fillWidth: true
                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -458,7 +493,7 @@ ApplicationWindow {
 
            Label{
                id: timeString
-               font.pointSize: 18
+               font.pointSize: 14
                color: "cyan"
                text: qsTr(" 现在时间:")
                Layout.fillWidth: true

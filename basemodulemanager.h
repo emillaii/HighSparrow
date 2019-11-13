@@ -141,6 +141,11 @@ public:
     //Remote vision location
     VisionLocation *tcp_vision_location_aa1_downlook;
 
+    //Remote motor names
+    QStringList tcpMotorNames;
+    //Remote io names
+    QList<QString> tcpIONames;
+
     int lightPanelLighting() const
     {
         return m_lightPanelLighting;
@@ -266,18 +271,23 @@ private:
     QString m_DataServerURL;
     QThread work_thread;
 
+    void inquiryTcpAllMotors();
+    void inquiryTcpAllIOs();
     void inquiryTcpModule();
     void inquiryTcpVisionLocations();
     void inquiryTcpModuleState(QString moduleName);
     void inquiryTcpModuleParameter(QString moduleName);
     void sendTcpUpdateParameterRequest();            //Send the need update parameter signal from real module to tcp remote module
     void setTcpModuleParameter(QString moduleName);  //Send the tcp module parameter to real module (eg. from AA2 -> AA1)
+    void sendTcpStepMoveRequest(QString motorName, double step_size, bool isPositive);
+    void sendTcpEnableMotor(QString motorName, bool on);
+    void sendTcpHomeMotor(QString motorName);
     QString m_FlowchartFilename;
-
 public:
     bool loadProfile();
     bool loadStructConfig(QString file_dir);
     bool loadMachineConfig(QString file_paths);
+    void sendAAHeadInterMoveRequest(int channel, double step_size); //channel = 0 AA_A, channel = 1 AA_B
     Q_INVOKABLE bool generateConfigFiles();
     Q_INVOKABLE bool loadParameters();
     Q_INVOKABLE bool loadconfig();

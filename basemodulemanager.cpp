@@ -54,7 +54,6 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
     if (ServerMode() == 0) {
         this->lut_module.openServer(19998);
-//        lutClient = new LutClient(&this->aa_head_module, "ws://localhost:19998");
         connect(&lut_module,&LutModule::sendLoadLensRequst,&lens_loader_module,&LensLoaderModule::receiveLoadLensRequst,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendLoadLensFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
     }
@@ -82,6 +81,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonAA2DownlookCamera) pylonAA2DownlookCamera->start();
         if(pylonSensorPickarmCamera) pylonSensorPickarmCamera->start();
     }
+
+    qInfo("CP2");
     material_tray.standards_parameters.setTrayCount(5);
     unitlog.setServerAddress(configs.dataServerURL());
     setHomeState(false);
@@ -131,6 +132,8 @@ void BaseModuleManager::tcpResp(QString message)
             else {
                 result["motorPosition"] = temp_motor->GetFeedbackPos();
                 result["motorTargetPosition"] = temp_motor->GetCurrentTragetPos();
+                result["motorHomeState"] = temp_motor->states.seekedOrigin();
+                result["motorEnableState"] = temp_motor->states.isEnabled();
                 result["error"] = "";
             }
             receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
@@ -188,6 +191,18 @@ void BaseModuleManager::tcpResp(QString message)
                 result[key] = vision_location_parameter;
             }
             qInfo("vision location: %s", getStringFromJsonObject(result).toStdString().c_str());
+            receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
+        }
+        else if (cmd == "inquiryAllMotorNames")
+        {
+            QJsonObject result;
+            result["resp"] = "motorNames";
+            QJsonArray array;
+            for (QString name : motors.keys()){
+                array.push_back(name);
+            }
+            result["motorNames"] = array;
+            qInfo("motor names: %s", getStringFromJsonObject(result).toStdString().c_str());
             receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
         }
         else if (cmd == "setModuleParameter")
@@ -268,6 +283,55 @@ void BaseModuleManager::tcpResp(QString message)
             }
             receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
         }
+        else if (cmd == "stepMove")
+        {
+            QString motor_name = message_object["motorName"].toString();
+            double step = message_object["step"].toDouble(0);
+            bool isPositive = message_object["isPositive"].toBool(false);
+            XtMotor* temp_motor = GetMotorByName(motor_name);
+            if(temp_motor == nullptr){
+               qWarning("Tcp step move command fail, cannot find motor: %s", motor_name.toStdString().c_str());
+            } else {
+               qInfo("Tcp step move command : %s step: %f direction: %d", motor_name.toStdString().c_str(), step, isPositive);
+               stepMove(motor_name, step, isPositive);
+            }
+        }
+        else if (cmd == "aaHeadInterMove")
+        {
+            int channel = message_object["channel"].toInt(0);
+            double step = message_object["step"].toDouble(0);
+            qInfo("Receive aa head inter move request. channel: %d step: %f", channel, step);
+            if (channel == 0) {
+                aa_head_module.stepInterpolation_AB_Sync(step, 0);
+            } else {
+                aa_head_module.stepInterpolation_AB_Sync(0, step);
+            }
+        }
+        else if (cmd == "enableMotor")
+        {
+            QString motorName = message_object["motorName"].toString();
+            bool enable = message_object["enable"].toBool(false);
+            if (motors.contains(motorName)) {
+               if (InitState()) {
+                   if (enable) {
+                       GetMotorByName(motorName)->Enable();
+                   }
+                   else {
+                       GetMotorByName(motorName)->Disable();
+                   }
+               }
+            }
+        }
+        else if (cmd == "homeMotor")
+        {
+            QString motorName = message_object["motorName"].toString();
+            if (motors.contains(motorName)) {
+               if (InitState()) {
+                    GetMotorByName(motorName)->SeekOrigin();
+                    GetMotorByName(motorName)->WaitSeekDone();
+               }
+            }
+        }
     }
     else if(message_object.contains("resp"))
     {
@@ -339,8 +403,18 @@ void BaseModuleManager::tcpResp(QString message)
             qInfo("receive visionLocations resp");
             QJsonArray vision_locations_names = message_object["visionLocations"].toArray();
             QString vision_location_message = getStringFromJsonObject(message_object);
-
             qInfo("receive visionLocations resp: %s", vision_location_message.toStdString().c_str());
+        }
+        else if (resp == "motorNames") {
+            qInfo("receive motor names resp");
+            QJsonArray motor_names = message_object["motorNames"].toArray();
+            for (int i = 0; i < motor_names.size(); i++) {
+                qInfo("Add motor : %s into tcp list", motor_names[i].toString().toStdString().c_str());
+                tcpMotorNames.push_back(motor_names[i].toString());
+                qInfo("tcpMotorNames size: %d", tcpMotorNames.size());
+            }
+            QString motor_name_message = getStringFromJsonObject(message_object);
+            qInfo("receive motor names resp: %s", motor_name_message.toStdString().c_str());
         }
     }
 }
@@ -379,6 +453,8 @@ QString BaseModuleManager::deviceResp(QString message)
                             geted = true;
                             result["motorPosition"] = result_json["motorPosition"];
                             result["motorTargetPosition"] = result_json["motorTargetPosition"];
+                            result["motorHomeState"] = result_json["motorHomeState"];
+                            result["motorEnableState"] = result_json["motorEnableState"];
                             result["error"] = "";
                             break;
                       }
@@ -394,6 +470,8 @@ QString BaseModuleManager::deviceResp(QString message)
                                     geted = true;
                                     result["motorPosition"] = result_json["motorPosition"];
                                     result["motorTargetPosition"] = result_json["motorTargetPosition"];
+                                    result["motorHomeState"] = result_json["motorHomeState"];
+                                    result["motorEnableState"] = result_json["motorEnableState"];
                                     result["error"] = "";
                                     break;
                               }
@@ -418,6 +496,8 @@ QString BaseModuleManager::deviceResp(QString message)
             else {
                 result["motorPosition"] = temp_motor->GetFeedbackPos();
                 result["motorTargetPosition"] = temp_motor->GetCurrentTragetPos();
+                result["motorHomeState"] = temp_motor->states.seekedOrigin();
+                result["motorEnableState"] = temp_motor->states.isEnabled();
                 result["error"] = "";
             }
             return getStringFromJsonObject(result);
@@ -571,7 +651,8 @@ void BaseModuleManager::alarmChecking()
         QString jsonString = getStringFromJsonObject(data);
         tcp_lutModule.states.setTcpVaccum1State(state_geter.getOutputIoState(tcp_lutModule.parameters.vacuum1Name()).current_state);
         tcp_lutModule.states.setTcpVaccum2State(state_geter.getOutputIoState(tcp_lutModule.parameters.vacuum2Name()).current_state);
-        tcp_aaCoreNew.states.setTcpAAGripperState(state_geter.getOutputIoState(tcp_aaHeadModule.parameters.gripperName()).current_state);
+        //ToDo: Add the disable button for different config. Standard AA - Lens AA
+        //tcp_aaCoreNew.states.setTcpAAGripperState(state_geter.getOutputIoState(tcp_aaHeadModule.parameters.gripperName()).current_state);
         tcp_lensLoaderModule.states.setTcpVaccumState(state_geter.getInputIoState(tcp_lensLoaderModule.parameters.pickarmVaccumSensorName()).current_state);
         tcp_lensTrayLoaderModule.states.setTcpCylinderClipSensorState(state_geter.getInputIoState(tcp_lensTrayLoaderModule.parameters.tcpCylinderClipSensorName()).current_state);
         tcp_lensTrayLoaderModule.states.setTcpCylinderLTK1SensorState(state_geter.getInputIoState(tcp_lensTrayLoaderModule.parameters.tcpCylinderLTKX1SensorName()).current_state);
@@ -1365,6 +1446,7 @@ QString BaseModuleManager::getSystermParameterDir()
 
 bool BaseModuleManager::InitStruct()
 {
+    qInfo("InitStruct");
     tcp_manager.Init();
     foreach (QVariant messager_name, parameters.respMessagerNames()) {
         TcpMessager* temp_messager = tcp_manager.GetAllTcpMessager(messager_name.toString());
@@ -1451,6 +1533,7 @@ bool BaseModuleManager::InitStruct()
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
+    qInfo("CP1 fuck");
     if(ServerMode())
     {
         sensor_picker1.Init(GetVcMotorByName(sensor_pickarm.parameters.motorZName()),
@@ -1552,6 +1635,15 @@ bool BaseModuleManager::InitStruct()
     material_tray.resetTrayState(0);
     material_tray.resetTrayState(1);
     return result;
+}
+
+void BaseModuleManager::inquiryTcpAllMotors()
+{
+    QJsonObject message;
+    message["cmd"] = "inquiryAllMotorNames";
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
 }
 
 void BaseModuleManager::inquiryTcpModule()
@@ -1690,9 +1782,10 @@ bool BaseModuleManager::initialDevice()
     if (ServerMode() == 1)
     {
         setOutput(u8"三色报警指示灯_绿", true);
+        inquiryTcpModule();
+        inquiryTcpVisionLocations();
+        inquiryTcpAllMotors();
     }
-    inquiryTcpModule();
-    inquiryTcpVisionLocations();
     return true;
 }
 
@@ -1714,8 +1807,13 @@ bool BaseModuleManager::generateConfigFiles()
 
 void BaseModuleManager::enableMotor(QString motorName)
 {
-    if (InitState())
-        GetMotorByName(motorName)->Enable();
+    if (motors.contains(motorName)) {
+       if (InitState())
+           GetMotorByName(motorName)->Enable();
+    } else {
+        qInfo("sendTcpEnableMotor");
+        sendTcpEnableMotor(motorName, true);
+    }
 }
 
 void BaseModuleManager::enableMotors()
@@ -1729,8 +1827,13 @@ void BaseModuleManager::enableMotors()
 
 void BaseModuleManager::disableMotor(QString motorName)
 {
-    if (InitState())
-        GetMotorByName(motorName)->Disable();
+    if (motors.contains(motorName)) {
+       if (InitState())
+           GetMotorByName(motorName)->Disable();
+    } else {
+        qInfo("sendTcpEnableMotor");
+        sendTcpEnableMotor(motorName, false);
+    }
 }
 
 void BaseModuleManager::disableAllMotors()
@@ -1758,13 +1861,13 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetVcMotorByName(this->lut_module.parameters.motorZName())->resetSoftLanding();
     if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
         return false;
-    //if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
-    //    return false;
+    if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
+        return false;
     GetMotorByName(this->lut_module.parameters.motorZName())->SeekOrigin();//LUT_Z
     GetVcMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
-//    GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
+    GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
 
-//    result = GetMotorByName(this->lut_module.parameters.motorZName())->WaitSeekDone();
+    result = GetMotorByName(this->lut_module.parameters.motorZName())->WaitSeekDone();
     if(!result)return false;
     GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
 
@@ -1774,12 +1877,12 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();//SUT_X
     GetMotorByName(this->sut_module.parameters.motorYName())->SeekOrigin();//SUT_Y
 
-//    result = GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->WaitSeekDone();
-//    if(!result)return false;
+    result = GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->WaitSeekDone();
+    if(!result)return false;
 
-//    GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->SeekOrigin();//LPA_X
-//    GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
-//    GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
+    GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->SeekOrigin();//LPA_X
+    GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
+    GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
 
     GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();//AA_A
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();//AA_B
@@ -1790,32 +1893,32 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->lut_module.parameters.motorXName())->SeekOrigin();//LUT_X
 
     //缩回气缸
-//    GetCylinderByName(this->tray_loader_module.parameters.cylinderClipName())->Set(0);
+    GetCylinderByName(this->tray_loader_module.parameters.cylinderClipName())->Set(0);
 
-//    GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->SeekOrigin();//LTIE
+    GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->SeekOrigin();//LTIE
 
-//    GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->SeekOrigin();//LTOE
+    GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->SeekOrigin();//LTOE
 
 
 
-//    result = GetMotorByName(this->lens_pick_arm.parameters.motorYName())->WaitSeekDone();
+    result = GetMotorByName(this->lens_pick_arm.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
     //升起气缸,降下托盘
     //
-//    GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->SeekOrigin();//LTL
+    GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->SeekOrigin();//LTL
 
 
     GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK1Name())->Set(0);
     GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(0);
-//    GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->SeekOrigin();//LTK1
-//    GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->SeekOrigin();//LTK2
+    GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->SeekOrigin();//LTK1
+    GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->SeekOrigin();//LTK2
 
 
     result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->sut_module.parameters.motorYName())->WaitSeekDone();
 
-//    result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
-//    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
+    result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
 
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
@@ -1823,12 +1926,12 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
 
     result &= GetMotorByName(this->lut_module.parameters.motorXName())->WaitSeekDone();
 
-//    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->WaitSeekDone();
+    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->WaitSeekDone();
 
-//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->WaitSeekDone();
-//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->WaitSeekDone();
-//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->WaitSeekDone();
-//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->WaitSeekDone();
+    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->WaitSeekDone();
+    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->WaitSeekDone();
+    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->WaitSeekDone();
+    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->WaitSeekDone();
     if(result)
     {
         qInfo("all motors seeked origin success!");
@@ -1975,7 +2078,7 @@ XtMotor *BaseModuleManager::GetMotorByName(QString name)
     if(motors.contains(name))
         return motors[name];
     else
-        qInfo("can not find motor io %s",name.toStdString().c_str());
+        qDebug("can not find motor io %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -1985,7 +2088,7 @@ XtVcMotor *BaseModuleManager::GetVcMotorByName(QString name)
     if(motors.contains(name))
         return  dynamic_cast<XtVcMotor*>(motors[name]);
     else
-        qInfo("can not find vcm motor io %s",name.toStdString().c_str());
+        qDebug("can not find vcm motor io %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -1995,7 +2098,7 @@ XtGeneralOutput *BaseModuleManager::GetOutputIoByName(QString name)
     if(output_ios.contains(name))
         return output_ios[name];
     else
-        qInfo("can not find output io %s",name.toStdString().c_str());
+        qDebug("can not find output io %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -2025,7 +2128,7 @@ XtCylinder *BaseModuleManager::GetCylinderByName(QString name)
     if(cylinder.contains(name))
         return cylinder[name];
     else
-        qInfo("can not find cylinder io %s",name.toStdString().c_str());
+        qDebug("can not find cylinder io %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -2035,7 +2138,7 @@ VisionLocation *BaseModuleManager::GetVisionLocationByName(QString name)
     if(vision_locations.contains(name))
         return vision_locations[name];
     else
-        qInfo("can not find vision location: %s",name.toStdString().c_str());
+        qDebug("can not find vision location: %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -2045,7 +2148,7 @@ Pixel2Mech *BaseModuleManager::GetPixel2MechByName(QString name)
     if(calibrations.contains(name))
         return calibrations[name]->getCaliMapping();
     else
-        qInfo("can not find calibration pixel2mech io %s",name.toStdString().c_str());
+        qWarning("can not find calibration pixel2mech io %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -2055,7 +2158,7 @@ Calibration *BaseModuleManager::GetCalibrationByName(QString name)
     if(calibrations.contains(name))
         return calibrations[name];
     else
-        qInfo("can not find calibration io %s",name.toStdString().c_str());
+        qWarning("can not find calibration io %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -2074,11 +2177,61 @@ QList<TcpMessager *> BaseModuleManager::GetTcpMessagersByName(QVariantList messa
     return temp_list;
 }
 
+void BaseModuleManager::sendTcpStepMoveRequest(QString name, double step, bool isPositive)
+{
+    QJsonObject message;
+    message["cmd"] = "stepMove";
+    message["motorName"] = name;
+    message["step"] = step;
+    message["isPositive"] = isPositive;
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
+}
+
+void BaseModuleManager::sendTcpEnableMotor(QString motorName, bool on)
+{
+    QJsonObject message;
+    message["cmd"] = "enableMotor";
+    message["motorName"] = motorName;
+    message["enable"] = on;
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
+}
+
+void BaseModuleManager::sendTcpHomeMotor(QString motorName)
+{
+    QJsonObject message;
+    message["cmd"] = "homeMotor";
+    message["motorName"] = motorName;
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
+}
+
+void BaseModuleManager::sendAAHeadInterMoveRequest(int channel, double step)
+{
+    QJsonObject message;
+    message["cmd"] = "aaHeadInterMove";
+    message["channel"] = channel;
+    message["step"] = step;
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
+}
+
 bool BaseModuleManager::stepMove(QString name, double step, bool isPositive)
 {
     if (!motors.contains(name)) {
-        qInfo("Selected motor does not exist");
-        return false;
+        if(tcpMotorNames.contains(name)) {
+            qInfo("Send step move in tcp motor name: %s step: %f isPositive: %d", name.toStdString().c_str(), step, isPositive);
+            sendTcpStepMoveRequest(name, step, isPositive);
+            return true;
+        } else {
+            qWarning("Selected motor does not exist", name.toStdString().c_str());
+            return false;
+        }
     }
     XtMotor* temp_motor = motors[name];
     qInfo("Step move: %s %f %d %f", temp_motor->Name().toStdString().c_str(), step, isPositive, temp_motor->GetFeedbackPos());
@@ -2294,6 +2447,8 @@ void BaseModuleManager::motorSeekOrigin(QString name)
     if (motors.contains(name)) {
         qInfo("Start motorSeekOrigin: %s", name.toStdString().c_str());
         motors[name]->SeekOrigin();
+    } else {
+        sendTcpHomeMotor(name);
     }
 }
 
@@ -2311,6 +2466,9 @@ bool BaseModuleManager::getMotorEnableState(QString name)
 {
     if (motors.contains(name)) {
         return motors[name]->states.isEnabled();
+    }else {
+        DeviceStatesGeter::motorState motor_state = state_geter.getMotorState(name);
+        return motor_state.isEnabled;
     }
     return false;
 }
@@ -2329,6 +2487,9 @@ bool BaseModuleManager::getMotorHomeState(QString name)
 {
     if (motors.contains(name)) {
         return motors[name]->states.seekedOrigin();
+    } else {
+        DeviceStatesGeter::motorState motor_state = state_geter.getMotorState(name);
+        return motor_state.isHome;
     }
     return false;
 }

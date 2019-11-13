@@ -311,7 +311,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("imageGrabber", highSprrow.baseModuleManager->dothinkey);
     engine.rootContext()->setContextProperty("imageGrabberThread", highSprrow.baseModuleManager->imageGrabberThread);
     engine.rootContext()->setContextProperty("lightingController", highSprrow.baseModuleManager->lightingModule);
-    QList<QString> temp_names = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames", QVariant::fromValue(highSprrow.baseModuleManager->motors.keys()));
 
     QStringList vision_locations_list = highSprrow.baseModuleManager->vision_locations.keys();
@@ -355,7 +354,29 @@ int main(int argc, char *argv[])
 //    engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramters);
 
     QStringList data = highSprrow.baseModuleManager->motors.keys();
-    engine.rootContext()->setContextProperty("motorsNames",data);
+    engine.rootContext()->setContextProperty("motorsNames", data);
+    //ToDo: Need to add the tcpMotorNames dynamically from the inquiryAllMotorNames in tcp
+    if (highSprrow.baseModuleManager->ServerMode() == 1) {
+        highSprrow.baseModuleManager->tcpMotorNames.append("AA1_A");
+        highSprrow.baseModuleManager->tcpMotorNames.append("AA1_B");
+        highSprrow.baseModuleManager->tcpMotorNames.append("AA1_C");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LPA_R");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LPA_X");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LPA_Y");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LPA_Z");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LTIE");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LTK_X1");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LTK_X2");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LTL_X");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LTOE");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LUT_X");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LUT_Y");
+        highSprrow.baseModuleManager->tcpMotorNames.append("LUT_Z");
+        highSprrow.baseModuleManager->tcpMotorNames.append("SUT1_X");
+        highSprrow.baseModuleManager->tcpMotorNames.append("SUT1_Y");
+        highSprrow.baseModuleManager->tcpMotorNames.append("SUT1_Z");
+        engine.rootContext()->setContextProperty("tcpMotorNames", highSprrow.baseModuleManager->tcpMotorNames);
+    }
 
     QStringList outputListRaw = highSprrow.baseModuleManager->output_ios.keys();
     QStringList outputList;

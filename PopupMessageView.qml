@@ -1,25 +1,41 @@
-import QtQuick 2.5
-import QtQuick.Controls 2.1
+import QtQuick.Controls 2.4
+import QtQuick.Dialogs 1.2
+import QtQuick.Layouts 1.11
+import QtQuick 2.11
+import QtQuick.Window 2.0
 
-Popup
-{
-    property alias messageText: messageText
-    id:myPopup
-    width: 400
-    height: 300
-    modal: true
-    focus: true
-    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+Window {
+    property int count: 0
+    id: myWindow
 
-    Rectangle
-    {
-        anchors.fill: parent
+    width: 800
+    height: 200
+
+    flags:  Qt.Window | Qt.WindowSystemMenuHint
+            | Qt.WindowTitleHint | Qt.WindowMinimizeButtonHint
+            | Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint
+
+    modality: Qt.NonModal // no need for this as it is the default value
+
+    function updateDialogStatus(){
+    }
+
+    Rectangle {
         color: "black"
-        Text {
-            id: messageText
-            font.pixelSize: 24
-            color: "white"
-            text: qsTr("Popup 内容显示模块")
+        anchors.fill: parent
+        RowLayout {
+            Label {
+                id: stateLabel
+                text: logicManagerState.handlingMessage
+                font.pointSize: 20
+                color: "white"
+            }
+            BusyIndicator {}
+            Label {
+                id: timerLabel
+                font.pointSize: 20
+                color: "skyblue"
+            }
         }
     }
 }

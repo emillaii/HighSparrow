@@ -42,6 +42,12 @@ public:
     ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.8);
     ErrorCodeStruct PR_Generic_NCC_Template_Matching_Retry(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score);
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
+    ErrorCodeStruct Glue_Inspection();
+    /*
+     * Prism Type Special PR
+     */
+    ErrorCodeStruct PR_Prism_Only_Matching(QString camera_name, PRResultStruct &prResult);
+    ErrorCodeStruct PR_Prism_SUT_Matching(QString camera_name, PRResultStruct &prResult);
     Q_INVOKABLE void aaDebugImage(QString input_filename, int threshold, int min_area, int max_area);
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 

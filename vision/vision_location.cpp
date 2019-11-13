@@ -32,7 +32,15 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
     current_result.ReSet();
     PRResultStruct pr_result;
     QThread::msleep(parameters.waitImageDelay());
-    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
+    ErrorCodeStruct temp;
+    //ToDo: Add enum for prism PR
+    if (parameters.prismPRType() == 1) {
+        temp = vison->PR_Prism_Only_Matching(parameters.cameraName(), pr_result);
+    } else if (parameters.prismPRType() == 2) {
+        temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), pr_result);
+    } else {
+        temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
+    }
     last_image_name = pr_result.imageName;
     if(ErrorCode::OK == temp.code)
     {
@@ -88,7 +96,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
         }
     }
     else {
-        qInfo("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
+        qWarning("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
     }
     AppendError(QString(u8"Perform PR Fail"));
     CloseLight();
@@ -102,7 +110,15 @@ bool VisionLocation::performPR()
     current_result.ReSet();
     PrOffset offset;
     QThread::msleep(parameters.waitImageDelay());
-    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), current_pixel_result, parameters.objectScore());
+    ErrorCodeStruct temp;
+    if (parameters.prismPRType() == 1) {
+        temp =  vison->PR_Prism_Only_Matching(parameters.cameraName(), current_pixel_result);
+    } else if (parameters.prismPRType() == 2) {
+        temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), current_pixel_result);
+    }
+    else {
+        temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), current_pixel_result, parameters.objectScore());
+    }
     last_image_name = current_pixel_result.imageName;
     if(ErrorCode::OK == temp.code)
     {
@@ -118,7 +134,7 @@ bool VisionLocation::performPR()
             temp_offset.O_Y = mech_o.y();
             if(abs(temp_offset.O_X)>parameters.maximumLength()||abs(temp_offset.O_Y)>parameters.maximumLength()||abs(temp_offset.X)>parameters.maximumOffset()||abs(temp_offset.Y)>parameters.maximumOffset())
             {
-                qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
+                qWarning("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8" pr result too big"));
                 CloseLight();
                 return false;
@@ -135,7 +151,7 @@ bool VisionLocation::performPR()
                 temp_offset.Theta = current_pixel_result.theta -360;
             else
             {
-                qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
+                qWarning("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8"theta result too big"));
                 CloseLight();
                 return false;
@@ -151,7 +167,7 @@ bool VisionLocation::performPR()
         }
     }
     else {
-        qInfo("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
+        qWarning("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
     }
     AppendError(QString(u8"Perform PR (%1) Fail").arg(parameters.cameraName()));
     CloseLight();
@@ -178,7 +194,15 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
 {
     OpenLight();
     QThread::msleep(parameters.waitImageDelay());
-    ErrorCodeStruct temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
+    ErrorCodeStruct temp;
+    if (parameters.prismPRType() == 1) {
+        temp = vison->PR_Prism_Only_Matching(parameters.cameraName(), pr_result);
+    } else if (parameters.prismPRType() == 2)
+    {
+        temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), pr_result);
+    } else {
+        temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
+    }
     last_image_name = pr_result.imageName;
     qInfo("CameraName: %s prFilename: %s PR_Result: %f %f %f",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str(),
           pr_result.x, pr_result.y, pr_result.theta);

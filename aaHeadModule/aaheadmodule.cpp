@@ -109,7 +109,7 @@ void AAHeadModule::openUVTillTime(int till_time)
 //    XT_Controler::SET_OUTPUT_IO(thread_id,uv1->GetID(),0);
 //    XT_Controler::SET_OUTPUT_IO(thread_id,uv2->GetID(),0);
 //    XT_Controler::SET_OUTPUT_IO(thread_id,uv3->GetID(),0);
-    //    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),0);
+//    XT_Controler::SET_OUTPUT_IO(thread_id,uv4->GetID(),0);
 }
 
 void AAHeadModule::waitUVFinish()

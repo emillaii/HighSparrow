@@ -40,7 +40,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step5Button
                     text: qsTr("5")
                     font.pixelSize: 10
@@ -51,7 +51,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step2Button
                     text: qsTr("2")
                     font.pixelSize: 10
@@ -73,7 +73,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step05Button
                     text: qsTr("0.5")
                     font.pixelSize: 10
@@ -84,7 +84,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step02Button
                     text: qsTr("0.2")
                     font.pixelSize: 10
@@ -107,7 +107,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step005Button
                     text: qsTr("0.05")
                     font.pixelSize: 10
@@ -118,7 +118,7 @@ Popup {
                         }
                     }
                 }
-				RadioButton {
+                RadioButton {
                     id: step002Button
                     text: qsTr("0.02")
                     font.pixelSize: 10
@@ -164,48 +164,46 @@ Popup {
                 ColumnLayout {
                     RowLayout {
                         Text {
-                            text: "AA_A_Inter "
+                            text: "AA_1_A_Inter "
                             color: "white"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                highSprrow.aa_A_Inter(-selectedStepSize);
+                                highSprrow.tcp_aa_A_Inter(-selectedStepSize);
                             }
                         }
                         RoundButton {
                             text: "+"
                             onClicked: {
-                                highSprrow.aa_A_Inter(selectedStepSize);
+                                highSprrow.tcp_aa_A_Inter(selectedStepSize);
                             }
                         }
                     }
                     RowLayout {
                         id:inter_layout_b
                         Text {
-                            text: "AA_B_Inter "
+                            text: "AA_1_B_Inter "
                             color: "white"
                         }
                         RoundButton {
                             text: "-"
                             onClicked: {
-                                highSprrow.aa_B_Inter(-selectedStepSize);
+                                highSprrow.tcp_aa_B_Inter(-selectedStepSize);
                             }
                         }
                         RoundButton {
                             text: "+"
                             onClicked: {
-                                highSprrow.aa_B_Inter(selectedStepSize);
+                                highSprrow.tcp_aa_B_Inter(selectedStepSize);
                             }
                         }
                     }
 
                     ListView{
-                        //anchors.top:inter_layout_b.bottom
                         id:list
-                        //anchors.top:  inter_layout_b.bottom
                         height: 50*count
-                        model: motorsNames
+                        model: tcpMotorNames
                         delegate: RowLayout{
                             Rectangle{
                                 width: 65
@@ -236,9 +234,7 @@ Popup {
                             RoundButton {
                                 id:homeButton
                                 onClicked: {
-                                    logicManagerState.setCurrentChannelName(modelData)
-                                    logicManager.performHandling("", LogicManager.MOTION_SINGLE_MOTOR_HOME)
-                                    //baseModuleManager.motorSeekOrigin(modelData)
+                                    baseModuleManager.motorSeekOrigin(modelData)
                                 }
                                 transformOrigin: Item.Center
                                 display: Button.IconOnly
@@ -248,14 +244,13 @@ Popup {
                                    target: timer
                                    onTriggered:{
                                        if(homeButton.visible)
-                                        homeButton.icon.color = baseModuleManager.getMotorHomeState(modelData)?"cyan":"red"
+                                          homeButton.icon.color = baseModuleManager.getMotorHomeState(modelData)?"cyan":"red"
                                    }
                                 }
                             }
                             RoundButton{
                                 text:"-"
                                 onClicked: {
-                                   //console.log("move "+modelData);
                                    var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
                                    console.log("result: "+res)
                                 }
@@ -263,10 +258,7 @@ Popup {
                             RoundButton{
                                 text:"+"
                                 onClicked: {
-                                   //console.log("move "+modelData);
                                    var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
-                                   console.log(motorsNames.length)
-                                   console.log("result: "+res)
                                 }
                             }
                             Label{

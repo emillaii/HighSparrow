@@ -32,6 +32,8 @@ DeviceStatesGeter::motorState DeviceStatesGeter::getMotorState(QString motor_nam
         qInfo("has no motorTargetPosition key");
         return state;
     }
+    state.isEnabled = result_json["motorEnableState"].toBool(false);
+    state.isHome = result_json["motorHomeState"].toBool(false);
     state.target_position = result_json["motorTargetPosition"].toDouble();
 
     if((!result_json.contains("error"))||result_json["error"].toString() != "")

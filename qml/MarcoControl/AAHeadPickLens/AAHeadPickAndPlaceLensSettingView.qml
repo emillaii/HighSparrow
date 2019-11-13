@@ -67,9 +67,10 @@ ColumnLayout{
 
     RowLayout {
         Button{
-            text: qsTr("LUT Pocket 1 VAC")
+            text: qsTr("LUT Pocket 1 VAC...")
             onClicked: {
-                 baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum1Name)
+                console.log("tcpLUTParams.tcpLutVacuum1Name: " + tcpLUTParams.tcpLutVacuum1Name)
+                baseModuleManager.toogleIoState(tcpLUTParams.tcpLutVacuum1Name)
             }
         }
         RoundButton{

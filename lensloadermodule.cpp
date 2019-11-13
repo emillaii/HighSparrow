@@ -39,14 +39,22 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
     this->lpa_updownlook_down_vision = lpa_updownlook_down_vision;
     parts.append(this->lpa_updownlook_down_vision);
     //Some pickarm parameter need to sync with lensLoaderModule
-    parameters.setPickarmVaccumName(this->pick_arm->picker->vacuum->parameters.outIoName());
-    parameters.setPickarmVaccumSensorName(this->pick_arm->picker->vacuum->parameters.inIoName());
+    if (pick_arm->picker->vacuum)
+    {
+        parameters.setPickarmVaccumName(this->pick_arm->picker->vacuum->parameters.outIoName());
+        parameters.setPickarmVaccumSensorName(this->pick_arm->picker->vacuum->parameters.inIoName());
+    }
     //Align the motor name to lens loader module
-    parameters.setMotorTName(this->pick_arm->picker->motor_t->Name());
-    parameters.setMotorTrayName(this->pick_arm->motor_x_tray->Name());
-    parameters.setMotorXName(this->pick_arm->motor_x->Name());
-    parameters.setMotorYName(this->pick_arm->motor_y->Name());
-    parameters.setMotorZName(this->pick_arm->picker->motor_z->Name());
+    if (pick_arm->picker->motor_t)
+       parameters.setMotorTName(this->pick_arm->picker->motor_t->Name());
+    if (pick_arm->motor_x_tray)
+        parameters.setMotorTrayName(this->pick_arm->motor_x_tray->Name());
+    if (pick_arm->motor_x)
+        parameters.setMotorXName(this->pick_arm->motor_x->Name());
+    if (pick_arm->motor_y)
+        parameters.setMotorYName(this->pick_arm->motor_y->Name());
+    if (pick_arm->picker->motor_z)
+        parameters.setMotorZName(this->pick_arm->picker->motor_z->Name());
 }
 
 void LensLoaderModule::loadJsonConfig(QString file_name)

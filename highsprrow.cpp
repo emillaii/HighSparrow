@@ -144,3 +144,13 @@ void HighSprrow::aa_B_Inter(double step)
 {
     baseModuleManager->aa_head_module.stepInterpolation_AB_Sync(0,step);
 }
+
+void HighSprrow::tcp_aa_A_Inter(double step)
+{
+    baseModuleManager->sendAAHeadInterMoveRequest(0, step);
+}
+
+void HighSprrow::tcp_aa_B_Inter(double step)
+{
+    baseModuleManager->sendAAHeadInterMoveRequest(1, step);
+}

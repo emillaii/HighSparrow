@@ -13,6 +13,8 @@ public:
         bool has_alarm = false;
         double current_position = 0;
         double target_position = 0;
+        bool isHome = false;
+        bool isEnabled = false;
     };
     struct IoState
     {

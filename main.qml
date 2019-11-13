@@ -414,7 +414,7 @@ ApplicationWindow {
                         var command = "document.getElementById('flowchart_running_cmd').value";
                         flowChartPage.webView.runJavaScript(command, function(result) {
                              command = "document.getElementById('flowchart_running_cmd').value = ''";
-                             if (result.length > 0) {
+                             if (result !== "undefined" && result.length > 0) {
                                  var obj = JSON.parse(result)
                                  var operatorId = obj["operatorId"]
                                  aaCoreTestItemName = operatorId

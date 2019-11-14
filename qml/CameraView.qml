@@ -491,10 +491,18 @@ Grid {
                 }
                 onCallQmlRefeshImg: {
                     image2.source = ""
-                    if(pickarmCameraSelectComboBox.currentIndex === 0) image2.source = "image://pickarmCameraImage"
-                    else if(pickarmCameraSelectComboBox.currentIndex === 1) image2.source = "image://pickarmULCameraImage"
-                    else if(pickarmCameraSelectComboBox.currentIndex === 2) image2.source = "image://pickarmBarcodeCameraImage"
-                    camera3Text.text =  "(Live)"
+                    if(pickarmCameraSelectComboBox.currentIndex === 0) {
+                        image2.source = "image://pickarmCameraImage"
+                        camera3Text.text =  "Pickarm Camera (Live)"
+                    }
+                    else if(pickarmCameraSelectComboBox.currentIndex === 1) {
+                        image2.source = "image://pickarmULCameraImage"
+                        camera3Text.text =  "Sensor UL Camera (Live)"
+                    }
+                    else if(pickarmCameraSelectComboBox.currentIndex === 2) {
+                        image2.source = "image://pickarmBarcodeCameraImage"
+                        camera3Text.text =  "Barcode Camera (Live)"
+                    }
                     camera3Text.color = "lightGreen"
                     camera3OnOff.icon.color = "lightGreen"
                 }

@@ -1101,8 +1101,7 @@ ErrorCodeStruct VisionModule::Glue_Inspection()
     ext_con_5de703f7_7929_4de4_b9a3_f3d9994aae29 = L"预览";
     ext_con_2e334c57_d1bb_441e_abde_188cf2600c8f = 0.18f;
     ext_con_5566e950_9b7f_4fdb_b191_97478323c462 = 0.0284f;
-    g_constData1 = L"预览";
-    g_constData2 = L"检测";
+
     return error_code;
 }
 

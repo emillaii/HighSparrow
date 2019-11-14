@@ -61,7 +61,7 @@ bool XtVacuum::Wait(bool target_state)
                 QThread::msleep(parameters.finishDelay());
             if((nullptr != break_io)&&(!target_state))
                 break_io->Set(false);
-            qInfo("%s wait time %d",parameters.vacuumName().toStdString().c_str(),temp_time);
+            qDebug("%s wait time %d",parameters.vacuumName().toStdString().c_str(),temp_time);
             return true;
         }
         count-=10;

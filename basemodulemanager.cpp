@@ -550,7 +550,7 @@ QString BaseModuleManager::deviceResp(QString message)
             qDebug()<<"inquiry output io state :"<< temp_name<<"thread id:"<<QThread::currentThreadId();
             QJsonObject result;
             result["outputIoName"] = temp_name;
-            XtGeneralOutput* temp_io = GetOutputIoByName(temp_name);
+            XtGeneralOutput* temp_io = GetOutputIoByName(temp_name, false);
             if(temp_io == nullptr)
             {
                 result["error"] = QString("can not find input io ").append(temp_name);
@@ -2096,13 +2096,16 @@ XtVcMotor *BaseModuleManager::GetVcMotorByName(QString name)
     return nullptr;
 }
 
-XtGeneralOutput *BaseModuleManager::GetOutputIoByName(QString name)
+XtGeneralOutput *BaseModuleManager::GetOutputIoByName(QString name, bool needQInfo)
 {
     if(name == "")return nullptr;
     if(output_ios.contains(name))
         return output_ios[name];
     else
-        qDebug("can not find output io %s",name.toStdString().c_str());
+    {
+        if (needQInfo)
+            qDebug("can not find output io %s",name.toStdString().c_str());
+    }
     return nullptr;
 }
 

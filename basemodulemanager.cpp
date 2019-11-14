@@ -36,6 +36,10 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
             pylonPickarmCamera = new BaslerPylonCamera(PICKARM_VISION_CAMERA);
             pylonAA2DownlookCamera = new BaslerPylonCamera(CAMERA_AA2_DL);
             pylonSensorPickarmCamera = new BaslerPylonCamera(CAMERA_SPA_DL);
+            if (MachineVersion() == 1) {
+                pylonPickarmULCamera = new BaslerPylonCamera(CAMERA_LPA_UL);
+                pylonBarcodeCamera = new BaslerPylonCamera(CAMERA_LPA_BARCODE);
+            }
         }
     }
     if (this->ServerMode() == 0) {
@@ -57,10 +61,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         connect(&lut_module,&LutModule::sendLoadLensRequst,&lens_loader_module,&LensLoaderModule::receiveLoadLensRequst,Qt::DirectConnection);
         connect(&lens_loader_module,&LensLoaderModule::sendLoadLensFinish,&lut_module,&LutModule::receiveLoadLensRequstFinish,Qt::DirectConnection);
     }
-    else
-    {
-//        lutClient = new LutClient(&this->aa_head_module, "ws://192.168.0.250:19998");
-    }
+
     connect(&sut_module,&SutModule::sendLoadSensorFinish,&aa_head_module,&AAHeadModule::receiveSensorFromSut,Qt::DirectConnection);
 
     connect(&aa_head_module,&AAHeadModule::sendSensrRequestToSut,&sut_module,&SutModule::receiveLoadSensorRequst,Qt::DirectConnection);
@@ -80,9 +81,10 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonPickarmCamera) pylonPickarmCamera->start();
         if(pylonAA2DownlookCamera) pylonAA2DownlookCamera->start();
         if(pylonSensorPickarmCamera) pylonSensorPickarmCamera->start();
+        if(pylonPickarmULCamera) pylonPickarmULCamera->start();
+        if(pylonBarcodeCamera) pylonBarcodeCamera->start();
     }
 
-    qInfo("CP2");
     material_tray.standards_parameters.setTrayCount(5);
     unitlog.setServerAddress(configs.dataServerURL());
     setHomeState(false);

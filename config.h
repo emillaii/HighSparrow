@@ -116,6 +116,8 @@
 #define CAMERA_LPA_DL                    "LPA_DLCamera"
 #define CAMERA_LUT_DL                    "LUT_ULCamera"
 #define CAMERA_SPA_DL                    "SPA_DLCamera"
+#define CAMERA_LPA_UL                    "Pickarm_ULCamera"
+#define CAMERA_LPA_BARCODE               "Pickarm_BarcodeCamera"
 
 #define LIGHTING_LUT_UL                 0
 #define LIGHTING_AA1_DL                 2

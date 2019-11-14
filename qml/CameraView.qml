@@ -459,6 +459,7 @@ Grid {
         id: frame2
         width: grid.width/grid.columns
         height: grid.height/grid.rows
+
         Image {
             id: image2
             anchors.fill: parent
@@ -483,26 +484,32 @@ Grid {
             }
 
             Connections {
-                target: pickarmCamera
+                target:  {
+                    if(pickarmCameraSelectComboBox.currentIndex === 0) return pickarmCamera
+                    else if(pickarmCameraSelectComboBox.currentIndex === 1) return pickarmULCamera
+                    else if(pickarmCameraSelectComboBox.currentIndex === 2) return pickarmBarcodeCamera
+                }
                 onCallQmlRefeshImg: {
                     image2.source = ""
-                    image2.source = "image://pickarmCameraImage"
-                    camera3Text.text = "Pickarm Camera (Live)"
+                    if(pickarmCameraSelectComboBox.currentIndex === 0) image2.source = "image://pickarmCameraImage"
+                    else if(pickarmCameraSelectComboBox.currentIndex === 1) image2.source = "image://pickarmULCameraImage"
+                    else if(pickarmCameraSelectComboBox.currentIndex === 2) image2.source = "image://pickarmBarcodeCameraImage"
+                    camera3Text.text =  "(Live)"
                     camera3Text.color = "lightGreen"
                     camera3OnOff.icon.color = "lightGreen"
                 }
                 onNoCameraEvent: {
-                    camera3Text.text = "Pickarm Camera (Cannot detect camera)"
+                    camera3Text.text = "(Cannot detect camera)"
                     camera3Text.color = "red"
                     camera3OnOff.icon.color = "red"
                 }
                 onCameraCloseEvent: {
-                    camera3Text.text = "Pickarm Camera (Camera closed)"
+                    camera3Text.text = "(Camera closed)"
                     camera3Text.color = "red"
                     camera3OnOff.icon.color = "red"
                 }
                 onCameraPauseEvent: {
-                    camera3Text.text = "Pickarm Camera (Live View Paused)"
+                    camera3Text.text = "(Live View Paused)"
                     camera3Text.color = "cyan"
                 }
             }
@@ -523,12 +530,31 @@ Grid {
                     console.log("x: " + delta.x +  " y:" + delta.y)
                 }
             }
+
+            ComboBox {
+                y: 15
+                id: pickarmCameraSelectComboBox
+                model: [ "DL", "UL", "Barcode" ]
+                currentIndex: 0
+                onCurrentIndexChanged: {
+                    console.log("Selected: " + currentIndex)
+                }
+            }
+
             Text {
                 id: camera3Text
                 x: -12
                 y: -12
                 color: "#9ef678"
-                text: qsTr("Pickarm Camera")
+                text: {
+                    if (pickarmCameraSelectComboBox.currentIndex === 0){
+                        qsTr("Pickarm Camera")
+                    } else if (pickarmCameraSelectComboBox.currentIndex === 1){
+                        qsTr("Pickarm Uplook Camera")
+                    } else if (pickarmCameraSelectComboBox.currentIndex === 2){
+                        qsTr("Barcode Camera")
+                    }
+                }
                 wrapMode: Text.WordWrap
                 elide: Text.ElideLeft
                 fontSizeMode: Text.Fit

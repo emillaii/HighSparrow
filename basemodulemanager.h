@@ -53,6 +53,7 @@ public:
     Q_PROPERTY(int ServerPort READ ServerPort WRITE setServerPort NOTIFY paramsChanged)
     Q_PROPERTY(bool InitState READ InitState WRITE setInitState NOTIFY InitStateChanged)
     Q_PROPERTY(bool HomeState READ HomeState WRITE setHomeState NOTIFY paramsChanged)
+    Q_PROPERTY(int MachineVersion READ MachineVersion WRITE setMachineVersion NOTIFY machineVersionChanged)
     Q_PROPERTY(QString ServerURL READ ServerURL WRITE setServerURL NOTIFY paramsChanged)
     Q_PROPERTY(QString DataServerURL READ DataServerURL WRITE setDataServerURL NOTIFY paramsChanged)
     Q_PROPERTY(QString FlowchartFilename READ FlowchartFilename WRITE setFlowchartFilename NOTIFY paramsChanged)
@@ -76,8 +77,11 @@ public:
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonPickarmCamera = Q_NULLPTR;
+    BaslerPylonCamera * pylonPickarmULCamera = Q_NULLPTR;
+    BaslerPylonCamera * pylonBarcodeCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonAA2DownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonSensorPickarmCamera = Q_NULLPTR;
+
     VisionModule * visionModule = Q_NULLPTR;
     WordopLight * lightingModule = Q_NULLPTR;
     LontryLight * lightPanel = Q_NULLPTR;
@@ -165,6 +169,8 @@ signals:
     void sendMessageToWorkerManger(QVariantMap message);
     void InitStateChanged(bool InitState);
 
+    void machineVersionChanged(int MachineVersion);
+
 public slots:
     void tcpResp(QString message);
     QString deviceResp(QString message);
@@ -240,6 +246,15 @@ public slots:
         emit InitStateChanged(m_InitState);
     }
 
+    void setMachineVersion(int MachineVersion)
+    {
+        if (m_MachineVersion == MachineVersion)
+            return;
+
+        m_MachineVersion = MachineVersion;
+        emit machineVersionChanged(m_MachineVersion);
+    }
+
 public:
     ModuleManangerConfig configs;
     ModuleManagerParameter parameters;
@@ -283,6 +298,8 @@ private:
     void sendTcpEnableMotor(QString motorName, bool on);
     void sendTcpHomeMotor(QString motorName);
     QString m_FlowchartFilename;
+    int m_MachineVersion;
+
 public:
     bool loadProfile();
     bool loadStructConfig(QString file_dir);
@@ -413,6 +430,10 @@ public:
     bool InitState() const
     {
         return m_InitState;
+    }
+    int MachineVersion() const
+    {
+        return m_MachineVersion;
     }
 };
 

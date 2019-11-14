@@ -95,6 +95,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("pickarmCamera", highSprrow.baseModuleManager->pylonPickarmCamera);
     engine.rootContext()->setContextProperty("aa2DownlookCamera", highSprrow.baseModuleManager->pylonAA2DownlookCamera);
     engine.rootContext()->setContextProperty("sensorPickarmCamera", highSprrow.baseModuleManager->pylonSensorPickarmCamera);
+    engine.rootContext()->setContextProperty("pickarmULCamera", highSprrow.baseModuleManager->pylonPickarmULCamera);
+    engine.rootContext()->setContextProperty("pickarmBarcodeCamera", highSprrow.baseModuleManager->pylonBarcodeCamera);
     engine.rootContext()->setContextProperty("sciencaLightSourceController", &highSprrow.baseModuleManager->chartBackgroundLightSourceController);
     QStringList workerNameList;
     for(QString output:highSprrow.worker_manager->getWorkersNames()){
@@ -433,6 +435,8 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);
     engine.addImageProvider(QLatin1String("downlookCameraImage"), highSprrow.baseModuleManager->pylonDownlookCamera);
     engine.addImageProvider(QLatin1String("pickarmCameraImage"), highSprrow.baseModuleManager->pylonPickarmCamera);
+    engine.addImageProvider(QLatin1String("pickarmULCameraImage"), highSprrow.baseModuleManager->pylonPickarmULCamera);
+    engine.addImageProvider(QLatin1String("pickarmBarcodeCameraImage"), highSprrow.baseModuleManager->pylonBarcodeCamera);
     engine.addImageProvider(QLatin1String("aa2DownlookCameraImage"), highSprrow.baseModuleManager->pylonAA2DownlookCamera);
     engine.addImageProvider(QLatin1String("sensorPickarmCameraImage"), highSprrow.baseModuleManager->pylonSensorPickarmCamera);
     engine.addImageProvider(QLatin1String("preview1"), highSprrow.baseModuleManager->visionModule);

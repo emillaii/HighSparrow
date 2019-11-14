@@ -509,10 +509,10 @@ QString BaseModuleManager::deviceResp(QString message)
         else if(cmd == "inquiryInputIoState")
         {
             QString temp_name = message_object["inputIoName"].toString();
-            qDebug()<<"inquiry input io state :"<< temp_name<<"thread id:"<<QThread::currentThreadId();
+            //qDebug()<<"inquiry input io state :"<< temp_name<<"thread id:"<<QThread::currentThreadId();
             QJsonObject result;
             result["inputIoName"] = temp_name;
-            XtGeneralInput* temp_io = GetInputIoByName(temp_name);
+            XtGeneralInput* temp_io = GetInputIoByName(temp_name, false);
             if(temp_io == nullptr)
             {
                 result["error"] = QString("can not find input io ").append(temp_name);
@@ -2106,13 +2106,15 @@ XtGeneralOutput *BaseModuleManager::GetOutputIoByName(QString name)
     return nullptr;
 }
 
-XtGeneralInput *BaseModuleManager::GetInputIoByName(QString name)
+XtGeneralInput *BaseModuleManager::GetInputIoByName(QString name, bool needQInfo)
 {
     if(name == "")return nullptr;
     if(input_ios.contains(name))
         return input_ios[name];
-    else
-        qDebug("can not find input io %s",name.toStdString().c_str());
+    else {
+        if (needQInfo)
+            qDebug("can not find input io %s",name.toStdString().c_str());
+    }
     return nullptr;
 }
 

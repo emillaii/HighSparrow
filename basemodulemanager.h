@@ -396,7 +396,7 @@ public:
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);
     XtGeneralOutput *GetOutputIoByName(QString name);
-    XtGeneralInput *GetInputIoByName(QString name);
+    XtGeneralInput *GetInputIoByName(QString name, bool needQInfo = true);
     XtVacuum *GetVacuumByName(QString name);
     XtCylinder *GetCylinderByName(QString name);
     VisionLocation *GetVisionLocationByName(QString name);

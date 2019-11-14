@@ -544,9 +544,6 @@ Grid {
                 id: pickarmCameraSelectComboBox
                 model: [ "DL", "UL", "Barcode" ]
                 currentIndex: 0
-                onCurrentIndexChanged: {
-                    console.log("Selected: " + currentIndex)
-                }
             }
 
             Text {
@@ -582,14 +579,24 @@ Grid {
                 anchors.bottomMargin: -22
                 anchors.left: parent.left
                 anchors.leftMargin: -5
-                value: lightingController.pickarmLighting
+                value: {
+                    if(pickarmCameraSelectComboBox.currentIndex === 0) return lightingController.pickarmLighting
+                    else if(pickarmCameraSelectComboBox.currentIndex === 1) return lightingController.sensorUplookLighting
+                    else if(pickarmCameraSelectComboBox.currentIndex === 2) return lightingController.barcodeCameraLighting
+                }
                 onValueChanged: {
-                    lightingController.setPickarmLighting(value)
+                    if(pickarmCameraSelectComboBox.currentIndex === 0) lightingController.setPickarmLighting(value)
+                    else if(pickarmCameraSelectComboBox.currentIndex === 1) lightingController.setSensorUplookLighting(value)
+                    else if(pickarmCameraSelectComboBox.currentIndex === 2) lightingController.setBarcodeCameraLighting(value)
                 }
                 Label {
                     y: 10
                     color: "#46eb46"
-                    text: lightingController.pickarmLighting
+                    text:{
+                        if(pickarmCameraSelectComboBox.currentIndex === 0) return lightingController.pickarmLighting
+                        else if(pickarmCameraSelectComboBox.currentIndex === 1) return lightingController.sensorUplookLighting
+                        else if(pickarmCameraSelectComboBox.currentIndex === 2) return lightingController.barcodeCameraLighting
+                    }
                     font.pointSize: 20
                     font.family: "Times New Roman"
                     anchors.bottom: parent.bottom

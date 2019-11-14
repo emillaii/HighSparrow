@@ -122,6 +122,7 @@
 #define LIGHTING_LUT_UL                 0
 #define LIGHTING_AA1_DL                 2
 #define LIGHTING_LPA_DL                 3
+#define LIGHTING_SENSOR_UL              1
 
 #define LIGHTING_SPA_DL                 0
 #define LIGHTING_AA2_DL                 1

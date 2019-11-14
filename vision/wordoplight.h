@@ -20,6 +20,9 @@ class WordopLight: public QObject, public ThreadWorkerBase
     Q_PROPERTY(int pickarmLighting READ pickarmLighting WRITE setPickarmLighting NOTIFY paramsChanged)
     Q_PROPERTY(int aa2DownlookLighting READ aa2DownlookLighting WRITE setAA2DownlookLighting NOTIFY paramsChanged)
     Q_PROPERTY(int sensorPickarmLighting READ sensorPickarmLighting WRITE setSensorPickarmLighting NOTIFY paramsChanged)
+    Q_PROPERTY(int sensorUplookLighting READ sensorUplookLighting WRITE setSensorUplookLighting NOTIFY sensorUplookLightingChanged)
+    Q_PROPERTY(int barcodeCameraLighting READ barcodeCameraLighting WRITE setBarcodeCameraLighting NOTIFY barcodeCameraLightingChanged)
+
     Q_OBJECT
 
     struct LongCommand
@@ -114,6 +117,10 @@ signals:
 
     void paramsChanged(int downlookLighting);
 
+    void sensorUplookLightingChanged(int sensorUplookLighting);
+
+    void barcodeCameraLightingChanged(int barcodeCameraLighting);
+
 public slots:
 void ChangeBrightness(int ch, uint8_t brightness);
 void ChangeDone(bool result);
@@ -196,6 +203,22 @@ void setSensorPickarmLighting(int sensorPickarmLighting)
     }
 }
 
+void setSensorUplookLighting(int sensorUplookLighting)
+{
+    qInfo("Set sensor uplook lighting %d", sensorUplookLighting);
+    if (m_sensorUplookLighting == sensorUplookLighting)
+        return;
+
+    m_sensorUplookLighting = sensorUplookLighting;
+    emit sensorUplookLightingChanged(m_sensorUplookLighting);
+    if (mode == 0){
+        setBrightness(LIGHTING_SENSOR_UL, (uint8_t)sensorUplookLighting);
+    }
+    else {
+        sendMessageToNextModule(LIGHTING_SENSOR_UL, (uint8_t)sensorUplookLighting);
+    }
+}
+
 private:
     const static uint8_t CMD_SET_ID = 0x09;
     const static uint8_t CMD_SET_PWM = 0x11;
@@ -250,6 +273,10 @@ private:
 
     int m_sensorPickarmLighting;
 
+    int m_sensorUplookLighting = 0;
+
+    int m_barcodeCameraLighting = 0;
+
 private slots:
     void readyReadSlot();
 
@@ -259,11 +286,29 @@ public slots:
     void stopWork(bool wait_finish) override;
     void resetLogic() override;
     void performHandlingOperation(int cmd, QVariant param) override;
+
+    void setBarcodeCameraLighting(int barcodeCameraLighting)
+    {
+        if (m_barcodeCameraLighting == barcodeCameraLighting)
+            return;
+
+        m_barcodeCameraLighting = barcodeCameraLighting;
+        emit barcodeCameraLightingChanged(m_barcodeCameraLighting);
+    }
+
 public:
     PropertyBase *getModuleState() override;
     void receivceModuleMessage(QVariantMap module_message) override;
     QMap<QString, PropertyBase *> getModuleParameter() override;
     void setModuleParameter(QMap<QString, PropertyBase *>) override;
+    int sensorUplookLighting() const
+    {
+        return m_sensorUplookLighting;
+    }
+    int barcodeCameraLighting() const
+    {
+        return m_barcodeCameraLighting;
+    }
 };
 
 #endif // WORDOPLIGHT_H

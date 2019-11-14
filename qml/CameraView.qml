@@ -614,7 +614,9 @@ Grid {
                     icon.color: "lightGreen"
                     icon.source: "../icons/save.png"
                     onClicked: {
-                        visionModule.saveImage(2)
+                         if(pickarmCameraSelectComboBox.currentIndex === 0) visionModule.saveImage(2)
+                         else if (pickarmCameraSelectComboBox.currentIndex === 1) visionModule.saveImage(5)
+                         else if (pickarmCameraSelectComboBox.currentIndex === 2) visionModule.saveImage(6)
                     }
                 }
                 Button {

@@ -1264,6 +1264,10 @@ void VisionModule::saveImage(int channel)
         ret = this->grabImageFromCamera(CAMERA_AA2_DL, image1);
     else if (channel == 4)
         ret = this->grabImageFromCamera(CAMERA_SPA_DL, image1);
+    else if (channel == 5)
+        ret = this->grabImageFromCamera(CAMERA_LPA_UL, image1);
+    else if (channel == 6)
+        ret = this->grabImageFromCamera(CAMERA_LPA_BARCODE, image1);
     else return;
     if (!ret) {
         qWarning("Cannot save image due to camera is not running");

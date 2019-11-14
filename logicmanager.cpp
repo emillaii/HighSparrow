@@ -789,17 +789,17 @@ void LogicManager::trayLoaderModuleLTLXPutDownTray()
 
 void LogicManager::sensorTrayLoaderModuleSTIEMovetoColumnIndex(int n)
 {
-    //    baseModuleManage->sensor_tray_loder_module.movetoSTIEColumnIndex(n);
+    baseModuleManage->sensor_tray_loder_module.movetoSTIEColumnIndex(n);
 }
 
 void LogicManager::sensorTrayLoaderModuleSTOEMovetoColumnIndex(int n)
 {
-    //    baseModuleManage->sensor_tray_loder_module.movetoSTOEColumnIndex(n);
+    baseModuleManage->sensor_tray_loder_module.movetoSTOEColumnIndex(n);
 }
 
 void LogicManager::sensorTrayLoaderModuleMovetoPushMotorSafePosotion()
 {
-    //    baseModuleManage->sensor_tray_loder_module.movetoPushMotorSafePosotion();
+    baseModuleManage->sensor_tray_loder_module.movetoPushMotorSafePosotion();
 }
 
 void LogicManager::sensorTrayLoaderModuleMovetoDownTrayPosition()
@@ -809,37 +809,37 @@ void LogicManager::sensorTrayLoaderModuleMovetoDownTrayPosition()
 
 void LogicManager::sensorTrayLoaderModuleMovetoGetTrayPosition()
 {
-    //    baseModuleManage->sensor_tray_loder_module.movetoGetTrayPosition();
+    baseModuleManage->sensor_tray_loder_module.movetoGetTrayPosition();
 }
 
 void LogicManager::sensorTrayLoaderModuleMovetoFinishKickTrayPosition()
 {
-    //    baseModuleManage->sensor_tray_loder_module.movetoFinishKickTrayPosition();
+    baseModuleManage->sensor_tray_loder_module.movetoFinishKickTrayPosition();
 }
 
 void LogicManager::sensorTrayLoaderModuleMovetoPushoutPosition()
 {
-    //    baseModuleManage->sensor_tray_loder_module.movetoPushoutPosition();
+    baseModuleManage->sensor_tray_loder_module.movetoPushoutPosition();
 }
 
 void LogicManager::sensorTrayLoaderModuleMovetoPutTrayPosition()
 {
-    //    baseModuleManage->sensor_tray_loder_module.movetoPutTrayPosition();
+    baseModuleManage->sensor_tray_loder_module.movetoPutTrayPosition();
 }
 
 void LogicManager::sensorTrayLoaderModuleMovetoStartKickTrayPosition()
 {
-    //    baseModuleManage->sensor_tray_loder_module.movetoStartKickTrayPosition();
+    baseModuleManage->sensor_tray_loder_module.movetoStartKickTrayPosition();
 }
 
 void LogicManager::sensorTrayLoaderModuleMovetoTrayWorkPosition()
 {
-    //    baseModuleManage->sensor_tray_loder_module.movetoTrayWorkPosition();
+    baseModuleManage->sensor_tray_loder_module.movetoTrayWorkPosition();
 }
 
 void LogicManager::sensorTrayLoaderModuleMovetoVacancyTrayPosition()
 {
-    //    baseModuleManage->sensor_tray_loder_module.movetoVacancyTrayPosition();
+    baseModuleManage->sensor_tray_loder_module.movetoVacancyTrayPosition();
 }
 
 void LogicManager::performHandlingOperation(QString module_name, int cmd,QVariant param)

@@ -10,7 +10,13 @@
 class SensorTrayLoaderModule:public ThreadWorkerBase
 {
     Q_OBJECT
+    Q_ENUMS(HandlePosition)
 public:
+    enum HandlePosition
+    {
+        START_POSITION,
+        END_POSITION
+    };
     SensorTrayLoaderModule();
     void Init(XtMotor* motor_tray,XtMotor* motor_kick,XtMotor* motor_stie,XtMotor* motor_stoe,XtMotor* motor_push,
               XtCylinder* kick1,XtCylinder* kick2,XtCylinder* hold_tray,XtCylinder* hold_vacancy,

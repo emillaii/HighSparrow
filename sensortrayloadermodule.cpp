@@ -423,13 +423,21 @@ void SensorTrayLoaderModule::resetLogic()
 
 bool SensorTrayLoaderModule::movetoSTIEColumnIndex(int n)
 {
-    entrance_clip->setCurrentIndex(n);
+    if (!motor_stie || !entrance_clip) {
+        qWarning("Missing STIE motor or Entrance clip");
+        return false;
+    }
+    if (entrance_clip) entrance_clip->setCurrentIndex(n);
     bool result = motor_stie->MoveToPosSync(entrance_clip->getCurrentPosition());
     return result;
 }
 
 bool SensorTrayLoaderModule::movetoSTOEColumnIndex(int n)
 {
+    if (!exit_clip || !motor_stoe) {
+        qWarning("Missing STOE motor or Exit clip");
+        return false;
+    }
     exit_clip->setCurrentIndex(n);
     bool result = motor_stoe->MoveToPosSync(exit_clip->getCurrentPosition());
     return result;

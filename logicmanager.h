@@ -179,17 +179,17 @@ public:
     void trayLoaderModuleLTLXPickUpTray();
     void trayLoaderModuleLTLXPutDownTray();
 
-    void sensorTrayLoaderModuleSTIEMovetoColumnIndex(int);
-    void sensorTrayLoaderModuleSTOEMovetoColumnIndex(int);
-    void sensorTrayLoaderModuleMovetoPushMotorSafePosotion();
-    void sensorTrayLoaderModuleMovetoDownTrayPosition();
-    void sensorTrayLoaderModuleMovetoGetTrayPosition();
-    void sensorTrayLoaderModuleMovetoFinishKickTrayPosition();
-    void sensorTrayLoaderModuleMovetoPushoutPosition();
-    void sensorTrayLoaderModuleMovetoPutTrayPosition();
-    void sensorTrayLoaderModuleMovetoStartKickTrayPosition();
-    void sensorTrayLoaderModuleMovetoTrayWorkPosition();
-    void sensorTrayLoaderModuleMovetoVacancyTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleSTIEMovetoColumnIndex(int);
+    Q_INVOKABLE void sensorTrayLoaderModuleSTOEMovetoColumnIndex(int);
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoPushMotorSafePosotion();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoDownTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoGetTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoFinishKickTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoPushoutPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoPutTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoStartKickTrayPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoTrayWorkPosition();
+    Q_INVOKABLE void sensorTrayLoaderModuleMovetoVacancyTrayPosition();
 
 //    int currentMode() const
 //    {

@@ -412,20 +412,22 @@ ApplicationWindow {
                     //Used for consuming the flowchart double click command
                     if (flowChartPage.webView.loadProgress == 100) {
                         var command = "document.getElementById('flowchart_running_cmd').value";
-                        flowChartPage.webView.runJavaScript(command, function(result) {
-                             command = "document.getElementById('flowchart_running_cmd').value = ''";
-                             if (result !== "undefined" && result.length > 0) {
-                                 var obj = JSON.parse(result)
-                                 var operatorId = obj["operatorId"]
-                                 aaCoreTestItemName = operatorId
-                                 aaCoreTestParams = result
-                                 aaCorePerformTestDialog.text = "Perform " + operatorId + "?"
-                                 aaCorePerformTestDialog.open()
-                                 flowChartPage.webView.runJavaScript(command, function(result) {
-                                     //This is just reset the command in flowchart js
-                                 })
-                             }
-                        })
+                        if (flowChartPage.webView.title === "Flow chart") {
+                            flowChartPage.webView.runJavaScript(command, function(result) {
+                                 command = "document.getElementById('flowchart_running_cmd').value = ''";
+                                 if (result.length > 0) {
+                                     var obj = JSON.parse(result)
+                                     var operatorId = obj["operatorId"]
+                                     aaCoreTestItemName = operatorId
+                                     aaCoreTestParams = result
+                                     aaCorePerformTestDialog.text = "Perform " + operatorId + "?"
+                                     aaCorePerformTestDialog.open()
+                                     flowChartPage.webView.runJavaScript(command, function(result) {
+                                         //This is just reset the command in flowchart js
+                                     })
+                                 }
+                            })
+                        }
                     }
                }
            }

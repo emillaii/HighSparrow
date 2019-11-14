@@ -8,6 +8,7 @@ DeviceStatesGeter::DeviceStatesGeter(QObject *parent) : QObject(parent)
 
 DeviceStatesGeter::motorState DeviceStatesGeter::getMotorState(QString motor_name)
 {
+    QMutexLocker locker(&mutex);
     QJsonObject temp_json;
     temp_json["cmd"] = "inquiryMotorPos";
     temp_json["motorName"] = motor_name;
@@ -47,6 +48,7 @@ DeviceStatesGeter::motorState DeviceStatesGeter::getMotorState(QString motor_nam
 
 DeviceStatesGeter::IoState DeviceStatesGeter::getInputIoState(QString input_io_name)
 {
+    QMutexLocker locker(&mutex);
     QJsonObject temp_json;
     temp_json["cmd"] = "inquiryInputIoState";
     temp_json["inputIoName"] = input_io_name;
@@ -69,6 +71,7 @@ DeviceStatesGeter::IoState DeviceStatesGeter::getInputIoState(QString input_io_n
 
 DeviceStatesGeter::IoState DeviceStatesGeter::getOutputIoState(QString output_io_name)
 {
+    QMutexLocker locker(&mutex);
     QJsonObject temp_json;
     temp_json["cmd"] = "inquiryOutputIoState";
     temp_json["outputIoName"] = output_io_name;
@@ -91,6 +94,7 @@ DeviceStatesGeter::IoState DeviceStatesGeter::getOutputIoState(QString output_io
 
 void DeviceStatesGeter::toggleOutputIoState(QString output_io_name, int input_state)
 {
+    QMutexLocker locker(&mutex);
     QJsonObject temp_json;
     temp_json["cmd"] = "toggleOutputIoState";
     temp_json["outputIoName"] = output_io_name;

@@ -2,6 +2,7 @@
 #define MOTORSTATESGETER_H
 
 #include <QObject>
+#include <QMutex>
 
 class DeviceStatesGeter : public QObject
 {
@@ -30,6 +31,8 @@ public:
     void toggleOutputIoState(QString output_io_name, int input_state = -1);
 signals:
     QString sendGetDeviceState(QString motor_name);
+private:
+    QMutex mutex;
 public slots:
 };
 

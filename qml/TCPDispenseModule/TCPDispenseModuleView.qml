@@ -14,6 +14,13 @@ ItemDelegate {
                     text: qsTr("")
                 }
             }
+            Button{
+                text: qsTr("打开点胶调试软件")
+                onClicked: {
+                    highSprrow.callQProcess("ML808FX_UI.exe")
+                }
+            }
+
             GroupBox{
                 title: qsTr("Dispense Param")
                 TCPDispenseParam {}

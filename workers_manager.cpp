@@ -371,6 +371,7 @@ void WorkersManager::resetLogics()
 
 void WorkersManager::startWorker(QString name,int run_mode)
 {
+    run_parameter.clear();
     if(name != current_name)
     {
         if("" != current_name)

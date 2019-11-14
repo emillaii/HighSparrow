@@ -282,15 +282,21 @@ ItemDelegate {
                         id:start_btn
                         text:qsTr("开始")
                         onClicked:{
-                            workersManager.startWorker("TrayLoaderModule",moduleManagerParam.runMode)
+                            workersManager.startWorker("LensTrayLoaderModule",moduleManagerParam.runMode)
                         }
                     }
                     Button{
                         enabled: true
-                        id:change_tray
+                        text:qsTr("允許進盘")
+                        onClicked:{
+                            lensLoaderModule.sendMessageToModule("LensTrayLoaderModule","ReadyTrayResquest");
+                        }
+                    }
+                    Button{
+                        enabled: true
                         text:qsTr("换盘")
                         onClicked:{
-                            logicManager.trayLoaderModuleEmitTestTrayUsed()
+                            lensLoaderModule.sendMessageToModule("LensTrayLoaderModule","ChangeTrayResquest");
                         }
                     }
                     Button{

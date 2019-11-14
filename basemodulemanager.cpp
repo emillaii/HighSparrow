@@ -1977,19 +1977,19 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
-//    if(!result)return false;
+    if(!result)return false;
     GetMotorByName(this->sensor_pickarm.parameters.motorYName())->SeekOrigin();
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
     result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
     if(!result)return false;
     GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->SeekOrigin();
-//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();
+    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();
 
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
     //升起氣缸
-//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->SeekOrigin();
-//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->SeekOrigin();
+    GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->SeekOrigin();
+    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->SeekOrigin();
 
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
@@ -1999,17 +1999,17 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorTName())->WaitSeekDone();
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->WaitSeekDone();
     result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->WaitSeekDone();
-//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->WaitSeekDone();
-//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->WaitSeekDone();
-//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->WaitSeekDone();
+    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->WaitSeekDone();
+    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->WaitSeekDone();
+    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->WaitSeekDone();
 
     if(result)
     {
         qInfo("all motor seeked origin successed!");
         setHomeState(true);
         this->aa_head_module.moveToMushroomPosition(true);
-        //if(ServerMode()!=0)
-        //    sensor_loader_module.performHandling(SensorLoaderModule::HandleCameraPosition::SPA_STANDBY_POS);
+        if(ServerMode()!=0)
+            sensor_loader_module.performHandling(SensorLoaderModule::HandleCameraPosition::SPA_STANDBY_POS);
         return  true;
     }
     return false;

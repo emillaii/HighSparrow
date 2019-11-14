@@ -46,13 +46,15 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         lightingModule = new WordopLight(ServerMode(), LIGHTING_CONTROLLER_1);
         visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera,
                                         pylonPickarmCamera, pylonAA2DownlookCamera,
-                                        pylonSensorPickarmCamera, VISION_MODULE_1);
+                                        pylonSensorPickarmCamera, pylonPickarmULCamera,
+                                        pylonBarcodeCamera, VISION_MODULE_1);
     }
     else {
         lightingModule = new WordopLight(ServerMode(), LIGHTING_CONTROLLER_2);
         visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera,
                                         pylonPickarmCamera, pylonAA2DownlookCamera,
-                                        pylonSensorPickarmCamera, VISION_MODULE_2);
+                                        pylonSensorPickarmCamera, pylonPickarmULCamera,
+                                        pylonBarcodeCamera, VISION_MODULE_2);
     }
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);

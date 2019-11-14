@@ -15,8 +15,9 @@
 #include <utils/commonutils.h>
 #include "vision/baslerpyloncamera.h"
 VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera,
-                            BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
-                            BaslerPylonCamera* sensorPickarmCamera, QString name)
+                           BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
+                           BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
+                           BaslerPylonCamera* barcodeCamera, QString name)
              :QQuickImageProvider(QQuickImageProvider::Image), ThreadWorkerBase (name)
 {
     this->downlookCamera = downlookCamera;
@@ -24,6 +25,8 @@ VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera 
     this->pickarmCamera = pickarmCamera;
     this->aa2DownlookCamera = aa2DownlookCamera;
     this->sensorPickarmCamera = sensorPickarmCamera;
+    this->sensorUplookCamera = sensorUplookCamera;
+    this->barcodeCamera = barcodeCamera;
     aaDebugImageProvider = new ImageProvider();
 }
 QVector<QPoint> VisionModule::Read_Dispense_Path()
@@ -85,6 +88,8 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
         else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
         else if (cameraName.contains(CAMERA_AA2_DL)) { camera = aa2DownlookCamera; }
         else if (cameraName.contains(CAMERA_SPA_DL)) { camera = sensorPickarmCamera; }
+        else if (cameraName.contains(CAMERA_LPA_UL)) { camera = sensorUplookCamera; }
+        else if (cameraName.contains(CAMERA_LPA_BARCODE)) { camera = barcodeCamera; }
         if (camera == Q_NULLPTR) {
             qWarning("Cannot find camera %s", cameraName.toStdString().c_str());
             return false;

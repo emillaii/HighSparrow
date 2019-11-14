@@ -34,7 +34,8 @@ class VisionModule: public ThreadWorkerBase,public QQuickImageProvider
 public:
     VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera,
                  BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
-                 BaslerPylonCamera* sensorPickarmCamera, QString name);
+                 BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
+                 BaslerPylonCamera* barcodeCamera, QString name);
     QVector<QPoint> VisionModule::Read_Dispense_Path();
     /*
      * Use the most generic NCC template matching
@@ -68,6 +69,8 @@ private:
     BaslerPylonCamera * pickarmCamera;
     BaslerPylonCamera * aa2DownlookCamera;
     BaslerPylonCamera * sensorPickarmCamera;
+    BaslerPylonCamera * sensorUplookCamera;
+    BaslerPylonCamera * barcodeCamera;
     ImageProvider downlookCameraPrResultImageProvider;
     ImageProvider uplookCameraPrResultImageProvider;
     ImageProvider pickarmCameraPrResultImageProvider;

@@ -608,9 +608,11 @@ bool XtMotor::CheckArrivedTargetPos(double target_position)
 {
     if(is_debug)return true;
     if(!(checkState()))return false;
+    double feedbackPos = GetFeedbackPos();
     if(fabs(GetFeedbackPos() - target_position) < parameters.positionError())
         return true;
-    qInfo("%s CheckArrivedTargetPos fail",name.toStdString().c_str());
+    qWarning("%s CheckArrivedTargetPos fail. feedbackPos: %f targetPos: %f posError setting: %f",
+             name.toStdString().c_str(), feedbackPos, target_position, parameters.positionError());
     return false;
 }
 
@@ -1040,8 +1042,9 @@ bool XtMotor::checkInterface(const double pos)
                 return false;
             if(!temp_parameter->checkInLimitSpance(motor_state.current_position,motor_state.target_position))
             {
-                AppendError(QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->motorName()));
-                qInfo("CheckLimit fail %f",pos);
+                QString errorMessage = QString( u8"%1从%2到%3的过程可能会与%4相撞").arg(name).arg(current_pos).arg(pos).arg(temp_parameter->motorName());
+                AppendError(errorMessage);
+                qCritical(errorMessage.toStdString().c_str());
                 return false;
             }
         }

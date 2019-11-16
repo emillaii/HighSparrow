@@ -975,13 +975,13 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
         PrOffset offset;
         if(!sut->moveToDownlookPR(offset)){ NgProduct(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "downlook pr fail"};}
         dispense->setPRPosition(offset.X, offset.Y, offset.Theta);
-
     }
     else {
         dispense->setPRPosition(this->aa_head->offset_x,this->aa_head->offset_y,this->aa_head->offset_theta);
     }
 
     // Perform dispense
+    QString imageBeforeDispense = sut->vision_downlook_location->getLastImageName();
     if(!dispense->performDispense()) { NgProduct(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
 
     current_dispense--;
@@ -998,6 +998,9 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
                             .append("_after_dispense.jpg");
 
             sut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
+            //ToDo: Glue Inspection
+            bool glueInspectionResult = sut->vision_downlook_location->performGlueInspection(imageBeforeDispense, imageNameAfterDispense);
+            qInfo("Glue Inspection result: %d", glueInspectionResult);
             //ToDo: return QImage from this function
             QImage image(imageNameAfterDispense);
             dispenseImageProvider->setImage(image);

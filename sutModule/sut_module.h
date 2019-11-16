@@ -56,6 +56,7 @@ public:
     bool moveToDownlookPR(bool close_lighting = true,bool check_autochthonous = false);
     Q_INVOKABLE bool moveToDownlookPos(bool check_autochthonous = false);
     bool moveToDownlookSaveImage(QString imageName,bool close_lighting = true,bool check_autochthonous = false);
+    bool glueInspection(QString afterDispenseImage);
     Q_INVOKABLE bool moveToReadyPos();
     Q_INVOKABLE bool moveToUpDwonlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     bool moveToDownLookFlyPr();
@@ -80,6 +81,8 @@ public:
 
     bool OpenSutVacuum();
     bool CloseSutVacuum();
+
+    QString getRecordDownlookImage() { return this->record_downlook_image; }
 signals:
     void sendLoadSensorFinish(double offset_x,double offset_y,double offset_z);
 public slots:
@@ -114,6 +117,7 @@ private:
 //    SutClient* sut_cilent;
     int thread_id;
     mPoint3D record_position;
+    QString record_downlook_image;
     PrOffset offset;
     bool is_run = false;
 

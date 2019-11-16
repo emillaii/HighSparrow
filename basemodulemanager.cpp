@@ -109,7 +109,8 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     //Machine Map Initialization
     //machineMap = new GraphWidget;
     //machineMap->show();
-    timer.start(3000);
+    // Todo
+    //timer.start(1000);
 }
 
 BaseModuleManager::~BaseModuleManager()

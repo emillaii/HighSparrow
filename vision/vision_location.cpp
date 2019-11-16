@@ -41,7 +41,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
     } else {
         temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
     }
-    last_image_name = pr_result.imageName;
+    last_image_name = pr_result.rawImageName;
     if(ErrorCode::OK == temp.code)
     {
         QPointF mech;
@@ -119,7 +119,7 @@ bool VisionLocation::performPR()
     else {
         temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), current_pixel_result, parameters.objectScore());
     }
-    last_image_name = current_pixel_result.imageName;
+    last_image_name = current_pixel_result.rawImageName;
     if(ErrorCode::OK == temp.code)
     {
         QPointF mech;
@@ -203,12 +203,17 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
     } else {
         temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
     }
-    last_image_name = pr_result.imageName;
+    last_image_name = pr_result.rawImageName;
     qInfo("CameraName: %s prFilename: %s PR_Result: %f %f %f",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str(),
           pr_result.x, pr_result.y, pr_result.theta);
-//    qInfo("camera %s perform PR result:%d name:%s",parameters.cameraName().toStdString().c_str(),temp.code,parameters.prFileName().toStdString().c_str());
     CloseLight();
     return  ErrorCode::OK == temp.code;
+}
+
+bool VisionLocation::performGlueInspection(QString beforeDispenseImageName, QString afterDispenseImageName)
+{
+    ErrorCodeStruct temp = vison->Glue_Inspection(beforeDispenseImageName, afterDispenseImageName);
+    return true;
 }
 
 void VisionLocation::resetResult()

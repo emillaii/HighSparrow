@@ -165,7 +165,7 @@ ItemDelegate {
                         Button{
                             text:qsTr("弹出")
                             onClicked: {
-                                logicManager.trayLoaderModuleEjectTray()
+                                logicManager.sensorTrayLoaderModuleMovetoPushoutPosition()
                             }
                         }
                     }

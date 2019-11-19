@@ -36,6 +36,10 @@ public:
     QPointF getMechCenter() const;
 
     bool hasCalibration();
+
+    double getXResolution();
+
+    double getYResoultion();
 private:
     //是否经过校正
     bool has_calibration = false;

@@ -14,6 +14,7 @@
 #include <config.h>
 #include <utils/commonutils.h>
 #include "vision/baslerpyloncamera.h"
+#include <QElapsedTimer>
 VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera,
                            BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
                            BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
@@ -411,7 +412,8 @@ void VisionModule::WidthJudge( WidthJudgeState& state, bool inRegionOk, atl::Con
         state.stringArray4.Resize(1);
         state.stringArray4[0] = state.string3;
         avs::DrawStrings_SingleColor( state.image5, state.stringArray4, g_constData8, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 0.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), 22.0f, 0.0f, true, atl::NIL, outResultImage );
-        avl::SaveImageToJpeg(outResultImage , imageName.toStdString().c_str(), atl::NIL, false);
+        qDebug("Width Judge function done");
+        //avl::SaveImageToJpeg(outResultImage , imageName.toStdString().c_str(), atl::NIL, false);
     }
     else
     {
@@ -434,6 +436,10 @@ void VisionModule::diffenenceImage(QImage image1, QImage image2)
 
 void VisionModule::testVision()
 {
+    QString imageName;
+    QElapsedTimer timer; timer.start();
+    //this->Glue_Inspection("", "", &imageName);
+    //qInfo("Glue inspection reuslt: %s time: %d", imageName.toStdString().c_str(), timer.elapsed());
     //PRResultStruct prResult;
     //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
@@ -1354,7 +1360,8 @@ void EnableControl( bool inObject )
     avl::CopyObject< bool >( inObject, atl::Dummy<bool>().Get() );
 }
 
-ErrorCodeStruct VisionModule::Glue_Inspection(QString beforeImage, QString afterImage)
+ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth, double maxWidth, double maxAvgWidth,
+                                              QString beforeImage, QString afterImage, QString *glueInspectionImageName)
 {
     ErrorCodeStruct error_code = { OK, "" };
     atl::String file1;
@@ -1378,12 +1385,16 @@ ErrorCodeStruct VisionModule::Glue_Inspection(QString beforeImage, QString after
     imageNameBeforeDispense.append(getDispensePrLogDir())
                     .append(getCurrentTimeString())
                     .append("_before_dispense.jpg");
+    QString outResultImageName;
+    outResultImageName.append(getDispensePrLogDir())
+                    .append(getCurrentTimeString())
+                    .append("_glue_inspection_result.jpg");
 
-    //file1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\before\\1.jpg";
-    //file2 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\after\\1_d.jpg";
-    file1 = beforeImage.toStdString().c_str();
-    file2 = afterImage.toStdString().c_str();
-    qInfo("Going to do the glueInspection. Before Dispense Image: %s After dispense image: %s", beforeImage.toStdString().c_str(), afterImage.toStdString().c_str());
+    file1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\before\\2.jpg";
+    file2 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\after\\2_d.jpg";
+    //file1 = beforeImage.toStdString().c_str();
+    //file2 = afterImage.toStdString().c_str();
+    qDebug("Going to do the glueInspection. Before Dispense Image: %s After dispense image: %s", beforeImage.toStdString().c_str(), afterImage.toStdString().c_str());
     try {
         avl::LoadImage( file1, false, image1 );
         avl::LoadImage( file2, false, image2 );
@@ -1402,8 +1413,18 @@ ErrorCodeStruct VisionModule::Glue_Inspection(QString beforeImage, QString after
             region5 = atl::NIL;
         }
         bool outResultOK = true;
-        WidthJudge( widthJudgeState1, bool1, region5, Resolution, MinWidth, image2, 0.5f, outResultOK, image3, atl::Dummy< atl::Conditional< float > >().Get(), atl::Dummy< atl::Conditional< float > >().Get(), atl::Dummy< atl::Conditional< float > >().Get() );
-        qInfo("Glue Inspection result: %d", outResultOK);
+        atl::Conditional<float> outMaxWidth = 0; atl::Conditional<float> outMinWidth = 0; atl::Conditional<float> outAveWidth = 0;
+
+        WidthJudge( widthJudgeState1, bool1, region5, resolution, minWidth, image2, maxAvgWidth, outResultOK, image3, outMaxWidth, outMinWidth, outAveWidth );
+
+        float outMaxWidth_f = 0, outMinWidth_f = 0, outAvgWidth_f = 0;
+        if (outMaxWidth.HasValue()) outMaxWidth_f = outMaxWidth.Get();
+        if (outMinWidth.HasValue()) outMinWidth_f = outMinWidth.Get();
+        if (outAveWidth.HasValue()) outMinWidth_f = outAveWidth.Get();
+
+        qInfo("Glue Inspection result: %d outMaxWidth: %f outMinWidth: %f outAvgWidth: %f", outResultOK, outMaxWidth_f, outMinWidth_f, outAvgWidth_f);
+        avl::SaveImageToJpeg( image3, outResultImageName.toStdString().c_str(), atl::NIL, false );
+        *glueInspectionImageName = outResultImageName;
     }catch(const atl::Error& error) {
         error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
         qWarning(error.Message());

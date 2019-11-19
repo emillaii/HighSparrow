@@ -64,7 +64,15 @@ bool Pixel2Mech::hasCalibration()
     return has_calibration;
 }
 
+double Pixel2Mech::getXResolution()
+{
+    return fabs(transformation.m12());
+}
 
+double Pixel2Mech::getYResoultion()
+{
+    return fabs(transformation.m21());
+}
 
 
 /* Calculates coefficients of affine transformation

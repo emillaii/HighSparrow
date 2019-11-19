@@ -84,14 +84,15 @@ public:
                  BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
                  BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
                  BaslerPylonCamera* barcodeCamera, QString name);
-    QVector<QPoint> VisionModule::Read_Dispense_Path();
+    QVector<QPoint> Read_Dispense_Path();
     /*
      * Use the most generic NCC template matching
      */
     ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.8);
     ErrorCodeStruct PR_Generic_NCC_Template_Matching_Retry(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score);
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
-    ErrorCodeStruct Glue_Inspection(QString beforeImage, QString afterImage);
+    ErrorCodeStruct Glue_Inspection(double resolution, double minWidth, double maxWidth, double maxAvgWidth,
+                                    QString beforeImage, QString afterImage, QString *glueInspectionImageName);
     /*
      * Glue inspection
      */

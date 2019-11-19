@@ -998,9 +998,10 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
                             .append("_after_dispense.jpg");
 
             sut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
-            //ToDo: Glue Inspection
-            bool glueInspectionResult = sut->vision_downlook_location->performGlueInspection(imageBeforeDispense, imageNameAfterDispense);
-            qInfo("Glue Inspection result: %d", glueInspectionResult);
+            //ToDo: Glue
+            QString glueInspectionName = "";
+            bool glueInspectionResult = sut->vision_downlook_location->performGlueInspection(imageBeforeDispense, imageNameAfterDispense, &glueInspectionName);
+            qInfo("Glue Inspection result: %d glueInspectionImageName: %s", glueInspectionResult, glueInspectionName.toStdString().c_str());
             //ToDo: return QImage from this function
             QImage image(imageNameAfterDispense);
             dispenseImageProvider->setImage(image);

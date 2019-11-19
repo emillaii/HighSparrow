@@ -311,7 +311,7 @@ bool XtMotor::StepMoveSync(double step, int thread)
     double targetPos = currPos+step;
     StepMove(step, thread);
     int count = 10000;
-    while ( fabs(currPos - targetPos) >= 0.005)
+    while ( fabs(currPos - targetPos) >= 0.002)
     {
         if (count == 0) {
             qCritical("Motion Timeout. id %d init %d,targetPos %f currPos %f",axis_sub_id,is_init,targetPos,currPos);

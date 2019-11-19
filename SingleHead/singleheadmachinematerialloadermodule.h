@@ -51,8 +51,6 @@ public:
 
         HANDLE_PR = (1<<11) - (1<<6)
     };
-
-
     enum HandleToWorkPos{
 
         PICKER1_TO_WORKPOS = 1<<11,

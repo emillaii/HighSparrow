@@ -340,7 +340,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PlaceSensorToSUT(int time_out
 bool SingleHeadMachineMaterialLoaderModule::picker2PickNgSensorFromSUT(int time_out)
 {
     qInfo("picker2PickNgSensorFromSUT time_out %d",time_out);
-    bool result = picker2SearchSutZ2Revert(pick_arm->parameters.placeSensorZ(),true,time_out);
+    bool result = picker2SearchSutZ(pick_arm->parameters.placeSensorZ(),true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT取NGsenor失败"));
     return result;
@@ -348,7 +348,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PickNgSensorFromSUT(int time_
 bool SingleHeadMachineMaterialLoaderModule::picker1PickNgSensorFromSUT(int time_out)
 {
     qInfo("pickSUTSensor  time_out %d",time_out);
-    bool result = picker1SearchSutZ2(pick_arm->parameters.placeSensorZ(),true,time_out);
+    bool result = picker1SearchSutZ(pick_arm->parameters.placeSensorZ(),true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取NGsenor失败"));
     return result;
@@ -357,7 +357,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PickNgSensorFromSUT(int time_
 bool SingleHeadMachineMaterialLoaderModule::picker1PickProductFormSUT(int time_out)
 {
     qInfo("pickSUTProduct time_out %d",time_out);
-    bool result = picker1SearchSutZ2(pick_arm->parameters.pickProductZ(),true,time_out);
+    bool result = picker1SearchSutZ(pick_arm->parameters.pickProductZ(),true,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取成品失败"));
     return result;
@@ -624,7 +624,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2MeasureHight(bool is_tray, bo
             else{
 
                 pick_arm->parameters.setPickSensorZ(pick_arm->GetSoftladngPosition(false, 1));
-
+                
             }
         }
         else
@@ -882,12 +882,12 @@ void SingleHeadMachineMaterialLoaderModule::run()
             moveToPicker1WorkPos();
             picker1PickProductFormSUT();
             if(!pick_arm->vacuum_lens_suction->GetVacuumState()) {
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick Product Fail.Please remove the product!");
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick Product Fail.Please remove the product");
                 int operation = waitMessageReturn(is_run);
                 qInfo("user operation: %d", operation);
                 //sensorTray->setCurrentMaterialState(MaterialState::IsProduct, states.currentSensorTray());
                 this->states.setSutHasProduct(false);
-                this->states.setHasPickedProduct(true);
+                this->states.setHasPickedProduct(false);
                 pick_arm->motor_th1->MoveToPos(0);
             } else {
                 this->states.setSutHasProduct(false);
@@ -931,10 +931,6 @@ void SingleHeadMachineMaterialLoaderModule::run()
             point.setY(current_y+camera_to_picker1_offset.Y()-camera_to_picker2_offset.Y() + placeOkProductToTrayOffset.Y());
             if(pick_arm->move_XY_Synic(point))
             {
-                pr_offset.ReSet();
-                performSensorVacancyPR();
-                applyPicker1PlaceOkProductOffset();
-                moveToPicker1WorkPos();
                 picker1PlaceProductToTray();
                 states.setHasPickedProduct(false);
                 sensorTray->setCurrentMaterialState(MaterialState::IsProduct, states.currentSensorTray());
@@ -1256,17 +1252,25 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
         sendAlarmMessage(ErrorLevel::TipNonblock,GetCurrentError());
         return;
     }
-
-    int handlePROffset = cmd & HANDLE_PR_OFFSET;
-    switch(handlePROffset){
+    int handleApplyOffset = cmd&HANDLE_PR_OFFSET;
+    switch(handleApplyOffset)
+    {
     case APPLY_PLACE_SENSOR_TO_SUT_OFFSET:
     {
-        qInfo("Apply PICKER1_PLACE_OK_PROCUDE_TO_TRAY, X: %f, Y: %f", parameters.picker1PlaceOkProductOffsetX(), parameters.picker1PlaceOkProductOffsetY());
-        applyPicker1PlaceOkProductOffset();
-    }
+        applyPrOffset(placeSensorToSutOffset);
         break;
     }
-
+    case APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET:
+    {
+        applyPrOffset(placeNgSensorToTrayOffset);
+        break;
+    }
+    case APPLY_PLACE_NG_PRODUCT_TO_TRAY_OFFSET:
+    {
+        applyPrOffset(placeNgProductToTrayOffset);
+        break;
+    }
+    }
     int handleToWorkPos = cmd&HANDLE_TO_WORKPOS;
     switch (handleToWorkPos) {
     case PICKER1_TO_WORKPOS:

@@ -202,15 +202,6 @@ ColumnLayout {
                     }
                 }
                 Button{
-                    text:qsTr("picker2动作")
-                    width:40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.performHandling(
-                                                                MaterialLoaderModule.PICKER2_PLACE_SENSOR_TO_SUT)
-                    }
-                }
-                Button{
                     text:qsTr("picker2取NG Sensor")
                     width:40
                     height: 40

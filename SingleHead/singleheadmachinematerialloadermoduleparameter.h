@@ -500,7 +500,16 @@ public slots:
         emit sutPlaceSensorAngleChanged(m_sutPlaceSensorAngle);
     }
 
-    void setPicker1PlaceOkProductOffsetX(double picker1PlaceOkProductOffsetX)
+    void setPerformPrAsPlacingNgDut(bool performPrAsPlacingNgDut)
+    {
+        if (m_performPrAsPlacingNgDut == performPrAsPlacingNgDut)
+            return;
+
+        m_performPrAsPlacingNgDut = performPrAsPlacingNgDut;
+        emit performPrAsPlacingNgDutChanged(m_performPrAsPlacingNgDut);
+    }
+
+ 	void setPicker1PlaceOkProductOffsetX(double picker1PlaceOkProductOffsetX)
     {
         qWarning("set setPicker1PlaceOkProductOffsetX to %f",picker1PlaceOkProductOffsetX);
         if (qFuzzyCompare(m_picker1PlaceOkProductOffsetX, picker1PlaceOkProductOffsetX))
@@ -518,9 +527,7 @@ public slots:
 
         m_picker1PlaceOkProductOffsetY = picker1PlaceOkProductOffsetY;
         emit picker1PlaceOkProductOffsetYChanged(m_picker1PlaceOkProductOffsetY);
-    }
-
-signals:
+    }signals:
 
     void vcm1SvelChanged(double vcm1Svel);
 
@@ -552,9 +559,9 @@ signals:
     void changeTrayTimeOutChanged(double changeTrayTimeOut);
     void cameraToPickerOffsetVisionNameChanged(QString cameraToPickerOffsetVisionName);
     void sutPlaceSensorAngleChanged(double sutPlaceSensorAngle);
-    void picker1PlaceOkProductOffsetXChanged(double picker1PlaceOkProductOffsetX);
-    void picker1PlaceOkProductOffsetYChanged(double picker1PlaceOkProductOffsetY);
-};
+    void performPrAsPlacingNgDutChanged(bool performPrAsPlacingNgDut);
+	void picker1PlaceOkProductOffsetXChanged(double picker1PlaceOkProductOffsetX);
+    void picker1PlaceOkProductOffsetYChanged(double picker1PlaceOkProductOffsetY);};
 
 class MaterialLoaderState:public PropertyBase
 {

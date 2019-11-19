@@ -20,7 +20,7 @@
 
 long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
 {
-    //鍒涘缓 Dump 鏂囦欢
+    //创建 Dump 文件
     HANDLE hDumpFile = ::CreateFile(
         L"MEMORY.DMP",
         GENERIC_WRITE,
@@ -32,12 +32,12 @@ long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
     );
     if (hDumpFile != INVALID_HANDLE_VALUE)
     {
-        //Dump淇℃伅
+        //Dump信息
         MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
         dumpInfo.ExceptionPointers = pexcp;
         dumpInfo.ThreadId = GetCurrentThreadId();
         dumpInfo.ClientPointers = TRUE;
-        //鍐欏叆Dump鏂囦欢鍐呭
+        //写入Dump文件内容
         ::MiniDumpWriteDump(
             GetCurrentProcess(),
             GetCurrentProcessId(),

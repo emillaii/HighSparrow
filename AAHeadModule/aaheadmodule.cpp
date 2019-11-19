@@ -55,7 +55,7 @@ bool AAHeadModule::moveToMushroomPosition(bool moveXYC)
         return moveToDiffrentZSync(mushroom_position.Z());
     else {
         mPoint6D point = this->GetFeedBack();
-        moveToSync(point.X,point.Y,point.Z,mushroom_position.A(),mushroom_position.B(),mushroom_position.C());
+        moveToSync(point.X,point.Y,mushroom_position.Z(),mushroom_position.A(),mushroom_position.B(),point.C);
     }
 }
 

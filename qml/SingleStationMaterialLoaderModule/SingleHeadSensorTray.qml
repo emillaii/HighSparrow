@@ -211,7 +211,6 @@ ColumnLayout {
                         }
                     }
                 }
-
                 RowLayout{
                     Label{
                         text:qsTr("PlaceOkProductToTrayOffset X:")

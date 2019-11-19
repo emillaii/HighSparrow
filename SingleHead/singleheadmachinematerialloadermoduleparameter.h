@@ -47,6 +47,8 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     double m_picker1PlaceOkProductOffsetX = 0;
     double m_picker1PlaceOkProductOffsetY = 0;
 
+    bool m_performPrAsPlacingNgDut;
+
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
 
@@ -83,6 +85,7 @@ public:
     Q_PROPERTY(double picker1PlaceOkProductOffsetX READ picker1PlaceOkProductOffsetX WRITE setPicker1PlaceOkProductOffsetX NOTIFY picker1PlaceOkProductOffsetXChanged)
     Q_PROPERTY(double picker1PlaceOkProductOffsetY READ picker1PlaceOkProductOffsetY WRITE setPicker1PlaceOkProductOffsetY NOTIFY picker1PlaceOkProductOffsetYChanged)
 
+    Q_PROPERTY(bool performPrAsPlacingNgDut READ performPrAsPlacingNgDut WRITE setPerformPrAsPlacingNgDut NOTIFY performPrAsPlacingNgDutChanged)
 
 
     double vcm1Svel() const
@@ -234,6 +237,11 @@ public:
     double picker1PlaceOkProductOffsetY() const
     {
         return m_picker1PlaceOkProductOffsetY;
+    }
+
+    bool performPrAsPlacingNgDut() const
+    {
+        return m_performPrAsPlacingNgDut;
     }
 
 public slots:
@@ -554,7 +562,6 @@ class MaterialLoaderState:public PropertyBase
 public:
     MaterialLoaderState():PropertyBase (){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
-    Q_PROPERTY(bool hasSensorTray READ hasSensorTray WRITE setHasSensorTray NOTIFY hasSensorTrayChanged)
     Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
     Q_PROPERTY(bool sutHasProduct READ sutHasProduct WRITE setSutHasProduct NOTIFY sutHasProductChanged)
@@ -562,48 +569,22 @@ public:
     Q_PROPERTY(bool sutIsReadyToLoadMaterial READ sutIsReadyToLoadMaterial WRITE setSutIsReadyToLoadMaterial NOTIFY sutIsReadyToLoadMaterialChanged)
 
     Q_PROPERTY(bool needLoadSensor READ needLoadSensor WRITE setNeedLoadSensor NOTIFY needLoadSensorChanged)
-    Q_PROPERTY(bool needChangeSensorTray READ needChangeSensorTray WRITE setNeedChangeSensorTray NOTIFY needChangeSensorTrayChanged)
-    Q_PROPERTY(bool allowChangeTray READ allowChangeSensorTray WRITE setAllowChangeSensorTray NOTIFY allowChangeSensorTrayChanged)
-
     Q_PROPERTY(bool hasPickedSensor READ hasPickedSensor WRITE setHasPickedSensor NOTIFY hasPickedSensorChanged)
     Q_PROPERTY(bool hasPickedProduct READ hasPickedProduct WRITE setHasPickedProduct NOTIFY hasPickedProductChanged)
     Q_PROPERTY(bool hasPickedNgSensor READ hasPickedNgSensor WRITE setHasPickedNgSensor NOTIFY hasPickedNgSensorChanged)
-    Q_PROPERTY(bool beExchangeMaterial READ beExchangeMaterial WRITE setBeExchangeMaterial NOTIFY beExchangeMaterialChanged)
-
-    Q_PROPERTY(bool waitingChangeSensorTray READ waitingChangeSensorTray WRITE setWaitingChangeSensorTray NOTIFY waitingChangeSensorTrayChanged)
-    Q_PROPERTY(bool finishChangeSensorTray READ finishChangeSensorTray WRITE setFinishChangeSensorTray NOTIFY finishChangeSensorTrayChanged)
-
-    Q_PROPERTY(bool hasLensTray READ hasLensTray WRITE setHasLensTray NOTIFY hasLensTrayChanged)
+//    Q_PROPERTY(bool beExchangeMaterial READ beExchangeMaterial WRITE setBeExchangeMaterial NOTIFY beExchangeMaterialChanged)
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool lutHasNgLens READ lutHasNgLens WRITE setLutHasNgLens NOTIFY lutHasNgLensChanged)
     Q_PROPERTY(bool needLoadLens READ needLoadLens WRITE setNeedLoadLens NOTIFY needLoadLensChanged)
     Q_PROPERTY(int currentLensTray READ currentLensTray WRITE setCurrentLensTray NOTIFY currentLensTrayChanged)
     Q_PROPERTY(int currentSensorTray READ currentSensorTray WRITE setCurrentSensorTray NOTIFY currentSensorTrayChanged)
     Q_PROPERTY(int currentRejectTray READ currentRejectTray WRITE setCurrentRejectTray NOTIFY currentRejectTrayChanged)
-    Q_PROPERTY(bool needChangeLensTray READ needChangeLensTray WRITE setNeedChangeLensTray NOTIFY needChangeLensTrayChanged)
-    Q_PROPERTY(bool allowChangeLensTray READ allowChangeLensTray WRITE setAllowChangeLensTray NOTIFY allowChangeLensTrayChanged)
     Q_PROPERTY(bool hasPickedLens READ hasPickedLens WRITE setHasPickedLens NOTIFY hasPickedLensChanged)
     Q_PROPERTY(bool hasPickedNgLens READ hasPickedNgLens WRITE setHasPickedNgLens NOTIFY hasPickedNgLensChanged)
-    Q_PROPERTY(int lutTrayID READ lutTrayID WRITE setLutTrayID NOTIFY lutTrayIDChanged)
-    Q_PROPERTY(int lutLensID READ lutLensID WRITE setLutLensID NOTIFY lutLensIDChanged)
-    Q_PROPERTY(int pickedLensTrayID READ pickedLensTrayID WRITE setPickedLensTrayID NOTIFY pickedLensTrayIDChanged)
-    Q_PROPERTY(int pickedLensID READ pickedLensID WRITE setPickedLensID NOTIFY pickedLensIDChanged)
-    Q_PROPERTY(int lutNgTrayID READ lutNgTrayID WRITE setLutNgTrayID NOTIFY lutNgTrayIDChanged)
-    Q_PROPERTY(int lutNgLensID READ lutNgLensID WRITE setLutNgLensID NOTIFY lutNgLensIDChanged)
-    Q_PROPERTY(bool loadingLens READ loadingLens WRITE setLoadingLens NOTIFY loadingLensChanged)
-    Q_PROPERTY(bool waitingChangeLensTray READ waitingChangeLensTray WRITE setWaitingChangeLensTray NOTIFY waitingChangeLensTrayChanged)
-    Q_PROPERTY(bool finishChangeLensTray READ finishChangeLensTray WRITE setFinishChangeLensTray NOTIFY finishChangeLensTrayChanged)
-
-
-    Q_PROPERTY(bool allowChangeRejectTray READ allowChangeRejectTray WRITE setAllowChangeRejectTray NOTIFY allowChangeRejectTrayChanged)
 
     int runMode() const
     {
         return m_runMode;
-    }
-    bool hasSensorTray() const
-    {
-        return m_hasSensorTray;
     }
 
     bool sutHasSensor() const
@@ -626,16 +607,6 @@ public:
         return m_needLoadSensor;
     }
 
-    bool needChangeSensorTray() const
-    {
-        return m_needChangeSensorTray;
-    }
-
-    bool allowChangeSensorTray() const
-    {
-        return m_allowChangeSensorTray;
-    }
-
     bool hasPickedSensor() const
     {
         return m_hasPickedSensor;
@@ -651,25 +622,10 @@ public:
         return m_hasPickedNgSensor;
     }
 
-    bool beExchangeMaterial() const
-    {
-        return m_beExchangeMaterial;
-    }
-
-    bool waitingChangeSensorTray() const
-    {
-        return m_waitingChangeSensorTray;
-    }
-
-    bool finishChangeSensorTray() const
-    {
-        return m_finishChangeSensorTray;
-    }
-
-    bool hasLensTray() const
-    {
-        return m_hasLensTray;
-    }
+//    bool beExchangeMaterial() const
+//    {
+//        return m_beExchangeMaterial;
+//    }
 
     bool lutHasLens() const
     {
@@ -691,16 +647,6 @@ public:
         return m_currentLensTray;
     }
 
-    bool needChangeLensTray() const
-    {
-        return m_needChangeLensTray;
-    }
-
-    bool allowChangeLensTray() const
-    {
-        return m_allowChangeLensTray;
-    }
-
     bool hasPickedLens() const
     {
         return m_hasPickedLens;
@@ -709,51 +655,6 @@ public:
     bool hasPickedNgLens() const
     {
         return m_hasPickedNgLens;
-    }
-
-    int lutTrayID() const
-    {
-        return m_lutTrayID;
-    }
-
-    int lutLensID() const
-    {
-        return m_lutLensID;
-    }
-
-    int pickedLensTrayID() const
-    {
-        return m_pickedLensTrayID;
-    }
-
-    int pickedLensID() const
-    {
-        return m_pickedLensID;
-    }
-
-    int lutNgTrayID() const
-    {
-        return m_lutNgTrayID;
-    }
-
-    int lutNgLensID() const
-    {
-        return m_lutNgLensID;
-    }
-
-    bool loadingLens() const
-    {
-        return m_loadingLens;
-    }
-
-    bool waitingChangeLensTray() const
-    {
-        return m_waitingChangeLensTray;
-    }
-
-    bool finishChangeLensTray() const
-    {
-        return m_finishChangeLensTray;
     }
 
 
@@ -765,11 +666,6 @@ public:
     int currentRejectTray() const
     {
         return m_currentRejectTray;
-    }
-
-    bool allowChangeRejectTray() const
-    {
-        return m_allowChangeRejectTray;
     }
 
     bool sutIsReadyToLoadMaterial() const
@@ -785,14 +681,6 @@ public slots:
 
         m_runMode = runMode;
         emit runModeChanged(m_runMode);
-    }
-    void setHasSensorTray(bool hasSensorTray)
-    {
-        if (m_hasSensorTray == hasSensorTray)
-            return;
-
-        m_hasSensorTray = hasSensorTray;
-        emit hasSensorTrayChanged(m_hasSensorTray);
     }
 
     void setSutHasSensor(bool sutHasSensor)
@@ -831,23 +719,6 @@ public slots:
         emit needLoadSensorChanged(m_needLoadSensor);
     }
 
-    void setNeedChangeSensorTray(bool needChangeSensorTray)
-    {
-        if (m_needChangeSensorTray == needChangeSensorTray)
-            return;
-
-        m_needChangeSensorTray = needChangeSensorTray;
-        emit needChangeSensorTrayChanged(m_needChangeSensorTray);
-    }
-
-    void setAllowChangeSensorTray(bool allowChangeSensorTray)
-    {
-        if (m_allowChangeSensorTray == allowChangeSensorTray)
-            return;
-
-        m_allowChangeSensorTray = allowChangeSensorTray;
-        emit allowChangeSensorTrayChanged(m_allowChangeSensorTray);
-    }
 
     void setHasPickedSensor(bool hasPickedSensor)
     {
@@ -876,41 +747,14 @@ public slots:
         emit hasPickedNgSensorChanged(m_hasPickedNgSensor);
     }
 
-    void setBeExchangeMaterial(bool beExchangeMaterial)
-    {
-        if (m_beExchangeMaterial == beExchangeMaterial)
-            return;
+//    void setBeExchangeMaterial(bool beExchangeMaterial)
+//    {
+//        if (m_beExchangeMaterial == beExchangeMaterial)
+//            return;
 
-        m_beExchangeMaterial = beExchangeMaterial;
-        emit beExchangeMaterialChanged(m_beExchangeMaterial);
-    }
-
-    void setWaitingChangeSensorTray(bool waitingChangeSensorTray)
-    {
-        if (m_waitingChangeSensorTray == waitingChangeSensorTray)
-            return;
-
-        m_waitingChangeSensorTray = waitingChangeSensorTray;
-        emit waitingChangeSensorTrayChanged(m_waitingChangeSensorTray);
-    }
-
-    void setFinishChangeSensorTray(bool finishChangeSensorTray)
-    {
-        if (m_finishChangeSensorTray == finishChangeSensorTray)
-            return;
-
-        m_finishChangeSensorTray = finishChangeSensorTray;
-        emit finishChangeSensorTrayChanged(m_finishChangeSensorTray);
-    }
-
-    void setHasLensTray(bool hasLensTray)
-    {
-        if (m_hasLensTray == hasLensTray)
-            return;
-
-        m_hasLensTray = hasLensTray;
-        emit hasLensTrayChanged(m_hasLensTray);
-    }
+//        m_beExchangeMaterial = beExchangeMaterial;
+//        emit beExchangeMaterialChanged(m_beExchangeMaterial);
+//    }
 
     void setLutHasLens(bool lutHasLens)
     {
@@ -948,23 +792,6 @@ public slots:
         emit currentLensTrayChanged(m_currentLensTray);
     }
 
-    void setNeedChangeLensTray(bool needChangeLensTray)
-    {
-        if (m_needChangeLensTray == needChangeLensTray)
-            return;
-
-        m_needChangeLensTray = needChangeLensTray;
-        emit needChangeLensTrayChanged(m_needChangeLensTray);
-    }
-
-    void setAllowChangeLensTray(bool allowChangeLensTray)
-    {
-        if (m_allowChangeLensTray == allowChangeLensTray)
-            return;
-
-        m_allowChangeLensTray = allowChangeLensTray;
-        emit allowChangeLensTrayChanged(m_allowChangeLensTray);
-    }
 
     void setHasPickedLens(bool hasPickedLens)
     {
@@ -984,86 +811,6 @@ public slots:
         emit hasPickedNgLensChanged(m_hasPickedNgLens);
     }
 
-    void setLutTrayID(int lutTrayID)
-    {
-        if (m_lutTrayID == lutTrayID)
-            return;
-
-        m_lutTrayID = lutTrayID;
-        emit lutTrayIDChanged(m_lutTrayID);
-    }
-
-    void setLutLensID(int lutLensID)
-    {
-        if (m_lutLensID == lutLensID)
-            return;
-
-        m_lutLensID = lutLensID;
-        emit lutLensIDChanged(m_lutLensID);
-    }
-
-    void setPickedLensTrayID(int pickedLensTrayID)
-    {
-        if (m_pickedLensTrayID == pickedLensTrayID)
-            return;
-
-        m_pickedLensTrayID = pickedLensTrayID;
-        emit pickedLensTrayIDChanged(m_pickedLensTrayID);
-    }
-
-    void setPickedLensID(int pickedLensID)
-    {
-        if (m_pickedLensID == pickedLensID)
-            return;
-
-        m_pickedLensID = pickedLensID;
-        emit pickedLensIDChanged(m_pickedLensID);
-    }
-
-    void setLutNgTrayID(int lutNgTrayID)
-    {
-        if (m_lutNgTrayID == lutNgTrayID)
-            return;
-
-        m_lutNgTrayID = lutNgTrayID;
-        emit lutNgTrayIDChanged(m_lutNgTrayID);
-    }
-
-    void setLutNgLensID(int lutNgLensID)
-    {
-        if (m_lutNgLensID == lutNgLensID)
-            return;
-
-        m_lutNgLensID = lutNgLensID;
-        emit lutNgLensIDChanged(m_lutNgLensID);
-    }
-
-    void setLoadingLens(bool loadingLens)
-    {
-        if (m_loadingLens == loadingLens)
-            return;
-
-        m_loadingLens = loadingLens;
-        emit loadingLensChanged(m_loadingLens);
-    }
-
-    void setWaitingChangeLensTray(bool waitingChangeLensTray)
-    {
-        if (m_waitingChangeLensTray == waitingChangeLensTray)
-            return;
-
-        m_waitingChangeLensTray = waitingChangeLensTray;
-        emit waitingChangeLensTrayChanged(m_waitingChangeLensTray);
-    }
-
-    void setFinishChangeLensTray(bool finishChangeLensTray)
-    {
-        if (m_finishChangeLensTray == finishChangeLensTray)
-            return;
-
-        m_finishChangeLensTray = finishChangeLensTray;
-        emit finishChangeLensTrayChanged(m_finishChangeLensTray);
-    }
 
     void setCurrentSensorTray(int currentSensorTray)
     {
@@ -1081,15 +828,6 @@ public slots:
 
         m_currentRejectTray = currentRejectTray;
         emit currentRejectTrayChanged(m_currentRejectTray);
-    }
-
-    void setAllowChangeRejectTray(bool allowChangeRejectTray)
-    {
-        if (m_allowChangeRejectTray == allowChangeRejectTray)
-            return;
-
-        m_allowChangeRejectTray = allowChangeRejectTray;
-        emit allowChangeRejectTrayChanged(m_allowChangeRejectTray);
     }
 
     void setSutIsReadyToLoadMaterial(bool sutIsReadyToLoadMaterial)
@@ -1115,21 +853,13 @@ signals:
 
     void needChangeSensorTrayChanged(bool needChangTray);
 
-    void allowChangeSensorTrayChanged(bool allowChangeTray);
-
     void hasPickedSensorChanged(bool hasPickedSensor);
 
     void hasPickedProductChanged(bool hasPickedProduct);
 
     void hasPickedNgSensorChanged(bool hasPickedNgSensor);
 
-    void beExchangeMaterialChanged(bool beExchangeMaterial);
-
-    void waitingChangeSensorTrayChanged(bool waitingChangeTray);
-
-    void finishChangeSensorTrayChanged(bool finishChangeTray);
-
-    void hasLensTrayChanged(bool hasLensTray);
+//    void beExchangeMaterialChanged(bool beExchangeMaterial);
 
     void lutHasLensChanged(bool lutHasLens);
 
@@ -1139,78 +869,35 @@ signals:
 
     void currentLensTrayChanged(int currentLensTray);
 
-    void needChangeLensTrayChanged(bool needChangeLensTray);
-
-    void allowChangeLensTrayChanged(bool allowChangeLensTray);
-
     void hasPickedLensChanged(bool hasPickedLens);
 
     void hasPickedNgLensChanged(bool hasPickedNgLens);
-
-    void lutTrayIDChanged(int lutTrayID);
-
-    void lutLensIDChanged(int lutLensID);
-
-    void pickedLensTrayIDChanged(int pickedLensTrayID);
-
-    void pickedLensIDChanged(int pickedLensID);
-
-    void lutNgTrayIDChanged(int lutNgTrayID);
-
-    void lutNgLensIDChanged(int lutNgLensID);
-
-    void loadingLensChanged(bool loadingLens);
-
-    void waitingChangeLensTrayChanged(bool waitingChangeLensTray);
-
-    void finishChangeLensTrayChanged(bool finishChangeLensTray);
 
     void currentSensorTrayChanged(int currentSensorTray);
 
     void currentRejectTrayChanged(int currentRejectTray);
 
-    void allowChangeRejectTrayChanged(bool allowChangeRejectTray);
-
     void sutIsReadyToLoadMaterialChanged(bool sutIsReadyToLoadMaterial);
 
 private:
     int m_runMode = 0;
-    bool m_hasSensorTray = false;
     bool m_sutHasSensor = false;
     bool m_sutHasNgSensor = false;
     bool m_sutHasProduct = false;
     bool m_needLoadSensor = false;
-    bool m_needChangeSensorTray = false;
-    bool m_allowChangeSensorTray = false;
     bool m_hasPickedSensor = false;
     bool m_hasPickedProduct = false;
     bool m_hasPickedNgSensor = false;
-    bool m_beExchangeMaterial = false;
-    bool m_waitingChangeSensorTray = false;
-    bool m_finishChangeSensorTray = false;
-
-    bool m_hasLensTray = true;
+//    bool m_beExchangeMaterial = false;
     bool m_lutHasLens = false;
     bool m_lutHasNgLens = false;
     bool m_needloadLens = false;
     int m_currentLensTray = 0;
     int m_currentSensorTray = 0;
     int m_currentRejectTray = 0;
-    bool m_needChangeLensTray = false;
-    bool m_allowChangeLensTray = false;
     bool m_hasPickedLens = false;
     bool m_hasPickedNgLens = false;
-    int m_lutTrayID = -1;
-    int m_lutLensID = -1;
-    int m_pickedLensTrayID = -1;
-    int m_pickedLensID = -1;
-    int m_lutNgTrayID = -1;
-    int m_lutNgLensID = -1;
-    bool m_loadingLens = false;
-    bool m_waitingChangeLensTray = false;
-    bool m_finishChangeLensTray = false;
-
-    bool m_allowChangeRejectTray = false;
+//    bool m_loadingLens = false;
     bool m_sutIsReadyToLoadMaterial = false;
 };
 

@@ -43,15 +43,6 @@ bool WordopLight::Init(const QString &com_port)
     return true;
 }
 
-bool WordopLight::ReInit(const QString &com_port) {
-    if (is_init) {
-        port.close();
-        is_init = false;
-    }
-    port_name = com_port;
-    return Init(com_port);
-}
-
 bool WordopLight::setBrightness(int ch, uint8_t brightness)
 {
     if(QThread::currentThreadId()==creator_tid)
@@ -78,25 +69,6 @@ bool WordopLight::setBrightness(int ch, uint8_t brightness)
     return false;
 }
 
-int WordopLight::GetBrightness(int ch)
-{
-    if((ch>9)||(ch<0))
-        return 0;
-    return now_brightness[ch];
-}
-
-bool WordopLight::SetPWM(int ch, uint8_t pwm)
-{
-    //todo:
-    return false;
-}
-
-bool WordopLight::SetTrigMode(int ch, uint8_t mode)
-{
-    //todo:
-    return false;
-}
-
 bool WordopLight::OnOff(int ch, bool on_or_off)
 {
     if(is_init!=true)
@@ -119,12 +91,6 @@ bool WordopLight::OnOff(int ch, bool on_or_off)
     port.flush();
     cmd_mutex.unlock();
     return true;
-}
-
-bool WordopLight::GetConfig(int ch, uint8_t &brightness, uint8_t &trig_mode, uint8_t onoff)
-{
-    //todo:
-    return false;
 }
 
 uint8_t WordopLight::CalcChecksum(uint8_t data[], int len)
@@ -216,62 +182,3 @@ void WordopLight::ChangeDone(bool result)
     change_done = true;
 }
 
-int WordopLight::getPickarmCmosSensorPRLighting()
-{
-    return this->pickarmCmosSensorPRLighting;
-}
-
-int WordopLight::getPickarmProductPRLighting()
-{
-    return  pickarmProductPRLighting;
-}
-
-int WordopLight::getPickarmLensHolderPRLighting()
-{
-    return this->pickarmLensHolderPRLighting;
-}
-
-int WordopLight::getDownlookCmosSensorPRLighting()
-{
-    return this->downlookCmosSensorPRLighting;
-}
-
-int WordopLight::getUpdownlookCalibGlassPRLighting()
-{
-    return this->updownlookCalibGlassPRLighting;
-}
-
-int WordopLight::getUplookLensHolderPRLighting()
-{
-    return this->uplookLensHolderPRLighting;
-}
-
-void WordopLight::setPickarmCmosSensorPRLighting(int val)
-{
-    pickarmCmosSensorPRLighting = val;
-}
-
-void WordopLight::setPickarmProductPRLighting(int value)
-{
-    pickarmProductPRLighting = value;
-}
-
-void WordopLight::setPickarmLensHolderPRLighting(int val)
-{
-    pickarmLensHolderPRLighting = val;
-}
-
-void WordopLight::setDownlookCmosSensorPRLighting(int val)
-{
-    downlookCmosSensorPRLighting = val;
-}
-
-void WordopLight::setUplookLensHolderPRLighting(int val)
-{
-    uplookLensHolderPRLighting = val;
-}
-
-void WordopLight::setUpdownlookCalibGlassPRLighting(int val)
-{
-    updownlookCalibGlassPRLighting = val;
-}

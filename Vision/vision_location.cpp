@@ -123,7 +123,7 @@ void VisionLocation::CloseLight()
     lighting->setBrightness(parameters.lightChannel(),0);
 }
 
-QString VisionLocation::getLastImageName()
-{
-    return last_image_name;
-}
+//QString VisionLocation::getLastImageName()
+//{
+//    return last_image_name;
+//}

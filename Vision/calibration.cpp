@@ -29,21 +29,6 @@ void Calibration::Init(XtMotor *motor_x, XtMotor *motor_y, VisionLocation *locat
     mRotationB = caculateRotationAngle();
 }
 
-//void Calibration::loadJsonConfig()
-//{
-//    if(PropertyBase::loadJsonConfig(file_path,name, &parameters))
-//        mapping.ChangeParameter(QMatrix(parameters.matrix11(),
-//                                        parameters.matrix12(),
-//                                        parameters.matrix21(),
-//                                        parameters.matrix22(),
-//                                        parameters.deltaX(),
-//                                        parameters.deltaY()),
-//                                QPointF(parameters.imageWidth()/2,parameters.imageHeight()/2));
-//}
-//void Calibration::saveJsonConfig()
-//{
-//    PropertyBase::saveJsonConfig(file_path,name, &parameters);
-//}
 bool Calibration::performCalibration()
 {
     qInfo("Performing calibration");
@@ -202,34 +187,6 @@ QPointF Calibration::getOneYPxielDistance()
    if(!getDeltaDistanceFromCenter(QPointF(0,1),one_one))
        return QPointF();
    return QPointF(one_one.x()-zero_zero.x(),one_one.y()-zero_zero.y());
-}
-
-
-bool Calibration::getMechPoint(QPointF pixelPoint, QPointF &mechPoint)
-{
-    if(mapping.hasCalibration())
-    {
-        mechPoint = mapping.pixel2MechPoint(pixelPoint);
-        return true;
-    }
-    return false;
-}
-
-bool Calibration::getCaliMapping(Pixel2Mech &caliMapping)
-{
-    if(mapping.hasCalibration())
-    {
-        caliMapping.ChangeParameter(QMatrix(parameters.matrix11(),
-                                           parameters.matrix12(),
-                                           parameters.matrix21(),
-                                           parameters.matrix22(),
-                                           parameters.deltaX(),
-                                           parameters.deltaY()),
-                                   QPointF(parameters.imageWidth()/2,parameters.imageHeight()/2));
-        return true;
-    }
-    else
-        return false;
 }
 
 Pixel2Mech *Calibration::getCaliMapping()

@@ -120,6 +120,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
     //AA Head Position
     engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);
+    engine.rootContext()->setContextProperty("bondOffset", &highSprrow.baseModuleManager->aa_head_module.bondOffset);
 
     //LSUT Position
     engine.rootContext()->setContextProperty("lsutLensOffset", &highSprrow.baseModuleManager->sh_lsut_module.lens_offset);
@@ -128,7 +129,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lsutLoadSensorPosition", &highSprrow.baseModuleManager->sh_lsut_module.load_sensor_position);
      engine.rootContext()->setContextProperty("lsutLoadLensPosition", &highSprrow.baseModuleManager->sh_lsut_module.load_lens_position);
     engine.rootContext()->setContextProperty("lsutPRPosition", &highSprrow.baseModuleManager->sh_lsut_module.downlook_position);
-    engine.rootContext()->setContextProperty("lsutGripperPosition", &highSprrow.baseModuleManager->sh_lsut_module.gripper_position);
+    engine.rootContext()->setContextProperty("lsutUplookPosition", &highSprrow.baseModuleManager->sh_lsut_module.uplook_position);
     engine.rootContext()->setContextProperty("lsutCalibrationPosition", &highSprrow.baseModuleManager->sh_lsut_module.calibration_position);
     engine.rootContext()->setContextProperty("lsutSafetyPosition", &highSprrow.baseModuleManager->sh_lsut_module.safety_position);
     engine.rootContext()->setContextProperty("lsutUnPickLensPosition", &highSprrow.baseModuleManager->sh_lsut_module.unpick_lens_position);
@@ -140,6 +141,11 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sh_lut_pr_position",&highSprrow.baseModuleManager->single_station_material_loader_module.lut_pr_position);
     engine.rootContext()->setContextProperty("sh_camera_to_picker1_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.camera_to_picker1_offset);
     engine.rootContext()->setContextProperty("sh_camera_to_picker2_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.camera_to_picker2_offset);
+    engine.rootContext()->setContextProperty("sh_place_sensor_to_sut_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeSensorToSutOffset);
+    engine.rootContext()->setContextProperty("sh_place_ng_sensor_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeNgSensorToTrayOffset);
+    engine.rootContext()->setContextProperty("sh_place_ng_product_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeNgProductToTrayOffset);
+    engine.rootContext()->setContextProperty("sh_place_ok_product_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeOkProductToTrayOffset);
+
 
     engine.rootContext()->setContextProperty("sh_sensor_tray",&highSprrow.baseModuleManager->sensor_tray);
     engine.rootContext()->setContextProperty("sh_sensor_first_tray_end_position",&highSprrow.baseModuleManager->sensor_tray.first_tray_end_position);
@@ -190,6 +196,9 @@ int main(int argc, char *argv[])
     }
 
     engine.rootContext()->setContextProperty("vl_parameter_list",QVariant::fromValue(vl_parameter_list));
+
+    //Doe
+    engine.rootContext()->setContextProperty("startCameraDoe", highSprrow.baseModuleManager->startCameraDoe);
 
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);

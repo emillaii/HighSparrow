@@ -32,17 +32,6 @@ void Dothinkey::loadParams(QString file_name)
     temp_map.insert("DOTHINKEY_PARAMS", this);
     PropertyBase::loadJsonConfig(file_name, temp_map);
 }
-
-void Dothinkey::DothinkeySetConfigFile(std::string filename)
-{
-    this->iniFilename = filename;
-}
-
-QString Dothinkey::readSensorID()
-{
-    return this->currentSensorID();
-}
-
 BOOL Dothinkey::DothinkeyEnum()
 {
     qDebug("[DothinkeyEnum] is called");
@@ -245,23 +234,6 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     isGrabbing = true;
     //TODO: Move that to test item or in dothinkey config file
     USHORT value_1 =0, value_2 =0, value_3 =0;
-//    WriteSensorReg(pSensor->SlaveID, 0x6028, 0x4000, pSensor->mode);
-//    Sleep(30);
-//    WriteSensorReg(pSensor->SlaveID, 0x6029, 0x0100, pSensor->mode);
-//    Sleep(30);
-//    WriteSensorReg(pSensor->SlaveID, 0x6F12, 0x0100, pSensor->mode);
-//    Sleep(30);
-//    WriteSensorReg(pSensor->SlaveID, 0x0a02, 0x0000, pSensor->mode);
-//    Sleep(30);
-//    WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0100, pSensor->mode);
-//    Sleep(30);
-//    ReadSensorReg(pSensor->SlaveID, 0x0a24, &value_1, pSensor->mode);
-//    ReadSensorReg(pSensor->SlaveID, 0x0a26, &value_2, pSensor->mode);
-//    ReadSensorReg(pSensor->SlaveID, 0x0a28, &value_3, pSensor->mode);
-//    qInfo("Read reg value %X %X %X", value_1, value_2, value_3);
-//    QString temp = "";
-//    temp.sprintf("%04X%04X%04X", value_1, value_2, value_3);
-//    setCurrentSensorID(temp);
 
     WriteSensorReg(pSensor->SlaveID, 0x0a02, 0x007F, pSensor->mode);
     Sleep(30);
@@ -514,71 +486,6 @@ QImage* Dothinkey::DothinkeyGrabImage(int channel)
     delete(CameraBuffer);
     CameraBuffer = NULL;
     return image;
-}
-
-BOOL Dothinkey::SaveBmpFile(std::string sfilename, BYTE *pBuffer, UINT width, UINT height)
-{
-    int				 OffBits;
-    HFILE			 bmpFile;
-    BITMAPFILEHEADER bmpHeader; // Header for Bitmap file
-    BITMAPINFO		 bmpInfo;
-
-    OffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-    DWORD dwSizeImage = width * height * 3;//IMAGESIZE_X*IMAGESIZE_Y*3;
-
-    bmpHeader.bfType = ((WORD)('M' << 8) | 'B');
-    bmpHeader.bfSize = OffBits + dwSizeImage;
-    bmpHeader.bfReserved1 = 0;
-    bmpHeader.bfReserved2 = 0;
-    bmpHeader.bfOffBits = OffBits;
-
-    bmpInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bmpInfo.bmiHeader.biWidth = width;
-    bmpInfo.bmiHeader.biHeight = height;
-    bmpInfo.bmiHeader.biPlanes = 1;
-    bmpInfo.bmiHeader.biBitCount = 24;
-    bmpInfo.bmiHeader.biCompression = BI_RGB;
-    bmpInfo.bmiHeader.biSizeImage = 0;
-    bmpInfo.bmiHeader.biXPelsPerMeter = 0;
-    bmpInfo.bmiHeader.biYPelsPerMeter = 0;
-    bmpInfo.bmiHeader.biClrUsed = 0;
-    bmpInfo.bmiHeader.biClrImportant = 0;
-
-    bmpFile = _lcreat(sfilename.c_str(), FALSE);
-    if (bmpFile < 0)
-    {
-        qCritical("Cannot create the bmp file.\r\n");
-        return FALSE;
-    }
-
-    UINT len;
-    len = _lwrite(bmpFile, (LPSTR)&bmpHeader, sizeof(BITMAPFILEHEADER));
-    len = _lwrite(bmpFile, (LPSTR)&bmpInfo, sizeof(BITMAPINFOHEADER));
-    len = _lwrite(bmpFile, (LPSTR)pBuffer, bmpHeader.bfSize - sizeof(bmpHeader) - sizeof(bmpInfo) + 4);  //+4 is for exact filesize
-    _lclose(bmpFile);
-
-    return TRUE;
-}
-
-bool Dothinkey::initSensor()
-{
-//    if (imageThread->isRunning()) {
-//        dk->DothinkeyClose();
-//        imageThread->stop();
-//    }
-//    XtMotion::xtout_cmos_vacuum = true;
-//    XtMotion::xtout_pogopin = true;
-    const int channel = 0;
-    bool res = DothinkeyEnum();
-    if (!res) { qCritical("Cannot find dothinkey"); return false; }
-    res = DothinkeyOpen();
-    if (!res) { qCritical("Cannot open dothinkey"); return false; }
-    res = DothinkeyLoadIniFile(channel);
-    if (!res) { qCritical("Cannot load dothinkey ini file"); return false; }
-    res = DothinkeyStartCamera(channel);
-    if (!res) { qCritical("Cannot start camera"); return false; }
-    //imageThread->start();
-    return true;
 }
 
 BOOL Dothinkey::DothinkeyIsGrabbing()

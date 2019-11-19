@@ -8,8 +8,6 @@
 #include "Vision/vision_location.h"
 #include "AAHeadModule/aaheadmodule.h"
 
-//! This class is defined as LSUT module in single-head AA machine
-//! LSUT is named as LUT and SUT is combined in single-head AA machine
 class SingleheadLSutModule : public ThreadWorkerBase
 {
     Q_OBJECT
@@ -22,7 +20,7 @@ public:
     enum HandlePosition
     {
         MOVE_TO_MUSHROOM_POSITION = 1,
-        MOVE_TO_GRIPPER_POSITION = 2,
+        MOVE_TO_UPLOOK_POSITION = 2,
         MOVE_TO_LOAD_SENSOR_POSITION = 3,
         MOVE_TO_LOAD_LENS_POSITION = 4,
         MOVE_TO_PR_POSITION = 5,
@@ -78,69 +76,55 @@ public:
     Position3D load_sensor_position;
     Position3D load_lens_position;
     Position3D downlook_position;
-    Position3D gripper_position;
+    Position3D uplook_position;
     Position3D calibration_position;
     Position3D safety_position;
     Position3D pick_lens_position;
     Position3D unpick_lens_position;
     PositionT  up_downlook_offset;
 
+    Position lens_offset;
+    Position sensor_offset;
+
+
     SingleHeadLSutParameter parameters;
     LSutState states;
+    XtGeneralOutput* pogopin = Q_NULLPTR;
 
-    //! Load LSUT parameters from config file
     void loadParams(QString file_name);
-    //! Save LSUT parameters to config file
     void saveParams(QString file_name);
 
     Q_INVOKABLE void performHandling(int cmd);
 
     bool moveToZPos(double z);
     bool stepMove_XY_Sync(double x,double y);
-    bool stepMove_Z_Sync(double step_z);
     void recordCurrentPos();
     bool movetoRecordPos(bool check_autochthonous = false);
     bool moveToDownlookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
+    bool moveToUplookPR(PrOffset &offset,bool close_lighting = true,bool check_autochthonous = false);
     bool moveToDownlookSaveImage(QString filename);
-    // Distance offset between lens center to uplook camera center
-    Position lens_offset;
-    // Distance offset between sensor center to uplook camera center
-    Position sensor_offset;
-
     bool gripLens();
     bool unpickLens();
 signals:
-//    void sendLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
-//    void sendLoadSensorFinish(double offset_x,double offset_y,double offset_z);
-    void sendLoadMaterialRequest(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial);
-    void sendStartAAProcessRequest();
+    void sendLoadMaterialRequestSignal(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial);
+    void sendStartAAProcessRequestSignal();
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
     void resetLogic();
     void performHandlingOperation(int cmd);
-    void receiveMaterialResponse(int sensor_index, int lens_index);
-    void receiveAAProcessResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product);
+    void receiveLoadMaterialFinishResponse(int sensor_index, int lens_index);
+    void receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product);
 public:
-    void run(bool isProduct);
-    void lens_logic();
-    void sensor_logic();
+    void run();
     bool moveToMushroomPosition(bool check_autochthonous = false);
-    bool moveToGripperPosition(bool check_autochthonous = false);
+    bool moveToUplookPosition(bool check_autochthonous = false);
     bool moveToLoadSensorPosition(bool check_autochthonous = false);
-    bool moveToLoadLensPosition(bool check_autochthonous = false);
     bool moveToPRPosition(bool check_autochthonous = false);
-    bool moveToCalibrationPosition(bool check_autochthonous = false);
-    bool moveToSafetyPosition(bool check_autochthonous = false);
     bool moveToPickLensPosition(bool check_autochthonous = false);
     bool moveToUnpickLensPosition(bool check_autochthonous = false);
-
     bool performDownlookSensorPR();
-    bool performUplookLensPR();
-    bool performUplookGripperPR();
-
     bool moveLensToGripperCenter();
-    bool moveLensToGripperPos(double step_z= 0);
     bool lensGripperMeasureHight();
 
 
@@ -148,10 +132,9 @@ public:
 
 private:
     bool is_run = false;
-    XtGeneralOutput* pogopin = Q_NULLPTR;
     VisionLocation* vision_downlook_location = Q_NULLPTR;
     VisionLocation* vision_mushroom_location = Q_NULLPTR;
-    VisionLocation* vision_gripper_location = Q_NULLPTR;   //Is this vision location for lens in gripper?
+    VisionLocation* vision_uplook_location = Q_NULLPTR;   //Is this vision location for lens in gripper?
     XtVacuum *vacuum_lut;
     XtVacuum *vacuum_sut;
     PrOffset pr_offset;

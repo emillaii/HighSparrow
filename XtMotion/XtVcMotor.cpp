@@ -97,22 +97,6 @@ void XtVcMotor::InitAllVCM()
     qInfo("VCM Soft_landing_dll_init failed!");
 }
 
-void XtVcMotor::Init(const QString& motor_name)
-{
-}
-
-
-
-void XtVcMotor::SetADC(int can_id, int data_ch)
-{
-
-}
-
-void XtVcMotor::SetEncoderFeedback(int can_id, int data_ch, double ratio)
-{
-
-}
-
 void XtVcMotor::SetFeedbackZero(double new_value)
 {
     if(!is_init)
@@ -177,25 +161,6 @@ double XtVcMotor::GetFeedbackPos(int decimal_digit) const
     return 0;
 }
 
-
-
-
-double XtVcMotor::GetCurADC() const
-{
-    if(adc!= nullptr)
-        return adc->GetValue();
-    return 0;
-}
-
-bool XtVcMotor::IsRunning() const
-{
-    if(!is_init)
-        return false;
-    int be_run;
-    XT_Controler_Extend::Get_Cur_Axis_State(axis_id,be_run);
-    return be_run == 1;
-}
-
 bool XtVcMotor::getAlarmState()
 {
     if(error_code == get_motor_error(vcm_id))
@@ -205,16 +170,6 @@ bool XtVcMotor::getAlarmState()
         return true;
     }
     return false;
-}
-
-double XtVcMotor::GetPostiveRange() const
-{
-    return max_range;
-}
-
-double XtVcMotor::GetNegativeRange() const
-{
-    return min_range;
 }
 
 int XtVcMotor::AxisId() const
@@ -260,20 +215,6 @@ void XtVcMotor::SetJerk(double jerk, int thread)
     SetPosModejerk(vcm_id, jerk);
 }
 
-void XtVcMotor::SetPostiveRange(double range)
-{
-    max_range = range;
-}
-
-void XtVcMotor::SetNegativeRange(double range)
-{
-    min_range = range;
-}
-
-void XtVcMotor::Home(int thread)
-{
-    MoveToPos(0, thread);
-}
 
 bool XtVcMotor::SeekOrigin(int thread)
 {
@@ -317,11 +258,6 @@ void XtVcMotor::GetMasterAxisID()
 }
 
 
-bool XtVcMotor::SearchPosByADC(double vel, double search_limit, double threshold, bool search_above, double &result)
-{
-
-    return false;
-}
 
 bool XtVcMotor::SearchPosByForce(const double speed,const double force,const double limit,const double margin,const int timeout)
 {
@@ -358,19 +294,6 @@ bool XtVcMotor::SearchPosByForce(const double speed,const double force,const int
     return res;
 }
 
-double XtVcMotor::SearchPosByForceOnyDown(double speed, double force, int timeout)
-{
-    if(!is_init)
-        return 0.0;
-    double start_pos = GetOutpuPos();
-    SetSoftLanding(speed,max_acc, force, start_pos,start_pos + (max_range - start_pos)/2,abs(max_range - start_pos)/2.1);
-    bool res;
-    res = DoSoftLanding();
-    res &= WaitSoftLandingDone(timeout);
-    if(res)
-        return  GetFeedbackPos();
-    return start_pos;
-}
 
 void XtVcMotor::RestoreForce()
 {

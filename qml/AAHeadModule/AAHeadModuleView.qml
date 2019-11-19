@@ -40,6 +40,25 @@ ItemDelegate {
                 title: qsTr("Mushroom Position")
                 AAHeadMushroomPosition {}
             }
+            GroupBox{
+                title: qsTr("Bond Offset")
+                RowLayout {
+                    Label {
+                        text: qsTr("Theta Offset")
+                    }
+                    TextField {
+                        text: bondOffset.Theta
+                        horizontalAlignment: TextInput.AlignHCenter
+                        validator: DoubleValidator {
+                            decimals: 6
+                            notation: DoubleValidator.StandardNotation
+                        }
+                        onEditingFinished: {
+                            bondOffset.setTheta(text)
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -11,25 +11,25 @@ ItemDelegate {
         spacing: 0
 
         ColumnLayout{
-            RowLayout {
-                Button{
-                    text: qsTr("生成参数")
-                    onClicked: {
-//                        baseModuleManager.generatefileConfigs()
-                    }
-                }
-                Button{
-                    text: qsTr("显示界面")
-                    onClicked:
-                    {
+//            RowLayout {
+//                Button{
+//                    text: qsTr("生成参数")
+//                    onClicked: {
+////                        baseModuleManager.generatefileConfigs()
+//                    }
+//                }
+//                Button{
+//                    text: qsTr("显示界面")
+//                    onClicked:
+//                    {
 
-                    }
-                }
+//                    }
+//                }
 
-                Label {
-                    text: qsTr("")
-                }
-            }
+//                Label {
+//                    text: qsTr("")
+//                }
+//            }
 
             GroupBox{
                 title:qsTr("系统操作")
@@ -54,115 +54,115 @@ ItemDelegate {
                 }
 
             }
-            GroupBox
-            {
-                visible: baseModuleManager.getServerMode()
-                title: qsTr("Sensor")
-                RowLayout{
-                    Button{
-                        text: qsTr("load")
-                        onClicked: {
-                            baseModuleManager.loadSensorLoaderParameter()
-                        }
-                    }
-                    Button {
-                        text: "开始"
-                        onClicked: {
-                            workersManager.startWorker("SutModule",0)
-                            workersManager.startWorker("SensorLoader",0)
-                        }
-                    }
-                    Button {
-                        text: "放"
-                        onClicked: {
-                            baseModuleManager.sendLoadSensor(false,false)
-                        }
-                    }
-                    Button {
-                        text: "放 取ng"
-                        onClicked: {
-                            baseModuleManager.sendLoadSensor(false,true)
-                        }
-                    }
-                    Button {
-                        text: "放 取成品"
-                        onClicked: {
-                            baseModuleManager.sendLoadSensor(true,false)
-                        }
-                    }
-                    Button {
-                        text: "停止"
-                        onClicked: {
-                            workersManager.stopWorkers()
-                        }
-                    }
-                }
-            }
+//            GroupBox
+//            {
+//                visible: baseModuleManager.getServerMode()
+//                title: qsTr("Sensor")
+//                RowLayout{
+//                    Button{
+//                        text: qsTr("load")
+//                        onClicked: {
+//                            baseModuleManager.loadSensorLoaderParameter()
+//                        }
+//                    }
+//                    Button {
+//                        text: "开始"
+//                        onClicked: {
+//                            workersManager.startWorker("SutModule",0)
+//                            workersManager.startWorker("SensorLoader",0)
+//                        }
+//                    }
+//                    Button {
+//                        text: "放"
+//                        onClicked: {
+//                            baseModuleManager.sendLoadSensor(false,false)
+//                        }
+//                    }
+//                    Button {
+//                        text: "放 取ng"
+//                        onClicked: {
+//                            baseModuleManager.sendLoadSensor(false,true)
+//                        }
+//                    }
+//                    Button {
+//                        text: "放 取成品"
+//                        onClicked: {
+//                            baseModuleManager.sendLoadSensor(true,false)
+//                        }
+//                    }
+//                    Button {
+//                        text: "停止"
+//                        onClicked: {
+//                            workersManager.stopWorkers()
+//                        }
+//                    }
+//                }
+//            }
 
-            GroupBox
-            {
-                visible: !baseModuleManager.getServerMode()
-                title: qsTr("Lens")
-                RowLayout{
-                    Button {
-                        text: "开始"
-                        onClicked: {
-                            workersManager.startWorker("LensPickArmModule",systerm_param.runMode)
-                            workersManager.startWorker("LUTModule",systerm_param.runMode)
-                        }
-                    }
-                    Button {
-                        text: "放"
-                        onClicked: {
-//                            lutClient.sendLensRequest(false,false)
-                            baseModuleManager.sendLoadLens(false)
-                        }
-                    }
-                    Button {
-                        text: "放 取ng"
-                        onClicked: {
-//                            lutClient.sendLensRequest(true,false)
-                            baseModuleManager.sendLoadLens(true)
-                        }
-                    }
-                    Button {
-                        text: "停止"
-                        onClicked: {
-                            workersManager.stopWorkers()
-                        }
-                    }
-                }
-            }
-            GroupBox{
-                visible: baseModuleManager.getServerMode()
-                title: qsTr("SensorTryLoader")
-                RowLayout{
-                    Button {
-                        text: "Load"
-                        onClicked: {
-//                            baseModuleManager.loadSensorTrayLoaderMuduleParameter()
-                        }
-                    }
-                    Button {
-                        text: "开始"
-                        onClicked: {
-                            workersManager.startWorker("SensorTrayLoaderModule",0)
-                        }
-                    }
-                    Button {
-                        text: "换盘"
-                        onClicked: {
-                            baseModuleManager.sendChangeSensorTray()
-                        }
-                    }
-                    Button {
-                        text: "停止"
-                        onClicked: {
-                            workersManager.stopWorkers()
-                        }
-                    }
-                }
-            }
+//            GroupBox
+//            {
+//                visible: !baseModuleManager.getServerMode()
+//                title: qsTr("Lens")
+//                RowLayout{
+//                    Button {
+//                        text: "开始"
+//                        onClicked: {
+//                            workersManager.startWorker("LensPickArmModule",systerm_param.runMode)
+//                            workersManager.startWorker("LUTModule",systerm_param.runMode)
+//                        }
+//                    }
+//                    Button {
+//                        text: "放"
+//                        onClicked: {
+////                            lutClient.sendLensRequest(false,false)
+//                            baseModuleManager.sendLoadLens(false)
+//                        }
+//                    }
+//                    Button {
+//                        text: "放 取ng"
+//                        onClicked: {
+////                            lutClient.sendLensRequest(true,false)
+//                            baseModuleManager.sendLoadLens(true)
+//                        }
+//                    }
+//                    Button {
+//                        text: "停止"
+//                        onClicked: {
+//                            workersManager.stopWorkers()
+//                        }
+//                    }
+//                }
+//            }
+//            GroupBox{
+//                visible: baseModuleManager.getServerMode()
+//                title: qsTr("SensorTryLoader")
+//                RowLayout{
+//                    Button {
+//                        text: "Load"
+//                        onClicked: {
+////                            baseModuleManager.loadSensorTrayLoaderMuduleParameter()
+//                        }
+//                    }
+//                    Button {
+//                        text: "开始"
+//                        onClicked: {
+//                            workersManager.startWorker("SensorTrayLoaderModule",0)
+//                        }
+//                    }
+//                    Button {
+//                        text: "换盘"
+//                        onClicked: {
+//                            baseModuleManager.sendChangeSensorTray()
+//                        }
+//                    }
+//                    Button {
+//                        text: "停止"
+//                        onClicked: {
+//                            workersManager.stopWorkers()
+//                        }
+//                    }
+//                }
+//            }
 //            GroupBox{
 //                visible: {
 //                    return !baseModuleManager.getServerMode()

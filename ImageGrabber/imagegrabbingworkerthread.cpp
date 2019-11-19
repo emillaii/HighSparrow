@@ -80,14 +80,6 @@ void ImageGrabbingWorkerThread::stop()
     forceStop = true;
 }
 
-void ImageGrabbingWorkerThread::toggleMTFLive(int count)
-{
-    mtf_live = true;
-    mtf_test_count = count;
-    resultData = "";
-    index = 0;
-}
-
 void ImageGrabbingWorkerThread::saveImage()
 {
     QMutexLocker locker(&mutex);

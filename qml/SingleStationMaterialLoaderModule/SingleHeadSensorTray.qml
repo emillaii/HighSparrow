@@ -213,6 +213,36 @@ ColumnLayout {
                 }
 
                 RowLayout{
+                    Label{
+                        text:qsTr("PlaceOkProductToTrayOffset X:")
+                    }
+                    TextField{
+                        text: sh_place_ok_product_to_tray_offset.X
+                        horizontalAlignment: TextInput.AlignHCenter
+                        validator: DoubleValidator {
+                            decimals: 6
+                            notation: DoubleValidator.StandardNotation
+                        }
+                        onEditingFinished: {
+                            sh_place_ok_product_to_tray_offset.setX(text)
+                        }
+                    }
+                    Label{
+                        text:qsTr("Y:")
+                    }
+                    TextField{
+                        text: sh_place_ok_product_to_tray_offset.Y
+                        horizontalAlignment: TextInput.AlignHCenter
+                        validator: DoubleValidator {
+                            decimals: 6
+                            notation: DoubleValidator.StandardNotation
+                        }
+                        onEditingFinished: {
+                            sh_place_ok_product_to_tray_offset.setY(text)
+                        }
+                    }
+                }
+                RowLayout{
                     Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                     Label{
                         text: qsTr("Picker1放Product Offset X:")

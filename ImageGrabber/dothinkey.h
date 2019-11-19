@@ -25,7 +25,6 @@ public:
     ~Dothinkey();
     Q_PROPERTY(QString currentSensorID READ currentSensorID WRITE setCurrentSensorID NOTIFY paramsChanged)
     Q_PROPERTY(QString IniFilename READ IniFilename WRITE setIniFilename NOTIFY paramsChanged)
-    Q_INVOKABLE bool initSensor();
     void loadParams(QString file_name);
     BOOL DothinkeyEnum();   //Enumerate the dothinkey devices
     BOOL DothinkeyOpen();   //Open Camera Devices
@@ -34,8 +33,6 @@ public:
     BOOL DothinkeyStartCamera(int channel);
     QImage* DothinkeyGrabImage(int channel);
     cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
-    void DothinkeySetConfigFile(std::string filename);
-    QString readSensorID();
     BOOL DothinkeyIsGrabbing();
     struct CameraChannel
     {
@@ -104,9 +101,6 @@ private:
     char *DeviceName[4];
 
     BOOL SetVoltageMclk(SensorTab CurrentSensor, int iDevID, float Mclk, float Avdd, float Dvdd, float Dovdd, float Afvcc, float vpp);
-    void MipiRaw10ToP10(BYTE *pIn, BYTE *pOut, int width, int height);
-    BOOL SaveBmpFile(std::string sfilename, BYTE *pBuffer, UINT width, UINT height);
-
     CameraChannel m_CameraChannels[2];
     std::string iniFilename;
 

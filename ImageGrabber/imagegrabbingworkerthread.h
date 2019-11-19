@@ -12,14 +12,12 @@ class ImageGrabbingWorkerThread : public QThread
 public:
     ImageGrabbingWorkerThread(Dothinkey* dk, QObject *parent = 0);
     void stop();
-    void toggleMTFLive(int count);
     static QImage cvMat2QImage(const cv::Mat& mat);
     ImageProvider *m_pImgProvider;
     Q_INVOKABLE void saveImage();
 protected:
     void run() override;
     bool forceStop;
-    bool mtf_live;
     int mtf_test_count;
 private:
     Dothinkey* dk;
@@ -28,7 +26,6 @@ private:
     QMutex mutex;
     QImage latestImage;
 signals:
-    void done();
     void callQmlRefeshImg();
 };
 

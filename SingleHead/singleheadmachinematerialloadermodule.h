@@ -19,7 +19,6 @@ class SingleHeadMachineMaterialLoaderModule:public ThreadWorkerBase
     Q_ENUMS(HandleToWorkPos)
     Q_ENUMS(HandlePickerAction)
     Q_ENUMS(HandlePROffset)
-
 public:
     enum HandlePosition{
         LENS_TRAY1 = 1,
@@ -100,12 +99,13 @@ public:
 
         HANDLE_PICKER_ACTION = (1<<23)-(1<<16)
     };
-
     enum HandlePROffset
     {
-        PICKER1_PLACE_OK_PROCUDE_TO_TRAY_PR_OFFSET = 1 << 23,
+        APPLY_PLACE_SENSOR_TO_SUT_OFFSET = 1 << 23,
+        APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET = 2 << 23,
+        APPLY_PLACE_NG_PRODUCT_TO_TRAY_OFFSET = 3 << 23,
 
-        HANDLE_PR_OFFSET = (1 << 27) - (1 << 23)
+        HANDLE_PR_OFFSET = (1 << 25) - (1 << 23)
     };
 
     SingleHeadMachineMaterialLoaderModule(QString name = "SingleHeadMachineMaterialLoaderModule");
@@ -122,13 +122,12 @@ public:
               VisionLocation* lens_vacancy_vision = nullptr,
               VisionLocation* lut_vision = nullptr,
               VisionLocation* lut_lens_vision = nullptr,
-              VisionLocation* camera_to_picker_offest_vision = nullptr,
+//              VisionLocation* camera_to_picker_offest_vision = nullptr,
               XtVacuum* sutVacuum = nullptr,
               XtVacuum* lutVacuum = nullptr);
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     Q_INVOKABLE void performHandling(int cmd);
-    Q_INVOKABLE void cameraTipOffsetCalibration(int pickhead = 0);
     Q_INVOKABLE bool moveToChangeTrayPos();
 
 public:
@@ -140,9 +139,13 @@ public:
     Position camera_to_picker1_offset;
     Position camera_to_picker2_offset;
 
-private:
-    void run(bool has_material);
+    PositionT placeSensorToSutOffset;
+    PositionT placeNgSensorToTrayOffset;
+    PositionT placeNgProductToTrayOffset;
+    Position placeOkProductToTrayOffset;
 
+private:
+    void run();
 
     //PR動作
     bool performSensorPR();
@@ -160,20 +163,16 @@ private:
 
     //pickArm and trayloder動作
     bool moveToNextLensTrayPos(int tray_index);
-    bool moveToLensTrayEmptyPos(int index,int tray_index);
-    bool moveToLensTrayPos(int index,int tray_index);
     bool moveToLensTrayPos(int tray_index);
     bool moveToLensTrayStartPos(int tray_index);
     bool moveToLensTrayEndPos();
 
     bool moveToNextSensorTrayPos(int tray_index);
-    bool moveToSensorTrayPos(int index,int tray_index);
     bool moveToSensorTrayPos(int tray_index);
     bool moveToSensorTrayStartPos(int tray_index);
     bool moveToSensorTrayEndPos();
 
     bool moveToNextRejectTrayPos(int tray_index);
-    bool moveToRejectTrayPos(int index,int tray_index);
     bool moveToRejectTrayPos(int tray_index);
     bool moveToRejectTrayStartPos(int tray_index);
     bool moveToRejectTrayEndPos();
@@ -206,13 +205,9 @@ private:
     bool picker1PickNgSensorFromSUT(int time_out = 10000);
     bool picker1PlaceNgSensorToTray(int time_out = 10000);
 
-    //NG product, no different like handle normal product process
-
-
     //Picker motion
     bool picker1SearchZ(double z,bool is_open = true,int time_out = 10000,int picker = 0);
     bool picker1SearchSutZ(double z,bool is_open = true,int time_out = 10000);
-    bool picker1SearchSutZ2(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchZ(double z,bool is_open = true,int time_out = 10000,int picker = 0);
     bool picker2SearchSutZ(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchSutZ2(double z,bool is_open = true,int time_out = 10000);
@@ -220,21 +215,11 @@ private:
     bool picker1MeasureHight(bool is_tray,bool is_product = false);
     bool picker2MeasureHight(bool is_tray,bool is_product = false);
 
-    //Action Combination
-    bool loadLensFromTrayAndPlaceToLUT();
-    bool pickNgLensFromLUTAndReturnToTray();
-
-    //Tray Handle
-    bool checkNeedChangeLensTray();
-    bool checkNeedChangeSensorTray();
-    bool checkNeedChangeRejectTray();
-//    bool moveToChangeTrayPos();
-    bool checkNeedChangeTray();
+    //PR Offset
+    void applyPrOffset(PositionT& offset);
 
 signals:
-    void sendChangeLensTrayRequst();
-    void sendLoadMaterialResponse(int sensor_index, int lens_index);
-    void sendChangeSensorTrayRequst();
+    void sendLoadMaterialFinishSignal(int sensor_index, int lens_index);
 
 public slots:
     void startWork(int run_mode);
@@ -242,9 +227,7 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
 
-    void receiveLoadMaterialRequest(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial);
-    void receiveChangeLensTrayRequest();
-    void receiveChangeSensorTrayRequest();
+    void receiveLoadMaterialRequestResponse(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial);
 private:
 
     SingleHeadMachineMaterialPickArm* pick_arm = Q_NULLPTR;
@@ -264,7 +247,7 @@ private:
     VisionLocation* lut_vision = Q_NULLPTR;
     VisionLocation* lut_lens_vision = Q_NULLPTR;
 
-    VisionLocation* camera_to_picker_offest_vision = Q_NULLPTR;
+//    VisionLocation* camera_to_picker_offest_vision = Q_NULLPTR;
 
     QMutex lsut_mutex;
     QMutex materialLoader_mutex;
@@ -272,6 +255,10 @@ private:
     bool is_run = false;
     bool finish_stop = false;
     PrOffset pr_offset;
+
+    int lensPrFailedTimes = 0;
+    int sensorPrFailedTimes = 0;
+    const int MaxPickDutFailedTimes = 5;
 };
 
 #endif // SINGLEHEADMACHINEMATERIALLOADERMODULE_H

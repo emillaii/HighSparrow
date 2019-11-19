@@ -29,10 +29,11 @@
 #include "SingleHead/singleheadmachinematerialloadermodule.h"
 #include "SingleHead/singlehead_lsut_module.h"
 #include "materialtray.h"
+#include "DOE/startcameradoe.h"
+
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
-
 public:
     explicit BaseModuleManager(QObject *parent = nullptr);
     ~BaseModuleManager();
@@ -73,6 +74,7 @@ public:
 
     Unitlog unitlog;
 
+    StartCameraDOE* startCameraDoe;
 
     int lightPanelLighting() const
     {
@@ -84,22 +86,18 @@ signals:
     void displaySfrImageInUI();
     void displayOCImageInUI();
     void lightingValueChanged(int downlookLighting);
-
     void lightPanelValueChanged(int lightPanelLighting);
-
     void paramsChanged();
-
     bool sendMsgSignal(QString,QString);
     void sendAlarm(int sender_id,int level, QString error_message);
 public slots:
     void alarmChecking();
-    void performHandlingOperation(int cmd);
-	void receiveImageFromAACore(int type) {
+    void receiveImageFromAACore(int type) {
         qInfo("Display SFR image in UI: %d", type);
         if (type == 0) emit displaySfrImageInUI();
         else if (type == 1) emit displayOCImageInUI();
     }
-    bool sendMessageTest(QString title,QString content);
+    bool receiveMsgSignal(QString title,QString content);
     void setLightPanelLighting(int lightPanelLighting)
     {
         if (m_lightPanelLighting == lightPanelLighting)
@@ -131,8 +129,6 @@ private:
     bool is_init;
     bool profile_loaded;
     static wchar_t ip[];
-    static wchar_t profile_path1[];
-    static wchar_t profile_path2[];
 
     VCM_Parameter_struct lut_vcm_parameters = {
         500/*MaxVel*/,20000/*MaxAcc*/,200000/*MaxJerk*/,0/*MaxRange*/,-19/*MinRange*/,9/*CanID*/,1/*dir*/,1024/*scale*/};
@@ -142,7 +138,7 @@ private:
     bool InitStruct();
 
     bool m_HomeState = false;
-      int m_lightPanelLighting;
+    int m_lightPanelLighting;
     QTimer timer;
     QThread work_thread;
 
@@ -150,11 +146,8 @@ public:
     bool loadProfile();
     bool loadStructConfig(QString file_dir);
     bool loadMachineConfig(QString file_paths);
-    Q_INVOKABLE bool generateConfigFiles();
     Q_INVOKABLE bool loadParameters();
-    Q_INVOKABLE bool loadconfig();
     Q_INVOKABLE bool saveParameters();
-    Q_INVOKABLE bool showSetting();
     bool loadVcmFile(QString file_name);
     bool saveVcmfile(QString file_name);
     bool loadMotorFile(QString file_name);
@@ -176,51 +169,32 @@ private:
     bool loadJsonObject(QString file_name, QJsonObject &object);
     bool saveJsonObject(QString file_name,QJsonObject &object);
     QString getCurrentParameterDir();
-
     QString m_FlowchartFilename;
 
 public:
     bool registerWorkers(WorkersManager* manager);
-
-    Q_INVOKABLE void performHandling(int cmd);
-
     Q_INVOKABLE bool initialDevice();
     Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);
-    Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
     Q_INVOKABLE void setMotorParamByName(QString name,double vel,double acc,double jert);
     bool performCalibration(QString calibration_name);
     bool performLocation(QString location_name);
-    bool performLensUpDownLookCalibration();
-    Q_INVOKABLE QString getCalibrationParam(QString calibration_name);
     Q_INVOKABLE void setOutput(QString name, bool on);
     Q_INVOKABLE bool getOutput(QString name);
     Q_INVOKABLE bool getInput(QString name);
     Q_INVOKABLE void motorSeekOrigin(QString name);
-    Q_INVOKABLE double getPROffsetX(QString location_name);
-    Q_INVOKABLE double getPROffsetY(QString location_name);
-
     Q_INVOKABLE double getMotorFeedbackPos(QString name);
-    Q_INVOKABLE double getMotorFeedbackPos(int index);
     Q_INVOKABLE void setLightingBrightness(QString location_name);
-    Q_INVOKABLE void sendLoadLens(bool has_ng);
-    Q_INVOKABLE void sendLoadSensor(bool has_product,bool has_ng);
-    Q_INVOKABLE void sendChangeSensorTray();
-
     Q_INVOKABLE bool initSensor();
     Q_INVOKABLE bool closeSensor();
     Q_INVOKABLE double showChartCalibrationRotation();
     void EnableMotors();
     void DisableAllMotors();
     Q_INVOKABLE bool allMotorsSeekOrigin();
-    bool allMotorsSeekOriginal3();
     void stopSeeking();
-
     Q_INVOKABLE int getNumberOfMotors();
     Q_INVOKABLE QString getMotorsName(int);
-
     Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString, QString filename = "");
-
 
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);

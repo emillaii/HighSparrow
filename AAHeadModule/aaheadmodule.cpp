@@ -13,6 +13,7 @@ void AAHeadModule::loadJsonConfig(QString file_name)
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("AA_HEAD_PARAMS", &parameters);
     temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
+    temp_map.insert("BOND_OFFSET", &this->bondOffset);
     PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
@@ -21,6 +22,7 @@ void AAHeadModule::saveJsonConfig(QString file_name)
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("AA_HEAD_PARAMS", &this->parameters);
     temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
+    temp_map.insert("BOND_OFFSET", &this->bondOffset);
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
@@ -57,32 +59,6 @@ bool AAHeadModule::moveToMushroomPosition(bool moveXYC)
     }
 }
 
-bool AAHeadModule::moveToPickLensPosition()
-{
-    return  moveToDiffrentZSync(parameters.PickLensPositionZ());
-}
-
-bool AAHeadModule::moveToOCPosition()
-{
-    return  moveToDiffrentZSync(parameters.OCPositionZ());
-}
-
-bool AAHeadModule::moveToAAPosition()
-{
-    return  moveToSync(last_aa_position.X(),last_aa_position.Y(),last_aa_position.Z(),last_aa_position.A(),last_aa_position.B(),last_aa_position.C());
-}
-
-void AAHeadModule::setUplookResult(double x, double y, double theta)
-{
-    uplook_x = x;
-    uplook_y = y;
-    uplook_theta = theta;
-}
-
-bool AAHeadModule::moveToUplookResultPosition()
-{
-    return stepMove_XYC_ToSync(uplook_x,uplook_y,uplook_theta);
-}
 
 void AAHeadModule::openUVTillTime(int till_time)
 {
@@ -119,43 +95,13 @@ void AAHeadModule::closeGripper()
 {
     qInfo("close gripper is called");
     gripper->Set(true);
-    Sleep(100);
+    Sleep(250);
 }
 
-bool AAHeadModule::stepMove_XY_Sync(double step_x, double step_y)
+bool AAHeadModule::moveToMushroomPosWithCOffset(double cOffset)
 {
-    double x = step_x + motor_x->GetFeedbackPos();
-    double y = step_y + motor_y->GetFeedbackPos();
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
-    bool result = motor_x->WaitArrivedTargetPos(x);
-    result &= motor_y->WaitArrivedTargetPos(y);
-    return result;
-}
-
-bool AAHeadModule::stepMove_XYC_Sync(double step_x, double step_y, double step_c)
-{
-    double x = step_x + motor_x->GetFeedbackPos();
-    double y = step_y + motor_y->GetFeedbackPos();
-    double c = step_c + motor_c->GetFeedbackPos();
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
-    motor_c->MoveToPos(c);
-    bool result = motor_x->WaitArrivedTargetPos(x);
-    result &= motor_y->WaitArrivedTargetPos(y);
-    result &= motor_c->WaitArrivedTargetPos(c);
-    return result;
-}
-
-bool AAHeadModule::stepMove_AB_Sync(double step_a, double step_b)
-{
-    double a = step_a + motor_a->GetFeedbackPos();
-    double b = step_b + motor_b->GetFeedbackPos();
-    motor_a->MoveToPos(a);
-    motor_b->MoveToPos(b);
-    bool result = motor_a->WaitArrivedTargetPos(a);
-    result &= motor_b->WaitArrivedTargetPos(b);
-    return result;
+    return moveToSync(mushroom_position.X(),mushroom_position.Y(),mushroom_position.Z(),
+                      mushroom_position.A(), mushroom_position.B(),mushroom_position.C() + cOffset);
 }
 
 bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)
@@ -172,7 +118,6 @@ bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)
         dy =-dy;
     if(motor_z->Name().contains("SUT"))
         dz =-dz;
-
     double x = -dx + motor_x->GetFeedbackPos();
     double y = dy + motor_y->GetFeedbackPos();
     double z = -dz + motor_z->GetFeedbackPos();
@@ -183,85 +128,11 @@ bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)
     return XYZAB_Interpolation(x,y,z,a,b);
 }
 
-bool AAHeadModule::stepMove_Z_Sync(double step_z)
-{
-    double z = step_z + motor_z->GetFeedbackPos();
-    motor_z->MoveToPos(z);
-    return motor_z->WaitArrivedTargetPos(z);
-}
-
-void AAHeadModule::SetAAPosion(mPoint6D point)
-{
-    last_aa_position.SetPosition(point);
-}
-
 mPoint6D AAHeadModule::GetFeedBack()
 {
     return mPoint6D(motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos(),motor_a->GetFeedbackPos(),motor_b->GetFeedbackPos(),motor_c->GetFeedbackPos());
 }
 
-void AAHeadModule::sendSensorRequest(int sut_state)
-{
-    qInfo("sendSensrRequest %d",sut_state);
-    waiting_sensor = true;
-    offset_x = 0;
-    offset_y = 0;
-    offset_theta = 0;
-    emit sendSensorRequestToSut(sut_state);
-}
-
-bool AAHeadModule::waitForLoadSensor(bool &is_run,int time_out)
-{
-    while (time_out > 0) {
-        if(!is_run)
-        {
-            qInfo("is_run  is false wait For LoadSensor fail");
-            return false;
-        }
-        if(!waiting_sensor)
-        {
-            return  true;
-//            bool  result = stepMove_XYC_Sync(offset_x,offset_y,offset_theta);
-//            qInfo("perform  sut pr result %d (%f,%f,%f)",result,offset_x,offset_y,offset_theta);
-//            return result;
-        }
-        QThread::msleep(100);
-        time_out -= 100;
-    }
-    qInfo("waitForLoadSensor fail");
-    return false;
-}
-
-bool AAHeadModule::moveToSync(double x, double y, double z, double c)
-{
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
-    motor_z->MoveToPos(z);
-    motor_c->MoveToPos(c);
-    bool result = motor_x->WaitArrivedTargetPos(x);
-    result &= motor_y->WaitArrivedTargetPos(y);
-    result &= motor_z->WaitArrivedTargetPos(z);
-    result &= motor_c->WaitArrivedTargetPos(c);
-    return result;
-}
-
-void AAHeadModule::receiveLensFromLut(double offset_x, double offset_y, double offset_theta)
-{
-    qInfo("receiveSensorFromSut %f %f %f",offset_x,offset_y,offset_theta);
-    this->uplook_x = offset_x;
-    this->uplook_y = offset_y;
-    this->uplook_theta = offset_theta;
-    waiting_lens = false;
-}
-
-void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double offset_theta)
-{
-    qInfo("receiveSensorFromSut %f %f %f",offset_x,offset_y,offset_theta);
-    this->offset_x = offset_x;
-    this->offset_y = offset_y;
-    this->offset_theta = offset_theta;
-    waiting_sensor = false;
-}
 
 bool AAHeadModule::moveToDiffrentZSync(double z)
 {
@@ -284,19 +155,6 @@ bool AAHeadModule::moveToSync(double x, double y, double z, double a, double b, 
     result &= motor_c->WaitArrivedTargetPos(c);
     return result;
 }
-bool AAHeadModule::stepMove_XYC_ToSync(double x, double y,double c)
-{
-    x += motor_x->GetFeedbackPos();
-    y += motor_y->GetFeedbackPos();
-    c += motor_c->GetFeedbackPos();
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
-    motor_c->MoveToPos(c);
-    bool result = motor_x->WaitArrivedTargetPos(motor_x->GetFeedbackPos() + x);
-    result &= motor_y->WaitArrivedTargetPos(y);
-    result &= motor_c->WaitArrivedTargetPos(c);
-    return result;
-}
 
 bool AAHeadModule::XYZAB_Interpolation(double x, double y, double z, double a, double b)
 {
@@ -313,7 +171,7 @@ bool AAHeadModule::XYZAB_Interpolation(double x, double y, double z, double a, d
 
     double start[] = {motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos(),motor_a->GetFeedbackPos(),motor_b->GetFeedbackPos()};
     double end[] = {x,y,z,a,b};
-
+    qInfo("motor _crashed test");
     int res = XT_Controler_Extend::Set_Curve_Param(curve_id, 0.1, dem, axis, axis_max_vel, axis_max_acc, axis_max_jerk, axis_combine);
     if(1!=res)
     {

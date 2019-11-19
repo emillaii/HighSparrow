@@ -16,7 +16,6 @@
         <file>qml/DispenseModule/DispenseXYOffset.qml</file>
         <file>qml/DispenseModule/DispenseZPos.qml</file>
         <file>qml/CalibrationView.qml</file>
-        <file>qml/SUTModule/SUTGripperPosition.qml</file>
         <file>qml/SUTModule/SUTLoadPositionView.qml</file>
         <file>qml/SUTModule/SUTModuleView.qml</file>
         <file>qml/SUTModule/SUTMushroomPosition.qml</file>
@@ -57,5 +56,7 @@
         <file>qml/Page5Form.ui.qml</file>
         <file>qml/MotionPopup.qml</file>
         <file>qml/FlowChartWeb.qml</file>
+        <file>qml/DOE/StartCameraDoe.qml</file>
+        <file>qml/SUTModule/SUTUplookPosition.qml</file>
     </qresource>
 </RCC>

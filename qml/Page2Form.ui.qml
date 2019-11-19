@@ -7,7 +7,7 @@ import Qt.labs.calendar 1.0
 
 Page {
 
-    readonly property string downlookCameraName: "AA_DLCamera1"
+    readonly property string downlookCameraName: "AA_DLCamera"
     readonly property string uplookCameraName: "LUT_ULCamera"
     readonly property string pickarmCameraName: "PickarmCamera"
 

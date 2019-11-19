@@ -4,6 +4,14 @@ import QtQuick.Layouts 1.11
 import SingleHeadMaterialLoaderLib 1.0
 
 ColumnLayout {
+    CheckBox{
+        id: ckbPerformPrAsPlacingNgDutToTray
+        text: qsTr("PerformPrAsPlacingNgDutToTray")
+        checked: materialLoaderParameter.performPrAsPlacingNgDut
+        onCheckedChanged: {
+            materialLoaderParameter.setPerformPrAsPlacingNgDut(ckbPerformPrAsPlacingNgDutToTray.checked)
+        }
+    }
     GroupBox{
         title:qsTr("reject盘起点")
         ColumnLayout{
@@ -115,6 +123,72 @@ ColumnLayout {
 
     }
     GroupBox{
+        title: qsTr("PlaceNgSensorOffset")
+        RowLayout{
+            Label{
+                text: qsTr("X")
+            }
+            TextField{
+                text: sh_place_ng_sensor_to_tray_offset.X
+                horizontalAlignment: TextInput.AlignHCenter
+                validator: DoubleValidator {
+                    decimals: 6
+                    notation: DoubleValidator.StandardNotation
+                }
+                onEditingFinished: {
+                    sh_place_ng_sensor_to_tray_offset.setX(text)
+                }
+            }
+            Label{
+                text: qsTr("Y")
+            }
+            TextField{
+                text: sh_place_ng_sensor_to_tray_offset.Y
+                horizontalAlignment: TextInput.AlignHCenter
+                validator: DoubleValidator {
+                    decimals: 6
+                    notation: DoubleValidator.StandardNotation
+                }
+                onEditingFinished: {
+                    sh_place_ng_sensor_to_tray_offset.setY(text)
+                }
+            }
+        }
+    }
+    GroupBox{
+        title: qsTr("PlaceNgProductOffset")
+        RowLayout{
+            Label{
+                text: qsTr("X")
+            }
+            TextField{
+                text: sh_place_ng_product_to_tray_offset.X
+                horizontalAlignment: TextInput.AlignHCenter
+                validator: DoubleValidator {
+                    decimals: 6
+                    notation: DoubleValidator.StandardNotation
+                }
+                onEditingFinished: {
+                    sh_place_ng_product_to_tray_offset.setX(text)
+                }
+            }
+            Label{
+                text: qsTr("Y")
+            }
+            TextField{
+                text: sh_place_ng_product_to_tray_offset.Y
+                horizontalAlignment: TextInput.AlignHCenter
+                validator: DoubleValidator {
+                    decimals: 6
+                    notation: DoubleValidator.StandardNotation
+                }
+                onEditingFinished: {
+                    sh_place_ng_product_to_tray_offset.setY(text)
+                }
+            }
+        }
+    }
+    GroupBox{
         title:qsTr("reject盘操作")
         ColumnLayout{
             ColumnLayout{
@@ -159,10 +233,23 @@ ColumnLayout {
                         height: 40
                         onClicked: {
                             sh_reject_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
-                                                                    MaterialLoaderModule.SENSOR_VACANCY_PR|
-                                                                    MaterialLoaderModule.PICKER1_TO_WORKPOS|
-                                                                    MaterialLoaderModule.PICKER1_PLACE_NG_SENSOR_TO_TRAY)
+                            if(materialLoaderParameter.performPrAsPlacingNgDut)
+                            {
+                                sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
+                                                                        MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                        MaterialLoaderModule.APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET|
+                                                                        MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                        MaterialLoaderModule.PICKER1_PLACE_NG_SENSOR_TO_TRAY)
+                            }
+                            else{
+                                sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
+                                                                        MaterialLoaderModule.RESET_PR|
+                                                                        MaterialLoaderModule.APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET|
+                                                                        MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                        MaterialLoaderModule.PICKER1_PLACE_NG_SENSOR_TO_TRAY)
+                            }
+
+
                         }
                     }
                     Button{
@@ -171,10 +258,22 @@ ColumnLayout {
                         height: 40
                         onClicked: {
                             sh_reject_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
-                                                                    MaterialLoaderModule.SENSOR_VACANCY_PR|
-                                                                    MaterialLoaderModule.PICKER2_TO_WORKPOS|
-                                                                    MaterialLoaderModule.PICKER2_PLACE_NG_SENSOR_TO_TRAY)
+
+                            if(materialLoaderParameter.performPrAsPlacingNgDut)
+                            {
+                                sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
+                                                                        MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                        MaterialLoaderModule.APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET|
+                                                                        MaterialLoaderModule.PICKER2_TO_WORKPOS|
+                                                                        MaterialLoaderModule.PICKER2_PLACE_NG_SENSOR_TO_TRAY)
+                            }
+                            else{
+                                sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
+                                                                        MaterialLoaderModule.RESET_PR|
+                                                                        MaterialLoaderModule.APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET|
+                                                                        MaterialLoaderModule.PICKER2_TO_WORKPOS|
+                                                                        MaterialLoaderModule.PICKER2_PLACE_NG_SENSOR_TO_TRAY)
+                            }
                         }
                     }
                     Button{
@@ -183,10 +282,21 @@ ColumnLayout {
                         height: 40
                         onClicked: {
                             sh_reject_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
+                            if(materialLoaderParameter.performPrAsPlacingNgDut)
+                            {
+                                sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
                                                                     MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                    MaterialLoaderModule.APPLY_PLACE_NG_PRODUCT_TO_TRAY_OFFSET|
                                                                     MaterialLoaderModule.PICKER1_TO_WORKPOS|
                                                                     MaterialLoaderModule.PICKER1_PLACE_NG_PRODUCT_TO_TRAY)
+                            }
+                            else{
+                                sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
+                                                                    MaterialLoaderModule.RESET_PR|
+                                                                    MaterialLoaderModule.APPLY_PLACE_NG_PRODUCT_TO_TRAY_OFFSET|
+                                                                    MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                    MaterialLoaderModule.PICKER1_PLACE_NG_PRODUCT_TO_TRAY)
+                            }
                         }
                     }
                 }

@@ -71,6 +71,7 @@ DISTFILES += \
     icons/index.theme
 
 HEADERS += \
+    DOE/startcameradoe.h \
     Dispense/dispense_module.h \
     Dispense/dispense_parameter.h \
     Dispense/dispenser.h \
@@ -140,6 +141,7 @@ HEADERS += \
     TrayMap/traymapmodel.h
 
 SOURCES += \
+    DOE/startcameradoe.cpp \
     Dispense/dispense_module.cpp \
     Dispense/dispenser.cpp \
     Light/LontryLight.cpp \

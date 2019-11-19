@@ -145,7 +145,7 @@ void AACoreNew::setSfrWorkerController(SfrWorkerController * sfrWorkerController
     this->sfrWorkerController = sfrWorkerController;
 }
 
-void AACoreNew::receiveStartAAProcessRequest()
+void AACoreNew::receiveStartAAProcessRequestResponse()
 {
     qInfo(__FUNCTION__);
     this->has_sensor = true;
@@ -174,7 +174,7 @@ void AACoreNew::run(bool has_material)
 			double temp_time = timer.elapsed();
 			temp_time/=1000;
 			qInfo("cycle_time :%f",temp_time);
-            emit sendAAProcessResponse(has_ng_sensor, has_ng_lens, has_product, has_ng_product);
+            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product);
         }
     }
     qInfo("End of thread");
@@ -341,6 +341,11 @@ void AACoreNew::performHandlingOperation(int cmd)
     runningUnit = this->unitlog->createUnit();
     if (cmd == HandleTest::Dispense)
     {
+        if(!lsut->moveToDownlookPR(sensorDownlookOffset))
+        {
+            qCritical("moveToDownlookPR failed!");
+            return;
+        }
         performDispense();
     }
     else if (cmd == HandleTest::PR_To_Bond)
@@ -752,18 +757,17 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
 ErrorCodeStruct AACoreNew::performDispense()
 {
     qInfo("Performing Dispense");
-    has_product = true;
-    has_lens = false;
-    has_sensor = false;
-    has_ng_lens = false;
-    has_ng_sensor = false;
+//    has_product = true;
+//    has_lens = false;
+//    has_sensor = false;
+//    has_ng_lens = false;
+//    has_ng_sensor = false;
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     lsut->recordCurrentPos();
-    PrOffset offset;
     dispense->setMapPosition(lsut->downlook_position.X(),lsut->downlook_position.Y());
-    if(!lsut->moveToDownlookPR(offset)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "downlook pr fail"};}
-    dispense->setPRPosition(offset.X,offset.Y,offset.Theta);
+    dispense->setPRPosition(sensorDownlookOffset.X,sensorDownlookOffset.Y,sensorDownlookOffset.Theta);
+
     lsut->moveToZPos(0);
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
     QString imageNameAfterDispense;
@@ -772,6 +776,7 @@ ErrorCodeStruct AACoreNew::performDispense()
                    .append("_")
                    .append("_after_dispense.jpg");
     lsut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
+//    QThread::msleep(500);
     QImage image(imageNameAfterDispense);
     dispenseImageProvider->setImage(image);
     emit callQmlRefeshImg(3);  //Emit dispense image to QML
@@ -781,6 +786,11 @@ ErrorCodeStruct AACoreNew::performDispense()
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
     qInfo("Finish Dispense");
+    has_product = true;
+    has_lens = false;
+    has_sensor = false;
+    has_ng_lens = false;
+    has_ng_sensor = false;
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
@@ -1054,6 +1064,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         step_move_timer.start();
         aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
         //aa_head->stepInterpolation_AB_Sync(-aa_result["xTilt"].toDouble(), -aa_result["yTilt"].toDouble());
+        step_move_timer.start();
         wait_tilt_time += step_move_timer.elapsed();
         map.insert("WAIT_TILT_TIME", wait_tilt_time);
     }
@@ -2092,23 +2103,12 @@ ErrorCodeStruct AACoreNew::performReject()
     Sleep(100);
     imageThread->exit();
     dk->DothinkeyClose();
-//    NgLens();
-//    NgSensor();
-//    if(!has_product)
-//    {
-//        if(has_lens)
-//            has_ng_lens = true;
-//        if(has_sensor)
-//            has_ng_sensor = true;
-//    }
-//    has_sensor = false;
-//    has_lens = false;
-//    map.insert("has_ng_lens", has_product);
-//    map.insert("has_ng_sensor", has_ng_sensor);
-//    map.insert("has_product", has_product);
-//    map.insert("has_sensor", has_sensor);
-//    map.insert("has_lens", has_lens);
-//    emit pushDataToUnit(this->runningUnit, "Reject", map);
+    map.insert("has_ng_lens", has_ng_lens);
+    map.insert("has_ng_sensor", has_ng_sensor);
+    map.insert("has_product", has_product);
+    map.insert("has_sensor", has_sensor);
+    map.insert("has_lens", has_lens);
+    emit pushDataToUnit(this->runningUnit, "Reject", map);
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -2130,6 +2130,14 @@ ErrorCodeStruct AACoreNew::performTerminate()
     Sleep(100);
     imageThread->exit();
     dk->DothinkeyClose();
+
+    QVariantMap map;
+    map.insert("has_ng_lens", has_ng_lens);
+    map.insert("has_ng_sensor", has_ng_sensor);
+    map.insert("has_product", has_product);
+    map.insert("has_sensor", has_sensor);
+    map.insert("has_lens", has_lens);
+    emit pushDataToUnit(this->runningUnit, "Termiate", map);
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -2330,15 +2338,20 @@ ErrorCodeStruct AACoreNew::performPRToBond()
 {
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
+    sensorDownlookOffset.ReSet();
+    if(!lsut->moveToDownlookPR(sensorDownlookOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
+    qInfo("downlook Pr Offset x: %f y: %f t: %f", sensorDownlookOffset.X, sensorDownlookOffset.Y, sensorDownlookOffset.Theta);
+    map.insert("moveToDownlookPR", stepTimer.elapsed()); stepTimer.restart();
     if (!lsut->gripLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
     map.insert("aa_gripLens", stepTimer.elapsed()); stepTimer.restart();
-    if (!this->aa_head->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
+    PrOffset uplookPrOffset;
+    if(!lsut->moveToUplookPR(uplookPrOffset)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToUplookPR"}; }
+    map.insert("moveToUplookPR", stepTimer.elapsed()); stepTimer.restart();
+
+    double thetaOffset = -uplookPrOffset.Theta - sensorDownlookOffset.Theta + aa_head->bondOffset.Theta();
+
+    if (!this->aa_head->moveToMushroomPosWithCOffset(thetaOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
-//    PrOffset downlookPrOffset;
-//    if(!lsut->moveToDownlookPR(downlookPrOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
-//    qInfo("downlook Pr Offset x: %f y: %f t: %f", downlookPrOffset.X, downlookPrOffset.Y, downlookPrOffset.Theta);
-//    double theta = lsut->up_downlook_offset.Theta() + aa_head->uplook_theta + aa_head->offset_theta;
-//    this->aa_head->moveToSync(0, 0, 0, theta);
     if(!this->lsut->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToMushroomPosition"}; }
     map.insert("lsut_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
     map.insert("timeElapsed", timer.elapsed());

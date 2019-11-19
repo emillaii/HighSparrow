@@ -150,43 +150,43 @@ Popup {
                 implicitHeight: 600
                 clip: true
                 ColumnLayout {
-                    RowLayout {
-                        Text {
-                            text: " AA_A_Inter "
-                            color: "white"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                highSprrow.aa_A_Inter(-selectedStepSize);
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                highSprrow.aa_A_Inter(selectedStepSize);
-                            }
-                        }
-                    }
-                    RowLayout {
-                        id:inter_layout_b
-                        Text {
-                            text: " AA_B_Inter "
-                            color: "white"
-                        }
-                        RoundButton {
-                            text: "-"
-                            onClicked: {
-                                highSprrow.aa_B_Inter(-selectedStepSize);
-                            }
-                        }
-                        RoundButton {
-                            text: "+"
-                            onClicked: {
-                                highSprrow.aa_B_Inter(selectedStepSize);
-                            }
-                        }
-                    }
+//                    RowLayout {
+//                        Text {
+//                            text: " AA_A_Inter "
+//                            color: "white"
+//                        }
+//                        RoundButton {
+//                            text: "-"
+//                            onClicked: {
+//                                highSprrow.aa_A_Inter(-selectedStepSize);
+//                            }
+//                        }
+//                        RoundButton {
+//                            text: "+"
+//                            onClicked: {
+//                                highSprrow.aa_A_Inter(selectedStepSize);
+//                            }
+//                        }
+//                    }
+//                    RowLayout {
+//                        id:inter_layout_b
+//                        Text {
+//                            text: " AA_B_Inter "
+//                            color: "white"
+//                        }
+//                        RoundButton {
+//                            text: "-"
+//                            onClicked: {
+//                                highSprrow.aa_B_Inter(-selectedStepSize);
+//                            }
+//                        }
+//                        RoundButton {
+//                            text: "+"
+//                            onClicked: {
+//                                highSprrow.aa_B_Inter(selectedStepSize);
+//                            }
+//                        }
+//                    }
 
                     ListView{
                         //anchors.top:inter_layout_b.bottom

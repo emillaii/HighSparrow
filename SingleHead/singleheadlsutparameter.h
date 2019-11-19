@@ -225,23 +225,12 @@ signals:
 class LSutState:public PropertyBase
 {
     Q_OBJECT
-    Q_PROPERTY(int lutTrayID READ lutTrayID WRITE setLutTrayID NOTIFY lutTrayIDChanged)
-    Q_PROPERTY(int lutLensID READ lutLensID WRITE setLutLensID NOTIFY lutLensIDChanged)
-    Q_PROPERTY(int lutNgTrayID READ lutNgTrayID WRITE setLutNgTrayID NOTIFY lutNgTrayIDChanged)
-    Q_PROPERTY(int lutNgLensID READ lutNgLensID WRITE setLutNgLensID NOTIFY lutNgLensIDChanged)
-    Q_PROPERTY(int aaTrayID READ aaTrayID WRITE setAaTrayID NOTIFY aaTrayIDChanged)
-    Q_PROPERTY(int aaLensID READ aaLensID WRITE setAaLensID NOTIFY aaLensIDChanged)
 
-    Q_PROPERTY(bool waitLens READ waitLens WRITE setWaitLens NOTIFY waitLensChanged)
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool lutHasNgLens READ lutHasNgLens WRITE setLutHasNgLens NOTIFY lutHasNgLensChanged)
-    //    Q_PROPERTY(bool pickingLens READ pickingLens WRITE setPickingLens NOTIFY pickingLensChanged)
-
     Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
     Q_PROPERTY(bool allowLoadSensor READ allowLoadSensor WRITE setAllowLoadSensor NOTIFY allowLoadSensorChanged)
-    //    Q_PROPERTY(bool loadingSensor READ loadingSensor WRITE setLoadingSensor NOTIFY loadingSensorChanged)
-
     Q_PROPERTY(bool allowLoadLens READ allowLoadLens WRITE setAllowLoadLens NOTIFY allowLoadLensChanged)
 
     Q_PROPERTY(bool waitLoading READ waitLoading WRITE setWaitLoading NOTIFY waitLoadingChanged)
@@ -250,50 +239,10 @@ class LSutState:public PropertyBase
     Q_PROPERTY(bool hasNgProduct READ hasNgProduct WRITE setHasNgProduct NOTIFY hasNgProductChanged)
 
 public:
-    int lutTrayID() const
-    {
-        return m_lutTrayID;
-    }
-
-    int lutLensID() const
-    {
-        return m_lutLensID;
-    }
-
-    int lutNgTrayID() const
-    {
-        return m_lutNgTrayID;
-    }
-
-    int lutNgLensID() const
-    {
-        return m_lutNgLensID;
-    }
-
-    int aaTrayID() const
-    {
-        return m_aaTrayID;
-    }
-
-    int aaLensID() const
-    {
-        return m_aaLensID;
-    }
-
-    bool waitLens() const
-    {
-        return m_waitLens;
-    }
-
     bool lutHasLens() const
     {
         return m_lutHasLens;
     }
-
-    //    bool pickingLens() const
-    //    {
-    //        return m_pickingLens;
-    //    }
 
     bool sutHasSensor() const
     {
@@ -310,11 +259,6 @@ public:
     {
         return m_allowLoadSensor;
     }
-
-    //    bool loadingSensor() const
-    //    {
-    //        return m_loadingSensor;
-    //    }
 
     bool waitLoading() const
     {
@@ -348,69 +292,6 @@ public:
     }
 
 public slots:
-    void setLutTrayID(int lutTrayID)
-    {
-        if (m_lutTrayID == lutTrayID)
-            return;
-
-        m_lutTrayID = lutTrayID;
-        emit lutTrayIDChanged(m_lutTrayID);
-    }
-
-    void setLutLensID(int lutLensID)
-    {
-        if (m_lutLensID == lutLensID)
-            return;
-
-        m_lutLensID = lutLensID;
-        emit lutLensIDChanged(m_lutLensID);
-    }
-
-    void setLutNgTrayID(int lutNgTrayID)
-    {
-        if (m_lutNgTrayID == lutNgTrayID)
-            return;
-
-        m_lutNgTrayID = lutNgTrayID;
-        emit lutNgTrayIDChanged(m_lutNgTrayID);
-    }
-
-    void setLutNgLensID(int lutNgLensID)
-    {
-        if (m_lutNgLensID == lutNgLensID)
-            return;
-
-        m_lutNgLensID = lutNgLensID;
-        emit lutNgLensIDChanged(m_lutNgLensID);
-    }
-
-    void setAaTrayID(int aaTrayID)
-    {
-        if (m_aaTrayID == aaTrayID)
-            return;
-
-        m_aaTrayID = aaTrayID;
-        emit aaTrayIDChanged(m_aaTrayID);
-    }
-
-    void setAaLensID(int aaLensID)
-    {
-        if (m_aaLensID == aaLensID)
-            return;
-
-        m_aaLensID = aaLensID;
-        emit aaLensIDChanged(m_aaLensID);
-    }
-
-    void setWaitLens(bool waitLens)
-    {
-        if (m_waitLens == waitLens)
-            return;
-
-        m_waitLens = waitLens;
-        emit waitLensChanged(m_waitLens);
-    }
-
     void setLutHasLens(bool lutHasLens)
     {
         if (m_lutHasLens == lutHasLens)
@@ -419,15 +300,6 @@ public slots:
         m_lutHasLens = lutHasLens;
         emit lutHasLensChanged(m_lutHasLens);
     }
-
-    //    void setPickingLens(bool pickingLens)
-    //    {
-    //        if (m_pickingLens == pickingLens)
-    //            return;
-
-    //        m_pickingLens = pickingLens;
-    //        emit pickingLensChanged(m_pickingLens);
-    //    }
 
     void setSutHasSensor(bool sutHasSensor)
     {
@@ -456,15 +328,6 @@ public slots:
         m_allowLoadSensor = allowLoadSensor;
         emit allowLoadSensorChanged(m_allowLoadSensor);
     }
-
-    //    void setLoadingSensor(bool loadingSensor)
-    //    {
-    //        if (m_loadingSensor == loadingSensor)
-    //            return;
-
-    //        m_loadingSensor = loadingSensor;
-    //        emit loadingSensorChanged(m_loadingSensor);
-    //    }
 
     void setWaitLoading(bool waitLoading)
     {
@@ -521,31 +384,14 @@ public slots:
     }
 
 signals:
-    void lutTrayIDChanged(int lutTrayID);
-
-    void lutLensIDChanged(int lutLensID);
-
-    void lutNgTrayIDChanged(int lutNgTrayID);
-
-    void lutNgLensIDChanged(int lutNgLensID);
-
-    void aaTrayIDChanged(int aaTrayID);
-
-    void aaLensIDChanged(int aaLensID);
-
-    void waitLensChanged(bool waitLens);
 
     void lutHasLensChanged(bool lutHasLens);
-
-    //    void pickingLensChanged(bool pickingLens);
 
     void sutHasSensorChanged(bool sutHasSensor);
 
     void sutHasNgSensorChanged(bool sutHasNgSensor);
 
     void allowLoadSensorChanged(bool allowLoadSensor);
-
-    //    void loadingSensorChanged(bool loadingSensor);
 
     void waitLoadingChanged(bool waitLoading);
 
@@ -560,13 +406,6 @@ signals:
     void waitAAProcessChanged(bool waitAAProcess);
 
 private:
-    int m_lutTrayID = -1;
-    int m_lutLensID = -1;
-    int m_lutNgTrayID = -1;
-    int m_lutNgLensID = -1;
-    int m_aaTrayID = -1;
-    int m_aaLensID = -1;
-    bool m_waitLens = false;
     bool m_lutHasLens = false;
     bool m_sutHasSensor = false;
     bool m_sutHasNgSensor = false;

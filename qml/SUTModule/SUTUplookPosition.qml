@@ -9,42 +9,42 @@ ColumnLayout {
             text: qsTr("SUT_X")
         }
         TextField {
-            text: lsutGripperPosition.X
+            text: lsutUplookPosition.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lsutGripperPosition.setX(text)
+                lsutUplookPosition.setX(text)
             }
         }
         Label {
             text: qsTr("SUT_Y")
         }
         TextField {
-            text: lsutGripperPosition.Y
+            text: lsutUplookPosition.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lsutGripperPosition.setY(text)
+                lsutUplookPosition.setY(text)
             }
         }
         Label {
             text: qsTr("SUT_Z")
         }
         TextField {
-            text: lsutGripperPosition.Z
+            text: lsutUplookPosition.Z
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lsutGripperPosition.setZ(text)
+                lsutUplookPosition.setZ(text)
             }
         }
     }
@@ -55,8 +55,8 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                console.log("lsut move to gripper pos")
-                sh_lsut_Module.performHandling(SingleheadLSutModule.MOVE_TO_GRIPPER_POSITION)
+                console.log("lsut move to uplook pos")
+                sh_lsut_Module.performHandling(SingleheadLSutModule.MOVE_TO_UPLOOK_POSITION)
             }
         }
         Button {
@@ -67,9 +67,9 @@ ColumnLayout {
                 var x = baseModuleManager.getMotorFeedbackPos(lsutParams.motorXName)
                 var y = baseModuleManager.getMotorFeedbackPos(lsutParams.motorYName)
                 var z = baseModuleManager.getMotorFeedbackPos(lsutParams.motorZName)
-                lsutGripperPosition.setX(x)
-                lsutGripperPosition.setY(y)
-                lsutGripperPosition.setZ(z)
+                lsutUplookPosition.setX(x)
+                lsutUplookPosition.setY(y)
+                lsutUplookPosition.setZ(z)
             }
         }
     }
@@ -140,15 +140,15 @@ ColumnLayout {
                 sh_lsut_Module.performHandling(SingleheadLSutModule.LENS_TO_GRIPPER_CENTER)
             }
         }
-        Button {
-            text: qsTr("LENS TO GRIPER")
-            width: 40
-            height: 40
-            onClicked: {
-                console.log("Move lens to gripper position")
-                sh_lsut_Module.performHandling(SingleheadLSutModule.LENS_TO_GRIPPER)
-            }
-        }
+//        Button {
+//            text: qsTr("LENS TO GRIPER")
+//            width: 40
+//            height: 40
+//            onClicked: {
+//                console.log("Move lens to gripper position")
+//                sh_lsut_Module.performHandling(SingleheadLSutModule.LENS_TO_GRIPPER)
+//            }
+//        }
         Button {
             text: qsTr("夹Lens")
             width: 40

@@ -41,28 +41,8 @@ public:
     ~WordopLight();
 
     bool Init(const QString &com_port);
-    bool ReInit(const QString &com_port);
     bool setBrightness(int ch, uint8_t brightness);
-    int GetBrightness(int ch);
-    bool SetPWM(int ch,uint8_t pwm);
-    bool SetTrigMode(int ch, uint8_t mode);
     bool OnOff(int ch, bool on_or_off);
-    bool GetConfig(int ch, uint8_t &brightness, uint8_t &trig_mode, uint8_t onoff);
-
-    int getUplookLensHolderPRLighting();
-    int getDownlookCmosSensorPRLighting();
-    int getUpdownlookCalibGlassPRLighting();
-    int getPickarmLensHolderPRLighting();
-    int getPickarmCmosSensorPRLighting();
-    int getPickarmProductPRLighting();
-
-    void setUplookLensHolderPRLighting(int val);
-    void setDownlookCmosSensorPRLighting(int val);
-    void setUpdownlookCalibGlassPRLighting(int val);
-    void setPickarmLensHolderPRLighting(int val);
-    void setPickarmCmosSensorPRLighting(int val);
-    void setPickarmProductPRLighting(int value);
-
     int downlookLighting() const
     {
         return m_downlookLighting;

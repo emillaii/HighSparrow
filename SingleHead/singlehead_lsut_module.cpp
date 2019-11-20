@@ -432,9 +432,16 @@ bool SingleheadLSutModule::gripLens()
          aa_head->closeGripper();
         return false;
     }
-    QThread::msleep(100);
+    if(parameters.delayBeforGripLens() > 0)
+    {
+        QThread::msleep(parameters.delayBeforGripLens());
+    }
     this->vacuum_lut->Set(false, false);  //First do not check the state.
     aa_head->closeGripper();
+    if(parameters.delayAfterGripLens() > 0)
+    {
+        QThread::msleep(parameters.delayAfterGripLens());
+    }
     qInfo("GripLens finished");
     return true;
 }

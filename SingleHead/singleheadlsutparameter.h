@@ -20,6 +20,10 @@ private:
     QString m_mushroomLocationName;
     QString m_lutGripperLoactionName;
 
+    int m_delayBeforGripLens = 0;
+
+    int m_delayAfterGripLens = 0;
+
 public:
     explicit SingleHeadLSutParameter(){}
     Q_PROPERTY(double ZOffset READ ZOffset WRITE setZOffset NOTIFY ZOffsetChanged)
@@ -34,6 +38,8 @@ public:
     Q_PROPERTY(QString sutDownLookLocationName READ sutDownLookLocationName WRITE setSutDownLookLocationName NOTIFY sutDownLookLocationNameChanged)
     Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
     Q_PROPERTY(QString lutGripperLoactionName READ lutGripperLoactionName WRITE setLutGripperLoactionName NOTIFY lutGripperLoactionNameChanged)
+    Q_PROPERTY(int delayBeforGripLens READ delayBeforGripLens WRITE setDelayBeforGripLens NOTIFY delayBeforGripLensChanged)
+    Q_PROPERTY(int delayAfterGripLens READ delayAfterGripLens WRITE setDelayAfterGripLens NOTIFY delayAfterGripLensChanged)
 
     double ZOffset() const
     {
@@ -93,6 +99,16 @@ public:
     QString lutGripperLoactionName() const
     {
         return m_lutGripperLoactionName;
+    }
+
+    int delayBeforGripLens() const
+    {
+        return m_delayBeforGripLens;
+    }
+
+    int delayAfterGripLens() const
+    {
+        return m_delayAfterGripLens;
     }
 
 public slots:
@@ -207,6 +223,24 @@ public slots:
         emit lutGripperLoactionNameChanged(m_lutGripperLoactionName);
     }
 
+    void setDelayBeforGripLens(int delayBeforGripLens)
+    {
+        if (m_delayBeforGripLens == delayBeforGripLens)
+            return;
+
+        m_delayBeforGripLens = delayBeforGripLens;
+        emit delayBeforGripLensChanged(m_delayBeforGripLens);
+    }
+
+    void setDelayAfterGripLens(int delayAfterGripLens)
+    {
+        if (m_delayAfterGripLens == delayAfterGripLens)
+            return;
+
+        m_delayAfterGripLens = delayAfterGripLens;
+        emit delayAfterGripLensChanged(m_delayAfterGripLens);
+    }
+
 signals:
     void ZOffsetChanged(double ZOffset);
     void LensSoftlandingVelChanged(double ZOffset);
@@ -220,6 +254,8 @@ signals:
     void sutDownLookLocationNameChanged(QString sutDownLookLocationName);
     void mushroomLocationNameChanged(QString mushroomLocationName);
     void lutGripperLoactionNameChanged(QString lutGripperLoactionName);
+    void delayBeforGripLensChanged(int delayBeforGripLens);
+    void delayAfterGripLensChanged(int delayAfterGripLens);
 };
 
 class LSutState:public PropertyBase

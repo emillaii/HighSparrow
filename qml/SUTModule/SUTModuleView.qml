@@ -43,6 +43,10 @@ ItemDelegate {
                 title: qsTr("Uplook Position")
                 SUTUplookPosition {}
             }
+            GroupBox {
+                title: qsTr("Lens操作")
+                LensOperation{}
+            }
             GroupBox{
                 title: qsTr("Load Position")
                 SUTLoadPositionView {}

@@ -59,5 +59,6 @@
         <file>qml/DOE/StartCameraDoe.qml</file>
         <file>qml/SUTModule/SUTUplookPosition.qml</file>
         <file>qml/VisionLocationParameters.qml</file>
+        <file>qml/SUTModule/LensOperation.qml</file>
     </qresource>
 </RCC>

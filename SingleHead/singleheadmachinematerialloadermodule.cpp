@@ -668,6 +668,7 @@ void SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequestResponse(b
 void SingleHeadMachineMaterialLoaderModule::run()
 {
     is_run = true;
+    int waitLastProductPlaceToTrayTimes = 0;
     while (is_run) {
         if (!states.needLoadSensor() || !states.needLoadLens()){  // Waiting for load material
             //May finish the loading, make decision here
@@ -910,12 +911,6 @@ void SingleHeadMachineMaterialLoaderModule::run()
         }
 
         if(this->states.hasPickedProduct()){  //Place product to tray
-            //            qInfo("Place Product to Sensor Tray");
-            //            if(moveToSensorTrayPos(states.currentSensorTray()))
-            //            {
-            //                pr_offset.ReSet();
-            //                performSensorVacancyPR();
-            //                moveToPicker1WorkPos();
             qInfo("Place Product to Sensor Tray");
             QPointF point;
             QPointF recordPickSensorPos = this->states.hasPickedSensor() ? lastPickSensorPos : currentPickSensorPos;
@@ -1030,11 +1025,23 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     }
                 }
             }else {
-                moveToChangeTrayPos();
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "sensor tray is empty. Please change the sensor tray");
-                int operation = waitMessageReturn(is_run);
-                qInfo("user operation: %d", operation);
-                sensorTray->resetTrayState(states.currentSensorTray());
+                if(states.sutIsReadyToLoadMaterial() && !states.hasPickedProduct() && !states.sutHasProduct())
+                {
+                    moveToChangeTrayPos();
+                    sendAlarmMessage(ErrorLevel::ContinueOrRetry, "sensor tray is empty. Please change the sensor tray");
+                    int operation = waitMessageReturn(is_run);
+                    qInfo("user operation: %d", operation);
+                    sensorTray->resetTrayState(states.currentSensorTray());
+                }
+                else {  //最后一颗产品还没有放回原SensorTray盘
+                    QThread::msleep(100);
+                    waitLastProductPlaceToTrayTimes++;
+                    if(waitLastProductPlaceToTrayTimes > 20)
+                    {
+                        qInfo("Waiting last product being placed to sensor tray!");
+                        waitLastProductPlaceToTrayTimes = 0;
+                    }
+                }
                 continue;
             }
             if(!is_run)break;

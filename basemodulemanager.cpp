@@ -1121,6 +1121,8 @@ bool BaseModuleManager::performLocation(QString location_name)
         qInfo("calibraion(%s)is null",temp_location->parameters.calibrationName().toStdString().c_str());
         return  false;
     }
+    temp_location->OpenLight();
+    QThread::msleep(50);
     PrOffset offset;
     if(temp_location->parameters.calibrationName().contains("chart_calibration"))
     {

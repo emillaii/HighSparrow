@@ -23,6 +23,9 @@ public:
 
     Pixel2Mech* mapping;
 
+private:
+    void applyOffset(PrOffset& prOffset);
+
 public:
     VisionLocationParameter parameters;
 private:

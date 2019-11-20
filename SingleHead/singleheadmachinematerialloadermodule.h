@@ -99,7 +99,6 @@ public:
     };
     enum HandlePROffset
     {
-        APPLY_PLACE_SENSOR_TO_SUT_OFFSET = 1 << 23,
         APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET = 2 << 23,
         APPLY_PLACE_NG_PRODUCT_TO_TRAY_OFFSET = 3 << 23,
 
@@ -137,7 +136,6 @@ public:
     Position camera_to_picker1_offset;
     Position camera_to_picker2_offset;
 
-    PositionT placeSensorToSutOffset;
     PositionT placeNgSensorToTrayOffset;
     PositionT placeNgProductToTrayOffset;
     Position placeOkProductToTrayOffset;

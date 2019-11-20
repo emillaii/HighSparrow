@@ -4,40 +4,6 @@ import QtQuick.Layouts 1.11
 import SingleHeadMaterialLoaderLib 1.0
 ColumnLayout {
     GroupBox{
-        title: qsTr("放Sensor偏移")
-        RowLayout{
-            Label{
-                text:qsTr("X")
-            }
-            TextField{
-                text:sh_place_sensor_to_sut_offset.X
-                horizontalAlignment: TextInput.AlignHCenter
-                validator: DoubleValidator{
-                    decimals: 6
-                    notation: DoubleValidator.StandardNotation
-                }
-                onEditingFinished: {
-                    sh_place_sensor_to_sut_offset.setX(text)
-                }
-            }
-            Label{
-                text:qsTr("Y")
-            }
-            TextField{
-                text:sh_place_sensor_to_sut_offset.Y
-                horizontalAlignment: TextInput.AlignHCenter
-                validator: DoubleValidator{
-                    decimals: 6
-                    notation: DoubleValidator.StandardNotation
-                }
-                onEditingFinished: {
-                    sh_place_sensor_to_sut_offset.setY(text)
-                }
-            }
-        }
-    }
-
-    GroupBox{
         title:qsTr("sut_pr_position")
         ColumnLayout{
             RowLayout{
@@ -196,7 +162,6 @@ ColumnLayout {
                     onClicked: {
                         sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR_POS|
                                                                 MaterialLoaderModule.SUT_PR|
-                                                                MaterialLoaderModule.APPLY_PLACE_SENSOR_TO_SUT_OFFSET|
                                                                 MaterialLoaderModule.PICKER2_TO_WORKPOS|
                                                                 MaterialLoaderModule.PICKER2_PLACE_SENSOR_TO_SUT)
                     }

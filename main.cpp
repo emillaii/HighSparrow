@@ -20,7 +20,6 @@
 
 long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
 {
-    //创建 Dump 文件
     HANDLE hDumpFile = ::CreateFile(
         L"MEMORY.DMP",
         GENERIC_WRITE,
@@ -32,12 +31,10 @@ long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
     );
     if (hDumpFile != INVALID_HANDLE_VALUE)
     {
-        //Dump信息
         MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
         dumpInfo.ExceptionPointers = pexcp;
         dumpInfo.ThreadId = GetCurrentThreadId();
         dumpInfo.ClientPointers = TRUE;
-        //写入Dump文件内容
         ::MiniDumpWriteDump(
             GetCurrentProcess(),
             GetCurrentProcessId(),
@@ -141,7 +138,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sh_lut_pr_position",&highSprrow.baseModuleManager->single_station_material_loader_module.lut_pr_position);
     engine.rootContext()->setContextProperty("sh_camera_to_picker1_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.camera_to_picker1_offset);
     engine.rootContext()->setContextProperty("sh_camera_to_picker2_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.camera_to_picker2_offset);
-    engine.rootContext()->setContextProperty("sh_place_sensor_to_sut_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeSensorToSutOffset);
     engine.rootContext()->setContextProperty("sh_place_ng_sensor_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeNgSensorToTrayOffset);
     engine.rootContext()->setContextProperty("sh_place_ng_product_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeNgProductToTrayOffset);
     engine.rootContext()->setContextProperty("sh_place_ok_product_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeOkProductToTrayOffset);

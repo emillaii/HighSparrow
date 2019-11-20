@@ -70,6 +70,10 @@ ApplicationWindow {
             }
         }
 
+        VisionLocationParameters{
+            id: visionLocationParametersViewer
+        }
+
         MotionDialog {
             id: motionDialog
         }
@@ -227,6 +231,19 @@ ApplicationWindow {
                       })
                   })
               }
+           }
+           ToolButton {
+                id: openVisionLocationParameterViewer
+                text: qsTr("VL参数")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/visionLocationParameterViewer.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    visionLocationParametersViewer.open()
+                }
            }
            ToolButton {
                 id: loadParamsButton

@@ -237,7 +237,6 @@ ColumnLayout {
                             {
                                 sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
                                                                         MaterialLoaderModule.SENSOR_VACANCY_PR|
-                                                                        MaterialLoaderModule.APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET|
                                                                         MaterialLoaderModule.PICKER1_TO_WORKPOS|
                                                                         MaterialLoaderModule.PICKER1_PLACE_NG_SENSOR_TO_TRAY)
                             }
@@ -263,7 +262,6 @@ ColumnLayout {
                             {
                                 sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
                                                                         MaterialLoaderModule.SENSOR_VACANCY_PR|
-                                                                        MaterialLoaderModule.APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET|
                                                                         MaterialLoaderModule.PICKER2_TO_WORKPOS|
                                                                         MaterialLoaderModule.PICKER2_PLACE_NG_SENSOR_TO_TRAY)
                             }
@@ -286,7 +284,6 @@ ColumnLayout {
                             {
                                 sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
                                                                     MaterialLoaderModule.SENSOR_VACANCY_PR|
-                                                                    MaterialLoaderModule.APPLY_PLACE_NG_PRODUCT_TO_TRAY_OFFSET|
                                                                     MaterialLoaderModule.PICKER1_TO_WORKPOS|
                                                                     MaterialLoaderModule.PICKER1_PLACE_NG_PRODUCT_TO_TRAY)
                             }

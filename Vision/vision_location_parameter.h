@@ -267,9 +267,9 @@ private:
     bool m_needCalibration = false;
     bool m_canMotion = true;
     double m_waitImageDelay = 100;
-    double m_offsetX;
-    double m_offsetY;
-    double m_offsetTheta;
+    double m_offsetX = 0;
+    double m_offsetY = 0;
+    double m_offsetTheta = 0;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

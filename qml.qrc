@@ -58,5 +58,6 @@
         <file>qml/FlowChartWeb.qml</file>
         <file>qml/DOE/StartCameraDoe.qml</file>
         <file>qml/SUTModule/SUTUplookPosition.qml</file>
+        <file>qml/VisionLocationParameters.qml</file>
     </qresource>
 </RCC>

@@ -53,7 +53,6 @@ void SingleHeadMachineMaterialLoaderModule::loadJsonConfig(QString file_name)
     temp_map.insert("lut_pr_position",&lut_pr_position);
     temp_map.insert("camera_to_picker1_offset",&camera_to_picker1_offset);
     temp_map.insert("camera_to_picker2_offset",&camera_to_picker2_offset);
-    temp_map.insert("place_sensor_to_sut_offset",&placeSensorToSutOffset);
     temp_map.insert("place_ng_sensor_to_tray_offset",&placeNgSensorToTrayOffset);
     temp_map.insert("place_ng_product_to_tray_offset",&placeNgProductToTrayOffset);
     temp_map.insert("place_ok_product_to_tray_offset",&placeOkProductToTrayOffset);
@@ -69,7 +68,6 @@ void SingleHeadMachineMaterialLoaderModule::saveJsonConfig(QString file_name)
     temp_map.insert("lut_pr_position",&lut_pr_position);
     temp_map.insert("camera_to_picker1_offset",&camera_to_picker1_offset);
     temp_map.insert("camera_to_picker2_offset",&camera_to_picker2_offset);
-    temp_map.insert("place_sensor_to_sut_offset",&placeSensorToSutOffset);
     temp_map.insert("place_ng_sensor_to_tray_offset",&placeNgSensorToTrayOffset);
     temp_map.insert("place_ng_product_to_tray_offset",&placeNgProductToTrayOffset);
     temp_map.insert("place_ok_product_to_tray_offset",&placeOkProductToTrayOffset);
@@ -734,7 +732,6 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     performSUTPR();
                     continue;
                 }else{
-                    applyPrOffset(placeSensorToSutOffset);
                     moveToPicker2WorkPos();           //use this in fast mode
                     picker2PlaceSensorToSUT();
                     states.setHasPickedSensor(false);
@@ -809,7 +806,6 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     performSUTPR();
                     continue;
                 }else{
-                    applyPrOffset(placeSensorToSutOffset);
                     moveToPicker2WorkPos();           //use this in fast mode
                     picker2PlaceSensorToSUT();
                     states.setHasPickedSensor(false);
@@ -831,7 +827,10 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 {
                     performSensorVacancyPR();
                 }
-                applyPrOffset(placeNgSensorToTrayOffset);
+                else
+                {
+                    applyPrOffset(placeNgSensorToTrayOffset);
+                }
                 moveToPicker1WorkPos();
                 picker1PlaceNgSensorToTray();
                 states.setHasPickedNgSensor(false);
@@ -898,7 +897,6 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     performSUTPR();
                     continue;
                 }else{
-                    applyPrOffset(placeSensorToSutOffset);
                     moveToPicker2WorkPos();           //use this in fast mode
                     picker2PlaceSensorToSUT();
                     states.setHasPickedSensor(false);
@@ -1251,11 +1249,6 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
     int handleApplyOffset = cmd&HANDLE_PR_OFFSET;
     switch(handleApplyOffset)
     {
-    case APPLY_PLACE_SENSOR_TO_SUT_OFFSET:
-    {
-        applyPrOffset(placeSensorToSutOffset);
-        break;
-    }
     case APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET:
     {
         applyPrOffset(placeNgSensorToTrayOffset);

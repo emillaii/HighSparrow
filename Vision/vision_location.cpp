@@ -52,6 +52,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
             offset.Theta = pr_result.theta;
             offset.W = pr_result.width;
             offset.H = pr_result.height;
+            applyOffset(offset);
             return true;
         }
         if(mapping->CalcMechDistance(QPointF(pr_result.x,pr_result.y),mech)&&mapping->CalcMechDistance(QPointF(pr_result.roi_x,pr_result.roi_y),mech_o))
@@ -82,6 +83,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
                AppendError(QString(u8"theta result too big"));
                return false;
            }
+           applyOffset(temp_offset);
            current_offset = offset = temp_offset;
            qInfo("mech: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
            return true;
@@ -121,6 +123,13 @@ void VisionLocation::OpenLight()
 void VisionLocation::CloseLight()
 {
     lighting->setBrightness(parameters.lightChannel(),0);
+}
+
+void VisionLocation::applyOffset(PrOffset &prOffset)
+{
+    prOffset.X += parameters.offsetX();
+    prOffset.Y += parameters.offsetY();
+    prOffset.Theta += parameters.offsetTheta();
 }
 
 //QString VisionLocation::getLastImageName()

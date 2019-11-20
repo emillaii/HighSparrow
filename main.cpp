@@ -117,6 +117,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
     //AA Head Position
     engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);
+    engine.rootContext()->setContextProperty("aaHeadPickLensPosition", &highSprrow.baseModuleManager->aa_head_module.aaPickLensPosition);
     engine.rootContext()->setContextProperty("bondOffset", &highSprrow.baseModuleManager->aa_head_module.bondOffset);
 
     //LSUT Position

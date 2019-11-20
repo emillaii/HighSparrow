@@ -13,6 +13,7 @@ void AAHeadModule::loadJsonConfig(QString file_name)
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("AA_HEAD_PARAMS", &parameters);
     temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
+    temp_map.insert("AA_PICK_LENS_POSITION", &this->aaPickLensPosition);
     temp_map.insert("BOND_OFFSET", &this->bondOffset);
     PropertyBase::loadJsonConfig(file_name, temp_map);
 }
@@ -22,6 +23,7 @@ void AAHeadModule::saveJsonConfig(QString file_name)
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("AA_HEAD_PARAMS", &this->parameters);
     temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
+    temp_map.insert("AA_PICK_LENS_POSITION", &this->aaPickLensPosition);
     temp_map.insert("BOND_OFFSET", &this->bondOffset);
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
@@ -102,6 +104,25 @@ bool AAHeadModule::moveToMushroomPosWithCOffset(double cOffset)
 {
     return moveToSync(mushroom_position.X(),mushroom_position.Y(),mushroom_position.Z(),
                       mushroom_position.A(), mushroom_position.B(),mushroom_position.C() + cOffset);
+}
+
+bool AAHeadModule::moveToPickLensPositionSync()
+{
+    return moveToPikLensPositionAsync() & waitArrivedPickLesPosition();
+}
+
+bool AAHeadModule::moveToPikLensPositionAsync()
+{
+    return motor_a->MoveToPos(aaPickLensPosition.A()) &
+    motor_b->MoveToPos(aaPickLensPosition.B())&
+    motor_c->MoveToPos(aaPickLensPosition.C());
+}
+
+bool AAHeadModule::waitArrivedPickLesPosition()
+{
+    return motor_a->WaitArrivedTargetPos(aaPickLensPosition.A()) &
+            motor_b->WaitArrivedTargetPos(aaPickLensPosition.B())&
+            motor_c->WaitArrivedTargetPos(aaPickLensPosition.C());
 }
 
 bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)

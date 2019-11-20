@@ -41,6 +41,10 @@ ItemDelegate {
                 AAHeadMushroomPosition {}
             }
             GroupBox{
+                title: qsTr("AAPickLensPosition")
+                AAHeadPickLensPosition {}
+            }
+            GroupBox{
                 title: qsTr("Bond Offset")
                 RowLayout {
                     Label {

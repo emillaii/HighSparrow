@@ -34,6 +34,9 @@ public:
     void openGripper();
     void closeGripper();
     bool moveToMushroomPosWithCOffset(double aOffset);
+    bool moveToPickLensPositionSync();
+    Q_INVOKABLE bool moveToPikLensPositionAsync();
+    bool waitArrivedPickLesPosition();
     Q_INVOKABLE bool stepInterpolation_AB_Sync(double step_a,double step_b);
     mPoint6D GetFeedBack();
 private:
@@ -44,6 +47,7 @@ private:
 public:
     AAHeadParameters parameters;
     Position6D mushroom_position;
+    Position6D aaPickLensPosition;
     PositionT bondOffset;
     bool waiting_lens;
     double uplook_x;
@@ -62,7 +66,6 @@ private:
     XtGeneralOutput * uv2 = Q_NULLPTR;
     XtGeneralOutput * uv3 = Q_NULLPTR;
     XtGeneralOutput * uv4 = Q_NULLPTR;
-    Position6D last_aa_position;
     int thread_id;
 };
 

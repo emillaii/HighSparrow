@@ -426,17 +426,15 @@ bool SingleheadLSutModule::gripLens()
 {
     qInfo("GripLens Start SUT is going to zOffset: %f", parameters.ZOffset());
     aa_head->openGripper();
-//     QThread::msleep(200);
     if(!moveToPickLensPosition()) {
         qInfo("Move to pick lens pos fail");
-//        aa_head->closeGripper();
         this->vacuum_lut->Set(false, false);  //First do not check the state.
          aa_head->closeGripper();
         return false;
     }
+    QThread::msleep(100);
     this->vacuum_lut->Set(false, false);  //First do not check the state.
     aa_head->closeGripper();
-//    this->vacuum_lut->Set(false, false);  //First do not check the state.
     qInfo("GripLens finished");
     return true;
 }

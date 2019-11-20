@@ -19,6 +19,9 @@ public:
     Q_PROPERTY(bool needCalibration READ needCalibration WRITE setNeedCalibration NOTIFY needCalibrationChanged)
     Q_PROPERTY(bool canMotion READ canMotion WRITE setCanMotion NOTIFY canMotionChanged)
     Q_PROPERTY(double waitImageDelay READ waitImageDelay WRITE setWaitImageDelay NOTIFY waitImageDelayChanged)
+    Q_PROPERTY(double offsetX READ offsetX WRITE setOffsetX NOTIFY offsetXChanged)
+    Q_PROPERTY(double offsetY READ offsetY WRITE setOffsetY NOTIFY offsetYChanged)
+    Q_PROPERTY(double offsetTheta READ offsetTheta WRITE setOffsetTheta NOTIFY offsetThetaChanged)
 
     QString prFileName() const
     {
@@ -73,6 +76,21 @@ public:
     double waitImageDelay() const
     {
         return m_waitImageDelay;
+    }
+
+    double offsetX() const
+    {
+        return m_offsetX;
+    }
+
+    double offsetY() const
+    {
+        return m_offsetY;
+    }
+
+    double offsetTheta() const
+    {
+        return m_offsetTheta;
     }
 
 public slots:
@@ -178,6 +196,36 @@ public slots:
         emit waitImageDelayChanged(m_waitImageDelay);
     }
 
+    void setOffsetX(double offsetX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_offsetX, offsetX))
+            return;
+
+        m_offsetX = offsetX;
+        emit offsetXChanged(m_offsetX);
+    }
+
+    void setOffsetY(double offsetY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_offsetY, offsetY))
+            return;
+
+        m_offsetY = offsetY;
+        emit offsetYChanged(m_offsetY);
+    }
+
+    void setOffsetTheta(double offsetTheta)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_offsetTheta, offsetTheta))
+            return;
+
+        m_offsetTheta = offsetTheta;
+        emit offsetThetaChanged(m_offsetTheta);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -201,6 +249,12 @@ signals:
 
     void waitImageDelayChanged(double waitImageDelay);
 
+    void offsetXChanged(double offsetX);
+
+    void offsetYChanged(double offsetY);
+
+    void offsetThetaChanged(double offsetTheta);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -213,6 +267,9 @@ private:
     bool m_needCalibration = false;
     bool m_canMotion = true;
     double m_waitImageDelay = 100;
+    double m_offsetX;
+    double m_offsetY;
+    double m_offsetTheta;
 };
 
 #endif // VISION_LOCATION_PARAMETER_H

@@ -44,8 +44,6 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     QString m_cameraToPickerOffsetVisionName = "";
 
     double m_sutPlaceSensorAngle = 90;
-    double m_picker1PlaceOkProductOffsetX = 0;
-    double m_picker1PlaceOkProductOffsetY = 0;
 
     bool m_performPrAsPlacingNgDut;
 
@@ -82,8 +80,6 @@ public:
     Q_PROPERTY(QString lutVacuumName READ lutVacuumName WRITE setLutVacuumName NOTIFY lutVacuumNameChanged)
     Q_PROPERTY(int changeTrayTimeOut READ changeTrayTimeOut WRITE setChangeTrayTimeOut NOTIFY changeTrayTimeOutChanged)
     Q_PROPERTY(double sutPlaceSensorAngle READ sutPlaceSensorAngle WRITE setSutPlaceSensorAngle NOTIFY sutPlaceSensorAngleChanged)
-    Q_PROPERTY(double picker1PlaceOkProductOffsetX READ picker1PlaceOkProductOffsetX WRITE setPicker1PlaceOkProductOffsetX NOTIFY picker1PlaceOkProductOffsetXChanged)
-    Q_PROPERTY(double picker1PlaceOkProductOffsetY READ picker1PlaceOkProductOffsetY WRITE setPicker1PlaceOkProductOffsetY NOTIFY picker1PlaceOkProductOffsetYChanged)
 
     Q_PROPERTY(bool performPrAsPlacingNgDut READ performPrAsPlacingNgDut WRITE setPerformPrAsPlacingNgDut NOTIFY performPrAsPlacingNgDutChanged)
 
@@ -225,18 +221,6 @@ public:
     double sutPlaceSensorAngle() const
     {
         return m_sutPlaceSensorAngle;
-    }
-
-
-
-    double picker1PlaceOkProductOffsetX() const
-    {
-        return m_picker1PlaceOkProductOffsetX;
-    }
-
-    double picker1PlaceOkProductOffsetY() const
-    {
-        return m_picker1PlaceOkProductOffsetY;
     }
 
     bool performPrAsPlacingNgDut() const
@@ -509,25 +493,7 @@ public slots:
         emit performPrAsPlacingNgDutChanged(m_performPrAsPlacingNgDut);
     }
 
- 	void setPicker1PlaceOkProductOffsetX(double picker1PlaceOkProductOffsetX)
-    {
-        qWarning("set setPicker1PlaceOkProductOffsetX to %f",picker1PlaceOkProductOffsetX);
-        if (qFuzzyCompare(m_picker1PlaceOkProductOffsetX, picker1PlaceOkProductOffsetX))
-            return;
-
-        m_picker1PlaceOkProductOffsetX = picker1PlaceOkProductOffsetX;
-        emit picker1PlaceOkProductOffsetXChanged(m_picker1PlaceOkProductOffsetX);
-    }
-
-    void setPicker1PlaceOkProductOffsetY(double picker1PlaceOkProductOffsetY)
-    {
-        qWarning("set picker1PlaceOkProductOffsetY to %f",picker1PlaceOkProductOffsetY);
-        if (qFuzzyCompare(m_picker1PlaceOkProductOffsetY, picker1PlaceOkProductOffsetY))
-            return;
-
-        m_picker1PlaceOkProductOffsetY = picker1PlaceOkProductOffsetY;
-        emit picker1PlaceOkProductOffsetYChanged(m_picker1PlaceOkProductOffsetY);
-    }signals:
+signals:
 
     void vcm1SvelChanged(double vcm1Svel);
 

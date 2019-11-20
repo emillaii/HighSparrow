@@ -156,9 +156,6 @@ private:
     bool performLUTPR();
     bool performLUTLensPR();
 
-    //PR Offset
-    void applyPicker1PlaceOkProductOffset();
-
     //pickArm and trayloder動作
     bool moveToNextLensTrayPos(int tray_index);
     bool moveToLensTrayPos(int tray_index);
@@ -210,6 +207,7 @@ private:
     bool picker2SearchSutZ(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchSutZ2(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchSutZ2Revert(double z,bool is_open = true,int time_out = 10000);
+    bool picker1SearchSutZ2(double z,bool is_open = true, int time_out = 10000);
     bool picker1MeasureHight(bool is_tray,bool is_product = false);
     bool picker2MeasureHight(bool is_tray,bool is_product = false);
 
@@ -253,6 +251,8 @@ private:
     bool is_run = false;
     bool finish_stop = false;
     PrOffset pr_offset;
+    QPointF lastPickSensorPos;
+    QPointF currentPickSensorPos;
 
     int lensPrFailedTimes = 0;
     int sensorPrFailedTimes = 0;

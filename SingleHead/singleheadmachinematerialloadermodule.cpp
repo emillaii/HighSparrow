@@ -314,12 +314,6 @@ bool SingleHeadMachineMaterialLoaderModule::performLUTLensPR()
     return lut_lens_vision->performPR(pr_offset);
 }
 
-void SingleHeadMachineMaterialLoaderModule::applyPicker1PlaceOkProductOffset()
-{
-    pr_offset.X += parameters.picker1PlaceOkProductOffsetX();
-    pr_offset.Y += parameters.picker1PlaceOkProductOffsetY();
-}
-
 bool SingleHeadMachineMaterialLoaderModule::picker2PickSensorFromTray(int time_out)
 {
     qInfo("pickTraySensor time_out %d",time_out);
@@ -676,7 +670,6 @@ void SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequestResponse(b
 void SingleHeadMachineMaterialLoaderModule::run()
 {
     is_run = true;
-    double current_x, current_y;
     while (is_run) {
         if (!states.needLoadSensor() || !states.needLoadLens()){  // Waiting for load material
             //May finish the loading, make decision here
@@ -927,8 +920,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
             //                moveToPicker1WorkPos();
             qInfo("Place Product to Sensor Tray");
             QPointF point;
-            point.setX(current_x+camera_to_picker1_offset.X()-camera_to_picker2_offset.X() + placeOkProductToTrayOffset.X());
-            point.setY(current_y+camera_to_picker1_offset.Y()-camera_to_picker2_offset.Y() + placeOkProductToTrayOffset.Y());
+            QPointF recordPickSensorPos = this->states.hasPickedSensor() ? lastPickSensorPos : currentPickSensorPos;
+            point.setX(recordPickSensorPos.x()+camera_to_picker1_offset.X()-camera_to_picker2_offset.X() + placeOkProductToTrayOffset.X());
+            point.setY(recordPickSensorPos.y()+camera_to_picker1_offset.Y()-camera_to_picker2_offset.Y() + placeOkProductToTrayOffset.Y());
             if(pick_arm->move_XY_Synic(point))
             {
                 picker1PlaceProductToTray();
@@ -1016,9 +1010,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 } else {
                     sensorPrFailedTimes = 0;
                     moveToPicker2WorkPos();
-                    current_x = pick_arm->motor_x->GetFeedbackPos();
-                    current_y = pick_arm->motor_y->GetFeedbackPos();
-                    qInfo("print current_x: %f current_y: %f", current_x, current_y);
+                    QPointF tmpPickSensorPos;
+                    tmpPickSensorPos.setX(pick_arm->motor_x->GetFeedbackPos());
+                    tmpPickSensorPos.setY(pick_arm->motor_y->GetFeedbackPos());
                     picker2PickSensorFromTray();
                     if(!pick_arm->vacuum_sensor_suction->GetVacuumState()) {
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick sensor from sensor tray fail");
@@ -1029,6 +1023,8 @@ void SingleHeadMachineMaterialLoaderModule::run()
                         sensorTray->setCurrentMaterialState(MaterialState::IsNg, states.currentSensorTray());
                         continue;
                     } else {
+                        lastPickSensorPos = currentPickSensorPos;
+                        currentPickSensorPos = tmpPickSensorPos;
                         states.setHasPickedSensor(true);
                         states.setNeedLoadSensor(false);
                         sensorTray->setCurrentMaterialState(MaterialState::IsInUse, states.currentSensorTray());

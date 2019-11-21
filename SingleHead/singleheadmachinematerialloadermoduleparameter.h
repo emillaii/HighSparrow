@@ -3,12 +3,6 @@
 
 #include "Utils/propertybase.h"
 
-struct PickSensorPos
-{
-    double TL_X;
-    double PA_X;
-    double PA_Y;
-};
 
 class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
 {

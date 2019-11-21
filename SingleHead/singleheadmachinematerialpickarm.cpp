@@ -57,6 +57,21 @@ bool SingleHeadMachineMaterialPickArm::move_XY_Synic(const QPointF position, con
     return result;
 }
 
+bool SingleHeadMachineMaterialPickArm::move_XYXm_Sync(PickArmPos pos, const bool check_softlanding, int timeout)
+{
+    if(check_softlanding)
+    {
+        if(!motor_vcm1->resetSoftLanding(timeout))return false;
+        if(!motor_vcm2->resetSoftLanding(timeout))return false;
+    }
+    motor_x->MoveToPos(pos.TL_X);
+    motor_y->MoveToPos(pos.PA_Y);
+    motor_vcmx->MoveToPos(pos.PA_X);
+    return motor_x->WaitArrivedTargetPos(pos.TL_X,timeout)&
+           motor_y->WaitArrivedTargetPos(pos.PA_Y,timeout) &
+           motor_vcmx->WaitArrivedTargetPos(pos.PA_X,timeout);
+}
+
 bool SingleHeadMachineMaterialPickArm::move_XmY_Synic(const QPointF position, const bool check_softlanding, int timeout)
 {
     if(check_softlanding)

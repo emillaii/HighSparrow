@@ -176,7 +176,7 @@ void AACoreNew::run(bool has_material)
 			double temp_time = timer.elapsed();
 			temp_time/=1000;
 			qInfo("cycle_time :%f",temp_time);
-            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex, currentLensIndex);
+            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex);
         }
     }
     qInfo("End of thread");

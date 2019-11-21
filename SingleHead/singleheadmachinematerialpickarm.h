@@ -9,6 +9,13 @@
 #include "XtMotion/xtmotor.h"
 #include "Vision/vision_location.h"
 
+struct PickArmPos
+{
+    double TL_X;
+    double PA_X;
+    double PA_Y;
+};
+
 class SingleHeadMachineMaterialPickArm:public ErrorBase
 {
 public:
@@ -24,6 +31,7 @@ public:
 
     bool move_Xm_Origin();
     bool move_XY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
+    bool move_XYXm_Sync(PickArmPos pos, const bool check_softlanding = false,int timeout = 10000);
     bool move_XmY_Synic(const QPointF position,const bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XmYT1_Synic(const double step_x,const double step_y,const double step_t1,const bool check_softlanding = false,int timeout = 10000);
     bool stepMove_XmYT2_Synic(const double step_x,const double step_y,const double step_t2,const bool check_softlanding = false,int timeout = 10000);

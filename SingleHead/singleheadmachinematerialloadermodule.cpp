@@ -818,39 +818,28 @@ void SingleHeadMachineMaterialLoaderModule::run()
             if(!pickSensorPoses.contains(currentProductIndex))
             {
                 qCritical("Did not find picking sensor position. Index: %d", currentProductIndex);
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Reject Tray Full. Please clear the reject tray");
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Did not know where the product should be placed to! Please remove the product!");
                 int operation = waitMessageReturn(is_run);
                 qInfo("user operation: %d", operation);
-            }
-            PickSensorPos recordPickSensorPos;
-            if(states.sutIsReadyToLoadMaterial())
-            {
-
+                states.setHasPickedProduct(false);
             }
             else {
-                if(states.hasPickedSensor())
+                PickArmPos recordPickSensorPos = pickSensorPoses.value(currentProductIndex);
+                recordPickSensorPos.TL_X += camera_to_picker1_offset.X()-camera_to_picker2_offset.X() + placeOkProductToTrayOffset.X();
+                recordPickSensorPos.PA_Y += camera_to_picker1_offset.Y()-camera_to_picker2_offset.Y() + placeOkProductToTrayOffset.Y();
+                if(pick_arm->move_XYXm_Sync(recordPickSensorPos))
                 {
-
-                }
-                else {
-
+                    picker1PlaceProductToTray();
+                    states.setHasPickedProduct(false);
+                    sensorTray->setCurrentMaterialState(MaterialState::IsProduct, states.currentSensorTray());
+                } else {
+                    sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Move failed! Please remove the product, then home the motor!");
+                    int operation = waitMessageReturn(is_run);
+                    qInfo("user operation: %d", operation);
+                    states.setHasPickedProduct(false);
                 }
             }
-            QPointF point;
-            QPointF recordPickSensorPos = this->states.hasPickedSensor() ? lastPickSensorPos : currentPickSensorPos;
-            point.setX(recordPickSensorPos.x()+camera_to_picker1_offset.X()-camera_to_picker2_offset.X() + placeOkProductToTrayOffset.X());
-            point.setY(recordPickSensorPos.y()+camera_to_picker1_offset.Y()-camera_to_picker2_offset.Y() + placeOkProductToTrayOffset.Y());
-            if(pick_arm->move_XY_Synic(point))
-            {
-                picker1PlaceProductToTray();
-                states.setHasPickedProduct(false);
-                sensorTray->setCurrentMaterialState(MaterialState::IsProduct, states.currentSensorTray());
-            } else {
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Move failed! Please remove the product, then home the motor!");
-                int operation = waitMessageReturn(is_run);
-                qInfo("user operation: %d", operation);
-                states.setHasPickedProduct(false);
-            }
+
             if(!is_run)break;
         }
 
@@ -926,7 +915,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 } else {
                     sensorPrFailedTimes = 0;
                     moveToPicker2WorkPos();
-                    PickSensorPos tmpPickSensorPos;
+                    PickArmPos tmpPickSensorPos;
                     tmpPickSensorPos.TL_X = pick_arm->motor_x->GetFeedbackPos();
                     tmpPickSensorPos.PA_X = pick_arm->motor_vcmx->GetFeedbackPos();
                     tmpPickSensorPos.PA_Y = pick_arm->motor_y->GetFeedbackPos();

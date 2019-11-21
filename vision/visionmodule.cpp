@@ -440,10 +440,10 @@ void VisionModule::testVision()
     QElapsedTimer timer; timer.start();
     //this->Glue_Inspection("", "", &imageName);
     //qInfo("Glue inspection reuslt: %s time: %d", imageName.toStdString().c_str(), timer.elapsed());
-    //PRResultStruct prResult;
+    PRResultStruct prResult;
     //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
-    //this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
+    this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
 }
@@ -473,16 +473,12 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Matching(QString camera_name, PRResul
     rawImageName.append(getVisionLogDir())
                 .append(getCurrentTimeString())
                 .append("_raw.jpg");
-    avl::SegmentFittingField ext_con_4ec14560_6099_46e9_aecb_6be91237a243;
-    avl::SegmentFittingField ext_con_c7ba17d7_c40c_4cb2_b2ae_f592b05307ac;
+
     static atl::String g_constData1;
     static avl::GrayModel g_constData2;
     static atl::String g_constData3;
     static atl::String g_emptyString;
     static atl::Array< atl::Conditional< avl::Location > > g_constData4;
-    ext_con_4ec14560_6099_46e9_aecb_6be91237a243 = avl::SegmentFittingField(avl::Segment2D(avl::Point2D(0.0f, 0.0f), avl::Point2D(0.0f, 0.0f)), 20.0f);
-
-    ext_con_c7ba17d7_c40c_4cb2_b2ae_f592b05307ac = avl::SegmentFittingField(avl::Segment2D(avl::Point2D(0.0f, 0.0f), avl::Point2D(0.0f, 0.0f)), 20.0f);
 
     g_constData3 = L"Angle: ";
 
@@ -504,13 +500,13 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Matching(QString camera_name, PRResul
         avl::Image image4;
         atl::Conditional< avl::Object2D > object2D1;
         atl::Conditional< avl::Point2D > point2D1;
-        g_constData1 = L"C:\\Users\\emil\\Desktop\\sunny_issue\\ois-af-project\\sutPrism\\18-07-19-508.jpg";
+        g_constData1 = L"C:\\Users\\emil\\Downloads\\grabber+log\\grabber log\\15-34-27-400.jpg";
         avs::ReadDataFromFile( L"config\\prConfig\\sutPrismDetection.70f9b147.avdata", L"GrayModel", g_constData2 );
 
         this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
 //        avl::LoadImage( g_constData1, false, image1 );
-        avl::LocateSingleObject_NCC( image1, atl::NIL, g_constData2, 0, 3, false, 0.7f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+        avl::LocateSingleObject_NCC( image1, atl::NIL, g_constData2, 0, 3, false, 0.6f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
 
         if (object2D1 != atl::NIL)
         {
@@ -521,10 +517,10 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Matching(QString camera_name, PRResul
             coordinateSystem2D1 = object2D1.Get().Alignment();
 
             // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-            avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState1, image1, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(246.308151f, 178.574448f), avl::Point2D(340.674469f, 277.443329f)), 10.7081118f), coordinateSystem2D1, 20, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.3f, avl::MEstimator::Tukey, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+            avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState1, image1, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(246.308151f, 178.574448f), avl::Point2D(340.674469f, 277.443329f)), 18.52667f), coordinateSystem2D1, 20, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.8f, avl::MEstimator::Tukey, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
             // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-            avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState2, image1, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(359.732239f, 272.591278f), avl::Point2D(434.376648f, 199.6306f)), 19.0827923f), coordinateSystem2D1, 20, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.1f, avl::MEstimator::Tukey, segment2D2, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+            avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState2, image1, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(345.701355f, 268.6625f), avl::Point2D(420.345764f, 195.70195f)), 19.0827923f), coordinateSystem2D1, 20, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.8f, avl::MEstimator::Tukey, segment2D2, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
             if (segment2D1 != atl::NIL)
             {
@@ -634,7 +630,7 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
                 .append(getCurrentTimeString())
                 .append("_raw.jpg");
     try {
-        g_constData1 = L"C:\\Users\\emil\\Desktop\\sunny_issue\\ois-af-project\\18-32-41-578_raw.jpg";
+        g_constData1 = L"C:\\Users\\emil\\Downloads\\grabber+log\\grabber log\\15-33-01-884.jpg";
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.9ec2dbe0.avdata", L"Path", g_constData2 );
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.5aab78b7.avdata", L"Path", g_constData3 );
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.685b0ee7.avdata", L"Path", g_constData4 );
@@ -668,7 +664,9 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
         atl::Array< atl::Conditional< atl::String > > stringArray1;
         avl::Image image5;
 
-        avl::LoadImage( g_constData1, false, image1 );
+        this->grabImageFromCamera(camera_name, image1);
+        avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
+        //avl::LoadImage( g_constData1, false, image1 );
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
         avl::ThresholdToRegion( image1, atl::NIL, 240.0f, 255.0f, 0.0f, region1 );
         avl::RemoveRegionBlobs( region1, avl::RegionConnectivity::EightDirections, avl::RegionFeature::Area, 100.0f, atl::NIL, false, region2 );

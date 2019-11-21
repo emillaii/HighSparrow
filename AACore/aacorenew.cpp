@@ -965,6 +965,12 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
     double x_offset_in_um = params["x_offset_in_um"].toDouble(0);
     double y_offset_in_um = params["y_offset_in_um"].toDouble(0);
     double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
+    bool enable_glue_inspection = params["enable_glue_inspection"].toBool(false);
+    double max_glue_width_in_mm = params["max_glue_width_in_mm"].toDouble(0);
+    double min_glue_width_in_mm = params["min_glue_width_in_mm"].toDouble(0);
+    double max_avg_glue_width_in_mm = params["max_avg_glue_width_in_mm"].toDouble(0);
+    qInfo("enable_glue_inspection: %d %f %f %f", enable_glue_inspection,
+          max_glue_width_in_mm, min_glue_width_in_mm, max_avg_glue_width_in_mm);
     int finish_delay = params["delay_in_ms"].toInt(0);
     QElapsedTimer timer; timer.start();
     QVariantMap map;
@@ -999,14 +1005,19 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
 
             sut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
             //ToDo: Glue
-            QString glueInspectionName = "";
-            bool glueInspectionResult = sut->vision_downlook_location->performGlueInspection(imageBeforeDispense, imageNameAfterDispense, &glueInspectionName);
-            qInfo("Glue Inspection result: %d glueInspectionImageName: %s", glueInspectionResult, glueInspectionName.toStdString().c_str());
+            QString glueInspectionImageName = "";
+            bool glueInspectionResult = sut->vision_downlook_location->performGlueInspection(imageBeforeDispense, imageNameAfterDispense, &glueInspectionImageName);
+            qInfo("Glue Inspection result: %d glueInspectionImageName: %s", glueInspectionResult, glueInspectionImageName.toStdString().c_str());
             //ToDo: return QImage from this function
-            QImage image(imageNameAfterDispense);
-            dispenseImageProvider->setImage(image);
-            emit callQmlRefeshImg(3);  //Emit dispense image to QML
-
+            if (!glueInspectionImageName.isEmpty()) {
+                QImage image(glueInspectionImageName);
+                dispenseImageProvider->setImage(image);
+                emit callQmlRefeshImg(3);  //Emit dispense image to QML
+            } else {
+                QImage image(imageNameAfterDispense);
+                dispenseImageProvider->setImage(image);
+                emit callQmlRefeshImg(3);  //Emit dispense image to QML
+            }
             int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"画胶检查");
             QString operation = waitMessageReturn(is_run,alarm_id);
             if (u8"抛料" == operation)

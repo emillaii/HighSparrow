@@ -145,9 +145,11 @@ void AACoreNew::setSfrWorkerController(SfrWorkerController * sfrWorkerController
     this->sfrWorkerController = sfrWorkerController;
 }
 
-void AACoreNew::receiveStartAAProcessRequestResponse()
+void AACoreNew::receiveStartAAProcessRequestResponse(int sensorIndex, int lensIndex)
 {
     qInfo(__FUNCTION__);
+    currentSensorIndex = sensorIndex;
+    currentLensIndex = lensIndex;
     this->has_sensor = true;
     this->has_ng_sensor = true;
     this->has_lens = true;
@@ -174,7 +176,7 @@ void AACoreNew::run(bool has_material)
 			double temp_time = timer.elapsed();
 			temp_time/=1000;
 			qInfo("cycle_time :%f",temp_time);
-            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product);
+            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex, currentLensIndex);
         }
     }
     qInfo("End of thread");

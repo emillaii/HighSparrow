@@ -143,6 +143,9 @@ private:
     double mtf_oc_x = 0;
     double mtf_oc_y = 0;
 
+    int currentSensorIndex;
+    int currentLensIndex;
+
     PrOffset sensorDownlookOffset;
 
     QVariantMap sfrFitCurve_Advance(int resize_factor, double start_pos);
@@ -167,7 +170,7 @@ signals:
     void postDataToELK(QString);
     void postSfrDataToELK(QString, QVariantMap);
     void sendLensRequestToLut();
-    void sendAAProcessFinishSignal(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product);
+    void sendAAProcessFinishSignal(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productIndex);
 public slots:
     void triggerGripperOn(bool isOn);
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);
@@ -177,7 +180,7 @@ public slots:
     }
     void sfrImageReady(QImage);
     void aaCoreParametersChanged();
-    void receiveStartAAProcessRequestResponse();
+    void receiveStartAAProcessRequestResponse(int sensorIndex, int lensIndex);
 };
 
 #endif // AACORENEW_H

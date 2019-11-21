@@ -209,6 +209,28 @@ private:
     bool picker1MeasureHight(bool is_tray,bool is_product = false);
     bool picker2MeasureHight(bool is_tray,bool is_product = false);
 
+
+    // composite state
+    bool picker1IsIdle()
+    {
+        return !(states.hasPickedLens() || states.hasPickedNgLens()
+                 || states.hasPickedProduct() || states.hasPickedNgSensor());
+    }
+    bool picker1ShouldUnloadDutFirst()
+    {
+        if(states.sutIsReadyToLoadMaterial())
+        {
+            return states.sutHasNgSensor() || states.sutHasProduct();
+        }
+        else {
+            return false;
+        }
+    }
+    bool sutHasDut()
+    {
+        return states.sutHasSensor() || states.sutHasProduct() || states.sutHasNgSensor();
+    }
+
     //PR Offset
     void applyPrOffset(PositionT& offset);
 
@@ -221,9 +243,10 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
 
-    void receiveLoadMaterialRequestResponse(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial);
+    void receiveLoadMaterialRequestResponse(bool need_sensor, bool need_lens, bool has_ng_sensor,
+                                            bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial, int productIndex);
 private:
-
+    QMap<int, PickSensorPos> pickSensorPoses;
     SingleHeadMachineMaterialPickArm* pick_arm = Q_NULLPTR;
     MaterialTray *sensorTray;
     MaterialTray *lensTray;
@@ -249,8 +272,7 @@ private:
     bool is_run = false;
     bool finish_stop = false;
     PrOffset pr_offset;
-    QPointF lastPickSensorPos;
-    QPointF currentPickSensorPos;
+    int currentProductIndex;
 
     int lensPrFailedTimes = 0;
     int sensorPrFailedTimes = 0;

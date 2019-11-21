@@ -77,6 +77,24 @@ int MaterialTray::getCurrentIndex(int tray_index)
 {
     return parameters[getTrayIndex(tray_index)]->currentIndex();
 }
+
+void MaterialTray::setCurrentData(QVariantMap data, int trayIndex)
+{
+    TrayParameter* current_tray = parameters[getTrayIndex(trayIndex)];
+    current_tray->setTrayNumber(current_tray->trayNumber() + 1);
+    for (int i = 0; i < current_tray->tray_material_state.count(); ++i)
+    {
+        qInfo("reset Tray State:%d", current_tray->tray_material_state[i]);
+        current_tray->tray_material_state[i] = current_tray->initState();
+        current_tray->tray_material_data[i].clear();
+        current_tray->tray_material_data[i].insert("TrayNumber",QString::number(current_tray->trayNumber()));
+
+}
+
+QVariantMap MaterialTray::getData(int materialIndex, int trayIndex)
+{
+
+}
 QPointF MaterialTray::getCurrentPosition(int tray_index)
 {
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];

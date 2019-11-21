@@ -82,11 +82,11 @@ void SingleheadLSutModule::receiveLoadMaterialFinishResponse(int sensor_index, i
         states.setWaitAAProcess(true);
         // QThread::msleep(100);// Wait for the while loop trapping in checking the aa process state
         qInfo(QString(tr("emit start aa process request")).toStdString().c_str());
-        emit sendStartAAProcessRequestSignal();
+        emit sendStartAAProcessRequestSignal(sensor_index, lens_index);
     }
 }
 
-void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product)
+void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productIndex)
 {
     qInfo("Receive AA process response has_ng_sensor: %d has_ng_lens: %d has_product: %d has_ng_product: %d",
           has_ng_sensor, has_ng_lens, has_product, has_ng_product);
@@ -94,6 +94,7 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
     this->states.setLutHasNgLens(has_ng_lens);
     this->states.setHasProduct(has_product);
     this->states.setHasNgProduct(has_ng_product);
+    currentProductIndex = productIndex;
     if (has_ng_lens) {
         //unpickLens();   // unpick the lens from aa head to lut
         //Go to lens reject bin
@@ -106,7 +107,7 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
     moveToLoadSensorPosition();
     emit sendLoadMaterialRequestSignal(states.allowLoadSensor(), states.allowLoadLens(),
                                  states.sutHasNgSensor(), states.lutHasNgLens(),
-                                 states.hasProduct(), true);
+                                 states.hasProduct(), true, currentProductIndex);
 }
 
 void SingleheadLSutModule::run(){
@@ -118,7 +119,7 @@ void SingleheadLSutModule::run(){
                 states.setAllowLoadLens(true);
                 states.setAllowLoadSensor(true);
                 emit sendLoadMaterialRequestSignal(states.allowLoadSensor(), states.allowLoadLens(),
-                                             false, false, false, false);
+                                             false, false, false, false, 0);
             }
             QThread::msleep(100);
             continue;
@@ -148,7 +149,7 @@ void SingleheadLSutModule::run(){
             states.setWaitLoading(true);
             emit sendLoadMaterialRequestSignal(states.allowLoadSensor(), states.allowLoadLens(),
                                          states.sutHasNgSensor(), states.lutHasNgLens(),
-                                         states.hasProduct(), true);
+                                         states.hasProduct(), true, currentProductIndex);
         }
     }
 }

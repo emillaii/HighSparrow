@@ -106,15 +106,15 @@ public:
     bool gripLens();
     bool unpickLens();
 signals:
-    void sendLoadMaterialRequestSignal(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial);
-    void sendStartAAProcessRequestSignal();
+    void sendLoadMaterialRequestSignal(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial, int productIndex);
+    void sendStartAAProcessRequestSignal(int sensorIndex, int lensIndex);
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
     void resetLogic();
     void performHandlingOperation(int cmd);
     void receiveLoadMaterialFinishResponse(int sensor_index, int lens_index);
-    void receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product);
+    void receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productIndex);
 public:
     void run();
     bool moveToMushroomPosition(bool check_autochthonous = false);
@@ -140,6 +140,7 @@ private:
     PrOffset pr_offset;
     mPoint3D record_position;
     LUTState state = NO_LENS;
+    int currentProductIndex;
 };
 
 #endif // SINGLEHEAD_LSUT_MODULE_H

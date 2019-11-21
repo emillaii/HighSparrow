@@ -92,6 +92,7 @@ public:
     AACoreStates states;
 private:
     bool is_run = false;
+    int autoRunDispenseTimes = 0;
     QMutex lut_mutex;
     void run(bool has_material);
     void LogicNg(int & ng_time);

@@ -676,7 +676,15 @@ void SingleHeadMachineMaterialLoaderModule::run()
     while (is_run) {
         if(states.sutIsReadyToLoadMaterial())
         {
-            if (this->states.hasPickedLens() && !states.lutHasLens())    //Place lens to LUT
+            if(this->states.lutHasNgLens())
+            {
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Please remove the LUT NG lens!");
+                int operation = waitMessageReturn(is_run);
+                qInfo("user operation: %d", operation);
+                states.setLutHasNgLens(false);
+            }
+
+            if (this->states.hasPickedLens() && !states.lutHasLens() && !states.lutHasNgLens())    //Place lens to LUT
             {
                 qInfo("Place lens to LUT");
                 QPointF point = lut_pr_position.ToPointF();

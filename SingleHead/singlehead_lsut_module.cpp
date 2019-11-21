@@ -105,6 +105,7 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
     this->states.setWaitAAProcess(false);
     pogopin->Set(false);
     moveToLoadSensorPosition();
+    checkReallyHasLens();
     emit sendLoadMaterialRequestSignal(states.allowLoadSensor(), states.allowLoadLens(),
                                  states.sutHasNgSensor(), states.lutHasNgLens(),
                                  states.hasProduct(), true, currentProductIndex);
@@ -147,6 +148,7 @@ void SingleheadLSutModule::run(){
             pogopin->Set(false);
             moveToLoadSensorPosition();
             states.setWaitLoading(true);
+            checkReallyHasLens();
             emit sendLoadMaterialRequestSignal(states.allowLoadSensor(), states.allowLoadLens(),
                                          states.sutHasNgSensor(), states.lutHasNgLens(),
                                          states.hasProduct(), true, currentProductIndex);
@@ -420,6 +422,19 @@ bool SingleheadLSutModule::lensGripperMeasureHight()
     {
         AppendError(QString(u8"Lens-Gripper测高失败"));
         return false;
+    }
+}
+
+void SingleheadLSutModule::checkReallyHasLens()
+{
+    if(states.lutHasLens() || states.lutHasNgLens())
+    {
+        if(!this->vacuum_lut->Set(true, true, 10, 100))
+        {
+            qWarning("Lut has Lens, but did not detect vacuum feedback signal.");
+            states.setLutHasLens(false);
+            states.setLutHasNgLens(false);
+        }
     }
 }
 

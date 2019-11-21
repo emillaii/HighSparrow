@@ -163,6 +163,7 @@ void AACoreNew::run(bool has_material)
 {
     qInfo("Start AACore Thread");
     is_run = true;
+    autoRunDispenseTimes = 0;
     QElapsedTimer timer;timer.start();
     while(is_run) {
 		timer.restart();
@@ -405,6 +406,7 @@ void AACoreNew::resetLogic()
     current_mtf_ng_time = 0;
     grr_repeat_time = 0;
     grr_change_time = 0;
+    autoRunDispenseTimes = 0;
 }
 
 bool AACoreNew::runFlowchartTest()
@@ -759,11 +761,6 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
 ErrorCodeStruct AACoreNew::performDispense()
 {
     qInfo("Performing Dispense");
-//    has_product = true;
-//    has_lens = false;
-//    has_sensor = false;
-//    has_ng_lens = false;
-//    has_ng_sensor = false;
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     lsut->recordCurrentPos();
@@ -772,16 +769,23 @@ ErrorCodeStruct AACoreNew::performDispense()
 
     lsut->moveToZPos(0);
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
-    QString imageNameAfterDispense;
-    imageNameAfterDispense.append(getDispensePrLogDir())
-                   .append(getCurrentTimeString())
-                   .append("_")
-                   .append("_after_dispense.jpg");
-    lsut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
-//    QThread::msleep(500);
-    QImage image(imageNameAfterDispense);
-    dispenseImageProvider->setImage(image);
-    emit callQmlRefeshImg(3);  //Emit dispense image to QML
+
+    if(is_run)   //自动模式
+    {
+        autoRunDispenseTimes ++;
+        if(autoRunDispenseTimes >= 5)
+        {
+            QString imageNameAfterDispense;
+            imageNameAfterDispense.append(getDispensePrLogDir())
+                    .append(getCurrentTimeString())
+                    .append("_")
+                    .append("_after_dispense.jpg");
+            lsut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
+            QImage image(imageNameAfterDispense);
+            dispenseImageProvider->setImage(image);
+            emit callQmlRefeshImg(3);  //Emit dispense image to QML
+        }
+    }
 
     if(!lsut->movetoRecordPos()){return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
 

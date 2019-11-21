@@ -131,6 +131,8 @@ public:
 
 
 private:
+    void checkReallyHasLens();
+
     bool is_run = false;
     VisionLocation* vision_downlook_location = Q_NULLPTR;
     VisionLocation* vision_mushroom_location = Q_NULLPTR;

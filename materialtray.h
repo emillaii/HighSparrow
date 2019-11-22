@@ -36,6 +36,7 @@ public:
     bool findNextPositionOfInitState(int tray_index = 0);
     int getCurrentIndex(int tray_index = 0);
     void setCurrentMaterialState(int state,int tray_index = 0);
+    void setCurrentMaterailStateWithInit(int tray_index = 0);
     void setTrayType(TrayType type);
     Q_INVOKABLE void setTrayCurrent(const int column_index,const int row_index,const int tray_index);
     void setTrayCurrent(const int index,const int tray_index);

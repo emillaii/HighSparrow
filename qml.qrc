@@ -60,5 +60,6 @@
         <file>qml/SUTModule/SUTUplookPosition.qml</file>
         <file>qml/VisionLocationParameters.qml</file>
         <file>qml/SUTModule/LensOperation.qml</file>
+        <file>qml/Log/LogView.qml</file>
     </qresource>
 </RCC>

@@ -89,7 +89,9 @@ HEADERS += \
     Utils/errorcode.h \
     Utils/filecontent.h \
     Utils/iniparser.h \
-    Utils/logger.h \
+    Utils/loging/loging.h \
+    Utils/loging/logmodel.h \
+    Utils/loging/rollbackfile.h \
     Utils/position_define.h \
     Utils/propertybase.h \
     Utils/unitlog.h \
@@ -153,7 +155,9 @@ SOURCES += \
     Utils/errorcode.cpp \
     Utils/filecontent.cpp \
     Utils/iniparser.cpp \
-    Utils/logger.cpp \
+    Utils/loging/loging.cpp \
+    Utils/loging/logmodel.cpp \
+    Utils/loging/rollbackfile.cpp \
     Utils/propertybase.cpp \
     Utils/unitlog.cpp \
     Vision/baslerpyloncamera.cpp \

@@ -262,22 +262,65 @@ class LSutState:public PropertyBase
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool aaHeadHasLens READ aaHeadHasLens WRITE setAAHeadHasLens NOTIFY aaHeadHasLensChanged)
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool lutHasNgLens READ lutHasNgLens WRITE setLutHasNgLens NOTIFY lutHasNgLensChanged)
     Q_PROPERTY(bool sutHasSensor READ sutHasSensor WRITE setSutHasSensor NOTIFY sutHasSensorChanged)
     Q_PROPERTY(bool sutHasNgSensor READ sutHasNgSensor WRITE setSutHasNgSensor NOTIFY sutHasNgSensorChanged)
-    Q_PROPERTY(bool allowLoadSensor READ allowLoadSensor WRITE setAllowLoadSensor NOTIFY allowLoadSensorChanged)
-    Q_PROPERTY(bool allowLoadLens READ allowLoadLens WRITE setAllowLoadLens NOTIFY allowLoadLensChanged)
+    Q_PROPERTY(bool hasProduct READ hasProduct WRITE setHasProduct NOTIFY hasProductChanged)
+    Q_PROPERTY(bool isProductOk READ isProductOk WRITE setIsProductOk NOTIFY isProductOkChanged)
 
     Q_PROPERTY(bool waitLoading READ waitLoading WRITE setWaitLoading NOTIFY waitLoadingChanged)
     Q_PROPERTY(bool waitAAProcess READ waitAAProcess WRITE setWaitAAProcess NOTIFY waitAAProcessChanged)
-    Q_PROPERTY(bool hasProduct READ hasProduct WRITE setHasProduct NOTIFY hasProductChanged)
-    Q_PROPERTY(bool hasNgProduct READ hasNgProduct WRITE setHasNgProduct NOTIFY hasNgProductChanged)
+
+
+    bool m_aaHeadHasLens = false;
+
+    bool m_lutHasLens = false;
+
+    bool m_lutHasNgLens = false;
+
+    bool m_sutHasSensor = false;
+
+    bool m_sutHasNgSensor = false;
+
+    bool m_hasProduct = false;
+
+    bool m_isProductOk = false;
+
+    bool m_waitLoading = false;
+
+    bool m_waitAAProcess = false;
 
 public:
+    bool hasOkLens() const
+    {
+        return lutHasLens() || aaHeadHasLens();
+    }
+
+    bool lutIsEmply() const
+    {
+        return !lutHasLens() && !lutHasNgLens();
+    }
+
+    bool sutIsEmply() const
+    {
+        return !(sutHasSensor() || sutHasNgSensor() || hasProduct());
+    }
+
+
+    bool aaHeadHasLens() const
+    {
+        return m_aaHeadHasLens;
+    }
     bool lutHasLens() const
     {
         return m_lutHasLens;
+    }
+
+    bool lutHasNgLens() const
+    {
+        return m_lutHasNgLens;
     }
 
     bool sutHasSensor() const
@@ -290,36 +333,19 @@ public:
         return m_sutHasNgSensor;
     }
 
-
-    bool allowLoadSensor() const
-    {
-        return m_allowLoadSensor;
-    }
-
-    bool waitLoading() const
-    {
-        return m_waitLoading;
-    }
-
-
-    bool allowLoadLens() const
-    {
-        return m_allowLoadLens;
-    }
-
     bool hasProduct() const
     {
         return m_hasProduct;
     }
 
-    bool lutHasNgLens() const
+    bool isProductOk() const
     {
-        return m_lutHasNgLens;
+        return m_isProductOk;
     }
 
-    bool hasNgProduct() const
+    bool waitLoading() const
     {
-        return m_hasNgProduct;
+        return m_waitLoading;
     }
 
     bool waitAAProcess() const
@@ -328,6 +354,14 @@ public:
     }
 
 public slots:
+    void setAAHeadHasLens(bool aaHeadHasLens)
+    {
+        if (m_aaHeadHasLens == aaHeadHasLens)
+            return;
+
+        m_aaHeadHasLens = aaHeadHasLens;
+        emit aaHeadHasLensChanged(m_aaHeadHasLens);
+    }
     void setLutHasLens(bool lutHasLens)
     {
         if (m_lutHasLens == lutHasLens)
@@ -335,6 +369,15 @@ public slots:
 
         m_lutHasLens = lutHasLens;
         emit lutHasLensChanged(m_lutHasLens);
+    }
+
+    void setLutHasNgLens(bool lutHasNgLens)
+    {
+        if (m_lutHasNgLens == lutHasNgLens)
+            return;
+
+        m_lutHasNgLens = lutHasNgLens;
+        emit lutHasNgLensChanged(m_lutHasNgLens);
     }
 
     void setSutHasSensor(bool sutHasSensor)
@@ -355,34 +398,6 @@ public slots:
         emit sutHasNgSensorChanged(m_sutHasNgSensor);
     }
 
-
-    void setAllowLoadSensor(bool allowLoadSensor)
-    {
-        if (m_allowLoadSensor == allowLoadSensor)
-            return;
-
-        m_allowLoadSensor = allowLoadSensor;
-        emit allowLoadSensorChanged(m_allowLoadSensor);
-    }
-
-    void setWaitLoading(bool waitLoading)
-    {
-        if (m_waitLoading == waitLoading)
-            return;
-
-        m_waitLoading = waitLoading;
-        emit waitLoadingChanged(m_waitLoading);
-    }
-
-    void setAllowLoadLens(bool allowLoadLens)
-    {
-        if (m_allowLoadLens == allowLoadLens)
-            return;
-
-        m_allowLoadLens = allowLoadLens;
-        emit allowLoadLensChanged(m_allowLoadLens);
-    }
-
     void setHasProduct(bool hasProduct)
     {
         if (m_hasProduct == hasProduct)
@@ -392,22 +407,22 @@ public slots:
         emit hasProductChanged(m_hasProduct);
     }
 
-    void setLutHasNgLens(bool lutHasNgLens)
+    void setIsProductOk(bool isProductOk)
     {
-        if (m_lutHasNgLens == lutHasNgLens)
+        if (m_isProductOk == isProductOk)
             return;
 
-        m_lutHasNgLens = lutHasNgLens;
-        emit lutHasNgLensChanged(m_lutHasNgLens);
+        m_isProductOk = isProductOk;
+        emit isProductOkChanged(m_isProductOk);
     }
 
-    void setHasNgProduct(bool hasNgProduct)
+    void setWaitLoading(bool waitLoading)
     {
-        if (m_hasNgProduct == hasNgProduct)
+        if (m_waitLoading == waitLoading)
             return;
 
-        m_hasNgProduct = hasNgProduct;
-        emit hasNgProductChanged(m_hasNgProduct);
+        m_waitLoading = waitLoading;
+        emit waitLoadingChanged(m_waitLoading);
     }
 
     void setWaitAAProcess(bool waitAAProcess)
@@ -420,38 +435,15 @@ public slots:
     }
 
 signals:
-
+    void aaHeadHasLensChanged(bool aaHeadHasLens);
     void lutHasLensChanged(bool lutHasLens);
-
-    void sutHasSensorChanged(bool sutHasSensor);
-
-    void sutHasNgSensorChanged(bool sutHasNgSensor);
-
-    void allowLoadSensorChanged(bool allowLoadSensor);
-
-    void waitLoadingChanged(bool waitLoading);
-
-    void allowLoadLensChanged(bool allowLoadLens);
-
-    void hasProductChanged(bool hasProduct);
-
     void lutHasNgLensChanged(bool lutHasNgLens);
-
-    void hasNgProductChanged(bool hasNgProduct);
-
+    void sutHasSensorChanged(bool sutHasSensor);
+    void sutHasNgSensorChanged(bool sutHasNgSensor);
+    void hasProductChanged(bool hasProduct);
+    void isProductOkChanged(bool isProductOk);
+    void waitLoadingChanged(bool waitLoading);
     void waitAAProcessChanged(bool waitAAProcess);
-
-private:
-    bool m_lutHasLens = false;
-    bool m_sutHasSensor = false;
-    bool m_sutHasNgSensor = false;
-    bool m_allowLoadSensor = false;
-    bool m_waitLoading = false;
-    bool m_allowLoadLens = false;
-    bool m_hasProduct = false;
-    bool m_lutHasNgLens = false;
-    bool m_hasNgProduct = false;
-    bool m_waitAAProcess = false;
 };
 
 #endif // SINGLEHEADLSUTPARAMETER_H

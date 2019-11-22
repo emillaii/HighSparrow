@@ -7,6 +7,9 @@
 #include "thread_worker_base.h"
 #include "Vision/vision_location.h"
 #include "AAHeadModule/aaheadmodule.h"
+#include <QMutex>
+#include <QMutexLocker>
+
 
 class SingleheadLSutModule : public ThreadWorkerBase
 {
@@ -51,14 +54,6 @@ public:
         UNPICK_LENS_TO_LUT = 3000
     };
 
-    enum LUTState
-    {
-        NO_LENS,
-        HAS_LENS,
-        BUSY,
-        HAS_NG_LENS
-    };
-
 public:
     SingleheadLSutModule(QString name = "LSutModule", QObject *parent = nullptr);
     void Init(MaterialCarrier *sut_carrier,
@@ -68,7 +63,8 @@ public:
               XtVacuum* sutVacuum,
               XtVacuum* lutVacuum,
               XtGeneralOutput *pogopin,
-              AAHeadModule * aaHead);
+              AAHeadModule * aaHead,
+              LSutState* lsutState);
 
     MaterialCarrier* sut_carrier;
     AAHeadModule* aa_head;
@@ -88,7 +84,6 @@ public:
 
 
     SingleHeadLSutParameter parameters;
-    LSutState states;
     XtGeneralOutput* pogopin = Q_NULLPTR;
 
     void loadParams(QString file_name);
@@ -106,8 +101,8 @@ public:
     bool gripLens();
     bool unpickLens();
 signals:
-    void sendLoadMaterialRequestSignal(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial, int productIndex);
-    void sendStartAAProcessRequestSignal(int sensorIndex, int lensIndex);
+    void sendLoadMaterialRequestSignal(bool isSutReadyToLoadMaterial, int productIndex);
+    void sendStartAAProcessRequestSignal(int sensorIndex, int lensIndex, bool isAAPickedLens);
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
@@ -131,17 +126,16 @@ public:
 
 
 private:
-    void checkReallyHasLens();
-
     bool is_run = false;
     VisionLocation* vision_downlook_location = Q_NULLPTR;
     VisionLocation* vision_mushroom_location = Q_NULLPTR;
     VisionLocation* vision_uplook_location = Q_NULLPTR;   //Is this vision location for lens in gripper?
     XtVacuum *vacuum_lut;
     XtVacuum *vacuum_sut;
+    LSutState* lsutState;
     PrOffset pr_offset;
     mPoint3D record_position;
-    LUTState state = NO_LENS;
+    QMutex locker;
     int currentProductIndex;
 };
 

@@ -4,11 +4,13 @@
 #include "materialtray.h"
 #include "singleheadmachinematerialloadermoduleparameter.h"
 #include "SingleHead/singleheadmachinematerialpickarm.h"
+#include "SingleHead/singleheadlsutparameter.h"
 #include "thread_worker_base.h"
 #include "Vision/vision_location.h"
 #include "Utils/commonutils.h"
 
 #define DELAY_JET 1000
+
 
 
 class SingleHeadMachineMaterialLoaderModule:public ThreadWorkerBase
@@ -107,6 +109,7 @@ public:
 
     SingleHeadMachineMaterialLoaderModule(QString name = "SingleHeadMachineMaterialLoaderModule");
     void Init(SingleHeadMachineMaterialPickArm* pick_arm,
+              LSutState* lsutState,
               MaterialTray* sensorTray,
               MaterialTray* lensTray,
               MaterialTray* rejectTray,
@@ -119,7 +122,6 @@ public:
               VisionLocation* lens_vacancy_vision = nullptr,
               VisionLocation* lut_vision = nullptr,
               VisionLocation* lut_lens_vision = nullptr,
-//              VisionLocation* camera_to_picker_offest_vision = nullptr,
               XtVacuum* sutVacuum = nullptr,
               XtVacuum* lutVacuum = nullptr);
     void loadJsonConfig(QString file_name);
@@ -209,30 +211,18 @@ private:
     bool picker1MeasureHight(bool is_tray,bool is_product = false);
     bool picker2MeasureHight(bool is_tray,bool is_product = false);
 
+    //PR Offset
+    void applyPrOffset(PositionT& offset);
 
-    // composite state
-    bool picker1IsIdle()
-    {
-        return !(states.hasPickedLens() || states.hasPickedNgLens()
-                 || states.hasPickedProduct() || states.hasPickedNgSensor());
-    }
-    bool picker1ShouldUnloadDutFirst()
+    bool picker1ShouldUnloadDutOnLSutFirst()
     {
         if(states.sutIsReadyToLoadMaterial())
         {
-            return states.sutHasNgSensor() || states.sutHasProduct();
-        }
-        else {
+            return lsutState->lutHasNgLens() || lsutState->sutHasNgSensor() || lsutState->hasProduct();
+        }else {
             return false;
         }
     }
-    bool sutHasDut()
-    {
-        return states.sutHasSensor() || states.sutHasProduct() || states.sutHasNgSensor();
-    }
-
-    //PR Offset
-    void applyPrOffset(PositionT& offset);
 
 signals:
     void sendLoadMaterialFinishSignal(int sensor_index, int lens_index);
@@ -243,9 +233,9 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
 
-    void receiveLoadMaterialRequestResponse(bool need_sensor, bool need_lens, bool has_ng_sensor,
-                                            bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial, int productIndex);
+    void receiveLoadMaterialRequestResponse(bool isSutReadyToLoadMaterial, int productIndex);
 private:
+    LSutState* lsutState;
     QMap<int, PickArmPos> pickSensorPoses;
     SingleHeadMachineMaterialPickArm* pick_arm = Q_NULLPTR;
     MaterialTray *sensorTray;

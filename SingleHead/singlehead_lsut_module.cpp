@@ -12,11 +12,13 @@ void SingleheadLSutModule::Init(MaterialCarrier *sut_carrier,
                                 XtVacuum *sutVacuum,
                                 XtVacuum *lutVacuum,
                                 XtGeneralOutput *pogopin,
-                                AAHeadModule * aa_head)
+                                AAHeadModule * aa_head,
+                                LSutState* lsutState)
 {
     qInfo("SingleheadLSutModule Init");
     this->aa_head = aa_head;
     this->sut_carrier = sut_carrier;
+    this->lsutState = lsutState;
     this->vision_downlook_location = downlook_location;
     this->vision_mushroom_location = mushroom_location;
     this->vision_uplook_location = gripper_location;
@@ -63,96 +65,72 @@ void SingleheadLSutModule::saveParams(QString file_name)
 
 void SingleheadLSutModule::receiveLoadMaterialFinishResponse(int sensor_index, int lens_index)
 {
+    QMutexLocker tmpLocker(&locker);
     qInfo("Receive material from loader with sensor_index: %d lens_index: %d", sensor_index, lens_index);
     pogopin->Set(true);
-    if(sensor_index >= 0) {
-        this->states.setSutHasSensor(true);
-        this->states.setSutHasNgSensor(false);
-    }
-    if(lens_index >= 0) {
-        this->states.setLutHasLens(true);
-        this->states.setLutHasNgLens(false);
-    }
-    this->states.setWaitLoading(false);
-
-    //Start AA Process
-    if (states.sutHasSensor() && !states.sutHasNgSensor() &&
-            states.lutHasLens() && !states.lutHasNgLens())
-    {
-        states.setWaitAAProcess(true);
-        // QThread::msleep(100);// Wait for the while loop trapping in checking the aa process state
-        qInfo(QString(tr("emit start aa process request")).toStdString().c_str());
-        emit sendStartAAProcessRequestSignal(sensor_index, lens_index);
-    }
+    lsutState->setWaitLoading(false);
+    lsutState->setWaitAAProcess(true);
+    qInfo(QString(tr("emit start aa process request")).toStdString().c_str());
+    emit sendStartAAProcessRequestSignal(sensor_index, lens_index, lsutState->aaHeadHasLens());
 }
 
 void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productIndex)
 {
+    QMutexLocker tmpLocker(&locker);
+    currentProductIndex = productIndex;
+
     qInfo("Receive AA process response has_ng_sensor: %d has_ng_lens: %d has_product: %d has_ng_product: %d",
           has_ng_sensor, has_ng_lens, has_product, has_ng_product);
-    this->states.setSutHasNgSensor(has_ng_sensor);
-    this->states.setLutHasNgLens(has_ng_lens);
-    this->states.setHasProduct(has_product);
-    this->states.setHasNgProduct(has_ng_product);
-    currentProductIndex = productIndex;
-    if (has_ng_lens) {
-        //unpickLens();   // unpick the lens from aa head to lut
-        //Go to lens reject bin
+
+    lsutState->setAAHeadHasLens(!has_ng_lens && !has_product && !has_ng_product);
+    if(has_ng_sensor)
+    {
+        lsutState->setSutHasSensor(false);
+    }
+    if(has_product || has_ng_product)
+    {
+        lsutState->setLutHasLens(false);
+        lsutState->setSutHasSensor(false);
+    }
+    if(has_ng_lens)
+    {
+        lsutState->setLutHasLens(false);
         sut_carrier->Move_SZ_SX_Y_X_Z_Sync(30, this->unpick_lens_position.Y(), this->unpick_lens_position.Z());
         aa_head->openGripper();
         QThread::msleep(200);
+        lsutState->setLutHasNgLens(false);  //已抛料
     }
-    this->states.setWaitAAProcess(false);
+
+    lsutState->setSutHasNgSensor(has_ng_sensor);
+    lsutState->setHasProduct(has_product || has_ng_product);
+    lsutState->setIsProductOk(has_product && !has_ng_product);
+
     pogopin->Set(false);
     moveToLoadSensorPosition();
-    checkReallyHasLens();
-    emit sendLoadMaterialRequestSignal(states.allowLoadSensor(), states.allowLoadLens(),
-                                 states.sutHasNgSensor(), states.lutHasNgLens(),
-                                 states.hasProduct(), true, currentProductIndex);
+
+    lsutState->setWaitAAProcess(false);
+    lsutState->setWaitLoading(true);
+
+    emit sendLoadMaterialRequestSignal(true, currentProductIndex);
 }
 
 void SingleheadLSutModule::run(){
     is_run = true;
     while (is_run) {
-        if (states.waitLoading() || states.waitAAProcess()) { //Waiting Material or AA Process
-            if (!states.waitLoading()) { //Pickarm is very free
-                states.setWaitLoading(true);
-                states.setAllowLoadLens(true);
-                states.setAllowLoadSensor(true);
-                emit sendLoadMaterialRequestSignal(states.allowLoadSensor(), states.allowLoadLens(),
-                                             false, false, false, false, 0);
+        {
+            QMutexLocker tmpLocker(&locker);
+            if(!lsutState->waitLoading() && !lsutState->waitAAProcess())
+            {
+                pogopin->Set(false);
+                moveToLoadSensorPosition();
+
+                lsutState->setWaitAAProcess(false);
+                lsutState->setWaitLoading(true);
+
+                emit sendLoadMaterialRequestSignal(true, currentProductIndex);
             }
-            QThread::msleep(100);
-            continue;
         }
-        if (!this->states.lutHasLens())          //LUT No lens
-        {
-            states.setWaitLoading(true);
-            states.setAllowLoadLens(true);
-            states.setLutHasNgLens(false);
-            states.setLutHasLens(false);
-            if(!is_run) break;
-        }
-
-        if (!this->states.sutHasSensor())
-        {
-            states.setWaitLoading(true);
-            states.setAllowLoadSensor(true);
-            states.setSutHasSensor(false);
-            states.setSutHasNgSensor(false);
-            if(!is_run) break;
-        }
-
-        if (states.allowLoadLens() || states.allowLoadSensor())
-        {
-            pogopin->Set(false);
-            moveToLoadSensorPosition();
-            states.setWaitLoading(true);
-            checkReallyHasLens();
-            emit sendLoadMaterialRequestSignal(states.allowLoadSensor(), states.allowLoadLens(),
-                                         states.sutHasNgSensor(), states.lutHasNgLens(),
-                                         states.hasProduct(), true, currentProductIndex);
-        }
+        QThread::sleep(200);
     }
 }
 
@@ -177,16 +155,15 @@ void SingleheadLSutModule::resetLogic()
 {
     qInfo("resetLogic is called");
     //    states.setWaitLens(false);
-    states.setLutHasLens(false);
-    states.setSutHasSensor(false);
-    states.setSutHasNgSensor(false);
-    states.setAllowLoadSensor(false);
-    states.setWaitLoading(false);
-    states.setAllowLoadLens(false);
-    states.setHasProduct(false);
-    states.setLutHasNgLens(false);
-    states.setHasNgProduct(false);
-    states.setWaitAAProcess(false);
+    lsutState->setAAHeadHasLens(false);
+    lsutState->setLutHasLens(false);
+    lsutState->setLutHasNgLens(false);
+    lsutState->setSutHasSensor(false);
+    lsutState->setSutHasNgSensor(false);
+    lsutState->setHasProduct(false);
+    lsutState->setIsProductOk(false);
+    lsutState->setWaitLoading(false);
+    lsutState->setWaitAAProcess(false);
 }
 
 void SingleheadLSutModule::performHandling(int cmd)
@@ -422,19 +399,6 @@ bool SingleheadLSutModule::lensGripperMeasureHight()
     {
         AppendError(QString(u8"Lens-Gripper测高失败"));
         return false;
-    }
-}
-
-void SingleheadLSutModule::checkReallyHasLens()
-{
-    if(states.lutHasLens() || states.lutHasNgLens())
-    {
-        if(!this->vacuum_lut->Set(true, true, 10, 100))
-        {
-            qWarning("Lut has Lens, but did not detect vacuum feedback signal.");
-            states.setLutHasLens(false);
-            states.setLutHasNgLens(false);
-        }
     }
 }
 

@@ -4,7 +4,6 @@
 #include <QQmlContext>
 #include <highsprrow.h>
 #include <QIcon>
-#include "Utils/logger.h"
 #include "Utils/filecontent.h"
 #include <QtWebEngine/QtWebEngine>
 
@@ -13,10 +12,11 @@
 #include "AACore/aadata.h"
 #include "MachineUtils/checkprocessmodel.h"
 #include "TrayMap/traymapmodel.h"
+#include "Utils/loging/loging.h"
 
 #include <windows.h>
 #include <DbgHelp.h>
-#pragma comment(lib,"Dbghelp.lib")
+#pragma comment(lib, "Dbghelp.lib")
 
 long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
 {
@@ -66,14 +66,19 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("High Sparrow");
     app.setOrganizationName("Silicool");
     app.setOrganizationDomain("silicool.com");
-//    qInstallMessageHandler(sparrowLogOutput);
-    qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{type}] %{file}:%{line}(%{function}):%{message}");
+
     app.setWindowIcon(QIcon(ICON_SPARROW));
 
     HighSprrow highSprrow;
 
     QtWebEngine::initialize();
     QQmlApplicationEngine engine;
+
+    // initialize logging system
+    LogManager logManager;
+    logManager.initLogSystem();
+    engine.rootContext()->setContextProperty("logManager", &logManager);
+    engine.rootContext()->setContextProperty("logModel", &logManager.logModel);
 
     qmlRegisterUncreatableType<TrayMapModel>("HighSprrow.Models", 1, 0, "TrayMapModel", "Tray map model should only be created in cpp code");
 
@@ -234,23 +239,6 @@ int main(int argc, char *argv[])
         inputList<<input;
     }
     engine.rootContext()->setContextProperty("inputList",inputList);
-
-
-    QStringList logList;
-    QFile file("./log/system_log/log.txt");
-    if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
-        qDebug()<<"???log??";
-    }else{
-        QTextStream in(&file);
-        QString line = in.readLine();
-        while(!line.isNull()){
-            logList<<line;
-            line = in.readLine();
-        }
-    }
-    engine.rootContext()->setContextProperty("logList",logList);
-
-
 
     CheckProcessModel checkProcessModel;
     engine.rootContext()->setContextProperty("checkProcessModel",&checkProcessModel);

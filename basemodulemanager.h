@@ -68,7 +68,7 @@ public:
     Dispenser dispenser;
     SfrWorkerController * sfrWorkerController;
     AACoreNew aaCoreNew;
-
+    LSutState lsutState;
     SingleHeadMachineMaterialLoaderModule single_station_material_loader_module;
     SingleHeadMachineMaterialPickArm single_station_material_pickarm;
 

@@ -90,9 +90,11 @@ public:
     ImageProvider * aaCoreTuningProvider;
     AACoreParameters parameters;
     AACoreStates states;
+
 private:
     bool is_run = false;
     int autoRunDispenseTimes = 0;
+    bool isAAHeadPickedLens = false;
     QMutex lut_mutex;
     void run(bool has_material);
     void LogicNg(int & ng_time);
@@ -104,6 +106,21 @@ private:
     void SetLens();
     void SetSensor();
     void SetProduct();
+
+    bool aaHeadPickLens()
+    {
+        if(is_run)
+        {
+            if(isAAHeadPickedLens)
+            {
+                return true;
+            }
+            else {
+                isAAHeadPickedLens = true;
+            }
+        }
+        return  lsut->gripLens();
+    }
 private:
     QString loopTestResult;
     int currentAAMode;
@@ -131,9 +148,9 @@ private:
     bool has_ng_lens = false;
     bool has_ng_sensor = false;
     bool has_sensor = false;
+    bool has_lens = false;
     bool send_lens_request = false;
     bool send_sensor_request = false;
-    bool has_lens = false;
 
     int current_aa_ng_time = 0;
     int current_oc_ng_time = 0;
@@ -181,7 +198,7 @@ public slots:
     }
     void sfrImageReady(QImage);
     void aaCoreParametersChanged();
-    void receiveStartAAProcessRequestResponse(int sensorIndex, int lensIndex);
+    void receiveStartAAProcessRequestResponse(int sensorIndex, int lensIndex, bool isAAPickedLens);
 };
 
 #endif // AACORENEW_H

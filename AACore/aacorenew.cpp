@@ -145,17 +145,18 @@ void AACoreNew::setSfrWorkerController(SfrWorkerController * sfrWorkerController
     this->sfrWorkerController = sfrWorkerController;
 }
 
-void AACoreNew::receiveStartAAProcessRequestResponse(int sensorIndex, int lensIndex)
+void AACoreNew::receiveStartAAProcessRequestResponse(int sensorIndex, int lensIndex, bool isAAPickedLens)
 {
     qInfo(__FUNCTION__);
     currentSensorIndex = sensorIndex;
     currentLensIndex = lensIndex;
     this->has_sensor = true;
-    this->has_ng_sensor = true;
+    this->has_ng_sensor = false;
     this->has_lens = true;
-    this->has_ng_lens = true;
+    this->has_ng_lens = false;
     this->has_product = false;
     this->has_ng_product = false;
+    this->isAAHeadPickedLens = isAAPickedLens;
     start_process = true;
 }
 
@@ -177,7 +178,7 @@ void AACoreNew::run(bool has_material)
 			double temp_time = timer.elapsed();
 			temp_time/=1000;
 			qInfo("cycle_time :%f",temp_time);
-            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex);
+            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex);         
         }
     }
     qInfo("End of thread");
@@ -190,42 +191,46 @@ void AACoreNew::LogicNg(int &ng_time)
     {
         has_ng_product = true;
         has_product = false;
+
+        has_lens = false;
+        has_ng_lens = false;
+        has_sensor = false;
+        has_ng_sensor = false;
         return;
     }
-    has_ng_lens = true;
-    has_ng_sensor = true;
-    has_lens = false;
-    has_sensor = false;
-//    if(parameters.firstRejectSensor())
-//    {
-//        if(ng_time >= parameters.rejectTimes())
-//        {
-//            ng_time = 0;
-//            has_ng_lens = true;
-//            has_lens = false;
-//        }
-//        else
-//        {
-//            has_ng_sensor = true;
-//            has_sensor = false;
-//            ng_time++;
-//        }
-//    }
-//    else
-//    {
-//        if(ng_time >= parameters.rejectTimes())
-//        {
-//            ng_time = 0;
-//            has_ng_sensor = true;
-//            has_sensor = false;
-//        }
-//        else
-//        {
-//            has_ng_lens = true;
-//            has_lens = false;
-//            ng_time++;
-//        }
-//    }
+
+    has_product = false;
+    has_ng_product = false;
+    if(parameters.firstRejectSensor())
+    {
+        if(ng_time >= parameters.rejectTimes())
+        {
+            ng_time = 0;
+            has_ng_lens = true;
+            has_lens = false;
+        }
+        else
+        {
+            has_ng_sensor = true;
+            has_sensor = false;
+            ng_time++;
+        }
+    }
+    else
+    {
+        if(ng_time >= parameters.rejectTimes())
+        {
+            ng_time = 0;
+            has_ng_sensor = true;
+            has_sensor = false;
+        }
+        else
+        {
+            has_ng_lens = true;
+            has_lens = false;
+            ng_time++;
+        }
+    }
 }
 
 void AACoreNew::NgLens()
@@ -233,6 +238,8 @@ void AACoreNew::NgLens()
     qInfo("NgLens");
     has_lens = false;
     has_ng_lens = true;
+    has_product = false;
+    has_ng_product = false;
     if(parameters.firstRejectSensor())
     {
         current_aa_ng_time = 0;
@@ -397,6 +404,7 @@ void AACoreNew::resetLogic()
     has_ng_sensor = false;
     has_sensor = false;
     has_lens = false;
+    isAAHeadPickedLens = false;
     send_lens_request = false;
     send_sensor_request = false;
     aa_head->waiting_sensor = false;
@@ -752,8 +760,6 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
     if (ret) {
         return ErrorCodeStruct {ErrorCode::OK, ""};
     } else {
-        NgSensor();
-        NgLens();
         return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""};
     }
 }
@@ -775,6 +781,7 @@ ErrorCodeStruct AACoreNew::performDispense()
         autoRunDispenseTimes ++;
         if(autoRunDispenseTimes >= 5)
         {
+            autoRunDispenseTimes = 0;
             QString imageNameAfterDispense;
             imageNameAfterDispense.append(getDispensePrLogDir())
                     .append(getCurrentTimeString())
@@ -1873,9 +1880,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     if (sfr_check) {
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-      // LogicNg(current_mtf_ng_time);
-        NgLens();
-        NgSensor();
+       LogicNg(current_mtf_ng_time);
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
@@ -2255,9 +2260,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         emit callQmlRefeshImg(1);
         if( vector.size()<1 || ccIndex > 9 )
         {
-            NgLens();
-            NgSensor();
-//            LogicNg(current_oc_ng_time);
+            LogicNg(current_oc_ng_time);
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
         }
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
@@ -2269,9 +2272,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage))
         {
-            NgLens();
-            NgSensor();
-//            LogicNg(current_oc_ng_time);
+            LogicNg(current_oc_ng_time);
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
         }
         ocImageProvider_1->setImage(outImage);
@@ -2292,9 +2293,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         qInfo("xy step: %f %f ", stepX, stepY);
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
-            NgLens();
-            NgSensor();
-//            LogicNg(current_oc_ng_time);
+            LogicNg(current_oc_ng_time);
             qInfo("OC result too big (x:%f,y:%f) pixel:(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
         }
@@ -2345,13 +2344,13 @@ ErrorCodeStruct AACoreNew::performPRToBond()
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
     sensorDownlookOffset.ReSet();
-    if(!lsut->moveToDownlookPR(sensorDownlookOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
+    if(!lsut->moveToDownlookPR(sensorDownlookOffset)) { NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
     qInfo("downlook Pr Offset x: %f y: %f t: %f", sensorDownlookOffset.X, sensorDownlookOffset.Y, sensorDownlookOffset.Theta);
     map.insert("moveToDownlookPR", stepTimer.elapsed()); stepTimer.restart();
-    if (!lsut->gripLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
+    if (!aaHeadPickLens()) { NgLens(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
     map.insert("aa_gripLens", stepTimer.elapsed()); stepTimer.restart();
     PrOffset uplookPrOffset;
-    if(!lsut->moveToUplookPR(uplookPrOffset)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToUplookPR"}; }
+    if(!lsut->moveToUplookPR(uplookPrOffset)){ NgLens(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToUplookPR"}; }
     map.insert("moveToUplookPR", stepTimer.elapsed()); stepTimer.restart();
 
     double thetaOffset = -uplookPrOffset.Theta - sensorDownlookOffset.Theta + aa_head->bondOffset.Theta();
@@ -2370,7 +2369,7 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    if (!lsut->gripLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
+    if (!aaHeadPickLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "AAPickLens", map);
 }

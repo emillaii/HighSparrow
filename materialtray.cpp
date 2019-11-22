@@ -107,6 +107,13 @@ void MaterialTray::setCurrentMaterialState(int state, int tray_index)
     }
     if(model != Q_NULLPTR) model->setUnitStatus(current_tray->currentIndex(), unitStatus);
 }
+
+void MaterialTray::setCurrentMaterailStateWithInit(int tray_index)
+{
+    TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
+    setCurrentMaterialState(current_tray->initState(), tray_index);
+}
+
 void MaterialTray::setTrayType(TrayType type)
 {
     this->trayType = type;

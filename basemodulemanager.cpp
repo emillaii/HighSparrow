@@ -739,8 +739,8 @@ bool BaseModuleManager::InitStruct()
                                          GetVacuumByName(single_station_material_pickarm.parameters.vacuumLUTName()),
                                          GetVacuumByName(single_station_material_pickarm.parameters.vacuumSUTName()),
                                          GetCylinderByName(single_station_material_pickarm.parameters.cylinderName()));
-    single_station_material_loader_module.Init(&single_station_material_pickarm,&sensor_tray,&lens_tray,&reject_tray,
 
+    single_station_material_loader_module.Init(&single_station_material_pickarm, &lsutState, &sensor_tray,&lens_tray,&reject_tray,
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.sensorVisionName()),
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.sensorVacancyVisionName()),
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.sutVisionName()),
@@ -767,7 +767,7 @@ bool BaseModuleManager::InitStruct()
                         GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()),
                         GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()),
                         GetOutputIoByName(sh_lsut_module.parameters.cylinderName()),
-                        &aa_head_module);
+                        &aa_head_module, &lsutState);
 
     sut_carrier.Init("sut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
                      GetMotorByName(sh_lsut_module.parameters.motorYName()),

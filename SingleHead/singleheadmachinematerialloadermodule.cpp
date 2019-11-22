@@ -12,6 +12,7 @@ SingleHeadMachineMaterialLoaderModule::SingleHeadMachineMaterialLoaderModule(QSt
 }
 
 void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickArm *pick_arm,
+                                                 LSutState* lsutState,
                                                  MaterialTray* sensorTray,
                                                  MaterialTray* lensTray,
                                                  MaterialTray* rejectTray,
@@ -28,6 +29,7 @@ void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickAr
                                                  XtVacuum* lutVacuum)
 {
     this->pick_arm = pick_arm;
+    this->lsutState = lsutState;
     this->sensorTray = sensorTray;
     this->lensTray = lensTray;
     this->rejectTray = rejectTray;
@@ -240,6 +242,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToPicker2WorkPos(bool check_soft
 
 bool SingleHeadMachineMaterialLoaderModule::performSensorPR()
 {
+    sensor_vision->OpenLight();
     Sleep(100); //Position settling
     qInfo("performSensorPR");
     bool result = sensor_vision->performPR(pr_offset);
@@ -250,6 +253,7 @@ bool SingleHeadMachineMaterialLoaderModule::performSensorPR()
 
 bool SingleHeadMachineMaterialLoaderModule::performSensorVacancyPR()
 {
+    sensor_vacancy_vision->OpenLight();
     Sleep(100); //Position settling
     qInfo("performVacancyPR");
     bool result = sensor_vacancy_vision->performPR(pr_offset);
@@ -260,6 +264,7 @@ bool SingleHeadMachineMaterialLoaderModule::performSensorVacancyPR()
 
 bool SingleHeadMachineMaterialLoaderModule::performSUTPR()
 {
+    sut_vision->OpenLight();
     Sleep(100); //Position settling
     qInfo("performSUTPR");
     bool result = sut_vision->performPR(pr_offset);
@@ -270,6 +275,7 @@ bool SingleHeadMachineMaterialLoaderModule::performSUTPR()
 
 bool SingleHeadMachineMaterialLoaderModule::performSUTSensorPR()
 {
+    sut_sensor_vision->OpenLight();
     Sleep(100); //Position settling
     qInfo("performSUTSensorPR");
     bool result = sut_sensor_vision->performPR(pr_offset);
@@ -280,7 +286,9 @@ bool SingleHeadMachineMaterialLoaderModule::performSUTSensorPR()
 
 bool SingleHeadMachineMaterialLoaderModule::performSUTProductPR()
 {
+    sut_product_vision->OpenLight();
     qInfo("performSUTProductPR");
+    Sleep(100); //Position settling
     bool result = sut_product_vision->performPR(pr_offset);
     if(result)
         AppendError(QString(u8"执行SUT视觉失败!"));
@@ -290,24 +298,28 @@ bool SingleHeadMachineMaterialLoaderModule::performSUTProductPR()
 bool SingleHeadMachineMaterialLoaderModule::performLensPR()
 {
     qInfo("performLensPR");
+    lens_vision->OpenLight();
     Sleep(100); //Position settling
     return  lens_vision->performPR(pr_offset);
 }
 
 bool SingleHeadMachineMaterialLoaderModule::performLensVacancyPR()
 {
+    lens_vacancy_vision->OpenLight();
     Sleep(100); //Position settling
     return  lens_vacancy_vision->performPR(pr_offset);
 }
 
 bool SingleHeadMachineMaterialLoaderModule::performLUTPR()
 {
+    lut_vision->OpenLight();
     Sleep(100); //Position settling
     return lut_vision->performPR(pr_offset);
 }
 
 bool SingleHeadMachineMaterialLoaderModule::performLUTLensPR()
 {
+    lut_lens_vision->OpenLight();
     Sleep(100); //Position settling
     return lut_lens_vision->performPR(pr_offset);
 }
@@ -652,20 +664,9 @@ bool SingleHeadMachineMaterialLoaderModule::moveToChangeTrayPos()
     return result;
 }
 
-void SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequestResponse(bool need_sensor, bool need_lens, bool has_ng_sensor,
-                                          bool has_ng_lens, bool has_product,  bool isSutReadyToLoadMaterial, int productIndex)
+void SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequestResponse(bool isSutReadyToLoadMaterial, int productIndex)
 {
-    qInfo("Receive material request, need_sensor: %d need_lens: %d  has_ng_sensor: %d has_ng_lens: %d has_product: %d",
-          need_sensor, need_lens, has_ng_sensor, has_ng_lens, has_product);
-    if(has_product || has_ng_sensor)
-    {
-        currentProductIndex = productIndex;
-    }
-    this->states.setNeedLoadSensor(need_sensor);
-    this->states.setSutHasNgSensor(has_ng_sensor);
-    this->states.setNeedLoadLens(need_lens);
-    this->states.setLutHasNgLens(has_ng_lens);
-    this->states.setSutHasProduct(has_product);
+    currentProductIndex = productIndex;
     this->states.setSutIsReadyToLoadMaterial(isSutReadyToLoadMaterial);
 }
 
@@ -676,15 +677,15 @@ void SingleHeadMachineMaterialLoaderModule::run()
     while (is_run) {
         if(states.sutIsReadyToLoadMaterial())
         {
-            if(this->states.lutHasNgLens())
+            if(lsutState->lutHasNgLens())
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Please remove the LUT NG lens!");
                 int operation = waitMessageReturn(is_run);
                 qInfo("user operation: %d", operation);
-                states.setLutHasNgLens(false);
+                lsutState->setLutHasNgLens(false);
             }
 
-            if (this->states.hasPickedLens() && !states.lutHasLens() && !states.lutHasNgLens())    //Place lens to LUT
+            if (this->states.hasPickedLens() && lsutState->lutIsEmply() && !lsutState->aaHeadHasLens())    //Place lens to LUT
             {
                 qInfo("Place lens to LUT");
                 QPointF point = lut_pr_position.ToPointF();
@@ -694,13 +695,12 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 picker1PlaceLensToLUT();
                 qInfo("placelenstoLUTtest_sutready");
                 states.setHasPickedLens(false);
-                states.setLutHasLens(true);
-                states.setNeedLoadLens(true);
+                lsutState->setLutHasLens(true);
                 qInfo("Place lens to LUT Finished");
                 if(!is_run)break;
             }
 
-            if (this->states.sutHasNgSensor() && picker1IsIdle())
+            if (lsutState->sutHasNgSensor() && states.picker1IsIdle())
             {
                 qInfo("Pick the ng sensor from sut");
                 moveToSUTPRPos();
@@ -710,8 +710,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform SUTSensor PR fail, please check");
                     int operation = waitMessageReturn(is_run);
                     qInfo("user operation: %d", operation);
-                    this->states.setSutHasNgSensor(false);   //user removed the ng sensor
-                    this->states.setHasPickedNgSensor(false);
+                    lsutState->setSutHasNgSensor(false);   //user removed the ng sensor
                 }else{
                     moveToPicker1WorkPos();
                     picker1PickNgSensorFromSUT();
@@ -720,19 +719,18 @@ void SingleHeadMachineMaterialLoaderModule::run()
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick ng sensor Fail.Please remove the ng sensor!");
                         int operation = waitMessageReturn(is_run);
                         qInfo("user operation: %d", operation);
-                        this->states.setSutHasNgSensor(false);
-                        this->states.setHasPickedNgSensor(false);
+                        lsutState->setSutHasNgSensor(false);
                         //Testing the reset theta motor position
                         //                    pick_arm->motor_th1->MoveToPos(0);
                     } else {
-                        this->states.setSutHasNgSensor(false);
+                        lsutState->setSutHasNgSensor(false);
                         this->states.setHasPickedNgSensor(true);
                     }
                 }
                 if(!is_run)break;
             }
 
-            if (this->states.sutHasProduct() && picker1IsIdle()){  //Pick product form sut
+            if (lsutState->hasProduct() && states.picker1IsIdle()){  //Pick product form sut
                 qInfo("Pick product from sut ");
                 moveToSUTPRPos();
                 pr_offset.ReSet();
@@ -741,8 +739,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform SUTProduct PR fail, please remove the product!");
                     int operation = waitMessageReturn(is_run);
                     qInfo("user operation: %d", operation);
-                    this->states.setSutHasProduct(false);
-                    this->states.setHasPickedProduct(false);
+                    lsutState->setHasProduct(false);
                 }
                 else {
                     pr_offset.Theta = 0;   //ignore angle
@@ -752,18 +749,18 @@ void SingleHeadMachineMaterialLoaderModule::run()
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick Product Fail. Please remove the product");
                         int operation = waitMessageReturn(is_run);
                         qInfo("user operation: %d", operation);
-                        this->states.setSutHasProduct(false);
-                        this->states.setHasPickedProduct(false);
+                        lsutState->setHasProduct(false);
                         pick_arm->motor_th1->MoveToPos(0);
                     } else {
-                        this->states.setSutHasProduct(false);
-                        this->states.setHasPickedProduct(true);
+                        lsutState->setHasProduct(false);
+                        states.setHasPickedProduct(true);
+                        states.setIsPickedProductOk(lsutState->isProductOk());
                     }
                 }
                 if(!is_run)break;
             }
 
-            if (states.hasPickedSensor() && !sutHasDut()) {      //Place Sensor to SUT
+            if (states.hasPickedSensor() && lsutState->sutIsEmply()) {      //Place Sensor to SUT
                 qInfo("Place sensor to SUT");
                 moveToSUTPRPos();
                 pr_offset.ReSet();
@@ -777,18 +774,26 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     moveToPicker2WorkPos();           //use this in fast mode
                     picker2PlaceSensorToSUT();
                     states.setHasPickedSensor(false);
-                    states.setSutHasSensor(true);
-                    states.setNeedLoadSensor(true);
+                    lsutState->setSutHasSensor(true);
                 }
                 if(!is_run)break;
             }
 
-            if (states.sutHasSensor() && states.lutHasLens())  //Both sensor and lens have already loaded into sut and lut
+            if (states.hasPickedLens() && lsutState->hasOkLens() && picker1ShouldUnloadDutOnLSutFirst())
+            {
+                moveToLensTrayPos(states.currentLensTray());
+                performLensVacancyPR();
+                moveToPicker1WorkPos();
+                picker1PlaceLensToTray();
+                lensTray->setCurrentMaterailStateWithInit(states.currentLensTray());
+                states.setHasPickedLens(false);
+            }
+
+            if (lsutState->sutHasSensor() && lsutState->hasOkLens() && !lsutState->lutHasNgLens())
             {
                 qInfo("Both sensor and lens have already loaded into sut and lut");
-                states.setSutHasSensor(false);
-                states.setLutHasLens(false);
                 emit sendLoadMaterialFinishSignal(sensorTray->getCurrentIndex(), lensTray->getCurrentIndex());
+                states.setSutIsReadyToLoadMaterial(false);
             }
         }
 
@@ -839,7 +844,13 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 {
                     picker1PlaceProductToTray();
                     states.setHasPickedProduct(false);
-                    sensorTray->setCurrentMaterialState(MaterialState::IsProduct, states.currentSensorTray());
+                    if(states.isPickedProductOk())
+                    {
+                        sensorTray->setCurrentMaterialState(MaterialState::IsProduct, states.currentSensorTray());
+                    }
+                    else{
+                        sensorTray->setCurrentMaterialState(MaterialState::IsNg, states.currentSensorTray());
+                    }
                 } else {
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Move failed! Please remove the product, then home the motor!");
                     int operation = waitMessageReturn(is_run);
@@ -851,9 +862,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
             if(!is_run)break;
         }
 
-
-        if (this->states.needLoadLens() && picker1IsIdle() &&
-                !picker1ShouldUnloadDutFirst() && !states.lutHasLens()){
+        if (states.picker1IsIdle() && !picker1ShouldUnloadDutOnLSutFirst()){
             qInfo("picke lens from tray");
             if(moveToNextLensTrayPos(states.currentLensTray())){
                 pr_offset.ReSet();
@@ -869,7 +878,6 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     else {
                         qCritical("Perform lens PR failed! Auto skip this lens. Continuous lens pr failed times: %d.", lensPrFailedTimes);
                     }
-                    states.setNeedLoadLens(true);
                     lensTray->setCurrentMaterialState(MaterialState::IsNg, states.currentLensTray());
                     continue;
                 } else {
@@ -880,13 +888,10 @@ void SingleHeadMachineMaterialLoaderModule::run()
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick lens from lens tray fail");
                         int operation = waitMessageReturn(is_run);
                         qInfo("user operation: %d", operation);
-                        states.setHasPickedLens(false);
-                        states.setNeedLoadLens(true);
                         lensTray->setCurrentMaterialState(MaterialState::IsNg, states.currentLensTray());
                         continue;
                     }else {
                         states.setHasPickedLens(true);
-                        states.setNeedLoadLens(false);
                         lensTray->setCurrentMaterialState(MaterialState::IsInUse, states.currentLensTray());
                     }
                 }
@@ -901,7 +906,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
             if(!is_run)break;
         }
 
-        if (this->states.needLoadSensor() && !states.hasPickedSensor() && !states.sutHasSensor()){ //Pick sensor form tray
+        if (!states.hasPickedSensor() && !picker1ShouldUnloadDutOnLSutFirst()){ //Pick sensor form tray
             qInfo("Pick sensor form tray");
             if(moveToNextSensorTrayPos(states.currentSensorTray())){
                 pr_offset.ReSet();
@@ -917,7 +922,6 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     else {
                         qCritical("Perform sensor PR failed! Auto skip this sensor. Continuous sensor pr failed times: %d.", sensorPrFailedTimes);
                     }
-                    states.setNeedLoadSensor(true);
                     sensorTray->setCurrentMaterialState(MaterialState::IsNg, states.currentSensorTray());
                     continue;
                 } else {
@@ -932,18 +936,16 @@ void SingleHeadMachineMaterialLoaderModule::run()
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick sensor from sensor tray fail");
                         int operation = waitMessageReturn(is_run);
                         qInfo("user operation: %d", operation);
-                        states.setNeedLoadSensor(true);
                         sensorTray->setCurrentMaterialState(MaterialState::IsNg, states.currentSensorTray());
                         continue;
                     } else {
                         pickSensorPoses[sensorTray->getCurrentIndex()] = tmpPickSensorPos;
                         states.setHasPickedSensor(true);
-                        states.setNeedLoadSensor(false);
                         sensorTray->setCurrentMaterialState(MaterialState::IsInUse, states.currentSensorTray());
                     }
                 }
             }else {
-                if(states.sutIsReadyToLoadMaterial() && !states.hasPickedProduct() && !states.sutHasProduct())
+                if(states.sutIsReadyToLoadMaterial() && !states.hasPickedProduct() && !lsutState->hasProduct())
                 {
                     moveToChangeTrayPos();
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry, "sensor tray is empty. Please change the sensor tray");
@@ -990,27 +992,20 @@ void SingleHeadMachineMaterialLoaderModule::stopWork(bool wait_finish)
 void SingleHeadMachineMaterialLoaderModule::resetLogic()
 {
     qInfo("resetLogic is called");
-    //    this->states.setLutHasLens(false);
-    //    this->states.setLutHasNgLens(false);
     sensorTray->resetTrayState(sensorTray->getCurrentIndex());
     lensTray->resetTrayState(lensTray->getCurrentIndex());
     rejectTray->resetTrayState(rejectTray->getCurrentIndex());
-    this->states.setSutHasSensor(false);
-    this->states.setSutHasNgSensor(false);
-    this->states.setSutHasProduct(false);
-    this->states.setNeedLoadSensor(false);
+    this->states.setSutIsReadyToLoadMaterial(false);
     this->states.setHasPickedSensor(false);
     this->states.setHasPickedProduct(false);
     this->states.setHasPickedNgSensor(false);
+    this->states.setHasPickedLens(false);
+    this->states.setHasPickedNgLens(false);
+    this->states.setIsPickedProductOk(false);
 
-    this->states.setLutHasLens(false);
-    this->states.setLutHasNgLens(false);
-    this->states.setNeedLoadLens(false);
     this->states.setCurrentSensorTray(0);
     this->states.setCurrentLensTray(0);
     this->states.setCurrentRejectTray(0);
-    this->states.setHasPickedLens(false);
-    this->states.setHasPickedNgLens(false);
 }
 
 void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)

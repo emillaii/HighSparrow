@@ -4,7 +4,7 @@ import QtCharts 2.0
 import QtQuick.Layouts 1.12
 import QtCharts 2.0
 import Qt.labs.calendar 1.0
-import "qml/LogView"
+import "Log"
 
 Page {
 
@@ -34,6 +34,7 @@ Page {
 
         height: parent.height * 0.6
     }
+
     TrayMapView {
         id: trayMapView
         anchors.left: parent.left

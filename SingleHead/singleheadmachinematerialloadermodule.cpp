@@ -668,6 +668,7 @@ void SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequestResponse(b
 {
     currentProductIndex = productIndex;
     this->states.setSutIsReadyToLoadMaterial(isSutReadyToLoadMaterial);
+    completeLoad = false;
 }
 
 void SingleHeadMachineMaterialLoaderModule::run()
@@ -866,7 +867,16 @@ void SingleHeadMachineMaterialLoaderModule::run()
             qInfo("picke lens from tray");
             if(moveToNextLensTrayPos(states.currentLensTray())){
                 pr_offset.ReSet();
-                if(!performLensPR()){
+
+                QElapsedTimer timer; timer.start();
+                bool res = performLensPR();
+                int elapsed = timer.elapsed();
+                if(elapsed > 1000)
+                {
+                    qCritical("Perform lens pr cost too long time. %d ms", elapsed);
+                }
+
+                if(!res){
                     lensPrFailedTimes++;
                     if(lensPrFailedTimes >= MaxPickDutFailedTimes)
                     {
@@ -970,8 +980,18 @@ void SingleHeadMachineMaterialLoaderModule::run()
 
         if(!states.sutIsReadyToLoadMaterial() && states.hasPickedLens() && states.hasPickedSensor())
         {
-            moveToLUTPRPos();
+            if(!completeLoad)
+            {
+                moveToLUTPRPos();
+                completeLoad = true;
+            }
+
             if(!is_run) break;
+        }
+
+        if(completeLoad)
+        {
+            QThread::msleep(50);
         }
     }
 }
@@ -1006,6 +1026,8 @@ void SingleHeadMachineMaterialLoaderModule::resetLogic()
     this->states.setCurrentSensorTray(0);
     this->states.setCurrentLensTray(0);
     this->states.setCurrentRejectTray(0);
+
+    completeLoad = false;
 }
 
 void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)

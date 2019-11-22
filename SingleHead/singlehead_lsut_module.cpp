@@ -82,7 +82,6 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
     qInfo("Receive AA process response has_ng_sensor: %d has_ng_lens: %d has_product: %d has_ng_product: %d",
           has_ng_sensor, has_ng_lens, has_product, has_ng_product);
 
-    lsutState->setAAHeadHasLens(!has_ng_lens && !has_product && !has_ng_product);
     if(has_ng_sensor)
     {
         lsutState->setSutHasSensor(false);
@@ -108,6 +107,21 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
     pogopin->Set(false);
     moveToLoadSensorPosition();
 
+    if(!has_ng_lens && !has_product && !has_ng_product)
+    {
+        if(!vacuum_lut->Set(true, true, VACUUM_FINISH_DELAY, 300))
+        {
+            vacuum_lut->Set(false, false);
+            lsutState->setLutHasLens(false);
+        }
+        else
+        {
+            lsutState->setLutHasLens(true);
+        }
+
+        lsutState->setAAHeadHasLens(!lsutState->lutHasLens());
+    }
+
     lsutState->setWaitAAProcess(false);
     lsutState->setWaitLoading(true);
 
@@ -130,7 +144,7 @@ void SingleheadLSutModule::run(){
                 emit sendLoadMaterialRequestSignal(true, currentProductIndex);
             }
         }
-        QThread::sleep(200);
+        QThread::msleep(200);
     }
 }
 

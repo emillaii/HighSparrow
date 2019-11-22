@@ -259,6 +259,7 @@ private:
     QMutex lsut_mutex;
     QMutex materialLoader_mutex;
 
+    bool completeLoad = false;
     bool is_run = false;
     bool finish_stop = false;
     PrOffset pr_offset;

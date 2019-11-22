@@ -2,6 +2,7 @@
 #define AACORENEW_H
 
 #include <QObject>
+#include <QDebug>
 #include "thread_worker_base.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
@@ -95,6 +96,8 @@ private:
     bool is_run = false;
     int autoRunDispenseTimes = 0;
     bool isAAHeadPickedLens = false;
+    bool hasDispense;
+    bool hasUV;
     QMutex lut_mutex;
     void run(bool has_material);
     void LogicNg(int & ng_time);

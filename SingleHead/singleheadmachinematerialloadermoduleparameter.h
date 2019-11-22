@@ -545,11 +545,11 @@ class MaterialLoaderState:public PropertyBase
 
     bool m_hasPickedNgLens = false;
 
-    int m_currentLensTray;
+    int m_currentLensTray = 0;
 
-    int m_currentSensorTray;
+    int m_currentSensorTray = 0;
 
-    int m_currentRejectTray;
+    int m_currentRejectTray = 0;
 
     bool m_isPickedProductOk = false;
 

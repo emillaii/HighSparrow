@@ -171,7 +171,15 @@ void AACoreNew::run(bool has_material)
         if (start_process)
         {
             runningUnit = this->unitlog->createUnit();
+            hasDispense = false;
+            hasUV = false;
             runFlowchartTest();
+            if(hasDispense && !hasUV)
+            {
+                qCritical("Has executed glue dispense, but not executed UV!");
+                performUV(3000);
+                aa_head->openGripper();
+            }
             start_process = false;
             emit postDataToELK(this->runningUnit);
 			QThread::msleep(100);
@@ -180,6 +188,7 @@ void AACoreNew::run(bool has_material)
 			qInfo("cycle_time :%f",temp_time);
             emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex);         
         }
+        QThread::msleep(20);
     }
     qInfo("End of thread");
 }
@@ -774,6 +783,7 @@ ErrorCodeStruct AACoreNew::performDispense()
     dispense->setPRPosition(sensorDownlookOffset.X,sensorDownlookOffset.Y,sensorDownlookOffset.Theta);
 
     lsut->moveToZPos(0);
+    hasDispense = true;
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
 
     if(is_run)   //自动模式
@@ -2097,6 +2107,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
 
 ErrorCodeStruct AACoreNew::performUV(int uv_time)
 {
+    hasUV = true;
     qInfo("Perform UV uv time: %d", uv_time);
     QElapsedTimer timer; timer.start();
     QVariantMap map;

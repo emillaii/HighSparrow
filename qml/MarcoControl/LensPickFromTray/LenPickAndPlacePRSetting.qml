@@ -17,34 +17,31 @@ GroupBox{
                icon.source: "../../../icons/unlock.png"
                icon.color: "red"
                onClicked: {
-                   lpa_lens_location_dial.enabled = !lpa_lens_location_dial.enabled
-                   if (lpa_lens_location_dial.enabled) {
+                   lpa_lens_location_slider.enabled = !lpa_lens_location_slider.enabled
+                   if (lpa_lens_location_slider.enabled) {
                        lpa_lens_location_lock.icon.color = "lightGreen"
                    } else {
                        lpa_lens_location_lock.icon.color = "red"
                    }
                }
            }
-
-           Dial{
-               id: lpa_lens_location_dial
+           Slider {
+               id: lpa_lens_location_slider
                enabled: false
                width: 25
                from: 0
-               value: lpa_lens_location.lightBrightness
+               value: 0
                to: 255
                stepSize: 1
-               Label {
-                   text: lpa_lens_location.lightBrightness
-                   color: "white"
-                   font.pixelSize: Qt.application.font.pixelSize * 3
-                   anchors.centerIn: parent
-               }
                onValueChanged: {
-                   lpa_lens_location.setLightBrightness(value)
-                   baseModuleManager.setLightingBrightness(lpa_lens_location.locationName)
+                   lightingController.setPickarmLighting(value)
                }
            }
+
+           Label {
+               text: lpa_lens_location_slider.value
+           }
+
            Button{
                text:qsTr("LPA Lens PR Draw")
                onClicked: {
@@ -81,17 +78,13 @@ GroupBox{
            Button{
                text:qsTr("执行PR")
                onClicked:{
-                   logicManagerState.setCurrentLocationName(lpa_lens_location.locationName)
-                   logicManagerState.setUseOriginPr(true)
-                   logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                   logicManager.performHandling("", logicManager.HANDLING_ORIGIN_LOCATION, "lpa_lens_location")
                }
            }
            Button{
                text:qsTr("执行PR偏移")
                onClicked:{
-                   logicManagerState.setCurrentLocationName(lpa_lens_location.locationName)
-                   logicManagerState.setUseOriginPr(false)
-                   logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                   logicManager.performHandling(logicManager.HANDLING_OFFSET_LOCATION, "lpa_lens_location")
                }
            }
        }
@@ -105,32 +98,29 @@ GroupBox{
                icon.source: "../../../icons/unlock.png"
                icon.color: "red"
                onClicked: {
-                   lpa_vacancy_location_dial.enabled = !lpa_vacancy_location_dial.enabled
-                   if (lpa_vacancy_location_dial.enabled) {
+                   lpa_vacancy_location_slider.enabled = !lpa_vacancy_location_slider.enabled
+                   if (lpa_vacancy_location_slider.enabled) {
                        lpa_vacancy_location_lock.icon.color = "lightGreen"
                    } else {
                        lpa_vacancy_location_lock.icon.color = "red"
                    }
                }
            }
-           Dial{
-               id: lpa_vacancy_location_dial
+           Slider {
+               id: lpa_vacancy_location_slider
                enabled: false
                width: 25
                from: 0
-               value: lpa_vacancy_location.lightBrightness
+               value: 0
                to: 255
                stepSize: 1
-               Label {
-                   text: lpa_vacancy_location.lightBrightness
-                   color: "white"
-                   font.pixelSize: Qt.application.font.pixelSize * 3
-                   anchors.centerIn: parent
-               }
                onValueChanged: {
-                   lpa_vacancy_location.setLightBrightness(value)
-                   baseModuleManager.setLightingBrightness(lpa_vacancy_location.locationName)
+                   lightingController.setPickarmLighting(value)
                }
+           }
+
+           Label {
+               text: lpa_lens_location_slider.value
            }
            Button{
                text:qsTr("LPA Lens Tray PR Draw")
@@ -168,17 +158,13 @@ GroupBox{
            Button{
                text:qsTr("执行PR")
                onClicked:{
-                   logicManagerState.setCurrentLocationName(lpa_vacancy_location.locationName)
-                   logicManagerState.setUseOriginPr(true)
-                   logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                   logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, "lpa_vacancy_location")
                }
            }
            Button{
                text:qsTr("执行PR偏移")
                onClicked:{
-                   logicManagerState.setCurrentLocationName(lpa_vacancy_location.locationName)
-                   logicManagerState.setUseOriginPr(false)
-                   logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                   logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "lpa_vacancy_location")
                }
            }
        }

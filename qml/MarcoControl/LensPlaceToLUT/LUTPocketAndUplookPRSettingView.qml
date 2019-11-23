@@ -30,11 +30,11 @@ ColumnLayout {
             enabled: false
             width: 25
             from: 0
-            value: lut1_pocket_location.lightBrightness
+            value: lut_load_loaction.lightBrightness
             to: 255
             stepSize: 1
             Label {
-                text: lut1_pocket_location.lightBrightness
+                text: lut_load_loaction.lightBrightness
                 color: "white"
                 font.pixelSize: Qt.application.font.pixelSize * 3
                 anchors.centerIn: parent
@@ -49,7 +49,7 @@ ColumnLayout {
         }
         TextField{
             color: "#57f529"
-            text: lut1_pocket_location.prFileName
+            text: lut_load_loaction.prFileName
             font.pixelSize: 14
             width: 600
             Layout.preferredWidth: 600
@@ -71,6 +71,12 @@ ColumnLayout {
             text:qsTr("读取PR文件")
             onClicked: {
                 lut1_pocket_location_file_dialog.open()
+            }
+        }
+        Button{
+            text:qsTr("执行PR")
+            onClicked:{
+                logicManager.performHandling(logicManager.HANDLING_CALIBRATION, "lut_load_loaction")
             }
         }
         Button{

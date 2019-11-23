@@ -1225,7 +1225,7 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
 
 void LogicManager::performTcpOperation(QVariantMap message)
 {
-    qInfo("receiveMessageFromWorkerManger");
+    qInfo("receiveMessageFromWorkerMangers");
     if(message.contains("Message"))
     {
         qInfo("receiveMessageFromWorkerManger Message %s",message["Message"].toString().toStdString().c_str());

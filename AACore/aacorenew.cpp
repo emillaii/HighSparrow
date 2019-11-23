@@ -1136,6 +1136,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
       } else if (zScanMode == ZSCAN_MODE::AA_DFOV_MODE){
            step_move_timer.start();
            double dfov = -1;
+           oc_fov = -1; // temporary disable
            if (oc_fov < 0) {
                sut->moveToZPos(start);
                QThread::msleep(zSleepInMs);

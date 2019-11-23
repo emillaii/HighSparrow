@@ -763,6 +763,7 @@ void LutModule::Init(MaterialCarrier *carrier, VisionLocation* uplook_location,V
     parts.append(mushroom_location);
     this->sut = sut;
     this->check_thread = check_thread;
+    this->gripper = gripper;
     //Align some parameters name in lut params for the ease of access
     if (load_vacuum)
     {
@@ -974,7 +975,6 @@ bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous,bool
         if(parameters.enablePickForce())
         {
             qInfo("moveToAA1PickLens Start ZSerchByForce");
-//            result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,0,load_vacuum);
             result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_picklens_position.Z(),parameters.lensHeight());
             qInfo("moveToAA1PickLens Finish ZSerchByForce");
         }
@@ -1274,20 +1274,20 @@ bool LutModule::checkNeedLens()
 
 void LutModule::openAA1Griper()
 {
+    gripper->Set(true);
     states.setGriperOperationResult(0);
-    sendMessageToModule("LogicManager1","OpenGripper");
+    //sendMessageToModule("LogicManager1","OpenGripper");
 }
 
 void LutModule::closeAA1Griper()
 {
-
+    gripper->Set(false);
     states.setGriperOperationResult(0);
-    sendMessageToModule("LogicManager1","CloseGripper");
+    //sendMessageToModule("LogicManager1","CloseGripper");
 }
 
 void LutModule::openAA2Griper()
 {
-
     states.setGriperOperationResult(0);
     sendMessageToModule("LogicManager2","OpenGripper");
 }

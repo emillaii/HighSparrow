@@ -611,8 +611,6 @@ bool XtMotor::CheckArrivedTargetPos(double target_position)
     double feedbackPos = GetFeedbackPos();
     if(fabs(GetFeedbackPos() - target_position) < parameters.positionError())
         return true;
-    qWarning("%s CheckArrivedTargetPos fail. feedbackPos: %f targetPos: %f posError setting: %f",
-             name.toStdString().c_str(), feedbackPos, target_position, parameters.positionError());
     return false;
 }
 

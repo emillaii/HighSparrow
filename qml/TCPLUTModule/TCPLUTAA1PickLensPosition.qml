@@ -1,7 +1,7 @@
 ﻿import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
-
+import LutModuleLib 1.1
 ColumnLayout {
     RowLayout {
         Label {
@@ -144,8 +144,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                //logicManager.lutPickLensToAA1()
-                //lutModule.moveToAA1PickLens(false,false,true)
+                logicManager.performHandling(tcpLUTParams.moduleName, LutModule.AA1_PICK_LENS)
             }
         }
         Button {

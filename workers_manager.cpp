@@ -372,6 +372,7 @@ void WorkersManager::resetLogics()
 void WorkersManager::startWorker(QString name,int run_mode)
 {
     run_parameter.clear();
+    qInfo("Start worker: %s run_mode: %d current_name: %s", name.toStdString().c_str(), run_mode, current_name.toStdString().c_str());
     if(name != current_name)
     {
         if("" != current_name)

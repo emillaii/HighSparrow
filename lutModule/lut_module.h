@@ -113,6 +113,7 @@ private:
     VisionLocation* mushroom_location;
     XtVacuum* load_vacuum;
     XtVacuum* unload_vacuum;
+    XtGeneralOutput* gripper;
     QMutex loader_mutext;
     SparrowQServer * server;
     QMutex tcp_mutex;

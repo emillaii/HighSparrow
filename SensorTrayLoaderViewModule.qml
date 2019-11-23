@@ -99,7 +99,7 @@ ItemDelegate {
                         Button{
                             text:title_read_encoder
                             onClicked: {
-                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTOEName)
+                                var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTIEName)
                                 sensor_entrance_clip_parameter.setEndPosition(x)
                             }
                         }

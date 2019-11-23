@@ -57,34 +57,22 @@ GroupBox{
            }
        }
        RowLayout {
-           FileDialog{
-               id:lpa_lens_location_file_dialog
-               title:"选择加载PR文件"
-               selectExisting: true
-               selectFolder: false
-               selectMultiple: false
-
-               nameFilters: ["avdata文件 (*.avdata)"]
-               onAccepted:{
-                   lpa_lens_location.setPrFileName(fileUrl)
-               }
-           }
            Button{
-               text:qsTr("读取PR文件")
-               onClicked: {
-                   lpa_lens_location_file_dialog.open()
+               text:qsTr("执行calibration")
+               onClicked:{
+                   logicManager.performHandling("", LogicManager.HANDLING_CALIBRATION, "lpa_lens_location")
                }
            }
            Button{
                text:qsTr("执行PR")
                onClicked:{
-                   logicManager.performHandling("", logicManager.HANDLING_ORIGIN_LOCATION, "lpa_lens_location")
+                   logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, "lpa_lens_location")
                }
            }
            Button{
                text:qsTr("执行PR偏移")
                onClicked:{
-                   logicManager.performHandling(logicManager.HANDLING_OFFSET_LOCATION, "lpa_lens_location")
+                   logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "lpa_lens_location")
                }
            }
        }
@@ -137,24 +125,6 @@ GroupBox{
            }
        }
        RowLayout {
-           FileDialog{
-               id:lpa_vacancy_location_file_dialog
-               title:"选择加载PR文件"
-               selectExisting: true
-               selectFolder: false
-               selectMultiple: false
-
-               nameFilters: ["avdata文件 (*.avdata)"]
-               onAccepted:{
-                   lpa_vacancy_location.setPrFileName(fileUrl)
-               }
-           }
-           Button{
-               text:qsTr("读取PR文件")
-               onClicked: {
-                   lpa_vacancy_location_file_dialog.open()
-               }
-           }
            Button{
                text:qsTr("执行PR")
                onClicked:{
@@ -197,12 +167,11 @@ GroupBox{
                width: 40
                height: 40
                onClicked: {
-                   material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                   if (baseModuleManager.getServerMode() === 0){
-                       logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY1)
-                   }else{
-                       logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS)
-                   }
+                   var param = {}
+                   param["col"] = t_ncol.text-1
+                   param["row"] = t_nrow.text-1
+                   param["tray_index"] = 0
+                   logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LENS_TRAY1, JSON.stringify(param))
                }
            }
        }

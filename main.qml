@@ -393,10 +393,6 @@ ApplicationWindow {
                icon.source: "icons/stop.png"
                icon.color: "red"
                onClicked: {
-                   if (baseModuleManager.getServerMode() === 0)
-                       uplookCamera.pauseLiveView(false)
-                   downlookCamera.pauseLiveView(false)
-                   pickarmCamera.pauseLiveView(false)
                    workersManager.stopAllWorkers(true)
                    logicManagerState.setIsHandling(false)
                }

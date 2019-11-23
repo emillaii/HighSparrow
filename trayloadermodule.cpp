@@ -323,6 +323,7 @@ bool TrayLoaderModule::moveToChangeClipPos()
 }
 void TrayLoaderModule::startWork(int run_mode)
 {
+    qInfo("startWork: %d", run_mode);
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
@@ -363,9 +364,15 @@ void TrayLoaderModule::startWork(int run_mode)
     if(run_mode == RunMode::Normal||run_mode == RunMode::NoMaterial)
     {
         if(states.handlyChangeLensTray())
+        {
+            qInfo("Running handlyChangeLensTray");
             runHandle();
+        }
         else
+        {
+            qInfo("Running auto load tray mode");
             run();
+        }
     }
 }
 
@@ -750,7 +757,7 @@ void TrayLoaderModule::runHandle()
     while(is_run)
     {
 //        if(!has_task)
-            QThread::msleep(100);
+        QThread::msleep(100);
         has_task = false;
         {
             QMutexLocker temp_locker(&tray_mutex);

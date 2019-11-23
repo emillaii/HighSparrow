@@ -9,7 +9,7 @@ Window {
     id: alarmWindow
     color: "black"
     title: "Alarm Dialog"
-    width: 500
+    width: 900
     height: 300
 
     flags:  Qt.Window | Qt.WindowSystemMenuHint

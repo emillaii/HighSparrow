@@ -47,7 +47,7 @@ $(document).ready(function () {
   var $init_lens_operator_properties = $('#init_lens_operator_properties');
 
   //Init the table 
-  $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button></div></div></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option><option value=3>XScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button><button id=\"select_x_scan_mode\" class=\"btn btn-info test_button\">XScan Mode</button></div></div></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Start Position: <input type=\"number\" id=\"aa_start_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Stop Position: <input type=\"number\" id=\"aa_stop_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Step Size in um: <input type=\"number\" id=\"aa_step_size\"></div>");
@@ -959,6 +959,11 @@ $(document).ready(function () {
   $('#select_stationary_scan_mode').click(function(){
 	  console.log("Selecting aa stationary scan mode");
 	  $('#aa_mode').val(2);
+  });
+  
+   $('#select_x_scan_mode').click(function(){
+	  console.log("Selecting aa stationary scan mode");
+	  $('#aa_mode').val(3);
   });
   
   $flowchart.siblings('.delete_selected_button').click(function () { $flowchart.flowchart('deleteSelected'); });

@@ -445,7 +445,7 @@ void VisionModule::testVision()
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
     this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Matching(DOWNLOOK_VISION_CAMERA, prResult);
-    //qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
+    qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
 }
 
 bool VisionModule::saveImage(QString cameraName, QString imageName)
@@ -630,7 +630,7 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
                 .append(getCurrentTimeString())
                 .append("_raw.jpg");
     try {
-        g_constData1 = L"C:\\Users\\emil\\Downloads\\grabber+log\\grabber log\\15-33-01-884.jpg";
+        g_constData1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\20191123\\20191123\\13-34-40-149_raw.jpg";
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.9ec2dbe0.avdata", L"Path", g_constData2 );
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.5aab78b7.avdata", L"Path", g_constData3 );
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.685b0ee7.avdata", L"Path", g_constData4 );
@@ -652,17 +652,20 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
         avs::ScanSingleEdgeState scanSingleEdgeState4;
         atl::Conditional< avl::Edge1D > edge1D4;
         avs::FitSegmentToEdgesState fitSegmentToEdgesState1;
+        atl::Array< atl::Conditional< avl::Edge1D > > edge1DArray1;
         avs::FitSegmentToEdgesState fitSegmentToEdgesState2;
+        atl::Array< atl::Conditional< avl::Edge1D > > edge1DArray2;
         atl::Conditional< atl::String > string1;
         atl::String string2;
         atl::Conditional< atl::Array< atl::Conditional< avl::Line2D > > > line2DArray1;
         atl::Conditional< atl::Array< atl::Conditional< avl::Point2D > > > point2DArray1;
-        atl::Array< avl::Point2D > point2DArray2;
+        atl::Conditional< atl::Array< atl::Conditional< avl::Point2D > > > point2DArray2;
         atl::Array< avl::Line2D > line2DArray2;
         avl::Image image3;
         avl::Image image4;
         atl::Array< atl::Conditional< atl::String > > stringArray1;
         avl::Image image5;
+        avl::Image image6;
 
         this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
@@ -710,15 +713,18 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
                 atl::Conditional< avl::Segment2D > segment2D2;
                 atl::Conditional< avl::Line2D > line2D4;
 
+                point2DArray1.AssignNonNil();
+                point2DArray2.AssignNonNil();
+
                 // Function AvsFilter_MakeLine is intended for generated code only. Consider use of proper Line2D constructor instead.
                 avs::AvsFilter_MakeLine( 0.0f, 1.0f, 0.0f, line2D3 );
                 avl::CreateCoordinateSystemFromPoint( point2D5.Get(), 0.0f, 1.0f, 1.0f, coordinateSystem2D1 );
 
                 // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-                avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState1, image2, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(211.359772f, -212.0911f), avl::Point2D(67.68335f, -70.09839f)), 82.9198f), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+                avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState1, image2, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(146.748871f, -137.745163f), avl::Point2D(35.69287f, -28.566925f)), 82.9198f), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, edge1DArray1, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
                 // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-                avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState2, image2, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(56.6221f, 42.7705078f), avl::Point2D(176.165375f, 164.558716f)), 87.22975f), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D2, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+                avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState2, image2, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(47.0810852f, 44.4541931f), avl::Point2D(166.624359f, 166.2424f)), 87.22975f), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D2, edge1DArray2, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
                 if (segment2D1 != atl::NIL)
                 {
@@ -729,8 +735,9 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
 
                     avl::SegmentLine( segment2D1.Get(), line2D4.Get() );
                     avl::AngleBetweenLines( line2D3, line2D4.Get(), real1, atl::NIL );
-                    avl::RealToString( real1, string2 );
                     prResult.theta = real1;
+                    avl::RealToString( real1, string2 );
+
                     // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
                     avs::AvsFilter_ConcatenateStrings( g_constData6, string2, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string1.Get() );
                 }
@@ -738,9 +745,38 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
                 {
                     line2D4 = atl::NIL;
                     string1 = atl::NIL;
-                    qWarning("Cannot find prism object");
-                    error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-                    return error_code;
+                }
+
+                point2DArray1.Get().Resize(edge1DArray2.Size());
+
+                for( int i = 0; i < edge1DArray2.Size(); ++i )
+                {
+                    if (edge1DArray2[i] != atl::NIL)
+                    {
+                        point2DArray1.Get()[i].AssignNonNil();
+
+                        point2DArray1.Get()[i].Get() = edge1DArray2[i].Get().Point();
+                    }
+                    else
+                    {
+                        point2DArray1.Get()[i] = atl::NIL;
+                    }
+                }
+
+                point2DArray2.Get().Resize(edge1DArray1.Size());
+
+                for( int i = 0; i < edge1DArray1.Size(); ++i )
+                {
+                    if (edge1DArray1[i] != atl::NIL)
+                    {
+                        point2DArray2.Get()[i].AssignNonNil();
+
+                        point2DArray2.Get()[i].Get() = edge1DArray1[i].Get().Point();
+                    }
+                    else
+                    {
+                        point2DArray2.Get()[i] = atl::NIL;
+                    }
                 }
 
                 if (segment2D2 != atl::NIL)
@@ -752,35 +788,11 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
 
                     if (line2D4 != atl::NIL)
                     {
-                        atl::Conditional< avl::Point2D > point2D6;
-
                         line2DArray1.AssignNonNil();
-
-                        avl::LineLineIntersection( line2D4.Get(), line2D5, point2D6 );
-                        prResult.x = point2D6.Get().X();
-                        prResult.y = point2D6.Get().Y();
-                        prResult.ori_x = point2D6.Get().X();
-                        prResult.ori_y = point2D6.Get().Y();
-                        if (point2D6 != atl::NIL)
-                        {
-                            point2DArray1.AssignNonNil();
-
-                            // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
-                            avs::AvsFilter_CreateArray< avl::Point2D >( point2D3, point2D4, point2D1, point2D2, point2D6.Get(), atl::NIL, atl::NIL, atl::NIL, point2DArray2 );
-
-                            point2DArray1.Get().Resize(point2DArray2.Size());
-
-                            for( int i = 0; i < point2DArray2.Size(); ++i )
-                            {
-                                point2DArray1.Get()[i].AssignNonNil();
-                                point2DArray1.Get()[i].Get() = point2DArray2[i];
-                            }
-                        }
-                        else
-                        {
-                            point2DArray1 = atl::NIL;
-                        }
-
+                        atl::Conditional<avl::Point2D> intersect_point;
+                        avl::LineLineIntersection( line2D4.Get(), line2D5, intersect_point );
+                        prResult.x = intersect_point.Get().X();
+                        prResult.y = intersect_point.Get().Y();
                         // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
                         avs::AvsFilter_CreateArray< avl::Line2D >( line2D4.Get(), line2D5, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, line2DArray2 );
 
@@ -795,7 +807,6 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
                     else
                     {
                         line2DArray1 = atl::NIL;
-                        point2DArray1 = atl::NIL;
                         qWarning("Cannot find prism object");
                         error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
                         return error_code;
@@ -803,7 +814,6 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
                 }
                 else
                 {
-                    point2DArray1 = atl::NIL;
                     line2DArray1 = atl::NIL;
                     qWarning("Cannot find prism object");
                     error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
@@ -812,8 +822,9 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
             }
             else
             {
-                string1 = atl::NIL;
                 point2DArray1 = atl::NIL;
+                point2DArray2 = atl::NIL;
+                string1 = atl::NIL;
                 line2DArray1 = atl::NIL;
                 qWarning("Cannot find prism object");
                 error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
@@ -824,18 +835,20 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
         {
             string1 = atl::NIL;
             point2DArray1 = atl::NIL;
+            point2DArray2 = atl::NIL;
             line2DArray1 = atl::NIL;
             qWarning("Cannot find prism object");
             error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
             return error_code;
         }
 
-        avs::DrawPoints_Palette( image1, point2DArray1, atl::NIL, atl::NIL, avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 5.0f, false, avl::PointShape::Cross, 25.0f), true, image3 );
-        avs::DrawLines_Palette( image3, line2DArray1, atl::NIL, atl::NIL, avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, atl::NIL, 1.0f), true, image4 );
+        avs::DrawPoints_SingleColor( image1, point2DArray1, atl::NIL, avl::Pixel(255.0f, 1.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 5.0f, false, avl::PointShape::Cross, 25.0f), true, image3 );
+        avs::DrawPoints_SingleColor( image3, point2DArray2, atl::NIL, avl::Pixel(255.0f, 1.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 5.0f, false, avl::PointShape::Cross, 25.0f), true, image4 );
+        avs::DrawLines_Palette( image4, line2DArray1, atl::NIL, atl::NIL, avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, atl::NIL, 1.0f), true, image5 );
         stringArray1.Resize(1);
         stringArray1[0] = string1;
-        avs::DrawStrings_SingleColor( image4, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), 28.0f, 0.0f, true, atl::NIL, image5 );
-        avl::SaveImageToJpeg( image5 , imageName.toStdString().c_str(), atl::NIL, false );
+        avs::DrawStrings_SingleColor( image5, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), 28.0f, 0.0f, true, atl::NIL, image6 );
+        avl::SaveImageToJpeg( image6 , imageName.toStdString().c_str(), atl::NIL, false );
     } catch(const atl::Error& error) {
         qWarning("PR Error: %s", error.Message());
         qWarning(error.Message());

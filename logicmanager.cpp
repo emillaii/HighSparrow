@@ -141,6 +141,11 @@ void LogicManager::run() {
     }
     else if (m_currentMode == CommandType::PERFORM_CALIBRATION)
     {
+        QVariantMap message;
+        message["calibration_name"] = calibration_name;
+        sendCmdMessage(message,CommandType::PERFORM_CALIBRATION);
+        waitReturnMessage();
+
         baseModuleManage->performCalibration(calibration_name);
         qInfo("calibration End");
     }
@@ -844,6 +849,7 @@ void LogicManager::sensorTrayLoaderModuleMovetoVacancyTrayPosition()
 
 void LogicManager::performHandlingOperation(QString module_name, int cmd,QVariant param)
 {
+    qInfo("performHandlingOperation module_name: %s cmd: %d param: %s", module_name.toStdString().c_str(), cmd, param.toString().toStdString().c_str());
     states.setIsHandling(true);
     is_handling = true;
     if(module_name == "")//非单一模块动作
@@ -929,6 +935,7 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
         else if(cmd == HANDLING_CALIBRATION)
         {
             QString location_name = param.toString();
+            qInfo("Handling calibration: %s", location_name.toStdString().c_str());
             states.setHandlingMessage(QString(u8"正在执行1校正……").arg(location_name));
             if(baseModuleManage->vision_locations.contains(location_name))
             {
@@ -1044,11 +1051,14 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
                 waitReturnMessage();
             }
         }
-
-        
-        
         else if (cmd == CommandType::PERFORM_CALIBRATION)
         {
+            QVariantMap message;
+            message["calibration_name"] = states.currentCalibrationName();
+            sendCmdMessage(message,CommandType::PERFORM_CALIBRATION);
+            waitReturnMessage();
+
+            qInfo("perform calibration name: %s", states.currentCalibrationName().toStdString().c_str());
             states.setHandlingMessage(u8"正在执行校正……");
             baseModuleManage->performCalibration(states.currentCalibrationName());
         }
@@ -1302,11 +1312,11 @@ void LogicManager::performTcpOperation(QVariantMap message)
                 result = performLocation(location_name,message["UseOrigin"].toBool());
         }
         else if (message["performHandling"].toInt() == HANDLING_CALIBRATION)
-         {
-             QString location_name = message["LocationName"].toString();
-             if(baseModuleManage->vision_locations.contains(location_name))
-                 result = performCalibration(location_name);
-         }
+        {
+            QString location_name = message["LocationName"].toString();
+            if(baseModuleManage->vision_locations.contains(location_name))
+                result = performCalibration(location_name);
+        }
         else if(message["performHandling"].toInt() == HANDLING_OPEN_CYLINDER
                 ||message["performHandling"].toInt() == HANDLING_CLOSE_CYLINDER)
         {

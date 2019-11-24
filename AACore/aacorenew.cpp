@@ -118,7 +118,8 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
 typedef enum {
     AA_ZSCAN_NORMAL,
     AA_DFOV_MODE,
-    AA_STATIONARY_SCAN_MODE
+    AA_STATIONARY_SCAN_MODE,
+    AA_XSCAN_MODE //Special AA scan mode for KunLunShan project
 } ZSCAN_MODE;
 
 AACoreNew * that;
@@ -508,7 +509,7 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
             aaData_2.setInProgress(true);
         }
         performAA(params);
-        //performAAOffline();
+        //performAAOfflineCCOnly();
         aaData_1.setInProgress(false);
         aaData_2.setInProgress(false);
     }
@@ -1020,7 +1021,7 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
             }
             int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"画胶检查");
             QString operation = waitMessageReturn(is_run,alarm_id);
-            if (u8"抛料" == operation)
+            if (REJECT_OPERATION == operation)
             {
                 NgSensor();
                 return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, u8"画胶检查"};
@@ -1297,6 +1298,110 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              dst.release();
              zScanCount++;
          }
+    } else if (zScanMode == ZSCAN_MODE::AA_XSCAN_MODE) {
+        unsigned int count = (int)fabs((start - stop)/step_size);
+        vector<double> x_pos, sfr_array, sfr_fit_array;
+        double peak_x = 0, peak_sfr = 0, error_dev = 0, error_avg = 0;
+        int fitOrder = 3;
+
+        AAData *data;
+        if (currentChartDisplayChannel == 0) {
+            data = &aaData_1;
+            currentChartDisplayChannel = 1;
+        } else {
+            data = &aaData_2;
+            currentChartDisplayChannel = 0;
+        }
+        data->clear();
+
+        for (unsigned int i = 0; i < count; i++)
+        {
+            step_move_timer.start();
+            sut->moveToXPos(start+(i*step_size));
+            zScanStopPosition = start+(i*step_size);
+            QThread::msleep(zSleepInMs);
+            step_move_time += step_move_timer.elapsed();
+            double realX = sut->carrier->GetFeedBackPos().X;
+            qInfo("X scan start from %f, real: %f", start+(i*step_size), realX);
+            grab_timer.start();
+            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+            grab_time += grab_timer.elapsed();
+            if (!grabRet) {
+                qInfo("AA Cannot grab image.");
+                NgSensor();
+                map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                emit pushDataToUnit(runningUnit, "AA", map);
+                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
+            }
+            if (!blackScreenCheck(img)) {
+                NgSensor();
+                map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                emit pushDataToUnit(runningUnit, "AA", map);
+                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
+            }
+            if(parameters.isDebug() == true)
+            {
+                QString imageName;
+                imageName.append(getGrabberLogDir())
+                        .append(sensorID)
+                        .append("_")
+                        .append(getCurrentTimeString())
+                        .append(".bmp");
+                cv::imwrite(imageName.toStdString().c_str(), img);
+            }
+            double dfov = calculateDFOV(img);
+            if(current_dfov.contains(QString::number(i)))
+                current_dfov[QString::number(i)] = dfov;
+            else
+                current_dfov.insert(QString::number(i),dfov);
+            qInfo("fov: %f  sut_x: %f", dfov, sut->carrier->GetFeedBackPos().X);
+            //Start calculate MTF
+            std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+            //Set the Image ROI Size for CC 4 edges
+            cv::Rect roi; roi.width = 32; roi.height = 32;
+            cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
+            int rect_width = sqrt(patterns[0].area)/2;
+            //Left ROI
+            roi.x = patterns[0].center.x() - rect_width - roi.width/2;
+            roi.y = patterns[0].center.y() - roi.width/2;
+            img(roi).copyTo(cropped_l_img);
+            //Right ROI
+            roi.x = patterns[0].center.x() + rect_width - roi.width/2;
+            roi.y = patterns[0].center.y() - roi.width/2;
+            img(roi).copyTo(cropped_r_img);
+            //Top ROI
+            roi.x = patterns[0].center.x() - roi.width/2;
+            roi.y = patterns[0].center.y() - rect_width - roi.width/2;
+            img(roi).copyTo(cropped_t_img);
+            //Bottom ROI
+            roi.x = patterns[0].center.x() - roi.width/2;
+            roi.y = patterns[0].center.y() + rect_width - roi.width/2;
+            img(roi).copyTo(cropped_b_img);
+            double sfr_l = sfr::calculateSfrWithSingleRoi(cropped_l_img,1);
+            double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
+            double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
+            double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
+            x_pos.push_back(realX - start);  // Need to normalize the x position, avoiding overflow
+            sfr_array.push_back(sfr_r);
+            double avg_sfr = (sfr_l + sfr_r + sfr_t + sfr_b)/4;
+            data->addData(0, realX, sfr_r, sfr_r);
+            //data->addData(1, realX, sfr_t, sfr_t);
+            //data->addData(2, realX sfr_r, sfr_r);
+            //data->addData(3, realX, sfr_b, sfr_b);
+            //data->addData(4, realX, sfr_l, sfr_l);
+            img.release();
+        }
+        fitCurve(x_pos, sfr_array, fitOrder, peak_x, peak_sfr, error_avg, error_dev, sfr_fit_array);
+        peak_x += start;  //Add back the base value
+        data->setZPeak(peak_x);
+        data->setWCCPeakZ(peak_x);
+        data->setLayer0(QString("CC:")
+                        .append(QString::number(peak_x, 'g', 6)
+                        .append(" SFR:")
+                        .append(QString::number(peak_sfr, 'g', 6))));
+        data->plot("XScan ");
+        qInfo("X scan result peak_x: %f peak_sfr: %f error_avg: %f error_dev: %f", peak_x, peak_sfr, error_avg, error_dev);
+        return ErrorCodeStruct{ ErrorCode::OK, ""};     //Capture image first
     }
     int timeout=1000;
     QElapsedTimer sfr_wait_timer; sfr_wait_timer.start();
@@ -1480,6 +1585,87 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
 
+void AACoreNew::performAAOfflineCCOnly()
+{
+    int inputImageCount = 7, resize_factor = 1, sfrCount = 0, fitOrder = 3;
+    double step_size = 0.01, start = 0;
+    vector<double> x_pos, sfr_array, sfr_fit_array;
+    double peak_x = 0, peak_sfr = 0, error_dev = 0, error_avg = 0;
+
+    AAData *data;
+    if (currentChartDisplayChannel == 0) {
+        data = &aaData_1;
+        currentChartDisplayChannel = 1;
+    } else {
+        data = &aaData_2;
+        currentChartDisplayChannel = 0;
+    }
+    data->clear();
+    for (int i = 0; i < inputImageCount -1; i++)
+    {
+        if (isZScanNeedToStop) {
+            qInfo("All peak passed, stop zscan");
+            break;
+        }
+        QString filename = "C:\\Users\\emil\\Desktop\\sunny_issue\\1_10um\\1_10um\\" + QString::number(i+1) + ".bmp";
+        cv::Mat input_img = cv::imread(filename.toStdString());
+        if (!blackScreenCheck(input_img)) {
+            qWarning("Black screen check fail");
+            return;
+        }
+        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+        for (size_t i = 0; i < patterns.size(); i++) {
+            qInfo("Pattern x: %f y: %f", patterns.at(i).center.x(), patterns.at(i).center.y());
+        }
+        cv::Rect roi; roi.width = 32; roi.height = 32;
+        cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
+        int rect_width = sqrt(patterns[0].area)/2;
+        //Left ROI
+        roi.x = patterns[0].center.x() - rect_width - roi.width/2;
+        roi.y = patterns[0].center.y() - roi.width/2;
+        input_img(roi).copyTo(cropped_l_img);
+        //Right ROI
+        roi.x = patterns[0].center.x() + rect_width - roi.width/2;
+        roi.y = patterns[0].center.y() - roi.width/2;
+        input_img(roi).copyTo(cropped_r_img);
+        //Top ROI
+        roi.x = patterns[0].center.x() - roi.width/2;
+        roi.y = patterns[0].center.y() - rect_width - roi.width/2;
+        input_img(roi).copyTo(cropped_t_img);
+        //Bottom ROI
+        roi.x = patterns[0].center.x() - roi.width/2;
+        roi.y = patterns[0].center.y() + rect_width - roi.width/2;
+        input_img(roi).copyTo(cropped_b_img);
+
+        double sfr_l = sfr::calculateSfrWithSingleRoi(cropped_l_img,1);
+        double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
+        double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
+        double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
+        double avg_sfr = (sfr_l + sfr_r + sfr_t + sfr_b)/4;
+        x_pos.push_back((start+step_size*i)*1000);
+        sfr_array.push_back(avg_sfr);
+        qInfo("sfr_t: %f sfr_r: %f sfr_b: %f sfr_l: %f", sfr_t, sfr_r, sfr_b, sfr_l);
+        data->addData(0, (start+step_size*i)*1000, avg_sfr, avg_sfr);
+        data->addData(1, (start+step_size*i)*1000, sfr_t, sfr_t);
+        data->addData(2, (start+step_size*i)*1000, sfr_r, sfr_r);
+        data->addData(3, (start+step_size*i)*1000, sfr_b, sfr_b);
+        data->addData(4, (start+step_size*i)*1000, sfr_l, sfr_l);
+    }
+    for (size_t i = 0; i < x_pos.size(); i++)
+    {
+        qInfo("x: %f sfr: %f", x_pos[i], sfr_array[i]);
+    }
+    fitCurve(x_pos, sfr_array, fitOrder, peak_x, peak_sfr,error_avg,error_dev, sfr_fit_array);
+    qInfo("X scan result peak_x: %f peak_sfr: %f error_avg: %f error_dev: %f", peak_x, peak_sfr, error_avg, error_dev);
+    data->setZPeak(peak_x);
+    data->setWCCPeakZ(peak_x);
+    data->setLayer0(QString("CC:")
+                    .append(QString::number(peak_x, 'g', 6)
+                    .append(" SFR:")
+                    .append(QString::number(peak_sfr, 'g', 6))));
+    data->plot("XScan ");
+}
+
 void AACoreNew::performAAOffline()
 {
     clustered_sfr_map.clear();
@@ -1494,7 +1680,7 @@ void AACoreNew::performAAOffline()
     double estimated_fov_slope = 15;
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
-    int inputImageCount = 17;
+    int inputImageCount = 7;
     for (int i = 0; i < inputImageCount -1; i++)
     {
         if (isZScanNeedToStop) {
@@ -1503,7 +1689,7 @@ void AACoreNew::performAAOffline()
         }
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
-        QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
+        QString filename = "C:\\Users\\emil\\Desktop\\sunny_issue\\1_10um\\1_10um\\" + QString::number(i+1) + ".bmp";
         //QString filename = "offline\\" + QString::number(i) + ".bmp";
         cv::Mat img = cv::imread(filename.toStdString());
         if (!blackScreenCheck(img)) {

@@ -69,6 +69,7 @@ public:
     Q_INVOKABLE bool stepMove_XY_Sync(double x,double y);
     Q_INVOKABLE bool stepMove_Z_Sync(double step_z);
     Q_INVOKABLE bool moveToZPos(double z);
+    Q_INVOKABLE bool moveToXPos(double x);
     Q_INVOKABLE bool moveZToSaftyInMushroom();
     bool moveZToSafety();
     Q_INVOKABLE void recordCurrentPos();

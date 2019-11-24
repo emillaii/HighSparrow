@@ -235,6 +235,12 @@ bool MaterialCarrier::Move_Z_Sync(double z, int timeout)
     return motor_z->WaitArrivedTargetPos(z, timeout);
 }
 
+bool MaterialCarrier::Move_X_Sync(double x, int timeout)
+{
+    motor_x->MoveToPos(x);
+    return motor_x->WaitArrivedTargetPos(x, timeout);
+}
+
 void MaterialCarrier::Move_XY_ToPos(double x, double y)
 {
     motor_x->MoveToPos(x);

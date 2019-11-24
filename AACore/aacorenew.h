@@ -60,6 +60,7 @@ public:
               ChartCalibration * chartCalibration,DispenseModule* dispense,
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog, int serverMode);
     void performAAOffline();
+    void performAAOfflineCCOnly();
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
     ErrorCodeStruct performVCMInit(QJsonValue params);

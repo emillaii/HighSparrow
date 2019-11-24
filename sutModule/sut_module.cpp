@@ -307,8 +307,14 @@ bool SutModule::stepMove_Z_Sync(double step_z)
 
 bool SutModule::moveToZPos(double z)
 {
-    qInfo("targert : %f",z);
+    qInfo("target : %f",z);
     return carrier->Move_Z_Sync(z);
+}
+
+bool SutModule::moveToXPos(double x)
+{
+    qInfo("target : %f",x);
+    return carrier->Move_X_Sync(x);
 }
 
 bool SutModule::moveZToSaftyInMushroom()

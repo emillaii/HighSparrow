@@ -34,6 +34,7 @@ public:
     bool StepMove_Z(double z, int timeout = 3000);
     void Move_XY_ToPos(double x,double y);
     bool Move_Z_Sync(double z,int timeout = 3000);
+    bool Move_X_Sync(double x, int timeout = 3000);
     bool ZSerchByForce(const double speed,const double force,const double search_limit = -1,const int vacuum_state = -1,XtVacuum* excute_vacuum = nullptr);
     bool ZSerchReturn();
     mPoint3D GetFeedBackPos();

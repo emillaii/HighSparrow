@@ -672,7 +672,7 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
         //avl::LoadImage( g_constData1, false, image1 );
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
         avl::ThresholdToRegion( image1, atl::NIL, 240.0f, 255.0f, 0.0f, region1 );
-        avl::RemoveRegionBlobs( region1, avl::RegionConnectivity::EightDirections, avl::RegionFeature::Area, 100.0f, atl::NIL, false, region2 );
+        avl::RemoveRegionBlobs( region1, avl::RegionConnectivity::EightDirections, avl::RegionFeature::Area, 100.0f, atl::NIL, true, region2 );
         avl::RegionToImage( region2, image2 );
 
         // Function AvsFilter_ScanSingleEdge is intended for generated code only, consider use of CreateScanMap and ScanSingleEdge functions in regular programs.

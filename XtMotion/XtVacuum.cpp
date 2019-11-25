@@ -21,8 +21,10 @@ bool XtVacuum::Set(bool new_state, bool wait_done,int finish_delay, int timeout,
     if((0 != finish_delay)&&(nullptr != break_io)&&(!new_state))
         break_io->Set(true);
     if(!wait_done)
+    {
         qInfo("vacuum wait done");
         return true;
+    }
     return Wait(new_state,timeout,finish_delay,input_null_delay);
 }
 

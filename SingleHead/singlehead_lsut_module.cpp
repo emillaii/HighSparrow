@@ -128,7 +128,6 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
             lsutState->setLutHasLens(true);
         }
         qInfo("AA finished, Lut has ok Lens: %d", lsutState->lutHasLens());
-        QThread::msleep(10000);
 
         lsutState->setAAHeadHasLens(!lsutState->lutHasLens());
     }

@@ -177,7 +177,7 @@ void AACoreNew::run(bool has_material)
             if(hasDispense && !hasUV)
             {
                 qCritical("Has executed glue dispense, but not executed UV!");
-                performUV(3000);
+                performUV(4000);
                 aa_head->openGripper();
             }
             start_process = false;
@@ -789,9 +789,8 @@ ErrorCodeStruct AACoreNew::performDispense()
     if(is_run)   //自动模式
     {
         autoRunDispenseTimes ++;
-        if(autoRunDispenseTimes >= 5)
+        if(autoRunDispenseTimes == 1)
         {
-            autoRunDispenseTimes = 0;
             QString imageNameAfterDispense;
             imageNameAfterDispense.append(getDispensePrLogDir())
                     .append(getCurrentTimeString())
@@ -801,6 +800,10 @@ ErrorCodeStruct AACoreNew::performDispense()
             QImage image(imageNameAfterDispense);
             dispenseImageProvider->setImage(image);
             emit callQmlRefeshImg(3);  //Emit dispense image to QML
+        }
+        if(autoRunDispenseTimes >= 5)
+        {
+            autoRunDispenseTimes = 0;
         }
     }
 

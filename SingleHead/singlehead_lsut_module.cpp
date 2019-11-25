@@ -82,34 +82,43 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
     qInfo("Receive AA process response has_ng_sensor: %d has_ng_lens: %d has_product: %d has_ng_product: %d",
           has_ng_sensor, has_ng_lens, has_product, has_ng_product);
 
-    if(has_ng_sensor)
-    {
-        lsutState->setSutHasSensor(false);
-    }
+    bool needCheckWhereIsTheOkLens = false;  //检查OkLens在LUT上还是在夹爪上
+
+    lsutState->setHasProduct(has_product || has_ng_product);
+    lsutState->setIsProductOk(has_product && !has_ng_product);
     if(has_product || has_ng_product)
     {
         lsutState->setLutHasLens(false);
         lsutState->setSutHasSensor(false);
+        lsutState->setLutHasNgLens(false);
+        lsutState->setSutHasNgSensor(false);
+        lsutState->setAAHeadHasLens(false);
     }
-    if(has_ng_lens)
-    {
-        lsutState->setLutHasLens(false);
-        sut_carrier->Move_SZ_SX_Y_X_Z_Sync(30, this->unpick_lens_position.Y(), this->unpick_lens_position.Z());
-        aa_head->openGripper();
-        QThread::msleep(200);
-        lsutState->setLutHasNgLens(false);  //已抛料
-    }
+    else {
+        lsutState->setSutHasNgSensor(has_ng_sensor);
+        lsutState->setSutHasSensor(!has_ng_sensor);
 
-    lsutState->setSutHasNgSensor(has_ng_sensor);
-    lsutState->setHasProduct(has_product || has_ng_product);
-    lsutState->setIsProductOk(has_product && !has_ng_product);
+        if(has_ng_lens)
+        {
+            lsutState->setLutHasLens(false);
+            sut_carrier->Move_SZ_SX_Y_X_Z_Sync(30, this->unpick_lens_position.Y(), this->unpick_lens_position.Z());
+            aa_head->openGripper();
+            QThread::msleep(200);
+            lsutState->setLutHasNgLens(false);  //已抛料
+            lsutState->setAAHeadHasLens(false);
+        }
+        else {
+            lsutState->setLutHasNgLens(false);
+            needCheckWhereIsTheOkLens = true;
+        }
+    }
 
     pogopin->Set(false);
     moveToLoadSensorPosition();
 
-    if(!has_ng_lens && !has_product && !has_ng_product)
+    if(needCheckWhereIsTheOkLens)
     {
-        if(!vacuum_lut->Set(true, true, VACUUM_FINISH_DELAY, 300))
+        if(!vacuum_lut->Set(true, true, VACUUM_FINISH_DELAY, 200))
         {
             vacuum_lut->Set(false, false);
             lsutState->setLutHasLens(false);
@@ -135,6 +144,7 @@ void SingleheadLSutModule::run(){
             QMutexLocker tmpLocker(&locker);
             if(!lsutState->waitLoading() && !lsutState->waitAAProcess())
             {
+                qDebug() << "LSUT is idle. So move to load position!";
                 pogopin->Set(false);
                 moveToLoadSensorPosition();
 

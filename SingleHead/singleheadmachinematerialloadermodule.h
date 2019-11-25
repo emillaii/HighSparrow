@@ -224,6 +224,16 @@ private:
         }
     }
 
+    bool shouldLoadSensorToLSutFirst()
+    {
+        if(states.sutIsReadyToLoadMaterial())
+        {
+            return lsutState->hasOkLens() && !lsutState->sutHasSensor();
+        }else {
+            return false;
+        }
+    }
+
 signals:
     void sendLoadMaterialFinishSignal(int sensor_index, int lens_index);
 

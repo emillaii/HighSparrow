@@ -788,6 +788,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 picker1PlaceLensToTray();
                 lensTray->setCurrentMaterailStateWithInit(states.currentLensTray());
                 states.setHasPickedLens(false);
+                continue;
             }
 
             if (lsutState->sutHasSensor() && lsutState->hasOkLens() && !lsutState->lutHasNgLens())
@@ -863,7 +864,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
             if(!is_run)break;
         }
 
-        if (states.picker1IsIdle() && !picker1ShouldUnloadDutOnLSutFirst()){
+        if (states.picker1IsIdle() && !picker1ShouldUnloadDutOnLSutFirst() && !shouldLoadSensorToLSutFirst()){
             qInfo("picke lens from tray");
             if(moveToNextLensTrayPos(states.currentLensTray())){
                 pr_offset.ReSet();
@@ -982,6 +983,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
         {
             if(!completeLoad)
             {
+                qDebug() << "MaterialLoader is idle, so moveToLUTPRPos";
                 moveToLUTPRPos();
                 completeLoad = true;
             }

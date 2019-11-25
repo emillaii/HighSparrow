@@ -83,13 +83,15 @@ BOOL Dothinkey::DothinkeyOpen()
 
 BOOL Dothinkey::DothinkeyClose()
 {
-    qInfo("Close device!");
+    QElapsedTimer timer;
+    timer.start();
     isGrabbing = false;
     setCurrentSensorID("");
     for (CameraChannel cc: m_CameraChannels)
     {
         cc.CloseCameraChannel();
     }
+    qInfo("Close device! Time elapsed: %d ms.", timer.elapsed());
     return DT_ERROR_OK;
 }
 

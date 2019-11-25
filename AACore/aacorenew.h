@@ -156,8 +156,8 @@ private:
     bool send_sensor_request = false;
 
     int current_aa_ng_time = 0;
-    int current_oc_ng_time = 0;
-    int current_mtf_ng_time = 0;
+//    int current_oc_ng_time = 0;
+//    int current_mtf_ng_time = 0;
     int grr_repeat_time = 0;
     int grr_change_time = 0;
     QString handlingParams = "";

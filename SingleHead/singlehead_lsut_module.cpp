@@ -118,7 +118,7 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
 
     if(needCheckWhereIsTheOkLens)
     {
-        if(!vacuum_lut->Set(true, true, VACUUM_FINISH_DELAY, 200))
+        if(!vacuum_lut->Set(true, true, VACUUM_FINISH_DELAY, 300))
         {
             vacuum_lut->Set(false, false);
             lsutState->setLutHasLens(false);
@@ -127,6 +127,8 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
         {
             lsutState->setLutHasLens(true);
         }
+        qInfo("AA finished, Lut has ok Lens: %d", lsutState->lutHasLens());
+        QThread::msleep(10000);
 
         lsutState->setAAHeadHasLens(!lsutState->lutHasLens());
     }

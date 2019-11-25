@@ -252,8 +252,8 @@ void AACoreNew::NgLens()
     if(parameters.firstRejectSensor())
     {
         current_aa_ng_time = 0;
-        current_oc_ng_time = 0;
-        current_mtf_ng_time = 0;
+//        current_oc_ng_time = 0;
+//        current_mtf_ng_time = 0;
     }
 }
 
@@ -267,8 +267,8 @@ void AACoreNew::NgSensor()
     if(!parameters.firstRejectSensor())
     {
         current_aa_ng_time = 0;
-        current_oc_ng_time = 0;
-        current_mtf_ng_time = 0;
+//        current_oc_ng_time = 0;
+//        current_mtf_ng_time = 0;
     }
 }
 
@@ -419,8 +419,8 @@ void AACoreNew::resetLogic()
     aa_head->waiting_sensor = false;
     aa_head->waiting_lens = false;
     current_aa_ng_time = 0;
-    current_oc_ng_time = 0;
-    current_mtf_ng_time = 0;
+//    current_oc_ng_time = 0;
+//    current_mtf_ng_time = 0;
     grr_repeat_time = 0;
     grr_change_time = 0;
     autoRunDispenseTimes = 0;
@@ -872,7 +872,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                qInfo("AA Cannot grab image.");
                map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                emit pushDataToUnit(runningUnit, "AA", map);
-               LogicNg(current_aa_ng_time);
+               NgSensor();
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
@@ -915,7 +915,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                qInfo("AA Cannot grab image.");
                map["Result"] = "AA Cannot grab image.";
                emit pushDataToUnit(runningUnit, "AA", map);
-               LogicNg(current_aa_ng_time);
+               NgSensor();
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
@@ -950,7 +950,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 grab_time += grab_timer.elapsed();
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
-                    LogicNg(current_aa_ng_time);
+                    NgSensor();
                     map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                     emit pushDataToUnit(runningUnit, "AA", map);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
@@ -1012,7 +1012,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              grab_time += grab_timer.elapsed();
              if (!grabRet) {
                  qInfo("AA Cannot grab image.");
-                 LogicNg(current_aa_ng_time);
+                 NgSensor();
                  map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                  emit pushDataToUnit(runningUnit, "AA", map);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
@@ -1702,7 +1702,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     if (sfr_check) {
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-       LogicNg(current_mtf_ng_time);
+       LogicNg(current_aa_ng_time);
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
@@ -1724,6 +1724,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
         qInfo("MTF Cannot grab image.");
+        NgSensor();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     double fov = calculateDFOV(img);
@@ -1893,7 +1894,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     if (sfr_check) {
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-       LogicNg(current_mtf_ng_time);
+       LogicNg(current_aa_ng_time);
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
@@ -2144,8 +2145,8 @@ ErrorCodeStruct AACoreNew::performAccept()
     imageThread->exit();
     dk->DothinkeyClose();
     current_aa_ng_time = 0;
-    current_oc_ng_time = 0;
-    current_mtf_ng_time = 0;
+//    current_oc_ng_time = 0;
+//    current_mtf_ng_time = 0;
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -2253,7 +2254,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
         qInfo("AA Cannot grab image.");
-        LogicNg(current_aa_ng_time);
+        NgSensor();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     QString imageName;
@@ -2274,7 +2275,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         emit callQmlRefeshImg(1);
         if( vector.size()<1 || ccIndex > 9 )
         {
-            LogicNg(current_oc_ng_time);
+            LogicNg(current_aa_ng_time);
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
         }
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
@@ -2286,7 +2287,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage))
         {
-            LogicNg(current_oc_ng_time);
+            LogicNg(current_aa_ng_time);
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
         }
         ocImageProvider_1->setImage(outImage);
@@ -2307,7 +2308,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         qInfo("xy step: %f %f ", stepX, stepY);
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
-            LogicNg(current_oc_ng_time);
+            LogicNg(current_aa_ng_time);
             qInfo("OC result too big (x:%f,y:%f) pixel:(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
         }

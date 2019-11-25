@@ -11,6 +11,7 @@
 #include "Utils/propertybase.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
+#include <QElapsedTimer>
 
 #define CAMERA_START 1
 #define CAMERA_STOP 2

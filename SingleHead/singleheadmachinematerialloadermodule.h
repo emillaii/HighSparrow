@@ -235,7 +235,7 @@ private:
     }
 
 signals:
-    void sendLoadMaterialFinishSignal(int sensor_index, int lens_index);
+    void sendLoadMaterialFinishSignal();
 
 public slots:
     void startWork(int run_mode);

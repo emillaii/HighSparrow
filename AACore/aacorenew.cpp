@@ -164,7 +164,6 @@ void AACoreNew::run(bool has_material)
 {
     qInfo("Start AACore Thread");
     is_run = true;
-    autoRunDispenseTimes = 0;
     QElapsedTimer timer;timer.start();
     while(is_run) {
 		timer.restart();

@@ -982,7 +982,7 @@ XtMotor *BaseModuleManager::GetMotorByName(QString name)
     if(motors.contains(name))
         return motors[name];
     else
-        qInfo("can not find motor io %s",name.toStdString().c_str());
+        qCritical("can not find motor name %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -992,7 +992,7 @@ XtVcMotor *BaseModuleManager::GetVcMotorByName(QString name)
     if(motors.contains(name))
         return  dynamic_cast<XtVcMotor*>(motors[name]);
     else
-        qInfo("can not find vcm motor io %s",name.toStdString().c_str());
+        qCritical("can not find vcm motor name %s",name.toStdString().c_str());
     return nullptr;
 }
 

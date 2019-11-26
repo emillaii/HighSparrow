@@ -553,6 +553,10 @@ class MaterialLoaderState:public PropertyBase
 
     bool m_isPickedProductOk = false;
 
+    int m_currentSensorIndexInPicker;
+
+    int m_currentLensIndexInPicker;
+
 public:
     MaterialLoaderState():PropertyBase (){}
     Q_PROPERTY(int runMode READ runMode WRITE setRunMode NOTIFY runModeChanged)
@@ -570,6 +574,9 @@ public:
     Q_PROPERTY(int currentLensTray READ currentLensTray WRITE setCurrentLensTray NOTIFY currentLensTrayChanged)
     Q_PROPERTY(int currentSensorTray READ currentSensorTray WRITE setCurrentSensorTray NOTIFY currentSensorTrayChanged)
     Q_PROPERTY(int currentRejectTray READ currentRejectTray WRITE setCurrentRejectTray NOTIFY currentRejectTrayChanged)
+
+    Q_PROPERTY(int currentSensorIndexInPicker READ currentSensorIndexInPicker WRITE setCurrentSensorIndexInPicker NOTIFY currentSensorIndexInPickerChanged)
+    Q_PROPERTY(int currentLensIndexInPicker READ currentLensIndexInPicker WRITE setCurrentLensIndexInPicker NOTIFY currentLensIndexInPickerChanged)
 
     bool picker1IsIdle() const
     {
@@ -630,6 +637,16 @@ public:
     bool isPickedProductOk() const
     {
         return m_isPickedProductOk;
+    }
+
+    int currentSensorIndexInPicker() const
+    {
+        return m_currentSensorIndexInPicker;
+    }
+
+    int currentLensIndexInPicker() const
+    {
+        return m_currentLensIndexInPicker;
     }
 
 public slots:
@@ -731,6 +748,24 @@ public slots:
         emit isPickedProductOkChanged(m_isPickedProductOk);
     }
 
+    void setCurrentSensorIndexInPicker(int currentSensorIndexInPicker)
+    {
+        if (m_currentSensorIndexInPicker == currentSensorIndexInPicker)
+            return;
+
+        m_currentSensorIndexInPicker = currentSensorIndexInPicker;
+        emit currentSensorIndexInPickerChanged(m_currentSensorIndexInPicker);
+    }
+
+    void setCurrentLensIndexInPicker(int currentLensIndexInPicker)
+    {
+        if (m_currentLensIndexInPicker == currentLensIndexInPicker)
+            return;
+
+        m_currentLensIndexInPicker = currentLensIndexInPicker;
+        emit currentLensIndexInPickerChanged(m_currentLensIndexInPicker);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void sutIsReadyToLoadMaterialChanged(bool sutIsReadyToLoadMaterial);
@@ -743,6 +778,8 @@ signals:
     void currentSensorTrayChanged(int currentSensorTray);
     void currentRejectTrayChanged(int currentRejectTray);
     void isPickedProductOkChanged(bool isPickedProductOk);
+    void currentSensorIndexInPickerChanged(int currentSensorIndexInPicker);
+    void currentLensIndexInPickerChanged(int currentLensIndexInPicker);
 };
 
 

@@ -273,6 +273,9 @@ class LSutState:public PropertyBase
     Q_PROPERTY(bool waitLoading READ waitLoading WRITE setWaitLoading NOTIFY waitLoadingChanged)
     Q_PROPERTY(bool waitAAProcess READ waitAAProcess WRITE setWaitAAProcess NOTIFY waitAAProcessChanged)
 
+    Q_PROPERTY(int currentSensorIndex READ currentSensorIndex WRITE setCurrentSensorIndex NOTIFY currentSensorIndexChanged)
+    Q_PROPERTY(int currentLensIndex READ currentLensIndex WRITE setCurrentLensIndex NOTIFY currentLensIndexChanged)
+
 
     bool m_aaHeadHasLens = false;
 
@@ -291,6 +294,10 @@ class LSutState:public PropertyBase
     bool m_waitLoading = false;
 
     bool m_waitAAProcess = false;
+
+    int m_currentSensorIndex;
+
+    int m_currentLensIndex;
 
 public:
     bool hasOkLens() const
@@ -351,6 +358,16 @@ public:
     bool waitAAProcess() const
     {
         return m_waitAAProcess;
+    }
+
+    int currentSensorIndex() const
+    {
+        return m_currentSensorIndex;
+    }
+
+    int currentLensIndex() const
+    {
+        return m_currentLensIndex;
     }
 
 public slots:
@@ -434,6 +451,24 @@ public slots:
         emit waitAAProcessChanged(m_waitAAProcess);
     }
 
+    void setCurrentSensorIndex(int currentSensorIndex)
+    {
+        if (m_currentSensorIndex == currentSensorIndex)
+            return;
+
+        m_currentSensorIndex = currentSensorIndex;
+        emit currentSensorIndexChanged(m_currentSensorIndex);
+    }
+
+    void setCurrentLensIndex(int currentLensIndex)
+    {
+        if (m_currentLensIndex == currentLensIndex)
+            return;
+
+        m_currentLensIndex = currentLensIndex;
+        emit currentLensIndexChanged(m_currentLensIndex);
+    }
+
 signals:
     void aaHeadHasLensChanged(bool aaHeadHasLens);
     void lutHasLensChanged(bool lutHasLens);
@@ -444,6 +479,8 @@ signals:
     void isProductOkChanged(bool isProductOk);
     void waitLoadingChanged(bool waitLoading);
     void waitAAProcessChanged(bool waitAAProcess);
+    void currentSensorIndexChanged(int currentSensorIndex);
+    void currentLensIndexChanged(int currentLensIndex);
 };
 
 #endif // SINGLEHEADLSUTPARAMETER_H

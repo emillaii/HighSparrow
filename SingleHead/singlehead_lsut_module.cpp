@@ -63,15 +63,15 @@ void SingleheadLSutModule::saveParams(QString file_name)
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
-void SingleheadLSutModule::receiveLoadMaterialFinishResponse(int sensor_index, int lens_index)
+void SingleheadLSutModule::receiveLoadMaterialFinishResponse()
 {
     QMutexLocker tmpLocker(&locker);
-    qInfo("Receive material from loader with sensor_index: %d lens_index: %d", sensor_index, lens_index);
+    qInfo("Receive material from loader");
     pogopin->Set(true);
     lsutState->setWaitLoading(false);
     lsutState->setWaitAAProcess(true);
     qInfo(QString(tr("emit start aa process request")).toStdString().c_str());
-    emit sendStartAAProcessRequestSignal(sensor_index, lens_index, lsutState->aaHeadHasLens());
+    emit sendStartAAProcessRequestSignal(lsutState->currentSensorIndex(), lsutState->currentLensIndex(), lsutState->aaHeadHasLens());
 }
 
 void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productIndex)

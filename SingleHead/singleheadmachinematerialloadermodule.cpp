@@ -695,7 +695,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 point.setY(point.y()+camera_to_picker1_offset.Y());
                 pick_arm->move_XmY_Synic(point);
                 picker1PlaceLensToLUT();
-                qInfo("placelenstoLUTtest_sutready");
+                lsutState->setCurrentLensIndex(states.currentLensIndexInPicker());
                 states.setHasPickedLens(false);
                 lsutState->setLutHasLens(true);
                 qInfo("Place lens to LUT Finished");
@@ -775,6 +775,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 }else{
                     moveToPicker2WorkPos();           //use this in fast mode
                     picker2PlaceSensorToSUT();
+                    lsutState->setCurrentSensorIndex(states.currentSensorIndexInPicker());
                     states.setHasPickedSensor(false);
                     lsutState->setSutHasSensor(true);
                 }
@@ -795,7 +796,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
             if (lsutState->sutHasSensor() && lsutState->hasOkLens() && !lsutState->lutHasNgLens())
             {
                 qInfo("Both sensor and lens have already loaded into sut and lut");
-                emit sendLoadMaterialFinishSignal(sensorTray->getCurrentIndex(), lensTray->getCurrentIndex());
+                emit sendLoadMaterialFinishSignal();
                 states.setSutIsReadyToLoadMaterial(false);
             }
         }
@@ -904,6 +905,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                         continue;
                     }else {
                         states.setHasPickedLens(true);
+                        states.setCurrentLensIndexInPicker(lensTray->getCurrentIndex());
                         lensTray->setCurrentMaterialState(MaterialState::IsInUse, states.currentLensTray());
                     }
                 }
@@ -953,6 +955,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     } else {
                         pickSensorPoses[sensorTray->getCurrentIndex()] = tmpPickSensorPos;
                         states.setHasPickedSensor(true);
+                        states.setCurrentSensorIndexInPicker(sensorTray->getCurrentIndex());
                         sensorTray->setCurrentMaterialState(MaterialState::IsInUse, states.currentSensorTray());
                     }
                 }

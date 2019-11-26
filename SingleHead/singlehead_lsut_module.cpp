@@ -141,8 +141,8 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
 void SingleheadLSutModule::run(){
     is_run = true;
     while (is_run) {
+        if(locker.tryLock(200))
         {
-            QMutexLocker tmpLocker(&locker);
             if(!lsutState->waitLoading() && !lsutState->waitAAProcess())
             {
                 qDebug() << "LSUT is idle. So move to load position!";
@@ -154,6 +154,7 @@ void SingleheadLSutModule::run(){
 
                 emit sendLoadMaterialRequestSignal(true, currentProductIndex);
             }
+            locker.unlock();
         }
         QThread::msleep(200);
     }

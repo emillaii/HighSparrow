@@ -149,6 +149,7 @@ bool Unitlog::postUnitDataToCSV(QString uuid)
                 break;
             file.setFileName(file_name.append("_temp.csv"));
             result = file.open(QIODevice::Append | QIODevice::Text);
+            count++;
         }
         file.write(content.toStdString().c_str());
         file.close();
@@ -165,6 +166,7 @@ bool Unitlog::postUnitDataToCSV(QString uuid)
                 return false;
             file.setFileName(file_name.append("_temp.csv"));
             result = file.open(QIODevice::Append | QIODevice::Text);
+            count ++;
         }
         if(temp_file_name == file_name)
         {

@@ -108,7 +108,7 @@ public slots:
     void stopWork(bool wait_finish);
     void resetLogic();
     void performHandlingOperation(int cmd);
-    void receiveLoadMaterialFinishResponse(int sensor_index, int lens_index);
+    void receiveLoadMaterialFinishResponse();
     void receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productIndex);
 public:
     void run();

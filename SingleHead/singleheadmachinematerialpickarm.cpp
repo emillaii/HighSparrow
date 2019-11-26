@@ -40,7 +40,7 @@ void SingleHeadMachineMaterialPickArm::Init(XtMotor *motor_x,
 
 bool SingleHeadMachineMaterialPickArm::move_Xm_Origin()
 {
-    return motor_vcmx->MoveToPosSync(-2);
+    return motor_vcmx->MoveToPosSync(parameters.pickArmOriginX());
 }
 
 bool SingleHeadMachineMaterialPickArm::move_XY_Synic(const QPointF position, const bool check_softlanding, int timeout)

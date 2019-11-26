@@ -25,6 +25,7 @@ public:
     Q_PROPERTY(double placeSensorZ READ placeSensorZ WRITE setPlaceSensorZ NOTIFY placeSensorZChanged)
     Q_PROPERTY(double pickProductZ READ pickProductZ WRITE setPickProductZ NOTIFY pickProductZChanged)
     Q_PROPERTY(double placeProductZ READ placeProductZ WRITE setPlaceProductZ NOTIFY placeProductZChanged)
+     Q_PROPERTY(double pickArmOriginX READ pickArmOriginX WRITE setPickArmOriginX NOTIFY pickArmOriginXChanged)
 
 public:
     SingleHeadMachineMaterialPickArmParameter():PropertyBase(){}
@@ -119,6 +120,11 @@ public:
         return m_placeProductZ;
     }
 
+
+    double pickArmOriginX() const
+    {
+        return m_pickArmOriginX;
+    }
 
 public slots:
     void setMotorXName(QString motorXName)
@@ -292,6 +298,16 @@ public slots:
 
 
 
+    void setPickArmOriginX(double pickArmOriginX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickArmOriginX, pickArmOriginX))
+            return;
+
+        m_pickArmOriginX = pickArmOriginX;
+        emit pickArmOriginXChanged(m_pickArmOriginX);
+    }
+
 signals:
     void motorXNameChanged(QString motorXName);
 
@@ -331,6 +347,7 @@ signals:
 
     void placeProductZChanged(double placeProductZ);
 
+    void pickArmOriginXChanged(double pickArmOriginX);
 
 private:
     QString m_motorXName = "";
@@ -351,6 +368,7 @@ private:
     double m_placeSensorZ = 0;
     double m_pickProductZ = 0;
     double m_placeProductZ = 0;
+    double m_pickArmOriginX = 0;
 };
 
 #endif // SINGLEHEADMACHINEMATERIALPICKARMPARAMETER_H

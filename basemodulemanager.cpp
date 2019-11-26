@@ -764,7 +764,7 @@ bool BaseModuleManager::InitStruct()
     sh_lsut_module.Init(&sut_carrier,
                         GetVisionLocationByName(sh_lsut_module.parameters.sutDownLookLocationName()),
                         GetVisionLocationByName(sh_lsut_module.parameters.mushroomLocationName()),
-                        GetVisionLocationByName(sh_lsut_module.parameters.lutGripperLoactionName()),
+                        GetVisionLocationByName(sh_lsut_module.parameters.lutUplookLoactionName()),
                         GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()),
                         GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()),
                         GetOutputIoByName(sh_lsut_module.parameters.cylinderName()),

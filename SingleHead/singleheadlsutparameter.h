@@ -18,7 +18,7 @@ private:
     QString m_cylinderName;
     QString m_sutDownLookLocationName;
     QString m_mushroomLocationName;
-    QString m_lutGripperLoactionName;
+    QString m_lutUplookLoactionName;
 
     int m_delayBeforGripLens = 0;
 
@@ -37,7 +37,7 @@ public:
     Q_PROPERTY(QString cylinderName READ cylinderName WRITE setCylinderName NOTIFY cylinderNameChanged)
     Q_PROPERTY(QString sutDownLookLocationName READ sutDownLookLocationName WRITE setSutDownLookLocationName NOTIFY sutDownLookLocationNameChanged)
     Q_PROPERTY(QString mushroomLocationName READ mushroomLocationName WRITE setMushroomLocationName NOTIFY mushroomLocationNameChanged)
-    Q_PROPERTY(QString lutGripperLoactionName READ lutGripperLoactionName WRITE setLutGripperLoactionName NOTIFY lutGripperLoactionNameChanged)
+    Q_PROPERTY(QString lutUplookLoactionName READ lutUplookLoactionName WRITE setLutUplookLoactionName NOTIFY lutUplookLoactionNameChanged)
     Q_PROPERTY(int delayBeforGripLens READ delayBeforGripLens WRITE setDelayBeforGripLens NOTIFY delayBeforGripLensChanged)
     Q_PROPERTY(int delayAfterGripLens READ delayAfterGripLens WRITE setDelayAfterGripLens NOTIFY delayAfterGripLensChanged)
 
@@ -96,9 +96,9 @@ public:
         return m_mushroomLocationName;
     }
 
-    QString lutGripperLoactionName() const
+    QString lutUplookLoactionName() const
     {
-        return m_lutGripperLoactionName;
+        return m_lutUplookLoactionName;
     }
 
     int delayBeforGripLens() const
@@ -214,13 +214,13 @@ public slots:
         emit mushroomLocationNameChanged(m_mushroomLocationName);
     }
 
-    void setLutGripperLoactionName(QString lutGripperLoactionName)
+    void setLutUplookLoactionName(QString lutUplookLoactionName)
     {
-        if (m_lutGripperLoactionName == lutGripperLoactionName)
+        if (m_lutUplookLoactionName == lutUplookLoactionName)
             return;
 
-        m_lutGripperLoactionName = lutGripperLoactionName;
-        emit lutGripperLoactionNameChanged(m_lutGripperLoactionName);
+        m_lutUplookLoactionName = lutUplookLoactionName;
+        emit lutUplookLoactionNameChanged(m_lutUplookLoactionName);
     }
 
     void setDelayBeforGripLens(int delayBeforGripLens)
@@ -253,7 +253,7 @@ signals:
     void cylinderNameChanged(QString cylinderName);
     void sutDownLookLocationNameChanged(QString sutDownLookLocationName);
     void mushroomLocationNameChanged(QString mushroomLocationName);
-    void lutGripperLoactionNameChanged(QString lutGripperLoactionName);
+    void lutUplookLoactionNameChanged(QString lutUplookLoactionName);
     void delayBeforGripLensChanged(int delayBeforGripLens);
     void delayAfterGripLensChanged(int delayAfterGripLens);
 };

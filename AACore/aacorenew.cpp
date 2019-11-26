@@ -1737,6 +1737,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
 //    timer.restart();
     if (fov == -1) {
         qCritical("Cannot calculate FOV from the grabbed image.");
+        LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     start_time = timer.elapsed();
@@ -2126,9 +2127,9 @@ ErrorCodeStruct AACoreNew::performReject()
 {
     QVariantMap map;
     imageThread->stop();
-    Sleep(100);
+    imageThread->wait();
     imageThread->exit();
-    dk->DothinkeyClose();
+    dk->stopCamera();
     map.insert("has_ng_lens", has_ng_lens);
     map.insert("has_ng_sensor", has_ng_sensor);
     map.insert("has_product", has_product);
@@ -2141,9 +2142,9 @@ ErrorCodeStruct AACoreNew::performReject()
 ErrorCodeStruct AACoreNew::performAccept()
 {
     imageThread->stop();
-    Sleep(100);
+    imageThread->wait();
     imageThread->exit();
-    dk->DothinkeyClose();
+    dk->stopCamera();
     current_aa_ng_time = 0;
 //    current_oc_ng_time = 0;
 //    current_mtf_ng_time = 0;
@@ -2153,9 +2154,9 @@ ErrorCodeStruct AACoreNew::performAccept()
 ErrorCodeStruct AACoreNew::performTerminate()
 {
     imageThread->stop();
-    Sleep(100);
+    imageThread->wait();
     imageThread->exit();
-    dk->DothinkeyClose();
+    dk->stopCamera();
 
     QVariantMap map;
     map.insert("has_ng_lens", has_ng_lens);
@@ -2330,17 +2331,14 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
     const int channel = 0;
-    bool res = dk->DothinkeyEnum();
-    if (!res) { qCritical("Cannot find dothinkey");NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "1"}; }
-    res = dk->DothinkeyOpen();
-    map.insert("dothinkeyOpen", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot open dothinkey"); NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "2"}; }
-    res = dk->DothinkeyLoadIniFile(channel);
-    map.insert("dothinkeyLoadIniFile", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot load dothinkey ini file");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "3"}; }
-    res = dk->DothinkeyStartCamera(channel);
+
+    if(!dk->startCamera(channel))
+    {
+        qCritical("Cannot start camera");
+        NgSensor();
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "4"};
+    }
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot start camera");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "4"}; }
 
 //    QString sensorID = dk->readSensorID();
 //    qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());

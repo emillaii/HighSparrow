@@ -78,6 +78,7 @@ BaseModuleManager::~BaseModuleManager()
 {
     this->work_thread.quit();
     this->work_thread.wait();
+    dothinkey->releaseDevice();
     delete startCameraDoe;
 }
 
@@ -807,6 +808,13 @@ bool BaseModuleManager::initialDevice()
         return true;
     if(!profile_loaded)
         return false;
+
+    if(!dothinkey->initDevice())
+    {
+        qCritical("Init dothingkey failed!");
+        return false;
+    }
+
     qInfo("Init module manager");
     LPWSTR pTarget = ip;
     XT_Controler::InitDevice_PC_Local_Controler(0);

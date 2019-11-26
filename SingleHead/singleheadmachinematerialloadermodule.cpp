@@ -525,7 +525,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ2(double z,  bool i
         result =pick_arm->motor_th2->MoveToPosSync(parameters.sutPlaceSensorAngle());
         result = pick_arm->motor_vcmx->StepMoveSync(parameters.escapeX());
         result &= pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open,false,time_out);
-        sut_vacuum->Set(true);
+        sut_vacuum->Set(true, false);   //Sensor放到SUT表面不平整，真空吸经常检测不到
         result &= pick_arm->ZSerchReturn(1,time_out);
         result &= pick_arm->motor_vcm2->MoveToPosSync(0);
     }

@@ -12,6 +12,10 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
 #include <QElapsedTimer>
+#include <QFile>
+#include <QDir>
+#include <QDebug>
+#include <QDateTime>
 
 #define CAMERA_START 1
 #define CAMERA_STOP 2
@@ -32,6 +36,31 @@ public:
     BOOL DothinkeyClose();  //Close Camera Devices
     BOOL DothinkeyLoadIniFile(int channel);   // 0 is camera channel 0, 1 is camera channel 1
     BOOL DothinkeyStartCamera(int channel);
+
+    ///
+    /// \brief initDevice 使用前，需要先初始化采集盒设备
+    /// \return
+    ///
+    bool initDevice();
+
+    ///
+    /// \brief startCamera 取图前，需要先startCamera
+    /// \param channel
+    /// \return
+    ///
+    bool startCamera(int channel=0);
+
+    ///
+    /// \brief stopCamera 把sensor从采集盒上取下来之前，需要先stopcamera
+    /// \param channel
+    ///
+    void stopCamera(int channel=0);
+
+    ///
+    /// \brief releaseDevice 关闭程序前，需要releaseDevice
+    ///
+    void releaseDevice();
+
     QImage* DothinkeyGrabImage(int channel);
     cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
     BOOL DothinkeyIsGrabbing();
@@ -99,6 +128,8 @@ signals:
     void paramsChanged(QString IniFilename);
 
 private:
+    bool isInitDevice = false;
+
     char *DeviceName[4];
 
     BOOL SetVoltageMclk(SensorTab CurrentSensor, int iDevID, float Mclk, float Avdd, float Dvdd, float Dovdd, float Afvcc, float vpp);

@@ -256,6 +256,95 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     return true;
 }
 
+bool Dothinkey::initDevice()
+{
+    if(isInitDevice)
+    {
+        releaseDevice();
+    }
+    isInitDevice = true;
+    return DothinkeyEnum() && DothinkeyOpen();
+}
+
+bool Dothinkey::startCamera(int channel)
+{
+    if(!isInitDevice)
+    {
+        qCritical("Did not init device!");
+        return false;
+    }
+    return DothinkeyLoadIniFile(channel) && DothinkeyStartCamera(channel);
+}
+
+void Dothinkey::stopCamera(int channel)
+{
+    QElapsedTimer timer;
+    timer.start();
+
+    SensorTab *pSensor = nullptr;
+    ULONG *grabSize = nullptr;
+    m_currentSensorID = "0";
+    int iDevID = -1;
+    float fMclk = 0;
+    float fAvdd = 0;
+    float fDvdd = 0;
+    float fDovdd = 0;
+    float fAfvcc = 0;
+    UINT vpp;
+    if (channel == 0 || channel == 1) {
+        pSensor = &(m_CameraChannels[channel].current_sensor);
+        iDevID = m_CameraChannels[channel].m_iDevID;
+        grabSize = &(m_CameraChannels[channel].m_GrabSize);
+        fMclk = m_CameraChannels[channel].m_fMclk;
+        fAvdd = m_CameraChannels[channel].m_fAvdd;
+        fDvdd = m_CameraChannels[channel].m_fDvdd;
+        fDovdd = m_CameraChannels[channel].m_fDovdd;
+        fAfvcc = m_CameraChannels[channel].m_fAfvcc;
+        vpp = m_CameraChannels[channel].m_vpp;
+    }
+
+    CloseVideo(iDevID);
+    //ResetSensorI2cBus(m_nDevID);
+    SensorEnable(pSensor->pin ^ 0x03, 1, iDevID);//取反reset
+    //SensorEnable(CurrentSensor.pin^0x03,1,m_nDevID);//取反pwdn
+    Sleep(50);
+    SetSensorClock(0, fMclk * 10, iDevID);
+    SENSOR_POWER Power[10] = { POWER_AVDD, POWER_DOVDD, POWER_DVDD, POWER_AFVCC, POWER_VPP };
+    int Volt[10] = { 0 };
+    int Current[10] = { 300, 300, 300, 300, 100 };//300mA VPP 100mA
+    int rise[5] = { 100,100,100,100,100 };
+    BOOL OnOff[10] = { FALSE };
+    PmuSetRise(Power, rise, 5, iDevID); //设定电源上升斜率
+    CURRENT_RANGE range[5] = { CURRENT_RANGE_UA, CURRENT_RANGE_UA, CURRENT_RANGE_UA, CURRENT_RANGE_UA, CURRENT_RANGE_UA };
+//    //Test Standby
+//    {
+//        Sleep(1500);//快速放电所需的时间
+//        PmuSetCurrentRange(Power, range, 5, iDevID);
+
+//        Sleep(500);//切换Range所需的时间
+
+//        //GetADValue();//PmuGetCurrent(Power, Current, 5, m_nDevID); 获取电流值
+//    }
+    SensorEnable(pSensor->pin, FALSE, iDevID);
+    //设置5路电压值
+    PmuSetVoltage(Power, Volt, 5, iDevID);
+    Sleep(50);
+
+    SetSoftPinPullUp(IO_NOPULL, iDevID);
+    /*使能UV910柔性接口不执行这两个函数不然IO口会上拉*/
+    //EnableGpio(FALSE,m_nDevID);
+    //EnableSoftPin(FALSE,m_nDevID);
+
+    isGrabbing = false;
+    qInfo("Stop camera. Time elapsed: %d", timer.elapsed());
+}
+
+void Dothinkey::releaseDevice()
+{
+    isInitDevice = false;
+    DothinkeyClose();
+}
+
 BOOL Dothinkey::SetVoltageMclk(SensorTab CurrentSensor, int iDevID, float Mclk, float Avdd, float Dvdd, float Dovdd, float Afvcc, float vpp)
 {
     SENSOR_POWER Power[10] = { POWER_AVDD, POWER_DOVDD, POWER_DVDD, POWER_AFVCC, POWER_VPP };

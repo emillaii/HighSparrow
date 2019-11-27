@@ -111,6 +111,7 @@ HEADERS += \
     XtMotion/XtVcMotor.h \
     XtMotion/iolimitparameter.h \
     XtMotion/parallellimitparameter.h \
+    XtMotion/towerlightbuzzer.h \
     XtMotion/verticallimitparameter.h \
     XtMotion/xtadcmodule.h \
     XtMotion/xtcylinderparameter.h \
@@ -172,6 +173,7 @@ SOURCES += \
     XtMotion/XtGeneralOutput.cpp \
     XtMotion/XtVacuum.cpp \
     XtMotion/XtVcMotor.cpp \
+    XtMotion/towerlightbuzzer.cpp \
     XtMotion/xtadcmodule.cpp \
     XtMotion/xtmotor.cpp \
     AACore/aacorenew.cpp \

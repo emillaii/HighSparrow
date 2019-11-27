@@ -94,6 +94,9 @@ HEADERS += \
     Utils/loging/rollbackfile.h \
     Utils/position_define.h \
     Utils/propertybase.h \
+    Utils/singletoninstances.h \
+    Utils/uiHelper/msgboxmodel.h \
+    Utils/uiHelper/uioperation.h \
     Utils/unitlog.h \
     Vision/baslerpyloncamera.h \
     Vision/calibration.h \
@@ -160,6 +163,9 @@ SOURCES += \
     Utils/loging/logmodel.cpp \
     Utils/loging/rollbackfile.cpp \
     Utils/propertybase.cpp \
+    Utils/singletoninstances.cpp \
+    Utils/uiHelper/msgboxmodel.cpp \
+    Utils/uiHelper/uioperation.cpp \
     Utils/unitlog.cpp \
     Vision/baslerpyloncamera.cpp \
     Vision/calibration.cpp \

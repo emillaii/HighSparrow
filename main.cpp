@@ -13,6 +13,7 @@
 #include "MachineUtils/checkprocessmodel.h"
 #include "TrayMap/traymapmodel.h"
 #include "Utils/loging/loging.h"
+#include "Utils/singletoninstances.h"
 
 #include <windows.h>
 #include <DbgHelp.h>
@@ -79,6 +80,14 @@ int main(int argc, char *argv[])
     logManager.initLogSystem();
     engine.rootContext()->setContextProperty("logManager", &logManager);
     engine.rootContext()->setContextProperty("logModel", &logManager.logModel);
+
+    qRegisterMetaType<MsgBoxItem>();
+    qRegisterMetaType<MsgBoxModel::MsgBoxIcon>();
+    qmlRegisterType<MsgBoxModel>("MsgBoxModel", 1, 0, "MsgBoxModel");
+    MsgBoxModel msgBoxModel;
+    SI::ui.init(&msgBoxModel);
+    engine.rootContext()->setContextProperty("msgBoxModel", &msgBoxModel);
+    engine.rootContext()->setContextProperty("uiOperation", &SI::ui);
 
     qmlRegisterUncreatableType<TrayMapModel>("HighSprrow.Models", 1, 0, "TrayMapModel", "Tray map model should only be created in cpp code");
 

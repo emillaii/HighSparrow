@@ -28,6 +28,7 @@
 //#include "DualHead/lutclient.h"
 #include "ImageGrabber/imagegrabbingworkerthread.h"
 #include "Utils/unitlog.h"
+#include "Utils/singletoninstances.h"
 
 class AACoreNew : public ThreadWorkerBase
 {

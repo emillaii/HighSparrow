@@ -101,6 +101,24 @@ ApplicationWindow {
             onError: console.log(msg)
         }
 
+        SilicolMsgBox{
+            id: silicolMsgBox
+        }
+
+        Connections{
+            target: msgBoxModel
+            onMsgBoxCountChanged:{
+                if(count > 0)
+                {
+                    silicolMsgBox.msgBoxCount = count
+                    silicolMsgBox.open()
+                }
+                else{
+                    silicolMsgBox.close()
+                }
+            }
+        }
+
     header:
         ToolBar {
             id: toolBar

@@ -61,5 +61,6 @@
         <file>qml/VisionLocationParameters.qml</file>
         <file>qml/SUTModule/LensOperation.qml</file>
         <file>qml/Log/LogView.qml</file>
+        <file>qml/SilicolMsgBox.qml</file>
     </qresource>
 </RCC>

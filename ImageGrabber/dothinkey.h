@@ -41,25 +41,25 @@ public:
     /// \brief initDevice 使用前，需要先初始化采集盒设备
     /// \return
     ///
-    bool initDevice();
+    Q_INVOKABLE bool initDevice();
 
     ///
     /// \brief startCamera 取图前，需要先startCamera
     /// \param channel
     /// \return
     ///
-    bool startCamera(int channel=0);
+    Q_INVOKABLE bool startCamera(int channel=0);
 
     ///
     /// \brief stopCamera 把sensor从采集盒上取下来之前，需要先stopcamera
     /// \param channel
     ///
-    void stopCamera(int channel=0);
+    Q_INVOKABLE void stopCamera(int channel=0);
 
     ///
     /// \brief releaseDevice 关闭程序前，需要releaseDevice
     ///
-    void releaseDevice();
+    Q_INVOKABLE void releaseDevice();
 
     QImage* DothinkeyGrabImage(int channel);
     cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);

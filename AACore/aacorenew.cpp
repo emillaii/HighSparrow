@@ -785,6 +785,7 @@ ErrorCodeStruct AACoreNew::performDispense()
     hasDispense = true;
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
 
+    bool checkGlueRes = true;
     if(is_run)   //自动模式
     {
         autoRunDispenseTimes ++;
@@ -799,8 +800,15 @@ ErrorCodeStruct AACoreNew::performDispense()
             QImage image(imageNameAfterDispense);
             dispenseImageProvider->setImage(image);
             emit callQmlRefeshImg(3);  //Emit dispense image to QML
+
+            auto rsp = SI::ui.getUIResponse("Check Glue", "Please check glue!", MsgBoxModel::Question, SI::ui.passFailButtons);
+            if(rsp == SI::ui.Fail)
+            {
+                autoRunDispenseTimes = 0;
+                checkGlueRes = false;
+            }
         }
-        if(autoRunDispenseTimes >= 5)
+        if(autoRunDispenseTimes >= parameters.FrequencyForCheckGlue())
         {
             autoRunDispenseTimes = 0;
         }
@@ -816,7 +824,14 @@ ErrorCodeStruct AACoreNew::performDispense()
     has_sensor = false;
     has_ng_lens = false;
     has_ng_sensor = false;
-    return ErrorCodeStruct {ErrorCode::OK, ""};
+    if(checkGlueRes)
+    {
+        return ErrorCodeStruct {ErrorCode::OK, ""};
+    }
+    else {
+        LogicNg(current_aa_ng_time);
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Check glue failed"};
+    }
 }
 
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)

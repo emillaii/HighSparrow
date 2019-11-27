@@ -33,6 +33,8 @@ class AACoreParameters : public PropertyBase
 
     double m_EstimatedAAFOV = 70;
 
+    double m_FrequencyForCheckGlue = 5;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -52,6 +54,7 @@ public:
     Q_PROPERTY(int rejectTimes READ rejectTimes WRITE setRejectTimes NOTIFY rejectTimesChanged)
     Q_PROPERTY(double EstimatedFOVSlope READ EstimatedFOVSlope WRITE setEstimatedFOVSlope NOTIFY paramsChanged)
     Q_PROPERTY(double EstimatedAAFOV READ EstimatedAAFOV WRITE setEstimatedAAFOV NOTIFY paramsChanged)
+    Q_PROPERTY(double FrequencyForCheckGlue READ FrequencyForCheckGlue WRITE setFrequencyForCheckGlue NOTIFY FrequencyForCheckGlueChanged)
 
 double EFL() const
 {
@@ -110,6 +113,11 @@ double EstimatedFOVSlope() const
 double EstimatedAAFOV() const
 {
     return m_EstimatedAAFOV;
+}
+
+double FrequencyForCheckGlue() const
+{
+    return m_FrequencyForCheckGlue;
 }
 
 public slots:
@@ -200,10 +208,21 @@ void setEstimatedAAFOV(double EstimatedAAFOV)
     emit paramsChanged();
 }
 
+void setFrequencyForCheckGlue(double FrequencyForCheckGlue)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_FrequencyForCheckGlue, FrequencyForCheckGlue))
+        return;
+
+    m_FrequencyForCheckGlue = FrequencyForCheckGlue;
+    emit FrequencyForCheckGlueChanged(m_FrequencyForCheckGlue);
+}
+
 signals:
 void paramsChanged();
 void firstRejectSensorChanged(bool firstRejectSensor);
 void rejectTimesChanged(int rejectTimes);
+void FrequencyForCheckGlueChanged(double FrequencyForCheckGlue);
 };
 class AACoreStates: public PropertyBase
 {

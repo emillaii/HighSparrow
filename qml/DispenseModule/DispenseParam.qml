@@ -51,5 +51,19 @@ ColumnLayout {
                 dispenseParams.setInitTheta(text)
             }
         }
+
+        Label {
+            text: qsTr("人工检胶频率")
+        }
+        TextField {
+            text: aaCoreParams.FrequencyForCheckGlue
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: IntValidator {
+                bottom: 1
+            }
+            onEditingFinished: {
+                aaCoreParams.setFrequencyForCheckGlue(text)
+            }
+        }
     }
 }

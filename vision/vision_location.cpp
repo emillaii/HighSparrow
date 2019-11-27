@@ -38,6 +38,8 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
         temp = vison->PR_Prism_Only_Matching(parameters.cameraName(), pr_result);
     } else if (parameters.prismPRType() == 2) {
         temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), pr_result);
+    } else if (parameters.prismPRType() == 3) {
+        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), pr_result);
     } else {
         temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
     }
@@ -115,8 +117,9 @@ bool VisionLocation::performPR()
         temp =  vison->PR_Prism_Only_Matching(parameters.cameraName(), current_pixel_result);
     } else if (parameters.prismPRType() == 2) {
         temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), current_pixel_result);
-    }
-    else {
+    } else if (parameters.prismPRType() == 3) {
+        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), pr_result);
+    } else {
         temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), current_pixel_result, parameters.objectScore());
     }
     last_image_name = current_pixel_result.rawImageName;
@@ -200,6 +203,8 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
     } else if (parameters.prismPRType() == 2)
     {
         temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), pr_result);
+    } else if (parameters.prismPRType() == 3) {
+        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), pr_result);
     } else {
         temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
     }

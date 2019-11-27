@@ -443,8 +443,9 @@ void VisionModule::testVision()
     PRResultStruct prResult;
     //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
-    this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
+    //this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Matching(DOWNLOOK_VISION_CAMERA, prResult);
+    this->PR_Prism_SUT_Two_Circle_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
 }
 
@@ -856,6 +857,169 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
         return error_code;
     }
 
+    return error_code;
+}
+
+ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_name, PRResultStruct &prResult)
+{
+    qInfo("PR_Prism_SUT_Two_Circle_Matching");
+    ErrorCodeStruct error_code = { OK, "" };
+    static atl::String g_constData1;
+    static avl::Region g_constData2;
+    static atl::String g_constData3;
+    static atl::String g_emptyString;
+    static atl::Array< atl::Conditional< avl::Location > > g_constData4;
+    QString imageName;
+    imageName.append(getVisionLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".jpg");
+    QString rawImageName;
+    rawImageName.append(getVisionLogDir())
+                .append(getCurrentTimeString())
+                .append("_raw.jpg");
+    g_constData1 = "C:\\Users\\emil\\Desktop\\Test\\DownlookPR_Program\\DownlookPR\\image\\10-19-52-894.jpg";
+    g_constData3 = L"Angle:";
+
+    g_emptyString = L"";
+
+    g_constData4.Reset(1);
+    g_constData4[0] = avl::Location(156, 53);
+    try {
+        avs::ReadDataFromFile("config\\prConfig\\twoCircles.db0fe743.avdata", "Region", g_constData2 );
+        avl::EnumerateFilesState enumerateImagesState1;
+        avl::Image image1;
+        atl::String file1;
+        atl::String string1;
+        atl::Array< avl::HoughCircle > houghCircleArray1;
+        atl::Array< avl::Circle2D > circle2DArray1;
+        atl::Array< bool > boolArray1;
+        atl::Array< avl::Circle2D > circle2DArray2;
+        atl::Array< avl::Circle2D > circle2DArray3;
+        atl::Array< atl::Conditional< avl::Point2D > > point2DArray1;
+        avs::FitCircleToEdgesState fitCircleToEdgesState1;
+        avs::FitCircleToEdgesState fitCircleToEdgesState2;
+        avs::FitCircleToRidgesState fitCircleToRidgesState1;
+        avl::Image image2;
+        atl::Conditional< atl::String > string2;
+        atl::String string3;
+        avl::Image image3;
+        avl::Image image4;
+        atl::Array< atl::Conditional< atl::String > > stringArray1;
+        avl::Image image5;
+
+        atl::Conditional< avl::Point2D > point2D1;
+        atl::Conditional< avl::Point2D > point2D2;
+        atl::Conditional< avl::Line2D > line2D1;
+        atl::Conditional< avl::Point2D > point2D3;
+
+        this->grabImageFromCamera(camera_name, image1);
+//        avl::LoadImage( g_constData1, false, image1 );
+        avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
+
+        //ToDo: Open the parameter for the circle radius detection ( 11.0 )
+        avl::DetectMultipleCircles( image1, g_constData2, 11.0f, 0.1f, 20.0f, 10.0f, houghCircleArray1, atl::Dummy<avl::Image>().Get(), atl::Dummy<avl::Image>().Get() );
+
+        circle2DArray1.Resize(houghCircleArray1.Size());
+        boolArray1.Resize(houghCircleArray1.Size());
+
+        for( int i = 0; i < houghCircleArray1.Size(); ++i )
+        {
+            avl::ShapeRegion shapeRegion1;
+
+            circle2DArray1[i] = houghCircleArray1[i].Circle();
+            avl::Circle2DToShapeRegion( circle2DArray1[i], shapeRegion1 );
+            avl::CheckPresence_Intensity( image1, shapeRegion1, atl::NIL, 240.0f, atl::NIL, 0.0f, atl::NIL, boolArray1[i], atl::NIL, atl::NIL, atl::NIL );
+        }
+
+        avl::ClassifyByPredicate< avl::Circle2D >( circle2DArray1, boolArray1, circle2DArray2, circle2DArray3 );
+
+        point2DArray1.Resize(circle2DArray2.Size());
+
+        for( int i = 0; i < circle2DArray2.Size(); ++i )
+        {
+            atl::Conditional< avl::Circle2D > circle2D1;
+
+            avl::CircleFittingField circleFittingField1 = avl::CircleFittingField(circle2DArray2[i], 10.0f);
+
+            // Function AvsFilter_FitCircleToEdges is intended for generated code only. Consider use of CreateFittingMap and FitCircleToEdges functions in regular programs.
+            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, atl::NIL, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, avl::MEstimator::Huber, atl::Dummy< atl::Conditional< avl::Circle2D > >().Get(), atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+            avl::CircleFittingField circleFittingField2 = avl::CircleFittingField(circle2DArray2[i], 15.0f);
+
+            // Function AvsFilter_FitCircleToEdges is intended for generated code only. Consider use of CreateFittingMap and FitCircleToEdges functions in regular programs.
+            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState2, image1, circleFittingField2, atl::NIL, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 3.0f, avl::EdgeTransition::DarkToBright), avl::Selection::Best, atl::NIL, 0.2f, avl::CircleFittingMethod::AlgebraicTaubin, avl::MEstimator::Huber, atl::Dummy< atl::Conditional< avl::Circle2D > >().Get(), atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+            avl::CircleFittingField circleFittingField3 = avl::CircleFittingField(circle2DArray2[i], 15.0f);
+
+            // Function AvsFilter_FitCircleToRidges is intended for generated code only. Consider use of CreateFittingMap and FitCircleToRidges functions in regular programs.
+            avs::AvsFilter_FitCircleToRidges( fitCircleToRidgesState1, image1, circleFittingField3, atl::NIL, 10, 5, avl::InterpolationMethod::Bilinear, avl::RidgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 1, 2, avl::RidgeOperator::Minimum, 5.0f, avl::Polarity::Dark), avl::Selection::Best, atl::NIL, 0.2f, avl::CircleFittingMethod::AlgebraicTaubin, avl::MEstimator::Huber, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+
+            if (circle2D1 != atl::NIL)
+            {
+                point2DArray1[i].AssignNonNil();
+
+                point2DArray1[i].Get() = circle2D1.Get().Center();
+            }
+            else
+            {
+                point2DArray1[i] = atl::NIL;
+                qWarning("PR Error! Cannot find two circles");
+                error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                return error_code;
+            }
+        }
+
+        avs::DrawPoints_SingleColor( image1, point2DArray1, atl::NIL, avl::Pixel(255.0f, 128.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 30.0f), true, image2 );
+
+        // AvsFilter_GetArrayElement_OrNil is intended for generated code only, consider use of built-in language features in regular programs.
+        avs::AvsFilter_GetArrayElement_OrNil< atl::Conditional< avl::Point2D > >( point2DArray1, 0, false, point2D1 );
+
+        // AvsFilter_GetArrayElement_OrNil is intended for generated code only, consider use of built-in language features in regular programs.
+        avs::AvsFilter_GetArrayElement_OrNil< atl::Conditional< avl::Point2D > >( point2DArray1, 1, false, point2D2 );
+
+        if (point2D1 != atl::NIL && point2D2 != atl::NIL)
+        {
+            avl::Line2D line2D2;
+            float real1;
+
+            line2D1.AssignNonNil();
+            point2D3.AssignNonNil();
+            string2.AssignNonNil();
+
+            // Function AvsFilter_MakeLine is intended for generated code only. Consider use of proper Line2D constructor instead.
+            avs::AvsFilter_MakeLine( 0.0f, 1.0f, 0.0f, line2D2 );
+            avl::LineThroughPoints( point2D1.Get(), point2D2.Get(), line2D1.Get() );
+            avl::AveragePoint( point2D1.Get(), point2D2.Get(), point2D3.Get() );
+            avl::AngleBetweenLines( line2D1.Get(), line2D2, real1, atl::NIL );
+            avl::RealToString( real1, string3 );
+            // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
+            avs::AvsFilter_ConcatenateStrings( g_constData3, string3, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string2.Get() );
+            prResult.x = point2D3.Get().X();
+            prResult.y = point2D3.Get().Y();
+            prResult.ori_x = point2D3.Get().X();
+            prResult.ori_y = point2D3.Get().Y();
+            prResult.theta = real1;
+        }
+        else
+        {
+            line2D1 = atl::NIL;
+            point2D3 = atl::NIL;
+            string2 = atl::NIL;
+            qWarning("PR Error! Cannot find two circles");
+            error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+            return error_code;
+        }
+
+        avs::DrawLines_SingleColor( image2, atl::ToArray< atl::Conditional< avl::Line2D > >(line2D1), atl::NIL, avl::Pixel(0.0f, 0.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, atl::NIL, 20.0f), true, image3 );
+        avs::DrawPoints_SingleColor( image3, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D3), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 50.0f), true, image4 );
+        stringArray1.Resize(1);
+        stringArray1[0] = string2;
+        avs::DrawStrings_SingleColor( image4, stringArray1, g_constData4, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 28.0f), 40.0f, 0.0f, true, atl::NIL, image5 );
+        avl::SaveImageToJpeg( image5 , imageName.toStdString().c_str(), atl::NIL, false );
+    }catch(const atl::Error& error) {
+        qWarning("PR Error: %s", error.Message());
+        qWarning(error.Message());
+        error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+        return error_code;
+    }
     return error_code;
 }
 

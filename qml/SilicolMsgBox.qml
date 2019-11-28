@@ -10,7 +10,11 @@ Popup {
     property int msgBoxesMargin: 10
     property int msgBoxCount: 0
 
-    anchors.centerIn: parent
+    property point clickedPos: "0, 0"
+
+    id: popup
+    x: (parent.width - msgBoxWidth) / 2
+    y: 200
     closePolicy: Popup.NoAutoClose
 
     width: msgBoxWidth
@@ -24,80 +28,124 @@ Popup {
         }
     }
 
-    contentItem: ListView{
+    contentItem: Rectangle{
         anchors.fill: parent
-        spacing: msgBoxesMargin
-        model: msgBoxModel
-        delegate: Rectangle{
-            radius: 20
+
+        Rectangle{
+            id: rectTitle
             width: msgBoxWidth
-            height: msgBoxHeight
-            border.width: 0
+            height: 30
+            color: "lime"
 
             Text {
-                id: txtTitle
-                anchors.left: parent.left
-                anchors.leftMargin: 50
-                text: title
+                anchors.fill: parent
+                text: qsTr("NOTIFICATION")
                 horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
-            Rectangle{
-                id: rectLine
-                anchors.top: txtTitle.bottom
-                width: msgBoxWidth
-                height: 2
-                border.color: "black"
-                border.width: 1
-            }
-            Image {
-                id: imgIcon
-                anchors.top: rectLine.bottom
-                anchors.topMargin: 20
-                anchors.leftMargin: 40
-                width: 80
-                height: 80
-                source: {
-                    switch(icon)
-                    {
-                    case MsgBoxModel.Information:
-                        return "/icons/information.png";
-                    case MsgBoxModel.Question:
-                        return "/icons/question.png";
-                    case MsgBoxModel.Warning:
-                        return "/icons/warning.png";
-                    case MsgBoxModel.Error:
-                        return "/icons/error.png";
-                    default:
-                        return "";
-                    }
+
+            MouseArea{
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton
+                onPressed: {
+                    clickedPos = Qt.point(mouse.x, mouse.y)
                 }
-            }
-            TextArea{
-                anchors.top: rectLine.bottom
-                anchors.left: imgIcon.right
-                anchors.bottom: rowButtons.top
-                anchors.right: parent.right
-                readOnly: true
-                text: content
-                color: "black"
-            }
-            RowLayout{
-                id: rowButtons
-                anchors.bottom: parent.bottom
-                height: 50
-                width: msgBoxWidth
-                Repeater{
-                    model: buttons
-                    delegate: Button{
-                        text: modelData
-                        onClicked: {
-                            uiOperation.onUIResponse(uuid, text)
-                        }
-                    }
+                onPositionChanged: {
+                    var delta = Qt.point(mouse.x - clickedPos.x, mouse.y - clickedPos.y)
+                    popup.x += delta.x
+                    popup.y += delta.y
                 }
             }
         }
 
-        ScrollBar.vertical: ScrollBar{}
+        ListView{
+            anchors.top: rectTitle.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            model: msgBoxModel
+
+            delegate: Rectangle{
+                width: msgBoxWidth
+                height: msgBoxHeight
+                border.width: 0
+
+                Rectangle{
+                    id: rectSpace
+                    width: msgBoxWidth
+                    height: msgBoxesMargin
+                    color: "gray"
+                }
+
+                Text {
+                    id: txtTitle
+                    anchors.top: rectSpace.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: title
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                Rectangle{
+                    id: rectLine
+                    anchors.top: txtTitle.bottom
+                    width: msgBoxWidth
+                    height: 2
+                    border.color: "black"
+                    border.width: 1
+                }
+                Image {
+                    id: imgIcon
+                    anchors.top: rectLine.bottom
+                    anchors.topMargin: 20
+                    anchors.left: parent.left
+                    anchors.leftMargin: 20
+                    width: 80
+                    height: 80
+                    source: {
+                        switch(icon)
+                        {
+                        case MsgBoxModel.Information:
+                            return "/icons/information.png";
+                        case MsgBoxModel.Question:
+                            return "/icons/question.png";
+                        case MsgBoxModel.Warning:
+                            return "/icons/warning.png";
+                        case MsgBoxModel.Error:
+                            return "/icons/error.png";
+                        default:
+                            return "";
+                        }
+                    }
+                }
+                TextArea{
+                    anchors.top: rectLine.bottom
+                    anchors.left: imgIcon.right
+                    anchors.leftMargin: 15
+                    anchors.bottom: rowButtons.top
+                    anchors.right: parent.right
+                    readOnly: true
+                    text: content
+                    color: "black"
+                }
+                RowLayout{
+                    id: rowButtons
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.leftMargin: 80
+                    height: 50
+                    width: msgBoxWidth - 80
+                    Repeater{
+                        model: buttons
+                        delegate: Button{
+                            text: modelData
+                            onClicked: {
+                                uiOperation.onUIResponse(uuid, text)
+                            }
+                        }
+                    }
+                }
+            }
+
+            ScrollBar.vertical: ScrollBar{}
+        }
     }
 }

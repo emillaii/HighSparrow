@@ -14,6 +14,7 @@
 #include "TrayMap/traymapmodel.h"
 #include "Utils/loging/loging.h"
 #include "Utils/singletoninstances.h"
+#include "UnitTest/SilicolMsgBoxTest.h"
 
 #include <windows.h>
 #include <DbgHelp.h>
@@ -88,6 +89,9 @@ int main(int argc, char *argv[])
     SI::ui.init(&msgBoxModel);
     engine.rootContext()->setContextProperty("msgBoxModel", &msgBoxModel);
     engine.rootContext()->setContextProperty("uiOperation", &SI::ui);
+
+    MsgBoxTester msgBoxTester;
+    engine.rootContext()->setContextProperty("msgBoxTester", &msgBoxTester);
 
     qmlRegisterUncreatableType<TrayMapModel>("HighSprrow.Models", 1, 0, "TrayMapModel", "Tray map model should only be created in cpp code");
 

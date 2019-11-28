@@ -424,6 +424,8 @@ ApplicationWindow {
         currentIndex: tabBar.currentIndex
         interactive: false
 
+        UnitTestForm{}
+
         Page1Form {
             featureButton.onClicked: {
                 //visionModule.testVision()

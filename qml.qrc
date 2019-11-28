@@ -62,5 +62,6 @@
         <file>qml/SUTModule/LensOperation.qml</file>
         <file>qml/Log/LogView.qml</file>
         <file>qml/SilicolMsgBox.qml</file>
+        <file>qml/UnitTestForm.qml</file>
     </qresource>
 </RCC>

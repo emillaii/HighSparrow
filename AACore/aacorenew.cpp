@@ -256,6 +256,18 @@ void AACoreNew::NgLens()
     }
 }
 
+void AACoreNew::NgSensorOrProduct()
+{
+    if(hasDispense)
+    {
+        NgProduct();
+    }
+    else
+    {
+        NgSensor();
+    }
+}
+
 void AACoreNew::NgSensor()
 {
     qInfo("NgSensor");
@@ -283,8 +295,15 @@ bool AACoreNew::HasSensorOrProduct()
 
 void AACoreNew::NgProduct()
 {
-    has_product = false;
     has_ng_product = true;
+    has_product = false;
+
+    has_lens = false;
+    has_ng_lens = false;
+    has_sensor = false;
+    has_ng_sensor = false;
+
+    current_aa_ng_time = 0;
 }
 
 void AACoreNew::SetLens()
@@ -880,13 +899,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
            qInfo("Z scan start from %f, real: %f", start+(i*step_size), realZ);
            grab_timer.start();
-           cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+           cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
            qInfo("Grab time elapsed: %d", grab_timer.elapsed());
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                emit pushDataToUnit(runningUnit, "AA", map);
-               NgSensor();
+               NgSensorOrProduct();
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
@@ -924,12 +943,12 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            QThread::msleep(zSleepInMs);
            step_move_time += step_move_timer.elapsed();
            grab_timer.start();
-           cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+           cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                map["Result"] = "AA Cannot grab image.";
                emit pushDataToUnit(runningUnit, "AA", map);
-               NgSensor();
+               NgSensorOrProduct();
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
@@ -960,11 +979,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 QThread::msleep(zSleepInMs);
                 step_move_time += step_move_timer.elapsed();
                 grab_timer.start();
-                cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+                cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
                 grab_time += grab_timer.elapsed();
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
-                    NgSensor();
+                    NgSensorOrProduct();
                     map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                     emit pushDataToUnit(runningUnit, "AA", map);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
@@ -1022,11 +1041,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              QThread::msleep(zSleepInMs);
              step_move_time += step_move_timer.elapsed();
              grab_timer.start();
-             cv::Mat img = dk->DothinkeyGrabImageCV(0,grabRet);
+             cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0,grabRet);
              grab_time += grab_timer.elapsed();
              if (!grabRet) {
                  qInfo("AA Cannot grab image.");
-                 NgSensor();
+                 NgSensorOrProduct();
                  map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                  emit pushDataToUnit(runningUnit, "AA", map);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
@@ -1110,7 +1129,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     }
     if (position_checking == 1){
         QThread::msleep(zSleepInMs);
-        cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+        cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
         double beforeZ = lsut->sut_carrier->GetFeedBackPos().Z;
         double expected_fov = fov_slope*aa_result["zPeak"].toDouble() + fov_intercept;
         double dfov = calculateDFOV(img);
@@ -1735,10 +1754,10 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     QElapsedTimer timer;timer.start();
     QVariantMap map;
     bool grabRet = false;
-    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
     if (!grabRet) {
         qInfo("MTF Cannot grab image.");
-        NgSensor();
+        NgSensorOrProduct();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     double fov = calculateDFOV(img);
@@ -2211,10 +2230,10 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     int enable_plot = params["enable_plot"].toInt();
 //    cv::Mat inputImage = cv::imread("1/5.bmp");
     bool grabRet;
-    cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
+    cv::Mat inputImage = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
     if (!grabRet) {
         qInfo("Cannot grab image.");
-        NgSensor();
+        NgSensorOrProduct();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Test Fail. Cannot grab image"};
     }
     float min_i = 0;
@@ -2266,10 +2285,10 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     QElapsedTimer timer;
     timer.start();
     bool grabRet;
-    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
     if (!grabRet) {
         qInfo("AA Cannot grab image.");
-        NgSensor();
+        NgSensorOrProduct();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     QString imageName;
@@ -2513,7 +2532,7 @@ void AACoreNew::captureLiveImage()
         return;
     }
     bool grabRet = false;
-    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
     if (!grabRet) {
         qInfo("AA Cannot grab image.");
         return;

@@ -537,6 +537,22 @@ cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel, bool &grabRet)
     return img;
 }
 
+cv::Mat Dothinkey::DothinkeyGrabImageCVWithAutoRetry(int channel, bool &ret, int maxRetryCount)
+{
+    for(int i = 0; i < maxRetryCount; i++)
+    {
+        auto img = DothinkeyGrabImageCV(channel, ret);
+        if(ret)
+        {
+            return img;
+        }
+        else {
+            qWarning("Can not grab image, auto retry...   %d", i + 1);
+        }
+    }
+    return cv::Mat();
+}
+
 QImage* Dothinkey::DothinkeyGrabImage(int channel)
 {
     SensorTab *pSensor = nullptr;

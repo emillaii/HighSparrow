@@ -63,6 +63,7 @@ public:
 
     QImage* DothinkeyGrabImage(int channel);
     cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
+    cv::Mat DothinkeyGrabImageCVWithAutoRetry(int channel, bool &ret, int maxRetryCount=3);
     BOOL DothinkeyIsGrabbing();
     struct CameraChannel
     {

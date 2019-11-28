@@ -103,6 +103,7 @@ private:
     void run(bool has_material);
     void LogicNg(int & ng_time);
     void NgLens();
+    void NgSensorOrProduct();
     void NgSensor();
     bool HasLens();
     bool HasSensorOrProduct();

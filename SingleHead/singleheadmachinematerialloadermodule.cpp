@@ -829,7 +829,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
             if(!is_run)break;
         }
 
-        if(this->states.hasPickedProduct()){  //Place product to tray
+        if(this->states.hasPickedProduct() && states.isPickedProductOk()){  //Place product to tray
             qInfo("Place Product to Sensor Tray");
 
             if(!pickSensorPoses.contains(currentProductIndex))
@@ -848,13 +848,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 {
                     picker1PlaceProductToTray();
                     states.setHasPickedProduct(false);
-                    if(states.isPickedProductOk())
-                    {
-                        sensorTray->setCurrentMaterialState(MaterialState::IsProduct, states.currentSensorTray());
-                    }
-                    else{
-                        sensorTray->setCurrentMaterialState(MaterialState::IsNg, states.currentSensorTray());
-                    }
+                    sensorTray->setCurrentMaterialState(MaterialState::IsProduct, states.currentSensorTray());
                 } else {
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Move failed! Please remove the product, then home the motor!");
                     int operation = waitMessageReturn(is_run);
@@ -863,6 +857,33 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 }
             }
 
+            if(!is_run)break;
+        }
+
+        if(this->states.hasPickedProduct() && !states.isPickedProductOk()){ // Place the ng product to tray
+            qInfo("Place the ng product to tray");
+            if(moveToNextRejectTrayPos(states.currentRejectTray()))
+            {
+                pr_offset.ReSet();
+                if(parameters.performPrAsPlacingNgDut())
+                {
+                    performSensorVacancyPR();
+                }
+                else
+                {
+                    applyPrOffset(placeNgProductToTrayOffset);
+                }
+                moveToPicker1WorkPos();
+                picker1PlaceProductToTray();
+                states.setHasPickedProduct(false);
+                rejectTray->setCurrentMaterialState(MaterialState::IsNg, states.currentRejectTray());
+            } else {
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Reject Tray Full. Please clear the reject tray");
+                int operation = waitMessageReturn(is_run);
+                qInfo("user operation: %d", operation);
+                rejectTray->resetTrayState(states.currentRejectTray());
+                continue;
+            }
             if(!is_run)break;
         }
 

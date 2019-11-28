@@ -116,6 +116,7 @@ HEADERS += \
     XtMotion/iolimitparameter.h \
     XtMotion/parallellimitparameter.h \
     XtMotion/towerlightbuzzer.h \
+    XtMotion/towerlightbuzzerparameter.h \
     XtMotion/verticallimitparameter.h \
     XtMotion/xtadcmodule.h \
     XtMotion/xtcylinderparameter.h \

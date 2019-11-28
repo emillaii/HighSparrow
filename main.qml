@@ -424,7 +424,7 @@ ApplicationWindow {
         currentIndex: tabBar.currentIndex
         interactive: false
 
-        UnitTestForm{}
+//        UnitTestForm{}
 
         Page1Form {
             featureButton.onClicked: {

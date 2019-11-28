@@ -22,6 +22,7 @@
 #define MOTOR_PARAMETER_FILE       "motor_parameter.json"
 #define CYLINDER_PARAMETER_FILE     "cylinder_parameter.json"
 #define VACUUM_PARAMETER_FILE       "vacuum_parameter.json"
+#define TOWERLIGHTBUZZER_PARAMETER_FILE "towerlightbuzzer_parameter.json"
 #define VISION_LOCATION_PARAMETER_FILE   "vision_location_parameter.json"
 #define CALIBRATION_PARAMETER_FILE   "calibration_parameter.json"
 #define AA_CORE_MODULE_FILE          "aaCoreConfig.json"

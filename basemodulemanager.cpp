@@ -337,7 +337,49 @@ bool BaseModuleManager::loadVacuumFiles(QString file_name)
     return true;
 }
 
+
 bool BaseModuleManager::saveVacuumFiles(QString file_name)
+{
+    QJsonArray array;
+    foreach (QString temp_name, vacuums.keys()) {
+        XtVacuum* temp_vacuum = GetVacuumByName(temp_name);
+        if(temp_vacuum != nullptr)
+        {
+            QJsonObject object;
+            temp_vacuum->parameters.write(object);
+            array.append(object);
+        }
+    }
+    if(array.size() > 0)
+        return  saveJsonArray(file_name,array);
+    return  false;
+}
+bool BaseModuleManager::loadTowerLightBuzzerFiles(QString file_name)
+{
+    QJsonArray array;
+    if(!loadJsonArray(file_name,array))
+    {
+        //        saveVacuumFiles(file_name);
+        return false;
+    }
+    for (int i = 0; i < array.count(); i++)
+    {
+        TowerLightBuzzer* temp_lightBuzzer = new TowerLightBuzzer;
+        temp_lightBuzzer->parameters.read(array.at(i).toObject());
+        QJsonObject temp_object;
+        temp_lightBuzzer->parameters.write(temp_object);
+        if(!towerLightBuzzer.contains(temp_lightBuzzer->parameters.buzzerName()))
+            towerLightBuzzer.insert(temp_lightBuzzer->parameters.buzzerName(),temp_lightBuzzer);
+        else
+        {
+            qInfo("towerlight buzzer param name(%s)repeat!",temp_lightBuzzer->parameters.buzzerName().toStdString().c_str());
+            delete temp_lightBuzzer;
+        }
+    }
+    return true;
+}
+
+bool BaseModuleManager::saveTowerLightBuzzerFiles(QString file_name)
 {
     QJsonArray array;
     foreach (QString temp_name, vacuums.keys()) {

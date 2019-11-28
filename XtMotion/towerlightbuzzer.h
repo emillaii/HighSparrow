@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "XtGeneralOutput.h"
+#include "towerlightbuzzerparameter.h"
 
 ///
 /// \brief The TowerLightBuzzer class
@@ -43,6 +44,9 @@ public:
     ///
     void switchColor(TowerLightColor color);
     void blinkColor(TowerLightColor color);
+
+public:
+    TowerLightBuzzerParameter parameters;
 
 private:
     XtGeneralOutput* buzzerOut;

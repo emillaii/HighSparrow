@@ -11,6 +11,7 @@
 #include "XT_MotionControler_Client_Lib.h"
 #include "XT_MotionControlerExtend_Client_Lib.h"
 #include "XtMotion/XtVacuum.h"
+#include "XtMotion/towerlightbuzzer.h"
 #include "XtMotion/XtCylinder.h"
 #include "XtMotion/XtVcMotor.h"
 #include "AAHeadModule/aaheadmodule.h"
@@ -46,6 +47,7 @@ public:
     QMap<QString,Calibration*> calibrations;
     QMap<QString,VisionLocation*> vision_locations;
     QMap<QString,XtVacuum*> vacuums;
+    QMap<QString,TowerLightBuzzer*> towerLightBuzzer;
     QMap<QString,XtCylinder*> cylinder;
     ChartCalibration * chart_calibration = Q_NULLPTR;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
@@ -154,6 +156,8 @@ public:
     bool saveMotorFile(QString file_name);
     bool loadVacuumFiles(QString file_name);
     bool saveVacuumFiles(QString file_name);
+    bool loadTowerLightBuzzerFiles(QString file_name);
+    bool saveTowerLightBuzzerFiles(QString file_name);
     bool loadCylinderFiles(QString file_name);
     bool saveCylinderFiles(QString file_name);
     bool loadVisionLoactionFiles(QString file_name);

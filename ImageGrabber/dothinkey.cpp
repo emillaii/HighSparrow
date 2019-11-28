@@ -522,19 +522,22 @@ cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel, bool &grabRet)
     if (ret == DT_ERROR_OK)
     {
         GetMipiCrcErrorCount(&crcCount, CHANNEL_A, iDevID);
+        ImageProcess(CameraBuffer, bmpBuffer, width, height, &frameInfo, iDevID);
+        CvSize mSize;
+        mSize.height = height;
+        mSize.width = width;
+        cv::Mat img(height, width, CV_8UC3, bmpBuffer);
+        delete(CameraBuffer);
+        CameraBuffer = NULL;
+        return img;
     } else {
         qInfo("Camera Grab Frame Fail");
         cv::Mat img;
         grabRet = false;
+        delete(CameraBuffer);
+        CameraBuffer = NULL;
+        return img;
     }
-    ImageProcess(CameraBuffer, bmpBuffer, width, height, &frameInfo, iDevID);
-    CvSize mSize;
-    mSize.height = height;
-    mSize.width = width;
-    cv::Mat img(height, width, CV_8UC3, bmpBuffer);
-    delete(CameraBuffer);
-    CameraBuffer = NULL;
-    return img;
 }
 
 cv::Mat Dothinkey::DothinkeyGrabImageCVWithAutoRetry(int channel, bool &ret, int maxRetryCount)
@@ -548,6 +551,7 @@ cv::Mat Dothinkey::DothinkeyGrabImageCVWithAutoRetry(int channel, bool &ret, int
         }
         else {
             qWarning("Can not grab image, auto retry...   %d", i + 1);
+            QThread::msleep(100);
         }
     }
     return cv::Mat();

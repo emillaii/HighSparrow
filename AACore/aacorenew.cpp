@@ -2369,7 +2369,15 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     {
         qCritical("Cannot start camera");
         NgSensor();
-        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "4"};
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "StartCameraFailed"};
+    }
+    bool res = false;
+    dk->DothinkeyGrabImageCV(channel, res);
+    if(!res)
+    {
+        qCritical("Cannot grab image");
+        NgSensor();
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "GrabImageFailed"};
     }
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
 

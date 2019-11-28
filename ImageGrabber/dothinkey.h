@@ -16,6 +16,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QDateTime>
+#include <QThread>
 
 #define CAMERA_START 1
 #define CAMERA_STOP 2
@@ -60,6 +61,12 @@ public:
     /// \brief releaseDevice 关闭程序前，需要releaseDevice
     ///
     Q_INVOKABLE void releaseDevice();
+
+    Q_INVOKABLE void getImgTest()
+    {
+        bool res;
+        auto imgj = DothinkeyGrabImageCVWithAutoRetry(0, res);
+    }
 
     QImage* DothinkeyGrabImage(int channel);
     cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);

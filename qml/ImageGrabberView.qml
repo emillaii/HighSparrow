@@ -104,6 +104,12 @@ ItemDelegate {
                         imageGrabber.stopCamera()
                     }
                 }
+                Button{
+                    text: "get Img"
+                    onClicked: {
+                        imageGrabber.getImgTest()
+                    }
+                }
             }
         }
     }

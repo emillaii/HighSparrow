@@ -27,6 +27,9 @@ SOURCES += \
     utils/loging/loging.cpp \
     utils/loging/logmodel.cpp \
     utils/loging/rollbackfile.cpp \
+    utils/singletoninstances.cpp \
+    utils/uiHelper/msgboxmodel.cpp \
+    utils/uiHelper/uioperation.cpp \
     vision/baslerpyloncamera.cpp \
     highsprrow.cpp \
     utils/errorcode.cpp \
@@ -144,9 +147,13 @@ DEPENDPATH += $$PWD/../libs/DTCCM2_SDK/X64_Lib
 
 HEADERS += \
     Drivers/LightSourceController/sciencalightsourcecontroller.h \
+    UnitTest/SilicolMsgBoxTest.h \
     utils/loging/loging.h \
     utils/loging/logmodel.h \
     utils/loging/rollbackfile.h \
+    utils/singletoninstances.h \
+    utils/uiHelper/msgboxmodel.h \
+    utils/uiHelper/uioperation.h \
     vision/baslerpyloncamera.h \
     config.h \
     devicestatesgeter.h \

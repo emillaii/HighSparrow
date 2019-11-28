@@ -215,5 +215,7 @@
         <file>qml/TCPTraySpec.qml</file>
         <file>qml/Drivers/LightSourceController/SciencaLightSourceControllerView.qml</file>
         <file>TcpMotionDialog.qml</file>
+        <file>qml/SilicolMsgBox.qml</file>
+        <file>qml/UnitTestForm.qml</file>
     </qresource>
 </RCC>

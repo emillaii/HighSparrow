@@ -26,5 +26,9 @@
         <file>icons/camera.png</file>
         <file>icons/lock.png</file>
         <file>icons/unlock.png</file>
+        <file>icons/error.png</file>
+        <file>icons/information.png</file>
+        <file>icons/question.png</file>
+        <file>icons/warning.png</file>
     </qresource>
 </RCC>

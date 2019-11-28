@@ -9,6 +9,8 @@
 
 #include "utils/loging/loging.h"
 #include "utils/loging/logmodel.h"
+#include "utils/singletoninstances.h"
+#include "UnitTest/SilicolMsgBoxTest.h"
 
 #include "AACore/aadata.h"
 #include "checkprocessmodel.h"
@@ -80,6 +82,17 @@ int main(int argc, char *argv[])
     logManager.initLogSystem();
     engine.rootContext()->setContextProperty("logManager", &logManager);
     engine.rootContext()->setContextProperty("logModel", &logManager.logModel);
+
+    qRegisterMetaType<MsgBoxItem>();
+    qRegisterMetaType<MsgBoxModel::MsgBoxIcon>();
+    qmlRegisterType<MsgBoxModel>("MsgBoxModel", 1, 0, "MsgBoxModel");
+    MsgBoxModel msgBoxModel;
+    SI::ui.init(&msgBoxModel);
+    engine.rootContext()->setContextProperty("msgBoxModel", &msgBoxModel);
+    engine.rootContext()->setContextProperty("uiOperation", &SI::ui);
+
+    MsgBoxTester msgBoxTester;
+    engine.rootContext()->setContextProperty("msgBoxTester", &msgBoxTester);
 
     qmlRegisterUncreatableType<TrayMapModel>("HighSprrow.Models", 1, 0, "TrayMapModel", "Tray map model should only be created in cpp code");
 

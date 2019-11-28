@@ -118,7 +118,7 @@ bool VisionLocation::performPR()
     } else if (parameters.prismPRType() == 2) {
         temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), current_pixel_result);
     } else if (parameters.prismPRType() == 3) {
-        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), pr_result);
+        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), current_pixel_result);
     } else {
         temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), current_pixel_result, parameters.objectScore());
     }

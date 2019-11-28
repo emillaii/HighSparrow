@@ -32,6 +32,7 @@ public:
     void init(MsgBoxModel* msgBoxModel);
 
     void showMessage(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons);
+    void showMessage(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QString button);
     QString getUIResponse(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons);
 
 signals:

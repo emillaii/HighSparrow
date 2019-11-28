@@ -2365,10 +2365,22 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     QVariantMap map;
     const int channel = 0;
 
+    if(needReInitFrameGrabber)
+    {
+        if(!dk->initDevice())
+        {
+            SI::ui.showMessage("Error", "Can not init frame grabber. Please check!", MsgBoxModel::MsgBoxIcon::Error, SI::ui.Ok);
+        }
+        else {
+            needReInitFrameGrabber = false;
+        }
+    }
+
     if(!dk->startCamera(channel))
     {
         qCritical("Cannot start camera");
         NgSensor();
+        needReInitFrameGrabber = true;
         return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "StartCameraFailed"};
     }
     bool res = false;
@@ -2377,6 +2389,7 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     {
         qCritical("Cannot grab image");
         NgSensor();
+        needReInitFrameGrabber = true;
         return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "GrabImageFailed"};
     }
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();

@@ -29,6 +29,7 @@
 #include "ImageGrabber/imagegrabbingworkerthread.h"
 #include "Utils/unitlog.h"
 #include "Utils/singletoninstances.h"
+#include "Utils/singletoninstances.h"
 
 class AACoreNew : public ThreadWorkerBase
 {
@@ -156,6 +157,7 @@ private:
     bool has_lens = false;
     bool send_lens_request = false;
     bool send_sensor_request = false;
+    bool needReInitFrameGrabber = false; //点亮失败，重新初始化采集盒设备
 
     int current_aa_ng_time = 0;
 //    int current_oc_ng_time = 0;

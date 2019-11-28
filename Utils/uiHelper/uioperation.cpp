@@ -35,6 +35,13 @@ void UIOperation::showMessage(QString title, QString content, MsgBoxModel::MsgBo
     emit addMsgBox(msgBox);
 }
 
+void UIOperation::showMessage(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QString button)
+{
+    QList<QString> buttons;
+    buttons.append(button);
+    showMessage(title, content, icon, buttons);
+}
+
 QString UIOperation::getUIResponse(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons)
 {
     QString buttonsRepr;

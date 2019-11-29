@@ -27,6 +27,7 @@ void BaslerPylonCamera::updateImage(const CGrabResultPtr& ptrGrabResult)
     trig_mutex.lock();
     is_triged = false;
     got_new = true;
+    this->setiIsGrabbing(true);
     trig_mutex.unlock();
     emit callQmlRefeshImg();
 }

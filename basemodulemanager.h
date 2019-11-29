@@ -143,7 +143,18 @@ public:
     SciencaLightSourceController chartBackgroundLightSourceController;
 
     //Remote vision location
-    VisionLocation *tcp_vision_location_aa1_downlook;
+    VisionLocation tcp_vision_location_aa1_downlook;
+    VisionLocation tcp_vision_location_aa1_mushroomhead;
+    VisionLocation tcp_vision_location_aa1_uplook;
+    VisionLocation tcp_vision_location_aa1_updownlook_down;
+    VisionLocation tcp_vision_location_aa1_updownlook_up;
+    VisionLocation tcp_vision_location_lpa_lens;
+    VisionLocation tcp_vision_location_lpa_lut_lens;
+    VisionLocation tcp_vision_location_lpa_lut;
+    VisionLocation tcp_vision_location_lpa_lut_ng;
+    VisionLocation tcp_vision_location_lpa_vacancy;
+    VisionLocation tcp_vision_location_lut_load;
+    VisionLocation tcp_vision_location_lut_uplook_picker;
 
     //Remote motor names
     QStringList tcpMotorNames;

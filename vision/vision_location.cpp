@@ -267,7 +267,7 @@ void VisionLocation::setCurrentResult(PrOffset pr_offset)
 PrOffset VisionLocation::getCurrentResult(bool use_origin)
 {
     PrOffset temp_offset;
-    if(use_origin)
+    if(this->parameters.useOrigin())
     {
         temp_offset.X = current_result.O_X;
         temp_offset.Y = current_result.O_Y;

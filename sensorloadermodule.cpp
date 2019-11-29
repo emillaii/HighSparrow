@@ -342,6 +342,18 @@ void SensorLoaderModule::performHandlingOperation(int cmd,QVariant param)
             pr_offset.ReSet();
         }
     }
+    else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_BACK_TO_TRAY1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = backSensorToTray(SensorPosition::SENSOR_TRAY_1);
+            pr_offset.ReSet();
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::PLACE_SENSOR_BACK_TO_TRAY2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = backSensorToTray(SensorPosition::SENSOR_TRAY_2);
+            pr_offset.ReSet();
+        }
+    }
     else if(cmd%temp_value == handlePickerAction::PICK_PRODUCT_FROM_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
             result = pickProductFromSut(false);
@@ -1477,6 +1489,23 @@ void SensorLoaderModule::run()
             {
                 //放sensor到SUT
                 sut_empty_location->resetResult();
+                sut_empty_location->OpenLight();
+                if(!moveCameraToSUTPRPos(is_local))
+                {
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
+                }
+                if(!performSUTEmptyPR())
+                {
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
+                }
                 if(!movePicker1ToSUTPos(is_local))
                 {
                     int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
@@ -2569,8 +2598,8 @@ bool SensorLoaderModule::performTraySensorPR()
         result = tray_sensor_location->performNoMaterialPR();
     else
         result= tray_sensor_location->performPR();
-    if(result)
-        tray->setTrayCurrentPrOffset(tray_sensor_location->getCurrentResult(true),states.currentTrayID());
+    if(result) //ToDo: Set the boolean for this pr using offset or not
+        tray->setTrayCurrentPrOffset(tray_sensor_location->getCurrentResult(false),states.currentTrayID());
     else
         AppendError(QString(u8"执行料盘sensor视觉失败!"));
     return  result;
@@ -2679,8 +2708,10 @@ bool SensorLoaderModule::movePicker2ToTrayCurrentPos(int tray_index,bool check_s
     double x = next_pos.x() + picker2_offset.X() - temp_pr.X;
     double y = next_pos.y() + picker2_offset.Y() - temp_pr.Y;
     double t = parameters.picker2PlaceTheta() - temp_pr.Theta;
+    qInfo("movePicker2ToTrayCurrentPos x: %f y: %f temp_pr_x: %f temp_pr_y: %f", x, y, temp_pr.X, temp_pr.Y);
     if(tray_empty_location->parameters.useOrigin())
     {
+        qInfo("tray_empty_location->parameters.useOrigin()");
         QPointF temp_offset = getPickerResultOffset(temp_pr.Theta);
         x-=temp_offset.x();
         y-=temp_offset.y();
@@ -3080,6 +3111,7 @@ bool SensorLoaderModule::placeNgProductToTray(int time_out)
 
 bool SensorLoaderModule::placeProductToTray(int tray_id,int time_out)
 {
+    qInfo("place product to tray");
     double temp_z = parameters.placeProductZ();
     if(SensorPosition::SENSOR_TRAY_2 == tray_id)
         temp_z = parameters.placeProductZ2();

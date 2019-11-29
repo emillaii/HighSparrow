@@ -132,7 +132,7 @@ bool ThreadWorkerBase::waitVisionResponseMessage(QString filename)
             QFile mFile(filename);
             if(mFile.exists())
             {
-                qInfo("wait repnonse time : %d filena:Image Grabber is not ONme: %s",current_time*10, filename.toStdString().c_str());
+                qInfo("wait repnonse time : %d filename:Image Grabber is not me: %s",current_time*10, filename.toStdString().c_str());
                 return true;
             }
             //QMutexLocker temp_locker(&message_mutex);

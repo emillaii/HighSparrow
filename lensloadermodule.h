@@ -7,6 +7,7 @@
 #include "thread_worker_base.h"
 #include "utils/unitlog.h"
 #include "utils/commonutils.h"
+#include "lutModule/lut_module.h"
 //namespace LensPickArmEnum {
 
 class LensLoaderModule:public ThreadWorkerBase
@@ -27,7 +28,8 @@ public:
             LENS_TRAY2_START_POS = 6,
             LENS_TRAY1_END_POS = 7,
             UPDOWNLOOK_DOWN_POS = 8,
-            UPDOWNLOOK_UP_POS =9
+            UPDOWNLOOK_UP_POS =9,
+            CLEARANCE = 10
         };
     enum HandlePR
     {
@@ -49,10 +51,11 @@ public:
     {
         PICK_LENS_FROM_TRAY = 1000,
         PLACE_LENS_TO_LUT = 2000,
-        PICK_NG_LENS_FROM_LUT = 3000,
-        PLACE_NG_LENS_TO_TRAY = 4000,
-        MeasureLensInTray = 5000,
-        MeasureLensInLUT = 6000
+        PICK_NG_LENS_FROM_LUT1 = 3000,
+        PICK_NG_LENS_FROM_LUT2 = 4000,
+        PLACE_NG_LENS_TO_TRAY = 5000,
+        MeasureLensInTray = 6000,
+        MeasureLensInLUT = 7000
     };
 
 public:
@@ -60,7 +63,7 @@ public:
     void Init(LensPickArm *pick_arm,MaterialTray *tray,MaterialCarrier *lut_carrier,XtVacuum* load_vacuum, XtVacuum* unload_vacuum,
               VisionLocation * lens_vision,VisionLocation * vacancy_vision,VisionLocation * lut_vision, VisionLocation *lut_lens_vision,
               VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision, VisionLocation *lpa_updownlook_down_vision,
-              VisionLocation * lut_ng_slow_vision);
+              VisionLocation * lut_ng_slow_vision, LutModule *lutModule);
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     bool performUpDownlookDownPR(PrOffset &offset);
@@ -76,6 +79,7 @@ public slots:
     void receiveChangeTrayFinish();
 private:
     void run(bool has_material);
+    void clearance();
 //    void runTest();
 
     bool moveToNextTrayPos(int tray_index);
@@ -106,6 +110,7 @@ private:
     bool vcmSearchReturn();
     bool pickTrayLens();
     bool placeLensToLUT();
+    bool pickLUT1Lens();
     bool pickLUTLens();
     bool placeLensToTray();
     bool measureHight(bool is_tray);
@@ -118,6 +123,8 @@ private:
 
     bool moveToUpdownlookDownPos();
     bool moveToUpdownlookUpPos();
+
+    bool unloadAllLens();
 
     void addCurrentNumber();
     void addCurrentNgNumber();
@@ -161,6 +168,7 @@ private:
     VisionLocation * lpa_updownlook_up_vision = Q_NULLPTR;
     VisionLocation * lpa_updownlook_down_vision = Q_NULLPTR;
     VisionLocation * lut_ng_slot_vision = Q_NULLPTR;
+    LutModule * lut = Q_NULLPTR;
     QMutex lut_mutex;
     QMutex tray_mutex;
     bool is_run = false;

@@ -23,6 +23,7 @@ GroupBox{
                    } else {
                        lpa_lens_location_lock.icon.color = "red"
                    }
+                   lpa_lens_location_slider.value = tcp_vision_location_lpa_lens.lightBrightness
                }
            }
            Slider {
@@ -30,7 +31,7 @@ GroupBox{
                enabled: false
                width: 25
                from: 0
-               value: 0
+               value: tcp_vision_location_lpa_lens.lightBrightness
                to: 255
                stepSize: 1
                onValueChanged: {
@@ -50,7 +51,7 @@ GroupBox{
            }
            TextField{
                color: "#57f529"
-               text: lpa_lens_location.prFileName
+               text: tcp_vision_location_lpa_lens.prFileName
                font.pixelSize: 14
                width: 600
                Layout.preferredWidth: 600
@@ -92,6 +93,7 @@ GroupBox{
                    } else {
                        lpa_vacancy_location_lock.icon.color = "red"
                    }
+                   lpa_vacancy_location_slider.value = tcp_vision_location_lpa_vacancy.lightBrightness
                }
            }
            Slider {
@@ -99,7 +101,7 @@ GroupBox{
                enabled: false
                width: 25
                from: 0
-               value: 0
+               value: tcp_vision_location_lpa_vacancy.lightBrightness
                to: 255
                stepSize: 1
                onValueChanged: {
@@ -108,7 +110,7 @@ GroupBox{
            }
 
            Label {
-               text: lpa_lens_location_slider.value
+               text: lpa_vacancy_location_slider.value
            }
            Button{
                text:qsTr("LPA Lens Tray PR Draw")
@@ -118,7 +120,7 @@ GroupBox{
            }
            TextField{
                color: "#57f529"
-               text: lpa_vacancy_location.prFileName
+               text: tcp_vision_location_lpa_vacancy.prFileName
                font.pixelSize: 14
                width: 600
                Layout.preferredWidth: 600

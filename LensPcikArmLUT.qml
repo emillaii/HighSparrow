@@ -196,11 +196,11 @@ ColumnLayout {
 //                        lensLoaderModule.performHandling(LensLoaderModule.LUT_POS2+
 //                                                         LensLoaderModule.LUT_LENS_PR+
 //                                                         LensLoaderModule.ToWork+
-//                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT)
+//                                                         LensLoaderModule.PICK_NG_LENS_FROM_LUT2)
                         logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2+
                                                      LensLoaderModule.LUT_LENS_PR+
                                                      LensLoaderModule.ToWork+
-                                                     LensLoaderModule.PICK_NG_LENS_FROM_LUT)
+                                                     LensLoaderModule.PICK_NG_LENS_FROM_LUT2)
                     }
                 }
             }

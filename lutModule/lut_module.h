@@ -92,6 +92,8 @@ public:
     UPHHelper left_lens_uph;
     UPHHelper right_lens_uph;
     MaterialCarrier* carrier;
+    XtVacuum* load_vacuum;
+    XtVacuum* unload_vacuum;
 signals:
     void sendMessageToClient(QString destAddress, QString module_message);
     void sendLoadLensRequst(bool need_lens,int ng_lens,int ng_lens_tray);
@@ -111,8 +113,6 @@ private:
     VisionLocation* uplook_location;
     VisionLocation* load_location;
     VisionLocation* mushroom_location;
-    XtVacuum* load_vacuum;
-    XtVacuum* unload_vacuum;
     XtGeneralOutput* gripper;
     QMutex loader_mutext;
     SparrowQServer * server;

@@ -9,7 +9,7 @@ LensLoaderModule::LensLoaderModule(QString name):ThreadWorkerBase (name)
 void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, MaterialCarrier *lut_carrier,XtVacuum* load_vacuum,
                             XtVacuum* unload_vacuum, VisionLocation *lens_vision, VisionLocation *vacancy_vision, VisionLocation *lut_vision,
                             VisionLocation *lut_lens_vision,VisionLocation *lpa_picker_vision,VisionLocation *lpa_updownlook_up_vision,
-                            VisionLocation *lpa_updownlook_down_vision, VisionLocation *lut_ng_slot_vision)
+                            VisionLocation *lpa_updownlook_down_vision, VisionLocation *lut_ng_slot_vision, LutModule *lut)
 {
     parts.clear();
     this->pick_arm = pick_arm;
@@ -55,6 +55,7 @@ void LensLoaderModule::Init(LensPickArm *pick_arm, MaterialTray *lens_tray, Mate
         parameters.setMotorYName(this->pick_arm->motor_y->Name());
     if (pick_arm->picker->motor_z)
         parameters.setMotorZName(this->pick_arm->picker->motor_z->Name());
+    this->lut = lut;
 }
 
 void LensLoaderModule::loadJsonConfig(QString file_name)
@@ -1130,6 +1131,19 @@ bool LensLoaderModule::placeLensToLUT()
     return result;
 }
 
+bool LensLoaderModule::pickLUT1Lens()
+{
+    bool result = vcmSearchLUTZ(parameters.placeLensZ(), true);
+    result &= closeLoadVacuum();
+    result &= vcmSearchReturn();
+    if(!result)
+        AppendError(QString(u8"从LUT1当前位置取NgLens失败"));
+    qInfo(u8"从LUT1当前位置取NgLens,返回值%d",result);
+    if(result)
+        result &= checkPickedLensOrNg(true);
+    return result;
+}
+
 bool LensLoaderModule::pickLUTLens()
 {
     bool result = vcmSearchLUTZ(parameters.placeLensZ(), true);
@@ -1250,6 +1264,81 @@ bool LensLoaderModule::moveToUpdownlookUpPos()
         AppendError(QString(u8"移动到UpDn Uplook位置失败"));
     qInfo(u8"移动到UpDn Uplook位置,返回值:%d",result);
     return result;
+}
+
+bool LensLoaderModule::unloadAllLens()
+{
+    lut->moveToLoadPos();
+    int i = 0;
+    //Checking 1: LPA has lens already
+    if (this->pick_arm->picker->vacuum->checkHasMaterielSync())
+    {   //ToDo：how to do the indexing tray
+        do{
+            moveToTrayPos(i, 0); i++;
+            if(performVacancyPR()) {
+                moveToWorkPos(true);
+                break;
+            }
+            if( i == 99) { qInfo("Fail"); return false; }
+        } while (i<99);
+        placeLensToTray();
+    }
+    //Checking 2: LUT1 has lens
+    if (lut->load_vacuum->checkHasMaterielSync())
+    {
+        moveToLUTPRPos1();
+        performLUTLensPR();
+        moveToWorkPos(true);
+        pickLUT1Lens();
+        do{
+            moveToTrayPos(i, 0); i++;
+            if(performVacancyPR()) {
+                moveToWorkPos(true);
+                break;
+            }
+            if( i == 99) { qInfo("Fail"); return false; }
+        }while(i<99);
+        placeLensToTray();
+    }
+
+    //Checking 3: LUT2 has lens
+    if (lut->unload_vacuum->checkHasMaterielSync())
+    {
+        moveToLUTPRPos2();
+        performLUTLensPR();
+        moveToWorkPos(true);
+        pickLUTLens();
+        do{
+            moveToTrayPos(i, 0); i++;
+            if(performVacancyPR()) {
+                moveToWorkPos(true);
+                break;
+            }
+            if( i == 99) { qInfo("Fail"); return false; }
+        }while (i<99);
+        placeLensToTray();
+    }
+
+    //Checking 4: LUT Go To AA1 Unpick
+    lut->moveToAA1UnPickLens();
+    lut->moveToLoadPos();
+    if (lut->unload_vacuum->checkHasMaterielSync())
+    {
+        moveToLUTPRPos2();
+        performLUTLensPR();
+        moveToWorkPos(true);
+        pickLUTLens();
+        do{
+            moveToTrayPos(i, 0); i++;
+            if(performVacancyPR()) {
+                moveToWorkPos(true);
+                break;
+            }
+            if( i == 99) { qInfo("Fail"); return false; }
+        }while (i<99);
+        placeLensToTray();
+    }
+    return true;
 }
 
 void LensLoaderModule::addCurrentNumber()
@@ -1373,11 +1462,8 @@ void LensLoaderModule::startWork(int run_mode)
         has_material = false;
         run(false);
     }
-//    else if(run_mode == RunMode::MachineTest)
-//    {
-//        runTest();
-//    }
 }
+
 
 void LensLoaderModule::stopWork(bool wait_finish)
 {
@@ -1428,6 +1514,13 @@ void LensLoaderModule::performHandlingOperation(int cmd,QVariant param)
     }
     bool result;
     int temp_value = 10;
+    if (cmd == HandlePosition::CLEARANCE)
+    {
+        this->unloadAllLens();
+        sendAlarmMessage(OK_OPERATION,"Lens Clearance Done",ErrorLevel::TipNonblock);
+        is_handling = false;
+        return;
+    }
     if(cmd%temp_value == HandlePosition::LUT_POS1)
         result = moveToLUTPRPos1(true);
     else if(cmd%temp_value == HandlePosition::LUT_POS2)
@@ -1511,7 +1604,15 @@ void LensLoaderModule::performHandlingOperation(int cmd,QVariant param)
             result = placeLensToLUT();
         }
     }
-    else if(cmd%temp_value == HandlePickerAction::PICK_NG_LENS_FROM_LUT){
+    else if(cmd%temp_value == HandlePickerAction::PICK_NG_LENS_FROM_LUT1){
+        if (skip_dialog){
+            result = pickLUT1Lens();
+        }
+        else if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
+            result = pickLUTLens();
+        }
+    }
+    else if(cmd%temp_value == HandlePickerAction::PICK_NG_LENS_FROM_LUT2){
         if (skip_dialog){
             result = pickLUTLens();
         }

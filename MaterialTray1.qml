@@ -414,12 +414,26 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                        //                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS
-                        //                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-                        //                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_POS1
-                        //                                                           +SensorLoaderModule.PLACE_PRODUCT_TO_TRAY1)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS
+                                                           +SensorLoaderModule.TRAY_EMPTY_PR
+                                                           +SensorLoaderModule.TO_PICK_SENSOR_POS1
+                                                           +SensorLoaderModule.PLACE_SENSOR_BACK_TO_TRAY1)
                     }
                 }
+                Button{
+                    text:qsTr("退NG sensor")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS
+                                                     +SensorLoaderModule.TRAY_EMPTY_PR
+                                                     +SensorLoaderModule.TO_PLACE_NG_POS
+                                                     +SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY)
+                    }
+                }
+            }
+            RowLayout{
                 CheckBox{
                     text: qsTr("使能视觉")
                     checked: sensorLoaderParameter.enablePlaceProdcutPr
@@ -432,11 +446,8 @@ ColumnLayout {
                     height: 40
                     onClicked: {
                         material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS
-////                                                           +SensorLoaderModule.TRAY_EMPTY_PR
-//                                                           +SensorLoaderModule.TO_PLACE_PRODUCT_POS1
-//                                                           +SensorLoaderModule.PLACE_PRODUCT_TO_TRAY1)
                         logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS
+                                                     +SensorLoaderModule.TRAY_EMPTY_PR
                                                      +SensorLoaderModule.TO_PLACE_PRODUCT_POS1
                                                      +SensorLoaderModule.PLACE_PRODUCT_TO_TRAY1)
                     }

@@ -291,7 +291,6 @@ ColumnLayout {
                                                      +SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1)
                     }
                 }
-
             }
         }
     }

@@ -110,7 +110,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     //machineMap = new GraphWidget;
     //machineMap->show();
     // Todo
-    //timer.start(1000);
+    timer.start(5000);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -190,11 +190,13 @@ void BaseModuleManager::tcpResp(QString message)
         {
             QJsonObject result;
             result["resp"] = "visionLocations";
+            QJsonObject vision_locations_parameter;
             for(QString key: vision_locations.keys()){
                 QJsonObject vision_location_parameter;
                 vision_locations[key]->parameters.write(vision_location_parameter);
-                result[key] = vision_location_parameter;
+                vision_locations_parameter[key] = vision_location_parameter;
             }
+            result["visionLocations"] = vision_locations_parameter;
             qInfo("vision location: %s", getStringFromJsonObject(result).toStdString().c_str());
             receive_messagers[message_object["sender_name"].toString()]->sendMessage(TcpMessager::getStringFromJsonObject(result));
         }
@@ -406,9 +408,46 @@ void BaseModuleManager::tcpResp(QString message)
         }
         else if (resp == "visionLocations") {
             qInfo("receive visionLocations resp");
-            QJsonArray vision_locations_names = message_object["visionLocations"].toArray();
+            QJsonObject vision_locations_names = message_object["visionLocations"].toObject();
             QString vision_location_message = getStringFromJsonObject(message_object);
             qInfo("receive visionLocations resp: %s", vision_location_message.toStdString().c_str());
+            QJsonObject::Iterator it;
+            for (it = vision_locations_names.begin(); it!=vision_locations_names.end();it++)
+            {
+                QString key = it.key();
+                QJsonObject value = it.value().toObject();
+                QString parameter = getStringFromJsonObject(value);
+                if (key == "aa1_downLook_loaction") tcp_vision_location_aa1_downlook.parameters.read(value);
+                if (key == "aa1_mushroomhead_loaction") tcp_vision_location_aa1_mushroomhead.parameters.read(value);
+                if (key == "aa1_upLook_location") tcp_vision_location_aa1_uplook.parameters.read(value);
+                if (key == "aa1_updownLook_down_location") tcp_vision_location_aa1_updownlook_down.parameters.read(value);
+                if (key == "aa1_updownLook_up_location") tcp_vision_location_aa1_updownlook_up.parameters.read(value);
+                if (key == "lpa_lens_location") {
+                    tcp_vision_location_lpa_lens.parameters.read(value);
+                    qInfo("tcp_vision_location_lpa_lens light brightness: %d", tcp_vision_location_lpa_lens.parameters.lightBrightness());
+                }
+                if (key == "lpa_lut_lens_location") tcp_vision_location_lpa_lut_lens.parameters.read(value);
+                if (key == "lpa_lut_location") tcp_vision_location_lpa_lut.parameters.read(value);
+                if (key == "lpa_lut_ng_location") tcp_vision_location_lpa_lut_ng.parameters.read(value);
+                if (key == "lpa_vacancy_location") tcp_vision_location_lpa_vacancy.parameters.read(value);
+                if (key == "lut_load_loaction") tcp_vision_location_lut_load.parameters.read(value);
+                if (key == "lut_uplook_picker_location") tcp_vision_location_lut_uplook_picker.parameters.read(value);
+            }
+//            for (int i = 0; i < vision_locations_names.count(); i++)
+//            {
+//                VisionLocation* temp_location = new VisionLocation();
+//                temp_location->parameters.read(vision_locations_names.at(i).toObject());
+//                QJsonObject temp_object;
+//                temp_location->parameters.write(temp_object);
+//                qInfo("vision location detected: %s", temp_location->parameters.locationName().toStdString().c_str());
+////                if(!vision_locations.contains(temp_location->parameters.locationName()))
+////                    vision_locations.insert(temp_location->parameters.locationName(),temp_location);
+////                else
+////                {
+////                    vision_locations[temp_location->parameters.locationName()]->parameters.read(temp_object);
+////                    delete temp_location;
+
+//            }
         }
         else if (resp == "motorNames") {
             qInfo("receive motor names resp");
@@ -1590,7 +1629,7 @@ bool BaseModuleManager::InitStruct()
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUplookPickerLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookUpLocationName()),
                                 GetVisionLocationByName(lens_loader_module.parameters.lpaUpdownlookDownLocationName()),
-                                GetVisionLocationByName(lens_loader_module.parameters.lutNgSlotLocationName()));
+                                GetVisionLocationByName(lens_loader_module.parameters.lutNgSlotLocationName()),&lut_module);
 
     }
     tray_loader_module.Init(GetMotorByName(tray_loader_module.parameters.motorLTIEName()),
@@ -2014,7 +2053,10 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
         setHomeState(true);
         this->aa_head_module.moveToMushroomPosition(true);
         if(ServerMode()!=0)
+        {
             sensor_loader_module.performHandling(SensorLoaderModule::HandleCameraPosition::SPA_STANDBY_POS);
+            sensor_tray_loder_module.movetoTrayWorkPosition();
+        }
         return  true;
     }
     return false;

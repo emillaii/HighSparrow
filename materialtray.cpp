@@ -252,7 +252,7 @@ PrOffset MaterialTray::getTrayCurrentPrOffset(int tray_index)
     temp_offset.X = temp_data["pr_offset_x"].toDouble();
     temp_offset.Y = temp_data["pr_offset_y"].toDouble();
     temp_offset.Theta = temp_data["pr_offset_t"].toDouble();
-    qInfo("getTrayCurrentPrOffset tray_index:%d,current_index %d,pr_offset_x:%f,pr_offset_y%f",tray_index,getCurrentIndex(tray_index),temp_offset.X,temp_offset.Y);
+    qInfo("getTrayCurrentPrOffset tray_index:%d,current_index %d,pr_offset_x:%f,pr_offset_y:%f",tray_index,getCurrentIndex(tray_index),temp_offset.X,temp_offset.Y);
     return temp_offset;
 
 }
@@ -272,10 +272,10 @@ void MaterialTray::setTrayCurrentPrOffset(PrOffset pr_offset, int tray_index)
     QVariantMap temp_data = getCurrentMaterialData(tray_index);
     temp_data["pr_offset_x"] = pr_offset.X;
     temp_data["pr_offset_y"] = pr_offset.Y;
-    //temp_data["pr_offset_t"] = pr_offset.Theta;
-    temp_data["pr_offset_t"] = 0;
+    temp_data["pr_offset_t"] = pr_offset.Theta;
+    //temp_data["pr_offset_t"] = 0;
     setCurrentMaterialData(tray_index,temp_data);
-    qInfo("setTrayCurrentPrOffset tray_index:%d,current_index %d,pr_offset_x:%f,pr_offset_y%f",tray_index,getCurrentIndex(tray_index),pr_offset.X,pr_offset.Y);
+    qInfo("setTrayCurrentPrOffset tray_index:%d,current_index %d,pr_offset_x:%f,pr_offset_y:%f，pr_offset_t:%f",tray_index,getCurrentIndex(tray_index),pr_offset.X,pr_offset.Y,pr_offset.Theta);
 }
 
 void MaterialTray::setTrayPrOffset(PrOffset pr_offset, int index, int tray_index)

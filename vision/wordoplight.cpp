@@ -189,6 +189,7 @@ void WordopLight::ChangeBrightness(int ch, uint8_t brightness)
             }
             else {
                 qInfo("waitForBytesWritten(); failed");
+                this->ReInit("com1");
             }
         }
         else {

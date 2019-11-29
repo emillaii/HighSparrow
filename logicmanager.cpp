@@ -502,7 +502,7 @@ void LogicManager::lensPickArmMoveToPickLensFromLut()
     baseModuleManage->lens_loader_module.performHandling(LensLoaderModule::HandlePosition::LUT_POS2+
                                                          LensLoaderModule::HandlePR::LUT_LENS_PR+
                                                          LensLoaderModule::HandleToWorkPos::ToWork+
-                                                         LensLoaderModule::HandlePickerAction::PICK_NG_LENS_FROM_LUT);
+                                                         LensLoaderModule::HandlePickerAction::PICK_NG_LENS_FROM_LUT2);
 }
 
 void LogicManager::lensPickArmMoveToPlaceLensToTray1()
@@ -1152,7 +1152,7 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
             baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS2+
                                                                  baseModuleManage->lens_loader_module.LUT_LENS_PR+
                                                                  baseModuleManage->lens_loader_module.ToWork+
-                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT);
+                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT2);
             baseModuleManage->lens_loader_module.waitPerformHandling();
             baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY1+
                                                                  baseModuleManage->lens_loader_module.VACANCY_PR+
@@ -1169,7 +1169,7 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
             baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS2+
                                                                  baseModuleManage->lens_loader_module.LUT_LENS_PR+
                                                                  baseModuleManage->lens_loader_module.ToWork+
-                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT);
+                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT2);
             baseModuleManage->lens_loader_module.waitPerformHandling();
             baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY1+
                                                                  baseModuleManage->lens_loader_module.VACANCY_PR+
@@ -1186,7 +1186,7 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
             baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS2+
                                                                  baseModuleManage->lens_loader_module.LUT_LENS_PR+
                                                                  baseModuleManage->lens_loader_module.ToWork+
-                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT);
+                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT2);
             baseModuleManage->lens_loader_module.waitPerformHandling();
             baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY2+
                                                                  baseModuleManage->lens_loader_module.VACANCY_PR+
@@ -1203,7 +1203,7 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
             baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LUT_POS2+
                                                                  baseModuleManage->lens_loader_module.LUT_LENS_PR+
                                                                  baseModuleManage->lens_loader_module.ToWork+
-                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT);
+                                                                 baseModuleManage->lens_loader_module.PICK_NG_LENS_FROM_LUT2);
             baseModuleManage->lens_loader_module.waitPerformHandling();
             baseModuleManage->lens_loader_module.performHandling(baseModuleManage->lens_loader_module.LENS_TRAY2+
                                                                  baseModuleManage->lens_loader_module.VACANCY_PR+

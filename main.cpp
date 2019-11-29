@@ -328,14 +328,30 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lightingController", highSprrow.baseModuleManager->lightingModule);
     engine.rootContext()->setContextProperty("motorsNames", QVariant::fromValue(highSprrow.baseModuleManager->motors.keys()));
 
+    //Vision Location
     QStringList vision_locations_list = highSprrow.baseModuleManager->vision_locations.keys();
     QList<QObject*> vl_parameter_list;
     for(QString key:vision_locations_list){
         vl_parameter_list<<&(highSprrow.baseModuleManager->vision_locations[key]->parameters);
         engine.rootContext()->setContextProperty(key, &(highSprrow.baseModuleManager->vision_locations[key]->parameters));
     }
-
     engine.rootContext()->setContextProperty("vl_parameter_list",QVariant::fromValue(vl_parameter_list));
+
+    //Remote TCP vision location
+    engine.rootContext()->setContextProperty("tcp_vision_location_aa1_downlook", &highSprrow.baseModuleManager->tcp_vision_location_aa1_downlook.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_aa1_mushroomhead", &highSprrow.baseModuleManager->tcp_vision_location_aa1_mushroomhead.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_aa1_uplook", &highSprrow.baseModuleManager->tcp_vision_location_aa1_uplook.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_aa1_updownLook_down", &highSprrow.baseModuleManager->tcp_vision_location_aa1_updownlook_down.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_aa1_updownlook_up", &highSprrow.baseModuleManager->tcp_vision_location_aa1_updownlook_up.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_lpa_lens", &highSprrow.baseModuleManager->tcp_vision_location_lpa_lens.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_lpa_lut_lens", &highSprrow.baseModuleManager->tcp_vision_location_lpa_lut_lens.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_lpa_lut", &highSprrow.baseModuleManager->tcp_vision_location_lpa_lut.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_lpa_lut_ng", &highSprrow.baseModuleManager->tcp_vision_location_lpa_lut_ng.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_lpa_vacancy", &highSprrow.baseModuleManager->tcp_vision_location_lpa_vacancy.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_lut_load", &highSprrow.baseModuleManager->tcp_vision_location_lut_load.parameters);
+    engine.rootContext()->setContextProperty("tcp_vision_location_lut_uplook_picker", &highSprrow.baseModuleManager->tcp_vision_location_lut_uplook_picker.parameters);
+
+
 
     //Params
     engine.rootContext()->setContextProperty("lensPickArmParams",&highSprrow.baseModuleManager->lens_pick_arm.parameters);

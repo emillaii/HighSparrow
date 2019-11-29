@@ -62,8 +62,8 @@ ColumnLayout{
             icon.source: "../../../icons/unlock.png"
             icon.color: "red"
             onClicked: {
-                spa_sensor_location_dial.enabled = !spa_sensor_location_dial.enabled
-                if (spa_sensor_location_dial.enabled) {
+                spa_sensor_location_slider.enabled = !spa_sensor_location_slider.enabled
+                if (spa_sensor_location_slider.enabled) {
                     spa_sensor_location_lock.icon.color = "lightGreen"
                 } else {
                     spa_sensor_location_lock.icon.color = "red"
@@ -71,24 +71,21 @@ ColumnLayout{
             }
         }
 
-        Dial{
-            id: spa_sensor_location_dial
+        Slider {
+            id: spa_sensor_location_slider
             enabled: false
             width: 25
             from: 0
             value: spa_sensor_location.lightBrightness
             to: 255
             stepSize: 1
-            Label {
-                text: spa_sensor_location.lightBrightness
-                color: "white"
-                font.pixelSize: Qt.application.font.pixelSize * 3
-                anchors.centerIn: parent
-            }
             onValueChanged: {
                 spa_sensor_location.setLightBrightness(value)
-                baseModuleManager.setLightingBrightness(spa_sensor_location.locationName)
+                lightingController.setSensorPickarmLighting(value)
             }
+        }
+        Label {
+            text: spa_sensor_location_slider.value
         }
         Button{
             text:qsTr("SPA Sensor PR Draw")
@@ -105,38 +102,16 @@ ColumnLayout{
         }
     }
     RowLayout {
-        FileDialog{
-            id:spa_sensor_location_file_dialog
-            title:"选择加载PR文件"
-            selectExisting: true
-            selectFolder: false
-            selectMultiple: false
-
-            nameFilters: ["avdata文件 (*.avdata)"]
-            onAccepted:{
-                spa_sensor_location.setPrFileName(fileUrl)
-            }
-        }
-        Button{
-            text:qsTr("读取PR文件")
-            onClicked: {
-                spa_sensor_location_file_dialog.open()
-            }
-        }
         Button{
             text:qsTr("执行PR")
             onClicked:{
-                logicManagerState.setCurrentLocationName(spa_sensor_location.locationName)
-                logicManagerState.setUseOriginPr(true)
-                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, spa_sensor_location)
             }
         }
         Button{
             text:qsTr("执行PR偏移")
             onClicked:{
-                logicManagerState.setCurrentLocationName(spa_sensor_location.locationName)
-                logicManagerState.setUseOriginPr(false)
-                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, spa_sensor_location)
             }
         }
     }
@@ -151,8 +126,8 @@ ColumnLayout{
             icon.source: "../../../icons/unlock.png"
             icon.color: "red"
             onClicked: {
-                spa_vacancy_location_dial.enabled = !spa_vacancy_location_dial.enabled
-                if (spa_vacancy_location_dial.enabled) {
+                spa_vacancy_location_slider.enabled = !spa_vacancy_location_slider.enabled
+                if (spa_vacancy_location_slider.enabled) {
                     spa_vacancy_location_lock.icon.color = "lightGreen"
                 } else {
                     spa_vacancy_location_lock.icon.color = "red"
@@ -160,24 +135,21 @@ ColumnLayout{
             }
         }
 
-        Dial{
-            id: spa_vacancy_location_dial
+        Slider {
+            id: spa_vacancy_location_slider
             enabled: false
             width: 25
             from: 0
             value: spa_vacancy_location.lightBrightness
             to: 255
             stepSize: 1
-            Label {
-                text: spa_vacancy_location.lightBrightness
-                color: "white"
-                font.pixelSize: Qt.application.font.pixelSize * 3
-                anchors.centerIn: parent
-            }
             onValueChanged: {
                 spa_vacancy_location.setLightBrightness(value)
-                baseModuleManager.setLightingBrightness(spa_vacancy_location.locationName)
+                lightingController.setSensorPickarmLighting(value)
             }
+        }
+        Label {
+            text: spa_vacancy_location_slider.value
         }
         Button{
             text:qsTr("SPA Sensor PR Draw")
@@ -194,38 +166,16 @@ ColumnLayout{
         }
     }
     RowLayout {
-        FileDialog{
-            id:spa_vacancy_location_file_dialog
-            title:"选择加载PR文件"
-            selectExisting: true
-            selectFolder: false
-            selectMultiple: false
-
-            nameFilters: ["avdata文件 (*.avdata)"]
-            onAccepted:{
-                spa_vacancy_location.setPrFileName(fileUrl)
-            }
-        }
-        Button{
-            text:qsTr("读取PR文件")
-            onClicked: {
-                spa_vacancy_location_file_dialog.open()
-            }
-        }
         Button{
             text:qsTr("执行PR")
             onClicked:{
-                logicManagerState.setCurrentLocationName(spa_vacancy_location.locationName)
-                logicManagerState.setUseOriginPr(true)
-                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, "spa_vacancy_location")
             }
         }
         Button{
             text:qsTr("执行PR偏移")
             onClicked:{
-                logicManagerState.setCurrentLocationName(spa_vacancy_location.locationName)
-                logicManagerState.setUseOriginPr(false)
-                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "spa_vacancy_location")
             }
         }
     }

@@ -1265,6 +1265,15 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              step_move_time += step_move_timer.elapsed();
              grab_timer.start();
              cv::Mat img = dk->DothinkeyGrabImageCV(0,grabRet);
+             if(parameters.isDebug() == true) {
+                 QString imageName;
+                 imageName.append(getGrabberLogDir())
+                         .append(sensorID)
+                         .append("_")
+                         .append(getCurrentTimeString())
+                         .append(".bmp");
+                 cv::imwrite(imageName.toStdString().c_str(), img);
+             }
              grab_time += grab_timer.elapsed();
              if (!grabRet) {
                  qInfo("AA Cannot grab image.");
@@ -1460,6 +1469,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 
     step_move_timer.start();
     double z_peak = aa_result["zPeak"].toDouble();
+    if (z_peak < start || z_peak > stop) {
+        qWarning("AA calculate Z Peak out of range! target_z: %f start_z: %f stop_z: %f ", z_peak, start, stop);
+        LogicNg(current_aa_ng_time);
+        map["Result"] = QString("AA calculate Z Peak out of range");
+        emit pushDataToUnit(runningUnit, "AA", map);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Perform AA fail"};
+    }
     sut->moveToZPos(z_peak);
     qInfo("zpeak: %f",z_peak);
     step_move_time += step_move_timer.elapsed();
@@ -2969,7 +2985,15 @@ ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int re
        if(change_lens&&HasLens())
            NgLens();
        if(change_sensor&&HasSensorOrProduct())
-           SetProduct();
+        {
+           has_sensor = false;
+           has_ng_sensor = false;
+           has_product = true;
+           has_ng_product = false;
+           has_lens = false;
+           has_ng_lens = true;
+           //SetProduct();
+        }
    }
    if(!change_lens) {
        SetLens();

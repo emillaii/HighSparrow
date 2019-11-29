@@ -116,30 +116,30 @@ Column {
             icon.source: "../../../icons/unlock.png"
             icon.color: "red"
             onClicked: {
-                sut_1_downlook_location_dial.enabled = !sut_1_downlook_location_dial.enabled
-                if (sut_1_downlook_location_dial.enabled) {
+                sut_1_downlook_location_slider.enabled = !sut_1_downlook_location_slider.enabled
+                if (sut_1_downlook_location_slider.enabled) {
                     sut_1_downlook_location_lock.icon.color = "lightGreen"
                 } else {
                     sut_1_downlook_location_lock.icon.color = "red"
                 }
+                sut_1_downlook_location_slider.value = tcp_vision_location_aa1_downlook.lightBrightness
             }
         }
-        Dial{
-            id: sut_1_downlook_location_dial
+        Slider {
+            id: sut_1_downlook_location_slider
             enabled: false
             width: 25
             from: 0
-            value: sut_1_downlook_location.lightBrightness
+            value: tcp_vision_location_aa1_downlook.lightBrightness
             to: 255
             stepSize: 1
-            Label {
-                text: sut_1_downlook_location.lightBrightness
-                color: "white"
-                font.pixelSize: Qt.application.font.pixelSize * 3
-                anchors.centerIn: parent
-            }
             onValueChanged: {
+                tcp_vision_location_aa1_downlook.setLightBrightness(value)
+                lightingController.setDownlookLighting(value)
             }
+        }
+        Label {
+            text: sut_1_downlook_location_slider.value
         }
         Button{
             text:qsTr("SUT 1 Camera PR Draw")
@@ -148,45 +148,29 @@ Column {
         }
         TextField{
             color: "#57f529"
-            text: sut_1_downlook_location.prFileName
+            text: tcp_vision_location_aa1_downlook.prFileName
             font.pixelSize: 14
             width: 600
             Layout.preferredWidth: 600
         }
     }
     RowLayout {
-        FileDialog{
-            id:sut_1_downlook_location_file_dialog
-            title:"选择加载PR文件"
-            selectExisting: true
-            selectFolder: false
-            selectMultiple: false
-
-            nameFilters: ["avdata文件 (*.avdata)"]
-            onAccepted:{
-                sut_1_downlook_location.setPrFileName(fileUrl)
-            }
-        }
         Button{
-            text:qsTr("读取PR文件")
-            onClicked: {
-                sut_1_downlook_location_file_dialog.open()
+            text:qsTr("执行Calibration")
+            onClicked:{
+                logicManager.performHandling("", LogicManager.HANDLING_CALIBRATION, "aa1_downLook_location")
             }
         }
         Button{
             text:qsTr("执行PR")
             onClicked:{
-                logicManagerState.setCurrentLocationName(sut_1_downlook_location.locationName)
-                logicManagerState.setUseOriginPr(true)
-                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION,"aa1_downLook_location")
             }
         }
         Button{
             text:qsTr("执行PR偏移")
             onClicked:{
-                logicManagerState.setCurrentLocationName(sut_1_downlook_location.locationName)
-                logicManagerState.setUseOriginPr(false)
-                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION,"aa1_downLook_location")
             }
         }
     }
@@ -202,30 +186,29 @@ Column {
             icon.source: "../../../icons/unlock.png"
             icon.color: "red"
             onClicked: {
-                sut_2_downlook_location_dial.enabled = !sut_2_downlook_location_dial.enabled
-                if (sut_2_downlook_location_dial.enabled) {
+                sut_2_downlook_location_slider.enabled = !sut_2_downlook_location_slider.enabled
+                if (sut_2_downlook_location_slider.enabled) {
                     sut_2_downlook_location_lock.icon.color = "lightGreen"
                 } else {
                     sut_2_downlook_location_lock.icon.color = "red"
                 }
             }
         }
-        Dial{
-            id: sut_2_downlook_location_dial
+        Slider {
+            id: sut_2_downlook_location_slider
             enabled: false
             width: 25
             from: 0
-            value: sut_2_downlook_location.lightBrightness
+            value: aa2_downLook_location.lightBrightness
             to: 255
             stepSize: 1
-            Label {
-                text: sut_2_downlook_location.lightBrightness
-                color: "white"
-                font.pixelSize: Qt.application.font.pixelSize * 3
-                anchors.centerIn: parent
-            }
             onValueChanged: {
+                aa2_downLook_location.setLightBrightness(value)
+                lightingController.setAA2DownlookLighting(value)
             }
+        }
+        Label {
+            text: sut_2_downlook_location_slider.value
         }
         Button{
             text:qsTr("SUT 2 Camera PR Draw")
@@ -234,45 +217,29 @@ Column {
         }
         TextField{
             color: "#57f529"
-            text: sut_2_downlook_location.prFileName
+            text: aa2_downLook_location.prFileName
             font.pixelSize: 14
             width: 600
             Layout.preferredWidth: 600
         }
     }
     RowLayout {
-        FileDialog{
-            id:sut_2_downlook_location_file_dialog
-            title:"选择加载PR文件"
-            selectExisting: true
-            selectFolder: false
-            selectMultiple: false
-
-            nameFilters: ["avdata文件 (*.avdata)"]
-            onAccepted:{
-                sut_2_downlook_location.setPrFileName(fileUrl)
-            }
-        }
         Button{
-            text:qsTr("读取PR文件")
-            onClicked: {
-                sut_2_downlook_location_file_dialog.open()
+            text:qsTr("执行Calibration")
+            onClicked:{
+                logicManager.performHandling("", LogicManager.HANDLING_CALIBRATION, "aa2_downLook_location")
             }
         }
         Button{
             text:qsTr("执行PR")
             onClicked:{
-                logicManagerState.setCurrentLocationName(sut_2_downlook_location.locationName)
-                logicManagerState.setUseOriginPr(true)
-                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, "aa2_downLook_location")
             }
         }
         Button{
             text:qsTr("执行PR偏移")
             onClicked:{
-                logicManagerState.setCurrentLocationName(sut_2_downlook_location.locationName)
-                logicManagerState.setUseOriginPr(false)
-                logicManager.performHandling(LogicManager.PERFORM_LOCATION)
+                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "aa2_downLook_location")
             }
         }
     }

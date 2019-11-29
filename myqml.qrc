@@ -217,5 +217,6 @@
         <file>TcpMotionDialog.qml</file>
         <file>qml/SilicolMsgBox.qml</file>
         <file>qml/UnitTestForm.qml</file>
+        <file>qml/PageMenuBar/Page9MenuBar.qml</file>
     </qresource>
 </RCC>

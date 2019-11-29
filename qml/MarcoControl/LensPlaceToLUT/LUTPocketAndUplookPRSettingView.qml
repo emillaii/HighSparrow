@@ -17,30 +17,31 @@ ColumnLayout {
             icon.source: "../../../icons/unlock.png"
             icon.color: "red"
             onClicked: {
-                lut1_pocket_location_dial.enabled = !lut1_pocket_location_dial.enabled
-                if (lut1_pocket_location_dial.enabled) {
+                lut_load_loaction_slider.enabled = !lut_load_loaction_slider.enabled
+                if (lut_load_loaction_slider.enabled) {
                     lut1_pocket_location_lock.icon.color = "lightGreen"
                 } else {
                     lut1_pocket_location_lock.icon.color = "red"
                 }
+                lut_load_loaction_slider.value = tcp_vision_location_lut_load.lightBrightness
             }
         }
-        Dial{
-            id: lut1_pocket_location_dial
+        Slider {
+            id: lut_load_loaction_slider
             enabled: false
             width: 25
             from: 0
-            value: lut_load_loaction.lightBrightness
+            value: tcp_vision_location_lut_load.lightBrightness
             to: 255
             stepSize: 1
-            Label {
-                text: lut_load_loaction.lightBrightness
-                color: "white"
-                font.pixelSize: Qt.application.font.pixelSize * 3
-                anchors.centerIn: parent
-            }
             onValueChanged: {
+                tcp_vision_location_lut_load.setLightBrightness(value)
+                lightingController.setPickarmLighting(value)
             }
+        }
+
+        Label {
+            text: lut_load_loaction_slider.value
         }
         Button{
             text:qsTr("LUT1 Pocket PR Draw")
@@ -49,122 +50,29 @@ ColumnLayout {
         }
         TextField{
             color: "#57f529"
-            text: lut_load_loaction.prFileName
+            text: tcp_vision_location_lut_load.prFileName
             font.pixelSize: 14
             width: 600
             Layout.preferredWidth: 600
         }
     }
     RowLayout {
-        FileDialog{
-            id:lut1_pocket_location_file_dialog
-            title:"选择加载PR文件"
-            selectExisting: true
-            selectFolder: false
-            selectMultiple: false
-            nameFilters: ["avdata文件 (*.avdata)"]
-            onAccepted:{
-                lut1_pocket_location.setPrFileName(fileUrl)
-            }
-        }
         Button{
-            text:qsTr("读取PR文件")
-            onClicked: {
-                lut1_pocket_location_file_dialog.open()
+            text:qsTr("执行Calibration")
+            onClicked:{
+                logicManager.performHandling("", logicManager.HANDLING_CALIBRATION, "lut_load_loaction")
             }
         }
         Button{
             text:qsTr("执行PR")
             onClicked:{
-                logicManager.performHandling(logicManager.HANDLING_CALIBRATION, "lut_load_loaction")
-            }
-        }
-        Button{
-            text:qsTr("执行PR")
-            onClicked:{
+                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, "lut_load_loaction")
             }
         }
         Button{
             text:qsTr("执行PR偏移")
             onClicked:{
-            }
-        }
-    }
-
-    RowLayout {
-        RoundButton{
-            id: lut2_pocket_location_lock
-            transformOrigin: Item.Center
-            display: Button.TextBesideIcon
-            icon.width: 30
-            icon.height: 30
-            icon.source: "../../../icons/unlock.png"
-            icon.color: "red"
-            onClicked: {
-                lut2_pocket_location_dial.enabled = !lut2_pocket_location_dial.enabled
-                if (lut2_pocket_location_dial.enabled) {
-                    lut2_pocket_location_lock.icon.color = "lightGreen"
-                } else {
-                    lut2_pocket_location_lock.icon.color = "red"
-                }
-            }
-        }
-        Dial{
-            id: lut2_pocket_location_dial
-            enabled: false
-            width: 25
-            from: 0
-            value: lut2_pocket_location.lightBrightness
-            to: 255
-            stepSize: 1
-            Label {
-                text: lut2_pocket_location.lightBrightness
-                color: "white"
-                font.pixelSize: Qt.application.font.pixelSize * 3
-                anchors.centerIn: parent
-            }
-            onValueChanged: {
-            }
-        }
-        Button{
-            text:qsTr("LUT2 Pocket PR Draw")
-            onClicked: {
-            }
-        }
-        TextField{
-            color: "#57f529"
-            text: lut2_pocket_location.prFileName
-            font.pixelSize: 14
-            width: 600
-            Layout.preferredWidth: 600
-        }
-    }
-    RowLayout {
-        FileDialog{
-            id:lut2_pocket_location_file_dialog
-            title:"选择加载PR文件"
-            selectExisting: true
-            selectFolder: false
-            selectMultiple: false
-            nameFilters: ["avdata文件 (*.avdata)"]
-            onAccepted:{
-                lut2_pocket_location.setPrFileName(fileUrl)
-            }
-        }
-        Button{
-            text:qsTr("读取PR文件")
-            onClicked: {
-                lut2_pocket_location_file_dialog.open()
-            }
-        }
-        Button{
-            text:qsTr("执行PR")
-            onClicked:{
-            }
-        }
-        Button{
-            text:qsTr("执行PR偏移")
-            onClicked:{
+                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "lut_load_loaction")
             }
         }
     }
@@ -179,30 +87,30 @@ ColumnLayout {
             icon.source: "../../../icons/unlock.png"
             icon.color: "red"
             onClicked: {
-                lut_uplook_location_dial.enabled = !lut_uplook_location_dial.enabled
-                if (lut_uplook_location_dial.enabled) {
+                lut_uplook_location_slider.enabled = !lut_uplook_location_slider.enabled
+                if (lut_uplook_location_slider.enabled) {
                     lut_uplook_location_lock.icon.color = "lightGreen"
                 } else {
                     lut_uplook_location_lock.icon.color = "red"
                 }
+                lut_uplook_location_slider.value = tcp_vision_location_lut_uplook_picker.lightBrightness
             }
         }
-        Dial{
-            id: lut_uplook_location_dial
+        Slider {
+            id: lut_uplook_location_slider
             enabled: false
             width: 25
             from: 0
-            value: lut_uplook_location.lightBrightness
+            value: tcp_vision_location_lut_uplook_picker.lightBrightness
             to: 255
             stepSize: 1
-            Label {
-                text: lut_uplook_location.lightBrightness
-                color: "white"
-                font.pixelSize: Qt.application.font.pixelSize * 3
-                anchors.centerIn: parent
-            }
             onValueChanged: {
+                tcp_vision_location_lut_uplook_picker.setLightBrightness(value)
+                lightingController.setUplookLighting(value)
             }
+        }
+        Label {
+            text: lut_uplook_location_slider.value
         }
         Button{
             text:qsTr("LUT Up Look PR Draw")
@@ -211,38 +119,23 @@ ColumnLayout {
         }
         TextField{
             color: "#57f529"
-            text: lut_uplook_location.prFileName
+            text: tcp_vision_location_lut_uplook_picker.prFileName
             font.pixelSize: 14
             width: 600
             Layout.preferredWidth: 600
         }
     }
     RowLayout {
-        FileDialog{
-            id:lut_uplook_location_file_dialog
-            title:"选择加载PR文件"
-            selectExisting: true
-            selectFolder: false
-            selectMultiple: false
-            nameFilters: ["avdata文件 (*.avdata)"]
-            onAccepted:{
-                lut_uplook_location.setPrFileName(fileUrl)
-            }
-        }
-        Button{
-            text:qsTr("读取PR文件")
-            onClicked: {
-                lut_uplook_location_file_dialog.open()
-            }
-        }
         Button{
             text:qsTr("执行PR")
             onClicked:{
+                 logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, "lut_uplook_picker_location")
             }
         }
         Button{
             text:qsTr("执行PR偏移")
             onClicked:{
+                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "lut_uplook_picker_location")
             }
         }
     }

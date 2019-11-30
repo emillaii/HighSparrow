@@ -47,7 +47,7 @@ public:
     QMap<QString,Calibration*> calibrations;
     QMap<QString,VisionLocation*> vision_locations;
     QMap<QString,XtVacuum*> vacuums;
-    QMap<QString,TowerLightBuzzer*> towerLightBuzzer;
+    QMap<QString,TowerLightBuzzer*> towerLightBuzzers;
     QMap<QString,XtCylinder*> cylinder;
     ChartCalibration * chart_calibration = Q_NULLPTR;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
@@ -205,6 +205,7 @@ public:
     XtGeneralOutput *GetOutputIoByName(QString name);
     XtGeneralInput *GetInputIoByName(QString name);
     XtVacuum *GetVacuumByName(QString name);
+    TowerLightBuzzer *GetTowerLightBuzzerByName(QString name);
     XtCylinder *GetCylinderByName(QString name);
     VisionLocation *GetVisionLocationByName(QString name);
     Pixel2Mech *GetPixel2MechByName(QString name);

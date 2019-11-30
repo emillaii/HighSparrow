@@ -12,21 +12,23 @@ SingleHeadMachineMaterialLoaderModule::SingleHeadMachineMaterialLoaderModule(QSt
 }
 
 void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickArm *pick_arm,
-                                                 LSutState* lsutState,
-                                                 MaterialTray* sensorTray,
-                                                 MaterialTray* lensTray,
-                                                 MaterialTray* rejectTray,
-                                                 VisionLocation* sensor_vision,
-                                                 VisionLocation* sensor_vacancy_vision,
-                                                 VisionLocation* sut_vision,
-                                                 VisionLocation* sut_sensor_vision,
-                                                 VisionLocation* sut_product_vision,
-                                                 VisionLocation* lens_vision,
-                                                 VisionLocation* lens_vacancy_vision,
-                                                 VisionLocation* lut_vision,
-                                                 VisionLocation* lut_lens_vision,
-                                                 XtVacuum* sutVacuum,
-                                                 XtVacuum* lutVacuum)
+                                                 LSutState *lsutState,
+                                                 MaterialTray *sensorTray,
+                                                 MaterialTray *lensTray,
+                                                 MaterialTray *rejectTray,
+                                                 VisionLocation *sensor_vision,
+                                                 VisionLocation *sensor_vacancy_vision,
+                                                 VisionLocation *sut_vision,
+                                                 VisionLocation *sut_sensor_vision,
+                                                 VisionLocation *sut_product_vision,
+                                                 VisionLocation *lens_vision,
+                                                 VisionLocation *lens_vacancy_vision,
+                                                 VisionLocation *lut_vision,
+                                                 VisionLocation *lut_lens_vision,
+                                                 XtVacuum *sutVacuum,
+                                                 XtVacuum *lutVacuum,
+                                                 TowerLightBuzzer* buzzer
+                                                 )
 {
     this->pick_arm = pick_arm;
     this->lsutState = lsutState;
@@ -42,10 +44,11 @@ void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickAr
     this->lens_vacancy_vision = lens_vacancy_vision;
     this->lut_vision = lut_vision;
     this->lut_lens_vision = lut_lens_vision;
-    //    this->camera_to_picker_offest_vision = camera_to_picker_offest_vision;
     this->sut_vacuum = sutVacuum;
     this->lut_vacuum = lutVacuum;
+    this->buzzer = buzzer;
 }
+
 
 void SingleHeadMachineMaterialLoaderModule::loadJsonConfig(QString file_name)
 {
@@ -504,12 +507,12 @@ bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ(double z, bool is_
     bool result = pick_arm->motor_vcm2->MoveToPosSync(z-parameters.escapeHeight());
     if(result)
     {
-        sut_vacuum->Set(0);
+        sut_vacuum->Set(true);
         result = pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open,false,time_out);
         result &= pick_arm->ZSerchReturn(1,time_out);
         QThread::msleep(100);
         result = pick_arm->motor_y->StepMoveSync(parameters.escapeY());
-         QThread::msleep(100);
+        QThread::msleep(100);
         result &= pick_arm->motor_vcm2->MoveToPosSync(0);
     }
     return result;
@@ -579,12 +582,12 @@ bool SingleHeadMachineMaterialLoaderModule::picker1SearchSutZ(double z,bool is_o
     {
         sut_vacuum->Set(false);
         result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
-         QThread::msleep(300);
+        QThread::msleep(300);
         result &= pick_arm->ZSerchReturn(0,time_out);
         QThread::msleep(100);
         result = pick_arm->motor_th1->MoveToPosSync(-parameters.sutPlaceSensorAngle());
         result = pick_arm->motor_y->StepMoveSync(parameters.escapeY());
-         QThread::msleep(100);
+        QThread::msleep(100);
         result &= pick_arm->motor_vcm1->MoveToPosSync(0);
     }
     return result;
@@ -663,6 +666,11 @@ bool SingleHeadMachineMaterialLoaderModule::moveToChangeTrayPos()
     if(!result)
         AppendError(QString(u8"移动到换盘位置失败"));
     return result;
+}
+
+void SingleHeadMachineMaterialLoaderModule::towerLightBuzzerTest()
+{
+    buzzer->Set(true);
 }
 
 void SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequestResponse(bool isSutReadyToLoadMaterial, int productIndex)

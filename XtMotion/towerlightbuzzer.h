@@ -15,35 +15,36 @@ class TowerLightBuzzer: public QObject
     Q_OBJECT
 
 public:
-    enum TowerLightColor
-    {
-        Red,
-        Green,
-        Yellow
-    };
-    Q_FLAGS(TowerLightColor)
+    //    enum TowerLightColor
+    //    {
+    //        Red,
+    //        Green,
+    //        Yellow
+    //    };
+    //    Q_FLAGS(TowerLightColor)
 
     TowerLightBuzzer();
 
-    void init(XtGeneralOutput* buzzerOut,
+    void Init(XtGeneralOutput* buzzerOut,
               XtGeneralOutput* redOut,
               XtGeneralOutput* greenOut,
-              XtGeneralOutput* yellowOut,
-              int buzzerBlinkInterval,
-              int buzzerBlinkDuration,
-              int towerLightBlinkInterval,
-              int towerLightBlinkDuration);
-
-    void openBuzzer();
+              XtGeneralOutput* yellowOut
+              //              int buzzerBlinkInterval,
+              //              int buzzerBlinkDuration,
+              //              int towerLightBlinkInterval,
+              //              int towerLightBlinkDuration
+              );
+    bool Set(bool new_state);
+    void openBuzzer(bool new_state);
     void blinkBuzzer();
-    void closeBuzzer();
+    void closeBuzzer(bool new_state);
 
 
     ///
     /// \param color 可以使用|操作符，打开多个颜色
     ///
-    void switchColor(TowerLightColor color);
-    void blinkColor(TowerLightColor color);
+    //    void switchColor(TowerLightColor color);
+    //    void blinkColor(TowerLightColor color);
 
 public:
     TowerLightBuzzerParameter parameters;

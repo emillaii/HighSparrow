@@ -109,6 +109,7 @@ QString XtGeneralOutput::Name()
     return name;
 }
 
+
 XtGeneralOutput::operator bool()
 {
     return Value();

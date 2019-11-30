@@ -8,6 +8,8 @@
 #include "thread_worker_base.h"
 #include "Vision/vision_location.h"
 #include "Utils/commonutils.h"
+#include "XtMotion/towerlightbuzzer.h"
+
 
 #define DELAY_JET 1000
 
@@ -123,11 +125,14 @@ public:
               VisionLocation* lut_vision = nullptr,
               VisionLocation* lut_lens_vision = nullptr,
               XtVacuum* sutVacuum = nullptr,
-              XtVacuum* lutVacuum = nullptr);
+              XtVacuum* lutVacuum = nullptr,
+              TowerLightBuzzer* buzzer = nullptr
+            );
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     Q_INVOKABLE void performHandling(int cmd);
     Q_INVOKABLE bool moveToChangeTrayPos();
+    Q_INVOKABLE void towerLightBuzzerTest();
 
 public:
     SingleHeadMachineMaterialLoaderModuleParameter parameters;
@@ -253,6 +258,8 @@ private:
     MaterialTray *rejectTray = Q_NULLPTR;
     XtVacuum* sut_vacuum = Q_NULLPTR;
     XtVacuum* lut_vacuum = Q_NULLPTR;
+    TowerLightBuzzer* buzzer = Q_NULLPTR;
+
 
     VisionLocation* sensor_vision = Q_NULLPTR;
     VisionLocation* sensor_vacancy_vision = Q_NULLPTR;
@@ -264,7 +271,7 @@ private:
     VisionLocation* lut_vision = Q_NULLPTR;
     VisionLocation* lut_lens_vision = Q_NULLPTR;
 
-//    VisionLocation* camera_to_picker_offest_vision = Q_NULLPTR;
+    //    VisionLocation* camera_to_picker_offest_vision = Q_NULLPTR;
 
     QMutex lsut_mutex;
     QMutex materialLoader_mutex;

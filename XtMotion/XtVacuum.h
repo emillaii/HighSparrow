@@ -19,6 +19,7 @@ public:
     bool IsVacuum();
     bool GetVacuumState();
     QString GetName();
+    bool setTowerLightBuzzer();
 public:
     XtVacuumParameter parameters;
 private:

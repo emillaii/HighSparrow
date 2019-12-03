@@ -98,6 +98,17 @@ void UserManagement::removeUser(QString userName)
         return;
     }
 
+    QString password;
+    Authority authority;
+    if(!getUserInfo(userName, password, authority))
+    {
+        return;
+    }
+    if(authority == Admin)
+    {
+        SI::ui.showMessage(tr("UserName Error"), tr("Can not remove Admin account!"), MsgBoxModel::Error, SI::ui.Ok);
+        return;
+    }
     QSqlQuery remove(db);
     remove.prepare("delete from user where name=?");
     remove.addBindValue(userName);
@@ -153,6 +164,7 @@ bool UserManagement::login(QString userName, QString password)
         }
         setCurrentUserName(userName);
         setCurrentAuthority(queriedAuthrity);
+        setHasLogin(true);
         return true;
     }
     return false;
@@ -162,6 +174,7 @@ void UserManagement::logout()
 {
     setCurrentUserName("");
     setCurrentAuthority(None);
+    setHasLogin(false);
 }
 
 void UserManagement::_addUser(QString userName, QString password, UserManagement::Authority authority)

@@ -52,17 +52,17 @@ ItemDelegate {
                     width: 40
                     height: 40
                     onClicked: {
-                         sh_materialLoaderModule.moveToChangeTrayPos()
+                        sh_materialLoaderModule.moveToChangeTrayPos()
                     }
                 }
-//                Button{
-//                    text:qsTr("三色灯")
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                         sh_materialLoaderModule.towerLightBuzzerTest()
-//                    }
-//                }
+                //                Button{
+                //                    text:qsTr("三色灯")
+                //                    width: 40
+                //                    height: 40
+                //                    onClicked: {
+                //                         sh_materialLoaderModule.towerLightBuzzerTest()
+                //                    }
+                //                }
             }
             GroupBox{
                 title:qsTr("头参数")
@@ -70,7 +70,10 @@ ItemDelegate {
             }
             GroupBox{
                 title:qsTr("lens盘规格")
-                LensTraySpecs{}
+                LensTraySpecs{
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
+                }
+
             }
 
             GroupBox{
@@ -79,7 +82,9 @@ ItemDelegate {
             }
             GroupBox{
                 title:qsTr("sensor盘规格")
-                SensorTraySpecs{}
+                SensorTraySpecs{
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
+                }
             }
 
             GroupBox{
@@ -88,7 +93,9 @@ ItemDelegate {
             }
             GroupBox{
                 title:qsTr("reject盘规格")
-                RejectTraySpecs{}
+                RejectTraySpecs{
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
+                }
             }
 
             GroupBox{

@@ -71,6 +71,7 @@ ColumnLayout {
                 lsutUplookPosition.setY(y)
                 lsutUplookPosition.setZ(z)
             }
+            enabled: userManagement.currentAuthority >= 2 //At least engineer authority
         }
     }
 }

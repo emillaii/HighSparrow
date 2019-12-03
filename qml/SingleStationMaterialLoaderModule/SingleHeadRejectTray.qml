@@ -62,6 +62,7 @@ ColumnLayout {
                         sh_reject_tray_start_point1.setX(x);
                         sh_reject_tray_start_point1.setY(y);
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
         }
@@ -117,6 +118,7 @@ ColumnLayout {
                         sh_reject_first_tray_end_position.setX(x);
                         sh_reject_first_tray_end_position.setY(y);
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
         }

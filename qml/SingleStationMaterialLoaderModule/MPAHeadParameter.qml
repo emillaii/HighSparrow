@@ -133,6 +133,7 @@ ColumnLayout {
                     onClicked: {
                       sh_materialLoaderModule.cameraTipOffsetCalibration(0)
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
         }
@@ -177,6 +178,7 @@ ColumnLayout {
 //                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_PR_POS1)
                         sh_materialLoaderModule.cameraTipOffsetCalibration(1)
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
         }

@@ -17,6 +17,7 @@ ColumnLayout {
             onEditingFinished: {
                 dispenseParams.setTestForce(text)
             }
+            readOnly: userManagement.currentAuthority < 2 //At least engineer authority
         }
 
         Label {
@@ -32,6 +33,7 @@ ColumnLayout {
             onEditingFinished: {
                 dispenseParams.setDispenseZOffset(text)
             }
+            readOnly: userManagement.currentAuthority < 2 //At least engineer authority
         }
     }
 
@@ -50,6 +52,7 @@ ColumnLayout {
             onEditingFinished: {
                 dispenseParams.setInitTheta(text)
             }
+            readOnly: userManagement.currentAuthority < 2 //At least engineer authority
         }
 
         Label {

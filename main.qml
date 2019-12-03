@@ -152,7 +152,16 @@ ApplicationWindow {
                 }
             }
             ToolButton {
-                text: qsTr("Login")
+                text: {
+                    if(userManagement.hasLogin)
+                    {
+                        return qsTr("Logout")
+                    }
+                    else
+                    {
+                        return qsTr("Login")
+                    }
+                }
                 transformOrigin: Item.Center
                 display: Button.TextUnderIcon
                 icon.width: 30
@@ -160,8 +169,15 @@ ApplicationWindow {
                 icon.source: "icons/login.png"
                 icon.color: "deepskyblue"
                 onClicked: {
-                    popupLogin.clearText()
-                    popupLogin.open()
+                    if(userManagement.hasLogin)
+                    {
+                        userManagement.logout()
+                    }
+                    else
+                    {
+                        popupLogin.clearText()
+                        popupLogin.open()
+                    }
                 }
             }
 

@@ -28,6 +28,8 @@ public:
 
     Q_PROPERTY(QString currentUserName READ currentUserName WRITE setCurrentUserName NOTIFY currentUserNameChanged)
     Q_PROPERTY(Authority currentAuthority READ currentAuthority WRITE setCurrentAuthority NOTIFY currentAuthorityChanged)
+    Q_PROPERTY(bool hasLogin READ hasLogin WRITE setHasLogin NOTIFY hasLoginChanged)
+
 
     void init();
 
@@ -66,9 +68,20 @@ public slots:
         emit currentAuthorityChanged(m_currentAuthority);
     }
 
+    void setHasLogin(bool hasLogin)
+    {
+        if (m_hasLogin == hasLogin)
+            return;
+
+        m_hasLogin = hasLogin;
+        emit hasLoginChanged(m_hasLogin);
+    }
+
 signals:
     void currentUserNameChanged(QString currentUserName);
     void currentAuthorityChanged(Authority currentAuthority);
+
+    void hasLoginChanged(bool hasLogin);
 
 private:
     QString cryptograph(QString clearText)
@@ -97,6 +110,11 @@ private:
 public:
     MySqlTableModel* userModel;
 
+    bool hasLogin() const
+    {
+        return m_hasLogin;
+    }
+
 private:
     QString m_currentUserName = "";
     Authority m_currentAuthority = None;
@@ -108,6 +126,7 @@ private:
     const int MinUserNameLen = 6;
     const int MinPasswordLen = 6;
     bool isInit = false;
+    bool m_hasLogin = false;
 };
 
 #endif // USERMANAGEMENT_H

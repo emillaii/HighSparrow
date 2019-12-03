@@ -69,6 +69,7 @@ ColumnLayout {
                 aaHeadMushroomPosition.setB(b)
                 aaHeadMushroomPosition.setC(c)
             }
+            enabled: userManagement.currentAuthority >= 2 //At least engineer authority
         }
     }
 }

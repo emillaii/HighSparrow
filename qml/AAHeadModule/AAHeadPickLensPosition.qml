@@ -69,6 +69,7 @@ ColumnLayout {
                 aaHeadPickLensPosition.setB(b)
                 aaHeadPickLensPosition.setC(c)
             }
+            enabled: userManagement.currentAuthority >= 2 //At least engineer authority
         }
     }
 }

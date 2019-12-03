@@ -72,6 +72,7 @@ ColumnLayout {
                 lsutLoadSensorPosition.setY(y)
                 lsutLoadSensorPosition.setZ(z)
             }
+            enabled: userManagement.currentAuthority >= 2 //At least engineer authority
         }
     }
 //    RowLayout {

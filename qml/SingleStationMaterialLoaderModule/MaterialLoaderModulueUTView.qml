@@ -53,6 +53,7 @@ ColumnLayout {
                         sh_sut_pr_position.setX(x);
                         sh_sut_pr_position.setY(y);
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
             RowLayout{
@@ -242,6 +243,7 @@ ColumnLayout {
                         sh_lut_pr_position.setX(x);
                         sh_lut_pr_position.setY(y);
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
             RowLayout{

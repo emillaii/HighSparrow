@@ -4,7 +4,9 @@ import QtQuick.Dialogs 1.2
 import FileContentItem 1.0
 import QtQuick.Layouts 1.11
 import AACoreNew 1.1
+import UserMng 1.0
 import "qml"
+import "qml/UserManagement"
 
 ApplicationWindow {
     visible: true
@@ -105,6 +107,14 @@ ApplicationWindow {
             id: silicolMsgBox
         }
 
+        UserManagement{
+            id: popupUserManagement
+        }
+
+        Login{
+            id: popupLogin
+        }
+
         Connections{
             target: msgBoxModel
             onMsgBoxCountChanged:{
@@ -128,6 +138,33 @@ ApplicationWindow {
             }
 
         RowLayout {
+            ToolButton {
+                text: qsTr("用户管理")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/userManagement.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    popupUserManagement.clearText()
+                    popupUserManagement.open()
+                }
+            }
+            ToolButton {
+                text: qsTr("Login")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/login.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    popupLogin.clearText()
+                    popupLogin.open()
+                }
+            }
+
             ToolButton {
                 text: qsTr("初始化")
                 transformOrigin: Item.Center
@@ -408,6 +445,36 @@ ApplicationWindow {
                }
            }
 
+           GridLayout{
+               rows: 2
+               columns: 2
+
+               Label{
+                  text: qsTr("User:")
+               }
+               Label{
+                  text: userManagement.currentUserName
+               }
+               Label{
+                  text: qsTr("Authority:")
+               }
+               Label{
+                  text: {
+                      switch(userManagement.currentAuthority)
+                      {
+                      case UserMng.Admin:
+                          return "Admin"
+                      case UserMng.Engineer:
+                          return "Engineer"
+                      case UserMng.Operator:
+                          return "Operator"
+                      case UserMng.None:
+                          return "None"
+                      }
+                  }
+               }
+           }
+
            Label{
               id: timeString
               color: "cyan"
@@ -424,7 +491,7 @@ ApplicationWindow {
         currentIndex: tabBar.currentIndex
         interactive: false
 
-        UnitTestForm{}
+//        UnitTestForm{}
 
         Page1Form {
             featureButton.onClicked: {

@@ -4,6 +4,7 @@ QT += webengine
 QT += widgets
 QT += charts qml quick
 QT += websockets
+QT += sql
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -99,6 +100,8 @@ HEADERS += \
     Utils/uiHelper/msgboxmodel.h \
     Utils/uiHelper/uioperation.h \
     Utils/unitlog.h \
+    Utils/userManagement/mysqltablemodel.h \
+    Utils/userManagement/usermanagement.h \
     Vision/baslerpyloncamera.h \
     Vision/calibration.h \
     Vision/calibration_parameter.h \
@@ -170,6 +173,8 @@ SOURCES += \
     Utils/uiHelper/msgboxmodel.cpp \
     Utils/uiHelper/uioperation.cpp \
     Utils/unitlog.cpp \
+    Utils/userManagement/mysqltablemodel.cpp \
+    Utils/userManagement/usermanagement.cpp \
     Vision/baslerpyloncamera.cpp \
     Vision/calibration.cpp \
     Vision/pixel2mech.cpp \

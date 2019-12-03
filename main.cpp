@@ -15,6 +15,7 @@
 #include "Utils/loging/loging.h"
 #include "Utils/singletoninstances.h"
 #include "UnitTest/SilicolMsgBoxTest.h"
+#include "Utils/userManagement/usermanagement.h"
 
 #include <windows.h>
 #include <DbgHelp.h>
@@ -92,6 +93,12 @@ int main(int argc, char *argv[])
 
     MsgBoxTester msgBoxTester;
     engine.rootContext()->setContextProperty("msgBoxTester", &msgBoxTester);
+
+    UserManagement userManagement;
+    userManagement.init();
+    qmlRegisterType<UserManagement>("UserMng", 1, 0, "UserMng");
+    engine.rootContext()->setContextProperty("userManagement", &userManagement);
+    engine.rootContext()->setContextProperty("userModel", userManagement.userModel);
 
     qmlRegisterUncreatableType<TrayMapModel>("HighSprrow.Models", 1, 0, "TrayMapModel", "Tray map model should only be created in cpp code");
 

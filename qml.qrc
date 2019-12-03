@@ -63,5 +63,10 @@
         <file>qml/Log/LogView.qml</file>
         <file>qml/SilicolMsgBox.qml</file>
         <file>qml/UnitTestForm.qml</file>
+        <file>qml/UserManagement/ChangePassword.qml</file>
+        <file>qml/UserManagement/Login.qml</file>
+        <file>qml/UserManagement/UserManagement.qml</file>
+        <file>qml/UserManagement/LoginComponent.qml</file>
+        <file>qml/UserManagement/UsersView.qml</file>
     </qresource>
 </RCC>

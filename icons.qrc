@@ -18,5 +18,7 @@
         <file>icons/information.png</file>
         <file>icons/question.png</file>
         <file>icons/warning.png</file>
+        <file>icons/login.png</file>
+        <file>icons/userManagement.png</file>
     </qresource>
 </RCC>

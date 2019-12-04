@@ -17,12 +17,12 @@ public:
     }
 
 public slots:
-    void onGetMsgRsp(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons)
+    void onGetMsgRsp(QString title, QString content, MsgBoxIcon::Icon icon, QList<QString> buttons)
     {
         SI::ui.getUIResponse(title, content, icon, buttons);
     }
 
-    void onShowMsg(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons)
+    void onShowMsg(QString title, QString content, MsgBoxIcon::Icon icon, QList<QString> buttons)
     {
         SI::ui.showMessage(title, content, icon, buttons);
     }
@@ -50,17 +50,23 @@ public:
 
     Q_INVOKABLE void randomShowMsg()
     {
-        emit showMsg(QString::number(qrand()), QString::number(qrand()), generateIcon(), generateButtons());
+        QString content;
+        for(int i = 0; i < 1000; i++)
+        {
+            content.append(QString::number(qrand()));
+            content.append(" ");
+        }
+        emit showMsg(QString::number(qrand()), content, generateIcon(), generateButtons());
     }
 
 signals:
-    void getMsgRsp(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons);
-    void showMsg(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons);
+    void getMsgRsp(QString title, QString content, MsgBoxIcon::Icon icon, QList<QString> buttons);
+    void showMsg(QString title, QString content, MsgBoxIcon::Icon icon, QList<QString> buttons);
 
 private:
-    MsgBoxModel::MsgBoxIcon generateIcon()
+    MsgBoxIcon::Icon generateIcon()
     {
-        return (MsgBoxModel::MsgBoxIcon)(qrand() % 4);
+        return (MsgBoxIcon::Icon)(qrand() % 4);
     }
 
     QList<QString> generateButtons()

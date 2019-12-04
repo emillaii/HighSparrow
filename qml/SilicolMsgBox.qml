@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
-import MsgBoxModel 1.0
+import MsgBoxIcon 1.0
 
 Popup {
     property int msgBoxWidth: 500
@@ -103,26 +103,30 @@ Popup {
                     source: {
                         switch(icon)
                         {
-                        case MsgBoxModel.Information:
+                        case MsgBoxIcon.Information:
                             return "/icons/information.png";
-                        case MsgBoxModel.Question:
+                        case MsgBoxIcon.Question:
                             return "/icons/question.png";
-                        case MsgBoxModel.Warning:
+                        case MsgBoxIcon.Warning:
                             return "/icons/warning.png";
-                        case MsgBoxModel.Error:
+                        case MsgBoxIcon.Error:
                             return "/icons/error.png";
                         default:
                             return "";
                         }
                     }
                 }
-                TextArea{
+                Text {
                     anchors.top: rectLine.bottom
+                    anchors.topMargin: 10
                     anchors.left: imgIcon.right
                     anchors.leftMargin: 15
                     anchors.bottom: rowButtons.top
                     anchors.right: parent.right
-                    readOnly: true
+                    anchors.rightMargin: 10
+
+                    elide: Text.ElideRight
+                    wrapMode: Text.WordWrap
                     text: content
                     color: "black"
                 }

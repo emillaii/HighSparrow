@@ -25,7 +25,7 @@ void UIOperation::init(MsgBoxModel *msgBoxModel)
     connect(this, &UIOperation::removeMsgBox, msgBoxModel, &MsgBoxModel::onRemoveMsgBox);
 }
 
-void UIOperation::showMessage(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons)
+void UIOperation::showMessage(QString title, QString content, MsgBoxIcon::Icon icon, QList<QString> buttons)
 {
     qDebug("showMessage, title: %s, content: %s", title.toStdString().c_str(),
            content.toStdString().c_str());
@@ -35,14 +35,14 @@ void UIOperation::showMessage(QString title, QString content, MsgBoxModel::MsgBo
     emit addMsgBox(msgBox);
 }
 
-void UIOperation::showMessage(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QString button)
+void UIOperation::showMessage(QString title, QString content, MsgBoxIcon::Icon icon, QString button)
 {
     QList<QString> buttons;
     buttons.append(button);
     showMessage(title, content, icon, buttons);
 }
 
-QString UIOperation::getUIResponse(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons)
+QString UIOperation::getUIResponse(QString title, QString content, MsgBoxIcon::Icon icon, QList<QString> buttons)
 {
     QString buttonsRepr;
     for(int i = 0; i < buttons.count(); i++)
@@ -72,6 +72,13 @@ QString UIOperation::getUIResponse(QString title, QString content, MsgBoxModel::
     qDebug("getUIResponse, user clicked button: %s", clickedButton.toStdString().c_str());
 
     return clickedButton;
+}
+
+QString UIOperation::getUIResponse(QString title, QString content, MsgBoxIcon::Icon icon, QString button)
+{
+    QList<QString> buttons;
+    buttons.append(button);
+    return getUIResponse(title, content, icon, buttons);
 }
 
 void UIOperation::onUIResponse(QString uuid, QString clickedButton)

@@ -4,6 +4,23 @@
 #include <QObject>
 #include <QAbstractListModel>
 
+class MsgBoxIcon: public QObject
+{
+    Q_OBJECT
+
+public:
+    enum Icon
+    {
+        Question,
+        Information,
+        Warning,
+        Error
+    };
+    Q_ENUMS(Icon)
+};
+
+Q_DECLARE_METATYPE(MsgBoxIcon::Icon)
+
 enum MsgBoxRole
 {
     UuidRole = Qt::UserRole + 1,
@@ -20,15 +37,6 @@ class MsgBoxModel: public QAbstractListModel
     Q_OBJECT
 
 public:
-    enum MsgBoxIcon
-    {
-        Question,
-        Information,
-        Warning,
-        Error
-    };
-    Q_ENUMS(MsgBoxIcon)
-
     MsgBoxModel();
 
     // QAbstractItemModel interface
@@ -49,7 +57,6 @@ private:
     QHash<int, QByteArray> msgBoxRoleNames;
 };
 
-Q_DECLARE_METATYPE(MsgBoxModel::MsgBoxIcon)
 
 class MsgBoxItem
 {
@@ -59,7 +66,7 @@ public:
 
     }
 
-    MsgBoxItem(QString uuid, QString title, MsgBoxModel::MsgBoxIcon icon, QString content, QList<QString> buttons)
+    MsgBoxItem(QString uuid, QString title, MsgBoxIcon::Icon icon, QString content, QList<QString> buttons)
     {
         this->uuid = uuid;
         this->title = title;
@@ -71,7 +78,7 @@ public:
 public:
     QString uuid;
     QString title;
-    MsgBoxModel::MsgBoxIcon icon;
+    MsgBoxIcon::Icon icon;
     QString content;
     QList<QString> buttons;
 };

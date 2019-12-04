@@ -149,7 +149,7 @@ double XtVcMotor::GetFeedbackPos(int decimal_digit) const
             gotIt = true;
             break;
         }
-        Sleep(1);
+        Sleep(5);
     }
     if(!gotIt)
     {

@@ -976,12 +976,20 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     tmpPickSensorPos.PA_Y = pick_arm->motor_y->GetFeedbackPos();
                     picker2PickSensorFromTray();
                     if(!pick_arm->vacuum_sensor_suction->GetVacuumState()) {
-                        sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick sensor from sensor tray fail");
-                        int operation = waitMessageReturn(is_run);
-                        qInfo("user operation: %d", operation);
+                        pickSensorFailedTimes++;
+                        if(pickSensorFailedTimes >= MaxPickDutFailedTimes)
+                        {
+                            pickSensorFailedTimes = 0;
+                            SI::ui.getUIResponse("Error", "Pick sensor from tray failed!", MsgBoxModel::Error, SI::ui.retryButtons);
+                        }
+                        else {
+                            qInfo("Pick sensor failed, Auto skipped!");
+                        }
+
                         sensorTray->setCurrentMaterialState(MaterialState::IsNg, states.currentSensorTray());
                         continue;
                     } else {
+                        pickSensorFailedTimes = 0;
                         pickSensorPoses[sensorTray->getCurrentIndex()] = tmpPickSensorPos;
                         states.setHasPickedSensor(true);
                         states.setCurrentSensorIndexInPicker(sensorTray->getCurrentIndex());

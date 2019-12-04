@@ -59,6 +59,7 @@ public:
     QList<QString> retryIgnoreAbortButtons;
     QList<QString> retryAbortButtons;
     QList<QString> retryIgnoreButtons;
+    QList<QString> retryButtons;
 
 
 private:

@@ -140,25 +140,27 @@ double XtVcMotor::GetFeedbackPos(int decimal_digit) const
     if(!is_init)
         return 0;
 
+    double val;
+    bool gotIt = false;
+    for(int i = 0; i < 100; i++)
     {
-//        static int time = 0;
-//        qInfo("spance:%d", QTime::currentTime().msec()-time);
-//        time = QTime::currentTime().msec();
-        double val;
-        int times = 10;
-        do{
-            int res = GetNowPos(vcm_id,val);
-            if(res==1)
-                break;
-            Sleep(1);
-            qInfo("%s VCM GetNowPos failed! %d", this->Name().toStdString().c_str(), times);
+        if(GetNowPos(vcm_id, val) == 1)
+        {
+            gotIt = true;
+            break;
         }
-        while(--times>0);
-        if(direction_is_opposite)
-            val = -val;
-        return round(val*pow(10,decimal_digit))/pow(10,decimal_digit);
+        Sleep(1);
     }
-    return 0;
+    if(!gotIt)
+    {
+        qCritical("%s VCM GetNowPos failed!", this->Name().toStdString().c_str());
+        // To be handled!
+    }
+
+    if(direction_is_opposite)
+        val = -val;
+
+    return round(val*pow(10,decimal_digit))/pow(10,decimal_digit);
 }
 
 bool XtVcMotor::getAlarmState()

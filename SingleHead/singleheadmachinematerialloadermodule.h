@@ -9,6 +9,7 @@
 #include "Vision/vision_location.h"
 #include "Utils/commonutils.h"
 #include "XtMotion/towerlightbuzzer.h"
+#include "Utils/singletoninstances.h"
 
 
 #define DELAY_JET 1000
@@ -284,6 +285,7 @@ private:
 
     int lensPrFailedTimes = 0;
     int sensorPrFailedTimes = 0;
+    int pickSensorFailedTimes = 0;
     const int MaxPickDutFailedTimes = 5;
 };
 

@@ -16,6 +16,7 @@ UIOperation::UIOperation()
     retryAbortButtons.append(Abort);
     retryIgnoreButtons.append(Retry);
     retryIgnoreButtons.append(Ignore);
+    retryButtons.append(Retry);
 }
 
 void UIOperation::init(MsgBoxModel *msgBoxModel)

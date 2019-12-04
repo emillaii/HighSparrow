@@ -820,7 +820,7 @@ ErrorCodeStruct AACoreNew::performDispense()
             dispenseImageProvider->setImage(image);
             emit callQmlRefeshImg(3);  //Emit dispense image to QML
 
-            auto rsp = SI::ui.getUIResponse("Check Glue", "Please check glue!", MsgBoxModel::Question, SI::ui.passFailButtons);
+            auto rsp = SI::ui.getUIResponse("Check Glue", "Please check glue!", MsgBoxIcon::Question, SI::ui.passFailButtons);
             if(rsp == SI::ui.Fail)
             {
                 autoRunDispenseTimes = 0;
@@ -2369,7 +2369,7 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     {
         if(!dk->initDevice())
         {
-            SI::ui.showMessage("Error", "Can not init frame grabber. Please check!", MsgBoxModel::MsgBoxIcon::Error, SI::ui.Ok);
+            SI::ui.showMessage("Error", "Can not init frame grabber. Please check!", MsgBoxIcon::Error, SI::ui.Ok);
         }
         else {
             needReInitFrameGrabber = false;

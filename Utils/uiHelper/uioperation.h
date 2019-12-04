@@ -31,9 +31,10 @@ public:
 
     void init(MsgBoxModel* msgBoxModel);
 
-    void showMessage(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons);
-    void showMessage(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QString button);
-    QString getUIResponse(QString title, QString content, MsgBoxModel::MsgBoxIcon icon, QList<QString> buttons);
+    void showMessage(QString title, QString content, MsgBoxIcon::Icon icon, QList<QString> buttons);
+    void showMessage(QString title, QString content, MsgBoxIcon::Icon icon, QString button);
+    QString getUIResponse(QString title, QString content, MsgBoxIcon::Icon icon, QList<QString> buttons);
+    QString getUIResponse(QString title, QString content, MsgBoxIcon::Icon icon, QString button);
 
 signals:
     void addMsgBox(MsgBoxItem msgBox);
@@ -59,7 +60,6 @@ public:
     QList<QString> retryIgnoreAbortButtons;
     QList<QString> retryAbortButtons;
     QList<QString> retryIgnoreButtons;
-    QList<QString> retryButtons;
 
 
 private:

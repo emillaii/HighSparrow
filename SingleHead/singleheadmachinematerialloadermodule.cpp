@@ -980,7 +980,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                         if(pickSensorFailedTimes >= MaxPickDutFailedTimes)
                         {
                             pickSensorFailedTimes = 0;
-                            SI::ui.getUIResponse("Error", "Pick sensor from tray failed!", MsgBoxModel::Error, SI::ui.retryButtons);
+                            SI::ui.getUIResponse("Error", "Pick sensor from tray failed!", MsgBoxIcon::Error, SI::ui.Retry);
                         }
                         else {
                             qInfo("Pick sensor failed, Auto skipped!");

@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("logModel", &logManager.logModel);
 
     qRegisterMetaType<MsgBoxItem>();
-    qRegisterMetaType<MsgBoxModel::MsgBoxIcon>();
-    qmlRegisterType<MsgBoxModel>("MsgBoxModel", 1, 0, "MsgBoxModel");
+    qRegisterMetaType<MsgBoxIcon::Icon>();
+    qmlRegisterType<MsgBoxIcon>("MsgBoxIcon", 1, 0, "MsgBoxIcon");
     MsgBoxModel msgBoxModel;
     SI::ui.init(&msgBoxModel);
     engine.rootContext()->setContextProperty("msgBoxModel", &msgBoxModel);

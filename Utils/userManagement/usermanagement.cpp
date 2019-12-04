@@ -61,30 +61,30 @@ void UserManagement::addUser(QString userName, QString password, UserManagement:
 {
     if(currentAuthority() != Admin)
     {
-        SI::ui.showMessage(tr("Authority Error"), tr("Only Admin can add user!"), MsgBoxModel::Error, SI::ui.Ok);
+        SI::ui.showMessage(tr("Authority Error"), tr("Only Admin can add user!"), MsgBoxIcon::Error, SI::ui.Ok);
         return;
     }
     int autho = static_cast<int>(authority);
     if(autho >= Admin || autho <= None)
     {
-        SI::ui.showMessage(tr("Authority Error"), tr("Please select correct authority!"), MsgBoxModel::Error, SI::ui.Ok);
+        SI::ui.showMessage(tr("Authority Error"), tr("Please select correct authority!"), MsgBoxIcon::Error, SI::ui.Ok);
         return;
     }
     if(userName.length() < MinUserNameLen)
     {
         SI::ui.showMessage(tr("UserName Error"), tr("User name was too short! Min length: %1").arg(MinUserNameLen),
-                           MsgBoxModel::Error, SI::ui.Ok);
+                           MsgBoxIcon::Error, SI::ui.Ok);
         return;
     }
     if(password.length() < 6)
     {
         SI::ui.showMessage(tr("Password Error"), tr("Password was too short! Min length: %1").arg(MinPasswordLen),
-                           MsgBoxModel::Error, SI::ui.Ok);
+                           MsgBoxIcon::Error, SI::ui.Ok);
         return;
     }
     if(hasUser(userName))
     {
-        SI::ui.showMessage(tr("UserName Error"), tr("User name already existed!"), MsgBoxModel::Error, SI::ui.Ok);
+        SI::ui.showMessage(tr("UserName Error"), tr("User name already existed!"), MsgBoxIcon::Error, SI::ui.Ok);
         return;
     }
     _addUser(userName, password, authority);
@@ -94,7 +94,7 @@ void UserManagement::removeUser(QString userName)
 {
     if(currentAuthority() != Admin)
     {
-        SI::ui.showMessage(tr("Authority Error"), tr("Only Admin can remove user!"), MsgBoxModel::Error, SI::ui.Ok);
+        SI::ui.showMessage(tr("Authority Error"), tr("Only Admin can remove user!"), MsgBoxIcon::Error, SI::ui.Ok);
         return;
     }
 
@@ -106,7 +106,7 @@ void UserManagement::removeUser(QString userName)
     }
     if(authority == Admin)
     {
-        SI::ui.showMessage(tr("UserName Error"), tr("Can not remove Admin account!"), MsgBoxModel::Error, SI::ui.Ok);
+        SI::ui.showMessage(tr("UserName Error"), tr("Can not remove Admin account!"), MsgBoxIcon::Error, SI::ui.Ok);
         return;
     }
     QSqlQuery remove(db);
@@ -124,13 +124,13 @@ bool UserManagement::changePassword(QString userName, QString oldPassword, QStri
 {
     if(newPassword != newPasswordRepeat)
     {
-        SI::ui.showMessage(tr("Password Error"), tr("Repeat password error!"), MsgBoxModel::Error, SI::ui.Ok);
+        SI::ui.showMessage(tr("Password Error"), tr("Repeat password error!"), MsgBoxIcon::Error, SI::ui.Ok);
         return false;
     }
     if(newPassword.length() < 6)
     {
         SI::ui.showMessage(tr("Password Error"), tr("Password was too short! Min length: %1").arg(MinPasswordLen),
-                           MsgBoxModel::Error, SI::ui.Ok);
+                           MsgBoxIcon::Error, SI::ui.Ok);
         return false;
     }
     if(!verifyUserPsw(userName, oldPassword))
@@ -144,7 +144,7 @@ bool UserManagement::changePassword(QString userName, QString oldPassword, QStri
     if(!changePsw.exec())
     {
         SI::ui.showMessage(tr("Change password failed"), changePsw.lastError().text(),
-                           MsgBoxModel::Error, SI::ui.Ok);
+                           MsgBoxIcon::Error, SI::ui.Ok);
         return false;
     }
     return true;
@@ -159,7 +159,7 @@ bool UserManagement::login(QString userName, QString password)
         if(queriedPsw != cryptograph(password))
         {
             SI::ui.showMessage(tr("Password Error"), tr("Please input correct password"),
-                               MsgBoxModel::Error, SI::ui.Ok);
+                               MsgBoxIcon::Error, SI::ui.Ok);
             return false;
         }
         setCurrentUserName(userName);
@@ -231,7 +231,7 @@ bool UserManagement::verifyUserPsw(QString userName, QString password)
         if(queriedPsw != cryptograph(password))
         {
             SI::ui.showMessage(tr("Password Error"), tr("Please input correct password"),
-                               MsgBoxModel::Error, SI::ui.Ok);
+                               MsgBoxIcon::Error, SI::ui.Ok);
             return false;
         }
         return true;
@@ -252,7 +252,7 @@ bool UserManagement::getUserInfo(QString userName, QString &password, UserManage
     if(!query.exec())
     {
         SI::ui.showMessage(tr("Query user %1 failed").arg(userName),
-                           query.lastError().text(), MsgBoxModel::Error, SI::ui.Ok);
+                           query.lastError().text(), MsgBoxIcon::Error, SI::ui.Ok);
         return false;
     }
     if(query.next())
@@ -265,7 +265,7 @@ bool UserManagement::getUserInfo(QString userName, QString &password, UserManage
         if(showMsgBoxAsUserDidNotExist)
         {
             SI::ui.showMessage(tr("UserName Error"), tr("User %1 did not exist").arg(userName),
-                               MsgBoxModel::Error, SI::ui.Ok);
+                               MsgBoxIcon::Error, SI::ui.Ok);
         }
         return false;
     }

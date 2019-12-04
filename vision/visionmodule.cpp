@@ -19,7 +19,7 @@ VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera 
                            BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
                            BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
                            BaslerPylonCamera* barcodeCamera, QString name)
-             :QQuickImageProvider(QQuickImageProvider::Image), ThreadWorkerBase (name)
+    :QQuickImageProvider(QQuickImageProvider::Image), ThreadWorkerBase (name)
 {
     this->downlookCamera = downlookCamera;
     this->uplookCamera = uplookCamera;
@@ -62,10 +62,10 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
         QJsonObject params;
         QString imageName;
         imageName.append(SHARE_DIR)
-                        .append(cameraName)
-                        .append("_")
-                        .append(getCurrentTimeString())
-                        .append(".jpg");
+                .append(cameraName)
+                .append("_")
+                .append(getCurrentTimeString())
+                .append(".jpg");
         params.insert("cameraName", cameraName);
         params.insert("imageName", imageName);
         sendMessageToModule(VISION_MODULE_1, "GrabImage", params);
@@ -112,7 +112,7 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 bool VisionModule::saveImageAndCheck(avl::Image image1, QString imageName)
 {
     try {
-         avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+        avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
     } catch(const atl::Error& error) {
         qInfo("saveImageAndCheck: %s", error.Message());
         qWarning(error.Message());
@@ -209,8 +209,8 @@ void VisionModule::WidthJudge( WidthJudgeState& state, bool inRegionOk, atl::Con
 
     QString imageName;
     imageName.append(getDispensePrLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
+            .append(getCurrentTimeString())
+            .append(".jpg");
 
     if (inResolution < 0.0f)
         throw atl::DomainError("Argument \"inResolution\" of function \"WidthJudge\" is out of the range of valid values.");
@@ -425,8 +425,8 @@ void VisionModule::diffenenceImage(QImage image1, QImage image2)
 {
     QString imageName;
     imageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
+            .append(getCurrentTimeString())
+            .append(".jpg");
     avl::Image output;
     avl::Image in1(image1.width(), image1.height(), image1.bytesPerLine(), avl::PlainType::Type::UInt8, image1.depth() / 8, image1.bits());
     avl::Image in2(image2.width(), image2.height(), image2.bytesPerLine(), avl::PlainType::Type::UInt8, image2.depth() / 8, image2.bits());
@@ -468,12 +468,12 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Matching(QString camera_name, PRResul
     ErrorCodeStruct error_code = { OK, "" };
     QString imageName;
     imageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
+            .append(getCurrentTimeString())
+            .append(".jpg");
     QString rawImageName;
     rawImageName.append(getVisionLogDir())
-                .append(getCurrentTimeString())
-                .append("_raw.jpg");
+            .append(getCurrentTimeString())
+            .append("_raw.jpg");
 
     static atl::String g_constData1;
     static avl::GrayModel g_constData2;
@@ -506,7 +506,7 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Matching(QString camera_name, PRResul
 
         this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
-//        avl::LoadImage( g_constData1, false, image1 );
+        //        avl::LoadImage( g_constData1, false, image1 );
         avl::LocateSingleObject_NCC( image1, atl::NIL, g_constData2, 0, 3, false, 0.6f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
 
         if (object2D1 != atl::NIL)
@@ -624,12 +624,12 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
     atl::Array< atl::Conditional< avl::Location > > g_constData7;
     QString imageName;
     imageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
+            .append(getCurrentTimeString())
+            .append(".jpg");
     QString rawImageName;
     rawImageName.append(getVisionLogDir())
-                .append(getCurrentTimeString())
-                .append("_raw.jpg");
+            .append(getCurrentTimeString())
+            .append("_raw.jpg");
     try {
         g_constData1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\20191123\\20191123\\13-34-40-149_raw.jpg";
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.9ec2dbe0.avdata", L"Path", g_constData2 );
@@ -864,20 +864,21 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
 {
     qInfo("PR_Prism_SUT_Two_Circle_Matching");
     ErrorCodeStruct error_code = { OK, "" };
-    static atl::String g_constData1;
-    static avl::Region g_constData2;
-    static atl::String g_constData3;
-    static atl::String g_emptyString;
-    static atl::Array< atl::Conditional< avl::Location > > g_constData4;
+    atl::String g_constData1;
+    avl::Region g_constData2;
+    atl::String g_constData3;
+    atl::String g_emptyString;
+    atl::Array< atl::Conditional< avl::Location > > g_constData4;
+
     QString imageName;
     imageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
+            .append(getCurrentTimeString())
+            .append(".jpg");
     QString rawImageName;
     rawImageName.append(getVisionLogDir())
-                .append(getCurrentTimeString())
-                .append("_raw.jpg");
-    g_constData1 = "C:\\Users\\emil\\Desktop\\Test\\DownlookPR_Program\\DownlookPR\\image\\10-19-52-894.jpg";
+            .append(getCurrentTimeString())
+            .append("_raw.jpg");
+    g_constData1 = "C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-12\\20191204\\17-40-43-963.jpg";
     g_constData3 = L"Angle:";
 
     g_emptyString = L"";
@@ -886,7 +887,6 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
     g_constData4[0] = avl::Location(156, 53);
     try {
         avs::ReadDataFromFile("config\\prConfig\\twoCircles.db0fe743.avdata", "Region", g_constData2 );
-        avl::EnumerateFilesState enumerateImagesState1;
         avl::Image image1;
         atl::String file1;
         atl::String string1;
@@ -913,11 +913,11 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
         atl::Conditional< avl::Point2D > point2D3;
 
         this->grabImageFromCamera(camera_name, image1);
-//        avl::LoadImage( g_constData1, false, image1 );
+        //avl::LoadImage( g_constData1, false, image1 );
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
 
         //ToDo: Open the parameter for the circle radius detection ( 11.0 )
-        avl::DetectMultipleCircles( image1, g_constData2, 11.0f, 0.1f, 20.0f, 10.0f, houghCircleArray1, atl::Dummy<avl::Image>().Get(), atl::Dummy<avl::Image>().Get() );
+        avl::DetectMultipleCircles( image1, g_constData2, 11.0f, 0.1f, 25.0f, 10.0f, houghCircleArray1, atl::Dummy<avl::Image>().Get(), atl::Dummy<avl::Image>().Get() );
 
         circle2DArray1.Resize(houghCircleArray1.Size());
         boolArray1.Resize(houghCircleArray1.Size());
@@ -942,15 +942,7 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
             avl::CircleFittingField circleFittingField1 = avl::CircleFittingField(circle2DArray2[i], 10.0f);
 
             // Function AvsFilter_FitCircleToEdges is intended for generated code only. Consider use of CreateFittingMap and FitCircleToEdges functions in regular programs.
-            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, atl::NIL, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, avl::MEstimator::Huber, atl::Dummy< atl::Conditional< avl::Circle2D > >().Get(), atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
-            avl::CircleFittingField circleFittingField2 = avl::CircleFittingField(circle2DArray2[i], 15.0f);
-
-            // Function AvsFilter_FitCircleToEdges is intended for generated code only. Consider use of CreateFittingMap and FitCircleToEdges functions in regular programs.
-            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState2, image1, circleFittingField2, atl::NIL, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 3.0f, avl::EdgeTransition::DarkToBright), avl::Selection::Best, atl::NIL, 0.2f, avl::CircleFittingMethod::AlgebraicTaubin, avl::MEstimator::Huber, atl::Dummy< atl::Conditional< avl::Circle2D > >().Get(), atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
-            avl::CircleFittingField circleFittingField3 = avl::CircleFittingField(circle2DArray2[i], 15.0f);
-
-            // Function AvsFilter_FitCircleToRidges is intended for generated code only. Consider use of CreateFittingMap and FitCircleToRidges functions in regular programs.
-            avs::AvsFilter_FitCircleToRidges( fitCircleToRidgesState1, image1, circleFittingField3, atl::NIL, 10, 5, avl::InterpolationMethod::Bilinear, avl::RidgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 1, 2, avl::RidgeOperator::Minimum, 5.0f, avl::Polarity::Dark), avl::Selection::Best, atl::NIL, 0.2f, avl::CircleFittingMethod::AlgebraicTaubin, avl::MEstimator::Huber, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, atl::NIL, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, avl::MEstimator::Huber, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
             if (circle2D1 != atl::NIL)
             {
@@ -961,7 +953,8 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
             else
             {
                 point2DArray1[i] = atl::NIL;
-                qWarning("PR Error! Cannot find two circles");
+
+                qWarning("PR Error: Cannot find circles");
                 error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
                 return error_code;
             }
@@ -990,20 +983,20 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
             avl::AveragePoint( point2D1.Get(), point2D2.Get(), point2D3.Get() );
             avl::AngleBetweenLines( line2D1.Get(), line2D2, real1, atl::NIL );
             avl::RealToString( real1, string3 );
-            // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
-            avs::AvsFilter_ConcatenateStrings( g_constData3, string3, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string2.Get() );
             prResult.x = point2D3.Get().X();
             prResult.y = point2D3.Get().Y();
             prResult.ori_x = point2D3.Get().X();
             prResult.ori_y = point2D3.Get().Y();
             prResult.theta = real1;
+            // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
+            avs::AvsFilter_ConcatenateStrings( g_constData3, string3, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string2.Get() );
         }
         else
         {
             line2D1 = atl::NIL;
             point2D3 = atl::NIL;
             string2 = atl::NIL;
-            qWarning("PR Error! Cannot find two circles");
+            qWarning("PR Error: Cannot find circles");
             error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
             return error_code;
         }
@@ -1013,6 +1006,7 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
         stringArray1.Resize(1);
         stringArray1[0] = string2;
         avs::DrawStrings_SingleColor( image4, stringArray1, g_constData4, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 28.0f), 40.0f, 0.0f, true, atl::NIL, image5 );
+
         avl::SaveImageToJpeg( image5 , imageName.toStdString().c_str(), atl::NIL, false );
     }catch(const atl::Error& error) {
         qWarning("PR Error: %s", error.Message());
@@ -1058,12 +1052,12 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         atl::String g_constData10;
         QString imageName;
         imageName.append(getVisionLogDir())
-                        .append(getCurrentTimeString())
-                        .append(".jpg");
+                .append(getCurrentTimeString())
+                .append(".jpg");
         QString rawImageName;
         rawImageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append("_raw.jpg");
+                .append(getCurrentTimeString())
+                .append("_raw.jpg");
         g_constData1 = L"test.jpg";
         g_constData2 = pr_offset_name.toStdString().c_str();
         g_constData3 = L"Vector2D";
@@ -1100,23 +1094,23 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
         prResult.rawImageName = rawImageName;
-//        bool isSearchRegionFound = true;
+        //        bool isSearchRegionFound = true;
         //Testing use
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
         avs::LoadObject< avl::Vector2D >( g_constData2, avl::StreamMode::Binary, g_constData3, vector2D1 );
         avs::LoadObject< avl::GrayModel >( g_constData4, avl::StreamMode::Binary, g_constData5, grayModel1 );
-//        try {
-//            avs::LoadObject< avl::Region >( g_constData8, avl::StreamMode::Binary, g_constData9, region1 );
-//        } catch(const atl::Error& error) {
-//            isSearchRegionFound = false;
-//            qInfo("Missing search region file, set this to nil for backward compatible: %s", error.Message());
-//        }
-//        if (isSearchRegionFound) {
-//            avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-//        }
-//        else {
-            avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-//        }
+        //        try {
+        //            avs::LoadObject< avl::Region >( g_constData8, avl::StreamMode::Binary, g_constData9, region1 );
+        //        } catch(const atl::Error& error) {
+        //            isSearchRegionFound = false;
+        //            qInfo("Missing search region file, set this to nil for backward compatible: %s", error.Message());
+        //        }
+        //        if (isSearchRegionFound) {
+        //            avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+        //        }
+        //        else {
+        avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+        //        }
         bool is_object_score_pass = true;
         if (object2D1 != atl::NIL)
         {
@@ -1241,12 +1235,12 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching_Retry(QString cam
         atl::String g_constData10;
         QString imageName;
         imageName.append(getVisionLogDir())
-                        .append(getCurrentTimeString())
-                        .append("_retry.jpg");
+                .append(getCurrentTimeString())
+                .append("_retry.jpg");
         QString rawImageName;
         rawImageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append("_retry_raw.jpg");
+                .append(getCurrentTimeString())
+                .append("_retry_raw.jpg");
         g_constData1 = L"test.jpg";
         g_constData2 = pr_offset_name.toStdString().c_str();
         g_constData3 = L"Vector2D";
@@ -1282,23 +1276,23 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching_Retry(QString cam
         //avl::LoadImage( "pr//19-39-23-431_raw.jpg", false, image1 );
         this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
-//        bool isSearchRegionFound = true;
+        //        bool isSearchRegionFound = true;
         //Testing use
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
         avs::LoadObject< avl::Vector2D >( g_constData2, avl::StreamMode::Binary, g_constData3, vector2D1 );
         avs::LoadObject< avl::GrayModel >( g_constData4, avl::StreamMode::Binary, g_constData5, grayModel1 );
-//        try {
-//            avs::LoadObject< avl::Region >( g_constData8, avl::StreamMode::Binary, g_constData9, region1 );
-//        } catch(const atl::Error& error) {
-//            isSearchRegionFound = false;
-//            qInfo("Missing search region file, set this to nil for backward compatible: %s", error.Message());
-//        }
-//        if (isSearchRegionFound) {
-//            avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-//        }
-//        else {
-            avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-//        }
+        //        try {
+        //            avs::LoadObject< avl::Region >( g_constData8, avl::StreamMode::Binary, g_constData9, region1 );
+        //        } catch(const atl::Error& error) {
+        //            isSearchRegionFound = false;
+        //            qInfo("Missing search region file, set this to nil for backward compatible: %s", error.Message());
+        //        }
+        //        if (isSearchRegionFound) {
+        //            avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+        //        }
+        //        else {
+        avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+        //        }
         bool is_object_score_pass = true;
         if (object2D1 != atl::NIL)
         {
@@ -1443,8 +1437,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
     try {
         QString imageName;
         imageName.append(getVisionLogDir())
-                        .append(getCurrentTimeString())
-                        .append(".jpg");
+                .append(getCurrentTimeString())
+                .append(".jpg");
         //avl::LoadImage( g_constData1, false, image1 );
         this->grabImageFromCamera(camera_name, image1);
         avs::LoadObject< atl::Conditional< avl::EdgeModel > >( g_constData2, avl::StreamMode::Binary, g_constData3, edgeModel1 );
@@ -1558,12 +1552,12 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
 
     QString imageNameBeforeDispense;
     imageNameBeforeDispense.append(getDispensePrLogDir())
-                    .append(getCurrentTimeString())
-                    .append("_before_dispense.jpg");
+            .append(getCurrentTimeString())
+            .append("_before_dispense.jpg");
     QString outResultImageName;
     outResultImageName.append(getDispensePrLogDir())
-                    .append(getCurrentTimeString())
-                    .append("_glue_inspection_result.jpg");
+            .append(getCurrentTimeString())
+            .append("_glue_inspection_result.jpg");
 
     file1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\before\\2.jpg";
     file2 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\after\\2_d.jpg";
@@ -1778,8 +1772,8 @@ void VisionModule::saveImage(int channel)
     }
     QString imageName;
     imageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
+            .append(getCurrentTimeString())
+            .append(".jpg");
     if (!image1.Empty())
     {
         qInfo("Save image: %s", imageName.toStdString().c_str());

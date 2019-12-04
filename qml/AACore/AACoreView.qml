@@ -5,10 +5,12 @@ import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
 import AACoreNew 1.1
 
-ItemDelegate {
+ScrollView {
     width: parent.width
+    contentWidth: 1920
 
-    contentItem: RowLayout  {
+    RowLayout  {
+        anchors.fill: parent
         spacing: 10
 
         ColumnLayout{
@@ -237,7 +239,7 @@ ItemDelegate {
                         Button{
                             text:qsTr("初始化")
                             onClicked: {
-//                                aaNewCore.performHandling(AACoreNew.INIT_VCM,0)
+                                //                                aaNewCore.performHandling(AACoreNew.INIT_VCM,0)
                                 logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.INIT_VCM)
                             }
                         }
@@ -258,7 +260,7 @@ ItemDelegate {
                         Button{
                             text:qsTr("移动")
                             onClicked: {
-//                                aaNewCore.performHandling(AACoreNew.LENS_VCM_POS,0)
+                                //                                aaNewCore.performHandling(AACoreNew.LENS_VCM_POS,0)
                                 logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.LENS_VCM_POS)
                             }
                         }
@@ -406,7 +408,7 @@ ItemDelegate {
                             model: [ "(xTilt, yTilt)", "(xTilt, -yTilt)", "(-xTilt, yTilt)", "(-xTilt, -yTilt)","(yTilt, xTilt)", "(yTilt, -xTilt)", "(-yTilt, xTilt)", "(-yTilt, -xTilt)" ]
                             currentIndex: aaCoreParams.tiltRelationship
                             onCurrentIndexChanged: {
-                               aaCoreParams.setTiltRelationship(currentIndex)
+                                aaCoreParams.setTiltRelationship(currentIndex)
                             }
                         }
                     }
@@ -671,23 +673,24 @@ ItemDelegate {
                 }
             }
         }
+        ColumnLayout{
+            Frame {
+                id: frame
+                Layout.fillWidth: true
+                contentHeight: 720
 
-        Frame {
-            id: frame
-            Layout.fillWidth: true
-            contentHeight: 720
-
-            Image {
-                id: image1
-                anchors.fill: parent
-                source: "../../icons/sparrow.png"
-                fillMode: Image.PreserveAspectFit
-                cache: false
-                Connections {
-                    target: highSprrow
-                    onDisplayAACoreTuningImageInUI: {
-                        image1.source = ""
-                        image1.source = "image://aaDebugImage"
+                Image {
+                    id: image1
+                    anchors.fill: parent
+                    source: "../../icons/sparrow.png"
+                    fillMode: Image.PreserveAspectFit
+                    cache: false
+                    Connections {
+                        target: highSprrow
+                        onDisplayAACoreTuningImageInUI: {
+                            image1.source = ""
+                            image1.source = "image://aaDebugImage"
+                        }
                     }
                 }
             }

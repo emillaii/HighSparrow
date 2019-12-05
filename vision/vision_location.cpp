@@ -111,6 +111,7 @@ bool VisionLocation::performPR()
     OpenLight();
     current_result.ReSet();
     PrOffset offset;
+    qInfo("PerformPR: %s with wait delay: %f", parameters.locationName().toStdString().c_str(), parameters.waitImageDelay());
     QThread::msleep(parameters.waitImageDelay());
     ErrorCodeStruct temp;
     if (parameters.prismPRType() == 1) {

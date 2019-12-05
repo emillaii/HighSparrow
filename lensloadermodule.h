@@ -17,6 +17,8 @@ class LensLoaderModule:public ThreadWorkerBase
     Q_ENUMS(HandlePR)
     Q_ENUMS(HandleToWorkPos)
     Q_ENUMS(HandlePickerAction)
+    Q_ENUMS(HandleMarcoAction)
+
 public:
     enum HandlePosition
         {
@@ -28,8 +30,7 @@ public:
             LENS_TRAY2_START_POS = 6,
             LENS_TRAY1_END_POS = 7,
             UPDOWNLOOK_DOWN_POS = 8,
-            UPDOWNLOOK_UP_POS =9,
-            CLEARANCE = 10
+            UPDOWNLOOK_UP_POS =9
         };
     enum HandlePR
     {
@@ -57,6 +58,10 @@ public:
         MeasureLensInTray = 6000,
         MeasureLensInLUT = 7000
     };
+    enum HandleMarcoAction
+    {
+        CLEARANCE = 10000
+    };
 
 public:
     LensLoaderModule(QString name = "LensLoaderModule");
@@ -79,7 +84,6 @@ public slots:
     void receiveChangeTrayFinish();
 private:
     void run(bool has_material);
-    void clearance();
 //    void runTest();
 
     bool moveToNextTrayPos(int tray_index);

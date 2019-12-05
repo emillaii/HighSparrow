@@ -218,5 +218,7 @@
         <file>qml/SilicolMsgBox.qml</file>
         <file>qml/UnitTestForm.qml</file>
         <file>qml/PageMenuBar/Page9MenuBar.qml</file>
+        <file>qml/CameraView2.qml</file>
+        <file>qml/CameraView1.qml</file>
     </qresource>
 </RCC>

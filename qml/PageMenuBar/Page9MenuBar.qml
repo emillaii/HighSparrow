@@ -8,7 +8,7 @@ RowLayout {
     Layout.fillWidth: false
     transformOrigin: Item.Left
     RoundButton {
-        text: "清空"
+        text: "清空Lens"
         transformOrigin: Item.Center
         display: Button.TextBesideIcon
         icon.width: 30
@@ -17,6 +17,18 @@ RowLayout {
         icon.color: "lightGreen"
         onClicked: {
             logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.CLEARANCE)
+        }
+    }
+    RoundButton {
+        text: "清空Sensor"
+        transformOrigin: Item.Center
+        display: Button.TextBesideIcon
+        icon.width: 30
+        icon.height: 30
+        icon.source: "../../icons/camera.png"
+        icon.color: "yellow"
+        onClicked: {
+            logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.CLEARANCE)
         }
     }
 }

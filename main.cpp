@@ -149,11 +149,11 @@ int main(int argc, char *argv[])
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
     qmlRegisterType<LogicManager>("LogicManagerLib",1,1,"LogicManager");
     qmlRegisterType<TrayLoaderModule>("TrayLoaderModuleLib",1,1,"TrayLoaderModule");
+    qmlRegisterType<VisionModule>("VisionModuleLib",1,1,"VisionModule");
 
     //
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
     engine.rootContext()->setContextProperty("lensLoaderModule", &highSprrow.baseModuleManager->lens_loader_module);
-//    engine.rootContext()->setContextProperty("lutClient", highSprrow.baseModuleManager->lutClient);
     engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
     engine.rootContext()->setContextProperty("dothinkey", highSprrow.baseModuleManager->dothinkey);
     engine.rootContext()->setContextProperty("tray_loader_module",&highSprrow.baseModuleManager->tray_loader_module);
@@ -474,6 +474,16 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("sfrImage"), highSprrow.baseModuleManager->aaCoreNew.sfrImageProvider);
     engine.addImageProvider(QLatin1String("dispenseImage"), highSprrow.baseModuleManager->aaCoreNew.dispenseImageProvider);
     engine.addImageProvider(QLatin1String("aaDebugImage"), highSprrow.baseModuleManager->visionModule->aaDebugImageProvider);
+    //camera sequence -- Uplook Camera, AA1 Downlook Camera, Lens Pickarm Camera,
+    //AA2 Downlook Camera, Sensor Pickarm Camera, Sensor Uplook Camera, Barcode Camera
+    engine.addImageProvider(QLatin1String("uplookCameraResultImage"), &highSprrow.baseModuleManager->visionModule->visionModuleImageProviders[0]);
+    engine.addImageProvider(QLatin1String("aa1DownlookCameraResultImage"), &highSprrow.baseModuleManager->visionModule->visionModuleImageProviders[1]);
+    engine.addImageProvider(QLatin1String("lensPickarmCameraResultImage"), &highSprrow.baseModuleManager->visionModule->visionModuleImageProviders[2]);
+    engine.addImageProvider(QLatin1String("aa2DownlookCameraResultImage"), &highSprrow.baseModuleManager->visionModule->visionModuleImageProviders[3]);
+    engine.addImageProvider(QLatin1String("sensorPickarmCameraResultImage"), &highSprrow.baseModuleManager->visionModule->visionModuleImageProviders[4]);
+    engine.addImageProvider(QLatin1String("sensorUplookCameraResultImage"), &highSprrow.baseModuleManager->visionModule->visionModuleImageProviders[5]);
+    engine.addImageProvider(QLatin1String("barcodeCameraResultImage"), &highSprrow.baseModuleManager->visionModule->visionModuleImageProviders[6]);
+
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

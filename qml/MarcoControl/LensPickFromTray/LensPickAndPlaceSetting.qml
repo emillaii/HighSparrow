@@ -402,15 +402,6 @@ ColumnLayout{
     }
 
     RowLayout {
-        Button {
-            text: qsTr("Clear All Lens")
-            onClicked: {
-                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.CLEARANCE)
-            }
-        }
-    }
-
-    RowLayout {
         Button{
             text: qsTr("LPA VAC Open/Closed")
             onClicked: {

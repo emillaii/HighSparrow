@@ -4,6 +4,8 @@
 #include "basemodulemanager.h"
 #include <QMessageBox>
 #include "utils/commonutils.h"
+#include "utils/uiHelper/uioperation.h"
+#include "utils/singletoninstances.h"
 #define PI 3.1415926535898
 SensorLoaderModule::SensorLoaderModule():ThreadWorkerBase ("SensorLoaderModule")
 {
@@ -442,6 +444,13 @@ void SensorLoaderModule::performHandlingOperation(int cmd,QVariant param)
     }
     else if(cmd%temp_value == handlePickerAction::MEASURE_Z_OFFSET)
         result = measureZOffset();
+    else if(cmd%temp_value == handlePickerAction::CLEARANCE)
+    {
+        result = unloadAllSensor();
+        sendAlarmMessage(OK_OPERATION,"Sensor Clearance Done",ErrorLevel::TipNonblock);
+        is_handling = false;
+        return;
+   }
     else
         result = true;
     if(!result)
@@ -3230,14 +3239,144 @@ bool SensorLoaderModule::measureZOffset()
     return true;
 }
 
-//bool SensorLoaderModule::moveToTrayPos(int index, int tray_index)
-//{
-//    qInfo("moveToTrayPos index %d tray_index %d",index,tray_index);
-//    bool result = pick_arm->move_XY_Synic(tray->getPositionByIndex(index,tray_index));
-//    if(!result)
-//        AppendError(QString(u8"移动到%1盘%1号位置失败").arg(tray_index == 0?"sensor":"成品").arg(index));
-//    return result;
-//}
+bool SensorLoaderModule::unloadAllSensor()
+{
+    qInfo("Unload all sensor");
+
+    sendMessageToModule("Sut1Module", "MoveToLoadPos");
+    sendMessageToModule("Sut2Module", "MoveToLoadPos");
+    int i = 0;
+    //Checking 1: SPA has product already
+    if (this->pick_arm->picker2->vacuum->checkHasMaterielSync())
+    {
+        QList<QString> trayIndexSelection; trayIndexSelection.append("Tray 1"); trayIndexSelection.append("Tray 2"); trayIndexSelection.append("Buffer Tray");
+        int tray_index = SensorPosition::SENSOR_TRAY_1;
+        QString resp = SI::ui.getUIResponse(this->Name(), "Detect Product! Please select the target tray.", MsgBoxIcon::Question, trayIndexSelection);
+        if(resp == "Tray 1") tray_index = SensorPosition::SENSOR_TRAY_1;
+        else if (resp == "Tray 2") tray_index = SensorPosition::SENSOR_TRAY_2;
+        else if (resp == "Buffer Tray") tray_index = SensorPosition::BUFFER_TRAY;
+
+        do{
+            moveToTrayPos(i, tray_index); i++;
+            if(performTrayEmptyPR()) {
+               qInfo("Detect Empty Pos");
+               PrOffset pr_offset = tray_empty_location->getCurrentResult();
+               tray_empty_location->setCurrentResult(pr_offset);
+               movePicker2ToTrayCurrentPos(tray_index,true);
+               placeProductToTray(tray_index);
+               break;
+            }
+            if (i%10 == 0) {
+                QString resp = SI::ui.getUIResponse(this->Name(), "Cannot find empty position. Continue?", MsgBoxIcon::Question, SI::ui.yesNoButtons);
+                if(resp ==  SI::ui.No) {
+                    return false;
+                }
+            }
+        } while(i<99);
+    }
+    //Checking 2: SPA has sensor already
+    if (this->pick_arm->picker1->vacuum->checkHasMaterielSync())
+    {
+        QList<QString> trayIndexSelection; trayIndexSelection.append("Tray 1"); trayIndexSelection.append("Tray 2"); trayIndexSelection.append("Buffer Tray");
+        int tray_index = SensorPosition::SENSOR_TRAY_1;
+        QString resp = SI::ui.getUIResponse(this->Name(), "Detect Sensor! Please select the target tray.", MsgBoxIcon::Question, trayIndexSelection);
+        if(resp == "Tray 1") tray_index = SensorPosition::SENSOR_TRAY_1;
+        else if (resp == "Tray 2") tray_index = SensorPosition::SENSOR_TRAY_2;
+        else if (resp == "Buffer Tray") tray_index = SensorPosition::BUFFER_TRAY;
+        do{
+            moveToTrayPos(i, tray_index); i++;
+            if(performTrayEmptyPR()) {
+               qInfo("Detect Empty Pos");
+               PrOffset pr_offset = tray_empty_location->getCurrentResult();
+               tray_empty_location->setCurrentResult(pr_offset);
+               movePicker1ToTrayCurrentPos(tray_index,true);
+               backSensorToTray(tray_index);
+               break;
+            }
+            if (i%10 == 0) {
+                QString resp = SI::ui.getUIResponse(this->Name(), "Cannot find empty position. Continue?", MsgBoxIcon::Question, SI::ui.yesNoButtons);
+                if(resp ==  SI::ui.No) {
+                    return false;
+                }
+            }
+        } while(i<99);
+    }
+    //Checking 3: Look at SUT 1 whether this has sensor, if yes, unload that
+    if(moveCameraToSUTPRPos(false,true)){
+        if(!performSUTEmptyPR()){
+            if(performSUTSensorPR()){   //This is ng sensor
+                movePicker2ToSUTPos(false, false);
+                pickNgSensorFromSut(false);
+                QList<QString> trayIndexSelection; trayIndexSelection.append("Tray 1"); trayIndexSelection.append("Tray 2"); trayIndexSelection.append("Buffer Tray");
+                int tray_index = SensorPosition::SENSOR_TRAY_1;
+                QString resp = SI::ui.getUIResponse(this->Name(), "Detect Ng Sensor! Please select the target tray.", MsgBoxIcon::Question, trayIndexSelection);
+                if(resp == "Tray 1") tray_index = SensorPosition::SENSOR_TRAY_1;
+                else if (resp == "Tray 2") tray_index = SensorPosition::SENSOR_TRAY_2;
+                else if (resp == "Buffer Tray") tray_index = SensorPosition::BUFFER_TRAY;
+                do{
+                    moveToTrayPos(i, tray_index); i++;
+                    if(performTrayEmptyPR()) {
+                       qInfo("Detect Empty Pos");
+                       PrOffset pr_offset = tray_empty_location->getCurrentResult();
+                       tray_empty_location->setCurrentResult(pr_offset);
+                       movePicker2ToTrayCurrentPos(tray_index,true);
+                       placeProductToTray(tray_index);
+                       break;
+                    }
+                    if (i%10 == 0) {
+                        QString resp = SI::ui.getUIResponse(this->Name(), "Cannot find empty position. Continue?", MsgBoxIcon::Question, SI::ui.yesNoButtons);
+                        if(resp ==  SI::ui.No) {
+                            return false;
+                        }
+                    }
+                } while(i<99);
+            }
+        }
+    }
+    //Checking 4: Look at SUT 2 whether this has sensor
+    if(moveCameraToSUTPRPos(true,true)){
+        if(!performSUTEmptyPR()){
+            if(performSUTSensorPR()){   //This is not product
+                movePicker2ToSUTPos(false, false);
+                pickNgSensorFromSut(false);
+                QList<QString> trayIndexSelection; trayIndexSelection.append("Tray 1"); trayIndexSelection.append("Tray 2"); trayIndexSelection.append("Buffer Tray");
+                int tray_index = SensorPosition::SENSOR_TRAY_1;
+                QString resp = SI::ui.getUIResponse(this->Name(), "Detect Product! Please select the target tray.", MsgBoxIcon::Question, trayIndexSelection);
+                if(resp == "Tray 1") tray_index = SensorPosition::SENSOR_TRAY_1;
+                else if (resp == "Tray 2") tray_index = SensorPosition::SENSOR_TRAY_2;
+                else if (resp == "Buffer Tray") tray_index = SensorPosition::BUFFER_TRAY;
+
+                do{
+                    moveToTrayPos(i, tray_index); i++;
+                    if(performTrayEmptyPR()) {
+                       qInfo("Detect Empty Pos");
+                       PrOffset pr_offset = tray_empty_location->getCurrentResult();
+                       tray_empty_location->setCurrentResult(pr_offset);
+                       movePicker2ToTrayCurrentPos(tray_index,true);
+                       placeProductToTray(tray_index);
+                       break;
+                    }
+                    if (i%10 == 0) {
+                        QString resp = SI::ui.getUIResponse(this->Name(), "Cannot find empty position. Continue?", MsgBoxIcon::Question, SI::ui.yesNoButtons);
+                        if(resp ==  SI::ui.No) {
+                            return false;
+                        }
+                    }
+                } while(i<99);
+            }
+        }
+    }
+    return true;
+}
+
+bool SensorLoaderModule::moveToTrayPos(int index, int tray_index)
+{
+    qInfo("moveToTrayPos index %d tray_index %d",index,tray_index);
+    bool result = pick_arm->move_XY_Synic(tray->getPositionByIndex(index,tray_index));
+    if(!result)
+        AppendError(QString(u8"移动到%1盘%1号位置失败").arg(tray_index == 0?"sensor":"成品").arg(index));
+    return result;
+}
 
 //bool SensorLoaderModule::moveToTrayPos(int tray_index)
 //{

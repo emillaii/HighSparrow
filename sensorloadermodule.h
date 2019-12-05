@@ -21,7 +21,6 @@ class SensorLoaderModule:public ThreadWorkerBase
     Q_ENUMS(HandlePR)
     Q_ENUMS(HandlePickerPos)
     Q_ENUMS(handlePickerAction)
-
 public:
     enum HandleCameraPosition
     {
@@ -92,7 +91,8 @@ public:
         MEASURE_NG_SENSOR_IN_TRAY = 22*TIMES_3,
         MEASURE_Z_OFFSET = 23*TIMES_3,
         PLACE_SENSOR_BACK_TO_TRAY1= 24*TIMES_3,
-        PLACE_SENSOR_BACK_TO_TRAY2= 25*TIMES_3
+        PLACE_SENSOR_BACK_TO_TRAY2= 25*TIMES_3,
+        CLEARANCE = 26*TIMES_3
     };
 
     enum SensorPosition
@@ -219,13 +219,13 @@ private:
     bool picker1MeasureHight(int tray_id);
     bool picker2MeasureHight(int tray_id);
     bool measureZOffset();
-
+    bool unloadAllSensor();
 
 //    bool checkPickedSensor(bool check_state);
 //    bool checkPickedNgOrProduct(bool check_state);
 
 
-//    bool moveToTrayPos(int index,int tray_index);
+    bool moveToTrayPos(int index,int tray_index);
 //    bool moveToTrayPos(int tray_index);
 
 

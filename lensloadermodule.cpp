@@ -1268,6 +1268,8 @@ bool LensLoaderModule::moveToUpdownlookUpPos()
 
 bool LensLoaderModule::unloadAllLens()
 {
+    sendMessageToModule("Sut1Module", "MoveToLoadPos");
+    sendMessageToModule("Sut2Module", "MoveToLoadPos");
     lut->moveToLoadPos();
     int i = 0;
     //Checking 1: LPA has lens already
@@ -1338,6 +1340,27 @@ bool LensLoaderModule::unloadAllLens()
         }while (i<99);
         placeLensToTray();
     }
+    //Checking 5: LUT Go To AA2 Unpick
+    lut->moveToAA2UnPickLens();
+    lut->moveToLoadPos();
+    if (lut->unload_vacuum->checkHasMaterielSync())
+    {
+        moveToLUTPRPos2();
+        performLUTLensPR();
+        moveToWorkPos(true);
+        pickLUTLens();
+        do{
+            moveToTrayPos(i, 0); i++;
+            if(performVacancyPR()) {
+                moveToWorkPos(true);
+                break;
+            }
+            if( i == 99) { qInfo("Fail"); return false; }
+        }while (i<99);
+        placeLensToTray();
+    }
+    lut->closeLoadVacuum();
+    lut->closeUnloadVacuum();
     return true;
 }
 
@@ -1514,7 +1537,7 @@ void LensLoaderModule::performHandlingOperation(int cmd,QVariant param)
     }
     bool result;
     int temp_value = 10;
-    if (cmd == HandlePosition::CLEARANCE)
+    if (cmd == HandleMarcoAction::CLEARANCE)
     {
         this->unloadAllLens();
         sendAlarmMessage(OK_OPERATION,"Lens Clearance Done",ErrorLevel::TipNonblock);

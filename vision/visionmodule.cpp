@@ -15,11 +15,14 @@
 #include <utils/commonutils.h>
 #include "vision/baslerpyloncamera.h"
 #include <QElapsedTimer>
+#include "utils/uiHelper/uioperation.h"
+#include "utils/singletoninstances.h"
+VisionModule::VisionModule():QQuickImageProvider(QQuickImageProvider::Image){}
 VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera,
                            BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
                            BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
                            BaslerPylonCamera* barcodeCamera, QString name)
-    :QQuickImageProvider(QQuickImageProvider::Image), ThreadWorkerBase (name)
+             :ThreadWorkerBase (name), QQuickImageProvider(QQuickImageProvider::Image)
 {
     this->downlookCamera = downlookCamera;
     this->uplookCamera = uplookCamera;
@@ -1837,19 +1840,19 @@ void VisionModule::receivceModuleMessage(QVariantMap message)
 void VisionModule::saveImage(int channel)
 {
     avl::Image image1; bool ret;
-    if (channel == 0)
+    if (channel == HandleCameraChannel::CAMERA_CHANNEL_UPLOOK_VISION_CAMERA)
         ret = this->grabImageFromCamera(UPLOOK_VISION_CAMERA, image1);
-    else if (channel == 1)
+    else if (channel == HandleCameraChannel::CAMERA_CHANNEL_DOWNLOOK_VISION_CAMERA)
         ret = this->grabImageFromCamera(DOWNLOOK_VISION_CAMERA, image1);
-    else if (channel == 2)
+    else if (channel == HandleCameraChannel::CAMERA_CHANNEL_PICKARM_VISION_CAMERA)
         ret = this->grabImageFromCamera(PICKARM_VISION_CAMERA, image1);
-    else if (channel == 3)
+    else if (channel == HandleCameraChannel::CAMERA_CHANNEL_CAMERA_AA2_DL)
         ret = this->grabImageFromCamera(CAMERA_AA2_DL, image1);
-    else if (channel == 4)
+    else if (channel == HandleCameraChannel::CAMERA_CHANNEL_CAMERA_SPA_DL)
         ret = this->grabImageFromCamera(CAMERA_SPA_DL, image1);
-    else if (channel == 5)
+    else if (channel == HandleCameraChannel::CAMERA_CHANNEL_CAMERA_LPA_UL)
         ret = this->grabImageFromCamera(CAMERA_LPA_UL, image1);
-    else if (channel == 6)
+    else if (channel == HandleCameraChannel::CAMERA_CHANNEL_CAMERA_LPA_BARCODE)
         ret = this->grabImageFromCamera(CAMERA_LPA_BARCODE, image1);
     else return;
     if (!ret) {
@@ -1862,8 +1865,13 @@ void VisionModule::saveImage(int channel)
             .append(".jpg");
     if (!image1.Empty())
     {
-        qInfo("Save image: %s", imageName.toStdString().c_str());
         avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+        QImage image(imageName);
+        this->visionModuleImageProviders[channel].setImage(image);
+        SI::ui.showMessage("VisionModule", QString("Save Image Success! ").append(imageName).append(" is saved."), MsgBoxIcon::Information, "OK");
+        emit callQmlRefeshImg(5+channel);
+    }else {
+         SI::ui.showMessage("VisionModule", QString("Save Image Fail!"), MsgBoxIcon::Information, "OK");
     }
 }
 

@@ -43,15 +43,29 @@ signals:
     void displayOCImageInUI();
     void displayAACoreTuningImageInUI();
     void displayGlueInspectImageInUI();
+    void displayUplookResultImageInUI();
+    void displayAA1DownlookResultImageInUI();
+    void displayLensPickarmResultImageInUI();
+    void displayAA2DownlookResultImageInUI();
+    void displaySensorPickarmResultImageInUI();
+    void displaySensorUplookResultImageInUI();
+    void displayBarcodeResultImageInUI();
 public slots:
     void homeAllMotors();
     Q_INVOKABLE void receiveImageFromAACore(int type) {
-        qInfo("Display image in UI: %d", type);
+        qDebug("Display image in UI: %d", type);
         if (type == 0) emit displaySfrImageInUI();
         else if (type == 1) emit displayOCImageInUI();
         else if (type == 2) emit displayAACoreTuningImageInUI();
         else if (type == 3) emit displayGlueInspectImageInUI();
         else if (type == 4) emit displayAACoreTuningImageInUI();
+        else if (type == 5) emit displayUplookResultImageInUI();
+        else if (type == 6) emit displayAA1DownlookResultImageInUI();
+        else if (type == 7) emit displayLensPickarmResultImageInUI();
+        else if (type == 8) emit displayAA2DownlookResultImageInUI();
+        else if (type == 9) emit displaySensorPickarmResultImageInUI();
+        else if (type == 10) emit displaySensorUplookResultImageInUI();
+        else if (type == 11) emit displayBarcodeResultImageInUI();
     };
 };
 

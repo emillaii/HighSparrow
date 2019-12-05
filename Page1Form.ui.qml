@@ -58,7 +58,6 @@ Page {
     }
 
     CameraView {
-        id: cameraView
         clip: false
         anchors.left: machineConfigListView.right
         anchors.right: parent.right

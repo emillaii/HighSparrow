@@ -313,7 +313,6 @@ bool XtVcMotor::SeekOrigin(int thread)
 {
     if(!checkState(false))return false;
     int result;
-    qInfo("sadas");
     ChangeDiretion(true);
     if(parameters.findOriginCurrent() > 0)
         result = Touch_Go_Zero(vcm_id,parameters.findOriginCurrent(),parameters.touchDistance());
@@ -331,7 +330,7 @@ bool XtVcMotor::SeekOrigin(int thread)
     {
         states.setSeekedOrigin(false);
         AppendError(QString(u8"%1回零失败").arg(name));
-        qInfo("axis %s seek origin fail!",name.toStdString().c_str());
+        qFatal("axis %s seek origin fail!",name.toStdString().c_str());
     }
     ChangeDiretion();
     return states.seekedOrigin();

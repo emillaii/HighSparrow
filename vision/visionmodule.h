@@ -78,8 +78,21 @@ struct WidthJudgeState
 
 class VisionModule: public ThreadWorkerBase,public QQuickImageProvider
 {
+//    Q_ENUMS(HandleCameraChannel)
     Q_OBJECT
+    Q_ENUMS(HandleCameraChannel)
 public:
+    enum HandleCameraChannel
+    {
+        CAMERA_CHANNEL_UPLOOK_VISION_CAMERA = 0,
+        CAMERA_CHANNEL_DOWNLOOK_VISION_CAMERA,
+        CAMERA_CHANNEL_PICKARM_VISION_CAMERA,
+        CAMERA_CHANNEL_CAMERA_AA2_DL,
+        CAMERA_CHANNEL_CAMERA_SPA_DL,
+        CAMERA_CHANNEL_CAMERA_LPA_UL,
+        CAMERA_CHANNEL_CAMERA_LPA_BARCODE
+    };
+    VisionModule();
     VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera,
                  BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
                  BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
@@ -113,6 +126,7 @@ public:
     bool saveImage(QString cameraName, QString imageName);
     Q_INVOKABLE void testVision();
     ImageProvider *aaDebugImageProvider;
+    ImageProvider visionModuleImageProviders[10];
 private:
     QString last_uplook_pr_result;
     QString last_downlook_pr_result;
@@ -140,6 +154,7 @@ private:
     float MinWidth = 0.18f;
 signals :
     void callQmlRefeshImg(int);
+    void displayUplookImage();
 public:
     bool is_debug = false;
 //ThreadWorkerBase Interface

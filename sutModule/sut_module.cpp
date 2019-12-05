@@ -665,9 +665,14 @@ void SutModule::receivceModuleMessage(QVariantMap message)
                 qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
             }
         }
-    }
-    else {
-         qInfo("module name error %s",message["OriginModule"].toString().toStdString().c_str());
+    } else if(message.contains("Message")){
+        qInfo("Testing code");
+        if(message["Message"].toString()=="MoveToLoadPos")
+        {
+            moveToLoadPos();
+        }
+    } else {
+        qInfo("module name error %s",message["OriginModule"].toString().toStdString().c_str());
     }
 }
 

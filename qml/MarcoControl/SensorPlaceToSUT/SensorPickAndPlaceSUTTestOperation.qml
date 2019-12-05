@@ -71,6 +71,28 @@ Column{
             }
         }
 
+        Button {
+            text: qsTr("Place NG Sensor")
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol1.text-1,t_nrow1.text-1,0)
+                sensorLoaderModule.performHandling(SensorLoaderModule.NG_SENSOR_TRAY_POS
+                                                   +SensorLoaderModule.TRAY_EMPTY_PR
+                                                   +SensorLoaderModule.TO_PLACE_NG_POS
+                                                   +SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY)
+            }
+        }
+
+        Button {
+            text: qsTr("Place Product")
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol1.text-1,t_nrow1.text-1,0)
+                sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS
+                                                   +SensorLoaderModule.TRAY_EMPTY_PR
+                                                   +SensorLoaderModule.TO_PLACE_PRODUCT_POS1
+                                                   +SensorLoaderModule.PLACE_PRODUCT_TO_TRAY1)
+            }
+        }
+
         Label {
             text: qsTr("料盘2")
         }
@@ -115,7 +137,7 @@ Column{
         Button {
             text: qsTr("Pick")
             onClicked: {
-                material_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,0)
+                material_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
                 logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_POS
                                              +SensorLoaderModule.TRAY_SENSOR_PR
                                              +SensorLoaderModule.TO_PICK_SENSOR_POS2
@@ -126,11 +148,32 @@ Column{
         Button {
             text: qsTr("Place")
             onClicked: {
-                material_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,0)
+                material_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
                 sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS
                                                    +SensorLoaderModule.TRAY_EMPTY_PR
                                                    +SensorLoaderModule.TO_PICK_SENSOR_POS2
                                                    +SensorLoaderModule.PLACE_SENSOR_BACK_TO_TRAY2)
+            }
+        }
+        Button {
+            text: qsTr("Place NG Sensor")
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol1.text-1,t_nrow1.text-1,1)
+                sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS
+                                                   +SensorLoaderModule.TRAY_EMPTY_PR
+                                                   +SensorLoaderModule.TO_PICK_SENSOR_POS2
+                                                   +SensorLoaderModule.PLACE_NG_SENSOR_TO_TRAY)
+            }
+        }
+
+        Button {
+            text: qsTr("Place Product")
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol1.text-1,t_nrow1.text-1,1)
+                sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS
+                                                   +SensorLoaderModule.TRAY_EMPTY_PR
+                                                   +SensorLoaderModule.TO_PLACE_PRODUCT_POS2
+                                                   +SensorLoaderModule.PLACE_PRODUCT_TO_TRAY2)
             }
         }
     }

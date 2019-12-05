@@ -142,6 +142,75 @@ ColumnLayout {
         }
     }
 
+    RowLayout{
+        Label{
+            text: qsTr("料盘1位置")
+        }
+
+        Label{
+            text: qsTr("目标行")
+        }
+        TextField{
+            id:t_nrow
+            text: "1"
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: IntValidator{
+                bottom: 1
+            }
+        }
+        Label{
+            text: qsTr("目标列")
+        }
+        TextField{
+            id:t_ncol
+            text: "1"
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: IntValidator{
+                bottom: 1
+            }
+        }
+        Button{
+            text:qsTr("下次取料位置")
+            width: 40
+            height: 40
+            onClicked: {
+                material_tray.setTrayFirst(t_ncol.text-1,t_nrow.text-1,0)
+            }
+        }
+        Button{
+            text:title_move_to
+            width: 40
+            height: 40
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS)
+            }
+        }
+        Button{
+            text:qsTr("Carrier 1 Pick Sensor")
+            width: 40
+            height: 40
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS
+                                             +SensorLoaderModule.TRAY_SENSOR_PR
+                                             +SensorLoaderModule.TO_PICK_SENSOR_POS1
+                                             +SensorLoaderModule.PICK_SENSOR_FROM_TRAY1)
+            }
+        }
+        Button{
+            text:qsTr("Carrier 1 Place Sensor")
+            width: 40
+            height: 40
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
+                sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS
+                                                   +SensorLoaderModule.TRAY_EMPTY_PR
+                                                   +SensorLoaderModule.TO_PICK_SENSOR_POS1
+                                                   +SensorLoaderModule.PLACE_SENSOR_BACK_TO_TRAY1)
+            }
+        }
+    }
     RowLayout {
         Label{
             text: qsTr("Carrier1 Pick And Place高度")
@@ -162,6 +231,7 @@ ColumnLayout {
             width:40
             height:40
             onClicked: {
+                material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
                 logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS
                                              +SensorLoaderModule.TRAY_SENSOR_PR)
 
@@ -172,9 +242,10 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
+                material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
                 logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS
                                              +SensorLoaderModule.TRAY_SENSOR_PR
-                                             +SensorLoaderModule.TO_PR_OFFSET)
+                                             +SensorLoaderModule.TO_PICK_SENSOR_POS1)
 
             }
         }
@@ -184,6 +255,76 @@ ColumnLayout {
             height: 40
             onClicked: {
                 logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.MEASURE_SENSOR_IN_TRAY1)
+            }
+        }
+    }
+
+    RowLayout{
+        Label{
+            text: qsTr("料盘2位置")
+        }
+
+        Label{
+            text: qsTr("目标行")
+        }
+        TextField{
+            id:t_nrow2
+            text: "1"
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: IntValidator{
+                bottom: 1
+            }
+        }
+        Label{
+            text: qsTr("目标列")
+        }
+        TextField{
+            id:t_ncol2
+            text: "1"
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: IntValidator{
+                bottom: 1
+            }
+        }
+        Button{
+            text:qsTr("下次取料位置")
+            width: 40
+            height: 40
+            onClicked: {
+                material_tray.setTrayFirst(t_ncol2.text-1,t_nrow2.text-1,1)
+            }
+        }
+        Button{
+            text:title_move_to
+            width: 40
+            height: 40
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_POS)
+            }
+        }
+        Button{
+            text:qsTr("Carrier 2 Pick Sensor")
+            width: 40
+            height: 40
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_POS
+                                             +SensorLoaderModule.TRAY_SENSOR_PR
+                                             +SensorLoaderModule.TO_PICK_SENSOR_POS2
+                                             +SensorLoaderModule.PICK_SENSOR_FROM_TRAY2)
+            }
+        }
+        Button{
+            text:qsTr("Carrier 2 Place Sensor")
+            width: 40
+            height: 40
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_2_POS
+                                                   +SensorLoaderModule.TRAY_EMPTY_PR
+                                                   +SensorLoaderModule.TO_PICK_SENSOR_POS2
+                                                   +SensorLoaderModule.PLACE_SENSOR_BACK_TO_TRAY2)
             }
         }
     }
@@ -208,8 +349,8 @@ ColumnLayout {
             width:40
             height:40
             onClicked: {
-                material_tray.setTrayCurrent(0,0,0)
-                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS
+                material_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_POS
                                              +SensorLoaderModule.TRAY_SENSOR_PR
                                              +SensorLoaderModule.TO_PR_OFFSET)
 
@@ -220,9 +361,10 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_POS
-                                             + SensorLoaderModule.TRAY_SENSOR_PR
-                                             + SensorLoaderModule.SENSOR_TRAY_1_POS)
+                material_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_POS
+                                             +SensorLoaderModule.TRAY_SENSOR_PR
+                                             +SensorLoaderModule.TO_PICK_SENSOR_POS2)
 
             }
         }

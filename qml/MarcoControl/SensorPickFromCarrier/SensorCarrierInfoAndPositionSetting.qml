@@ -96,6 +96,13 @@ Column {
             }
         }
         Button {
+            text: title_move_to
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_START_POS)
+            }
+        }
+
+        Button {
             text: title_read_encoder
             onClicked: {
                 var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
@@ -134,6 +141,13 @@ Column {
             }
         }
         Button {
+            text: title_move_to
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_1_END_POS)
+            }
+        }
+
+        Button {
             text: title_read_encoder
             onClicked: {
                 var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
@@ -171,6 +185,12 @@ Column {
             }
             onEditingFinished: {
                 tray_start_point2.setY(text)
+            }
+        }
+        Button {
+            text: title_move_to
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_START_POS)
             }
         }
         Button {

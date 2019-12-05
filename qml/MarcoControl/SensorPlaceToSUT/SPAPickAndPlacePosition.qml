@@ -67,6 +67,90 @@ ColumnLayout{
             }
         }
     }
+    RowLayout{
+        Label{
+            text:qsTr("sensor高度")
+        }
+        TextField{
+            text:sensorLoaderParameter.placeSensorZ
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPlaceSensorZ(text)
+            }
+        }
+        Button{
+            text:qsTr("测高")
+            width: 40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_SENSOR_IN_SUT)
+            }
+        }
+    }
+    RowLayout{
+        Label{
+            text:qsTr("product高度")
+        }
+        TextField{
+            text:sensorLoaderParameter.pickProductZ
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPickProductZ(text)
+            }
+        }
+        Button{
+            text:qsTr("测高")
+            width: 40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_PRODUCT_IN_SUT)
+            }
+        }
+        CheckBox{
+            text: qsTr("使能视觉")
+            checked: sensorLoaderParameter.enableProductPr
+            onCheckedChanged:
+                sensorLoaderParameter.setEnableProductPr(checked)
+        }
+    }
+    RowLayout{
+        Label{
+            text:qsTr("NG sensor高度")
+        }
+        TextField{
+            text:sensorLoaderParameter.pickNgSensorZ
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPickNgSensorZ(text)
+            }
+        }
+        Button{
+            text:qsTr("测高")
+            width: 40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT)
+            }
+        }
+        CheckBox{
+            text: qsTr("使能视觉")
+            checked: sensorLoaderParameter.enableNgSensorPr
+            onCheckedChanged:
+                sensorLoaderParameter.setEnableNgSensorPr(checked)
+        }
+    }
     RowLayout {
         Label { text: qsTr("SPA Pick & Place SUT1 Position") }
         Label {
@@ -113,11 +197,6 @@ ColumnLayout{
             }
         }
         Button {
-            text: qsTr("测高")
-            onClicked: {
-            }
-        }
-        Button {
             text: qsTr("Place Sensor视觉")
             onClicked: {
                 logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
@@ -135,7 +214,7 @@ ColumnLayout{
             }
         }
         Button {
-            text: qsTr("NG ensor视觉")
+            text: qsTr("NG sensor视觉")
             onClicked: {
                 logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
                                              +SensorLoaderModule.SUT_SENSOR_PR
@@ -143,7 +222,7 @@ ColumnLayout{
             }
         }
         Button {
-            text: qsTr("移动到取放位置")
+            text: qsTr("移动到取放NG sensor位置")
             onClicked: {
                 logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
                                              +SensorLoaderModule.SUT_SENSOR_PR
@@ -151,12 +230,37 @@ ColumnLayout{
             }
         }
         Button {
-            text: qsTr("取NG ensor")
+            text: qsTr("取NG sensor")
             onClicked: {
                 logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
                                              +SensorLoaderModule.SUT_SENSOR_PR
                                              +SensorLoaderModule.TO_PICK_NG_SENSOR_POS1
                                              +SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT1)
+            }
+        }
+        Button {
+            text: qsTr("成品视觉")
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
+                                             +SensorLoaderModule.SUT_PRODUCT_PR
+                                             +SensorLoaderModule.TO_PICK_PRODUCT_POS1)
+            }
+        }
+        Button {
+            text: qsTr("移动到取放成品位置")
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
+                                             +SensorLoaderModule.SUT_PRODUCT_PR
+                                             +SensorLoaderModule.TO_PICK_PRODUCT_POS1)
+            }
+        }
+        Button {
+            text: qsTr("取成品")
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1
+                                             +SensorLoaderModule.SUT_PRODUCT_PR
+                                             +SensorLoaderModule.TO_PICK_PRODUCT_POS1
+                                             +SensorLoaderModule.PICK_PRODUCT_FROM_SUT1)
             }
         }
     }
@@ -202,22 +306,74 @@ ColumnLayout{
         Button {
             text: title_move_to
             onClicked: {
-                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2)
             }
         }
         Button {
-            text: qsTr("sensor视觉")
+            text: qsTr("Place Sensor视觉")
             onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.TO_PLACE_SENSOR_POS2)
+            }
+        }
+        Button{
+            text:qsTr("放sensor")
+            width: 40
+            height: 40
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.TO_PLACE_SENSOR_POS2
+                                             +SensorLoaderModule.PLACE_SENSOR_TO_SUT2)
             }
         }
         Button {
-            text: qsTr("移动到取放位置")
+            text: qsTr("NG sensor视觉")
             onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.SUT_SENSOR_PR
+                                             +SensorLoaderModule.TO_PR_OFFSET)
             }
         }
         Button {
-            text: qsTr("测高")
+            text: qsTr("移动到取放NG sensor位置")
             onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.SUT_SENSOR_PR
+                                             +SensorLoaderModule.TO_PICK_NG_SENSOR_POS2)
+            }
+        }
+        Button {
+            text: qsTr("取NG sensor")
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.SUT_SENSOR_PR
+                                             +SensorLoaderModule.TO_PICK_NG_SENSOR_POS2
+                                             +SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT2)
+            }
+        }
+        Button {
+            text: qsTr("成品视觉")
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.SUT_PRODUCT_PR
+                                             +SensorLoaderModule.TO_PICK_PRODUCT_POS2)
+            }
+        }
+        Button {
+            text: qsTr("移动到取放成品位置")
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.SUT_PRODUCT_PR
+                                             +SensorLoaderModule.TO_PICK_PRODUCT_POS2)
+            }
+        }
+        Button {
+            text: qsTr("取成品")
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2
+                                             +SensorLoaderModule.SUT_PRODUCT_PR
+                                             +SensorLoaderModule.TO_PICK_PRODUCT_POS2
+                                             +SensorLoaderModule.PICK_PRODUCT_FROM_SUT2)
             }
         }
     }

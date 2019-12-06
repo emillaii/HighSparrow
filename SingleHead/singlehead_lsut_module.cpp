@@ -331,7 +331,7 @@ bool SingleheadLSutModule::moveToDownlookSaveImage(QString filename)
 {
     vision_downlook_location->OpenLight();
     bool result = moveToPRPosition(true);
-    QThread::msleep(200);
+    QThread::msleep(300);
     if(result)
     {
         this->vision_downlook_location->saveImage(filename);

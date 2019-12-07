@@ -521,17 +521,20 @@ bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ(double z, bool is_
 bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ2(double z,  bool is_open, int time_out)
 {
     qInfo("picker2SearchSutZ z %f is_open %d time_out %d sutPlaceSensorAngle: %f",z,is_open,time_out, parameters.sutPlaceSensorAngle());
-    bool result = pick_arm->motor_vcm2->MoveToPosSync(z-parameters.escapeHeight());
+    bool result = pick_arm->motor_y->StepMoveSync(parameters.escapeY());
+    result &= pick_arm->motor_vcm2->MoveToPosSync(z-parameters.escapeHeight());
 
     if(result)
     {
         result =pick_arm->motor_th2->MoveToPosSync(parameters.sutPlaceSensorAngle());
-        result = pick_arm->motor_vcmx->StepMoveSync(parameters.escapeX());
+        //        result = pick_arm->motor_vcmx->StepMoveSync(parameters.escapeX());
+        result &= pick_arm->motor_y->StepMoveSync(-parameters.escapeY());
         result &= pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open,false,time_out);
         sut_vacuum->Set(true, false);   //Sensor放到SUT表面不平整，真空吸经常检测不到
         result &= pick_arm->ZSerchReturn(1,time_out);
-        result &= pick_arm->motor_vcm2->MoveToPosSync(0);
+        //        result &= pick_arm->motor_vcm2->MoveToPosSync(0);
     }
+    result &= pick_arm->motor_vcm2->MoveToPosSync(0);
     result &= pick_arm ->motor_th2->MoveToPos(0);
     return result;
 }
@@ -790,7 +793,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 if(!is_run)break;
             }
 
-            if (states.hasPickedLens() && lsutState->hasOkLens() && picker1ShouldUnloadDutOnLSutFirst())
+            if (states.hasPickedLens() && lsutState->hasOkLens() && picker1ShouldUnloadDutOnLSutFirst()) //place lens to tray
             {
                 moveToLensTrayPos(states.currentLensTray());
                 performLensVacancyPR();
@@ -1007,15 +1010,15 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     pickSensorPoses.clear();
                     continue;
                 }
-                else {  //最后一颗产品还没有放回原SensorTray盘
-                    QThread::msleep(50);
-                    waitLastProductPlaceToTrayTimes++;
-                    if(waitLastProductPlaceToTrayTimes > 20)
-                    {
-                        qInfo("Waiting last product being placed to sensor tray!");
-                        waitLastProductPlaceToTrayTimes = 0;
-                    }
-                }
+//                else {  //最后一颗产品还没有放回原SensorTray盘
+//                    QThread::msleep(50);
+//                    waitLastProductPlaceToTrayTimes++;
+//                    if(waitLastProductPlaceToTrayTimes > 20)
+//                    {
+//                        qInfo("Waiting last product being placed to sensor tray!");
+//                        waitLastProductPlaceToTrayTimes = 0;
+//                    }
+//                }
             }
             if(!is_run)break;
         }

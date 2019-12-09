@@ -1028,10 +1028,7 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous,bool check_softland
     bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
     if(result)
     {
-        qInfo("moveToAA1UnPickLens Start ZSerchByForce");
-//        result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,1,unload_vacuum);
         result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_picklens_position.Z(),parameters.lensHeight());
-        qInfo("moveToAA1UnPickLens Start ZSerchByForce");
         openAA1Griper();
         result &= openUnloadVacuum();
         Sleep(parameters.gripperDelay());

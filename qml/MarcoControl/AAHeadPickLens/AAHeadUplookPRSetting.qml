@@ -171,14 +171,27 @@ ColumnLayout{
         Button{
             text:qsTr("AA1 Uplook PR Draw")
             onClicked: {
+                 highSprrow.callAVSPRSettingProcess("GenericNCCavproj.avexe", "aa1_upLook_location");
             }
         }
         TextField{
             color: "#57f529"
-            text: tcp_vision_location_aa1_uplook.prFileName
+            text: tcp_vision_location_aa1_uplook.locationName
             font.pixelSize: 14
-            width: 600
-            Layout.preferredWidth: 600
+            width: 200
+            Layout.preferredWidth: 200
+        }
+        RoundButton{
+            transformOrigin: Item.Center
+            display: Button.TextBesideIcon
+            icon.width: 30
+            icon.height: 30
+            icon.source: "../../../icons/refresh.png"
+            icon.color: "cyan"
+            onClicked: {
+                aa1_upLook_location_image.source = ""
+                aa1_upLook_location_image.source = "file:///" + dirPath + "//config//prConfig//aa1_upLook_location_resultImage.jpg"
+            }
         }
     }
     RowLayout {
@@ -195,6 +208,14 @@ ColumnLayout{
             onClicked:{
                 logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "aa1_upLook_location")
             }
+        }
+        Image{
+            id: aa1_upLook_location_image
+            cache: false
+            sourceSize.width: 250
+            sourceSize.height: 250
+            fillMode: Image.PreserveAspectFit
+            source: "file:///" + dirPath + "//config//prConfig//aa1_upLook_location_resultImage.jpg"
         }
     }
 }

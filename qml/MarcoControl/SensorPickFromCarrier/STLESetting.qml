@@ -8,85 +8,105 @@ import SomeLib 1.1
 Column {
    RowLayout {
        Label { text: qsTr("STLE 起始位置") }
-       TextField {
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator {
+       TextField{
+           text:sensor_entrance_clip_parameter.startPosition
+           horizontalAlignment:TextInput.AlignHCenter
+           validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
+               sensor_entrance_clip_parameter.setStartPosition(text)
            }
        }
        Button{
            text:title_read_encoder
            onClicked: {
+               var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTIEName)
+               sensor_entrance_clip_parameter.setStartPosition(x)
            }
        }
        Button{
            text:title_move_to
            onClicked: {
+               logicManager.sensorTrayLoaderModuleSTIEMovetoColumnIndex(0)
            }
        }
        Label { text: qsTr("CTLE 起始位置") }
-       TextField {
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator {
+       TextField{
+           text:sensor_exit_clip_parameter.startPosition
+           horizontalAlignment:TextInput.AlignHCenter
+           validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
-           }
-       }
-       Button{
-           text:title_read_encoder
-           onClicked: {
+               sensor_exit_clip_parameter.setStartPosition(text)
            }
        }
        Button{
            text:title_move_to
            onClicked: {
+               logicManager.sensorTrayLoaderModuleSTOEMovetoColumnIndex(0)
+           }
+       }
+       Button{
+           text:title_read_encoder
+           onClicked: {
+               var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTOEName)
+               sensor_exit_clip_parameter.setStartPosition(x)
            }
        }
    }
    RowLayout {
        Label { text: qsTr("STLE 结束位置") }
-       TextField {
+       TextField{
+           text:sensor_entrance_clip_parameter.endPosition
            horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator {
+           validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
-           }
-       }
-       Button{
-           text:title_read_encoder
-           onClicked: {
+               sensor_entrance_clip_parameter.setEndPosition(text)
            }
        }
        Button{
            text:title_move_to
            onClicked: {
+               logicManager.sensorTrayLoaderModuleSTIEMovetoColumnIndex(sensor_clip_standard_parameter.count-1);
+           }
+       }
+       Button{
+           text:title_read_encoder
+           onClicked: {
+               var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTIEName)
+               sensor_entrance_clip_parameter.setEndPosition(x)
            }
        }
        Label { text: qsTr("CTLE 结束位置") }
-       TextField {
+       TextField{
+           text:sensor_exit_clip_parameter.endPosition
            horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator {
+           validator: DoubleValidator{
                decimals: 6
                notation: DoubleValidator.StandardNotation
            }
            onEditingFinished: {
-           }
-       }
-       Button{
-           text:title_read_encoder
-           onClicked: {
+               sensor_exit_clip_parameter.setEndPosition(text)
            }
        }
        Button{
            text:title_move_to
            onClicked: {
+               logicManager.sensorTrayLoaderModuleSTOEMovetoColumnIndex(sensor_clip_standard_parameter.count-1)
+           }
+       }
+       Button{
+           text:title_read_encoder
+           onClicked: {
+               var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorSTOEName)
+               sensor_exit_clip_parameter.setEndPosition(x)
            }
        }
    }

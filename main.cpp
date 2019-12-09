@@ -351,8 +351,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("tcp_vision_location_lut_load", &highSprrow.baseModuleManager->tcp_vision_location_lut_load.parameters);
     engine.rootContext()->setContextProperty("tcp_vision_location_lut_uplook_picker", &highSprrow.baseModuleManager->tcp_vision_location_lut_uplook_picker.parameters);
 
-
-
     //Params
     engine.rootContext()->setContextProperty("lensPickArmParams",&highSprrow.baseModuleManager->lens_pick_arm.parameters);
 
@@ -382,7 +380,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("left_lens_uph",&highSprrow.baseModuleManager->lut_module.left_lens_uph);
     engine.rootContext()->setContextProperty("right_lens_uph",&highSprrow.baseModuleManager->lut_module.right_lens_uph);
 
-//    engine.rootContext()->setContextProperty("systerm_param",&highSprrow.baseModuleManager->paramters);
 
     QStringList data = highSprrow.baseModuleManager->motors.keys();
     engine.rootContext()->setContextProperty("motorsNames", data);
@@ -455,10 +452,6 @@ int main(int argc, char *argv[])
 
     CheckProcessModel checkProcessModel;
     engine.rootContext()->setContextProperty("checkProcessModel",&checkProcessModel);
-//    QStringList vacuumNames = highSprrow.baseModuleManager->vacuums.keys();
-//    QStringList cylinderNames = highSprrow.baseModuleManager->cylinder.keys();
-//    engine.rootContext()->setContextProperty("vacuumNames",vacuumNames);
-//    engine.rootContext()->setContextProperty("cylinderNames",cylinderNames);
 
     //QImage Provider
     engine.addImageProvider(QLatin1String("uplookCameraImage"), highSprrow.baseModuleManager->pylonUplookCamera);
@@ -487,7 +480,6 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
-
 
     // test code just to demonstrate how to use these models
     TrayMapModel* model = TrayMapModel::instance(TrayMapModel::LensTray);

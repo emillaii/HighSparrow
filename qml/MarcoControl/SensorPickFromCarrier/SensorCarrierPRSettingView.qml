@@ -90,29 +90,49 @@ ColumnLayout{
         Button{
             text:qsTr("SPA Sensor PR Draw")
             onClicked: {
-
+                 highSprrow.callAVSPRSettingProcess("GenericNCCavproj.avexe", "spa_sensor_location");
+            }
+        }
+        RoundButton{
+            transformOrigin: Item.Center
+            display: Button.TextBesideIcon
+            icon.width: 30
+            icon.height: 30
+            icon.source: "../../../icons/refresh.png"
+            icon.color: "cyan"
+            onClicked: {
+                spa_sensor_location_image.source = ""
+                spa_sensor_location_image.source = "file:///" + dirPath + "//config//prConfig//spa_sensor_location_resultImage.jpg"
             }
         }
         TextField{
             color: "#57f529"
-            text: spa_sensor_location.prFileName
+            text: spa_sensor_location.locationName
             font.pixelSize: 14
-            width: 600
-            Layout.preferredWidth: 600
+            width: 200
+            Layout.preferredWidth: 200
         }
     }
     RowLayout {
         Button{
             text:qsTr("执行PR")
             onClicked:{
-                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, spa_sensor_location)
+                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, "spa_sensor_location")
             }
         }
         Button{
             text:qsTr("执行PR偏移")
             onClicked:{
-                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, spa_sensor_location)
+                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "spa_sensor_location")
             }
+        }
+        Image{
+            id: spa_sensor_location_image
+            cache: false
+            sourceSize.width: 250
+            sourceSize.height: 250
+            fillMode: Image.PreserveAspectFit
+            source: "file:///" + dirPath + "//config//prConfig//spa_sensor_location_resultImage.jpg"
         }
     }
 
@@ -126,6 +146,8 @@ ColumnLayout{
             icon.source: "../../../icons/unlock.png"
             icon.color: "red"
             onClicked: {
+                spa_vacancy_location_image.source = ""
+                spa_vacancy_location_image.source = "file:///" + dirPath + "//config//prConfig//spa_vacancy_location_resultImage.jpg"
                 spa_vacancy_location_slider.enabled = !spa_vacancy_location_slider.enabled
                 if (spa_vacancy_location_slider.enabled) {
                     spa_vacancy_location_lock.icon.color = "lightGreen"
@@ -152,17 +174,30 @@ ColumnLayout{
             text: spa_vacancy_location_slider.value
         }
         Button{
-            text:qsTr("SPA Sensor PR Draw")
+            text:qsTr("SPA Vacancy PR Draw")
             onClicked: {
-
+                 highSprrow.callAVSPRSettingProcess("GenericNCCavproj.avexe", "spa_vacancy_location");
             }
         }
+        RoundButton{
+            transformOrigin: Item.Center
+            display: Button.TextBesideIcon
+            icon.width: 30
+            icon.height: 30
+            icon.source: "../../../icons/refresh.png"
+            icon.color: "cyan"
+            onClicked: {
+                spa_vacancy_location_image.source = ""
+                spa_vacancy_location_image.source = "file:///" + dirPath + "//config//prConfig//spa_vacancy_location_resultImage.jpg"
+            }
+        }
+
         TextField{
             color: "#57f529"
-            text: spa_vacancy_location.prFileName
+            text: spa_vacancy_location.locationName
             font.pixelSize: 14
-            width: 600
-            Layout.preferredWidth: 600
+            width: 200
+            Layout.preferredWidth: 200
         }
     }
     RowLayout {
@@ -177,6 +212,14 @@ ColumnLayout{
             onClicked:{
                 logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "spa_vacancy_location")
             }
+        }
+        Image{
+            id: spa_vacancy_location_image
+            cache: false
+            sourceSize.width: 250
+            sourceSize.height: 250
+            fillMode: Image.PreserveAspectFit
+            source: "file:///" + dirPath + "//config//prConfig//spa_vacancy_location_resultImage.jpg"
         }
     }
 

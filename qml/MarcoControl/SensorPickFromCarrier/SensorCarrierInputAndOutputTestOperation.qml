@@ -9,20 +9,28 @@ Column{
         Label {
             text: qsTr("进盘弹夹层数")
         }
-        TextField {
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator {
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
+        TextField{
+            id:col_in
+            text:sensor_entrance_clip_parameter.currentIndex+1
+            validator: IntValidator{
+                bottom: 1
             }
+            horizontalAlignment: TextInput.AlignHCenter
             onEditingFinished: {
+                var idx = text-1
+                sensor_entrance_clip_parameter.setCurrentIndex(idx)
             }
         }
-        Button {
-            text: title_move_to
-            width: 40
-            height: 40
+        Button{
+            text:title_move_to
             onClicked: {
+                logicManager.sensorTrayLoaderModuleSTIEMovetoColumnIndex(col_in.text-1)
+            }
+        }
+        Button{
+            text:qsTr("弹出")
+            onClicked: {
+                logicManager.sensorTrayLoaderModuleMovetoPushoutPosition()
             }
         }
         Button {
@@ -36,24 +44,28 @@ Column{
         Label {
             text: qsTr("出盘弹夹层数")
         }
-        TextField {
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator {
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
+        TextField{
+            id:col_out
+            text:sensor_exit_clip_parameter.currentIndex+1
+            validator: IntValidator{
+                bottom: 1
             }
+            horizontalAlignment: TextInput.AlignHCenter
             onEditingFinished: {
+                var idx = text-1
+                sensor_exit_clip_parameter.setCurrentIndex(idx)
             }
         }
-        Button {
-            text: title_move_to
-            width: 40
-            height: 40
+        Button{
+            text:qsTr("移动")
             onClicked: {
+                logicManager.sensorTrayLoaderModuleSTOEMovetoColumnIndex(col_out.text-1)
             }
         }
         Button {
             text: qsTr("推盘")
+            onClicked:  {
+            }
         }
     }
 

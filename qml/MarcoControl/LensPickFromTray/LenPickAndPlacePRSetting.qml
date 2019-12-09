@@ -46,12 +46,25 @@ GroupBox{
            Button{
                text:qsTr("LPA Lens PR Draw")
                onClicked: {
-
+                    highSprrow.callAVSPRSettingProcess("GenericNCCavproj.avexe", "lpa_lens_location");
+               }
+           }
+           RoundButton{
+               transformOrigin: Item.Center
+               display: Button.TextBesideIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "../../../icons/refresh.png"
+               icon.color: "cyan"
+               onClicked: {
+                   lpa_lens_location_image.source = ""
+                   lpa_lens_location_image.source = "file:///" + dirPath + "//config//prConfig//lpa_lens_location_resultImage.jpg"
                }
            }
            TextField{
                color: "#57f529"
-               text: tcp_vision_location_lpa_lens.prFileName
+               text: tcp_vision_location_lpa_lens.locationName
+               enabled: false
                font.pixelSize: 14
                width: 600
                Layout.preferredWidth: 600
@@ -75,6 +88,14 @@ GroupBox{
                onClicked:{
                    logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "lpa_lens_location")
                }
+           }
+           Image{
+               id: lpa_lens_location_image
+               cache: false
+               sourceSize.width: 250
+               sourceSize.height: 250
+               fillMode: Image.PreserveAspectFit
+               source: "file:///" + dirPath + "//config//prConfig//lpa_lens_location_resultImage.jpg"
            }
        }
        RowLayout {
@@ -115,14 +136,27 @@ GroupBox{
            Button{
                text:qsTr("LPA Lens Tray PR Draw")
                onClicked: {
-
+                    highSprrow.callAVSPRSettingProcess("GenericNCCavproj.avexe", "lpa_vacancy_location");
+               }
+           }
+           RoundButton{
+               transformOrigin: Item.Center
+               display: Button.TextBesideIcon
+               icon.width: 30
+               icon.height: 30
+               icon.source: "../../../icons/refresh.png"
+               icon.color: "cyan"
+               onClicked: {
+                   lpa_vacancy_location_image.source = ""
+                   lpa_vacancy_location_image.source = "file:///" + dirPath + "//config//prConfig//lpa_vacancy_location_resultImage.jpg"
                }
            }
            TextField{
                color: "#57f529"
-               text: tcp_vision_location_lpa_vacancy.prFileName
+               text: tcp_vision_location_lpa_vacancy.locationName
+               enabled: false
                font.pixelSize: 14
-               width: 600
+               width: 400
                Layout.preferredWidth: 600
            }
        }
@@ -138,6 +172,14 @@ GroupBox{
                onClicked:{
                    logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "lpa_vacancy_location")
                }
+           }
+           Image{
+               id: lpa_vacancy_location_image
+               cache: false
+               sourceSize.width: 250
+               sourceSize.height: 250
+               fillMode: Image.PreserveAspectFit
+               source: "file:///" + dirPath + "//config//prConfig//lpa_vacancy_location_resultImage.jpg"
            }
        }
        RowLayout {

@@ -130,6 +130,20 @@ void HighSprrow::callQProcess(QString arg)
     process.waitForStarted();
 }
 
+void HighSprrow::callAVSPRSettingProcess(QString exe_name, QString pr_name)
+{
+    QString filename = ".//config//prConfig//prconfig.txt";
+    QFile file;
+    file.setFileName(filename);
+    if(!file.open(QFile::WriteOnly)){
+        qWarning("save parameters to %s failed, Couldn't open save file.",filename.toStdString().data());
+        return;
+    }
+    file.write(pr_name.toStdString().c_str());
+    file.close();
+    callQProcess(exe_name);
+}
+
 void HighSprrow::homeAllMotors()
 {
     qInfo("Home All Motors");

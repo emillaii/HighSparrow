@@ -30,5 +30,6 @@
         <file>icons/information.png</file>
         <file>icons/question.png</file>
         <file>icons/warning.png</file>
+        <file>icons/refresh.png</file>
     </qresource>
 </RCC>

@@ -106,6 +106,8 @@ public:
     Position3D tool_uplook_positon;
     Position down_look_fly_end_position;
     PositionT  up_downlook_offset;
+    Position sut1PickOffset;
+    Position sut2PickOffset;
     MaterialCarrier* carrier;
     VisionLocation* vision_downlook_location;
     XtGeneralOutput* camera_trig;

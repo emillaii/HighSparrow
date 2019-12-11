@@ -183,6 +183,7 @@ void AACoreNew::run(bool has_material)
         runningUnit = this->unitlog->createUnit();
         //Reset some previous result
         oc_fov = -1;
+        hasDispense = false;
         runFlowchartTest();
         emit postDataToELK(this->runningUnit);
         QThread::msleep(100);
@@ -212,8 +213,16 @@ void AACoreNew::LogicNg(int &ng_time)
     {
         has_ng_product = true;
         has_product = false;
+
+        has_lens = false;
+        has_ng_lens = false;
+        has_sensor = false;
+        has_ng_sensor = false;
         return;
     }
+
+    has_product = false;
+    has_ng_product = false;
     if(parameters.firstRejectSensor())
     {
         if(ng_time >= parameters.rejectTimes())
@@ -256,6 +265,18 @@ void AACoreNew::NgLens()
         current_aa_ng_time = 0;
         current_oc_ng_time = 0;
         current_mtf_ng_time = 0;
+    }
+}
+
+void AACoreNew::NgSensorOrProduct()
+{
+    if(hasDispense)
+    {
+        NgProduct();
+    }
+    else
+    {
+        NgSensor();
     }
 }
 
@@ -2036,10 +2057,20 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 
     if(parameters.enableZpeakCoefficient()&&all_coefficient>0)
     {
-        double z_peak = (parameters.zpeakccCoefficient()*map["zPeak_cc"].toDouble()+
-                parameters.zpeak03Coefficient()*map["zPeak_03"].toDouble()+
-                parameters.zpeak05Coefficient()*map["zPeak_05"].toDouble()+
-                parameters.zpeak08Coefficient()*map["zPeak_08"].toDouble())/all_coefficient;
+        double z1 = 0;
+        double z2 = 0;
+        double z3 = 0;
+        double z4 = 0;
+        if (parameters.zpeakccCoefficient() != 0) {z1 = parameters.zpeakccCoefficient()*map["zPeak_cc"].toDouble();}
+        if (parameters.zpeak03Coefficient() != 0) {z2 = parameters.zpeak03Coefficient()*map["zPeak_03"].toDouble();}
+        if (parameters.zpeak05Coefficient() != 0) {z3 = parameters.zpeak05Coefficient()*map["zPeak_05"].toDouble();}
+        if (parameters.zpeak08Coefficient() != 0) {z4 = parameters.zpeak08Coefficient()*map["zPeak_08"].toDouble();}
+        double z_peak = z1 + z2 + z3 + z4;
+        qInfo("zpeakccCoefficient: %f, zPeak_cc: %f", parameters.zpeakccCoefficient(), map["zPeak_cc"].toDouble());
+        qInfo("zpeak03Coefficient: %f, zPeak_03: %f", parameters.zpeak03Coefficient(), map["zPeak_03"].toDouble());
+        qInfo("zpeak05Coefficient: %f, zPeak_05: %f", parameters.zpeak05Coefficient(), map["zPeak_05"].toDouble());
+        qInfo("zpeak08Coefficient: %f, zPeak_08: %f", parameters.zpeak08Coefficient(), map["zPeak_08"].toDouble());
+        qInfo("z_peak calculate result is %f", z_peak);
         result.insert("zPeak", z_peak); map.insert("zPeak", z_peak);
     }
     else {
@@ -3108,7 +3139,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         emit callQmlRefeshImg(1);
         if( vector.size()<1 || ccIndex > 9 )
         {
-            NgSensor();
+            LogicNg(current_aa_ng_time);
             map.insert("result", "OC Cannot find enough pattern");
             map.insert("timeElapsed", timer.elapsed());
             emit pushDataToUnit(this->runningUnit, "OC", map);
@@ -3123,7 +3154,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage))
         {
-            NgSensor();
+            LogicNg(current_aa_ng_time);
             map.insert("result", "OC Cannot calculate OC");
             map.insert("timeElapsed", timer.elapsed());
             emit pushDataToUnit(this->runningUnit, "OC", map);
@@ -3147,7 +3178,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         qInfo("xy step: %f %f ", stepX, stepY);
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
-            NgSensor();
+            LogicNg(current_aa_ng_time);
             qInfo("OC result too big (x:%f,y:%f) pixel：(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
             map.insert("result", "OC result too big");
             map.insert("timeElapsed", timer.elapsed());
@@ -3220,8 +3251,8 @@ ErrorCodeStruct AACoreNew::performVCMInit(QJsonValue params)
 //           return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, respond};
 //       }
 //    }
-//    if(delay>0)
-//        QThread::msleep(delay);
+    if(delay>0)
+        QThread::msleep(delay);
     map.insert("timeElapsed", timer.elapsed());
     map.insert("result", "OK");
     emit pushDataToUnit(runningUnit, "VCMInit", map);

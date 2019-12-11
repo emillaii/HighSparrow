@@ -292,6 +292,36 @@ ColumnLayout {
                     }
                 }
             }
+            RowLayout{
+                Label{
+                    text:qsTr("取料offsetX")
+                }
+                TextField{
+                    text:sut1PickOffset.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sut1PickOffset.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("取料offsetY")
+                }
+                TextField{
+                    text:sut1PickOffset.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sut1PickOffset.setY(text)
+                    }
+                }
+            }
         }
     }
     GroupBox{
@@ -490,6 +520,36 @@ ColumnLayout {
                                                      +SensorLoaderModule.SUT_SENSOR_PR
                                                      +SensorLoaderModule.TO_PICK_NG_SENSOR_POS2
                                                      +SensorLoaderModule.PICK_NG_SENSOR_FROM_SUT2)
+                    }
+                }
+            }
+            RowLayout{
+                Label{
+                    text:qsTr("取料offsetX")
+                }
+                TextField{
+                    text:sutParams.pickOffsetX
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sut2PickOffset.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("取料offsetY")
+                }
+                TextField{
+                    text:sutParams.pickOffsetY
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sutParams.setPickOffsetY(text)
                     }
                 }
             }

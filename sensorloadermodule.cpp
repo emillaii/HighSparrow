@@ -851,28 +851,29 @@ void SensorLoaderModule::run()
             states.setHasBufferTrayPrOffset(false);
         }
 
+        //检测NG盘是否已满
+        if(!findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY))
+        {
+            if(!moveCameraToStandbyPos(true))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            AppendError(u8"请更换Ng盘后继续！");
+            int alarm_id = sendAlarmMessage(u8"已换盘",GetCurrentError());
+            waitMessageReturn(is_run,alarm_id);
+            if(!is_run)break;
+            tray->resetTrayState(SensorPosition::NG_SENSOR_TRAY);
+            findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY);
+            states.setHasNgTrayPrOffset(false);
+        }
+
         //放Ng成品/NgSensor
         if(((MaterialState::IsNgProduct == states.picker2MaterialState())||(MaterialState::IsNgSensor == states.picker2MaterialState())))
         {
-            //检测NG盘是否已满
-            if(!findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY))
-            {
-                if(!moveCameraToStandbyPos(true))
-                {
-                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                    QString operation = waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
-                    if(RETRY_OPERATION == operation)
-                        continue;
-                }
-                AppendError(u8"请更换Ng盘后继续！");
-                int alarm_id = sendAlarmMessage(u8"已换盘",GetCurrentError());
-                waitMessageReturn(is_run,alarm_id);
-                if(!is_run)break;
-                tray->resetTrayState(SensorPosition::NG_SENSOR_TRAY);
-                findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY);
-                states.setHasNgTrayPrOffset(false);
-            }
             //检查是否有料
             if(!checkPicker2HasMaterialSync())
             {

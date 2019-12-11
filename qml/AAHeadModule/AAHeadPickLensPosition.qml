@@ -87,9 +87,12 @@ ColumnLayout {
                 var b = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorBName)
                 var c = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorCName)
 
-                aaHeadMushroomPosition.setA(a)
-                aaHeadMushroomPosition.setB(b)
-                aaHeadMushroomPosition.setC(c)
+//                aaHeadMushroomPosition.setA(a)
+//                aaHeadMushroomPosition.setB(b)
+//                aaHeadMushroomPosition.setC(c)
+                aaHeadPickLensPosition.setA(a)
+                aaHeadPickLensPosition.setB(b)
+                aaHeadPickLensPosition.setC(c)
             }
         }
     }

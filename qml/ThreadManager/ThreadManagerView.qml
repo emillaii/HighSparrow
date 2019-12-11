@@ -287,7 +287,7 @@ ItemDelegate {
                     }
                     Button{
                         enabled: true
-                        text:qsTr("允許進盘")
+                        text:qsTr("允许进盘")
                         onClicked:{
                             lensLoaderModule.sendMessageToModule("LensTrayLoaderModule","ReadyTrayResquest");
                         }

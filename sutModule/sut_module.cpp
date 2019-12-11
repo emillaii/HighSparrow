@@ -152,8 +152,10 @@ bool SutModule::moveToLoadPos(bool check_autochthonous)
         result &= popgpin->Set(false,false);
         qInfo("moveToLoadPos z");
         result &= carrier->motor_z->MoveToPosSync(load_position.Z(),0.1);
-        qInfo("moveToLoadPos z");
+        qInfo("WaitArrivedTargetPos y");
         result &= carrier->motor_y->WaitArrivedTargetPos(load_position.Y());
+        qInfo("delayBeforeVaccum %d", parameters.delayBeforeVaccum());
+        QThread::msleep(parameters.delayBeforeVaccum());
         result &= vacuum->Set(false,false,false);
     }
     qInfo("moveToLoadPos");
@@ -515,11 +517,18 @@ void SutModule::run()
             QThread::msleep(100);
             if(!moveToDownlookPR(offset))
             {
-                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
                 if(RETRY_OPERATION == operation)
+                {
                     continue;
+                }
+                else if(REJECT_OPERATION == operation)
+                {
+                    states.setSutHasNgSensor(true);
+                    continue;
+                }
             }
             else
             {

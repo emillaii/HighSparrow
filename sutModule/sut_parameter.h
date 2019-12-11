@@ -29,6 +29,7 @@ public:
     Q_PROPERTY(double downlookCameraExposureTime READ downlookCameraExposureTime WRITE setDownlookCameraExposureTime NOTIFY downlookCameraExposureTimeChanged)
     Q_PROPERTY(QString tcpSUTVaccumName READ tcpSUTVaccumName WRITE setTcpSUTVaccumName NOTIFY tcpSUTVaccumNameChanged)
     Q_PROPERTY(QString tcpSUTPOGOPINName READ tcpSUTPOGOPINName WRITE setTcpSUTPOGOPINName NOTIFY tcpSUTPOGOPINNameChanged)
+    Q_PROPERTY(int delayBeforeVaccum READ delayBeforeVaccum WRITE setDelayBeforeVaccum NOTIFY delayBeforeVaccumChanged)
     double Force() const
     {
         return m_Force;
@@ -136,6 +137,11 @@ public:
     QString tcpSUTPOGOPINName() const
     {
         return m_tcpSUTPOGOPINName;
+    }
+
+    int delayBeforeVaccum() const
+    {
+        return m_delayBeforeVaccum;
     }
 
 public slots:
@@ -346,6 +352,15 @@ public slots:
         emit tcpSUTPOGOPINNameChanged(m_tcpSUTPOGOPINName);
     }
 
+    void setDelayBeforeVaccum(int delayBeforeVaccum)
+    {
+        if (m_delayBeforeVaccum == delayBeforeVaccum)
+            return;
+
+        m_delayBeforeVaccum = delayBeforeVaccum;
+        emit delayBeforeVaccumChanged(m_delayBeforeVaccum);
+    }
+
 signals:
     void paramsChanged(double Force);
 
@@ -393,6 +408,8 @@ signals:
 
     void tcpSUTPOGOPINNameChanged(QString tcpSUTPOGOPINName);
 
+    void delayBeforeVaccumChanged(int delayBeforeVaccum);
+
 private:
     double m_Force = 0;
     QString m_motorXName = "SUT_X";
@@ -416,6 +433,7 @@ private:
     double m_downlookCameraExposureTime;
     QString m_tcpSUTVaccumName;
     QString m_tcpSUTPOGOPINName;
+    int m_delayBeforeVaccum = 0;
 };
 
 class SutState:public PropertyBase

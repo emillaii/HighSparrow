@@ -16,6 +16,9 @@ ColumnLayout{
 
             }
         }
+        Button{
+            text: title_move_to
+        }
     }
     RowLayout{
         Label{
@@ -27,6 +30,9 @@ ColumnLayout{
             validator: IntValidator{
 
             }
+        }
+        Button{
+            text: title_move_to
         }
     }
     RowLayout{ Label { text: qsTr("料盘信息") } }

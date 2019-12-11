@@ -433,21 +433,6 @@ void BaseModuleManager::tcpResp(QString message)
                 if (key == "lut_load_loaction") tcp_vision_location_lut_load.parameters.read(value);
                 if (key == "lut_uplook_picker_location") tcp_vision_location_lut_uplook_picker.parameters.read(value);
             }
-//            for (int i = 0; i < vision_locations_names.count(); i++)
-//            {
-//                VisionLocation* temp_location = new VisionLocation();
-//                temp_location->parameters.read(vision_locations_names.at(i).toObject());
-//                QJsonObject temp_object;
-//                temp_location->parameters.write(temp_object);
-//                qInfo("vision location detected: %s", temp_location->parameters.locationName().toStdString().c_str());
-////                if(!vision_locations.contains(temp_location->parameters.locationName()))
-////                    vision_locations.insert(temp_location->parameters.locationName(),temp_location);
-////                else
-////                {
-////                    vision_locations[temp_location->parameters.locationName()]->parameters.read(temp_object);
-////                    delete temp_location;
-
-//            }
         }
         else if (resp == "motorNames") {
             qInfo("receive motor names resp");

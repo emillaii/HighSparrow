@@ -9,11 +9,8 @@ ColumnLayout{
         Label { text: qsTr("料盘信息") }
     }
     RowLayout{
-        Button{
+       Label{
            text:qsTr("料盘1起点")
-           onClicked: {
-               logicManager.performHandling(tcp_lens_loader_parameter.moduleName, LensLoaderModule.LENS_TRAY1_START_POS)
-           }
        }
        Label{
             text: qsTr("X")
@@ -44,6 +41,13 @@ ColumnLayout{
             }
        }
        Button{
+           text: title_move_to
+           onClicked: {
+               logicManager.performHandling(tcp_lens_loader_parameter.moduleName, LensLoaderModule.LENS_TRAY1_START_POS)
+           }
+       }
+
+       Button{
            text:title_read_encoder
            width: 40
            height: 40
@@ -55,11 +59,8 @@ ColumnLayout{
                tcp_tray_start_point1.setY(y);
            }
        }
-       Button{
+       Label{
            text: qsTr("料盘1终点")
-           onClicked: {
-               logicManager.performHandling(tcp_lens_loader_parameter.moduleName, LensLoaderModule.LENS_TRAY1_END_POS)
-           }
        }
        Label{
            text: qsTr("X")
@@ -90,6 +91,12 @@ ColumnLayout{
            }
        }
        Button{
+           onClicked: {
+               logicManager.performHandling(tcp_lens_loader_parameter.moduleName, LensLoaderModule.LENS_TRAY1_END_POS)
+           }
+       }
+
+       Button{
            text:title_read_encoder
            onClicked: {
                var x  = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorTrayName)
@@ -100,11 +107,8 @@ ColumnLayout{
        }
     }
     RowLayout{
-        Button{
+        Label{
             text:qsTr("料盘2起点")
-            onClicked: {
-                logicManager.performHandling(tcp_lens_loader_parameter.moduleName, LensLoaderModule.LENS_TRAY2_START_POS)
-            }
         }
         Label{
             text: qsTr("X")
@@ -134,6 +138,13 @@ ColumnLayout{
                 tcp_tray_start_point2.setY(text)
             }
         }
+        Button{
+            text: title_move_to
+            onClicked: {
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName, LensLoaderModule.LENS_TRAY2_START_POS)
+            }
+        }
+
         Button{
             text:title_read_encoder
             width: 40

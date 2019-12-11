@@ -6,7 +6,7 @@ $(document).ready(function () {
     offset_in_um: -40, delay_Z_in_ms: 200, step_size: 10,
     position_checking: 0, is_debug: 0, image_count: 7, enable_tilt: 0
   };
-  var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 0, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
+  var init_oc_params = { enable_motion: 1, fast_mode: 0, mode: 0, is_debug: 0, delay_in_ms: 0, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_initial_tilt_params = { roll: 0, pitch: 0, delay_in_ms: 0};
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1};
@@ -69,6 +69,7 @@ $(document).ready(function () {
 
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"oc_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Fast Mode: <select id=\"oc_fast_mode\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">OC Mode: <select id=\"oc_mode\" size=\"2\"><option value=0>Chart Pattern</option><option value=1>Optical Mass Center</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Debug: <select id=\"oc_is_debug\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"oc_retry\"></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"oc_delay_in_ms\"></div>");
@@ -173,6 +174,7 @@ $(document).ready(function () {
         $oc_operator_properties.show();
         $oc_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
         $('#oc_fast_mode').val(params["fast_mode"]);
+		$('#oc_mode').val(params["mode"]);
         $('#oc_enable_motion').val(params["enable_motion"]);
         $('#oc_delay_in_ms').val(params["delay_in_ms"]);
         $('#oc_is_debug').val(params["is_debug"]);
@@ -381,6 +383,7 @@ $(document).ready(function () {
       var params = {
         enable_motion: Number($('#oc_enable_motion').val()),
         fast_mode: Number($('#oc_fast_mode').val()),
+		mode: Number($('#oc_mode').val()),
 		is_debug: Number($('#oc_is_debug').val()),
         delay_in_ms: Number($('#oc_delay_in_ms').val()),
 		retry: Number($('#oc_retry').val()),
@@ -746,6 +749,7 @@ $(document).ready(function () {
       var params = {
         enable_motion: Number($('#oc_enable_motion').val()),
         fast_mode: Number($('#oc_fast_mode').val()),
+	    mode: Number($('#oc_mode').val()),
 		is_debug: Number($('#oc_is_debug').val()),
         delay_in_ms: Number($('#oc_delay_in_ms').val()),
 		retry: Number($('#oc_retry').val()),
@@ -1002,6 +1006,7 @@ $(document).ready(function () {
       var params = {
         enable_motion: Number($('#oc_enable_motion').val()),
         fast_mode: Number($('#oc_fast_mode').val()),
+		mode: Number($('#oc_mode').val()),
 		is_debug: Number($('#oc_is_debug').val()),
         delay_in_ms: Number($('#oc_delay_in_ms').val()),
 		retry: Number($('#oc_retry').val()),

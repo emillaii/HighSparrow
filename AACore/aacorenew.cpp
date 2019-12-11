@@ -3098,11 +3098,13 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     bool enable_motion = params["enable_motion"].toInt();
     bool fast_mode = params["fast_mode"].toInt();
     int finish_delay = params["delay_in_ms"].toInt();
+    int mode = params["mode"].toInt();  //0: Pattern ; else : Mass center
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
     QVariantMap map;
     QElapsedTimer timer;
     timer.start();
     bool grabRet;
+    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_10.bmp");
     cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
         qInfo("OC Cannot grab image.");
@@ -3111,10 +3113,10 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         NgSensor();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "OC Cannot Grab Image"};
     }
-    oc_fov = calculateDFOV(img);
-    oc_z = aa_head->GetFeedBack().Z;
-    qInfo("DFOV in OC: %f", oc_fov);
-    map.insert("DFOV", oc_fov);
+    //oc_fov = calculateDFOV(img);
+    //oc_z = aa_head->GetFeedBack().Z;
+    //qInfo("DFOV in OC: %f", oc_fov);
+    //map.insert("DFOV", oc_fov);
     if (!blackScreenCheck(img)) {
         NgSensor();
         map["Result"] = "OC Detect black screen";
@@ -3125,13 +3127,12 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     imageName.append(getGrabberLogDir())
                     .append(getCurrentTimeString())
                     .append(".jpg");
-    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_10.bmp");
     QImage outImage;
     double offsetX, offsetY;
     unsigned int ccIndex = 10000, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
-    int method = 1;  //1: Pattern ; else : Mass center
-    if (method == 1)
+    if (mode == 0)
     {
+        qInfo("Using chart pattern");
         std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, false,
                                                                         ccIndex, ulIndex, urIndex,
                                                                         llIndex, lrIndex);
@@ -3151,6 +3152,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         map.insert("OC_OFFSET_X_IN_PIXEL", round(offsetX*1000)/1000);
         map.insert("OC_OFFSET_Y_IN_PIXEL", round(offsetY*1000)/1000);
     } else {
+        qInfo("Using optical mass center");
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage))
         {

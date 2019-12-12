@@ -105,5 +105,13 @@ void AAData::plotIntensityProfile(float minI, float maxI, std::vector<float> val
 }
 
 void AAData::run(){
-    emit wValueChanged();
+    if (plotProfile == 0) emit wValueChanged();  //AA Data plot
+    else if (plotProfile == 1) {
+        for (unsigned i = 0; i < m_PointsList.size(); i=i+10){
+            this->m_wValue.setX(m_PointsList[i].x());
+            this->m_wValue.setY(m_PointsList[i].y());
+            QThread::msleep(5);
+            emit wValueChanged();
+        }
+    }
 }

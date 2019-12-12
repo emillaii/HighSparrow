@@ -65,6 +65,16 @@ ColumnLayout {
         title:qsTr("料盘操作")
         ColumnLayout{
             RowLayout{
+                Button{
+                    text: qsTr("换缓存盘")
+                    width: 40
+                    height: 40
+                    onClicked:{
+                        sensorLoaderModule.changeBufferTray()
+                    }
+                }
+            }
+            RowLayout{
                 Label{
                     text: qsTr("目标行")
                 }

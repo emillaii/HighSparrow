@@ -131,6 +131,8 @@ public:
     PropertyBase *getModuleState();
     QMap<QString,PropertyBase*> getModuleParameter();
     void setModuleParameter(QMap<QString, PropertyBase *>);
+    Q_INVOKABLE void changeBufferTray();
+    Q_INVOKABLE void changeNgTray();
 signals:
     void sendMessageToClient(QString destAddress, QString module_message);
     void sendChangeTrayRequst();
@@ -274,6 +276,8 @@ private:
     int thread_id = 0;
     bool is_run = false;
     bool finish_stop = false;
+    bool allowChangeBufferTray = false;
+    bool allowChangeNgTray = false;
     QMutex tray_mutex;
     QVariantMap picker1_senseor_data;
     QVariantMap sut1_sensor_data;

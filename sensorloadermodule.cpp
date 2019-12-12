@@ -462,6 +462,24 @@ void SensorLoaderModule::performHandlingOperation(int cmd,QVariant param)
     is_handling = false;
 }
 
+void SensorLoaderModule::changeBufferTray()
+{
+    allowChangeBufferTray = true;
+    if (is_run == false)
+    {
+        moveToStartPos(SensorPosition::NG_SENSOR_TRAY);
+    }
+}
+
+void SensorLoaderModule::changeNgTray()
+{
+    allowChangeNgTray = true;
+    if (is_run == false)
+    {
+        moveToStartPos(SensorPosition::BUFFER_TRAY);
+    }
+}
+
 //void SensorLoaderModule::receiveRequestMessage(QString message, QString client_ip)
 //{
 //    qInfo("Sut Module receive command:%s from ip: %s", message.toStdString().c_str(), client_ip.toStdString().c_str());
@@ -833,7 +851,7 @@ void SensorLoaderModule::run()
         }
 
         //检测是否更换Buffer盘
-        if(!findTrayNextInitStatePos(SensorPosition::BUFFER_TRAY))
+        if(!findTrayNextInitStatePos(SensorPosition::BUFFER_TRAY) || allowChangeBufferTray)
         {
             if(!moveToStartPos(SensorPosition::BUFFER_TRAY))
             {
@@ -852,9 +870,10 @@ void SensorLoaderModule::run()
         }
 
         //检测NG盘是否已满
-        if(!findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY))
+        if(!findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY) || allowChangeNgTray)
         {
-            if(!moveCameraToStandbyPos(true))
+            //if(!moveCameraToStandbyPos(true))
+            if(!moveToStartPos(SensorPosition::BUFFER_TRAY))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);

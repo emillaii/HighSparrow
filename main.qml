@@ -6,6 +6,8 @@ import QtQuick.Layouts 1.11
 import AACoreNew 1.1
 import LogicManagerLib 1.1
 import "qml"
+import "qml/UserManagement"
+
 ApplicationWindow {
     id: applicationWindow
     visible: true
@@ -115,6 +117,14 @@ ApplicationWindow {
 
     SilicolMsgBox{
         id: silicolMsgBox
+    }
+
+    UserManagement{
+        id: popupUserManagement
+    }
+
+    Login{
+        id: popupLogin
     }
 
     Connections{

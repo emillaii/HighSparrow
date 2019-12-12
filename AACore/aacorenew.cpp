@@ -3331,7 +3331,7 @@ ErrorCodeStruct AACoreNew::performPRToBond(int finish_delay)
     double x = sut->mushroom_positon.X();
     double y = sut->mushroom_positon.Y();
     double z = sut->mushroom_positon.Z();
-    double theta = sut->up_downlook_offset.Theta() - aa_head->uplook_theta - aa_head->offset_theta;
+    double theta = aa_head->GetFeedBack().C + sut->up_downlook_offset.Theta() - aa_head->uplook_theta - aa_head->offset_theta;
     qInfo("downlook_offset(%f,%f)",aa_head->offset_x,aa_head->offset_y,aa_head->offset_theta);
     qInfo("uplook_offset(%f,%f,%f)",aa_head->uplook_x,aa_head->uplook_y,aa_head->uplook_theta);
     qInfo("up_downlook_offset(%f,%f,%f)",sut->up_downlook_offset.X(),sut->up_downlook_offset.Y(),sut->up_downlook_offset.Theta());

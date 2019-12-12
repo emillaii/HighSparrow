@@ -6,6 +6,7 @@ QT += charts
 QT += qml
 QT += quick
 QT += websockets
+QT += sql
 CONFIG += c++11
 CONFIG+=qtquickcompiler
 # The following define makes your compiler emit warnings if you use
@@ -30,6 +31,8 @@ SOURCES += \
     utils/singletoninstances.cpp \
     utils/uiHelper/msgboxmodel.cpp \
     utils/uiHelper/uioperation.cpp \
+    utils/userManagement/mysqltablemodel.cpp \
+    utils/userManagement/usermanagement.cpp \
     vision/baslerpyloncamera.cpp \
     highsprrow.cpp \
     utils/errorcode.cpp \
@@ -154,6 +157,8 @@ HEADERS += \
     utils/singletoninstances.h \
     utils/uiHelper/msgboxmodel.h \
     utils/uiHelper/uioperation.h \
+    utils/userManagement/mysqltablemodel.h \
+    utils/userManagement/usermanagement.h \
     vision/baslerpyloncamera.h \
     config.h \
     devicestatesgeter.h \

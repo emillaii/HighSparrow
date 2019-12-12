@@ -48,6 +48,7 @@ ItemDelegate {
                     onClicked:{
                         aa_head_motions.open()
                     }
+                    enabled: userManagement.currentAuthority >= 2 // At least engineer autority
                 }
                 Button{
                     text:qsTr("背光板操作")

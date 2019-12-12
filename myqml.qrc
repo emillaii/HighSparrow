@@ -220,5 +220,10 @@
         <file>qml/PageMenuBar/Page9MenuBar.qml</file>
         <file>qml/CameraView2.qml</file>
         <file>qml/CameraView1.qml</file>
+        <file>qml/UserManagement/ChangePassword.qml</file>
+        <file>qml/UserManagement/Login.qml</file>
+        <file>qml/UserManagement/LoginComponent.qml</file>
+        <file>qml/UserManagement/UserManagement.qml</file>
+        <file>qml/UserManagement/UsersView.qml</file>
     </qresource>
 </RCC>

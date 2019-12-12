@@ -10,6 +10,8 @@
 #include "utils/loging/loging.h"
 #include "utils/loging/logmodel.h"
 #include "utils/singletoninstances.h"
+#include "utils/userManagement/usermanagement.h"
+#include "utils/userManagement/mysqltablemodel.h"
 #include "UnitTest/SilicolMsgBoxTest.h"
 
 #include "AACore/aadata.h"
@@ -25,14 +27,14 @@ long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
 {
     //创建 Dump 文件
     HANDLE hDumpFile = ::CreateFile(
-        L"MEMORY.DMP",
-        GENERIC_WRITE,
-        0,
-        NULL,
-        CREATE_ALWAYS,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL
-    );
+                L"MEMORY.DMP",
+                GENERIC_WRITE,
+                0,
+                NULL,
+                CREATE_ALWAYS,
+                FILE_ATTRIBUTE_NORMAL,
+                NULL
+                );
     if (hDumpFile != INVALID_HANDLE_VALUE)
     {
         //Dump信息
@@ -42,14 +44,14 @@ long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
         dumpInfo.ClientPointers = TRUE;
         //写入Dump文件内容
         ::MiniDumpWriteDump(
-            GetCurrentProcess(),
-            GetCurrentProcessId(),
-            hDumpFile,
-            MiniDumpNormal,
-            &dumpInfo,
-            NULL,
-            NULL
-        );
+                    GetCurrentProcess(),
+                    GetCurrentProcessId(),
+                    hDumpFile,
+                    MiniDumpNormal,
+                    &dumpInfo,
+                    NULL,
+                    NULL
+                    );
     }
     return 0;
 }
@@ -69,7 +71,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QApplication::setApplicationName("High Sparrow");
     app.setOrganizationName("Silicool");
-    app.setOrganizationDomain("silicool.com");   
+    app.setOrganizationDomain("silicool.com");
     app.setWindowIcon(QIcon(ICON_SPARROW));
 
     HighSprrow highSprrow;
@@ -90,6 +92,12 @@ int main(int argc, char *argv[])
     SI::ui.init(&msgBoxModel);
     engine.rootContext()->setContextProperty("msgBoxModel", &msgBoxModel);
     engine.rootContext()->setContextProperty("uiOperation", &SI::ui);
+
+    UserManagement userManagement;
+    userManagement.init();
+    qmlRegisterType<UserManagement>("UserMng", 1, 0, "UserMng");
+    engine.rootContext()->setContextProperty("userManagement", &userManagement);
+    engine.rootContext()->setContextProperty("userModel", userManagement.userModel);
 
     MsgBoxTester msgBoxTester;
     engine.rootContext()->setContextProperty("msgBoxTester", &msgBoxTester);

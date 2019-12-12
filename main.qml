@@ -145,6 +145,49 @@ ApplicationWindow {
         }
 
         RowLayout {
+            ToolButton {
+                text: qsTr("用户管理")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/userManagement.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    popupUserManagement.clearText()
+                    popupUserManagement.open()
+                }
+            }
+            ToolButton {
+                text: {
+                    if(userManagement.hasLogin)
+                    {
+                        return qsTr("Logout")
+                    }
+                    else
+                    {
+                        return qsTr("Login")
+                    }
+                }
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/login.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    if(userManagement.hasLogin)
+                    {
+                        userManagement.logout()
+                    }
+                    else
+                    {
+                        popupLogin.clearText()
+                        popupLogin.open()
+                    }
+                }
+            }
+
             RoundButton {
                 id: initButton
                 text: qsTr("初始化")
@@ -514,6 +557,36 @@ ApplicationWindow {
                text: qsTr(" 现在时间:")
                Layout.fillWidth: true
                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+           }
+
+           GridLayout{
+               rows: 2
+               columns: 2
+
+               Label{
+                  text: qsTr("User:")
+               }
+               Label{
+                  text: userManagement.currentUserName
+               }
+               Label{
+                  text: qsTr("Authority:")
+               }
+               Label{
+                  text: {
+                      switch(userManagement.currentAuthority)
+                      {
+                      case UserMng.Admin:
+                          return "Admin"
+                      case UserMng.Engineer:
+                          return "Engineer"
+                      case UserMng.Operator:
+                          return "Operator"
+                      case UserMng.None:
+                          return "None"
+                      }
+                  }
+               }
            }
         }
     }

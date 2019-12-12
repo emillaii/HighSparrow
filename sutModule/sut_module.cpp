@@ -552,6 +552,7 @@ void SutModule::run()
 
 void SutModule::startWork(int run_mode)
 {
+    if(run_mode == RunMode::AAFlowChartTest) return;
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {

@@ -169,7 +169,19 @@ ApplicationWindow {
                     popupUserManagement.open()
                 }
             }
+
+            MessageDialog {
+                id: logoutDialog
+                text: "是否确定要登出?"
+                standardButtons: StandardButton.Yes|StandardButton.No
+                icon:StandardIcon.Question
+                onYes: {
+                    userManagement.logout()
+                }
+            }
+
             ToolButton {
+                id: loginButton
                 text: {
                     if(userManagement.hasLogin)
                     {
@@ -185,16 +197,23 @@ ApplicationWindow {
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/login.png"
-                icon.color: "deepskyblue"
+                icon.color: "red"
                 onClicked: {
                     if(userManagement.hasLogin)
                     {
-                        userManagement.logout()
+                        logoutDialog.open()
                     }
                     else
                     {
                         popupLogin.clearText()
                         popupLogin.open()
+                    }
+                }
+                Connections{
+                    target: timer
+                    onTriggered:{
+                        if(userManagement.hasLogin) {  loginButton.icon.color = "lightGreen" }
+                        else {  loginButton.icon.color = "red" }
                     }
                 }
             }
@@ -449,10 +468,6 @@ ApplicationWindow {
                 icon.source: "icons/auto-run.png"
                 icon.color: "deepskyblue"
                 onClicked: {
-                    //                   if (baseModuleManager.getServerMode() === 0)
-                    //                       uplookCamera.pauseLiveView(true)
-                    //                   downlookCamera.pauseLiveView(true)
-                    //                   pickarmCamera.pauseLiveView(true)
                     workersManager.startAllWorkers(moduleManagerParam.runMode)
                 }
             }
@@ -476,7 +491,6 @@ ApplicationWindow {
                 onTriggered: {
                     timeString.text =  Qt.formatTime(new Date(), "现在时间: hh:mm:ss")
                     busyDialog.updateBusyDialogStatus()
-                    //messageDialog.updateDialogStatus()
                     //Used for consuming the flowchart double click command
                     if (flowChartPage.webView.loadProgress == 100) {
                         var command = "document.getElementById('flowchart_running_cmd').value";
@@ -499,14 +513,6 @@ ApplicationWindow {
                     }
                 }
             }
-
-            //           RoundButton {
-            //               text: qsTr("Home")
-            //               background: Rectangle {
-            //                   id: homeSignal
-            //                   color: "red"
-            //               }
-            //           }
 
             Button{
                 text: "报警信息"
@@ -560,14 +566,12 @@ ApplicationWindow {
 
                 Label{
                     text: qsTr("硅酷科技 版本:" + version)
-                    //                       font.pointSize: 14
                     color: "white"
                     Layout.fillWidth: true
                 }
 
                 Label{
                     id: timeString
-                    //                       font.pointSize: 14
                     color: "cyan"
                     text: qsTr(" 现在时间:")
                     Layout.fillWidth: true

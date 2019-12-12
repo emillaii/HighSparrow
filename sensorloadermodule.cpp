@@ -43,6 +43,7 @@ void SensorLoaderModule::Init(SensorPickArm *pick_arm,
 
 void SensorLoaderModule::startWork(int run_mode)
 {
+    if(run_mode == RunMode::AAFlowChartTest) return;
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {

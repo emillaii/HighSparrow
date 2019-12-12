@@ -323,6 +323,7 @@ bool TrayLoaderModule::moveToChangeClipPos()
 }
 void TrayLoaderModule::startWork(int run_mode)
 {
+    if(run_mode == RunMode::AAFlowChartTest) return;
     qInfo("startWork: %d", run_mode);
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())

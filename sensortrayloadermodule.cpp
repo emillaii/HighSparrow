@@ -60,6 +60,7 @@ void SensorTrayLoaderModule::Init(XtMotor *motor_tray, XtMotor *motor_kick, XtMo
 
 void SensorTrayLoaderModule::startWork(int run_mode)
 {
+    if(run_mode == RunMode::AAFlowChartTest) return;
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {

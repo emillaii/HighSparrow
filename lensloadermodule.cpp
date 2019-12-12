@@ -1448,6 +1448,7 @@ bool LensLoaderModule::isRunning()
 
 void LensLoaderModule::startWork(int run_mode)
 {
+    if(run_mode == RunMode::AAFlowChartTest) return;
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {

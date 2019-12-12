@@ -402,6 +402,17 @@ double AACoreNew::getzPeakDev_um(int count,double numbers,...)
 
 void AACoreNew::startWork( int run_mode)
 {
+    if (run_mode == RunMode::AAFlowChartTest) {
+        QElapsedTimer timer;timer.start();
+        runningUnit = this->unitlog->createUnit();
+        runFlowchartTest();
+        emit postDataToELK(this->runningUnit);
+        double temp_time = timer.elapsed();
+        temp_time/=1000;
+        qInfo("circle_time :%f",temp_time);
+        states.setCircleTime(temp_time);
+        return;
+    }
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
@@ -471,15 +482,6 @@ void AACoreNew::startWork( int run_mode)
             QThread::msleep(200);
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
-    } else if (run_mode == RunMode::AAFlowChartTest) {
-        QElapsedTimer timer;timer.start();
-        runningUnit = this->unitlog->createUnit();
-        runFlowchartTest();
-        emit postDataToELK(this->runningUnit);
-        double temp_time = timer.elapsed();
-        temp_time/=1000;
-        qInfo("circle_time :%f",temp_time);
-        states.setCircleTime(temp_time);
     }
 }
 

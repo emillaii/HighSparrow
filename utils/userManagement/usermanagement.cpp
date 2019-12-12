@@ -2,7 +2,7 @@
 
 UserManagement::UserManagement()
 {
-
+    setCurrentUserName("None");
 }
 
 UserManagement::~UserManagement()
@@ -172,7 +172,7 @@ bool UserManagement::login(QString userName, QString password)
 
 void UserManagement::logout()
 {
-    setCurrentUserName("");
+    setCurrentUserName("None");
     setCurrentAuthority(None);
     setHasLogin(false);
 }

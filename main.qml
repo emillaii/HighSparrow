@@ -5,8 +5,10 @@ import FileContentItem 1.0
 import QtQuick.Layouts 1.11
 import AACoreNew 1.1
 import LogicManagerLib 1.1
+import UserMng 1.0
 import "qml"
 import "qml/UserManagement"
+
 
 ApplicationWindow {
     id: applicationWindow
@@ -143,17 +145,16 @@ ApplicationWindow {
 
     header:
         ToolBar {
-            id: toolBar
-            height: 50
-            background: Rectangle {
-                color: "black"
-            }
+        id: toolBar
+        height: 60
+        background: Rectangle {
+            color: "black"
+        }
 
         Timer {
             id:timer
             interval: 600; running: true; repeat: true
         }
-
         RowLayout {
             ToolButton {
                 text: qsTr("用户管理")
@@ -198,11 +199,11 @@ ApplicationWindow {
                 }
             }
 
-            RoundButton {
+            ToolButton {
                 id: initButton
                 text: qsTr("初始化")
                 transformOrigin: Item.Center
-                display: Button.TextBesideIcon
+                display: Button.TextUnderIcon
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/initial.png"
@@ -212,10 +213,10 @@ ApplicationWindow {
                     //visionModule.testVision()
                 }
                 Connections{
-                   target: timer
-                   onTriggered:{
-                       initButton.icon.color = baseModuleManager.InitState?"deepskyblue":"red"
-                   }
+                    target: timer
+                    onTriggered:{
+                        initButton.icon.color = baseModuleManager.InitState?"deepskyblue":"red"
+                    }
                 }
             }
 
@@ -287,12 +288,12 @@ ApplicationWindow {
                 }
             }
 
-            RoundButton {
+            ToolButton {
                 id: homeAllButton
                 objectName: "HomeButtonObject"
                 text: qsTr("Home")
                 transformOrigin: Item.Center
-                display: Button.TextBesideIcon
+                display: Button.TextUnderIcon
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/home.png"
@@ -302,17 +303,17 @@ ApplicationWindow {
                     //logicManager.sendMessageTest()
                 }
                 Connections{
-                   target: timer
-                   onTriggered:{
-                       homeAllButton.icon.color = baseModuleManager.HomeState?"deepskyblue":"red"
-                   }
+                    target: timer
+                    onTriggered:{
+                        homeAllButton.icon.color = baseModuleManager.HomeState?"deepskyblue":"red"
+                    }
                 }
             }
-           RoundButton {
+            ToolButton {
                 id: loadFlowChartButton
                 text: qsTr("加载流程图")
                 transformOrigin: Item.Center
-                display: Button.TextBesideIcon
+                display: Button.TextUnderIcon
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/flowchart.png"
@@ -320,25 +321,25 @@ ApplicationWindow {
                 onClicked: {
                     loadfileDialog.open()
                 }
-           }
-           RoundButton {
-              id: saveFlowChart
-              text: qsTr("保存流程图")
-              transformOrigin: Item.Center
-              display: Button.TextBesideIcon
-              icon.width: 30
-              icon.height: 30
-              icon.source: "icons/save.png"
-              icon.color: "deepskyblue"
-              onClicked: {
-                   saveFileDialog.open()
-              }
-           }
-           RoundButton {
+            }
+            ToolButton {
+                id: saveFlowChart
+                text: qsTr("保存流程图")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/save.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    saveFileDialog.open()
+                }
+            }
+            ToolButton {
                 id: loadParamsButton
                 text: qsTr("加载参数")
                 transformOrigin: Item.Center
-                display: Button.TextBesideIcon
+                display: Button.TextUnderIcon
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/flowchart.png"
@@ -346,133 +347,133 @@ ApplicationWindow {
                 onClicked: {
                     baseModuleManager.loadconfig()
                 }
-           }
-           RoundButton {
-               id: saveParams
-               text: qsTr("保存参数")
-               transformOrigin: Item.Center
-               display: Button.TextBesideIcon
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/save.png"
-               icon.color: "deepskyblue"
-               onClicked: {
-                   baseModuleManager.updateParams()
-               }
-           }
+            }
+            ToolButton {
+                id: saveParams
+                text: qsTr("保存参数")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/save.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    baseModuleManager.updateParams()
+                }
+            }
 
-           RoundButton {
-               text: qsTr("AA1电机")
-               visible: {
-                   if (baseModuleManager.getServerMode() === 0) return false
-                   else return true
-               }
+            ToolButton {
+                text: qsTr("AA1电机")
+                visible: {
+                    if (baseModuleManager.getServerMode() === 0) return false
+                    else return true
+                }
 
-               transformOrigin: Item.Center
-               display: Button.TextBesideIcon
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/machine.png"
-               icon.color: "yellow"
-               onClicked: {
-                   tcpMotionDialog.open()
-               }
-           }
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/machine.png"
+                icon.color: "yellow"
+                onClicked: {
+                    tcpMotionDialog.open()
+                }
+            }
 
-           RoundButton {
-               text: {
-                   if (baseModuleManager.getServerMode() === 0)
-                       return qsTr("AA1电机")
-                   else
-                       return qsTr("AA2电机")
-               }
-               transformOrigin: Item.Center
-               display: Button.TextBesideIcon
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/machine.png"
-               icon.color: {
-                   if (baseModuleManager.getServerMode() === 0)
+            ToolButton {
+                text: {
+                    if (baseModuleManager.getServerMode() === 0)
+                        return qsTr("AA1电机")
+                    else
+                        return qsTr("AA2电机")
+                }
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/machine.png"
+                icon.color: {
+                    if (baseModuleManager.getServerMode() === 0)
                         return "yellow"
-                   else
-                       return "lightGreen"
-               }
-               onClicked: {
-                   motionDialog.open()
-               }
-           }
-           RoundButton {
-               text: qsTr("IO")
-               transformOrigin: Item.Center
-               display: Button.TextBesideIcon
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/settings_input_composite.png"
-               icon.color: "deepskyblue"
-               onClicked: {
-                   ioDialog.open()
-               }
-           }
-           RoundButton {
-               text: qsTr("运行流程图")
-               transformOrigin: Item.Center
-               display: Button.TextBesideIcon
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/flowchart_1.png"
-               icon.color: "deepskyblue"
-               onClicked: {
-                   workersManager.startAllWorkers(3)
-               }
-           }
+                    else
+                        return "lightGreen"
+                }
+                onClicked: {
+                    motionDialog.open()
+                }
+            }
+            ToolButton {
+                text: qsTr("IO")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/settings_input_composite.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    ioDialog.open()
+                }
+            }
+            ToolButton {
+                text: qsTr("运行流程图")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/flowchart_1.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    workersManager.startAllWorkers(3)
+                }
+            }
 
-//           ToolButton {
-//               text: qsTr("Map")
-//               transformOrigin: Item.Center
-//               display: Button.TextUnderIcon
-//               icon.width: 30
-//               icon.height: 30
-//               icon.source: "icons/machine.png"
-//               icon.color: "yellow"
-//               onClicked: {
-//                   baseModuleManager.showMachineMap()
-//               }
-//           }
+            //           ToolButton {
+            //               text: qsTr("Map")
+            //               transformOrigin: Item.Center
+            //               display: Button.TextUnderIcon
+            //               icon.width: 30
+            //               icon.height: 30
+            //               icon.source: "icons/machine.png"
+            //               icon.color: "yellow"
+            //               onClicked: {
+            //                   baseModuleManager.showMachineMap()
+            //               }
+            //           }
 
-           RoundButton {
-               text: qsTr("Auto")
-               transformOrigin: Item.Center
-               display: Button.TextBesideIcon
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/auto-run.png"
-               icon.color: "deepskyblue"
-               onClicked: {
-//                   if (baseModuleManager.getServerMode() === 0)
-//                       uplookCamera.pauseLiveView(true)
-//                   downlookCamera.pauseLiveView(true)
-//                   pickarmCamera.pauseLiveView(true)
-                   workersManager.startAllWorkers(moduleManagerParam.runMode)
-               }
-           }
-           RoundButton {
-               text: qsTr("Stop")
-               transformOrigin: Item.Center
-               display: Button.TextBesideIcon
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/stop.png"
-               icon.color: "red"
-               onClicked: {
-                   workersManager.stopAllWorkers(true)
-                   logicManagerState.setIsHandling(false)
-               }
-           }
-//Main Timer
-           Timer {
-               id: mainTimer
-               interval: 500; running: true; repeat: true
-               onTriggered: {
+            ToolButton {
+                text: qsTr("Auto")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/auto-run.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    //                   if (baseModuleManager.getServerMode() === 0)
+                    //                       uplookCamera.pauseLiveView(true)
+                    //                   downlookCamera.pauseLiveView(true)
+                    //                   pickarmCamera.pauseLiveView(true)
+                    workersManager.startAllWorkers(moduleManagerParam.runMode)
+                }
+            }
+            ToolButton {
+                text: qsTr("Stop")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/stop.png"
+                icon.color: "red"
+                onClicked: {
+                    workersManager.stopAllWorkers(true)
+                    logicManagerState.setIsHandling(false)
+                }
+            }
+            //Main Timer
+            Timer {
+                id: mainTimer
+                interval: 500; running: true; repeat: true
+                onTriggered: {
                     timeString.text =  Qt.formatTime(new Date(), "现在时间: hh:mm:ss")
                     busyDialog.updateBusyDialogStatus()
                     //messageDialog.updateDialogStatus()
@@ -481,125 +482,131 @@ ApplicationWindow {
                         var command = "document.getElementById('flowchart_running_cmd').value";
                         if (flowChartPage.webView.title === "Flow chart") {
                             flowChartPage.webView.runJavaScript(command, function(result) {
-                                 command = "document.getElementById('flowchart_running_cmd').value = ''";
-                                 if (result.length > 0) {
-                                     var obj = JSON.parse(result)
-                                     var operatorId = obj["operatorId"]
-                                     aaCoreTestItemName = operatorId
-                                     aaCoreTestParams = result
-                                     aaCorePerformTestDialog.text = "Perform " + operatorId + "?"
-                                     aaCorePerformTestDialog.open()
-                                     flowChartPage.webView.runJavaScript(command, function(result) {
-                                         //This is just reset the command in flowchart js
-                                     })
-                                 }
+                                command = "document.getElementById('flowchart_running_cmd').value = ''";
+                                if (result.length > 0) {
+                                    var obj = JSON.parse(result)
+                                    var operatorId = obj["operatorId"]
+                                    aaCoreTestItemName = operatorId
+                                    aaCoreTestParams = result
+                                    aaCorePerformTestDialog.text = "Perform " + operatorId + "?"
+                                    aaCorePerformTestDialog.open()
+                                    flowChartPage.webView.runJavaScript(command, function(result) {
+                                        //This is just reset the command in flowchart js
+                                    })
+                                }
                             })
                         }
                     }
-               }
-           }
+                }
+            }
 
-//           RoundButton {
-//               text: qsTr("Home")
-//               background: Rectangle {
-//                   id: homeSignal
-//                   color: "red"
-//               }
-//           }
+            //           RoundButton {
+            //               text: qsTr("Home")
+            //               background: Rectangle {
+            //                   id: homeSignal
+            //                   color: "red"
+            //               }
+            //           }
 
-           Button{
-               text: "报警信息"
-               onClicked: {
+            Button{
+                text: "报警信息"
+                onClicked: {
                     workersManager.changeAlarmShow()
-               }
-           }
+                }
+            }
 
-           MessageDialog {
-               id: closeDialog
-               text: "是否确定要退出应用?"
-               standardButtons: StandardButton.Yes|StandardButton.No
-               icon:StandardIcon.Question
-               onYes: {
-                   applicationWindow.close()
-               }
-           }
+            MessageDialog {
+                id: closeDialog
+                text: "是否确定要退出应用?"
+                standardButtons: StandardButton.Yes|StandardButton.No
+                icon:StandardIcon.Question
+                onYes: {
+                    applicationWindow.close()
+                }
+            }
 
-           RoundButton {
-               focusPolicy: Qt.TabFocus
-               display: AbstractButton.IconOnly
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/full-screen.png"
-               icon.color: "orange"
-               onClicked: {
-                   if (!isWindowMaximized) {
-                       applicationWindow.showMaximized()
-                   }
-                   else {
-                       applicationWindow.showNormal()
-                   }
-                   isWindowMaximized = !isWindowMaximized
-               }
-           }
-           RoundButton {
-               display: AbstractButton.IconOnly
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/close_program.png"
-               icon.color: "red"
-               onClicked: {
-                   closeDialog.open()
-               }
-           }
+            ToolButton {
+                focusPolicy: Qt.TabFocus
+                display: AbstractButton.IconOnly
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/full-screen.png"
+                icon.color: "orange"
+                onClicked: {
+                    if (!isWindowMaximized) {
+                        applicationWindow.showMaximized()
+                    }
+                    else {
+                        applicationWindow.showNormal()
+                    }
+                    isWindowMaximized = !isWindowMaximized
+                }
+            }
+            ToolButton {
+                display: AbstractButton.IconOnly
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/close_program.png"
+                icon.color: "red"
+                onClicked: {
+                    closeDialog.open()
+                }
+            }
 
-           Label{
-               text: qsTr("硅酷科技 版本:" + version)
-               font.pointSize: 14
-               color: "white"
-               Layout.fillWidth: true
-               Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-           }
 
-           Label{
-               id: timeString
-               font.pointSize: 14
-               color: "cyan"
-               text: qsTr(" 现在时间:")
-               Layout.fillWidth: true
-               Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-           }
+            GridLayout{
+                rows: 2
+                columns: 2
 
-           GridLayout{
-               rows: 2
-               columns: 2
+                Label{
+                    text: qsTr("硅酷科技 版本:" + version)
+                    //                       font.pointSize: 14
+                    color: "white"
+                    Layout.fillWidth: true
+                }
 
-               Label{
-                  text: qsTr("User:")
-               }
-               Label{
-                  text: userManagement.currentUserName
-               }
-               Label{
-                  text: qsTr("Authority:")
-               }
-               Label{
-                  text: {
-                      switch(userManagement.currentAuthority)
-                      {
-                      case UserMng.Admin:
-                          return "Admin"
-                      case UserMng.Engineer:
-                          return "Engineer"
-                      case UserMng.Operator:
-                          return "Operator"
-                      case UserMng.None:
-                          return "None"
-                      }
-                  }
-               }
-           }
+                Label{
+                    id: timeString
+                    //                       font.pointSize: 14
+                    color: "cyan"
+                    text: qsTr(" 现在时间:")
+                    Layout.fillWidth: true
+                }
+
+                RowLayout{
+                    Label{
+                        text: qsTr("User:")
+                    }
+                    Label{
+                        text: userManagement.currentUserName
+                    }
+                }
+                RowLayout{
+                    Label{
+                        text: qsTr("Authority:")
+                    }
+                    Label{
+                        text: {
+                            switch(userManagement.currentAuthority)
+                            {
+                            case UserMng.Admin:
+                                return "Admin"
+                            case UserMng.Engineer:
+                                return "Engineer"
+                            case UserMng.Operator:
+                                return "Operator"
+                            case UserMng.None:
+                                return "None"
+                            }
+                        }
+                    }
+                }
+
+            }
         }
     }
+
+
 
     StackLayout {
         id: swipeView
@@ -609,7 +616,7 @@ ApplicationWindow {
 
         }
 
-//        UnitTestForm {}
+        //        UnitTestForm {}
 
         Page1Form {
             featureButton.onClicked: {
@@ -650,43 +657,43 @@ ApplicationWindow {
         currentIndex: swipeView.currentIndex
         Component.onCompleted: {
             if (baseModuleManager.getServerMode() === 1) {
-               tabBar.currentIndex = 0
+                tabBar.currentIndex = 0
             }
             else
             {
-               tabBar.currentIndex = 1
+                tabBar.currentIndex = 1
             }
         }
         TabButton {
             text: qsTr("操作")
             enabled: {
                 if (baseModuleManager.getServerMode() === 1)
-                   return true
+                    return true
                 else
-                   return false
+                    return false
             }
         }
 
         TabButton {
             text: {
                 if (baseModuleManager.getServerMode() === 1)
-                   return "右工位"
+                    return "右工位"
                 else
-                   return "左工位"
+                    return "左工位"
             }
         }
         TabButton {
             text: {
                 if (baseModuleManager.getServerMode() === 1)
-                   return "左工位"
+                    return "左工位"
                 else
-                   return "右工位"
+                    return "右工位"
             }
             enabled: {
                 if (baseModuleManager.getServerMode() === 1)
-                   return true
+                    return true
                 else
-                   return false
+                    return false
             }
         }
         TabButton {

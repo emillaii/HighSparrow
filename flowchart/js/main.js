@@ -9,8 +9,9 @@ $(document).ready(function () {
   var init_oc_params = { enable_motion: 1, fast_mode: 0, mode: 0, is_debug: 0, delay_in_ms: 0, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_initial_tilt_params = { roll: 0, pitch: 0, delay_in_ms: 0};
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
-  var init_y_level_params = { enable_plot: 1};
+  var init_y_level_params = { enable_plot: 1, min: 0, max: 200 };
   var init_uv_params = {time_in_ms: 3000, enable_OTP: 0 };
+  var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
   var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0, delay_in_ms: 0};
   var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0, enable_glue_inspection: 0, max_glue_width_in_mm:0, min_glue_width_in_mm: 0, max_avg_glue_width_in_mm:0 };
@@ -63,6 +64,9 @@ $(document).ready(function () {
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"initial_tilt_delay_in_ms\"></div>");
   
   $y_level_operator_properties.append("<div style=\"margin-top:20px;\">Enable Plot:  <select id=\"y_level_enable_plot\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $y_level_operator_properties.append("<div style=\"margin-top:20px\">Min Y Level: <input type=\"number\" id=\"y_level_min\"></div>");
+  $y_level_operator_properties.append("<div style=\"margin-top:20px\">Max Y Level: <input type=\"number\" id=\"y_level_max\"></div>");
+  
 
   $operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"basic_retry\"></div>");
   $operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"basic_delay\"></div>");
@@ -157,6 +161,8 @@ $(document).ready(function () {
 		$y_level_operator_properties.show();
 		$y_level_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
         $('#y_level_enable_plot').val(params["enable_plot"]);
+		$('#y_level_min').val(params["min"]);
+		$('#y_level_max').val(params["max"]);
 	  } else if (operatorId.includes("Z Offset")) {
         $aa_z_offset_operator_properties.show();
         $aa_z_offset_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -439,7 +445,9 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', operatorId, params);
 	} else if (selectedOperatorId.includes("Y_Level")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#y_level_operator_title').val());
-	  var params = { enable_plot: Number($('#y_level_enable_plot').val())
+	  var params = { enable_plot: Number($('#y_level_enable_plot').val()),
+	  min: Number($('#y_level_min').val()),
+	  max: Number($('#y_level_max').val())
 	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
 	} else if (selectedOperatorId.includes("UV")) {
@@ -805,7 +813,9 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Y_Level")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#y_level_operator_title').val());
-	  var params = { enable_plot: Number($('#y_level_enable_plot').val())
+	  var params = { enable_plot: Number($('#y_level_enable_plot').val()),
+	  min: Number($('#y_level_min').val()),
+	  max: Number($('#y_level_max').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("UV")) {
@@ -1062,7 +1072,9 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Y_Level")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#y_level_operator_title').val());
-	  var params = { enable_plot: Number($('#y_level_enable_plot').val())
+	  var params = { enable_plot: Number($('#y_level_enable_plot').val()),
+	  min: Number($('#y_level_min').val()),
+	  max: Number($('#y_level_max').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("UV")) {

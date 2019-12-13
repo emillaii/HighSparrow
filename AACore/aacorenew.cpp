@@ -3046,8 +3046,12 @@ ErrorCodeStruct AACoreNew::performOTP(QJsonValue params)
 
 ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
 {
+    QVariantMap map;
     int enable_plot = params["enable_plot"].toInt();
-    //cv::Mat inputImage = cv::imread("1/blackScreen.bmp");
+    int min_i_spec = params["min"].toInt(0);
+    int max_i_spec = params["max"].toInt(255);
+    float min_i, max_i;
+    //cv::Mat inputImage = cv::imread("2.jpg");
     bool grabRet;
     cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
@@ -3055,25 +3059,45 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
         NgSensor();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Test Fail. Cannot grab image"};
     }
-    float min_i = 0;
-    float max_i = 0;
     vector<float> intensityProfile;
     QElapsedTimer timer; timer.start();
     bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile);
     if (ret) {
+        map.insert("min_i", min_i);
+        map.insert("min_i_spec", min_i_spec);
+        map.insert("max_i", max_i);
+        map.insert("max_i_spec", max_i_spec);
+
         qInfo("performYLevelTest Success. Min I: %f Max I: %f size: %d", min_i, max_i, intensityProfile.size());
         if (enable_plot == 1) {
             intensity_profile.clear();
             this->intensity_profile.plotIntensityProfile(min_i, max_i, intensityProfile);
         }
         if (max_i < 10) {
-            qInfo("This is black screen.");
+            qWarning("This is black screen.");
+            emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Black screen detected"};
         }
-        qInfo("Time elapsed: %d", timer.elapsed());
+        if (min_i < min_i_spec) {
+            qWarning("Y Level Fail. The tested intensity is smaller than spec. Tested min intensity: %f intensity spec: %f", min_i, min_i_spec);
+            map.insert("result", "Y Level max spec cannnot pass");
+            emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is smaller than spec"};
+        }
+        if (max_i >= max_i_spec) {
+            qWarning("Y Level Fail. The tested intensity is larger than spec. Tested max intensity: %f intensity spec: %f", max_i, max_i_spec);
+            map.insert("result", "Y Level max spec cannnot pass");
+            emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is larger than spec"};
+        }
+        map.insert("result", "Pass");
+        map.insert("timeElapsed", timer.elapsed());
+        emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
         return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-        qInfo("performYLevelTest Fail");
+        map.insert("result", "Y Level test fail. Cannot grab image");
+        qWarning("performYLevelTest Fail");
+        emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Cannot grab image"};
     }
 }

@@ -55,6 +55,46 @@ ColumnLayout {
         Label { text: qsTr("取放LUT1 Pocket Lens 位置") }
     }
     RowLayout {
+        Label { text: qsTr("LPA Position") }
+        Label{
+            text:qsTr("X")
+        }
+        TextField{
+            text: tcp_lut_pr_position1.X
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                tcp_lut_pr_position1.setX(text)
+            }
+        }
+        Label{
+            text:qsTr("Y")
+        }
+        TextField{
+            text: tcp_lut_pr_position1.Y
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                tcp_lut_pr_position1.setY(text)
+            }
+        }
+        Button{
+            text: title_read_encoder
+            onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorYName)
+                tcp_lut_pr_position1.setX(x)
+                tcp_lut_pr_position1.setY(y)
+            }
+        }
+    }
+    RowLayout {
         Label{
             text:qsTr("物料高度")
         }
@@ -101,7 +141,7 @@ ColumnLayout {
             text:qsTr("X")
         }
         TextField{
-            text: "0"
+            text: tcp_lut_pr_position2.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
@@ -114,33 +154,7 @@ ColumnLayout {
             text:qsTr("Y")
         }
         TextField{
-            text: "0"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-            }
-        }
-        Label{
-            text:qsTr("Z")
-        }
-        TextField{
-            text: "0"
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-            }
-        }
-        Label{
-            text:qsTr("Theta")
-        }
-        TextField{
-            text: "0"
+            text: tcp_lut_pr_position2.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
@@ -152,12 +166,11 @@ ColumnLayout {
         Button {
             text: title_read_encoder
             onClicked: {
-            }
-        }
-        Button {
-            text: qsTr("测高")
-            onClicked: {
-            }
+                var x = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorYName)
+                tcp_lut_pr_position2.setX(x)
+                tcp_lut_pr_position2.setY(y)
+            }           
         }
     }
     RowLayout {

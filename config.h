@@ -138,28 +138,6 @@
 
 #define CONSTANT_REFERENCE 2448.0
 
-//PR Execuatable for HMI
-#define SAVE_IMAGE_FROM_BASLER_EXEC     "SaveImage.avexe"
-#define LEARN_PR_DOWNLOOK_SENSOR_EXEC   "LearnPR_Downlook_Sensor.avexe"
-#define LEARN_PR_UPLOOK_MUSHROOM_EXEC   "LearnPR_Uplook_Mushroom.avexe"
-
-//PR Learn
-#define PR_DOWNLOOK_SENSOR_FILENAME     ".//config//vision_config_1//downlook_sensor.avdata"
-#define PR_UPLOOK_MUSHROOM_FILENAME     ".//config//vision_config_1//uplook_mushroom.avdata"
-
-#define PR_DOWNLOOK_CALI_GLASS_FILENAME   ".//config//vision_config_1//downlook_calib_glass.avdata"
-#define PR_UPLOOK_CALI_GLASS_FILENAME     ".//config//vision_config_1//uplook_calib_glass.avdata"
-
-#define UpDownlook_Calibration_Glass_Region_FILENAME ".//config//vision_config_1//UpDownlook_Calibration_Glass.226f8c29.Region.avdata"
-#define UPLOOK_LENS_HOLDER_ADVANCE_REGION_FILENAME ".//config//vision_config_1//Lens.ee860be7.avdata"
-
-#define PR_ROOT                         ".//vision_pr_system"
-#define PR_M1                           "M1_V.avexe"
-#define PR_M2                           "M2_V.avexe"
-#define PR_M3                           "M3_V.avexe"
-#define PR_M4                           "M4_V.avexe"
-#define PR_M5                           "M5_V.avexe"
-
 #define DISPENSE_DIR                    "config//vision_dispense_path"
 #define DISPENSE_PATH_EXE               "DrawPath.avexe"
 #define DISPENSE_PATH_IMAGE_LOCATION    "config//vision_dispense_path//resultImageWithPath.jpg"
@@ -169,20 +147,6 @@
 #define DOWNLOOK_CMOS_IMX363_EDGE_MODEL           "config//vision_config_1//downlook_sensor.ad9e6e81.avdata"
 //calibration
 #define CALIBRATION_RESULT_PATH          ".//config//calibrationConfig//"
-#define LENS_PICKARM_CALIBRATION         "lens_pickarm_calibration"
-#define SENSOR_PICKARM_CALIBRATION       "sensor_pickarm_calibration"
-#define AA1_UPLOOK_CALIBRATION           "aa1_upLook_calibration"
-#define AA2_UPLOOK_CALIBRATION           "aa2_upLook_calibration"
-#define AA1_DOWNLOOK_CALIBRATION         "aa1_downLook_calibration"
-#define AA2_DOWNLOOK_CALIBRATION         "aa2_downLook_calibration"
-#define AA1_UPDownLOOK_UP_CALIBRATION    "aa1_updownLook_up_calibration"
-#define AA1_UPDownLOOK_DOWN_CALIBRATION  "aa1_updownLook_down_calibration"
-#define AA2_UPDownLOOK_UP_CALIBRATION    "aa2_updownLook_up_calibration"
-#define AA2_UPDownLOOK_DOWN_CALIBRATION  "aa2_updownLook_down_calibration"
-#define AA1_MUSHROOMHEAD_CALIBRATION     "aa1_mushroomhead_calibration"
-#define LPA_LENS_CALIBRATION               "lpa_lens_calibration"
-#define SPA_SENSOR_CALIBRATION               "spa_sensor_calibration"
-
 
 #define CHART_CALIBRATION                "chart_calibration"
 //dispenser
@@ -197,15 +161,6 @@
 #define TRAY_CLIPOUT_PATH  ".//config//tray_clipout_parameter.json"
 #define TRAY_CLIPIN_PATH  ".//config//tray_clipin_parameter.json"
 //PR
-#define PR_SENSOR_PACKAGE_IMX362        "IMX362"
-#define PR_SENSOR_PACKAGE_IMX363        "IMX363"
-#define PR_MUSHROOM_PR                  "mushroom_pr"
-#define PR_DOWNLOOK_CMOS_PR             "downlook_cmos_pr"
-#define PR_UPLOOK_LENS_HOLDER_PR        "uplook_lens_holder_pr"
-#define PR_PICKARM_CMOS_PR              "pickarm_cmos_pr"
-#define PR_PICKARM_LENS_HOLDER_PR       "pickarm_lens_holder_pr"
-#define PR_UPDOWNLOOK_CALIB_GLASS_PR    "updownlook_calib_glass_pr"
-#define PR_PICKARM_LENS_TREAY_PR        "pickarm_lens_tray_pr"
 
 #define PR_PARAMETER_FILE_PATH           ".//config//pr_param//"
 #define PR_AA1_MUSHROOMHEAD              "pr_aa1_mushroom"
@@ -217,10 +172,9 @@
 #define PR_AA2_LUT_UPLOOK                "pr_aa2_lut_uplook"
 #define PR_SUT_DOWNLOOK                  "pr_sut_downlook"
 #define PR_LOAD_LUT_UPLOOK               "pr_load_lut_uplook"
-#define PR_LENS_LPALOOK               "pr_lens_lpalook"
+#define PR_LENS_LPALOOK                  "pr_lens_lpalook"
 #define PR_VACANCY_LPALOOK               "pr_vacancy_lpalook"
-#define PR_LENS_LUTLOOK               "pr_lens_lutlook"
-
+#define PR_LENS_LUTLOOK                  "pr_lens_lutlook"
 
 //Lighting Config
 #define LIGHTING_UPLOOK_LENS_HOLDER_PR         "uplookLensHolderPRLighting"
@@ -230,34 +184,8 @@
 #define LIGHTING_PICKARM_CMOS_PR               "pickarmCmosPRLighting"
 #define LIGHTING_PICKARM_PRODUCT_PR            "pickarmProductPRLighting"
 
-//AA Calibration Config
-#define AA_CALIBRATION       "aaCalibration"
-#define AA_CALIBRATION_A11   "a11"
-#define AA_CALIBRATION_A12   "a12"
-#define AA_CALIBRATION_A13   "a13"
-#define AA_CALIBRATION_A21   "a21"
-#define AA_CALIBRATION_A22   "a22"
-#define AA_CALIBRATION_A23   "a23"
-#define AA_CALIBRATION_THETA "theta"
-
-
 //Icon name
 #define ICON_SPARROW         ":/icons/sparrow.png"
-#define ICON_SETTING         ":/images/icon/settings_input_composite.png"
-#define ICON_POWER_ON        ":/images/icon/poweron.png"
-#define ICON_POWER_OFF        ":/images/icon/poweroff.png"
-#define ICON_STATUS_OFF      ":/images/icon/icon_status-dot-red"
-#define ICON_STATUS_ON       ":/images/icon/icon_status-dot-green"
-#define ICON_CAMERA_OFF      ":/images/icon/camera_off.png"
-#define ICON_CAMERA_ON       ":/images/icon/camera_on.png"
-#define ICON_HOME            ":/images/icon/home.png"
-#define ICON_INIT            ":/images/icon/initial.png"
-#define ICON_CALIBRATION     ":/images/icon/calibration.png"
-#define ICON_READ            ":/images/icon/read.png"
-#define ICON_MOVE            ":/images/icon/move.png"
-#define ICON_NO_IMAGE        ":/images/icon/no_image_placeholder.png"
-
-#define POS_ERROR           0.01
 
 //Flowchart Params
 #define AA_PIECE_START "Start"
@@ -320,11 +248,6 @@
 #define AA_PARAM_Z_OFFSET_TYPE "type"
 #define AA_PARAM_Z_OFFSET_IN_UM "z_offset_in_um"
 #define AA_PARAM_DELAY_IN_MS "delay"
-
-//AA Params ToDo Move to System Property
-#define AA_MAX_INTENSITY 50
-#define AA_MIN_AREA 10000
-#define AA_MAX_AREA 90000
 
 #define UNIT_LOG_PORT 5044
 #define SFR_LOG_PORT 5045

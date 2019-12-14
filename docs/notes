@@ -1,0 +1,26 @@
+--------------------------------------------Notes for using High Sparrow------------------------------
+
+Upgrade Guideline
+
+--------------------------------------------Camera Setting--------------------------------------------
+
+1. Share folder will be used for sharing the camera capture from AA1 to AA2
+2. AA2 will use the following share folder path for accessing the captured image from AA1 
+ 
+#define SHARE_DIR                   "\\\\AA1\\share\\temp\\"
+
+3. Please create the share\temp folder in C: , and enable the share that in network
+4. AA2 ensure the network path can be used. 
+
+--------------------------------------------Vision Setting--------------------------------------------
+
+1. Share the AA2 prConfig folder in network
+2. AA1 create the Z: and point to AA2 prConfig folder
+3. In order to make the prConfig is backward compatiable, user need to config the AA1 and AA2 vision parameter json pointing to the correct new vision path either using the json file or calibration setting in UI. 
+
+
+--------------------------------------------Auto start script-----------------------------------------
+1. Click window+R
+2. type "shell:startup"
+3. Put the start.bat with configuring the path in the start.bat
+4. Window will start the script in startup.

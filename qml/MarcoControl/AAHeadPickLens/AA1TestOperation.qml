@@ -29,14 +29,12 @@ RowLayout {
     }
     Button {
         text: qsTr("Place Lens Pocket 1")
-        enabled: false
         onClicked: {
             logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_UNPICK_LENS_POS)
         }
     }
     Button {
         text: qsTr("Pick Lens Pocket 2")
-        enabled: false
         onClicked: {
             logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_PICK_LENS)
         }

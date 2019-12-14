@@ -1722,6 +1722,56 @@ void BaseModuleManager::sendTcpUpdateParameterRequest()
     }
 }
 
+void BaseModuleManager::setTcpVisionLocationParameter(QString visionLocation)
+{
+    QJsonObject message;
+    int brightness = 0;
+    message["cmd"] = "setVisionLocationParameter";
+    message["visionLocationName"] = visionLocation;
+    if (visionLocation == "aa1_downLook_loaction") {
+        brightness = tcp_vision_location_aa1_downlook.parameters.lightBrightness();
+    }
+    if (visionLocation == "aa1_mushroomhead_loaction") {
+        brightness = tcp_vision_location_aa1_mushroomhead.parameters.lightBrightness();
+    }
+    if (visionLocation == "aa1_upLook_location") {
+        brightness = tcp_vision_location_aa1_uplook.parameters.lightBrightness();
+    }
+    if (visionLocation == "aa1_updownLook_down_location") {
+        brightness = tcp_vision_location_aa1_updownlook_down.parameters.lightBrightness();
+    }
+    if (visionLocation == "aa1_updownLook_up_location") {
+        brightness = tcp_vision_location_aa1_updownlook_up.parameters.lightBrightness();
+    }
+    if (visionLocation == "lpa_lens_location") {
+        brightness = tcp_vision_location_lpa_lens.parameters.lightBrightness();
+    }
+    if (visionLocation == "lpa_lut_lens_location") {
+        brightness = tcp_vision_location_lpa_lut_lens.parameters.lightBrightness();
+    }
+    if (visionLocation == "lpa_lut_location") {
+        brightness = tcp_vision_location_lpa_lut.parameters.lightBrightness();
+    }
+    if (visionLocation == "lpa_lut_ng_location") {
+        brightness = tcp_vision_location_lpa_lut_ng.parameters.lightBrightness();
+    }
+    if (visionLocation == "lpa_vacancy_location") {
+        brightness = tcp_vision_location_lpa_vacancy.parameters.lightBrightness();
+    }
+    if (visionLocation == "lut_load_loaction") {
+        brightness = tcp_vision_location_lut_load.parameters.lightBrightness();
+    }
+    if (visionLocation == "lut_uplook_picker_location") {
+        brightness = tcp_vision_location_lut_uplook_picker.parameters.lightBrightness();
+    }
+    message["brightness"] = brightness;
+    QString messageString = TcpMessager::getStringFromJsonObject(message);
+    qInfo("Message: %s", messageString.toStdString().c_str());
+//    foreach (TcpMessager* temp_messager, sender_messagers) {
+//        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+//    }
+}
+
 void BaseModuleManager::setTcpModuleParameter(QString moduleName)
 {
     QJsonObject message;
@@ -2071,7 +2121,8 @@ void BaseModuleManager::updateParams()
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
-    saveParameters();
+    saveParameters();    
+    setTcpVisionLocationParameter(tcp_vision_location_lpa_lens.parameters.locationName());
     if (this->m_InitState && ServerMode() == 1)  //If this is AA2, set the remote tcp parameter to AA1 parameter
     {
         setTcpModuleParameter(tcp_aaCoreNew.Name());
@@ -2079,6 +2130,7 @@ void BaseModuleManager::updateParams()
         setTcpModuleParameter(tcp_lensTrayLoaderModule.Name());
         setTcpModuleParameter(tcp_lutModule.Name());
         setTcpModuleParameter(tcp_lensLoaderModule.Name());
+        //setTcpVisionLocationParameter(tcp_vision_location_lpa_lens.parameters.locationName());
     } else if (this->m_InitState && ServerMode() == 0){  // If this is AA1, send the need update parameter request to AA2, and then AA2 will inquiry tcp parameter
         sendTcpUpdateParameterRequest();
     }

@@ -305,6 +305,7 @@ private:
     void inquiryTcpModuleParameter(QString moduleName);
     void sendTcpUpdateParameterRequest();            //Send the need update parameter signal from real module to tcp remote module
     void setTcpModuleParameter(QString moduleName);  //Send the tcp module parameter to real module (eg. from AA2 -> AA1)
+    void setTcpVisionLocationParameter(QString visionLocation);
     void sendTcpStepMoveRequest(QString motorName, double step_size, bool isPositive);
     void sendTcpEnableMotor(QString motorName, bool on);
     void sendTcpHomeMotor(QString motorName);

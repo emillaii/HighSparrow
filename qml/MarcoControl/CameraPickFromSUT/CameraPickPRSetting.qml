@@ -12,48 +12,48 @@ Column {
             text: qsTr("CPA Pick And Place SUT 1 PR Position")
         }
         Label{
-           text:qsTr("X")
+            text:qsTr("X")
         }
         TextField{
-           text: sut_pr_position1.X
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-               sut_pr_position1.setX(text)
-           }
+            text: sut_pr_position1.X
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sut_pr_position1.setX(text)
+            }
         }
         Label{
-           text:qsTr("Y")
+            text:qsTr("Y")
         }
         TextField{
-           text: sut_pr_position1.Y
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-               sut_pr_position1.setY(text)
-           }
+            text: sut_pr_position1.Y
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sut_pr_position1.setY(text)
+            }
         }
 
         Button{
-           text:title_read_encoder
-           onClicked: {
-               var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
-               var y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
-               sut_pr_position1.setX(x);
-               sut_pr_position1.setY(y);
-           }
+            text:title_read_encoder
+            onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                sut_pr_position1.setX(x);
+                sut_pr_position1.setY(y);
+            }
         }
         Button{
-           text:title_move_to
-           onClicked: {
-               logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1)
-           }
+            text:title_move_to
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS1)
+            }
         }
     }
     RowLayout {
@@ -61,54 +61,54 @@ Column {
             text: qsTr("CPA Pick And Place SUT 2 PR Position")
         }
         Label{
-           text:qsTr("X")
+            text:qsTr("X")
         }
         TextField{
-           text: sut_pr_position2.X
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-               sut_pr_position2.setX(text)
-           }
+            text: sut_pr_position2.X
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sut_pr_position2.setX(text)
+            }
         }
         Label{
-           text:qsTr("Y")
+            text:qsTr("Y")
         }
         TextField{
-           text: sut_pr_position2.Y
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-               sut_pr_position2.setY(text)
-           }
+            text: sut_pr_position2.Y
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sut_pr_position2.setY(text)
+            }
         }
 
         Button{
-           text:title_read_encoder
-           onClicked: {
-               var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
-               var y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
-               sut_pr_position2.setX(x);
-               sut_pr_position2.setY(y);
-           }
+            text:title_read_encoder
+            onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                sut_pr_position2.setX(x);
+                sut_pr_position2.setY(y);
+            }
         }
         Button{
-           text:title_move_to
-           onClicked: {
-               logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2)
-           }
+            text:title_move_to
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SUT_POS2)
+            }
         }
     }
 
     RowLayout {
         RoundButton{
-            id: sut_1_downlook_location_lock
+            id: sut_empty_location_lock
             transformOrigin: Item.Center
             display: Button.TextBesideIcon
             icon.width: 30
@@ -116,39 +116,52 @@ Column {
             icon.source: "../../../icons/unlock.png"
             icon.color: "red"
             onClicked: {
-                sut_1_downlook_location_slider.enabled = !sut_1_downlook_location_slider.enabled
-                if (sut_1_downlook_location_slider.enabled) {
-                    sut_1_downlook_location_lock.icon.color = "lightGreen"
+                sut_empty_location_lock_slider.enabled = !sut_empty_location_lock_slider.enabled
+                if (sut_empty_location_lock_slider.enabled) {
+                    sut_empty_location_lock.icon.color = "lightGreen"
                 } else {
-                    sut_1_downlook_location_lock.icon.color = "red"
+                    sut_empty_location_lock.icon.color = "red"
                 }
-                sut_1_downlook_location_slider.value = tcp_vision_location_aa1_downlook.lightBrightness
+                sut_empty_location_lock_slider.value = sut_location.lightBrightness
             }
         }
         Slider {
-            id: sut_1_downlook_location_slider
+            id: sut_empty_location_lock_slider
             enabled: false
             width: 25
             from: 0
-            value: tcp_vision_location_aa1_downlook.lightBrightness
+            value: sut_location.lightBrightness
             to: 255
             stepSize: 1
             onValueChanged: {
-                tcp_vision_location_aa1_downlook.setLightBrightness(value)
-                lightingController.setDownlookLighting(value)
+                sut_location.setLightBrightness(value)
+                lightingController.setSensorPickarmLighting(value)
             }
         }
         Label {
-            text: sut_1_downlook_location_slider.value
+            text: sut_empty_location_lock_slider.value
         }
         Button{
-            text:qsTr("SUT 1 Camera PR Draw")
+            text:qsTr("SUT Empty PR Draw")
             onClicked: {
+                highSprrow.callAVSPRSettingProcess("GenericNCCavproj.avexe", "sut_location");
+            }
+        }
+        RoundButton{
+            transformOrigin: Item.Center
+            display: Button.TextBesideIcon
+            icon.width: 30
+            icon.height: 30
+            icon.source: "../../../icons/refresh.png"
+            icon.color: "cyan"
+            onClicked: {
+                sut_location_image.source = ""
+                sut_location_image.source = "file:///" + dirPath + "//config//prConfig//sut_location_resultImage.jpg"
             }
         }
         TextField{
             color: "#57f529"
-            text: tcp_vision_location_aa1_downlook.prFileName
+            text: sut_location.locationName
             font.pixelSize: 14
             width: 600
             Layout.preferredWidth: 600
@@ -156,29 +169,31 @@ Column {
     }
     RowLayout {
         Button{
-            text:qsTr("执行Calibration")
-            onClicked:{
-                logicManager.performHandling("", LogicManager.HANDLING_CALIBRATION, "aa1_downLook_location")
-            }
-        }
-        Button{
             text:qsTr("执行PR")
             onClicked:{
-                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION,"aa1_downLook_location")
+                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION,"sut_location")
             }
         }
         Button{
             text:qsTr("执行PR偏移")
             onClicked:{
-                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION,"aa1_downLook_location")
+                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION,"sut_location")
             }
+        }
+        Image{
+            id: sut_location_image
+            cache: false
+            sourceSize.width: 250
+            sourceSize.height: 250
+            fillMode: Image.PreserveAspectFit
+            source: "file:///" + dirPath + "//config//prConfig//sut_location_resultImage.jpg"
         }
     }
 
 
     RowLayout {
         RoundButton{
-            id: sut_2_downlook_location_lock
+            id: sut_camera_location_lock
             transformOrigin: Item.Center
             display: Button.TextBesideIcon
             icon.width: 30
@@ -186,38 +201,51 @@ Column {
             icon.source: "../../../icons/unlock.png"
             icon.color: "red"
             onClicked: {
-                sut_2_downlook_location_slider.enabled = !sut_2_downlook_location_slider.enabled
-                if (sut_2_downlook_location_slider.enabled) {
-                    sut_2_downlook_location_lock.icon.color = "lightGreen"
+                sut_camera_location_slider.enabled = !sut_camera_location_slider.enabled
+                if (sut_camera_location_slider.enabled) {
+                    sut_camera_location_lock.icon.color = "lightGreen"
                 } else {
-                    sut_2_downlook_location_lock.icon.color = "red"
+                    sut_camera_location_lock.icon.color = "red"
                 }
             }
         }
         Slider {
-            id: sut_2_downlook_location_slider
+            id: sut_camera_location_slider
             enabled: false
             width: 25
             from: 0
-            value: aa2_downLook_location.lightBrightness
+            value: sut_camera_location.lightBrightness
             to: 255
             stepSize: 1
             onValueChanged: {
-                aa2_downLook_location.setLightBrightness(value)
-                lightingController.setAA2DownlookLighting(value)
+                sut_camera_location.setLightBrightness(value)
+                lightingController.setSensorPickarmLighting(value)
             }
         }
         Label {
-            text: sut_2_downlook_location_slider.value
+            text: sut_camera_location_slider.value
         }
         Button{
-            text:qsTr("SUT 2 Camera PR Draw")
+            text:qsTr("SUT Product PR Draw")
             onClicked: {
+                highSprrow.callAVSPRSettingProcess("GenericNCCavproj.avexe", "sut_camera_location");
+            }
+        }
+        RoundButton{
+            transformOrigin: Item.Center
+            display: Button.TextBesideIcon
+            icon.width: 30
+            icon.height: 30
+            icon.source: "../../../icons/refresh.png"
+            icon.color: "cyan"
+            onClicked: {
+                sut_camera_location_image.source = ""
+                sut_camera_location_image.source = "file:///" + dirPath + "//config//prConfig//sut_camera_location_resultImage.jpg"
             }
         }
         TextField{
             color: "#57f529"
-            text: aa2_downLook_location.prFileName
+            text: sut_camera_location.locationName
             font.pixelSize: 14
             width: 600
             Layout.preferredWidth: 600
@@ -225,22 +253,107 @@ Column {
     }
     RowLayout {
         Button{
-            text:qsTr("执行Calibration")
-            onClicked:{
-                logicManager.performHandling("", LogicManager.HANDLING_CALIBRATION, "aa2_downLook_location")
-            }
-        }
-        Button{
             text:qsTr("执行PR")
             onClicked:{
-                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, "aa2_downLook_location")
+                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, "sut_camera_location")
             }
         }
         Button{
             text:qsTr("执行PR偏移")
             onClicked:{
-                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "aa2_downLook_location")
+                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "sut_camera_location")
             }
+        }
+        Image{
+            id: sut_camera_location_image
+            cache: false
+            sourceSize.width: 250
+            sourceSize.height: 250
+            fillMode: Image.PreserveAspectFit
+            source: "file:///" + dirPath + "//config//prConfig//sut_camera_location_resultImage.jpg"
+        }
+    }
+
+    RowLayout {
+        RoundButton{
+            id: sut_ng_sensor_location_lock
+            transformOrigin: Item.Center
+            display: Button.TextBesideIcon
+            icon.width: 30
+            icon.height: 30
+            icon.source: "../../../icons/unlock.png"
+            icon.color: "red"
+            onClicked: {
+                sut_ng_sensor_location_slider.enabled = !sut_ng_sensor_location_slider.enabled
+                if (sut_ng_sensor_location_slider.enabled) {
+                    sut_ng_sensor_location_lock.icon.color = "lightGreen"
+                } else {
+                    sut_ng_sensor_location_lock.icon.color = "red"
+                }
+            }
+        }
+        Slider {
+            id: sut_ng_sensor_location_slider
+            enabled: false
+            width: 25
+            from: 0
+            value: sut_ng_sensor_location.lightBrightness
+            to: 255
+            stepSize: 1
+            onValueChanged: {
+                sut_ng_sensor_location.setLightBrightness(value)
+                lightingController.setSensorPickarmLighting(value)
+            }
+        }
+        Label {
+            text: sut_ng_sensor_location_slider.value
+        }
+        Button{
+            text:qsTr("SUT Product PR Draw")
+            onClicked: {
+                highSprrow.callAVSPRSettingProcess("GenericNCCavproj.avexe", "sut_ng_sensor_location");
+            }
+        }
+        RoundButton{
+            transformOrigin: Item.Center
+            display: Button.TextBesideIcon
+            icon.width: 30
+            icon.height: 30
+            icon.source: "../../../icons/refresh.png"
+            icon.color: "cyan"
+            onClicked: {
+                sut_ng_sensor_location_image.source = ""
+                sut_ng_sensor_location_image.source = "file:///" + dirPath + "//config//prConfig//sut_ng_sensor_location_resultImage.jpg"
+            }
+        }
+        TextField{
+            color: "#57f529"
+            text: sut_ng_sensor_location.locationName
+            font.pixelSize: 14
+            width: 600
+            Layout.preferredWidth: 600
+        }
+    }
+    RowLayout {
+        Button{
+            text:qsTr("执行PR")
+            onClicked:{
+                logicManager.performHandling("", LogicManager.HANDLING_ORIGIN_LOCATION, "sut_ng_sensor_location")
+            }
+        }
+        Button{
+            text:qsTr("执行PR偏移")
+            onClicked:{
+                logicManager.performHandling("", LogicManager.HANDLING_OFFSET_LOCATION, "sut_ng_sensor_location")
+            }
+        }
+        Image{
+            id: sut_ng_sensor_location_image
+            cache: false
+            sourceSize.width: 250
+            sourceSize.height: 250
+            fillMode: Image.PreserveAspectFit
+            source: "file:///" + dirPath + "//config//prConfig//sut_ng_sensor_location_resultImage.jpg"
         }
     }
 

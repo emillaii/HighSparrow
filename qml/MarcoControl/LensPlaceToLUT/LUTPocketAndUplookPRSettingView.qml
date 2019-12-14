@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.2
 import LogicManagerLib 1.1
 import SomeLib 1.1
+import LutModuleLib 1.1
 
 ColumnLayout {
     Label { text: qsTr("PR Draw") }
@@ -272,12 +273,21 @@ ColumnLayout {
     RowLayout {
         Button {
             text: qsTr("LUT移动到Load位置")
+            onClicked: {
+                logicManager.performHandling(tcpLUTParams.moduleName, LutModule.LOAD_POS)
+            }
         }
         Button {
             text: qsTr("LPA移动到LUT1 Pocket PR Position")
+            onClicked: {
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS1)
+            }
         }
         Button {
             text: qsTr("LPA移动到LUT2 Pocket PR Position")
+            onClicked: {
+                logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2)
+            }
         }
         Button {
             text: qsTr("LPA移动到Up Look PR Position")

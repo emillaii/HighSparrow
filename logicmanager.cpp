@@ -30,7 +30,7 @@ void LogicManager::init(BaseModuleManager *device_manager)
 
 void LogicManager::performHandling(QString module_name,int cmd,QVariant param)
 {
-    qInfo("performHandling: %s", param.toString().toStdString().c_str());
+    qInfo("performHandling in module: %s cmd: %s params: %s", module_name.toStdString().c_str(), cmd, param.toString().toStdString().c_str());
     emit sendPerformHandling(module_name,cmd,param);
 }
 

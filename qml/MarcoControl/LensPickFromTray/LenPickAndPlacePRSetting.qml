@@ -36,6 +36,7 @@ GroupBox{
                stepSize: 1
                onValueChanged: {
                    lightingController.setPickarmLighting(value)
+                   tcp_vision_location_lpa_lens.setLightBrightness(value)
                }
            }
 
@@ -127,6 +128,7 @@ GroupBox{
                stepSize: 1
                onValueChanged: {
                    lightingController.setPickarmLighting(value)
+                   tcp_vision_location_lpa_vacancy.setLightBrightness(value)
                }
            }
 

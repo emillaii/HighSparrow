@@ -19,6 +19,10 @@ void SensorPickArm::Init(XtMotor *motor_x, XtMotor *motor_y, MaterialPicker *pic
     parts.append(this->picker2->motor_t);
     parts.append(this->picker2->motor_z);
     parts.append(this->picker2->vacuum);
+    this->parameters.setSpaVaccum1InIoName(picker1->vacuum->parameters.inIoName());
+    this->parameters.setSpaVaccum2InIoName(picker2->vacuum->parameters.inIoName());
+    this->parameters.setSpaVaccum1OutIoName(picker1->vacuum->parameters.outIoName());
+    this->parameters.setSpaVaccum2OutIoName(picker2->vacuum->parameters.outIoName());
 }
 
 bool SensorPickArm::checkXYArrived(const double x, const double y)

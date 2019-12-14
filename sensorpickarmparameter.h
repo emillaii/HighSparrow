@@ -11,7 +11,6 @@ class SensorPickArmParameter: public PropertyBase
 public:
     SensorPickArmParameter():PropertyBase(){}
     Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
-//    Q_PROPERTY(QString motorTrayName READ motorTrayName WRITE setMotorTrayName NOTIFY motorTrayNameChanged)
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
     Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
     Q_PROPERTY(QString motorTName READ motorTName WRITE setMotorTName NOTIFY motorTNameChanged)
@@ -19,6 +18,10 @@ public:
     Q_PROPERTY(QString motorZ2Name READ motorZ2Name WRITE setMotorZ2Name NOTIFY motorZ2NameChanged)
     Q_PROPERTY(QString motorT2Name READ motorT2Name WRITE setMotorT2Name NOTIFY motorT2NameChanged)
     Q_PROPERTY(QString vacuum2Name READ vacuum2Name WRITE setVacuum2Name NOTIFY vacuum2NameChanged)
+    Q_PROPERTY(QString spaVaccum1OutIoName READ spaVaccum1OutIoName WRITE setSpaVaccum1OutIoName NOTIFY spaVaccum1OutIoNameChanged)
+    Q_PROPERTY(QString spaVaccum1InIoName READ spaVaccum1InIoName WRITE setSpaVaccum1InIoName NOTIFY spaVaccum1InIoNameChanged)
+    Q_PROPERTY(QString spaVaccum2OutIoName READ spaVaccum2OutIoName WRITE setSpaVaccum2OutIoName NOTIFY spaVaccum2OutIoNameChanged)
+    Q_PROPERTY(QString spaVaccum2InIoName READ spaVaccum2InIoName WRITE setSpaVaccum2InIoName NOTIFY spaVaccum2InIoNameChanged)
     Q_PROPERTY(double motor1SafeHeight READ motor1SafeHeight WRITE setMotor1SafeHeight NOTIFY motor1SafeHeightChanged)
     Q_PROPERTY(double motor2SafeHeight READ motor2SafeHeight WRITE setMotor2SafeHeight NOTIFY motor2SafeHeightChanged)
     Q_PROPERTY(double processPositionError READ processPositionError WRITE setProcessPositionError NOTIFY processPositionErrorChanged)
@@ -26,10 +29,6 @@ public:
     {
         return m_motorXName;
     }
-//    QString motorTrayName() const
-//    {
-//        return m_motorTrayName;
-//    }
 
     QString motorYName() const
     {
@@ -81,6 +80,26 @@ public:
         return m_processPositionError;
     }
 
+    QString spaVaccum1OutIoName() const
+    {
+        return m_spaVaccum1OutIoName;
+    }
+
+    QString spaVaccum1InIoName() const
+    {
+        return m_spaVaccum1InIoName;
+    }
+
+    QString spaVaccum2OutIoName() const
+    {
+        return m_spaVaccum2OutIoName;
+    }
+
+    QString spaVaccum2InIoName() const
+    {
+        return m_spaVaccum2InIoName;
+    }
+
 public slots:
     void setMotorXName(QString motorXName)
     {
@@ -90,14 +109,6 @@ public slots:
         m_motorXName = motorXName;
         emit motorXNameChanged(m_motorXName);
     }
-//    void setMotorTrayName(QString motorTrayName)
-//    {
-//        if (m_motorTrayName == motorTrayName)
-//            return;
-
-//        m_motorTrayName = motorTrayName;
-//        emit motorTrayNameChanged(m_motorTrayName);
-//    }
 
     void setMotorYName(QString motorYName)
     {
@@ -192,9 +203,44 @@ public slots:
         emit processPositionErrorChanged(m_processPositionError);
     }
 
+    void setSpaVaccum1OutIoName(QString spaVaccum1OutIoName)
+    {
+        if (m_spaVaccum1OutIoName == spaVaccum1OutIoName)
+            return;
+
+        m_spaVaccum1OutIoName = spaVaccum1OutIoName;
+        emit spaVaccum1OutIoNameChanged(m_spaVaccum1OutIoName);
+    }
+
+    void setSpaVaccum1InIoName(QString spaVaccum1InIoName)
+    {
+        if (m_spaVaccum1InIoName == spaVaccum1InIoName)
+            return;
+
+        m_spaVaccum1InIoName = spaVaccum1InIoName;
+        emit spaVaccum1InIoNameChanged(m_spaVaccum1InIoName);
+    }
+
+    void setSpaVaccum2OutIoName(QString spaVaccum2OutIoName)
+    {
+        if (m_spaVaccum2OutIoName == spaVaccum2OutIoName)
+            return;
+
+        m_spaVaccum2OutIoName = spaVaccum2OutIoName;
+        emit spaVaccum2OutIoNameChanged(m_spaVaccum2OutIoName);
+    }
+
+    void setSpaVaccum2InIoName(QString spaVaccum2InIoName)
+    {
+        if (m_spaVaccum2InIoName == spaVaccum2InIoName)
+            return;
+
+        m_spaVaccum2InIoName = spaVaccum2InIoName;
+        emit spaVaccum2InIoNameChanged(m_spaVaccum2InIoName);
+    }
+
 signals:
     void motorXNameChanged(QString motorXName);
-//    void motorTrayNameChanged(QString motorTrayName);
 
     void motorYNameChanged(QString motorYName);
 
@@ -216,9 +262,16 @@ signals:
 
     void processPositionErrorChanged(double processPositionError);
 
+    void spaVaccum1OutIoNameChanged(QString spaVaccum1OutIoName);
+
+    void spaVaccum1InIoNameChanged(QString spaVaccum1InIoName);
+
+    void spaVaccum2OutIoNameChanged(QString spaVaccum2OutIoName);
+
+    void spaVaccum2InIoNameChanged(QString spaVaccum2InIoName);
+
 private:
     QString m_motorXName = "";
-//    QString m_motorTrayName = "";
     QString m_motorYName = "";
     QString m_motorZName = "";
     QString m_motorTName = "";
@@ -229,6 +282,10 @@ private:
     double m_motor1SafeHeight = 0;
     double m_motor2SaftHeight = 0;
     double m_processPositionError = 1;
+    QString m_spaVaccum1OutIoName;
+    QString m_spaVaccum1InIoName;
+    QString m_spaVaccum2OutIoName;
+    QString m_spaVaccum2InIoName;
 };
 
 #endif // SENSORPICKARMPARAMETER_H

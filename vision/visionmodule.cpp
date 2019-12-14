@@ -1179,8 +1179,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::Image image6;
         avl::Image image7;
         atl::Array< atl::Conditional< avl::Region > > regionArray1;
-        //avl::LoadImage( "pr//19-39-23-431_raw.jpg", false, image1 );
-        this->grabImageFromCamera(camera_name, image1);
+        avl::LoadImage( "test.jpg", false, image1 );
+        //this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
         prResult.rawImageName = rawImageName;
         //        bool isSearchRegionFound = true;

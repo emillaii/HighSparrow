@@ -231,6 +231,17 @@ void BaseModuleManager::tcpResp(QString message)
                 saveParameters();
             }
         }
+        else if (cmd == "setVisionLocationParameter")
+        {
+             QString visionLocationName = message_object["visionLocationName"].toString();
+             int brightness = message_object["brightness"].toInt(0);
+             qDebug("setVisionLocationParameter vision location name: %s brightness: %d", visionLocationName.toStdString().c_str(), brightness);
+             if(vision_locations[visionLocationName] != Q_NULLPTR) {
+                 qDebug("setVisionLocationParameter vision location name: %s brightness: %d success", visionLocationName.toStdString().c_str(), brightness);
+                 vision_locations[visionLocationName]->parameters.setLightBrightness(brightness);
+             }
+             saveParameters();
+        }
         else if (cmd == "needUpdateParameter")
         {
             qInfo("Receive need update parameter");
@@ -1767,9 +1778,9 @@ void BaseModuleManager::setTcpVisionLocationParameter(QString visionLocation)
     message["brightness"] = brightness;
     QString messageString = TcpMessager::getStringFromJsonObject(message);
     qInfo("Message: %s", messageString.toStdString().c_str());
-//    foreach (TcpMessager* temp_messager, sender_messagers) {
-//        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
-//    }
+    foreach (TcpMessager* temp_messager, sender_messagers) {
+        temp_messager->sendMessage(TcpMessager::getStringFromJsonObject(message));
+    }
 }
 
 void BaseModuleManager::setTcpModuleParameter(QString moduleName)
@@ -2121,8 +2132,7 @@ void BaseModuleManager::updateParams()
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::saveJsonConfig(BASE_MODULE_JSON,temp_map);
-    saveParameters();    
-    setTcpVisionLocationParameter(tcp_vision_location_lpa_lens.parameters.locationName());
+    saveParameters();
     if (this->m_InitState && ServerMode() == 1)  //If this is AA2, set the remote tcp parameter to AA1 parameter
     {
         setTcpModuleParameter(tcp_aaCoreNew.Name());
@@ -2130,7 +2140,18 @@ void BaseModuleManager::updateParams()
         setTcpModuleParameter(tcp_lensTrayLoaderModule.Name());
         setTcpModuleParameter(tcp_lutModule.Name());
         setTcpModuleParameter(tcp_lensLoaderModule.Name());
-        //setTcpVisionLocationParameter(tcp_vision_location_lpa_lens.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_lpa_lens.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_lpa_lut.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_lut_load.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_aa1_uplook.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_lpa_lut_ng.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_lpa_vacancy.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_aa1_downlook.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_lpa_lut_lens.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_aa1_mushroomhead.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_aa1_updownlook_up.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_lut_uplook_picker.parameters.locationName());
+        setTcpVisionLocationParameter(tcp_vision_location_aa1_updownlook_down.parameters.locationName());
     } else if (this->m_InitState && ServerMode() == 0){  // If this is AA1, send the need update parameter request to AA2, and then AA2 will inquiry tcp parameter
         sendTcpUpdateParameterRequest();
     }

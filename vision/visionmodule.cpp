@@ -179,7 +179,7 @@ void VisionModule::RegionJudge( RegionJudgeState& state, const avl::Image& inSub
     outRegion3 = outRegion;
 }
 
-void VisionModule::WidthJudge( WidthJudgeState& state, bool inRegionOk, atl::Conditional< const avl::Region& > inRegion, float inResolution, float inMinWidth, const avl::Image& inAfterImage, float inMaxAveWidth, bool& outResultOK, avl::Image& outResultImage, atl::Conditional< float >& outMaxWidth, atl::Conditional< float >& outMinWidth, atl::Conditional< float >& outAveWidth )
+void VisionModule::WidthJudge( WidthJudgeState& state, bool inRegionOk, atl::Conditional< const avl::Region& > inRegion, float inResolution, float inMinWidth, float inMaxWidth, const avl::Image& inAfterImage, float inMaxAveWidth, bool& outResultOK, avl::Image& outResultImage, atl::Conditional< float >& outMaxWidth, atl::Conditional< float >& outMinWidth, atl::Conditional< float >& outAveWidth )
 {
     atl::Array<atl::Conditional<atl::String>> g_constData1;
     atl::Array<atl::Conditional<avl::Location>> g_constData2;
@@ -190,6 +190,7 @@ void VisionModule::WidthJudge( WidthJudgeState& state, bool inRegionOk, atl::Con
     atl::String g_constData7;
     atl::Array<atl::Conditional<avl::Location>> g_constData8;
 
+    outResultOK = false;
     g_constData1.Reset(1);
     g_constData1[0] = "胶线破损严重";
 
@@ -244,7 +245,6 @@ void VisionModule::WidthJudge( WidthJudgeState& state, bool inRegionOk, atl::Con
 
         avs::DrawPaths_SingleColor( state.image1, state.pathArray1, atl::NIL, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), true, outResultImage );
         avl::SaveImageToJpeg(outResultImage , imageName.toStdString().c_str(), atl::NIL, false);
-        outResultOK = false;
         outMaxWidth = atl::NIL;
         outMinWidth = atl::NIL;
         outAveWidth = atl::NIL;
@@ -399,13 +399,15 @@ void VisionModule::WidthJudge( WidthJudgeState& state, bool inRegionOk, atl::Con
 
         if (outMaxWidth != atl::NIL && state.string2 != atl::NIL && state.string1 != atl::NIL)
         {
+            if (outMinWidth.Get() < inMinWidth || outMaxWidth.Get() > inMaxWidth || outAveWidth.Get() > inMaxAveWidth) outResultOK = false;
+            else outResultOK = true;
             state.string3.AssignNonNil();
 
             avl::BoolToString( outResultOK, state.string4 );
             avl::RealToString( outMaxWidth.Get(), state.string5 );
 
             // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
-            avs::AvsFilter_ConcatenateStrings( g_constData4, state.string4, g_constData5, state.string5, g_constData6, state.string2.Get(), g_constData7, state.string1.Get(), state.string3.Get() );
+            avs::AvsFilter_ConcatenateStrings( g_constData4, state.string4, g_constData6, state.string2.Get(), g_constData5, state.string5, g_constData7, state.string1.Get(), state.string3.Get() );
         }
         else
         {
@@ -414,8 +416,11 @@ void VisionModule::WidthJudge( WidthJudgeState& state, bool inRegionOk, atl::Con
 
         state.stringArray4.Resize(1);
         state.stringArray4[0] = state.string3;
-        avs::DrawStrings_SingleColor( state.image5, state.stringArray4, g_constData8, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 0.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), 22.0f, 0.0f, true, atl::NIL, outResultImage );
-        qDebug("Width Judge function done");
+        if (outResultOK)
+            avs::DrawStrings_SingleColor( state.image5, state.stringArray4, g_constData8, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 0.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), 22.0f, 0.0f, true, atl::NIL, outResultImage );
+        else {
+            avs::DrawStrings_SingleColor( state.image5, state.stringArray4, g_constData8, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 1.0f), 22.0f, 0.0f, true, atl::NIL, outResultImage );
+        }
         //avl::SaveImageToJpeg(outResultImage , imageName.toStdString().c_str(), atl::NIL, false);
     }
     else
@@ -1619,7 +1624,8 @@ void EnableControl( bool inObject )
 }
 
 ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth, double maxWidth, double maxAvgWidth,
-                                              QString beforeImage, QString afterImage, QString *glueInspectionImageName)
+                                              QString beforeImage, QString afterImage, QString *glueInspectionImageName,
+                                              double *outMinGlueWidth, double *outMaxGlueWidth, double *outMaxAvgGlueWidth)
 {
     ErrorCodeStruct error_code = { OK, "" };
     atl::String file1;
@@ -1648,10 +1654,10 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
             .append(getCurrentTimeString())
             .append("_glue_inspection_result.jpg");
 
-    file1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\before\\2.jpg";
-    file2 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\after\\2_d.jpg";
-    //file1 = beforeImage.toStdString().c_str();
-    //file2 = afterImage.toStdString().c_str();
+    //file1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\before\\2.jpg";
+    //file2 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\after\\2_d.jpg";
+    file1 = beforeImage.toStdString().c_str();
+    file2 = afterImage.toStdString().c_str();
     qDebug("Going to do the glueInspection. Before Dispense Image: %s After dispense image: %s", beforeImage.toStdString().c_str(), afterImage.toStdString().c_str());
     try {
         avl::LoadImage( file1, false, image1 );
@@ -1673,16 +1679,20 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
         bool outResultOK = true;
         atl::Conditional<float> outMaxWidth = 0; atl::Conditional<float> outMinWidth = 0; atl::Conditional<float> outAveWidth = 0;
 
-        WidthJudge( widthJudgeState1, bool1, region5, resolution, minWidth, image2, maxAvgWidth, outResultOK, image3, outMaxWidth, outMinWidth, outAveWidth );
+        WidthJudge( widthJudgeState1, bool1, region5, resolution, minWidth, maxWidth, image2, maxAvgWidth, outResultOK, image3, outMaxWidth, outMinWidth, outAveWidth );
 
-        float outMaxWidth_f = 0, outMinWidth_f = 0, outAvgWidth_f = 0;
-        if (outMaxWidth.HasValue()) outMaxWidth_f = outMaxWidth.Get();
-        if (outMinWidth.HasValue()) outMinWidth_f = outMinWidth.Get();
-        if (outAveWidth.HasValue()) outMinWidth_f = outAveWidth.Get();
-
-        qInfo("Glue Inspection result: %d outMaxWidth: %f outMinWidth: %f outAvgWidth: %f", outResultOK, outMaxWidth_f, outMinWidth_f, outAvgWidth_f);
+        if (outMaxWidth.HasValue()) *outMaxGlueWidth = outMaxWidth.Get();
+        if (outMinWidth.HasValue()) *outMinGlueWidth = outMinWidth.Get();
+        if (outAveWidth.HasValue()) *outMaxAvgGlueWidth = outAveWidth.Get();
+        qDebug("Glue Inspection result: %d outMaxWidth: %f outMinWidth: %f outAvgWidth: %f", outResultOK, outMaxWidth.Get(),  outMinWidth.Get(), outAveWidth.Get());
         avl::SaveImageToJpeg( image3, outResultImageName.toStdString().c_str(), atl::NIL, false );
         *glueInspectionImageName = outResultImageName;
+        if (outResultOK) {
+            return error_code;
+        } else {
+            error_code.code = ErrorCode::GLUE_INSPECTION_FAIL;
+            return error_code;
+        }
     }catch(const atl::Error& error) {
         error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
         qWarning(error.Message());

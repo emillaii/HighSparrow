@@ -85,8 +85,8 @@ $(document).ready(function () {
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT Y Offset in um: <input type=\"number\" id=\"dispense_y_offset_in_um\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT Z Offset in um: <input type=\"number\" id=\"dispense_z_offset_in_um\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Enable Glue Inspection: <select id=\"enable_glue_inspection\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
-  $dispense_operator_properties.append("<div style=\"margin-top:20px\">Max Glue Width in mm: <input type=\"number\" id=\"max_glue_width_in_mm\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Min Glue Width in mm: <input type=\"number\" id=\"min_glue_width_in_mm\"></div>");
+  $dispense_operator_properties.append("<div style=\"margin-top:20px\">Max Glue Width in mm: <input type=\"number\" id=\"max_glue_width_in_mm\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Max Avg Glue Width in mm: <input type=\"number\" id=\"max_avg_glue_width_in_mm\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"dispense_delay_in_ms\"></div>");
   

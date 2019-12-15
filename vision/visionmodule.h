@@ -105,12 +105,13 @@ public:
     ErrorCodeStruct PR_Generic_NCC_Template_Matching_Retry(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score);
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     ErrorCodeStruct Glue_Inspection(double resolution, double minWidth, double maxWidth, double maxAvgWidth,
-                                    QString beforeImage, QString afterImage, QString *glueInspectionImageName);
+                                    QString beforeImage, QString afterImage, QString *glueInspectionImageName,
+                                    double *outMinGlueWidth, double *outMaxGlueWidth, double *outMaxAvgGlueWidth);
     /*
      * Glue inspection
      */
     void RegionJudge( RegionJudgeState& state, const avl::Image& inSubtractImage, const avl::Image& inAfterImage, bool& outRegionOk, atl::Conditional< avl::Region >& outRegion, avl::Region& outRegion1, avl::Region& outRegion2, atl::Conditional< avl::Region >& outRegion3 );
-    void WidthJudge( WidthJudgeState& state, bool inRegionOk, atl::Conditional< const avl::Region& > inRegion, float inResolution, float inMinWidth, const avl::Image& inAfterImage, float inMaxAveWidth, bool& outResultOK, avl::Image& outResultImage, atl::Conditional< float >& outMaxWidth, atl::Conditional< float >& outMinWidth, atl::Conditional< float >& outAveWidth );
+    void WidthJudge( WidthJudgeState& state, bool inRegionOk, atl::Conditional< const avl::Region& > inRegion, float inResolution, float inMinWidth, float inMaxWidth, const avl::Image& inAfterImage, float inMaxAveWidth, bool& outResultOK, avl::Image& outResultImage, atl::Conditional< float >& outMaxWidth, atl::Conditional< float >& outMinWidth, atl::Conditional< float >& outAveWidth );
 
     /*
      * Prism Type Special PR

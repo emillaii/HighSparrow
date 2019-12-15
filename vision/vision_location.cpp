@@ -216,15 +216,16 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
     return  ErrorCode::OK == temp.code;
 }
 
-bool VisionLocation::performGlueInspection(QString beforeDispenseImageName, QString afterDispenseImageName,  QString *glueInspectionImageName)
+bool VisionLocation::performGlueInspection(QString beforeDispenseImageName, QString afterDispenseImageName,  QString *glueInspectionImageName,
+                                           double min_glue_width, double max_glue_width, double max_avg_glue_width,
+                                           double &outMinGlueWidth, double &outMaxGlueWidth, double &outMaxAvgGlueWidth)
 {
     double resolution = this->mapping->getXResolution();
-    double minGlueWidth = 0;
-    double maxGlueWidth = 0;
-    double maxAvgGlueWidth = 0;
-    ErrorCodeStruct temp = vison->Glue_Inspection(resolution, minGlueWidth, maxGlueWidth, maxAvgGlueWidth,
-                                                  beforeDispenseImageName, afterDispenseImageName, glueInspectionImageName);
-    return true;
+    ErrorCodeStruct temp = vison->Glue_Inspection(resolution, min_glue_width, max_glue_width, max_avg_glue_width,
+                                                  beforeDispenseImageName, afterDispenseImageName, glueInspectionImageName,
+                                                  &outMinGlueWidth, &outMaxGlueWidth, &outMaxAvgGlueWidth);
+    if (temp.code == ErrorCode::OK) return true;
+    else return false;
 }
 
 void VisionLocation::resetResult()

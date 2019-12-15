@@ -17,7 +17,9 @@ public:
     bool performPR();
     bool performNoMaterialPR();
     bool performPR(PRResultStruct &pr_result);
-    bool performGlueInspection(QString beforeDispenseImageName, QString afterDispenseImageName, QString *glueInspectionImageName);
+    bool performGlueInspection(QString beforeDispenseImageName, QString afterDispenseImageName, QString *glueInspectionImageName,
+                               double min_glue_width, double max_glue_width, double avg_glue_width,
+                               double &outMinGlueWidth, double &outMaxGlueWidth, double &outMaxAvgGlueWidth);
     void resetResult();
     QPointF getCurrentOffset();
 

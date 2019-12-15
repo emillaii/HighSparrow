@@ -993,11 +993,15 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
     double max_glue_width_in_mm = params["max_glue_width_in_mm"].toDouble(0);
     double min_glue_width_in_mm = params["min_glue_width_in_mm"].toDouble(0);
     double max_avg_glue_width_in_mm = params["max_avg_glue_width_in_mm"].toDouble(0);
-    qInfo("enable_glue_inspection: %d %f %f %f", enable_glue_inspection,
+    qDebug("enable_glue_inspection: %d %f %f %f", enable_glue_inspection,
           max_glue_width_in_mm, min_glue_width_in_mm, max_avg_glue_width_in_mm);
     int finish_delay = params["delay_in_ms"].toInt(0);
     QElapsedTimer timer; timer.start();
     QVariantMap map;
+
+    QString glueInspectionImageName = "";
+    double outMinGlueWidth = 0, outMaxGlueWidth = 0, outMaxAvgGlueWidth = 0;
+
     sut->recordCurrentPos();
     dispense->setMapPosition(sut->downlook_position.X(),sut->downlook_position.Y());
     // Check if downlook sensor pr is done or not
@@ -1015,7 +1019,7 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
     if(!dispense->performDispense()) { NgProduct(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
 
     current_dispense--;
-    if(parameters.enableCheckDispense())
+    if(enable_glue_inspection)
     {
         if(current_dispense<=0)
         {
@@ -1028,9 +1032,12 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
                             .append("_after_dispense.jpg");
 
             sut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
-            //ToDo: Glue
+
             QString glueInspectionImageName = "";
-            bool glueInspectionResult = sut->vision_downlook_location->performGlueInspection(imageBeforeDispense, imageNameAfterDispense, &glueInspectionImageName);
+            //Perform dispense inspection need the image before dispense file path and image after dispense file path
+            bool glueInspectionResult = sut->vision_downlook_location->performGlueInspection(imageBeforeDispense, imageNameAfterDispense, &glueInspectionImageName,
+                                                                                             min_glue_width_in_mm, max_glue_width_in_mm, max_avg_glue_width_in_mm,
+                                                                                             outMinGlueWidth, outMaxGlueWidth, outMaxAvgGlueWidth);
             qInfo("Glue Inspection result: %d glueInspectionImageName: %s", glueInspectionResult, glueInspectionImageName.toStdString().c_str());
             //ToDo: return QImage from this function
             if (!glueInspectionImageName.isEmpty()) {
@@ -1042,12 +1049,24 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
                 dispenseImageProvider->setImage(image);
                 emit callQmlRefeshImg(3);  //Emit dispense image to QML
             }
-            int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"画胶检查");
-            QString operation = waitMessageReturn(is_run,alarm_id);
-            if (REJECT_OPERATION == operation)
-            {
-                NgSensor();
-                return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, u8"画胶检查"};
+            if (!glueInspectionResult) {
+                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"画胶检查 Fail");
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if (REJECT_OPERATION == operation)
+                {
+                    NgSensor();
+                    map.insert("min_glue_width_spec_in_mm", min_glue_width_in_mm);
+                    map.insert("max_glue_width_spec_in_mm", max_glue_width_in_mm);
+                    map.insert("max_avg_glue_width_spec_in_mm", max_avg_glue_width_in_mm);
+                    map.insert("out_min_glue_width", outMinGlueWidth);
+                    map.insert("out_max_glue_width", outMaxGlueWidth);
+                    map.insert("out_max_avg_glue_width", outMaxAvgGlueWidth);
+                    map.insert("z_peak",sut->carrier->GetFeedBackPos().Z);
+                    map.insert("timeElapsed", timer.elapsed());
+                    map.insert("result", "Glue Inspection Fail");
+                    emit pushDataToUnit(this->runningUnit, "Dispense", map);
+                    return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, u8"画胶检查"};
+                }
             }
             current_dispense = parameters.checkDispenseCount();
         }
@@ -1059,8 +1078,15 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
     map.insert("x_offset_in_um",x_offset_in_um);
     map.insert("y_offset_in_um",y_offset_in_um);
     map.insert("z_offset_in_um",z_offset_in_um);
+    map.insert("min_glue_width_spec_in_mm", min_glue_width_in_mm);
+    map.insert("max_glue_width_spec_in_mm", max_glue_width_in_mm);
+    map.insert("max_avg_glue_width_spec_in_mm", max_avg_glue_width_in_mm);
+    map.insert("out_min_glue_width", outMinGlueWidth);
+    map.insert("out_max_glue_width", outMaxGlueWidth);
+    map.insert("out_max_avg_glue_width", outMaxAvgGlueWidth);
     map.insert("z_peak",sut->carrier->GetFeedBackPos().Z);
     map.insert("timeElapsed", timer.elapsed());
+    map.insert("result", "Pass");
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
     qInfo("Finish Dispense");
     return ErrorCodeStruct {ErrorCode::OK, ""};

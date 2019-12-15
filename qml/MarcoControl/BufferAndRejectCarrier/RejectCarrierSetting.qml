@@ -7,53 +7,41 @@ Column {
         Label { text: qsTr("料盘信息") }
     }
     RowLayout {
-        Label { text: qsTr("料盘1起点") }
+        Label { text: qsTr("料盘起点") }
         Label { text: qsTr("X") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            text: tray_start_point3.X
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                tray_start_point3.setX(text)
+            }
         }
         Label { text: qsTr("Y") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            text: tray_start_point3.Y
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                tray_start_point3.setY(text)
+            }
         }
         Button {
             text: title_read_encoder
-        }
-        Label { text: qsTr("料盘1终点") }
-        Label { text: qsTr("X") }
-        TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
-        }
-        Label { text: qsTr("Y") }
-        TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
-        }
-        Button {
-            text: title_read_encoder
+            onClicked: {
+                var x =0;
+                var y =0;
+                x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+                y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                tray_start_point3.setX(x);
+                tray_start_point3.setY(y);
+            }
         }
     }
     RowLayout {
@@ -62,50 +50,54 @@ Column {
     RowLayout {
         Label { text: qsTr("取料压力") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+            }
         }
         Label { text: qsTr("速度") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+            }
         }
         Label { text: qsTr("限力区间") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+            }
         }
     }
 
     RowLayout {
         Label { text: qsTr("Reject 放料区间") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            text:sensorLoaderParameter.placeToNgTrayMargin
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPlaceToNgTrayMargin(text)
+            }
         }
         CheckBox{
             text: qsTr("不限力")
-            onCheckedChanged: {
+            checked: sensorLoaderParameter.disablePlaceToNgTrayForceLimit
+            onClicked: {
+                sensorLoaderParameter.setDisablePlaceToNgTrayForceLimit(checked)
             }
         }
     }
@@ -114,33 +106,33 @@ Column {
         Label { text: qsTr("Reject Place Offset") }
         Label { text: qsTr("X") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+            }
         }
         Label { text: qsTr("Y") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+            }
         }
         Label { text: qsTr("Theta") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator{
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+            }
         }
         Button {
             text: title_read_encoder
@@ -153,22 +145,39 @@ Column {
     RowLayout {
         Label { text: qsTr("Reject Place高度") }
         TextField{
-           horizontalAlignment: TextInput.AlignHCenter
-           validator: DoubleValidator{
-               decimals: 6
-               notation: DoubleValidator.StandardNotation
-           }
-           onEditingFinished: {
-           }
+            text: sensorLoaderParameter.placeNgProductZ
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                sensorLoaderParameter.setPlaceNgProductZ(text)
+            }
         }
         Button {
             text: qsTr("视觉")
+            onClicked:{
+                material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.NG_SENSOR_TRAY_POS
+                                             +SensorLoaderModule.TRAY_EMPTY_PR
+                                             +SensorLoaderModule.TO_PR_OFFSET)
+            }
         }
         Button {
             text: qsTr("移动到取放位置")
+            onClicked: {
+                material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,2)
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.NG_SENSOR_TRAY_POS
+                                             +SensorLoaderModule.TRAY_EMPTY_PR
+                                             +SensorLoaderModule.TO_PLACE_NG_POS)
+            }
         }
         Button {
             text: qsTr("测高")
+            onClicked: {
+                logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.MEASURE_NG_SENSOR_IN_TRAY)
+            }
         }
     }
 

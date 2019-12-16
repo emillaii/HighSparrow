@@ -54,6 +54,7 @@
 #define GRABBER_DEBUG_DIR            "grabber_log//"
 #define MTF_DEBUG_DIR                "mtf_log//"
 #define UNIT_LOG_DIR                 "unit_log//"
+#define AA_LOG_DIR                   "aa_log//"
 #define PERFORMANCE_DIR              "performance//"
 #define AA_PROCESS_DIR               "aa_process//"
 #define PRODUCE_PROCESS_DIR          "produce_process//"

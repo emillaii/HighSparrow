@@ -74,6 +74,7 @@ bool Unitlog::postDataToELK(QString uuid)
     if (unit_log_list.contains(uuid))
     {
          QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
+         json["uuid"] = uuid;
          QJsonDocument doc(json);
          QUrl unitLogEndpoint = QString("http://192.168.0.250:5044");
          // QString unitLogEndpoint = serverAddress;
@@ -82,7 +83,6 @@ bool Unitlog::postDataToELK(QString uuid)
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));
          //json log
-//         qInfo(doc.toJson().toStdString().c_str());
          QString filename = "";
          filename.append(getUnitLogDir())
                          .append(getCurrentTimeString())
@@ -221,7 +221,7 @@ bool Unitlog::postUnitDataToCSV(QString uuid)
 
 bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
 {
-     data.insert("device_id", uuid);
+     data.insert("uuid", uuid);
      QJsonObject json = QJsonObject::fromVariantMap(data);
      QJsonDocument doc(json);
      //qInfo("Sfr log: %s", doc.toJson().toStdString().c_str());
@@ -235,7 +235,17 @@ bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
      {
 //       nam->post(request, doc.toJson());
 //       qInfo("Push sfr data to ELK success: %s", uuid.toStdString().c_str());
-         qInfo("save json to a txt");
+         {
+             QString filename = "";
+             filename.append(getAALogDir())
+                             .append(getCurrentTimeString())
+                             .append(".json");
+             QFile file(filename);
+             file.open(QIODevice::WriteOnly | QIODevice::Text);
+             file.write(doc.toJson());
+             file.close();
+         }
+
          QString filename = "";
          filename.append(getMTFLogDir())
                  .append("_")

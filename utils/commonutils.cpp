@@ -37,6 +37,7 @@ QString getShareDir(){ return getDir(SHARE_DIR); }
 QString getGrabberLogDir(){ return getDir(GRABBER_DEBUG_DIR); }
 QString getMTFLogDir(){ return getDir(MTF_DEBUG_DIR); }
 QString getUnitLogDir(){ return getDir(UNIT_LOG_DIR); }
+QString getAALogDir(){ return getDir(AA_LOG_DIR); }
 QString getDispensePrLogDir() { return getDir(DISPENSE_VISION_PR_DIR); }
 
 void writeFile(QString data, QString dir, QString filename)

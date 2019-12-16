@@ -21,6 +21,9 @@
 #include <math.h>
 #include "tcpmessager.h"
 #include "materialtray.h"
+#include "utils/uiHelper/uioperation.h"
+#include "utils/singletoninstances.h"
+
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX,
                         double & localMaxY, double & error_avg, double & error_dev, vector<double> & y_output) {
     size_t n = x.size();
@@ -3672,18 +3675,21 @@ void AACoreNew::sfrImageReady(QImage img)
 
 void AACoreNew::captureLiveImage()
 {
-//    if(!dk->DothinkeyIsGrabbing()) {
-//        qInfo("Image Grabber is not ON");
-//        return;
-//    }
-//    bool grabRet = false;
-//    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
-//    if (!grabRet) {
-//        qWarning("AA Cannot grab image.");
-//        return;
-//    }
-//    cv::imwrite("livePhoto.bmp", img);
-
+    if(!dk->DothinkeyIsGrabbing()) {
+        qInfo("Image Grabber is not ON");
+        SI::ui.showMessage("AA Core", QString("Save Image Fail! Image Grabber is not open"), MsgBoxIcon::Error, "OK");
+        return;
+    }
+    bool grabRet = false;
+    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        SI::ui.showMessage("AA Core", QString("Save Image Fail! Image Grabber is not open"), MsgBoxIcon::Error, "OK");
+        qWarning("AA Cannot grab image.");
+        return;
+    } else {
+        cv::imwrite("livePhoto.bmp", img);
+        SI::ui.showMessage("AA Core", QString("Save Image Success! You can start AA Core parameter debug."), MsgBoxIcon::Information, "OK");
+    }
 }
 
 void AACoreNew::aaCoreParametersChanged()

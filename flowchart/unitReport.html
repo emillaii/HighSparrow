@@ -31,19 +31,21 @@ tr:nth-child(even) {
   background-color: #dddddd;
 }
 </style>
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
 <title>Page Title</title>
 </head>
 <body>
 
 <h1>Silicool Data Reporting</h1>
 <h2 id="sensorID"></h2>
-<!---
+
 <input type="file" id="files" name="files[]" multiple />
 <output id="list"></output>
---->
+
 <div id="timeContainer"></div>
 <div id="container"></div>
 <div id="container1"></div>
+<div id="tableContainer"></div>
 
 </body>
 <script type="text/javascript" src="echarts.min.js"></script>
@@ -252,7 +254,7 @@ tr:nth-child(even) {
 	//End of Draw Time chart
 	function displayData(inputData) {
 		sfr_count = 0;
-		//var myData = JSON.parse($('#myTextarea').val());
+		document.getElementById("tableContainer").innerHTML = "";
 		var myData = JSON.parse(inputData);
 		var table = document.getElementById("myTable");
 		option = null;
@@ -261,10 +263,10 @@ tr:nth-child(even) {
 		for (var operatorName in myData) {
 			var title = document.createElement("h1");
 			title.innerHTML = operatorName;
-			document.body.appendChild(title);
+			document.getElementById("tableContainer").appendChild(title);
 			var x = document.createElement("table");
 			x.setAttribute("id", "table_"+operatorName);
-			document.body.appendChild(x);
+			document.getElementById("tableContainer").appendChild(x);
 			var row = x.insertRow();
 			var row1 = x.insertRow(-1);
 			var count = 0;

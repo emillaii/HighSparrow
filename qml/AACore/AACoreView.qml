@@ -649,27 +649,6 @@ ScrollView {
                             }
                         }
                     }
-
-                    RowLayout {
-                        Label {
-                            id: chartCalibrationTheta
-                            text: qsTr("")
-                        }
-                        RoundButton{
-                            text: qsTr("Take Photo")
-                            onClicked: {
-                                aaNewCore.captureLiveImage()
-                                visionModule.aaDebugImage("livePhoto.bmp", aaCoreParams.MaxIntensity, aaCoreParams.MinArea, aaCoreParams.MaxArea)
-                            }
-                        }
-
-                        Button {
-                            text: qsTr("Show Chart Theta")
-                            onClicked: {
-                                chartCalibrationTheta.text = baseModuleManager.showChartCalibrationRotation()
-                            }
-                        }
-                    }
                 }
             }
         }

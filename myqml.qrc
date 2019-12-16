@@ -225,5 +225,6 @@
         <file>qml/UserManagement/LoginComponent.qml</file>
         <file>qml/UserManagement/UserManagement.qml</file>
         <file>qml/UserManagement/UsersView.qml</file>
+        <file>qml/PageMenuBar/Page6MenuBar.qml</file>
     </qresource>
 </RCC>

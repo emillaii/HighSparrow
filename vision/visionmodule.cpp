@@ -639,7 +639,7 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
             .append(getCurrentTimeString())
             .append("_raw.jpg");
     try {
-        g_constData1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-12\\20191204\\17-48-18-404.jpg";
+        g_constData1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-12\\20191217\\14-03-14-771.jpg";
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.9ec2dbe0.avdata", L"Path", g_constData2 );
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.5aab78b7.avdata", L"Path", g_constData3 );
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.685b0ee7.avdata", L"Path", g_constData4 );
@@ -692,16 +692,16 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
         avl::RegionToImage( region2, image2 );
 
         // Function AvsFilter_ScanSingleEdge is intended for generated code only, consider use of CreateScanMap and ScanSingleEdge functions in regular programs.
-        avs::AvsFilter_ScanSingleEdge( scanSingleEdgeState1, image2, g_constData2, atl::NIL, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 0.6f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, edge1D1, atl::NIL, atl::Dummy<avl::Profile>().Get(), atl::Dummy<avl::Profile>().Get(), atl::Dummy< atl::Array< avl::Path > >().Get() );
+        avs::AvsFilter_ScanSingleEdge( scanSingleEdgeState1, image2, g_constData2, atl::NIL, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 0.6f, 5.0f, avl::EdgeTransition::DarkToBright), avl::Selection::First, atl::NIL, edge1D1, atl::NIL, atl::Dummy<avl::Profile>().Get(), atl::Dummy<avl::Profile>().Get(), atl::Dummy< atl::Array< avl::Path > >().Get() );
 
         // Function AvsFilter_ScanSingleEdge is intended for generated code only, consider use of CreateScanMap and ScanSingleEdge functions in regular programs.
-        avs::AvsFilter_ScanSingleEdge( scanSingleEdgeState2, image2, g_constData3, atl::NIL, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 0.6f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Last, atl::NIL, edge1D2, atl::NIL, atl::Dummy<avl::Profile>().Get(), atl::Dummy<avl::Profile>().Get(), atl::Dummy< atl::Array< avl::Path > >().Get() );
+        avs::AvsFilter_ScanSingleEdge( scanSingleEdgeState2, image2, g_constData3, atl::NIL, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 0.6f, 5.0f, avl::EdgeTransition::DarkToBright), avl::Selection::First, atl::NIL, edge1D2, atl::NIL, atl::Dummy<avl::Profile>().Get(), atl::Dummy<avl::Profile>().Get(), atl::Dummy< atl::Array< avl::Path > >().Get() );
 
         // Function AvsFilter_ScanSingleEdge is intended for generated code only, consider use of CreateScanMap and ScanSingleEdge functions in regular programs.
-        avs::AvsFilter_ScanSingleEdge( scanSingleEdgeState3, image2, g_constData4, atl::NIL, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 0.6f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Last, atl::NIL, edge1D3, atl::NIL, atl::Dummy<avl::Profile>().Get(), atl::Dummy<avl::Profile>().Get(), atl::Dummy< atl::Array< avl::Path > >().Get() );
+        avs::AvsFilter_ScanSingleEdge( scanSingleEdgeState3, image2, g_constData4, atl::NIL, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 0.6f, 5.0f, avl::EdgeTransition::DarkToBright), avl::Selection::First, atl::NIL, edge1D3, atl::NIL, atl::Dummy<avl::Profile>().Get(), atl::Dummy<avl::Profile>().Get(), atl::Dummy< atl::Array< avl::Path > >().Get() );
 
         // Function AvsFilter_ScanSingleEdge is intended for generated code only, consider use of CreateScanMap and ScanSingleEdge functions in regular programs.
-        avs::AvsFilter_ScanSingleEdge( scanSingleEdgeState4, image2, g_constData5, atl::NIL, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 0.6f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Last, atl::NIL, edge1D4, atl::NIL, atl::Dummy<avl::Profile>().Get(), atl::Dummy<avl::Profile>().Get(), atl::Dummy< atl::Array< avl::Path > >().Get() );
+        avs::AvsFilter_ScanSingleEdge( scanSingleEdgeState4, image2, g_constData5, atl::NIL, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 0.6f, 5.0f, avl::EdgeTransition::DarkToBright), avl::Selection::First, atl::NIL, edge1D4, atl::NIL, atl::Dummy<avl::Profile>().Get(), atl::Dummy<avl::Profile>().Get(), atl::Dummy< atl::Array< avl::Path > >().Get() );
 
         if (edge1D3 != atl::NIL && edge1D4 != atl::NIL && edge1D1 != atl::NIL && edge1D2 != atl::NIL)
         {
@@ -741,13 +741,13 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
                 avl::CreateCoordinateSystemFromPoint( point2D5.Get(), 0.0f, 1.0f, 1.0f, coordinateSystem2D1 );
 
                 // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-                avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState1, image2, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(146.748871f, -137.745163f), avl::Point2D(35.69287f, -28.566925f)), 82.9198f), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, edge1DArray1, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+                avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState1, image2, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(-149.088623f, -139.976257f), avl::Point2D(-35.1577759f, -29.41275f)), 82.9198f), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, edge1DArray1, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
                 // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-                avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState2, image2, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(47.0810852f, 44.4541931f), avl::Point2D(166.624359f, 166.2424f)), 87.22975f), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::BrightToDark), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D2, edge1DArray2, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+                avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState2, image2, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(-50.3110962f, 54.2114258f), avl::Point2D(-148.5274f, 159.1626f)), 87.22975f), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D2, edge1DArray2, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
                 // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-                avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState3, image2, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(216.406265f, -86.2953f), avl::Point2D(215.115158f, 80.37331f)), 87.22975f), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::DarkToBright), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D3, edge1DArray3, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+                avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState3, image2, avl::SegmentFittingField(avl::Segment2D(avl::Point2D(-226.9702f, -86.85654f), avl::Point2D(-224.85553f, 83.39569f)), 87.22975f), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D3, edge1DArray3, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
                 if (segment2D2 != atl::NIL)
                 {
@@ -972,7 +972,7 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
     rawImageName.append(getVisionLogDir())
             .append(getCurrentTimeString())
             .append("_raw.jpg");
-    g_constData1 = "C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-12\\20191204\\17-40-43-963.jpg";
+    g_constData1 = "C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-12\\20191217\\13-54-02-283.jpg";
     g_constData3 = L"Angle:";
 
     g_emptyString = L"";

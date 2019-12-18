@@ -86,6 +86,7 @@ HEADERS += \
     SingleHead/singleheadmachinematerialpickarm.h \
     SingleHead/singleheadmachinematerialpickarmparameter.h \
     UnitTest/SilicolMsgBoxTest.h \
+    Utils/commonmethod.h \
     Utils/commonutils.h \
     Utils/config.h \
     Utils/errorcode.h \

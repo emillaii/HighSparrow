@@ -25,7 +25,7 @@
 #include "utils/singletoninstances.h"
 
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX,
-                        double & localMaxY, double & error_avg, double & error_dev, vector<double> & y_output) {
+                        double & localMaxY, double & error_avg, double & error_dev, vector<double> & y_output, bool & detectedAbnormality) {
     size_t n = x.size();
 
     double minX = 999999;
@@ -65,11 +65,24 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
 
     Eigen::MatrixXd Ans(n, 1);
     Ans = X * A;
-
-//    qInfo("Y | Prediction | Error");
-//    for (size_t i = 0; i < n; ++i) {
-//       qInfo("X: %f Y: %f  Ans: %f Error: %f", X(i,0), Y(i, 0), Ans(i, 0), Y(i, 0) - Ans(i, 0));
-//    }
+    for (size_t i = 0; i < n; ++i) {
+       double error = Y(i, 0) - Ans(i, 0);
+       qInfo("Sample Y: %f  Predicted Y: %f Error: %f", Y(i, 0), Ans(i, 0), error);
+       //If |error| > 10, then this point is outfiter, then remove that point and fitCurve recursively
+       //Avoid infinite recursive loop
+       if (!detectedAbnormality && fabs(error) >= 10) {
+           qInfo("Detected the abnormal data point");
+           detectedAbnormality = true;
+           vector<double> newX; vector<double> newY;
+           for (size_t ii=0; ii < n; ++ii) {
+               if (ii != i) {
+                   newX.push_back(x[ii]);
+                   newY.push_back(y[ii]);
+               }
+           }
+           return fitCurve(newX, newY, order, localMaxX, localMaxY, error_avg, error_dev, y_output, detectedAbnormality);
+       }
+    }
 
     double error = 0;
     double average = 0;
@@ -1131,6 +1144,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     QElapsedTimer step_move_timer;
     QElapsedTimer grab_timer;
     double estimated_aa_z = 0;
+    bool detectedAbormality = false;
     if(zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
         unsigned int count = (int)fabs((start - stop)/step_size);
         for (unsigned int i = 0; i < count; i++)
@@ -1452,7 +1466,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             //data->addData(4, realX, sfr_l, sfr_l);
             img.release();
         }
-        fitCurve(x_pos, sfr_array, fitOrder, peak_x, peak_sfr, error_avg, error_dev, sfr_fit_array);
+        fitCurve(x_pos, sfr_array, fitOrder, peak_x, peak_sfr, error_avg, error_dev, sfr_fit_array, detectedAbormality);
         peak_x += start;  //Add back the base value
         data->setZPeak(peak_x);
         data->setWCCPeakZ(peak_x);
@@ -1481,6 +1495,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     qInfo("Layer 1 xTilt : %f yTilt: %f ", aa_result["xTilt_1"].toDouble(), aa_result["yTilt_1"].toDouble());
     qInfo("Layer 2 xTilt : %f yTilt: %f ", aa_result["xTilt_2"].toDouble(), aa_result["yTilt_2"].toDouble());
     qInfo("Layer 3 xTilt : %f yTilt: %f ", aa_result["xTilt_3"].toDouble(), aa_result["yTilt_3"].toDouble());
+    map.insert("DetectedAbormality", detectedAbormality);
     map.insert("CC_Zpeak_Dev", round(aa_result["CC_Zpeak_Dev"].toDouble()*1000)/1000);
     map.insert("UL_03F_Zpeak_Dev", round(aa_result["UL_03F_Zpeak_Dev"].toDouble()*1000)/1000);
     map.insert("UR_03F_Zpeak_Dev", round(aa_result["UR_03F_Zpeak_Dev"].toDouble()*1000)/1000);
@@ -1659,7 +1674,7 @@ void AACoreNew::performAAOfflineCCOnly()
     double step_size = 0.01, start = 0;
     vector<double> x_pos, sfr_array, sfr_fit_array;
     double peak_x = 0, peak_sfr = 0, error_dev = 0, error_avg = 0;
-
+    bool detectedAbormality = false;
     AAData *data;
     if (currentChartDisplayChannel == 0) {
         data = &aaData_1;
@@ -1723,7 +1738,7 @@ void AACoreNew::performAAOfflineCCOnly()
     {
         qInfo("x: %f sfr: %f", x_pos[i], sfr_array[i]);
     }
-    fitCurve(x_pos, sfr_array, fitOrder, peak_x, peak_sfr,error_avg,error_dev, sfr_fit_array);
+    fitCurve(x_pos, sfr_array, fitOrder, peak_x, peak_sfr,error_avg,error_dev, sfr_fit_array, detectedAbormality);
     qInfo("X scan result peak_x: %f peak_sfr: %f error_avg: %f error_dev: %f", peak_x, peak_sfr, error_avg, error_dev);
     data->setZPeak(peak_x);
     data->setWCCPeakZ(peak_x);
@@ -1828,6 +1843,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     map.insert("SensorID",sensorID);
     vector<vector<Sfr_entry>> sorted_sfr_map;
     vector<vector<double>> sorted_sfr_fit_map;
+    bool detectedAbormality = false;
     for (size_t i = 0; i < clustered_sfr_map[0].size(); ++i)
     {
         vector<Sfr_entry> sfr_map;
@@ -1895,10 +1911,10 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         double peak_sfr, peak_z,b_peak_z,t_peak_z,l_peak_z,r_peak_z;
 
         double error_avg,error_dev;
-        fitCurve(z, b_sfr, fitOrder, b_peak_z, peak_sfr,error_avg,error_dev, b_sfr_fit);
-        fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr,error_avg,error_dev, t_sfr_fit);
-        fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr,error_avg,error_dev, l_sfr_fit);
-        fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr,error_avg,error_dev, r_sfr_fit);
+        fitCurve(z, b_sfr, fitOrder, b_peak_z, peak_sfr,error_avg,error_dev, b_sfr_fit, detectedAbormality);
+        fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr,error_avg,error_dev, t_sfr_fit, detectedAbormality);
+        fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr,error_avg,error_dev, l_sfr_fit, detectedAbormality);
+        fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr,error_avg,error_dev, r_sfr_fit, detectedAbormality);
 
         if (b_peak_z > maxPeakZ) maxPeakZ = b_peak_z;
         if (t_peak_z > maxPeakZ) maxPeakZ = t_peak_z;
@@ -1954,7 +1970,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         default:
             break;
         }
-        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev, sfr_fit);
+        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev, sfr_fit, detectedAbormality);
         sorted_sfr_fit_map.push_back(sfr_fit); //Used to display the curve with fitting result
         if (i==0) {
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
@@ -2350,6 +2366,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         map.insert("dev_3", dev_3);
     }
     map.insert("fov_slope", current_fov_slope);
+    map.insert("DetectedAbormality", detectedAbormality);
     //emit pushDataToUnit(runningUnit, "SFR", map);
 	emit postSfrDataToELK(runningUnit, map);
     data->plot(runningTestName);

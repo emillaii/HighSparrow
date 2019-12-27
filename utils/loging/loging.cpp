@@ -4,17 +4,21 @@
 QString LogManager::folder("log/system_log");
 QString LogManager::allLogFileName("HighSparrowQ");
 QString LogManager::warnLogFileName("HighSparrowQWarn");
-QString LogManager::logConfigFileName("logParameter.json");
+LogConfig* LogManager::logParameter = nullptr;
 RollbackFile LogManager::allLogFile;
 RollbackFile LogManager::warnLogFile;
-LogParameter LogManager::logParameter;
 QMap<QtMsgType, int> LogManager::msgTypeToLevel;
 QMutex LogManager::stdoutLocker;
 LogBuffer LogManager::logBuffer;
 LogModel LogManager::logModel;
 
-void LogManager::initLogSystem()
+void LogManager::initLogSystem(LogConfig* _logParameter)
 {
+    if(_logParameter == nullptr){
+        qFatal("LogParameter is null!");
+        return;
+    }
+    logParameter = _logParameter;
     msgTypeToLevel[QtDebugMsg] = 0;
     msgTypeToLevel[QtInfoMsg] = 1;
     msgTypeToLevel[QtWarningMsg] = 2;
@@ -26,16 +30,8 @@ void LogManager::initLogSystem()
     logBuffer.startThd();
     connect(&logBuffer, &LogBuffer::logBufferChanged, &logModel, &LogModel::onLogBufferChanged);
 
-    if(QFile::exists(logConfigFileName) &&
-            logParameter.loadJsonConfig(logConfigFileName, QString("LogParameter")))
-    {
-
-    }
-    else {
-        logParameter.saveJsonConfig(logConfigFileName, QString("LogParameter"));
-    }
-    allLogFile.init(folder, allLogFileName, logParameter.maxSize(), logParameter.nBackupFile(), logParameter.flushImmediately());
-    warnLogFile.init(folder, warnLogFileName, logParameter.maxSize(), logParameter.nBackupFile(), logParameter.flushImmediately());
+    allLogFile.init(folder, allLogFileName, logParameter->maxSize(), logParameter->nBackupFile(), logParameter->flushImmediately());
+    warnLogFile.init(folder, warnLogFileName, logParameter->maxSize(), logParameter->nBackupFile(), logParameter->flushImmediately());
     qInstallMessageHandler(messageHandler);
     qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{type}] %{file}:%{line}(%{function}):%{message}");
 }
@@ -43,11 +39,12 @@ void LogManager::initLogSystem()
 void LogManager::disposeLogSystem()
 {
     logBuffer.stopThd();
+    qInstallMessageHandler(nullptr);
 }
 
 void LogManager::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    if(msgTypeToLevel[type] < logParameter.logLevel())
+    if(msgTypeToLevel[type] < logParameter->logLevel())
         return;
 
     QString log = qFormatLogMessage(type, context, msg);

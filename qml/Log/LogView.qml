@@ -24,24 +24,24 @@ Rectangle {
 
             RadioButton{
                 text: qsTr("Debug")
-                checked: logManager.logLevel == 0
+                checked: logConfig.logLevel == 0
 
                 onClicked: {
-                    logManager.setLogLevel(0)
+                    logConfig.setLogLevel(0)
                 }
             }
             RadioButton{
                 text: qsTr("Info")
-                checked: logManager.logLevel== 1
+                checked: logConfig.logLevel== 1
                 onClicked: {
-                    logManager.setLogLevel(1)
+                    logConfig.setLogLevel(1)
                 }
             }
             RadioButton{
                 text: qsTr("Warn")
-                checked: logManager.logLevel == 2
+                checked: logConfig.logLevel == 2
                 onClicked: {
-                    logManager.setLogLevel(2)
+                    logConfig.setLogLevel(2)
                 }
             }
         }

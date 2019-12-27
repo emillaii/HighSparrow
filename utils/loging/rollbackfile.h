@@ -28,7 +28,7 @@ public:
      * @param nBackupFile  保存的备份文件的最大数量，超出该数量时，将删除最早的日志文件
      * @param flushImmediately  每条log是否立即写入到文件，还是只写入流。建议调试期间设为true，系统稳定后改为false。
      */
-    void init(QString& folder, QString& fileName, qint64 maxSize, int nBackupFile, bool flushImmediately);
+    void init(QString folder, QString fileName, qint64 maxSize, int nBackupFile, bool flushImmediately);
     void appendLine(QString s);
     ~RollbackFile();
 

@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.11
 import AACoreNew 1.1
 import LogicManagerLib 1.1
 import UserMng 1.0
+import LanguageConfig 1.0
 import "qml"
 import "qml/UserManagement"
 
@@ -129,6 +130,10 @@ ApplicationWindow {
         id: popupLogin
     }
 
+    LanguageSelector{
+        id: languageSelector
+    }
+
     Connections{
         target: msgBoxModel
         onMsgBoxCountChanged:{
@@ -156,6 +161,19 @@ ApplicationWindow {
             interval: 600; running: true; repeat: true
         }
         RowLayout {
+            ToolButton {
+                text: qsTr("Language")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/language.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    languageSelector.open()
+                }
+            }
+
             ToolButton {
                 text: qsTr("用户管理")
                 transformOrigin: Item.Center

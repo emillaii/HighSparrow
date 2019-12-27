@@ -16,6 +16,8 @@ CONFIG+=qtquickcompiler
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_MESSAGELOGCONTEXT
 
+TRANSLATIONS = languagePackage/chinese.ts languagePackage/english.ts
+
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
@@ -25,6 +27,10 @@ SOURCES += \
     Drivers/LightSourceController/sciencalightsourcecontroller.cpp \
     devicestatesgeter.cpp \
     main.cpp \
+    utils/commonmethod.cpp \
+    utils/configManager/configarray.cpp \
+    utils/configManager/configobject.cpp \
+    utils/configManager/configobjectarray.cpp \
     utils/loging/loging.cpp \
     utils/loging/logmodel.cpp \
     utils/loging/rollbackfile.cpp \
@@ -102,7 +108,8 @@ SOURCES += \
     uiControl/node.cpp \
     alarmmessageshower.cpp
 
-RESOURCES += myqml.qrc
+RESOURCES += myqml.qrc \
+    language.qrc
 RESOURCES += icons.qrc
 #QTQUICK_COMPILER_SKIPPED_RESOURCES += myqml.qrc
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -151,6 +158,19 @@ DEPENDPATH += $$PWD/../libs/DTCCM2_SDK/X64_Lib
 HEADERS += \
     Drivers/LightSourceController/sciencalightsourcecontroller.h \
     UnitTest/SilicolMsgBoxTest.h \
+    basicconfig.h \
+    utils/commonmethod.h \
+    utils/configManager/configarray.h \
+    utils/configManager/configbase.h \
+    utils/configManager/configfile.h \
+    utils/configManager/configmanager.h \
+    utils/configManager/configmanagerunittest.h \
+    utils/configManager/configobject.h \
+    utils/configManager/configobjectarray.h \
+    utils/configManager/qobjectfactory.h \
+    utils/languageManager/languageconfig.h \
+    utils/languageManager/languagemanager.h \
+    utils/loging/logconfig.h \
     utils/loging/loging.h \
     utils/loging/logmodel.h \
     utils/loging/rollbackfile.h \

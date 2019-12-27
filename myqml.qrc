@@ -226,5 +226,6 @@
         <file>qml/UserManagement/UserManagement.qml</file>
         <file>qml/UserManagement/UsersView.qml</file>
         <file>qml/PageMenuBar/Page6MenuBar.qml</file>
+        <file>LanguageSelector.qml</file>
     </qresource>
 </RCC>

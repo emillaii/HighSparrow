@@ -13,6 +13,9 @@
 #include "utils/userManagement/usermanagement.h"
 #include "utils/userManagement/mysqltablemodel.h"
 #include "UnitTest/SilicolMsgBoxTest.h"
+#include "utils/languageManager/languagemanager.h"
+#include "utils/configManager/configfile.h"
+#include "basicconfig.h"
 
 #include "AACore/aadata.h"
 #include "checkprocessmodel.h"
@@ -21,6 +24,7 @@
 #include <QtWidgets/QApplication>
 #include <windows.h>
 #include <DbgHelp.h>
+
 #pragma comment(lib,"Dbghelp.lib")
 
 long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
@@ -79,11 +83,19 @@ int main(int argc, char *argv[])
     QtWebEngine::initialize();
     QQmlApplicationEngine engine;
 
+    BasicConfig basicConfig;
+    basicConfig.setObjectName("basicConfig");
+    ConfigFile basicConfigFile("basicConfig", &basicConfig, "basicConfig.json", false);
+    basicConfigFile.populate();
     // initialize logging system
     LogManager logManager;
-    logManager.initLogSystem();
-    engine.rootContext()->setContextProperty("logManager", &logManager);
+    logManager.initLogSystem(basicConfig.logConfig());
+    engine.rootContext()->setContextProperty("logConfig", basicConfig.logConfig());
     engine.rootContext()->setContextProperty("logModel", &logManager.logModel);
+
+    LanguageManager languageManager(basicConfig.languageConfig(), app, engine);
+    engine.rootContext()->setContextProperty("languageConfig", basicConfig.languageConfig());
+    qmlRegisterType<LanguageConfig>("LanguageConfig", 1, 0, "LanguageConfig");
 
     qRegisterMetaType<MsgBoxItem>();
     qRegisterMetaType<MsgBoxIcon::Icon>();
@@ -488,6 +500,8 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
+
+    basicConfig.languageConfig()->publishLanguage();
 
     // test code just to demonstrate how to use these models
     TrayMapModel* model = TrayMapModel::instance(TrayMapModel::LensTray);

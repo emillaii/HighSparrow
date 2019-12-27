@@ -6,7 +6,7 @@ RollbackFile::RollbackFile()
 
 }
 
-void RollbackFile::init(QString &folder, QString &fileName, qint64 maxSize, int nBackupFile, bool flushImmediately)
+void RollbackFile::init(QString folder, QString fileName, qint64 maxSize, int nBackupFile, bool flushImmediately)
 {
     this->folder = folder;
     this->fileName = fileName;

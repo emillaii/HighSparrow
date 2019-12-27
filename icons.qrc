@@ -33,5 +33,6 @@
         <file>icons/refresh.png</file>
         <file>icons/login.png</file>
         <file>icons/userManagement.png</file>
+        <file>icons/language.png</file>
     </qresource>
 </RCC>

@@ -17,7 +17,7 @@ $(document).ready(function () {
   var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0, enable_glue_inspection: 0, max_glue_width_in_mm:0, min_glue_width_in_mm: 0, max_avg_glue_width_in_mm:0 };
   var init_save_image = { type: 0, lighting: 100 };
   var init_grr_params ={ change_lens: 1, change_sensor: 0, repeat_time: 10,change_time: 11};
-  var init_lens_params = { target_position: 70,delay_in_ms: 0 }
+  var init_lens_params = { cmd: 0, target_position: 70, ois_x_target_position: 0, ois_y_target_position: 0, delay_in_ms: 0 }
   var latestCreatedLinkId;
   var $linkProperties = $('#link_properties');
   var $operatorTitle = $('#operator_title');
@@ -110,7 +110,10 @@ $(document).ready(function () {
   $uv_operator_properties.append("<div style=\"margin-top:20px\">Enable OTP: <select id=\"uv_enable_OTP\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $uv_operator_properties.append("<div style=\"margin-top:20px\">UV time: <input type=\"number\" id=\"uv_time_in_ms\" value=3000></div>"); 
   
+  $init_lens_operator_properties.append("<div style=\"margin-top:20px\">CMD: <select id=\"init_lens_cmd\" size=\"4\"><option value=0>Init</option><option value=1>AF+OIS XY Move</option><option value=2>AF Move</option><option value=3>OIS XY Move</option></select></div>");
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">Target Position: <input type=\"number\" id=\"init_lens_target_position\" value=70></div>");
+  $init_lens_operator_properties.append("<div style=\"margin-top:20px\">OIS X Target Position: <input type=\"number\" id=\"init_lens_ois_x_target_position\" value=70></div>");
+  $init_lens_operator_properties.append("<div style=\"margin-top:20px\">OIS Y Target Position: <input type=\"number\" id=\"init_lens_ois_y_target_position\" value=70></div>");
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"init_lens_delay_in_ms\" value=0></div>"); 
   // Apply the plugin on a standard, empty div...
   var $flowchart = $('#example_7');
@@ -251,6 +254,9 @@ $(document).ready(function () {
 	  }else if (operatorId.includes("Init_Lens")) {
 		$init_lens_operator_properties.show();
 		$init_lens_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+        $('#init_lens_cmd').val(params["cmd"]);
+		$('#init_lens_ois_x_target_position').val(params["ois_x_target_position"]);
+		$('#init_lens_ois_y_target_position').val(params["ois_y_target_position"]);
         $('#init_lens_target_position').val(params["target_position"]);
 		$('#init_lens_delay_in_ms').val(params["delay_in_ms"]);
 	  }
@@ -459,6 +465,9 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("Init_Lens")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#init_lens_operator_title').val());
 	  var params = { delay_in_ms: Number($('#init_lens_delay_in_ms').val()),
+	  cmd: Number($('#init_lens_cmd').val()),
+	  ois_x_target_position:  Number($('#init_lens_ois_x_target_position').val()),
+	  ois_y_target_position:  Number($('#init_lens_ois_y_target_position').val()),
 	  target_position:  Number($('#init_lens_target_position').val())
 	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
@@ -827,6 +836,9 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("Init_Lens")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#init_lens_operator_title').val());
 	  var params = { delay_in_ms: Number($('#init_lens_delay_in_ms').val()),
+	  cmd: Number($('#init_lens_cmd').val()),
+	  ois_x_target_position: Number($('#init_lens_ois_x_target_position').val()),
+	  ois_y_target_position: Number($('#init_lens_ois_y_target_position').val()),
 	  target_position:  Number($('#init_lens_target_position').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
@@ -1086,6 +1098,9 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("Init_Lens")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#init_lens_operator_title').val());
 	  var params = { delay_in_ms: Number($('#init_lens_delay_in_ms').val()),
+	  cmd: Number($('#init_lens_cmd').val()),
+	  ois_x_target_position:  Number($('#init_lens_ois_x_target_position').val()),
+	  ois_y_target_position:  Number($('#init_lens_ois_y_target_position').val()),
 	  target_position:  Number($('#init_lens_target_position').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);

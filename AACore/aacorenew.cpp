@@ -3274,9 +3274,17 @@ ErrorCodeStruct AACoreNew::performVCMInit(QJsonValue params)
 {
     QElapsedTimer timer;timer.start();
     QVariantMap map;
+    int cmd = params["cmd"].toInt(0); // 0: Init , 1: AF_OIS_Move, 2: AF Move 3: OIS XY MOVE
     double target_position = params["target_position"].toDouble();
+    double ois_x_target_position = params["ois_x_target_position"].toDouble();
+    double ois_y_target_position = params["ois_y_target_position"].toDouble();
     int delay = params["delay_in_ms"].toInt();
     map.insert("target_position", target_position);
+    map.insert("cmd", cmd);
+    map.insert("ois_x_target_position", ois_x_target_position);
+    map.insert("ois_y_target_position", ois_x_target_position);
+    map.insert("delay_in_ms", delay);
+    qInfo("cmd %d ois_x: %f ois_y: %f", cmd, ois_x_target_position, ois_y_target_position);
     if (!this->vcmCmdServer.isOpen()) {
         QStringList arguments;
         arguments << "/c" << ".\\config\\i2c_test\\i2c_test.exe";
@@ -3287,15 +3295,30 @@ ErrorCodeStruct AACoreNew::performVCMInit(QJsonValue params)
     }
     CClient client;
     QVariantMap json;
-    if(target_position < 0)
+    if(cmd == 0)
     {
         json["cmd"] = "init";
         json["delay"] = delay;
     }
-    else
+    else if (cmd == 1)
+    {
+        json["cmd"] = "af_ois_move";
+        json["pos"] = target_position;
+        json["ois_x_pos"] = ois_x_target_position;
+        json["ois_y_pos"] = ois_y_target_position;
+        json["delay"] = delay;
+    }
+    else if (cmd == 2)
     {
         json["cmd"] = "move";
         json["pos"] = target_position;
+        json["delay"] = delay;
+    }
+    else if (cmd == 3)
+    {
+        json["cmd"] = "ois_xy_move";
+        json["ois_x_pos"] = ois_x_target_position;
+        json["ois_y_pos"] = ois_y_target_position;
         json["delay"] = delay;
     }
 

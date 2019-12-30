@@ -60,6 +60,11 @@ class ConfigObjectArray: public ConfigBase
     Q_OBJECT
 
 public:
+    ///
+    /// \brief ConfigObjectArray
+    /// \param configObjClassName This class must inherit ConfibObject, and the parameter of it`s constructor must be (QObject* parent)
+    /// \param parent
+    ///
     ConfigObjectArray(QString configObjClassName, QObject* parent=nullptr);
 
     ConfigObject* const &at(int index) const

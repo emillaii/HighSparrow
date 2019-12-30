@@ -93,7 +93,7 @@ bool ConfigObjectArray::read(const QJsonValue &jsonValue)
                 result = false;
             }
         }else {
-            ConfigObject* configObj = qobject_cast<ConfigObject*>(QObjectFactory::createObject(configObjClassName));
+            ConfigObject* configObj = qobject_cast<ConfigObject*>(QObjectFactory::createObject(configObjClassName, this));
             if(configObj == nullptr){
                 return false;
             }
@@ -157,7 +157,7 @@ bool ConfigObjectArray::executeAddConfigObject(int index, ConfigObject* instance
 #endif
 
     if(instance == nullptr){
-        instance = qobject_cast<ConfigObject*>(QObjectFactory::createObject(configObjClassName));
+        instance = qobject_cast<ConfigObject*>(QObjectFactory::createObject(configObjClassName, this));
         if(instance == nullptr){
             return false;
         }

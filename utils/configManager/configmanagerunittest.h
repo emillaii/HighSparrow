@@ -221,7 +221,7 @@ class TestClassB: public ConfigObject
     ConfigObjectArray* m_testClassAArray;
 
 public:
-    TestClassB(QObject* parent=nullptr)
+    TestClassB(QObject* parent=nullptr): ConfigObject(parent)
     {
         hide("hiddenString");
         hide("hiddenBool");

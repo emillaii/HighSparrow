@@ -25,6 +25,8 @@
 #include <windows.h>
 #include <DbgHelp.h>
 
+#include "utils/configManager/configobjectarray.h"
+
 #pragma comment(lib,"Dbghelp.lib")
 
 long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
@@ -82,6 +84,11 @@ int main(int argc, char *argv[])
 
     QtWebEngine::initialize();
     QQmlApplicationEngine engine;
+
+    qmlRegisterType<ConfigElementInfo>("ConfigElementType", 1, 0, "ConfigElementType");
+    qmlRegisterType<ConfigObject>("ConfigObject", 1, 0, "ConfigObject");
+    qRegisterMetaType<ConfigElementInfo::Type>();
+    engine.rootContext()->setContextProperty("cfgManager", &SI::cfgManager);
 
     BasicConfig basicConfig;
     basicConfig.setObjectName("basicConfig");

@@ -15,7 +15,7 @@ ColumnLayout{
         }
         RoundButton{
             radius: 8
-            icon.source: isExpand ? "/icon/collapse.png" : "/icon/expand.png"
+            icon.source: isExpand ? "/icons/collapse.png" : "/icons/expand.png"
             icon.color: "transparent"
             onClicked: {
                 isExpand = !isExpand

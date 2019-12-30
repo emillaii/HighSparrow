@@ -9,6 +9,7 @@ import UserMng 1.0
 import LanguageConfig 1.0
 import "qml"
 import "qml/UserManagement"
+import "qml/ConfigManager"
 
 
 ApplicationWindow {
@@ -134,6 +135,34 @@ ApplicationWindow {
         id: languageSelector
     }
 
+    Popup{
+        id: popupConfigManager
+
+        ColumnLayout{
+            Button{
+                text: "VisionLocationParameter"
+                onClicked: {
+                    popupConfigManager.close()
+                    popupVisionLocationParameter.open()
+                }
+            }
+        }
+    }
+
+    Popup{
+        id: popupVisionLocationParameter
+
+//        contentItem: ArrayEditor{
+//            sectionName: qsTr("VisionLocationParameter")
+//            configModel: vlParameters
+//            listMaxWidth: 1500
+//            listMaxHeight: 900
+//            Component.onCompleted: {
+//                init()
+//            }
+//        }
+    }
+
     Connections{
         target: msgBoxModel
         onMsgBoxCountChanged:{
@@ -161,6 +190,19 @@ ApplicationWindow {
             interval: 600; running: true; repeat: true
         }
         RowLayout {
+//            ToolButton {
+//                text: qsTr("ConfigManager")
+//                transformOrigin: Item.Center
+//                display: Button.TextUnderIcon
+//                icon.width: 30
+//                icon.height: 30
+//                icon.source: "icons/configManager.png"
+//                icon.color: "deepskyblue"
+//                onClicked: {
+//                    popupConfigManager.open()
+//                }
+//            }
+
             ToolButton {
                 text: qsTr("Language")
                 transformOrigin: Item.Center
@@ -187,6 +229,31 @@ ApplicationWindow {
                     popupUserManagement.open()
                 }
             }
+
+//            ToolButton {
+//                text: qsTr("Undo")
+//                transformOrigin: Item.Center
+//                display: Button.TextUnderIcon
+//                icon.width: 30
+//                icon.height: 30
+//                icon.source: "icons/undo.png"
+//                icon.color: cfgManager.commandCount > 0 ? "transparent" : "gray"
+//                onClicked: {
+//                    cfgManager.undo()
+//                }
+//            }
+//            ToolButton {
+//                text: qsTr("Redo")
+//                transformOrigin: Item.Center
+//                display: Button.TextUnderIcon
+//                icon.width: 30
+//                icon.height: 30
+//                icon.source: "icons/redo.png"
+//                icon.color: cfgManager.undoCommandCount > 0 ? "transparent" : "gray"
+//                onClicked: {
+//                    cfgManager.redo()
+//                }
+//            }
 
             MessageDialog {
                 id: logoutDialog

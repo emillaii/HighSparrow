@@ -2,6 +2,7 @@
 #define VISION_LOCATION_PARAMETER_H
 
 #include "propertybase.h"
+#include "utils/configManager/configobject.h"
 
 class VisionLocationParameter:public PropertyBase
 {
@@ -337,5 +338,6 @@ private:
     int m_performTime = 0;
     int m_prismPRType = 0;
 };
+
 
 #endif // VISION_LOCATION_PARAMETER_H

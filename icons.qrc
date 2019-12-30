@@ -58,5 +58,6 @@
         <file>icons/switchcamera.png</file>
         <file>icons/undo.png</file>
         <file>icons/zoomin.png</file>
+        <file>icons/configManager.png</file>
     </qresource>
 </RCC>

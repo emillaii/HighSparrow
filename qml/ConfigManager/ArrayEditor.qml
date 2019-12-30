@@ -78,7 +78,7 @@ BasicConfigEditor{
         id: rowAddRemove
         visible: isExpand
         RoundButton{
-            icon.source: "/icon/add.png"
+            icon.source: "/icons/add.png"
             icon.color: "transparent"
             onClicked: {
                 var listviewIndex = configNodes.currentIndex
@@ -90,7 +90,7 @@ BasicConfigEditor{
             }
         }
         RoundButton{
-            icon.source: "/icon/remove.png"
+            icon.source: "/icons/remove.png"
             icon.color: "transparent"
             onClicked: {
                 var listviewIndex = configNodes.currentIndex
@@ -183,7 +183,7 @@ BasicConfigEditor{
 
         delegate: Rectangle{
             id: rect
-            color: configNodes.currentIndex == rowIndex ? "Red" : "white"
+            color: configNodes.currentIndex == rowIndex ? "darkgray" : "transparent"
 
             Loader{
                 source: self.isObjectArray ? "ObjectArrayRow.qml" : "SimpleTypeArrayRow.qml"
@@ -236,6 +236,7 @@ BasicConfigEditor{
         height: 15
         width: 200
         visible: isExpand
+        color: "transparent"
 
         ScrollBar{
             id: hbar

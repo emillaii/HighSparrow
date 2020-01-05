@@ -1386,7 +1386,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
          }
     } else if (zScanMode == ZSCAN_MODE::AA_XSCAN_MODE) {
         unsigned int count = (int)fabs((start - stop)/step_size);
-        vector<double> x_pos, sfr_array, sfr_fit_array;
+        vector<double> x_pos, sfr_array, sfr_fit_array, area_array;
         double peak_x = 0, peak_sfr = 0, error_dev = 0, error_avg = 0;
         int fitOrder = 3;
 
@@ -1444,41 +1444,59 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             //Start calculate MTF
             std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
             //Set the Image ROI Size for CC 4 edges
-            cv::Rect roi; roi.width = 32; roi.height = 32;
-            cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
-            int rect_width = sqrt(patterns[0].area)/2;
-            //Left ROI
-            roi.x = patterns[0].center.x() - rect_width - roi.width/2;
-            roi.y = patterns[0].center.y() - roi.width/2;
-            img(roi).copyTo(cropped_l_img);
-            //Right ROI
-            roi.x = patterns[0].center.x() + rect_width - roi.width/2;
-            roi.y = patterns[0].center.y() - roi.width/2;
-            img(roi).copyTo(cropped_r_img);
-            //Top ROI
-            roi.x = patterns[0].center.x() - roi.width/2;
-            roi.y = patterns[0].center.y() - rect_width - roi.width/2;
-            img(roi).copyTo(cropped_t_img);
-            //Bottom ROI
-            roi.x = patterns[0].center.x() - roi.width/2;
-            roi.y = patterns[0].center.y() + rect_width - roi.width/2;
-            img(roi).copyTo(cropped_b_img);
-            double sfr_l = sfr::calculateSfrWithSingleRoi(cropped_l_img,1);
-            double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
-            double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
-            double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
+//            cv::Rect roi; roi.width = 32; roi.height = 32;
+//            cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
+//            int rect_width = sqrt(patterns[0].area)/2;
+//            //Left ROI
+//            roi.x = patterns[0].center.x() - rect_width - roi.width/2;
+//            roi.y = patterns[0].center.y() - roi.width/2;
+//            img(roi).copyTo(cropped_l_img);
+//            //Right ROI
+//            roi.x = patterns[0].center.x() + rect_width - roi.width/2;
+//            roi.y = patterns[0].center.y() - roi.width/2;
+//            img(roi).copyTo(cropped_r_img);
+//            //Top ROI
+//            roi.x = patterns[0].center.x() - roi.width/2;
+//            roi.y = patterns[0].center.y() - rect_width - roi.width/2;
+//            img(roi).copyTo(cropped_t_img);
+//            //Bottom ROI
+//            roi.x = patterns[0].center.x() - roi.width/2;
+//            roi.y = patterns[0].center.y() + rect_width - roi.width/2;
+//            img(roi).copyTo(cropped_b_img);
+//            double sfr_l = sfr::calculateSfrWithSingleRoi(cropped_l_img,1);
+//            double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
+//            double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
+//            double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
             x_pos.push_back(realX - start);  // Need to normalize the x position, avoiding overflow
-            sfr_array.push_back(sfr_r);
-            double avg_sfr = (sfr_l + sfr_r + sfr_t + sfr_b)/4;
-            data->addData(0, realX, sfr_r, sfr_r);
+            area_array.push_back(patterns[0].area);
+//            sfr_array.push_back(sfr_r);
+//            double avg_sfr = (sfr_l + sfr_r + sfr_t + sfr_b)/4;
+//            data->addData(0, realX, sfr_r, sfr_r);
             //data->addData(1, realX, sfr_t, sfr_t);
             //data->addData(2, realX sfr_r, sfr_r);
             //data->addData(3, realX, sfr_b, sfr_b);
             //data->addData(4, realX, sfr_l, sfr_l);
             img.release();
         }
+
+        //First loop, find min , max of the area
+        double area_max = -99999999; double area_min = 9999999;
+        for (size_t i = 0; i < x_pos.size(); i++)
+        {
+            if (area_array[i] > area_max) area_max = area_array[i];
+            if (area_array[i] < area_min) area_min = area_array[i];
+        }
+
+        //Second loop, scale the value in y axis for ploting
+        for (size_t i = 0; i < x_pos.size(); i++)
+        {
+            double area_in_percentage = 50*(area_array[i]-area_min)/(area_max-area_min);
+            area_array[i] = area_in_percentage;
+            data->addData(0, (start+step_size*i)*1000, area_in_percentage, area_in_percentage);
+        }
+
         int deletedIndex = -1;
-        fitCurve(x_pos, sfr_array, fitOrder, peak_x, peak_sfr, error_avg, error_dev, sfr_fit_array, detectedAbormality, deletedIndex);
+        fitCurve(x_pos, area_array, fitOrder, peak_x, peak_sfr, error_avg, error_dev, area_array, detectedAbormality, deletedIndex);
         peak_x += start;  //Add back the base value
         data->setZPeak(peak_x);
         data->setWCCPeakZ(peak_x);
@@ -1685,7 +1703,7 @@ void AACoreNew::performAAOfflineCCOnly()
 {
     int inputImageCount = 7, resize_factor = 1, sfrCount = 0, fitOrder = 3;
     double step_size = 0.01, start = 0;
-    vector<double> x_pos, sfr_array, sfr_fit_array;
+    vector<double> x_pos, sfr_array, sfr_fit_array, area_array;
     double peak_x = 0, peak_sfr = 0, error_dev = 0, error_avg = 0;
     bool detectedAbormality = false;
     AAData *data;
@@ -1697,13 +1715,15 @@ void AACoreNew::performAAOfflineCCOnly()
         currentChartDisplayChannel = 0;
     }
     data->clear();
-    for (int i = 0; i < inputImageCount -1; i++)
+    bool direction = false; // true: + step , false: - step
+    for (int i = 0; i <= inputImageCount -1; i++)
     {
         if (isZScanNeedToStop) {
             qInfo("All peak passed, stop zscan");
             break;
         }
-        QString filename = "C:\\Users\\emil\\Desktop\\sunny_issue\\1_10um\\1_10um\\" + QString::number(i+1) + ".bmp";
+        QString filename = "C:\\Users\\emil\\Desktop\\KLS\\aa_scan\\5\\" + QString::number(i+1) + ".bmp";
+        qInfo("input image: %s", filename.toStdString().c_str());
         cv::Mat input_img = cv::imread(filename.toStdString());
         if (!blackScreenCheck(input_img)) {
             qWarning("Black screen check fail");
@@ -1711,48 +1731,55 @@ void AACoreNew::performAAOfflineCCOnly()
         }
         std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
         for (size_t i = 0; i < patterns.size(); i++) {
-            qInfo("Pattern x: %f y: %f", patterns.at(i).center.x(), patterns.at(i).center.y());
+            qInfo("Pattern x: %f y: %f area: %f", patterns.at(i).center.x(), patterns.at(i).center.y(), patterns.at(i).area);
         }
-        cv::Rect roi; roi.width = 32; roi.height = 32;
-        cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
-        int rect_width = sqrt(patterns[0].area)/2;
-        //Left ROI
-        roi.x = patterns[0].center.x() - rect_width - roi.width/2;
-        roi.y = patterns[0].center.y() - roi.width/2;
-        input_img(roi).copyTo(cropped_l_img);
-        //Right ROI
-        roi.x = patterns[0].center.x() + rect_width - roi.width/2;
-        roi.y = patterns[0].center.y() - roi.width/2;
-        input_img(roi).copyTo(cropped_r_img);
-        //Top ROI
-        roi.x = patterns[0].center.x() - roi.width/2;
-        roi.y = patterns[0].center.y() - rect_width - roi.width/2;
-        input_img(roi).copyTo(cropped_t_img);
-        //Bottom ROI
-        roi.x = patterns[0].center.x() - roi.width/2;
-        roi.y = patterns[0].center.y() + rect_width - roi.width/2;
-        input_img(roi).copyTo(cropped_b_img);
+        qInfo("[%d] Pattern CC x: %f y: %f area: %f", i, patterns.at(0).center.x(), patterns.at(0).center.y(), patterns.at(0).area);
+//        cv::Rect roi; roi.width = 32; roi.height = 32;
+//        cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
+//        int rect_width = sqrt(patterns[0].area)/2;
+//        //Left ROI
+//        roi.x = patterns[0].center.x() - rect_width - roi.width/2;
+//        roi.y = patterns[0].center.y() - roi.width/2;
+//        input_img(roi).copyTo(cropped_l_img);
+//        //Right ROI
+//        roi.x = patterns[0].center.x() + rect_width - roi.width/2;
+//        roi.y = patterns[0].center.y() - roi.width/2;
+//        input_img(roi).copyTo(cropped_r_img);
+//        //Top ROI
+//        roi.x = patterns[0].center.x() - roi.width/2;
+//        roi.y = patterns[0].center.y() - rect_width - roi.width/2;
+//        input_img(roi).copyTo(cropped_t_img);
+//        //Bottom ROI
+//        roi.x = patterns[0].center.x() - roi.width/2;
+//        roi.y = patterns[0].center.y() + rect_width - roi.width/2;
+//        input_img(roi).copyTo(cropped_b_img);
 
-        double sfr_l = sfr::calculateSfrWithSingleRoi(cropped_l_img,1);
-        double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
-        double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
-        double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
-        double avg_sfr = (sfr_l + sfr_r + sfr_t + sfr_b)/4;
+//        double sfr_l = sfr::calculateSfrWithSingleRoi(cropped_l_img,1);
+//        double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
+//        double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
+//        double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
+//        double avg_sfr = (sfr_l + sfr_r + sfr_t + sfr_b)/4;
         x_pos.push_back((start+step_size*i)*1000);
-        sfr_array.push_back(avg_sfr);
-        qInfo("sfr_t: %f sfr_r: %f sfr_b: %f sfr_l: %f", sfr_t, sfr_r, sfr_b, sfr_l);
-        data->addData(0, (start+step_size*i)*1000, avg_sfr, avg_sfr);
-        data->addData(1, (start+step_size*i)*1000, sfr_t, sfr_t);
-        data->addData(2, (start+step_size*i)*1000, sfr_r, sfr_r);
-        data->addData(3, (start+step_size*i)*1000, sfr_b, sfr_b);
-        data->addData(4, (start+step_size*i)*1000, sfr_l, sfr_l);
+        area_array.push_back(patterns.at(0).area);
+//        qInfo("sfr_t: %f sfr_r: %f sfr_b: %f sfr_l: %f", sfr_t, sfr_r, sfr_b, sfr_l);
+        //data->addData(0, (start+step_size*i)*1000, patterns.at(0).area/25000*100, patterns.at(0).area/25000*100);
     }
+    double area_min = 9999999, area_max = -9999999;
     for (size_t i = 0; i < x_pos.size(); i++)
     {
-        qInfo("x: %f sfr: %f", x_pos[i], sfr_array[i]);
+        if (area_array[i] > area_max) area_max = area_array[i];
+        if (area_array[i] < area_min) area_min = area_array[i];
     }
+
+    for (size_t i = 0; i < x_pos.size(); i++)
+    {
+        double area_in_percentage = 50*(area_array[i]-area_min)/(area_max-area_min);
+        area_array[i] = area_in_percentage;
+        data->addData(0, (start+step_size*i)*1000, area_in_percentage, area_in_percentage);
+    }
+
     int deletedIndex = -1;
-    fitCurve(x_pos, sfr_array, fitOrder, peak_x, peak_sfr,error_avg,error_dev, sfr_fit_array, detectedAbormality, deletedIndex);
+    fitCurve(x_pos, area_array, fitOrder, peak_x, peak_sfr,error_avg,error_dev, area_array, detectedAbormality, deletedIndex);
     qInfo("X scan result peak_x: %f peak_sfr: %f error_avg: %f error_dev: %f", peak_x, peak_sfr, error_avg, error_dev);
     data->setZPeak(peak_x);
     data->setWCCPeakZ(peak_x);

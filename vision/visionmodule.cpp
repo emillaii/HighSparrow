@@ -451,9 +451,9 @@ void VisionModule::testVision()
     PRResultStruct prResult;
     //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
-    this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
+    //this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Matching(DOWNLOOK_VISION_CAMERA, prResult);
-    //this->PR_Prism_SUT_Two_Circle_Matching(DOWNLOOK_VISION_CAMERA, prResult);
+    this->PR_Prism_SUT_Two_Circle_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
 }
 
@@ -1011,7 +1011,7 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
 
         //ToDo: Open the parameter for the circle radius detection ( 11.0 )
-        avl::DetectMultipleCircles( image1, g_constData2, 11.0f, 0.1f, 25.0f, 10.0f, houghCircleArray1, atl::Dummy<avl::Image>().Get(), atl::Dummy<avl::Image>().Get() );
+        avl::DetectMultipleCircles( image1, g_constData2, 11.0f, 0.1f, 15.0f, 10.0f, houghCircleArray1, atl::Dummy<avl::Image>().Get(), atl::Dummy<avl::Image>().Get() );
 
         circle2DArray1.Resize(houghCircleArray1.Size());
         boolArray1.Resize(houghCircleArray1.Size());
@@ -1047,10 +1047,6 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
             else
             {
                 point2DArray1[i] = atl::NIL;
-
-                qWarning("PR Error: Cannot find circles");
-                error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-                return error_code;
             }
         }
 

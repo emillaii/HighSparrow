@@ -888,6 +888,7 @@ public:
     Q_PROPERTY(double circleTime READ circleTime WRITE setCircleTime NOTIFY circleTimeChanged)
     Q_PROPERTY(double circleAverageTime READ circleAverageTime WRITE setCircleAverageTime NOTIFY circleAverageTimeChanged)
     Q_PROPERTY(int circleCount READ circleCount WRITE setCircleCount NOTIFY circleCountChanged)
+    Q_PROPERTY(int calculatedUPH READ calculatedUPH WRITE setCalculatedUPH NOTIFY calculatedUPHChanged)
     Q_PROPERTY(bool tcpAAGripperState READ tcpAAGripperState WRITE setTcpAAGripperState NOTIFY tcpAAGripperStateChanged)
     bool isWaitingLens() const
     {
@@ -982,6 +983,11 @@ public:
     bool tcpAAGripperState() const
     {
         return m_tcpAAGripperState;
+    }
+
+    int calculatedUPH() const
+    {
+        return m_calculatedUPH;
     }
 
 public slots:
@@ -1157,6 +1163,15 @@ public slots:
         emit tcpAAGripperStateChanged(m_tcpAAGripperState);
     }
 
+    void setCalculatedUPH(int calculatedUPH)
+    {
+        if (m_calculatedUPH == calculatedUPH)
+            return;
+
+        m_calculatedUPH = calculatedUPH;
+        emit calculatedUPHChanged(m_calculatedUPH);
+    }
+
 signals:
     void isWaitingLensChanged(bool isWaitingLens);
     void isWaitingSensorChanged(bool isWaitingSensor);
@@ -1195,6 +1210,8 @@ signals:
 
     void tcpAAGripperStateChanged(bool tcpAAGripperState);
 
+    void calculatedUPHChanged(int calculatedUPH);
+
 private:
     bool m_isWaitingLens = false;
     bool m_isWaitingSensor = false;
@@ -1215,6 +1232,7 @@ private:
     bool m_finishSensorTask = false;
     bool m_finishLensTask = false;
     bool m_tcpAAGripperState;
+    int m_calculatedUPH = 0;
 };
 
 #endif // AACOREPARAMETERS_H

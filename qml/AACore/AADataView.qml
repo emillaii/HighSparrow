@@ -612,6 +612,70 @@ Grid {
             }
         }
     }
+
+    Frame {
+        id: frame7
+        width: grid.width/4
+        height: grid.height/2
+
+        ColumnLayout {
+            RowLayout {
+                Label {
+                    text: qsTr("Current Cycle Time: ")
+                    font.bold: true
+                    font.italic: true
+                }
+                TextField {
+                    readOnly: true
+                    text: aaCoreStates.circleTime
+                    horizontalAlignment: TextInput.AlignHCenter
+                    width: 60
+                }
+            }
+
+            RowLayout {
+                Label {
+                    text: qsTr("Average Cycle Time: ")
+                    font.bold: true
+                    font.italic: true
+                }
+                TextField {
+                    readOnly: true
+                    text: aaCoreStates.circleAverageTime
+                    horizontalAlignment: TextInput.AlignHCenter
+                    width: 60
+                }
+            }
+
+            RowLayout {
+                Label {
+                    text: qsTr("Gross Cycle Count: ")
+                    font.bold: true
+                    font.italic: true
+                }
+                TextField {
+                    readOnly: true
+                    text: aaCoreStates.circleCount
+                    horizontalAlignment: TextInput.AlignHCenter
+                    width: 60
+                }
+            }
+
+            RowLayout {
+                Label {
+                    text: qsTr("Gross UPH: ")
+                    font.bold: true
+                    font.italic: true
+                }
+                TextField {
+                    readOnly: true
+                    text: aaCoreStates.calculatedUPH
+                    horizontalAlignment: TextInput.AlignHCenter
+                    width: 60
+                }
+            }
+        }
+    }
 }
 
 

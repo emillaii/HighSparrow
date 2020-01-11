@@ -226,6 +226,11 @@ void AACoreNew::run(bool has_material)
             temp_average = round(temp_average)/1000;
             qInfo("CircleAverageTime :%f",temp_average);
             states.setCircleAverageTime(temp_average);
+
+            if (temp_average > 0)
+            {
+                states.setCalculatedUPH(round(3600/temp_average));
+            }
         }
     }
     states.setRunMode(RunMode::Normal);

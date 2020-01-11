@@ -1294,7 +1294,6 @@ void LutModule::openAA2Griper()
 
 void LutModule::closeAA2Griper()
 {
-
     states.setGriperOperationResult(0);
     sendMessageToModule("LogicManager2","CloseGripper");
 }

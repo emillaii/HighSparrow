@@ -1033,7 +1033,6 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
            max_glue_width_in_mm, min_glue_width_in_mm, max_avg_glue_width_in_mm);
     int finish_delay = params["delay_in_ms"].toInt(0);
 
-    return ErrorCodeStruct {ErrorCode::OK, ""};
     QElapsedTimer timer; timer.start();
     QVariantMap map;
 
@@ -1072,11 +1071,11 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
             sut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
 
             bool glueInspectionResult = false;
+            QString glueInspectionImageName = "";
             if (glue_inspection_mode == 1)
             {
-                QString glueInspectionImageName = "";
                 //Perform dispense inspection need the image before dispense file path and image after dispense file path
-                bool glueInspectionResult = sut->vision_downlook_location->performGlueInspection(imageBeforeDispense, imageNameAfterDispense, &glueInspectionImageName,
+                glueInspectionResult = sut->vision_downlook_location->performGlueInspection(imageBeforeDispense, imageNameAfterDispense, &glueInspectionImageName,
                                                                                                  min_glue_width_in_mm, max_glue_width_in_mm, max_avg_glue_width_in_mm,
                                                                                                  outMinGlueWidth, outMaxGlueWidth, outMaxAvgGlueWidth);
                 qInfo("Glue Inspection result: %d glueInspectionImageName: %s", glueInspectionResult, glueInspectionImageName.toStdString().c_str());
@@ -1092,7 +1091,7 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
                 emit callQmlRefeshImg(3);  //Emit dispense image to QML
             }
             if (!glueInspectionResult) {
-                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"画胶检查 Fail");
+                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"画胶检查");
                 QString operation = waitMessageReturn(is_run,alarm_id);
                 if (REJECT_OPERATION == operation)
                 {

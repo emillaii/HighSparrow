@@ -23,6 +23,7 @@ void WorkersManager::Init(QList<TcpMessager*> senders,QList<TcpMessager*> receiv
     }
     connect(this,&WorkersManager::showAlarm,&alarm_shower,&AlarmMessageShower::appendAlarmMessage);
     connect(&alarm_shower,&AlarmMessageShower::feedbackOperation,this,&WorkersManager::feedbackOperation);
+    connect(&alarm_shower,&AlarmMessageShower::lightOperation,this,&WorkersManager::lightOperation);
     qDebug("receive_messagers size %d",receive_messagers.size());
 }
 
@@ -128,6 +129,13 @@ void WorkersManager::feedbackOperation(const QString module_name,const int alarm
     receiveModuleMessage(message);
 }
 
+void WorkersManager::lightOperation()
+{
+    QVariantMap message;
+    message.insert("Message", "CloseAlarmLight");
+    sendMessageToLogicManager(message);
+}
+
 bool WorkersManager::sendMessageTest(QString title, QString content)
 {
     QMessageBox::StandardButton rb = QMessageBox::information(nullptr,title,content,QMessageBox::Yes|QMessageBox::No);
@@ -140,7 +148,6 @@ bool WorkersManager::sendMessageTest(QString title, QString content)
 
 void WorkersManager::receiveModuleMessage(QVariantMap message)
 {
-
     qInfo("receive module message %s to %s",TcpMessager::getStringFromQvariantMap(message).toStdString().c_str(),message["TargetModule"].toString().toStdString().c_str());
     if(message.contains("TargetModule"))
     {

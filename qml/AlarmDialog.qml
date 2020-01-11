@@ -62,7 +62,10 @@ Window {
                                 alarmShower.sendOperation(module_name,alarm_id,text)
                                 myModel.remove(index)
                                 if(myModel.count<=0)
+                                {
                                     alarmWindow.visible = false
+                                    alarmShower.closeLight()
+                                }
                             }
                         }
                         Button {
@@ -73,7 +76,10 @@ Window {
                                 alarmShower.sendOperation(module_name,alarm_id,text)
                                 myModel.remove(index)
                                 if(myModel.count<=0)
+                                {
                                     alarmWindow.visible = false
+                                    alarmShower.closeLight()
+                                }
                             }
                         }
                         Button {
@@ -84,7 +90,10 @@ Window {
                                 alarmShower.sendOperation(module_name,alarm_id,text)
                                 myModel.remove(index)
                                 if(myModel.count<=0)
+                                {
                                     alarmWindow.visible = false
+                                    alarmShower.closeLight()
+                                }
                             }
                         }
                         Button {
@@ -95,7 +104,10 @@ Window {
                                 alarmShower.sendOperation(module_name,alarm_id,text)
                                 myModel.remove(index)
                                 if(myModel.count<=0)
+                                {
                                     alarmWindow.visible = false
+                                    alarmShower.closeLight()
+                                }
                             }
                         }
 

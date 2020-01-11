@@ -76,6 +76,11 @@ void AlarmMessageShower::finihShow()
     show_mutex.unlock();
 }
 
+void AlarmMessageShower::closeLight()
+{
+    emit lightOperation();
+}
+
 void AlarmMessageShower::sendOperation(const QString module_name,const int alarm_id,const QString operation)
 {
     emit feedbackOperation(module_name,alarm_id,operation);

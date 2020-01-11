@@ -24,10 +24,12 @@ public:
     Q_INVOKABLE QString getChooseTip4();
     bool startShow(int time_out = 5000);
     Q_INVOKABLE void finihShow();
+    Q_INVOKABLE void closeLight();
     Q_INVOKABLE void sendOperation(const QString module_name,const int alarm_id,const QString operation);
 signals:
     void showAlarm();
     void feedbackOperation(const QString module_name,const int alarm_id,const QString operation);
+    void lightOperation();
 public slots:
     void appendAlarmMessage();
 public:

@@ -72,7 +72,7 @@ QString ThreadWorkerBase::waitMessageReturn(bool &interruput,int alarm_id)
                 qInfo("%s waitMessageReturn %s",Name().toStdString().c_str(),operation.toStdString().c_str());
                 choosed_operations.remove(alarm_id);
                 sendMessageToModule("LogicManager2", "CloseAlarmLight");
-                return  operation;
+                return operation;
             }
         }
     }

@@ -160,7 +160,7 @@ void VisionModule::RegionJudge( RegionJudgeState& state, const avl::Image& inSub
 
     for( int i = 0; i < state.regionArray1.Size(); ++i )
     {
-        avl::DilateRegion( state.regionArray1[i], avl::KernelShape::Box, 1, atl::NIL, state.regionArray2[i] );
+        avl::DilateRegion( state.regionArray1[i], avl::KernelShape::Box, 2, atl::NIL, state.regionArray2[i] );
     }
 
     avl::RegionUnion_OfArray( state.regionArray2, outRegion1 );

@@ -677,7 +677,6 @@ void SutModule::receivceModuleMessage(QVariantMap message)
             }
         }
     } else if(message.contains("Message")){
-        qInfo("Testing code");
         if(message["Message"].toString()=="MoveToLoadPos")
         {
             moveToLoadPos();

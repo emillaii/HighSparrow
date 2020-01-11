@@ -30,6 +30,7 @@ signals:
 public slots:
     void tcpResp(QString message);
     void feedbackOperation(const QString module_name,const int alarm_id,const QString operation);
+    void lightOperation();
     bool sendMessageTest(QString title,QString content);
     void receiveModuleMessage(QVariantMap message);
 

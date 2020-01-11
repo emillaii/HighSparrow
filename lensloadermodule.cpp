@@ -1266,6 +1266,39 @@ bool LensLoaderModule::moveToUpdownlookUpPos()
     return result;
 }
 
+bool LensLoaderModule::loadOneLensToLUT()
+{
+    sendMessageToModule("Sut1Module", "MoveToLoadPos");
+    sendMessageToModule("Sut2Module", "MoveToLoadPos");
+    lut->moveToLoadPos();
+    //Checking 1: LPA has lens already
+    if (this->pick_arm->picker->vacuum->checkHasMaterielSync())
+    {
+        int i = 0;
+        do{
+            moveToTrayPos(i, 0); i++;
+            if(performVacancyPR()) {
+                moveToWorkPos(true);
+                break;
+            }
+            if( i == 20) { qInfo("Fail"); return false; }
+        } while (i<20);
+        placeLensToTray();
+    }
+    int i = 0;
+    do{
+        moveToTrayPos(i, 0); i++;
+        if(performLensPR()) {
+            moveToWorkPos(true);
+            break;
+        }
+        if( i == 20) { qInfo("Fail"); return false; }
+    } while (i<20);
+    pickTrayLens();
+    placeLensToLUT();
+    return true;
+}
+
 bool LensLoaderModule::unloadAllLens()
 {
     sendMessageToModule("Sut1Module", "MoveToLoadPos");
@@ -1449,6 +1482,11 @@ bool LensLoaderModule::isRunning()
 void LensLoaderModule::startWork(int run_mode)
 {
     if(run_mode == RunMode::AAFlowChartTest) return;
+    if(run_mode == RunMode::UNLOAD_ALL_LENS) {
+        this->unloadAllLens();
+        return;
+    }
+
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
@@ -1542,6 +1580,13 @@ void LensLoaderModule::performHandlingOperation(int cmd,QVariant param)
     {
         this->unloadAllLens();
         sendAlarmMessage(OK_OPERATION,"Lens Clearance Done",ErrorLevel::TipNonblock);
+        is_handling = false;
+        return;
+    }
+    if (cmd == HandleMarcoAction::LOAD_ONE_LENS_TO_LUT)
+    {
+        this->loadOneLensToLUT();
+        sendAlarmMessage(OK_OPERATION,"Load lens to LUT Done",ErrorLevel::TipNonblock);
         is_handling = false;
         return;
     }

@@ -16,7 +16,8 @@ RowLayout {
         icon.source: "../../icons/camera.png"
         icon.color: "lightGreen"
         onClicked: {
-            logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.CLEARANCE)
+           //logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.CLEARANCE)
+           workersManager.startAllWorkers(4)
         }
     }
     RoundButton {
@@ -29,6 +30,19 @@ RowLayout {
         icon.color: "yellow"
         onClicked: {
             logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.CLEARANCE)
+        }
+    }
+
+    RoundButton {
+        text: "Load Lens To LUT"
+        transformOrigin: Item.Center
+        display: Button.TextBesideIcon
+        icon.width: 30
+        icon.height: 30
+        icon.source: "../../icons/camera.png"
+        icon.color: "purple"
+        onClicked: {
+           logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LOAD_ONE_LENS_TO_LUT)
         }
     }
 }

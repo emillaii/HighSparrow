@@ -60,7 +60,8 @@ public:
     };
     enum HandleMarcoAction
     {
-        CLEARANCE = 10000
+        CLEARANCE = 10000,
+        LOAD_ONE_LENS_TO_LUT = 20000
     };
 
 public:
@@ -129,6 +130,7 @@ private:
     bool moveToUpdownlookUpPos();
 
     bool unloadAllLens();
+    bool loadOneLensToLUT();
 
     void addCurrentNumber();
     void addCurrentNgNumber();

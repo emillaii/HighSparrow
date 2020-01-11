@@ -44,7 +44,8 @@ enum RunMode
     Normal = 0,
     NoMaterial = 1,
     VibrationTest = 2,
-    AAFlowChartTest = 3
+    AAFlowChartTest = 3,
+    UNLOAD_ALL_LENS = 4
 };
 enum FinishedType
 {

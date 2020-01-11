@@ -70,7 +70,7 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
         qInfo("Sample Y: %f  Predicted Y: %f Error: %f", Y(i, 0), Ans(i, 0), error);
         //If |error| > 10, then this point is outfiter, then remove that point and fitCurve recursively
         //Avoid infinite recursive loop
-        if (!detectedAbnormality && error < -10) {
+        if (!detectedAbnormality && error < -7) {
             qInfo("Detected the abnormal data point");
             detectedAbnormality = true;
             deletedIndex = i;
@@ -1504,7 +1504,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             area_array[i] = area_in_percentage;
             data->addData(0, (start+step_size*i)*1000, area_in_percentage, area_in_percentage);
         }
-
+        bool detectedAbormality = false;
         int deletedIndex = -1;
         fitCurve(x_pos, area_array, fitOrder, peak_x, peak_sfr, error_avg, error_dev, area_array, detectedAbormality, deletedIndex);
         peak_x += start;  //Add back the base value
@@ -1565,6 +1565,21 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     map.insert("Z_PEAK_L1_um", round((aa_result["zPeak_03"].toDouble()*1000)*1000)/1000);
     map.insert("Z_PEAK_L2_um", round((aa_result["zPeak_05"].toDouble()*1000)*1000)/1000);
     map.insert("Z_PEAK_L3_um", round((aa_result["zPeak_08"].toDouble()*1000)*1000)/1000);
+    map.insert("detectedAbnormality_CC", aa_result["detectedAbnormality_CC"]);
+    map.insert("deletedIndex_CC", aa_result["detectedAbnormality_CC"]);
+    map.insert("fitCurveErrorDevCC", aa_result["fitCurveErrorDevCC"]);
+    map.insert("detectedAbnormality_L1_UL", aa_result["detectedAbnormality_L1_UL"]);
+    map.insert("deletedIndex_L1_UL", aa_result["detectedAbnormality_L1_UL"]);
+    map.insert("fitCurveErrorDev_L1_UL", aa_result["fitCurveErrorDev_L1_UL"]);
+    map.insert("detectedAbnormality_L1_UR", aa_result["detectedAbnormality_L1_UR"]);
+    map.insert("deletedIndex_L1_UR", aa_result["detectedAbnormality_L1_UR"]);
+    map.insert("fitCurveErrorDev_L1_UR", aa_result["fitCurveErrorDev_L1_UR"]);
+    map.insert("detectedAbnormality_L1_LL", aa_result["detectedAbnormality_L1_LL"]);
+    map.insert("deletedIndex_L1_LL", aa_result["detectedAbnormality_L1_LL"]);
+    map.insert("fitCurveErrorDev_L1_LL", aa_result["fitCurveErrorDev_L1_LL"]);
+    map.insert("detectedAbnormality_L1_LR", aa_result["detectedAbnormality_L1_LR"]);
+    map.insert("deletedIndex_L1_LR", aa_result["detectedAbnormality_L1_LR"]);
+    map.insert("fitCurveErrorDev_L1_LR", aa_result["fitCurveErrorDev_L1_LR"]);
     map.insert("FOV_SLOPE", round(fov_slope*1000)/1000);
     map.insert("FOV_INTERCEPT", round(fov_intercept*1000)/1000);
     bool aaResult = aa_result["OK"].toBool();
@@ -1809,7 +1824,7 @@ void AACoreNew::performAAOfflineCCOnly()
         area_array[i] = area_in_percentage;
         data->addData(0, (start+step_size*i)*1000, area_in_percentage, area_in_percentage);
     }
-
+    bool detectedAbormality = false;
     int deletedIndex = -1;
     fitCurve(x_pos, area_array, fitOrder, peak_x, peak_sfr,error_avg,error_dev, area_array, detectedAbormality, deletedIndex);
     qInfo("X scan result peak_x: %f peak_sfr: %f error_avg: %f error_dev: %f", peak_x, peak_sfr, error_avg, error_dev);
@@ -1889,6 +1904,27 @@ void AACoreNew::performAAOffline()
     QVariantMap aa_result = sfrFitCurve_Advance(resize_factor, start);
     map.insert("X_TILT", round(aa_result["xTilt"].toDouble()*1000)/1000);
     map.insert("Y_TILT", round(aa_result["yTilt"].toDouble()*1000)/1000);
+
+    map.insert("detectedAbnormality_CC", aa_result["detectedAbnormality_CC"]);
+    map.insert("deletedIndex_CC", aa_result["detectedAbnormality_CC"]);
+    map.insert("fitCurveErrorDevCC", aa_result["fitCurveErrorDevCC"]);
+
+    map.insert("detectedAbnormality_L1_UL", aa_result["detectedAbnormality_L1_UL"]);
+    map.insert("deletedIndex_L1_UL", aa_result["detectedAbnormality_L1_UL"]);
+    map.insert("fitCurveErrorDev_L1_UL", aa_result["fitCurveErrorDev_L1_UL"]);
+
+    map.insert("detectedAbnormality_L1_UR", aa_result["detectedAbnormality_L1_UR"]);
+    map.insert("deletedIndex_L1_UR", aa_result["detectedAbnormality_L1_UR"]);
+    map.insert("fitCurveErrorDev_L1_UR", aa_result["fitCurveErrorDev_L1_UR"]);
+
+    map.insert("detectedAbnormality_L1_LL", aa_result["detectedAbnormality_L1_LL"]);
+    map.insert("deletedIndex_L1_LL", aa_result["detectedAbnormality_L1_LL"]);
+    map.insert("fitCurveErrorDev_L1_LL", aa_result["fitCurveErrorDev_L1_LL"]);
+
+    map.insert("detectedAbnormality_L1_LR", aa_result["detectedAbnormality_L1_LR"]);
+    map.insert("deletedIndex_L1_LR", aa_result["detectedAbnormality_L1_LR"]);
+    map.insert("fitCurveErrorDev_L1_LR", aa_result["fitCurveErrorDev_L1_LR"]);
+
     map.insert("Z_PEAK_CC_um", round((aa_result["zPeak_cc"].toDouble()*1000)*1000)/1000);
     map.insert("Z_PEAK_03_um", round((aa_result["zPeak_03"].toDouble()*1000)*1000)/1000);
     map.insert("Z_PEAK_05_um", round((aa_result["zPeak_05"].toDouble()*1000)*1000)/1000);
@@ -2055,20 +2091,37 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         default:
             break;
         }
-        bool detectedAbnormality = false;
+        bool detectedAbnormality = true;
         int temp_index = -1;
         fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev, sfr_fit, detectedAbnormality, temp_index);
         sorted_sfr_fit_map.push_back(sfr_fit); //Used to display the curve with fitting result
         if (i==0) {
             deletedIndex = temp_index;
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
-            result.insert("detectedAbnormality", detectedAbnormality);
-            result.insert("deletedIndex", deletedIndex);
-            result.insert("fitCurveErrorDevCC", error_dev); map.insert("fitCurveErrorDevCC", error_dev);
+            result.insert("detectedAbnormality_CC", detectedAbnormality);
+            result.insert("deletedIndex_CC", deletedIndex);
+            result.insert("fitCurveErrorDevCC", error_dev);
             qInfo("fitCurveErrorDevCC:avg:%f,dev:%f",error_avg,error_dev);
         } else if ( i >= 1 && i <= 4) {
             points_1.emplace_back(ex, ey, peak_z + start_pos);
             points_11.emplace_back(ex, ey, peak_z + start_pos);
+            if (i == 1){   //Detect L1 UL curve abnormality
+                result.insert("detectedAbnormality_L1_UL", detectedAbnormality);
+                result.insert("deletedIndex_L1_UL", deletedIndex);
+                result.insert("fitCurveErrorDev_L1_UL", error_dev);
+            } else if (i == 2){   //Detect L1 UR curve abnormality
+                result.insert("detectedAbnormality_L1_UR", detectedAbnormality);
+                result.insert("deletedIndex_L1_UR", deletedIndex);
+                result.insert("fitCurveErrorDev_L1_UR", error_dev);
+            } else if (i == 3){   //Detect L1 LR curve abnormality
+                result.insert("detectedAbnormality_L1_LR", detectedAbnormality);
+                result.insert("deletedIndex_L1_LR", deletedIndex);
+                result.insert("fitCurveErrorDev_L1_LR", error_dev);
+            } else if (i == 4){   //Detect L1 LL curve abnormality
+                result.insert("detectedAbnormality_L1_LL", detectedAbnormality);
+                result.insert("deletedIndex_L1_LL", deletedIndex);
+                result.insert("fitCurveErrorDev_L1_LL", error_dev);
+            }
         } else if ( i >= 5 && i <= 8) {
             points_2.emplace_back(ex, ey, peak_z + start_pos);
             points_22.emplace_back(ex, ey, peak_z + start_pos);

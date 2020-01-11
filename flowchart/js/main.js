@@ -14,7 +14,7 @@ $(document).ready(function () {
   var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
   var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0, delay_in_ms: 0};
-  var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0, enable_glue_inspection: 0, max_glue_width_in_mm:0, min_glue_width_in_mm: 0, max_avg_glue_width_in_mm:0 };
+  var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0, enable_glue_inspection: 0, glue_inspection_mode: 0, max_glue_width_in_mm:0, min_glue_width_in_mm: 0, max_avg_glue_width_in_mm:0 };
   var init_save_image = { type: 0, lighting: 100 };
   var init_grr_params ={ change_lens: 1, change_sensor: 0, repeat_time: 10,change_time: 11};
   var init_lens_params = { cmd: 0, target_position: 70, ois_x_target_position: 0, ois_y_target_position: 0, delay_in_ms: 0 }
@@ -85,6 +85,7 @@ $(document).ready(function () {
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT Y Offset in um: <input type=\"number\" id=\"dispense_y_offset_in_um\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT Z Offset in um: <input type=\"number\" id=\"dispense_z_offset_in_um\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Enable Glue Inspection: <select id=\"enable_glue_inspection\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $dispense_operator_properties.append("<div style=\"margin-top:20px\">Glue Inspection Mode: <select id=\"glue_inspection_mode\" size=\"2\"><option value=0>Manual</option><option value=1>Auto</option></select></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Min Glue Width in mm: <input type=\"number\" id=\"min_glue_width_in_mm\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Max Glue Width in mm: <input type=\"number\" id=\"max_glue_width_in_mm\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Max Avg Glue Width in mm: <input type=\"number\" id=\"max_avg_glue_width_in_mm\"></div>");
@@ -204,6 +205,7 @@ $(document).ready(function () {
         $('#dispense_y_offset_in_um').val(params["y_offset_in_um"]);
         $('#dispense_z_offset_in_um').val(params["z_offset_in_um"]);
 		$('#enable_glue_inspection').val(params["enable_glue_inspection"]);
+		$('#glue_inspection_mode').val(params["glue_inspection_mode"]);
 		$('#max_glue_width_in_mm').val(params["max_glue_width_in_mm"]);
 		$('#min_glue_width_in_mm').val(params["min_glue_width_in_mm"]);
 		$('#max_avg_glue_width_in_mm').val(params["max_avg_glue_width_in_mm"]);
@@ -431,6 +433,7 @@ $(document).ready(function () {
 	  y_offset_in_um:  Number($('#dispense_y_offset_in_um').val()),
 	  z_offset_in_um:  Number($('#dispense_z_offset_in_um').val()),
 	  enable_glue_inspection: Number($('#enable_glue_inspection').val()),
+	  glue_inspection_mode: Number($('#glue_inspection_mode').val()),
 	  min_glue_width_in_mm: Number($('#min_glue_width_in_mm').val()),
 	  max_glue_width_in_mm: Number($('#max_glue_width_in_mm').val()),
 	  max_avg_glue_width_in_mm: Number($('#max_avg_glue_width_in_mm').val()),
@@ -802,6 +805,7 @@ $(document).ready(function () {
 	  y_offset_in_um:  Number($('#dispense_y_offset_in_um').val()),
 	  z_offset_in_um:  Number($('#dispense_z_offset_in_um').val()),
 	  enable_glue_inspection: Number($('#enable_glue_inspection').val()),
+	  glue_inspection_mode: Number($('#glue_inspection_mode').val()),
 	  min_glue_width_in_mm: Number($('#min_glue_width_in_mm').val()),
 	  max_glue_width_in_mm: Number($('#max_glue_width_in_mm').val()),
 	  max_avg_glue_width_in_mm: Number($('#max_avg_glue_width_in_mm').val()),
@@ -1064,6 +1068,7 @@ $(document).ready(function () {
 	  y_offset_in_um:  Number($('#dispense_y_offset_in_um').val()),
 	  z_offset_in_um:  Number($('#dispense_z_offset_in_um').val()),
 	  enable_glue_inspection: Number($('#enable_glue_inspection').val()),
+	  glue_inspection_mode: Number($('#glue_inspection_mode').val()),
 	  min_glue_width_in_mm: Number($('#min_glue_width_in_mm').val()),
 	  max_glue_width_in_mm: Number($('#max_glue_width_in_mm').val()),
 	  max_avg_glue_width_in_mm: Number($('#max_avg_glue_width_in_mm').val()),

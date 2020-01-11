@@ -55,6 +55,7 @@ int ThreadWorkerBase::sendAlarmMessage(QString error_tips, QString error_message
     message_map.insert("ErrorLevel",error_level);
     message_map.insert("OriginModule",Name());
     emit sendModuleMessage(message_map);
+    sendMessageToModule("LogicManager2", "OpenAlarmLight");
     return alarm_id;
 }
 
@@ -70,6 +71,7 @@ QString ThreadWorkerBase::waitMessageReturn(bool &interruput,int alarm_id)
                 QString operation = choosed_operations[alarm_id];
                 qInfo("%s waitMessageReturn %s",Name().toStdString().c_str(),operation.toStdString().c_str());
                 choosed_operations.remove(alarm_id);
+                sendMessageToModule("LogicManager2", "CloseAlarmLight");
                 return  operation;
             }
         }

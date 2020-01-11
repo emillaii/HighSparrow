@@ -393,6 +393,8 @@ void TrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
     }
     else if(cmd == HandlePosition::ENTRANCE_CLIP_WAIT_POS)
         result = moveEntranceClipToWaitPos();
+    else if(cmd == HandlePosition::ENTRANCE_CLIP_CHANGE_POS)
+        result = moveToChangeClipPos();
     else if(cmd == HandlePosition::ENTRANCE_CLIP_TOP)
         result = moveEntranceClipToTop();
     else if(cmd == HandlePosition::ENTRANCE_CLIP_BOTTOM)

@@ -802,6 +802,7 @@ bool BaseModuleManager::loadconfig()
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
+    loadCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     tcp_manager.loadJsonConfig(getSystermParameterDir().append(TCP_CONFIG_FILE));
     return true;
 }

@@ -1849,9 +1849,7 @@ void VisionModule::receivceModuleMessage(QVariantMap message)
         avl::Image image1;
         this->grabImageFromCamera(cameraName, image1);
         if (!image1.Empty()) {
-            qInfo("Save Image");
             avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
-            qInfo("Done");
             QJsonObject params;
             params.insert("cameraName", cameraName);
             params.insert("filename", imageName);

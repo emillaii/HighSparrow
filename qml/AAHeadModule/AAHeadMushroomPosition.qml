@@ -135,7 +135,7 @@ ColumnLayout {
             height: 40
             onClicked: {
 //                lutModule.performHandling(1);
-                logicManager.performHandling(lutParams.moduleName,LutModule.AA1_UPLOOK_POS+LutModule.AA1_UPLOOK_PR)
+                logicManager.performHandling(lutParams.moduleName,LutModule.AA1_UPLOOK_POS)
             }
         }
         Button {
@@ -145,7 +145,7 @@ ColumnLayout {
             height: 40
             onClicked: {
 //                lutModule.performHandling(2);
-                logicManager.performHandling(lutParams.moduleName,LutModule.AA2_UPLOOK_POS+LutModule.AA2_UPLOOK_PR)
+                logicManager.performHandling(lutParams.moduleName,LutModule.AA2_UPLOOK_POS)
             }
         }
         Button {
@@ -154,7 +154,7 @@ ColumnLayout {
             height: 40
             onClicked: {
 //                sutModule.performHandling(1);
-                logicManager.performHandling(sutParams.moduleName,SutModule.DOWNLOOK_PR)
+                logicManager.performHandling(sutParams.moduleName,SutModule.DOWNLOOK_PR_POS+SutModule.DOWNLOOK_PR)
             }
         }
         Button {

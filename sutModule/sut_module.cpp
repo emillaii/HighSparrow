@@ -623,7 +623,7 @@ void SutModule::performHandlingOperation(int cmd,QVariant param)
 //        PrOffset offset(0, 0, 0);
 //        moveToDownlookPR(offset, false);
 //        stepMove_XY_Sync(-offset.X, -offset.Y);
-        moveToDownlookPR(false,true);
+        result = moveToDownlookPR(true, false);
     }
     if(!result)
         sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);

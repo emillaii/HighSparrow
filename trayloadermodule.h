@@ -14,7 +14,8 @@ public:
     enum HandlePosition
     {
         ENTRANCE_CLIP_POS,
-        ENTRANCE_CLIP_WAIT_POS,
+        ENTRANCE_CLIP_WAIT_POS,        
+        ENTRANCE_CLIP_CHANGE_POS,
         ENTRANCE_CLIP_TOP,
         ENTRANCE_CLIP_BOTTOM,
         EXIT_CLIP_POS,

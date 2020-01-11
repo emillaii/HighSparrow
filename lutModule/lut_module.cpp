@@ -368,7 +368,7 @@ void LutModule::run(bool has_material)
                     ||states.disableStation1())
                 action_result = moveToAA2ReadyPos();
             else
-                action_result = action_result = moveToAA1ReadyPos();
+                action_result = moveToAA1ReadyPos();
             if(!action_result)
             {
                 AppendError("move to ready pos fail");

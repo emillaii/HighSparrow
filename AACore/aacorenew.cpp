@@ -1165,7 +1165,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     QElapsedTimer step_move_timer;
     QElapsedTimer grab_timer;
     double estimated_aa_z = 0;
-    bool detectedAbormality = false;
+    bool detectedAbnormality = false;
     if(zScanMode == ZSCAN_MODE::AA_ZSCAN_NORMAL) {
         unsigned int count = (int)fabs((start - stop)/step_size);
         for (unsigned int i = 0; i < count; i++)
@@ -1737,7 +1737,7 @@ void AACoreNew::performAAOfflineCCOnly()
     double step_size = 0.01, start = 0;
     vector<double> x_pos, sfr_array, sfr_fit_array, area_array;
     double peak_x = 0, peak_sfr = 0, error_dev = 0, error_avg = 0;
-    bool detectedAbormality = false;
+    bool detectedAbnormality = false;
     AAData *data;
     if (currentChartDisplayChannel == 0) {
         data = &aaData_1;
@@ -2055,14 +2055,14 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         default:
             break;
         }
-        bool detectedAbormality = false;
+        bool detectedAbnormality = false;
         int temp_index = -1;
-        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev, sfr_fit, detectedAbormality, temp_index);
+        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev, sfr_fit, detectedAbnormality, temp_index);
         sorted_sfr_fit_map.push_back(sfr_fit); //Used to display the curve with fitting result
         if (i==0) {
             deletedIndex = temp_index;
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
-            result.insert("detectedAbnormality", detectedAbormality);
+            result.insert("detectedAbnormality", detectedAbnormality);
             result.insert("deletedIndex", deletedIndex);
             result.insert("fitCurveErrorDevCC", error_dev); map.insert("fitCurveErrorDevCC", error_dev);
             qInfo("fitCurveErrorDevCC:avg:%f,dev:%f",error_avg,error_dev);

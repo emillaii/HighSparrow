@@ -1271,6 +1271,16 @@ void LogicManager::performTcpOperation(QVariantMap message)
                 sendMessageToModule(message["OriginModule"].toString(),result?"CloseGripperSuccess":"CloseGripperFail");
             }
         }
+        else if(message["Message"].toString() == "OpenAlarmLight")
+        {
+            baseModuleManage->setOutput(u8"三色报警指示灯_绿", false);
+            baseModuleManage->setOutput(u8"三色报警指示灯_红", true);
+        }
+        else if(message["Message"].toString() == "CloseAlarmLight")
+        {
+            baseModuleManage->setOutput(u8"三色报警指示灯_红", false);
+            baseModuleManage->setOutput(u8"三色报警指示灯_绿", true);
+        }
 
     }
     else if(message.contains("performHandling"))

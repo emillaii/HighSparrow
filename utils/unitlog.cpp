@@ -33,7 +33,6 @@ bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap map)
     QVariantMap testMap;
     if (unit_log_list.contains(uuid))
     {
-//        qInfo("get data name: %s uuid:%s",test_name.toStdString().c_str(),uuid.toStdString().c_str());
         int index = 1;
         for (QString s : unit_log_test_name_list[uuid]) {
             QString name = test_name;
@@ -47,7 +46,6 @@ bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap map)
         testMap.insert(name, map);
         unit_log_list[uuid].insert(test_name, map);
         unit_log_test_name_list[uuid].push_back(test_name.append("_").append(QString::number(index)));
-//        qInfo("Push data to unit: %s", uuid.toStdString().c_str());
 
         QString temp_header;
         foreach (QString temp_key, map.keys()) {
@@ -86,6 +84,8 @@ bool Unitlog::postDataToELK(QString uuid)
          QString filename = "";
          filename.append(getUnitLogDir())
                          .append(getCurrentTimeString())
+                         .append("_")
+                         .append(uuid)
                          .append(".json");
          QFile file(filename);
          file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -239,6 +239,8 @@ bool Unitlog::postSfrDataToELK(QString uuid, QVariantMap data)
              QString filename = "";
              filename.append(getAALogDir())
                              .append(getCurrentTimeString())
+                             .append("_")
+                             .append(uuid)
                              .append(".json");
              QFile file(filename);
              file.open(QIODevice::WriteOnly | QIODevice::Text);

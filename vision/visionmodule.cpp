@@ -22,7 +22,7 @@ VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera 
                            BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
                            BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
                            BaslerPylonCamera* barcodeCamera, QString name)
-             :ThreadWorkerBase (name), QQuickImageProvider(QQuickImageProvider::Image)
+    :ThreadWorkerBase (name), QQuickImageProvider(QQuickImageProvider::Image)
 {
     this->downlookCamera = downlookCamera;
     this->uplookCamera = uplookCamera;
@@ -155,10 +155,18 @@ void VisionModule::RegionJudge( RegionJudgeState& state, const avl::Image& inSub
 
     avl::ThresholdToRegion_Dynamic( inSubtractImage, atl::NIL, atl::NIL, 5, 5, 5.0f, atl::NIL, 0.0f, state.region1, atl::Dummy<avl::Image>().Get() );
     avl::SplitRegionIntoBlobs( state.region1, avl::RegionConnectivity::EightDirections, 100, atl::NIL, true, state.regionArray1, atl::Dummy< atl::Array< int > >().Get() );
-    avl::RegionUnion_OfArray( state.regionArray1, outRegion1 );
+
+    state.regionArray2.Resize(state.regionArray1.Size());
+
+    for( int i = 0; i < state.regionArray1.Size(); ++i )
+    {
+        avl::DilateRegion( state.regionArray1[i], avl::KernelShape::Box, 1, atl::NIL, state.regionArray2[i] );
+    }
+
+    avl::RegionUnion_OfArray( state.regionArray2, outRegion1 );
     avl::FillRegionHoles( outRegion1, avl::RegionConnectivity::EightDirections, 0, GlueInnerFrameMinArea, outRegion2 );
-    avl::SplitRegionIntoBlobs( outRegion2, avl::RegionConnectivity::EightDirections, GlueLineMinArea, atl::NIL, true, state.regionArray2, atl::Dummy< atl::Array< int > >().Get() );
-    avl::GetMaximumRegion_OrNil( state.regionArray2, avl::RegionFeature::Area, outRegion, atl::Dummy< atl::Conditional< float > >().Get(), atl::Dummy< atl::Conditional< int > >().Get() );
+    avl::SplitRegionIntoBlobs( outRegion2, avl::RegionConnectivity::EightDirections, GlueLineMinArea, atl::NIL, true, state.regionArray3, atl::Dummy< atl::Array< int > >().Get() );
+    avl::GetMaximumRegion_OrNil( state.regionArray3, avl::RegionFeature::Area, outRegion, atl::Dummy< atl::Conditional< float > >().Get(), atl::Dummy< atl::Conditional< int > >().Get() );
 
     if (outRegion != atl::NIL)
     {
@@ -446,15 +454,17 @@ void VisionModule::testVision()
 {
     QString imageName;
     QElapsedTimer timer; timer.start();
-    //this->Glue_Inspection("", "", &imageName);
-    //qInfo("Glue inspection reuslt: %s time: %d", imageName.toStdString().c_str(), timer.elapsed());
-    PRResultStruct prResult;
+    double outMinGlueWidth = 0, outMaxGlueWidth = 0, outMaxAvgGlueWidth = 0;
+    this->Glue_Inspection(1, 1, 1, 1, "", "", &imageName, &outMinGlueWidth, &outMaxGlueWidth, &outMaxAvgGlueWidth);
+
+    qInfo("Glue inspection reuslt: %s time: %d", imageName.toStdString().c_str(), timer.elapsed());
+    //PRResultStruct prResult;
     //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
     //this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Matching(DOWNLOOK_VISION_CAMERA, prResult);
-    this->PR_Prism_SUT_Two_Circle_Matching(DOWNLOOK_VISION_CAMERA, prResult);
-    qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
+    //this->PR_Prism_SUT_Two_Circle_Matching(DOWNLOOK_VISION_CAMERA, prResult);
+    //qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
 }
 
 bool VisionModule::saveImage(QString cameraName, QString imageName)
@@ -1653,9 +1663,9 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
     substractImage.append(getDispensePrLogDir())
             .append(getCurrentTimeString())
             .append("_substract_result.jpg");
-			
-    //file1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\before\\2.jpg";
-    //file2 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\after\\2_d.jpg";
+
+    //file1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\before\\0.jpg";
+    //file2 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\after\\0_d.jpg";
     file1 = beforeImage.toStdString().c_str();
     file2 = afterImage.toStdString().c_str();
     qDebug("Going to do the glueInspection. Before Dispense Image: %s After dispense image: %s", beforeImage.toStdString().c_str(), afterImage.toStdString().c_str());
@@ -1682,10 +1692,10 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
 
         WidthJudge( widthJudgeState1, bool1, region5, resolution, minWidth, maxWidth, image2, maxAvgWidth, outResultOK, image3, outMaxWidth, outMinWidth, outAveWidth );
 
-        if (outMaxWidth.HasValue()) *outMaxGlueWidth = outMaxWidth.Get();
-        if (outMinWidth.HasValue()) *outMinGlueWidth = outMinWidth.Get();
-        if (outAveWidth.HasValue()) *outMaxAvgGlueWidth = outAveWidth.Get();
-        qDebug("Glue Inspection result: %d outMaxWidth: %f outMinWidth: %f outAvgWidth: %f", outResultOK, outMaxWidth.Get(),  outMinWidth.Get(), outAveWidth.Get());
+        if (outMaxWidth != atl::NIL && outMaxWidth.HasValue()) *outMaxGlueWidth = outMaxWidth.Get();
+        if (outMinWidth != atl::NIL && outMinWidth.HasValue()) *outMinGlueWidth = outMinWidth.Get();
+        if (outAveWidth != atl::NIL && outAveWidth.HasValue()) *outMaxAvgGlueWidth = outAveWidth.Get();
+        qDebug("Glue Inspection result: %d outMaxWidth: %f outMinWidth: %f outAvgWidth: %f", outResultOK, *outMaxGlueWidth,  *outMinGlueWidth, *outMaxAvgGlueWidth);
         avl::SaveImageToJpeg( image3, outResultImageName.toStdString().c_str(), atl::NIL, false );
         *glueInspectionImageName = outResultImageName;
         if (outResultOK) {
@@ -1884,7 +1894,7 @@ void VisionModule::saveImage(int channel)
         SI::ui.showMessage("VisionModule", QString("Save Image Success! ").append(imageName).append(" is saved."), MsgBoxIcon::Information, "OK");
         emit callQmlRefeshImg(5+channel);
     }else {
-         SI::ui.showMessage("VisionModule", QString("Save Image Fail!"), MsgBoxIcon::Information, "OK");
+        SI::ui.showMessage("VisionModule", QString("Save Image Fail!"), MsgBoxIcon::Information, "OK");
     }
 }
 

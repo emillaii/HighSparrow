@@ -34,6 +34,7 @@ struct RegionJudgeState
     avl::Region region1;
     atl::Array< avl::Region > regionArray1;
     atl::Array< avl::Region > regionArray2;
+    atl::Array< avl::Region > regionArray3;
 };
 
 

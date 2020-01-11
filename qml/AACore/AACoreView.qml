@@ -36,7 +36,7 @@ ScrollView {
                         ComboBox {
                             id: aaCoreProfile
                             Layout.preferredWidth: 300
-                            model: [ "Best CC", "Best 0.3F", "Best 0.5F", "Best 0.8F" ]
+                            model: [ "Best CC", "Best Layer1", "Best Layer2", "Best Layer3" ]
                             currentIndex: aaCoreParams.peakProfile
                             onCurrentIndexChanged: {
                                 aaCoreParams.setPeakProfile(currentIndex)
@@ -68,45 +68,45 @@ ScrollView {
                             }
                         }
                         Label {
-                            text: qsTr("03")
+                            text: qsTr("Layer1")
                         }
                         TextField {
-                            text: aaCoreParams.zpeak03Coefficient
+                            text: aaCoreParams.zpeakL1Coefficient
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                aaCoreParams.setZpeak03Coefficient(text)
+                                aaCoreParams.setZpeakL1Coefficient(text)
                             }
                         }
                         Label {
-                            text: qsTr("05")
+                            text: qsTr("Layer2")
                         }
                         TextField {
-                            text: aaCoreParams.zpeak05Coefficient
+                            text: aaCoreParams.zpeakL2Coefficient
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                aaCoreParams.setZpeak05Coefficient(text)
+                                aaCoreParams.setZpeakL2Coefficient(text)
                             }
                         }
                         Label {
-                            text: qsTr("08")
+                            text: qsTr("Layer3")
                         }
                         TextField {
-                            text: aaCoreParams.zpeak08Coefficient
+                            text: aaCoreParams.zpeakL3Coefficient
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                aaCoreParams.setZpeak08Coefficient(text)
+                                aaCoreParams.setZpeakL3Coefficient(text)
                             }
                         }
                     }
@@ -141,89 +141,131 @@ ScrollView {
                             }
                         }
                         Label {
-                            text: qsTr("05F ZPeak Diff")
+                            text: qsTr("L1 ZPeak Diff")
                         }
                         TextField {
-                            text: aaCoreParams.zPeakDiff05Max
+                            text: aaCoreParams.zPeakDiffL1Max
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                aaCoreParams.setZPeakDiff05Max(text)
+                                aaCoreParams.setZPeakDiffL1Max(text)
                             }
                         }
                         Label {
-                            text: qsTr("08F ZPeak Diff")
+                            text: qsTr("L2 ZPeak Diff")
                         }
                         TextField {
-                            text: aaCoreParams.zPeakDiff08Max
+                            text: aaCoreParams.zPeakDiffL2Max
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                aaCoreParams.setZPeakDiff08Max(text)
+                                aaCoreParams.setZPeakDiffL2Max(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("L3 ZPeak Diff")
+                        }
+                        TextField {
+                            text: aaCoreParams.zPeakDiffL3Max
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setZPeakDiffL3Max(text)
                             }
                         }
                     }
                     RowLayout {
                         Label {
-                            text: qsTr("CC_08MinDev")
+                            text: qsTr("CC-L1MinDev")
                         }
                         TextField {
-                            text: aaCoreParams.CC08MinDev
+                            text: aaCoreParams.CCL1MinDev
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                aaCoreParams.setCC08MinDev(text)
+                                aaCoreParams.setCCL1MinDev(text)
                             }
                         }
                         Label {
-                            text: qsTr("CC_08MaxDev")
+                            text: qsTr("CC-L1MaxDev")
                         }
                         TextField {
-                            text: aaCoreParams.CC08MaxDev
+                            text: aaCoreParams.CCL1MaxDev
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                aaCoreParams.setCC08MaxDev(text)
+                                aaCoreParams.setCCL1MaxDev(text)
                             }
                         }
                         Label {
-                            text: qsTr("CC_05MinDev")
+                            text: qsTr("CC-L2MinDev")
                         }
                         TextField {
-                            text: aaCoreParams.CC05MinDev
+                            text: aaCoreParams.CCL2MinDev
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                aaCoreParams.setCC05MinDev(text)
+                                aaCoreParams.setCCL2MinDev(text)
                             }
                         }
                         Label {
-                            text: qsTr("CC_05MaxDev")
+                            text: qsTr("CC-L2MaxDev")
                         }
                         TextField {
-                            text: aaCoreParams.CC05MaxDev
+                            text: aaCoreParams.CCL2MaxDev
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: DoubleValidator {
                                 decimals: 2
                                 notation: DoubleValidator.StandardNotation
                             }
                             onEditingFinished: {
-                                aaCoreParams.setCC05MaxDev(text)
+                                aaCoreParams.setCCL2MaxDev(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("CC-L3MinDev")
+                        }
+                        TextField {
+                            text: aaCoreParams.CCL3MinDev
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setCCL3MinDev(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("CC-L3MaxDev")
+                        }
+                        TextField {
+                            text: aaCoreParams.CCL3MaxDev
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setCCL3MaxDev(text)
                             }
                         }
                     }

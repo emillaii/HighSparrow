@@ -860,7 +860,8 @@ bool LutModule::moveToAA1UplookPR(bool close_lighting, bool check_autochthonous,
         result.insert("prOffsetY", pr_offset.Y);
         result.insert("prOffsetT", pr_offset.Theta);
         result.insert("event", "prResp");
-        emit sendMessageToClient("::1", getStringFromJsonObject(result));
+        this->sendMessageToModule("AA1CoreNew", "UplookPrResult", result);
+        //emit sendMessageToClient("::1", getStringFromJsonObject(result));
         return true;
     }
     AppendError(u8"执行AA1uplook PR失败");
@@ -899,7 +900,8 @@ bool LutModule::moveToAA2UplookPR(bool close_lighting, bool check_autochthonous,
         result.insert("prOffsetY", pr_offset.Y);
         result.insert("prOffsetT", pr_offset.Theta);
         result.insert("event", "prResp");
-        emit sendMessageToClient("remote", getStringFromJsonObject(result));
+        this->sendMessageToModule("AA2CoreNew", "UplookPrResult", result);
+        //emit sendMessageToClient("remote", getStringFromJsonObject(result));
         return true;
     }
     AppendError(u8"执行AA2 uplook PR失败");

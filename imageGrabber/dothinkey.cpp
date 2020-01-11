@@ -247,20 +247,29 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     isGrabbing = true;
     //TODO: Move that to test item or in dothinkey config file
     USHORT value_1 =0;
-    WriteSensorReg(pSensor->SlaveID, 0x0a02, 0x007F, pSensor->mode);
+    qInfo("mode = %d", pSensor->mode);
+//    bool result = WriteSensorReg(pSensor->SlaveID, 0x6028, 0x4000, 4);
+//    Sleep(30);
+//    result = WriteSensorReg(pSensor->SlaveID, 0x602A, 0x0100, 4);
+//    Sleep(30);
+//    result = WriteSensorReg(pSensor->SlaveID, 0x6F12, 0x0100, 3);
+//    Sleep(30);
+    bool result = WriteSensorReg(pSensor->SlaveID, 0x0a02, 0x0000, pSensor->mode);
     Sleep(30);
-    WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0001, pSensor->mode);
+    result = WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0100, pSensor->mode);
     Sleep(30);
-    USHORT start = 0x0a21;
-    USHORT end = 0x0a29;
+    USHORT start = 0x0a24;
+    USHORT end = 0x0a28;
     QString temp = "";
     QString senser_id = "";
-    for (USHORT i = start; i <= end; ++i) {
-        ReadSensorReg(pSensor->SlaveID, i, &value_1, pSensor->mode);
-        qInfo("Read reg %X  value %02X",i, value_1);
-        senser_id.append(temp.sprintf("%02X", value_1));
+    for (USHORT i = start; i <= end; i=i+2) {
+        result = ReadSensorReg(pSensor->SlaveID, i, &value_1, pSensor->mode);
+        qInfo("Read reg %X  value %04X  result %d",i, value_1, result);
+        senser_id.append(temp.sprintf("%04X", value_1));
         Sleep(30);
     }
+//    result = WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0000, 3);
+//    Sleep(30);
     setCurrentSensorID(senser_id);
     return true;
 }
@@ -273,38 +282,38 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
     pSensor = &(m_CameraChannels[0].current_sensor);
 //    byte uAddr = pSensor->SlaveID;
     bool result_otp = true;
-    byte uAddr = 0xA2;
-    int result = WriteSensorReg(uAddr, 0x8000, 0x00, pSensor->mode);
+    byte uAddr = 0xA4;
+    int result = WriteSensorReg(uAddr, 0x8000, 0x00, 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x8000,0x00,result);
+    qInfo("write reg %X  value %02X  result %d", 0x8000, 0x00, result);
     if(result != 1)
         result_otp = false;
-    int number = 100 + serverMode + 1;
+    int number = 120*100 + serverMode + 1;
     QByteArray byte;
     byte.resize(sizeof(int));
     memcpy(byte.data(), &number, sizeof(int));
     USHORT value = byte[0];
     // 机台号
-    WriteSensorReg(uAddr, 0x1E00, value, pSensor->mode);
+    result = WriteSensorReg(uAddr, 0x1E90, value, 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F00, value,result);
+    qInfo("write reg %X  value %02X result %d",0x1E90, value,result);
     if(result != 1)
         result_otp = false;
     // 工位号
     value = byte[1];
-    WriteSensorReg(uAddr, 0x1E01, value, pSensor->mode);
+    result = WriteSensorReg(uAddr, 0x1E91, value, 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F01, value,result);
+    qInfo("write reg %X  value %02X result %d",0x1E91, value,result);
     if(result != 1)
         result_otp = false;
 
     // 镜头标志位
     USHORT lens_label = 0x00;
-    WriteSensorReg(uAddr, 0x1E03, lens_label, pSensor->mode);
-    Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F03, lens_label,result);
-    if(result != 1)
-        result_otp = false;
+//    result = WriteSensorReg(uAddr, 0x1E93, lens_label, pSensor->mode);
+//    Sleep(300);
+//    qInfo("write reg %X  value %02X result %d",0x1F03, lens_label,result);
+//    if(result != 1)
+//        result_otp = false;
 
     // 时间
     QDate date = QDate::currentDate();
@@ -313,47 +322,48 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
     byte.resize(sizeof(int));
     memcpy(byte.data(), &year, sizeof(int));
     value = byte[0];
-    WriteSensorReg(uAddr, 0x1E04, value, pSensor->mode);
+    result = WriteSensorReg(uAddr, 0x1E94, value, 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F04, value,result);
+    qInfo("write reg %X  value %02X result %d",0x1E94, value,result);
     if(result != 1)
         result_otp = false;
     value = byte[1];
-    WriteSensorReg(uAddr, 0x1E05, value, pSensor->mode);
+    result = WriteSensorReg(uAddr, 0x1E95, value, 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F05,value,result);
+    qInfo("write reg %X  value %02X result %d",0x1E95,value,result);
     if(result != 1)
         result_otp = false;
-    WriteSensorReg(uAddr, 0x1E06, date.month(), pSensor->mode);
+    result = WriteSensorReg(uAddr, 0x1E96, date.month(), 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F06, date.month(),result);
+    qInfo("write reg %X  value %02X result %d",0x1E96, date.month(),result);
     if(result != 1)
         result_otp = false;
-    WriteSensorReg(uAddr, 0x1E07, date.day(), pSensor->mode);
+    result = WriteSensorReg(uAddr, 0x1E97, date.day(), 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F07, date.day(),result);
+    qInfo("write reg %X  value %02X result %d",0x1E97, date.day(),result);
     if(result != 1)
         result_otp = false;
-    WriteSensorReg(uAddr, 0x1E08, time.hour(), pSensor->mode);
+    result = WriteSensorReg(uAddr, 0x1E98, time.hour(), 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F08, time.hour(),result);
+    qInfo("write reg %X  value %02X result %d",0x1E98, time.hour(),result);
     if(result != 1)
         result_otp = false;
-    WriteSensorReg(uAddr, 0x1E09, time.minute(), pSensor->mode);
+    result = WriteSensorReg(uAddr, 0x1E99, time.minute(), 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F09, time.minute(),result);
+    qInfo("write reg %X  value %02X result %d",0x1E99, time.minute(),result);
     if(result != 1)
         result_otp = false;
-    WriteSensorReg(uAddr, 0x1E0A, time.second(), pSensor->mode);
+    result = WriteSensorReg(uAddr, 0x1E9A, time.second(), 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1F0A, time.second(),result);
+    qInfo("write reg %X  value %02X result %d",0x1E9A, time.second(),result);
     if(result != 1)
         result_otp = false;
 
     // 检查镜头标志位 0 or 1
     value = 0;
-    ReadSensorReg(uAddr, 0x1E03, &value, pSensor->mode);
-    qInfo("Read reg %X  value %02X",uAddr, value);
+    //result = ReadSensorReg(uAddr, 0x1E93, &value, pSensor->mode);
+    qInfo("Read reg %X  value %02X", 0x1E93, value);
+    qInfo("value = %u, lens_label = %u, result_otp = %u", value, lens_label, result_otp);
     if ((value != lens_label)||(!result_otp))
     {
         qInfo("DothinkeyOTP fail");

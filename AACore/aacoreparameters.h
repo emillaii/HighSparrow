@@ -45,11 +45,11 @@ class AACoreParameters : public PropertyBase
 
     double m_zpeakccCoefficient = 1;
 
-    double m_zpeak03Coefficient = 0;
+    double m_zpeakL1Coefficient = 0;
 
-    double m_zpeak05Coefficient = 0;
+    double m_zpeakL2Coefficient = 0;
 
-    double m_zpeak08Coefficient = 0;
+    double m_zpeakL3Coefficient = 0;
 
     double m_maxDev = 100;
 
@@ -61,17 +61,23 @@ class AACoreParameters : public PropertyBase
 
     int m_minIntensityDiff = 10;
 
-    double m_zPeakDiff05Max = 3;
+    double m_zPeakDiffL1Max = 3;
 
-    double m_zPeakDiff08Max = 5;
+    double m_zPeakDiffL2Max = 3;
 
-    double m_CC05MinDev = -100;
+    double m_zPeakDiffL3Max = 5;
 
-    double m_CC05MaxDev = 100;
+    double m_CCL1MinDev = -100;
 
-    double m_CC08MinDev = -100;
+    double m_CCL1MaxDev = 100;
 
-    double m_CC08MaxDev = 100;
+    double m_CCL2MinDev = -100;
+
+    double m_CCL2MaxDev = 100;
+
+    double m_CCL3MinDev = -100;
+
+    double m_CCL3MaxDev = 100;
 
     bool m_isDebug = false;
 
@@ -131,20 +137,23 @@ public:
     Q_PROPERTY(int peakProfile READ PeakProfile WRITE setPeakProfile NOTIFY paramsChanged)
     Q_PROPERTY(bool enableZpeakCoefficient READ enableZpeakCoefficient WRITE setEnableZpeakCoefficient NOTIFY enableZpeakCoefficientChanged)
     Q_PROPERTY(double zpeakccCoefficient READ zpeakccCoefficient WRITE setZpeakccCoefficient NOTIFY zpeakccCoefficientChanged)
-    Q_PROPERTY(double zpeak03Coefficient READ zpeak03Coefficient WRITE setZpeak03Coefficient NOTIFY zpeak03CoefficientChanged)
-    Q_PROPERTY(double zpeak05Coefficient READ zpeak05Coefficient WRITE setZpeak05Coefficient NOTIFY zpeak05CoefficientChanged)
-    Q_PROPERTY(double zpeak08Coefficient READ zpeak08Coefficient WRITE setZpeak08Coefficient NOTIFY zpeak08CoefficientChanged)
+    Q_PROPERTY(double zpeakL1Coefficient READ zpeakL1Coefficient WRITE setZpeakL1Coefficient NOTIFY zpeakL1CoefficientChanged)
+    Q_PROPERTY(double zpeakL2Coefficient READ zpeakL2Coefficient WRITE setZpeakL2Coefficient NOTIFY zpeakL2CoefficientChanged)
+    Q_PROPERTY(double zpeakL3Coefficient READ zpeakL3Coefficient WRITE setZpeakL3Coefficient NOTIFY zpeakL3CoefficientChanged)
     Q_PROPERTY(double maxDev READ maxDev WRITE setMaxDev NOTIFY maxDevChanged)
     Q_PROPERTY(double minDev READ minDev WRITE setMinDev NOTIFY minDevChanged)
     Q_PROPERTY(bool enableCheckDispense READ enableCheckDispense WRITE setEnableCheckDispense NOTIFY enableCheckDispenseChanged)
     Q_PROPERTY(int checkDispenseCount READ checkDispenseCount WRITE setCheckDispenseCount NOTIFY checkDispenseCountChanged)
     Q_PROPERTY(int minIntensityDiff READ minIntensityDiff WRITE setMinIntensityDiff NOTIFY minIntensityDiffChanged)
-    Q_PROPERTY(double zPeakDiff05Max READ zPeakDiff05Max WRITE setZPeakDiff05Max NOTIFY zPeakDiff05MaxChanged)
-    Q_PROPERTY(double zPeakDiff08Max READ zPeakDiff08Max WRITE setZPeakDiff08Max NOTIFY zPeakDiff08MaxChanged)
-    Q_PROPERTY(double CC05MinDev READ CC05MinDev WRITE setCC05MinDev NOTIFY CC05MinDevChanged)
-    Q_PROPERTY(double CC05MaxDev READ CC05MaxDev WRITE setCC05MaxDev NOTIFY CC05MaxDevChanged)
-    Q_PROPERTY(double CC08MinDev READ CC08MinDev WRITE setCC08MinDev NOTIFY CC08MinDevChanged)
-    Q_PROPERTY(double CC08MaxDev READ CC08MaxDev WRITE setCC08MaxDev NOTIFY CC08MaxDevChanged)
+    Q_PROPERTY(double zPeakDiffL1Max READ zPeakDiffL1Max WRITE setZPeakDiffL1Max NOTIFY zPeakDiffL1MaxChanged)
+    Q_PROPERTY(double zPeakDiffL2Max READ zPeakDiffL2Max WRITE setZPeakDiffL2Max NOTIFY zPeakDiffL2MaxChanged)
+    Q_PROPERTY(double zPeakDiffL3Max READ zPeakDiffL3Max WRITE setZPeakDiffL3Max NOTIFY zPeakDiffL3MaxChanged)
+    Q_PROPERTY(double CCL1MinDev READ CCL1MinDev WRITE setCCL1MinDev NOTIFY CCL1MinDevChanged)
+    Q_PROPERTY(double CCL1MaxDev READ CCL1MaxDev WRITE setCCL1MaxDev NOTIFY CCL1MaxDevChanged)
+    Q_PROPERTY(double CCL2MinDev READ CCL2MinDev WRITE setCCL2MinDev NOTIFY CCL2MinDevChanged)
+    Q_PROPERTY(double CCL2MaxDev READ CCL2MaxDev WRITE setCCL2MaxDev NOTIFY CCL2MaxDevChanged)
+    Q_PROPERTY(double CCL3MinDev READ CCL3MinDev WRITE setCCL3MinDev NOTIFY CCL3MinDevChanged)
+    Q_PROPERTY(double CCL3MaxDev READ CCL3MaxDev WRITE setCCL3MaxDev NOTIFY CCL3MaxDevChanged)
     Q_PROPERTY(bool isDebug READ isDebug WRITE setIsDebug NOTIFY isDebugChanged)
     Q_PROPERTY(bool enableLensVcm READ enableLensVcm WRITE setEnableLensVcm NOTIFY enableLensVcmChanged)
     Q_PROPERTY(QString lensVcmPath READ lensVcmPath WRITE setLensVcmPath NOTIFY lensVcmPathChanged)
@@ -245,19 +254,19 @@ public:
         return m_zpeakccCoefficient;
     }
 
-    double zpeak03Coefficient() const
+    double zpeakL1Coefficient() const
     {
-        return m_zpeak03Coefficient;
+        return m_zpeakL1Coefficient;
     }
 
-    double zpeak05Coefficient() const
+    double zpeakL2Coefficient() const
     {
-        return m_zpeak05Coefficient;
+        return m_zpeakL2Coefficient;
     }
 
-    double zpeak08Coefficient() const
+    double zpeakL3Coefficient() const
     {
-        return m_zpeak08Coefficient;
+        return m_zpeakL3Coefficient;
     }
 
     double maxDev() const
@@ -285,34 +294,49 @@ public:
         return m_minIntensityDiff;
     }
 
-    double zPeakDiff05Max() const
+    double zPeakDiffL1Max() const
     {
-        return m_zPeakDiff05Max;
+        return m_zPeakDiffL1Max;
     }
 
-    double zPeakDiff08Max() const
+    double zPeakDiffL2Max() const
     {
-        return m_zPeakDiff08Max;
+        return m_zPeakDiffL2Max;
     }
 
-    double CC05MinDev() const
+    double zPeakDiffL3Max() const
     {
-        return m_CC05MinDev;
+        return m_zPeakDiffL3Max;
     }
 
-    double CC05MaxDev() const
+    double CCL1MinDev() const
     {
-        return m_CC05MaxDev;
+        return m_CCL1MinDev;
     }
 
-    double CC08MinDev() const
+    double CCL1MaxDev() const
     {
-        return m_CC08MinDev;
+        return m_CCL1MaxDev;
     }
 
-    double CC08MaxDev() const
+    double CCL2MinDev() const
     {
-        return m_CC08MaxDev;
+        return m_CCL2MinDev;
+    }
+
+    double CCL2MaxDev() const
+    {
+        return m_CCL2MaxDev;
+    }
+
+    double CCL3MinDev() const
+    {
+        return m_CCL3MinDev;
+    }
+
+    double CCL3MaxDev() const
+    {
+        return m_CCL3MaxDev;
     }
 
     bool isDebug() const
@@ -526,37 +550,34 @@ public slots:
         emit zpeakccCoefficientChanged(m_zpeakccCoefficient);
     }
 
-    void setZpeak03Coefficient(double zpeak03Coefficient)
+    void setZpeakL1Coefficient(double zpeakL1Coefficient)
     {
-        if(zpeak03Coefficient<0)return;
-
-        if (qFuzzyCompare(m_zpeak03Coefficient, zpeak03Coefficient))
+        if(zpeakL1Coefficient<0)return;
+        if (qFuzzyCompare(m_zpeakL1Coefficient, zpeakL1Coefficient))
             return;
 
-        m_zpeak03Coefficient = zpeak03Coefficient;
-        emit zpeak03CoefficientChanged(m_zpeak03Coefficient);
+        m_zpeakL1Coefficient = zpeakL1Coefficient;
+        emit zpeakL1CoefficientChanged(m_zpeakL1Coefficient);
     }
 
-    void setZpeak05Coefficient(double zpeak05Coefficient)
+    void setZpeakL2Coefficient(double zpeakL2Coefficient)
     {
-        if(zpeak05Coefficient<0)return;
-
-        if (qFuzzyCompare(m_zpeak05Coefficient, zpeak05Coefficient))
+        if(zpeakL2Coefficient<0)return;
+        if (qFuzzyCompare(m_zpeakL2Coefficient, zpeakL2Coefficient))
             return;
 
-        m_zpeak05Coefficient = zpeak05Coefficient;
-        emit zpeak05CoefficientChanged(m_zpeak05Coefficient);
+        m_zpeakL2Coefficient = zpeakL2Coefficient;
+        emit zpeakL2CoefficientChanged(m_zpeakL2Coefficient);
     }
 
-    void setZpeak08Coefficient(double zpeak08Coefficient)
+    void setZpeakL3Coefficient(double zpeakL3Coefficient)
     {
-        if(zpeak08Coefficient<0)return;
-
-        if (qFuzzyCompare(m_zpeak08Coefficient, zpeak08Coefficient))
+        if(zpeakL3Coefficient<0)return;
+        if (qFuzzyCompare(m_zpeakL3Coefficient, zpeakL3Coefficient))
             return;
 
-        m_zpeak08Coefficient = zpeak08Coefficient;
-        emit zpeak08CoefficientChanged(m_zpeak08Coefficient);
+        m_zpeakL3Coefficient = zpeakL3Coefficient;
+        emit zpeakL3CoefficientChanged(m_zpeakL3Coefficient);
     }
 
     void setMaxDev(double maxDev)
@@ -606,64 +627,85 @@ public slots:
         emit minIntensityDiffChanged(m_minIntensityDiff);
     }
 
-    void setZPeakDiff05Max(double zPeakDiff05Max)
+    void setZPeakDiffL1Max(double zPeakDiffL1Max)
     {
-
-        if (qFuzzyCompare(m_zPeakDiff05Max, zPeakDiff05Max))
+        if (qFuzzyCompare(m_zPeakDiffL1Max, zPeakDiffL1Max))
             return;
 
-        m_zPeakDiff05Max = zPeakDiff05Max;
-        emit zPeakDiff05MaxChanged(m_zPeakDiff05Max);
+        m_zPeakDiffL1Max = zPeakDiffL1Max;
+        emit zPeakDiffL1MaxChanged(m_zPeakDiffL1Max);
     }
 
-    void setZPeakDiff08Max(double zPeakDiff08Max)
+    void setZPeakDiffL2Max(double zPeakDiffL2Max)
     {
-
-        if (qFuzzyCompare(m_zPeakDiff08Max, zPeakDiff08Max))
+        if (qFuzzyCompare(m_zPeakDiffL2Max, zPeakDiffL2Max))
             return;
 
-        m_zPeakDiff08Max = zPeakDiff08Max;
-        emit zPeakDiff08MaxChanged(m_zPeakDiff08Max);
+        m_zPeakDiffL2Max = zPeakDiffL2Max;
+        emit zPeakDiffL2MaxChanged(m_zPeakDiffL2Max);
     }
 
-    void setCC05MinDev(double CC05MinDev)
+    void setZPeakDiffL3Max(double zPeakDiffL3Max)
     {
-
-        if (qFuzzyCompare(m_CC05MinDev, CC05MinDev))
+        if (qFuzzyCompare(m_zPeakDiffL3Max, zPeakDiffL3Max))
             return;
 
-        m_CC05MinDev = CC05MinDev;
-        emit CC05MinDevChanged(m_CC05MinDev);
+        m_zPeakDiffL3Max = zPeakDiffL3Max;
+        emit zPeakDiffL3MaxChanged(m_zPeakDiffL3Max);
     }
 
-    void setCC05MaxDev(double CC05MaxDev)
+    void setCCL1MinDev(double CCL1MinDev)
     {
-
-        if (qFuzzyCompare(m_CC05MaxDev, CC05MaxDev))
+        if (qFuzzyCompare(m_CCL1MinDev, CCL1MinDev))
             return;
 
-        m_CC05MaxDev = CC05MaxDev;
-        emit CC05MaxDevChanged(m_CC05MaxDev);
+        m_CCL1MinDev = CCL1MinDev;
+        emit CCL1MinDevChanged(m_CCL1MinDev);
     }
 
-    void setCC08MinDev(double CC08MinDev)
+    void setCCL1MaxDev(double CCL1MaxDev)
     {
-
-        if (qFuzzyCompare(m_CC08MinDev, CC08MinDev))
+        if (qFuzzyCompare(m_CCL1MaxDev, CCL1MaxDev))
             return;
 
-        m_CC08MinDev = CC08MinDev;
-        emit CC08MinDevChanged(m_CC08MinDev);
+        m_CCL1MaxDev = CCL1MaxDev;
+        emit CCL1MaxDevChanged(m_CCL1MaxDev);
     }
 
-    void setCC08MaxDev(double CC08MaxDev)
+    void setCCL2MinDev(double CCL2MinDev)
     {
-
-        if (qFuzzyCompare(m_CC08MaxDev, CC08MaxDev))
+        if (qFuzzyCompare(m_CCL2MinDev, CCL2MinDev))
             return;
 
-        m_CC08MaxDev = CC08MaxDev;
-        emit CC08MaxDevChanged(m_CC08MaxDev);
+        m_CCL2MinDev = CCL2MinDev;
+        emit CCL2MinDevChanged(m_CCL2MinDev);
+    }
+
+    void setCCL2MaxDev(double CCL2MaxDev)
+    {
+        if (qFuzzyCompare(m_CCL2MaxDev, CCL2MaxDev))
+            return;
+
+        m_CCL2MaxDev = CCL2MaxDev;
+        emit CCL2MaxDevChanged(m_CCL2MaxDev);
+    }
+
+    void setCCL3MinDev(double CCL3MinDev)
+    {
+        if (qFuzzyCompare(m_CCL3MinDev, CCL3MinDev))
+            return;
+
+        m_CCL3MinDev = CCL3MinDev;
+        emit CCL3MinDevChanged(m_CCL3MinDev);
+    }
+
+    void setCCL3MaxDev(double CCL3MaxDev)
+    {
+        if (qFuzzyCompare(m_CCL3MaxDev, CCL3MaxDev))
+            return;
+
+        m_CCL3MaxDev = CCL3MaxDev;
+        emit CCL3MaxDevChanged(m_CCL3MaxDev);
     }
 
     void setIsDebug(bool isDebug)
@@ -790,20 +832,23 @@ signals:
     void moduleNameChanged(QString moduleName);
     void enableZpeakCoefficientChanged(bool enableZpeakCoefficient);
     void zpeakccCoefficientChanged(double zpeakccCoefficient);
-    void zpeak03CoefficientChanged(double zpeak03Coefficient);
-    void zpeak05CoefficientChanged(double zpeak05Coefficient);
-    void zpeak08CoefficientChanged(double zpeak08Coefficient);
+    void zpeakL1CoefficientChanged(double zpeakL1Coefficient);
+    void zpeakL2CoefficientChanged(double zpeakL2Coefficient);
+    void zpeakL3CoefficientChanged(double zpeakL3Coefficient);
     void maxDevChanged(double maxDev);
     void minDevChanged(double minDev);
     void enableCheckDispenseChanged(bool enableCheckDispense);
     void checkDispenseCountChanged(int checkDispenseCount);
     void minIntensityDiffChanged(int minIntensityDiff);
-    void zPeakDiff05MaxChanged(double zPeakDiff05Max);
-    void zPeakDiff08MaxChanged(double zPeakDiff08Max);
-    void CC05MinDevChanged(double CC05MinDev);
-    void CC05MaxDevChanged(double CC05MaxDev);
-    void CC08MinDevChanged(double CC08MinDev);
-    void CC08MaxDevChanged(double CC08MaxDev);
+    void zPeakDiffL1MaxChanged(double zPeakDiffL1Max);
+    void zPeakDiffL2MaxChanged(double zPeakDiffL2Max);
+    void zPeakDiffL3MaxChanged(double zPeakDiffL3Max);
+    void CCL1MinDevChanged(double CCL1MinDev);
+    void CCL1MaxDevChanged(double CCL1MaxDev);
+    void CCL2MinDevChanged(double CCL2MinDev);
+    void CCL2MaxDevChanged(double CCL2MaxDev);
+    void CCL3MinDevChanged(double CCL3MinDev);
+    void CCL3MaxDevChanged(double CCL3MaxDev);
     void isDebugChanged(bool isDebug);
     void taskModeChanged(int taskMode);
     void taskNumberFSJChanged(int taskNumberFSJ);

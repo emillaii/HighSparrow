@@ -854,7 +854,7 @@ void SensorLoaderModule::run()
         //检测是否更换Buffer盘
         if(!findTrayNextInitStatePos(SensorPosition::BUFFER_TRAY) || allowChangeBufferTray)
         {
-            if(!moveToStartPos(SensorPosition::BUFFER_TRAY))
+            if(!moveToStartPos(SensorPosition::NG_SENSOR_TRAY))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -862,7 +862,7 @@ void SensorLoaderModule::run()
                 if(RETRY_OPERATION == operation)
                     continue;
             }
-            AppendError("请更换缓存盘后继续！");
+            AppendError(u8"请更换缓存盘后继续！");
             int alarm_id = sendAlarmMessage(u8"已换盘",GetCurrentError());
             waitMessageReturn(is_run,alarm_id);
             if(!is_run)break;
@@ -873,8 +873,7 @@ void SensorLoaderModule::run()
         //检测NG盘是否已满
         if(!findTrayNextInitStatePos(SensorPosition::NG_SENSOR_TRAY) || allowChangeNgTray)
         {
-            //if(!moveCameraToStandbyPos(true))
-            if(!moveToStartPos(SensorPosition::BUFFER_TRAY))
+            if(!moveCameraToStandbyPos(true))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                 QString operation = waitMessageReturn(is_run,alarm_id);
@@ -1289,22 +1288,24 @@ void SensorLoaderModule::run()
                             //uph统计
                             product_uph.addCurrentNumber(updateAccumulatedHour());
                             if(has_product)
+                            {
                                 product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                                if(is_local)
+                                {
+                                    right_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                                    if(has_product)
+                                        right_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                                    right_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                                }
+                                else
+                                {
+                                    left_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                                    if(has_product)
+                                        left_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                                    left_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                                }
+                            }
                             comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                            if(is_local)
-                            {
-                                right_product_uph.addCurrentNumber(updateAccumulatedHour(false));
-                                if(has_product)
-                                    right_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                                right_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                            }
-                            else
-                            {
-                                left_product_uph.addCurrentNumber(updateAccumulatedHour(false));
-                                if(has_product)
-                                    left_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                                left_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                            }
                             continue;
                         }
                         else if(RETRY_OPERATION == operation)
@@ -1374,22 +1375,25 @@ void SensorLoaderModule::run()
                 //uph统计
                 product_uph.addCurrentNumber(updateAccumulatedHour());
                 if(has_product)
+                {
                     product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    if(is_local)
+                    {
+                        right_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        if(has_product)
+                            right_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                        right_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    }
+                    else
+                    {
+                        left_product_uph.addCurrentNumber(updateAccumulatedHour(false));
+                        if(has_product)
+                            left_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                        left_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
+                    }
+                }
                 comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                if(is_local)
-                {
-                    right_product_uph.addCurrentNumber(updateAccumulatedHour(false));
-                    if(has_product)
-                        right_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                    right_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                }
-                else
-                {
-                    left_product_uph.addCurrentNumber(updateAccumulatedHour(false));
-                    if(has_product)
-                        left_product_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                    left_comprehensive_uph.addCurrentReslutNumber(updateAccumulatedHour(false));
-                }
+
                 if(!is_run)break;
             }
             //取NGSensor
@@ -1519,23 +1523,6 @@ void SensorLoaderModule::run()
             {
                 //放sensor到SUT
                 sut_empty_location->resetResult();
-                sut_empty_location->OpenLight();
-                if(!moveCameraToSUTPRPos(is_local))
-                {
-                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                    QString operation = waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
-                    if(RETRY_OPERATION == operation)
-                        continue;
-                }
-                if(!performSUTEmptyPR())
-                {
-                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                    QString operation = waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
-                    if(RETRY_OPERATION == operation)
-                        continue;
-                }
                 if(!movePicker1ToSUTPos(is_local))
                 {
                     int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());

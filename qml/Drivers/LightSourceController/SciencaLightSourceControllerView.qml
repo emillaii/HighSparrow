@@ -40,9 +40,9 @@ Popup{
                             }
                         }
                     }
-                    popup.onOpenedChanged: {
-                        visible = popup.opened
-                    }
+//                    popup.onOpenedChanged: {
+//                        visible = popup.opened
+//                    }
                 }
             }
             Button{
@@ -98,3 +98,8 @@ Popup{
         }
     }
 }
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

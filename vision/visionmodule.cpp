@@ -1180,8 +1180,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::Image image6;
         avl::Image image7;
         atl::Array< atl::Conditional< avl::Region > > regionArray1;
-        avl::LoadImage( "test.jpg", false, image1 );
-        //this->grabImageFromCamera(camera_name, image1);
+        //avl::LoadImage( "test.jpg", false, image1 );
+        this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
         prResult.rawImageName = rawImageName;
         //        bool isSearchRegionFound = true;
@@ -1649,7 +1649,11 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
     outResultImageName.append(getDispensePrLogDir())
             .append(getCurrentTimeString())
             .append("_glue_inspection_result.jpg");
-
+    QString substractImage;
+    substractImage.append(getDispensePrLogDir())
+            .append(getCurrentTimeString())
+            .append("_substract_result.jpg");
+			
     //file1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\before\\2.jpg";
     //file2 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\after\\2_d.jpg";
     file1 = beforeImage.toStdString().c_str();
@@ -1660,6 +1664,7 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
         avl::LoadImage( file2, false, image2 );
         avl::SaveImageToJpeg( image1 , imageNameBeforeDispense.toStdString().c_str(), atl::NIL, false );
         avl::SubtractImages( image1, image2, atl::NIL, 2.0f, image1 );
+        avl::SaveImageToJpeg( image1 , substractImage.toStdString().c_str(), atl::NIL, false );
         RegionJudge( regionJudgeState1, image1, image2, bool1, region1, region2, region3, region4 );
 
         if (region1 != atl::NIL)
@@ -1834,7 +1839,9 @@ void VisionModule::receivceModuleMessage(QVariantMap message)
         avl::Image image1;
         this->grabImageFromCamera(cameraName, image1);
         if (!image1.Empty()) {
+            qInfo("Save Image");
             avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+            qInfo("Done");
             QJsonObject params;
             params.insert("cameraName", cameraName);
             params.insert("filename", imageName);

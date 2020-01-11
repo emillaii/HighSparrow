@@ -124,7 +124,7 @@ bool ThreadWorkerBase::waitResponseMessage(bool &is_run, QString target_message)
 bool ThreadWorkerBase::waitVisionResponseMessage(QString filename)
 {
     int current_time = 0;
-    while (current_time < 10)
+    while (current_time < 30)
     {
         current_time++;
         QThread::msleep(100);

@@ -92,7 +92,7 @@
 #define CALIBRATION_PARAMETER_FILENAME   "config//calibration_parameter.json"
 #define VISION_DISPENSE_PATH         "config//vision_dispense_path//resultImageWithPath.jpg"
 #define FLOWCHART_URL                "http://127.0.0.1:8000/flowchart.html"
-#define SHARE_DIR                   "\\\\AA1\\share\\temp\\"
+#define SHARE_DIR                   "\\\\AA1\\r\\temp\\"
 
 
 //Title naming

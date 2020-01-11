@@ -1,7 +1,8 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
-
+import LutModuleLib 1.1
+import SutModuleLib 1.1
 ColumnLayout {
 //    RowLayout {
 //        Label {
@@ -134,7 +135,7 @@ ColumnLayout {
             height: 40
             onClicked: {
 //                lutModule.performHandling(1);
-                logicManager.performHandling(lutParams.moduleName,1)
+                logicManager.performHandling(lutParams.moduleName,LutModule.AA1_UPLOOK_POS+LutModule.AA1_UPLOOK_PR)
             }
         }
         Button {
@@ -144,7 +145,7 @@ ColumnLayout {
             height: 40
             onClicked: {
 //                lutModule.performHandling(2);
-                logicManager.performHandling(lutParams.moduleName,2)
+                logicManager.performHandling(lutParams.moduleName,LutModule.AA2_UPLOOK_POS+LutModule.AA2_UPLOOK_PR)
             }
         }
         Button {
@@ -153,7 +154,7 @@ ColumnLayout {
             height: 40
             onClicked: {
 //                sutModule.performHandling(1);
-                logicManager.performHandling(sutParams.moduleName,1)
+                logicManager.performHandling(sutParams.moduleName,SutModule.DOWNLOOK_PR)
             }
         }
         Button {

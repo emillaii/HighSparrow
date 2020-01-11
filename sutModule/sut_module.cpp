@@ -620,9 +620,10 @@ void SutModule::performHandlingOperation(int cmd,QVariant param)
     temp_value = 100;
     if(cmd%temp_value == HandlePR::DOWNLOOK_PR)
     {
-        PrOffset offset(0, 0, 0);
-        moveToDownlookPR(offset, false);
-        stepMove_XY_Sync(-offset.X, -offset.Y);
+//        PrOffset offset(0, 0, 0);
+//        moveToDownlookPR(offset, false);
+//        stepMove_XY_Sync(-offset.X, -offset.Y);
+        moveToDownlookPR(false,true);
     }
     if(!result)
         sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);

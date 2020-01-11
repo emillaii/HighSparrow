@@ -134,7 +134,6 @@ public slots:
 
     void seteditableDouble(double editableDouble)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_editableDouble, editableDouble))
             return;
 
@@ -144,7 +143,6 @@ public slots:
 
     void setreadonlyDouble(double readonlyDouble)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_readonlyDouble, readonlyDouble))
             return;
 
@@ -154,7 +152,6 @@ public slots:
 
     void setoptionalDouble(double optionalDouble)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_optionalDouble, optionalDouble))
             return;
 
@@ -164,7 +161,6 @@ public slots:
 
     void sethiddenDouble(double hiddenDouble)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_hiddenDouble, hiddenDouble))
             return;
 
@@ -645,7 +641,6 @@ public slots:
 
     void setoptionalDouble(double optionalDouble)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_optionalDouble, optionalDouble))
             return;
 
@@ -655,7 +650,6 @@ public slots:
 
     void seteditableDouble(double editableDouble)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_editableDouble, editableDouble))
             return;
 

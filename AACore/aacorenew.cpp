@@ -3260,7 +3260,9 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     bool fast_mode = params["fast_mode"].toInt();
     int finish_delay = params["delay_in_ms"].toInt();
     int mode = params["mode"].toInt();  //0: Pattern ; else : Mass center
+    int oc_intensity_threshold = params["oc_intensity_threshold"].toInt(0);
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
+
     QVariantMap map;
     QElapsedTimer timer;
     timer.start();
@@ -3313,9 +3315,8 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         map.insert("OC_OFFSET_X_IN_PIXEL", round(offsetX*1000)/1000);
         map.insert("OC_OFFSET_Y_IN_PIXEL", round(offsetY*1000)/1000);
     } else {
-        qInfo("Using optical mass center");
         QImage outImage; QPointF center;
-        if (!AA_Helper::calculateOC(img, center, outImage))
+        if (!AA_Helper::calculateOC(img, center, outImage, oc_intensity_threshold))
         {
             LogicNg(current_aa_ng_time);
             map.insert("result", "OC Cannot calculate OC");

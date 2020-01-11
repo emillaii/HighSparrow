@@ -6,7 +6,7 @@ $(document).ready(function () {
     offset_in_um: -40, delay_Z_in_ms: 200, step_size: 10,
     position_checking: 0, is_debug: 0, image_count: 7, enable_tilt: 0
   };
-  var init_oc_params = { enable_motion: 1, fast_mode: 0, mode: 0, is_debug: 0, delay_in_ms: 0, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
+  var init_oc_params = { enable_motion: 1, fast_mode: 0, mode: 0, oc_intensity_threshold: 100, is_debug: 0, delay_in_ms: 0, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_initial_tilt_params = { roll: 0, pitch: 0, delay_in_ms: 0};
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, min: 0, max: 200 };
@@ -80,6 +80,7 @@ $(document).ready(function () {
   $oc_operator_properties.append("<div style=\"margin-top:20px\">OC Check: <select id=\"oc_is_check\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">X limit in um: <input type=\"number\" id=\"oc_x_limit_in_um\"></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Y limit in um: <input type=\"number\" id=\"oc_y_limit_in_um\"></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">Intensity threshold: <input type=\"number\" id=\"oc_intensity_threshold\"></div>");
   
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT X Offset in um: <input type=\"number\" id=\"dispense_x_offset_in_um\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT Y Offset in um: <input type=\"number\" id=\"dispense_y_offset_in_um\"></div>");
@@ -192,6 +193,7 @@ $(document).ready(function () {
 		$('#oc_is_check').val(params["is_check"]);
 		$('#oc_x_limit_in_um').val(params["x_limit_in_um"]);
 		$('#oc_y_limit_in_um').val(params["y_limit_in_um"]);
+		$('#oc_intensity_threshold').val(params["oc_intensity_threshold"]);
 		
       } else if (operatorId.includes("Save Image")) {
 		$save_image_operator_properties.show();
@@ -403,7 +405,8 @@ $(document).ready(function () {
 		retry: Number($('#oc_retry').val()),
 		is_check: Number($('#oc_is_check').val()),
 		x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
-		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
+		y_limit_in_um: Number($('#oc_y_limit_in_um').val()),
+		oc_intensity_threshold: Number($('#oc_intensity_threshold').val())
       };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
     } else if (selectedOperatorId.includes("Z Offset")) {
@@ -775,7 +778,8 @@ $(document).ready(function () {
 		retry: Number($('#oc_retry').val()),
 		is_check: Number($('#oc_is_check').val()),
 		x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
-		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
+		y_limit_in_um: Number($('#oc_y_limit_in_um').val()),
+		oc_intensity_threshold: Number($('oc_intensity_threshold').val())
       };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Z Offset")) {
@@ -1038,7 +1042,8 @@ $(document).ready(function () {
 		retry: Number($('#oc_retry').val()),
 		is_check: Number($('#oc_is_check').val()),
 		x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
-		y_limit_in_um: Number($('#oc_y_limit_in_um').val())
+		y_limit_in_um: Number($('#oc_y_limit_in_um').val()),
+		oc_intensity_threshold: Number($('#oc_intensity_threshold').val())
       };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Z Offset")) {

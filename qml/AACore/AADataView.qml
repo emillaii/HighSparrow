@@ -397,7 +397,7 @@ Grid {
                 id: axisX3
                 gridVisible: true
                 min: 0
-                max: 2000
+                max: 10000
             }
 
             LineSeries {

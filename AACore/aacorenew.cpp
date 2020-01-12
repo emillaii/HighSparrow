@@ -3242,6 +3242,8 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     int enable_plot = params["enable_plot"].toInt();
     int min_i_spec = params["min"].toInt(0);
     int max_i_spec = params["max"].toInt(255);
+    int mode = params["mode"].toInt(1); //0: Rectangle Path, 1: Dialgoue Path
+    int image_margin = params["margin"].toInt(100);
     float min_i, max_i;
     //cv::Mat inputImage = cv::imread("2.jpg");
     bool grabRet;
@@ -3253,7 +3255,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     }
     vector<float> intensityProfile;
     QElapsedTimer timer; timer.start();
-    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile);
+    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile, mode, image_margin);
     if (ret) {
         map.insert("min_i", min_i);
         map.insert("min_i_spec", min_i_spec);
@@ -3297,7 +3299,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
 bool AACoreNew::blackScreenCheck(cv::Mat inImage)
 {
     vector<float> intensityProfile; float min_i = 0; float max_i = 0;
-    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile);
+    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile, 0, 0);
     if (ret) {
         qInfo("[blackScreenCheck] Checking intensity...min: %f max: %f", min_i, max_i);
         if ((max_i - min_i) < parameters.minIntensityDiff()) {

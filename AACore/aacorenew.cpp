@@ -444,6 +444,7 @@ void AACoreNew::startWork( int run_mode)
         states.setCircleTime(temp_time);
         return;
     }
+    if (run_mode == RunMode::UNLOAD_ALL_LENS) return;
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
@@ -2095,7 +2096,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         default:
             break;
         }
-        bool detectedAbnormality = true;
+        bool detectedAbnormality = false;
         int temp_index = -1;
         fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev, sfr_fit, detectedAbnormality, temp_index);
         sorted_sfr_fit_map.push_back(sfr_fit); //Used to display the curve with fitting result
@@ -3139,6 +3140,9 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
             result = dk->DothinkeyOTP(serverMode);  //retry OTP
         }
     }
+    QJsonValue param_dummy;
+    performYLevelTest(param_dummy);
+
     aa_head->waitUVFinish();
     map.insert("timeElapsed", timer.elapsed());
     if(result)
@@ -3239,11 +3243,11 @@ ErrorCodeStruct AACoreNew::performOTP(QJsonValue params)
 ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
 {
     QVariantMap map;
-    int enable_plot = params["enable_plot"].toInt();
+    int enable_plot = params["enable_plot"].toInt(1);
     int min_i_spec = params["min"].toInt(0);
-    int max_i_spec = params["max"].toInt(255);
-    int mode = params["mode"].toInt(1); //0: Rectangle Path, 1: Dialgoue Path
-    int image_margin = params["margin"].toInt(100);
+    int max_i_spec = params["max"].toInt(200);
+    int mode = params["mode"].toInt(0); //0: Rectangle Path, 1: Dialgoue Path
+    int image_margin = params["margin"].toInt(10);
     float min_i, max_i;
     //cv::Mat inputImage = cv::imread("2.jpg");
     bool grabRet;

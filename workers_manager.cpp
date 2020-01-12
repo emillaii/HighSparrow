@@ -319,7 +319,7 @@ void WorkersManager::showAlarmMessage(QVariantMap message)
 
 void WorkersManager::startAllWorkers(int run_mode)
 {
-    qInfo("start all worker %d",workers.size());
+    qInfo("start all worker %d %d",workers.size(), run_mode);
 
     // Reset logic if necessary
     QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否重置逻辑？(Yes: 重置逻辑并开始 No: 不重置逻辑并开始 Cancle: 取消)"),QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
@@ -344,6 +344,7 @@ void WorkersManager::startAllWorkers(int run_mode)
     startWorkers(run_mode);
     QVariantMap message;
     message.insert("TargetModule","WorkersManagerStart");
+    message.insert("RunMode", run_mode);
     sendTcpMessage(message);
 }
 
@@ -359,7 +360,7 @@ void WorkersManager::stopAllWorkers(bool wait_finish)
 void WorkersManager::startWorkers(int run_mode)
 {
     run_parameter.clear();
-    qInfo("startSelfWorkers");
+    qInfo("startSelfWorkers run_mode: %d", run_mode);
     emit startWorkersSignal(run_mode);
 }
 

@@ -60,7 +60,7 @@ void SensorTrayLoaderModule::Init(XtMotor *motor_tray, XtMotor *motor_kick, XtMo
 
 void SensorTrayLoaderModule::startWork(int run_mode)
 {
-    if(run_mode == RunMode::AAFlowChartTest) return;
+    if(run_mode == RunMode::AAFlowChartTest || run_mode == RunMode::UNLOAD_ALL_LENS) return;
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
@@ -122,6 +122,7 @@ void SensorTrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
 void SensorTrayLoaderModule:: run()
 {
     is_run = true;
+    int retryTime = parameters.checkEntranceTrayRetryTimes();
     while (is_run)
     {
         QThread::msleep(100);
@@ -152,16 +153,27 @@ void SensorTrayLoaderModule:: run()
         {
             if((!moveToPullNextTray()))
             {
-                AppendError(u8"去拉入空盘失败！");
-                int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
-                QString operation = waitMessageReturn(is_run,alarm_id);
-                if(!is_run)break;
-                if(REJECT_OPERATION == operation)
+                if (retryTime > 0)
                 {
+                    retryTime--;
                     states.setEntranceClipReady(false);
                     states.setHasCarrierReady(false);
                     continue;
                 }
+                else {
+                    retryTime = parameters.checkEntranceTrayRetryTimes();
+                    AppendError(u8"去拉入空盘失败！");
+                    int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(REJECT_OPERATION == operation)
+                    {
+                        states.setEntranceClipReady(false);
+                        states.setHasCarrierReady(false);
+                        continue;
+                    }
+                }
+
             }
             states.setHasCarrierReady(false);
             states.setHasReadyTray(true);
@@ -560,6 +572,23 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
             motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
             kick_result &= kick1->Set(true);
         }
+    } else {
+        qInfo("Error handling for the sensor tray handling");
+        bool kick_resul2 = true;
+        if(has_vacancy_tray)
+        {
+            kick_resul2 &= motor_kick->SlowMoveToPosSync(parameters.finishKickTrayPosition(),parameters.pushVelocity());
+            kick_resul2 &= kick2->Set(false);
+            if(kick_resul2)
+                kick_resul2 &= motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
+            if(kick_resul2)
+                kick_resul2 &= kick1->Set(true);
+        }
+        else
+        {
+            motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
+            kick_resul2 &= kick1->Set(true);
+        }
     }
 
     //顶盘
@@ -615,6 +644,10 @@ bool SensorTrayLoaderModule::moveToPullNextTray()
         result_push &= gripper->Wait(true);
     if(result_push)
         result_push &= checkEntanceTray(true);
+    if (!result_push)
+        qInfo(u8"送出新盘，返回值%d",result_push);
+        return result_push;
+
     bool result = motor_tray->MoveToPosSync(parameters.putTrayPosition());
     if(result)
         result &= gripper->Set(false);

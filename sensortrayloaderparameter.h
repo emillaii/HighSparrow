@@ -45,6 +45,7 @@ public:
     Q_PROPERTY(QString entanceTrayChcekIoName READ entanceTrayChcekIoName WRITE setEntanceTrayChcekIoName NOTIFY entanceTrayChcekIoNameChanged)
     Q_PROPERTY(QString exitTrayCheckIoName READ exitTrayCheckIoName WRITE setExitTrayCheckIoName NOTIFY exitTrayCheckIoNameChanged)
     Q_PROPERTY(bool isHandly READ isHandly WRITE setIsHandly NOTIFY isHandlyChanged)
+    Q_PROPERTY(int checkEntranceTrayRetryTimes READ checkEntranceTrayRetryTimes WRITE setCheckEntranceTrayRetryTimes NOTIFY checkEntranceTrayRetryTimesChanged)
     QString motorTrayName() const
     {
         return m_motorTrayName;
@@ -217,6 +218,11 @@ public:
     bool handlyChangeSensorTray() const
     {
         return m_handlyChangeSensorTray;
+    }
+
+    int checkEntranceTrayRetryTimes() const
+    {
+        return m_checkEntranceTrayRetryTimes;
     }
 
 public slots:
@@ -534,6 +540,15 @@ public slots:
         emit handlyChangeSensorTrayChanged(m_handlyChangeSensorTray);
     }
 
+    void setCheckEntranceTrayRetryTimes(int checkEntranceTrayRetryTimes)
+    {
+        if (m_checkEntranceTrayRetryTimes == checkEntranceTrayRetryTimes)
+            return;
+
+        m_checkEntranceTrayRetryTimes = checkEntranceTrayRetryTimes;
+        emit checkEntranceTrayRetryTimesChanged(m_checkEntranceTrayRetryTimes);
+    }
+
 signals:
     void motorTrayNameChanged(QString motorTrayName);
     void motorSTIENameChanged(QString motorSTIEName);
@@ -604,6 +619,8 @@ signals:
 
     void handlyChangeSensorTrayChanged(bool handlyChangeSensorTray);
 
+    void checkEntranceTrayRetryTimesChanged(int checkEntranceTrayRetryTimes);
+
 private:
     QString m_motorTrayName = "";
     QString m_motorSTIEName = "";
@@ -640,6 +657,7 @@ private:
     QString m_exitTrayCheckIoName = "";
     bool m_isHandly = false;
     bool m_handlyChangeSensorTray = false;
+    int m_checkEntranceTrayRetryTimes = 3;
 };
 class SensorTrayLoaderState:public PropertyBase
 {

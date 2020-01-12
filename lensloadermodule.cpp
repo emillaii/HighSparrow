@@ -928,6 +928,7 @@ bool LensLoaderModule::loadOneLensToLUT()
     } while (i<20);
     bool ret = pickTrayLens();
     ret &= moveToLUTPRPos1(true);
+    ret &= moveToWorkPos();
     ret &= placeLensToLUT();
     return true;
 }

@@ -16,8 +16,9 @@ RowLayout {
         icon.source: "../../icons/camera.png"
         icon.color: "lightGreen"
         onClicked: {
-            workersManager.stopAllWorkers(false)
-            workersManager.startWorker(tcp_lens_loader_parameter.moduleName,4)
+            //workersManager.stopAllWorkers(false)
+            //workersManager.startWorker(tcp_lens_loader_parameter.moduleName,4)
+            workersManager.startAllWorkers(4)
         }
     }
     RoundButton {

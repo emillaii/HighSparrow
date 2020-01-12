@@ -28,9 +28,9 @@ Popup {
         }
         ListElement{
             breakIoName:"null"
-            inIoName:"null"
+            inIoName:"LUT真空检测2"
             outIoName:"LUT2吸真空"
-            vacuumName:"LUT吸真空"
+            vacuumName:"LUT2真空"
         }
     }
     ListModel{

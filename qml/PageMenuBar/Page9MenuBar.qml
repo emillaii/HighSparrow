@@ -16,8 +16,8 @@ RowLayout {
         icon.source: "../../icons/camera.png"
         icon.color: "lightGreen"
         onClicked: {
-           //logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.CLEARANCE)
-           workersManager.startAllWorkers(4)
+            workersManager.stopAllWorkers(false)
+            workersManager.startWorker(tcp_lens_loader_parameter.moduleName,4)
         }
     }
     RoundButton {
@@ -42,7 +42,7 @@ RowLayout {
         icon.source: "../../icons/camera.png"
         icon.color: "purple"
         onClicked: {
-           logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LOAD_ONE_LENS_TO_LUT)
+            logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LOAD_ONE_LENS_TO_LUT)
         }
     }
 }

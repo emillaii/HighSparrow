@@ -91,6 +91,7 @@ ColumnLayout{
            }
        }
        Button{
+           text:title_move_to
            onClicked: {
                logicManager.performHandling(tcp_lens_loader_parameter.moduleName, LensLoaderModule.LENS_TRAY1_END_POS)
            }

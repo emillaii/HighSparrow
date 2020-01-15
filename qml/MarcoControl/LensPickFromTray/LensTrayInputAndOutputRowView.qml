@@ -233,6 +233,7 @@ ColumnLayout{
         Button{
             text:title_move_to
             onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.ENTRANCE_KICK_READY_POS)
             }
         }
         Label{
@@ -259,6 +260,7 @@ ColumnLayout{
         Button{
             text:title_move_to
             onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.ENTRANCE_KICK_PUSH_POS)
             }
         }
         Label{
@@ -285,6 +287,7 @@ ColumnLayout{
         Button{
             text:title_move_to
             onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.ENTRANCE_KICK_PULL_POS)
             }
         }
     }
@@ -313,6 +316,7 @@ ColumnLayout{
         Button{
             text:title_move_to
             onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.EXIT_KICK_READY_POS)
             }
         }
         Label{
@@ -339,6 +343,7 @@ ColumnLayout{
         Button{
             text:title_move_to
             onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.EXIT_KICK_PUSH_POS)
             }
         }
         Label{
@@ -352,19 +357,13 @@ ColumnLayout{
            }
            horizontalAlignment: TextInput.AlignHCenter
            onEditingFinished: {
-               tcp_tray_loader_module_parameters.ltkx2SafeDistance(text)
+               tcp_tray_loader_module_parameters.setLtkx2SafeDistance(text)
            }
         }
         Button{
-            text:title_read_encoder
+            text:qsTr("确认")
             onClicked: {
-                var x = baseModuleManager.getMotorFeedbackPos(tcp_tray_loader_module_parameters.motorLTKX2Name)
-                tcp_tray_loader_module_parameters.setLtkx2SafeDistance(x)
-            }
-        }
-        Button{
-            text:title_move_to
-            onClicked: {
+                tcp_tray_loader_module_parameters.setLtkx2SafeDistance(text)
             }
         }
     }
@@ -409,6 +408,7 @@ ColumnLayout{
         Button{
             text:title_move_to
             onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.LOADER_WAIT_POS)
             }
         }
         Label{
@@ -435,13 +435,11 @@ ColumnLayout{
         Button{
             text:title_move_to
             onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.LOADER_WORK_POS)
             }
         }
         Label{
             text:qsTr("LTL 放盘位置")
-//            onClicked: {
-//                logicManager.trayLoaderModuleLTKX1MovetoSetPos()
-//            }
         }
         TextField{
             text:tcp_tray_loader_module_parameters.ltlReleasePos
@@ -476,6 +474,7 @@ ColumnLayout{
         Button{
             text:title_move_to
             onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.LOADER_RELEASE_POS)
             }
         }
     }
@@ -564,19 +563,19 @@ ColumnLayout{
             horizontalAlignment: TextInput.AlignHCenter
             onEditingFinished: {
                 var idx = text-1
-                tray_clipin_parameter.setCurrentIndex(idx)
+                tcp_tray_clipin_parameter.setCurrentIndex(idx)
             }
         }
         Button{
             text:title_move_to
             onClicked: {
-                logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in.text-1)
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_POS,tcp_tray_clipin_parameter.currentIndex())
             }
         }
         Button{
             text:qsTr("推出Tray盘")
             onClicked: {
-                logicManager.trayLoaderModuleEjectTray()
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.EJECT_TRAY)
             }
         }
         Button{
@@ -609,7 +608,7 @@ ColumnLayout{
         Button{
             text:qsTr("移动")
             onClicked: {
-                logicManager.trayLoaderModuleLTOEMovetoColumnIndex(col_out.text-1)
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_POS,tcp_tray_clipout_parameter.currentIndex())
             }
         }
         Button{

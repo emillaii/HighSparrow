@@ -183,7 +183,7 @@ bool TrayLoaderModule::moveToPushOutTray()
     if(result)
     {
         result &= cylinder_ltk2->Set(false);
-        result &=motor_out->MoveToPosSync(parameters.ltlReleasePos() - parameters.ltkx2SafeDistance());
+        result &= motor_out->MoveToPosSync(parameters.ltlReleasePos() - parameters.ltkx2SafeDistance());
     }
     if(!result)
         AppendError(QString(u8"推出空盘失败"));
@@ -424,6 +424,8 @@ void TrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
         result = moveTrayLoaderToWorkPos();
     else if(cmd == HandlePosition::LOADER_RELEASE_POS)
         result = moveTrayLoaderToReleasePos();
+    else if(cmd == HandlePosition::EJECT_TRAY)
+        result = ejectTray();
     if(!result)
         sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
     is_handling = false;
@@ -939,7 +941,7 @@ bool TrayLoaderModule::moveTrayLoaderToWaitPos()
 
 bool TrayLoaderModule::moveTrayLoaderToWorkPos()
 {
-    bool result = motor_work->MoveToPosSync(parameters.ltlPressPos());
+    bool result = motor_work->MoveToPosSync(parameters.ltlWorkPos());
     if(!result)
         AppendError(QString(u8"移动载盘到工作位置失败"));
     if(parameters.openQinfo())
@@ -972,4 +974,17 @@ bool TrayLoaderModule::checkEntranceTray(bool check_state)
         return true;
     AppendError(QString(u8"%1的状态不为%2").arg(entrance_tray_check_io->Name()).arg(check_state));
     return false;
+}
+
+bool TrayLoaderModule::ejectTray()
+{
+    bool res = cylinder_clip->Set(true);
+    if(!res){
+        qInfo(u8"入料弹夹气缸推出失败");
+    }
+    res &= cylinder_clip->Set(false);
+    if(!res){
+        qInfo(u8"入料弹夹气缸收回失败");
+    }
+    return res;
 }

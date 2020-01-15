@@ -135,14 +135,9 @@ bool ThreadWorkerBase::waitVisionResponseMessage(QString filename)
             if(mFile.exists())
             {
                 qInfo("wait repnonse time : %d filename:Image Grabber is not me: %s",current_time*10, filename.toStdString().c_str());
+                QThread::msleep(400); //ToDo: Minimize this wait time for loading image
                 return true;
             }
-            //QMutexLocker temp_locker(&message_mutex);
-//            if(vision_operations.contains(cameraName))
-//            {
-//                qInfo("waipylont repnonse time : %d cameraName: %s",current_time*10, cameraName.toStdString().c_str());
-//                return true;
-//            }
         }
     }
     return false;

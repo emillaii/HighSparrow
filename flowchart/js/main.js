@@ -1137,6 +1137,11 @@ $(document).ready(function () {
     alert(selectedOperatorId + " Params is updated");
   });
   
+  var toggle_edit_state = false;
+  $('#close_modal_button').click(function(){
+	toggle_edit_state = false;
+	$("a[rel='modal:close']").click();
+  });
   window.onkeyup = function(event) {
     let key = event.key.toUpperCase();
 	var selectedOperatorId = $flowchart.flowchart('getSelectedOperatorId');
@@ -1144,12 +1149,20 @@ $(document).ready(function () {
     if ( key == 'W' ) {
         // 'W' key is pressed
 		updateData();
-    } else if ( key == 'R' ) {
-        $("a[rel='modal:open']").click();
+    } else if ( key == 'E' && !toggle_edit_state) {
+		$('#ex1').modal({
+			showClose: false,
+			escapeClose: false,
+			clickClose: false
+		});
+		toggle_edit_state = true;
     } else if (key == 'DELETE') {
 		$flowchart.flowchart('deleteSelected');
-	} else if (key == 'T') {
+	} else if (key == 'C' && !toggle_edit_state) {
 		duplicateOperationWidget();
+	} else if (key == 'ESCAPE') {
+		toggle_edit_state = false;
+		$("a[rel='modal:close']").click();
 	}
   }
   window.onclick = function(event) {
@@ -1163,6 +1176,6 @@ $(document).ready(function () {
 			}
 		}
 	}
-  }  
+  }
   
 });

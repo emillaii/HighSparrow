@@ -80,6 +80,7 @@ ApplicationWindow {
                 command = "document.getElementById('flowchart_data').value";
                 flowChartPage.webView.runJavaScript(command, function(result) {
                     baseModuleManager.loadFlowchart(result, saveFileDialog.fileUrl)
+                    result = result.replace(/\\n/g, '\\\\n')
                     file.setData(result)
                     file.write()
                 })

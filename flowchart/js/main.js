@@ -10,7 +10,7 @@ $(document).ready(function () {
   var init_initial_tilt_params = { roll: 0, pitch: 0, delay_in_ms: 0};
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, min: 0, max: 200, mode: 0, margin: 100 };
-  var init_uv_params = {time_in_ms: 3000, enable_OTP: 0 };
+  var init_uv_params = {time_in_ms: 3000, enable_OTP: 0, OTP_information: '' };
   var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
   var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0, delay_in_ms: 0};
@@ -258,6 +258,7 @@ $(document).ready(function () {
 		$uv_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
 		$('#uv_time_in_ms').val(params["time_in_ms"]);
         $('#uv_enable_OTP').val(params["enable_OTP"]);
+		$('#uv_OTP_information').val(params["OTP_information"]);
 	  }else if (operatorId.includes("Init_Lens")) {
 		$init_lens_operator_properties.show();
 		$init_lens_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -470,7 +471,8 @@ $(document).ready(function () {
 	} else if (selectedOperatorId.includes("UV")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#uv_operator_title').val());
 	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
-	  enable_OTP:  Number($('#uv_enable_OTP').val())
+	  enable_OTP:  Number($('#uv_enable_OTP').val()),
+	  OTP_information: $('#uv_OTP_information').val()
 	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
     } else if (selectedOperatorId.includes("Init_Lens")) {
@@ -845,7 +847,8 @@ $(document).ready(function () {
 	} else if (selectedOperatorId.includes("UV")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#uv_operator_title').val());
 	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
-	  enable_OTP:  Number($('#uv_enable_OTP').val())
+	  enable_OTP:  Number($('#uv_enable_OTP').val()),
+	  OTP_information: ($('#uv_OTP_information').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Init_Lens")) {
@@ -1111,7 +1114,8 @@ $(document).ready(function () {
 	} else if (selectedOperatorId.includes("UV")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#uv_operator_title').val());
 	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
-	  enable_OTP:  Number($('#uv_enable_OTP').val())
+	  enable_OTP:  Number($('#uv_enable_OTP').val()),
+	  OTP_information: $('#uv_OTP_information').val()
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Init_Lens")) {
@@ -1140,11 +1144,11 @@ $(document).ready(function () {
     if ( key == 'W' ) {
         // 'W' key is pressed
 		updateData();
-    } else if ( key == 'E' ) {
+    } else if ( key == 'R' ) {
         $("a[rel='modal:open']").click();
     } else if (key == 'DELETE') {
 		$flowchart.flowchart('deleteSelected');
-	} else if (key == 'C') {
+	} else if (key == 'T') {
 		duplicateOperationWidget();
 	}
   }

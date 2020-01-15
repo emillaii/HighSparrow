@@ -860,7 +860,7 @@ bool TrayLoaderModule::moveExitClipToTop()
 
 bool TrayLoaderModule::moveExitClipToBottom()
 {
-    bool result = motor_clip_out->MoveToPosSync(tray_clip_out->standards_parameters.firstTrayPos());
+    bool result = motor_clip_out->MoveToPosSync(tray_clip_out->standards_parameters.lastTrayPos());
     if(!result)
         AppendError(QString(u8"移动出料弹夹去结束层失败"));
     if(parameters.openQinfo())

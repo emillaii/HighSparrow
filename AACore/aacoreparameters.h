@@ -107,7 +107,7 @@ class AACoreParameters : public PropertyBase
 
 public:
     explicit AACoreParameters(){
-        for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
+        for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
         {
             m_WeightList.push_back(QVariant(0.25));
         }

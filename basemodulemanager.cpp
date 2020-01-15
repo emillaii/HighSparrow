@@ -930,6 +930,11 @@ void BaseModuleManager::loadAACoreParameter()
     aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
 }
 
+void BaseModuleManager::loadAAHeadParameter()
+{
+    aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
+}
+
 void BaseModuleManager::performHandlingOperation(int cmd)
 {
     qInfo("performHandlingOperation cmd: ", cmd);

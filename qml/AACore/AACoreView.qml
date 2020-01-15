@@ -691,6 +691,66 @@ ScrollView {
                             }
                         }
                     }
+
+                    RowLayout {
+                        Label {
+                            text: qsTr("CC w_top")
+                        }
+                        TextField {
+                            text: aaCoreParams.WeightList[16]
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setWeightValue(16, text);
+                            }
+                        }
+                        Label {
+                            text: qsTr("w_right")
+                        }
+                        TextField {
+                            text: aaCoreParams.WeightList[17]
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setWeightValue(17, text);
+                            }
+                        }
+                        Label {
+                            text: qsTr("w_bottom")
+                        }
+                        TextField {
+                            text: aaCoreParams.WeightList[18]
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setWeightValue(18, text);
+                            }
+                        }
+                        Label {
+                            text: qsTr("w_left")
+                        }
+                        TextField {
+                            text: aaCoreParams.WeightList[19]
+                            width: 1000
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setWeightValue(19, text);
+                            }
+                        }
+                    }
                 }
             }
         }

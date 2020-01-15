@@ -106,7 +106,7 @@ bool Calibration::performCalibration()
     if(coordinateA2BMapping(pixelPoints,motorPoints))
     {
         parameters.setOriginX(mOriginB.x());
-        parameters.setOriginX(mOriginB.y());
+        parameters.setOriginY(mOriginB.y());
         parameters.setMatrix11(mA2BMatrix.m11());
         parameters.setMatrix12(mA2BMatrix.m12());
         parameters.setMatrix21(mA2BMatrix.m21());

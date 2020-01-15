@@ -1831,7 +1831,7 @@ void AACoreNew::performAAOfflineCCOnly()
     }
     bool detectedAbormality = false;
     int deletedIndex = -1;
-    fitCurve(x_pos, area_array, fitOrder, peak_x, peak_sfr,error_avg,error_dev, area_array, detectedAbormality, deletedIndex);
+    fitCurve(x_pos, area_array, fitOrder, peak_x, peak_sfr,error_avg,error_dev, area_array, detectedAbnormality, deletedIndex);
     qInfo("X scan result peak_x: %f peak_sfr: %f error_avg: %f error_dev: %f", peak_x, peak_sfr, error_avg, error_dev);
     data->setZPeak(peak_x);
     data->setWCCPeakZ(peak_x);
@@ -3574,15 +3574,19 @@ ErrorCodeStruct AACoreNew::performPRToBond(int finish_delay)
     if (!this->aa_head->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
 
-    //    double x = sut->downlook_position.X() + sut->up_downlook_offset.X() + aa_head->uplook_x + aa_head->offset_x;
-    //    double y = sut->downlook_position.Y() + sut->up_downlook_offset.Y() + aa_head->uplook_y + aa_head->offset_y;
+    //    double x = sut->downlook_position.X() + sut->up_downlook_offset.X() + aa_head->uplook_x + aa_head->offset_x + aa_head->parameters.pr2Bond_offsetX();
+    //    double y = sut->downlook_position.Y() + sut->up_downlook_offset.Y() + aa_head->uplook_y + aa_head->offset_y + aa_head->parameters.pr2Bond_offsetY();
     double x = sut->mushroom_positon.X();
     double y = sut->mushroom_positon.Y();
     double z = sut->mushroom_positon.Z();
-    double theta = aa_head->GetFeedBack().C + sut->up_downlook_offset.Theta() - aa_head->uplook_theta - aa_head->offset_theta;
+    double theta = aa_head->GetFeedBack().C + sut->up_downlook_offset.Theta() - aa_head->uplook_theta - aa_head->offset_theta + aa_head->parameters.pr2Bond_offsetTheta();
+    qInfo("mushroom position(%f,%f,%f)",sut->mushroom_positon.X(),sut->mushroom_positon.Y(),sut->mushroom_positon.Z());
     qInfo("downlook_offset(%f,%f)",aa_head->offset_x,aa_head->offset_y,aa_head->offset_theta);
     qInfo("uplook_offset(%f,%f,%f)",aa_head->uplook_x,aa_head->uplook_y,aa_head->uplook_theta);
     qInfo("up_downlook_offset(%f,%f,%f)",sut->up_downlook_offset.X(),sut->up_downlook_offset.Y(),sut->up_downlook_offset.Theta());
+    qInfo("Pr2Bond offset(%f,%f,%f)",aa_head->parameters.pr2Bond_offsetX(),aa_head->parameters.pr2Bond_offsetY(),aa_head->parameters.pr2Bond_offsetTheta());
+    qInfo("Pr2Bond x y z theta(%f,%f,%f,%f)",x,y,z,theta);
+
     if (!sut->moveZToSafety()) {return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to SUT_Z safety position"};};
     if (!this->aa_head->moveToSZ_XYSC_Z_Sync(x,y,z,theta)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to PRToBond Position"};}
     if(finish_delay>0)

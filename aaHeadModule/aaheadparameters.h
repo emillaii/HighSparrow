@@ -25,6 +25,9 @@ public:
     Q_PROPERTY(QString uv3Name READ uv3Name WRITE setUv3Name NOTIFY uv3NameChanged)
     Q_PROPERTY(QString uv4Name READ uv4Name WRITE setUv4Name NOTIFY uv4NameChanged)
     Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
+    Q_PROPERTY(double pr2Bond_offsetX READ pr2Bond_offsetX WRITE setPr2Bond_offsetX NOTIFY pr2Bond_offsetXChanged)
+    Q_PROPERTY(double pr2Bond_offsetY READ pr2Bond_offsetY WRITE setPr2Bond_offsetY NOTIFY pr2Bond_offsetYChanged)
+    Q_PROPERTY(double pr2Bond_offsetTheta READ pr2Bond_offsetTheta WRITE setPr2Bond_offsetTheta NOTIFY pr2Bond_offsetThetaChanged)
 
 double PickLensPositionZ() const
 {
@@ -99,6 +102,21 @@ QString uv4Name() const
 QString moduleName() const
 {
     return m_moduleName;
+}
+
+double pr2Bond_offsetX() const
+{
+    return m_pr2Bond_offsetX;
+}
+
+double pr2Bond_offsetY() const
+{
+    return m_pr2Bond_offsetY;
+}
+
+double pr2Bond_offsetTheta() const
+{
+    return m_pr2Bond_offsetTheta;
 }
 
 public slots:
@@ -231,6 +249,36 @@ void setModuleName(QString moduleName)
     emit moduleNameChanged(m_moduleName);
 }
 
+void setPr2Bond_offsetX(double pr2Bond_offsetX)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_pr2Bond_offsetX, pr2Bond_offsetX))
+        return;
+
+    m_pr2Bond_offsetX = pr2Bond_offsetX;
+    emit pr2Bond_offsetXChanged(m_pr2Bond_offsetX);
+}
+
+void setPr2Bond_offsetY(double pr2Bond_offsetY)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_pr2Bond_offsetY, pr2Bond_offsetY))
+        return;
+
+    m_pr2Bond_offsetY = pr2Bond_offsetY;
+    emit pr2Bond_offsetYChanged(m_pr2Bond_offsetY);
+}
+
+void setPr2Bond_offsetTheta(double pr2Bond_offsetTheta)
+{
+    qWarning("Floating point comparison needs context sanity check");
+    if (qFuzzyCompare(m_pr2Bond_offsetTheta, pr2Bond_offsetTheta))
+        return;
+
+    m_pr2Bond_offsetTheta = pr2Bond_offsetTheta;
+    emit pr2Bond_offsetThetaChanged(m_pr2Bond_offsetTheta);
+}
+
 signals:
 void paramsChanged();
 void rotateZOffsetChanged(double rotateZOffset);
@@ -259,6 +307,12 @@ void uv4NameChanged(QString uv4Name);
 
 void moduleNameChanged(QString moduleName);
 
+void pr2Bond_offsetXChanged(double pr2Bond_offsetX);
+
+void pr2Bond_offsetYChanged(double pr2Bond_offsetY);
+
+void pr2Bond_offsetThetaChanged(double pr2Bond_offsetTheta);
+
 private:
 double m_PickLensPositionZ = 0;
 double m_OCPositionZ = 0;
@@ -275,6 +329,9 @@ QString m_uv2Name = "AA_UV2";
 QString m_uv3Name = "AA_UV3";
 QString m_uv4Name = "AA_UV4";
 QString m_moduleName = "AA1Head";
+double m_pr2Bond_offsetX = 0;
+double m_pr2Bond_offsetY = 0;
+double m_pr2Bond_offsetTheta = 0;
 };
 
 #endif // AAHEADPARAMETERS_H

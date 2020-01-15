@@ -56,6 +56,12 @@ ItemDelegate {
                         slsc.open()
                     }
                 }
+                Button{
+                    text:qsTr("加载")
+                    onClicked: {
+                        baseModuleManager.loadAAHeadParameter()
+                    }
+                }
             }
             GroupBox{
                 title: qsTr("Mushroom Position")

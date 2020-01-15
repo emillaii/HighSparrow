@@ -644,9 +644,6 @@ bool SensorTrayLoaderModule::moveToPullNextTray()
         result_push &= gripper->Wait(true);
     if(result_push)
         result_push &= checkEntanceTray(true);
-    if (!result_push)
-        qInfo(u8"送出新盘，返回值%d",result_push);
-        return result_push;
 
     bool result = motor_tray->MoveToPosSync(parameters.putTrayPosition());
     if(result)

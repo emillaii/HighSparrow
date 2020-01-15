@@ -1158,6 +1158,16 @@ void LensLoaderModule::startWork(int run_mode)
         has_material = false;
         run(false);
     }
+    else if(run_mode == RunMode::VibrationTest)
+    {
+        is_run = true;
+        while(is_run) {
+            moveToLUTPRPos1();
+            QThread::msleep(2000);
+            moveToTrayPos(0,0);
+            QThread::msleep(2000);
+        }
+    }
 }
 
 

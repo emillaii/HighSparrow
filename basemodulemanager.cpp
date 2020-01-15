@@ -2375,13 +2375,13 @@ bool BaseModuleManager::stepMove(int index, double step, bool isPositive)
 void BaseModuleManager::setMotorParamByName(QString name, double vel, double acc, double jert)
 {
     qInfo("setMotorParamByName %f, %f, %f",vel,acc,jert);
-  XtMotor* temp_motor = GetMotorByName(name);
-  if(temp_motor != nullptr)
-  {
+    XtMotor* temp_motor = GetMotorByName(name);
+    if(temp_motor != nullptr)
+    {
       temp_motor->SetVel(vel);
       temp_motor->SetAcc(acc);
       temp_motor->SetJerk(jert);
-  }
+    }
 }
 
 bool BaseModuleManager::performCalibration(QString calibration_name)

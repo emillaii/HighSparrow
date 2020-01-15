@@ -303,7 +303,7 @@ int main(int argc, char *argv[])
 
     {
         //Local lens loader
-        engine.rootContext()->setContextProperty("lensPickArmModuleParameter", &highSprrow.baseModuleManager->lens_loader_module.parameters);
+        engine.rootContext()->setContextProperty("lensPickArmModuleParameter", &highSprrow.baseModuleManager->lens_pick_arm.parameters);
         engine.rootContext()->setContextProperty("lut_pr_position1",&highSprrow.baseModuleManager->lens_loader_module.lut_pr_position1);
         engine.rootContext()->setContextProperty("lut_pr_position2",&highSprrow.baseModuleManager->lens_loader_module.lut_pr_position2);
         engine.rootContext()->setContextProperty("lut_camera_position",&highSprrow.baseModuleManager->lens_loader_module.lut_camera_position);

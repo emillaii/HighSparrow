@@ -643,6 +643,16 @@ void LutModule::startWork(int run_mode)
         this->has_material = false;
         run(false);
     }
+    else if (run_mode == RunMode::VibrationTest)
+    {
+        is_run = true;
+        while(is_run) {
+            moveToLoadPos();
+            QThread::msleep(2000);
+            moveToAA1UplookPos();
+            QThread::msleep(2000);
+        }
+    }
 //    else if(run_mode == RunMode::MachineTest)
 //    {
 //        runTest();

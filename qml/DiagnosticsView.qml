@@ -22,8 +22,18 @@ Grid {
                     onClicked: {
                         workersManager.stopAllWorkers(false)
                         workersManager.startWorker(aaCoreParams.moduleName,2)
-                        if (sensorLoderCheckBox.checked)
-                            workersManager.startWorker("SensorLoaderModule",3)
+                        if (baseModuleManager.ServerMode == 0)
+                        {
+                            if (lutCheckBox.checked)
+                                workersManager.startWorker("LUTModule",3)
+                            if (lpaCheckBox.checked)
+                                workersManager.startWorker("LensLoaderModule",3)
+                        }
+                        else if (baseModuleManager.ServerMode == 1)
+                        {
+                            if (sensorLoderCheckBox.checked)
+                                workersManager.startWorker("SensorLoaderModule",3)
+                        }
                     }
                 }
                 Button {
@@ -49,7 +59,7 @@ Grid {
                     color: "white"
                     width :100
                     id: vel
-                    text: qsTr("400")
+                    text: qsTr("600")
                 }
                 Label
                 {
@@ -59,7 +69,7 @@ Grid {
                     color: "white"
                     width :100
                     id: acc
-                    text: qsTr("8000")
+                    text: qsTr("15000")
                 }
                 Label
                 {
@@ -69,13 +79,97 @@ Grid {
                     color: "white"
                     width :100
                     id: jert
-                    text: qsTr("80000")
+                    text: qsTr("200000")
                 }
                 Button
                 {
                     text: qsTr("更新参数")  //Vibration Test
                     onClicked: {
                         baseModuleManager.setMotorParamByName(sensorPickArmParams.motorXName,vel.text,acc.text,jert.text);
+                    }
+                }
+                CheckBox {
+                    id: lutCheckBox
+                    checked: false
+                    text: qsTr("LUT")
+                }
+                Label
+                {
+                    text: qsTr("速度")
+                }
+                TextEdit {
+                    color: "white"
+                    width :100
+                    id: lut_vel
+                    text: qsTr("400")
+                }
+                Label
+                {
+                    text: qsTr("加速度")
+                }
+                TextEdit {
+                    color: "white"
+                    width :100
+                    id: lut_acc
+                    text: qsTr("8000")
+                }
+                Label
+                {
+                    text: qsTr("加加速度")
+                }
+                TextEdit {
+                    color: "white"
+                    width :100
+                    id: lut_jert
+                    text: qsTr("80000")
+                }
+                Button
+                {
+                    text: qsTr("更新参数")  //Vibration Test
+                    onClicked: {
+                        baseModuleManager.setMotorParamByName(lutParams.motorXName,lut_vel.text,lut_acc.text,lut_jert.text);
+                    }
+                }
+                CheckBox {
+                    id: lpaCheckBox
+                    checked: false
+                    text: qsTr("LPA")
+                }
+                Label
+                {
+                    text: qsTr("速度")
+                }
+                TextEdit {
+                    color: "white"
+                    width :100
+                    id: lpa_vel
+                    text: qsTr("1000")
+                }
+                Label
+                {
+                    text: qsTr("加速度")
+                }
+                TextEdit {
+                    color: "white"
+                    width :100
+                    id: lpa_acc
+                    text: qsTr("10000")
+                }
+                Label
+                {
+                    text: qsTr("加加速度")
+                }
+                TextEdit {
+                    color: "white"
+                    width :100
+                    id: lpa_jert
+                    text: qsTr("150000")
+                }
+                Button
+                {
+                    text: qsTr("更新参数")  //Vibration Test
+                    onClicked: {
+                        baseModuleManager.setMotorParamByName(lensPickArmModuleParameter.motorYName,lpa_vel.text,lpa_acc.text,lpa_jert.text);
                     }
                 }
             }

@@ -28,8 +28,8 @@ public:
         EXIT_KICK_PUSH_POS,
         LOADER_WAIT_POS,
         LOADER_WORK_POS,
-        LOADER_RELEASE_POS
-
+        LOADER_RELEASE_POS,
+        EJECT_TRAY
     };
     TrayLoaderModule(QString name="LensTrayLoaderModule");
     void Init(XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtMotor*,XtCylinder*,XtCylinder*,XtCylinder*,XtCylinder*,TrayClip*,TrayClip*,
@@ -55,6 +55,7 @@ public:
     bool moveToChangeChangeHandlly();
     bool moveToWorkPos();
     bool moveToChangeClipPos();
+    bool ejectTray();
 private:
     void run();
     bool resumeState();

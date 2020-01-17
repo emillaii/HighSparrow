@@ -301,6 +301,7 @@ Popup {
                                 transformOrigin: Item.Center
                                 display: Button.IconOnly
                                 icon.source: "icons/target.png"
+                                icon.color: "cyan"
                                 onClicked: {
                                     baseModuleManager.moveToPos(modelData, pos.text)
                                 }

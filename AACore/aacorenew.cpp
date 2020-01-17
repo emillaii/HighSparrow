@@ -1048,8 +1048,7 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, u8"画胶积累数量超过限制"};
         }
     }
-     parameters.setDispenseCount(parameters.dispenseCount()+1);
-        return ErrorCodeStruct {ErrorCode::OK, ""};
+    parameters.setDispenseCount(parameters.dispenseCount()+1);
 
     QString glueInspectionImageName = "";
     double outMinGlueWidth = 0, outMaxGlueWidth = 0, outMaxAvgGlueWidth = 0;

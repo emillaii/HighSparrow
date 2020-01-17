@@ -627,7 +627,7 @@ Grid {
                 }
                 TextField {
                     readOnly: true
-                    text: aaCoreStates.circleTime
+                    text: aaCoreParams.circleTime
                     horizontalAlignment: TextInput.AlignHCenter
                     width: 60
                 }
@@ -641,7 +641,7 @@ Grid {
                 }
                 TextField {
                     readOnly: true
-                    text: aaCoreStates.circleAverageTime
+                    text: aaCoreParams.circleAverageTime
                     horizontalAlignment: TextInput.AlignHCenter
                     width: 60
                 }
@@ -655,7 +655,7 @@ Grid {
                 }
                 TextField {
                     readOnly: true
-                    text: aaCoreStates.circleCount
+                    text: aaCoreParams.circleCount
                     horizontalAlignment: TextInput.AlignHCenter
                     width: 60
                 }
@@ -669,7 +669,7 @@ Grid {
                 }
                 TextField {
                     readOnly: true
-                    text: aaCoreStates.calculatedUPH
+                    text: aaCoreParams.calculatedUPH
                     horizontalAlignment: TextInput.AlignHCenter
                     width: 60
                 }
@@ -686,6 +686,17 @@ Grid {
                     text: aaCoreParams.dispenseCount
                     horizontalAlignment: TextInput.AlignHCenter
                     width: 60
+                }
+                Label {
+                    text: qsTr("/")
+                    font.bold: true
+                    font.italic: true
+                }
+                TextEdit {
+                    color: "white"
+                    width :100
+                    text: aaCoreParams.dispenseCountLimit
+                    readOnly: true
                 }
                 Button {
                     text: qsTr("Clear")

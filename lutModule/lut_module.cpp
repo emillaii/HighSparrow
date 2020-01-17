@@ -649,7 +649,7 @@ void LutModule::startWork(int run_mode)
         while(is_run) {
             moveToLoadPos();
             QThread::msleep(2000);
-            moveToAA1UplookPos();
+            moveToAA1ReadyPos();
             QThread::msleep(2000);
         }
     }

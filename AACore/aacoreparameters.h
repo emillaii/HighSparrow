@@ -109,6 +109,14 @@ class AACoreParameters : public PropertyBase
 
     int m_dispenseCountLimit = 3000;
 
+    double m_circleTime = 0;
+
+    double m_circleAverageTime = 0;
+
+    int m_circleCount = 0;
+
+    int m_calculatedUPH = 0;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -166,6 +174,10 @@ public:
     Q_PROPERTY(QString aaCoreRunningTest READ aaCoreRunningTest WRITE setAACoreRunningTest NOTIFY aaCoreRunningTestChanged)
     Q_PROPERTY(int dispenseCount READ dispenseCount WRITE setDispenseCount NOTIFY dispenseCountChanged)
     Q_PROPERTY(int dispenseCountLimit READ dispenseCountLimit WRITE setDispenseCountLimit NOTIFY dispenseCountLimitChanged)
+    Q_PROPERTY(double circleTime READ circleTime WRITE setCircleTime NOTIFY circleTimeChanged)
+    Q_PROPERTY(double circleAverageTime READ circleAverageTime WRITE setCircleAverageTime NOTIFY circleAverageTimeChanged)
+    Q_PROPERTY(int circleCount READ circleCount WRITE setCircleCount NOTIFY circleCountChanged)
+    Q_PROPERTY(int calculatedUPH READ calculatedUPH WRITE setCalculatedUPH NOTIFY calculatedUPHChanged)
     double EFL() const
     {
         return m_EFL;
@@ -418,6 +430,26 @@ public:
     int dispenseCountLimit() const
     {
         return m_dispenseCountLimit;
+    }
+
+    double circleTime() const
+    {
+        return m_circleTime;
+    }
+
+    double circleAverageTime() const
+    {
+        return m_circleAverageTime;
+    }
+
+    int circleCount() const
+    {
+        return m_circleCount;
+    }
+
+    int calculatedUPH() const
+    {
+        return m_calculatedUPH;
     }
 
 public slots:
@@ -857,6 +889,44 @@ public slots:
         emit dispenseCountLimitChanged(m_dispenseCountLimit);
     }
 
+    void setCircleTime(double circleTime)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_circleTime, circleTime))
+            return;
+
+        m_circleTime = circleTime;
+        emit circleTimeChanged(m_circleTime);
+    }
+
+    void setCircleAverageTime(double circleAverageTime)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_circleAverageTime, circleAverageTime))
+            return;
+
+        m_circleAverageTime = circleAverageTime;
+        emit circleAverageTimeChanged(m_circleAverageTime);
+    }
+
+    void setCircleCount(int circleCount)
+    {
+        if (m_circleCount == circleCount)
+            return;
+
+        m_circleCount = circleCount;
+        emit circleCountChanged(m_circleCount);
+    }
+
+    void setCalculatedUPH(int calculatedUPH)
+    {
+        if (m_calculatedUPH == calculatedUPH)
+            return;
+
+        m_calculatedUPH = calculatedUPH;
+        emit calculatedUPHChanged(m_calculatedUPH);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -897,6 +967,10 @@ signals:
     void aaCoreRunningTestChanged(QString aaCoreRunningTest);
     void dispenseCountChanged();
     void dispenseCountLimitChanged(int dispenseCountLimit);
+    void circleTimeChanged(double circleTime);
+    void circleAverageTimeChanged(double circleAverageTime);
+    void circleCountChanged(int circleCount);
+    void calculatedUPHChanged(int calculatedUPH);
 };
 class AACoreStates: public PropertyBase
 {
@@ -921,12 +995,7 @@ public:
     Q_PROPERTY(bool hasNgSensor READ hasNgSensor WRITE setHasNgSensor NOTIFY hasNgSensorChanged)
     Q_PROPERTY(bool hasProduct READ hasProduct WRITE setHasProduct NOTIFY hasProductChanged)
     Q_PROPERTY(bool hasNgProduct READ hasNgProduct WRITE setHasNgProduct NOTIFY hasNgProductChanged)
-    Q_PROPERTY(double circleTime READ circleTime WRITE setCircleTime NOTIFY circleTimeChanged)
-    Q_PROPERTY(double circleAverageTime READ circleAverageTime WRITE setCircleAverageTime NOTIFY circleAverageTimeChanged)
-    Q_PROPERTY(int circleCount READ circleCount WRITE setCircleCount NOTIFY circleCountChanged)
-    Q_PROPERTY(int calculatedUPH READ calculatedUPH WRITE setCalculatedUPH NOTIFY calculatedUPHChanged)
     Q_PROPERTY(bool tcpAAGripperState READ tcpAAGripperState WRITE setTcpAAGripperState NOTIFY tcpAAGripperStateChanged)
-    Q_PROPERTY(int dispenseCount READ dispenseCount WRITE setDispenseCount NOTIFY dispenseCountChanged)
     bool isWaitingLens() const
     {
         return m_isWaitingLens;
@@ -964,22 +1033,6 @@ public:
     bool hasNgProduct() const
     {
         return m_hasNgProduct;
-    }
-
-
-    double circleTime() const
-    {
-        return m_circleTime;
-    }
-
-    int circleCount() const
-    {
-        return m_circleCount;
-    }
-
-    double circleAverageTime() const
-    {
-        return m_circleAverageTime;
     }
 
     int runMode() const
@@ -1020,16 +1073,6 @@ public:
     bool tcpAAGripperState() const
     {
         return m_tcpAAGripperState;
-    }
-
-    int calculatedUPH() const
-    {
-        return m_calculatedUPH;
-    }
-
-    int dispenseCount() const
-    {
-        return m_dispenseCount;
     }
 
 public slots:
@@ -1104,35 +1147,6 @@ public slots:
         emit hasNgProductChanged(m_hasNgProduct);
     }
 
-    void setCircleTime(double circleTime)
-    {
-
-        if (qFuzzyCompare(m_circleTime, circleTime))
-            return;
-
-        m_circleTime = circleTime;
-        emit circleTimeChanged(m_circleTime);
-    }
-
-    void setCircleCount(int circleCount)
-    {
-        if (m_circleCount == circleCount)
-            return;
-
-        m_circleCount = circleCount;
-        emit circleCountChanged(m_circleCount);
-    }
-
-    void setCircleAverageTime(double circleAverageTime)
-    {
-
-        if (qFuzzyCompare(m_circleAverageTime, circleAverageTime))
-            return;
-
-        m_circleAverageTime = circleAverageTime;
-        emit circleAverageTimeChanged(m_circleAverageTime);
-    }
-
     void setRunMode(int runMode)
     {
         if (m_runMode == runMode)
@@ -1205,24 +1219,6 @@ public slots:
         emit tcpAAGripperStateChanged(m_tcpAAGripperState);
     }
 
-    void setCalculatedUPH(int calculatedUPH)
-    {
-        if (m_calculatedUPH == calculatedUPH)
-            return;
-
-        m_calculatedUPH = calculatedUPH;
-        emit calculatedUPHChanged(m_calculatedUPH);
-    }
-
-    void setDispenseCount(int dispenseCount)
-    {
-        if (m_dispenseCount == dispenseCount)
-            return;
-
-        m_dispenseCount = dispenseCount;
-        emit dispenseCountChanged();
-    }
-
 signals:
     void isWaitingLensChanged(bool isWaitingLens);
     void isWaitingSensorChanged(bool isWaitingSensor);
@@ -1238,12 +1234,6 @@ signals:
     void hasProductChanged(bool hasProduct);
 
     void hasNgProductChanged(bool hasNgProduct);
-
-    void circleTimeChanged(double circleTime);
-
-    void circleCountChanged(int circleCount);
-
-    void circleAverageTimeChanged(double circleAverageTime);
 
     void runModeChanged(int runMode);
 
@@ -1261,10 +1251,6 @@ signals:
 
     void tcpAAGripperStateChanged(bool tcpAAGripperState);
 
-    void calculatedUPHChanged(int calculatedUPH);
-
-    void dispenseCountChanged();
-
 private:
     bool m_isWaitingLens = false;
     bool m_isWaitingSensor = false;
@@ -1274,9 +1260,6 @@ private:
     bool m_hasNgSensor = false;
     bool m_hasProduct = false;
     bool m_hasNgProduct = false;
-    double m_circleTime = 0;
-    int m_circleCount = 0;
-    double m_circleAverageTime = 0;
     int m_runMode = 0;
     bool m_disableStation = false;
     int m_stationNumber = 0;
@@ -1285,8 +1268,6 @@ private:
     bool m_finishSensorTask = false;
     bool m_finishLensTask = false;
     bool m_tcpAAGripperState;
-    int m_calculatedUPH = 0;
-    int m_dispenseCount = 0;
 };
 
 #endif // AACOREPARAMETERS_H

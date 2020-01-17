@@ -2384,9 +2384,9 @@ void BaseModuleManager::setMotorParamByName(QString name, double vel, double acc
     XtMotor* temp_motor = GetMotorByName(name);
     if(temp_motor != nullptr)
     {
-      temp_motor->SetVel(vel);
-      temp_motor->SetAcc(acc);
-      temp_motor->SetJerk(jert);
+        temp_motor->SetVel(vel);
+        temp_motor->SetAcc(acc);
+        temp_motor->SetJerk(jert);
     }
 }
 

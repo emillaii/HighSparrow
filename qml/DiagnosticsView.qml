@@ -25,14 +25,14 @@ Grid {
                         if (baseModuleManager.ServerMode == 0)
                         {
                             if (lutCheckBox.checked)
-                                workersManager.startWorker("LUTModule",3)
+                                workersManager.startWorker("LUTModule",2)
                             if (lpaCheckBox.checked)
-                                workersManager.startWorker("LensLoaderModule",3)
+                                workersManager.startWorker("LensLoaderModule",2)
                         }
                         else if (baseModuleManager.ServerMode == 1)
                         {
                             if (sensorLoderCheckBox.checked)
-                                workersManager.startWorker("SensorLoaderModule",3)
+                                workersManager.startWorker("SensorLoaderModule",2)
                         }
                     }
                 }

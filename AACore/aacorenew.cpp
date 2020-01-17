@@ -70,7 +70,7 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
         qInfo("Sample Y: %f  Predicted Y: %f Error: %f", Y(i, 0), Ans(i, 0), error);
         //If |error| > 10, then this point is outfiter, then remove that point and fitCurve recursively
         //Avoid infinite recursive loop
-        if (!detectedAbnormality && error < -7) {
+        if (!detectedAbnormality && error < -5) {
             qInfo("Detected the abnormal data point");
             detectedAbnormality = true;
             deletedIndex = i;
@@ -216,20 +216,20 @@ void AACoreNew::run(bool has_material)
         double temp_time = timer.elapsed();
         temp_time/=1000;
         qInfo("cycle_time :%f",temp_time);
-        states.setCircleTime(temp_time);
-        if(states.circleTime() > parameters.minCircleTime() && states.circleTime() < parameters.maxCicleTime())
+        parameters.setCircleTime(temp_time);
+        if(parameters.circleTime() > parameters.minCircleTime() && parameters.circleTime() < parameters.maxCicleTime())
         {
-            states.setCircleCount(states.circleCount()+1);
-            double temp_average = states.circleAverageTime()*(states.circleCount()-1) + states.circleTime();
-            temp_average /= states.circleCount();
+            parameters.setCircleCount(parameters.circleCount()+1);
+            double temp_average = parameters.circleAverageTime()*(parameters.circleCount()-1) + parameters.circleTime();
+            temp_average /= parameters.circleCount();
             temp_average *= 1000;
             temp_average = round(temp_average)/1000;
             qInfo("CircleAverageTime :%f",temp_average);
-            states.setCircleAverageTime(temp_average);
+            parameters.setCircleAverageTime(temp_average);
 
             if (temp_average > 0)
             {
-                states.setCalculatedUPH(round(3600/temp_average));
+                parameters.setCalculatedUPH(round(3600/temp_average));
             }
         }
     }
@@ -441,7 +441,7 @@ void AACoreNew::startWork( int run_mode)
         double temp_time = timer.elapsed();
         temp_time/=1000;
         qInfo("circle_time :%f",temp_time);
-        states.setCircleTime(temp_time);
+        parameters.setCircleTime(temp_time);
         return;
     }
     if (run_mode == RunMode::UNLOAD_ALL_LENS) return;

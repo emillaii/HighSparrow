@@ -151,7 +151,7 @@ void SensorTrayLoaderModule:: run()
         //夹盘
         if(states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasKickReady())&&(!states.hasWorkTray())&&(!states.hasKickTray())&&(!states.hasReadyTray())&&states.entranceClipReady())
         {
-            if((!moveToPullNextTray()))
+            if(!moveToPullNextTray())
             {
                 if (retryTime > 0)
                 {
@@ -173,7 +173,6 @@ void SensorTrayLoaderModule:: run()
                         continue;
                     }
                 }
-
             }
             states.setHasCarrierReady(false);
             states.setHasReadyTray(true);

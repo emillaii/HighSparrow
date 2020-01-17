@@ -1274,12 +1274,16 @@ void LogicManager::performTcpOperation(QVariantMap message)
         else if(message["Message"].toString() == "OpenAlarmLight")
         {
             baseModuleManage->setOutput(u8"三色报警指示灯_绿", false);
+            baseModuleManage->setOutput(u8"三色报警指示灯_黄", false);
             baseModuleManage->setOutput(u8"三色报警指示灯_红", true);
+            //baseModuleManage->setOutput(u8"三色报警指示灯_蜂鸣器",true);
         }
         else if(message["Message"].toString() == "CloseAlarmLight")
         {
-            baseModuleManage->setOutput(u8"三色报警指示灯_红", false);
             baseModuleManage->setOutput(u8"三色报警指示灯_绿", true);
+            baseModuleManage->setOutput(u8"三色报警指示灯_黄", false);
+            baseModuleManage->setOutput(u8"三色报警指示灯_红", false);
+            //baseModuleManage->setOutput(u8"三色报警指示灯_蜂鸣器",false);
         }
 
     }

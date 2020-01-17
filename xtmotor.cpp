@@ -265,13 +265,34 @@ bool XtMotor::checkAlarm()
 
 bool XtMotor::getAlarmState()
 {
-    if(alm.Value())
+    qInfo("%s reserseAlarmIO: %d", name.toStdString().c_str(), parameters.reverseAlarmIO());
+    bool temp = false;
+    if(parameters.reverseAlarmIO())
+    {
+        temp = !alm.Value();
+        qInfo("%s reverseAlarmIO, alm.value: %d, temp: %d", name.toStdString().c_str(), alm.Value(), temp);
+    }
+    else
+    {
+        temp = alm.Value();
+    }
+    if(temp)
     {
         if(states.seekedOrigin())
             states.setSeekedOrigin(false);
         return true;
     }
     return false;
+}
+
+bool XtMotor::clearAlarmState()
+{
+    XT_Controler::SetCurIoOutput(out_en_id,0);
+    XT_Controler::SetCurIoOutput(out_clr_id,1);
+    QThread::msleep(500);
+    XT_Controler::SetCurIoOutput(out_en_id,1);
+    XT_Controler::SetCurIoOutput(out_clr_id,0);
+    return true;
 }
 
 double XtMotor::GetPostiveRange() const

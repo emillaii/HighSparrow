@@ -2378,6 +2378,11 @@ bool BaseModuleManager::stepMove(int index, double step, bool isPositive)
     return true;
 }
 
+bool BaseModuleManager::moveToPos(QString name, double pos)
+{
+    return GetMotorByName(name)->MoveToPos(pos);
+}
+
 void BaseModuleManager::setMotorParamByName(QString name, double vel, double acc, double jert)
 {
     qInfo("setMotorParamByName %f, %f, %f",vel,acc,jert);
@@ -2603,6 +2608,37 @@ double BaseModuleManager::getMotorFeedbackPos(QString name)
         DeviceStatesGeter::motorState motor_state = state_geter.getMotorState(name);
         return motor_state.current_position;
     }
+}
+
+bool BaseModuleManager::getMotorAlarmState(QString name)
+{
+    if (InitState())
+    {
+        if (motors.contains(name)) {
+            return motors[name]->getAlarmState();
+        } else {
+            DeviceStatesGeter::motorState motor_state = state_geter.getMotorState(name);
+            return motor_state.alarmState;
+        }
+    }
+    else
+        return true;
+}
+
+bool BaseModuleManager::clearMotorAlarmState(QString name)
+{
+    if (InitState())
+    {
+        qInfo("Clear %s alarm state", name.toStdString().c_str());
+        if (motors.contains(name)) {
+            return motors[name]->clearAlarmState();
+        } /*else {
+            DeviceStatesGeter::motorState motor_state = state_geter.getMotorState(name);
+            return motor_state.alarmState;
+        }*/
+    }
+    else
+        return false;
 }
 
 bool BaseModuleManager::getMotorHomeState(QString name)

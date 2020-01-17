@@ -12,6 +12,7 @@ public:
     Q_PROPERTY(bool useDelay READ useDelay WRITE setUseDelay NOTIFY useDelayChanged)
     Q_PROPERTY(double positionError READ positionError WRITE setPositionError NOTIFY positionErrorChanged)
     Q_PROPERTY(bool firstCheckArrived READ firstCheckArrived WRITE setFirstCheckArrived NOTIFY firstCheckArrivedChanged)
+    Q_PROPERTY(bool reverseAlarmIO READ reverseAlarmIO WRITE setReverseAlarmIO NOTIFY reverseAlarmIOChanged)
     int arrivedDelay() const
     {
         return m_arrivedDelay;
@@ -30,6 +31,11 @@ public:
     bool firstCheckArrived() const
     {
         return m_firstCheckArrived;
+    }
+
+    bool reverseAlarmIO() const
+    {
+        return m_reverseAlarmIO;
     }
 
 public slots:
@@ -67,6 +73,15 @@ public slots:
         emit firstCheckArrivedChanged(m_firstCheckArrived);
     }
 
+    void setReverseAlarmIO(bool reverseAlarmIO)
+    {
+        if (m_reverseAlarmIO == reverseAlarmIO)
+            return;
+
+        m_reverseAlarmIO = reverseAlarmIO;
+        emit reverseAlarmIOChanged(m_reverseAlarmIO);
+    }
+
 signals:
     void arrivedDelayChanged(int arrivedDelay);
     void useDelayChanged(bool useDelay);
@@ -75,11 +90,18 @@ signals:
 
     void firstCheckArrivedChanged(bool firstCheckArrived);
 
+    void clearIOChanged(QString clearIO);
+
+    void alarmIOChanged(QString alarmIO);
+
+    void reverseAlarmIOChanged(bool reverseAlarmIO);
+
 private:
     int m_arrivedDelay = 100;
     bool m_useDelay = true;
     double m_positionError = 0.01;
     bool m_firstCheckArrived = false;
+    bool m_reverseAlarmIO = false;
 };
 class XtMotorState:public PropertyBase
 {

@@ -357,6 +357,7 @@ public:
     Q_INVOKABLE bool initialDevice();
     Q_INVOKABLE bool stepMove(QString name, double step, bool isPositive);
     Q_INVOKABLE bool stepMove(int index, double step, bool isPositive);
+    Q_INVOKABLE bool moveToPos(QString name, double pos);
     Q_INVOKABLE void setMotorParamByName(QString name,double vel,double acc,double jert);
     bool performCalibration(QString calibration_name);
     bool performUpDnLookCalibration();
@@ -375,6 +376,8 @@ public:
     Q_INVOKABLE bool getMotorEnableState(QString name);
     Q_INVOKABLE double getMotorFeedbackPos(QString name);
     Q_INVOKABLE bool getMotorHomeState(QString name);
+    Q_INVOKABLE bool getMotorAlarmState(QString name);
+    Q_INVOKABLE bool clearMotorAlarmState(QString name);
     Q_INVOKABLE double getMotorFeedbackPos(int index);
     Q_INVOKABLE void setLightingBrightness(QString location_name);
     Q_INVOKABLE void sendLoadLens(bool has_ng);

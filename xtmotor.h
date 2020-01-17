@@ -60,6 +60,7 @@ public:
     virtual bool IsRunning() const;
     virtual bool checkAlarm();
     virtual bool getAlarmState();
+    virtual bool clearAlarmState();
 //these are run parameter
     virtual double GetPostiveRange() const;
     virtual double GetNegativeRange() const;

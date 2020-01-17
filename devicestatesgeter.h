@@ -16,6 +16,7 @@ public:
         double target_position = 0;
         bool isHome = false;
         bool isEnabled = false;
+        bool alarmState = false;
     };
     struct IoState
     {

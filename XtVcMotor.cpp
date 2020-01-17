@@ -232,7 +232,8 @@ bool XtVcMotor::IsRunning() const
 
 bool XtVcMotor::getAlarmState()
 {
-    if(error_code == get_motor_error(vcm_id))
+    //if(error_code == get_motor_error(vcm_id))
+    if(-1 == get_motor_error(vcm_id))
     {
         if(states.seekedOrigin())
             states.setSeekedOrigin(false);

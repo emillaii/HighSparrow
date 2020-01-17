@@ -13,7 +13,7 @@ Popup {
     contentItem: Rectangle {
         id: rectangle
         color: "black"
-        implicitWidth: 500
+        implicitWidth: 650
         implicitHeight: 800
 
         RowLayout {
@@ -158,7 +158,7 @@ Popup {
                     interval: 600; running: true; repeat: true
                 }
 
-                implicitWidth:  400
+                implicitWidth:  550
                 implicitHeight: 600
                 clip: true
                 ColumnLayout {
@@ -207,8 +207,26 @@ Popup {
                         height: 50*count
                         model: motorsNames
                         delegate: RowLayout{
+                            RoundButton{
+                                background: Rectangle {
+                                    id: err
+                                    radius: 6
+                                    Connections{
+                                       target: timer
+                                       onTriggered:{
+                                            if (baseModuleManager.getMotorAlarmState(modelData))
+                                                err.color = "red"
+                                            else
+                                                err.color = "green"
+                                       }
+                                    }
+                                }
+                                onClicked: {
+                                    baseModuleManager.clearMotorAlarmState(modelData)
+                                }
+                            }
                             Rectangle{
-                                width: 65
+                                width: 40
                                 Text{
                                    anchors.verticalCenter: parent.verticalCenter
                                    text:modelData
@@ -267,6 +285,24 @@ Popup {
                                    var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
                                    console.log(motorsNames.length)
                                    console.log("result: "+res)
+                                }
+                            }
+                            TextField{
+                                id: pos
+                                horizontalAlignment: TextInput.AlignHCenter
+                                validator: DoubleValidator {
+                                    bottom: -100
+                                    top: 100
+                                    decimals: 3
+                                    notation: DoubleValidator.StandardNotation
+                                }
+                            }
+                            RoundButton{
+                                transformOrigin: Item.Center
+                                display: Button.IconOnly
+                                icon.source: "icons/target.png"
+                                onClicked: {
+                                    baseModuleManager.moveToPos(modelData, pos.text)
                                 }
                             }
                             Label{

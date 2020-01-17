@@ -3169,7 +3169,8 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
     QJsonValue param_dummy;
     performYLevelTest(param_dummy);
 
-    aa_head->waitUVFinish();
+    //aa_head->waitUVFinish();
+    QThread::msleep(uv_time - timer.elapsed());
     map.insert("timeElapsed", timer.elapsed());
     if(result)
     {

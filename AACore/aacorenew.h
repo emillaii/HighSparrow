@@ -63,6 +63,7 @@ public:
     void performAAOfflineCCOnly();
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
+    Q_INVOKABLE void clearCurrentDispenseCount();
     ErrorCodeStruct performVCMInit(QJsonValue params);
     ErrorCodeStruct performInitSensor(int finish_delay = 0,bool check_map = false);
     ErrorCodeStruct performPRToBond(int finish_delay);

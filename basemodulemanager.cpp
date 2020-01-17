@@ -76,6 +76,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&lut_module, &LutModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::saveUnitDataToCSV, &unitlog, &Unitlog::saveUnitDataToCSV);
+    connect(&aaCoreNew.parameters, &AACoreParameters::dispenseCountChanged, this, &BaseModuleManager::updateAACoreParameter);
     if(!QDir(".//notopencamera").exists() && ServerMode() == 0)
     {
         if(pylonUplookCamera) pylonUplookCamera->start();
@@ -746,6 +747,11 @@ void BaseModuleManager::receiveMessageFromWorkerManger(QVariantMap message)
         temp_param.insert("Message","runParametersResp");
         emit sendMessageToWorkerManger(temp_param);
     }
+}
+
+void BaseModuleManager::updateAACoreParameter()
+{
+    aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
 }
 
 bool BaseModuleManager::loadParameters()

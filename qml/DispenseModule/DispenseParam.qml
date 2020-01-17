@@ -52,4 +52,44 @@ ColumnLayout {
             }
         }
     }
+
+    RowLayout {
+
+        Label {
+            text: qsTr("积累计数")
+        }
+        TextField {
+            text: aaCoreParams.dispenseCount
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                aaCoreParams.setDispenseCount(text)
+            }
+        }
+
+        Button {
+            text: qsTr("Clear 积累计数")
+            onClicked: {
+                aaNewCore.clearCurrentDispenseCount()
+            }
+        }
+
+        Label {
+            text: qsTr("积累计数限制")
+        }
+        TextField {
+            text: aaCoreParams.dispenseCountLimit
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                aaCoreParams.setDispenseCountLimit(text)
+            }
+        }
+    }
 }

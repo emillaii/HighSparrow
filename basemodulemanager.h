@@ -265,7 +265,7 @@ public slots:
         m_MachineVersion = MachineVersion;
         emit machineVersionChanged(m_MachineVersion);
     }
-
+    void updateAACoreParameter();
 public:
     ModuleManangerConfig configs;
     ModuleManagerParameter parameters;

@@ -105,6 +105,10 @@ class AACoreParameters : public PropertyBase
 
     QString m_aaCoreRunningTest;
 
+    int m_dispenseCount = 0;
+
+    int m_dispenseCountLimit = 3000;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -160,6 +164,8 @@ public:
     Q_PROPERTY(double lensVcmWorkPosition READ lensVcmWorkPosition WRITE setLensVcmWorkPosition NOTIFY lensVcmWorkPositionChanged)
     Q_PROPERTY(int tiltRelationship READ tiltRelationship WRITE setTiltRelationship NOTIFY tiltRelationshipChanged)
     Q_PROPERTY(QString aaCoreRunningTest READ aaCoreRunningTest WRITE setAACoreRunningTest NOTIFY aaCoreRunningTestChanged)
+    Q_PROPERTY(int dispenseCount READ dispenseCount WRITE setDispenseCount NOTIFY dispenseCountChanged)
+    Q_PROPERTY(int dispenseCountLimit READ dispenseCountLimit WRITE setDispenseCountLimit NOTIFY dispenseCountLimitChanged)
     double EFL() const
     {
         return m_EFL;
@@ -404,6 +410,16 @@ public:
         return m_aaCoreRunningTest;
     }
 
+    int dispenseCount() const
+    {
+        return m_dispenseCount;
+    }
+
+    int dispenseCountLimit() const
+    {
+        return m_dispenseCountLimit;
+    }
+
 public slots:
     void setEFL(double EFL)
     {
@@ -615,7 +631,7 @@ public slots:
             return;
 
         m_checkDispenseCount = checkDispenseCount;
-        emit checkDispenseCountChanged(m_checkDispenseCount);
+        emit checkDispenseCountChanged();
     }
 
     void setMinIntensityDiff(int minIntensityDiff)
@@ -823,6 +839,24 @@ public slots:
         emit aaCoreRunningTestChanged(m_aaCoreRunningTest);
     }
 
+    void setDispenseCount(int dispenseCount)
+    {
+        if (m_dispenseCount == dispenseCount)
+            return;
+
+        m_dispenseCount = dispenseCount;
+        emit dispenseCountChanged();
+    }
+
+    void setDispenseCountLimit(int dispenseCountLimit)
+    {
+        if (m_dispenseCountLimit == dispenseCountLimit)
+            return;
+
+        m_dispenseCountLimit = dispenseCountLimit;
+        emit dispenseCountLimitChanged(m_dispenseCountLimit);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -838,7 +872,7 @@ signals:
     void maxDevChanged(double maxDev);
     void minDevChanged(double minDev);
     void enableCheckDispenseChanged(bool enableCheckDispense);
-    void checkDispenseCountChanged(int checkDispenseCount);
+    void checkDispenseCountChanged();
     void minIntensityDiffChanged(int minIntensityDiff);
     void zPeakDiffL1MaxChanged(double zPeakDiffL1Max);
     void zPeakDiffL2MaxChanged(double zPeakDiffL2Max);
@@ -861,6 +895,8 @@ signals:
     void currentTaskChanged(int currentTask);
     void tiltRelationshipChanged(int tiltRelationship);
     void aaCoreRunningTestChanged(QString aaCoreRunningTest);
+    void dispenseCountChanged();
+    void dispenseCountLimitChanged(int dispenseCountLimit);
 };
 class AACoreStates: public PropertyBase
 {
@@ -890,6 +926,7 @@ public:
     Q_PROPERTY(int circleCount READ circleCount WRITE setCircleCount NOTIFY circleCountChanged)
     Q_PROPERTY(int calculatedUPH READ calculatedUPH WRITE setCalculatedUPH NOTIFY calculatedUPHChanged)
     Q_PROPERTY(bool tcpAAGripperState READ tcpAAGripperState WRITE setTcpAAGripperState NOTIFY tcpAAGripperStateChanged)
+    Q_PROPERTY(int dispenseCount READ dispenseCount WRITE setDispenseCount NOTIFY dispenseCountChanged)
     bool isWaitingLens() const
     {
         return m_isWaitingLens;
@@ -988,6 +1025,11 @@ public:
     int calculatedUPH() const
     {
         return m_calculatedUPH;
+    }
+
+    int dispenseCount() const
+    {
+        return m_dispenseCount;
     }
 
 public slots:
@@ -1172,6 +1214,15 @@ public slots:
         emit calculatedUPHChanged(m_calculatedUPH);
     }
 
+    void setDispenseCount(int dispenseCount)
+    {
+        if (m_dispenseCount == dispenseCount)
+            return;
+
+        m_dispenseCount = dispenseCount;
+        emit dispenseCountChanged();
+    }
+
 signals:
     void isWaitingLensChanged(bool isWaitingLens);
     void isWaitingSensorChanged(bool isWaitingSensor);
@@ -1212,6 +1263,8 @@ signals:
 
     void calculatedUPHChanged(int calculatedUPH);
 
+    void dispenseCountChanged();
+
 private:
     bool m_isWaitingLens = false;
     bool m_isWaitingSensor = false;
@@ -1233,6 +1286,7 @@ private:
     bool m_finishLensTask = false;
     bool m_tcpAAGripperState;
     int m_calculatedUPH = 0;
+    int m_dispenseCount = 0;
 };
 
 #endif // AACOREPARAMETERS_H

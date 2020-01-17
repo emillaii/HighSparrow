@@ -674,6 +674,27 @@ Grid {
                     width: 60
                 }
             }
+
+            RowLayout {
+                Label {
+                    text: qsTr("Dispense Count: ")
+                    font.bold: true
+                    font.italic: true
+                }
+                TextField {
+                    readOnly: true
+                    text: aaCoreParams.dispenseCount
+                    horizontalAlignment: TextInput.AlignHCenter
+                    width: 60
+                }
+                Button {
+                    text: qsTr("Clear")
+                    onClicked: {
+                        console.log("Clear dispense count")
+                        aaNewCore.clearCurrentDispenseCount()
+                    }
+                }
+            }
         }
     }
 }

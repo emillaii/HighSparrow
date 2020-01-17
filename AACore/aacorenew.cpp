@@ -174,7 +174,7 @@ void AACoreNew::Init(AAHeadModule *aa_head, SutModule *sut, Dothinkey *dk, Chart
     dispenseImageProvider = new ImageProvider();
     connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
-    //connect(&this->parameters, &AACoreParameters::paramsChanged, this, &AACoreNew::aaCoreParametersChanged);
+    //connect(&this->parameters, &AACoreParameters::dispenseCountChanged, this, &AACoreNew::aaCoreParametersChanged);
     this->serverMode = serverMode;
 }
 
@@ -1037,6 +1037,20 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
     QElapsedTimer timer; timer.start();
     QVariantMap map;
 
+    if (parameters.dispenseCount() >= parameters.dispenseCountLimit()) {
+        int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"画胶积累数量超过限制");
+        QString operation = waitMessageReturn(is_run,alarm_id);
+        if (REJECT_OPERATION == operation)
+        {
+            NgSensor();
+            map.insert("result", "Dispense Exceed Limit");
+            emit pushDataToUnit(this->runningUnit, "Dispense", map);
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, u8"画胶积累数量超过限制"};
+        }
+    }
+     parameters.setDispenseCount(parameters.dispenseCount()+1);
+        return ErrorCodeStruct {ErrorCode::OK, ""};
+
     QString glueInspectionImageName = "";
     double outMinGlueWidth = 0, outMaxGlueWidth = 0, outMaxAvgGlueWidth = 0;
 
@@ -1054,8 +1068,21 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
 
     // Perform dispense
     QString imageBeforeDispense = sut->vision_downlook_location->getLastImageName();
-    if(!dispense->performDispense()) { NgProduct(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
 
+    if (parameters.dispenseCount() >= parameters.dispenseCountLimit()) {
+        int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"画胶积累数量超过限制");
+        QString operation = waitMessageReturn(is_run,alarm_id);
+        if (REJECT_OPERATION == operation)
+        {
+            NgSensor();
+            map.insert("result", "Dispense Exceed Limit");
+            emit pushDataToUnit(this->runningUnit, "Dispense", map);
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, u8"画胶积累数量超过限制"};
+        }
+    }
+
+    if(!dispense->performDispense()) { NgProduct(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
+    parameters.setDispenseCount(parameters.dispenseCount()+1);
     current_dispense--;
     if(enable_glue_inspection)
     {
@@ -3887,6 +3914,11 @@ void AACoreNew::captureLiveImage()
         cv::imwrite("livePhoto.bmp", img);
         SI::ui.showMessage("AA Core", QString("Save Image Success! You can start AA Core parameter debug."), MsgBoxIcon::Information, "OK");
     }
+}
+
+void AACoreNew::clearCurrentDispenseCount()
+{
+    this->parameters.setDispenseCount(0);
 }
 
 void AACoreNew::aaCoreParametersChanged()

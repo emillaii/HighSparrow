@@ -3166,7 +3166,14 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
         }
     }
     QJsonValue param_dummy;
-    performYLevelTest(param_dummy);
+    ErrorCodeStruct ret = performYLevelTest(param_dummy);
+    if (ret.code != ErrorCode::OK)
+    {
+        NgProduct();
+        map.insert("result", "Y level in UV fail");
+        emit pushDataToUnit(this->runningUnit, "UV", map);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y level in UV fail"};
+    }
 
     //aa_head->waitUVFinish();
     QThread::msleep(uv_time - timer.elapsed());
@@ -3280,7 +3287,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
         qInfo("Cannot grab image.");
-        NgSensor();
+        NgProduct();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Test Fail. Cannot grab image"};
     }
     vector<float> intensityProfile;
@@ -3304,7 +3311,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
         }
         if (min_i < min_i_spec) {
             qWarning("Y Level Fail. The tested intensity is smaller than spec. Tested min intensity: %f intensity spec: %f", min_i, min_i_spec);
-            map.insert("result", "Y Level max spec cannnot pass");
+            map.insert("result", "Y Level min spec cannnot pass");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is smaller than spec"};
         }

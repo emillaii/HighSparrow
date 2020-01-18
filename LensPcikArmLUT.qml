@@ -65,28 +65,28 @@ ColumnLayout {
                     text:qsTr("物料高度")
                 }
                 TextField{
-                    text:lensPickArmModuleParameter.placeLensZ
+                    text:lens_loader_parameter.placeLensZ
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        lensPickArmModuleParameter.setPlaceLensZ(text)
+                        lens_loader_parameter.setPlaceLensZ(text)
                     }
                 }
                 Label{
                     text:qsTr("Theta")
                 }
                 TextField{
-                    text:lensPickArmModuleParameter.placeTheta
+                    text:lens_loader_parameter.placeTheta
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        lensPickArmModuleParameter.setPlaceTheta(text)
+                        lens_loader_parameter.setPlaceTheta(text)
                     }
                 }
                 Button{

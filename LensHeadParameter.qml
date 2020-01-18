@@ -7,28 +7,28 @@ ColumnLayout {
             text:qsTr("力限制")
         }
         TextField{
-            text:lensPickArmModuleParameter.vcmWorkForce
+            text:lens_loader_parameter.vcmWorkForce
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lensPickArmModuleParameter.setVcmWorkForce(text)
+                lens_loader_parameter.setVcmWorkForce(text)
             }
         }
         Label{
             text:qsTr("速度")
         }
         TextField{
-            text:lensPickArmModuleParameter.vcmWorkSpeed
+            text:lens_loader_parameter.vcmWorkSpeed
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lensPickArmModuleParameter.setVcmWorkSpeed(text)
+                lens_loader_parameter.setVcmWorkSpeed(text)
             }
         }
     }
@@ -37,14 +37,14 @@ ColumnLayout {
             text:qsTr("限力区间")
         }
         TextField{
-            text:lensPickArmModuleParameter.vcmMargin
+            text:lens_loader_parameter.vcmMargin
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lensPickArmModuleParameter.setVcmMargin(text)
+                lens_loader_parameter.setVcmMargin(text)
             }
         }
 
@@ -52,14 +52,14 @@ ColumnLayout {
             text:qsTr("视觉位置X")
         }
         TextField{
-            text:lensPickArmModuleParameter.visonPositionX
+            text:lens_loader_parameter.visonPositionX
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                lensPickArmModuleParameter.setVisonPositionX(text)
+                lens_loader_parameter.setVisonPositionX(text)
             }
         }
     }

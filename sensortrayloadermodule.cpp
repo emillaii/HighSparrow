@@ -122,7 +122,7 @@ void SensorTrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
 void SensorTrayLoaderModule:: run()
 {
     is_run = true;
-    int retryTime = parameters.checkEntranceTrayRetryTimes();
+    retryTime = parameters.checkEntranceTrayRetryTimes();
     while (is_run)
     {
         QThread::msleep(100);
@@ -306,7 +306,7 @@ void SensorTrayLoaderModule:: run()
                     continue;
             }
             retryTime = parameters.checkEntranceTrayRetryTimes();
-            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,u8"请在备用sensor进料弹夹位置放入带料弹夹!");
+            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,u8"换进料弹夹：请在备用sensor进料弹夹位置放入带料弹夹!");
             waitMessageReturn(is_run,alarm_id);
             if(!is_run)break;
             states.setHasEntranceClip(true);
@@ -323,7 +323,7 @@ void SensorTrayLoaderModule:: run()
                 if(RETRY_OPERATION == operation)
                     continue;
             }
-            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,u8"请在备用sensor出料弹夹位置放入空弹夹!");
+            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,u8"换出料弹夹：请在备用sensor出料弹夹位置放入空弹夹!");
             waitMessageReturn(is_run,alarm_id);
             if(!is_run)break;
             states.setHasExitClip(true);
@@ -484,6 +484,7 @@ bool SensorTrayLoaderModule::movetoGetTrayPosition()
     bool result = gripper->Set(true);
     if(result)
         result &= motor_tray->MoveToPosSync(parameters.getTrayPosition());
+    result &= gripper->Set(false);
     return result;
 }
 
@@ -761,6 +762,7 @@ bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
     result &= motor_stie->MoveToPosSync(entrance_clip->getNextPosition());
     if(result)
         entrance_clip->finishCurrentPosition();
+    retryTime = parameters.checkEntranceTrayRetryTimes();
     return result;
 }
 

@@ -461,7 +461,7 @@ ColumnLayout {
                     text: baseModuleManager.getServerMode()===0?qsTr("物料高度"):qsTr("sensor高度")
                 }
                 TextField{
-                    text: baseModuleManager.getServerMode()===0 ?lensPickArmModuleParameter.pickLensZ:sensorLoaderParameter.pickSensorZ
+                    text: baseModuleManager.getServerMode()===0 ?lens_loader_parameter.pickLensZ:sensorLoaderParameter.pickSensorZ
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
@@ -469,7 +469,7 @@ ColumnLayout {
                     }
                     onEditingFinished: {
                         if (baseModuleManager.getServerMode()===0)
-                            lensPickArmModuleParameter.setPickLensZ(text)
+                            lens_loader_parameter.setPickLensZ(text)
                         else {
                             sensorLoaderParameter.setPickSensorZ(text)
                         }

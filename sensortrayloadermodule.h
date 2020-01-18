@@ -83,6 +83,7 @@ public:
 
 private:
     bool is_run = false;
+    int retryTime;
     bool moveToDownTrayAndReadyToPush();
     bool moveToUpReadyTray(bool has_tray);
     bool moveToWaitHandleTray();

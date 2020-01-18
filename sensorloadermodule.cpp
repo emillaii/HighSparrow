@@ -2399,7 +2399,7 @@ bool SensorLoaderModule::checkSut2WaitCondition()
 int SensorLoaderModule::getTrayIndex()
 {
     int work_station = picker2_senseor_data["WorkStation"].toInt();
-    qInfo("work_station : %d",work_station);
+    //qInfo("work_station : %d",work_station);
     if(states.crossTrayPlaceProduct())
     {
         if(work_station == BusyState::SUT2)

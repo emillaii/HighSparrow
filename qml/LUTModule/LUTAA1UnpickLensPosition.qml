@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import LutModuleLib 1.1
 
 ColumnLayout {
     RowLayout {
@@ -77,7 +78,7 @@ ColumnLayout {
             onClicked: {
                 //logicManager.lutPickLensToAA1()
 //                lutModule.performHandling(3);
-                logicManager.performHandling(lutParams.moduleName,3)
+                logicManager.performHandling(lutParams.moduleName,LutModule.AA1_UNPICK_LENS)
 //                lutModule.moveToAA1UnPickLens()
 //                lutModule.moveToAA1PickLens(false,true)
             }

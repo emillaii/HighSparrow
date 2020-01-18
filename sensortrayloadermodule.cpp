@@ -174,6 +174,8 @@ void SensorTrayLoaderModule:: run()
                     }
                 }
             }
+            retryTime = parameters.checkEntranceTrayRetryTimes();
+
             states.setHasCarrierReady(false);
             states.setHasReadyTray(true);
             states.setEntranceClipReady(false);
@@ -240,13 +242,24 @@ void SensorTrayLoaderModule:: run()
         {
             if(!moveToPullNextTray1())
             {
-                AppendError(u8"取盘失败！");
-                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                QString operation = waitMessageReturn(is_run,alarm_id);
-                if(!is_run)break;
-                if(RETRY_OPERATION == operation)
+                if (retryTime > 0)
+                {
+                    retryTime--;
+                    states.setEntranceClipReady(false);
+                    movetoGetTrayPosition();
                     continue;
+                }
+                else {
+                    retryTime = parameters.checkEntranceTrayRetryTimes();
+                    AppendError(u8"取盘失败！");
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                    QString operation = waitMessageReturn(is_run,alarm_id);
+                    if(!is_run)break;
+                    if(RETRY_OPERATION == operation)
+                        continue;
+                }
             }
+            retryTime = parameters.checkEntranceTrayRetryTimes();
             if(states.hasProductTray())
             {
                 states.setExitClipReady(false);
@@ -292,6 +305,7 @@ void SensorTrayLoaderModule:: run()
                 if(RETRY_OPERATION == operation)
                     continue;
             }
+            retryTime = parameters.checkEntranceTrayRetryTimes();
             int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,u8"请在备用sensor进料弹夹位置放入带料弹夹!");
             waitMessageReturn(is_run,alarm_id);
             if(!is_run)break;

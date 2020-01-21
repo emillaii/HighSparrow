@@ -13,6 +13,7 @@ public:
     static QString combineNumber(const QString& seperator, const QList<T>& numberList);
 
     static QString getCurrentDateTime();
+    static uint getIntFromHexOrDecString(QString value);
 };
 
 #endif

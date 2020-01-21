@@ -34,6 +34,7 @@ public:
     BOOL DothinkeyStartCamera(int channel);
     // Hardcore OTP in UV, temp solution, move to ini file later
     BOOL DothinkeyOTP(int serverMode);
+    BOOL DothinkeyOTPEx(int serverMode, QString params);
     QImage* DothinkeyGrabImage(int channel);
     cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
     void DothinkeySetConfigFile(std::string filename);

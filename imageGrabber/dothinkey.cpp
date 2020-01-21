@@ -1,7 +1,7 @@
 ﻿#include "imageGrabber/dothinkey.h"
 #include <QTime>
 #include <QDateTime>
-
+#include "utils/commonmethod.h"
 bool Dothinkey::CameraChannel::CloseCameraChannel()
 {
     if (this->m_iDevID>= 0) {
@@ -272,6 +272,71 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
 //    Sleep(30);
     setCurrentSensorID(senser_id);
     return true;
+}
+
+BOOL Dothinkey::DothinkeyOTPEx(int serverMode, QString params)
+{
+    QDate date = QDate::currentDate();
+    QTime time = QTime::currentTime();
+    QByteArray byteData_year;
+    int year = date.year();
+    int year_MSB = year/100;
+    int year_LSB = year - year_MSB*100;
+    bool result_otp = true;
+    QStringList otp_list = params.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+
+    byte uAddr = 0xA4; //Default Slave ID
+
+    for (int i = 0; i < otp_list.size(); i++){
+        qInfo("otp command: %s", otp_list[i].toStdString().c_str());
+        QStringList cmd_list = otp_list[i].split(QRegExp("\\s+"),QString::SkipEmptyParts);
+        if (cmd_list.size() > 0){
+            //Slave ID Handle
+            if (cmd_list[0].compare("SlaveID", Qt::CaseInsensitive) == 0){
+                if (cmd_list.size()>1) { //Protocol : Slave ID CMD / Slave ID
+                    uAddr = CommonMethod::getIntFromHexOrDecString(cmd_list[1]);
+                }
+            } // Set Register Handle
+            else if (cmd_list[0].compare("SetReg", Qt::CaseInsensitive) == 0){
+                if (cmd_list.size() > 3) { //Protocol : SetReg / Address / Value / mode
+                    uint value  = 0;
+                    if (cmd_list[2].compare("YY_MSB", Qt::CaseSensitive) == 0){
+                        value = year_MSB;
+                    } else if (cmd_list[2].compare("YY_LSB", Qt::CaseSensitive) == 0){
+                        value = year_LSB;
+                    } else if (cmd_list[2].compare("MM", Qt::CaseSensitive) == 0) {
+                        value = date.month();
+                    } else if (cmd_list[2].compare("DD", Qt::CaseSensitive) == 0) {
+                        value = date.day();
+                    } else if (cmd_list[2].compare("hh", Qt::CaseSensitive) == 0) {
+                        value = time.hour();
+                    } else if (cmd_list[2].compare("mm", Qt::CaseSensitive) == 0) {
+                        value = time.minute();
+                    } else if (cmd_list[2].compare("ss", Qt::CaseSensitive) == 0) {
+                        value = time.second();
+                    } else {
+                        value = CommonMethod::getIntFromHexOrDecString(cmd_list[2]);
+                    }
+                    uint addr = CommonMethod::getIntFromHexOrDecString(cmd_list[1]);
+                    uint mode = CommonMethod::getIntFromHexOrDecString(cmd_list[3]);
+                    qInfo("Set Reg addr: %d value : %d mode: %d", addr, value, mode);
+                    int result = WriteSensorReg(uAddr, addr, value, mode);
+                    if(result != 1) {
+                        qCritical("WriteSensorReg fail. uAddr: %x Addr: %x Value: %x mode: %d", uAddr, addr, value, mode);
+                        result_otp = false;
+                    }
+                }
+            } // Sleep Handle
+            else if (cmd_list[0].compare("Sleep", Qt::CaseInsensitive) == 0){
+                if (cmd_list.size() > 1) { //Protocol : Sleep / ms delay
+                    uint delay_in_ms = CommonMethod::getIntFromHexOrDecString(cmd_list[1]);
+                    qInfo("Sleep : %d", delay_in_ms);
+                    Sleep(delay_in_ms);
+                }
+            }
+        }
+    }
+    return result_otp;
 }
 
 // Hardcore OTP in UV, temp solution, move to ini file later

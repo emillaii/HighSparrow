@@ -3154,11 +3154,15 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
     QVariantMap map;
     int uv_time = params["time_in_ms"].toInt(3000);
     bool enable_OTP = params["enable_OTP"].toInt(0);
+    QString otp_information = params["OTP_information"].toString("");
+
     aa_head->openUVTillTime(uv_time);
     bool result = true;
     if (enable_OTP)
     {
         // OTP
+        //dk->DothinkeyOTPEx(serverMode, otp_information);
+
         result = dk->DothinkeyOTP(serverMode);
         if (result != true)
         {

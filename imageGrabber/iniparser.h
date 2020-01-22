@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <string>
 #include "imagekit.h"
+#include <QObject>
 #define _SEARCH_DOTHINKEY_FAVORITES_
 #define GETYFROMBGR(R, G, B) ((1225*(R) + 2404*(G) + 467*(B) + 2048)>>12)
 
@@ -63,7 +64,7 @@ public:
 public:
     void SetIniFilename(std::string sFilename);
     int ReadIniData(std::string sSection, std::string sSectionKey, int nDefault);
-    BOOL GetI2CData(pSensorTab pSensor);
+    BOOL GetI2CData(pSensorTab pSensor, QStringList &cmdList);
 protected:
     std::string sFilename;
 };

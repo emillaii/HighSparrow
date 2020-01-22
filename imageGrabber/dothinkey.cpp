@@ -140,10 +140,10 @@ BOOL Dothinkey::DothinkeyLoadIniFile(int channel) {
     pCurrentSensor->dvdd = iniParser_->ReadIniData("Sensor", "dvdd", 0x00);
     pCurrentSensor->ParaList = new USHORT[8192 * 4];
     pCurrentSensor->ParaListSize = 0;
-    pCurrentSensor->SleepParaList = NULL;
-    pCurrentSensor->SleepParaListSize = NULL;
-    iniParser_->GetI2CData(pCurrentSensor);
-
+    pCurrentSensor->SleepParaList = new USHORT[8192 * 4];
+    pCurrentSensor->SleepParaListSize = 0;
+    cmd_list.clear();
+    iniParser_->GetI2CData(pCurrentSensor, cmd_list);
     delete iniParser_;
     return DT_ERROR_OK;
 }
@@ -254,6 +254,32 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
 //    Sleep(30);
 //    result = WriteSensorReg(pSensor->SlaveID, 0x6F12, 0x0100, 3);
 //    Sleep(30);
+
+    //ToDo: Waiting for test
+//    QString sensor_id = "";
+//    for (int i = 0; i < cmd_list.size(); i++){
+//        qInfo("cmd: %s", cmd_list[i].toStdString().c_str());
+//        QStringList cmd = cmd_list[i].split(QRegExp("\\,"),QString::SkipEmptyParts);
+//        if (cmd.size()>0) {
+//            if (cmd[0].compare("setreg", Qt::CaseInsensitive) == 0){
+//                uint addr = CommonMethod::getIntFromHexOrDecString(cmd[1]);
+//                uint value = CommonMethod::getIntFromHexOrDecString(cmd[2]);
+//                qInfo("Set Register addr: %x value: %x", addr, value);
+//                WriteSensorReg(pSensor->SlaveID, addr, value, pSensor->mode);
+//                Sleep(30);
+//            } else if (cmd[0].compare("sensorId", Qt::CaseInsensitive) == 0){
+//                for (int j = 1; j < cmd.size(); j++){
+//                    QString temp = "";
+//                    uint addr = CommonMethod::getIntFromHexOrDecString(cmd[j]);
+//                    qInfo("Set Sensor ID: %x", addr);
+//                    ReadSensorReg(pSensor->SlaveID, i, &value_1, pSensor->mode);
+//                    sensor_id.append(temp.sprintf("%04X", value_1));
+//                }
+//            }
+//        }
+//    }
+
+
     bool result = WriteSensorReg(pSensor->SlaveID, 0x0a02, 0x0000, pSensor->mode);
     Sleep(30);
     result = WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0100, pSensor->mode);

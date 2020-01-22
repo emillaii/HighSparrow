@@ -1,7 +1,6 @@
 #include "imageGrabber\iniparser.h"
 #include <fstream>
 #include <algorithm>
-
 std::wstring s2ws(const std::string& s)
 {
     int len;
@@ -34,7 +33,7 @@ int iniParser::ReadIniData(std::string sSection, std::string sSectionKey, int nD
     return GetPrivateProfileInt(lpcwstrSection, lpcwstrSectionKey, nDefault, lpcwstrFilename);
 }
 
-BOOL iniParser::GetI2CData(pSensorTab pSensor)
+BOOL iniParser::GetI2CData(pSensorTab pSensor, QStringList &cmd_list)
 {
     std::string sReg, sVal;
     std::string strTmp[10];
@@ -64,7 +63,9 @@ BOOL iniParser::GetI2CData(pSensorTab pSensor)
     strTmp[5] = "[AF_NearParaList]";
     strTmp[6] = "[Exposure_ParaList]";
     strTmp[7] = "[Gain_ParaList]";
-    for (int i = 0; i < 8; i++)
+    strTmp[8] = "[SensorID_ParaList]";
+
+    for (int i = 0; i < 9; i++)
     {
         std::transform(strTmp[i].begin(), strTmp[i].end(), strTmp[i].begin(), ::tolower);
     }
@@ -145,6 +146,13 @@ BOOL iniParser::GetI2CData(pSensorTab pSensor)
                 continue;
             }
 
+            else if (line == strTmp[8])
+            {
+                state = 8;
+                gain_ParaListSize = 0;
+                continue;
+            }
+
             if (state == 0)
             {
                 int tmp_1 = (int)line.find(",", 0);
@@ -158,6 +166,11 @@ BOOL iniParser::GetI2CData(pSensorTab pSensor)
                 *(paraList + paraListSize + 1) = val;
                 paraListSize += 2;
                 //printf("Paralist: %s Reg: %s Val: %s\r\n", line.c_str(), sReg.c_str(), sVal.c_str());
+            }
+
+            if (state == 8)
+            {
+                cmd_list.append(line.c_str());
             }
         }
         fs.close();

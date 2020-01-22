@@ -117,6 +117,7 @@ private:
     QString m_currentSensorID = "";
 
     bool isGrabbing = false;
+    QStringList cmd_list;
 };
 
 #endif // DOTHINKEY_H

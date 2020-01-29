@@ -1,0 +1,35 @@
+29-1-2020
+
+1. Add SensorID_ParaList in dothinkey ini, so that we can config the sensor ID read logic.
+
+Example:
+
+[SensorID_ParaList]
+SetReg,0x0a24,0x01
+SetReg,0x0a28,0x02
+SensorID,0x0a24,0x0a26,0x0a28
+
+SensorID will append in the order of [0x0a24][0x0a26][0x0a28]
+
+2. OTP Update in flowchart "UV" test item.
+
+The last digit of the config is dothinkey I2CMode 
+//I2C Mode        : 0:Normal 8Addr,8Data;  1:Samsung 8 Addr,8Data; 2:Micron 8 Addr,16Data
+//I2C Mode        : 3:Stmicro 16Addr,8Data;4:Micron2 16 Addr,16Data
+
+3 will be used in this example, 16bits Addr with 8bits Data value
+
+Example: 
+
+SlaveId 0x2654  
+SetReg 0x1011 0x01 3    (Set address 0x1011 with value 0x0001) 
+Sleep 30
+SetReg 0x1000 YY_MSB 3   (Set year , if now is 2021, 20 will be written in 0x1000)
+SetReg 0x1001 YY_LSB 3   (Set year , if now is 2021, 21 will be written in 0x1001)
+SetReg 0x1002 MM 3       (Set month, if now is 2021-10-20 , 10 will be written in 0x1002)
+SetReg 0x1003 DD 3       (Set month, if now is 2021-10-20 , 20 will be written in 0x1003)
+SetReg 0x1004 hh 3       (Set month, if now is 13:40:22 , 13 will be written in 0x1004)
+SetReg 0x1005 mm 3       (Set month, if now is 13:40:22 , 40 will be written in 0x1005)
+SetReg 0x1006 ss 3       (Set month, if now is 13:40:22 , 22 will be written in 0x1006)
+
+

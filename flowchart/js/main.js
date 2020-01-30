@@ -48,11 +48,11 @@ $(document).ready(function () {
   var $init_lens_operator_properties = $('#init_lens_operator_properties');
 
   //Init the table 
-  $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option><option value=3>XScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button><button id=\"select_x_scan_mode\" class=\"btn btn-info test_button\">XScan Mode</button></div></div></div>");
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">Start Position: <input type=\"number\" id=\"aa_start_position\"></div>");
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">Stop Position: <input type=\"number\" id=\"aa_stop_position\"></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select disabled id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option><option value=3>XScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button><button id=\"select_x_scan_mode\" class=\"btn btn-info test_button\">XScan Mode</button></div></div></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa_start_position_div\">Start Position: <input type=\"number\" id=\"aa_start_position\"></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa_stop_position_div\">Stop Position: <input type=\"number\" id=\"aa_stop_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Step Size in um: <input type=\"number\" id=\"aa_step_size\"></div>");
-  $aa_operator_properties.append("<div style=\"margin-top:20px\">AA Offset in um: <input type=\"number\" id=\"aa_offset_in_um\"></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa_offset_in_um_div\">AA Offset in um: <input type=\"number\" id=\"aa_offset_in_um\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Delay in ms: <input type=\"number\" id=\"aa_delay_Z_in_ms\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Position Checking: <select id=\"aa_position_checking\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Image Count: <input type=\"number\" id=\"aa_image_count\"></div>");
@@ -993,16 +993,26 @@ $(document).ready(function () {
   $('#select_zscan_mode').click(function(){
 	  console.log("Selecting aa zscan mode");
 	  $('#aa_mode').val(0);
+	  $('#aa_start_position_div')[0].style.display = "block";
+	  $('#aa_stop_position_div')[0].style.display = "block";
+	  $('#aa_offset_in_um_div')[0].style.display = "none";
+	  
   });
   
   $('#select_dfov_mode').click(function(){
 	  console.log("Selecting aa dfov mode");
 	  $('#aa_mode').val(1);
+	  $('#aa_start_position_div')[0].style.display = "block";
+	  $('#aa_stop_position_div')[0].style.display = "block";
+	  $('#aa_offset_in_um_div')[0].style.display = "none";
   });
   
   $('#select_stationary_scan_mode').click(function(){
 	  console.log("Selecting aa stationary scan mode");
 	  $('#aa_mode').val(2);
+	  $('#aa_start_position_div')[0].style.display = "none";
+	  $('#aa_stop_position_div')[0].style.display = "none";
+	  $('#aa_offset_in_um_div')[0].style.display = "block";
   });
   
    $('#select_x_scan_mode').click(function(){
@@ -1150,6 +1160,15 @@ $(document).ready(function () {
         // 'W' key is pressed
 		updateData();
     } else if ( key == 'E' && !toggle_edit_state) {
+		if ($('#aa_mode').val() == "0" || $('#aa_mode').val() == "1"){
+			$('#aa_start_position_div')[0].style.display = "block";
+			$('#aa_stop_position_div')[0].style.display = "block";
+			$('#aa_offset_in_um_div')[0].style.display = "none";
+		} else if (($('#aa_mode').val() == "2")) {
+			$('#aa_start_position_div')[0].style.display = "none";
+			$('#aa_stop_position_div')[0].style.display = "none";
+			$('#aa_offset_in_um_div')[0].style.display = "block";
+		}
 		$('#ex1').modal({
 			showClose: false,
 			escapeClose: false,

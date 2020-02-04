@@ -117,6 +117,16 @@ class AACoreParameters : public PropertyBase
 
     int m_calculatedUPH = 0;
 
+    int m_mtfFrequency = 1;
+
+    int m_aaScanMTFFrequency = 1;
+
+    int m_aaScanCurveFitOrder = 4;
+
+    int m_aaScanOversampling = 0;
+
+    int m_aaScanCurveFitErrorThreshold = -10;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -178,6 +188,12 @@ public:
     Q_PROPERTY(double circleAverageTime READ circleAverageTime WRITE setCircleAverageTime NOTIFY circleAverageTimeChanged)
     Q_PROPERTY(int circleCount READ circleCount WRITE setCircleCount NOTIFY circleCountChanged)
     Q_PROPERTY(int calculatedUPH READ calculatedUPH WRITE setCalculatedUPH NOTIFY calculatedUPHChanged)
+    Q_PROPERTY(int mtfFrequency READ mtfFrequency WRITE setMTFFrequency NOTIFY mtfFrequencyChanged)
+    Q_PROPERTY(int aaScanMTFFrequency READ aaScanMTFFrequency WRITE setAAScanMTFFrequency NOTIFY aaScanMTFFrequencyChanged)
+    Q_PROPERTY(int aaScanCurveFitOrder READ aaScanCurveFitOrder WRITE setAAScanCurveFitOrder NOTIFY aaScanCurveFitOrderChanged)
+    Q_PROPERTY(int aaScanOversampling READ aaScanOversampling WRITE setAAScanOversampling NOTIFY aaScanOversamplingChanged)
+    Q_PROPERTY(int aaScanCurveFitErrorThreshold READ aaScanCurveFitErrorThreshold WRITE setAAScanCurveFitErrorThreshold NOTIFY aaScanCurveFitErrorThresholdChanged)
+
     double EFL() const
     {
         return m_EFL;
@@ -450,6 +466,31 @@ public:
     int calculatedUPH() const
     {
         return m_calculatedUPH;
+    }
+
+    int mtfFrequency() const
+    {
+        return m_mtfFrequency;
+    }
+
+    int aaScanMTFFrequency() const
+    {
+        return m_aaScanMTFFrequency;
+    }
+
+    int aaScanCurveFitOrder() const
+    {
+        return m_aaScanCurveFitOrder;
+    }
+
+    int aaScanOversampling() const
+    {
+        return m_aaScanOversampling;
+    }
+
+    int aaScanCurveFitErrorThreshold() const
+    {
+        return m_aaScanCurveFitErrorThreshold;
     }
 
 public slots:
@@ -927,6 +968,51 @@ public slots:
         emit calculatedUPHChanged(m_calculatedUPH);
     }
 
+    void setMTFFrequency(int mtfFrequency)
+    {
+        if (m_mtfFrequency == mtfFrequency)
+            return;
+
+        m_mtfFrequency = mtfFrequency;
+        emit mtfFrequencyChanged(m_mtfFrequency);
+    }
+
+    void setAAScanMTFFrequency(int aaScanMTFFrequency)
+    {
+        if (m_aaScanMTFFrequency == aaScanMTFFrequency)
+            return;
+
+        m_aaScanMTFFrequency = aaScanMTFFrequency;
+        emit aaScanMTFFrequencyChanged(m_aaScanMTFFrequency);
+    }
+
+    void setAAScanCurveFitOrder(int aaScanCurveFitOrder)
+    {
+        if (m_aaScanCurveFitOrder == aaScanCurveFitOrder)
+            return;
+
+        m_aaScanCurveFitOrder = aaScanCurveFitOrder;
+        emit aaScanCurveFitOrderChanged(m_aaScanCurveFitOrder);
+    }
+
+    void setAAScanOversampling(int aaScanOversampling)
+    {
+        if (m_aaScanOversampling == aaScanOversampling)
+            return;
+
+        m_aaScanOversampling = aaScanOversampling;
+        emit aaScanOversamplingChanged(m_aaScanOversampling);
+    }
+
+    void setAAScanCurveFitErrorThreshold(int aaScanCurveFitErrorThreshold)
+    {
+        if (m_aaScanCurveFitErrorThreshold == aaScanCurveFitErrorThreshold)
+            return;
+
+        m_aaScanCurveFitErrorThreshold = aaScanCurveFitErrorThreshold;
+        emit aaScanCurveFitErrorThresholdChanged(m_aaScanCurveFitErrorThreshold);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -971,6 +1057,12 @@ signals:
     void circleAverageTimeChanged(double circleAverageTime);
     void circleCountChanged(int circleCount);
     void calculatedUPHChanged(int calculatedUPH);
+    void mtfFrequencyChanged(int mtfFrequency);
+    void aaScanMTFFrequencyChanged(int aaScanMTFFrequency);
+    void aaScanCurveFitOrderChanged(int aaScanCurveFitOrder);
+    void aaScanOversamplingChanged(int aaScanOversampling);
+    void aaScanCurveFitErrorThreshold(int aaScanCurveFitErrorThreshold);
+    void aaScanCurveFitErrorThresholdChanged(int aaScanCurveFitErrorThreshold);
 };
 class AACoreStates: public PropertyBase
 {

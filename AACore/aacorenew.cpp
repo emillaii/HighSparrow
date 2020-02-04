@@ -25,7 +25,7 @@
 #include "utils/singletoninstances.h"
 
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX,
-                        double & localMaxY, double & error_avg, double & error_dev, vector<double> & y_output, bool & detectedAbnormality, int deletedIndex, double deletedValue = 0) {
+                        double & localMaxY, double & error_avg, double & error_dev, vector<double> & y_output, bool & detectedAbnormality, int deletedIndex, double deletedValue = 0, int errorThreshold = -10) {
     size_t n = x.size();
 
     double minX = 999999;
@@ -82,7 +82,7 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
                     newY.push_back(y[ii]);
                 }
             }
-            return fitCurve(newX, newY, order, localMaxX, localMaxY, error_avg, error_dev, y_output, detectedAbnormality, deletedIndex, deletedValue);
+            return fitCurve(newX, newY, order, localMaxX, localMaxY, error_avg, error_dev, y_output, detectedAbnormality, deletedIndex, deletedValue, errorThreshold);
         }
     }
 
@@ -1536,7 +1536,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         }
         bool detectedAbormality = false;
         int deletedIndex = -1;
-        fitCurve(x_pos, area_array, fitOrder, peak_x, peak_sfr, error_avg, error_dev, area_array, detectedAbormality, deletedIndex);
+        fitCurve(x_pos, area_array, fitOrder, peak_x, peak_sfr, error_avg, error_dev, area_array, detectedAbormality, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
         peak_x += start;  //Add back the base value
         data->setZPeak(peak_x);
         data->setWCCPeakZ(peak_x);
@@ -1856,7 +1856,7 @@ void AACoreNew::performAAOfflineCCOnly()
     }
     bool detectedAbormality = false;
     int deletedIndex = -1;
-    fitCurve(x_pos, area_array, fitOrder, peak_x, peak_sfr,error_avg,error_dev, area_array, detectedAbnormality, deletedIndex);
+    fitCurve(x_pos, area_array, fitOrder, peak_x, peak_sfr,error_avg,error_dev, area_array, detectedAbnormality, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
     qInfo("X scan result peak_x: %f peak_sfr: %f error_avg: %f error_dev: %f", peak_x, peak_sfr, error_avg, error_dev);
     data->setZPeak(peak_x);
     data->setWCCPeakZ(peak_x);
@@ -1874,24 +1874,24 @@ void AACoreNew::performAAOffline()
     QVariantMap map, stepTimerMap, dFovMap, sfrTimeElapsedMap;
     QElapsedTimer timer;
     timer.start();
-    int resize_factor = 2;
+    int resize_factor = parameters.aaScanOversampling()+1;
     int sfrCount = 0;
     double step_size = 0.01, start = 0;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     double estimated_fov_slope = 15;
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
-    int inputImageCount = 8;
-    for (int i = 0; i < inputImageCount -1; i++)
+    int inputImageCount = 7;
+    for (int i = 0; i < inputImageCount; i++)
     {
         if (isZScanNeedToStop) {
             qInfo("All peak passed, stop zscan");
             break;
         }
-        //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
+        QString filename = "C:\\Users\\emil\\Desktop\\sunny_field\\aascan\\1\\1\\zscan_" + QString::number(i+1) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "C:\\Users\\emil\\Desktop\\sunny_issue\\1_10um\\1_10um\\" + QString::number(i+1) + ".bmp";
-        QString filename = "C:\\Users\\emil\\Documents\\Projects\\SparrowQ_AA.git\\build-SparrowQ-Qt_5_11_1_MSVC_2017_64_bit-Release\\aa_log\\aa_log_bug\\2018-11-10T14-21-48-298Z\\zscan_" + QString::number(i) + ".bmp";
+        //QString filename = "C:\\Users\\emil\\Documents\\Projects\\SparrowQ_AA.git\\build-SparrowQ-Qt_5_11_1_MSVC_2017_64_bit-Release\\aa_log\\aa_log_bug\\2018-11-10T14-21-48-298Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "offline\\" + QString::number(i) + ".bmp";
         cv::Mat img = cv::imread(filename.toStdString());
         if (!blackScreenCheck(img)) {
@@ -1916,7 +1916,7 @@ void AACoreNew::performAAOffline()
         xysum=xysum+currZ*dfov;                 //calculate sigma(xi*yi)
         dFovMap.insert(QString::number(i), dfov);
 
-        emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, resize_factor);
+        emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, parameters.aaScanMTFFrequency()+1);
         img.release();
         dst.release();
         sfrCount++;
@@ -1998,7 +1998,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         result.insert("OK", false);
         return result;
     }
-    int fitOrder = 4;
+    int fitOrder = parameters.aaScanCurveFitOrder();
     threeDPoint point_0;
     vector<threeDPoint> points_1, points_11;
     vector<threeDPoint> points_2, points_22;
@@ -2053,19 +2053,19 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         double error_avg,error_dev;
         {
             int deletedIndex = -1; bool detectedAbnormlity = false;
-            fitCurve(z, b_sfr, fitOrder, b_peak_z, peak_sfr,error_avg,error_dev, b_sfr_fit, detectedAbnormlity, deletedIndex);
+            fitCurve(z, b_sfr, fitOrder, b_peak_z, peak_sfr,error_avg,error_dev, b_sfr_fit, detectedAbnormlity, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
         }
         {
             int deletedIndex = -1; bool detectedAbnormlity = false;
-            fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr,error_avg,error_dev, t_sfr_fit, detectedAbnormlity, deletedIndex);
+            fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr,error_avg,error_dev, t_sfr_fit, detectedAbnormlity, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
         }
         {
             int deletedIndex = -1; bool detectedAbnormlity = false;
-            fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr,error_avg,error_dev, l_sfr_fit, detectedAbnormlity, deletedIndex);
+            fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr,error_avg,error_dev, l_sfr_fit, detectedAbnormlity, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
         }
         {
             int deletedIndex = -1; bool detectedAbnormlity = false;
-            fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr,error_avg,error_dev, r_sfr_fit, detectedAbnormlity, deletedIndex);
+            fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr,error_avg,error_dev, r_sfr_fit, detectedAbnormlity, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
         }
         if (b_peak_z > maxPeakZ) maxPeakZ = b_peak_z;
         if (t_peak_z > maxPeakZ) maxPeakZ = t_peak_z;
@@ -2123,7 +2123,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         }
         bool detectedAbnormality = false;
         int temp_index = -1;
-        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev, sfr_fit, detectedAbnormality, temp_index);
+        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev, sfr_fit, detectedAbnormality, temp_index, parameters.aaScanCurveFitErrorThreshold());
         sorted_sfr_fit_map.push_back(sfr_fit); //Used to display the curve with fitting result
         if (i==0) {
             deletedIndex = temp_index;
@@ -2677,11 +2677,6 @@ double AACoreNew::performMTFInThread( cv::Mat input, int freq )
 
 ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
 {
-    //    double cc_min_sfr = params["CC"].toDouble(-1);
-    //    double ul_min_sfr = params["UL"].toDouble(-1);
-    //    double ur_min_sfr = params["UR"].toDouble(-1);
-    //    double ll_min_sfr = params["LL"].toDouble(-1);
-    //    double lr_min_sfr = params["LR"].toDouble(-1);
     double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
     double sfr_tol[8] = {0};
     sfr_tol[0] = params["CC_MIN"].toDouble(0);
@@ -2733,10 +2728,10 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         input_img(roi).copyTo(cropped_b_img);
 
         QFuture<double> f1, f2, f3, f4;
-        f1 = QtConcurrent::run(performMTFInThread, cropped_l_img, 1);
-        f2 = QtConcurrent::run(performMTFInThread, cropped_r_img, 1);
-        f3 = QtConcurrent::run(performMTFInThread, cropped_t_img, 1);
-        f4 = QtConcurrent::run(performMTFInThread, cropped_b_img, 1);
+        f1 = QtConcurrent::run(performMTFInThread, cropped_l_img, this->parameters.mtfFrequency() + 1);
+        f2 = QtConcurrent::run(performMTFInThread, cropped_r_img, this->parameters.mtfFrequency() + 1);
+        f3 = QtConcurrent::run(performMTFInThread, cropped_t_img, this->parameters.mtfFrequency() + 1);
+        f4 = QtConcurrent::run(performMTFInThread, cropped_b_img, this->parameters.mtfFrequency() + 1);
         f1.waitForFinished();
         f2.waitForFinished();
         f3.waitForFinished();
@@ -2888,6 +2883,7 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     map.insert("LL_08F_SFR_DEV",round(ll_08f_sfr_dev*1000)/1000);
     map.insert("LR_08F_SFR_DEV",round(lr_08f_sfr_dev*1000)/1000);
     map.insert("UR_08F_SFR_DEV",round(ur_08f_sfr_dev*1000)/1000);
+    map.insert("Selected_Frequency", this->parameters.mtfFrequency());
     map.insert("timeElapsed", timer.elapsed());
     qDebug("Time Elapsed: %d", timer.elapsed());
     if (write_log) {

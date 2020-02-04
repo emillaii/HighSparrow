@@ -42,7 +42,74 @@ ScrollView {
                                 aaCoreParams.setPeakProfile(currentIndex)
                             }
                         }
+                        Label {
+                            text: qsTr("MTF Check Nyquist Frequency: ")
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 300
+                            model: [ "1/8", "1/4" ]
+                            currentIndex: aaCoreParams.mtfFrequency
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setMTFFrequency(currentIndex)
+                            }
+                        }
                     }
+                    RowLayout {
+                        Label {
+                            text: qsTr("Oversampling:")
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 300
+                            model: [ "1", "2"]
+                            currentIndex: aaCoreParams.aaScanOversampling
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setAAScanOversampling(currentIndex)
+                            }
+                        }
+                        Label {
+                            text: qsTr("AA Scan MTF Nyquist Frequency:")
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 300
+                            model: [ "1/8", "1/4" ]
+                            currentIndex: aaCoreParams.aaScanMTFFrequency
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setAAScanMTFFrequency(currentIndex)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Label {
+                            text: qsTr("Fit Order:")
+                        }
+                        TextField {
+                            text: aaCoreParams.aaScanCurveFitOrder
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: IntValidator {
+                                bottom: 4
+                                top: 6
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setAAScanCurveFitOrder(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("AA Curve Fit Error Threshold:")
+                        }
+                        TextField {
+                            text: aaCoreParams.aaScanCurveFitErrorThreshold
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: IntValidator {
+                                bottom: -10
+                                top: 0
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setAAScanCurveFitErrorThreshold(text)
+                            }
+                        }
+                    }
+
                     RowLayout {
                         CheckBox {
                             text: qsTr("使能zpeak系数:")

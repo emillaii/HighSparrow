@@ -699,7 +699,7 @@ Grid {
                     readOnly: true
                 }
                 Button {
-                    text: qsTr("«Â¡„")
+                    text: qsTr("Clear")
                     onClicked: {
                         console.log("Clear dispense count")
                         aaNewCore.clearCurrentDispenseCount()

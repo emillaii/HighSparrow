@@ -397,7 +397,7 @@ Grid {
                 id: axisX3
                 gridVisible: true
                 min: 0
-                max: 10000
+                max: dataFromIntensityProfile.valuesSize
             }
 
             LineSeries {
@@ -418,7 +418,7 @@ Grid {
         Connections {
             target: dataFromIntensityProfile
             onWValueChanged: {
-                iSeriesLabel.text = "Min: " + dataFromIntensityProfile.minValue + " Max: " + dataFromIntensityProfile.maxValue
+                iSeriesLabel.text = "Min: " + dataFromIntensityProfile.minValue + " Max: " + dataFromIntensityProfile.maxValue + " Detected Error: " + dataFromIntensityProfile.detectedIntensityError
                 iSeries.append(dataFromIntensityProfile.wValue.x, dataFromIntensityProfile.wValue.y)
             }
             onWValueClear: {

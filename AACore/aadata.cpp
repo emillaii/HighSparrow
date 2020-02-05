@@ -90,16 +90,18 @@ void AAData::incrementData(double y1, double y2, double y3, double y4, double y5
     emit wValueChanged();
 }
 
-void AAData::plotIntensityProfile(float minI, float maxI, std::vector<float> values)
+void AAData::plotIntensityProfile(float minI, float maxI, std::vector<float> values, int detectedNumberOfError)
 {
     if (this->isRunning()) {
         qInfo("stop the thread");
         this->terminate();
     }
     m_minValue = (int)minI; m_maxValue = (int)maxI;
+    m_detectedIntensityError = detectedNumberOfError;
     for (unsigned i = 0; i < values.size(); i++){
         this->m_PointsList.push_back(QPoint(i, values[i]));
     }
+    this->setValuesSize(values.size());
     plotProfile = 1;
     this->start();
 }

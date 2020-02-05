@@ -3279,9 +3279,10 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     int enable_plot = params["enable_plot"].toInt(1);
     int min_i_spec = params["min"].toInt(0);
     int max_i_spec = params["max"].toInt(200);
-    int mode = params["mode"].toInt(0); //0: Rectangle Path, 1: Dialgoue Path
-    int image_margin = params["margin"].toInt(10);
+    int mode = params["mode"].toInt(1); //1: Rectangle Path, 0: Dialgoue Path
+    int image_margin = params["margin"].toInt(5);
     float min_i, max_i;
+    int detectedNumberOfError = 0;
     //cv::Mat inputImage = cv::imread("2.jpg");
     bool grabRet;
     cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
@@ -3292,34 +3293,53 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     }
     vector<float> intensityProfile;
     QElapsedTimer timer; timer.start();
-    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile, mode, image_margin);
+    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile, mode, image_margin, detectedNumberOfError);
     if (ret) {
         map.insert("min_i", min_i);
         map.insert("min_i_spec", min_i_spec);
         map.insert("max_i", max_i);
         map.insert("max_i_spec", max_i_spec);
+        map.insert("num_of_detected_error", detectedNumberOfError);
 
-        qInfo("performYLevelTest Success. Min I: %f Max I: %f size: %d", min_i, max_i, intensityProfile.size());
+        QString imageName;
+        imageName.append(getYLevelDir())
+                .append(sensorID)
+                .append("_")
+                .append(getCurrentTimeString())
+                .append(".bmp");
+        cv::imwrite(imageName.toStdString().c_str(), inputImage);
+
+        qInfo("performYLevelTest Success. Min I: %f Max I: %f size: %d detected number of error: %d", min_i, max_i, intensityProfile.size(), detectedNumberOfError);
         if (enable_plot == 1) {
             intensity_profile.clear();
-            this->intensity_profile.plotIntensityProfile(min_i, max_i, intensityProfile);
+            this->intensity_profile.plotIntensityProfile(min_i, max_i, intensityProfile, detectedNumberOfError);
         }
         if (max_i < 10) {
             qWarning("This is black screen.");
+            map.insert("result", "Fail");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Black screen detected"};
         }
         if (min_i < min_i_spec) {
             qWarning("Y Level Fail. The tested intensity is smaller than spec. Tested min intensity: %f intensity spec: %f", min_i, min_i_spec);
             map.insert("result", "Y Level min spec cannnot pass");
+            map.insert("result", "Fail");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is smaller than spec"};
         }
         if (max_i >= max_i_spec) {
             qWarning("Y Level Fail. The tested intensity is larger than spec. Tested max intensity: %f intensity spec: %f", max_i, max_i_spec);
             map.insert("result", "Y Level max spec cannnot pass");
+            map.insert("result", "Fail");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is larger than spec"};
+        }
+        if (detectedNumberOfError > 0) {
+            qWarning("Detected Intensity Error.");
+            map.insert("result", "Detected Y Level error");
+            map.insert("result", "Fail");
+            emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Detected intensity error"};
         }
         map.insert("result", "Pass");
         map.insert("timeElapsed", timer.elapsed());
@@ -3335,8 +3355,8 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
 
 bool AACoreNew::blackScreenCheck(cv::Mat inImage)
 {
-    vector<float> intensityProfile; float min_i = 0; float max_i = 0;
-    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile, 0, 0);
+    vector<float> intensityProfile; float min_i = 0; float max_i = 0; int detectedError = 0;
+    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile, 0, 0, detectedError);
     if (ret) {
         qInfo("[blackScreenCheck] Checking intensity...min: %f max: %f", min_i, max_i);
         if ((max_i - min_i) < parameters.minIntensityDiff()) {

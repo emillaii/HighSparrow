@@ -51,6 +51,9 @@ class AAData : public QThread
 
     Q_PROPERTY(bool inProgress READ inProgress WRITE setInProgress)
 
+    Q_PROPERTY(int valuesSize READ valuesSize WRITE setValuesSize NOTIFY valuesSizeChanged)
+    Q_PROPERTY(int detectedIntensityError READ detectedIntensityError WRITE detectedIntensityError)
+
     Q_PROPERTY(NOTIFY wValueClear)
     Q_PROPERTY(NOTIFY wValueChanged)
     Q_PROPERTY(NOTIFY wInProgressChanged)
@@ -59,7 +62,7 @@ public:
     //i is index, x is x-axis data, y will be used for showing curve fit data, rawY will be used for showing raw data
     void addData(int i, double x, double y, double rawY);
     void incrementData(double y1, double y2, double y3, double y4, double y5);
-    void plotIntensityProfile(float minI, float maxI, std::vector<float> values);
+    void plotIntensityProfile(float minI, float maxI, std::vector<float> values, int detectedNumberOfError);
     void clear();
     void plot(QString chartName = "Silicool AA");
     QPointF wValue() const{
@@ -225,6 +228,16 @@ public:
         return m_inProgress;
     }
 
+    int valuesSize() const
+    {
+        return m_valuesSize;
+    }
+
+    int detectedIntensityError() const
+    {
+        return m_detectedIntensityError;
+    }
+
 public slots:
     void setDev(double dev)
     {
@@ -306,11 +319,24 @@ public slots:
         emit wInProgressChanged();
     }
 
+    void setValuesSize(int valuesSize)
+    {
+        m_valuesSize = valuesSize;
+        emit valuesSizeChanged(m_valuesSize);
+    }
+
+    void detectedIntensityError(int detectedIntensityError)
+    {
+        m_detectedIntensityError = detectedIntensityError;
+    }
+
 signals:
     void wValueChanged();
     void wValueClear();
     void zPeakChanged(double zPeak);
     void wInProgressChanged();
+    void valuesSizeChanged(int valuesSize);
+
 private slots:
     void wTimeout();
 private:
@@ -383,6 +409,10 @@ private:
     QVariantList m_wLRRealList;
 
     bool m_inProgress;
+
+    int m_valuesSize = 10000;
+
+    int m_detectedIntensityError;
 
 protected:
     void run();

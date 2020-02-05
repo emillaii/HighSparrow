@@ -61,6 +61,7 @@
 #define VISION_PR_DEBUG_DIR          "pr_log//"
 #define DISPENSE_VISION_PR_DIR       "dispense_log//"
 #define GLUE_INPSECTION_DIR          "glue_inspection//"
+#define Y_LEVEL_DIR                  "y_level_log//"
 #define AA_DEBUG_DIR                 "aa_log//"
 #define AA_SAVE_IMAGE_DIR            "aa_save_image//"
 #define AA_SAVE_IMAGE_DOWNLOOK_DIR   "aa_save_image//downlook//"

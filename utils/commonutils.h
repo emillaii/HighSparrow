@@ -14,6 +14,7 @@ QString getMTFLogDir();
 QString getUnitLogDir();
 QString getAALogDir();
 QString getDispensePrLogDir();
+QString getYLevelDir();
 QString getPerformanceLogDir();
 QString getAAProcessLogDir();
 QString getProduceProcessLogDir();

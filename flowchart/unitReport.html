@@ -87,6 +87,27 @@ tr:nth-child(even) {
 	
 	//End of load local file
 	var sfr_count = 0;
+	function drawSFRCurve2(inputData) {
+		var myData = JSON.parse(inputData);
+		var dataSeries = {};
+		for (var operatorName in myData) {
+			console.log(operatorName);
+			if ((operatorName === "CC" || operatorName === "UL_1" || operatorName === "UR_1" || operatorName === "LL_1" || operatorName === "LR_1")){
+				var dataX = [], dataY = [];  var data = [];
+				for (var z in myData[operatorName]) {
+					var sfr = myData[operatorName][z]["sfr"];
+					var pz = myData[operatorName][z]["pz"];
+					dataX.push(pz);
+					dataY.push(sfr);
+				}
+				data.name = operatorName;
+				data.z = dataX;
+				data.sfr = dataY;
+				dataSeries[operatorName] = data;
+			}
+		}
+		drawSFRCurve("SFR", dataSeries);
+	}
 	//Draw SFR chart
 	function drawSFRCurve(operatorName, dataSeries) {
 	    
@@ -97,6 +118,7 @@ tr:nth-child(even) {
 			if (sfr_count === 1) 
 				container = document.getElementById("container1");
 			sfr_count++;
+			if (sfr_count > 1) sfr_count = 0; 
 			container.style.height = "500px"
 			var myChart = echarts.init(container);
 			var app = {};
@@ -257,8 +279,8 @@ tr:nth-child(even) {
 		document.getElementById("tableContainer").innerHTML = "";
 		var myData = JSON.parse(inputData);
 		var table = document.getElementById("myTable");
+		var uuid = "";
 		option = null;
-		var colors = ['#5793f3', '#d14a61', '#675bba'];
 		var timeMap = [];
 		for (var operatorName in myData) {
 			var title = document.createElement("h1");
@@ -271,6 +293,10 @@ tr:nth-child(even) {
 			var row1 = x.insertRow(-1);
 			var count = 0;
 			var dataSeries = {};
+			console.log(operatorName);
+			if (operatorName == "uuid") {
+				uuid = myData[operatorName];
+			}
 			for (var attr in myData[operatorName]) {
 				var cell1 = row.insertCell(count);
 				var cell2 = row1.insertCell(count);
@@ -299,7 +325,7 @@ tr:nth-child(even) {
 					dataSeries[attr] = data;
 				}
 			}
-			drawSFRCurve(operatorName, dataSeries);
+			//drawSFRCurve(operatorName, dataSeries);
 		}
 		drawTimeChart(timeMap);
 		var textedJson = JSON.stringify(myData, undefined, 4);

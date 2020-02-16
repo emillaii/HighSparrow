@@ -92,7 +92,9 @@ tr:nth-child(even) {
 		var dataSeries = {};
 		for (var operatorName in myData) {
 			console.log(operatorName);
-			if ((operatorName === "CC" || operatorName === "UL_1" || operatorName === "UR_1" || operatorName === "LL_1" || operatorName === "LR_1")){
+			if ((operatorName === "CC" || operatorName === "UL_1" || operatorName === "UR_1" || operatorName === "LL_1" || operatorName === "LR_1"
+			     || operatorName === "UL_2" || operatorName === "UR_2" || operatorName === "LL_2" || operatorName === "LR_2"
+				 || operatorName === "UL_3" || operatorName === "UR_3" || operatorName === "LL_3" || operatorName === "LR_3")){
 				var dataX = [], dataY = [];  var data = [];
 				for (var z in myData[operatorName]) {
 					var sfr = myData[operatorName][z]["sfr"];
@@ -223,7 +225,7 @@ tr:nth-child(even) {
 					name:'Time Pie Chart',
 					type:'pie',
 					selectedMode: 'single',
-					radius: [0, '70%'],
+					radius: [0, '30%'],
 
 					label: {
 						 normal: {

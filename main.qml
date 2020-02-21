@@ -645,10 +645,15 @@ ApplicationWindow {
                 }
             }
 
-
             GridLayout{
                 rows: 2
-                columns: 2
+                columns: 3
+
+                Label{
+                    text: qsTr("LotNumber:") + aaCoreParams.lotNumber
+                    color: "white"
+                    Layout.fillWidth: true
+                }
 
                 Label{
                     text: qsTr("硅酷科技 版本:" + version)

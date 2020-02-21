@@ -191,7 +191,7 @@ signals:
     void callQmlRefeshImg(int);
     void pushDataToUnit(QString uuid, QString name, QVariantMap map);
     void clearHeaders();
-    void postDataToELK(QString);
+    void postDataToELK(QString, QString);
     void postSfrDataToELK(QString, QVariantMap);
     void sendLensRequestToLut();
     void needUpdateParameterInTcpModule();

@@ -211,7 +211,7 @@ void AACoreNew::run(bool has_material)
         oc_fov = -1;
         hasDispense = false;
         runFlowchartTest();
-        emit postDataToELK(this->runningUnit);
+        emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
         QThread::msleep(100);
         double temp_time = timer.elapsed();
         temp_time/=1000;
@@ -437,7 +437,7 @@ void AACoreNew::startWork( int run_mode)
         QElapsedTimer timer;timer.start();
         runningUnit = this->unitlog->createUnit();
         runFlowchartTest();
-        emit postDataToELK(this->runningUnit);
+        emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
         double temp_time = timer.elapsed();
         temp_time/=1000;
         qInfo("circle_time :%f",temp_time);
@@ -625,7 +625,7 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
         this->dispense->moveToDispenseDot();
         emit needUpdateParameterInTcpModule();
     }
-    emit postDataToELK(this->runningUnit);
+    emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
     is_handling = false;
 }
 
@@ -3283,9 +3283,9 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     int image_margin = params["margin"].toInt(5);
     float min_i, max_i;
     int detectedNumberOfError = 0;
-    //cv::Mat inputImage = cv::imread("2.jpg");
+    cv::Mat inputImage = cv::imread("2.jpg");
     bool grabRet;
-    cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
+    //cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
         qInfo("Cannot grab image.");
         NgProduct();

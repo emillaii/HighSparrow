@@ -127,6 +127,8 @@ class AACoreParameters : public PropertyBase
 
     int m_aaScanCurveFitErrorThreshold = -10;
 
+    QString m_lotNumber = "Silicool";
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -193,7 +195,7 @@ public:
     Q_PROPERTY(int aaScanCurveFitOrder READ aaScanCurveFitOrder WRITE setAAScanCurveFitOrder NOTIFY aaScanCurveFitOrderChanged)
     Q_PROPERTY(int aaScanOversampling READ aaScanOversampling WRITE setAAScanOversampling NOTIFY aaScanOversamplingChanged)
     Q_PROPERTY(int aaScanCurveFitErrorThreshold READ aaScanCurveFitErrorThreshold WRITE setAAScanCurveFitErrorThreshold NOTIFY aaScanCurveFitErrorThresholdChanged)
-
+    Q_PROPERTY(QString lotNumber READ lotNumber WRITE setLotNumber NOTIFY LotNumberChanged)
     double EFL() const
     {
         return m_EFL;
@@ -491,6 +493,11 @@ public:
     int aaScanCurveFitErrorThreshold() const
     {
         return m_aaScanCurveFitErrorThreshold;
+    }
+
+    QString lotNumber() const
+    {
+        return m_lotNumber;
     }
 
 public slots:
@@ -1013,6 +1020,15 @@ public slots:
         emit aaScanCurveFitErrorThresholdChanged(m_aaScanCurveFitErrorThreshold);
     }
 
+    void setLotNumber(QString lotNumber)
+    {
+        if (m_lotNumber == lotNumber)
+            return;
+
+        m_lotNumber = lotNumber;
+        emit LotNumberChanged(m_lotNumber);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -1063,6 +1079,7 @@ signals:
     void aaScanOversamplingChanged(int aaScanOversampling);
     void aaScanCurveFitErrorThreshold(int aaScanCurveFitErrorThreshold);
     void aaScanCurveFitErrorThresholdChanged(int aaScanCurveFitErrorThreshold);
+    void LotNumberChanged(QString lotNumber);
 };
 class AACoreStates: public PropertyBase
 {

@@ -30,7 +30,7 @@ private:
 public slots:
     bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
     void clearHeaders();
-    bool postDataToELK(QString uuid);
+    bool postDataToELK(QString uuid, QString lotNumber);
     bool postUnitDataToCSV(QString uuid);
     bool postSfrDataToELK(QString uuid, QVariantMap data);
     QString getCSVString(QString data_name,QVariantMap map);

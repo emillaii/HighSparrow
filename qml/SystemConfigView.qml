@@ -38,6 +38,17 @@ ItemDelegate {
                             }
                         }
                     }
+                    RowLayout {
+                        Label {
+                            text: qsTr("Lot Number:")
+                        }
+                        TextField {
+                            text: aaCoreParams.lotNumber
+                            onEditingFinished: {
+                                aaCoreParams.setLotNumber(text)
+                            }
+                        }
+                    }
                 }
             }
         }

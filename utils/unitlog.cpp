@@ -67,12 +67,13 @@ void Unitlog::clearHeaders()
     headers.clear();
 }
 
-bool Unitlog::postDataToELK(QString uuid)
+bool Unitlog::postDataToELK(QString uuid, QString lotNumber)
 {
     if (unit_log_list.contains(uuid))
     {
          QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
          json["uuid"] = uuid;
+         json["lotNumber"] = lotNumber;
          QJsonDocument doc(json);
          QUrl unitLogEndpoint = QString("http://192.168.0.250:5044");
          // QString unitLogEndpoint = serverAddress;
@@ -84,6 +85,8 @@ bool Unitlog::postDataToELK(QString uuid)
          QString filename = "";
          filename.append(getUnitLogDir())
                          .append(getCurrentTimeString())
+                         .append("_")
+                         .append(lotNumber)
                          .append("_")
                          .append(uuid)
                          .append(".json");

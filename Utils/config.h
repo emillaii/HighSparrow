@@ -67,6 +67,7 @@
 #define CAMERA_SH_UT_UL                  "UT_ULCamera"
 #define CAMERA_SH_PA_DL                  "PA_DLCamera"
 #define CAMERA_SH_AA_DL                  "AA_DLCamera"
+#define CAMERA_HIK_CAM                   "HIK_Camera"
 
 #define LIGHTING_PA_DL                  0
 #define LIGHTING_AA_DL                  3

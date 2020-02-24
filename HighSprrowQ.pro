@@ -65,7 +65,10 @@ LIBS += -L$$PWD/../libs/DTCCM2_SDK/X64_Lib/ -ldtccm2
 INCLUDEPATH += $$PWD/../libs/DTCCM2_SDK
 DEPENDPATH += $$PWD/../libs/DTCCM2_SDK/X64_Lib
 
-
+#HIK Library
+LIBS += -L$$PWD/../libs/hik/lib/win64/ -lMvCameraControl
+INCLUDEPATH += $$PWD/../libs/hik/Includes
+DEPENDPATH += $$PWD/../libs/hik/lib/win64
 
 DISTFILES += \
     icons/index.theme
@@ -99,7 +102,9 @@ HEADERS += \
     Vision/baslerpyloncamera.h \
     Vision/calibration.h \
     Vision/calibration_parameter.h \
+    Vision/hikcamera.h \
     Vision/pixel2mech.h \
+    Vision/silicoolcamera.h \
     Vision/vision_location.h \
     Vision/vision_location_parameter.h \
     Vision/visionmodule.h \
@@ -165,6 +170,7 @@ SOURCES += \
     Utils/unitlog.cpp \
     Vision/baslerpyloncamera.cpp \
     Vision/calibration.cpp \
+    Vision/hikcamera.cpp \
     Vision/pixel2mech.cpp \
     Vision/vision_location.cpp \
     Vision/visionmodule.cpp \

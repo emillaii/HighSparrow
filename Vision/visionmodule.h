@@ -7,7 +7,7 @@
 #include <AVL.h>
 
 class BaslerPylonCamera;
-
+class HIKCamera;
 struct PRResultStruct {
     PRResultStruct() : x(0), y(0), theta(0), width(0), height(0), ret(false)
     {}
@@ -30,7 +30,7 @@ class VisionModule: public QObject, public QQuickImageProvider
 {
     Q_OBJECT
 public:
-    VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera);
+    VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera, HIKCamera* hikCamera);
     QVector<QPoint> VisionModule::Read_Dispense_Path();
     /*
      * Use the most generic NCC template matching
@@ -50,13 +50,10 @@ private:
     void diffenenceImage(QImage image1, QImage image2);
     bool grabImageFromCamera(QString cameraName, avl::Image &image);
     bool saveImageAndCheck(avl::Image image1, QString imageName);
-    BaslerPylonCamera * downlookCamera;
-    BaslerPylonCamera * uplookCamera;
-    BaslerPylonCamera * pickarmCamera;
-//    ImageProvider downlookCameraPrResultImageProvider;
-//    ImageProvider uplookCameraPrResultImageProvider;
-//    ImageProvider pickarmCameraPrResultImageProvider;
-//    ImageProvider glueInspectionResultImageProvider;
+    BaslerPylonCamera * downlookCamera = Q_NULLPTR;
+    BaslerPylonCamera * uplookCamera = Q_NULLPTR;
+    BaslerPylonCamera * pickarmCamera = Q_NULLPTR;
+    HIKCamera * hikCamera = Q_NULLPTR;
 signals :
     void callQmlRefeshImg();
 public:

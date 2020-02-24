@@ -384,10 +384,17 @@ Grid {
             }
 
             Connections {
-                target: pickarmCamera
+                target: {
+                    if (pickarmCameraSelectComboBox.currentIndex === 0) return pickarmCamera
+                    else if (pickarmCameraSelectComboBox.currentIndex === 1) return hikCamera
+                }
                 onCallQmlRefeshImg: {
                     image2.source = ""
-                    image2.source = "image://pickarmCameraImage"
+                    if (pickarmCameraSelectComboBox.currentIndex === 0){
+                        image2.source = "image://pickarmCameraImage"
+                    } else if (pickarmCameraSelectComboBox.currentIndex === 1){
+                        image2.source = "image://hikCameraImage"
+                    }
                 }
             }
 
@@ -415,13 +422,23 @@ Grid {
                 x: -12
                 y: -12
                 color: "#9ef678"
-                text: qsTr("Pickarm Camera")
+                text: {
+                    if (pickarmCameraSelectComboBox.currentIndex === 0) return qsTr("Pickarm Camera")
+                    else if (pickarmCameraSelectComboBox.currentIndex === 1) return qsTr("HIK Camera")
+                }
                 wrapMode: Text.WordWrap
                 elide: Text.ElideLeft
                 fontSizeMode: Text.Fit
                 lineHeight: 3.1
                 anchors.fill: parent
                 font.pixelSize: 12
+            }
+
+            ComboBox {
+                y: 15
+                id: pickarmCameraSelectComboBox
+                model: [ "PA DL", "HIK" ]
+                currentIndex: 0
             }
             Slider {
                 id: slider1
@@ -461,7 +478,11 @@ Grid {
                     icon.source: "../icons/save.png"
                     onClicked: {
                         console.log("Save Image")
-                        visionModule.saveImage(2)
+                        if (pickarmCameraSelectComboBox.currentIndex === 0) {
+                            visionModule.saveImage(2)
+                        } else if (pickarmCameraSelectComboBox.currentIndex === 1) {
+                            visionModule.saveImage(3)
+                        }
                     }
                 }
             }

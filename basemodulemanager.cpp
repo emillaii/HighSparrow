@@ -31,10 +31,11 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         pylonUplookCamera = new BaslerPylonCamera(CAMERA_SH_UT_UL);
         pylonDownlookCamera = new BaslerPylonCamera(CAMERA_SH_AA_DL);
         pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SH_PA_DL);
+        hikCamera = new HIKCamera();
     }
 
     lightingModule = new WordopLight();
-    visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
+    visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera, hikCamera);
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);
     sfrWorkerController = new SfrWorkerController(&aaCoreNew);
@@ -47,6 +48,9 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonUplookCamera) pylonUplookCamera->start();
         if(pylonDownlookCamera) pylonDownlookCamera->start();
         if(pylonPickarmCamera) pylonPickarmCamera->start();
+        if(hikCamera) {
+            hikCamera->SCCameraInit("192.168.1.8");
+        }
     }
 //    material_tray.standards_parameters.setTrayCount(2);
     lens_tray.standards_parameters.setTrayCount(2);

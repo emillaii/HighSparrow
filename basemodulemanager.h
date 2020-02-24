@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "Vision/baslerpyloncamera.h"
+#include "Vision/hikcamera.h"
 #include "Vision/visionmodule.h"
 #include "Vision/wordoplight.h"
 #include "Utils/propertybase.h"
@@ -29,6 +30,8 @@
 #include "SingleHead/singleheadmachinematerialloadermodule.h"
 #include "SingleHead/singlehead_lsut_module.h"
 #include "materialtray.h"
+
+
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
     Q_OBJECT
@@ -50,6 +53,7 @@ public:
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonUplookCamera = Q_NULLPTR;
     BaslerPylonCamera * pylonPickarmCamera = Q_NULLPTR;
+    HIKCamera * hikCamera = Q_NULLPTR;
     VisionModule * visionModule = Q_NULLPTR;
     WordopLight * lightingModule = Q_NULLPTR;
     LontryLight * lightPanel = Q_NULLPTR;

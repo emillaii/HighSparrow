@@ -14,13 +14,15 @@
 #include "Utils/config.h"
 #include "Utils/commonutils.h"
 #include "Vision/baslerpyloncamera.h"
+#include "Vision/hikcamera.h"
 
-VisionModule:: VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera)
+VisionModule:: VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera, BaslerPylonCamera* pickarmCamera, HIKCamera* hikCamera)
              :QQuickImageProvider(QQuickImageProvider::Image)
 {
     this->downlookCamera = downlookCamera;
     this->uplookCamera = uplookCamera;
     this->pickarmCamera = pickarmCamera;
+    this->hikCamera = hikCamera;
 }
 QVector<QPoint> VisionModule::Read_Dispense_Path()
 {
@@ -53,6 +55,16 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
     if (cameraName.contains(CAMERA_SH_AA_DL)) {camera = downlookCamera;}
     else if (cameraName.contains(CAMERA_SH_UT_UL)) {camera = uplookCamera;}
     else if (cameraName.contains(CAMERA_SH_PA_DL)) {camera = pickarmCamera;}
+    else if (cameraName.contains(CAMERA_HIK_CAM)) {
+        if (hikCamera != Q_NULLPTR) {
+            QPixmap p = QPixmap::fromImage(hikCamera->getImage());
+            QImage q2 = p.toImage();
+            q2 = q2.convertToFormat(QImage::Format_RGB888);
+            avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+            image = image2;
+        }
+        return true;
+    }
     if (camera == Q_NULLPTR) {
         qInfo("Cannot find camera %s", cameraName.toStdString().c_str());
         return false;
@@ -62,7 +74,6 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
         qInfo("camera grabbing fail %s", cameraName.toStdString().c_str());
         return false;
     }
-    //QPixmap p = QPixmap::fromImage(camera->getImage());
     QPixmap p = QPixmap::fromImage(camera->getNewImage());
     QImage q2 = p.toImage();
     q2 = q2.convertToFormat(QImage::Format_RGB888);
@@ -113,6 +124,8 @@ void VisionModule::saveImage(int channel, QString filename)
         ret = this->grabImageFromCamera(DOWNLOOK_VISION_CAMERA, image1);
     else if (channel == 2)
         ret = this->grabImageFromCamera(PICKARM_VISION_CAMERA, image1);
+    else if (channel == 3)
+        ret = this->grabImageFromCamera(CAMERA_HIK_CAM, image1);
     else return;
     if (!ret) {
         qInfo("Cannot save image due to camera is not running");
@@ -131,6 +144,8 @@ void VisionModule::saveImage(int channel)
         ret = this->grabImageFromCamera(DOWNLOOK_VISION_CAMERA, image1);
     else if (channel == 2)
         ret = this->grabImageFromCamera(PICKARM_VISION_CAMERA, image1);
+    else if (channel == 3)
+        ret = this->grabImageFromCamera(CAMERA_HIK_CAM, image1);
     else return;
     if (!ret) {
         qInfo("Cannot save image due to camera is not running");

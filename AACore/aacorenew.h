@@ -2,6 +2,7 @@
 #define AACORENEW_H
 
 #include <QObject>
+#include <QDebug>
 #include "thread_worker_base.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
@@ -27,6 +28,8 @@
 //#include "DualHead/lutclient.h"
 #include "ImageGrabber/imagegrabbingworkerthread.h"
 #include "Utils/unitlog.h"
+#include "Utils/singletoninstances.h"
+#include "Utils/singletoninstances.h"
 
 class AACoreNew : public ThreadWorkerBase
 {
@@ -90,12 +93,18 @@ public:
     ImageProvider * aaCoreTuningProvider;
     AACoreParameters parameters;
     AACoreStates states;
+
 private:
     bool is_run = false;
+    int autoRunDispenseTimes = 0;
+    bool isAAHeadPickedLens = false;
+    bool hasDispense;
+    bool hasUV;
     QMutex lut_mutex;
     void run(bool has_material);
     void LogicNg(int & ng_time);
     void NgLens();
+    void NgSensorOrProduct();
     void NgSensor();
     bool HasLens();
     bool HasSensorOrProduct();
@@ -103,6 +112,21 @@ private:
     void SetLens();
     void SetSensor();
     void SetProduct();
+
+    bool aaHeadPickLens()
+    {
+        if(is_run)
+        {
+            if(isAAHeadPickedLens)
+            {
+                return true;
+            }
+            else {
+                isAAHeadPickedLens = true;
+            }
+        }
+        return  lsut->gripLens();
+    }
 private:
     QString loopTestResult;
     int currentAAMode;
@@ -130,19 +154,24 @@ private:
     bool has_ng_lens = false;
     bool has_ng_sensor = false;
     bool has_sensor = false;
+    bool has_lens = false;
     bool send_lens_request = false;
     bool send_sensor_request = false;
-    bool has_lens = false;
+    bool needReInitFrameGrabber = false; //点亮失败，重新初始化采集盒设备
 
     int current_aa_ng_time = 0;
-    int current_oc_ng_time = 0;
-    int current_mtf_ng_time = 0;
+//    int current_oc_ng_time = 0;
+//    int current_mtf_ng_time = 0;
     int grr_repeat_time = 0;
     int grr_change_time = 0;
     QString handlingParams = "";
     double mtf_oc_x = 0;
     double mtf_oc_y = 0;
 
+    int currentSensorIndex;
+    int currentLensIndex;
+
+    PrOffset sensorDownlookOffset;
 
     QVariantMap sfrFitCurve_Advance(int resize_factor, double start_pos);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,
@@ -166,7 +195,7 @@ signals:
     void postDataToELK(QString);
     void postSfrDataToELK(QString, QVariantMap);
     void sendLensRequestToLut();
-    void sendAAProcessResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product);
+    void sendAAProcessFinishSignal(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productIndex);
 public slots:
     void triggerGripperOn(bool isOn);
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);
@@ -176,7 +205,7 @@ public slots:
     }
     void sfrImageReady(QImage);
     void aaCoreParametersChanged();
-    void receiveStartAAProcessRequest();
+    void receiveStartAAProcessRequestResponse(int sensorIndex, int lensIndex, bool isAAPickedLens);
 };
 
 #endif // AACORENEW_H

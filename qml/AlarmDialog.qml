@@ -103,14 +103,14 @@ Window {
                     id: button1
                     text: qsTr("OK")
                     onClicked: {
-                        workersManager.sendOperation(modelData, 0);
+                        workersManager.performAlarmOperation(modelData, 0);
                     }
                 }
                 Button {
                     id: button2
                     text: qsTr("Cancel")
                     onClicked: {
-                        workersManager.sendOperation(modelData, 1);
+                        workersManager.performAlarmOperation(modelData, 1);
                     }
                 }
             }

@@ -4,7 +4,9 @@ import QtQuick.Dialogs 1.2
 import FileContentItem 1.0
 import QtQuick.Layouts 1.11
 import AACoreNew 1.1
+import UserMng 1.0
 import "qml"
+import "qml/UserManagement"
 
 ApplicationWindow {
     visible: true
@@ -70,6 +72,10 @@ ApplicationWindow {
             }
         }
 
+        VisionLocationParameters{
+            id: visionLocationParametersViewer
+        }
+
         MotionDialog {
             id: motionDialog
         }
@@ -97,6 +103,32 @@ ApplicationWindow {
             onError: console.log(msg)
         }
 
+        SilicolMsgBox{
+            id: silicolMsgBox
+        }
+
+        UserManagement{
+            id: popupUserManagement
+        }
+
+        Login{
+            id: popupLogin
+        }
+
+        Connections{
+            target: msgBoxModel
+            onMsgBoxCountChanged:{
+                if(count > 0)
+                {
+                    silicolMsgBox.msgBoxCount = count
+                    silicolMsgBox.open()
+                }
+                else{
+                    silicolMsgBox.close()
+                }
+            }
+        }
+
     header:
         ToolBar {
             id: toolBar
@@ -106,6 +138,49 @@ ApplicationWindow {
             }
 
         RowLayout {
+            ToolButton {
+                text: qsTr("用户管理")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/userManagement.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    popupUserManagement.clearText()
+                    popupUserManagement.open()
+                }
+            }
+            ToolButton {
+                text: {
+                    if(userManagement.hasLogin)
+                    {
+                        return qsTr("Logout")
+                    }
+                    else
+                    {
+                        return qsTr("Login")
+                    }
+                }
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/login.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    if(userManagement.hasLogin)
+                    {
+                        userManagement.logout()
+                    }
+                    else
+                    {
+                        popupLogin.clearText()
+                        popupLogin.open()
+                    }
+                }
+            }
+
             ToolButton {
                 text: qsTr("初始化")
                 transformOrigin: Item.Center
@@ -177,7 +252,7 @@ ApplicationWindow {
                 icon.color: "deepskyblue"
                 onClicked: {
                     qmessageDialog.open()
-                    //logicManager.sendMessageTest()
+                    //logicManager.receiveMsgSignal()
                 }
             }
             ToolButton {
@@ -227,6 +302,19 @@ ApplicationWindow {
                       })
                   })
               }
+           }
+           ToolButton {
+                id: openVisionLocationParameterViewer
+                text: qsTr("VL参数")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/visionLocationParameterViewer.png"
+                icon.color: "deepskyblue"
+                onClicked: {
+                    visionLocationParametersViewer.open()
+                }
            }
            ToolButton {
                 id: loadParamsButton
@@ -373,6 +461,36 @@ ApplicationWindow {
                }
            }
 
+           GridLayout{
+               rows: 2
+               columns: 2
+
+               Label{
+                  text: qsTr("User:")
+               }
+               Label{
+                  text: userManagement.currentUserName
+               }
+               Label{
+                  text: qsTr("Authority:")
+               }
+               Label{
+                  text: {
+                      switch(userManagement.currentAuthority)
+                      {
+                      case UserMng.Admin:
+                          return "Admin"
+                      case UserMng.Engineer:
+                          return "Engineer"
+                      case UserMng.Operator:
+                          return "Operator"
+                      case UserMng.None:
+                          return "None"
+                      }
+                  }
+               }
+           }
+
            Label{
               id: timeString
               color: "cyan"
@@ -388,6 +506,8 @@ ApplicationWindow {
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
         interactive: false
+
+//        UnitTestForm{}
 
         Page1Form {
             featureButton.onClicked: {

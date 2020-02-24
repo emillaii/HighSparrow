@@ -57,20 +57,6 @@ QPointF Pixel2Mech::pixel2MechPoint(const QPointF &pixelPoint)
     return transformation.map(pixelPoint);
 }
 
-QPointF Pixel2Mech::getMechCenter() const
-{
-    if(has_calibration!=true)
-        return QPointF(0.0,0.0);
-    return center_of_mech;
-}
-
-QPointF Pixel2Mech::getPixelCenter() const
-{
-    if(has_calibration!=true)
-        return QPointF(0.0,0.0);
-    return center_of_pixel;
-}
-
 bool Pixel2Mech::hasCalibration()
 {
     return has_calibration;

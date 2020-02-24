@@ -33,13 +33,10 @@ public:
     ~BaslerPylonCamera();
     bool Init();
     Q_INVOKABLE void close();
-    Q_INVOKABLE void open();
-    bool IsOpend();
     bool GrabImage();
     void CopyBufferToQImage(CGrabResultPtr, QImage&);
     QImage getImage();
     bool isCameraGrabbing();
-    void switchCameraChannel();
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 
     QImage getNewImage();
@@ -47,7 +44,6 @@ public:
     bool is_triged = false;
     bool got_new = false;
     bool need_triged = false;
-    QString getCameraChannelname();
     void updateImage(const CGrabResultPtr& ptrGrabResult);
     bool isGrabbing() const
     {
@@ -73,7 +69,6 @@ private:
     bool m_isGrabbing = false;
     CSampleImageEventHandler *imageHandler;
 signals:
-    void imageChanged(QImage);
     void callQmlRefeshImg();
     void noCameraEvent();
     void cameraCloseEvent();

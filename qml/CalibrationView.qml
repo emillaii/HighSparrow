@@ -59,6 +59,7 @@ ItemDelegate {
                                 onClicked: {
                                     file_dialog.open()
                                 }
+                                enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                             }
                             TextField{
                                 color: "#57f529"
@@ -66,6 +67,7 @@ ItemDelegate {
                                 font.pixelSize: 14
                                 width: 300
                                 Layout.preferredWidth: 300
+                                readOnly: userManagement.currentAuthority < 2 //At least engineer authority
                             }
                         }
                         RowLayout{

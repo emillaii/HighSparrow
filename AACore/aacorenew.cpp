@@ -145,15 +145,18 @@ void AACoreNew::setSfrWorkerController(SfrWorkerController * sfrWorkerController
     this->sfrWorkerController = sfrWorkerController;
 }
 
-void AACoreNew::receiveStartAAProcessRequest()
+void AACoreNew::receiveStartAAProcessRequestResponse(int sensorIndex, int lensIndex, bool isAAPickedLens)
 {
     qInfo(__FUNCTION__);
+    currentSensorIndex = sensorIndex;
+    currentLensIndex = lensIndex;
     this->has_sensor = true;
-    this->has_ng_sensor = true;
+    this->has_ng_sensor = false;
     this->has_lens = true;
-    this->has_ng_lens = true;
+    this->has_ng_lens = false;
     this->has_product = false;
     this->has_ng_product = false;
+    this->isAAHeadPickedLens = isAAPickedLens;
     start_process = true;
 }
 
@@ -167,15 +170,24 @@ void AACoreNew::run(bool has_material)
         if (start_process)
         {
             runningUnit = this->unitlog->createUnit();
+            hasDispense = false;
+            hasUV = false;
             runFlowchartTest();
+            if(hasDispense && !hasUV)
+            {
+                qCritical("Has executed glue dispense, but not executed UV!");
+                performUV(4000);
+                aa_head->openGripper();
+            }
             start_process = false;
             emit postDataToELK(this->runningUnit);
 			QThread::msleep(100);
 			double temp_time = timer.elapsed();
 			temp_time/=1000;
 			qInfo("cycle_time :%f",temp_time);
-            emit sendAAProcessResponse(has_ng_sensor, has_ng_lens, has_product, has_ng_product);
+            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex);         
         }
+        QThread::msleep(20);
     }
     qInfo("End of thread");
 }
@@ -187,42 +199,46 @@ void AACoreNew::LogicNg(int &ng_time)
     {
         has_ng_product = true;
         has_product = false;
+
+        has_lens = false;
+        has_ng_lens = false;
+        has_sensor = false;
+        has_ng_sensor = false;
         return;
     }
-    has_ng_lens = true;
-    has_ng_sensor = true;
-    has_lens = false;
-    has_sensor = false;
-//    if(parameters.firstRejectSensor())
-//    {
-//        if(ng_time >= parameters.rejectTimes())
-//        {
-//            ng_time = 0;
-//            has_ng_lens = true;
-//            has_lens = false;
-//        }
-//        else
-//        {
-//            has_ng_sensor = true;
-//            has_sensor = false;
-//            ng_time++;
-//        }
-//    }
-//    else
-//    {
-//        if(ng_time >= parameters.rejectTimes())
-//        {
-//            ng_time = 0;
-//            has_ng_sensor = true;
-//            has_sensor = false;
-//        }
-//        else
-//        {
-//            has_ng_lens = true;
-//            has_lens = false;
-//            ng_time++;
-//        }
-//    }
+
+    has_product = false;
+    has_ng_product = false;
+    if(parameters.firstRejectSensor())
+    {
+        if(ng_time >= parameters.rejectTimes())
+        {
+            ng_time = 0;
+            has_ng_lens = true;
+            has_lens = false;
+        }
+        else
+        {
+            has_ng_sensor = true;
+            has_sensor = false;
+            ng_time++;
+        }
+    }
+    else
+    {
+        if(ng_time >= parameters.rejectTimes())
+        {
+            ng_time = 0;
+            has_ng_sensor = true;
+            has_sensor = false;
+        }
+        else
+        {
+            has_ng_lens = true;
+            has_lens = false;
+            ng_time++;
+        }
+    }
 }
 
 void AACoreNew::NgLens()
@@ -230,11 +246,25 @@ void AACoreNew::NgLens()
     qInfo("NgLens");
     has_lens = false;
     has_ng_lens = true;
+    has_product = false;
+    has_ng_product = false;
     if(parameters.firstRejectSensor())
     {
         current_aa_ng_time = 0;
-        current_oc_ng_time = 0;
-        current_mtf_ng_time = 0;
+//        current_oc_ng_time = 0;
+//        current_mtf_ng_time = 0;
+    }
+}
+
+void AACoreNew::NgSensorOrProduct()
+{
+    if(hasDispense)
+    {
+        NgProduct();
+    }
+    else
+    {
+        NgSensor();
     }
 }
 
@@ -248,8 +278,8 @@ void AACoreNew::NgSensor()
     if(!parameters.firstRejectSensor())
     {
         current_aa_ng_time = 0;
-        current_oc_ng_time = 0;
-        current_mtf_ng_time = 0;
+//        current_oc_ng_time = 0;
+//        current_mtf_ng_time = 0;
     }
 }
 
@@ -265,8 +295,15 @@ bool AACoreNew::HasSensorOrProduct()
 
 void AACoreNew::NgProduct()
 {
-    has_product = false;
     has_ng_product = true;
+    has_product = false;
+
+    has_lens = false;
+    has_ng_lens = false;
+    has_sensor = false;
+    has_ng_sensor = false;
+
+    current_aa_ng_time = 0;
 }
 
 void AACoreNew::SetLens()
@@ -341,6 +378,11 @@ void AACoreNew::performHandlingOperation(int cmd)
     runningUnit = this->unitlog->createUnit();
     if (cmd == HandleTest::Dispense)
     {
+        if(!lsut->moveToDownlookPR(sensorDownlookOffset))
+        {
+            qCritical("moveToDownlookPR failed!");
+            return;
+        }
         performDispense();
     }
     else if (cmd == HandleTest::PR_To_Bond)
@@ -389,15 +431,17 @@ void AACoreNew::resetLogic()
     has_ng_sensor = false;
     has_sensor = false;
     has_lens = false;
+    isAAHeadPickedLens = false;
     send_lens_request = false;
     send_sensor_request = false;
     aa_head->waiting_sensor = false;
     aa_head->waiting_lens = false;
     current_aa_ng_time = 0;
-    current_oc_ng_time = 0;
-    current_mtf_ng_time = 0;
+//    current_oc_ng_time = 0;
+//    current_mtf_ng_time = 0;
     grr_repeat_time = 0;
     grr_change_time = 0;
+    autoRunDispenseTimes = 0;
 }
 
 bool AACoreNew::runFlowchartTest()
@@ -743,8 +787,6 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
     if (ret) {
         return ErrorCodeStruct {ErrorCode::OK, ""};
     } else {
-        NgSensor();
-        NgLens();
         return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""};
     }
 }
@@ -752,36 +794,63 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
 ErrorCodeStruct AACoreNew::performDispense()
 {
     qInfo("Performing Dispense");
-    has_product = true;
-    has_lens = false;
-    has_sensor = false;
-    has_ng_lens = false;
-    has_ng_sensor = false;
     QElapsedTimer timer; timer.start();
     QVariantMap map;
     lsut->recordCurrentPos();
-    PrOffset offset;
     dispense->setMapPosition(lsut->downlook_position.X(),lsut->downlook_position.Y());
-    if(!lsut->moveToDownlookPR(offset)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "downlook pr fail"};}
-    dispense->setPRPosition(offset.X,offset.Y,offset.Theta);
+    dispense->setPRPosition(sensorDownlookOffset.X,sensorDownlookOffset.Y,sensorDownlookOffset.Theta);
+
     lsut->moveToZPos(0);
+    hasDispense = true;
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
-    QString imageNameAfterDispense;
-    imageNameAfterDispense.append(getDispensePrLogDir())
-                   .append(getCurrentTimeString())
-                   .append("_")
-                   .append("_after_dispense.jpg");
-    lsut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
-    QImage image(imageNameAfterDispense);
-    dispenseImageProvider->setImage(image);
-    emit callQmlRefeshImg(3);  //Emit dispense image to QML
+
+    bool checkGlueRes = true;
+    if(is_run)   //自动模式
+    {
+        autoRunDispenseTimes ++;
+        if(autoRunDispenseTimes == 1)
+        {
+            QString imageNameAfterDispense;
+            imageNameAfterDispense.append(getDispensePrLogDir())
+                    .append(getCurrentTimeString())
+                    .append("_")
+                    .append("_after_dispense.jpg");
+            lsut->moveToDownlookSaveImage(imageNameAfterDispense); // For save image only
+            QImage image(imageNameAfterDispense);
+            dispenseImageProvider->setImage(image);
+            emit callQmlRefeshImg(3);  //Emit dispense image to QML
+
+            auto rsp = SI::ui.getUIResponse("Check Glue", "Please check glue!", MsgBoxIcon::Question, SI::ui.passFailButtons);
+            if(rsp == SI::ui.Fail)
+            {
+                autoRunDispenseTimes = 0;
+                checkGlueRes = false;
+            }
+        }
+        if(autoRunDispenseTimes >= parameters.FrequencyForCheckGlue())
+        {
+            autoRunDispenseTimes = 0;
+        }
+    }
 
     if(!lsut->movetoRecordPos()){return  ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "sut move to record pos fail"};}
 
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
     qInfo("Finish Dispense");
-    return ErrorCodeStruct {ErrorCode::OK, ""};
+    has_product = true;
+    has_lens = false;
+    has_sensor = false;
+    has_ng_lens = false;
+    has_ng_sensor = false;
+    if(checkGlueRes)
+    {
+        return ErrorCodeStruct {ErrorCode::OK, ""};
+    }
+    else {
+        LogicNg(current_aa_ng_time);
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Check glue failed"};
+    }
 }
 
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
@@ -830,13 +899,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
            qInfo("Z scan start from %f, real: %f", start+(i*step_size), realZ);
            grab_timer.start();
-           cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+           cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
            qInfo("Grab time elapsed: %d", grab_timer.elapsed());
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                emit pushDataToUnit(runningUnit, "AA", map);
-               LogicNg(current_aa_ng_time);
+               NgSensorOrProduct();
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
@@ -874,12 +943,12 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            QThread::msleep(zSleepInMs);
            step_move_time += step_move_timer.elapsed();
            grab_timer.start();
-           cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+           cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
            if (!grabRet) {
                qInfo("AA Cannot grab image.");
                map["Result"] = "AA Cannot grab image.";
                emit pushDataToUnit(runningUnit, "AA", map);
-               LogicNg(current_aa_ng_time);
+               NgSensorOrProduct();
                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
            }
            if (!blackScreenCheck(img)) {
@@ -910,11 +979,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 QThread::msleep(zSleepInMs);
                 step_move_time += step_move_timer.elapsed();
                 grab_timer.start();
-                cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+                cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
                 grab_time += grab_timer.elapsed();
                 if (!grabRet) {
                     qInfo("AA Cannot grab image.");
-                    LogicNg(current_aa_ng_time);
+                    NgSensorOrProduct();
                     map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                     emit pushDataToUnit(runningUnit, "AA", map);
                     return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
@@ -972,11 +1041,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              QThread::msleep(zSleepInMs);
              step_move_time += step_move_timer.elapsed();
              grab_timer.start();
-             cv::Mat img = dk->DothinkeyGrabImageCV(0,grabRet);
+             cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0,grabRet);
              grab_time += grab_timer.elapsed();
              if (!grabRet) {
                  qInfo("AA Cannot grab image.");
-                 LogicNg(current_aa_ng_time);
+                 NgSensorOrProduct();
                  map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
                  emit pushDataToUnit(runningUnit, "AA", map);
                  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
@@ -1054,12 +1123,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         step_move_timer.start();
         aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
         //aa_head->stepInterpolation_AB_Sync(-aa_result["xTilt"].toDouble(), -aa_result["yTilt"].toDouble());
+        step_move_timer.start();
         wait_tilt_time += step_move_timer.elapsed();
         map.insert("WAIT_TILT_TIME", wait_tilt_time);
     }
     if (position_checking == 1){
         QThread::msleep(zSleepInMs);
-        cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+        cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
         double beforeZ = lsut->sut_carrier->GetFeedBackPos().Z;
         double expected_fov = fov_slope*aa_result["zPeak"].toDouble() + fov_intercept;
         double dfov = calculateDFOV(img);
@@ -1665,7 +1735,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     if (sfr_check) {
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-       LogicNg(current_mtf_ng_time);
+       LogicNg(current_aa_ng_time);
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
@@ -1684,9 +1754,10 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     QElapsedTimer timer;timer.start();
     QVariantMap map;
     bool grabRet = false;
-    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
     if (!grabRet) {
         qInfo("MTF Cannot grab image.");
+        NgSensorOrProduct();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     double fov = calculateDFOV(img);
@@ -1699,6 +1770,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
 //    timer.restart();
     if (fov == -1) {
         qCritical("Cannot calculate FOV from the grabbed image.");
+        LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     start_time = timer.elapsed();
@@ -1856,9 +1928,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     if (sfr_check) {
        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-      // LogicNg(current_mtf_ng_time);
-        NgLens();
-        NgSensor();
+       LogicNg(current_aa_ng_time);
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
@@ -2075,6 +2145,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
 
 ErrorCodeStruct AACoreNew::performUV(int uv_time)
 {
+    hasUV = true;
     qInfo("Perform UV uv time: %d", uv_time);
     QElapsedTimer timer; timer.start();
     QVariantMap map;
@@ -2089,47 +2160,44 @@ ErrorCodeStruct AACoreNew::performReject()
 {
     QVariantMap map;
     imageThread->stop();
-    Sleep(100);
+    imageThread->wait();
     imageThread->exit();
-    dk->DothinkeyClose();
-//    NgLens();
-//    NgSensor();
-//    if(!has_product)
-//    {
-//        if(has_lens)
-//            has_ng_lens = true;
-//        if(has_sensor)
-//            has_ng_sensor = true;
-//    }
-//    has_sensor = false;
-//    has_lens = false;
-//    map.insert("has_ng_lens", has_product);
-//    map.insert("has_ng_sensor", has_ng_sensor);
-//    map.insert("has_product", has_product);
-//    map.insert("has_sensor", has_sensor);
-//    map.insert("has_lens", has_lens);
-//    emit pushDataToUnit(this->runningUnit, "Reject", map);
+    dk->stopCamera();
+    map.insert("has_ng_lens", has_ng_lens);
+    map.insert("has_ng_sensor", has_ng_sensor);
+    map.insert("has_product", has_product);
+    map.insert("has_sensor", has_sensor);
+    map.insert("has_lens", has_lens);
+    emit pushDataToUnit(this->runningUnit, "Reject", map);
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performAccept()
 {
     imageThread->stop();
-    Sleep(100);
+    imageThread->wait();
     imageThread->exit();
-    dk->DothinkeyClose();
+    dk->stopCamera();
     current_aa_ng_time = 0;
-    current_oc_ng_time = 0;
-    current_mtf_ng_time = 0;
+//    current_oc_ng_time = 0;
+//    current_mtf_ng_time = 0;
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performTerminate()
 {
     imageThread->stop();
-    Sleep(100);
+    imageThread->wait();
     imageThread->exit();
-    dk->DothinkeyClose();
+    dk->stopCamera();
+
+    QVariantMap map;
+    map.insert("has_ng_lens", has_ng_lens);
+    map.insert("has_ng_sensor", has_ng_sensor);
+    map.insert("has_product", has_product);
+    map.insert("has_sensor", has_sensor);
+    map.insert("has_lens", has_lens);
+    emit pushDataToUnit(this->runningUnit, "Termiate", map);
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -2162,17 +2230,18 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     int enable_plot = params["enable_plot"].toInt();
 //    cv::Mat inputImage = cv::imread("1/5.bmp");
     bool grabRet;
-    cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
+    cv::Mat inputImage = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
     if (!grabRet) {
         qInfo("Cannot grab image.");
-        NgSensor();
+        NgSensorOrProduct();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Test Fail. Cannot grab image"};
     }
     float min_i = 0;
     float max_i = 0;
     vector<float> intensityProfile;
     QElapsedTimer timer; timer.start();
-    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile);
+    int dummy;
+    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile, 0, 0, dummy);
     if (ret) {
         qInfo("performYLevelTest Success. Min I: %f Max I: %f size: %d", min_i, max_i, intensityProfile.size());
         if (enable_plot == 1) {
@@ -2194,7 +2263,8 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
 bool AACoreNew::blackScreenCheck(cv::Mat inImage)
 {
     vector<float> intensityProfile; float min_i = 0; float max_i = 0;
-    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile);
+    int dummy;
+    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile, 0, 0 , dummy);
     if (ret) {
         qInfo("[blackScreenCheck] Checking intensity...min: %f max: %f", min_i, max_i);
         if (max_i < 10) {
@@ -2217,10 +2287,10 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     QElapsedTimer timer;
     timer.start();
     bool grabRet;
-    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
     if (!grabRet) {
         qInfo("AA Cannot grab image.");
-        LogicNg(current_aa_ng_time);
+        NgSensorOrProduct();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     QString imageName;
@@ -2241,9 +2311,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         emit callQmlRefeshImg(1);
         if( vector.size()<1 || ccIndex > 9 )
         {
-            NgLens();
-            NgSensor();
-//            LogicNg(current_oc_ng_time);
+            LogicNg(current_aa_ng_time);
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
         }
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
@@ -2255,9 +2323,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage))
         {
-            NgLens();
-            NgSensor();
-//            LogicNg(current_oc_ng_time);
+            LogicNg(current_aa_ng_time);
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
         }
         ocImageProvider_1->setImage(outImage);
@@ -2278,9 +2344,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         qInfo("xy step: %f %f ", stepX, stepY);
         if(abs(stepX)>0.5||abs(stepY)>0.5)
         {
-            NgLens();
-            NgSensor();
-//            LogicNg(current_oc_ng_time);
+            LogicNg(current_aa_ng_time);
             qInfo("OC result too big (x:%f,y:%f) pixel:(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
         }
@@ -2302,17 +2366,35 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
     const int channel = 0;
-    bool res = dk->DothinkeyEnum();
-    if (!res) { qCritical("Cannot find dothinkey");NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "1"}; }
-    res = dk->DothinkeyOpen();
-    map.insert("dothinkeyOpen", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot open dothinkey"); NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "2"}; }
-    res = dk->DothinkeyLoadIniFile(channel);
-    map.insert("dothinkeyLoadIniFile", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot load dothinkey ini file");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "3"}; }
-    res = dk->DothinkeyStartCamera(channel);
+
+    if(needReInitFrameGrabber)
+    {
+        if(!dk->initDevice())
+        {
+            SI::ui.showMessage("Error", "Can not init frame grabber. Please check!", MsgBoxIcon::Error, SI::ui.Ok);
+        }
+        else {
+            needReInitFrameGrabber = false;
+        }
+    }
+
+    if(!dk->startCamera(channel))
+    {
+        qCritical("Cannot start camera");
+        NgSensor();
+        needReInitFrameGrabber = true;
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "StartCameraFailed"};
+    }
+    bool res = false;
+    dk->DothinkeyGrabImageCV(channel, res);
+    if(!res)
+    {
+        qCritical("Cannot grab image");
+        NgSensor();
+        needReInitFrameGrabber = true;
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "GrabImageFailed"};
+    }
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot start camera");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "4"}; }
 
 //    QString sensorID = dk->readSensorID();
 //    qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());
@@ -2330,15 +2412,20 @@ ErrorCodeStruct AACoreNew::performPRToBond()
 {
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
     QVariantMap map;
-    if (!lsut->gripLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
+    sensorDownlookOffset.ReSet();
+    if(!lsut->moveToDownlookPR(sensorDownlookOffset)) { NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
+    qInfo("downlook Pr Offset x: %f y: %f t: %f", sensorDownlookOffset.X, sensorDownlookOffset.Y, sensorDownlookOffset.Theta);
+    map.insert("moveToDownlookPR", stepTimer.elapsed()); stepTimer.restart();
+    if (!aaHeadPickLens()) { NgLens(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
     map.insert("aa_gripLens", stepTimer.elapsed()); stepTimer.restart();
-    if (!this->aa_head->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
+    PrOffset uplookPrOffset;
+    if(!lsut->moveToUplookPR(uplookPrOffset)){ NgLens(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToUplookPR"}; }
+    map.insert("moveToUplookPR", stepTimer.elapsed()); stepTimer.restart();
+
+    double thetaOffset = -uplookPrOffset.Theta - sensorDownlookOffset.Theta + aa_head->bondOffset.Theta();
+
+    if (!this->aa_head->moveToMushroomPosWithCOffset(thetaOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
-//    PrOffset downlookPrOffset;
-//    if(!lsut->moveToDownlookPR(downlookPrOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToDownlookPR"}; }
-//    qInfo("downlook Pr Offset x: %f y: %f t: %f", downlookPrOffset.X, downlookPrOffset.Y, downlookPrOffset.Theta);
-//    double theta = lsut->up_downlook_offset.Theta() + aa_head->uplook_theta + aa_head->offset_theta;
-//    this->aa_head->moveToSync(0, 0, 0, theta);
     if(!this->lsut->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToMushroomPosition"}; }
     map.insert("lsut_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
     map.insert("timeElapsed", timer.elapsed());
@@ -2351,7 +2438,7 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    if (!lsut->gripLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
+    if (!aaHeadPickLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "AAPickLens", map);
 }
@@ -2421,6 +2508,7 @@ std::vector<AA_Helper::patternAttr> AACoreNew::search_mtf_pattern(cv::Mat inImag
 
 double AACoreNew::calculateDFOV(cv::Mat img)
 {
+    int dummy;
     std::vector<AA_Helper::patternAttr> vector = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), 0);
     if (vector.size() == 4) {
         double d1 = sqrt(pow((vector[0].center.x() - vector[2].center.x()), 2) + pow((vector[0].center.y() - vector[2].center.y()), 2));
@@ -2468,7 +2556,7 @@ void AACoreNew::captureLiveImage()
         return;
     }
     bool grabRet = false;
-    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
     if (!grabRet) {
         qInfo("AA Cannot grab image.");
         return;

@@ -1,11 +1,11 @@
-﻿#ifndef XTVACUUM_H
+﻿         #ifndef XTVACUUM_H
 #define XTVACUUM_H
 #include "XtMotion/XtGeneralInput.h"
 #include "XtMotion/XtGeneralOutput.h"
 #include "Utils/errorcode.h"
 #include "XtMotion/xtvacuumparameter.h"
 #include <QString>
-#define VACUUM_TIMEOUT 3000
+#define VACUUM_TIMEOUT 1500
 #define VACUUM_INPUT_NULL_DELAY 1000
 #define VACUUM_FINISH_DELAY 20
 class XtVacuum :public ErrorBase
@@ -19,6 +19,7 @@ public:
     bool IsVacuum();
     bool GetVacuumState();
     QString GetName();
+    bool setTowerLightBuzzer();
 public:
     XtVacuumParameter parameters;
 private:

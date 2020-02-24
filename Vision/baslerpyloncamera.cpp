@@ -84,22 +84,6 @@ void BaslerPylonCamera::close()
     camera.DestroyDevice();
 }
 
-void BaslerPylonCamera::open()
-{
-    bool ret = Init();
-    if (!ret) return;
-    if((!camera.IsOpen())&&(!isGrabbing()))
-    {
-       camera.Open();
-       this->start();
-    } else this->start();
-}
-
-bool BaslerPylonCamera::IsOpend()
-{
-    return camera.IsOpen();
-}
-
 void BaslerPylonCamera::run(){
     if (camera.CanWaitForFrameTriggerReady())
     {
@@ -208,7 +192,3 @@ QImage BaslerPylonCamera::getNewImage()
     return this->getImage();
 }
 
-QString BaslerPylonCamera::getCameraChannelname()
-{
-    return this->cameraChannelName;
-}

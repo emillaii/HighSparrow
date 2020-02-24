@@ -17,8 +17,8 @@ bool WorkersManager::registerWorker(ThreadWorkerBase* worker)
         connect(this,&WorkersManager::resetLogicsSignal,worker,&ThreadWorkerBase::resetLogic);
         connect(worker,&ThreadWorkerBase::sendHandlingOperation,worker,&ThreadWorkerBase::performHandlingOperation);
         connect(worker,&ThreadWorkerBase::sendErrorMessage,this,&WorkersManager::receiveAlarm);
-        connect(this,&WorkersManager::feedbackOperation,worker,&ThreadWorkerBase::receiveOperation,Qt::DirectConnection);
-        connect(worker,&ThreadWorkerBase::sendMsgSignal,this,&WorkersManager::sendMessageTest,Qt::BlockingQueuedConnection);
+        connect(this,&WorkersManager::sendOperationSignal,worker,&ThreadWorkerBase::receiveOperation,Qt::DirectConnection);
+        connect(worker,&ThreadWorkerBase::sendMsgSignal,this,&WorkersManager::receiveMsgSignal,Qt::BlockingQueuedConnection);
         worker->setAlarmId(workers.count());
         qInfo("registerWorker :%s",worker->Name().toStdString().c_str());
         return true;
@@ -34,7 +34,7 @@ void WorkersManager::receiveAlarm(int sender_id,int level, QString error_message
         emit stopWorkers();
 }
 
-bool WorkersManager::sendMessageTest(QString title, QString content)
+bool WorkersManager::receiveMsgSignal(QString title, QString content)
 {
     QMessageBox::StandardButton rb = QMessageBox::information(nullptr,title,content,QMessageBox::Yes|QMessageBox::No);
     if(rb==QMessageBox::Yes){
@@ -136,11 +136,11 @@ int WorkersManager::getAlarmState(QString workerName)
     }
 }
 
-void WorkersManager::sendOperation(QString workerName, int operation_type)
+void WorkersManager::performAlarmOperation(QString workerName, int operation_type)
 {
     qInfo("Workername: %s operationType: %d", workerName.toStdString().c_str(), operation_type);
     //ToDo: Send back to worker for handling the user response
-    emit feedbackOperation(workers[workerName]->getAlarmId(),operation_type);
+    emit sendOperationSignal(workers[workerName]->getAlarmId(),operation_type);
     int sender_id = workers[workerName]->getAlarmId();
     workersState.remove(sender_id);
     workersError.remove(sender_id);

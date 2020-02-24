@@ -55,6 +55,7 @@ ColumnLayout {
                         sh_lens_tray_start_point1.setX(x);
                         sh_lens_tray_start_point1.setY(y);
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
         }
@@ -111,6 +112,7 @@ ColumnLayout {
                         sh_lens_first_tray_end_position.setX(x);
                         sh_lens_first_tray_end_position.setY(y);
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
         }
@@ -241,98 +243,97 @@ ColumnLayout {
         }
     }
 
-    GroupBox{
-        title:qsTr("Lens盘2起点")
-        ColumnLayout{
-            RowLayout{
-                Label{
-                    text: qsTr("X")
-                }
-                TextField{
-                    text: sh_lens_tray_start_point2.X
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator {
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                    onEditingFinished: {
-                        sh_lens_tray_start_point2.setX(text)
-                    }
-                }
-                Label{
-                    text: qsTr("Y")
-                }
-                TextField{
-                    text: sh_lens_tray_start_point2.Y
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator {
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                    onEditingFinished: {
-                        sh_lens_tray_start_point2.setY(text)
-                    }
-                }
-                Button{
-                    text:title_move_to
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2_START_POS)
-                    }
-                }
-                Button{
-                    text:title_read_encoder
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorXName)
-                        var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
-                        sh_lens_tray_start_point2.setX(x);
-                        sh_lens_tray_start_point2.setY(y);
-                    }
-                }
-            }
-        }
-    }
+//    GroupBox{
+//        title:qsTr("Lens盘2起点")
+//        ColumnLayout{
+//            RowLayout{
+//                Label{
+//                    text: qsTr("X")
+//                }
+//                TextField{
+//                    text: sh_lens_tray_start_point2.X
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    validator: DoubleValidator {
+//                        decimals: 6
+//                        notation: DoubleValidator.StandardNotation
+//                    }
+//                    onEditingFinished: {
+//                        sh_lens_tray_start_point2.setX(text)
+//                    }
+//                }
+//                Label{
+//                    text: qsTr("Y")
+//                }
+//                TextField{
+//                    text: sh_lens_tray_start_point2.Y
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    validator: DoubleValidator {
+//                        decimals: 6
+//                        notation: DoubleValidator.StandardNotation
+//                    }
+//                    onEditingFinished: {
+//                        sh_lens_tray_start_point2.setY(text)
+//                    }
+//                }
+//                Button{
+//                    text:title_move_to
+//                    width: 40
+//                    height: 40
+//                    onClicked: {
+//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2_START_POS)
+//                    }
+//                }
+//                Button{
+//                    text:title_read_encoder
+//                    width: 40
+//                    height: 40
+//                    onClicked: {
+//                        var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorXName)
+//                        var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
+//                        sh_lens_tray_start_point2.setX(x);
+//                        sh_lens_tray_start_point2.setY(y);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-    GroupBox{
-        title:qsTr("Lens盘2操作")
-        ColumnLayout{
-            RowLayout{
-                Label{
-                    text: qsTr("目标行")
-                }
-                TextField{
-                    id:t_nrow2
-                    text: "1"
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: IntValidator{
-                        bottom: 1
-                    }
-                }
-                Label{
-                    text: qsTr("目标列")
-                }
-                TextField{
-                    id:t_ncol2
-                    text: "1"
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: IntValidator{
-                        bottom: 1
-                    }
-                }
-                Button{
-                    text:title_move_to
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2)
-                    }
-                }
-            }
-        }
-    }
-
+//    GroupBox{
+//        title:qsTr("Lens盘2操作")
+//        ColumnLayout{
+//            RowLayout{
+//                Label{
+//                    text: qsTr("目标行")
+//                }
+//                TextField{
+//                    id:t_nrow2
+//                    text: "1"
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    validator: IntValidator{
+//                        bottom: 1
+//                    }
+//                }
+//                Label{
+//                    text: qsTr("目标列")
+//                }
+//                TextField{
+//                    id:t_ncol2
+//                    text: "1"
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    validator: IntValidator{
+//                        bottom: 1
+//                    }
+//                }
+//                Button{
+//                    text:title_move_to
+//                    width: 40
+//                    height: 40
+//                    onClicked: {
+//                        sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
+//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2)
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

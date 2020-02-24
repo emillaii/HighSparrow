@@ -6,6 +6,7 @@ import "DispenseModule"
 import "SUTModule"
 import "ThreadManager"
 import "SingleStationMaterialLoaderModule"
+import "DOE"
 
 ScrollView {
     id: machineConfigListView
@@ -60,10 +61,16 @@ ScrollView {
             visible: {threadMgrSwitch.checked}
         }
 
-        Switch {id: commonCtrlSwitch; text:"常用操作"; font.bold: true}
-        CommonControl{
+//        Switch {id: commonCtrlSwitch; text:"常用操作"; font.bold: true}
+//        CommonControl{
+//            Layout.fillWidth: true
+//            visible: {commonCtrlSwitch.checked}
+//        }
+
+        Switch {id: doeSwitch; text:"DOE"; font.bold: true}
+        StartCameraDoe{
             Layout.fillWidth: true
-            visible: {commonCtrlSwitch.checked}
+            visible: {doeSwitch.checked}
         }
 
 //        Switch {id: checkProcessSwitch; text:"校正过程"; font.bold: true}

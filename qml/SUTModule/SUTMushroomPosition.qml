@@ -71,6 +71,7 @@ ColumnLayout {
                 lsutMushroomPosition.setY(y)
                 lsutMushroomPosition.setZ(z)
             }
+            enabled: userManagement.currentAuthority >= 2 //At least engineer authority
         }
     }
 }

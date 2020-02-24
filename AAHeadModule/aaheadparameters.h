@@ -25,6 +25,10 @@ public:
     Q_PROPERTY(QString uv3Name READ uv3Name WRITE setUv3Name NOTIFY uv3NameChanged)
     Q_PROPERTY(QString uv4Name READ uv4Name WRITE setUv4Name NOTIFY uv4NameChanged)
     Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
+    //huawei aa
+    Q_PROPERTY(QString motorAAXName READ motorAAXName WRITE setMotorAAXName NOTIFY motorAAXNameChanged)
+    Q_PROPERTY(QString motorAAYName READ motorAAYName WRITE setMotorAAYName NOTIFY motorAAYNameChanged)
+    Q_PROPERTY(QString motorAAZName READ motorAAZName WRITE setMotorAAZName NOTIFY motorAAZNameChanged)
 
 double PickLensPositionZ() const
 {
@@ -99,6 +103,21 @@ QString uv4Name() const
 QString moduleName() const
 {
     return m_moduleName;
+}
+
+QString motorAAXName() const
+{
+    return m_motorAAXName;
+}
+
+QString motorAAYName() const
+{
+    return m_motorAAYName;
+}
+
+QString motorAAZName() const
+{
+    return m_motorAAZName;
 }
 
 public slots:
@@ -231,6 +250,33 @@ void setModuleName(QString moduleName)
     emit moduleNameChanged(m_moduleName);
 }
 
+void setMotorAAXName(QString motorAAXName)
+{
+    if (m_motorAAXName == motorAAXName)
+        return;
+
+    m_motorAAXName = motorAAXName;
+    emit motorAAXNameChanged(m_motorAAXName);
+}
+
+void setMotorAAYName(QString motorAAYName)
+{
+    if (m_motorAAYName == motorAAYName)
+        return;
+
+    m_motorAAYName = motorAAYName;
+    emit motorAAYNameChanged(m_motorAAYName);
+}
+
+void setMotorAAZName(QString motorAAZName)
+{
+    if (m_motorAAZName == motorAAZName)
+        return;
+
+    m_motorAAZName = motorAAZName;
+    emit motorAAZNameChanged(m_motorAAZName);
+}
+
 signals:
 void paramsChanged();
 void rotateZOffsetChanged(double rotateZOffset);
@@ -259,6 +305,12 @@ void uv4NameChanged(QString uv4Name);
 
 void moduleNameChanged(QString moduleName);
 
+void motorAAXNameChanged(QString motorAAXName);
+
+void motorAAYNameChanged(QString motorAAYName);
+
+void motorAAZNameChanged(QString motorAAZName);
+
 private:
 double m_PickLensPositionZ = 0;
 double m_OCPositionZ = 0;
@@ -275,6 +327,9 @@ QString m_uv2Name = "AA_UV2";
 QString m_uv3Name = "AA_UV3";
 QString m_uv4Name = "AA_UV4";
 QString m_moduleName = "AA1Head";
+QString m_motorAAXName = Q_NULLPTR;
+QString m_motorAAYName = Q_NULLPTR;
+QString m_motorAAZName = Q_NULLPTR;
 };
 
 #endif // AAHEADPARAMETERS_H

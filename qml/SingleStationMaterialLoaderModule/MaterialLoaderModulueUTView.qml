@@ -53,6 +53,7 @@ ColumnLayout {
                         sh_sut_pr_position.setX(x);
                         sh_sut_pr_position.setY(y);
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
             RowLayout{
@@ -167,15 +168,6 @@ ColumnLayout {
                     }
                 }
                 Button{
-                    text:qsTr("picker2动作")
-                    width:40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.performHandling(
-                                                                MaterialLoaderModule.PICKER2_PLACE_SENSOR_TO_SUT)
-                    }
-                }
-                Button{
                     text:qsTr("picker2取NG Sensor")
                     width:40
                     height: 40
@@ -251,6 +243,7 @@ ColumnLayout {
                         sh_lut_pr_position.setX(x);
                         sh_lut_pr_position.setY(y);
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
             RowLayout{

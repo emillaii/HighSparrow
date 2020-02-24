@@ -12,14 +12,17 @@
 #include "AACore/aadata.h"
 #include "MachineUtils/checkprocessmodel.h"
 #include "TrayMap/traymapmodel.h"
+#include "Utils/loging/loging.h"
+#include "Utils/singletoninstances.h"
+#include "UnitTest/SilicolMsgBoxTest.h"
+#include "Utils/userManagement/usermanagement.h"
 
 #include <windows.h>
 #include <DbgHelp.h>
-#pragma comment(lib,"Dbghelp.lib")
+#pragma comment(lib, "Dbghelp.lib")
 
 long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
 {
-    //创建 Dump 文件
     HANDLE hDumpFile = ::CreateFile(
         L"MEMORY.DMP",
         GENERIC_WRITE,
@@ -31,12 +34,10 @@ long  __stdcall CrashInfocallback(_EXCEPTION_POINTERS *pexcp)
     );
     if (hDumpFile != INVALID_HANDLE_VALUE)
     {
-        //Dump信息
         MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
         dumpInfo.ExceptionPointers = pexcp;
         dumpInfo.ThreadId = GetCurrentThreadId();
         dumpInfo.ClientPointers = TRUE;
-        //写入Dump文件内容
         ::MiniDumpWriteDump(
             GetCurrentProcess(),
             GetCurrentProcessId(),
@@ -68,14 +69,36 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("High Sparrow");
     app.setOrganizationName("Silicool");
     app.setOrganizationDomain("silicool.com");
-//    qInstallMessageHandler(sparrowLogOutput);
-    qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} [%{type}] %{file}:%{line}(%{function}):%{message}");
+
     app.setWindowIcon(QIcon(ICON_SPARROW));
 
     HighSprrow highSprrow;
 
     QtWebEngine::initialize();
     QQmlApplicationEngine engine;
+
+    // initialize logging system
+    LogManager logManager;
+    logManager.initLogSystem();
+    engine.rootContext()->setContextProperty("logManager", &logManager);
+    engine.rootContext()->setContextProperty("logModel", &logManager.logModel);
+
+    qRegisterMetaType<MsgBoxItem>();
+    qRegisterMetaType<MsgBoxIcon::Icon>();
+    qmlRegisterType<MsgBoxIcon>("MsgBoxIcon", 1, 0, "MsgBoxIcon");
+    MsgBoxModel msgBoxModel;
+    SI::ui.init(&msgBoxModel);
+    engine.rootContext()->setContextProperty("msgBoxModel", &msgBoxModel);
+    engine.rootContext()->setContextProperty("uiOperation", &SI::ui);
+
+    MsgBoxTester msgBoxTester;
+    engine.rootContext()->setContextProperty("msgBoxTester", &msgBoxTester);
+
+    UserManagement userManagement;
+    userManagement.init();
+    qmlRegisterType<UserManagement>("UserMng", 1, 0, "UserMng");
+    engine.rootContext()->setContextProperty("userManagement", &userManagement);
+    engine.rootContext()->setContextProperty("userModel", userManagement.userModel);
 
     qmlRegisterUncreatableType<TrayMapModel>("HighSprrow.Models", 1, 0, "TrayMapModel", "Tray map model should only be created in cpp code");
 
@@ -91,7 +114,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("downlookCamera", highSprrow.baseModuleManager->pylonDownlookCamera);
     engine.rootContext()->setContextProperty("pickarmCamera", highSprrow.baseModuleManager->pylonPickarmCamera);
     engine.rootContext()->setContextProperty("hikCamera", highSprrow.baseModuleManager->hikCamera);
-
     QStringList workerNameList;
     for(QString output:highSprrow.worker_manager->getWorkersNames()){
         workerNameList<<output;
@@ -121,6 +143,9 @@ int main(int argc, char *argv[])
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
     //AA Head Position
     engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);
+    engine.rootContext()->setContextProperty("aaHeadPickLensPosition", &highSprrow.baseModuleManager->aa_head_module.aaPickLensPosition);
+    engine.rootContext()->setContextProperty("bondOffset", &highSprrow.baseModuleManager->aa_head_module.bondOffset);
+    engine.rootContext()->setContextProperty("aaHeadXYZPosition",&highSprrow.baseModuleManager->aa_head_module.aaHeadXYZPosition);
 
     //LSUT Position
     engine.rootContext()->setContextProperty("lsutLensOffset", &highSprrow.baseModuleManager->sh_lsut_module.lens_offset);
@@ -129,7 +154,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lsutLoadSensorPosition", &highSprrow.baseModuleManager->sh_lsut_module.load_sensor_position);
      engine.rootContext()->setContextProperty("lsutLoadLensPosition", &highSprrow.baseModuleManager->sh_lsut_module.load_lens_position);
     engine.rootContext()->setContextProperty("lsutPRPosition", &highSprrow.baseModuleManager->sh_lsut_module.downlook_position);
-    engine.rootContext()->setContextProperty("lsutGripperPosition", &highSprrow.baseModuleManager->sh_lsut_module.gripper_position);
+    engine.rootContext()->setContextProperty("lsutUplookPosition", &highSprrow.baseModuleManager->sh_lsut_module.uplook_position);
     engine.rootContext()->setContextProperty("lsutCalibrationPosition", &highSprrow.baseModuleManager->sh_lsut_module.calibration_position);
     engine.rootContext()->setContextProperty("lsutSafetyPosition", &highSprrow.baseModuleManager->sh_lsut_module.safety_position);
     engine.rootContext()->setContextProperty("lsutUnPickLensPosition", &highSprrow.baseModuleManager->sh_lsut_module.unpick_lens_position);
@@ -141,6 +166,10 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sh_lut_pr_position",&highSprrow.baseModuleManager->single_station_material_loader_module.lut_pr_position);
     engine.rootContext()->setContextProperty("sh_camera_to_picker1_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.camera_to_picker1_offset);
     engine.rootContext()->setContextProperty("sh_camera_to_picker2_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.camera_to_picker2_offset);
+    engine.rootContext()->setContextProperty("sh_place_ng_sensor_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeNgSensorToTrayOffset);
+    engine.rootContext()->setContextProperty("sh_place_ng_product_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeNgProductToTrayOffset);
+    engine.rootContext()->setContextProperty("sh_place_ok_product_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeOkProductToTrayOffset);
+
 
     engine.rootContext()->setContextProperty("sh_sensor_tray",&highSprrow.baseModuleManager->sensor_tray);
     engine.rootContext()->setContextProperty("sh_sensor_first_tray_end_position",&highSprrow.baseModuleManager->sensor_tray.first_tray_end_position);
@@ -192,6 +221,9 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("vl_parameter_list",QVariant::fromValue(vl_parameter_list));
 
+    //Doe
+    engine.rootContext()->setContextProperty("startCameraDoe", highSprrow.baseModuleManager->startCameraDoe);
+
     //Params
     engine.rootContext()->setContextProperty("aaHeadParams", &highSprrow.baseModuleManager->aa_head_module.parameters);
     engine.rootContext()->setContextProperty("aaCoreParams", &highSprrow.baseModuleManager->aaCoreNew.parameters);
@@ -229,23 +261,6 @@ int main(int argc, char *argv[])
         inputList<<input;
     }
     engine.rootContext()->setContextProperty("inputList",inputList);
-
-
-    QStringList logList;
-    QFile file("./log/system_log/log.txt");
-    if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
-        qDebug()<<"???log??";
-    }else{
-        QTextStream in(&file);
-        QString line = in.readLine();
-        while(!line.isNull()){
-            logList<<line;
-            line = in.readLine();
-        }
-    }
-    engine.rootContext()->setContextProperty("logList",logList);
-
-
 
     CheckProcessModel checkProcessModel;
     engine.rootContext()->setContextProperty("checkProcessModel",&checkProcessModel);

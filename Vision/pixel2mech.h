@@ -31,11 +31,7 @@ public:
 //计算传入的像素点和相机中心的机械距离
     bool CalcMechDistance(const QPointF &pixel_point,QPointF &mech_point);
 
-
     QPointF pixel2MechPoint(const QPointF &pixelPoint);
-
-    QPointF getMechCenter() const;
-    QPointF getPixelCenter() const;
 
     bool hasCalibration();
 private:

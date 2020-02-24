@@ -33,6 +33,8 @@ public:
         return m_breakIoName;
     }
 
+
+
 public slots:
     void setVacuumName(QString vacuumName)
     {
@@ -69,6 +71,8 @@ public slots:
         emit breakIoNameChanged(m_breakIoName);
     }
 
+
+
 signals:
     void vacuumNameChanged(QString vacuumName);
     void outIoNameChanged(QString outIoName);
@@ -76,6 +80,7 @@ signals:
     void inIoNameChanged(QString inIoName);
 
     void breakIoNameChanged(QString breakIoName);
+
 
 private:
     QString m_vacuumName = "Vcauum";

@@ -2,6 +2,7 @@
 #define DISPENSER_PARAMETER_H
 
 #include "Utils/propertybase.h"
+#include "Utils/commonmethod.h"
 
 class DispenserParameter:public PropertyBase
 {
@@ -50,7 +51,7 @@ public slots:
         if (qFuzzyCompare(m_openOffset, openOffset))
             return;
 
-        m_openOffset = openOffset;
+        m_openOffset = SET_PRECISION(openOffset, 6);
         emit openOffsetChanged(m_openOffset);
     }
     void setCloseOffset(double closeOffset)
@@ -59,7 +60,7 @@ public slots:
         if (qFuzzyCompare(m_closeOffset, closeOffset))
             return;
 
-        m_closeOffset = closeOffset;
+        m_closeOffset = SET_PRECISION(closeOffset, 6);
         emit closeOffsetChanged(m_closeOffset);
     }
 

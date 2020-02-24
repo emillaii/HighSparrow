@@ -54,6 +54,7 @@ ColumnLayout {
                         sh_sensor_tray_start_point1.setX(x);
                         sh_sensor_tray_start_point1.setY(y);
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
         }
@@ -108,6 +109,7 @@ ColumnLayout {
                         sh_sensor_first_tray_end_position.setX(x);
                         sh_sensor_first_tray_end_position.setY(y);
                     }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
             }
         }
@@ -211,35 +213,33 @@ ColumnLayout {
                         }
                     }
                 }
-
                 RowLayout{
-                    Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                     Label{
-                        text: qsTr("Picker1放Product Offset X:")
+                        text:qsTr("PlaceOkProductToTrayOffset X:")
                     }
                     TextField{
-                        text: materialLoaderParameter.picker1PlaceOkProductOffsetX
+                        text: sh_place_ok_product_to_tray_offset.X
                         horizontalAlignment: TextInput.AlignHCenter
-                        validator: DoubleValidator{
+                        validator: DoubleValidator {
                             decimals: 6
                             notation: DoubleValidator.StandardNotation
                         }
                         onEditingFinished: {
-                           materialLoaderParameter.setPicker1PlaceOkProductOffsetX(text)
+                            sh_place_ok_product_to_tray_offset.setX(text)
                         }
                     }
                     Label{
-                        text: qsTr("Y:")
+                        text:qsTr("Y:")
                     }
                     TextField{
-                        text: materialLoaderParameter.picker1PlaceOkProductOffsetY
+                        text: sh_place_ok_product_to_tray_offset.Y
                         horizontalAlignment: TextInput.AlignHCenter
-                        validator: DoubleValidator{
+                        validator: DoubleValidator {
                             decimals: 6
                             notation: DoubleValidator.StandardNotation
                         }
                         onEditingFinished: {
-                           materialLoaderParameter.setPicker1PlaceOkProductOffsetY(text)
+                            sh_place_ok_product_to_tray_offset.setY(text)
                         }
                     }
                 }

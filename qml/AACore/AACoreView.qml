@@ -16,6 +16,7 @@ ItemDelegate {
             GroupBox{
                 id: coreParamGroupBox
                 title: qsTr("AA Core Parameters")
+                enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 ColumnLayout {
                     RowLayout {
                         Label {

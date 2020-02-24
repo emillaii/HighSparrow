@@ -76,6 +76,41 @@ ItemDelegate {
                     }
                 }
             }
+
+            RowLayout{
+                Button{
+                    text: "init"
+                    onClicked: {
+                        imageGrabber.initDevice()
+                    }
+                }
+                Button{
+                    text: "release"
+                    onClicked: {
+                        imageGrabber.releaseDevice()
+                    }
+                }
+            }
+            RowLayout{
+                Button{
+                    text: "start"
+                    onClicked: {
+                        imageGrabber.startCamera()
+                    }
+                }
+                Button{
+                    text: "stop"
+                    onClicked: {
+                        imageGrabber.stopCamera()
+                    }
+                }
+                Button{
+                    text: "get Img"
+                    onClicked: {
+                        imageGrabber.getImgTest()
+                    }
+                }
+            }
         }
     }
 }

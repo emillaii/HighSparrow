@@ -17,6 +17,7 @@ ColumnLayout {
             onEditingFinished: {
                 dispenserParams.setOpenOffset(text)
             }
+            readOnly: userManagement.currentAuthority < 2 //At least engineer authority
         }
 
         Label {
@@ -32,6 +33,7 @@ ColumnLayout {
             onEditingFinished: {
                 dispenserParams.setCloseOffset(text)
             }
+            readOnly: userManagement.currentAuthority < 2 //At least engineer authority
         }
     }
     RowLayout {
@@ -49,6 +51,7 @@ ColumnLayout {
                 dispenserParams.setMaximumSpeed(text)
                 dispenserParams.setEndSpeed(text)
             }
+            readOnly: userManagement.currentAuthority < 2 //At least engineer authority
         }
         Button {
             text: qsTr("更新图纸")

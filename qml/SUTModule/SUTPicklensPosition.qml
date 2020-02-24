@@ -71,6 +71,7 @@ ColumnLayout {
                 lsutPickLensPosition.setY(y)
                 lsutPickLensPosition.setZ(z)
             }
+            enabled: userManagement.currentAuthority >= 2 //At least engineer authority
         }
     }
 

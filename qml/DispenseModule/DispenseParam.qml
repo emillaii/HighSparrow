@@ -17,6 +17,7 @@ ColumnLayout {
             onEditingFinished: {
                 dispenseParams.setTestForce(text)
             }
+            readOnly: userManagement.currentAuthority < 2 //At least engineer authority
         }
 
         Label {
@@ -32,6 +33,7 @@ ColumnLayout {
             onEditingFinished: {
                 dispenseParams.setDispenseZOffset(text)
             }
+            readOnly: userManagement.currentAuthority < 2 //At least engineer authority
         }
     }
 
@@ -49,6 +51,21 @@ ColumnLayout {
             }
             onEditingFinished: {
                 dispenseParams.setInitTheta(text)
+            }
+            readOnly: userManagement.currentAuthority < 2 //At least engineer authority
+        }
+
+        Label {
+            text: qsTr("人工检胶频率")
+        }
+        TextField {
+            text: aaCoreParams.FrequencyForCheckGlue
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: IntValidator {
+                bottom: 1
+            }
+            onEditingFinished: {
+                aaCoreParams.setFrequencyForCheckGlue(text)
             }
         }
     }

@@ -15,14 +15,16 @@ public:
     void saveParam();
     bool performPR(PrOffset &offset, bool need_conversion = true);
     bool saveImage(QString filename);
-//    bool performPR();
     bool performPR(PRResultStruct &pr_result);
     Q_INVOKABLE QPointF getCurrentOffset();
     void OpenLight();
     void CloseLight();
-    QString getLastImageName();
+//    QString getLastImageName();
 
     Pixel2Mech* mapping;
+
+private:
+    void applyOffset(PrOffset& prOffset);
 
 public:
     VisionLocationParameter parameters;

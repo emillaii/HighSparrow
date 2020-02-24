@@ -25,6 +25,11 @@ public:
     Q_PROPERTY(double placeSensorZ READ placeSensorZ WRITE setPlaceSensorZ NOTIFY placeSensorZChanged)
     Q_PROPERTY(double pickProductZ READ pickProductZ WRITE setPickProductZ NOTIFY pickProductZChanged)
     Q_PROPERTY(double placeProductZ READ placeProductZ WRITE setPlaceProductZ NOTIFY placeProductZChanged)
+    Q_PROPERTY(double pickArmOriginX READ pickArmOriginX WRITE setPickArmOriginX NOTIFY pickArmOriginXChanged)
+    //huawei aa
+    Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
+    Q_PROPERTY(double pickArmZ READ pickArmZ WRITE setPickArmZ NOTIFY pickArmZChanged)
+
 
 public:
     SingleHeadMachineMaterialPickArmParameter():PropertyBase(){}
@@ -119,6 +124,21 @@ public:
         return m_placeProductZ;
     }
 
+
+    double pickArmOriginX() const
+    {
+        return m_pickArmOriginX;
+    }
+
+    QString motorZName() const
+    {
+        return m_motorZName;
+    }
+
+    double pickArmZ() const
+    {
+        return m_pickArmZ;
+    }
 
 public slots:
     void setMotorXName(QString motorXName)
@@ -292,12 +312,39 @@ public slots:
 
 
 
+    void setPickArmOriginX(double pickArmOriginX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickArmOriginX, pickArmOriginX))
+            return;
+
+        m_pickArmOriginX = pickArmOriginX;
+        emit pickArmOriginXChanged(m_pickArmOriginX);
+    }
+
+    void setMotorZName(QString motorZName)
+    {
+        if (m_motorZName == motorZName)
+            return;
+
+        m_motorZName = motorZName;
+        emit motorZNameChanged(m_motorZName);
+    }
+
+    void setPickArmZ(double pickArmZ)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickArmZ, pickArmZ))
+            return;
+
+        m_pickArmZ = pickArmZ;
+        emit pickArmZChanged(m_pickArmZ);
+    }
+
 signals:
     void motorXNameChanged(QString motorXName);
 
     void motorYNameChanged(QString motorYName);
-
-    void motorZNameChanged(QString motorZName);
 
     void motorTh1NameChanged(QString motorTh1Name);
 
@@ -331,6 +378,10 @@ signals:
 
     void placeProductZChanged(double placeProductZ);
 
+    void pickArmOriginXChanged(double pickArmOriginX);
+    void motorZNameChanged(QString motorZName);
+
+    void pickArmZChanged(double pickArmZ);
 
 private:
     QString m_motorXName = "";
@@ -351,6 +402,9 @@ private:
     double m_placeSensorZ = 0;
     double m_pickProductZ = 0;
     double m_placeProductZ = 0;
+    double m_pickArmOriginX = 0;
+    QString m_motorZName = "";
+    double m_pickArmZ = 0;
 };
 
 #endif // SINGLEHEADMACHINEMATERIALPICKARMPARAMETER_H

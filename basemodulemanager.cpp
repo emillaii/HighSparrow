@@ -9,9 +9,7 @@
 #include <qjsonarray.h>
 #include <qjsondocument.h>
 
-wchar_t BaseModuleManager::ip[] =  L"192.168.8.251";
-wchar_t BaseModuleManager::profile_path1[] = L".\\config\\";
-wchar_t BaseModuleManager::profile_path2[] = L"..\\config\\xt_motion_config.csv";
+wchar_t BaseModuleManager::ip[] =  L"192.168.0.251";
 
 BaseModuleManager::BaseModuleManager(QObject *parent)
     : PropertyBase (parent),
@@ -22,7 +20,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("BASE_MODULE_PARAMS", this);
     PropertyBase::loadJsonConfig(BASE_MODULE_JSON,temp_map);
-//    qInfo("Server Mode: %d", ServerMode());
+    //    qInfo("Server Mode: %d", ServerMode());
     is_init = false;
     profile_loaded = false;
     if(!QDir(".//notopencamera").exists())
@@ -52,42 +50,40 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
             hikCamera->SCCameraInit("192.168.1.8");
         }
     }
-//    material_tray.standards_parameters.setTrayCount(2);
     lens_tray.standards_parameters.setTrayCount(2);
     lens_tray.setTrayType(TrayType::LENS_TRAY);
     sensor_tray.standards_parameters.setTrayCount(2);
     sensor_tray.setTrayType(TrayType::SENSOR_TRAY);
     reject_tray.standards_parameters.setTrayCount(2);
     reject_tray.setTrayType(TrayType::REJECT_TRAY);
+
     unitlog.setServerAddress(configs.dataServerURL());
     setHomeState(false);
-    connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::sendMessageTest,Qt::BlockingQueuedConnection);
+    connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::receiveMsgSignal,Qt::BlockingQueuedConnection);
     connect(&timer, &QTimer::timeout, this, &BaseModuleManager::alarmChecking);
-    connect(this,&BaseModuleManager::sendHandlingOperation,this,&BaseModuleManager::performHandlingOperation);
 
-    //Send Lens Request / Response Pair
-    connect(&this->sh_lsut_module, &SingleheadLSutModule::sendLoadMaterialRequest,
-            &this->single_station_material_loader_module,&SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequest,Qt::DirectConnection);
-    connect(&this->single_station_material_loader_module, &SingleHeadMachineMaterialLoaderModule::sendLoadMaterialResponse,
-            &this->sh_lsut_module,&SingleheadLSutModule::receiveMaterialResponse,Qt::DirectConnection);
+    //Load material Request / Finish Pair
+    connect(&this->sh_lsut_module, &SingleheadLSutModule::sendLoadMaterialRequestSignal,
+            &this->single_station_material_loader_module,&SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequestResponse,Qt::DirectConnection);
+    connect(&this->single_station_material_loader_module, &SingleHeadMachineMaterialLoaderModule::sendLoadMaterialFinishSignal,
+            &this->sh_lsut_module,&SingleheadLSutModule::receiveLoadMaterialFinishResponse,Qt::DirectConnection);
 
-    //Start AA Process Request / Response Pair
-    connect(&this->sh_lsut_module, &SingleheadLSutModule::sendStartAAProcessRequest,
-            &this->aaCoreNew, &AACoreNew::receiveStartAAProcessRequest, Qt::DirectConnection);
-    connect(&this->aaCoreNew, &AACoreNew::sendAAProcessResponse,
-            &this->sh_lsut_module, &SingleheadLSutModule::receiveAAProcessResponse, Qt::DirectConnection);
+    //Start AA Process start/ Finish Pair
+    connect(&this->sh_lsut_module, &SingleheadLSutModule::sendStartAAProcessRequestSignal,
+            &this->aaCoreNew, &AACoreNew::receiveStartAAProcessRequestResponse, Qt::DirectConnection);
+    connect(&this->aaCoreNew, &AACoreNew::sendAAProcessFinishSignal,
+            &this->sh_lsut_module, &SingleheadLSutModule::receiveAAProcessFinishResponse, Qt::DirectConnection);
     //timer.start(1000);
-    //change tray
-    connect (&this->single_station_material_loader_module,&SingleHeadMachineMaterialLoaderModule::sendChangeLensTrayRequst,
-             &this->single_station_material_loader_module,&SingleHeadMachineMaterialLoaderModule::receiveChangeLensTrayRequest,Qt::DirectConnection);
-    connect (&this->single_station_material_loader_module,&SingleHeadMachineMaterialLoaderModule::sendChangeSensorTrayRequst,
-             &this->single_station_material_loader_module,&SingleHeadMachineMaterialLoaderModule::receiveChangeSensorTrayRequest,Qt::DirectConnection);
+
+    startCameraDoe = new StartCameraDOE();
 }
 
 BaseModuleManager::~BaseModuleManager()
 {
     this->work_thread.quit();
     this->work_thread.wait();
+    dothinkey->releaseDevice();
+    delete startCameraDoe;
 }
 
 void BaseModuleManager::alarmChecking()
@@ -105,16 +101,11 @@ void BaseModuleManager::alarmChecking()
             setHomeState(false);
         }
     }
-    XtGeneralInput *reset_button = GetInputIoByName(u8"复位按钮");
-    qInfo("reset_button: %d",reset_button->Value());
-    if (reset_button->Value() == 0) {
-        this->allMotorsSeekOrigin();
-    }
     if(checked_alarm)
         emit sendAlarm(0,ErrorLevel::ErrorMustStop,GetCurrentError());
 }
 
-bool BaseModuleManager::sendMessageTest(QString title, QString content)
+bool BaseModuleManager::receiveMsgSignal(QString title, QString content)
 {
     QMessageBox::StandardButton rb = QMessageBox::information(nullptr,title,content,QMessageBox::Yes|QMessageBox::No);
     if(rb==QMessageBox::Yes){
@@ -137,18 +128,9 @@ bool BaseModuleManager::loadParameters()
     dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
     dispense_module.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
 
-    QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("material_pickarm",&single_station_material_pickarm.parameters);
-    PropertyBase::loadJsonConfig(getCurrentParameterDir().append(MATERIAL_PICKARM_FILE), temp_map);
-    QMap<QString,PropertyBase*> map;
-    map.insert("material_loader",&single_station_material_loader_module.parameters);
-    map.insert("sut_pr_position",&single_station_material_loader_module.sut_pr_position);
-    map.insert("lut_pr_position",&single_station_material_loader_module.lut_pr_position);
-    map.insert("camera_to_picker1_offset",&single_station_material_loader_module.camera_to_picker1_offset);
-    map.insert("camera_to_picker2_offset",&single_station_material_loader_module.camera_to_picker2_offset);
-    PropertyBase::loadJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),map);
-//    lut_carrier.parameters.loadJsonConfig(getCurrentParameterDir().append(LUT_CARRIER_FILE),LUT_CARRIER_PARAMETER);
+    single_station_material_pickarm.parameters.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_PICKARM_FILE),MATERIAL_PICKARM_PARAMETER);
     sh_lsut_module.loadParams(getCurrentParameterDir().append(SH_LSUT_FILE));
+    single_station_material_loader_module.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE));
 
     aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
     qInfo("start  loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));");
@@ -158,13 +140,8 @@ bool BaseModuleManager::loadParameters()
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
-    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
-    return true;
-}
-
-bool BaseModuleManager::loadconfig()
-{
-    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    loadTowerLightBuzzerFiles(getCurrentParameterDir().append(TOWERLIGHTBUZZER_PARAMETER_FILE));
+    //    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
     return true;
 }
 
@@ -181,26 +158,15 @@ bool BaseModuleManager::saveParameters()
     dispense_module.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
 
     single_station_material_pickarm.parameters.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_PICKARM_FILE), MATERIAL_PICKARM_PARAMETER);
-    QMap<QString,PropertyBase*> map;
-    map.insert("material_loader",&single_station_material_loader_module.parameters);
-    map.insert("sut_pr_position",&single_station_material_loader_module.sut_pr_position);
-    map.insert("lut_pr_position",&single_station_material_loader_module.lut_pr_position);
-    map.insert("camera_to_picker1_offset",&single_station_material_loader_module.camera_to_picker1_offset);
-    map.insert("camera_to_picker2_offset",&single_station_material_loader_module.camera_to_picker2_offset);
-    PropertyBase::saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE),map);
     sh_lsut_module.saveParams(getCurrentParameterDir().append(SH_LSUT_FILE));
+    single_station_material_loader_module.saveJsonConfig(getCurrentParameterDir().append(MATERIAL_LOADER_FILE));
 
     aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
     saveMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     saveCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
-    return true;
-}
-
-bool BaseModuleManager::showSetting()
-{
-    GetVcMotorByName("PA_Z1")->ShowSetting();
+    //    saveMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
     return true;
 }
 
@@ -211,16 +177,6 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
     result &= manager->registerWorker(&single_station_material_loader_module);
     result &= manager->registerWorker(&aaCoreNew);
     return result;
-}
-
-void BaseModuleManager::performHandling(int cmd)
-{
-    emit sendHandlingOperation(cmd);
-}
-
-void BaseModuleManager::performHandlingOperation(int cmd)
-{
-    qInfo("performHandlingOperation cmd: ", cmd);
 }
 
 bool BaseModuleManager::loadProfile()
@@ -386,6 +342,7 @@ bool BaseModuleManager::loadVacuumFiles(QString file_name)
     return true;
 }
 
+
 bool BaseModuleManager::saveVacuumFiles(QString file_name)
 {
     QJsonArray array;
@@ -395,6 +352,47 @@ bool BaseModuleManager::saveVacuumFiles(QString file_name)
         {
             QJsonObject object;
             temp_vacuum->parameters.write(object);
+            array.append(object);
+        }
+    }
+    if(array.size() > 0)
+        return  saveJsonArray(file_name,array);
+    return  false;
+}
+bool BaseModuleManager::loadTowerLightBuzzerFiles(QString file_name)
+{
+    QJsonArray array;
+    if(!loadJsonArray(file_name,array))
+    {
+        //        saveVacuumFiles(file_name);
+        return false;
+    }
+    for (int i = 0; i < array.count(); i++)
+    {
+        TowerLightBuzzer* temp_towerLightBuzzer = new TowerLightBuzzer;
+        temp_towerLightBuzzer->parameters.read(array.at(i).toObject());
+        QJsonObject temp_object;
+        temp_towerLightBuzzer->parameters.write(temp_object);
+        if(!towerLightBuzzers.contains(temp_towerLightBuzzer->parameters.towerLightBuzzerName()))
+            towerLightBuzzers.insert(temp_towerLightBuzzer->parameters.towerLightBuzzerName(),temp_towerLightBuzzer);
+        else
+        {
+            qInfo("towerlight buzzer param name(%s)repeat!",temp_towerLightBuzzer->parameters.towerLightBuzzerName().toStdString().c_str());
+            delete temp_towerLightBuzzer;
+        }
+    }
+    return true;
+}
+
+bool BaseModuleManager::saveTowerLightBuzzerFiles(QString file_name)
+{
+    QJsonArray array;
+    foreach (QString temp_name, towerLightBuzzers.keys()) {
+        TowerLightBuzzer* temp_towerLightBuzzer = GetTowerLightBuzzerByName(temp_name);
+        if(temp_towerLightBuzzer != nullptr)
+        {
+            QJsonObject object;
+            temp_towerLightBuzzer->parameters.write(object);
             array.append(object);
         }
     }
@@ -740,7 +738,8 @@ bool BaseModuleManager::InitStruct()
     foreach (XtVacuum* temp_vacuum, vacuums.values()) {
         temp_vacuum->Init(GetOutputIoByName(temp_vacuum->parameters.outIoName()),
                           GetInputIoByName(temp_vacuum->parameters.inIoName()),
-                          GetOutputIoByName(temp_vacuum->parameters.breakIoName()));
+                          GetOutputIoByName(temp_vacuum->parameters.breakIoName())
+                          );
     }
 
     foreach (XtCylinder* temp_cylinder, cylinder.values()) {
@@ -749,25 +748,12 @@ bool BaseModuleManager::InitStruct()
                             GetInputIoByName(temp_cylinder->parameters.zeroInName()),
                             GetOutputIoByName(temp_cylinder->parameters.zeroOutName()));
     }
-
-    sut_carrier.Init("sut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
-                     GetMotorByName(sh_lsut_module.parameters.motorYName()),
-                     GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
-                     GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()));
-
-    aa_head_module.Init("AAHead",GetMotorByName(aa_head_module.parameters.motorXName()),
-                        GetMotorByName(aa_head_module.parameters.motorYName()),
-                        GetMotorByName(aa_head_module.parameters.motorZName()),
-                        GetMotorByName(aa_head_module.parameters.motorAName()),
-                        GetMotorByName(aa_head_module.parameters.motorBName()),
-                        GetMotorByName(aa_head_module.parameters.motorCName()),
-                        GetOutputIoByName(aa_head_module.parameters.gripperName()),
-                        GetOutputIoByName(aa_head_module.parameters.uv1Name()),
-                        GetOutputIoByName(aa_head_module.parameters.uv2Name()),
-                        GetOutputIoByName(aa_head_module.parameters.uv3Name()),
-                        GetOutputIoByName(aa_head_module.parameters.uv4Name()),
-                        XtMotor::GetThreadResource(),
-                        &sut_carrier);
+    foreach (TowerLightBuzzer* temp_towerLightBuzzer, towerLightBuzzers.values()){
+        temp_towerLightBuzzer->Init(GetOutputIoByName(temp_towerLightBuzzer->parameters.buzzerName()),
+                                    GetOutputIoByName(temp_towerLightBuzzer->parameters.redLightName()),
+                                    GetOutputIoByName(temp_towerLightBuzzer->parameters.greenLightName()),
+                                    GetOutputIoByName(temp_towerLightBuzzer->parameters.yellowLightName()));
+    };
 
     foreach (Calibration* temp_calibraion, calibrations) {
         temp_calibraion->Init(GetMotorByName(temp_calibraion->parameters.motorXName()),
@@ -798,6 +784,7 @@ bool BaseModuleManager::InitStruct()
 
     single_station_material_pickarm.Init(GetMotorByName(single_station_material_pickarm.parameters.motorXName()),
                                          GetMotorByName(single_station_material_pickarm.parameters.motorYName()),
+                                         GetMotorByName(single_station_material_pickarm.parameters.motorZName()),
                                          GetMotorByName(single_station_material_pickarm.parameters.motorTh1Name()),
                                          GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name()),
                                          GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name()),
@@ -808,7 +795,8 @@ bool BaseModuleManager::InitStruct()
                                          GetVacuumByName(single_station_material_pickarm.parameters.vacuumLUTName()),
                                          GetVacuumByName(single_station_material_pickarm.parameters.vacuumSUTName()),
                                          GetCylinderByName(single_station_material_pickarm.parameters.cylinderName()));
-    single_station_material_loader_module.Init(&single_station_material_pickarm,&sensor_tray,&lens_tray,&reject_tray,
+
+    single_station_material_loader_module.Init(&single_station_material_pickarm, &lsutState, &sensor_tray,&lens_tray,&reject_tray,
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.sensorVisionName()),
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.sensorVacancyVisionName()),
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.sutVisionName()),
@@ -818,9 +806,11 @@ bool BaseModuleManager::InitStruct()
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.lensVacancyVisionName()),
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.lutVisionName()),
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.lutLensVisionName()),
-                                               GetVisionLocationByName(single_station_material_loader_module.parameters.cameraToPickerOffsetVisionName()),
+                                               //                                               GetVisionLocationByName(single_station_material_loader_module.parameters.cameraToPickerOffsetVisionName()),
                                                GetVacuumByName(single_station_material_loader_module.parameters.sutVacuumName()),
-                                               GetVacuumByName(single_station_material_loader_module.parameters.lutVacuumName()));
+                                               GetVacuumByName(single_station_material_loader_module.parameters.lutVacuumName()),
+                                               GetTowerLightBuzzerByName(single_station_material_loader_module.parameters.buzzerName())
+                                               );
     sensor_tray.resetTrayState(0);
     sensor_tray.resetTrayState(1);
     lens_tray.resetTrayState(0);
@@ -831,18 +821,46 @@ bool BaseModuleManager::InitStruct()
     sh_lsut_module.Init(&sut_carrier,
                         GetVisionLocationByName(sh_lsut_module.parameters.sutDownLookLocationName()),
                         GetVisionLocationByName(sh_lsut_module.parameters.mushroomLocationName()),
-                        GetVisionLocationByName(sh_lsut_module.parameters.lutGripperLoactionName()),
+                        GetVisionLocationByName(sh_lsut_module.parameters.lutUplookLoactionName()),
                         GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()),
                         GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()),
                         GetOutputIoByName(sh_lsut_module.parameters.cylinderName()),
-                        &aa_head_module);
+                        &aa_head_module, &lsutState);
+
+    sut_carrier.Init("sut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
+                     GetMotorByName(sh_lsut_module.parameters.motorYName()),
+                     GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
+                     GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()));
 
     lut_carrier.Init("lut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
                      GetMotorByName(sh_lsut_module.parameters.motorYName()),
                      GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
                      GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()));
 
+    aa_head_module.Init("AAHead",
+                        GetMotorByName(aa_head_module.parameters.motorXName()),
+                        GetMotorByName(aa_head_module.parameters.motorYName()),
+                        GetMotorByName(aa_head_module.parameters.motorZName()),
+                        GetMotorByName(aa_head_module.parameters.motorAName()),
+                        GetMotorByName(aa_head_module.parameters.motorBName()),
+                        GetMotorByName(aa_head_module.parameters.motorCName()),
+                        GetOutputIoByName(aa_head_module.parameters.gripperName()),
+                        GetOutputIoByName(aa_head_module.parameters.uv1Name()),
+                        GetOutputIoByName(aa_head_module.parameters.uv2Name()),
+                        GetOutputIoByName(aa_head_module.parameters.uv3Name()),
+                        GetOutputIoByName(aa_head_module.parameters.uv4Name()),
+                        GetMotorByName(aa_head_module.parameters.motorAAXName()),
+                        GetMotorByName(aa_head_module.parameters.motorAAYName()),
+                        GetMotorByName(aa_head_module.parameters.motorAAZName()),
+                        XtMotor::GetThreadResource(),
+                        &sut_carrier
+                        );
+
     aaCoreNew.Init(&aa_head_module, &sh_lsut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog);
+
+    startCameraDoe->init(&sh_lsut_module, &single_station_material_loader_module,
+                         &single_station_material_pickarm,
+                         &sensor_tray, dothinkey);
     return true;
 }
 
@@ -852,6 +870,13 @@ bool BaseModuleManager::initialDevice()
         return true;
     if(!profile_loaded)
         return false;
+
+    if(!dothinkey->initDevice())
+    {
+        qCritical("Init dothingkey failed!");
+        return false;
+    }
+
     qInfo("Init module manager");
     LPWSTR pTarget = ip;
     XT_Controler::InitDevice_PC_Local_Controler(0);
@@ -903,25 +928,11 @@ bool BaseModuleManager::initialDevice()
         m->GetMasterAxisID();
     }
     EnableMotors();
-    GetOutputIoByName(u8"TL_上下平台")->Set(true);
-    GetOutputIoByName(u8"SUT_气缸")->Set(true);
+    //    GetOutputIoByName(u8"TL_上下平台")->Set(true);
+    //    GetOutputIoByName(u8"SUT_气缸")->Set(true);
+    GetOutputIoByName(u8"PA1电磁阀")->Set(true);//huawei aa
+    GetOutputIoByName(u8"PA2电磁阀")->Set(true);//huawei aa
     return true;
-}
-
-bool BaseModuleManager::generateConfigFiles()
-{
-    foreach (XtMotor* temp_motor, motors) {
-        temp_motor->parallel_limit_parameters.append(new ParallelLimitParameter());
-        temp_motor->vertical_limit_parameters.append(new VerticalLimitParameter());
-        QVariantList temp_space;temp_space.append(0);temp_space.append(1);
-        temp_motor->vertical_limit_parameters[0]->setMoveSpance(temp_space);
-        temp_motor->vertical_limit_parameters[0]->setLimitSpance(temp_space);
-        temp_motor->io_limit_parameters.append(new IOLimitParameter());
-        temp_motor->io_limit_parameters[0]->setMoveSpance(temp_space);
-    }
-    bool result = saveMotorLimitFiles(LIMIT_PARAMETER_MODE_FILENAME);
-
-    return result;
 }
 
 void BaseModuleManager::EnableMotors()
@@ -944,12 +955,7 @@ void BaseModuleManager::DisableAllMotors()
 
 bool BaseModuleManager::allMotorsSeekOrigin()
 {
-    return allMotorsSeekOriginal3();
-}
-
-bool BaseModuleManager::allMotorsSeekOriginal3()
-{
-    qInfo("allMotorsSeekOriginal3 Start");
+    qInfo("allMotorsSeekOrigin Start");
     bool result = false;
 
     //Home SUT Z First
@@ -959,24 +965,34 @@ bool BaseModuleManager::allMotorsSeekOriginal3()
     GetMotorByName(sh_lsut_module.parameters.motorXName())->SeekOrigin();
     GetMotorByName(sh_lsut_module.parameters.motorYName())->SeekOrigin();
 
+    GetMotorByName(aa_head_module.parameters.motorAAXName())->SeekOrigin();//huawei aa
+    GetMotorByName(aa_head_module.parameters.motorAAYName())->SeekOrigin();//huawei aa
+    GetMotorByName(aa_head_module.parameters.motorAAZName())->SeekOrigin();//huawei aa
+
+    result &= GetMotorByName(aa_head_module.parameters.motorAAXName())->WaitSeekDone();//huawei aa
+    result &= GetMotorByName(aa_head_module.parameters.motorAAYName())->WaitSeekDone();//huawei aa
+    result &= GetMotorByName(aa_head_module.parameters.motorAAZName())->WaitSeekDone();//huawei aa
+
     GetMotorByName(aa_head_module.parameters.motorAName())->SeekOrigin();
     GetMotorByName(aa_head_module.parameters.motorBName())->SeekOrigin();
     GetMotorByName(aa_head_module.parameters.motorCName())->SeekOrigin();
 
     GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->SeekOrigin();
     GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->SeekOrigin();
-    GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->SeekOrigin();
+    //    GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->SeekOrigin();
     result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->WaitSeekDone();
     result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->WaitSeekDone();
-    result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->WaitSeekDone();
+    //    result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->WaitSeekDone();
     GetMotorByName(single_station_material_pickarm.parameters.motorXName())->SeekOrigin();
     GetMotorByName(single_station_material_pickarm.parameters.motorYName())->SeekOrigin();
+    GetMotorByName(single_station_material_pickarm.parameters.motorZName())->SeekOrigin(); //huawei aa
 
     GetMotorByName(single_station_material_pickarm.parameters.motorTh1Name())->SeekOrigin();
     GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name())->SeekOrigin();
 
     result = GetMotorByName(single_station_material_pickarm.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(single_station_material_pickarm.parameters.motorYName())->WaitSeekDone();
+    result &= GetMotorByName(single_station_material_pickarm.parameters.motorZName())->WaitSeekDone();//huawei aa
     result &= GetMotorByName(single_station_material_pickarm.parameters.motorTh1Name())->WaitSeekDone();
     result &= GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name())->WaitSeekDone();
 
@@ -1034,14 +1050,13 @@ void BaseModuleManager::loadFlowchart(QString json, QString filename)
     aaCoreNew.setFlowchartDocument(json);
 }
 
-
 XtMotor *BaseModuleManager::GetMotorByName(QString name)
 {
     if(name == "")return nullptr;
     if(motors.contains(name))
         return motors[name];
     else
-        qInfo("can not find motor io %s",name.toStdString().c_str());
+        qCritical("can not find motor name %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -1051,7 +1066,7 @@ XtVcMotor *BaseModuleManager::GetVcMotorByName(QString name)
     if(motors.contains(name))
         return  dynamic_cast<XtVcMotor*>(motors[name]);
     else
-        qInfo("can not find vcm motor io %s",name.toStdString().c_str());
+        qCritical("can not find vcm motor name %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -1082,6 +1097,16 @@ XtVacuum *BaseModuleManager::GetVacuumByName(QString name)
         return vacuums[name];
     else
         qInfo("can not find vacuum io %s",name.toStdString().c_str());
+    return nullptr;
+}
+
+TowerLightBuzzer *BaseModuleManager::GetTowerLightBuzzerByName(QString name)
+{
+    if(name == "")return nullptr;
+    if(towerLightBuzzers.contains(name))
+        return towerLightBuzzers[name];
+    else
+        qInfo("can not find towerLightBuzzer io %s",name.toStdString().c_str());
     return nullptr;
 }
 
@@ -1141,19 +1166,6 @@ bool BaseModuleManager::stepMove(QString name, double step, bool isPositive)
     return true;
 }
 
-
-bool BaseModuleManager::stepMove(int index, double step, bool isPositive)
-{
-    XtMotor* temp_motor = motors.values()[index];
-    qInfo("Step move: %s %f %d %f", temp_motor->Name().toStdString().c_str(), step, isPositive, temp_motor->GetFeedbackPos());
-    if (isPositive)
-        temp_motor->StepMove(step);
-    else {
-        temp_motor->StepMove(-step);
-    }
-    return true;
-}
-
 void BaseModuleManager::setMotorParamByName(QString name, double vel, double acc, double jert)
 {
     qInfo("setMotorParamByName %f, %f, %f",vel,acc,jert);
@@ -1183,7 +1195,6 @@ bool BaseModuleManager::performCalibration(QString calibration_name)
     return  temp_caliration->performCalibration();
 }
 
-
 bool BaseModuleManager::performLocation(QString location_name)
 {
     //    if(!emit sendMsgSignal("title","content")){
@@ -1202,6 +1213,8 @@ bool BaseModuleManager::performLocation(QString location_name)
         qInfo("calibraion(%s)is null",temp_location->parameters.calibrationName().toStdString().c_str());
         return  false;
     }
+    temp_location->OpenLight();
+    QThread::msleep(50);
     PrOffset offset;
     if(temp_location->parameters.calibrationName().contains("chart_calibration"))
     {
@@ -1224,46 +1237,6 @@ bool BaseModuleManager::performLocation(QString location_name)
         temp_caliration->performPRResult(offset);
     }
     return true;
-}
-
-bool BaseModuleManager::performLensUpDownLookCalibration()
-{
-    //ToDo: This is the calibration glass width and height in mm
-    double realWidth = 7, realHeight = 7;
-    PrOffset offset1, offset2;
-//    this->lens_loader_module.performUpdowlookUpPR(offset1);
-    offset1.X /= offset1.W/realWidth;
-    offset1.Y /= offset1.H/realHeight;
-    qInfo("Lens loader UpDnlook up PR: %f %f %f %f %f", offset1.X, offset1.Y, offset1.Theta, offset1.W, offset1.H);
-//    this->lens_loader_module.performUpDownlookDownPR(offset2);
-    offset2.X /= offset2.W/realWidth;
-    offset2.Y /= offset2.H/realHeight;
-    qInfo("Lens loader UpDnlook down PR: %f %f %f %f %f", offset2.X, offset2.Y, offset2.Theta, offset2.W, offset2.H);
-    double offsetX = offset1.X - offset2.X;
-    double offsetY = offset1.Y - offset2.Y;
-    this->single_station_material_loader_module.camera_to_picker1_offset.setX(offsetX);
-    this->single_station_material_loader_module.camera_to_picker1_offset.setY(offsetY);
-//    this->lut_module.lpa_camera_to_picker_offset.setX(-offsetX);
-//    this->lut_module.lpa_camera_to_picker_offset.setY(-offsetY);
-    this->single_station_material_loader_module.camera_to_picker2_offset.setX(-offsetX);
-    this->single_station_material_loader_module.camera_to_picker2_offset.setY(-offsetY);
-
-    qInfo("Lens UpDnlook Calibration result offsetX : %f offsetY: %f", offsetX,offsetY);
-    return true;
-}
-QString BaseModuleManager::getCalibrationParam(QString calibration_name)
-{
-    Calibration* temp_caliration = GetCalibrationByName(calibration_name);
-    if(temp_caliration == nullptr)return  "no calibration";
-    QString temp_value = "(";
-    QPointF temp_point = temp_caliration->getOnePxielDistance();
-    temp_value.append(QString::number(round(temp_point.x()*10000)/10000));
-    temp_value.append(",");
-    temp_value.append(QString::number(round(temp_point.y()*10000)/10000));
-    temp_value.append(",");
-    temp_value.append(QString::number(round(temp_caliration->getRotationAngle()*100)/100));
-    temp_value.append(")");
-    return temp_value;
 }
 
 void BaseModuleManager::setOutput(QString name, bool on)
@@ -1303,16 +1276,6 @@ void BaseModuleManager::motorSeekOrigin(QString name)
     }
 }
 
-double BaseModuleManager::getPROffsetX(QString location_name)
-{
-    return  GetVisionLocationByName(location_name)->getCurrentOffset().x();
-}
-
-double BaseModuleManager::getPROffsetY(QString location_name)
-{
-    return  GetVisionLocationByName(location_name)->getCurrentOffset().y();
-}
-
 double BaseModuleManager::getMotorFeedbackPos(QString name)
 {
     if (motors.contains(name)) {
@@ -1321,34 +1284,15 @@ double BaseModuleManager::getMotorFeedbackPos(QString name)
     return 0;
 }
 
-double BaseModuleManager::getMotorFeedbackPos(int index)
-{
-    return motors.values()[index]->GetFeedbackPos();
-}
-
 void BaseModuleManager::setLightingBrightness(QString location_name)
 {
     GetVisionLocationByName(location_name)->OpenLight();
 }
 
-void BaseModuleManager::sendLoadLens(bool has_ng)
-{
-}
-
-void BaseModuleManager::sendLoadSensor(bool has_product, bool has_ng)
-{
-}
-
-void BaseModuleManager::sendChangeSensorTray()
-{
-    //emit sensor_loader_module.sendChangeTrayRequst();
-    emit single_station_material_loader_module.sendChangeSensorTrayRequst();
-}
-
 bool BaseModuleManager::initSensor()
 {
     // Make sure SUT sensor vaccum is on
-    GetVacuumByName(sh_lsut_module.parameters.sutVacuumName())->Set(true);
+//    GetVacuumByName(sh_lsut_module.parameters.sutVacuumName())->Set(true);
 
     const int channel = 0;
     bool res = dothinkey->DothinkeyEnum();
@@ -1370,7 +1314,6 @@ bool BaseModuleManager::closeSensor()
     imageGrabberThread->exit();
     return dothinkey->DothinkeyClose();
 }
-
 
 double BaseModuleManager::showChartCalibrationRotation()
 {

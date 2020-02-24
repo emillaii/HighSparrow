@@ -4,11 +4,16 @@
 #include "materialtray.h"
 #include "singleheadmachinematerialloadermoduleparameter.h"
 #include "SingleHead/singleheadmachinematerialpickarm.h"
+#include "SingleHead/singleheadlsutparameter.h"
 #include "thread_worker_base.h"
 #include "Vision/vision_location.h"
 #include "Utils/commonutils.h"
+#include "XtMotion/towerlightbuzzer.h"
+#include "Utils/singletoninstances.h"
+
 
 #define DELAY_JET 1000
+
 
 
 class SingleHeadMachineMaterialLoaderModule:public ThreadWorkerBase
@@ -19,7 +24,7 @@ class SingleHeadMachineMaterialLoaderModule:public ThreadWorkerBase
     Q_ENUMS(HandleToWorkPos)
     Q_ENUMS(HandlePickerAction)
     Q_ENUMS(HandlePROffset)
-
+    Q_ENUMS(HandlePickarmZ)//huawei aa
 public:
     enum HandlePosition{
         LENS_TRAY1 = 1,
@@ -52,8 +57,6 @@ public:
 
         HANDLE_PR = (1<<11) - (1<<6)
     };
-
-
     enum HandleToWorkPos{
 
         PICKER1_TO_WORKPOS = 1<<11,
@@ -100,16 +103,24 @@ public:
 
         HANDLE_PICKER_ACTION = (1<<23)-(1<<16)
     };
-
     enum HandlePROffset
     {
-        PICKER1_PLACE_OK_PROCUDE_TO_TRAY_PR_OFFSET = 1 << 23,
+        APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET = 2 << 23,
+        APPLY_PLACE_NG_PRODUCT_TO_TRAY_OFFSET = 3 << 23,
 
-        HANDLE_PR_OFFSET = (1 << 27) - (1 << 23)
+        HANDLE_PR_OFFSET = (1 << 25) - (1 << 23)
     };
+    enum HandlePickarmZ
+    {
+        MOVE_PICKARM_Z = 1 << 25,
+
+        HANDLE_PICKEARM_POS = (1 << 27) - (1 << 25)
+    };
+
 
     SingleHeadMachineMaterialLoaderModule(QString name = "SingleHeadMachineMaterialLoaderModule");
     void Init(SingleHeadMachineMaterialPickArm* pick_arm,
+              LSutState* lsutState,
               MaterialTray* sensorTray,
               MaterialTray* lensTray,
               MaterialTray* rejectTray,
@@ -122,14 +133,15 @@ public:
               VisionLocation* lens_vacancy_vision = nullptr,
               VisionLocation* lut_vision = nullptr,
               VisionLocation* lut_lens_vision = nullptr,
-              VisionLocation* camera_to_picker_offest_vision = nullptr,
               XtVacuum* sutVacuum = nullptr,
-              XtVacuum* lutVacuum = nullptr);
+              XtVacuum* lutVacuum = nullptr,
+              TowerLightBuzzer* buzzer = nullptr
+            );
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     Q_INVOKABLE void performHandling(int cmd);
-    Q_INVOKABLE void cameraTipOffsetCalibration(int pickhead = 0);
     Q_INVOKABLE bool moveToChangeTrayPos();
+    Q_INVOKABLE void towerLightBuzzerTest();
 
 public:
     SingleHeadMachineMaterialLoaderModuleParameter parameters;
@@ -140,9 +152,12 @@ public:
     Position camera_to_picker1_offset;
     Position camera_to_picker2_offset;
 
-private:
-    void run(bool has_material);
+    PositionT placeNgSensorToTrayOffset;
+    PositionT placeNgProductToTrayOffset;
+    Position placeOkProductToTrayOffset;
 
+private:
+    void run();
 
     //PR動作
     bool performSensorPR();
@@ -155,25 +170,18 @@ private:
     bool performLUTPR();
     bool performLUTLensPR();
 
-    //PR Offset
-    void applyPicker1PlaceOkProductOffset();
-
     //pickArm and trayloder動作
     bool moveToNextLensTrayPos(int tray_index);
-    bool moveToLensTrayEmptyPos(int index,int tray_index);
-    bool moveToLensTrayPos(int index,int tray_index);
     bool moveToLensTrayPos(int tray_index);
     bool moveToLensTrayStartPos(int tray_index);
     bool moveToLensTrayEndPos();
 
     bool moveToNextSensorTrayPos(int tray_index);
-    bool moveToSensorTrayPos(int index,int tray_index);
     bool moveToSensorTrayPos(int tray_index);
     bool moveToSensorTrayStartPos(int tray_index);
     bool moveToSensorTrayEndPos();
 
     bool moveToNextRejectTrayPos(int tray_index);
-    bool moveToRejectTrayPos(int index,int tray_index);
     bool moveToRejectTrayPos(int tray_index);
     bool moveToRejectTrayStartPos(int tray_index);
     bool moveToRejectTrayEndPos();
@@ -206,35 +214,45 @@ private:
     bool picker1PickNgSensorFromSUT(int time_out = 10000);
     bool picker1PlaceNgSensorToTray(int time_out = 10000);
 
-    //NG product, no different like handle normal product process
-
-
     //Picker motion
     bool picker1SearchZ(double z,bool is_open = true,int time_out = 10000,int picker = 0);
     bool picker1SearchSutZ(double z,bool is_open = true,int time_out = 10000);
-    bool picker1SearchSutZ2(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchZ(double z,bool is_open = true,int time_out = 10000,int picker = 0);
     bool picker2SearchSutZ(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchSutZ2(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchSutZ2Revert(double z,bool is_open = true,int time_out = 10000);
+    bool picker1SearchSutZ2(double z,bool is_open = true, int time_out = 10000);
     bool picker1MeasureHight(bool is_tray,bool is_product = false);
     bool picker2MeasureHight(bool is_tray,bool is_product = false);
 
-    //Action Combination
-    bool loadLensFromTrayAndPlaceToLUT();
-    bool pickNgLensFromLUTAndReturnToTray();
+    //HUAWEIAA
+    bool movePickarmZToPos();
 
-    //Tray Handle
-    bool checkNeedChangeLensTray();
-    bool checkNeedChangeSensorTray();
-    bool checkNeedChangeRejectTray();
-//    bool moveToChangeTrayPos();
-    bool checkNeedChangeTray();
+    //PR Offset
+    void applyPrOffset(PositionT& offset);
+
+    bool picker1ShouldUnloadDutOnLSutFirst()
+    {
+        if(states.sutIsReadyToLoadMaterial())
+        {
+            return lsutState->lutHasNgLens() || lsutState->sutHasNgSensor() || lsutState->hasProduct();
+        }else {
+            return false;
+        }
+    }
+
+    bool shouldLoadSensorToLSutFirst()
+    {
+        if(states.sutIsReadyToLoadMaterial())
+        {
+            return lsutState->hasOkLens() && !lsutState->sutHasSensor();
+        }else {
+            return false;
+        }
+    }
 
 signals:
-    void sendChangeLensTrayRequst();
-    void sendLoadMaterialResponse(int sensor_index, int lens_index);
-    void sendChangeSensorTrayRequst();
+    void sendLoadMaterialFinishSignal();
 
 public slots:
     void startWork(int run_mode);
@@ -242,17 +260,18 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
 
-    void receiveLoadMaterialRequest(bool need_sensor, bool need_lens, bool has_ng_sensor, bool has_ng_lens, bool has_product, bool isSutReadyToLoadMaterial);
-    void receiveChangeLensTrayRequest();
-    void receiveChangeSensorTrayRequest();
+    void receiveLoadMaterialRequestResponse(bool isSutReadyToLoadMaterial, int productIndex);
 private:
-
+    LSutState* lsutState;
+    QMap<int, PickArmPos> pickSensorPoses;
     SingleHeadMachineMaterialPickArm* pick_arm = Q_NULLPTR;
     MaterialTray *sensorTray;
     MaterialTray *lensTray;
     MaterialTray *rejectTray = Q_NULLPTR;
     XtVacuum* sut_vacuum = Q_NULLPTR;
     XtVacuum* lut_vacuum = Q_NULLPTR;
+    TowerLightBuzzer* buzzer = Q_NULLPTR;
+
 
     VisionLocation* sensor_vision = Q_NULLPTR;
     VisionLocation* sensor_vacancy_vision = Q_NULLPTR;
@@ -264,14 +283,21 @@ private:
     VisionLocation* lut_vision = Q_NULLPTR;
     VisionLocation* lut_lens_vision = Q_NULLPTR;
 
-    VisionLocation* camera_to_picker_offest_vision = Q_NULLPTR;
+    //    VisionLocation* camera_to_picker_offest_vision = Q_NULLPTR;
 
     QMutex lsut_mutex;
     QMutex materialLoader_mutex;
 
+    bool completeLoad = false;
     bool is_run = false;
     bool finish_stop = false;
     PrOffset pr_offset;
+    int currentProductIndex;
+
+    int lensPrFailedTimes = 0;
+    int sensorPrFailedTimes = 0;
+    int pickSensorFailedTimes = 0;
+    const int MaxPickDutFailedTimes = 5;
 };
 
 #endif // SINGLEHEADMACHINEMATERIALLOADERMODULE_H

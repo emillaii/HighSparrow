@@ -13,5 +13,12 @@
         <file>icons/auto-run.png</file>
         <file>icons/stop.png</file>
         <file>icons/flowchart_1.png</file>
+        <file>icons/visionLocationParameterViewer.png</file>
+        <file>icons/error.png</file>
+        <file>icons/information.png</file>
+        <file>icons/question.png</file>
+        <file>icons/warning.png</file>
+        <file>icons/login.png</file>
+        <file>icons/userManagement.png</file>
     </qresource>
 </RCC>

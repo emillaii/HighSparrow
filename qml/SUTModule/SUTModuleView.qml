@@ -40,8 +40,12 @@ ItemDelegate {
                 SUTMushroomPosition {}
             }
             GroupBox{
-                title: qsTr("Gripper Position")
-                SUTGripperPosition {}
+                title: qsTr("Uplook Position")
+                SUTUplookPosition {}
+            }
+            GroupBox {
+                title: qsTr("Lens操作")
+                LensOperation{}
             }
             GroupBox{
                 title: qsTr("Load Position")
@@ -51,14 +55,14 @@ ItemDelegate {
                 title: qsTr("PR Position")
                 SUTPRPositionView {}
             }
-            GroupBox{
-                title: qsTr("Calibration Position")
-                SUTToollookPosition {}
-            }
-            GroupBox{
-                title: qsTr("Safety Position")
-                SUTSafetyPositionView {}
-            }
+//            GroupBox{
+//                title: qsTr("Calibration Position")
+//                SUTToollookPosition {}
+//            }
+//            GroupBox{
+//                title: qsTr("Safety Position")
+//                SUTSafetyPositionView {}
+//            }
             GroupBox{
                 title: qsTr("Pick Lens Position")
                 SUTPicklensPosition {}

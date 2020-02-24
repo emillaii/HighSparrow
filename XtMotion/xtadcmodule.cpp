@@ -22,9 +22,9 @@ bool XtADCModule::InitResource(int module_can_id, int adc_channel)
         return false;
     this->module_can_id = module_can_id;
     this->adc_channel = adc_channel;
-    SET_INPUT_DATA_MAP(0, module_can_id,  adc_channel+20, datatype_float32, data_channel_id);
-    RESET_INPUT_DATA_FIFO(0, data_channel_id, 50);
-    WaitForAllInsFinish(0);
+    XT_Controler::SET_INPUT_DATA_MAP(0, module_can_id,  adc_channel+20, datatype_float32, data_channel_id);
+    XT_Controler::RESET_INPUT_DATA_FIFO(0, data_channel_id, 50);
+    XT_Controler::WaitForAllInsFinish(0);
     running = true;
     start();
     return true;
@@ -55,7 +55,7 @@ void XtADCModule::run()
     while(running)
     {
         QThread::msleep(10);
-        res = GetInputChannelData(data_channel_id, 50, cnt, result, result_order);
+        res = XT_Controler::GetInputChannelData(data_channel_id, 50, cnt, result, result_order);
         if(res!=0&&cnt>0)
         {
             read_write_locker.lock();

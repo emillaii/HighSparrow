@@ -4,6 +4,7 @@ QT += webengine
 QT += widgets
 QT += charts qml quick
 QT += websockets
+QT += sql
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -74,42 +75,50 @@ DISTFILES += \
     icons/index.theme
 
 HEADERS += \
+    DOE/startcameradoe.h \
     Dispense/dispense_module.h \
     Dispense/dispense_parameter.h \
     Dispense/dispenser.h \
     Dispense/dispenser_parameter.h \
-    Foundation/LogModule/loging.h \
-    Foundation/LogModule/logmodel.h \
-    Foundation/LogModule/rollbackfile.h \
-    Foundation/propertybase.h \
-    Foundation/silicolexception.h \
     Light/LontryLight.h \
     Matrix/Matrix.h \
+    SingleHead/chartheightcontrolmodule.h \
+    SingleHead/chartheightcontrolmoduleparameter.h \
     SingleHead/singlehead_lsut_module.h \
     SingleHead/singleheadlsutparameter.h \
     SingleHead/singleheadmachinematerialloadermodule.h \
     SingleHead/singleheadmachinematerialloadermoduleparameter.h \
     SingleHead/singleheadmachinematerialpickarm.h \
     SingleHead/singleheadmachinematerialpickarmparameter.h \
+    UnitTest/SilicolMsgBoxTest.h \
+    Utils/commonmethod.h \
     Utils/commonutils.h \
     Utils/config.h \
     Utils/errorcode.h \
     Utils/filecontent.h \
     Utils/iniparser.h \
+    Utils/loging/loging.h \
+    Utils/loging/logmodel.h \
+    Utils/loging/rollbackfile.h \
     Utils/position_define.h \
     Utils/propertybase.h \
+    Utils/singletoninstances.h \
+    Utils/uiHelper/msgboxmodel.h \
+    Utils/uiHelper/uioperation.h \
     Utils/unitlog.h \
+    Utils/userManagement/mysqltablemodel.h \
+    Utils/userManagement/usermanagement.h \
     Vision/baslerpyloncamera.h \
     Vision/calibration.h \
     Vision/calibration_parameter.h \
-    Vision/hikcamera.h \
     Vision/pixel2mech.h \
-    Vision/silicoolcamera.h \
     Vision/vision_location.h \
     Vision/vision_location_parameter.h \
     Vision/visionmodule.h \
     Vision/wordoplight.h \
     Vision/chart_calibration.h \
+    Vision/hikcamera.h \
+    Vision/silicoolcamera.h \
     XtMotion/XtCylinder.h \
     XtMotion/XtGeneralInput.h \
     XtMotion/XtGeneralOutput.h \
@@ -117,6 +126,9 @@ HEADERS += \
     XtMotion/XtVcMotor.h \
     XtMotion/iolimitparameter.h \
     XtMotion/parallellimitparameter.h \
+    XtMotion/towerlightbuzzer.h \
+    XtMotion/towerlightbuzzerparameter.h \
+    XtMotion/towerlightbuzzerparameter.h \
     XtMotion/verticallimitparameter.h \
     XtMotion/xtadcmodule.h \
     XtMotion/xtcylinderparameter.h \
@@ -146,19 +158,15 @@ HEADERS += \
     trayparameter.h \
     traystandardsparameter.h \
     workers_manager.h \
-    TrayMap/traymapmodel.h\
-    Foundation/languagemanager.h
+    TrayMap/traymapmodel.h
 
 SOURCES += \
+    DOE/startcameradoe.cpp \
     Dispense/dispense_module.cpp \
     Dispense/dispenser.cpp \
-    Foundation/LogModule/loging.cpp \
-    Foundation/LogModule/logmodel.cpp \
-    Foundation/LogModule/rollbackfile.cpp \
-    Foundation/propertybase.cpp \
-    Foundation/silicolexception.cpp \
     Light/LontryLight.cpp \
     Matrix/Matrix.cpp \
+    SingleHead/chartheightcontrolmodule.cpp \
     SingleHead/singlehead_lsut_module.cpp \
     SingleHead/singleheadmachinematerialloadermodule.cpp \
     SingleHead/singleheadmachinematerialpickarm.cpp \
@@ -166,11 +174,19 @@ SOURCES += \
     Utils/errorcode.cpp \
     Utils/filecontent.cpp \
     Utils/iniparser.cpp \
+    Utils/loging/loging.cpp \
+    Utils/loging/logmodel.cpp \
+    Utils/loging/rollbackfile.cpp \
     Utils/propertybase.cpp \
+    Utils/singletoninstances.cpp \
+    Utils/uiHelper/msgboxmodel.cpp \
+    Utils/uiHelper/uioperation.cpp \
     Utils/unitlog.cpp \
+    Utils/userManagement/mysqltablemodel.cpp \
+    Utils/userManagement/usermanagement.cpp \
     Vision/baslerpyloncamera.cpp \
-    Vision/calibration.cpp \
     Vision/hikcamera.cpp \
+    Vision/calibration.cpp \
     Vision/pixel2mech.cpp \
     Vision/vision_location.cpp \
     Vision/visionmodule.cpp \
@@ -181,6 +197,7 @@ SOURCES += \
     XtMotion/XtGeneralOutput.cpp \
     XtMotion/XtVacuum.cpp \
     XtMotion/XtVcMotor.cpp \
+    XtMotion/towerlightbuzzer.cpp \
     XtMotion/xtadcmodule.cpp \
     XtMotion/xtmotor.cpp \
     AACore/aacorenew.cpp \
@@ -201,8 +218,7 @@ SOURCES += \
     materialtray.cpp \
     thread_worker_base.cpp \
     workers_manager.cpp \
-    TrayMap/traymapmodel.cpp\
-    Foundation/languagemanager.cpp
+    TrayMap/traymapmodel.cpp
 
 
 RC_ICONS= icons/sparrow.ico

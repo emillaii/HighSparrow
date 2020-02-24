@@ -16,6 +16,8 @@ Page {
     ColumnLayout {
         anchors.fill: parent
         AACoreView {
+            font.family: "Times New Roman"
+            spacing: 19
             Layout.fillHeight: true
             Layout.fillWidth: true
         }

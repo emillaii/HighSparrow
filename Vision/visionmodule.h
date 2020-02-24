@@ -8,6 +8,7 @@
 
 class BaslerPylonCamera;
 class HIKCamera;
+
 struct PRResultStruct {
     PRResultStruct() : x(0), y(0), theta(0), width(0), height(0), ret(false)
     {}
@@ -41,21 +42,15 @@ public:
 
     void saveImage(int channel, QString filename);
     Q_INVOKABLE void saveImage(int channel);
-    Q_INVOKABLE void testVision();
 private:
     QString last_uplook_pr_result;
     QString last_downlook_pr_result;
     QString last_pickarm_pr_result;
-    void displayPRResult(const QString, const PRResultStruct);
-    void diffenenceImage(QImage image1, QImage image2);
     bool grabImageFromCamera(QString cameraName, avl::Image &image);
-    bool saveImageAndCheck(avl::Image image1, QString imageName);
     BaslerPylonCamera * downlookCamera = Q_NULLPTR;
     BaslerPylonCamera * uplookCamera = Q_NULLPTR;
     BaslerPylonCamera * pickarmCamera = Q_NULLPTR;
     HIKCamera * hikCamera = Q_NULLPTR;
-signals :
-    void callQmlRefeshImg();
 public:
     bool is_debug = false;
 };

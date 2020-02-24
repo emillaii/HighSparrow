@@ -93,6 +93,7 @@ void TrayMapModel::resetModel(uint row, uint column, UnitStatus status)
 
 void TrayMapModel::setUnitStatus(uint idx, UnitStatus status)
 {
+    qInfo("Setting index : %d status: %d", idx, status);
     if(idx < m_column*m_row)
     {
         m_currentState[idx] = status;

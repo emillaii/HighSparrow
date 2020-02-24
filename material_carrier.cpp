@@ -47,43 +47,7 @@ bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool ch
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
     result = motor_z->MoveToPosSync(z);
-    //Sleep(300);
     return result;
-}
-
-bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool check_autochthonous,double check_distance, int timeout)
-{
-    if(check_autochthonous)
-    {
-        if(abs(motor_x->GetFeedbackPos()-x)>check_distance||abs(motor_y->GetFeedbackPos()-y)>check_distance||abs(motor_z->GetFeedbackPos()-z)>check_distance)
-            check_autochthonous = false;
-    }
-    bool result;
-    if(!check_autochthonous)
-    {
-        result = motor_z->MoveToPosSync(parameters.SafetyZ());
-        if(!result) return false;
-        if(abs(motor_x->GetFeedbackPos() - x) > 2)
-            result = motor_y->MoveToPosSync(parameters.SafetyY());
-        if(!result) return false;
-    }
-    result = motor_x->MoveToPosSync(x);
-    if(!result) return false;
-    result = motor_y->MoveToPosSync(y);
-    if(!result) return false;
-    result = motor_z->MoveToPosSync(z);
-    //Sleep(300);
-    return result;
-}
-
-bool MaterialCarrier::Move_SZ_XY_ToPos(double x, double y, int timeout)
-{
-    bool result;
-    result = motor_z->MoveToPosSync(parameters.SafetyZ());
-    if(!result) return false;
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
-    return true;
 }
 
 bool MaterialCarrier::Wait_XY_ToPos(double x, double y, int timeout)
@@ -91,14 +55,6 @@ bool MaterialCarrier::Wait_XY_ToPos(double x, double y, int timeout)
     bool result;
     result = motor_x->WaitArrivedTargetPos(x,timeout);
     result &= motor_y->WaitArrivedTargetPos(y,timeout);
-    return result;
-}
-bool MaterialCarrier::Wait_XYZ_ToPos(double x, double y, double z, int timeout)
-{
-    bool result;
-    result = motor_x->WaitArrivedTargetPos(x,timeout);
-    result &= motor_y->WaitArrivedTargetPos(y,timeout);
-    result &= motor_z->WaitArrivedTargetPos(z,timeout);
     return result;
 }
 
@@ -113,23 +69,6 @@ bool MaterialCarrier::StepMove_XY_Sync(double step_x, double step_y, int timeout
     return Wait_XY_ToPos(target_x,target_y,timeout);
 }
 
-bool MaterialCarrier::StepMove_XYZ_Sync(double step_x, double step_y,double step_z, int timeout)
-{
-    double cur_x = motor_x->GetFeedbackPos();
-    double cur_y = motor_y->GetFeedbackPos();
-    double cur_z = motor_z->GetFeedbackPos();
-    double target_x = cur_x + step_x;
-    double target_y = cur_y + step_y;
-    double target_z = cur_z + step_z;
-    motor_x->MoveToPos(target_x);
-    motor_y->MoveToPos(target_y);
-    motor_z->MoveToPos(target_z);
-    bool result = motor_x->WaitArrivedTargetPos(target_x);
-    result &= motor_y->WaitArrivedTargetPos(target_y);
-    result &= motor_z->WaitArrivedTargetPos(target_z);
-//    return Wait_XYZ_ToPos(target_x,target_y,target_z, timeout);
-    return result;
-}
 
 bool MaterialCarrier::StepMove_SZ_XY_Sync(double step_x, double step_y, int timeout)
 {
@@ -150,12 +89,6 @@ bool MaterialCarrier::Move_Z_Sync(double z, int timeout)
 {
     motor_z->MoveToPos(z);
     return motor_z->WaitArrivedTargetPos(z, timeout);
-}
-
-void MaterialCarrier::Move_XY_ToPos(double x, double y)
-{
-    motor_x->MoveToPos(x);
-    motor_y->MoveToPos(y);
 }
 
 bool MaterialCarrier::ZSerchByForce(const double speed,const double force,const double search_limit,const int vacuum_state,XtVacuum* excute_vacuum)

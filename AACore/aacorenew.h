@@ -108,6 +108,8 @@ public:
     AACoreStates states;
     AAHeadModule* aa_head;
     DispenseModule* dispense;
+    QJsonDocument flowchartDocument;
+    QString flowchartJsonString;
 private:
     bool is_run = false;
     bool hasDispense = false;
@@ -143,7 +145,6 @@ private:
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QVariantMap current_dfov;
     double current_fov_slope;
-    QJsonDocument flowchartDocument;
     bool isZScanNeedToStop = false;
     int currentChartDisplayChannel = 0;
     int currentOCDisplayChannel = 0;
@@ -200,6 +201,7 @@ public slots:
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);
     void stopZScan();
     void setFlowchartDocument(QString json){
+        this->flowchartJsonString = json;
         flowchartDocument = QJsonDocument::fromJson(json.toUtf8());
     }
     void sfrImageReady(QImage);

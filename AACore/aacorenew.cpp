@@ -446,6 +446,7 @@ void AACoreNew::startWork( int run_mode)
     }
     if (run_mode == RunMode::UNLOAD_ALL_LENS) return;
     QVariantMap run_params = inquirRunParameters();
+
     if(run_params.isEmpty())
     {
         sendAlarmMessage(OK_OPERATION,u8"启动参数为空.启动失败.",ErrorLevel::ErrorMustStop);
@@ -459,6 +460,11 @@ void AACoreNew::startWork( int run_mode)
     {
         sendAlarmMessage(OK_OPERATION,u8"启动参数RunMode缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
+    }
+    if(run_params.contains("AAFlowchart"))
+    {
+        QString aaFlowChart = run_params["AAFlowchart"].toString();
+        this->setFlowchartDocument(aaFlowChart);
     }
     if(run_params.contains("StationNumber"))
     {

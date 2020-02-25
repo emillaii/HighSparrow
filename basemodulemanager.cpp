@@ -722,6 +722,8 @@ void BaseModuleManager::receiveMessageFromWorkerManger(QVariantMap message)
         QVariantMap temp_param;
         if(getServerMode() == 1)
         {
+            //AA1 will ask AA2 for the flowchart parameter
+            temp_param.insert("AAFlowchart", aaCoreNew.flowchartJsonString);
             temp_param.insert("RunMode",parameters.runMode());
             temp_param.insert("HandlyChangeSensor",sensor_loader_module.parameters.handlyChangeSensor());
             temp_param.insert("HandlyChangeSensorTray",sensor_tray_loder_module.parameters.handlyChangeSensorTray());

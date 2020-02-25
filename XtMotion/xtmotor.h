@@ -81,7 +81,7 @@ public:
 
     virtual bool SeekOrigin(int thread = -1);
     bool StopSeeking(int thread = -1);
-    virtual bool WaitSeekDone(int thread = -1, int timeout = 100000);
+    virtual bool WaitSeekDone(int thread = -1, int timeout = 50000);
 //    virtual bool WaitStop(int timeout = 10000);
 
 //    bool IsInsideRange(double target_pos,double error = 0.01);

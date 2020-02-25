@@ -107,10 +107,6 @@ ItemDelegate {
                 title:qsTr("SUT & LUT")
                 MaterialLoaderModulueUTView{}
             }
-            GroupBox{
-                title:qsTr("pick arm z")
-                SingleHeadPickarmZ{}
-            }
         }
     }
 }

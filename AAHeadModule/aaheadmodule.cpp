@@ -30,7 +30,7 @@ void AAHeadModule::saveJsonConfig(QString file_name)
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
-void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMotor *motor_z, XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtGeneralOutput *gripper,
+void AAHeadModule::Init(XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtGeneralOutput *gripper,
                         XtGeneralOutput * uv1,
                         XtGeneralOutput * uv2,
                         XtGeneralOutput * uv3,
@@ -54,8 +54,8 @@ void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMoto
     this->uv3 = uv3;
     this->uv4 = uv4;
     this->motor_aax = motor_aax;
-    this->motor_aax = motor_aay;
-    this->motor_aax = motor_aaz;
+    this->motor_aay = motor_aay;
+    this->motor_aaz = motor_aaz;
 
     this->thread_id = thread_id;
     setName(parameters.moduleName());
@@ -164,14 +164,14 @@ mPoint6D AAHeadModule::GetFeedBack()
     return mPoint6D(motor_x->GetFeedbackPos(),motor_y->GetFeedbackPos(),motor_z->GetFeedbackPos(),motor_a->GetFeedbackPos(),motor_b->GetFeedbackPos(),motor_c->GetFeedbackPos());
 }
 
-bool AAHeadModule::moveAAHead_XYZToPos(double position , int timeout)//huawei aa
+bool AAHeadModule::moveAAHead_XYZToPos()//huawei aa
 {
     motor_aax->MoveToPos(aaHeadXYZPosition.X());
     motor_aay->MoveToPos(aaHeadXYZPosition.Y());
     motor_aaz->MoveToPos(aaHeadXYZPosition.Z());
-    bool result = motor_aax->WaitArrivedTargetPos(position, timeout);
-    result &= motor_aay->WaitArrivedTargetPos(position, timeout);
-    result &= motor_aaz->WaitArrivedTargetPos(position, timeout);
+    bool result = motor_aax->WaitArrivedTargetPos(aaHeadXYZPosition.X());
+    result &= motor_aay->WaitArrivedTargetPos(aaHeadXYZPosition.Y());
+    result &= motor_aaz->WaitArrivedTargetPos(aaHeadXYZPosition.Z());
     return result;
 
 }

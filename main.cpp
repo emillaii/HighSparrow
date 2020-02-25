@@ -166,6 +166,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sh_lut_pr_position",&highSprrow.baseModuleManager->single_station_material_loader_module.lut_pr_position);
     engine.rootContext()->setContextProperty("sh_camera_to_picker1_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.camera_to_picker1_offset);
     engine.rootContext()->setContextProperty("sh_camera_to_picker2_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.camera_to_picker2_offset);
+
     engine.rootContext()->setContextProperty("sh_place_ng_sensor_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeNgSensorToTrayOffset);
     engine.rootContext()->setContextProperty("sh_place_ng_product_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeNgProductToTrayOffset);
     engine.rootContext()->setContextProperty("sh_place_ok_product_to_tray_offset",&highSprrow.baseModuleManager->single_station_material_loader_module.placeOkProductToTrayOffset);

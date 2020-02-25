@@ -20,7 +20,7 @@ class AAHeadModule : public QObject,public ErrorBase
     Q_OBJECT
 public:
     AAHeadModule();
-    void Init(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtGeneralOutput * gripper,
+    void Init(XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtGeneralOutput * gripper,
               XtGeneralOutput * uv1,
               XtGeneralOutput * uv2,
               XtGeneralOutput * uv3,
@@ -43,7 +43,7 @@ public:
     mPoint6D GetFeedBack();
 
     //huawei aa
-    Q_INVOKABLE bool moveAAHead_XYZToPos(const double position, const int timeout = 10000);
+    Q_INVOKABLE bool moveAAHead_XYZToPos();
 private:
     bool moveToDiffrentZSync(double z);
     bool moveToSync(double x, double y, double z, double a, double b, double c);
@@ -53,7 +53,7 @@ public:
     AAHeadParameters parameters;
     Position6D mushroom_position;
     Position6D aaPickLensPosition;
-    Position3D aaHeadXYZPosition;
+    Position6D aaHeadXYZPosition;
     PositionT bondOffset;
     bool waiting_lens;
     double uplook_x;

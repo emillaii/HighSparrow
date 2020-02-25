@@ -1,6 +1,7 @@
 ﻿import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import SingleHeadMaterialLoaderLib 1.0
 
 ColumnLayout {
     RowLayout{
@@ -177,6 +178,45 @@ ColumnLayout {
                     onClicked: {
 //                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_PR_POS1)
                         sh_materialLoaderModule.cameraTipOffsetCalibration(1)
+                    }
+                    enabled: userManagement.currentAuthority >= 2 //At least engineer authority
+                }
+            }
+        }
+    }
+    GroupBox{
+        title:qsTr("pickarmZ_position")
+        ColumnLayout{
+            RowLayout{
+                Label{
+                    text:qsTr("Z")
+                }
+                TextField{
+                    text:materialPickArmParams.pickArmZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialPickArmParams.setPickArmZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("移动")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                      sh_materialLoaderModule.performHandling(MaterialLoaderModule.MOVE_PICKARM_Z)
+                    }
+                }
+                Button{
+                    text:qsTr("读取")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        var z = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorZName)
+                        pickarmParmeter.setPickArmZ(z)
                     }
                     enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }

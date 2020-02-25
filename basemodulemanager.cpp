@@ -47,7 +47,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonDownlookCamera) pylonDownlookCamera->start();
         if(pylonPickarmCamera) pylonPickarmCamera->start();
         if(hikCamera) {
-            hikCamera->SCCameraInit("192.168.1.8");
+            hikCamera->SCCameraInit("192.168.0.15");
         }
     }
     lens_tray.standards_parameters.setTrayCount(2);
@@ -837,11 +837,7 @@ bool BaseModuleManager::InitStruct()
                      GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
                      GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()));
 
-    aa_head_module.Init("AAHead",
-                        GetMotorByName(aa_head_module.parameters.motorXName()),
-                        GetMotorByName(aa_head_module.parameters.motorYName()),
-                        GetMotorByName(aa_head_module.parameters.motorZName()),
-                        GetMotorByName(aa_head_module.parameters.motorAName()),
+    aa_head_module.Init(GetMotorByName(aa_head_module.parameters.motorAName()),
                         GetMotorByName(aa_head_module.parameters.motorBName()),
                         GetMotorByName(aa_head_module.parameters.motorCName()),
                         GetOutputIoByName(aa_head_module.parameters.gripperName()),
@@ -928,8 +924,8 @@ bool BaseModuleManager::initialDevice()
         m->GetMasterAxisID();
     }
     EnableMotors();
-    //    GetOutputIoByName(u8"TL_上下平台")->Set(true);
-    //    GetOutputIoByName(u8"SUT_气缸")->Set(true);
+    GetOutputIoByName(u8"TL_上下平台")->Set(true);
+    GetOutputIoByName(u8"SUT_气缸")->Set(true);
     GetOutputIoByName(u8"PA1电磁阀")->Set(true);//huawei aa
     GetOutputIoByName(u8"PA2电磁阀")->Set(true);//huawei aa
     return true;
@@ -1292,7 +1288,7 @@ void BaseModuleManager::setLightingBrightness(QString location_name)
 bool BaseModuleManager::initSensor()
 {
     // Make sure SUT sensor vaccum is on
-//    GetVacuumByName(sh_lsut_module.parameters.sutVacuumName())->Set(true);
+    //    GetVacuumByName(sh_lsut_module.parameters.sutVacuumName())->Set(true);
 
     const int channel = 0;
     bool res = dothinkey->DothinkeyEnum();

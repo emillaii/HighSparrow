@@ -405,6 +405,7 @@ public:
 
     Q_INVOKABLE void updateParams();
     Q_INVOKABLE void loadFlowchart(QString json, QString filename = "");
+    Q_INVOKABLE void updateCurrentFlowchart(QString json);
     Q_INVOKABLE void loadSensorTrayLoaderMuduleParameter();
 
     Q_INVOKABLE int getServerMode() { return m_ServerMode; }

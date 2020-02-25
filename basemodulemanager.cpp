@@ -2181,6 +2181,11 @@ void BaseModuleManager::loadFlowchart(QString json, QString filename)
     aaCoreNew.setFlowchartDocument(json);
 }
 
+void BaseModuleManager::updateCurrentFlowchart(QString json)
+{
+    aaCoreNew.setFlowchartDocument(json);
+}
+
 void BaseModuleManager::loadSensorTrayLoaderMuduleParameter()
 {
     QMap<QString,PropertyBase*> temp_map;

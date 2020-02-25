@@ -554,7 +554,14 @@ ApplicationWindow {
                 icon.source: "icons/auto-run.png"
                 icon.color: "deepskyblue"
                 onClicked: {
-                    workersManager.startAllWorkers(moduleManagerParam.runMode)
+                    var command = "document.getElementById('get_data').click()";
+                    flowChartPage.webView.runJavaScript(command, function(result) {
+                        command = "document.getElementById('flowchart_data').value";
+                        flowChartPage.webView.runJavaScript(command, function(result) {
+                            baseModuleManager.updateCurrentFlowchart(result)
+                            workersManager.startAllWorkers(moduleManagerParam.runMode)
+                        })
+                    })
                 }
             }
             ToolButton {

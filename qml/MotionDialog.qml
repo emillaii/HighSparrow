@@ -211,7 +211,7 @@ Popup {
                                 }
                                 transformOrigin: Item.Center
                                 display: Button.IconOnly
-                                icon.source: "icons/home.png"
+                                icon.source: "../icons/home.png"
                                 icon.color: "cyan"
                             }
                             RoundButton{

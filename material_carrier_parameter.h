@@ -12,14 +12,14 @@ class MaterialCarrierParameter:public PropertyBase
 
     double m_SafetyX = 0;
 
-    double m_StopTime = 0;
+//    double m_StopTime = 0;
 
 public:
     MaterialCarrierParameter():PropertyBase (){}
     Q_PROPERTY(double SafetyZ READ SafetyZ WRITE setSafetyZ NOTIFY paramsChanged)
     Q_PROPERTY(double SafetyY READ SafetyY WRITE setSafetyY NOTIFY paramsChanged)
     Q_PROPERTY(double SafetyX READ SafetyX WRITE setSafetyX NOTIFY paramsChanged)
-    Q_PROPERTY(double StopTime READ StopTime WRITE setStopTime NOTIFY StopTimeChanged)
+//    Q_PROPERTY(double StopTime READ StopTime WRITE setStopTime NOTIFY StopTimeChanged)
     double SafetyZ() const
     {
         return m_SafetyZ;
@@ -34,10 +34,10 @@ public:
         return m_SafetyX;
     }
 
-    double StopTime() const
-    {
-        return m_StopTime;
-    }
+//    double StopTime() const
+//    {
+//        return m_StopTime;
+//    }
 
 public slots:
     void setSafetyZ(double SafetyZ)
@@ -66,19 +66,19 @@ public slots:
         emit paramsChanged(m_SafetyX);
     }
 
-    void setStopTime(double StopTime)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_StopTime, StopTime))
-            return;
+//    void setStopTime(double StopTime)
+//    {
+//        qWarning("Floating point comparison needs context sanity check");
+//        if (qFuzzyCompare(m_StopTime, StopTime))
+//            return;
 
-        m_StopTime = StopTime;
-        emit StopTimeChanged(m_StopTime);
-    }
+//        m_StopTime = StopTime;
+//        emit StopTimeChanged(m_StopTime);
+//    }
 
 signals:
     void paramsChanged(double SafetyZ);
-    void StopTimeChanged(double StopTime);
+//    void StopTimeChanged(double StopTime);
 };
 
 #endif // MATERIAL_CARRIER_PARAMETER_H

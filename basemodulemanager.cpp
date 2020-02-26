@@ -23,14 +23,14 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     //    qInfo("Server Mode: %d", ServerMode());
     is_init = false;
     profile_loaded = false;
-    if(!QDir(".//notopencamera").exists())
-    {
-        qInfo("Init BaslerPylonCamera--------------------------------------");
-        pylonUplookCamera = new BaslerPylonCamera(CAMERA_SH_UT_UL);
-        pylonDownlookCamera = new BaslerPylonCamera(CAMERA_SH_AA_DL);
-        pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SH_PA_DL);
-        hikCamera = new HIKCamera();
-    }
+    //    if(!QDir(".//notopencamera").exists())
+    //    {
+    qInfo("Init BaslerPylonCamera--------------------------------------");
+    pylonUplookCamera = new BaslerPylonCamera(CAMERA_SH_UT_UL);
+    pylonDownlookCamera = new BaslerPylonCamera(CAMERA_SH_AA_DL);
+    pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SH_PA_DL);
+    hikCamera = new HIKCamera();
+    //    }
 
     lightingModule = new WordopLight();
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera, hikCamera);
@@ -41,15 +41,15 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &BaseModuleManager::receiveImageFromAACore);
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
-    if(!QDir(".//notopencamera").exists())
-    {
-        if(pylonUplookCamera) pylonUplookCamera->start();
-        if(pylonDownlookCamera) pylonDownlookCamera->start();
-        if(pylonPickarmCamera) pylonPickarmCamera->start();
-        if(hikCamera) {
-            hikCamera->SCCameraInit("192.168.0.15");
-        }
+    //    if(!QDir(".//notopencamera").exists())
+    //    {
+    if(pylonUplookCamera) pylonUplookCamera->start();
+    if(pylonDownlookCamera) pylonDownlookCamera->start();
+    if(pylonPickarmCamera) pylonPickarmCamera->start();
+    if(hikCamera) {
+        hikCamera->SCCameraInit("192.168.0.15");
     }
+    //    }
     lens_tray.standards_parameters.setTrayCount(2);
     lens_tray.setTrayType(TrayType::LENS_TRAY);
     sensor_tray.standards_parameters.setTrayCount(2);
@@ -163,6 +163,8 @@ bool BaseModuleManager::saveParameters()
 
     aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
     saveMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    saveVcmfile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
+    saveVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     saveCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));

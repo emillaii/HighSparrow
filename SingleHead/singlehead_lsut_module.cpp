@@ -31,6 +31,7 @@ void SingleheadLSutModule::loadParams(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LSUT_PARAMS",&parameters);
+    temp_map.insert("LSUT_SAFETY_PARAMS",&carrier_parameters);//load material carrier parameters to json
     //    temp_map.insert("load_position",&load_position);
     temp_map.insert("load_sensor_position",&load_sensor_position);
     temp_map.insert("load_lens_position",&load_lens_position);
@@ -49,6 +50,7 @@ void SingleheadLSutModule::saveParams(QString file_name)
 {
     QMap<QString,PropertyBase*> temp_map;
     temp_map.insert("LSUT_PARAMS",&parameters);
+    temp_map.insert("LSUT_SAFETY_PARAMS",&carrier_parameters);
     //    temp_map.insert("load_position",&load_position);
     temp_map.insert("load_sensor_position",&load_sensor_position);
     temp_map.insert("load_lens_position",&load_lens_position);

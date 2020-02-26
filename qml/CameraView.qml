@@ -327,7 +327,7 @@ Grid {
                     text: "Button"
                     display: AbstractButton.IconOnly
                     icon.color: "lightGreen"
-                    icon.source: "icons/save.png"
+                    icon.source: "../icons/save.png"
                     onClicked: {
                         console.log("Save Image")
                         visionModule.saveImage(1)

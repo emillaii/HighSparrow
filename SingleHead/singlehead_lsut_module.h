@@ -84,6 +84,7 @@ public:
 
 
     SingleHeadLSutParameter parameters;
+    MaterialCarrierParameter carrier_parameters;
     XtGeneralOutput* pogopin = Q_NULLPTR;
 
     void loadParams(QString file_name);

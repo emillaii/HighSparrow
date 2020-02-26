@@ -2,7 +2,7 @@ $(document).ready(function () {
 
   var data = {};
   var init_aa_params = {
-    mode: 1, start_pos: 0, stop_pos: 0, delay_in_ms: 0,
+    mode: 1, aa1_start_pos: 0, aa1_stop_pos: 0, aa2_start_pos: 0, aa2_stop_pos: 0, delay_in_ms: 0,
     offset_in_um: -40, delay_Z_in_ms: 200, step_size: 10,
     position_checking: 0, is_debug: 0, image_count: 7, enable_tilt: 0
   };
@@ -49,8 +49,10 @@ $(document).ready(function () {
 
   //Init the table 
   $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select disabled id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option><option value=3>XScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button><button id=\"select_x_scan_mode\" class=\"btn btn-info test_button\">XScan Mode</button></div></div></div>");
-  $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa_start_position_div\">Start Position: <input type=\"number\" id=\"aa_start_position\"></div>");
-  $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa_stop_position_div\">Stop Position: <input type=\"number\" id=\"aa_stop_position\"></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa1_start_position_div\">AA 1 Start Position: <input type=\"number\" id=\"aa1_start_position\"></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa1_stop_position_div\">AA 1 Stop Position: <input type=\"number\" id=\"aa1_stop_position\"></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa2_start_position_div\">AA 2 Start Position: <input type=\"number\" id=\"aa2_start_position\"></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa2_stop_position_div\">AA 2 Stop Position: <input type=\"number\" id=\"aa2_stop_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Step Size in um: <input type=\"number\" id=\"aa_step_size\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa_offset_in_um_div\">AA Offset in um: <input type=\"number\" id=\"aa_offset_in_um\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Delay in ms: <input type=\"number\" id=\"aa_delay_Z_in_ms\"></div>");
@@ -148,8 +150,10 @@ $(document).ready(function () {
         $aa_operator_properties.show();
         $aa_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
         $('#aa_mode').val(params["mode"]);
-        $('#aa_start_position').val(params["start_pos"]);
-        $('#aa_stop_position').val(params["stop_pos"]);
+        $('#aa1_start_position').val(params["aa1_start_pos"]);
+        $('#aa1_stop_position').val(params["aa1_stop_pos"]);
+		$('#aa2_start_position').val(params["aa2_start_pos"]);
+        $('#aa2_stop_position').val(params["aa2_stop_pos"]);
         $('#aa_step_size').val(params["step_size"]);
         $('#aa_offset_in_um').val(params["offset_in_um"]);
         $('#aa_delay_Z_in_ms').val(params["delay_Z_in_ms"]);
@@ -381,8 +385,10 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_operatorTitle.val());
       var params = {
         mode: Number($('#aa_mode').val()),
-		start_pos: Number($('#aa_start_position').val()),
-		stop_pos: Number($('#aa_stop_position').val()),
+		aa1_start_pos: Number($('#aa1_start_position').val()),
+		aa1_stop_pos: Number($('#aa1_stop_position').val()),
+		aa2_start_pos: Number($('#aa2_start_position').val()),
+		aa2_stop_pos: Number($('#aa2_stop_position').val()),
         step_size: Number($('#aa_step_size').val()), 
 		offset_in_um: Number($('#aa_offset_in_um').val()),
 		delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
@@ -759,8 +765,10 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_operatorTitle.val());
       var params = {
         mode: Number($('#aa_mode').val()),
-		start_pos: Number($('#aa_start_position').val()),
-		stop_pos: Number($('#aa_stop_position').val()),
+		aa1_start_pos: Number($('#aa1_start_position').val()),
+		aa1_stop_pos: Number($('#aa1_stop_position').val()),
+		aa2_start_pos: Number($('#aa2_start_position').val()),
+		aa2_stop_pos: Number($('#aa2_stop_position').val()),
         step_size: Number($('#aa_step_size').val()), 
 		offset_in_um: Number($('#aa_offset_in_um').val()),
 		delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
@@ -1001,8 +1009,10 @@ $(document).ready(function () {
   $('#select_zscan_mode').click(function(){
 	  console.log("Selecting aa zscan mode");
 	  $('#aa_mode').val(0);
-	  $('#aa_start_position_div')[0].style.display = "block";
-	  $('#aa_stop_position_div')[0].style.display = "block";
+	  $('#aa1_start_position_div')[0].style.display = "block";
+	  $('#aa1_stop_position_div')[0].style.display = "block";
+	  $('#aa2_start_position_div')[0].style.display = "block";
+	  $('#aa2_stop_position_div')[0].style.display = "block";
 	  $('#aa_offset_in_um_div')[0].style.display = "none";
 	  
   });
@@ -1010,16 +1020,20 @@ $(document).ready(function () {
   $('#select_dfov_mode').click(function(){
 	  console.log("Selecting aa dfov mode");
 	  $('#aa_mode').val(1);
-	  $('#aa_start_position_div')[0].style.display = "block";
-	  $('#aa_stop_position_div')[0].style.display = "block";
+	  $('#aa1_start_position_div')[0].style.display = "block";
+	  $('#aa1_stop_position_div')[0].style.display = "block";
+	  $('#aa2_start_position_div')[0].style.display = "block";
+	  $('#aa2_stop_position_div')[0].style.display = "block";
 	  $('#aa_offset_in_um_div')[0].style.display = "none";
   });
   
   $('#select_stationary_scan_mode').click(function(){
 	  console.log("Selecting aa stationary scan mode");
 	  $('#aa_mode').val(2);
-	  $('#aa_start_position_div')[0].style.display = "none";
-	  $('#aa_stop_position_div')[0].style.display = "none";
+	  $('#aa1_start_position_div')[0].style.display = "none";
+	  $('#aa1_stop_position_div')[0].style.display = "none";
+	  $('#aa2_start_position_div')[0].style.display = "none";
+	  $('#aa2_stop_position_div')[0].style.display = "none";
 	  $('#aa_offset_in_um_div')[0].style.display = "block";
   });
   
@@ -1038,8 +1052,10 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_operatorTitle.val());
       var params = {
         mode: Number($('#aa_mode').val()),
-		start_pos: Number($('#aa_start_position').val()),
-		stop_pos: Number($('#aa_stop_position').val()),
+		aa1_start_pos: Number($('#aa1_start_position').val()),
+		aa1_stop_pos: Number($('#aa1_stop_position').val()),
+		aa2_start_pos: Number($('#aa2_start_position').val()),
+		aa2_stop_pos: Number($('#aa2_stop_position').val()),
         step_size: Number($('#aa_step_size').val()), 
 		offset_in_um: Number($('#aa_offset_in_um').val()),
 		delay_Z_in_ms: Number($('#aa_delay_Z_in_ms').val()),
@@ -1171,12 +1187,16 @@ $(document).ready(function () {
 		updateData();
     } else if ( key == 'E' && !toggle_edit_state) {
 		if ($('#aa_mode').val() == "0" || $('#aa_mode').val() == "1"){
-			$('#aa_start_position_div')[0].style.display = "block";
-			$('#aa_stop_position_div')[0].style.display = "block";
+			$('#aa1_start_position_div')[0].style.display = "block";
+			$('#aa1_stop_position_div')[0].style.display = "block";
+			$('#aa2_start_position_div')[0].style.display = "block";
+			$('#aa2_stop_position_div')[0].style.display = "block";
 			$('#aa_offset_in_um_div')[0].style.display = "none";
 		} else if (($('#aa_mode').val() == "2")) {
-			$('#aa_start_position_div')[0].style.display = "none";
-			$('#aa_stop_position_div')[0].style.display = "none";
+			$('#aa1_start_position_div')[0].style.display = "none";
+			$('#aa1_stop_position_div')[0].style.display = "none";
+			$('#aa2_start_position_div')[0].style.display = "none";
+			$('#aa2_stop_position_div')[0].style.display = "none";
 			$('#aa_offset_in_um_div')[0].style.display = "block";
 		}
 		$('#ex1').modal({

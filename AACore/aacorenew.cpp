@@ -1171,8 +1171,15 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     map.insert("Result","OK");
     clustered_sfr_map.clear();
     int zScanMode = params["mode"].toInt();
-    double start = params["start_pos"].toDouble();
-    double stop = params["stop_pos"].toDouble();
+    double start = 0;  //params["start_pos"].toDouble();
+    double stop = 0; //params["stop_pos"].toDouble();
+    if (serverMode == 0) {
+        start = params["aa1_start_pos"].toDouble();
+        stop = params["aa1_stop_pos"].toDouble();
+    }else if (serverMode == 1) {
+        start = params["aa2_start_pos"].toDouble();
+        stop = params["aa2_stop_pos"].toDouble();
+    }
     double step_size = params["step_size"].toDouble()/1000;
     unsigned int zSleepInMs = params["delay_Z_in_ms"].toInt();
     double estimated_aa_fov = parameters.EstimatedAAFOV();

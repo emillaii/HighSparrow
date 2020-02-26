@@ -13,7 +13,7 @@ $(document).ready(function () {
   var init_uv_params = {time_in_ms: 3000, enable_OTP: 0, OTP_information: '' };
   var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
   var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
-  var init_xy_offset = { type: 0, x_offset_in_um: 0, y_offset_in_um: 0, delay_in_ms: 0};
+  var init_xy_offset = { type: 0, x_offset_in_um_aa1: 0, y_offset_in_um_aa1: 0, x_offset_in_um_aa2: 0, y_offset_in_um_aa2: 0, delay_in_ms: 0};
   var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0, enable_glue_inspection: 0, glue_inspection_mode: 0, max_glue_width_in_mm:0, min_glue_width_in_mm: 0, max_avg_glue_width_in_mm:0 };
   var init_save_image = { type: 0, lighting: 100 };
   var init_grr_params ={ change_lens: 1, change_sensor: 0, repeat_time: 10,change_time: 11};
@@ -98,8 +98,10 @@ $(document).ready(function () {
   $aa_z_offset_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"aa_z_offset_delay_in_ms\"></div>");
 
   $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">Motion Type: <select id=\"aa_xy_offset_type\"><option value=0>SUT</option><option value=1>AA</option></select></div>");
-  $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">X Offset in um: <input type=\"number\" id=\"aa_x_offset_in_um\"></div>");
-  $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">Y Offset in um: <input type=\"number\" id=\"aa_y_offset_in_um\"></div>");
+  $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">AA 1 X Offset in um: <input type=\"number\" id=\"aa_x_offset_in_um_aa1\"></div>");
+  $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">AA 1 Y Offset in um: <input type=\"number\" id=\"aa_y_offset_in_um_aa1\"></div>");
+  $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">AA 2 X Offset in um: <input type=\"number\" id=\"aa_x_offset_in_um_aa2\"></div>");
+  $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">AA 2 Y Offset in um: <input type=\"number\" id=\"aa_y_offset_in_um_aa2\"></div>");
   $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"aa_xy_offset_delay_in_ms\"></div>");
   
   $save_image_operator_properties.append("<div style=\"margin-top:20px\">Camera Type: <select id=\"save_image_type\"><option value=0>Downlook Camera</option><option value=1>Uplook Camera</option><option value=2>Pickarm Camera</option></select></div>");
@@ -181,8 +183,10 @@ $(document).ready(function () {
         $aa_xy_offset_operator_properties.show();
         $aa_xy_offset_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
         $('#aa_xy_offset_type').val(params["type"]);
-        $('#aa_x_offset_in_um').val(params["x_offset_in_um"]);
-        $('#aa_y_offset_in_um').val(params["y_offset_in_um"]);
+        $('#aa_x_offset_in_um_aa1').val(params["x_offset_in_um_aa1"]);
+        $('#aa_y_offset_in_um_aa1').val(params["y_offset_in_um_aa1"]);
+		$('#aa_x_offset_in_um_aa2').val(params["x_offset_in_um_aa2"]);
+        $('#aa_y_offset_in_um_aa2').val(params["y_offset_in_um_aa2"]);
         $('#aa_xy_offset_delay_in_ms').val(params["delay_in_ms"]);
       } else if (operatorId.includes("OC")) {
         $oc_operator_properties.show();
@@ -423,8 +427,10 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("XY Offset")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_xy_offset_operator_title.val());
       var params = { type: Number($('#aa_xy_offset_type').val()),
-	  x_offset_in_um: Number($('#aa_x_offset_in_um').val()),
-	  y_offset_in_um: Number($('#aa_y_offset_in_um').val()),
+	  x_offset_in_um_aa1: Number($('#aa_x_offset_in_um_aa1').val()),
+	  y_offset_in_um_aa1: Number($('#aa_y_offset_in_um_aa1').val()),
+	  x_offset_in_um_aa2: Number($('#aa_x_offset_in_um_aa2').val()),
+	  y_offset_in_um_aa2: Number($('#aa_y_offset_in_um_aa2').val()),
 	  delay_in_ms: Number($('#aa_xy_offset_delay_in_ms').val())
 	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
@@ -799,8 +805,10 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("XY Offset")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_xy_offset_operator_title.val());
       var params = { type: Number($('#aa_xy_offset_type').val()),
-	  x_offset_in_um: Number($('#aa_x_offset_in_um').val()),
-	  y_offset_in_um: Number($('#aa_y_offset_in_um').val()),
+	  x_offset_in_um_aa1: Number($('#aa_x_offset_in_um_aa1').val()),
+	  y_offset_in_um_aa1: Number($('#aa_y_offset_in_um_aa1').val()),
+	  x_offset_in_um_aa2: Number($('#aa_x_offset_in_um_aa2').val()),
+	  y_offset_in_um_aa2: Number($('#aa_y_offset_in_um_aa2').val()),
 	  delay_in_ms: Number($('#aa_xy_offset_delay_in_ms').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
@@ -1076,8 +1084,10 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("XY Offset")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_xy_offset_operator_title.val());
       var params = { type: Number($('#aa_xy_offset_type').val()),
-	  x_offset_in_um: Number($('#aa_x_offset_in_um').val()),
-	  y_offset_in_um: Number($('#aa_y_offset_in_um').val()),
+	  x_offset_in_um_aa1: Number($('#aa_x_offset_in_um_aa1').val()),
+	  y_offset_in_um_aa1: Number($('#aa_y_offset_in_um_aa1').val()),
+	  x_offset_in_um_aa2: Number($('#aa_x_offset_in_um_aa2').val()),
+	  y_offset_in_um_aa2: Number($('#aa_y_offset_in_um_aa2').val()),
 	  delay_in_ms: Number($('#aa_xy_offset_delay_in_ms').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);

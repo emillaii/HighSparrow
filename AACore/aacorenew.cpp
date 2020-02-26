@@ -3859,8 +3859,15 @@ ErrorCodeStruct AACoreNew::performZOffset(QJsonValue params)
 
 ErrorCodeStruct AACoreNew::performXYOffset(QJsonValue params)
 {
-    double x_offset_in_um = params["x_offset_in_um"].toDouble(0);
-    double y_offset_in_um = params["y_offset_in_um"].toDouble(0);
+    double x_offset_in_um = 0;
+    double y_offset_in_um = 0;
+    if (this->serverMode == 0) {
+        x_offset_in_um = params["x_offset_in_um_aa1"].toDouble(0);
+        y_offset_in_um = params["y_offset_in_um_aa1"].toDouble(0);
+    }else if (this->serverMode == 1) {
+        x_offset_in_um = params["x_offset_in_um_aa2"].toDouble(0);
+        y_offset_in_um = params["y_offset_in_um_aa2"].toDouble(0);
+    }
     int finish_delay = params["delay_in_ms"].toInt(0);
     QElapsedTimer timer; timer.start();
     QVariantMap map;

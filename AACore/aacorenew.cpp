@@ -3845,7 +3845,12 @@ ErrorCodeStruct AACoreNew::performCameraUnload(int finish_delay)
 
 ErrorCodeStruct AACoreNew::performZOffset(QJsonValue params)
 {
-    double z_offset_in_um = params["z_offset_in_um"].toDouble(0);
+    double z_offset_in_um = 0; // = params["z_offset_in_um"].toDouble(0);
+    if (this->serverMode == 0) {
+        z_offset_in_um = params["z_offset_in_um_aa1"].toDouble(0);
+    }else if (this->serverMode == 1) {
+        z_offset_in_um = params["z_offset_in_um_aa2"].toDouble(0);
+    }
     int finish_delay = params["delay_in_ms"].toInt(0);
     QElapsedTimer timer; timer.start();
     QVariantMap map;

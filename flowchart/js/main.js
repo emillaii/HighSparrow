@@ -11,8 +11,7 @@ $(document).ready(function () {
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, min: 0, max: 200, mode: 0, margin: 100 };
   var init_uv_params = {time_in_ms: 3000, enable_OTP: 0, OTP_information: '' };
-  var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
-  var init_z_offset = { type: 0, z_offset_in_um: 0, delay_in_ms: 0 };
+  var init_z_offset = { type: 0, z_offset_in_um_aa1: 0, z_offset_in_um_aa2: 0, delay_in_ms: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um_aa1: 0, y_offset_in_um_aa1: 0, x_offset_in_um_aa2: 0, y_offset_in_um_aa2: 0, delay_in_ms: 0};
   var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0, enable_glue_inspection: 0, glue_inspection_mode: 0, max_glue_width_in_mm:0, min_glue_width_in_mm: 0, max_avg_glue_width_in_mm:0 };
   var init_save_image = { type: 0, lighting: 100 };
@@ -96,7 +95,8 @@ $(document).ready(function () {
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"dispense_delay_in_ms\"></div>");
   
   $aa_z_offset_operator_properties.append("<div style=\"margin-top:20px\">Motion Type: <select id=\"aa_z_offset_type\"><option value=0>SUT Z</option><option value=1>AA Z</option></select></div>");
-  $aa_z_offset_operator_properties.append("<div style=\"margin-top:20px\">Z Offset in um: <input type=\"number\" id=\"aa_z_offset_in_um\"></div>");
+  $aa_z_offset_operator_properties.append("<div style=\"margin-top:20px\">AA 1 Z Offset in um: <input type=\"number\" id=\"z_offset_in_um_aa1\"></div>");
+  $aa_z_offset_operator_properties.append("<div style=\"margin-top:20px\">AA 2 Z Offset in um: <input type=\"number\" id=\"z_offset_in_um_aa2\"></div>");
   $aa_z_offset_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"aa_z_offset_delay_in_ms\"></div>");
 
   $aa_xy_offset_operator_properties.append("<div style=\"margin-top:20px\">Motion Type: <select id=\"aa_xy_offset_type\"><option value=0>SUT</option><option value=1>AA</option></select></div>");
@@ -181,7 +181,8 @@ $(document).ready(function () {
         $aa_z_offset_operator_properties.show();
         $aa_z_offset_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
         $('#aa_z_offset_type').val(params["type"]);
-        $('#aa_z_offset_in_um').val(params["z_offset_in_um"]);
+        $('#z_offset_in_um_aa1').val(params["z_offset_in_um_aa1"]);
+		$('#z_offset_in_um_aa2').val(params["z_offset_in_um_aa2"]);
         $('#aa_z_offset_delay_in_ms').val(params["delay_in_ms"]);
       } else if (operatorId.includes("XY Offset")) {
         $aa_xy_offset_operator_properties.show();
@@ -426,7 +427,8 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("Z Offset")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_z_offset_operator_title.val());
       var params = { type: Number($('#aa_z_offset_type').val()),
-	  z_offset_in_um: Number($('#aa_z_offset_in_um').val()),
+	  z_offset_in_um_aa1: Number($('#z_offset_in_um_aa1').val()),
+	  z_offset_in_um_aa2: Number($('#z_offset_in_um_aa2').val()),
 	  delay_in_ms: Number($('#aa_z_offset_delay_in_ms').val())
 	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
@@ -806,7 +808,8 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("Z Offset")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_z_offset_operator_title.val());
       var params = { type: Number($('#aa_z_offset_type').val()),
-	  z_offset_in_um: Number($('#aa_z_offset_in_um').val()),
+	  z_offset_in_um_aa1: Number($('#z_offset_in_um_aa1').val()),
+	  z_offset_in_um_aa2: Number($('#z_offset_in_um_aa2').val()),
 	  delay_in_ms: Number($('#aa_z_offset_delay_in_ms').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
@@ -1093,7 +1096,8 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("Z Offset")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $aa_z_offset_operator_title.val());
       var params = { type: Number($('#aa_z_offset_type').val()),
-	  z_offset_in_um: Number($('#aa_z_offset_in_um').val()),
+	  z_offset_in_um_aa1: Number($('#z_offset_in_um_aa1').val()),
+	  z_offset_in_um_aa2: Number($('#z_offset_in_um_aa2').val()),
 	  delay_in_ms: Number($('#aa_z_offset_delay_in_ms').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);

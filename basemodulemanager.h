@@ -64,6 +64,7 @@ public:
 
     MaterialCarrier lut_carrier;
     MaterialCarrier sut_carrier;
+    MaterialCarrier material_carrier;
     MaterialTray sensor_tray;
     MaterialTray reject_tray;
     MaterialTray lens_tray;

@@ -82,9 +82,7 @@ public:
     Position lens_offset;
     Position sensor_offset;
 
-
     SingleHeadLSutParameter parameters;
-    MaterialCarrierParameter carrier_parameters;
     XtGeneralOutput* pogopin = Q_NULLPTR;
 
     void loadParams(QString file_name);

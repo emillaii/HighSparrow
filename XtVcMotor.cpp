@@ -419,8 +419,9 @@ bool XtVcMotor::MoveToPos(double pos, int thread)
         }
         else
         {
-            auto rsp = SI::ui.getUIResponse("MotionError", QObject::tr("%1 move to pos %2 failed!").arg(name).arg(pos),
-                                            MsgBoxIcon::Error, SI::ui.retryIgnoreButtons);
+            auto rsp = SI::ui.getUIResponse(
+                "MotionError", QObject::tr("%1 move to pos %2 failed! %3").arg(name).arg(pos).arg(getErrorMsg()),
+                MsgBoxIcon::Error, SI::ui.retryIgnoreButtons);
             if (rsp == SI::ui.Retry)
             {
                 continue;
@@ -447,9 +448,12 @@ bool XtVcMotor::WaitArrivedTargetPos(double target_position, int timeout)
         }
         else
         {
-            auto rsp = SI::ui.getUIResponse(
-                "MotionError", QObject::tr("%1 wait arriving target pos %2 failed!").arg(name).arg(target_position),
-                MsgBoxIcon::Error, SI::ui.retryIgnoreButtons);
+            auto rsp = SI::ui.getUIResponse("MotionError",
+                                            QObject::tr("%1 wait arriving target pos %2 failed! %3")
+                                                .arg(name)
+                                                .arg(target_position)
+                                                .arg(getErrorMsg()),
+                                            MsgBoxIcon::Error, SI::ui.retryIgnoreButtons);
             if (rsp == SI::ui.Retry)
             {
                 continue;
@@ -477,10 +481,11 @@ bool XtVcMotor::WaitArrivedTargetPos(double target_position, double arived_error
         else
         {
             auto rsp = SI::ui.getUIResponse("MotionError",
-                                            QObject::tr("%1 wait arriving target pos %2 with pos error %3 failed!")
+                                            QObject::tr("%1 wait arriving target pos %2 with pos error %3 failed! %4")
                                                 .arg(name)
                                                 .arg(target_position)
-                                                .arg(arived_error),
+                                                .arg(arived_error)
+                                                .arg(getErrorMsg()),
                                             MsgBoxIcon::Error, SI::ui.retryIgnoreButtons);
             if (rsp == SI::ui.Retry)
             {
@@ -501,6 +506,28 @@ bool XtVcMotor::WaitArrivedTargetPos(double target_position, double arived_error
 bool XtVcMotor::WaitArrivedTargetPos(int timeout)
 {
     return XtMotor::WaitArrivedTargetPos(timeout);
+}
+
+QString XtVcMotor::getErrorMsg()
+{
+    auto errorCode = get_motor_error(vcm_id);
+    switch (errorCode)
+    {
+        case 0:
+            return QString();
+        case 1:
+            return "HardwareError: error_over_current";
+        case 1 << 1:
+            return "HardwareError: error_go_zero";
+        case 1 << 2:
+            return "HardwareError: error_over_temp";
+        case 1 << 3:
+            return "HardwareError: error_leakage_current";
+        case -1:
+            return "HardwareError: ControllerError";
+        default:
+            return QString("HardwareError: Unkown error: %1").arg(errorCode);
+    }
 }
 
 void XtVcMotor::ShowSetting()

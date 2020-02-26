@@ -117,6 +117,9 @@ public:
     virtual bool WaitArrivedTargetPos(double target_position, int timeout = 10000) override;
     virtual bool WaitArrivedTargetPos(double target_position, double arived_error, int timeout = 10000) override;
     virtual bool WaitArrivedTargetPos(int timeout = 10000) override;
+
+private:
+    QString getErrorMsg();
 };
 
 #endif    // XTVCMOTOR_H

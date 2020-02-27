@@ -57,6 +57,7 @@ private:
     QThread work_thread;
     QMap<QString,QVariantMap> run_parameter;
     QString local_station_number = "0";
+    QMutex fileLock;
 public:
     WorkersManagerParameter parameters;
     AlarmMessageShower alarm_shower;

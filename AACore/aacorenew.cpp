@@ -70,7 +70,7 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
         qInfo("Sample Y: %f  Predicted Y: %f Error: %f", Y(i, 0), Ans(i, 0), error);
         //If |error| > 10, then this point is outfiter, then remove that point and fitCurve recursively
         //Avoid infinite recursive loop
-        if (!detectedAbnormality && error < -5) {
+        if (!detectedAbnormality && error < -4) {
             qInfo("Detected the abnormal data point");
             detectedAbnormality = true;
             deletedIndex = i;
@@ -215,7 +215,6 @@ void AACoreNew::run(bool has_material)
         QThread::msleep(100);
         double temp_time = timer.elapsed();
         temp_time/=1000;
-        qInfo("cycle_time :%f",temp_time);
         parameters.setCircleTime(temp_time);
         if(parameters.circleTime() > parameters.minCircleTime() && parameters.circleTime() < parameters.maxCicleTime())
         {
@@ -224,7 +223,6 @@ void AACoreNew::run(bool has_material)
             temp_average /= parameters.circleCount();
             temp_average *= 1000;
             temp_average = round(temp_average)/1000;
-            qInfo("CircleAverageTime :%f",temp_average);
             parameters.setCircleAverageTime(temp_average);
 
             if (temp_average > 0)
@@ -446,7 +444,6 @@ void AACoreNew::startWork( int run_mode)
     }
     if (run_mode == RunMode::UNLOAD_ALL_LENS) return;
     QVariantMap run_params = inquirRunParameters();
-
     if(run_params.isEmpty())
     {
         sendAlarmMessage(OK_OPERATION,u8"启动参数为空.启动失败.",ErrorLevel::ErrorMustStop);
@@ -465,6 +462,11 @@ void AACoreNew::startWork( int run_mode)
     {
         QString aaFlowChart = run_params["AAFlowchart"].toString();
         this->setFlowchartDocument(aaFlowChart);
+    }
+    if(run_params.contains("LotNumber"))
+    {
+        QString lotNumber = run_params["LotNumber"].toString();
+        this->parameters.setLotNumber(lotNumber);
     }
     if(run_params.contains("StationNumber"))
     {
@@ -1195,7 +1197,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     qInfo("start : %f stop: %f enable_tilt: %d", start, stop, enableTilt);
     unsigned int zScanCount = 0;
     QElapsedTimer timer; timer.start();
-    int resize_factor = 2;
+    int resize_factor = 1;
     vector<double> fov_y; vector<double> fov_x;
     QPointF prev_point = {0, 0};
     double prev_fov_slope = 0;

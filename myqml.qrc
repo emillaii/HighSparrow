@@ -237,5 +237,6 @@
         <file>qml/ConfigManager/SilicolComboBox.qml</file>
         <file>qml/ConfigManager/SilicolTextField.qml</file>
         <file>qml/ConfigManager/SimpleTypeArrayRow.qml</file>
+        <file>qml/MarcoControl/SystemConfiguration/SystemConfiguration.qml</file>
     </qresource>
 </RCC>

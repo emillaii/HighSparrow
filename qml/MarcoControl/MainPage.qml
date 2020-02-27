@@ -13,6 +13,7 @@ import "./ActiveAlignment"
 import "./CameraPickFromSUT"
 import "./CameraPlaceToCarrier"
 import "./BufferAndRejectCarrier"
+import "./SystemConfiguration"
 
 ScrollView {
     id: machineConfigListView
@@ -153,6 +154,19 @@ ScrollView {
         }
         BufferAndRejectCarrierView{
             id: bufferAndRejectCarrierView
+            visible: false
+        }
+
+        Button {
+            id: systemConfigurationViewSwitch
+            text:"System Configuration"
+            Layout.fillWidth: true
+            onClicked: {
+                systemConfiguration.visible = !systemConfiguration.visible
+            }
+        }
+        SystemConfiguration {
+            id: systemConfiguration
             visible: false
         }
     }

@@ -2,7 +2,9 @@
 
 #include <QMessageBox>
 #include <QVariantMap>
-
+#include "config.h"
+#include "utils/commonutils.h"
+#include <QFile>
 WorkersManager::WorkersManager(QObject *parent):QObject (parent)
 {
     this->moveToThread(&work_thread);
@@ -313,6 +315,22 @@ void WorkersManager::showAlarmMessage(QVariantMap message)
     alarm_shower.current_message.alarm_id = message["AlarmId"].toInt();
     alarm_shower.current_message.module_name = message["OriginModule"].toString();
     alarm_shower.current_message.message_content = message["ErrorMessage"].toString();
+
+    qInfo("Alarm: %s: %s", message["OriginModule"].toString().toStdString().c_str(), message["ErrorMessage"].toString().toStdString().c_str());
+    QString alarmMessage = getCurrentTimeString().append(",")
+                           .append(message["OriginModule"].toString()).append(",")
+                           .append(message["AlarmId"].toString()).append(",")
+                           .append(message["ErrorLevel"].toString()).append(",")
+                           .append(message["ErrorMessage"].toString())
+                           .append("\n");
+    QString filename;
+    fileLock.lock();
+    filename.append(getAlarmLogDir()).append("alarm.log");
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
+    file.write(alarmMessage.toStdString().c_str());
+    file.close();
+    fileLock.unlock();
     emit showAlarm();
 }
 

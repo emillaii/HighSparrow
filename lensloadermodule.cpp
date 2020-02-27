@@ -948,8 +948,8 @@ bool LensLoaderModule::unloadAllLens()
                 moveToWorkPos(true);
                 break;
             }
-            if( i == 99) { qInfo("Fail"); return false; }
-        } while (i<99);
+            if( i == 19) { qInfo("Fail"); return false; }
+        } while (i<19);
         placeLensToTray();
     }
     //Checking 2: LUT1 has lens
@@ -965,8 +965,8 @@ bool LensLoaderModule::unloadAllLens()
                 moveToWorkPos(true);
                 break;
             }
-            if( i == 99) { qInfo("Fail"); return false; }
-        }while(i<99);
+            if( i == 19) { qInfo("Fail"); return false; }
+        }while(i<19);
         placeLensToTray();
     }
 
@@ -983,8 +983,8 @@ bool LensLoaderModule::unloadAllLens()
                 moveToWorkPos(true);
                 break;
             }
-            if( i == 99) { qInfo("Fail"); return false; }
-        }while (i<99);
+            if( i == 19) { qInfo("Fail"); return false; }
+        }while (i<19);
         placeLensToTray();
     }
 
@@ -1003,8 +1003,8 @@ bool LensLoaderModule::unloadAllLens()
                 moveToWorkPos(true);
                 break;
             }
-            if( i == 99) { qInfo("Fail"); return false; }
-        }while (i<99);
+            if( i == 19) { qInfo("Fail"); return false; }
+        }while (i<19);
         placeLensToTray();
     }
     //Checking 5: LUT Go To AA2 Unpick
@@ -1022,8 +1022,8 @@ bool LensLoaderModule::unloadAllLens()
                 moveToWorkPos(true);
                 break;
             }
-            if( i == 99) { qInfo("Fail"); return false; }
-        }while (i<99);
+            if( i == 19) { qInfo("Fail"); return false; }
+        }while (i<19);
         placeLensToTray();
     }
     lut->closeLoadVacuum();

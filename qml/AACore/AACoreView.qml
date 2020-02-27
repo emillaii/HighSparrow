@@ -30,6 +30,61 @@ ItemDelegate {
 
                     RowLayout {
                         Label {
+                            text: qsTr("MTF Check Nyquist Frequency: ")
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 300
+                            model: [ "1/8", "1/4" ]
+                            currentIndex: aaCoreParams.mtfFrequency
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setMTFFrequency(currentIndex)
+                            }
+                        }
+                    }
+                    RowLayout {
+                        Label {
+                            text: qsTr("Oversampling:")
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 300
+                            model: [ "1", "2"]
+                            currentIndex: aaCoreParams.aaScanOversampling
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setAAScanOversampling(currentIndex)
+                            }
+                        }
+                        Label {
+                            text: qsTr("AA Scan MTF Nyquist Frequency:")
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 300
+                            model: [ "1/8", "1/4" ]
+                            currentIndex: aaCoreParams.aaScanMTFFrequency
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setAAScanMTFFrequency(currentIndex)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Label {
+                            text: qsTr("Fit Order:")
+                        }
+                        TextField {
+                            text: aaCoreParams.aaScanCurveFitOrder
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: IntValidator {
+                                bottom: 4
+                                top: 6
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setAAScanCurveFitOrder(text)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Label {
                             text: qsTr("EFL")
                         }
                         TextField {
@@ -406,6 +461,20 @@ ItemDelegate {
 
                     RowLayout {
                         Label {
+                            text: qsTr("AA Tilt Compensation ( AA-A, AA-B ) : ")
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 300
+                            model: [ "(xTilt, yTilt)", "(xTilt, -yTilt)", "(-xTilt, yTilt)", "(-xTilt, -yTilt)","(yTilt, xTilt)", "(yTilt, -xTilt)", "(-yTilt, xTilt)", "(-yTilt, -xTilt)" ]
+                            currentIndex: aaCoreParams.tiltRelationship
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setTiltRelationship(currentIndex)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Label {
                             id: chartCalibrationTheta
                             text: qsTr("")
                         }
@@ -435,7 +504,7 @@ ItemDelegate {
             Image {
                 id: image1
                 anchors.fill: parent
-                source: "icons/sparrow.png"
+                source: "../../icons/sparrow.png"
                 fillMode: Image.PreserveAspectFit
                 cache: false
                 Connections {

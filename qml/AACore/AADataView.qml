@@ -190,7 +190,7 @@ Grid {
             cache: false
             TextEdit {
                 id: sensorIDLabel
-                text: qsTr("SensorID: ") + dothinkey.currentSensorID
+                text: qsTr("SensorID: ")
                 color: "steelblue"
                 font.bold: true
                 font.italic: true
@@ -198,9 +198,6 @@ Grid {
                 cursorVisible: true
                 mouseSelectionMode: TextEdit.SelectWords
                 selectByMouse: true
-//                background: Rectangle {
-//                    color: "black"
-//                }
             }
         }
         Rectangle {

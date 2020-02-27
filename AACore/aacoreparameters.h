@@ -35,6 +35,18 @@ class AACoreParameters : public PropertyBase
 
     double m_FrequencyForCheckGlue = 5;
 
+    int m_tiltRelationship = 0;
+
+    int m_aaScanMTFFrequency = 1;
+
+    int m_aaScanCurveFitOrder = 4;
+
+    int m_aaScanOversampling = 0;
+
+    int m_aaScanCurveFitErrorThreshold = -10;
+
+    int m_mtfFrequency = 1;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -55,174 +67,270 @@ public:
     Q_PROPERTY(double EstimatedFOVSlope READ EstimatedFOVSlope WRITE setEstimatedFOVSlope NOTIFY paramsChanged)
     Q_PROPERTY(double EstimatedAAFOV READ EstimatedAAFOV WRITE setEstimatedAAFOV NOTIFY paramsChanged)
     Q_PROPERTY(double FrequencyForCheckGlue READ FrequencyForCheckGlue WRITE setFrequencyForCheckGlue NOTIFY FrequencyForCheckGlueChanged)
+    Q_PROPERTY(int tiltRelationship READ tiltRelationship WRITE setTiltRelationship NOTIFY tiltRelationshipChanged)
+    Q_PROPERTY(int mtfFrequency READ mtfFrequency WRITE setMTFFrequency NOTIFY mtfFrequencyChanged)
+    Q_PROPERTY(int aaScanMTFFrequency READ aaScanMTFFrequency WRITE setAAScanMTFFrequency NOTIFY aaScanMTFFrequencyChanged)
+    Q_PROPERTY(int aaScanCurveFitOrder READ aaScanCurveFitOrder WRITE setAAScanCurveFitOrder NOTIFY aaScanCurveFitOrderChanged)
+    Q_PROPERTY(int aaScanOversampling READ aaScanOversampling WRITE setAAScanOversampling NOTIFY aaScanOversamplingChanged)
+    Q_PROPERTY(int aaScanCurveFitErrorThreshold READ aaScanCurveFitErrorThreshold WRITE setAAScanCurveFitErrorThreshold NOTIFY aaScanCurveFitErrorThresholdChanged)
 
-double EFL() const
-{
-    return m_EFL;
-}
-int MaxIntensity() const
-{
-    return m_MaxIntensity;
-}
+    double EFL() const
+    {
+        return m_EFL;
+    }
+    int MaxIntensity() const
+    {
+        return m_MaxIntensity;
+    }
 
-int MinArea() const
-{
-    return m_MinArea;
-}
+    int MinArea() const
+    {
+        return m_MinArea;
+    }
 
-int MaxArea() const
-{
-    return m_MaxArea;
-}
+    int MaxArea() const
+    {
+        return m_MaxArea;
+    }
 
-int SensorXRatio() const
-{
-    return m_SensorXRatio;
-}
+    int SensorXRatio() const
+    {
+        return m_SensorXRatio;
+    }
 
-int SensorYRatio() const
-{
-    return m_SensorYRatio;
-}
+    int SensorYRatio() const
+    {
+        return m_SensorYRatio;
+    }
 
-double ROIRatio() const
-{
-    return m_ROIRatio;
-}
+    double ROIRatio() const
+    {
+        return m_ROIRatio;
+    }
 
-bool firstRejectSensor() const
-{
-    return m_firstRejectSensor;
-}
+    bool firstRejectSensor() const
+    {
+        return m_firstRejectSensor;
+    }
 
-int rejectTimes() const
-{
-    return m_rejectTimes;
-}
+    int rejectTimes() const
+    {
+        return m_rejectTimes;
+    }
 
-QVariantList WeightList() const
-{
-    return m_WeightList;
-}
+    QVariantList WeightList() const
+    {
+        return m_WeightList;
+    }
 
-double EstimatedFOVSlope() const
-{
-    return m_EstimatedFOVSlope;
-}
+    double EstimatedFOVSlope() const
+    {
+        return m_EstimatedFOVSlope;
+    }
 
-double EstimatedAAFOV() const
-{
-    return m_EstimatedAAFOV;
-}
+    double EstimatedAAFOV() const
+    {
+        return m_EstimatedAAFOV;
+    }
 
-double FrequencyForCheckGlue() const
-{
-    return m_FrequencyForCheckGlue;
-}
+    double FrequencyForCheckGlue() const
+    {
+        return m_FrequencyForCheckGlue;
+    }
+
+    int tiltRelationship() const
+    {
+        return m_tiltRelationship;
+    }
+
+    int aaScanMTFFrequency() const
+    {
+        return m_aaScanMTFFrequency;
+    }
+
+    int aaScanCurveFitOrder() const
+    {
+        return m_aaScanCurveFitOrder;
+    }
+
+    int aaScanOversampling() const
+    {
+        return m_aaScanOversampling;
+    }
+
+    int aaScanCurveFitErrorThreshold() const
+    {
+        return m_aaScanCurveFitErrorThreshold;
+    }
+
+    int mtfFrequency() const
+    {
+        return m_mtfFrequency;
+    }
 
 public slots:
-void setEFL(double EFL)
-{
-    m_EFL = EFL;
-    emit paramsChanged();
-}
-void setMaxIntensity(int MaxIntensity)
-{
-    m_MaxIntensity = MaxIntensity;
-    emit paramsChanged();
-}
+    void setEFL(double EFL)
+    {
+        m_EFL = EFL;
+        emit paramsChanged();
+    }
+    void setMaxIntensity(int MaxIntensity)
+    {
+        m_MaxIntensity = MaxIntensity;
+        emit paramsChanged();
+    }
 
-void setMinArea(int MinArea)
-{
-    m_MinArea = MinArea;
-    emit paramsChanged();
-}
+    void setMinArea(int MinArea)
+    {
+        m_MinArea = MinArea;
+        emit paramsChanged();
+    }
 
-void setMaxArea(int MaxArea)
-{
-    m_MaxArea = MaxArea;
-    emit paramsChanged();
-}
+    void setMaxArea(int MaxArea)
+    {
+        m_MaxArea = MaxArea;
+        emit paramsChanged();
+    }
 
-void setSensorXRatio(int SensorXRatio)
-{
-    m_SensorXRatio = SensorXRatio;
-    emit paramsChanged();
-}
+    void setSensorXRatio(int SensorXRatio)
+    {
+        m_SensorXRatio = SensorXRatio;
+        emit paramsChanged();
+    }
 
-void setSensorYRatio(int SensorYRatio)
-{
-    m_SensorYRatio = SensorYRatio;
-    emit paramsChanged();
-}
+    void setSensorYRatio(int SensorYRatio)
+    {
+        m_SensorYRatio = SensorYRatio;
+        emit paramsChanged();
+    }
 
-void setROIRatio(double ROIRatio)
-{
-    m_ROIRatio = ROIRatio;
-    emit paramsChanged();
-}
+    void setROIRatio(double ROIRatio)
+    {
+        m_ROIRatio = ROIRatio;
+        emit paramsChanged();
+    }
 
-void setFirstRejectSensor(bool firstRejectSensor)
-{
-    if (m_firstRejectSensor == firstRejectSensor)
-        return;
+    void setFirstRejectSensor(bool firstRejectSensor)
+    {
+        if (m_firstRejectSensor == firstRejectSensor)
+            return;
 
-    m_firstRejectSensor = firstRejectSensor;
-    emit firstRejectSensorChanged(m_firstRejectSensor);
-}
+        m_firstRejectSensor = firstRejectSensor;
+        emit firstRejectSensorChanged(m_firstRejectSensor);
+    }
 
-void setRejectTimes(int rejectTimes)
-{
-    if (m_rejectTimes == rejectTimes)
-        return;
+    void setRejectTimes(int rejectTimes)
+    {
+        if (m_rejectTimes == rejectTimes)
+            return;
 
-    m_rejectTimes = rejectTimes;
-    emit rejectTimesChanged(m_rejectTimes);
-}
+        m_rejectTimes = rejectTimes;
+        emit rejectTimesChanged(m_rejectTimes);
+    }
 
-void setWeightValue(int index, double value)
-{
-    qInfo("Set Weight Value: %d %f", index, value);
-    m_WeightList[index].setValue(value);
-    emit paramsChanged();
-}
+    void setWeightValue(int index, double value)
+    {
+        qInfo("Set Weight Value: %d %f", index, value);
+        m_WeightList[index].setValue(value);
+        emit paramsChanged();
+    }
 
-void setWeightList(QVariantList WeightList)
-{
-    if (m_WeightList == WeightList)
-        return;
+    void setWeightList(QVariantList WeightList)
+    {
+        if (m_WeightList == WeightList)
+            return;
 
-    m_WeightList = WeightList;
-    emit paramsChanged();
-}
+        m_WeightList = WeightList;
+        emit paramsChanged();
+    }
 
-void setEstimatedFOVSlope(double EstimatedFOVSlope)
-{
-    m_EstimatedFOVSlope = EstimatedFOVSlope;
-    emit paramsChanged();
-}
+    void setEstimatedFOVSlope(double EstimatedFOVSlope)
+    {
+        m_EstimatedFOVSlope = EstimatedFOVSlope;
+        emit paramsChanged();
+    }
 
-void setEstimatedAAFOV(double EstimatedAAFOV)
-{
-    m_EstimatedAAFOV = EstimatedAAFOV;
-    emit paramsChanged();
-}
+    void setEstimatedAAFOV(double EstimatedAAFOV)
+    {
+        m_EstimatedAAFOV = EstimatedAAFOV;
+        emit paramsChanged();
+    }
 
-void setFrequencyForCheckGlue(double FrequencyForCheckGlue)
-{
-    qWarning("Floating point comparison needs context sanity check");
-    if (qFuzzyCompare(m_FrequencyForCheckGlue, FrequencyForCheckGlue))
-        return;
+    void setFrequencyForCheckGlue(double FrequencyForCheckGlue)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_FrequencyForCheckGlue, FrequencyForCheckGlue))
+            return;
 
-    m_FrequencyForCheckGlue = FrequencyForCheckGlue;
-    emit FrequencyForCheckGlueChanged(m_FrequencyForCheckGlue);
-}
+        m_FrequencyForCheckGlue = FrequencyForCheckGlue;
+        emit FrequencyForCheckGlueChanged(m_FrequencyForCheckGlue);
+    }
+
+    void setTiltRelationship(int tiltRelationship)
+    {
+        if (m_tiltRelationship == tiltRelationship)
+            return;
+
+        m_tiltRelationship = tiltRelationship;
+        emit tiltRelationshipChanged(m_tiltRelationship);
+    }
+
+    void setAAScanMTFFrequency(int aaScanMTFFrequency)
+    {
+        if (m_aaScanMTFFrequency == aaScanMTFFrequency)
+            return;
+
+        m_aaScanMTFFrequency = aaScanMTFFrequency;
+        emit aaScanMTFFrequencyChanged(m_aaScanMTFFrequency);
+    }
+
+    void setAAScanCurveFitOrder(int aaScanCurveFitOrder)
+    {
+        if (m_aaScanCurveFitOrder == aaScanCurveFitOrder)
+            return;
+
+        m_aaScanCurveFitOrder = aaScanCurveFitOrder;
+        emit aaScanCurveFitOrderChanged(m_aaScanCurveFitOrder);
+    }
+
+    void setAAScanOversampling(int aaScanOversampling)
+    {
+        if (m_aaScanOversampling == aaScanOversampling)
+            return;
+
+        m_aaScanOversampling = aaScanOversampling;
+        emit aaScanOversamplingChanged(m_aaScanOversampling);
+    }
+
+    void setAAScanCurveFitErrorThreshold(int aaScanCurveFitErrorThreshold)
+    {
+        if (m_aaScanCurveFitErrorThreshold == aaScanCurveFitErrorThreshold)
+            return;
+
+        m_aaScanCurveFitErrorThreshold = aaScanCurveFitErrorThreshold;
+        emit aaScanCurveFitErrorThresholdChanged(m_aaScanCurveFitErrorThreshold);
+    }
+
+    void setMTFFrequency(int mtfFrequency)
+    {
+        if (m_mtfFrequency == mtfFrequency)
+            return;
+
+        m_mtfFrequency = mtfFrequency;
+        emit mtfFrequencyChanged(m_mtfFrequency);
+    }
 
 signals:
-void paramsChanged();
-void firstRejectSensorChanged(bool firstRejectSensor);
-void rejectTimesChanged(int rejectTimes);
-void FrequencyForCheckGlueChanged(double FrequencyForCheckGlue);
+    void paramsChanged();
+    void firstRejectSensorChanged(bool firstRejectSensor);
+    void rejectTimesChanged(int rejectTimes);
+    void FrequencyForCheckGlueChanged(double FrequencyForCheckGlue);
+    void tiltRelationshipChanged(int tiltRelationship);
+    void aaScanMTFFrequencyChanged(int aaScanMTFFrequency);
+    void aaScanCurveFitOrderChanged(int aaScanCurveFitOrder);
+    void aaScanOversamplingChanged(int aaScanOversampling);
+    void aaScanCurveFitErrorThresholdChanged(int aaScanCurveFitErrorThreshold);
+    void mtfFrequencyChanged(int mtfFrequency);
 };
 class AACoreStates: public PropertyBase
 {

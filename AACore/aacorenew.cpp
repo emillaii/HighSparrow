@@ -873,7 +873,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     qInfo("start : %f stop: %f enable_tilt: %d", start, stop, enableTilt);
     unsigned int zScanCount = 0;
     QElapsedTimer timer; timer.start();
-    int resize_factor = 2;
+    int resize_factor = parameters.aaScanOversampling()+1;
     vector<double> fov_y; vector<double> fov_x;
     QPointF prev_point = {0, 0};
     double prev_fov_slope = 0;
@@ -1027,7 +1027,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 cv::Mat dst;
                 cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
                 cv::resize(img, dst, size);
-                emit sfrWorkerController->calculate(i, realZ, dst, false, resize_factor);
+                emit sfrWorkerController->calculate(i, realZ, dst, false, parameters.aaScanMTFFrequency()+1);
                 img.release();
                 dst.release();
                 zScanCount++;
@@ -1070,7 +1070,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              cv::Mat dst;
              cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
              cv::resize(img, dst, size);
-             emit sfrWorkerController->calculate(i, realZ, dst, false, resize_factor);
+             emit sfrWorkerController->calculate(i, realZ, dst, false, parameters.aaScanMTFFrequency()+1);
              img.release();
              dst.release();
              zScanCount++;
@@ -1121,8 +1121,29 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     } else {
         qInfo("Enable tilt...xTilt: %f yTilt: %f", aa_result["xTilt"].toDouble(), aa_result["yTilt"].toDouble());
         step_move_timer.start();
-        aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
+        //aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
         //aa_head->stepInterpolation_AB_Sync(-aa_result["xTilt"].toDouble(), -aa_result["yTilt"].toDouble());
+        double tilt_a, tilt_b;
+        int index;
+        if(parameters.tiltRelationship() < 4)
+        {
+            tilt_a = aa_result["xTilt"].toDouble();
+            tilt_b = aa_result["yTilt"].toDouble();
+            index = parameters.tiltRelationship();
+        }
+        else
+        {
+            tilt_a = aa_result["yTilt"].toDouble();
+            tilt_b = aa_result["xTilt"].toDouble();
+            index = parameters.tiltRelationship() - 4;
+        }
+        if(index > 1)
+            tilt_a = -tilt_a;
+        if(parameters.tiltRelationship()%2 == 1)
+            tilt_b = -tilt_b;
+        qInfo("xTilt %f yTilt %f aTilt %f bTilt %f ",aa_result["xTilt"].toDouble(),aa_result["yTilt"].toDouble(),tilt_a,tilt_b);
+        aa_head->stepInterpolation_AB_Sync(tilt_a, tilt_b);
+
         step_move_timer.start();
         wait_tilt_time += step_move_timer.elapsed();
         map.insert("WAIT_TILT_TIME", wait_tilt_time);
@@ -1134,7 +1155,6 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         double expected_fov = fov_slope*aa_result["zPeak"].toDouble() + fov_intercept;
         double dfov = calculateDFOV(img);
         double diff_z = (dfov - expected_fov)/fov_slope;
-//        sut->moveToZPos(beforeZ - diff_z);
         double afterZ = lsut->sut_carrier->GetFeedBackPos().Z;
         map.insert("Final_X", lsut->sut_carrier->GetFeedBackPos().X);
         map.insert("Final_Y", lsut->sut_carrier->GetFeedBackPos().Y);
@@ -1257,7 +1277,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         result.insert("OK", false);
         return result;
     }
-    int fitOrder = 4;
+    int fitOrder = parameters.aaScanCurveFitOrder();
     if (clustered_sfr_map[0].size() == 6) {
         qInfo("Down the curve fitting to 5 order");
         fitOrder = 5;
@@ -1761,20 +1781,15 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     double fov = calculateDFOV(img);
-    cv::Mat dst;
-    cv::Size size(img.cols, img.rows);
-//    timer.start();
     qint64 start_time = timer.elapsed();
-    cv::resize(img, dst, size);
-    qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, dst.cols, dst.rows, timer.elapsed() - start_time);
-//    timer.restart();
+    qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, img.cols, img.rows, timer.elapsed() - start_time);
     if (fov == -1) {
         qCritical("Cannot calculate FOV from the grabbed image.");
         LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
     start_time = timer.elapsed();
-    emit sfrWorkerController->calculate(0, 0, dst, true);
+    emit sfrWorkerController->calculate(0, 0, img, true, parameters.mtfFrequency()+1);
     int timeout=1000;
     while(this->clustered_sfr_map.size() != 1 && timeout >0) {
         Sleep(10);
@@ -1932,216 +1947,6 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
-
-//ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
-//{
-//    QElapsedTimer timer; timer.start();
-//    QVariantMap map;
-//    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
-//    cv::Mat img = dk->DothinkeyGrabImageCV(0);
-//    int imageWidth = img.cols;
-//    int imageHeight = img.rows;
-//    double fov = this->calculateDFOV(img);
-//    map.insert("DFOV", fov);
-//    if (fov == -1) {
-//        qInfo("Error in calculating fov");
-//        LogicNg(current_mtf_ng_time);
-//        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-//    } else {
-//        qInfo("DFOV :%f", fov);
-//    }
-//    emit sfrWorkerController->calculate(0, 0, img, true);
-//    int timeout=1000;
-//    while(this->clustered_sfr_map.size() != 1 && timeout >0) {
-//        Sleep(10);
-//        timeout--;
-//    }
-//    if (timeout <= 0) {
-//        qInfo("Error in performing MTF: %d", timeout);
-//        LogicNg(current_mtf_ng_time);
-//        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-//    }
-//    vector<Sfr_entry> sfr_entry = clustered_sfr_map.at(0);
-//    double cc_min_d = 999999, ul_min_d = 999999, ur_min_d = 999999, lr_min_d = 999999, ll_min_d = 999999;
-//    unsigned int ccROIIndex = 0 , ulROIIndex = 0, urROIIndex = 0, llROIIndex = 0, lrROIIndex = 0;
-//    for (unsigned int i = 0; i < sfr_entry.size(); i++)
-//    {
-//        double cc_d = sqrt(pow(sfr_entry.at(i).px - imageWidth/2, 2) + pow(sfr_entry.at(i).py - imageHeight/2, 2));
-//        double ul_d = sqrt(pow(sfr_entry.at(i).px, 2) + pow(sfr_entry.at(i).py, 2));
-//        double ur_d = sqrt(pow(sfr_entry.at(i).px - imageWidth, 2) + pow(sfr_entry.at(i).py, 2));
-//        double ll_d = sqrt(pow(sfr_entry.at(i).px, 2) + pow(sfr_entry.at(i).py - imageHeight, 2));
-//        double lr_d = sqrt(pow(sfr_entry.at(i).px - imageWidth, 2) + pow(sfr_entry.at(i).py - imageHeight, 2));
-//        if (cc_d < cc_min_d) {
-//              cc_min_d = cc_d;
-//              ccROIIndex = i;
-//        }
-//        if (ul_d < ul_min_d) {
-//             ul_min_d = ul_d;
-//             ulROIIndex = i;
-//        }
-//        if (ur_d < ur_min_d) {
-//             ur_min_d = ur_d;
-//             urROIIndex = i;
-//        }
-//        if (ll_d < ll_min_d) {
-//             ll_min_d = ll_d;
-//             llROIIndex = i;
-//        }
-//        if (lr_d < lr_min_d) {
-//            lr_min_d = lr_d;
-//            lrROIIndex = i;
-//        }
-//    }
-
-//    double cc_min_sfr = params["CC"].toDouble(-1);
-//    double ul_min_sfr = params["UL"].toDouble(-1);
-//    double ur_min_sfr = params["UR"].toDouble(-1);
-//    double ll_min_sfr = params["LL"].toDouble(-1);
-//    double lr_min_sfr = params["LR"].toDouble(-1);
-//    double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
-
-//    map.insert("CC_CHECK", cc_min_sfr);
-//    map.insert("UR_CHECK", ul_min_sfr);
-//    map.insert("UL_CHECK", ur_min_sfr);
-//    map.insert("LR_CHECK", lr_min_sfr);
-//    map.insert("LL_CHECK", ll_min_sfr);
-//    map.insert("SFR_MAX_TOL", sfr_dev_tol);
-
-//    bool sfr_check = true;
-//    if (sfr_entry[ccROIIndex].t_sfr < cc_min_sfr ||
-//        sfr_entry[ccROIIndex].r_sfr < cc_min_sfr ||
-//        sfr_entry[ccROIIndex].b_sfr < cc_min_sfr ||
-//        sfr_entry[ccROIIndex].l_sfr < cc_min_sfr) {
-//       qInfo("cc cannot pass");
-//       sfr_check = false;
-//    }
-//    if (sfr_entry[urROIIndex].t_sfr < ur_min_sfr ||
-//        sfr_entry[urROIIndex].r_sfr < ur_min_sfr ||
-//        sfr_entry[urROIIndex].b_sfr < ur_min_sfr ||
-//        sfr_entry[urROIIndex].l_sfr < ur_min_sfr) {
-//       qInfo("ur cannot pass");
-//       sfr_check = false;
-//    }
-//    if (sfr_entry[ulROIIndex].t_sfr < ul_min_sfr ||
-//        sfr_entry[ulROIIndex].r_sfr < ul_min_sfr ||
-//        sfr_entry[ulROIIndex].b_sfr < ul_min_sfr ||
-//        sfr_entry[ulROIIndex].l_sfr < ul_min_sfr) {
-//       qInfo("ul cannot pass");
-//       sfr_check = false;
-//    }
-//    if (sfr_entry[lrROIIndex].t_sfr < lr_min_sfr ||
-//        sfr_entry[lrROIIndex].r_sfr < lr_min_sfr ||
-//        sfr_entry[lrROIIndex].b_sfr < lr_min_sfr ||
-//        sfr_entry[lrROIIndex].l_sfr < lr_min_sfr) {
-//       qInfo("lr cannot pass");
-//       sfr_check = false;
-//    }
-//    if (sfr_entry[llROIIndex].t_sfr < ll_min_sfr ||
-//        sfr_entry[llROIIndex].r_sfr < ll_min_sfr ||
-//        sfr_entry[llROIIndex].b_sfr < ll_min_sfr ||
-//        sfr_entry[llROIIndex].l_sfr < ll_min_sfr) {
-//       qInfo("ll cannot pass");
-//       sfr_check = false;
-//    }
-
-//    std::vector<double> sfr_v;
-//    for (int i = 0; i < 4; i++) {
-//        unsigned int index = 0;
-//        if (i == 0) index = urROIIndex;
-//        if (i == 1) index = ulROIIndex;
-//        if (i == 2) index = lrROIIndex;
-//        if (i == 3) index = llROIIndex;
-//        sfr_v.push_back(sfr_entry[index].sfr);
-//        sfr_v.push_back(sfr_entry[index].sfr);
-//        sfr_v.push_back(sfr_entry[index].sfr);
-//        sfr_v.push_back(sfr_entry[index].sfr);
-//        sfr_v.push_back(sfr_entry[index].sfr);
-//    }
-
-//    std::sort(sfr_v.begin(), sfr_v.end());
-//    double max_sfr_deviation = fabs(sfr_v[0] - sfr_v[sfr_v.size()-1]);
-//    if (max_sfr_deviation >= sfr_dev_tol) {
-//        qInfo("max_sfr_deviation cannot pass");
-//        sfr_check = false;
-//    }
-
-//    qInfo("Read the aahead and sut carrier feedback");
-//    mPoint6D motorsPosition = this->aa_head->GetFeedBack();
-//    mPoint3D sutPosition = this->sut->carrier->GetFeedBackPos();
-//    qInfo("inset data to map ccROIIndex %d urROIIndex %d ulROIInde %dx lrROIIndex %d llROIIndex %d size %d",ccROIIndex,urROIIndex,ulROIIndex,lrROIIndex,llROIIndex,sfr_entry.size());
-//    map.insert("AA_X", motorsPosition.X);
-//    map.insert("AA_Y", motorsPosition.Y);
-//    map.insert("AA_Z", motorsPosition.Z);
-//    map.insert("AA_A", motorsPosition.A);
-//    map.insert("AA_B", motorsPosition.B);
-//    map.insert("AA_C", motorsPosition.C);
-//    map.insert("AA_A", motorsPosition.A);
-//    map.insert("AA_B", motorsPosition.B);
-//    map.insert("AA_C", motorsPosition.C);
-//    map.insert("SUT_X", sutPosition.X);
-//    map.insert("SUT_Y", sutPosition.Y);
-//    map.insert("SUT_Z", sutPosition.Z);
-//    map.insert("OC_X", sfr_entry[ccROIIndex].px - imageWidth/2);
-//    map.insert("OC_Y", sfr_entry[ccROIIndex].py - imageHeight/2);
-
-//    map.insert("CC_SFR", sfr_entry[ccROIIndex].sfr);
-//    map.insert("CC_SFR_1", sfr_entry[ccROIIndex].t_sfr);
-//    map.insert("CC_SFR_2", sfr_entry[ccROIIndex].r_sfr);
-//    map.insert("CC_SFR_3", sfr_entry[ccROIIndex].b_sfr);
-//    map.insert("CC_SFR_4", sfr_entry[ccROIIndex].l_sfr);
-
-//    map.insert("UR_SFR", sfr_entry[urROIIndex].sfr);
-//    map.insert("UR_SFR_1", sfr_entry[urROIIndex].t_sfr);
-//    map.insert("UR_SFR_2", sfr_entry[urROIIndex].r_sfr);
-//    map.insert("UR_SFR_3", sfr_entry[urROIIndex].b_sfr);
-//    map.insert("UR_SFR_4", sfr_entry[urROIIndex].l_sfr);
-
-//    map.insert("UL_SFR", sfr_entry[ulROIIndex].sfr);
-//    map.insert("UL_SFR_1", sfr_entry[ulROIIndex].t_sfr);
-//    map.insert("UL_SFR_2", sfr_entry[ulROIIndex].r_sfr);
-//    map.insert("UL_SFR_3", sfr_entry[ulROIIndex].b_sfr);
-//    map.insert("UL_SFR_4", sfr_entry[ulROIIndex].l_sfr);
-
-//    map.insert("LR_SFR", sfr_entry[lrROIIndex].sfr);
-//    map.insert("LR_SFR_1", sfr_entry[lrROIIndex].t_sfr);
-//    map.insert("LR_SFR_2", sfr_entry[lrROIIndex].r_sfr);
-//    map.insert("LR_SFR_3", sfr_entry[lrROIIndex].b_sfr);
-//    map.insert("LR_SFR_4", sfr_entry[lrROIIndex].l_sfr);
-
-//    map.insert("LL_SFR", sfr_entry[llROIIndex].sfr);
-//    map.insert("LL_SFR_1", sfr_entry[llROIIndex].t_sfr);
-//    map.insert("LL_SFR_2", sfr_entry[llROIIndex].r_sfr);
-//    map.insert("LL_SFR_3", sfr_entry[llROIIndex].b_sfr);
-//    map.insert("LL_SFR_4", sfr_entry[llROIIndex].l_sfr);
-
-//    map.insert("Sensor_ID", dk->readSensorID());
-//    map.insert("SFR_CHECK", sfr_check);
-//    map.insert("DFOV", fov);
-//    map.insert("timeElapsed", timer.elapsed());
-//    qInfo("CC_X :%f CC_Y: %f", sfr_entry[ccROIIndex].px, sfr_entry[ccROIIndex].py);
-//    clustered_sfr_map.clear();
-//    emit pushDataToUnit(this->runningUnit, "MTF", map);
-//    if (write_log) {
-//        this->loopTestResult.append(QString::number(sfr_entry[ccROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[ulROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[urROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[llROIIndex].sfr))
-//                            .append(",")
-//                            .append(QString::number(sfr_entry[lrROIIndex].sfr))
-//                            .append(",\n");
-//        this->mtf_log.incrementData(sfr_entry[ccROIIndex].sfr, sfr_entry[ulROIIndex].sfr, sfr_entry[urROIIndex].sfr, sfr_entry[llROIIndex].sfr,sfr_entry[lrROIIndex].sfr);
-//    }
-//    qInfo("MTF done");
-//    if (sfr_check) {
-//        return ErrorCodeStruct{ErrorCode::OK, ""};
-//    } else {
-//        LogicNg(current_mtf_ng_time);
-//        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-//    }
-//}
 
 ErrorCodeStruct AACoreNew::performUV(int uv_time)
 {

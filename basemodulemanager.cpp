@@ -1,7 +1,6 @@
 ﻿#include "XtMotion/XtVcMotor.h"
 #include "basemodulemanager.h"
 #include "XtMotion/xtvcmotorparameter.h"
-
 #include <QMessageBox>
 #include <qcoreapplication.h>
 #include <qdir.h>
@@ -23,14 +22,11 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     //    qInfo("Server Mode: %d", ServerMode());
     is_init = false;
     profile_loaded = false;
-        if(!QDir(".//notopencamera").exists())
-        {
     qInfo("Init BaslerPylonCamera--------------------------------------");
     pylonUplookCamera = new BaslerPylonCamera(CAMERA_SH_UT_UL);
     pylonDownlookCamera = new BaslerPylonCamera(CAMERA_SH_AA_DL);
     pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SH_PA_DL);
     hikCamera = new HIKCamera();
-        }
 
     lightingModule = new WordopLight();
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera, hikCamera);
@@ -41,15 +37,12 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &BaseModuleManager::receiveImageFromAACore);
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
-        if(!QDir(".//notopencamera").exists())
-        {
     if(pylonUplookCamera) pylonUplookCamera->start();
     if(pylonDownlookCamera) pylonDownlookCamera->start();
     if(pylonPickarmCamera) pylonPickarmCamera->start();
     if(hikCamera) {
         hikCamera->SCCameraInit("192.168.0.15");
     }
-        }
     lens_tray.standards_parameters.setTrayCount(2);
     lens_tray.setTrayType(TrayType::LENS_TRAY);
     sensor_tray.standards_parameters.setTrayCount(2);
@@ -123,7 +116,7 @@ bool BaseModuleManager::loadParameters()
     lens_tray.loadJsonConfig(getCurrentParameterDir().append(SH_LENS_TRAY_FILE));
     sensor_tray.loadJsonConfig(getCurrentParameterDir().append(SH_SENSOR_TRAY_FILE));
     reject_tray.loadJsonConfig(getCurrentParameterDir().append(SH_REJECT_TRAY_FILE));
-    material_carrier.loadParams(getCurrentParameterDir().append(MATERIAL_CARRIER_FILE));
+    sut_carrier.loadParams(getCurrentParameterDir().append(MATERIAL_CARRIER_FILE));
     aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     dothinkey->loadParams(getCurrentParameterDir().append(DOTHINGKEY_FILE));
     dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
@@ -155,7 +148,7 @@ bool BaseModuleManager::saveParameters()
     reject_tray.saveJsonConfig(getCurrentParameterDir().append(SH_REJECT_TRAY_FILE));
     aa_head_module.saveJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     dothinkey->saveJsonConfig(getCurrentParameterDir().append(DOTHINGKEY_FILE));
-    material_carrier.saveParams(getCurrentParameterDir().append(MATERIAL_CARRIER_FILE));
+    sut_carrier.saveParams(getCurrentParameterDir().append(MATERIAL_CARRIER_FILE));
     dispenser.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
     dispense_module.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
 
@@ -836,10 +829,6 @@ bool BaseModuleManager::InitStruct()
                      GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
                      GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()));
 
-    lut_carrier.Init("lut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
-                     GetMotorByName(sh_lsut_module.parameters.motorYName()),
-                     GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
-                     GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()));
 
     aa_head_module.Init(GetMotorByName(aa_head_module.parameters.motorAName()),
                         GetMotorByName(aa_head_module.parameters.motorBName()),

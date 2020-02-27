@@ -62,9 +62,7 @@ public:
     Dothinkey * dothinkey = Q_NULLPTR;
     ImageGrabbingWorkerThread * imageGrabberThread = Q_NULLPTR;
 
-    MaterialCarrier lut_carrier;
     MaterialCarrier sut_carrier;
-    MaterialCarrier material_carrier;
     MaterialTray sensor_tray;
     MaterialTray reject_tray;
     MaterialTray lens_tray;

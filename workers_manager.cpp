@@ -128,6 +128,21 @@ void WorkersManager::feedbackOperation(const QString module_name,const int alarm
     message.insert("AlarmId",alarm_id);
     message.insert("Operation",operation);
     message.insert("OriginModule","AlarmModule");
+    QString alarmMessage = getCurrentDateString().append("-")
+                           .append(getCurrentTimeString()).append(",")
+                           .append("Remit,")
+                           .append(module_name).append(",")
+                           .append(message["AlarmId"].toString()).append(",")
+                           .append(message["Operation"].toString())
+                           .append("\n");
+    QString filename;
+    fileLock.lock();
+    filename.append(getAlarmLogDir()).append("alarm.log");
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
+    file.write(alarmMessage.toStdString().c_str());
+    file.close();
+    fileLock.unlock();
     receiveModuleMessage(message);
 }
 
@@ -317,7 +332,9 @@ void WorkersManager::showAlarmMessage(QVariantMap message)
     alarm_shower.current_message.message_content = message["ErrorMessage"].toString();
 
     qInfo("Alarm: %s: %s", message["OriginModule"].toString().toStdString().c_str(), message["ErrorMessage"].toString().toStdString().c_str());
-    QString alarmMessage = getCurrentTimeString().append(",")
+    QString alarmMessage = getCurrentDateString().append("-")
+                           .append(getCurrentTimeString()).append(",")
+                           .append("Assert,")
                            .append(message["OriginModule"].toString()).append(",")
                            .append(message["AlarmId"].toString()).append(",")
                            .append(message["ErrorLevel"].toString()).append(",")

@@ -933,7 +933,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            x2sum=x2sum+pow(realZ,2);
            xysum=xysum+realZ*dfov;
            zScanCount++;
-           emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, resize_factor);
+           emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, parameters.aaScanMTFFrequency()+1);
            img.release();
            dst.release();
          }

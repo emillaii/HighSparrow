@@ -4,6 +4,7 @@
 #include <QObject>
 #include <Utils/errorcode.h>
 #include <QQuickImageProvider>
+#include "Utils/imageprovider.h"
 #include <AVL.h>
 
 class BaslerPylonCamera;
@@ -42,6 +43,8 @@ public:
 
     void saveImage(int channel, QString filename);
     Q_INVOKABLE void saveImage(int channel);
+    Q_INVOKABLE void aaDebugImage(QString input_filename, int threshold, int min_area, int max_area);
+    ImageProvider *aaDebugImageProvider;
 private:
     QString last_uplook_pr_result;
     QString last_downlook_pr_result;
@@ -53,6 +56,8 @@ private:
     HIKCamera * hikCamera = Q_NULLPTR;
 public:
     bool is_debug = false;
+signals:
+    void callQmlRefeshImg(int);
 };
 
 #endif // VISIONMODULE_H

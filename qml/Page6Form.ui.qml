@@ -8,11 +8,6 @@ Page {
     width: 1280
     height: 720
 
-    header: Label {
-        text: qsTr("Page 6")
-        font.pixelSize: Qt.application.font.pixelSize * 2
-        padding: 10
-    }
     ColumnLayout {
         anchors.fill: parent
         AACoreView {

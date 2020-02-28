@@ -2355,15 +2355,19 @@ void AACoreNew::captureLiveImage()
 {
     if(!dk->DothinkeyIsGrabbing()) {
         qInfo("Image Grabber is not ON");
+        SI::ui.showMessage("AA Core", QString("Save Image Fail! Image Grabber is not open"), MsgBoxIcon::Error, "OK");
         return;
     }
     bool grabRet = false;
-    cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
+    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
-        qInfo("AA Cannot grab image.");
+        SI::ui.showMessage("AA Core", QString("Save Image Fail! Image Grabber is not open"), MsgBoxIcon::Error, "OK");
+        qWarning("AA Cannot grab image.");
         return;
+    } else {
+        cv::imwrite("livePhoto.bmp", img);
+        SI::ui.showMessage("AA Core", QString("Save Image Success! You can start AA Core parameter debug."), MsgBoxIcon::Information, "OK");
     }
-    cv::imwrite("livePhoto.bmp", img);
 }
 
 void AACoreNew::aaCoreParametersChanged()

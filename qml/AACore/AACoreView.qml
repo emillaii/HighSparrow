@@ -17,7 +17,37 @@ ItemDelegate {
                 id: coreParamGroupBox
                 title: qsTr("AA Core Parameters")
                 enabled: userManagement.currentAuthority >= 2 //At least engineer authority
+
+
+
                 ColumnLayout {
+                    RowLayout {
+                        RoundButton {
+                            text: "从图像采集卡捕获图像"
+                            transformOrigin: Item.Center
+                            display: Button.TextBesideIcon
+                            icon.width: 30
+                            icon.height: 30
+                            icon.source: "../../icons/camera.png"
+                            icon.color: "lightGreen"
+                            onClicked: {
+                                 aaNewCore.captureLiveImage()
+                            }
+                        }
+                        RoundButton {
+                            text: "测试"
+                            transformOrigin: Item.Center
+                            display: Button.TextBesideIcon
+                            icon.width: 30
+                            icon.height: 30
+                            icon.source: "../../icons/camera.png"
+                            icon.color: "yellow"
+                            onClicked: {
+                                visionModule.aaDebugImage("livePhoto.bmp", aaCoreParams.MaxIntensity, aaCoreParams.MinArea, aaCoreParams.MaxArea)
+                            }
+                        }
+                    }
+
                     RowLayout {
                         Label {
                             text: qsTr("Selected Profile: ")
@@ -478,13 +508,6 @@ ItemDelegate {
                             id: chartCalibrationTheta
                             text: qsTr("")
                         }
-                        RoundButton{
-                            text: qsTr("Take Photo")
-                            onClicked: {
-                                aaNewCore.captureLiveImage()
-                            }
-                        }
-
                         Button {
                             text: qsTr("Show Chart Theta")
                             onClicked: {
@@ -511,7 +534,7 @@ ItemDelegate {
                     target: highSprrow
                     onDisplayAACoreTuningImageInUI: {
                         image1.source = ""
-                        image1.source = "image://aaCoreTuningImage"
+                        image1.source = "image://aaDebugImage"
                     }
                 }
             }

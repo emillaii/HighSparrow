@@ -265,7 +265,6 @@ bool XtMotor::checkAlarm()
 
 bool XtMotor::getAlarmState()
 {
-    qInfo("%s reserseAlarmIO: %d", name.toStdString().c_str(), parameters.reverseAlarmIO());
     bool temp = false;
     if(parameters.reverseAlarmIO())
     {

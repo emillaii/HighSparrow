@@ -3333,6 +3333,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
             qWarning("This is black screen.");
             map.insert("result", "Fail");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+            NgProduct();
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Black screen detected"};
         }
         if (min_i < min_i_spec) {
@@ -3340,6 +3341,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
             map.insert("result", "Y Level min spec cannnot pass");
             map.insert("result", "Fail");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+            NgProduct();
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is smaller than spec"};
         }
         if (max_i >= max_i_spec) {
@@ -3354,6 +3356,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
             map.insert("result", "Detected Y Level error");
             map.insert("result", "Fail");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+            NgProduct();
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Detected intensity error"};
         }
         map.insert("result", "Pass");
@@ -3364,6 +3367,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
         map.insert("result", "Y Level test fail. Cannot grab image");
         qWarning("performYLevelTest Fail");
         emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+        NgProduct();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Cannot grab image"};
     }
 }

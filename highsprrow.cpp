@@ -14,6 +14,7 @@ HighSprrow::HighSprrow()
     logicManager = new LogicManager(baseModuleManager);
     baseModuleManager->registerWorkers(worker_manager);
     connect(logicManager,&LogicManager::sendMsgSignal,worker_manager,&WorkersManager::receiveMsgSignal,Qt::BlockingQueuedConnection);
+    connect(&baseModuleManager->aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &HighSprrow::receiveImageFromAACore);
     connect(this->baseModuleManager->visionModule, &VisionModule::callQmlRefeshImg, this, &HighSprrow::receiveImageFromAACore);
 }
 

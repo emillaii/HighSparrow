@@ -41,6 +41,7 @@ QString getAALogDir(){ return getDir(AA_LOG_DIR); }
 QString getDispensePrLogDir() { return getDir(DISPENSE_VISION_PR_DIR); }
 QString getYLevelDir() { return getDir(Y_LEVEL_DIR); }
 QString getAlarmLogDir() { return getDir(ALARM_LOG_DIR); }
+QString getRejectLogDir() { return getDir(REJECT_LOG_DIR); }
 
 void writeFile(QString data, QString dir, QString filename)
 {

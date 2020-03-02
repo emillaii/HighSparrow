@@ -55,6 +55,7 @@
 #define MTF_DEBUG_DIR                "mtf_log//"
 #define UNIT_LOG_DIR                 "unit_log//"
 #define ALARM_LOG_DIR                "alarm_log//"
+#define REJECT_LOG_DIR               "reject_log//"
 #define AA_LOG_DIR                   "aa_log//"
 #define PERFORMANCE_DIR              "performance//"
 #define AA_PROCESS_DIR               "aa_process//"

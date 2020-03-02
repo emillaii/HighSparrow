@@ -970,6 +970,10 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             int lighting = params["lighting"].toInt();
         }
     }
+    if (ret.code != ErrorCode::OK) {
+        SI::ui.showMessage("AA", ret.errorMessage, MsgBoxIcon::Warning, "OK");
+        emit pushNgDataToCSV(this->runningUnit, parameters.lotNumber(), dk->readSensorID(), testItemName, ret.errorMessage);
+    }
     parameters.setAACoreRunningTest("");
     return ret;
 }
@@ -1295,6 +1299,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             if (dfov <= -1) {
                 qInfo("Cannot find the target FOV!");
                 LogicNg(current_aa_ng_time);
+                map["Result"] = "Cannot find the target FOV";
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
             }
             estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
@@ -2710,7 +2715,9 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     //cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\mtf_test\\18-45-31-211.bmp");
     if (!grabRet) {
         qInfo("MTF Cannot grab image.");
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+        map.insert("result", "MTF Cannot grab image");
+        emit pushDataToUnit(this->runningUnit, "MTF", map);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "MTF Cannot grab image"};
     }
     double fov = calculateDFOV(input_img);
     std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
@@ -3331,7 +3338,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
         }
         if (max_i < 10) {
             qWarning("This is black screen.");
-            map.insert("result", "Fail");
+            map.insert("result", "Detected black screen");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             NgProduct();
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Black screen detected"};
@@ -3339,7 +3346,6 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
         if (min_i < min_i_spec) {
             qWarning("Y Level Fail. The tested intensity is smaller than spec. Tested min intensity: %f intensity spec: %f", min_i, min_i_spec);
             map.insert("result", "Y Level min spec cannnot pass");
-            map.insert("result", "Fail");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             NgProduct();
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is smaller than spec"};
@@ -3347,14 +3353,12 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
         if (max_i >= max_i_spec) {
             qWarning("Y Level Fail. The tested intensity is larger than spec. Tested max intensity: %f intensity spec: %f", max_i, max_i_spec);
             map.insert("result", "Y Level max spec cannnot pass");
-            map.insert("result", "Fail");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is larger than spec"};
         }
         if (detectedNumberOfError > 0) {
             qWarning("Detected Intensity Error.");
             map.insert("result", "Detected Y Level error");
-            map.insert("result", "Fail");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             NgProduct();
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Detected intensity error"};
@@ -3411,10 +3415,6 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         NgSensor();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "OC Cannot Grab Image"};
     }
-    //oc_fov = calculateDFOV(img);
-    //oc_z = aa_head->GetFeedBack().Z;
-    //qInfo("DFOV in OC: %f", oc_fov);
-    //map.insert("DFOV", oc_fov);
     if (!blackScreenCheck(img)) {
         NgSensor();
         map["Result"] = "OC Detect black screen";
@@ -3591,16 +3591,16 @@ ErrorCodeStruct AACoreNew::performInitSensor(int finish_delay,bool check_map)
     QVariantMap map;
     const int channel = 0;
     bool res = dk->DothinkeyEnum();
-    if (!res) { qCritical("Cannot find dothinkey");NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "1"}; }
+    if (!res) { qCritical("Cannot find dothinkey"); NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Cannot find dothinkey"}; }
     res = dk->DothinkeyOpen();
     map.insert("dothinkeyOpen", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot open dothinkey"); NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "2"}; }
+    if (!res) { qCritical("Cannot open dothinkey"); NgSensor();return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Cannot open dothinkey"}; }
     res = dk->DothinkeyLoadIniFile(channel);
     map.insert("dothinkeyLoadIniFile", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot load dothinkey ini file");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "3"}; }
+    if (!res) { qCritical("Cannot load dothinkey ini file");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Cannot load dothinkey ini file"}; }
     res = dk->DothinkeyStartCamera(channel);
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
-    if (!res) { qCritical("Cannot start camera");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "4"}; }
+    if (!res) { qCritical("Cannot start camera");NgSensor(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Cannot start camera"}; }
 
     sensorID = dk->readSensorID();
     qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());

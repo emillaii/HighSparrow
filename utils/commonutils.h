@@ -13,6 +13,7 @@ QString getGrabberLogDir();
 QString getMTFLogDir();
 QString getUnitLogDir();
 QString getAlarmLogDir();
+QString getRejectLogDir();
 QString getAALogDir();
 QString getDispensePrLogDir();
 QString getYLevelDir();

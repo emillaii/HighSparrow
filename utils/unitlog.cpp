@@ -110,6 +110,25 @@ bool Unitlog::postDataToELK(QString uuid, QString lotNumber)
     return true;
 }
 
+bool Unitlog::pushNgDataToCSV(QString uuid, QString lotNumber, QString sensorId, QString testItemName, QString errorMessage)
+{
+    QString ngMessage = getCurrentDateString().append("-")
+                       .append(getCurrentTimeString()).append(",")
+                       .append(uuid).append(",")
+                       .append(lotNumber).append(",")
+                       .append(sensorId).append(",")
+                       .append(testItemName).append(",")
+                       .append(errorMessage)
+                       .append("\n");
+    QString filename;
+    filename.append(getRejectLogDir()).append("ng.log");
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
+    file.write(ngMessage.toStdString().c_str());
+    file.close();
+    return true;
+}
+
 bool Unitlog::postUnitDataToCSV(QString uuid)
 {
     if(!unit_log_list.contains(uuid))

@@ -191,6 +191,7 @@ signals:
     void sfrResultsDetectFinished();
     void callQmlRefeshImg(int);
     void pushDataToUnit(QString uuid, QString name, QVariantMap map);
+    void pushNgDataToCSV(QString uuid, QString lotNumber, QString sensorId, QString testItemName, QString errorMessage);
     void clearHeaders();
     void postDataToELK(QString, QString);
     void postSfrDataToELK(QString, QVariantMap);

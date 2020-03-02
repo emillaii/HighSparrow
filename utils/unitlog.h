@@ -29,6 +29,7 @@ private:
     QString temp_file_name = "";
 public slots:
     bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
+    bool pushNgDataToCSV(QString uuid, QString lotNumber, QString sensorId, QString testItemName, QString errorMessage);
     void clearHeaders();
     bool postDataToELK(QString uuid, QString lotNumber);
     bool postUnitDataToCSV(QString uuid);

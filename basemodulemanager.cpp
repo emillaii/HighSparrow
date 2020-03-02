@@ -47,14 +47,14 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera,
                                         pylonPickarmCamera, pylonAA2DownlookCamera,
                                         pylonSensorPickarmCamera, pylonPickarmULCamera,
-                                        pylonBarcodeCamera, VISION_MODULE_1);
+                                        pylonBarcodeCamera, VISION_MODULE_1, 0);
     }
     else {
         lightingModule = new WordopLight(ServerMode(), LIGHTING_CONTROLLER_2);
         visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera,
                                         pylonPickarmCamera, pylonAA2DownlookCamera,
                                         pylonSensorPickarmCamera, pylonPickarmULCamera,
-                                        pylonBarcodeCamera, VISION_MODULE_2);
+                                        pylonBarcodeCamera, VISION_MODULE_2, 1);
     }
     dothinkey = new Dothinkey();
     imageGrabberThread = new ImageGrabbingWorkerThread(dothinkey);

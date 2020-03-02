@@ -8,6 +8,8 @@
 #include "utils/imageprovider.h"
 #include "thread_worker_base.h"
 #include "utils/imageprovider.h"
+#include "./rep_vision_replica.h"
+
 class BaslerPylonCamera;
 
 struct PRResultStruct {
@@ -77,6 +79,8 @@ struct WidthJudgeState
     atl::Array< atl::Conditional< atl::String > > stringArray4;
 };
 
+class VisionServer;
+
 class VisionModule: public ThreadWorkerBase,public QQuickImageProvider
 {
 //    Q_ENUMS(HandleCameraChannel)
@@ -97,7 +101,7 @@ public:
     VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera,
                  BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
                  BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
-                 BaslerPylonCamera* barcodeCamera, QString name);
+                 BaslerPylonCamera* barcodeCamera, QString name, int serverMode);
     QVector<QPoint> Read_Dispense_Path();
     /*
      * Use the most generic NCC template matching
@@ -154,6 +158,10 @@ private:
     int GlueInnerFrameMinArea = 18000;
     float Resolution = 0.0284f;
     float MinWidth = 0.18f;
+    VisionServer *server = nullptr;
+    SilicoolVisionReplica *visionRep = nullptr;
+    QRemoteObjectNode node;
+    QRemoteObjectHost host;
 signals :
     void callQmlRefeshImg(int);
     void displayUplookImage();

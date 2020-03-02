@@ -17,11 +17,13 @@
 #include <QElapsedTimer>
 #include "utils/uiHelper/uioperation.h"
 #include "utils/singletoninstances.h"
+#include "visionserver.h"
+
 VisionModule::VisionModule():QQuickImageProvider(QQuickImageProvider::Image){}
 VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera * uplookCamera,
                            BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
                            BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
-                           BaslerPylonCamera* barcodeCamera, QString name)
+                           BaslerPylonCamera* barcodeCamera, QString name, int serverMode)
     :ThreadWorkerBase (name), QQuickImageProvider(QQuickImageProvider::Image)
 {
     this->downlookCamera = downlookCamera;
@@ -32,6 +34,19 @@ VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera 
     this->sensorUplookCamera = sensorUplookCamera;
     this->barcodeCamera = barcodeCamera;
     aaDebugImageProvider = new ImageProvider();
+    if (serverMode == 0) {
+        qInfo("Vision Server is opened");
+        this->server = new VisionServer(this->downlookCamera, this->uplookCamera, this->pickarmCamera,
+                                        this->aa2DownlookCamera, this->sensorPickarmCamera, this->sensorUplookCamera,
+                                        this->barcodeCamera);
+        host.setHostUrl(QUrl("tcp://192.168.1.2:9999"));
+        host.enableRemoting(server);
+        qInfo("Vision Server is opened");
+    } else {
+        node.connectToNode(QUrl("tcp://192.168.1.2:9999"));
+        auto visionRep = node.acquire<SilicoolVisionReplica>();
+        this->visionRep = visionRep;
+    }
 }
 QVector<QPoint> VisionModule::Read_Dispense_Path()
 {
@@ -62,27 +77,17 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 {
     QMutexLocker locker(&mutex);
     if (this->Name() == VISION_MODULE_2) { //If vision module 2, need to ask vision module 1 to get image
-        QJsonObject params;
-        QString imageName;
-        imageName.append(SHARE_DIR)
-                .append(cameraName)
-                .append("_")
-                .append(getCurrentTimeString())
-                .append(".jpg");
-        params.insert("cameraName", cameraName);
-        params.insert("imageName", imageName);
-        sendMessageToModule(VISION_MODULE_1, "GrabImage", params);
-        if(this->waitVisionResponseMessage(imageName)){
-            qInfo("got vision photo: %s", imageName.toStdString().c_str());
-            QPixmap p = QPixmap::fromImage(QImage(imageName));
+        QRemoteObjectPendingReply<QByteArray> reply = visionRep->getImageEx(cameraName);
+        if (reply.waitForFinished()){
+            QByteArray byteArray = reply.returnValue();
+            QImage img((uchar *)byteArray.data(), visionRep->width(), visionRep->height(), (QImage::Format)visionRep->imgFormat());
+            QPixmap p = QPixmap::fromImage(img);
             QImage q2 = p.toImage();
             q2 = q2.convertToFormat(QImage::Format_RGB888);
             avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
             image = image2;
-            QFile file; file.remove(imageName);
-            //ToDo: Delete the file in temp file
         } else {
-            qCritical("grabImageFromCamera fail");
+            qFatal("grabImageFromCamera fail");
             return false;
         }
     } else {

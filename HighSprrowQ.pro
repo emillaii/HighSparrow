@@ -7,6 +7,7 @@ QT += qml
 QT += quick
 QT += websockets
 QT += sql
+QT += remoteobjects
 CONFIG += c++11
 CONFIG+=qtquickcompiler
 # The following define makes your compiler emit warnings if you use
@@ -16,6 +17,8 @@ CONFIG+=qtquickcompiler
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_MESSAGELOGCONTEXT
 
+REPC_REPLICA += ./QTRORep/vision.rep
+REPC_SOURCE += ./QTRORep/vision.rep
 TRANSLATIONS = languagePackage/chinese.ts languagePackage/english.ts
 
 # You can also make your code fail to compile if it uses deprecated APIs.
@@ -48,6 +51,7 @@ SOURCES += \
     motorspositionmodel.cpp \
     propertybase.cpp \
     basemodule.cpp \
+    vision/visionserver.cpp \
     xtadcmodule.cpp \
     XtGeneralOutput.cpp \
     XtGeneralInput.cpp \
@@ -191,6 +195,7 @@ HEADERS += \
     motorspositionmodel.h \
     propertybase.h \
     basemodule.h \
+    vision/visionserver.h \
     xtadcmodule.h \
     XtGeneralOutput.h \
     XtGeneralInput.h \

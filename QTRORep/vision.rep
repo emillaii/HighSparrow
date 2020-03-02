@@ -1,0 +1,8 @@
+class SilicoolVision
+{
+    PROP(QByteArray content READONLY)
+    PROP(int imgFormat)
+    PROP(int height)
+    PROP(int width)
+    SLOT(QByteArray getImageEx(QString cameraName))
+}

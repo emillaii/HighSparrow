@@ -29,7 +29,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
         emit sfrResultsReady(index, std::move(sv_result), 0);
         return;
     }
-    qInfo("Emit sfr results: %d %p", index);
+    qInfo("Emit sfr results: %d", index);
     emit sfrResultsReady(index, std::move(sv_result), timerTest.elapsed());
 }
 

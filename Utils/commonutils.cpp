@@ -33,11 +33,15 @@ QString getDir(QString dir)
 }
 
 QString getVisionLogDir(){ return getDir(VISION_PR_DEBUG_DIR); }
+QString getShareDir(){ return getDir(SHARE_DIR); }
 QString getGrabberLogDir(){ return getDir(GRABBER_DEBUG_DIR); }
 QString getMTFLogDir(){ return getDir(MTF_DEBUG_DIR); }
 QString getUnitLogDir(){ return getDir(UNIT_LOG_DIR); }
-QString getDispensePrLogDir(){ return getDir(DISPENSE_DIR); }
-QString getProduceProcessLogDir(){ return getDir(PRODUCE_PROCESS_DIR); }
+QString getAALogDir(){ return getDir(AA_DEBUG_DIR); }
+QString getDispensePrLogDir() { return getDir(VISION_PR_DEBUG_DIR); }
+QString getYLevelDir() { return getDir(Y_LEVEL_DIR); }
+QString getAlarmLogDir() { return getDir(ALARM_LOG_DIR); }
+
 void writeFile(QString data, QString dir, QString filename)
 {
     QString target;
@@ -53,9 +57,9 @@ void writeFile(QString data, QString dir, QString filename)
 
 // QString >> QJson
 QJsonObject getJsonObjectFromString(const QString jsonString){
-    QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonString.toLocal8Bit().data());
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonString.toUtf8().data());
     if( jsonDocument.isNull() ){
-        qDebug()<< "===> please check the string "<< jsonString.toLocal8Bit().data();
+        qDebug()<< "===> please check the string "<< jsonString.toUtf8().data();
     }
     QJsonObject jsonObject = jsonDocument.object();
     return jsonObject;
@@ -115,4 +119,15 @@ bool fitCircle(const std::vector<cv::Point2d> &points, cv::Point2d &center, doub
      radius = sqrt(a * a + b * b - 4 * c) / 2;
      return true;
 
+}
+
+QString getPerformanceLogDir(){ return getDir(PERFORMANCE_DIR); }
+
+QString getAAProcessLogDir(){ return getDir(AA_PROCESS_DIR); }
+
+QString getProduceProcessLogDir(){ return getDir(PRODUCE_PROCESS_DIR); }
+
+QString getStringFromQvariantMap(const QVariantMap &qvariantMap)
+{
+    return QString(QJsonDocument(QJsonObject::fromVariantMap(qvariantMap)).toJson());
 }

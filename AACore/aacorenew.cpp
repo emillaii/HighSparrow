@@ -970,6 +970,22 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             int lighting = params["lighting"].toInt();
         }
     }
+
+    QVariantMap map;
+    if (ret.code != ErrorCode::OK){
+        map["testResult"] = "Fail";
+        map["errorMessage"] = ret.errorMessage;
+    } else {
+        map["testResult"] = "Pass";
+    }
+    map["lens"] = this->has_lens;
+    map["sensor"] = this->has_sensor;
+    map["product"] = this->has_product;
+    map["ng_product"] = this->has_ng_product;
+    map["ng_sensor"] = this->has_ng_sensor;
+    map["ng_lens"] = this->has_ng_lens;
+    emit pushDataToUnit(runningUnit, "overallResult", map);
+
     if (ret.code != ErrorCode::OK) {
         SI::ui.showMessage("AA", ret.errorMessage, MsgBoxIcon::Warning, "OK");
         emit pushNgDataToCSV(this->runningUnit, parameters.lotNumber(), dk->readSensorID(), testItemName, ret.errorMessage);

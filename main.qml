@@ -182,6 +182,7 @@ ApplicationWindow {
             }
 
             ToolButton {
+                id:inintButton
                 text: qsTr("初始化")
                 transformOrigin: Item.Center
                 display: Button.TextUnderIcon
@@ -191,6 +192,12 @@ ApplicationWindow {
                 icon.color: "red"
                 onClicked: {
                     logicManager.init()
+                }
+                Connections{
+                    target: timer
+                    onTriggered:{
+                        initButton.icon.color = baseModuleManager.InitState?"deepskyblue":"red"
+                    }
                 }
             }
 
@@ -242,6 +249,7 @@ ApplicationWindow {
             }
 
             ToolButton {
+                id: homeAllButton
                 objectName: "HomeButtonObject"
                 text: qsTr("Home")
                 transformOrigin: Item.Center
@@ -253,6 +261,13 @@ ApplicationWindow {
                 onClicked: {
                     qmessageDialog.open()
                     //logicManager.receiveMsgSignal()
+                }
+                Connections{
+                    target: timer
+                    onTriggered:{
+//                        homeAllButton.icon.color = baseModuleManager.HomeState?"deepskyblue":"red"
+                        homeAllButton.icon.color = baseModuleManager.HomeState? "deepskyblue":"red"
+                    }
                 }
             }
 //            ToolButton {

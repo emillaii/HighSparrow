@@ -912,6 +912,7 @@ bool BaseModuleManager::initialDevice()
     XT_Controler_Extend::Start_Buffer_Sync(-1);
 
     is_init = true;
+    setInitState(true);
     //this must after "is_init = true;!!!"
     foreach (XtMotor *m, motors.values()) {
         m->GetMasterAxisID();

@@ -42,6 +42,7 @@ public:
     ~BaseModuleManager();
     Q_PROPERTY(int lightPanelLighting READ lightPanelLighting WRITE setLightPanelLighting NOTIFY lightPanelValueChanged)
     Q_PROPERTY(bool HomeState READ HomeState WRITE setHomeState NOTIFY paramsChanged)
+    Q_PROPERTY(bool InitState READ InitState WRITE setInitState NOTIFY InitStateChanged)
     Q_PROPERTY(QString FlowchartFilename READ FlowchartFilename WRITE setFlowchartFilename NOTIFY paramsChanged)
     QMap<QString,XtMotor*> motors;
     QMap<QString,XtGeneralInput*> input_ios;
@@ -94,6 +95,8 @@ signals:
     void paramsChanged();
     bool sendMsgSignal(QString,QString);
     void sendAlarm(int sender_id,int level, QString error_message);
+    void InitStateChanged(bool InitState);
+
 public slots:
     void alarmChecking();
     void receiveImageFromAACore(int type) {
@@ -125,6 +128,15 @@ public slots:
         emit paramsChanged();
     }
 
+    void setInitState(bool InitState)
+    {
+        if (m_InitState == InitState)
+            return;
+
+        m_InitState = InitState;
+        emit InitStateChanged(m_InitState);
+    }
+
 public:
     ModuleManangerConfig configs;
     ModuleManagerParameter paramers;
@@ -145,6 +157,7 @@ private:
     int m_lightPanelLighting;
     QTimer timer;
     QThread work_thread;
+    bool m_InitState = false;
 
 public:
     bool loadProfile();
@@ -176,6 +189,8 @@ private:
     bool saveJsonObject(QString file_name,QJsonObject &object);
     QString getCurrentParameterDir();
     QString m_FlowchartFilename;
+
+
 
 public:
     bool registerWorkers(WorkersManager* manager);
@@ -219,6 +234,10 @@ public:
     QString FlowchartFilename() const
     {
         return m_FlowchartFilename;
+    }
+    bool InitState() const
+    {
+        return m_InitState;
     }
 };
 

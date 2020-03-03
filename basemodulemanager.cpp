@@ -70,6 +70,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 
     connect(&aaCoreNew, &AACoreNew::needUpdateParameterInTcpModule, this, &BaseModuleManager::receiveNeedUpdateTcpParameter);
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
+    connect(&aaCoreNew, &AACoreNew::pushNgDataToCSV, &unitlog, &Unitlog::pushNgDataToCSV);
     connect(&aaCoreNew, &AACoreNew::clearHeaders, &unitlog, &Unitlog::clearHeaders,Qt::DirectConnection);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
     connect(&aaCoreNew, &AACoreNew::postSfrDataToELK, &unitlog, &Unitlog::postSfrDataToELK);

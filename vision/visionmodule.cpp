@@ -39,11 +39,11 @@ VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera 
         this->server = new VisionServer(this->downlookCamera, this->uplookCamera, this->pickarmCamera,
                                         this->aa2DownlookCamera, this->sensorPickarmCamera, this->sensorUplookCamera,
                                         this->barcodeCamera);
-        host.setHostUrl(QUrl("tcp://192.168.1.2:9999"));
+        host.setHostUrl(QUrl("tcp://192.168.0.250:9999"));
         host.enableRemoting(server);
         qInfo("Vision Server is opened");
     } else {
-        node.connectToNode(QUrl("tcp://192.168.1.2:9999"));
+        node.connectToNode(QUrl("tcp://192.168.0.251:9999"));
         auto visionRep = node.acquire<SilicoolVisionReplica>();
         this->visionRep = visionRep;
     }

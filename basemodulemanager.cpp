@@ -786,7 +786,7 @@ bool BaseModuleManager::InitStruct()
                                          GetMotorByName(single_station_material_pickarm.parameters.motorTh2Name()),
                                          GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name()),
                                          GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name()),
-                                         GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName()),
+                                         GetMotorByName(single_station_material_pickarm.parameters.motorPAXName()),
                                          GetVacuumByName(single_station_material_pickarm.parameters.vacuumLensSuctionName()),
                                          GetVacuumByName(single_station_material_pickarm.parameters.vacuumSensorSuctionName()),
                                          GetVacuumByName(single_station_material_pickarm.parameters.vacuumLUTName()),
@@ -968,10 +968,12 @@ bool BaseModuleManager::allMotorsSeekOrigin()
 
     GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->SeekOrigin();
     GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->SeekOrigin();
-    //    GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->SeekOrigin();
+//    GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->SeekOrigin();
+    GetMotorByName(single_station_material_pickarm.parameters.motorPAXName())->SeekOrigin(); //huawie aa
     result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm1Name())->WaitSeekDone();
     result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcm2Name())->WaitSeekDone();
-    //    result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->WaitSeekDone();
+//    result &= GetVcMotorByName(single_station_material_pickarm.parameters.motorVcmXName())->WaitSeekDone();
+    result &= GetMotorByName(single_station_material_pickarm.parameters.motorPAXName())->WaitSeekDone();
     GetMotorByName(single_station_material_pickarm.parameters.motorXName())->SeekOrigin();
     GetMotorByName(single_station_material_pickarm.parameters.motorYName())->SeekOrigin();
     GetMotorByName(single_station_material_pickarm.parameters.motorZName())->SeekOrigin(); //huawei aa

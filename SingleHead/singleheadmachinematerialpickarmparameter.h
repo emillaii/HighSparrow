@@ -29,6 +29,8 @@ public:
     //huawei aa
     Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
     Q_PROPERTY(double pickArmZ READ pickArmZ WRITE setPickArmZ NOTIFY pickArmZChanged)
+    Q_PROPERTY(QString motorPAXName READ motorPAXName WRITE setMotorPAXName NOTIFY motorPAXNameChanged)
+
 
 
 public:
@@ -138,6 +140,11 @@ public:
     double pickArmZ() const
     {
         return m_pickArmZ;
+    }
+
+    QString motorPAXName() const
+    {
+        return m_motorPAXName;
     }
 
 public slots:
@@ -341,6 +348,15 @@ public slots:
         emit pickArmZChanged(m_pickArmZ);
     }
 
+    void setMotorPAXName(QString motorPAXName)
+    {
+        if (m_motorPAXName == motorPAXName)
+            return;
+
+        m_motorPAXName = motorPAXName;
+        emit motorPAXNameChanged(m_motorPAXName);
+    }
+
 signals:
     void motorXNameChanged(QString motorXName);
 
@@ -383,6 +399,8 @@ signals:
 
     void pickArmZChanged(double pickArmZ);
 
+    void motorPAXNameChanged(QString motorPAXName);
+
 private:
     QString m_motorXName = "";
     QString m_motorYName = "";
@@ -405,6 +423,7 @@ private:
     double m_pickArmOriginX = 0;
     QString m_motorZName = "";
     double m_pickArmZ = 0;
+    QString m_motorPAXName = "";
 };
 
 #endif // SINGLEHEADMACHINEMATERIALPICKARMPARAMETER_H

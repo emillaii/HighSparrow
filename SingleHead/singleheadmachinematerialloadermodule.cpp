@@ -536,7 +536,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ2(double z,  bool i
     if(result)
     {
         result =pick_arm->motor_th2->MoveToPosSync(parameters.sutPlaceSensorAngle());
-        //        result = pick_arm->motor_vcmx->StepMoveSync(parameters.escapeX());
+                result = pick_arm->motor_pax->StepMoveSync(parameters.escapeX());
         result &= pick_arm->motor_y->StepMoveSync(-parameters.escapeY());
         result &= pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open,false,time_out);
         sut_vacuum->Set(true, false);   //Sensor放到SUT表面不平整，真空吸经常检测不到
@@ -560,7 +560,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ2Revert(double z, b
         result &= pick_arm->ZSerchReturn(1,time_out);
         pick_arm->motor_vcm2->MoveToPosSync(z-parameters.escapeHeight());
         QThread::msleep(200);
-        result = pick_arm->motor_vcmx->StepMoveSync(-parameters.escapeX());
+        result = pick_arm->motor_pax->StepMoveSync(-parameters.escapeX());
         result &= pick_arm->motor_vcm2->MoveToPosSync(0);
     }
     return result;
@@ -579,7 +579,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1SearchSutZ2(double z,bool is_
         QThread::msleep(200);
         pick_arm->motor_vcm1->MoveToPosSync(z-parameters.escapeHeight());
         QThread::msleep(200);
-        result = pick_arm->motor_vcmx->StepMoveSync(-parameters.escapeX());
+        result = pick_arm->motor_pax->StepMoveSync(-parameters.escapeX());
         result &= pick_arm->motor_vcm1->MoveToPosSync(0);
     }
     return result;
@@ -993,7 +993,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     moveToPicker2WorkPos();
                     PickArmPos tmpPickSensorPos;
                     tmpPickSensorPos.TL_X = pick_arm->motor_x->GetFeedbackPos();
-                    tmpPickSensorPos.PA_X = pick_arm->motor_vcmx->GetFeedbackPos();
+                    tmpPickSensorPos.PA_X = pick_arm->motor_pax->GetFeedbackPos();
                     tmpPickSensorPos.PA_Y = pick_arm->motor_y->GetFeedbackPos();
                     picker2PickSensorFromTray();
                     if(!pick_arm->vacuum_sensor_suction->GetVacuumState()) {

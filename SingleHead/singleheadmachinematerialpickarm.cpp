@@ -15,7 +15,7 @@ void SingleHeadMachineMaterialPickArm::Init(XtMotor *motor_x,
                                             XtMotor *motor_th2,
                                             XtVcMotor *motor_vcm1,
                                             XtVcMotor *motor_vcm2,
-                                            XtVcMotor *motor_vcmx,
+                                            XtMotor *motor_pax,
                                             XtVacuum *vacuum_lens_suction,
                                             XtVacuum *vacuum_sensor_suction,
                                             XtVacuum *vacuum_lut,
@@ -30,7 +30,7 @@ void SingleHeadMachineMaterialPickArm::Init(XtMotor *motor_x,
     this->motor_th2 = motor_th2;
     this->motor_vcm1 = motor_vcm1;
     this->motor_vcm2 = motor_vcm2;
-    this->motor_vcmx = motor_vcmx;
+    this->motor_pax = motor_pax;
     this->vacuum_lens_suction = vacuum_lens_suction;
     this->vacuum_sensor_suction = vacuum_sensor_suction;
     this->vacuum_lut = vacuum_lut;
@@ -42,7 +42,7 @@ void SingleHeadMachineMaterialPickArm::Init(XtMotor *motor_x,
 
 bool SingleHeadMachineMaterialPickArm::move_Xm_Origin()
 {
-    return motor_vcmx->MoveToPosSync(parameters.pickArmOriginX());
+    return motor_pax->MoveToPosSync(parameters.pickArmOriginX());
 }
 
 bool SingleHeadMachineMaterialPickArm::move_Z_Synic(const double position, int timeout)
@@ -75,10 +75,10 @@ bool SingleHeadMachineMaterialPickArm::move_XYXm_Sync(PickArmPos pos, const bool
     }
     motor_x->MoveToPos(pos.TL_X);
     motor_y->MoveToPos(pos.PA_Y);
-    motor_vcmx->MoveToPos(pos.PA_X);
+    motor_pax->MoveToPos(pos.PA_X);
     return motor_x->WaitArrivedTargetPos(pos.TL_X,timeout)&
            motor_y->WaitArrivedTargetPos(pos.PA_Y,timeout) &
-           motor_vcmx->WaitArrivedTargetPos(pos.PA_X,timeout);
+           motor_pax->WaitArrivedTargetPos(pos.PA_X,timeout);
 }
 
 bool SingleHeadMachineMaterialPickArm::move_XmY_Synic(const QPointF position, const bool check_softlanding, int timeout)
@@ -88,10 +88,9 @@ bool SingleHeadMachineMaterialPickArm::move_XmY_Synic(const QPointF position, co
         if(!motor_vcm1->resetSoftLanding(timeout))return false;
         if(!motor_vcm2->resetSoftLanding(timeout))return false;
     }
-//    motor_vcmx->MoveToPos(position.x());
+    motor_pax->MoveToPos(position.x());
     motor_y->MoveToPos(position.y());
-    bool result = false;
-//    bool result = motor_vcmx->WaitArrivedTargetPos(position.x(),timeout);
+    bool result = motor_pax->WaitArrivedTargetPos(position.x(),timeout);
     result &= motor_y->WaitArrivedTargetPos(position.y(),timeout);
     return result;
 }
@@ -103,14 +102,13 @@ bool SingleHeadMachineMaterialPickArm::stepMove_XmYT1_Synic(const double step_x,
         if(!motor_vcm1->resetSoftLanding(timeout))return false;
         if(!motor_vcm2->resetSoftLanding(timeout))return false;
     }
-//    double target_x = motor_vcmx->GetFeedbackPos() + step_x;
+    double target_x = motor_pax->GetFeedbackPos() + step_x;
     double target_y = motor_y->GetFeedbackPos() + step_y;
     double target_t = motor_th1->GetFeedbackPos() + step_t1;
-    motor_vcmx->StepMove(step_x);
+    motor_pax->StepMove(step_x);
     motor_y->StepMove(step_y);
     motor_th1->StepMove(step_t1);
-//    bool resut = motor_vcmx->WaitArrivedTargetPos(target_x);
-      bool resut = false;
+    bool resut = motor_pax->WaitArrivedTargetPos(target_x);
     resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
     resut &= motor_th1->WaitArrivedTargetPos(target_t,timeout);
     return resut;
@@ -123,14 +121,13 @@ bool SingleHeadMachineMaterialPickArm::stepMove_XmYT2_Synic(const double step_x,
         if(!motor_vcm1->resetSoftLanding(timeout))return false;
         if(!motor_vcm2->resetSoftLanding(timeout))return false;
     }
-//    double target_x = motor_vcmx->GetFeedbackPos() + step_x;
+    double target_x = motor_pax->GetFeedbackPos() + step_x;
     double target_y = motor_y->GetFeedbackPos() + step_y;
     double target_t = motor_th2->GetFeedbackPos() + step_t2;
-    motor_vcmx->StepMove(step_x);
+    motor_pax->StepMove(step_x);
     motor_y->StepMove(step_y);
     motor_th2->StepMove(step_t2);
-//    bool resut = motor_vcmx->WaitArrivedTargetPos(target_x);
-      bool resut = false;
+    bool resut = motor_pax->WaitArrivedTargetPos(target_x);
     resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
     resut &= motor_th2->WaitArrivedTargetPos(target_t,timeout);
     return resut;

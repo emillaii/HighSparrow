@@ -43,9 +43,9 @@ Item {
                 model: lensTrayModel
 
                 delegate: Rectangle {
-                    id: lensCell
-                    implicitWidth: 20
-                    implicitHeight: 20
+//                    id: lensCell
+//                    implicitWidth: 20
+//                    implicitHeight: 20
 
                     color:
                     {
@@ -59,7 +59,7 @@ Item {
                         }
                         else if(Status === TrayMapModel.StatusIdle)// idle
                         {
-                            "#c0c0c0"
+                            "yellow"
                         }
                         else if (Status === TrayMapModel.StatusInUse) //InUse
                         {
@@ -135,8 +135,8 @@ Item {
 
                 delegate: Rectangle {
                     id: sensorCell
-                    implicitWidth: 20
-                    implicitHeight: 20
+//                    implicitWidth: 20
+//                    implicitHeight: 20
 
                     color:
                     {
@@ -150,7 +150,7 @@ Item {
                         }
                         else if(Status === TrayMapModel.StatusIdle)// idle
                         {
-                            "#c0c0c0"
+                            "yellow"
                         }
                         else if (Status === TrayMapModel.StatusInUse) //InUse
                         {
@@ -222,12 +222,12 @@ Item {
                 leftMargin: contentWidth < width ? (width - contentWidth) / 2 : 0
                 topMargin: contentHeight < height ? (height - contentHeight) / 2 : 0
 
-                model: productTrayModel
+                model: sensorTrayModel
 
                 delegate: Rectangle {
                     id: productCell
-                    implicitWidth: 20
-                    implicitHeight: 20
+//                    implicitWidth: 20
+//                    implicitHeight: 20
 
                     color:
                     {
@@ -241,7 +241,7 @@ Item {
                         }
                         else if(Status === TrayMapModel.StatusIdle)// idle
                         {
-                            "#c0c0c0"
+                            "yellow"
                         }
                         else if (Status === TrayMapModel.StatusInUse) //InUse
                         {
@@ -317,8 +317,8 @@ Item {
 
                 delegate: Rectangle {
                     id: rejectCell
-                    implicitWidth: 20
-                    implicitHeight: 20
+//                    implicitWidth: 20
+//                    implicitHeight: 20
 
                     color:
                     {
@@ -328,11 +328,11 @@ Item {
                         }
                         else if(Status === TrayMapModel.StatusNG) //NG
                         {
-                            "#ff0000"
+                            "red"
                         }
                         else if(Status === TrayMapModel.StatusIdle)// idle
                         {
-                            "#c0c0c0"
+                            "yellow"
                         }
                         else if (Status === TrayMapModel.StatusInUse) //InUse
                         {

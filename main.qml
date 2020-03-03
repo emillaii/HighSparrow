@@ -188,7 +188,7 @@ ApplicationWindow {
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/initial.png"
-                icon.color: "deepskyblue"
+                icon.color: "red"
                 onClicked: {
                     logicManager.init()
                 }
@@ -249,26 +249,26 @@ ApplicationWindow {
                 icon.width: 30
                 icon.height: 30
                 icon.source: "icons/home.png"
-                icon.color: "deepskyblue"
+                icon.color: "red"
                 onClicked: {
                     qmessageDialog.open()
                     //logicManager.receiveMsgSignal()
                 }
             }
-            ToolButton {
-               id: stopHomeButton
-               objectName: "StopHomeButtonObject"
-               text: qsTr("停Home")
-               transformOrigin: Item.Center
-               display: Button.TextUnderIcon
-               icon.width: 30
-               icon.height: 30
-               icon.source: "icons/home.png"
-               icon.color: "red"
-               onClicked: {
-                   logicManager.stopHome()
-               }
-           }
+//            ToolButton {
+//               id: stopHomeButton
+//               objectName: "StopHomeButtonObject"
+//               text: qsTr("停Home")
+//               transformOrigin: Item.Center
+//               display: Button.TextUnderIcon
+//               icon.width: 30
+//               icon.height: 30
+//               icon.source: "icons/home.png"
+//               icon.color: "red"
+//               onClicked: {
+//                   logicManager.stopHome()
+//               }
+//           }
            ToolButton {
                 id: loadFlowChartButton
                 text: qsTr("加载流程图")

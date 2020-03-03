@@ -9,7 +9,7 @@
         <file>qml/AAHeadModule/AAHeadMushroomPosition.qml</file>
         <file>qml/AAHeadModule/AAHeadOCPosition.qml</file>
         <file>qml/AAHeadModule/AAHeadPickLensPosition.qml</file>
-		<file>qml/AAHeadModule/AAHeadXYZPosition.qml</file>
+        <file>qml/AAHeadModule/AAHeadXYZPosition.qml</file>
         <file>qml/CheckProcessItem/CheckProcess.qml</file>
         <file>qml/DispenseModule/DispenseModuleView.qml</file>
         <file>qml/DispenseModule/DispenseParam.qml</file>
@@ -34,7 +34,7 @@
         <file>qml/SingleStationMaterialLoaderModule/SensorTraySpecs.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/SingleHeadLensTray.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/SingleHeadRejectTray.qml</file>
-		<file>qml/SingleStationMaterialLoaderModule/SingleHeadPickarmZ.qml</file>
+        <file>qml/SingleStationMaterialLoaderModule/SingleHeadPickarmZ.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/SingleHeadSensorTray.qml</file>
         <file>qml/SingleStationMaterialLoaderModule/SingleStationMaterialLoaderModuleView.qml</file>
         <file>qml/AlarmDialog.qml</file>
@@ -70,5 +70,6 @@
         <file>qml/UserManagement/UserManagement.qml</file>
         <file>qml/UserManagement/LoginComponent.qml</file>
         <file>qml/UserManagement/UsersView.qml</file>
+        <file>qml/AAControlPageMenuBar.qml</file>
     </qresource>
 </RCC>

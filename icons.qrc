@@ -20,5 +20,45 @@
         <file>icons/warning.png</file>
         <file>icons/login.png</file>
         <file>icons/userManagement.png</file>
+        <file>icons/add.png</file>
+        <file>icons/alignment.png</file>
+        <file>icons/calculate.png</file>
+        <file>icons/camera.png</file>
+        <file>icons/camera_on.png</file>
+        <file>icons/close_program.png</file>
+        <file>icons/collapse.png</file>
+        <file>icons/configManager.png</file>
+        <file>icons/draw.png</file>
+        <file>icons/expand.png</file>
+        <file>icons/flow-auto-finish.png</file>
+        <file>icons/flow-auto-run.png</file>
+        <file>icons/flow-auto-stop.png</file>
+        <file>icons/full-screen.png</file>
+        <file>icons/icon_status-dot-green.png</file>
+        <file>icons/icon_status-dot-red.png</file>
+        <file>icons/language.png</file>
+        <file>icons/LC_icon_light_line.png</file>
+        <file>icons/learning.png</file>
+        <file>icons/lock.png</file>
+        <file>icons/machine_icon.png</file>
+        <file>icons/machine-learning.png</file>
+        <file>icons/move.png</file>
+        <file>icons/move-vertical.png</file>
+        <file>icons/no_image_placeholder.png</file>
+        <file>icons/no-image.png</file>
+        <file>icons/pattern_learn.png</file>
+        <file>icons/pause.png</file>
+        <file>icons/poweroff.png</file>
+        <file>icons/poweron.png</file>
+        <file>icons/read.png</file>
+        <file>icons/redo.png</file>
+        <file>icons/refresh.png</file>
+        <file>icons/remove.png</file>
+        <file>icons/sparrow.ico</file>
+        <file>icons/switchcamera.png</file>
+        <file>icons/target.png</file>
+        <file>icons/undo.png</file>
+        <file>icons/unlock.png</file>
+        <file>icons/zoomin.png</file>
     </qresource>
 </RCC>

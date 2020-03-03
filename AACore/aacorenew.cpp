@@ -1165,7 +1165,7 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
     map.insert("out_max_avg_glue_width", outMaxAvgGlueWidth);
     map.insert("z_peak",sut->carrier->GetFeedBackPos().Z);
     map.insert("timeElapsed", timer.elapsed());
-    map.insert("result", "Pass");
+    map.insert("Result", "Pass");
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
     qInfo("Finish Dispense");
     return ErrorCodeStruct {ErrorCode::OK, ""};
@@ -1238,7 +1238,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             }
             if (!blackScreenCheck(img)) {
                 NgSensor();
-                map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                map["Result"] = QString("Fail. AA Detect BlackScreen.i:%1").arg(i);
                 emit pushDataToUnit(runningUnit, "AA", map);
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
             }
@@ -1284,14 +1284,14 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
 
             if (!grabRet) {
                 qInfo("AA Cannot grab image.");
-                map["Result"] = "AA Cannot grab image.";
+                map["Result"] = "Fail. AA Cannot grab image.";
                 emit pushDataToUnit(runningUnit, "AA", map);
                 NgSensor();
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
             }
             if (!blackScreenCheck(img)) {
                 NgSensor();
-                map["Result"] = "AA Detect black screen";
+                map["Result"] = "Fail. AA Detect black screen";
                 emit pushDataToUnit(runningUnit, "AA", map);
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
             }
@@ -1299,7 +1299,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             if (dfov <= -1) {
                 qInfo("Cannot find the target FOV!");
                 LogicNg(current_aa_ng_time);
-                map["Result"] = "Cannot find the target FOV";
+                map["Result"] = "Fail. Cannot find the target FOV";
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
             }
             estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
@@ -1315,7 +1315,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         if (target_z >= stop) {
             qInfo("The estimated target is too large. value: %f", target_z);
             LogicNg(current_aa_ng_time);
-            map["Result"] = QString("The estimated target is too large. value:%1 target:%2").arg(target_z).arg(stop);
+            map["Result"] = QString("Fail. The estimated target is too large. value:%1 target:%2").arg(target_z).arg(stop);
             emit pushDataToUnit(runningUnit, "AA", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
         }
@@ -1332,13 +1332,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             if (!grabRet) {
                 qInfo("AA Cannot grab image.");
                 NgSensor();
-                map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                map["Result"] = QString("Fail. AA Cannot grab image.i:%1").arg(i);
                 emit pushDataToUnit(runningUnit, "AA", map);
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
             }
             if (!blackScreenCheck(img)) {
                 NgSensor();
-                map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                map["Result"] = QString("Fail. AA Detect BlackScreen.i:%1").arg(i);
                 emit pushDataToUnit(runningUnit, "AA", map);
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
             }
@@ -1415,13 +1415,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             if (!grabRet) {
                 qInfo("AA Cannot grab image.");
                 NgSensor();
-                map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                map["Result"] = QString("Fail. AA Cannot grab image.i:%1").arg(i);
                 emit pushDataToUnit(runningUnit, "AA", map);
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
             }
             if (!blackScreenCheck(img)) {
                 NgSensor();
-                map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                map["Result"] = QString("Fail. AA Detect BlackScreen.i:%1").arg(i);
                 emit pushDataToUnit(runningUnit, "AA", map);
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
             }
@@ -1475,13 +1475,13 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             if (!grabRet) {
                 qInfo("AA Cannot grab image.");
                 NgSensor();
-                map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                map["Result"] = QString("Fail. AA Cannot grab image.i:%1").arg(i);
                 emit pushDataToUnit(runningUnit, "AA", map);
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot Grab Image"};
             }
             if (!blackScreenCheck(img)) {
                 NgSensor();
-                map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                map["Result"] = QString("Fail. AA Detect BlackScreen.i:%1").arg(i);
                 emit pushDataToUnit(runningUnit, "AA", map);
                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Detect BlackScreen"};
             }
@@ -1710,7 +1710,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         double maxZPeak = aa_result["maxZPeak"].toDouble();
         if ( fabs(zScanStopPosition - maxZPeak) < 0.001 ) {
             LogicNg(current_aa_ng_time);
-            map["Result"] = QString("one of the zpeak too close to z scan boundary.(%1)").arg(maxZPeak);
+            map["Result"] = QString("Fail. One of the zpeak too close to z scan boundary.(%1)").arg(maxZPeak);
             emit pushDataToUnit(runningUnit, "AA", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, map["Result"].toString()};
         }
@@ -2926,11 +2926,11 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
                 vec[max_layer*4 + 3].avg_sfr);
     }
     if (sfr_check) {
-        map.insert("result", "Pass");
+        map.insert("Result", "Pass");
         emit pushDataToUnit(runningUnit, "MTF", map);
         return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-        map.insert("result", error);
+        map.insert("Result", error);
         emit pushDataToUnit(runningUnit, "MTF", map);
         LogicNg(current_mtf_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
@@ -3155,11 +3155,11 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
     map.insert("timeElapsed", timer.elapsed());
 
     if (sfr_check) {
-        map.insert("result", "Pass");
+        map.insert("Result", "Pass");
         emit pushDataToUnit(runningUnit, "MTF", map);
         return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-        map.insert("result", error);
+        map.insert("Result", error);
         emit pushDataToUnit(runningUnit, "MTF", map);
         LogicNg(current_mtf_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
@@ -3338,14 +3338,14 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
         }
         if (max_i < 10) {
             qWarning("This is black screen.");
-            map.insert("result", "Detected black screen");
+            map.insert("Result", "Y Level Fail. Detected black screen");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             NgProduct();
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Black screen detected"};
         }
         if (min_i < min_i_spec) {
             qWarning("Y Level Fail. The tested intensity is smaller than spec. Tested min intensity: %f intensity spec: %f", min_i, min_i_spec);
-            map.insert("result", "Y Level min spec cannnot pass");
+            map.insert("Result", "Y Level Fail. min spec cannnot pass");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             NgProduct();
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is smaller than spec"};
@@ -3363,12 +3363,12 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
             NgProduct();
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Detected intensity error"};
         }
-        map.insert("result", "Pass");
+        map.insert("Result", "Pass");
         map.insert("timeElapsed", timer.elapsed());
         emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
         return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-        map.insert("result", "Y Level test fail. Cannot grab image");
+        map.insert("Result", "Y Level test fail. Cannot grab image");
         qWarning("performYLevelTest Fail");
         emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
         NgProduct();

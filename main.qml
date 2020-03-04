@@ -19,7 +19,7 @@ ApplicationWindow {
     height: 720
     title: qsTr("High Sparrow")
 
-    readonly property string version: "1.0.1"
+    readonly property string version: "1.0.2"
 
     readonly property string title_move_to: "移动"
     readonly property string title_read_encoder: "读取"

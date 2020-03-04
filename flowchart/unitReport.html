@@ -39,12 +39,13 @@ tr:nth-child(even) {
 <h1>Silicool Data Reporting</h1>
 <h2 id="sensorID"></h2>
 <h2 id="result"></h2>
-
+<input type="file" id="files" name="files[]" multiple />
 <output id="list"></output>
 
 <div id="timeContainer"></div>
 <div id="container"></div>
 <div id="container1"></div>
+<div id="container2"></div>
 <div id="tableContainer"></div>
 
 </body>
@@ -66,6 +67,7 @@ tr:nth-child(even) {
 			reader.readAsText(f, "UTF-8");
 			 reader.onload = function (evt) {
 				displayData(evt.target.result);
+				//drawSFRCurve2(evt.target.result);
 			}
 			reader.onerror = function (evt) {
 				console.log("error in reading file");
@@ -87,70 +89,86 @@ tr:nth-child(even) {
 	
 	//End of load local file
 	var sfr_count = 0;
+	var min_z = 0;
+	var max_z = 0;
 	function drawSFRCurve2(inputData) {
 		var myData = JSON.parse(inputData);
 		var dataSeries = {};
 		for (var operatorName in myData) {
 			console.log(operatorName);
-			if ((operatorName === "CC" || operatorName === "UL_1" || operatorName === "UR_1" || operatorName === "LL_1" || operatorName === "LR_1"
+			if (operatorName === "zPeak") {
+				var dataX = [], dataY = [];  var data = [];
+				var pz = myData[operatorName];
+				var dataXY = [];
+				dataXY.push([pz,0]);
+				dataXY.push([pz,100]);
+				data.name = operatorName;
+				data.dataXY = dataXY;
+				dataSeries[operatorName] = data;
+			}else if ((operatorName === "CC" || operatorName === "UL_1" || operatorName === "UR_1" || operatorName === "LL_1" || operatorName === "LR_1"
 			     || operatorName === "UL_2" || operatorName === "UR_2" || operatorName === "LL_2" || operatorName === "LR_2"
 				 || operatorName === "UL_3" || operatorName === "UR_3" || operatorName === "LL_3" || operatorName === "LR_3")){
-				var dataX = [], dataY = [];  var data = [];
+				var dataXY = []; var data = [];
+				var index = 0;
 				for (var z in myData[operatorName]) {
 					var sfr = myData[operatorName][z]["sfr"];
 					var pz = myData[operatorName][z]["pz"];
-					dataX.push(pz);
-					dataY.push(sfr);
+					if (index == 0) min_z = pz;
+					max_z = pz;
+					index++;
+					dataXY.push([pz, sfr]);
 				}
 				data.name = operatorName;
-				data.z = dataX;
-				data.sfr = dataY;
+				data.dataXY = dataXY;
 				dataSeries[operatorName] = data;
 			}
 		}
 		drawSFRCurve("SFR", dataSeries);
 	}
 	//Draw SFR chart
+	var dataSeriesTemp = [];
+	var gDataSeries = {};
 	function drawSFRCurve(operatorName, dataSeries) {
-	    
+	    gDataSeries = dataSeries;
 		if (operatorName.indexOf("SFR") !== -1) {
-			var container;  
-			if (sfr_count === 0) 
+			var container; var title = "";
+			if (sfr_count === 0) {
 				container = document.getElementById("container");
-			if (sfr_count === 1) 
+				title = "AA_1";
+			}
+			if (sfr_count === 1) { 
 				container = document.getElementById("container1");
+				title = "AA_2";
+			}
+			if (sfr_count === 2) { 
+				container = document.getElementById("container2");
+				title = "AA_3";
+			}
 			sfr_count++;
-			if (sfr_count > 1) sfr_count = 0; 
+			if (sfr_count > 2) sfr_count = 0; 
 			container.style.height = "500px"
 			var myChart = echarts.init(container);
 			var app = {};
 			//document.body.appendChild(container);
 			console.log(operatorName);
-			app.title = operatorName;
+			app.title = title;
 			option = {
 			    title: {
-					text: operatorName,
+					text: title,
 					left: 'left'
 				},
 				legend: {
-					data:['CC', 'UL', 'UR', 'LL', 'LR']
+					data:['CC', 'UL', 'UR', 'LL', 'LR', 'zPeak']
+				},
+				tooltip: {
+					trigger: 'axis'
 				},
 				xAxis: {
-					type: 'category',
-					data: dataSeries["CC"].z,
+					type: 'value',
+					min: min_z,
+					max: max_z,
 					axisTick: {
 						alignWithLabel: true
-					},
-					axisPointer: {
-						label: {
-							formatter: function (params) {
-								var message = "";
-								for (var m in params.seriesData) {
-									message +=  params.seriesData[m].seriesName + ":" + params.seriesData[m].data.toFixed(2) + " \n"
-								}
-								return message;
-							}
-						}
 					}
 				},
 				yAxis: {
@@ -164,33 +182,41 @@ tr:nth-child(even) {
 				},
 				series: [{
 						name:'CC',
-						data: dataSeries["CC"].sfr,
+						data: dataSeries["CC"].dataXY,
 						type: 'line',
 						smooth: true,
 					}
 				]
 			};
 			
+			if (dataSeries["zPeak"] !== undefined) {
+				var zPeakDataSeries = {};
+				zPeakDataSeries.name = 'zPeak';
+				zPeakDataSeries.data = dataSeries["zPeak"].dataXY;
+				zPeakDataSeries.type = 'line';
+				option.series.push(zPeakDataSeries);
+			}
+			
 			if (dataSeries["UL_3"] !== undefined) {
 				var ulDataSeries = {}, urDataSeries = {}, llDataSeries = {}, lrDataSeries = {};
-				ulDataSeries.name = 'UL'; ulDataSeries.data = dataSeries["UL_3"].sfr; ulDataSeries.type = 'line'; ulDataSeries.smooth = true;
-				urDataSeries.name = 'UR'; urDataSeries.data = dataSeries["UR_3"].sfr; urDataSeries.type = 'line'; urDataSeries.smooth = true;
-				llDataSeries.name = 'LL'; llDataSeries.data = dataSeries["LL_3"].sfr; llDataSeries.type = 'line'; llDataSeries.smooth = true;
-				lrDataSeries.name = 'LR'; lrDataSeries.data = dataSeries["LR_3"].sfr; lrDataSeries.type = 'line'; lrDataSeries.smooth = true;				
+				ulDataSeries.name = 'UL'; ulDataSeries.data = dataSeries["UL_3"].dataXY; ulDataSeries.type = 'line'; ulDataSeries.smooth = true;
+				urDataSeries.name = 'UR'; urDataSeries.data = dataSeries["UR_3"].dataXY; urDataSeries.type = 'line'; urDataSeries.smooth = true;
+				llDataSeries.name = 'LL'; llDataSeries.data = dataSeries["LL_3"].dataXY; llDataSeries.type = 'line'; llDataSeries.smooth = true;
+				lrDataSeries.name = 'LR'; lrDataSeries.data = dataSeries["LR_3"].dataXY; lrDataSeries.type = 'line'; lrDataSeries.smooth = true;				
 				option.series.push(ulDataSeries); option.series.push(urDataSeries); option.series.push(llDataSeries); option.series.push(lrDataSeries);
 			} else if (dataSeries["UL_2"] !== undefined) {
 				var ulDataSeries = {}, urDataSeries = {}, llDataSeries = {}, lrDataSeries = {};
-				ulDataSeries.name = 'UL'; ulDataSeries.data = dataSeries["UL_2"].sfr; ulDataSeries.type = 'line'; ulDataSeries.smooth = true;
-				urDataSeries.name = 'UR'; urDataSeries.data = dataSeries["UR_2"].sfr; urDataSeries.type = 'line'; urDataSeries.smooth = true;
-				llDataSeries.name = 'LL'; llDataSeries.data = dataSeries["LL_2"].sfr; llDataSeries.type = 'line'; llDataSeries.smooth = true;
-				lrDataSeries.name = 'LR'; lrDataSeries.data = dataSeries["LR_2"].sfr; lrDataSeries.type = 'line'; lrDataSeries.smooth = true;				
+				ulDataSeries.name = 'UL'; ulDataSeries.data = dataSeries["UL_2"].dataXY; ulDataSeries.type = 'line'; ulDataSeries.smooth = true;
+				urDataSeries.name = 'UR'; urDataSeries.data = dataSeries["UR_2"].dataXY; urDataSeries.type = 'line'; urDataSeries.smooth = true;
+				llDataSeries.name = 'LL'; llDataSeries.data = dataSeries["LL_2"].dataXY; llDataSeries.type = 'line'; llDataSeries.smooth = true;
+				lrDataSeries.name = 'LR'; lrDataSeries.data = dataSeries["LR_2"].dataXY; lrDataSeries.type = 'line'; lrDataSeries.smooth = true;				
 				option.series.push(ulDataSeries); option.series.push(urDataSeries); option.series.push(llDataSeries); option.series.push(lrDataSeries);
 			} else if (dataSeries["UL_1"] !== undefined) {
 				var ulDataSeries = {}, urDataSeries = {}, llDataSeries = {}, lrDataSeries = {};
-				ulDataSeries.name = 'UL'; ulDataSeries.data = dataSeries["UL_1"].sfr; ulDataSeries.type = 'line'; ulDataSeries.smooth = true;
-				urDataSeries.name = 'UR'; urDataSeries.data = dataSeries["UR_1"].sfr; urDataSeries.type = 'line'; urDataSeries.smooth = true;
-				llDataSeries.name = 'LL'; llDataSeries.data = dataSeries["LL_1"].sfr; llDataSeries.type = 'line'; llDataSeries.smooth = true;
-				lrDataSeries.name = 'LR'; lrDataSeries.data = dataSeries["LR_1"].sfr; lrDataSeries.type = 'line'; lrDataSeries.smooth = true;				
+				ulDataSeries.name = 'UL'; ulDataSeries.data = dataSeries["UL_1"].dataXY; ulDataSeries.type = 'line'; ulDataSeries.smooth = true;
+				urDataSeries.name = 'UR'; urDataSeries.data = dataSeries["UR_1"].dataXY; urDataSeries.type = 'line'; urDataSeries.smooth = true;
+				llDataSeries.name = 'LL'; llDataSeries.data = dataSeries["LL_1"].dataXY; llDataSeries.type = 'line'; llDataSeries.smooth = true;
+				lrDataSeries.name = 'LR'; lrDataSeries.data = dataSeries["LR_1"].dataXY; lrDataSeries.type = 'line'; lrDataSeries.smooth = true;				
 				option.series.push(ulDataSeries); option.series.push(urDataSeries); option.series.push(llDataSeries); option.series.push(lrDataSeries);
 			}
 
@@ -292,7 +318,7 @@ tr:nth-child(even) {
 			x.setAttribute("id", "table_"+operatorName);
 			document.getElementById("tableContainer").appendChild(x);
 			var row = x.insertRow();
-			var row1 = x.insertRow(-1);
+			var row1 = x.insertRow();
 			var count = 0;
 			var dataSeries = {};
 			console.log(operatorName);
@@ -300,8 +326,15 @@ tr:nth-child(even) {
 				uuid = myData[operatorName];
 			}
 			for (var attr in myData[operatorName]) {
-				var cell1 = row.insertCell(count);
-				var cell2 = row1.insertCell(count);
+				var cell1, cell2;
+				if (attr === "result" || attr === "Result")
+				{
+					cell1 = row.insertCell(0);
+					cell2 = row1.insertCell(0);
+				} else {
+					cell1 = row.insertCell(count);
+					cell2 = row1.insertCell(count);
+				}
 				count++;
 				cell1.innerHTML = attr;
 				cell2.innerHTML = myData[operatorName][attr];

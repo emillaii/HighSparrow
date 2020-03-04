@@ -160,7 +160,7 @@ private:
     bool m_InitState = false;
 
 public:
-    bool loadProfile();
+   bool loadProfile();
     bool loadStructConfig(QString file_dir);
     bool loadMachineConfig(QString file_paths);
     Q_INVOKABLE bool loadParameters();

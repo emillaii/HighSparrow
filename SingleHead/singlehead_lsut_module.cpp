@@ -434,7 +434,7 @@ bool SingleheadLSutModule::gripLens()
     qInfo("GripLens Start SUT is going to zOffset: %f", parameters.ZOffset());
     aa_head->openGripper();
     aa_head->moveToPikLensPositionAsync();
-    if(!moveToPickLensPosition() | !aa_head->waitArrivedPickLesPosition()) {
+    if(!moveToPickLensPosition() || !aa_head->waitArrivedPickLesPosition()) {
         qInfo("Move to pick lens pos fail");
         this->vacuum_lut->Set(false, false);  //First do not check the state.
         aa_head->closeGripper();
@@ -466,6 +466,8 @@ bool SingleheadLSutModule::unpickLens()
         return false;
     }
     aa_head->openGripper();
+    moveToLoadSensorPosition();
     qInfo("Unpick Lens finished");
+
     return true;
 }

@@ -181,6 +181,13 @@ ApplicationWindow {
                 }
             }
 
+            Timer{
+                id: timer
+                interval: 500
+                repeat: true
+                running: true
+            }
+
             ToolButton {
                 id:inintButton
                 text: qsTr("初始化")
@@ -196,7 +203,7 @@ ApplicationWindow {
                 Connections{
                     target: timer
                     onTriggered:{
-                        initButton.icon.color = baseModuleManager.InitState?"deepskyblue":"red"
+                        inintButton.icon.color = baseModuleManager.InitState?"deepskyblue":"red"
                     }
                 }
             }
@@ -341,7 +348,7 @@ ApplicationWindow {
                 icon.source: "icons/flowchart.png"
                 icon.color: "deepskyblue"
                 onClicked: {
-                    baseModuleManager.loadParameter()
+                    baseModuleManager.loadParameters()
                 }
            }
            ToolButton {

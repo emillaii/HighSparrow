@@ -221,7 +221,7 @@ private:
     bool picker2SearchSutZ(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchSutZ2(double z,bool is_open = true,int time_out = 10000);
     bool picker2SearchSutZ2Revert(double z,bool is_open = true,int time_out = 10000);
-    bool picker1SearchSutZ2(double z,bool is_open = true, int time_out = 10000);
+//    bool picker1SearchSutZ2(double z,bool is_open = true, int time_out = 10000);
     bool picker1MeasureHight(bool is_tray,bool is_product = false);
     bool picker2MeasureHight(bool is_tray,bool is_product = false);
 

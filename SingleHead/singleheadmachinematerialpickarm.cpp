@@ -16,8 +16,8 @@ void SingleHeadMachineMaterialPickArm::Init(XtMotor *motor_x,
                                             XtVcMotor *motor_vcm1,
                                             XtVcMotor *motor_vcm2,
                                             XtMotor *motor_pax,
-                                            XtVacuum *vacuum_lens_suction,
-                                            XtVacuum *vacuum_sensor_suction,
+                                            XtVacuum *vacuum_picker1_suction,
+                                            XtVacuum *vacuum_picker2_suction,
                                             XtVacuum *vacuum_lut,
                                             XtVacuum *vacuum_sut,
                                             XtCylinder *pogopin
@@ -31,8 +31,8 @@ void SingleHeadMachineMaterialPickArm::Init(XtMotor *motor_x,
     this->motor_vcm1 = motor_vcm1;
     this->motor_vcm2 = motor_vcm2;
     this->motor_pax = motor_pax;
-    this->vacuum_lens_suction = vacuum_lens_suction;
-    this->vacuum_sensor_suction = vacuum_sensor_suction;
+    this->vacuum_picker1_suction = vacuum_picker1_suction;
+    this->vacuum_picker2_suction = vacuum_picker2_suction;
     this->vacuum_lut = vacuum_lut;
     this->vacuum_sut = vacuum_sut;
     this->pogopin = pogopin;
@@ -42,7 +42,12 @@ void SingleHeadMachineMaterialPickArm::Init(XtMotor *motor_x,
 
 bool SingleHeadMachineMaterialPickArm::move_Xm_Origin()
 {
-    return motor_pax->MoveToPosSync(parameters.pickArmOriginX());
+//    return motor_pax->MoveToPosSync(parameters.pickArmOriginX());
+    motor_pax->MoveToPosSync(parameters.pickArmOriginX());
+    motor_z->MoveToPosSync(parameters.pickArmZ());
+    bool result = motor_pax->WaitArrivedTargetPos(parameters.pickArmOriginX());
+    result &=motor_z->WaitArrivedTargetPos(parameters.pickArmZ());
+    return result;
 }
 
 bool SingleHeadMachineMaterialPickArm::move_Z_Synic(const double position, int timeout)
@@ -148,7 +153,7 @@ bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker, double speed, d
 bool SingleHeadMachineMaterialPickArm::ZSerchByForce(int picker, double speed, double force, double limit, double margin, int finish_time, bool open_vacuum, bool need_return, int timeout)
 {
     XtVcMotor* motor_vcm = picker==0?motor_vcm1:motor_vcm2;
-    XtVacuum* vacuum = picker==0?vacuum_lens_suction:vacuum_sensor_suction;
+    XtVacuum* vacuum = picker==0?vacuum_picker1_suction:vacuum_picker2_suction;
     qInfo("SensorPickArm::ZSerchByForce timeout %d, force: %f limit: f",timeout);
     bool result = motor_vcm->SearchPosByForce(speed,force,limit,margin,timeout);
     if(result)

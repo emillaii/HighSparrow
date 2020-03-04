@@ -25,7 +25,7 @@ public:
     void Init(XtMotor *motor_x,XtMotor *motor_y,XtMotor *motor_z,
               XtMotor *motor_th1,XtMotor *motor_th2,
               XtVcMotor *motor_vcm1,XtVcMotor *motor_vcm2,XtMotor *motor_pax,
-              XtVacuum *vacuum_lens_suction,XtVacuum *vacuum_sensor_suction,
+              XtVacuum *vacuum_picker1_suction,XtVacuum *vacuum_picker2_suction,
               XtVacuum *vacuum_lut,XtVacuum *vacuum_sut,XtCylinder *pogopin
               );
 
@@ -50,8 +50,8 @@ public:
     XtVcMotor *motor_vcm1;
     XtVcMotor *motor_vcm2;
     XtMotor *motor_pax;
-    XtVacuum *vacuum_lens_suction;//lens吸嘴，右吸嘴
-    XtVacuum *vacuum_sensor_suction;//cmos吸嘴，左吸嘴
+    XtVacuum *vacuum_picker1_suction;//lens吸嘴，右吸嘴
+    XtVacuum *vacuum_picker2_suction;//cmos吸嘴，左吸嘴
     XtVacuum *vacuum_lut;//LUT真空
     XtVacuum *vacuum_sut;//SUT真空
     XtCylinder *pogopin;

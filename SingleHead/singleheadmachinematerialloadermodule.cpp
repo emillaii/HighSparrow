@@ -88,8 +88,7 @@ void SingleHeadMachineMaterialLoaderModule::performHandling(int cmd)
 bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayPos(int tray_index)
 {
     qInfo("moveToTrayPos tray_index %d",tray_index);
-//    bool result = pick_arm->move_Xm_Origin();
-    bool result = true;
+    bool result = pick_arm->move_Xm_Origin();
     result &= pick_arm->move_XY_Synic(lensTray->getCurrentPosition(tray_index),false);
     if(!result)
         AppendError(QString(u8"移动到lens盘当前位置失败"));
@@ -99,8 +98,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayPos(int tray_index)
 bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayStartPos(int tray_index)
 {
     qInfo("moveToStartPos%d",tray_index);
-//    bool result = pick_arm->move_Xm_Origin();
-    bool result = true;
+    bool result = pick_arm->move_Xm_Origin();
     result &= pick_arm->move_XY_Synic(lensTray->getStartPosition(tray_index),false);
     if(!result)
         AppendError(QString(u8"移动到lens盘起始位置失败"));
@@ -110,8 +108,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayStartPos(int tray_inde
 bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayEndPos()
 {
     qInfo("moveToTrayEndPos");
-//    bool result = pick_arm->move_Xm_Origin();
-    bool result = true;
+    bool result = pick_arm->move_Xm_Origin();
     result &= pick_arm->move_XY_Synic(lensTray->getEndPosition(),false);
     if(!result)
         AppendError(QString(u8"移动到lens盘结束位置失败"));
@@ -123,6 +120,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToNextLensTrayPos(int tray_index
     qInfo("moveToNextTrayPos tray_index %d",tray_index);
     bool result = lensTray->findNextPositionOfInitState(tray_index);
     if(result)
+        result &= pick_arm->move_Xm_Origin();
         result &=  pick_arm->move_XY_Synic(lensTray->getCurrentPosition(tray_index));
     if(!result)
         AppendError(QString(u8"移动到lens盘下一个位置失败"));
@@ -132,8 +130,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToNextLensTrayPos(int tray_index
 bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayPos(int tray_index)
 {
     qInfo("moveToSensorTrayPos");
-//    bool result = pick_arm->move_Xm_Origin();
-    bool result = true;
+    bool result = pick_arm->move_Xm_Origin();
     result &= pick_arm->move_XY_Synic(sensorTray->getCurrentPosition(tray_index),false);
     if(!result)
         AppendError(QString(u8"移动到sensor盘当前位置失败"));
@@ -143,8 +140,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayPos(int tray_index)
 bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayStartPos(int tray_index)
 {
     qInfo("moveToStartPos%d");
-//    bool result = pick_arm->move_Xm_Origin();
-    bool result = true;
+    bool result = pick_arm->move_Xm_Origin();
     result &= pick_arm->move_XY_Synic(sensorTray->getStartPosition(tray_index),false);
     if(!result)
         AppendError(QString(u8"移动到%1盘起始位置失败"));
@@ -154,8 +150,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayStartPos(int tray_in
 bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayEndPos()
 {
     qInfo("moveToTray1EndPos");
-//    bool result = pick_arm->move_Xm_Origin();
-    bool result = true;
+    bool result = pick_arm->move_Xm_Origin();
     result &= pick_arm->move_XY_Synic(sensorTray->getEndPosition(),false);
     if(!result)
         AppendError(QString(u8"移动到sensor盘结束位置失败"));
@@ -167,6 +162,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToNextSensorTrayPos(int tray_ind
     qInfo("moveToNextTrayPos tray_index %d",tray_index);
     bool result = sensorTray->findNextPositionOfInitState(tray_index);
     if(result)
+        result &= pick_arm->move_Xm_Origin();
         result &=  pick_arm->move_XY_Synic(sensorTray->getCurrentPosition(tray_index));
     if(!result)
         AppendError(QString(u8"移动到sensor盘下一个位置失败"));
@@ -176,8 +172,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToNextSensorTrayPos(int tray_ind
 bool SingleHeadMachineMaterialLoaderModule::moveToRejectTrayPos(int tray_index)
 {
     qInfo("moveToRejectTrayPos tray_index %d",tray_index);
-//    bool result = pick_arm->move_Xm_Origin();
-    bool result = true;
+    bool result = pick_arm->move_Xm_Origin();
     result &= pick_arm->move_XY_Synic(rejectTray->getCurrentPosition(tray_index),true);
     if(!result)
         AppendError(QString(u8"移动到reject盘当前位置失败"));
@@ -187,8 +182,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToRejectTrayPos(int tray_index)
 bool SingleHeadMachineMaterialLoaderModule::moveToRejectTrayStartPos(int tray_index)
 {
     qInfo("moveToRejectTrayStartPos%d",tray_index);
-//    bool result = pick_arm->move_Xm_Origin();
-    bool result = true;
+    bool result = pick_arm->move_Xm_Origin();
     result &= pick_arm->move_XY_Synic(rejectTray->getStartPosition(tray_index),true);
     if(!result)
         AppendError(QString(u8"移动到reject盘起始位置失败"));
@@ -198,8 +192,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToRejectTrayStartPos(int tray_in
 bool SingleHeadMachineMaterialLoaderModule::moveToRejectTrayEndPos()
 {
     qInfo("moveToRejectTrayEndPos");
-//    bool result = pick_arm->move_Xm_Origin();
-    bool result = true;
+    bool result = pick_arm->move_Xm_Origin();
     result &= pick_arm->move_XY_Synic(rejectTray->getEndPosition(),true);
     if(!result)
         AppendError(QString(u8"移动到reject盘结束位置失败"));
@@ -211,6 +204,7 @@ bool SingleHeadMachineMaterialLoaderModule::moveToNextRejectTrayPos(int tray_ind
     qInfo("moveToNextRejectTrayPos tray_index %d",tray_index);
     bool result = rejectTray->findNextPositionOfInitState(tray_index);
     if(result)
+        result &= pick_arm->move_Xm_Origin();
         result &=  pick_arm->move_XY_Synic(rejectTray->getCurrentPosition(tray_index));
     if(!result)
         AppendError(QString(u8"移动到reject盘下一个位置失败"));
@@ -442,7 +436,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PlaceLensToLUT(int time_out)
     this->lut_vacuum->Set(true, false);
     bool result = picker1SearchZ(pick_arm->parameters.placeLensZ(), false, time_out, 0);
     //    this->lut_vacuum->Set(true, false);
-    //    result &= pick_arm->vacuum_sensor_suction->Set(false, false);
+    //    result &= pick_arm->vacuum_picker2_suction->Set(false, false);
     return result;
 }
 
@@ -472,7 +466,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PlaceNgLensToTray(int time_ou
     qInfo("placeLensToTray");
     //    return picker1SearchZ(pick_arm->parameters.pickLensZ(),false,time_out,0);
     bool result = picker1SearchZ(pick_arm->parameters.pickLensZ(),false,time_out,0);
-    //    result &= pick_arm->vacuum_sensor_suction->Set(false,false);
+    //    result &= pick_arm->vacuum_picker2_suction->Set(false,false);
     return result;
 
 
@@ -482,7 +476,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1PlaceLensToTray(int time_out)
     qInfo("placeLensToTray");
     //    return picker1SearchZ(pick_arm->parameters.pickLensZ(),false,time_out, 0);
     bool result = picker1SearchZ(pick_arm->parameters.pickLensZ(),false,time_out, 0);
-    //    result &= pick_arm->vacuum_sensor_suction->Set(false,false);
+    //    result &= pick_arm->vacuum_picker2_suction->Set(false,false);
     return result;
 
 }
@@ -505,6 +499,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1SearchZ(double z, bool is_ope
     QElapsedTimer timer; timer.start();
     bool result = pick_arm->ZSerchByForce(picker,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
     qInfo("ZSerchByForce: %d", timer.elapsed()); timer.restart();
+//    result &= pick_arm->vacuum_picker1_suction->Set(false,false);
     result &= pick_arm->ZSerchReturn(picker,time_out);
     qInfo("ZSerchReturn: %d", timer.elapsed()); timer.restart();
     return result;
@@ -516,7 +511,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ(double z, bool is_
     bool result = pick_arm->motor_vcm2->MoveToPosSync(z-parameters.escapeHeight());
     if(result)
     {
-        sut_vacuum->Set(true);
+        sut_vacuum->Set(false);
         result = pick_arm->ZSerchByForce(1,parameters.vcm2Svel(),parameters.vcm2PickForce(),z,parameters.vcm2Margin(),parameters.vcm2FinishDelay(),is_open,false,time_out);
         result &= pick_arm->ZSerchReturn(1,time_out);
         QThread::msleep(100);
@@ -565,25 +560,25 @@ bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ2Revert(double z, b
     }
     return result;
 }
-bool SingleHeadMachineMaterialLoaderModule::picker1SearchSutZ2(double z,bool is_open, int time_out)
-{
-    qInfo("picker1SearchSutZ2 z %f is_open %d time_out %d",z,is_open,time_out);
-    bool result = pick_arm->motor_vcm1->MoveToPosSync(z-parameters.escapeHeight());
+//bool SingleHeadMachineMaterialLoaderModule::picker1SearchSutZ2(double z,bool is_open, int time_out)
+//{
+//    qInfo("picker1SearchSutZ2 z %f is_open %d time_out %d",z,is_open,time_out);
+//    bool result = pick_arm->motor_vcm1->MoveToPosSync(z-parameters.escapeHeight());
 
-    if(result)
-    {
-        sut_vacuum->Set(false);
-        result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
-        QThread::msleep(100);
-        result &= pick_arm->ZSerchReturn(0,time_out);
-        QThread::msleep(200);
-        pick_arm->motor_vcm1->MoveToPosSync(z-parameters.escapeHeight());
-        QThread::msleep(200);
-        result = pick_arm->motor_pax->StepMoveSync(-parameters.escapeX());
-        result &= pick_arm->motor_vcm1->MoveToPosSync(0);
-    }
-    return result;
-}
+//    if(result)
+//    {
+//        sut_vacuum->Set(false);
+//        result = pick_arm->ZSerchByForce(0,parameters.vcm1Svel(),parameters.vcm1PickForce(),z,parameters.vcm1Margin(),parameters.vcm1FinishDelay(),is_open,false,time_out);
+//        QThread::msleep(100);
+//        result &= pick_arm->ZSerchReturn(0,time_out);
+//        QThread::msleep(200);
+//        pick_arm->motor_vcm1->MoveToPosSync(z-parameters.escapeHeight());
+//        QThread::msleep(200);
+//        result = pick_arm->motor_pax->StepMoveSync(-parameters.escapeX());
+//        result &= pick_arm->motor_vcm1->MoveToPosSync(0);
+//    }
+//    return result;
+//}
 
 bool SingleHeadMachineMaterialLoaderModule::picker1SearchSutZ(double z,bool is_open, int time_out)
 {
@@ -745,8 +740,8 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 }else{
                     moveToPicker1WorkPos();
                     picker1PickNgSensorFromSUT();
-                    qInfo("pick_arm->vacuum_lens_suction name: %s", pick_arm->vacuum_lens_suction->GetName().toStdString().c_str());
-                    if(!pick_arm->vacuum_lens_suction->GetVacuumState()) {
+                    qInfo("pick_arm->vacuum_picker1_suction name: %s", pick_arm->vacuum_picker1_suction->GetName().toStdString().c_str());
+                    if(!pick_arm->vacuum_picker1_suction->GetVacuumState()) {
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick ng sensor Fail.Please remove the ng sensor!");
                         int operation = waitMessageReturn(is_run);
                         qInfo("user operation: %d", operation);
@@ -776,7 +771,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     pr_offset.Theta = 0;   //ignore angle
                     moveToPicker1WorkPos();
                     picker1PickProductFormSUT();
-                    if(!pick_arm->vacuum_lens_suction->GetVacuumState()) {
+                    if(!pick_arm->vacuum_picker1_suction->GetVacuumState()) {
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick Product Fail. Please remove the product");
                         int operation = waitMessageReturn(is_run);
                         qInfo("user operation: %d", operation);
@@ -947,7 +942,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     lensPrFailedTimes = 0;
                     moveToPicker1WorkPos();
                     picker1PickLensFromTray();
-                    if(!pick_arm->vacuum_lens_suction->GetVacuumState()) {
+                    if(!pick_arm->vacuum_picker1_suction->GetVacuumState()) {
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick lens from lens tray fail");
                         int operation = waitMessageReturn(is_run);
                         qInfo("user operation: %d", operation);
@@ -996,7 +991,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     tmpPickSensorPos.PA_X = pick_arm->motor_pax->GetFeedbackPos();
                     tmpPickSensorPos.PA_Y = pick_arm->motor_y->GetFeedbackPos();
                     picker2PickSensorFromTray();
-                    if(!pick_arm->vacuum_sensor_suction->GetVacuumState()) {
+                    if(!pick_arm->vacuum_picker2_suction->GetVacuumState()) {
                         pickSensorFailedTimes++;
                         if(pickSensorFailedTimes >= MaxPickDutFailedTimes)
                         {

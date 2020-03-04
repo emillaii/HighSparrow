@@ -51,6 +51,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     reject_tray.setTrayType(TrayType::REJECT_TRAY);
 
     unitlog.setServerAddress(configs.dataServerURL());
+    setInitState(false);
     setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::receiveMsgSignal,Qt::BlockingQueuedConnection);
     connect(&timer, &QTimer::timeout, this, &BaseModuleManager::alarmChecking);
@@ -109,6 +110,7 @@ bool BaseModuleManager::receiveMsgSignal(QString title, QString content)
 }
 
 bool BaseModuleManager::loadParameters()
+
 {
     configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
     if(!this->paramers.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))return false;
@@ -998,6 +1000,7 @@ bool BaseModuleManager::allMotorsSeekOrigin()
     if(result){
         qInfo("all motor seeked origin successed!");
         aa_head_module.moveToMushroomPosition();
+        aa_head_module.moveAAHead_XYZToPos();
         setHomeState(true);
         return true;
     }

@@ -48,7 +48,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorVcmXName)
+                        var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorPAXName)
                         var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
                         sh_sut_pr_position.setX(x);
                         sh_sut_pr_position.setY(y);
@@ -237,7 +237,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorVcmXName)
+                        var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorPAXName)
                         var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
 
                         sh_lut_pr_position.setX(x);

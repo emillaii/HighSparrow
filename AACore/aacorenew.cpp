@@ -1241,6 +1241,11 @@ bool zPeakComp(const threeDPoint & p1, const threeDPoint & p2)
 QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 {
     QVariantMap result, map;
+    if (clustered_sfr_map[0].size() == 0 || clustered_sfr_map[0].size() < 4) {
+        qInfo("AA Scan Fail. Not enough data points for data fitting");
+        result.insert("OK", false);
+        return result;
+    }
     vector<vector<Sfr_entry>> sorted_sfr_map;
     for (size_t i = 0; i < clustered_sfr_map[0].size(); ++i)
     {
@@ -1252,11 +1257,6 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         sorted_sfr_map.push_back(sfr_map);
     }
     qInfo("clustered sfr map pattern size: %d sorted_sfr_map size: %d", clustered_sfr_map[0].size(), sorted_sfr_map.size());
-    if (clustered_sfr_map[0].size() == 0 || clustered_sfr_map[0].size() < 4) {
-        qInfo("AA Scan Fail. Not enough data points for data fitting");
-        result.insert("OK", false);
-        return result;
-    }
     int fitOrder = 4;
     if (clustered_sfr_map[0].size() == 6) {
         qInfo("Down the curve fitting to 5 order");

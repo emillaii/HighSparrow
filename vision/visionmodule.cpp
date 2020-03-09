@@ -653,8 +653,12 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
     rawImageName.append(getVisionLogDir())
             .append(getCurrentTimeString())
             .append("_raw.jpg");
+    QString debugImageName;
+    debugImageName.append(getVisionLogDir())
+            .append(getCurrentTimeString())
+            .append("_debug.jpg");
     try {
-        g_constData1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-12\\20191223\\09-36-27-238.jpg";
+        g_constData1 = L"C:\\Users\\emil\\Desktop\\pr_edge\\prism_20200305\\18-34-54-191.jpg"; //Debug Use
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.9ec2dbe0.avdata", L"Path", g_constData2 );
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.5aab78b7.avdata", L"Path", g_constData3 );
         avs::ReadDataFromFile( L"config\\prConfig\\PrismOnly.685b0ee7.avdata", L"Path", g_constData4 );
@@ -662,10 +666,13 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
         g_constData6 = L"Angle: ";
         g_emptyString = L"";
         g_constData7.Reset(1);
+
         g_constData7[0] = avl::Location(143, 55);
         avl::Image image1;
         avl::Region region1;
         avl::Region region2;
+        atl::Array< avl::Region > regionArray1;
+        avl::Region region3;
         avl::Image image2;
         avs::ScanSingleEdgeState scanSingleEdgeState1;
         atl::Conditional< avl::Edge1D > edge1D1;
@@ -698,13 +705,20 @@ ErrorCodeStruct VisionModule::PR_Prism_Only_Matching(QString camera_name, PRResu
         avl::Image image7;
         atl::Array< atl::Conditional< atl::String > > stringArray1;
         avl::Image image8;
+        avl::Image image9;
 
         this->grabImageFromCamera(camera_name, image1);
-        avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
         //avl::LoadImage( g_constData1, false, image1 );
-        avl::ThresholdToRegion( image1, atl::NIL, 200.0f, 255.0f, 0.0f, region1 );
-        avl::RemoveRegionBlobs( region1, avl::RegionConnectivity::EightDirections, avl::RegionFeature::Area, 100.0f, atl::NIL, true, region2 );
-        avl::RegionToImage( region2, image2 );
+        avl::ThresholdToRegion( image1, atl::NIL, 230.0f, 255.0f, 0.0f, region1 );
+        avl::RegionToImage( region1, image9 );
+        avl::SaveImageToJpeg( image9 , debugImageName.toStdString().c_str(), atl::NIL, false );
+
+        avl::RemoveRegionBlobs( region1, avl::RegionConnectivity::EightDirections, avl::RegionFeature::Area, 1000.0f, atl::NIL, true, region2 );
+        avl::SplitRegionIntoBlobs( region2, avl::RegionConnectivity::EightDirections, 1, atl::NIL, false, regionArray1, atl::Dummy< atl::Array< int > >().Get() );
+        avl::GetMaximumRegion( regionArray1, avl::RegionFeature::Area, region3, atl::NIL, atl::NIL );
+        avl::RegionToImage( region3, image2 );
+
+        avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
 
         // Function AvsFilter_ScanSingleEdge is intended for generated code only, consider use of CreateScanMap and ScanSingleEdge functions in regular programs.
         avs::AvsFilter_ScanSingleEdge( scanSingleEdgeState1, image2, g_constData2, atl::NIL, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 0.6f, 5.0f, avl::EdgeTransition::DarkToBright), avl::Selection::First, atl::NIL, edge1D1, atl::NIL, atl::Dummy<avl::Profile>().Get(), atl::Dummy<avl::Profile>().Get(), atl::Dummy< atl::Array< avl::Path > >().Get() );

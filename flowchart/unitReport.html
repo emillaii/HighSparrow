@@ -38,7 +38,7 @@ tr:nth-child(even) {
 
 <h1>Silicool Data Reporting</h1>
 <h2 id="sensorID"></h2>
-<h2 id="result"></h2>
+<h2 id="aaResult"></h2>
 <input type="file" id="files" name="files[]" multiple />
 <output id="list"></output>
 
@@ -308,6 +308,7 @@ tr:nth-child(even) {
 		var myData = JSON.parse(inputData);
 		var table = document.getElementById("myTable");
 		var uuid = "";
+		var aaTime = 0;
 		option = null;
 		var timeMap = [];
 		for (var operatorName in myData) {
@@ -338,11 +339,16 @@ tr:nth-child(even) {
 				count++;
 				cell1.innerHTML = attr;
 				cell2.innerHTML = myData[operatorName][attr];
+				
 				if (attr === "timeElapsed") {
 					var t = {};
 					t.name = operatorName;
 					t.timeElapsed = myData[operatorName][attr];
 					timeMap.push(t);
+					if (operatorName.indexOf("AA") !== -1 && operatorName.indexOf("AA_Load") == -1) {
+						console.log(t.timeElapsed);
+						aaTime += t.timeElapsed;
+					}
 				}
 				if (attr === "sensorID") {
 					document.getElementById("sensorID").innerHTML = "Sensor ID: " + myData[operatorName][attr]
@@ -362,6 +368,7 @@ tr:nth-child(even) {
 			}
 			//drawSFRCurve(operatorName, dataSeries);
 		}
+		document.getElementById("aaResult").innerHTML = "Total AA time: " + aaTime + "ms";
 		drawTimeChart(timeMap);
 		var textedJson = JSON.stringify(myData, undefined, 4);
 		$('#myTextarea').text(textedJson);

@@ -716,6 +716,12 @@ void SingleHeadMachineMaterialLoaderModule::calibrateCameraPickerOffset(int pick
         qInfo("fitCircle, center: %d, %d, radius: %d", center.x, center.y, radius);
 
         // test the new offset
+        if(!camera_to_picker_offest_vision->performPR(prOffset))
+        {
+            throw std::exception("Perform pr failed!");
+        }
+        pick_arm->stepMove_XmYT1_Synic(-prOffset.X, -prOffset.Y, 0);
+
         Position* oldOffset = pickerIndex == 0 ? &camera_to_picker1_offset : &camera_to_picker2_offset;
         Position newOffset;
         newOffset.setX(oldOffset->X() + center.x);
@@ -808,7 +814,7 @@ void SingleHeadMachineMaterialLoaderModule::moveToRotateCalibrationBlock(int pic
     {
         throw std::exception("Z SearchPosByForce failed!");
     }
-    if(!vacuum->Set(true, true, 300))
+    if(!vacuum->Set(true, true, 1000))
     {
         throw std::exception("Vacuumize failed!");
     }

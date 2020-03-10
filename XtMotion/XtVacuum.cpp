@@ -30,6 +30,7 @@ bool XtVacuum::Set(bool new_state, bool wait_done,int finish_delay, int timeout,
 
 void XtVacuum::SET(int thread, bool new_state)
 {
+    qDebug() << name << "set vacuum to" << new_state;
     out_io->Set(new_state, thread);
 }
 

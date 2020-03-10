@@ -185,7 +185,7 @@ void AACoreNew::run(bool has_material)
 			double temp_time = timer.elapsed();
 			temp_time/=1000;
 			qInfo("cycle_time :%f",temp_time);
-            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex);         
+            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex, currentLensIndex);
         }
         QThread::msleep(20);
     }
@@ -194,6 +194,14 @@ void AACoreNew::run(bool has_material)
 
 void AACoreNew::LogicNg(int &ng_time)
 {
+    //  Todo 为华为AA演示临时更改
+    has_ng_lens = true;
+    has_lens = false;
+    has_ng_sensor = true;
+    has_sensor = false;
+    return;
+
+
     qInfo("LogicNg ng_time:%d",ng_time);
     if(has_product)
     {
@@ -820,8 +828,8 @@ ErrorCodeStruct AACoreNew::performDispense()
             dispenseImageProvider->setImage(image);
             emit callQmlRefeshImg(3);  //Emit dispense image to QML
 
-            auto rsp = SI::ui.getUIResponse("Check Glue", "Please check glue!", MsgBoxIcon::Question, SI::ui.passFailButtons);
-            if(rsp == SI::ui.Fail)
+            auto rsp = UIOperation::getIns()->getUIResponse("Check Glue", "Please check glue!", MsgBoxIcon::Question, PassFailBtns);
+            if(rsp == FailBtn)
             {
                 autoRunDispenseTimes = 0;
                 checkGlueRes = false;
@@ -2174,7 +2182,7 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     {
         if(!dk->initDevice())
         {
-            SI::ui.showMessage("Error", "Can not init frame grabber. Please check!", MsgBoxIcon::Error, SI::ui.Ok);
+            UIOperation::getIns()->showMessage("Error", "Can not init frame grabber. Please check!", MsgBoxIcon::Error, OkBtn);
         }
         else {
             needReInitFrameGrabber = false;
@@ -2221,14 +2229,15 @@ ErrorCodeStruct AACoreNew::performPRToBond()
     map.insert("moveToDownlookPR", stepTimer.elapsed()); stepTimer.restart();
     if (!aaHeadPickLens()) { NgLens(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
     map.insert("aa_gripLens", stepTimer.elapsed()); stepTimer.restart();
-    PrOffset uplookPrOffset;
-    if(!lsut->moveToUplookPR(uplookPrOffset)){ NgLens(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToUplookPR"}; }
-    map.insert("moveToUplookPR", stepTimer.elapsed()); stepTimer.restart();
+    //華為AA暫時comment
+//    PrOffset uplookPrOffset;
+//    if(!lsut->moveToUplookPR(uplookPrOffset)){ NgLens(); return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToUplookPR"}; }
+//    map.insert("moveToUplookPR", stepTimer.elapsed()); stepTimer.restart();
 
-    double thetaOffset = -uplookPrOffset.Theta - sensorDownlookOffset.Theta + aa_head->bondOffset.Theta();
+//    double thetaOffset = -uplookPrOffset.Theta - sensorDownlookOffset.Theta + aa_head->bondOffset.Theta();
 
-    if (!this->aa_head->moveToMushroomPosWithCOffset(thetaOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
-    map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
+//    if (!this->aa_head->moveToMushroomPosWithCOffset(thetaOffset)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
+//    map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
     if(!this->lsut->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "moveToMushroomPosition"}; }
     map.insert("lsut_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
     map.insert("timeElapsed", timer.elapsed());
@@ -2244,6 +2253,7 @@ ErrorCodeStruct AACoreNew::performAAPickLens()
     if (!aaHeadPickLens()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA pick lens fail"};}
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "AAPickLens", map);
+    return  ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performDelay(int delay_in_ms)
@@ -2355,18 +2365,18 @@ void AACoreNew::captureLiveImage()
 {
     if(!dk->DothinkeyIsGrabbing()) {
         qInfo("Image Grabber is not ON");
-        SI::ui.showMessage("AA Core", QString("Save Image Fail! Image Grabber is not open"), MsgBoxIcon::Error, "OK");
+        UIOperation::getIns()->showMessage("AA Core", QString("Save Image Fail! Image Grabber is not open"), MsgBoxIcon::Error, "OK");
         return;
     }
     bool grabRet = false;
     cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
-        SI::ui.showMessage("AA Core", QString("Save Image Fail! Image Grabber is not open"), MsgBoxIcon::Error, "OK");
+        UIOperation::getIns()->showMessage("AA Core", QString("Save Image Fail! Image Grabber is not open"), MsgBoxIcon::Error, "OK");
         qWarning("AA Cannot grab image.");
         return;
     } else {
         cv::imwrite("livePhoto.bmp", img);
-        SI::ui.showMessage("AA Core", QString("Save Image Success! You can start AA Core parameter debug."), MsgBoxIcon::Information, "OK");
+        UIOperation::getIns()->showMessage("AA Core", QString("Save Image Success! You can start AA Core parameter debug."), MsgBoxIcon::Information, "OK");
     }
 }
 

@@ -9,12 +9,10 @@
 #include "Vision/vision_location.h"
 #include "Utils/commonutils.h"
 #include "XtMotion/towerlightbuzzer.h"
-#include "Utils/singletoninstances.h"
-
+#include "Utils/uiHelper/uioperation.h"
+#include <math.h>
 
 #define DELAY_JET 1000
-
-
 
 class SingleHeadMachineMaterialLoaderModule:public ThreadWorkerBase
 {
@@ -99,7 +97,9 @@ public:
         PICKER2_MEASURE_SENSOR_IN_SUT = 23<<16,
 
         //measure camer tip
-
+        CAMERA_TO_PICKER1_OFFSET_CALIBRATION = 24 << 16,
+        CAMERA_TO_PICKER2_OFFSET_CALIBRATION = 25 << 16,
+        STATIC_PICK_AND_PLACE_TEST = 26 << 16,
 
         HANDLE_PICKER_ACTION = (1<<23)-(1<<16)
     };
@@ -133,6 +133,7 @@ public:
               VisionLocation* lens_vacancy_vision = nullptr,
               VisionLocation* lut_vision = nullptr,
               VisionLocation* lut_lens_vision = nullptr,
+              VisionLocation* camera_to_picker_offest_vision = nullptr,
               XtVacuum* sutVacuum = nullptr,
               XtVacuum* lutVacuum = nullptr,
               TowerLightBuzzer* buzzer = nullptr
@@ -251,6 +252,10 @@ private:
         }
     }
 
+    void calibrateCameraPickerOffset(int pickerIndex);
+    void staticPickAndPlaceTest();
+    void moveToRotateCalibrationBlock(int pickerIndex, double angle, bool placeBackCalibrationBlock=true, Position* cameraToPickerOffset=nullptr);
+
 signals:
     void sendLoadMaterialFinishSignal();
 
@@ -260,7 +265,7 @@ public slots:
     void resetLogic();
     void performHandlingOperation(int cmd);
 
-    void receiveLoadMaterialRequestResponse(bool isSutReadyToLoadMaterial, int productIndex);
+    void receiveLoadMaterialRequestResponse(bool isSutReadyToLoadMaterial, int productOrSensorIndex, int lensIndex);
 private:
     LSutState* lsutState;
     QMap<int, PickArmPos> pickSensorPoses;
@@ -282,8 +287,7 @@ private:
     VisionLocation* lens_vacancy_vision = Q_NULLPTR;
     VisionLocation* lut_vision = Q_NULLPTR;
     VisionLocation* lut_lens_vision = Q_NULLPTR;
-
-    //    VisionLocation* camera_to_picker_offest_vision = Q_NULLPTR;
+    VisionLocation* camera_to_picker_offest_vision = Q_NULLPTR;
 
     QMutex lsut_mutex;
     QMutex materialLoader_mutex;
@@ -293,6 +297,7 @@ private:
     bool finish_stop = false;
     PrOffset pr_offset;
     int currentProductIndex;
+    int receivedLensIndex;
 
     int lensPrFailedTimes = 0;
     int sensorPrFailedTimes = 0;

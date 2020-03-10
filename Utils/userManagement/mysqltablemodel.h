@@ -2,12 +2,11 @@
 #define USERTABLEMODEL_H
 
 #include <QObject>
-#include <qsqltablemodel.h>
-#include <qsqlrecord.h>
 #include <qsqlfield.h>
+#include <qsqlrecord.h>
+#include <qsqltablemodel.h>
 
-
-class MySqlTableModel: public QSqlTableModel
+class MySqlTableModel : public QSqlTableModel
 {
     Q_OBJECT
 
@@ -21,4 +20,4 @@ public:
     virtual QHash<int, QByteArray> roleNames() const override;
 };
 
-#endif // USERTABLEMODEL_H
+#endif    // USERTABLEMODEL_H

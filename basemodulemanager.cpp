@@ -805,7 +805,7 @@ bool BaseModuleManager::InitStruct()
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.lensVacancyVisionName()),
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.lutVisionName()),
                                                GetVisionLocationByName(single_station_material_loader_module.parameters.lutLensVisionName()),
-                                               //                                               GetVisionLocationByName(single_station_material_loader_module.parameters.cameraToPickerOffsetVisionName()),
+                                               GetVisionLocationByName(single_station_material_loader_module.parameters.cameraToPickerOffsetVisionName()),
                                                GetVacuumByName(single_station_material_loader_module.parameters.sutVacuumName()),
                                                GetVacuumByName(single_station_material_loader_module.parameters.lutVacuumName()),
                                                GetTowerLightBuzzerByName(single_station_material_loader_module.parameters.buzzerName())

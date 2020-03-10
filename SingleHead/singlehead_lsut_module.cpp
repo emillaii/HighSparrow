@@ -75,10 +75,11 @@ void SingleheadLSutModule::receiveLoadMaterialFinishResponse()
     emit sendStartAAProcessRequestSignal(lsutState->currentSensorIndex(), lsutState->currentLensIndex(), lsutState->aaHeadHasLens());
 }
 
-void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productIndex)
+void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productOrSensorIndex, int lensIndex)
 {
     QMutexLocker tmpLocker(&locker);
-    currentProductIndex = productIndex;
+    currentProductIndex = productOrSensorIndex;
+    currentLensIndex = lensIndex;
 
     qInfo("Receive AA process response has_ng_sensor: %d has_ng_lens: %d has_product: %d has_ng_product: %d",
           has_ng_sensor, has_ng_lens, has_product, has_ng_product);
@@ -102,10 +103,11 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
         if(has_ng_lens)
         {
             lsutState->setLutHasLens(false);
-            sut_carrier->Move_SZ_SX_Y_X_Z_Sync(30, this->unpick_lens_position.Y(), this->unpick_lens_position.Z());
-            aa_head->openGripper();
-            QThread::msleep(200);
-            lsutState->setLutHasNgLens(false);  //已抛料
+            this->unpickLens();
+//            sut_carrier->Move_SZ_SX_Y_X_Z_Sync(-2, this->unpick_lens_position.Y(), this->unpick_lens_position.Z());
+//            aa_head->openGripper();
+//            QThread::msleep(200);
+            lsutState->setLutHasNgLens(true);
             lsutState->setAAHeadHasLens(false);
         }
         else {
@@ -136,7 +138,7 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
     lsutState->setWaitAAProcess(false);
     lsutState->setWaitLoading(true);
 
-    emit sendLoadMaterialRequestSignal(true, currentProductIndex);
+    emit sendLoadMaterialRequestSignal(true, currentProductIndex, currentLensIndex);
 }
 
 void SingleheadLSutModule::run(){
@@ -153,7 +155,7 @@ void SingleheadLSutModule::run(){
                 lsutState->setWaitAAProcess(false);
                 lsutState->setWaitLoading(true);
 
-                emit sendLoadMaterialRequestSignal(true, currentProductIndex);
+                emit sendLoadMaterialRequestSignal(true, currentProductIndex, currentLensIndex);
             }
             locker.unlock();
         }

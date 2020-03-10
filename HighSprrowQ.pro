@@ -90,7 +90,6 @@ HEADERS += \
     SingleHead/singleheadmachinematerialloadermoduleparameter.h \
     SingleHead/singleheadmachinematerialpickarm.h \
     SingleHead/singleheadmachinematerialpickarmparameter.h \
-    UnitTest/SilicolMsgBoxTest.h \
     Utils/commonmethod.h \
     Utils/commonutils.h \
     Utils/config.h \
@@ -102,7 +101,6 @@ HEADERS += \
     Utils/loging/rollbackfile.h \
     Utils/position_define.h \
     Utils/propertybase.h \
-    Utils/singletoninstances.h \
     Utils/uiHelper/msgboxmodel.h \
     Utils/uiHelper/uioperation.h \
     Utils/unitlog.h \
@@ -170,6 +168,7 @@ SOURCES += \
     SingleHead/singlehead_lsut_module.cpp \
     SingleHead/singleheadmachinematerialloadermodule.cpp \
     SingleHead/singleheadmachinematerialpickarm.cpp \
+    Utils/commonmethod.cpp \
     Utils/commonutils.cpp \
     Utils/errorcode.cpp \
     Utils/filecontent.cpp \
@@ -178,7 +177,6 @@ SOURCES += \
     Utils/loging/logmodel.cpp \
     Utils/loging/rollbackfile.cpp \
     Utils/propertybase.cpp \
-    Utils/singletoninstances.cpp \
     Utils/uiHelper/msgboxmodel.cpp \
     Utils/uiHelper/uioperation.cpp \
     Utils/unitlog.cpp \

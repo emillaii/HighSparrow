@@ -197,13 +197,13 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     Sleep(50);
 
     //check sensor is on line...
-    res = SensorIsMe(pSensor, CHANNEL_A, 0, iDevID);
-    qDebug("[DothinkeyStartCamera]SensorIsMe(pSensor, CHANNEL_A, 0, iDevID) = %d",res);
-    if  (res != DT_ERROR_OK)
-    {
-        qCritical("[DothinkeyStartCamera] Sensor is not ok!");
-        return false;
-    }
+//    res = SensorIsMe(pSensor, CHANNEL_A, 0, iDevID);
+//    qDebug("[DothinkeyStartCamera]SensorIsMe(pSensor, CHANNEL_A, 0, iDevID) = %d",res);
+//    if  (res != DT_ERROR_OK)
+//    {
+//        qCritical("[DothinkeyStartCamera] Sensor is not ok!");
+//        return false;
+//    }
     //init sensor....
     qDebug() << pSensor->SlaveID << pSensor->ParaList << pSensor->ParaListSize <<   pSensor->mode << iDevID;
     if (InitSensor(pSensor->SlaveID,

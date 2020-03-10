@@ -28,8 +28,7 @@
 //#include "DualHead/lutclient.h"
 #include "ImageGrabber/imagegrabbingworkerthread.h"
 #include "Utils/unitlog.h"
-#include "Utils/singletoninstances.h"
-#include "Utils/singletoninstances.h"
+#include "Utils/uiHelper/uioperation.h"
 
 class AACoreNew : public ThreadWorkerBase
 {
@@ -195,7 +194,7 @@ signals:
     void postDataToELK(QString);
     void postSfrDataToELK(QString, QVariantMap);
     void sendLensRequestToLut();
-    void sendAAProcessFinishSignal(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productIndex);
+    void sendAAProcessFinishSignal(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productOrSensorIndex, int lensIndex);
 public slots:
     void triggerGripperOn(bool isOn);
     void storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElasped);

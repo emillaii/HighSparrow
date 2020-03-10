@@ -5,6 +5,8 @@
 #include "Utils/errorcode.h"
 #include "XtMotion/xtvacuumparameter.h"
 #include <QString>
+#include <QDebug>
+
 #define VACUUM_TIMEOUT 1500
 #define VACUUM_INPUT_NULL_DELAY 1000
 #define VACUUM_FINISH_DELAY 20

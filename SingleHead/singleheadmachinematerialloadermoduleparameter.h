@@ -54,6 +54,12 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
 
     QString m_yellowLightName = "";
 
+    int m_staticPickAndPlaceTestTimes = 3;
+
+    int m_calibrationStepCount = 4;
+
+    double m_calibrationStep = 30;
+
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
 
@@ -93,7 +99,9 @@ public:
     Q_PROPERTY(QString redLightName READ redLightName WRITE setRedLightName NOTIFY redLightChanged)
     Q_PROPERTY(QString greenLightName READ greenLightName WRITE setGreenLightName NOTIFY greenLightChanged)
     Q_PROPERTY(QString yellowLightName READ yellowLightName WRITE setYellowLightName NOTIFY yellowLightChanged)
-
+    Q_PROPERTY(int staticPickAndPlaceTestTimes READ staticPickAndPlaceTestTimes WRITE setStaticPickAndPlaceTestTimes NOTIFY staticPickAndPlaceTestTimesChanged)
+    Q_PROPERTY(int calibrationStepCount READ calibrationStepCount WRITE setCalibrationStepCount NOTIFY calibrationStepCountChanged)
+    Q_PROPERTY(double calibrationStep READ calibrationStep WRITE setCalibrationStep NOTIFY calibrationStepChanged)
 
 
     double vcm1Svel() const
@@ -258,6 +266,21 @@ public:
     QString yellowLightName() const
     {
         return m_yellowLightName;
+    }
+
+    int staticPickAndPlaceTestTimes() const
+    {
+        return m_staticPickAndPlaceTestTimes;
+    }
+
+    int calibrationStepCount() const
+    {
+        return m_calibrationStepCount;
+    }
+
+    double calibrationStep() const
+    {
+        return m_calibrationStep;
     }
 
 public slots:
@@ -561,6 +584,34 @@ public slots:
         emit yellowLightChanged(m_yellowLightName);
     }
 
+    void setStaticPickAndPlaceTestTimes(int staticPickAndPlaceTestTimes)
+    {
+        if (m_staticPickAndPlaceTestTimes == staticPickAndPlaceTestTimes)
+            return;
+
+        m_staticPickAndPlaceTestTimes = staticPickAndPlaceTestTimes;
+        emit staticPickAndPlaceTestTimesChanged(m_staticPickAndPlaceTestTimes);
+    }
+
+    void setCalibrationStepCount(int calibrationStepCount)
+    {
+        if (m_calibrationStepCount == calibrationStepCount)
+            return;
+
+        m_calibrationStepCount = calibrationStepCount;
+        emit calibrationStepCountChanged(m_calibrationStepCount);
+    }
+
+    void setCalibrationStep(double calibrationStep)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_calibrationStep, calibrationStep))
+            return;
+
+        m_calibrationStep = calibrationStep;
+        emit calibrationStepChanged(m_calibrationStep);
+    }
+
 signals:
 
     void vcm1SvelChanged(double vcm1Svel);
@@ -599,6 +650,9 @@ signals:
     void redLightChanged(QString redLightName);
     void greenLightChanged(QString greenLightName);
     void yellowLightChanged(QString yellowLightName);
+    void staticPickAndPlaceTestTimesChanged(int staticPickAndPlaceTestTimes);
+    void calibrationStepCountChanged(int calibrationStepCount);
+    void calibrationStepChanged(double calibrationStep);
 };
 
 class MaterialLoaderState:public PropertyBase

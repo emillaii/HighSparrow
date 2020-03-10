@@ -3,7 +3,7 @@
 #include <QElapsedTimer>
 #include <QDebug>
 #include <qdebug.h>
-
+#include "Utils/commonmethod.h"
 
 SingleHeadMachineMaterialLoaderModule::SingleHeadMachineMaterialLoaderModule(QString name)
     :ThreadWorkerBase (name)
@@ -25,6 +25,7 @@ void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickAr
                                                  VisionLocation *lens_vacancy_vision,
                                                  VisionLocation *lut_vision,
                                                  VisionLocation *lut_lens_vision,
+                                                 VisionLocation* camera_to_picker_offest_vision,
                                                  XtVacuum *sutVacuum,
                                                  XtVacuum *lutVacuum,
                                                  TowerLightBuzzer* buzzer
@@ -44,6 +45,7 @@ void SingleHeadMachineMaterialLoaderModule::Init(SingleHeadMachineMaterialPickAr
     this->lens_vacancy_vision = lens_vacancy_vision;
     this->lut_vision = lut_vision;
     this->lut_lens_vision = lut_lens_vision;
+    this->camera_to_picker_offest_vision = camera_to_picker_offest_vision;
     this->sut_vacuum = sutVacuum;
     this->lut_vacuum = lutVacuum;
     this->buzzer = buzzer;
@@ -675,6 +677,157 @@ void SingleHeadMachineMaterialLoaderModule::applyPrOffset(PositionT &offset)
     pr_offset.Theta += offset.Theta();
 }
 
+void SingleHeadMachineMaterialLoaderModule::calibrateCameraPickerOffset(int pickerIndex)
+{
+    qInfo("calibrateCameraPickerOffset, %d", pickerIndex);
+
+    int calibrationStepCount = parameters.calibrationStepCount();
+    double step = parameters.calibrationStep();
+    if(calibrationStepCount < 3)
+    {
+        UIOperation::getIns()->showMessage("calibrateCameraPickerOffset Failed",
+                                           QString("calibrationStepCount must greater than 2!"),
+                                           MsgBoxIcon::Error, OkBtn);
+        return;
+    }
+    try {
+        PrOffset prOffset;
+        if(!camera_to_picker_offest_vision->performPR(prOffset))
+        {
+            throw std::exception("Perform pr failed!");
+        }
+        pick_arm->stepMove_XmYT1_Synic(-prOffset.X, -prOffset.Y, 0);
+
+        std::vector<cv::Point2d> points;
+        for (int i = 0; i < calibrationStepCount; i++) {
+            PrOffset offset;
+            if(!camera_to_picker_offest_vision->performPR(offset))
+            {
+                throw std::exception("Perform pr failed!");
+            }
+            points.push_back(cv::Point2d(offset.X, offset.Y));
+            if(i != calibrationStepCount - 1){
+                moveToRotateCalibrationBlock(pickerIndex, step);
+            }
+        }
+        cv::Point2d center;
+        double radius;
+        fitCircle(points, center, radius);
+        qInfo("fitCircle, center: %d, %d, radius: %d", center.x, center.y, radius);
+
+        // test the new offset
+        Position* oldOffset = pickerIndex == 0 ? &camera_to_picker1_offset : &camera_to_picker2_offset;
+        Position newOffset;
+        newOffset.setX(oldOffset->X() + center.x);
+        newOffset.setY(oldOffset->Y() + center.y);
+        moveToRotateCalibrationBlock(pickerIndex, 0, false, &newOffset);
+
+        // confirm if use the new offset
+        auto rsp = UIOperation::getIns()->getUIResponse("Confirm",
+                                           QString("Calibrate camera to picker offset successful!\r\nAre you sure to use this offset?\r\nx: %1, y: %2").arg(newOffset.X()).arg(newOffset.Y()),
+                                           MsgBoxIcon::Question, OkCancelBtns);
+        if(rsp == OkBtn)
+        {
+            oldOffset->setX(SET_PRECISION(newOffset.X(), 5));
+            oldOffset->setY(SET_PRECISION(newOffset.Y(), 5));
+        }
+        return;
+    } catch (std::exception& ex) {
+        if(pickerIndex == 0) {
+            pick_arm->motor_vcm1->resetSoftLanding();
+        } else {
+            pick_arm->motor_vcm2->resetSoftLanding();
+        }
+        UIOperation::getIns()->showMessage("CalibrateCameraPickerOffset Failed", ex.what(), MsgBoxIcon::Error, OkBtn);
+    }
+}
+
+void SingleHeadMachineMaterialLoaderModule::staticPickAndPlaceTest()
+{
+    qInfo("staticPickAndPlaceTest");
+    if(parameters.staticPickAndPlaceTestTimes() < 2)
+    {
+        UIOperation::getIns()->showMessage("staticPickAndPlaceTest Failed",
+                                           QString("staticPickAndPlaceTestTimes must greater than 1!"),
+                                           MsgBoxIcon::Error, OkBtn);
+        return;
+    }
+
+    try {
+        PrOffset prOffset;
+        if(!camera_to_picker_offest_vision->performPR(prOffset))
+        {
+            throw std::exception("Perform pr failed!");
+        }
+        pick_arm->stepMove_XmYT1_Synic(-prOffset.X, -prOffset.Y, 0);
+
+        double maxXOffset = 0;
+        double minXOffset  = 1;
+        double maxYOffset = 0;
+        double minYOffset = 1;
+        PrOffset staticTestPrOffset;
+        for (int i = 0; i < parameters.staticPickAndPlaceTestTimes(); i++) {
+            moveToRotateCalibrationBlock(0, 0);
+            if(!camera_to_picker_offest_vision->performPR(staticTestPrOffset))
+            {
+                throw std::exception("Perform pr failed!");
+            }
+            maxXOffset = qMax(maxXOffset, staticTestPrOffset.X);
+            minXOffset = qMin(minXOffset, staticTestPrOffset.X);
+            maxYOffset = qMax(maxYOffset, staticTestPrOffset.Y);
+            minYOffset = qMin(minYOffset, staticTestPrOffset.Y);
+        }
+        double offsetXRange = maxXOffset - minXOffset;
+        double offsetYRange = maxYOffset - minYOffset;
+        UIOperation::getIns()->showMessage("staticPickAndPlaceTest successful",
+                                           QString("Offset X range: %1, Offset y range: %2").arg(offsetXRange).arg(offsetYRange),
+                                           MsgBoxIcon::Error, OkBtn);
+        return;
+    } catch (std::exception& ex) {
+        pick_arm->motor_vcm1->resetSoftLanding();
+        UIOperation::getIns()->showMessage("staticPickAndPlaceTest Failed", ex.what(), MsgBoxIcon::Error, OkBtn);
+    }
+}
+
+void SingleHeadMachineMaterialLoaderModule::moveToRotateCalibrationBlock(int pickerIndex, double angle, bool placeBackCalibrationBlock, Position* cameraToPickerOffset)
+{
+    if(cameraToPickerOffset == nullptr) {
+        cameraToPickerOffset = pickerIndex == 0 ? &camera_to_picker1_offset : &camera_to_picker2_offset;
+    }
+    XtVcMotor* zMotor = pickerIndex == 0 ? pick_arm->motor_vcm1 : pick_arm->motor_vcm2;
+    XtVacuum* vacuum = pickerIndex == 0 ? pick_arm->vacuum_picker1_suction : pick_arm->vacuum_picker2_suction;
+    XtMotor* thetaMotor = pickerIndex == 0 ? pick_arm->motor_th1 : pick_arm->motor_th2;
+    double searchVel = pickerIndex == 0 ? parameters.vcm1Svel() : parameters.vcm2Svel();
+    double searchForce = pickerIndex == 0 ? parameters.vcm1PickForce() : parameters.vcm2PickForce();
+
+    if(!pick_arm->stepMove_XmYT1_Synic(cameraToPickerOffset->X(), cameraToPickerOffset->Y(), 0))
+    {
+        throw std::exception("stepMove_XmYT1_Synic failed!");
+    }
+    if(!zMotor->SearchPosByForce(searchVel, searchForce))
+    {
+        throw std::exception("Z SearchPosByForce failed!");
+    }
+    if(!vacuum->Set(true, true, 300))
+    {
+        throw std::exception("Vacuumize failed!");
+    }
+    zMotor->resetSoftLanding();
+    thetaMotor->StepMoveSync(angle);
+
+    if(placeBackCalibrationBlock) {
+        if(!zMotor->SearchPosByForce(searchVel, searchForce))
+        {
+            throw std::exception("Z SearchPosByForce failed!");
+        }
+        vacuum->Set(false, true, 300);
+        zMotor->resetSoftLanding();
+        if(!pick_arm->stepMove_XmYT1_Synic(-cameraToPickerOffset->X(), -cameraToPickerOffset->Y(), 0))
+        {
+            throw std::exception("stepMove_XmYT1_Synic failed!");
+        }
+    }
+}
 bool SingleHeadMachineMaterialLoaderModule::moveToChangeTrayPos()
 {
     qInfo("moveToChangeTrayPos %d tray_load %d");
@@ -689,9 +842,10 @@ void SingleHeadMachineMaterialLoaderModule::towerLightBuzzerTest()
     buzzer->Set(true);
 }
 
-void SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequestResponse(bool isSutReadyToLoadMaterial, int productIndex)
+void SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequestResponse(bool isSutReadyToLoadMaterial, int productOrSensorIndex, int lensIndex)
 {
-    currentProductIndex = productIndex;
+    currentProductIndex = productOrSensorIndex;
+    receivedLensIndex = lensIndex;
     this->states.setSutIsReadyToLoadMaterial(isSutReadyToLoadMaterial);
     completeLoad = false;
 }
@@ -703,12 +857,31 @@ void SingleHeadMachineMaterialLoaderModule::run()
     while (is_run) {
         if(states.sutIsReadyToLoadMaterial())
         {
-            if(lsutState->lutHasNgLens())
+            if(lsutState->lutHasNgLens() && states.picker1IsIdle()) // pick NG lens
             {
-                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Please remove the LUT NG lens!");
-                int operation = waitMessageReturn(is_run);
-                qInfo("user operation: %d", operation);
-                lsutState->setLutHasNgLens(false);
+                qInfo("pick ng lens from lut");
+                moveToLUTPRPos();
+                pr_offset.ReSet();
+                if(!performLUTLensPR())
+                {
+                    sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform lut NG lens PR failed, please take away the NG lens!");
+                    int operation = waitMessageReturn(is_run);
+                    qInfo("user operation: %d", operation);
+                    lsutState->setLutHasNgLens(false);   //user removed the ng lens
+                } else{
+                    moveToPicker1WorkPos();
+                    picker1PickNgLensFromLUT();
+                    if(!pick_arm->vacuum_picker1_suction->GetVacuumState()){
+                        sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick lens from lut failed, please take away the lens!");
+                        int operation = waitMessageReturn(is_run);
+                        qInfo("user operation: %d", operation);
+                        lsutState->setLutHasNgLens(false);   //user removed the ng lens
+                    } else {
+                        lsutState->setLutHasNgLens(false);
+                        states.setHasPickedNgLens(true);
+                    }
+                }
+                if(!is_run)break;
             }
 
             if (this->states.hasPickedLens() && lsutState->lutIsEmply() && !lsutState->aaHeadHasLens())    //Place lens to LUT
@@ -806,7 +979,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 if(!is_run)break;
             }
 
-            if (states.hasPickedLens() && lsutState->hasOkLens() && picker1ShouldUnloadDutOnLSutFirst()) //place lens to tray
+            if (states.hasPickedLens() && (lsutState->hasOkLens() || lsutState->lutHasNgLens()) && picker1ShouldUnloadDutOnLSutFirst()) //place lens to tray
             {
                 moveToLensTrayPos(states.currentLensTray());
                 performLensVacancyPR();
@@ -825,6 +998,28 @@ void SingleHeadMachineMaterialLoaderModule::run()
             }
         }
 
+        if(this->states.hasPickedNgLens())      // place ng lens to tray
+        {
+            qInfo("Place NG lens to tray");
+            lensTray->setTrayCurrent(receivedLensIndex, states.currentLensTray());
+            moveToLensTrayPos(states.currentLensTray());
+            pr_offset.ReSet();
+            if(!performLensVacancyPR()){
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform lens tray vacancy PR failed, please take away the NG lens!");
+                int operation = waitMessageReturn(is_run);
+                qInfo("user operation: %d", operation);
+                states.setHasPickedNgLens(false);   //user removed the ng lens
+            }else {
+                moveToPicker1WorkPos();
+                picker1PlaceLensToTray();
+                states.setHasPickedNgLens(false);
+
+                //  跑单颗Lens时
+                //  lensTray->setCurrentMaterailStateWithInit(states.currentLensTray());
+
+                lensTray->setCurrentMaterialState(MaterialState::IsNg, states.currentLensTray());
+            }
+        }
 
         if(this->states.hasPickedNgSensor()){ // Place the ng sensor to tray
             qInfo("Place the ng sensor to tray");
@@ -996,7 +1191,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                         if(pickSensorFailedTimes >= MaxPickDutFailedTimes)
                         {
                             pickSensorFailedTimes = 0;
-                            SI::ui.getUIResponse("Error", "Pick sensor from tray failed!", MsgBoxIcon::Error, SI::ui.Retry);
+                            UIOperation::getIns()->getUIResponse("Error", "Pick sensor from tray failed!", MsgBoxIcon::Error, RetryBtn);
                         }
                         else {
                             qInfo("Pick sensor failed, Auto skipped!");
@@ -1433,6 +1628,24 @@ void SingleHeadMachineMaterialLoaderModule::performHandlingOperation(int cmd)
     {
         qInfo("measuer place lens to LUT height,cmd: %d",PICKER1_MEASURE_LENS_IN_LUT);
         result = picker1MeasureHight(false);
+    }
+        break;
+    case CAMERA_TO_PICKER1_OFFSET_CALIBRATION:
+    {
+        qInfo("calibrateCameraPickerOffset,cmd: %d",CAMERA_TO_PICKER1_OFFSET_CALIBRATION);
+        calibrateCameraPickerOffset(0);
+    }
+        break;
+    case CAMERA_TO_PICKER2_OFFSET_CALIBRATION:
+    {
+        qInfo("calibrateCameraPickerOffset,cmd: %d",CAMERA_TO_PICKER2_OFFSET_CALIBRATION);
+        calibrateCameraPickerOffset(1);
+    }
+        break;
+    case STATIC_PICK_AND_PLACE_TEST:
+    {
+        qInfo("staticPickAndPlaceTest,cmd: %d",STATIC_PICK_AND_PLACE_TEST);
+        staticPickAndPlaceTest();
     }
         break;
     default:

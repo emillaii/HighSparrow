@@ -1,0 +1,1 @@
+start /min C:\huaweiAA\singleHeadAA\flowchart\miniweb.exe -r C:\huaweiAA\singleHeadAA\flowchart

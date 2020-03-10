@@ -1,10 +1,10 @@
 #ifndef MSGBOXMODEL_H
 #define MSGBOXMODEL_H
 
-#include <QObject>
 #include <QAbstractListModel>
+#include <QObject>
 
-class MsgBoxIcon: public QObject
+class MsgBoxIcon : public QObject
 {
     Q_OBJECT
 
@@ -30,9 +30,31 @@ enum MsgBoxRole
     ButtonsRole
 };
 
-class MsgBoxItem;
+class MsgBoxItem
+{
+public:
+    MsgBoxItem() {}
 
-class MsgBoxModel: public QAbstractListModel
+    MsgBoxItem(QString uuid, QString title, MsgBoxIcon::Icon icon, QString content, QList<QString> buttons)
+    {
+        this->uuid = uuid;
+        this->title = title;
+        this->icon = icon;
+        this->content = content;
+        this->buttons = buttons;
+    }
+
+public:
+    QString uuid;
+    QString title;
+    MsgBoxIcon::Icon icon;
+    QString content;
+    QList<QString> buttons;
+};
+
+Q_DECLARE_METATYPE(MsgBoxItem)
+
+class MsgBoxModel : public QAbstractListModel
 {
     Q_OBJECT
 
@@ -57,32 +79,4 @@ private:
     QHash<int, QByteArray> msgBoxRoleNames;
 };
 
-
-class MsgBoxItem
-{
-public:
-    MsgBoxItem()
-    {
-
-    }
-
-    MsgBoxItem(QString uuid, QString title, MsgBoxIcon::Icon icon, QString content, QList<QString> buttons)
-    {
-        this->uuid = uuid;
-        this->title = title;
-        this->icon = icon;
-        this->content = content;
-        this->buttons = buttons;
-    }
-
-public:
-    QString uuid;
-    QString title;
-    MsgBoxIcon::Icon icon;
-    QString content;
-    QList<QString> buttons;
-};
-
-Q_DECLARE_METATYPE(MsgBoxItem)
-
-#endif // MSGBOXMODEL_H
+#endif    // MSGBOXMODEL_H

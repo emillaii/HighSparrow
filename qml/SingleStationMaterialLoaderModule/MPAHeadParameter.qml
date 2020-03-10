@@ -95,6 +95,65 @@ ColumnLayout {
             }
         }
     }
+
+    GroupBox{
+        title: qsTr("CameraToPickerOffsetCalibrationParameter")
+        ColumnLayout{
+            RowLayout{
+                Label{
+                    text:qsTr("staticPickAndPlaceTestTimes")
+                }
+                TextField{
+                    text: materialLoaderParameter.staticPickAndPlaceTestTimes
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: IntValidator{
+                        bottom: 2
+                    }
+                    onEditingFinished: {
+                        materialLoaderParameter.setStaticPickAndPlaceTestTimes(text)
+                    }
+                }
+               Button{
+                   text: qsTr("Test")
+                   onClicked: {
+                       sh_materialLoaderModule.performHandling(MaterialLoaderModule.STATIC_PICK_AND_PLACE_TEST)
+                   }
+               }
+            }
+            RowLayout{
+                Label{
+                    text:qsTr("calibrationStepCount")
+                }
+                TextField{
+                    text: materialLoaderParameter.calibrationStepCount
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: IntValidator{
+                        bottom: 3
+                    }
+                    onEditingFinished: {
+                        materialLoaderParameter.setCalibrationStepCount(text)
+                    }
+                }
+            }
+            RowLayout{
+                Label{
+                    text:qsTr("calibrationStep")
+                }
+                TextField{
+                    text: materialLoaderParameter.calibrationStep
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialLoaderParameter.setCalibrationStep(text)
+                    }
+                }
+            }
+        }
+    }
+
     GroupBox{
         title:qsTr("camera_to_picker1_offset")
         ColumnLayout{
@@ -132,7 +191,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                      sh_materialLoaderModule.cameraTipOffsetCalibration(0)
+                      sh_materialLoaderModule.performHandling(MaterialLoaderModule.CAMERA_TO_PICKER1_OFFSET_CALIBRATION)
                     }
                     enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }
@@ -176,8 +235,7 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_PR_POS1)
-                        sh_materialLoaderModule.cameraTipOffsetCalibration(1)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.CAMERA_TO_PICKER2_OFFSET_CALIBRATION)
                     }
                     enabled: userManagement.currentAuthority >= 2 //At least engineer authority
                 }

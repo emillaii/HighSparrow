@@ -13,8 +13,6 @@
 #include "MachineUtils/checkprocessmodel.h"
 #include "TrayMap/traymapmodel.h"
 #include "Utils/loging/loging.h"
-#include "Utils/singletoninstances.h"
-#include "UnitTest/SilicolMsgBoxTest.h"
 #include "Utils/userManagement/usermanagement.h"
 
 #include <windows.h>
@@ -87,12 +85,9 @@ int main(int argc, char *argv[])
     qRegisterMetaType<MsgBoxIcon::Icon>();
     qmlRegisterType<MsgBoxIcon>("MsgBoxIcon", 1, 0, "MsgBoxIcon");
     MsgBoxModel msgBoxModel;
-    SI::ui.init(&msgBoxModel);
+    UIOperation::getIns()->init(&msgBoxModel, QThread::currentThreadId());
     engine.rootContext()->setContextProperty("msgBoxModel", &msgBoxModel);
-    engine.rootContext()->setContextProperty("uiOperation", &SI::ui);
-
-    MsgBoxTester msgBoxTester;
-    engine.rootContext()->setContextProperty("msgBoxTester", &msgBoxTester);
+    engine.rootContext()->setContextProperty("uiOperation", UIOperation::getIns());
 
     UserManagement userManagement;
     userManagement.init();

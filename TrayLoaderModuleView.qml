@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
+import TrayLoaderModuleLib 1.1
 
 ItemDelegate {
     width: parent.width
@@ -64,7 +65,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTIEMovetoChangeClipPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName, TrayLoaderModule.ENTRANCE_CLIP_CHANGE_POS)
                             }
                         }
                         Button{
@@ -93,7 +94,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTIEMovetoFirstPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName, TrayLoaderModule.ENTRANCE_CLIP_TOP)
                             }
                         }
                         Button{
@@ -122,7 +123,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTIEMovetoLastPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName, TrayLoaderModule.ENTRANCE_CLIP_BOTTOM)
                             }
                         }
                         Button{
@@ -188,13 +189,13 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTIEMovetoColumnIndex(col_in.text-1)
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName, TrayLoaderModule.ENTRANCE_CLIP_POS, col_in.text-1)
                             }
                         }
                         Button{
                             text:qsTr("弹出")
                             onClicked: {
-                                logicManager.trayLoaderModuleEjectTray()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.EJECT_TRAY)
                             }
                         }
                     }
@@ -221,7 +222,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTOEMovetoFirstPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.EXIT_CLIP_TOP)
                             }
                         }
                         Button{
@@ -250,7 +251,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTOEMovetoLastPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.EXIT_CLIP_BOTTOM)
                             }
                         }
                         Button{
@@ -316,7 +317,7 @@ ItemDelegate {
                         Button{
                             text:qsTr("移动")
                             onClicked: {
-                                logicManager.trayLoaderModuleLTOEMovetoColumnIndex(col_out.text-1)
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.EXIT_CLIP_POS)
                             }
                         }
                     }
@@ -344,7 +345,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTKX1MovetoGetPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_KICK_READY_POS)
                             }
                         }
                         Button{
@@ -355,8 +356,7 @@ ItemDelegate {
                             }
                         }
                     }
-//*/
-/*
+
                     RowLayout{
                         Label{
                             text:qsTr("LTK_X1 中继位置")
@@ -375,7 +375,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTKX1MoveToRelayPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_KICK_PUSH_POS)
                             }
                         }
                         Button{
@@ -386,8 +386,7 @@ ItemDelegate {
                             }
                         }
                     }
-//*/
-/*
+
                     RowLayout{
                         Label{
                             text:qsTr("LTK_X1 放盘位置")
@@ -406,7 +405,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTKX1MovetoSetPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_KICK_PULL_POS)
                             }
                         }
                         Button{
@@ -417,7 +416,7 @@ ItemDelegate {
                             }
                         }
                     }
-//*/
+//
 
                     RowLayout{
                         Layout.alignment: Qt.AlignRight
@@ -434,7 +433,7 @@ ItemDelegate {
                             }
                         }
                     }
-/*
+
                     RowLayout{
                         Label{
                             text:qsTr("LTK_X2 接盘位置")
@@ -453,7 +452,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTKX2MovetoGetPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.EXIT_KICK_READY_POS)
                             }
                         }
                         Button{
@@ -464,8 +463,7 @@ ItemDelegate {
                             }
                         }
                     }
-//*/
-/*
+
                     RowLayout{
                         Label{
                             text:qsTr("LTK_X2 放盘位置")
@@ -484,7 +482,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTKX2MovetoSetPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.EXIT_KICK_PUSH_POS)
                             }
                         }
                         Button{
@@ -495,8 +493,7 @@ ItemDelegate {
                             }
                         }
                     }
-//*/
-/*
+
                     RowLayout{
                         Layout.alignment: Qt.AlignRight
                         Button{
@@ -512,7 +509,7 @@ ItemDelegate {
                             }
                         }
                     }
-//*/
+
                     RowLayout{
                         Label{
                             text:qsTr("LTL 接盘位置")
@@ -539,7 +536,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTLMovetoGetPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName, TrayLoaderModule.LOADER_WAIT_POS)
                             }
                         }
                         Button{
@@ -584,7 +581,7 @@ ItemDelegate {
                         Button{
                             text:title_move_to
                             onClicked: {
-                                logicManager.trayLoaderModuleLTLMovetoSetPos()
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName, TrayLoaderModule.LOADER_RELEASE_POS)
                             }
                         }
                         Button{

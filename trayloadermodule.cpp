@@ -388,7 +388,7 @@ void TrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
     bool result = true;
     if(cmd == HandlePosition::ENTRANCE_CLIP_POS)
     {
-        int layer_index = param.toInt();
+        int layer_index = tray_clip_in->getCurrentIndex();
         result = moveEntranceClipToPos(layer_index);
     }
     else if(cmd == HandlePosition::ENTRANCE_CLIP_WAIT_POS)
@@ -401,7 +401,7 @@ void TrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
         result = moveEntranceClipToBottom();
     else if(cmd == HandlePosition::EXIT_CLIP_POS)
     {
-        int layer_index = param.toInt();
+        int layer_index = tray_clip_out->getCurrentIndex();
         result = moveExitClipToPos(layer_index);
     }
     else if(cmd == HandlePosition::EXIT_CLIP_TOP)

@@ -55,7 +55,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToAA1UnPickLens(false,true)
+                lutModule.moveToAA1UnPickLensPos(false,true)
             }
         }
         Button {

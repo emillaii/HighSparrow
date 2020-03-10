@@ -923,8 +923,6 @@ bool BaseModuleManager::registerWorkers(WorkersManager *manager)
     workers.insert(sut_module.Name(),&sut_module);
     result &= manager->registerWorker(&aaCoreNew);
     workers.insert(aaCoreNew.Name(),&aaCoreNew);
-    result &= manager->registerWorker(visionModule);
-    workers.insert(visionModule->Name(),visionModule);
     result &= manager->registerWorker(lightingModule);
     workers.insert(lightingModule->Name(),lightingModule);
     return result;

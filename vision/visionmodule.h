@@ -81,7 +81,7 @@ struct WidthJudgeState
 
 class VisionServer;
 
-class VisionModule: public ThreadWorkerBase,public QQuickImageProvider
+class VisionModule: public QObject ,public QQuickImageProvider
 {
 //    Q_ENUMS(HandleCameraChannel)
     Q_OBJECT
@@ -162,22 +162,16 @@ private:
     SilicoolVisionReplica *visionRep = nullptr;
     QRemoteObjectNode node;
     QRemoteObjectHost host;
+    Qt::HANDLE threadId;
+    int serverMode;
 signals :
     void callQmlRefeshImg(int);
-    void displayUplookImage();
+    void displayUplookImage(QString cameraName);
+    QImage grabImageFromMainThreadSig(QString cameraName);
 public:
     bool is_debug = false;
-//ThreadWorkerBase Interface
-public slots:
-    void startWork(int run_mode) override;
-    void stopWork(bool wait_finish) override;
-    void resetLogic() override;
-    void performHandlingOperation(int cmd, QVariant params);
-public:
-    PropertyBase *getModuleState() override;
-    void receivceModuleMessage(QVariantMap module_message) override;
-    QMap<QString, PropertyBase *> getModuleParameter() override;
-    void setModuleParameter(QMap<QString, PropertyBase *>) override;
+private slots:
+    QImage grabImageFromMainThreadSlot(QString cameraName);
 };
 
 #endif // VISIONMODULE_H

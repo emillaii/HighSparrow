@@ -24,7 +24,7 @@ VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera 
                            BaslerPylonCamera* pickarmCamera, BaslerPylonCamera * aa2DownlookCamera,
                            BaslerPylonCamera* sensorPickarmCamera, BaslerPylonCamera* sensorUplookCamera,
                            BaslerPylonCamera* barcodeCamera, QString name, int serverMode)
-    :ThreadWorkerBase (name), QQuickImageProvider(QQuickImageProvider::Image)
+    : QQuickImageProvider(QQuickImageProvider::Image)
 {
     this->downlookCamera = downlookCamera;
     this->uplookCamera = uplookCamera;
@@ -43,10 +43,13 @@ VisionModule::VisionModule(BaslerPylonCamera *downlookCamera, BaslerPylonCamera 
         host.enableRemoting(server);
         qInfo("Vision Server is opened");
     } else {
-        node.connectToNode(QUrl("tcp://192.168.0.251:9999"));
+        node.connectToNode(QUrl("tcp://192.168.0.250:9999"));
         auto visionRep = node.acquire<SilicoolVisionReplica>();
         this->visionRep = visionRep;
     }
+    this->threadId = this->thread()->currentThreadId();
+    this->serverMode = serverMode;
+    connect(this, &VisionModule::grabImageFromMainThreadSig, this, &VisionModule::grabImageFromMainThreadSlot, Qt::BlockingQueuedConnection);
 }
 QVector<QPoint> VisionModule::Read_Dispense_Path()
 {
@@ -73,23 +76,53 @@ QVector<QPoint> VisionModule::Read_Dispense_Path()
     return results;
 }
 
+QImage VisionModule::grabImageFromMainThreadSlot(QString cameraName)
+{
+    qInfo("thread_id: %d", this->thread()->currentThreadId());
+    QImage img;
+    QRemoteObjectPendingReply<QByteArray> reply = visionRep->getImageEx(cameraName);
+    if (reply.waitForFinished()){
+        QByteArray byteArray = reply.returnValue();
+        QImage img((uchar *)byteArray.data(), visionRep->width(), visionRep->height(), (QImage::Format)visionRep->imgFormat());
+        return img;
+    } else {
+        qWarning("grabImageFromCamera fail");
+        return img;
+    }
+}
+
 bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 {
     QMutexLocker locker(&mutex);
-    if (this->Name() == VISION_MODULE_2) { //If vision module 2, need to ask vision module 1 to get image
-        QRemoteObjectPendingReply<QByteArray> reply = visionRep->getImageEx(cameraName);
-        if (reply.waitForFinished()){
-            QByteArray byteArray = reply.returnValue();
-            QImage img((uchar *)byteArray.data(), visionRep->width(), visionRep->height(), (QImage::Format)visionRep->imgFormat());
-            QPixmap p = QPixmap::fromImage(img);
-            QImage q2 = p.toImage();
-            q2 = q2.convertToFormat(QImage::Format_RGB888);
-            avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-            image = image2;
-        } else {
-            qFatal("grabImageFromCamera fail");
-            return false;
-        }
+    qInfo("grabImageFromCamera current_thread_id: %d main_thread_id", this->thread()->currentThreadId(), this->threadId);
+    if (serverMode == 1) { //If vision module 2, need to ask vision module 1 to get image
+         if (this->thread()->currentThreadId() == this->threadId) //Main thread handle.
+         {
+             QRemoteObjectPendingReply<QByteArray> reply = visionRep->getImageEx(cameraName);
+             if (reply.waitForFinished()){
+                 QByteArray byteArray = reply.returnValue();
+                 QImage img((uchar *)byteArray.data(), visionRep->width(), visionRep->height(), (QImage::Format)visionRep->imgFormat());
+                 QPixmap p = QPixmap::fromImage(img);
+                 QImage q2 = p.toImage();
+                 q2 = q2.convertToFormat(QImage::Format_RGB888);
+                 avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+                 image = image2;
+             } else {
+                 qWarning("grabImageFromCamera fail from main thread handle");
+                 return false;
+             }
+         } else { //Call QTRO in another thread
+             QImage img = emit grabImageFromMainThreadSig(cameraName);
+             if (img.isNull()) {
+                 qWarning("grabImageFromCamera fail from another thread handle");
+                 return false;
+             }
+             QPixmap p = QPixmap::fromImage(img);
+             QImage q2 = p.toImage();
+             q2 = q2.convertToFormat(QImage::Format_RGB888);
+             avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+             image = image2;
+         }
     } else {
         BaslerPylonCamera *camera = Q_NULLPTR;
         if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
@@ -127,31 +160,6 @@ bool VisionModule::saveImageAndCheck(avl::Image image1, QString imageName)
         return false;
     }
     return true;
-}
-
-void VisionModule::startWork(int run_mode)
-{
-    qDebug("startWork");
-}
-
-void VisionModule::stopWork(bool wait_finish)
-{
-    qDebug("stopWork");
-}
-
-void VisionModule::resetLogic()
-{
-    qDebug("resetLogic");
-}
-
-void VisionModule::performHandlingOperation(int cmd, QVariant params)
-{
-    qDebug("performHandlingOperation");
-}
-
-PropertyBase *VisionModule::getModuleState()
-{
-    return Q_NULLPTR;
 }
 
 void VisionModule::RegionJudge( RegionJudgeState& state, const avl::Image& inSubtractImage, const avl::Image&, bool& outRegionOk, atl::Conditional< avl::Region >& outRegion, avl::Region& outRegion1, avl::Region& outRegion2, atl::Conditional< avl::Region >& outRegion3 )
@@ -1859,24 +1867,6 @@ QImage VisionModule::requestImage(const QString &id, QSize *size, const QSize &r
     return QImage();
 }
 
-void VisionModule::receivceModuleMessage(QVariantMap message)
-{
-    if (message["TargetModule"].toString() == this->Name() && message["Message"].toString() == "GrabImage"){
-        qInfo("target module: %s", message["TargetModule"].toString().toStdString().c_str());
-        QString cameraName = message["cameraName"].toString();
-        QString imageName = message["imageName"].toString();
-        avl::Image image1;
-        this->grabImageFromCamera(cameraName, image1);
-        if (!image1.Empty()) {
-            avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
-            QJsonObject params;
-            params.insert("cameraName", cameraName);
-            params.insert("filename", imageName);
-            emit sendMessageToModule(message["OriginModule"].toString(), "Response", params);
-        }
-    }
-}
-
 void VisionModule::saveImage(int channel)
 {
     avl::Image image1; bool ret;
@@ -1915,13 +1905,3 @@ void VisionModule::saveImage(int channel)
     }
 }
 
-QMap<QString, PropertyBase *> VisionModule::getModuleParameter()
-{
-    QMap<QString, PropertyBase *> map;
-    return map;
-}
-
-void VisionModule::setModuleParameter(QMap<QString, PropertyBase *> params)
-{
-
-}

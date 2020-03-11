@@ -56,9 +56,7 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-                //dispensePath.update()
                 dispenseModule.updatePath()
-                //dispensePath.source = "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
             }
         }
         Button {

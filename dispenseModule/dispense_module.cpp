@@ -55,6 +55,7 @@ void DispenseModule::updatePath()
     }
      dispenser->parameters.setSpeedCount(mechPoints.size());
     qInfo("read point :%d",mechPoints.size());
+    callQmlRefeshImg(12);
 }
 
 void DispenseModule::setMapPosition(double pos_x, double pos_y)

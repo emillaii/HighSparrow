@@ -134,7 +134,7 @@ ItemDelegate {
                             text:qsTr("计算")
                             onClicked: {
                                 var y1 = sensor_entrance_clip_parameter.startPosition;
-                                var y2 = sensor_entrance_clip_parameter.startPosition;
+                                var y2 = sensor_entrance_clip_parameter.endPosition;
                                 var delta = (y2-y1)/(sensor_clip_standard_parameter.count-1);
                                 tray_clipin_parameter.setColumnDelta(delta);
                             }
@@ -522,7 +522,7 @@ ItemDelegate {
                             text:title_read_encoder
                             onClicked: {
                                 var x = baseModuleManager.getMotorFeedbackPos(sensor_tray_loader_module_parameter.motorTrayName)
-                                sensor_tray_loader_module_parameter.setPutTrayPosition(text)
+                                sensor_tray_loader_module_parameter.setPutTrayPosition(x)
                             }
                         }
                     }

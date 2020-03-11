@@ -51,6 +51,7 @@ signals:
     void displaySensorPickarmResultImageInUI();
     void displaySensorUplookResultImageInUI();
     void displayBarcodeResultImageInUI();
+    void displayDispenseImageInUI();
 public slots:
     void homeAllMotors();
     Q_INVOKABLE void receiveImageFromAACore(int type) {
@@ -67,6 +68,7 @@ public slots:
         else if (type == 9) emit displaySensorPickarmResultImageInUI();
         else if (type == 10) emit displaySensorUplookResultImageInUI();
         else if (type == 11) emit displayBarcodeResultImageInUI();
+        else if (type == 12) emit displayDispenseImageInUI();
     };
 };
 

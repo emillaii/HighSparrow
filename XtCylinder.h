@@ -15,6 +15,7 @@ public:
     bool Wait(bool target_state);
     bool Value();
     bool checkState(bool target_state);
+    bool SetValue(bool value);
 public:
     XtCylinderParameter parameters;
 private:

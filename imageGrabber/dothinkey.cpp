@@ -199,6 +199,7 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     qDebug("[DothinkeyStartCamera]SetSensorI2cRate(I2C_400K, iDevID) = %d",res);
     res = SetSensorI2cRapid(TRUE, iDevID);
     qDebug("[DothinkeyStartCamera]SetSensorI2cRapid(TRUE, iDevID) = %d",res);
+    SetMipiImageVC(0, true, 1, iDevID);
     //check sensor is on line or not ,if on line,init sensor to work....
     res =SensorEnable(pSensor->pin ^ 0x02, 1, iDevID); //reset
     qDebug("[DothinkeyStartCamera]SensorEnable(pSensor->pin ^ 0x02, 1, iDevID) = %d",res);

@@ -123,3 +123,11 @@ bool XtCylinder::checkState(bool target_state)
     }
 }
 
+bool XtCylinder::SetValue(bool value)
+{
+    if (out->Set(value))
+        return true;
+    else
+        return false;
+}
+

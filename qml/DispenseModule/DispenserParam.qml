@@ -103,6 +103,14 @@ ColumnLayout {
         Image{
             id:dispensePath
             source: "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
+            cache: false
+            Connections{
+                target: highSprrow
+                onDisplayDispenseImageInUI: {
+                    dispensePath.source = ""
+                    dispensePath.source = "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
+                }
+            }
         }
     }
 }

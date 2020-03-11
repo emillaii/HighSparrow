@@ -42,6 +42,8 @@ private:
     QString file_path = "";
     QString name = "";
     bool cancalculation = false;
+signals:
+    void callQmlRefeshImg(int);
 };
 
 #endif // DISPENSE_MODULE_H

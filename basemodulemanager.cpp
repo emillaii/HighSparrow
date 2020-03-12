@@ -23,13 +23,11 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     //    qInfo("Server Mode: %d", ServerMode());
     is_init = false;
     profile_loaded = false;
-    if(!QDir(".//notopencamera").exists())
-    {
-        qInfo("Init BaslerPylonCamera--------------------------------------");
-        pylonUplookCamera = new BaslerPylonCamera(CAMERA_SH_UT_UL);
-        pylonDownlookCamera = new BaslerPylonCamera(CAMERA_SH_AA_DL);
-        pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SH_PA_DL);
-    }
+
+    qInfo("Init BaslerPylonCamera--------------------------------------");
+    pylonUplookCamera = new BaslerPylonCamera(CAMERA_SH_UT_UL);
+    pylonDownlookCamera = new BaslerPylonCamera(CAMERA_SH_AA_DL);
+    pylonPickarmCamera = new BaslerPylonCamera(CAMERA_SH_PA_DL);
 
     lightingModule = new WordopLight();
     visionModule = new VisionModule(pylonDownlookCamera, pylonUplookCamera, pylonPickarmCamera);
@@ -40,12 +38,11 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&aaCoreNew, &AACoreNew::callQmlRefeshImg, this, &BaseModuleManager::receiveImageFromAACore);
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
-    if(!QDir(".//notopencamera").exists())
-    {
-        if(pylonUplookCamera) pylonUplookCamera->start();
-        if(pylonDownlookCamera) pylonDownlookCamera->start();
-        if(pylonPickarmCamera) pylonPickarmCamera->start();
-    }
+    
+    if(pylonUplookCamera) pylonUplookCamera->start();
+    if(pylonDownlookCamera) pylonDownlookCamera->start();
+    if(pylonPickarmCamera) pylonPickarmCamera->start();
+
     lens_tray.standards_parameters.setTrayCount(2);
     lens_tray.setTrayType(TrayType::LENS_TRAY);
     sensor_tray.standards_parameters.setTrayCount(2);
@@ -54,6 +51,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     reject_tray.setTrayType(TrayType::REJECT_TRAY);
 
     unitlog.setServerAddress(configs.dataServerURL());
+    setInitState(false);
     setHomeState(false);
     connect(this,&BaseModuleManager::sendMsgSignal,this,&BaseModuleManager::receiveMsgSignal,Qt::BlockingQueuedConnection);
     connect(&timer, &QTimer::timeout, this, &BaseModuleManager::alarmChecking);
@@ -119,6 +117,7 @@ bool BaseModuleManager::loadParameters()
     lens_tray.loadJsonConfig(getCurrentParameterDir().append(SH_LENS_TRAY_FILE));
     sensor_tray.loadJsonConfig(getCurrentParameterDir().append(SH_SENSOR_TRAY_FILE));
     reject_tray.loadJsonConfig(getCurrentParameterDir().append(SH_REJECT_TRAY_FILE));
+    sut_carrier.loadParams(getCurrentParameterDir().append(MATERIAL_CARRIER_FILE));
     aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     dothinkey->loadParams(getCurrentParameterDir().append(DOTHINGKEY_FILE));
     dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
@@ -150,6 +149,7 @@ bool BaseModuleManager::saveParameters()
     reject_tray.saveJsonConfig(getCurrentParameterDir().append(SH_REJECT_TRAY_FILE));
     aa_head_module.saveJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
     dothinkey->saveJsonConfig(getCurrentParameterDir().append(DOTHINGKEY_FILE));
+    sut_carrier.saveParams(getCurrentParameterDir().append(MATERIAL_CARRIER_FILE));
     dispenser.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
     dispense_module.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
 
@@ -159,6 +159,8 @@ bool BaseModuleManager::saveParameters()
 
     aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
     saveMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    saveVcmfile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
+    saveVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     saveCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
@@ -384,7 +386,7 @@ bool BaseModuleManager::saveTowerLightBuzzerFiles(QString file_name)
 {
     QJsonArray array;
     foreach (QString temp_name, towerLightBuzzers.keys()) {
-       TowerLightBuzzer* temp_towerLightBuzzer = GetTowerLightBuzzerByName(temp_name);
+        TowerLightBuzzer* temp_towerLightBuzzer = GetTowerLightBuzzerByName(temp_name);
         if(temp_towerLightBuzzer != nullptr)
         {
             QJsonObject object;
@@ -827,10 +829,6 @@ bool BaseModuleManager::InitStruct()
                      GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
                      GetVacuumByName(sh_lsut_module.parameters.sutVacuumName()));
 
-    lut_carrier.Init("lut_carrier",GetMotorByName(sh_lsut_module.parameters.motorXName()),
-                     GetMotorByName(sh_lsut_module.parameters.motorYName()),
-                     GetVcMotorByName(sh_lsut_module.parameters.motorZName()),
-                     GetVacuumByName(sh_lsut_module.parameters.lutVacuumName()));
 
     aa_head_module.Init("AAHead",GetMotorByName(aa_head_module.parameters.motorXName()),
                         GetMotorByName(aa_head_module.parameters.motorYName()),
@@ -913,6 +911,7 @@ bool BaseModuleManager::initialDevice()
     XT_Controler_Extend::Start_Buffer_Sync(-1);
 
     is_init = true;
+    setInitState(true);
     //this must after "is_init = true;!!!"
     foreach (XtMotor *m, motors.values()) {
         m->GetMasterAxisID();

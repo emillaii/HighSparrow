@@ -19,11 +19,19 @@ ScrollView {
             visible: aaViewSwitch.checked
         }
 
+
         Switch {id: sutModuleViewSwitch; text:"SUT 配置"; font.bold: true}
         SUTModuleView{
             Layout.fillWidth: true
             visible: sutModuleViewSwitch.checked
         }
+
+        Switch {id: materialLoaderViewSwitch; text:"MaterialLoader 配置"; font.bold: true}
+        SingleStationMaterialLoaderModuleView{
+            Layout.fillWidth: true
+            visible: materialLoaderViewSwitch.checked
+        }
+
 
         Switch {id: dispensViewSwitch; text:"Dispense 配置"; font.bold: true}
         DispenseModuleView{
@@ -49,11 +57,7 @@ ScrollView {
             visible: {systemViewSwitch.checked}
         }
 
-        Switch {id: materialLoaderViewSwitch; text:"MaterialLoader 配置"; font.bold: true}
-        SingleStationMaterialLoaderModuleView{
-            Layout.fillWidth: true
-            visible: materialLoaderViewSwitch.checked
-        }
+
 
         Switch {id: threadMgrSwitch; text:"Thread Manager"; font.bold: true}
         ThreadManagerView{

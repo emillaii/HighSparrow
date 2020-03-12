@@ -55,14 +55,6 @@ ItemDelegate {
                 title: qsTr("PR Position")
                 SUTPRPositionView {}
             }
-//            GroupBox{
-//                title: qsTr("Calibration Position")
-//                SUTToollookPosition {}
-//            }
-//            GroupBox{
-//                title: qsTr("Safety Position")
-//                SUTSafetyPositionView {}
-//            }
             GroupBox{
                 title: qsTr("Pick Lens Position")
                 SUTPicklensPosition {}

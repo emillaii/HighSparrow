@@ -588,11 +588,11 @@ bool SingleHeadMachineMaterialLoaderModule::picker1SearchSutZ(double z,bool is_o
         QThread::msleep(300);
         result &= pick_arm->ZSerchReturn(0,time_out);
         QThread::msleep(100);
-        //result = pick_arm->motor_th1->MoveToPosSync(-parameters.sutPlaceSensorAngle());
-        result = pick_arm->motor_y->StepMoveSync(parameters.escapeY());
+        result &= pick_arm->motor_th1->MoveToPosSync(-parameters.sutPlaceSensorAngle());
+        result &= pick_arm->motor_y->StepMoveSync(parameters.escapeY());
         QThread::msleep(100);
         result &= pick_arm->motor_vcm1->MoveToPosSync(0);
-        result = pick_arm->motor_th1->MoveToPos(-parameters.sutPlaceSensorAngle());
+//        result = pick_arm->motor_th1->MoveToPos(-parameters.sutPlaceSensorAngle());
     }
     return result;
 }

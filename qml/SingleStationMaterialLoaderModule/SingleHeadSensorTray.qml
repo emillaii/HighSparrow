@@ -173,15 +173,8 @@ ColumnLayout {
                         width: 40
                         height: 40
                         onClicked: {
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_MEASURE_SENSOR_IN_TRAY)
-                        }
-                    }
-                    Button{
-                        text:qsTr("移動吸嘴")
-                        width: 40
-                        height: 40
-                        onClicked: {
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_TO_WORKPOS)
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_TO_WORKPOS|
+                                                                    MaterialLoaderModule.PICKER2_MEASURE_SENSOR_IN_TRAY)
                         }
                     }
                 }
@@ -203,19 +196,14 @@ ColumnLayout {
                     Button{
                         text:qsTr("测高")
                         onClicked: {
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_MEASURE_PRODUCT_IN_TRAY)
-                        }
-                    }
-                    Button{
-                        text:qsTr("移動吸嘴")
-                        onClicked: {
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS)
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                    MaterialLoaderModule.PICKER1_MEASURE_PRODUCT_IN_TRAY)
                         }
                     }
                 }
                 RowLayout{
                     Label{
-                        text:qsTr("PlaceOkProductToTrayOffset X:")
+                        text:qsTr("放Product偏移 X:")
                     }
                     TextField{
                         text: sh_place_ok_product_to_tray_offset.X
@@ -245,9 +233,8 @@ ColumnLayout {
                 }
 
                 RowLayout{
-                    Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                     Button{
-                         text:qsTr("picker2取Sensor")
+                        text:qsTr("picker2取Sensor")
                         width: 40
                         height: 40
                         onClicked: {
@@ -256,6 +243,18 @@ ColumnLayout {
                                                                     MaterialLoaderModule.SENSOR_PR|
                                                                     MaterialLoaderModule.PICKER2_TO_WORKPOS|
                                                                     MaterialLoaderModule.PICKER2_PICK_SENSOR_FROM_TRAY)
+                        }
+                    }
+                    Button{
+                        text:qsTr("picker2放Sensor")
+                        width: 40
+                        height: 40
+                        onClicked: {
+                            sh_sensor_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TRAY|
+                                                                    MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                    MaterialLoaderModule.PICKER2_TO_WORKPOS|
+                                                                    MaterialLoaderModule.PICKER2_PLACE_SENSOR_TO_TRAY)
                         }
                     }
                     Button{
@@ -269,18 +268,6 @@ ColumnLayout {
                                                                     MaterialLoaderModule.PICKER1_PLACE_OK_PROCUDE_TO_TRAY_PR_OFFSET|
                                                                     MaterialLoaderModule.PICKER1_TO_WORKPOS|
                                                                     MaterialLoaderModule.PICKER1_PLACE_PRODUCT_TO_TRAY)
-                        }
-                    }
-                    Button{
-                        text:qsTr("picker2放Sensor")
-                        width: 40
-                        height: 40
-                        onClicked: {
-                            sh_sensor_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-                            sh_materialLoaderModule.performHandling(MaterialLoaderModule.SENSOR_TRAY|
-                                                                    MaterialLoaderModule.SENSOR_VACANCY_PR|
-                                                                    MaterialLoaderModule.PICKER2_TO_WORKPOS|
-                                                                    MaterialLoaderModule.PICKER2_PLACE_SENSOR_TO_TRAY)
                         }
                     }
                 }

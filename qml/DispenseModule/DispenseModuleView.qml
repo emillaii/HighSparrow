@@ -15,19 +15,19 @@ ItemDelegate {
                 }
             }
             GroupBox{
-                title: qsTr("Dispense Param")
+                title: qsTr("点胶头参数")
                 DispenseParam {}
             }
             GroupBox{
-                title: qsTr("Dispense X Y Offset")
+                title: qsTr("视觉到点胶位置偏移")
                 DispenseXYOffset {}
             }
             GroupBox{
-                title: qsTr("Dispense Z")
+                title: qsTr("点胶高度")
                 DispenseZPos {}
             }
             GroupBox{
-                title: qsTr("Dispenser Param")
+                title: qsTr("点胶轨迹参数")
                 DispenserParam {}
             }
         }

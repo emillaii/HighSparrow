@@ -11,6 +11,9 @@ class MaterialCarrier:public ErrorBase
 public:
     MaterialCarrier();
     void Init(QString name, XtMotor* motor_x,XtMotor* motor_y,XtVcMotor* motor_z,XtVacuum* vacuum);
+
+    void loadParams(QString file_name);
+    void saveParams(QString file_name);
 public:
     XtMotor* motor_x = Q_NULLPTR;
     XtMotor* motor_y = Q_NULLPTR;

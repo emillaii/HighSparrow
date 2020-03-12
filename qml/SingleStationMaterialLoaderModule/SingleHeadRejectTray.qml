@@ -6,7 +6,7 @@ import SingleHeadMaterialLoaderLib 1.0
 ColumnLayout {
     CheckBox{
         id: ckbPerformPrAsPlacingNgDutToTray
-        text: qsTr("PerformPrAsPlacingNgDutToTray")
+        text: qsTr("使能视觉")
         checked: materialLoaderParameter.performPrAsPlacingNgDut
         onCheckedChanged: {
             materialLoaderParameter.setPerformPrAsPlacingNgDut(ckbPerformPrAsPlacingNgDutToTray.checked)
@@ -111,7 +111,6 @@ ColumnLayout {
                     text:title_read_encoder
                     width: 40
                     height: 40
-
                     onClicked: {
                         var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorXName)
                         var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
@@ -122,76 +121,11 @@ ColumnLayout {
                 }
             }
         }
+    }
 
-    }
-    GroupBox{
-        title: qsTr("PlaceNgSensorOffset")
-        RowLayout{
-            Label{
-                text: qsTr("X")
-            }
-            TextField{
-                text: sh_place_ng_sensor_to_tray_offset.X
-                horizontalAlignment: TextInput.AlignHCenter
-                validator: DoubleValidator {
-                    decimals: 6
-                    notation: DoubleValidator.StandardNotation
-                }
-                onEditingFinished: {
-                    sh_place_ng_sensor_to_tray_offset.setX(text)
-                }
-            }
-            Label{
-                text: qsTr("Y")
-            }
-            TextField{
-                text: sh_place_ng_sensor_to_tray_offset.Y
-                horizontalAlignment: TextInput.AlignHCenter
-                validator: DoubleValidator {
-                    decimals: 6
-                    notation: DoubleValidator.StandardNotation
-                }
-                onEditingFinished: {
-                    sh_place_ng_sensor_to_tray_offset.setY(text)
-                }
-            }
-        }
-    }
-    GroupBox{
-        title: qsTr("PlaceNgProductOffset")
-        RowLayout{
-            Label{
-                text: qsTr("X")
-            }
-            TextField{
-                text: sh_place_ng_product_to_tray_offset.X
-                horizontalAlignment: TextInput.AlignHCenter
-                validator: DoubleValidator {
-                    decimals: 6
-                    notation: DoubleValidator.StandardNotation
-                }
-                onEditingFinished: {
-                    sh_place_ng_product_to_tray_offset.setX(text)
-                }
-            }
-            Label{
-                text: qsTr("Y")
-            }
-            TextField{
-                text: sh_place_ng_product_to_tray_offset.Y
-                horizontalAlignment: TextInput.AlignHCenter
-                validator: DoubleValidator {
-                    decimals: 6
-                    notation: DoubleValidator.StandardNotation
-                }
-                onEditingFinished: {
-                    sh_place_ng_product_to_tray_offset.setY(text)
-                }
-            }
-        }
-    }
     GroupBox{
         title:qsTr("reject盘操作")
+
         ColumnLayout{
             ColumnLayout{
                 RowLayout{
@@ -227,6 +161,67 @@ ColumnLayout {
                         }
                     }
                 }
+
+                RowLayout{
+                    Label{
+                        text:qsTr("放NgSensor偏移 X:")
+                    }
+                    TextField{
+                        text: sh_place_ng_sensor_to_tray_offset.X
+                        horizontalAlignment: TextInput.AlignHCenter
+                        validator: DoubleValidator {
+                            decimals: 6
+                            notation: DoubleValidator.StandardNotation
+                        }
+                        onEditingFinished: {
+                            sh_place_ng_sensor_to_tray_offset.setX(text)
+                        }
+                    }
+                    Label{
+                        text:qsTr("Y:")
+                    }
+                    TextField{
+                        text: sh_place_ng_sensor_to_tray_offset.Y
+                        horizontalAlignment: TextInput.AlignHCenter
+                        validator: DoubleValidator {
+                            decimals: 6
+                            notation: DoubleValidator.StandardNotation
+                        }
+                        onEditingFinished: {
+                            sh_place_ng_sensor_to_tray_offset.setY(text)
+                        }
+                    }
+                }
+                RowLayout{
+                    Label{
+                        text:qsTr("放NgProduct偏移 X:")
+                    }
+                    TextField{
+                        text: sh_place_ng_product_to_tray_offset.X
+                        horizontalAlignment: TextInput.AlignHCenter
+                        validator: DoubleValidator {
+                            decimals: 6
+                            notation: DoubleValidator.StandardNotation
+                        }
+                        onEditingFinished: {
+                            sh_place_ng_product_to_tray_offset.setX(text)
+                        }
+                    }
+                    Label{
+                        text:qsTr("Y:")
+                    }
+                    TextField{
+                        text: sh_place_ng_product_to_tray_offset.Y
+                        horizontalAlignment: TextInput.AlignHCenter
+                        validator: DoubleValidator {
+                            decimals: 6
+                            notation: DoubleValidator.StandardNotation
+                        }
+                        onEditingFinished: {
+                            sh_place_ng_product_to_tray_offset.setY(text)
+                        }
+                    }
+                }
                 RowLayout{
 
                     Button{
@@ -249,31 +244,6 @@ ColumnLayout {
                                                                         MaterialLoaderModule.PICKER1_TO_WORKPOS|
                                                                         MaterialLoaderModule.PICKER1_PLACE_NG_SENSOR_TO_TRAY)
                             }
-
-
-                        }
-                    }
-                    Button{
-                        text:qsTr("PICKER2放ng Sensor")
-                        width:40
-                        height: 40
-                        onClicked: {
-                            sh_reject_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
-
-                            if(materialLoaderParameter.performPrAsPlacingNgDut)
-                            {
-                                sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
-                                                                        MaterialLoaderModule.SENSOR_VACANCY_PR|
-                                                                        MaterialLoaderModule.PICKER2_TO_WORKPOS|
-                                                                        MaterialLoaderModule.PICKER2_PLACE_NG_SENSOR_TO_TRAY)
-                            }
-                            else{
-                                sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
-                                                                        MaterialLoaderModule.RESET_PR|
-                                                                        MaterialLoaderModule.APPLY_PLACE_NG_SENSOR_TO_TRAY_OFFSET|
-                                                                        MaterialLoaderModule.PICKER2_TO_WORKPOS|
-                                                                        MaterialLoaderModule.PICKER2_PLACE_NG_SENSOR_TO_TRAY)
-                            }
                         }
                     }
                     Button{
@@ -285,16 +255,16 @@ ColumnLayout {
                             if(materialLoaderParameter.performPrAsPlacingNgDut)
                             {
                                 sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
-                                                                    MaterialLoaderModule.SENSOR_VACANCY_PR|
-                                                                    MaterialLoaderModule.PICKER1_TO_WORKPOS|
-                                                                    MaterialLoaderModule.PICKER1_PLACE_NG_PRODUCT_TO_TRAY)
+                                                                        MaterialLoaderModule.SENSOR_VACANCY_PR|
+                                                                        MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                        MaterialLoaderModule.PICKER1_PLACE_NG_PRODUCT_TO_TRAY)
                             }
                             else{
                                 sh_materialLoaderModule.performHandling(MaterialLoaderModule.REJECT_TRAY|
-                                                                    MaterialLoaderModule.RESET_PR|
-                                                                    MaterialLoaderModule.APPLY_PLACE_NG_PRODUCT_TO_TRAY_OFFSET|
-                                                                    MaterialLoaderModule.PICKER1_TO_WORKPOS|
-                                                                    MaterialLoaderModule.PICKER1_PLACE_NG_PRODUCT_TO_TRAY)
+                                                                        MaterialLoaderModule.RESET_PR|
+                                                                        MaterialLoaderModule.APPLY_PLACE_NG_PRODUCT_TO_TRAY_OFFSET|
+                                                                        MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                        MaterialLoaderModule.PICKER1_PLACE_NG_PRODUCT_TO_TRAY)
                             }
                         }
                     }

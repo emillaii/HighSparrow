@@ -6,20 +6,16 @@
 class MaterialCarrierParameter:public PropertyBase
 {
     Q_OBJECT
-    double m_SafetyZ = 0;
-
-    double m_SafetyY = 0;
-
-    double m_SafetyX = 0;
-
-    double m_StopTime = 0;
+   
 
 public:
     MaterialCarrierParameter():PropertyBase (){}
-    Q_PROPERTY(double SafetyZ READ SafetyZ WRITE setSafetyZ NOTIFY paramsChanged)
-    Q_PROPERTY(double SafetyY READ SafetyY WRITE setSafetyY NOTIFY paramsChanged)
-    Q_PROPERTY(double SafetyX READ SafetyX WRITE setSafetyX NOTIFY paramsChanged)
-    Q_PROPERTY(double StopTime READ StopTime WRITE setStopTime NOTIFY StopTimeChanged)
+    Q_PROPERTY(double SafetyZ READ SafetyZ WRITE setSafetyZ NOTIFY SafetyZChanged)
+    Q_PROPERTY(double SafetyY READ SafetyY WRITE setSafetyY NOTIFY SafetyYChanged)
+    Q_PROPERTY(double SafetyX READ SafetyX WRITE setSafetyX NOTIFY SafetyXChanged)
+
+public:
+
     double SafetyZ() const
     {
         return m_SafetyZ;
@@ -34,51 +30,52 @@ public:
         return m_SafetyX;
     }
 
-    double StopTime() const
-    {
-        return m_StopTime;
-    }
+ 
 
 public slots:
     void setSafetyZ(double SafetyZ)
     {
+        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_SafetyZ, SafetyZ))
             return;
 
         m_SafetyZ = SafetyZ;
-        emit paramsChanged(m_SafetyZ);
+        emit SafetyZChanged(m_SafetyZ);
     }
     void setSafetyY(double SafetyY)
     {
+        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_SafetyY, SafetyY))
             return;
 
         m_SafetyY = SafetyY;
-        emit paramsChanged(m_SafetyY);
+        emit SafetyYChanged(m_SafetyY);
     }
 
     void setSafetyX(double SafetyX)
     {
+        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_SafetyX, SafetyX))
             return;
 
         m_SafetyX = SafetyX;
-        emit paramsChanged(m_SafetyX);
+        emit SafetyXChanged(m_SafetyX);
     }
 
-    void setStopTime(double StopTime)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_StopTime, StopTime))
-            return;
-
-        m_StopTime = StopTime;
-        emit StopTimeChanged(m_StopTime);
-    }
+ 
 
 signals:
-    void paramsChanged(double SafetyZ);
-    void StopTimeChanged(double StopTime);
+    void SafetyZChanged(double SafetyZ);
+
+    void SafetyYChanged(double SafetyY);
+
+    void SafetyXChanged(double SafetyX);
+
+private:
+
+    double m_SafetyZ = 0;
+    double m_SafetyY = 0;
+    double m_SafetyX = 0;
 };
 
 #endif // MATERIAL_CARRIER_PARAMETER_H

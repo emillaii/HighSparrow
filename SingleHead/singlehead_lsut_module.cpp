@@ -413,6 +413,16 @@ bool SingleheadLSutModule::movetoRecordPos(bool check_autochthonous)
 bool SingleheadLSutModule::lensGripperMeasureHight()
 {
     qInfo("Measure height from lens to gripper with low speed");
+    aa_head->openGripper();
+    if(!aa_head->moveToPickLensPositionSync())
+    {
+        qInfo("aa head move to lens measure hight pos fail");
+    };
+    if(!sut_carrier->Move_SZ_SX_Y_X_Z_Sync(pick_lens_position.X(),pick_lens_position.Y(),0))
+    {
+       qInfo("lsut move to lens measure hight pos fail");
+    };
+    QThread::msleep(200);
     if (sut_carrier->ZSerchByForce(parameters.LensSoftlandingVel(), parameters.LensSoftlandingForce(), true))
     {
         QThread::msleep(100);
@@ -426,6 +436,7 @@ bool SingleheadLSutModule::lensGripperMeasureHight()
         AppendError(QString(u8"Lens-Gripper测高失败"));
         return false;
     }
+    return  true;
 }
 
 bool SingleheadLSutModule::gripLens()
@@ -433,7 +444,7 @@ bool SingleheadLSutModule::gripLens()
     qInfo("GripLens Start SUT is going to zOffset: %f", parameters.ZOffset());
     aa_head->openGripper();
     aa_head->moveToPikLensPositionAsync();
-    if(!moveToPickLensPosition() | !aa_head->waitArrivedPickLesPosition()) {
+    if(!moveToPickLensPosition() || !aa_head->waitArrivedPickLesPosition()) {
         qInfo("Move to pick lens pos fail");
         this->vacuum_lut->Set(false, false);  //First do not check the state.
          aa_head->closeGripper();
@@ -456,7 +467,7 @@ bool SingleheadLSutModule::gripLens()
 bool SingleheadLSutModule::unpickLens()
 {
     qInfo("Unpick Lens start");
-    if (!moveToUnpickLensPosition(true)) {
+    if (!moveToUnpickLensPosition()) {
         qInfo("Move to unpick lens position fail");
         return false;
     }
@@ -465,6 +476,11 @@ bool SingleheadLSutModule::unpickLens()
         return false;
     }
     aa_head->openGripper();
+    QThread::msleep(200);
+    if(!moveToLoadSensorPosition())
+    {
+       qInfo("Move to load position fail");
+    };
     qInfo("Unpick Lens finished");
     return true;
 }

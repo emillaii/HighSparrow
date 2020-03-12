@@ -6,7 +6,7 @@ import SingleHeadMaterialLoaderLib 1.0
 
 ColumnLayout {
     GroupBox{
-        title:qsTr("Lens盘1起点")
+        title:qsTr("Lens盘起点")
         ColumnLayout{
             RowLayout{
                 Label{
@@ -62,7 +62,7 @@ ColumnLayout {
     }
 
     GroupBox{
-        title:qsTr("Lens盘1终点")
+        title:qsTr("Lens盘终点")
         ColumnLayout{
             RowLayout{
                 Label{
@@ -119,7 +119,7 @@ ColumnLayout {
     }
 
     GroupBox{
-        title:qsTr("Lens盘1操作")
+        title:qsTr("Lens盘操作")
         ColumnLayout{
             RowLayout{
                 Label{
@@ -177,20 +177,14 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_MEASURE_LENS_IN_TRAY)
-                    }
-                }
-                Button{
-                    text:qsTr("移動吸嘴")
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS)
+                        sh_materialLoaderModule.performHandling(
+                                    MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                    MaterialLoaderModule.PICKER1_MEASURE_LENS_IN_TRAY)
                     }
                 }
             }
             RowLayout{
-                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
+//                Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
                 Button{
                     text:qsTr("picker1取lens")
                     width: 40
@@ -227,113 +221,7 @@ ColumnLayout {
                                                                 MaterialLoaderModule.PICKER1_PLACE_NG_LENS_TO_TRAY)
                     }
                 }
-                Button{
-                    text:qsTr("picker2放NGlens")
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_lens_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,0)
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY1|
-                                                                MaterialLoaderModule.LENS_VACANCY_PR|
-                                                                MaterialLoaderModule.PICKER2_TO_WORKPOS|
-                                                                MaterialLoaderModule.PICKER2_PLACE_NG_LENS_TO_TRAY)
-                    }
-                }
             }
         }
     }
-
-//    GroupBox{
-//        title:qsTr("Lens盘2起点")
-//        ColumnLayout{
-//            RowLayout{
-//                Label{
-//                    text: qsTr("X")
-//                }
-//                TextField{
-//                    text: sh_lens_tray_start_point2.X
-//                    horizontalAlignment: TextInput.AlignHCenter
-//                    validator: DoubleValidator {
-//                        decimals: 6
-//                        notation: DoubleValidator.StandardNotation
-//                    }
-//                    onEditingFinished: {
-//                        sh_lens_tray_start_point2.setX(text)
-//                    }
-//                }
-//                Label{
-//                    text: qsTr("Y")
-//                }
-//                TextField{
-//                    text: sh_lens_tray_start_point2.Y
-//                    horizontalAlignment: TextInput.AlignHCenter
-//                    validator: DoubleValidator {
-//                        decimals: 6
-//                        notation: DoubleValidator.StandardNotation
-//                    }
-//                    onEditingFinished: {
-//                        sh_lens_tray_start_point2.setY(text)
-//                    }
-//                }
-//                Button{
-//                    text:title_move_to
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2_START_POS)
-//                    }
-//                }
-//                Button{
-//                    text:title_read_encoder
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        var x = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorXName)
-//                        var y = baseModuleManager.getMotorFeedbackPos(materialPickArmParams.motorYName)
-//                        sh_lens_tray_start_point2.setX(x);
-//                        sh_lens_tray_start_point2.setY(y);
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-//    GroupBox{
-//        title:qsTr("Lens盘2操作")
-//        ColumnLayout{
-//            RowLayout{
-//                Label{
-//                    text: qsTr("目标行")
-//                }
-//                TextField{
-//                    id:t_nrow2
-//                    text: "1"
-//                    horizontalAlignment: TextInput.AlignHCenter
-//                    validator: IntValidator{
-//                        bottom: 1
-//                    }
-//                }
-//                Label{
-//                    text: qsTr("目标列")
-//                }
-//                TextField{
-//                    id:t_ncol2
-//                    text: "1"
-//                    horizontalAlignment: TextInput.AlignHCenter
-//                    validator: IntValidator{
-//                        bottom: 1
-//                    }
-//                }
-//                Button{
-//                    text:title_move_to
-//                    width: 40
-//                    height: 40
-//                    onClicked: {
-//                        sh_lens_tray.setTrayCurrent(t_ncol2.text-1,t_nrow2.text-1,1)
-//                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LENS_TRAY2)
-//                    }
-//                }
-//            }
-//        }
-//    }
 }

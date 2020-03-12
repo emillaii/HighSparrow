@@ -94,12 +94,10 @@ ColumnLayout {
             }
         }
     }
-    GroupBox{
-        title:qsTr("camera_to_picker1_offset")
         ColumnLayout{
             RowLayout{
                 Label{
-                    text:qsTr("X")
+                    text:qsTr("相机到1号吸嘴偏移 X:")
                 }
                 TextField{
                     text:sh_camera_to_picker1_offset.X
@@ -137,13 +135,10 @@ ColumnLayout {
                 }
             }
         }
-    }
-    GroupBox{
-        title:qsTr("camera_to_picker2_offset")
         ColumnLayout{
             RowLayout{
                 Label{
-                    text:qsTr("X")
+                    text:qsTr("相机到2号吸嘴偏移 X:")
                 }
                 TextField{
                     text:sh_camera_to_picker2_offset.X
@@ -175,7 +170,6 @@ ColumnLayout {
                     width: 40
                     height: 40
                     onClicked: {
-//                        sensorLoaderModule.performHandling(SensorLoaderModule.SUT_PR_POS1)
                         sh_materialLoaderModule.cameraTipOffsetCalibration(1)
                     }
                     enabled: userManagement.currentAuthority >= 2 //At least engineer authority
@@ -183,4 +177,4 @@ ColumnLayout {
             }
         }
     }
-}
+//}

@@ -5,41 +5,10 @@ import SingleheadLSutModuleLib 1.0
 
 
 ColumnLayout{
-    RowLayout {
-        Label{
-            text: qsTr("Lens offset X")
-        }
-        TextField{
-            text: lsutLensOffset.X
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                lsutLensOffset.setX(text)
-            }
-        }
-        Label{
-            text: qsTr("Y")
-        }
-        TextField{
-            text: lsutLensOffset.Y
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                lsutLensOffset.setY(text)
-            }
-        }
-    }
-
 
     RowLayout {
         Label{
-            text: qsTr("Gripper高度")
+            text: qsTr("Lens高度")
         }
         TextField{
             text: lsutParameter.ZOffset
@@ -65,7 +34,7 @@ ColumnLayout{
 
     RowLayout {
         Label{
-            text: qsTr("DelayBeforeGripLens")
+            text: qsTr("开夹爪延时")
         }
         TextField{
             text: lsutParameter.delayBeforGripLens
@@ -76,7 +45,7 @@ ColumnLayout{
             }
         }
         Label{
-            text: qsTr("DelayAfterGripLens")
+            text: qsTr("关夹爪延时")
         }
         TextField{
             text: lsutParameter.delayAfterGripLens
@@ -90,15 +59,6 @@ ColumnLayout{
 
     RowLayout {
         Button {
-            text: qsTr("LENS TO GRIPER CENTER")
-            width: 40
-            height: 40
-            onClicked: {
-                console.log("Move lens to center of gripper")
-                sh_lsut_Module.performHandling(SingleheadLSutModule.LENS_TO_GRIPPER_CENTER)
-            }
-        }
-        Button {
             text: qsTr("夹Lens")
             width: 40
             height: 40
@@ -108,7 +68,7 @@ ColumnLayout{
             }
         }
         Button {
-            text: qsTr("UnPick Lens")
+            text: qsTr("取Lens")
             width: 40
             height: 40
             onClicked: {

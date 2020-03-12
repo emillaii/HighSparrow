@@ -800,7 +800,7 @@ ErrorCodeStruct AACoreNew::performDispense()
     dispense->setMapPosition(lsut->downlook_position.X(),lsut->downlook_position.Y());
     dispense->setPRPosition(sensorDownlookOffset.X,sensorDownlookOffset.Y,sensorDownlookOffset.Theta);
 
-    lsut->moveToZPos(0);
+    lsut->moveToZPos(1.5);
     hasDispense = true;
     if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
 

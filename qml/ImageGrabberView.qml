@@ -62,7 +62,7 @@ ItemDelegate {
 
                 Button {
                     id: button
-                    text: qsTr("Open Camera")
+                    text: qsTr("打开摄像头")
                     onClicked: {
                         baseModuleManager.initSensor()
                     }
@@ -70,47 +70,47 @@ ItemDelegate {
 
                 Button {
                     id: button1
-                    text: qsTr("Close Camera")
+                    text: qsTr("关闭摄像头")
                     onClicked: {
                         baseModuleManager.closeSensor()
                     }
                 }
             }
 
-            RowLayout{
-                Button{
-                    text: "init"
-                    onClicked: {
-                        imageGrabber.initDevice()
-                    }
-                }
-                Button{
-                    text: "release"
-                    onClicked: {
-                        imageGrabber.releaseDevice()
-                    }
-                }
-            }
-            RowLayout{
-                Button{
-                    text: "start"
-                    onClicked: {
-                        imageGrabber.startCamera()
-                    }
-                }
-                Button{
-                    text: "stop"
-                    onClicked: {
-                        imageGrabber.stopCamera()
-                    }
-                }
-                Button{
-                    text: "get Img"
-                    onClicked: {
-                        imageGrabber.getImgTest()
-                    }
-                }
-            }
+//            RowLayout{
+//                Button{
+//                    text: "init"
+//                    onClicked: {
+//                        imageGrabber.initDevice()
+//                    }
+//                }
+//                Button{
+//                    text: "release"
+//                    onClicked: {
+//                        imageGrabber.releaseDevice()
+//                    }
+//                }
+//            }
+//            RowLayout{
+//                Button{
+//                    text: "start"
+//                    onClicked: {
+//                        imageGrabber.startCamera()
+//                    }
+//                }
+//                Button{
+//                    text: "stop"
+//                    onClicked: {
+//                        imageGrabber.stopCamera()
+//                    }
+//                }
+//                Button{
+//                    text: "get Img"
+//                    onClicked: {
+//                        imageGrabber.getImgTest()
+//                    }
+//                }
+//            }
         }
     }
 }

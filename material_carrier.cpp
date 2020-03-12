@@ -13,6 +13,21 @@ void MaterialCarrier::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtV
     setName(name);
 }
 
+void MaterialCarrier::loadParams(QString file_name)
+{
+    QMap<QString , PropertyBase *> temp_map;
+    temp_map.insert("LSUT_SAFETY_PARMAS", &parameters);
+    PropertyBase::loadJsonConfig(file_name,temp_map);
+
+}
+
+void MaterialCarrier::saveParams(QString file_name)
+{
+    QMap<QString, PropertyBase*> temp_map;
+    temp_map.insert("LSUT_SAFETY_PARMAS",&parameters);
+    PropertyBase::saveJsonConfig(file_name,temp_map);
+}
+
 bool MaterialCarrier::Move_SZ_XY_Z_Sync(double x, double y, double z, int timeout)
 {
     bool result;

@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.11
 import SingleHeadMaterialLoaderLib 1.0
 ColumnLayout {
     GroupBox{
-        title:qsTr("sut_pr_position")
+        title:qsTr("sut视觉位置")
         ColumnLayout{
             RowLayout{
                 Label{
@@ -72,27 +72,18 @@ ColumnLayout {
                     }
                 }
                 Button{
-                
+
                     text:qsTr("测高")
                     width: 40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_MEASURE_SENSOR_IN_SUT)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER2_MEASURE_SENSOR_IN_SUT)
                     }
                 }
-                Button{
+            }
 
-                    text:qsTr("移動吸嘴")
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER2_TO_WORKPOS)
-                    }
-                }
-              
-                    }
-               
-           
+
             RowLayout{
                 Label{
                     text:qsTr("product高度")
@@ -109,27 +100,19 @@ ColumnLayout {
                     }
                 }
                 Button{
-              
+
                     text:qsTr("测高")
                     width: 40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_MEASURE_PRODUCT_IN_SUT)
-                    }
-                }
-                Button{
-
-                    text:qsTr("移動吸嘴")
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER1_MEASURE_PRODUCT_IN_SUT)
                     }
                 }
             }
             RowLayout{
                 Label{
-                    text:qsTr("sensor角度")
+                    text:qsTr("放sensor角度")
                 }
                 TextField{
                     text:materialLoaderParameter.sutPlaceSensorAngle
@@ -145,18 +128,6 @@ ColumnLayout {
             }
             RowLayout{
                 Button{
-                    text:qsTr("picker1取Product")
-                    width:40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR_POS|
-                                                                MaterialLoaderModule.PRODUCT_PR|
-                                                                MaterialLoaderModule.PICKER1_TO_WORKPOS|
-                                                                MaterialLoaderModule.PICKER1_PICK_PRODUCT_FROM_SUT)
-
-                    }
-                }
-                Button{
                     text:qsTr("picker2放Sensor")
                     width:40
                     height: 40
@@ -165,17 +136,6 @@ ColumnLayout {
                                                                 MaterialLoaderModule.SUT_PR|
                                                                 MaterialLoaderModule.PICKER2_TO_WORKPOS|
                                                                 MaterialLoaderModule.PICKER2_PLACE_SENSOR_TO_SUT)
-                    }
-                }
-                Button{
-                    text:qsTr("picker2取NG Sensor")
-                    width:40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR_POS|
-                                                                MaterialLoaderModule.NG_SENSOR_PR|
-                                                                MaterialLoaderModule.PICKER2_TO_WORKPOS|
-                                                                MaterialLoaderModule.PICKER2_PICK_NG_SENSOR_FROM_SUT)
                     }
                 }
                 Button{
@@ -189,11 +149,24 @@ ColumnLayout {
                                                                 MaterialLoaderModule.PICKER1_PICK_NG_SENSOR_FROM_SUT)
                     }
                 }
+                Button{
+                    text:qsTr("picker1取Product")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR_POS|
+                                                                MaterialLoaderModule.PRODUCT_PR|
+                                                                MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER1_PICK_PRODUCT_FROM_SUT)
+
+                    }
+                }
+
             }
         }
     }
     GroupBox{
-        title:qsTr("lut_pr_position")
+        title:qsTr("lut视觉位置")
         ColumnLayout{
             RowLayout{
                 Label{
@@ -262,26 +235,18 @@ ColumnLayout {
                     }
                 }
                 Button{
-                
+
                     text:qsTr("测高")
                     width: 40
                     height: 40
                     onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_MEASURE_LENS_IN_LUT)
-                    }
-                }
-                Button{
-
-                    text:qsTr("移動吸嘴")
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS)
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.PICKER1_TO_WORKPOS|
+                                                                MaterialLoaderModule.PICKER1_MEASURE_LENS_IN_LUT)
                     }
                 }
             }
             RowLayout{
-             
+
                 Button{
                     text:qsTr("picker1放Lens")
                     width:40
@@ -305,17 +270,6 @@ ColumnLayout {
                     }
                 }
 
-                Button{
-                    text:qsTr("picker2取NG Lens")
-                    width:40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.LUT_PR_POS|
-                                                                MaterialLoaderModule.NG_LENS_PR|
-                                                                MaterialLoaderModule.PICKER2_TO_WORKPOS|
-                                                                MaterialLoaderModule.PICKER2_PICK_NG_LENS_FROM_LUT)
-                    }
-                }
             }
         }
     }

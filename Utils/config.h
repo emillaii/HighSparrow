@@ -30,6 +30,7 @@
 #define MATERIAL_PICKARM_FILE        "materialPickArmConfig.json"
 #define MATERIAL_LOADER_FILE         "materialLoaderModule.json"
 #define SH_LSUT_FILE                 "lsut_module.json"
+#define MATERIAL_CARRIER_FILE        "materialCarrier_parameters.json"
 
 #define BASE_LOG_DIR                 "log//"
 #define SYSTEM_LOG_DIR               "system_log//"

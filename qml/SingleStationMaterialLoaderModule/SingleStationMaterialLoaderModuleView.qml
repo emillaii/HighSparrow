@@ -55,14 +55,6 @@ ItemDelegate {
                         sh_materialLoaderModule.moveToChangeTrayPos()
                     }
                 }
-                //                Button{
-                //                    text:qsTr("三色灯")
-                //                    width: 40
-                //                    height: 40
-                //                    onClicked: {
-                //                         sh_materialLoaderModule.towerLightBuzzerTest()
-                //                    }
-                //                }
             }
             GroupBox{
                 title:qsTr("头参数")
@@ -104,7 +96,7 @@ ItemDelegate {
             }
 
             GroupBox{
-                title:qsTr("SUT & LUT")
+                title:qsTr("sut和lut操作")
                 MaterialLoaderModulueUTView{}
             }
         }

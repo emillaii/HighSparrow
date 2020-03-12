@@ -61,9 +61,10 @@
 #define CAMERA_SH_AA_DL                  "AA_DLCamera"
 #define CAMERA_SH_HIK_CAM                "HIK_Camera"
 
-#define LIGHTING_PA_DL                  0
-#define LIGHTING_AA_DL                  3
-#define LIGHTING_SUT_UL                 2
+// Todo: Need to place these config to config file
+#define LIGHTING_PA_DL                  2
+#define LIGHTING_AA_DL                  1
+#define LIGHTING_SUT_UL                 0
 
 #define DOWNLOOK_VISION_CAMERA_WIDTH    659
 #define DOWNLOOK_VISION_CAMERA_HEIGHT   494

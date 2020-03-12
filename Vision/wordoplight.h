@@ -5,6 +5,7 @@
 #include <QObject>
 #include <qmutex.h>
 #include "Utils/config.h"
+#include <QDebug>
 
 class WordopLight: public QObject
 {

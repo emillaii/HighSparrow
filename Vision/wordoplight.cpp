@@ -5,6 +5,7 @@
 WordopLight::WordopLight()
 {
     port_name = "";
+    // Todo Need to place the com port to config file.
     Init("com1");
     OnOff(0, true);
     OnOff(1, true);
@@ -35,8 +36,10 @@ bool WordopLight::Init(const QString &com_port)
     QObject::connect(&port, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
 
     bool res = port.open(QIODevice::ReadWrite);
-    if(res!=true)
+    if(!res){
+        qCritical() << "Open port failed!" << com_port << "error message:" << port.error();
         return false;
+    }
     port.clearError();
     port.clear();
     is_init = true;
@@ -115,8 +118,10 @@ void WordopLight::readyReadSlot()
 
 void WordopLight::ChangeBrightness(int ch, uint8_t brightness)
 {
-    if(is_init!=true)
+    if(!is_init){
+        qCritical() <<"WordopLight is not inited!";
         return;
+    }
     uint8_t buf[8];
     Pack *pack;
     LongCommand *cmd;

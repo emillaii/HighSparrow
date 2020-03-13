@@ -63,7 +63,7 @@ ColumnLayout {
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
                             x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
-                            tray_start_point1.setX(x + lensPickArmModuleParameter.visonPositionX - x1);
+                            tray_start_point1.setX(x + lens_loader_parameter.visonPositionX - x1);
                             tray_start_point1.setY(y);
                         }else{
 
@@ -138,7 +138,7 @@ ColumnLayout {
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
                             x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
-                            first_tray_end_position.setX(x + lensPickArmModuleParameter.visonPositionX - x1);
+                            first_tray_end_position.setX(x + lens_loader_parameter.visonPositionX - x1);
                             first_tray_end_position.setY(y);
                         }else{
 

@@ -135,7 +135,6 @@ public slots:
     }
 
 signals:
-    void visonPositionXChanged(QString motorXName);
     void motorTrayNameChanged(QString motorTrayName);
 
     void motorYNameChanged(QString motorYName);

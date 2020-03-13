@@ -62,7 +62,7 @@ ColumnLayout {
                             x = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorTrayName)
                             var x1 = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorXName)
                             y = baseModuleManager.getMotorFeedbackPos(lensPickArmParams.motorYName)
-                            tray_start_point2.setX(x + lensPickArmModuleParameter.visonPositionX - x1);
+                            tray_start_point2.setX(x + lens_loader_parameter.visonPositionX - x1);
                             tray_start_point2.setY(y);
                         }else{
 

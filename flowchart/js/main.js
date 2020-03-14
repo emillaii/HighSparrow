@@ -1027,7 +1027,7 @@ $(document).ready(function () {
 	  $('#aa1_stop_position_div')[0].style.display = "block";
 	  $('#aa2_start_position_div')[0].style.display = "block";
 	  $('#aa2_stop_position_div')[0].style.display = "block";
-	  $('#aa_offset_in_um_div')[0].style.display = "none";
+	  $('#aa_offset_in_um_div')[0].style.display = "block";
   });
   
   $('#select_stationary_scan_mode').click(function(){
@@ -1195,7 +1195,7 @@ $(document).ready(function () {
 			$('#aa1_stop_position_div')[0].style.display = "block";
 			$('#aa2_start_position_div')[0].style.display = "block";
 			$('#aa2_stop_position_div')[0].style.display = "block";
-			$('#aa_offset_in_um_div')[0].style.display = "none";
+			$('#aa_offset_in_um_div')[0].style.display = "block";
 		} else if (($('#aa_mode').val() == "2")) {
 			$('#aa1_start_position_div')[0].style.display = "none";
 			$('#aa1_stop_position_div')[0].style.display = "none";

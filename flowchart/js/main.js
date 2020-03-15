@@ -1190,7 +1190,13 @@ $(document).ready(function () {
         // 'W' key is pressed
 		updateData();
     } else if ( key == 'E' && !toggle_edit_state) {
-		if ($('#aa_mode').val() == "0" || $('#aa_mode').val() == "1"){
+		if ($('#aa_mode').val() == "0"){
+			$('#aa1_start_position_div')[0].style.display = "block";
+			$('#aa1_stop_position_div')[0].style.display = "block";
+			$('#aa2_start_position_div')[0].style.display = "block";
+			$('#aa2_stop_position_div')[0].style.display = "block";
+			$('#aa_offset_in_um_div')[0].style.display = "none";
+		} else if (($('#aa_mode').val() == "1")) {
 			$('#aa1_start_position_div')[0].style.display = "block";
 			$('#aa1_stop_position_div')[0].style.display = "block";
 			$('#aa2_start_position_div')[0].style.display = "block";

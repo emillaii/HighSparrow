@@ -458,10 +458,13 @@ void AACoreNew::startWork( int run_mode)
         sendAlarmMessage(OK_OPERATION,u8"启动参数RunMode缺失.启动失败.",ErrorLevel::ErrorMustStop);
         return;
     }
-    if(run_params.contains("AAFlowchart"))
+    if(run_params.contains("AAFlowchart") && this->serverMode == 0)
     {
-        QString aaFlowChart = run_params["AAFlowchart"].toString();
-        this->setFlowchartDocument(aaFlowChart);
+        QString resp = SI::ui.getUIResponse(this->Name(), "Run with AA2 flowchart parameters?", MsgBoxIcon::Question, SI::ui.yesNoButtons);
+        if(resp ==  SI::ui.Yes) {
+            QString aaFlowChart = run_params["AAFlowchart"].toString();
+            this->setFlowchartDocument(aaFlowChart);
+        }
     }
     if(run_params.contains("LotNumber"))
     {

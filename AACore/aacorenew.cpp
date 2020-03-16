@@ -1345,9 +1345,19 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     double xTilt_3 = weighted_vector_3.z * weighted_vector_3.x;
     double yTilt_3 = weighted_vector_3.z * weighted_vector_3.y;
 
+    if(isnan(xTilt_1)||isnan(xTilt_2))
+    {
+        qCritical("AA calculation tilt fail.");
+        result.insert("OK", false);
+        emit postSfrDataToELK(runningUnit, map);
+        return result;
+    }
+
     qInfo("Layer 1: xTilt: %f yTilt: %f dev: %f", xTilt_1, yTilt_1, dev_1);
     qInfo("Layer 2: xTilt: %f yTilt: %f dev: %f", xTilt_2, yTilt_2, dev_2);
     qInfo("Layer 3: xTilt: %f yTilt: %f dev: %f", xTilt_3, yTilt_3, dev_3);
+
+
     result.insert("xTilt_1", xTilt_1); map.insert("xTilt_1", xTilt_1);
     result.insert("yTilt_1", yTilt_1); map.insert("yTilt_1", yTilt_1);
     result.insert("xTilt_2", xTilt_2); map.insert("xTilt_2", xTilt_2);

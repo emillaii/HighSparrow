@@ -73,9 +73,9 @@ signals:
 
 private:
 
-    double m_SafetyZ = 0;
+    double m_SafetyZ = 1.5;
     double m_SafetyY = 0;
-    double m_SafetyX = 0;
+    double m_SafetyX = 1;
 };
 
 #endif // MATERIAL_CARRIER_PARAMETER_H

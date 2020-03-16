@@ -118,7 +118,8 @@ bool SingleHeadMachineMaterialLoaderModule::moveToLensTrayEndPos()
 bool SingleHeadMachineMaterialLoaderModule::moveToNextLensTrayPos(int tray_index)
 {
     qInfo("moveToNextTrayPos tray_index %d",tray_index);
-    bool result = lensTray->findNextPositionOfInitState(tray_index);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= lensTray->findNextPositionOfInitState(tray_index);
     if(result)
         result &=  pick_arm->move_XY_Synic(lensTray->getCurrentPosition(tray_index));
     if(!result)
@@ -159,7 +160,8 @@ bool SingleHeadMachineMaterialLoaderModule::moveToSensorTrayEndPos()
 bool SingleHeadMachineMaterialLoaderModule::moveToNextSensorTrayPos(int tray_index)
 {
     qInfo("moveToNextTrayPos tray_index %d",tray_index);
-    bool result = sensorTray->findNextPositionOfInitState(tray_index);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= sensorTray->findNextPositionOfInitState(tray_index);
     if(result)
         result &=  pick_arm->move_XY_Synic(sensorTray->getCurrentPosition(tray_index));
     if(!result)
@@ -200,7 +202,8 @@ bool SingleHeadMachineMaterialLoaderModule::moveToRejectTrayEndPos()
 bool SingleHeadMachineMaterialLoaderModule::moveToNextRejectTrayPos(int tray_index)
 {
     qInfo("moveToNextRejectTrayPos tray_index %d",tray_index);
-    bool result = rejectTray->findNextPositionOfInitState(tray_index);
+    bool result = pick_arm->move_Xm_Origin();
+    result &= rejectTray->findNextPositionOfInitState(tray_index);
     if(result)
         result &=  pick_arm->move_XY_Synic(rejectTray->getCurrentPosition(tray_index));
     if(!result)
@@ -592,7 +595,7 @@ bool SingleHeadMachineMaterialLoaderModule::picker1SearchSutZ(double z,bool is_o
         result &= pick_arm->motor_y->StepMoveSync(parameters.escapeY());
         QThread::msleep(100);
         result &= pick_arm->motor_vcm1->MoveToPosSync(0);
-//        result = pick_arm->motor_th1->MoveToPos(-parameters.sutPlaceSensorAngle());
+        //        result = pick_arm->motor_th1->MoveToPos(-parameters.sutPlaceSensorAngle());
     }
     return result;
 }
@@ -832,6 +835,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 states.setHasPickedNgSensor(false);
                 rejectTray->setCurrentMaterialState(MaterialState::IsNg, states.currentRejectTray());
             } else {
+                moveToChangeTrayPos();
                 sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Reject Tray Full. Please clear the reject tray");
                 int operation = waitMessageReturn(is_run);
                 qInfo("user operation: %d", operation);
@@ -1011,15 +1015,15 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     pickSensorPoses.clear();
                     continue;
                 }
-//                else {  //最后一颗产品还没有放回原SensorTray盘
-//                    QThread::msleep(50);
-//                    waitLastProductPlaceToTrayTimes++;
-//                    if(waitLastProductPlaceToTrayTimes > 20)
-//                    {
-//                        qInfo("Waiting last product being placed to sensor tray!");
-//                        waitLastProductPlaceToTrayTimes = 0;
-//                    }
-//                }
+                //                else {  //最后一颗产品还没有放回原SensorTray盘
+                //                    QThread::msleep(50);
+                //                    waitLastProductPlaceToTrayTimes++;
+                //                    if(waitLastProductPlaceToTrayTimes > 20)
+                //                    {
+                //                        qInfo("Waiting last product being placed to sensor tray!");
+                //                        waitLastProductPlaceToTrayTimes = 0;
+                //                    }
+                //                }
             }
             if(!is_run)break;
         }

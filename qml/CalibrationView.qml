@@ -96,17 +96,30 @@ ItemDelegate {
                                     logicManager.performHandling(LogicManager.PERFORM_LOCATION)
                                 }
                             }
-//                            Image{
-//                                cache: false
-//                                sourceSize.width: 100
-//                                sourceSize.height: 100
-//                                fillMode: Image.PreserveAspectFit
-//                                source: {
-//                                    console.log(prFileName)
-//                                    var imageName = prFileName.replace(".avdata", "_resultImage.jpg")
-//                                    return imageName
-//                                }
-//                            }
+                            RoundButton{
+                                transformOrigin: Item.Center
+                                display: Button.TextBesideIcon
+                                icon.width: 30
+                                icon.height: 30
+                                icon.source: "../../../icons/refresh.png"
+                                icon.color: "cyan"
+                                onClicked: {
+                                    image.source = ""
+                                    image.source = prFileName.replace(".avdata", "_resultImage.jpg")
+                                }
+                            }
+                            Image{
+                                id: image
+                                cache: false
+                                sourceSize.width: 100
+                                sourceSize.height: 100
+                                fillMode: Image.PreserveAspectFit
+                                source: {
+                                    console.log(prFileName)
+                                    var imageName = prFileName.replace(".avdata", "_resultImage.jpg")
+                                    return imageName
+                                }
+                            }
                         }
                     }
                 }

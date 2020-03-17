@@ -1220,7 +1220,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     qInfo("start : %f stop: %f enable_tilt: %d", start, stop, enableTilt);
     unsigned int zScanCount = 0;
     QElapsedTimer timer; timer.start();
-    int resize_factor = 1;
+    int resize_factor = parameters.aaScanOversampling() + 1;
     vector<double> fov_y; vector<double> fov_x;
     QPointF prev_point = {0, 0};
     double prev_fov_slope = 0;
@@ -1285,7 +1285,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             x2sum=x2sum+pow(realZ,2);
             xysum=xysum+realZ*dfov;
             zScanCount++;
-            emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, resize_factor);
+            emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, parameters.aaScanMTFFrequency()+1);
             img.release();
             dst.release();
         }
@@ -1405,7 +1405,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             cv::Mat dst;
             cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
             cv::resize(img, dst, size);
-            emit sfrWorkerController->calculate(i, realZ, dst, false, resize_factor);
+            emit sfrWorkerController->calculate(i, realZ, dst, false, parameters.aaScanMTFFrequency()+1);
             img.release();
             dst.release();
             zScanCount++;
@@ -1458,7 +1458,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             cv::Mat dst;
             cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
             cv::resize(img, dst, size);
-            emit sfrWorkerController->calculate(i, realZ, dst, false, resize_factor);
+            emit sfrWorkerController->calculate(i, realZ, dst, false, parameters.aaScanMTFFrequency()+1);
             img.release();
             dst.release();
             zScanCount++;

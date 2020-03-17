@@ -1,6 +1,6 @@
 #include "SingleHead/singlehead_lsut_module.h"
 
-SingleheadLSutModule::SingleheadLSutModule(QString name, QObject * parent) : ThreadWorkerBase (name)
+SingleheadLSutModule::SingleheadLSutModule(QString name, QObject *parent) : ThreadWorkerBase(name)
 {
     Q_UNUSED(parent);
 }
@@ -8,12 +8,12 @@ SingleheadLSutModule::SingleheadLSutModule(QString name, QObject * parent) : Thr
 void SingleheadLSutModule::Init(MaterialCarrier *sut_carrier,
                                 VisionLocation *downlook_location,
                                 VisionLocation *mushroom_location,
-                                VisionLocation * gripper_location,
+                                VisionLocation *gripper_location,
                                 XtVacuum *sutVacuum,
                                 XtVacuum *lutVacuum,
                                 XtGeneralOutput *pogopin,
-                                AAHeadModule * aa_head,
-                                LSutState* lsutState)
+                                AAHeadModule *aa_head,
+                                LSutState *lsutState)
 {
     qInfo("SingleheadLSutModule Init");
     this->aa_head = aa_head;
@@ -29,39 +29,39 @@ void SingleheadLSutModule::Init(MaterialCarrier *sut_carrier,
 
 void SingleheadLSutModule::loadParams(QString file_name)
 {
-    QMap<QString,PropertyBase*> temp_map;
+    QMap<QString, PropertyBase *> temp_map;
 
-    temp_map.insert("LSUT_PARAMS",&parameters);
+    temp_map.insert("LSUT_PARAMS", &parameters);
     //    temp_map.insert("load_position",&load_position);
-    temp_map.insert("load_sensor_position",&load_sensor_position);
-    temp_map.insert("load_lens_position",&load_lens_position);
-    temp_map.insert("downlook_position",&downlook_position);
-    temp_map.insert("mushroom_position",&mushroom_position);
-    temp_map.insert("uplook_position",&uplook_position);
-    temp_map.insert("calibration_position",&calibration_position);
+    temp_map.insert("load_sensor_position", &load_sensor_position);
+    temp_map.insert("load_lens_position", &load_lens_position);
+    temp_map.insert("downlook_position", &downlook_position);
+    temp_map.insert("mushroom_position", &mushroom_position);
+    temp_map.insert("uplook_position", &uplook_position);
+    temp_map.insert("calibration_position", &calibration_position);
     temp_map.insert("safety_position", &safety_position);
-    temp_map.insert("pick_lens_position",&pick_lens_position);
-    temp_map.insert("unpick_lens_position",&unpick_lens_position);
-    temp_map.insert("lens_offset",&lens_offset);
-    PropertyBase::loadJsonConfig(file_name,temp_map);
+    temp_map.insert("pick_lens_position", &pick_lens_position);
+    temp_map.insert("unpick_lens_position", &unpick_lens_position);
+    temp_map.insert("lens_offset", &lens_offset);
+    PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
 void SingleheadLSutModule::saveParams(QString file_name)
 {
-    QMap<QString,PropertyBase*> temp_map;
-    temp_map.insert("LSUT_PARAMS",&parameters);
+    QMap<QString, PropertyBase *> temp_map;
+    temp_map.insert("LSUT_PARAMS", &parameters);
     //    temp_map.insert("load_position",&load_position);
-    temp_map.insert("load_sensor_position",&load_sensor_position);
-    temp_map.insert("load_lens_position",&load_lens_position);
-    temp_map.insert("downlook_position",&downlook_position);
-    temp_map.insert("mushroom_position",&mushroom_position);
-    temp_map.insert("uplook_position",&uplook_position);
-    temp_map.insert("calibration_position",&calibration_position);
-    temp_map.insert("safety_position",&safety_position);
-    temp_map.insert("pick_lens_position",&pick_lens_position);
-    temp_map.insert("unpick_lens_position",&unpick_lens_position);
-    temp_map.insert("lens_offset",&lens_offset);
-    PropertyBase::saveJsonConfig(file_name,temp_map);
+    temp_map.insert("load_sensor_position", &load_sensor_position);
+    temp_map.insert("load_lens_position", &load_lens_position);
+    temp_map.insert("downlook_position", &downlook_position);
+    temp_map.insert("mushroom_position", &mushroom_position);
+    temp_map.insert("uplook_position", &uplook_position);
+    temp_map.insert("calibration_position", &calibration_position);
+    temp_map.insert("safety_position", &safety_position);
+    temp_map.insert("pick_lens_position", &pick_lens_position);
+    temp_map.insert("unpick_lens_position", &unpick_lens_position);
+    temp_map.insert("lens_offset", &lens_offset);
+    PropertyBase::saveJsonConfig(file_name, temp_map);
 }
 
 void SingleheadLSutModule::receiveLoadMaterialFinishResponse()
@@ -72,10 +72,16 @@ void SingleheadLSutModule::receiveLoadMaterialFinishResponse()
     lsutState->setWaitLoading(false);
     lsutState->setWaitAAProcess(true);
     qInfo(QString(tr("emit start aa process request")).toStdString().c_str());
-    emit sendStartAAProcessRequestSignal(lsutState->currentSensorIndex(), lsutState->currentLensIndex(), lsutState->aaHeadHasLens());
+    emit sendStartAAProcessRequestSignal(lsutState->currentSensorIndex(), lsutState->currentLensIndex(),
+                                         lsutState->aaHeadHasLens());
 }
 
-void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bool has_ng_lens, bool has_product, bool has_ng_product, int productOrSensorIndex, int lensIndex)
+void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor,
+                                                          bool has_ng_lens,
+                                                          bool has_product,
+                                                          bool has_ng_product,
+                                                          int productOrSensorIndex,
+                                                          int lensIndex)
 {
     QMutexLocker tmpLocker(&locker);
     currentProductIndex = productOrSensorIndex;
@@ -84,11 +90,11 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
     qInfo("Receive AA process response has_ng_sensor: %d has_ng_lens: %d has_product: %d has_ng_product: %d",
           has_ng_sensor, has_ng_lens, has_product, has_ng_product);
 
-    bool needCheckWhereIsTheOkLens = false;  //检查OkLens在LUT上还是在夹爪上
+    bool needCheckWhereIsTheOkLens = false;    //检查OkLens在LUT上还是在夹爪上
 
     lsutState->setHasProduct(has_product || has_ng_product);
     lsutState->setIsProductOk(has_product && !has_ng_product);
-    if(has_product || has_ng_product)
+    if (has_product || has_ng_product)
     {
         lsutState->setLutHasLens(false);
         lsutState->setSutHasSensor(false);
@@ -96,32 +102,33 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
         lsutState->setSutHasNgSensor(false);
         lsutState->setAAHeadHasLens(false);
     }
-    else {
+    else
+    {
         lsutState->setSutHasNgSensor(has_ng_sensor);
         lsutState->setSutHasSensor(!has_ng_sensor);
 
-        if(has_ng_lens)
+        if (has_ng_lens)
         {
             lsutState->setLutHasLens(false);
             this->unpickLens();
-//            sut_carrier->Move_SZ_SX_Y_X_Z_Sync(-2, this->unpick_lens_position.Y(), this->unpick_lens_position.Z());
-//            aa_head->openGripper();
-//            QThread::msleep(200);
+            //            sut_carrier->Move_SZ_SX_Y_X_Z_Sync(-2, this->unpick_lens_position.Y(),
+            //            this->unpick_lens_position.Z()); aa_head->openGripper(); QThread::msleep(200);
             lsutState->setLutHasNgLens(true);
             lsutState->setAAHeadHasLens(false);
         }
-        else {
+        else
+        {
             lsutState->setLutHasNgLens(false);
             needCheckWhereIsTheOkLens = true;
         }
     }
 
     pogopin->Set(false);
-    moveToLoadSensorPosition();
+    moveToLoadSensorPosition(true);
 
-    if(needCheckWhereIsTheOkLens)
+    if (needCheckWhereIsTheOkLens)
     {
-        if(!vacuum_lut->Set(true, true, VACUUM_FINISH_DELAY, 300))
+        if (!vacuum_lut->Set(true, true, VACUUM_FINISH_DELAY, 300))
         {
             vacuum_lut->Set(false, false);
             lsutState->setLutHasLens(false);
@@ -141,16 +148,18 @@ void SingleheadLSutModule::receiveAAProcessFinishResponse(bool has_ng_sensor, bo
     emit sendLoadMaterialRequestSignal(true, currentProductIndex, currentLensIndex);
 }
 
-void SingleheadLSutModule::run(){
+void SingleheadLSutModule::run()
+{
     is_run = true;
-    while (is_run) {
-        if(locker.tryLock(200))
+    while (is_run)
+    {
+        if (locker.tryLock(200))
         {
-            if(!lsutState->waitLoading() && !lsutState->waitAAProcess())
+            if (!lsutState->waitLoading() && !lsutState->waitAAProcess())
             {
                 qDebug() << "LSUT is idle. So move to load position!";
                 pogopin->Set(false);
-                moveToLoadSensorPosition();
+                moveToLoadSensorPosition(true);
 
                 lsutState->setWaitAAProcess(false);
                 lsutState->setWaitLoading(true);
@@ -165,10 +174,12 @@ void SingleheadLSutModule::run(){
 
 void SingleheadLSutModule::startWork(int run_mode)
 {
-    if (run_mode == RunMode::Normal) {
+    if (run_mode == RunMode::Normal)
+    {
         qInfo("LSUT start work");
         is_run = true;
-        while(is_run) {
+        while (is_run)
+        {
             run();
         }
     }
@@ -198,101 +209,117 @@ void SingleheadLSutModule::resetLogic()
 void SingleheadLSutModule::performHandling(int cmd)
 {
     emit sendHandlingOperation(cmd);
-    qInfo("emit performHandling %d",cmd);
+    qInfo("emit performHandling %d", cmd);
 }
 
 void SingleheadLSutModule::performHandlingOperation(int cmd)
 {
-    qInfo("Single head LSUT performHandling %d",cmd);
+    qInfo("Single head LSUT performHandling %d", cmd);
     bool result;
 
     int temp_value = 10;
-    if(cmd % temp_value == HandlePosition::MOVE_TO_MUSHROOM_POSITION) {
+    if (cmd % temp_value == HandlePosition::MOVE_TO_MUSHROOM_POSITION)
+    {
         qInfo("LSUT move to mushroom position, cmd: %d", MOVE_TO_MUSHROOM_POSITION);
         result = moveToMushroomPosition(true);
     }
-    else if(cmd % temp_value == HandlePosition::MOVE_TO_UPLOOK_POSITION) {
+    else if (cmd % temp_value == HandlePosition::MOVE_TO_UPLOOK_POSITION)
+    {
         qInfo("LSUT move to gripper position, cmd: %d", MOVE_TO_UPLOOK_POSITION);
         result = moveToUplookPosition(true);
     }
-    else if (cmd % temp_value == HandlePosition::MOVE_TO_LOAD_SENSOR_POSITION) {
+    else if (cmd % temp_value == HandlePosition::MOVE_TO_LOAD_SENSOR_POSITION)
+    {
         qInfo("LSUT move to load sensor position, cmd: %d", MOVE_TO_LOAD_SENSOR_POSITION);
         result = moveToLoadSensorPosition(true);
     }
-    else if (cmd % temp_value == HandlePosition::MOVE_TO_PR_POSITION) {
+    else if (cmd % temp_value == HandlePosition::MOVE_TO_PR_POSITION)
+    {
         qInfo("LSUT move to sensor PR position, cmd: %d", MOVE_TO_PR_POSITION);
         result = moveToPRPosition(true);
     }
-    else if (cmd % temp_value == HandlePosition::MOVE_TO_PICK_LENS_POSITION) {
+    else if (cmd % temp_value == HandlePosition::MOVE_TO_PICK_LENS_POSITION)
+    {
         qInfo("LSUT move to safety position, cmd: %d", MOVE_TO_PICK_LENS_POSITION);
         result = moveToPickLensPosition(true);
     }
-    else if (cmd % temp_value == HandlePosition::MOVE_TO_UNPICK_LENS_POSITION) {
+    else if (cmd % temp_value == HandlePosition::MOVE_TO_UNPICK_LENS_POSITION)
+    {
         qInfo("LSUT move to safety position, cmd: %d", MOVE_TO_UNPICK_LENS_POSITION);
         result = moveToUnpickLensPosition(true);
     }
-    else {
+    else
+    {
         result = true;
     }
-    if(!result)
+    if (!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock, GetCurrentError());
         return;
     }
-    cmd =cmd/temp_value*temp_value;
+    cmd = cmd / temp_value * temp_value;
 
     temp_value = 100;
-    if(cmd % temp_value == HandlePR::RESET_PR) {
+    if (cmd % temp_value == HandlePR::RESET_PR)
+    {
         qInfo("Reset PR result,cmd: %d", RESET_PR);
         pr_offset.ReSet();
     }
-    else if (cmd % temp_value == HandlePR::DOWNLOOK_SENSOR_PR) {
+    else if (cmd % temp_value == HandlePR::DOWNLOOK_SENSOR_PR)
+    {
         qInfo("LSUT perform sensor PR, cmd: %d", DOWNLOOK_SENSOR_PR);
         result = performDownlookSensorPR();
     }
-    else {
+    else
+    {
         result = true;
     }
-    if(!result)
+    if (!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock, GetCurrentError());
         return;
     }
-    cmd =cmd/temp_value*temp_value;
+    cmd = cmd / temp_value * temp_value;
 
     temp_value = 1000;
 
-    if (cmd % temp_value == HandleToWorkPos::LENS_TO_GRIPPER_CENTER) {
+    if (cmd % temp_value == HandleToWorkPos::LENS_TO_GRIPPER_CENTER)
+    {
         qInfo("Move lens to gripper center, cmd: %d", LENS_TO_GRIPPER_CENTER);
         result = moveLensToGripperCenter();
     }
-    else {
+    else
+    {
         result = true;
     }
-    if(!result)
+    if (!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock, GetCurrentError());
         return;
     }
-    cmd =cmd/temp_value*temp_value;
+    cmd = cmd / temp_value * temp_value;
 
     temp_value = 10000;
-    if (cmd % temp_value == HandlePick::LENS_GRIPPER_MEASURE_HEIGHT) {
+    if (cmd % temp_value == HandlePick::LENS_GRIPPER_MEASURE_HEIGHT)
+    {
         qInfo("Measure height from lens to gripper, cmd: %d", LENS_GRIPPER_MEASURE_HEIGHT);
         result = lensGripperMeasureHight();
     }
-    else if (cmd % temp_value == HandlePick::GRAB_LENS_TO_GRIPPER) {
+    else if (cmd % temp_value == HandlePick::GRAB_LENS_TO_GRIPPER)
+    {
         qInfo("Grab lens to gripper, cmd: %d", GRAB_LENS_TO_GRIPPER);
         result = gripLens();
     }
-    else if (cmd % temp_value == HandlePick::UNPICK_LENS_TO_LUT) {
+    else if (cmd % temp_value == HandlePick::UNPICK_LENS_TO_LUT)
+    {
         qInfo("UnPick lens to lut, cmd: %d", UNPICK_LENS_TO_LUT);
         result = unpickLens();
     }
-    else {
+    else
+    {
         result = true;
     }
-    if(!result)
+    if (!result)
     {
         sendAlarmMessage(ErrorLevel::TipNonblock, GetCurrentError());
         return;
@@ -301,17 +328,17 @@ void SingleheadLSutModule::performHandlingOperation(int cmd)
     return;
 }
 
-bool SingleheadLSutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check_autochthonous)
+bool SingleheadLSutModule::moveToDownlookPR(PrOffset &offset, bool close_lighting, bool check_autochthonous)
 {
 
     vision_downlook_location->OpenLight();
     bool result = moveToPRPosition(check_autochthonous);
     QThread::msleep(200);
-    if(result)
+    if (result)
     {
         result = vision_downlook_location->performPR(offset);
     }
-    if(close_lighting)
+    if (close_lighting)
         vision_downlook_location->CloseLight();
     return result;
 }
@@ -321,11 +348,11 @@ bool SingleheadLSutModule::moveToUplookPR(PrOffset &offset, bool close_lighting,
     vision_uplook_location->OpenLight();
     bool result = moveToUplookPosition(check_autochthonous);
     QThread::msleep(200);
-    if(result)
+    if (result)
     {
         result = vision_uplook_location->performPR(offset);
     }
-    if(close_lighting)
+    if (close_lighting)
         vision_uplook_location->CloseLight();
     return result;
 }
@@ -335,7 +362,7 @@ bool SingleheadLSutModule::moveToDownlookSaveImage(QString filename)
     vision_downlook_location->OpenLight();
     bool result = moveToPRPosition(true);
     QThread::msleep(300);
-    if(result)
+    if (result)
     {
         this->vision_downlook_location->saveImage(filename);
     }
@@ -346,35 +373,41 @@ bool SingleheadLSutModule::moveToMushroomPosition(bool check_autochthonous)
 {
     qInfo("SUT module moveToMushroomPos");
 
-    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(mushroom_position.X(),mushroom_position.Y(),mushroom_position.Z(),check_autochthonous);
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(mushroom_position.X(), mushroom_position.Y(), mushroom_position.Z(),
+                                              check_autochthonous);
 }
 
 bool SingleheadLSutModule::moveToUplookPosition(bool check_autochthonous)
 {
     qInfo("SUT module moveToGripperPosition");
-    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(uplook_position.X(),uplook_position.Y(),uplook_position.Z(),check_autochthonous);
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(uplook_position.X(), uplook_position.Y(), uplook_position.Z(),
+                                              check_autochthonous);
 }
 
 bool SingleheadLSutModule::moveToLoadSensorPosition(bool check_autochthonous)
 {
     qInfo("SUT module moveToLoadPos");
-    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(load_sensor_position.X(),load_sensor_position.Y(),load_sensor_position.Z(),check_autochthonous);
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(load_sensor_position.X(), load_sensor_position.Y(),
+                                              load_sensor_position.Z(), check_autochthonous);
 }
 
 bool SingleheadLSutModule::moveToPRPosition(bool check_autochthonous)
 {
     qInfo("SUT module moveToPRPosition");
-    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),downlook_position.Z(),check_autochthonous);
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(), downlook_position.Y(), downlook_position.Z(),
+                                              check_autochthonous);
 }
 
 bool SingleheadLSutModule::moveToPickLensPosition(bool check_autochthonous)
 {
-    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(pick_lens_position.X(),pick_lens_position.Y(),pick_lens_position.Z(),check_autochthonous);
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(pick_lens_position.X(), pick_lens_position.Y(), pick_lens_position.Z(),
+                                              check_autochthonous);
 }
 
 bool SingleheadLSutModule::moveToUnpickLensPosition(bool check_autochthonous)
 {
-    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(unpick_lens_position.X(),unpick_lens_position.Y(),unpick_lens_position.Z(),check_autochthonous);
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(unpick_lens_position.X(), unpick_lens_position.Y(),
+                                              unpick_lens_position.Z(), check_autochthonous);
 }
 
 bool SingleheadLSutModule::performDownlookSensorPR()
@@ -385,19 +418,18 @@ bool SingleheadLSutModule::performDownlookSensorPR()
 bool SingleheadLSutModule::moveLensToGripperCenter()
 {
     qInfo("moveLensToGripper position");
-    return sut_carrier->StepMove_XY_Sync(lens_offset.X()-pr_offset.X, lens_offset.Y()-pr_offset.Y);
-
+    return sut_carrier->StepMove_XY_Sync(lens_offset.X() - pr_offset.X, lens_offset.Y() - pr_offset.Y);
 }
 
-bool SingleheadLSutModule::stepMove_XY_Sync(double x,double y)
+bool SingleheadLSutModule::stepMove_XY_Sync(double x, double y)
 {
     qInfo("Move to target position, X: %f, Y: %f", x, y);
-    return sut_carrier->StepMove_XY_Sync(x,y);
+    return sut_carrier->StepMove_XY_Sync(x, y);
 }
 
 bool SingleheadLSutModule::moveToZPos(double z)
 {
-    qInfo("Motor Z : %s Target : %f", sut_carrier->motor_z->Name().toStdString().c_str(),z);
+    qInfo("Motor Z : %s Target : %f", sut_carrier->motor_z->Name().toStdString().c_str(), z);
     return sut_carrier->Move_Z_Sync(z);
 }
 
@@ -410,7 +442,8 @@ void SingleheadLSutModule::recordCurrentPos()
 bool SingleheadLSutModule::movetoRecordPos(bool check_autochthonous)
 {
     qInfo("Move to record position X: %f, Y: %f, Z: %f", record_position.X, record_position.Y, record_position.Z);
-    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(record_position.X,record_position.Y,record_position.Z,check_autochthonous);
+    return sut_carrier->Move_SZ_SX_Y_X_Z_Sync(record_position.X, record_position.Y, record_position.Z,
+                                              check_autochthonous);
 }
 
 bool SingleheadLSutModule::lensGripperMeasureHight()
@@ -419,7 +452,8 @@ bool SingleheadLSutModule::lensGripperMeasureHight()
     if (sut_carrier->ZSerchByForce(parameters.LensSoftlandingVel(), parameters.LensSoftlandingForce(), true))
     {
         QThread::msleep(100);
-        if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"Use this Z height:%1").arg(sut_carrier->GetSoftladngPosition()))){
+        if (!emit sendMsgSignal(tr(u8"提示"), tr(u8"Use this Z height:%1").arg(sut_carrier->GetSoftladngPosition())))
+        {
             return true;
         }
         parameters.setZOffset(sut_carrier->GetSoftladngPosition());
@@ -436,19 +470,20 @@ bool SingleheadLSutModule::gripLens()
     qInfo("GripLens Start SUT is going to zOffset: %f", parameters.ZOffset());
     aa_head->openGripper();
     aa_head->moveToPikLensPositionAsync();
-    if(!moveToPickLensPosition() || !aa_head->waitArrivedPickLesPosition()) {
+    if (!moveToPickLensPosition() || !aa_head->waitArrivedPickLesPosition())
+    {
         qInfo("Move to pick lens pos fail");
-        this->vacuum_lut->Set(false, false);  //First do not check the state.
+        this->vacuum_lut->Set(false, false);    // First do not check the state.
         aa_head->closeGripper();
         return false;
     }
-    if(parameters.delayBeforGripLens() > 0)
+    if (parameters.delayBeforGripLens() > 0)
     {
         QThread::msleep(parameters.delayBeforGripLens());
     }
-    this->vacuum_lut->Set(false, false);  //First do not check the state.
+    this->vacuum_lut->Set(false, false);    // First do not check the state.
     aa_head->closeGripper();
-    if(parameters.delayAfterGripLens() > 0)
+    if (parameters.delayAfterGripLens() > 0)
     {
         QThread::msleep(parameters.delayAfterGripLens());
     }
@@ -459,16 +494,19 @@ bool SingleheadLSutModule::gripLens()
 bool SingleheadLSutModule::unpickLens()
 {
     qInfo("Unpick Lens start");
-    if (!moveToUnpickLensPosition(true)) {
+    if (!moveToUnpickLensPosition(true))
+    {
         qInfo("Move to unpick lens position fail");
         return false;
     }
-    if (!this->vacuum_lut->Set(true)) {
-        qInfo("vacuum_lut set to true error");
+    this->vacuum_lut->Set(true, false);
+    aa_head->openGripper();
+    if (!this->vacuum_lut->Wait(true))
+    {
+        qCritical("vacuum_lut set to true error");
         return false;
     }
-    aa_head->openGripper();
-    moveToLoadSensorPosition();
+    moveToLoadSensorPosition(true);
     qInfo("Unpick Lens finished");
 
     return true;

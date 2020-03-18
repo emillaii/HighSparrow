@@ -446,7 +446,7 @@ void TrayLoaderModule::receivceModuleMessage(QVariantMap message)
         qInfo("message error! has no OriginModule.");
         return;
     }
-    if(message["OriginModule"].toString() == "LensLoaderModule")
+    if(message["OriginModule"].toString() == "LensLoaderModule" || message["OriginModule"].toString() == "LensTrayLoaderModule")
     {
         if(message.contains("Message"))
         {
@@ -770,6 +770,7 @@ void TrayLoaderModule::runHandle()
         }
         if(allow_change_tray)
         {
+            qInfo("Changing tray");
             has_task = true;
             if(!moveToChangeChangeHandlly())
             {

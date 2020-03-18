@@ -990,7 +990,7 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
     emit pushDataToUnit(runningUnit, "overallResult", map);
 
     if (ret.code != ErrorCode::OK) {
-        SI::ui.showMessage("AA", ret.errorMessage, MsgBoxIcon::Warning, "OK");
+        //SI::ui.showMessage("AA", ret.errorMessage, MsgBoxIcon::Warning, "OK");
         emit pushNgDataToCSV(this->runningUnit, parameters.lotNumber(), dk->readSensorID(), testItemName, ret.errorMessage);
     }
     parameters.setAACoreRunningTest("");

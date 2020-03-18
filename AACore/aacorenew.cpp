@@ -1345,7 +1345,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     double xTilt_3 = weighted_vector_3.z * weighted_vector_3.x;
     double yTilt_3 = weighted_vector_3.z * weighted_vector_3.y;
 
-    if(isnan(xTilt_1)||isnan(xTilt_2))
+    if(isnan(xTilt_1)||isnan(yTilt_1))
     {
         qCritical("AA calculation tilt fail.");
         result.insert("OK", false);

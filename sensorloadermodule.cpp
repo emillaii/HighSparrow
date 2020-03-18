@@ -1101,97 +1101,99 @@ void SensorLoaderModule::run()
         }
 
         //去等待位置
-        if(checkSut1WaitCondition())
-        {
-            if((states.picker1MaterialState() == MaterialState::IsRawSensor)&&(states.sut1MaterialState() == MaterialState::IsEmpty))
+        if(states.picker2MaterialState() == MaterialState::IsEmpty){    // Picker2 有料，应先处理完再去等待位置
+            if(checkSut1WaitCondition())
             {
-                if(!movePicker1ToSUTPos(false))
+                if((states.picker1MaterialState() == MaterialState::IsRawSensor)&&(states.sut1MaterialState() == MaterialState::IsEmpty))
                 {
-                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
-                    waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
+                    if(!movePicker1ToSUTPos(false))
+                    {
+                        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                        waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                    }
+                }
+                else if(((states.sut1MaterialState() == MaterialState::IsNgProduct)&&(!parameters.enableNgProductPr()))||
+                        ((states.sut1MaterialState() == MaterialState::IsGoodProduct)&&(!parameters.enableProductPr()))||
+                        ((states.sut1MaterialState() == MaterialState::IsNgSensor)&&(!parameters.enableNgSensorPr()))||
+                        ((states.sut1MaterialState() == MaterialState::IsRawSensor)&&(!parameters.enableProductPr())))
+                {
+                    if(!movePicker2ToSUTPos(false,states.sut1MaterialState() != MaterialState::IsNgSensor))
+                    {
+                        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                        waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                    }
+                }
+                else
+                {
+                    if(((states.sut1MaterialState() == MaterialState::IsNgProduct)&&parameters.enableNgProductPr())||
+                                        ((states.sut1MaterialState() == MaterialState::IsGoodProduct)&&parameters.enableProductPr()))
+                    {
+                        sut_product_location->OpenLight();
+                    }
+                    else if(((states.sut1MaterialState() == MaterialState::IsNgSensor)&&parameters.enableNgSensorPr()))
+                    {
+                        sut_sensor_location->OpenLight();
+                    }
+                    if(!moveCameraToSUTPRPos(false,true))
+                    {
+                        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                        waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                    }
                 }
             }
-            else if(((states.sut1MaterialState() == MaterialState::IsNgProduct)&&(!parameters.enableNgProductPr()))||
-                    ((states.sut1MaterialState() == MaterialState::IsGoodProduct)&&(!parameters.enableProductPr()))||
-                    ((states.sut1MaterialState() == MaterialState::IsNgSensor)&&(!parameters.enableNgSensorPr()))||
-                    ((states.sut1MaterialState() == MaterialState::IsRawSensor)&&(!parameters.enableProductPr())))
+            else if(checkSut2WaitCondition())
             {
-                if(!movePicker2ToSUTPos(false,states.sut1MaterialState() != MaterialState::IsNgSensor))
+                if((states.picker1MaterialState() == MaterialState::IsRawSensor)&&(states.sut2MaterialState() == MaterialState::IsEmpty))
                 {
-                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
-                    waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
+                    if(!movePicker1ToSUTPos(true))
+                    {
+                        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                        waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                    }
+                }
+                else if(((states.sut2MaterialState() == MaterialState::IsNgProduct)&&(!parameters.enableNgProductPr()))||
+                        ((states.sut2MaterialState() == MaterialState::IsGoodProduct)&&(!parameters.enableProductPr()))||
+                        ((states.sut2MaterialState() == MaterialState::IsNgSensor)&&(!parameters.enableNgSensorPr()))||
+                        ((states.sut2MaterialState() == MaterialState::IsRawSensor)&&(!parameters.enableProductPr())))
+                {
+                    if(!movePicker2ToSUTPos(true,states.sut1MaterialState() != MaterialState::IsNgSensor))
+                    {
+                        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                        waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                    }
+                }
+                else
+                {
+                    if(((states.sut2MaterialState() == MaterialState::IsNgProduct)&&parameters.enableNgProductPr())||
+                            ((states.sut2MaterialState() == MaterialState::IsGoodProduct)&&parameters.enableProductPr()))
+                    {
+                        sut_product_location->OpenLight();
+                    }
+                    else if(((states.sut2MaterialState() == MaterialState::IsNgSensor)&&parameters.enableNgSensorPr()))
+                    {
+                        sut_sensor_location->OpenLight();
+                    }
+                    if(!moveCameraToSUTPRPos(true,true))
+                    {
+                        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
+                        waitMessageReturn(is_run,alarm_id);
+                        if(!is_run)break;
+                    }
                 }
             }
             else
             {
-                if(((states.sut1MaterialState() == MaterialState::IsNgProduct)&&parameters.enableNgProductPr())||
-                                    ((states.sut1MaterialState() == MaterialState::IsGoodProduct)&&parameters.enableProductPr()))
-                {
-                    sut_product_location->OpenLight();
-                }
-                else if(((states.sut1MaterialState() == MaterialState::IsNgSensor)&&parameters.enableNgSensorPr()))
-                {
-                    sut_sensor_location->OpenLight();
-                }
-                if(!moveCameraToSUTPRPos(false,true))
+                if(!moveCameraToStandbyPos(true))
                 {
                     int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
                     waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
                 }
-            }
-        }
-        else if(checkSut2WaitCondition())
-        {
-            if((states.picker1MaterialState() == MaterialState::IsRawSensor)&&(states.sut2MaterialState() == MaterialState::IsEmpty))
-            {
-                if(!movePicker1ToSUTPos(true))
-                {
-                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
-                    waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
-                }
-            }
-            else if(((states.sut2MaterialState() == MaterialState::IsNgProduct)&&(!parameters.enableNgProductPr()))||
-                    ((states.sut2MaterialState() == MaterialState::IsGoodProduct)&&(!parameters.enableProductPr()))||
-                    ((states.sut2MaterialState() == MaterialState::IsNgSensor)&&(!parameters.enableNgSensorPr()))||
-                    ((states.sut2MaterialState() == MaterialState::IsRawSensor)&&(!parameters.enableProductPr())))
-            {
-                if(!movePicker2ToSUTPos(true,states.sut1MaterialState() != MaterialState::IsNgSensor))
-                {
-                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
-                    waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
-                }
-            }
-            else
-            {
-                if(((states.sut2MaterialState() == MaterialState::IsNgProduct)&&parameters.enableNgProductPr())||
-                        ((states.sut2MaterialState() == MaterialState::IsGoodProduct)&&parameters.enableProductPr()))
-                {
-                    sut_product_location->OpenLight();
-                }
-                else if(((states.sut2MaterialState() == MaterialState::IsNgSensor)&&parameters.enableNgSensorPr()))
-                {
-                    sut_sensor_location->OpenLight();
-                }
-                if(!moveCameraToSUTPRPos(true,true))
-                {
-                    int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
-                    waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
-                }
-            }
-        }
-        else
-        {
-            if(!moveCameraToStandbyPos(true))
-            {
-                int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,GetCurrentError());
-                waitMessageReturn(is_run,alarm_id);
-                if(!is_run)break;
             }
         }
 

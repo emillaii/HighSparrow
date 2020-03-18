@@ -75,6 +75,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
     connect(&aaCoreNew, &AACoreNew::postSfrDataToELK, &unitlog, &Unitlog::postSfrDataToELK);
     connect(&lut_module, &LutModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
+    connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTrayRequst,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);
     connect(&lens_loader_module, &LensLoaderModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::saveUnitDataToCSV, &unitlog, &Unitlog::saveUnitDataToCSV);
     connect(&aaCoreNew.parameters, &AACoreParameters::dispenseCountChanged, this, &BaseModuleManager::updateAACoreParameter);
@@ -723,7 +724,6 @@ void BaseModuleManager::receiveMessageFromWorkerManger(QVariantMap message)
         QVariantMap temp_param;
         if(getServerMode() == 1)
         {
-            //AA1 will ask AA2 for the flowchart parameter
             temp_param.insert("AAFlowchart", aaCoreNew.flowchartJsonString);
             temp_param.insert("LotNumber", aaCoreNew.parameters.lotNumber());
             temp_param.insert("RunMode",parameters.runMode());
@@ -2702,10 +2702,10 @@ void BaseModuleManager::toogleIoState(QString io_name, int inputState)
     state_geter.toggleOutputIoState(io_name, inputState);
 }
 
-//void BaseModuleManager::sendChangeSensorTray()
-//{
-//   emit sensor_loader_module.sendChangeTrayRequst();
-//}
+void BaseModuleManager::sendChangeSensorTray()
+{
+   emit sensor_loader_module.sendChangeTrayRequst();
+}
 
 bool BaseModuleManager::initSensor()
 {

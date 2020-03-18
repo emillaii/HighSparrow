@@ -38,7 +38,7 @@ public slots:
     void stopWork(bool wait_finish);
     void performHandlingOperation(int cmd,QVariant param);
     void resetLogic();
-//    void receiveChangeTray();
+    void receiveChangeTray();
 private:
     void run();
     void runHandly();

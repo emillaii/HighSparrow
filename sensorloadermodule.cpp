@@ -481,6 +481,17 @@ void SensorLoaderModule::changeNgTray()
     }
 }
 
+void SensorTrayLoaderModule::receiveChangeTray()
+{
+    qInfo("receiveChangeTray");
+    if(states.changingTray())
+        return;
+    states.setNeedChangeTray(true);
+    if(states.hasVacancyTray())
+        states.setHasProductTray(true);
+    states.setChangingTray(true);
+}
+
 //void SensorLoaderModule::receiveRequestMessage(QString message, QString client_ip)
 //{
 //    qInfo("Sut Module receive command:%s from ip: %s", message.toStdString().c_str(), client_ip.toStdString().c_str());

@@ -4,6 +4,7 @@
 #include <QObject>
 #include "XtGeneralOutput.h"
 #include "towerlightbuzzerparameter.h"
+#include <QThread>
 
 ///
 /// \brief The TowerLightBuzzer class
@@ -13,15 +14,14 @@
 class TowerLightBuzzer: public QObject
 {
     Q_OBJECT
-
 public:
-    //    enum TowerLightColor
-    //    {
-    //        Red,
-    //        Green,
-    //        Yellow
-    //    };
-    //    Q_FLAGS(TowerLightColor)
+    enum TowerLightColor
+    {
+        Red,
+        Green,
+        Yellow
+    };
+    Q_FLAGS(TowerLightColor)
 
     TowerLightBuzzer();
 
@@ -29,22 +29,18 @@ public:
               XtGeneralOutput* redOut,
               XtGeneralOutput* greenOut,
               XtGeneralOutput* yellowOut
-              //              int buzzerBlinkInterval,
-              //              int buzzerBlinkDuration,
-              //              int towerLightBlinkInterval,
-              //              int towerLightBlinkDuration
               );
-    bool Set(bool new_state);
-    void openBuzzer(bool new_state);
+    void loadJsonConfig(QString file_name);
+    void saveJsonConfig(QString file_name);
+    void openBuzzer();
     void blinkBuzzer();
-    void closeBuzzer(bool new_state);
-
+    void closeBuzzer();
 
     ///
     /// \param color 可以使用|操作符，打开多个颜色
     ///
-    //    void switchColor(TowerLightColor color);
-    //    void blinkColor(TowerLightColor color);
+    void switchColor(TowerLightColor color);
+    void blinkColor(TowerLightColor color);
 
 public:
     TowerLightBuzzerParameter parameters;
@@ -58,6 +54,8 @@ private:
     int buzzerBlinkDuration;
     int towerLightBlinkInterval;
     int towerLightBlinkDuration;
+
+    bool isBuzzerOn = false;
 };
 
 #endif // TOWERLIGHTBUZZER_H

@@ -127,13 +127,14 @@ public:
               VisionLocation* lut_lens_vision = nullptr,
               XtVacuum* sutVacuum = nullptr,
               XtVacuum* lutVacuum = nullptr,
-              TowerLightBuzzer* buzzer = nullptr
+              TowerLightBuzzer *towerLightBuzzer = nullptr
             );
     void loadJsonConfig(QString file_name);
     void saveJsonConfig(QString file_name);
     Q_INVOKABLE void performHandling(int cmd);
     Q_INVOKABLE bool moveToChangeTrayPos();
-    Q_INVOKABLE void towerLightBuzzerTest();
+    Q_INVOKABLE bool towerLightBuzzerTest();
+     Q_INVOKABLE bool closeAllTowerLightBuzzer();
 
 public:
     SingleHeadMachineMaterialLoaderModuleParameter parameters;
@@ -259,7 +260,8 @@ private:
     MaterialTray *rejectTray = Q_NULLPTR;
     XtVacuum* sut_vacuum = Q_NULLPTR;
     XtVacuum* lut_vacuum = Q_NULLPTR;
-    TowerLightBuzzer* buzzer = Q_NULLPTR;
+    TowerLightBuzzer* towerLightBuzzer = Q_NULLPTR;
+    TowerLightBuzzer* towerLight = Q_NULLPTR;
 
 
     VisionLocation* sensor_vision = Q_NULLPTR;

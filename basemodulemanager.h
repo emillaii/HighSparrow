@@ -48,7 +48,6 @@ public:
     QMap<QString,Calibration*> calibrations;
     QMap<QString,VisionLocation*> vision_locations;
     QMap<QString,XtVacuum*> vacuums;
-    QMap<QString,TowerLightBuzzer*> towerLightBuzzers;
     QMap<QString,XtCylinder*> cylinder;
     ChartCalibration * chart_calibration = Q_NULLPTR;
     BaslerPylonCamera * pylonDownlookCamera = Q_NULLPTR;
@@ -78,6 +77,7 @@ public:
     Unitlog unitlog;
 
     StartCameraDOE* startCameraDoe;
+    TowerLightBuzzer tower_light_buzzer;
 
     int lightPanelLighting() const
     {
@@ -169,8 +169,6 @@ public:
     bool saveMotorFile(QString file_name);
     bool loadVacuumFiles(QString file_name);
     bool saveVacuumFiles(QString file_name);
-    bool loadTowerLightBuzzerFiles(QString file_name);
-    bool saveTowerLightBuzzerFiles(QString file_name);
     bool loadCylinderFiles(QString file_name);
     bool saveCylinderFiles(QString file_name);
     bool loadVisionLoactionFiles(QString file_name);
@@ -218,7 +216,6 @@ public:
     XtGeneralOutput *GetOutputIoByName(QString name);
     XtGeneralInput *GetInputIoByName(QString name);
     XtVacuum *GetVacuumByName(QString name);
-    TowerLightBuzzer *GetTowerLightBuzzerByName(QString name);
     XtCylinder *GetCylinderByName(QString name);
     VisionLocation *GetVisionLocationByName(QString name);
     Pixel2Mech *GetPixel2MechByName(QString name);

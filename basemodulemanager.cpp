@@ -135,8 +135,9 @@ bool BaseModuleManager::loadParameters()
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
-    loadTowerLightBuzzerFiles(getCurrentParameterDir().append(TOWERLIGHTBUZZER_PARAMETER_FILE));
     //    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    tower_light_buzzer.loadJsonConfig(getCurrentParameterDir().append(TOWERLIGHTBUZZER_PARAMETER_FILE));
+
     return true;
 }
 
@@ -165,6 +166,7 @@ bool BaseModuleManager::saveParameters()
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
     //    saveMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    tower_light_buzzer.saveJsonConfig(getCurrentParameterDir().append(TOWERLIGHTBUZZER_PARAMETER_FILE));
     return true;
 }
 
@@ -350,47 +352,6 @@ bool BaseModuleManager::saveVacuumFiles(QString file_name)
         {
             QJsonObject object;
             temp_vacuum->parameters.write(object);
-            array.append(object);
-        }
-    }
-    if(array.size() > 0)
-        return  saveJsonArray(file_name,array);
-    return  false;
-}
-bool BaseModuleManager::loadTowerLightBuzzerFiles(QString file_name)
-{
-    QJsonArray array;
-    if(!loadJsonArray(file_name,array))
-    {
-        //        saveVacuumFiles(file_name);
-        return false;
-    }
-    for (int i = 0; i < array.count(); i++)
-    {
-        TowerLightBuzzer* temp_towerLightBuzzer = new TowerLightBuzzer;
-        temp_towerLightBuzzer->parameters.read(array.at(i).toObject());
-        QJsonObject temp_object;
-        temp_towerLightBuzzer->parameters.write(temp_object);
-        if(!towerLightBuzzers.contains(temp_towerLightBuzzer->parameters.towerLightBuzzerName()))
-            towerLightBuzzers.insert(temp_towerLightBuzzer->parameters.towerLightBuzzerName(),temp_towerLightBuzzer);
-        else
-        {
-            qInfo("towerlight buzzer param name(%s)repeat!",temp_towerLightBuzzer->parameters.towerLightBuzzerName().toStdString().c_str());
-            delete temp_towerLightBuzzer;
-        }
-    }
-    return true;
-}
-
-bool BaseModuleManager::saveTowerLightBuzzerFiles(QString file_name)
-{
-    QJsonArray array;
-    foreach (QString temp_name, towerLightBuzzers.keys()) {
-        TowerLightBuzzer* temp_towerLightBuzzer = GetTowerLightBuzzerByName(temp_name);
-        if(temp_towerLightBuzzer != nullptr)
-        {
-            QJsonObject object;
-            temp_towerLightBuzzer->parameters.write(object);
             array.append(object);
         }
     }
@@ -746,12 +707,6 @@ bool BaseModuleManager::InitStruct()
                             GetInputIoByName(temp_cylinder->parameters.zeroInName()),
                             GetOutputIoByName(temp_cylinder->parameters.zeroOutName()));
     }
-    foreach (TowerLightBuzzer* temp_towerLightBuzzer, towerLightBuzzers.values()){
-        temp_towerLightBuzzer->Init(GetOutputIoByName(temp_towerLightBuzzer->parameters.buzzerName()),
-                                    GetOutputIoByName(temp_towerLightBuzzer->parameters.redLightName()),
-                                    GetOutputIoByName(temp_towerLightBuzzer->parameters.greenLightName()),
-                                    GetOutputIoByName(temp_towerLightBuzzer->parameters.yellowLightName()));
-    };
 
     foreach (Calibration* temp_calibraion, calibrations) {
         temp_calibraion->Init(GetMotorByName(temp_calibraion->parameters.motorXName()),
@@ -806,7 +761,7 @@ bool BaseModuleManager::InitStruct()
                                                //                                               GetVisionLocationByName(single_station_material_loader_module.parameters.cameraToPickerOffsetVisionName()),
                                                GetVacuumByName(single_station_material_loader_module.parameters.sutVacuumName()),
                                                GetVacuumByName(single_station_material_loader_module.parameters.lutVacuumName()),
-                                               GetTowerLightBuzzerByName(single_station_material_loader_module.parameters.buzzerName())
+                                               &tower_light_buzzer
                                                );
     sensor_tray.resetTrayState(0);
     sensor_tray.resetTrayState(1);
@@ -849,6 +804,12 @@ bool BaseModuleManager::InitStruct()
     startCameraDoe->init(&sh_lsut_module, &single_station_material_loader_module,
                          &single_station_material_pickarm,
                          &sensor_tray, dothinkey);
+
+    tower_light_buzzer.Init(GetOutputIoByName(tower_light_buzzer.parameters.buzzerName()),
+                            GetOutputIoByName(tower_light_buzzer.parameters.redLightName()),
+                            GetOutputIoByName(tower_light_buzzer.parameters.greenLightName()),
+                            GetOutputIoByName(tower_light_buzzer.parameters.yellowLightName())
+                            );
     return true;
 }
 
@@ -919,6 +880,7 @@ bool BaseModuleManager::initialDevice()
     EnableMotors();
     GetOutputIoByName(u8"TL_上下平台")->Set(true);
     GetOutputIoByName(u8"SUT_气缸")->Set(true);
+    tower_light_buzzer.switchColor(TowerLightBuzzer::TowerLightColor::Yellow);
     return true;
 }
 
@@ -1074,16 +1036,6 @@ XtVacuum *BaseModuleManager::GetVacuumByName(QString name)
         return vacuums[name];
     else
         qInfo("can not find vacuum io %s",name.toStdString().c_str());
-    return nullptr;
-}
-
-TowerLightBuzzer *BaseModuleManager::GetTowerLightBuzzerByName(QString name)
-{
-    if(name == "")return nullptr;
-    if(towerLightBuzzers.contains(name))
-        return towerLightBuzzers[name];
-    else
-        qInfo("can not find towerLightBuzzer io %s",name.toStdString().c_str());
     return nullptr;
 }
 

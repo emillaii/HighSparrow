@@ -1,4 +1,5 @@
 #include "towerlightbuzzer.h"
+#include <QDebug>
 
 TowerLightBuzzer::TowerLightBuzzer()
 {
@@ -9,10 +10,6 @@ void TowerLightBuzzer::Init(XtGeneralOutput *buzzerOut,
                             XtGeneralOutput *redOut,
                             XtGeneralOutput *greenOut,
                             XtGeneralOutput *yellowOut
-//                            int buzzerBlinkInterval,
-//                            int buzzerBlinkDuration,
-//                            int towerLightBlinkInterval,
-//                            int towerLightBlinkDuration
                             )
 {
     this->buzzerOut = buzzerOut;
@@ -21,28 +18,62 @@ void TowerLightBuzzer::Init(XtGeneralOutput *buzzerOut,
     this->yellowOut = yellowOut;
 }
 
-bool TowerLightBuzzer::Set(bool new_state)
+void TowerLightBuzzer::loadJsonConfig(QString file_name)
 {
-    buzzerOut->Set(new_state);
-//    if((redOut != nullptr)&&(!new_state))
-//    {
-//        redOut->Set(true);
-//    }
-    return true;
-//}
+    QMap<QString, PropertyBase*> temp_map;
+    temp_map.insert("tower_light_buzzer",&parameters);
+    PropertyBase::loadJsonConfig(file_name,temp_map);
 }
 
-void TowerLightBuzzer::openBuzzer(bool new_state)
+void TowerLightBuzzer::saveJsonConfig(QString file_name)
 {
-    buzzerOut->Set(new_state);
+    QMap<QString, PropertyBase*> temp_map;
+    temp_map.insert("tower_light_buzzer",&parameters);
+    PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
-void TowerLightBuzzer::closeBuzzer(bool new_state)
+void TowerLightBuzzer::openBuzzer()
 {
-    buzzerOut->Set(new_state);
+    buzzerOut->Set(true);
 }
 
-//void TowerLightBuzzer::switchColor(TowerLightBuzzer::TowerLightColor color)
-//{
+void TowerLightBuzzer::blinkBuzzer()
+{
+    isBuzzerOn= true;
+    if (isBuzzerOn) {
+        buzzerOut->Set(true);
+    }
+}
+void TowerLightBuzzer::closeBuzzer()
+{
+    isBuzzerOn = false;
+    buzzerOut->Set(false);
+}
 
-//}
+void TowerLightBuzzer::switchColor(TowerLightBuzzer::TowerLightColor color)
+{
+    if(color == TowerLightColor::Red)
+    {
+        redOut->Set(true);
+        yellowOut->Set(false);
+        greenOut->Set(false);
+    }
+    if(color == TowerLightColor::Yellow)
+    {
+        redOut->Set(false);
+        yellowOut->Set(true);
+        greenOut->Set(false);
+    }
+    if(color == TowerLightColor::Green)
+    {
+        redOut->Set(false);
+        yellowOut->Set(false);
+        greenOut->Set(true);
+    }
+}
+
+void TowerLightBuzzer::blinkColor(TowerLightBuzzer::TowerLightColor color)
+{
+
+}
+

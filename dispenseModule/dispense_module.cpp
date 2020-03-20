@@ -85,9 +85,9 @@ void DispenseModule::moveToDispenseDot(bool record_z)
         double zValue = carrier->motor_z->GetFeedbackPos();
         if(record_z)
         {
-            //QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否应用此高度:%1").arg(zValue),QMessageBox::Yes|QMessageBox::No);
-            //if(rb==QMessageBox::Yes)
-            //{
+            QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否应用此高度:%1").arg(zValue),QMessageBox::Yes|QMessageBox::No);
+            if(rb==QMessageBox::Yes)
+            {
                 parameters.setDispenseZPos(zValue);
                 if(dispense_io != nullptr)
                 {
@@ -97,7 +97,7 @@ void DispenseModule::moveToDispenseDot(bool record_z)
                 }
                 else
                     qInfo("dispense_io is null");
-            //}
+            }
             carrier->ZSerchReturn();
         }
         else

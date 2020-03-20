@@ -2598,9 +2598,9 @@ bool SensorLoaderModule::movePicker2ToSUTPos(bool is_local,bool is_product,bool 
     bool result;
     QPointF temp_pos;
     if(is_local)
-        temp_pos =  sut2_pr_position.ToPointF();
+        temp_pos =  sut2_pr_position.ToPointF() + sut2PickOffset.ToPointF();
     else
-        temp_pos =  sut1_pr_position.ToPointF();
+        temp_pos =  sut1_pr_position.ToPointF() + sut1PickOffset.ToPointF();
     PrOffset temp_pr = is_product?sut_product_location->getCurrentResult():sut_sensor_location->getCurrentResult();
     double x = temp_pos.x() + picker2_offset.X() - temp_pr.X;
     double y = temp_pos.y() + picker2_offset.Y() - temp_pr.Y;

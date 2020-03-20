@@ -754,7 +754,7 @@ bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
             if(!is_run)return false;
             states.setHasAuxiliaryEntranceClip(false);
         }
-        sendAlarmMessage(u8"已放备用进料弹夹",u8"请在备用sensor进料弹夹位置放入带料弹夹!");
+        //sendAlarmMessage(u8"已放备用进料弹夹",u8"请在备用sensor进料弹夹位置放入带料弹夹!");
     }
 
     bool result = entrance_clip_push->Set(states.useSpareEntanceClip());
@@ -783,7 +783,7 @@ bool SensorTrayLoaderModule::moveToExitClipNextPos()
             if(!is_run)return false;
             states.setHasAuxiliaryExitClip(false);
         }
-        sendAlarmMessage(u8"已放备用出料弹夹",u8"请在备用sensor出料弹夹位置放入空弹夹!");
+        //sendAlarmMessage(u8"已放备用出料弹夹",u8"请在备用sensor出料弹夹位置放入空弹夹!");
     }
 
     bool result = exit_clip_push->Set(states.useSpareExitClip());
@@ -802,7 +802,7 @@ bool SensorTrayLoaderModule::checkEntanceTray(bool check_state)
         return true;
     QString logic_state = check_state?u8"有":u8"无";
     QString checked_state = check_state?u8"无":u8"有";
-    AppendError(QString(u8"轨道入口处逻辑%1盘，但检测到%2盘！").arg(logic_state).arg(checked_state));
+    //AppendError(QString(u8"轨道入口处逻辑%1盘，但检测到%2盘！").arg(logic_state).arg(checked_state));
     qInfo(u8"轨道入口处逻辑%s盘，但检测到%s盘！",logic_state.toStdString().c_str(),checked_state.toStdString().c_str());
     return false;
 }

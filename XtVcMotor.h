@@ -75,9 +75,8 @@ public:
     void GetMasterAxisID() override;
 
     bool SearchPosByADC(double vel, double search_limit, double threshold, bool search_above, double &result) override;
-    bool SearchPosByForce(
-        const double speed, const double force, const double limit, const double margin, const int timeout = 30000);
-    bool SearchPosByForce(const double speed, const double force, const int timeout = 30000);
+    bool SearchPosByForce(const double speed,const double force,const double  limit,const double margin,const int timeout = 30000);
+    bool SearchPosByForce(const double speed,const double force,const int timeout = 30000);
     bool resetSoftLanding(int timeout = 30000);
 
     void ShowSetting();
@@ -89,8 +88,7 @@ public:
     static QMutex setSoftLanding_mutex;
 
 private:
-    void SetSoftLanding(
-        double slow_speed, double slow_acc, double force, double start_pos, double target_pos, double margin);
+    void SetSoftLanding(double slow_speed, double slow_acc, double force, double start_pos, double target_pos, double margin);
     bool DoSoftLanding();
     bool DoSoftLandingReturn();
     bool WaitSoftLandingDone(int timeout = 30000);

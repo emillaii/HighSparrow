@@ -251,6 +251,8 @@ public:
     Position spa_standby_position;
     Position picker1_offset;
     Position picker2_offset;
+    Position sut1PickOffset;
+    Position sut2PickOffset;
 
     UPHHelper sensor_uph;
     UPHHelper product_uph;

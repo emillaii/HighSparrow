@@ -145,6 +145,7 @@ ColumnLayout {
             height: 40
             onClicked: {
                 //logicManager.lutPickLensToAA1()
+                aaHeadModule.moveToPickLensPosition()   //aahead move to pick lens position before pick
                 lutModule.moveToAA1PickLens(false,false,true)
             }
         }

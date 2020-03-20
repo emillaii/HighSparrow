@@ -23,8 +23,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_displa
         is_cc_falling = false; is_ul_falling = false; is_ur_falling = false; is_ll_falling = false; is_lr_falling = false;
     }
     cv::Mat displayImage = img.clone();
-    vector<Sfr_entry> sv_result = sfr::calculateSfr(z, img, freq_factor);   // Freq 0.25
-    //vector<Sfr_entry> sv_result = sfr::calculateSfr(z, img, freq_factor);   //Freq: 0.125
+    vector<Sfr_entry> sv_result = sfr::calculateSfr(z, img, freq_factor);
     vector<Sfr_entry> sv = sv_result;
     if (sv.size() == 0) {
         qInfo("Cannot find any mtf pattern. Sfr calculation fail");

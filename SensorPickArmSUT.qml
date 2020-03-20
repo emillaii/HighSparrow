@@ -528,7 +528,7 @@ ColumnLayout {
                     text:qsTr("取料offsetX")
                 }
                 TextField{
-                    text:sutParams.pickOffsetX
+                    text:sut2PickOffset.X
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
@@ -542,14 +542,14 @@ ColumnLayout {
                     text:qsTr("取料offsetY")
                 }
                 TextField{
-                    text:sutParams.pickOffsetY
+                    text:sut2PickOffset.Y
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sutParams.setPickOffsetY(text)
+                        sut2PickOffset.setY(text)
                     }
                 }
             }

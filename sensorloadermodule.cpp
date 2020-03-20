@@ -3608,6 +3608,8 @@ QMap<QString,PropertyBase*> SensorLoaderModule::getModuleParameter()
     temp_map.insert("spa_standby_position", &spa_standby_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
+    temp_map.insert("sut1PickOffset", &sut1PickOffset);
+    temp_map.insert("sut2PickOffset", &sut2PickOffset);
     temp_map.insert("sensor_uph",&sensor_uph);
     temp_map.insert("left_sensor_uph",&left_sensor_uph);
     temp_map.insert("right_sensor_uph",&right_sensor_uph);

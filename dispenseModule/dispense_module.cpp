@@ -53,7 +53,7 @@ void DispenseModule::updatePath()
             mechPoints.push_back(QPointF(-mechPoint.x(), -mechPoint.y()));
         }
     }
-     dispenser->parameters.setSpeedCount(mechPoints.size());
+    dispenser->parameters.setSpeedCount(mechPoints.size());
     qInfo("read point :%d",mechPoints.size());
     emit callQmlRefeshImg(12);
 }
@@ -70,6 +70,7 @@ void DispenseModule::setPRPosition(double pr_x, double pr_y, double pr_theta)
     this->pr_y = -pr_y;
     this->pr_theta = pr_theta;
 }
+
 void DispenseModule::moveToDispenseDot(bool record_z)
 {
     cancalculation = true;

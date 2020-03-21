@@ -56,7 +56,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
             offset.Theta = pr_result.theta;
             offset.W = pr_result.width;
             offset.H = pr_result.height;
-            CloseLight();
+            //CloseLight();
             return true;
         }
         if(mapping->CalcMechDistance(QPointF(pr_result.x,pr_result.y),mech)&&mapping->CalcMechDistance(QPointF(pr_result.ori_x,pr_result.ori_y),mech_o))
@@ -69,7 +69,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
             {
                 qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8" pr result too big"));
-                CloseLight();
+                //CloseLight();
                 return false;
             }
             if(abs(pr_result.theta) < parameters.maximunAngle())
@@ -86,7 +86,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
             {
                 qInfo("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8"theta result too big"));
-                CloseLight();
+                //CloseLight();
                 return false;
             }
             current_result = offset = temp_offset;
@@ -101,7 +101,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
         qWarning("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
     }
     AppendError(QString(u8"Perform PR Fail"));
-    CloseLight();
+    //CloseLight();
     return false;
 }
 
@@ -140,7 +140,7 @@ bool VisionLocation::performPR()
             {
                 qWarning("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8" pr result too big"));
-                CloseLight();
+                //CloseLight();
                 return false;
             }
             if(abs(current_pixel_result.theta) < parameters.maximunAngle())
@@ -157,7 +157,7 @@ bool VisionLocation::performPR()
             {
                 qWarning("pr result too big: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
                 AppendError(QString(u8"theta result too big"));
-                CloseLight();
+                //CloseLight();
                 return false;
             }
             current_result = offset = temp_offset;
@@ -174,7 +174,7 @@ bool VisionLocation::performPR()
         qWarning("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
     }
     AppendError(QString(u8"Perform PR (%1) Fail").arg(parameters.cameraName()));
-    CloseLight();
+    //CloseLight();
     return false;
 }
 

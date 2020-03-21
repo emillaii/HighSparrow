@@ -2060,9 +2060,9 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
 {
     qInfo("allMotorsSeekOriginal2 Start");
 
-    XtGeneralOutput *gripperIo = GetOutputIoByName(u8"夹爪稳压阀");
-    if (gripperIo)
-        gripperIo->Set(1);
+//    XtGeneralOutput *gripperIo = GetOutputIoByName(u8"夹爪稳压阀");
+//    if (gripperIo)
+//        gripperIo->Set(1);
     //推料氣缸復位
     bool result;
     if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))

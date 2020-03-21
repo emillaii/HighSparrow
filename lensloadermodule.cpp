@@ -177,7 +177,7 @@ void LensLoaderModule::run(bool has_material)
                 if(RETRY_OPERATION == operation)
                     continue;
             }
-            vacancy_vision->CloseLight();
+            //vacancy_vision->CloseLight();
             if(!moveToWorkPos(true))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_REJECT_OPERATION,GetCurrentError());
@@ -278,7 +278,7 @@ void LensLoaderModule::run(bool has_material)
                 //sendAlarmMessage(ErrorLevel::TipNonblock,"");
                 // TODO: Add autoprtime same as sensor loader module
             }
-            lens_vision->CloseLight();
+            //lens_vision->CloseLight();
             pr_times = 5;
             if(!moveToWorkPos(false))
             {
@@ -430,7 +430,7 @@ void LensLoaderModule::run(bool has_material)
                 else if(RETRY_OPERATION == operation)
                     continue;
             }
-            lut_lens_vision->CloseLight();
+            //lut_lens_vision->CloseLight();
             if(!moveToWorkPos(false))
             {
                 int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());

@@ -724,7 +724,7 @@ void SensorLoaderModule::run()
                 pr_times = parameters.autoPrTime();
                 //sendAlarmMessage(ErrorLevel::TipNonblock,"");
             }
-            tray_sensor_location->CloseLight();
+            //tray_sensor_location->CloseLight();
             //走偏移值
             checkPicker1HasMateril();
             if(!movePicker1ToTrayCurrentPos(states.currentTrayID()))
@@ -798,7 +798,7 @@ void SensorLoaderModule::run()
                     else if(RETRY_OPERATION == operation)
                         continue;
                 }
-                tray_empty_location->CloseLight();
+                //tray_empty_location->CloseLight();
                 if(is_buffer_tray)
                 {
                     tray->setTrayPrOffset(tray_empty_location->getCurrentResult(),0,SensorPosition::BUFFER_TRAY);
@@ -943,7 +943,7 @@ void SensorLoaderModule::run()
                         continue;
                     if(!is_run)break;
                 }
-                tray_empty_location->CloseLight();
+                //tray_empty_location->CloseLight();
                 if(!parameters.enablePlaceNgProductPr())
                 {
                     tray->setTrayPrOffset(tray_empty_location->getCurrentResult(),0,SensorPosition::NG_SENSOR_TRAY);
@@ -1041,7 +1041,7 @@ void SensorLoaderModule::run()
                 pr_times = parameters.autoPrTime();
                 //sendAlarmMessage(ErrorLevel::TipNonblock,"");
             }
-            tray_sensor_location->CloseLight();
+            //tray_sensor_location->CloseLight();
             //走偏移值
             checkPicker1HasMateril();
             if(!movePicker1ToTrayCurrentPos(states.currentTrayID()))
@@ -1324,7 +1324,7 @@ void SensorLoaderModule::run()
                         else if(RETRY_OPERATION == operation)
                             continue;
                     }
-                    sut_product_location->CloseLight();
+                    //sut_product_location->CloseLight();
                 }
                 else
                 {
@@ -1447,7 +1447,7 @@ void SensorLoaderModule::run()
                         if(RETRY_OPERATION == operation)
                             continue;
                     }
-                    sut_sensor_location->CloseLight();
+                    //sut_sensor_location->CloseLight();
                 }
                 else
                 {

@@ -34,12 +34,13 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
             pylonUplookCamera = new BaslerPylonCamera(UPLOOK_VISION_CAMERA);
             pylonDownlookCamera = new BaslerPylonCamera(DOWNLOOK_VISION_CAMERA);
             pylonPickarmCamera = new BaslerPylonCamera(PICKARM_VISION_CAMERA);
-            pylonAA2DownlookCamera = new BaslerPylonCamera(CAMERA_AA2_DL);
-            pylonSensorPickarmCamera = new BaslerPylonCamera(CAMERA_SPA_DL);
             if (MachineVersion() == 1) {
                 pylonPickarmULCamera = new BaslerPylonCamera(CAMERA_LPA_UL);
                 pylonBarcodeCamera = new BaslerPylonCamera(CAMERA_LPA_BARCODE);
             }
+        } else if (ServerMode() == 1) {
+            pylonAA2DownlookCamera = new BaslerPylonCamera(CAMERA_AA2_DL);
+            pylonSensorPickarmCamera = new BaslerPylonCamera(CAMERA_SPA_DL);
         }
     }
     if (this->ServerMode() == 0) {

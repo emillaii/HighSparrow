@@ -94,59 +94,86 @@ QImage VisionModule::grabImageFromMainThreadSlot(QString cameraName)
 bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 {
     QMutexLocker locker(&mutex);
-    qInfo("grabImageFromCamera current_thread_id: %d main_thread_id", this->thread()->currentThreadId(), this->threadId);
-    if (serverMode == 1) { //If vision module 2, need to ask vision module 1 to get image
-         if (this->thread()->currentThreadId() == this->threadId) //Main thread handle.
-         {
-             QRemoteObjectPendingReply<QByteArray> reply = visionRep->getImageEx(cameraName);
-             if (reply.waitForFinished()){
-                 QByteArray byteArray = reply.returnValue();
-                 QImage img((uchar *)byteArray.data(), visionRep->width(), visionRep->height(), (QImage::Format)visionRep->imgFormat());
-                 QPixmap p = QPixmap::fromImage(img);
-                 QImage q2 = p.toImage();
-                 q2 = q2.convertToFormat(QImage::Format_RGB888);
-                 avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-                 image = image2;
-             } else {
-                 qWarning("grabImageFromCamera fail from main thread handle");
-                 return false;
-             }
-         } else { //Call QTRO in another thread
-             QImage img = emit grabImageFromMainThreadSig(cameraName);
-             if (img.isNull()) {
-                 qWarning("grabImageFromCamera fail from another thread handle");
-                 return false;
-             }
-             QPixmap p = QPixmap::fromImage(img);
-             QImage q2 = p.toImage();
-             q2 = q2.convertToFormat(QImage::Format_RGB888);
-             avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-             image = image2;
-         }
-    } else {
-        BaslerPylonCamera *camera = Q_NULLPTR;
+
+    BaslerPylonCamera *camera = Q_NULLPTR;
+    if (serverMode == 0) {
         if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
         else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
         else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
-        else if (cameraName.contains(CAMERA_AA2_DL)) { camera = aa2DownlookCamera; }
-        else if (cameraName.contains(CAMERA_SPA_DL)) { camera = sensorPickarmCamera; }
         else if (cameraName.contains(CAMERA_LPA_UL)) { camera = sensorUplookCamera; }
         else if (cameraName.contains(CAMERA_LPA_BARCODE)) { camera = barcodeCamera; }
-        if (camera == Q_NULLPTR) {
-            qWarning("Cannot find camera %s", cameraName.toStdString().c_str());
-            return false;
-        }
-        if (!camera->isCameraGrabbing())
-        {
-            qWarning("camera grabbing fail %s", cameraName.toStdString().c_str());
-            return false;
-        }
-        QPixmap p = QPixmap::fromImage(camera->getNewImage());
-        QImage q2 = p.toImage();
-        q2 = q2.convertToFormat(QImage::Format_RGB888);
-        avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-        image = image2;
+    } else if (serverMode == 1) {
+        if (cameraName.contains(CAMERA_AA2_DL)) { camera = aa2DownlookCamera; }
+        else if (cameraName.contains(CAMERA_SPA_DL)) { camera = sensorPickarmCamera; }
     }
+    if (camera == Q_NULLPTR) {
+        qWarning("Cannot find camera %s", cameraName.toStdString().c_str());
+        return false;
+    }
+    if (!camera->isCameraGrabbing())
+    {
+        qWarning("camera grabbing fail %s", cameraName.toStdString().c_str());
+        return false;
+    }
+    QPixmap p = QPixmap::fromImage(camera->getNewImage());
+    QImage q2 = p.toImage();
+    q2 = q2.convertToFormat(QImage::Format_RGB888);
+    avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+    image = image2;
+
+//    qInfo("grabImageFromCamera current_thread_id: %d main_thread_id", this->thread()->currentThreadId(), this->threadId);
+//    if (serverMode == 1) { //If vision module 2, need to ask vision module 1 to get image
+//         if (this->thread()->currentThreadId() == this->threadId) //Main thread handle.
+//         {
+//             QRemoteObjectPendingReply<QByteArray> reply = visionRep->getImageEx(cameraName);
+//             if (reply.waitForFinished()){
+//                 QByteArray byteArray = reply.returnValue();
+//                 QImage img((uchar *)byteArray.data(), visionRep->width(), visionRep->height(), (QImage::Format)visionRep->imgFormat());
+//                 QPixmap p = QPixmap::fromImage(img);
+//                 QImage q2 = p.toImage();
+//                 q2 = q2.convertToFormat(QImage::Format_RGB888);
+//                 avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+//                 image = image2;
+//             } else {
+//                 qWarning("grabImageFromCamera fail from main thread handle");
+//                 return false;
+//             }
+//         } else { //Call QTRO in another thread
+//             QImage img = emit grabImageFromMainThreadSig(cameraName);
+//             if (img.isNull()) {
+//                 qWarning("grabImageFromCamera fail from another thread handle");
+//                 return false;
+//             }
+//             QPixmap p = QPixmap::fromImage(img);
+//             QImage q2 = p.toImage();
+//             q2 = q2.convertToFormat(QImage::Format_RGB888);
+//             avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+//             image = image2;
+//         }
+//    } else {
+//        BaslerPylonCamera *camera = Q_NULLPTR;
+//        if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
+//        else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
+//        else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
+//        else if (cameraName.contains(CAMERA_AA2_DL)) { camera = aa2DownlookCamera; }
+//        else if (cameraName.contains(CAMERA_SPA_DL)) { camera = sensorPickarmCamera; }
+//        else if (cameraName.contains(CAMERA_LPA_UL)) { camera = sensorUplookCamera; }
+//        else if (cameraName.contains(CAMERA_LPA_BARCODE)) { camera = barcodeCamera; }
+//        if (camera == Q_NULLPTR) {
+//            qWarning("Cannot find camera %s", cameraName.toStdString().c_str());
+//            return false;
+//        }
+//        if (!camera->isCameraGrabbing())
+//        {
+//            qWarning("camera grabbing fail %s", cameraName.toStdString().c_str());
+//            return false;
+//        }
+//        QPixmap p = QPixmap::fromImage(camera->getNewImage());
+//        QImage q2 = p.toImage();
+//        q2 = q2.convertToFormat(QImage::Format_RGB888);
+//        avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+//        image = image2;
+//    }
     return true;
 }
 

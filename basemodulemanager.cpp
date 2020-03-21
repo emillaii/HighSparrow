@@ -89,6 +89,15 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
         if(pylonSensorPickarmCamera) pylonSensorPickarmCamera->start();
         if(pylonPickarmULCamera) pylonPickarmULCamera->start();
         if(pylonBarcodeCamera) pylonBarcodeCamera->start();
+    } else if(!QDir(".//notopencamera").exists() && ServerMode() == 1)
+    {
+        if(pylonUplookCamera) pylonUplookCamera->start();
+        if(pylonDownlookCamera) pylonDownlookCamera->start();
+        if(pylonPickarmCamera) pylonPickarmCamera->start();
+        if(pylonAA2DownlookCamera) pylonAA2DownlookCamera->start();
+        if(pylonSensorPickarmCamera) pylonSensorPickarmCamera->start();
+        if(pylonPickarmULCamera) pylonPickarmULCamera->start();
+        if(pylonBarcodeCamera) pylonBarcodeCamera->start();
     }
 
     material_tray.standards_parameters.setTrayCount(5);

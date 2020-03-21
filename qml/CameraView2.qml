@@ -50,7 +50,7 @@ Grid {
                     var borderX = (image3.width - image3.paintedWidth) / 2
                     var borderY = (image3.height - image3.paintedHeight) / 2
                     if (mouseX < borderX || mouseX > image3.width - borderX ||
-                            mouseY < borderY || mouseY > image3.height - borderY)
+                        mouseY < borderY || mouseY > image3.height - borderY)
                     {
                         return console.log("Image Click Out of range")
                     }
@@ -160,7 +160,7 @@ Grid {
                     var borderX = (image.width - image.paintedWidth) / 2
                     var borderY = (image.height - image.paintedHeight) / 2
                     if (mouseX < borderX || mouseX > image.width - borderX ||
-                            mouseY < borderY || mouseY > image.height - borderY)
+                        mouseY < borderY || mouseY > image.height - borderY)
                     {
                         return console.log("Image Click Out of range")
                     }
@@ -227,16 +227,65 @@ Grid {
                         visionModule.saveImage(VisionModule.CAMERA_CHANNEL_UPLOOK_VISION_CAMERA)
                     }
                 }
+                Button {
+                    id: camera1OnOff
+                    x: 240
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/full-screen.png"
+                    onClicked: {
+                        if (uplookCamera.isGrabbing)
+                        {
+                            uplookCamera.close()
+                        }
+                        else
+                        {
+                            uplookCamera.open()
+                        }
+                    }
+                }
+                Button {
+                    id: camera1PauseLive
+                    x: 290
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/pause.png"
+                    onClicked: {
+                        uplookCamera.toggleLiveView()
+                    }
+                }
             }
 
             Connections {
-                target: highSprrow
-                onDisplayUplookResultImageInUI: {
+                target: uplookCamera
+                onCallQmlRefeshImg: {
                     image.source = ""
-                    image.source = "image://uplookCameraResultImage"
-                    camera1Text.text = "Uplook Camera"
+                    image.source = "image://uplookCameraImage"
+                    camera1Text.text = "Uplook Camera (Live)"
                     camera1Text.color = "lightGreen"
                     camera1OnOff.icon.color = "lightGreen"
+                }
+                onNoCameraEvent: {
+                    camera1Text.text = "Uplook Camera (Cannot detect camera)"
+                    camera1Text.color = "red"
+                    camera1OnOff.icon.color = "red"
+                }
+                onCameraCloseEvent: {
+                    camera1Text.text = "Uplook Camera (Camera closed)"
+                    camera1Text.color = "red"
+                    camera1OnOff.icon.color = "red"
+                }
+                onCameraPauseEvent: {
+                    camera1Text.text = "Uplook Camera (Live View Paused)"
+                    camera1Text.color = "cyan"
                 }
             }
         }
@@ -277,7 +326,7 @@ Grid {
                     var borderX = (image1.width - image1.paintedWidth) / 2
                     var borderY = (image1.height - image1.paintedHeight) / 2
                     if (mouseX < borderX || mouseX > image1.width - borderX ||
-                            mouseY < borderY || mouseY > image1.height - borderY)
+                        mouseY < borderY || mouseY > image1.height - borderY)
                     {
                         return console.log("Image Click Out of range")
                     }
@@ -324,19 +373,71 @@ Grid {
                     icon.color: "lightGreen"
                     icon.source: "../icons/save.png"
                     onClicked: {
+                        console.log("Save Image")
                         visionModule.saveImage(VisionModule.CAMERA_CHANNEL_DOWNLOOK_VISION_CAMERA)
                     }
+                }
+                Button {
+                    id: camera2OnOff
+                    x: 240
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/full-screen.png"
+                    onClicked: {
+                        if (downlookCamera.isGrabbing)
+                        {
+                            console.log("Close Button")
+                            downlookCamera.close()
+                        }
+                        else
+                        {
+                            console.log("Open Button")
+                            downlookCamera.open()
+                        }
+                    }
+                }
+                Button {
+                   id: camera2PauseLive
+                   x: 290
+                   y: 0
+                   width: 50
+                   height: 50
+                   text: "Button"
+                   display: AbstractButton.IconOnly
+                   icon.color: "red"
+                   icon.source: "../icons/pause.png"
+                   onClicked: {
+                       downlookCamera.toggleLiveView()
+                   }
                 }
             }
 
             Connections {
-                target: highSprrow
-                onDisplayAA1DownlookResultImageInUI: {
+                target: downlookCamera
+                onCallQmlRefeshImg: {
                     image1.source = ""
-                    image1.source = "image://aa1DownlookCameraResultImage"
-                    camera2Text.text = "AA1 Downlook Camera"
+                    image1.source = "image://downlookCameraImage"
+                    camera2Text.text = "AA Downlook Camera (Live)"
                     camera2Text.color = "lightGreen"
                     camera2OnOff.icon.color = "lightGreen"
+                }
+                onNoCameraEvent: {
+                    camera2Text.text = "AA Downlook Camera (Cannot detect camera)"
+                    camera2Text.color = "red"
+                    camera2OnOff.icon.color = "red"
+                }
+                onCameraCloseEvent: {
+                    camera2Text.text = "AA Downlook Camera (Camera closed)"
+                    camera2Text.color = "red"
+                    camera2OnOff.icon.color = "red"
+                }
+                onCameraPauseEvent: {
+                    camera2Text.text = "AA Downlook Camera (Live View Paused)"
+                    camera2Text.color = "cyan"
                 }
             }
         }
@@ -344,7 +445,7 @@ Grid {
         Text {
             id: camera2Text
             color: "#9ef678"
-            text: qsTr("AA1 Downlook Camera")
+            text: qsTr("AA Downlook Camera")
             fontSizeMode: Text.Fit
             lineHeight: 3.1
             anchors.fill: parent
@@ -381,25 +482,41 @@ Grid {
             }
 
             Connections {
-                target:  highSprrow
-                onDisplayLensPickarmResultImageInUI: {
+                target:  {
+                    if(pickarmCameraSelectComboBox.currentIndex === 0) return pickarmCamera
+                    else if(pickarmCameraSelectComboBox.currentIndex === 1) return pickarmULCamera
+                    else if(pickarmCameraSelectComboBox.currentIndex === 2) return pickarmBarcodeCamera
+                }
+                onCallQmlRefeshImg: {
                     image2.source = ""
                     if(pickarmCameraSelectComboBox.currentIndex === 0) {
-                        image2.source = "image://lensPickarmCameraResultImage"
-                        camera3Text.text =  "Pickarm Camera"
+                        image2.source = "image://pickarmCameraImage"
+                        camera3Text.text =  "Pickarm Camera (Live)"
                     }
+                    else if(pickarmCameraSelectComboBox.currentIndex === 1) {
+                        image2.source = "image://pickarmULCameraImage"
+                        camera3Text.text =  "Sensor UL Camera (Live)"
+                    }
+                    else if(pickarmCameraSelectComboBox.currentIndex === 2) {
+                        image2.source = "image://pickarmBarcodeCameraImage"
+                        camera3Text.text =  "Barcode Camera (Live)"
+                    }
+                    camera3Text.color = "lightGreen"
+                    camera3OnOff.icon.color = "lightGreen"
                 }
-                onDisplaySensorUplookResultImageInUI: {
-                    if(pickarmCameraSelectComboBox.currentIndex === 1) {
-                        image2.source = "image://sensorUplookCameraResultImage"
-                        camera3Text.text =  "Sensor UL Camera"
-                    }
+                onNoCameraEvent: {
+                    camera3Text.text = "(Cannot detect camera)"
+                    camera3Text.color = "red"
+                    camera3OnOff.icon.color = "red"
                 }
-                onDisplayBarcodeResultImageInUI: {
-                    if(pickarmCameraSelectComboBox.currentIndex === 2) {
-                        image2.source = "image://barcodeCameraResultImage"
-                        camera3Text.text =  "Barcode Camera"
-                    }
+                onCameraCloseEvent: {
+                    camera3Text.text = "(Camera closed)"
+                    camera3Text.color = "red"
+                    camera3OnOff.icon.color = "red"
+                }
+                onCameraPauseEvent: {
+                    camera3Text.text = "(Live View Paused)"
+                    camera3Text.color = "cyan"
                 }
             }
 
@@ -409,7 +526,7 @@ Grid {
                     var borderX = (image2.width - image2.paintedWidth) / 2
                     var borderY = (image2.height - image2.paintedHeight) / 2
                     if (mouseX < borderX || mouseX > image2.width - borderX ||
-                            mouseY < borderY || mouseY > image2.height - borderY)
+                        mouseY < borderY || mouseY > image2.height - borderY)
                     {
                         return console.log("Image Click Out of range")
                     }
@@ -495,9 +612,44 @@ Grid {
                     icon.color: "lightGreen"
                     icon.source: "../icons/save.png"
                     onClicked: {
-                        if(pickarmCameraSelectComboBox.currentIndex === 0) visionModule.saveImage(VisionModule.CAMERA_CHANNEL_PICKARM_VISION_CAMERA)
-                        else if (pickarmCameraSelectComboBox.currentIndex === 1) visionModule.saveImage(VisionModule.CAMERA_CHANNEL_CAMERA_LPA_UL)
-                        else if (pickarmCameraSelectComboBox.currentIndex === 2) visionModule.saveImage(VisionModule.CAMERA_CHANNEL_CAMERA_LPA_BARCODE)
+                         if(pickarmCameraSelectComboBox.currentIndex === 0) visionModule.saveImage(VisionModule.CAMERA_CHANNEL_PICKARM_VISION_CAMERA)
+                         else if (pickarmCameraSelectComboBox.currentIndex === 1) visionModule.saveImage(VisionModule.CAMERA_CHANNEL_CAMERA_LPA_UL)
+                         else if (pickarmCameraSelectComboBox.currentIndex === 2) visionModule.saveImage(VisionModule.CAMERA_CHANNEL_CAMERA_LPA_BARCODE)
+                    }
+                }
+                Button {
+                    id: camera3OnOff
+                    x: 240
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/full-screen.png"
+                    onClicked: {
+                        if (pickarmCamera.isGrabbing)
+                        {
+                            pickarmCamera.close()
+                        }
+                        else
+                        {
+                            pickarmCamera.open()
+                        }
+                    }
+                }
+                Button {
+                    id: camera3PauseLive
+                    x: 290
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/pause.png"
+                    onClicked: {
+                        pickarmCamera.toggleLiveView()
                     }
                 }
             }
@@ -532,13 +684,27 @@ Grid {
             }
 
             Connections {
-                target: highSprrow
-                onDisplayAA2DownlookResultImageInUI: {
+                target: aa2DownlookCamera
+                onCallQmlRefeshImg: {
                     image4.source = ""
-                    image4.source = "image://aa2DownlookCameraResultImage"
-                    camera4Text.text = "AA2 Downlook Camera"
+                    image4.source = "image://aa2DownlookCameraImage"
+                    camera4Text.text = "AA2 Downlook Camera (Live)"
                     camera4Text.color = "lightGreen"
                     camera4OnOff.icon.color = "lightGreen"
+                }
+                onNoCameraEvent: {
+                    camera4Text.text = "AA2 Downlook Camera (Cannot detect camera)"
+                    camera4Text.color = "red"
+                    camera4OnOff.icon.color = "red"
+                }
+                onCameraCloseEvent: {
+                    camera4Text.text = "AA2 Downlook Camera (Camera closed)"
+                    camera4Text.color = "red"
+                    camera4OnOff.icon.color = "red"
+                }
+                onCameraPauseEvent: {
+                    camera4Text.text = "AA2 Downlook Camera (Live View Paused)"
+                    camera4Text.color = "cyan"
                 }
             }
 
@@ -600,6 +766,41 @@ Grid {
                         visionModule.saveImage(VisionModule.CAMERA_CHANNEL_CAMERA_AA2_DL)
                     }
                 }
+                Button {
+                    id: camera4OnOff
+                    x: 240
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/full-screen.png"
+                    onClicked: {
+                        if (aa2DownlookCamera.isGrabbing)
+                        {
+                            aa2DownlookCamera.close()
+                        }
+                        else
+                        {
+                            aa2DownlookCamera.open()
+                        }
+                    }
+                }
+                Button {
+                    id: camera4PauseLive
+                    x: 290
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/pause.png"
+                    onClicked: {
+                        aa2DownlookCamera.toggleLiveView()
+                    }
+                }
             }
         }
     }
@@ -632,13 +833,27 @@ Grid {
             }
 
             Connections {
-                target: highSprrow
-                onDisplaySensorPickarmResultImageInUI: {
+                target: sensorPickarmCamera
+                onCallQmlRefeshImg: {
                     image5.source = ""
-                    image5.source = "image://sensorPickarmCameraResultImage"
-                    camera5Text.text = "Sensor Pickarm Camera"
+                    image5.source = "image://sensorPickarmCameraImage"
+                    camera5Text.text = "Sensor Pickarm Camera (Live)"
                     camera5Text.color = "lightGreen"
                     camera5OnOff.icon.color = "lightGreen"
+                }
+                onNoCameraEvent: {
+                    camera5Text.text = "Sensor Pickarm Camera (Cannot detect camera)"
+                    camera4Text.color = "red"
+                    camera4OnOff.icon.color = "red"
+                }
+                onCameraCloseEvent: {
+                    camera5Text.text = "Sensor Pickarm Camera (Camera closed)"
+                    camera5Text.color = "red"
+                    camera5OnOff.icon.color = "red"
+                }
+                onCameraPauseEvent: {
+                    camera5Text.text = "Sensor Pickarm Camera (Live View Paused)"
+                    camera5Text.color = "cyan"
                 }
             }
 
@@ -698,6 +913,41 @@ Grid {
                     icon.source: "../icons/save.png"
                     onClicked: {
                         visionModule.saveImage(VisionModule.CAMERA_CHANNEL_CAMERA_SPA_DL)
+                    }
+                }
+                Button {
+                    id: camera5OnOff
+                    x: 240
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/full-screen.png"
+                    onClicked: {
+                        if (sensorPickarmCamera.isGrabbing)
+                        {
+                            sensorPickarmCamera.close()
+                        }
+                        else
+                        {
+                            sensorPickarmCamera.open()
+                        }
+                    }
+                }
+                Button {
+                    id: camera5PauseLive
+                    x: 290
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "red"
+                    icon.source: "../icons/pause.png"
+                    onClicked: {
+                        sensorPickarmCamera.toggleLiveView()
                     }
                 }
             }

@@ -722,7 +722,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
             if (lsutState->lutHasNgLens())
             {
                 sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Please remove the LUT NG lens!");
+                towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                 int operation = waitMessageReturn(is_run);
+                towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                 qInfo("user operation: %d", operation);
                 lsutState->setLutHasNgLens(false);
             }
@@ -752,7 +754,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 if (!performSUTSensorPR())
                 {
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform SUTSensor PR fail, please check");
+                    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                     int operation = waitMessageReturn(is_run);
+                    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                     qInfo("user operation: %d", operation);
                     lsutState->setSutHasNgSensor(false);    // user removed the ng sensor
                 }
@@ -766,7 +770,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     {
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry,
                                          "Pick ng sensor Fail.Please remove the ng sensor!");
+                        towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                         int operation = waitMessageReturn(is_run);
+                        towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                         qInfo("user operation: %d", operation);
                         lsutState->setSutHasNgSensor(false);
                         // Testing the reset theta motor position
@@ -791,7 +797,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 {
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry,
                                      "Perform SUTProduct PR fail, please remove the product!");
+                    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                     int operation = waitMessageReturn(is_run);
+                    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                     qInfo("user operation: %d", operation);
                     lsutState->setHasProduct(false);
                 }
@@ -803,7 +811,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     if (!pick_arm->vacuum_lens_suction->GetVacuumState())
                     {
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick Product Fail. Please remove the product");
+                        towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                         int operation = waitMessageReturn(is_run);
+                        towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                         qInfo("user operation: %d", operation);
                         lsutState->setHasProduct(false);
                         pick_arm->motor_th1->MoveToPos(0);
@@ -827,7 +837,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 if (!performSUTPR())
                 {
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform SUT PR fail, please check");
+                    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                     int operation = waitMessageReturn(is_run);
+                    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                     qInfo("user operation: %d", operation);
                     continue;
                 }
@@ -886,7 +898,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
             {
                 moveToChangeTrayPos();
                 sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Reject Tray Full. Please clear the reject tray");
+                towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                 int operation = waitMessageReturn(is_run);
+                towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                 qInfo("user operation: %d", operation);
                 rejectTray->resetTrayState(states.currentRejectTray());
                 continue;
@@ -904,7 +918,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 qCritical("Did not find picking sensor position. Index: %d", currentProductIndex);
                 sendAlarmMessage(ErrorLevel::ContinueOrRetry,
                                  "Did not know where the product should be placed to! Please remove the product!");
+                towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                 int operation = waitMessageReturn(is_run);
+                towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                 qInfo("user operation: %d", operation);
                 states.setHasPickedProduct(false);
             }
@@ -925,7 +941,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 {
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry,
                                      "Move failed! Please remove the product, then home the motor!");
+                    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                     int operation = waitMessageReturn(is_run);
+                    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                     qInfo("user operation: %d", operation);
                     states.setHasPickedProduct(false);
                 }
@@ -991,7 +1009,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     {
                         lensPrFailedTimes = 0;
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform Lens PR fail");
+                        towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                         int operation = waitMessageReturn(is_run);
+                        towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                         qInfo("user operation: %d", operation);
                     }
                     else
@@ -1010,7 +1030,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                     if (!pick_arm->vacuum_lens_suction->GetVacuumState())
                     {
                         sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick lens from lens tray fail");
+                        towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                         int operation = waitMessageReturn(is_run);
+                        towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                         qInfo("user operation: %d", operation);
                         lensTray->setCurrentMaterialState(MaterialState::IsNg, states.currentLensTray());
                         continue;
@@ -1029,7 +1051,7 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 sendAlarmMessage(ErrorLevel::ContinueOrRetry, "lens tray is empty. Please change the lens tray");
                 towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                 int operation = waitMessageReturn(is_run);
-                towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
+                towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                 qInfo("user operation: %d", operation);
                 lensTray->resetTrayState(states.currentLensTray());
                 continue;
@@ -1053,7 +1075,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                         {
                             sensorPrFailedTimes = 0;
                             sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform Sensor PR fail");
+                            towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                             int operation = waitMessageReturn(is_run);
+                            towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                             qInfo("user operation: %d", operation);
                         }
                         else
@@ -1104,7 +1128,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
                 else
                 {
                     sendAlarmMessage(ErrorLevel::ContinueOrRetry, "moveToNextSensorTrayPos fail");
+                    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
                     waitMessageReturn(is_run);
+                    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
                 }
             }
             else    // need to change tray
@@ -1164,9 +1190,9 @@ void SingleHeadMachineMaterialLoaderModule::run()
 void SingleHeadMachineMaterialLoaderModule::startWork(int run_mode)
 {
     qInfo("MaterailLoader start run_mode :%d in %d", run_mode, QThread::currentThreadId());
+    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
     if (run_mode == RunMode::Normal)
         run();
-    towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
 
 }
 

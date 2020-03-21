@@ -45,15 +45,6 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     double m_sutPlaceSensorAngle = 90;
 
     bool m_performPrAsPlacingNgDut;
-
-    QString m_buzzerName = "";
-
-    QString m_redLightName = "";
-
-    QString m_greenLightName = "";
-
-    QString m_yellowLightName = "";
-
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
 
@@ -89,11 +80,6 @@ public:
     Q_PROPERTY(double sutPlaceSensorAngle READ sutPlaceSensorAngle WRITE setSutPlaceSensorAngle NOTIFY sutPlaceSensorAngleChanged)
 
     Q_PROPERTY(bool performPrAsPlacingNgDut READ performPrAsPlacingNgDut WRITE setPerformPrAsPlacingNgDut NOTIFY performPrAsPlacingNgDutChanged)
-    Q_PROPERTY(QString buzzerName READ buzzerName WRITE setBuzzerName NOTIFY buzzerNameChanged)
-    Q_PROPERTY(QString redLightName READ redLightName WRITE setRedLightName NOTIFY redLightChanged)
-    Q_PROPERTY(QString greenLightName READ greenLightName WRITE setGreenLightName NOTIFY greenLightChanged)
-    Q_PROPERTY(QString yellowLightName READ yellowLightName WRITE setYellowLightName NOTIFY yellowLightChanged)
-
 
 
     double vcm1Svel() const
@@ -238,26 +224,6 @@ public:
     bool performPrAsPlacingNgDut() const
     {
         return m_performPrAsPlacingNgDut;
-    }
-
-    QString buzzerName() const
-    {
-        return m_buzzerName;
-    }
-
-    QString redLightName() const
-    {
-        return m_redLightName;
-    }
-
-    QString greenLightName() const
-    {
-        return m_greenLightName;
-    }
-
-    QString yellowLightName() const
-    {
-        return m_yellowLightName;
     }
 
 public slots:
@@ -525,41 +491,6 @@ public slots:
         emit performPrAsPlacingNgDutChanged(m_performPrAsPlacingNgDut);
     }
 
-    void setBuzzerName(QString buzzerName)
-    {
-        if (m_buzzerName == buzzerName)
-            return;
-
-        m_buzzerName = buzzerName;
-        emit buzzerNameChanged(m_buzzerName);
-    }
-
-    void setRedLightName(QString redLightName)
-    {
-        if (m_redLightName == redLightName)
-            return;
-
-        m_redLightName = redLightName;
-        emit redLightChanged(m_redLightName);
-    }
-
-    void setGreenLightName(QString greenLightName)
-    {
-        if (m_greenLightName == greenLightName)
-            return;
-
-        m_greenLightName = greenLightName;
-        emit greenLightChanged(m_greenLightName);
-    }
-
-    void setYellowLightName(QString yellowLightName)
-    {
-        if (m_yellowLightName == yellowLightName)
-            return;
-
-        m_yellowLightName = yellowLightName;
-        emit yellowLightChanged(m_yellowLightName);
-    }
 
 signals:
 
@@ -596,9 +527,6 @@ signals:
     void performPrAsPlacingNgDutChanged(bool performPrAsPlacingNgDut);
     void picker1PlaceOkProductOffsetXChanged(double picker1PlaceOkProductOffsetX);
     void picker1PlaceOkProductOffsetYChanged(double picker1PlaceOkProductOffsetY);void buzzerNameChanged(QString buzzerName);
-    void redLightChanged(QString redLightName);
-    void greenLightChanged(QString greenLightName);
-    void yellowLightChanged(QString yellowLightName);
 };
 
 class MaterialLoaderState:public PropertyBase

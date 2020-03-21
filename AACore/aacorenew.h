@@ -30,6 +30,7 @@
 #include "Utils/unitlog.h"
 #include "Utils/singletoninstances.h"
 #include "Utils/singletoninstances.h"
+#include "XtMotion/towerlightbuzzer.h"
 
 class AACoreNew : public ThreadWorkerBase
 {
@@ -50,7 +51,7 @@ public:
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head, SingleheadLSutModule *lsut, Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
-              ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
+              ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog, TowerLightBuzzer *towerLightBuzzer);
     void performAAOffline();
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
@@ -172,6 +173,9 @@ private:
     int currentLensIndex;
 
     PrOffset sensorDownlookOffset;
+
+    TowerLightBuzzer *towerLightBuzzer;
+
 
     QVariantMap sfrFitCurve_Advance(int resize_factor, double start_pos);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,

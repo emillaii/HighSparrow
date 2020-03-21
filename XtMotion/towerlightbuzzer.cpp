@@ -9,8 +9,7 @@ TowerLightBuzzer::TowerLightBuzzer()
 void TowerLightBuzzer::Init(XtGeneralOutput *buzzerOut,
                             XtGeneralOutput *redOut,
                             XtGeneralOutput *greenOut,
-                            XtGeneralOutput *yellowOut
-                            )
+                            XtGeneralOutput *yellowOut)
 {
     this->buzzerOut = buzzerOut;
     this->redOut = redOut;
@@ -37,11 +36,21 @@ void TowerLightBuzzer::openBuzzer()
     buzzerOut->Set(true);
 }
 
-void TowerLightBuzzer::blinkBuzzer()
+void TowerLightBuzzer::blinkBuzzer()  //todo
 {
-    isBuzzerOn= true;
-    if (isBuzzerOn) {
+    int buzzerBlinkDuration = 3;
+    isBuzzerOn = true;
+    if(buzzerOut == nullptr ){
+        qCritical("Buzzer io is null, please check!");
+        return;
+    }
+    while (isBuzzerOn) {
+        buzzerBlinkDuration--;
+        Sleep(500);
         buzzerOut->Set(true);
+        Sleep(500);
+        buzzerOut->Set(false);
+        if(!isBuzzerOn||buzzerBlinkDuration <=0) break;
     }
 }
 void TowerLightBuzzer::closeBuzzer()
@@ -50,13 +59,14 @@ void TowerLightBuzzer::closeBuzzer()
     buzzerOut->Set(false);
 }
 
-void TowerLightBuzzer::switchColor(TowerLightBuzzer::TowerLightColor color)
+void TowerLightBuzzer::switchColor(TowerLightBuzzer::TowerLightColor color) //todo
 {
     if(color == TowerLightColor::Red)
     {
         redOut->Set(true);
         yellowOut->Set(false);
         greenOut->Set(false);
+        this->blinkBuzzer();
     }
     if(color == TowerLightColor::Yellow)
     {
@@ -74,6 +84,19 @@ void TowerLightBuzzer::switchColor(TowerLightBuzzer::TowerLightColor color)
 
 void TowerLightBuzzer::blinkColor(TowerLightBuzzer::TowerLightColor color)
 {
-
+    int towerLightBlinkDuration = 20;
+    if(color == TowerLightColor::Red)
+    {
+        yellowOut->Set(false);
+        greenOut->Set(false);
+        for (int  i = 0; i < towerLightBlinkDuration; i++) {
+            Sleep(500);
+            redOut->Set(true);
+            Sleep(500);
+            redOut->Set(false);
+        }
+    }
 }
+
+
 

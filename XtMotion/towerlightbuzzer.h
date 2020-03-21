@@ -50,10 +50,10 @@ private:
     XtGeneralOutput* redOut;
     XtGeneralOutput* greenOut;
     XtGeneralOutput* yellowOut;
-    int buzzerBlinkInterval;
-    int buzzerBlinkDuration;
-    int towerLightBlinkInterval;
-    int towerLightBlinkDuration;
+//    int buzzerBlinkInterval;
+//    int buzzerBlinkDuration;
+//    int towerLightBlinkInterval;
+//    int towerLightBlinkDuration;
 
     bool isBuzzerOn = false;
 };

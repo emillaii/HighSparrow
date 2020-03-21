@@ -55,22 +55,22 @@ ItemDelegate {
                         sh_materialLoaderModule.moveToChangeTrayPos()
                     }
                 }
-                Button{
-                    text:qsTr("towerlight test")
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.towerLightBuzzerTest()
-                    }
-                }
-                Button{
-                    text:qsTr("CLOSE ALL towerlight")
-                    width: 40
-                    height: 40
-                    onClicked: {
-                        sh_materialLoaderModule.closeAllTowerLightBuzzer()
-                    }
-                }
+//                Button{
+//                    text:qsTr("towerlight test")
+//                    width: 40
+//                    height: 40
+//                    onClicked: {
+//                        sh_materialLoaderModule.towerLightBuzzerTest()
+//                    }
+//                }
+//                Button{
+//                    text:qsTr("CLOSE ALL towerlight")
+//                    width: 40
+//                    height: 40
+//                    onClicked: {
+//                        sh_materialLoaderModule.closeAllTowerLightBuzzer()
+//                    }
+//                }
             }
             GroupBox{
                 title:qsTr("头参数")

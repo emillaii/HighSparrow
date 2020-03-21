@@ -58,17 +58,17 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
     Eigen::MatrixXd Ans(n, 1);
     Ans = X * A;
 
-//    qInfo("Y | Prediction | Error");
-//    for (size_t i = 0; i < n; ++i) {
-//       qInfo("X: %f Y: %f  Ans: %f Error: %f", X(i,0), Y(i, 0), Ans(i, 0), Y(i, 0) - Ans(i, 0));
-//    }
+    //    qInfo("Y | Prediction | Error");
+    //    for (size_t i = 0; i < n; ++i) {
+    //       qInfo("X: %f Y: %f  Ans: %f Error: %f", X(i,0), Y(i, 0), Ans(i, 0), Y(i, 0) - Ans(i, 0));
+    //    }
 
-//    double error = 0;
-//    for (size_t i = 0; i < n; ++i) {
-//        error += (B(i, 0) - Y(i, 0)) * (B(i, 0) - Y(i, 0));
-//    }
+    //    double error = 0;
+    //    for (size_t i = 0; i < n; ++i) {
+    //        error += (B(i, 0) - Y(i, 0)) * (B(i, 0) - Y(i, 0));
+    //    }
 
-//    qInfo("Error: %f", error);
+    //    qInfo("Error: %f", error);
 
     vector<double> ans;
     for (int i = 0; i <= order; ++i) {
@@ -116,7 +116,7 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 }
 
 void AACoreNew::Init(AAHeadModule *aa_head, SingleheadLSutModule *lsut, Dothinkey *dk, ChartCalibration *chartCalibration,
-                     DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog)
+                     DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog, TowerLightBuzzer *towerLightBuzzer)
 {
     this->aa_head = aa_head;
     this->lsut = lsut;
@@ -125,6 +125,7 @@ void AACoreNew::Init(AAHeadModule *aa_head, SingleheadLSutModule *lsut, Dothinke
     this->dispense = dispense;
     this->imageThread = imageThread;
     this->unitlog = unitlog;
+    this->towerLightBuzzer = towerLightBuzzer;
 }
 
 void AACoreNew::loadJsonConfig(QString file_name)
@@ -166,7 +167,7 @@ void AACoreNew::run(bool has_material)
     is_run = true;
     QElapsedTimer timer;timer.start();
     while(is_run) {
-		timer.restart();
+        timer.restart();
         if (start_process)
         {
             runningUnit = this->unitlog->createUnit();
@@ -181,11 +182,11 @@ void AACoreNew::run(bool has_material)
             }
             start_process = false;
             emit postDataToELK(this->runningUnit);
-			QThread::msleep(100);
-			double temp_time = timer.elapsed();
-			temp_time/=1000;
-			qInfo("cycle_time :%f",temp_time);
-            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex);         
+            QThread::msleep(100);
+            double temp_time = timer.elapsed();
+            temp_time/=1000;
+            qInfo("cycle_time :%f",temp_time);
+            emit sendAAProcessFinishSignal(has_ng_sensor, has_ng_lens, has_product, has_ng_product, currentSensorIndex);
         }
         QThread::msleep(20);
     }
@@ -251,8 +252,8 @@ void AACoreNew::NgLens()
     if(parameters.firstRejectSensor())
     {
         current_aa_ng_time = 0;
-//        current_oc_ng_time = 0;
-//        current_mtf_ng_time = 0;
+        //        current_oc_ng_time = 0;
+        //        current_mtf_ng_time = 0;
     }
 }
 
@@ -278,8 +279,8 @@ void AACoreNew::NgSensor()
     if(!parameters.firstRejectSensor())
     {
         current_aa_ng_time = 0;
-//        current_oc_ng_time = 0;
-//        current_mtf_ng_time = 0;
+        //        current_oc_ng_time = 0;
+        //        current_mtf_ng_time = 0;
     }
 }
 
@@ -348,7 +349,7 @@ void AACoreNew::startWork( int run_mode)
         runningUnit = this->unitlog->createUnit();
         runFlowchartTest();
         emit postDataToELK(this->runningUnit);
-		double temp_time = timer.elapsed();
+        double temp_time = timer.elapsed();
         temp_time/=1000;
         qInfo("circle_time :%f",temp_time);
     }
@@ -437,8 +438,8 @@ void AACoreNew::resetLogic()
     aa_head->waiting_sensor = false;
     aa_head->waiting_lens = false;
     current_aa_ng_time = 0;
-//    current_oc_ng_time = 0;
-//    current_mtf_ng_time = 0;
+    //    current_oc_ng_time = 0;
+    //    current_mtf_ng_time = 0;
     grr_repeat_time = 0;
     grr_change_time = 0;
     autoRunDispenseTimes = 0;
@@ -454,74 +455,74 @@ bool AACoreNew::runFlowchartTest()
     QString currentPointer = "start";
     while (!end)
     {
-       end = true;
-       foreach(const QString &key, links.keys()){
-           QJsonValue value = links.value(key);
-           if (value["fromOperator"].toString() == currentPointer
-            && value["fromConnector"].toString() == "success") {
-               if (currentPointer == "start") {
-                   QVariantMap map;
-                   map.insert("Time", getCurrentTimeString());
-                   emit pushDataToUnit(runningUnit, "FlowChart_StartTime", map);    //Add a_ to make it first in map sorting
+        end = true;
+        foreach(const QString &key, links.keys()){
+            QJsonValue value = links.value(key);
+            if (value["fromOperator"].toString() == currentPointer
+                    && value["fromConnector"].toString() == "success") {
+                if (currentPointer == "start") {
+                    QVariantMap map;
+                    map.insert("Time", getCurrentTimeString());
+                    emit pushDataToUnit(runningUnit, "FlowChart_StartTime", map);    //Add a_ to make it first in map sorting
 
-                   qInfo(QString("Move from " + currentPointer + " to " + value["toOperator"].toString()).toStdString().c_str());
-                   currentPointer = value["toOperator"].toString();
-                   if (links.size() == 1) {
-                       QJsonValue op = operators[currentPointer.toStdString().c_str()];
-                       ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
-                   }
-                   end = false;
-                   break;
-               }
-               else {
-                   qInfo(QString("Do Test:" + currentPointer).toStdString().c_str());
-                   QJsonValue op = operators[currentPointer.toStdString().c_str()];
-                   //Choose Path base on the result
-                   ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
-                   bool ret = true;
-                   if (ret_error.code != ErrorCode::OK) ret = false;
-                   if (ret) {
-                       currentPointer = value["toOperator"].toString();
-                   } else {
-                       //Find fail path
-                       bool hasFailPath = false;
-                       foreach(const QString &key, links.keys()){
+                    qInfo(QString("Move from " + currentPointer + " to " + value["toOperator"].toString()).toStdString().c_str());
+                    currentPointer = value["toOperator"].toString();
+                    if (links.size() == 1) {
+                        QJsonValue op = operators[currentPointer.toStdString().c_str()];
+                        ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
+                    }
+                    end = false;
+                    break;
+                }
+                else {
+                    qInfo(QString("Do Test:" + currentPointer).toStdString().c_str());
+                    QJsonValue op = operators[currentPointer.toStdString().c_str()];
+                    //Choose Path base on the result
+                    ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
+                    bool ret = true;
+                    if (ret_error.code != ErrorCode::OK) ret = false;
+                    if (ret) {
+                        currentPointer = value["toOperator"].toString();
+                    } else {
+                        //Find fail path
+                        bool hasFailPath = false;
+                        foreach(const QString &key, links.keys()){
                             QJsonValue value = links.value(key);
                             if (value["fromOperator"].toString() == currentPointer
-                             && value["fromConnector"].toString() == "fail") {
+                                    && value["fromConnector"].toString() == "fail") {
                                 currentPointer = value["toOperator"].toString();
                                 hasFailPath = true;
                                 break;
                             }
-                       }
-                       if (!hasFailPath) {
-                           qInfo("Finished With Auto Reject");
-                           performReject();
-                           end = true;
-                           break;
-                       }
-                   }
-                   if (currentPointer.contains("Accept")
-                           ||currentPointer.contains("Reject")
-                           ||currentPointer.contains("Terminate")) {
-                       QJsonValue op = operators[currentPointer.toStdString().c_str()];
-                       ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
-                       qInfo("Finished With %s",currentPointer.toStdString().c_str());
-                       end = true;
-                       break;
-                   }
-                   end = false;
-                   break;
-               }
-           } else if ( value["fromOperator"].toString() == currentPointer
-                       && value["fromConnector"].toString() == "thread_1" ) {
-               qInfo("Found Parallel Test Item");
-               vector<QString> thread_1_test_list, thread_2_test_list;
+                        }
+                        if (!hasFailPath) {
+                            qInfo("Finished With Auto Reject");
+                            performReject();
+                            end = true;
+                            break;
+                        }
+                    }
+                    if (currentPointer.contains("Accept")
+                            ||currentPointer.contains("Reject")
+                            ||currentPointer.contains("Terminate")) {
+                        QJsonValue op = operators[currentPointer.toStdString().c_str()];
+                        ErrorCodeStruct ret_error = performTest(currentPointer.toStdString().c_str(), op["properties"]);
+                        qInfo("Finished With %s",currentPointer.toStdString().c_str());
+                        end = true;
+                        break;
+                    }
+                    end = false;
+                    break;
+                }
+            } else if ( value["fromOperator"].toString() == currentPointer
+                        && value["fromConnector"].toString() == "thread_1" ) {
+                qInfo("Found Parallel Test Item");
+                vector<QString> thread_1_test_list, thread_2_test_list;
 
-               QString current_thread_1 = currentPointer, current_thread_2 = currentPointer;
-               //Find the head first
-               bool isFoundThread_1 = false, isFoundThread_2 = false;
-               foreach(const QString &key, links.keys()){
+                QString current_thread_1 = currentPointer, current_thread_2 = currentPointer;
+                //Find the head first
+                bool isFoundThread_1 = false, isFoundThread_2 = false;
+                foreach(const QString &key, links.keys()){
                     QJsonValue value = links.value(key);
                     if (value["fromOperator"].toString() == current_thread_1 && value["fromConnector"] == "thread_1") {
                         current_thread_1 = value["toOperator"].toString();
@@ -535,56 +536,56 @@ bool AACoreNew::runFlowchartTest()
                         thread_2_test_list.push_back(current_thread_2);
                         break;
                     }
-               }
-               //Traverse the thread
-               bool thread1End = false;
-               while (!thread1End)
-               {
-                   thread1End = true;
-                   foreach(const QString &key, links.keys()){
-                       QJsonValue value = links.value(key);
-                       if (value["fromOperator"].toString() == current_thread_1) {
-                           thread_1_test_list.push_back(value["toOperator"].toString());
-                           current_thread_1 = value["toOperator"].toString();
-                           thread1End = false;
-                           break;
-                       }
-                   }
-                   if (current_thread_1.contains("Join")) {
-                       thread1End = true;
-                   }
-               }
-               bool thread2End = false;
-               while (!thread2End)
-               {
-                   thread2End = true;
-                   foreach(const QString &key, links.keys()){
-                       QJsonValue value = links.value(key);
-                       if (value["fromOperator"].toString() == current_thread_2) {
-                           thread_2_test_list.push_back(value["toOperator"].toString());
-                           current_thread_2 = value["toOperator"].toString();
-                           thread2End = false;
-                           if (current_thread_2.contains("Join")) {
-                               currentPointer = current_thread_2;
-                               thread2End = true;
-                           }
-                           break;
-                       }
-                   }
-               }
-               qInfo("End of traversal: %s", jsonMap["operators"].toString().toStdString().c_str());
-               QJsonValue op1 = operators[thread_1_test_list[0].toStdString().c_str()];
-               QJsonValue op2 = operators[thread_2_test_list[0].toStdString().c_str()];
-               ErrorCodeStruct ret = performParallelTest(thread_1_test_list, thread_2_test_list, op1["properties"], op2["properties"]);
-               if (ret.code != ErrorCode::OK) {
-                   qInfo("Finished With Auto Reject");
-                   performReject();
-                   end = true;
-                   break;
-               }
-               //Perform Parallel Test
-           }
-       }
+                }
+                //Traverse the thread
+                bool thread1End = false;
+                while (!thread1End)
+                {
+                    thread1End = true;
+                    foreach(const QString &key, links.keys()){
+                        QJsonValue value = links.value(key);
+                        if (value["fromOperator"].toString() == current_thread_1) {
+                            thread_1_test_list.push_back(value["toOperator"].toString());
+                            current_thread_1 = value["toOperator"].toString();
+                            thread1End = false;
+                            break;
+                        }
+                    }
+                    if (current_thread_1.contains("Join")) {
+                        thread1End = true;
+                    }
+                }
+                bool thread2End = false;
+                while (!thread2End)
+                {
+                    thread2End = true;
+                    foreach(const QString &key, links.keys()){
+                        QJsonValue value = links.value(key);
+                        if (value["fromOperator"].toString() == current_thread_2) {
+                            thread_2_test_list.push_back(value["toOperator"].toString());
+                            current_thread_2 = value["toOperator"].toString();
+                            thread2End = false;
+                            if (current_thread_2.contains("Join")) {
+                                currentPointer = current_thread_2;
+                                thread2End = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+                qInfo("End of traversal: %s", jsonMap["operators"].toString().toStdString().c_str());
+                QJsonValue op1 = operators[thread_1_test_list[0].toStdString().c_str()];
+                QJsonValue op2 = operators[thread_2_test_list[0].toStdString().c_str()];
+                ErrorCodeStruct ret = performParallelTest(thread_1_test_list, thread_2_test_list, op1["properties"], op2["properties"]);
+                if (ret.code != ErrorCode::OK) {
+                    qInfo("Finished With Auto Reject");
+                    performReject();
+                    end = true;
+                    break;
+                }
+                //Perform Parallel Test
+            }
+        }
     }
 
     QVariantMap map;
@@ -819,8 +820,9 @@ ErrorCodeStruct AACoreNew::performDispense()
             QImage image(imageNameAfterDispense);
             dispenseImageProvider->setImage(image);
             emit callQmlRefeshImg(3);  //Emit dispense image to QML
-
+            towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
             auto rsp = SI::ui.getUIResponse("Check Glue", "Please check glue!", MsgBoxIcon::Question, SI::ui.passFailButtons);
+            towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
             if(rsp == SI::ui.Fail)
             {
                 autoRunDispenseTimes = 0;
@@ -890,197 +892,197 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         unsigned int count = (int)fabs((start - stop)/step_size);
         for (unsigned int i = 0; i < count; i++)
         {
-           step_move_timer.start();
-           double target = start + i*step_size;
-           qInfo("target: %f",target);
-           this->lsut->sut_carrier->Move_Z_Sync(start+(i*step_size));
-           QThread::msleep(zSleepInMs);
-           qInfo("Getting feedback position from lsut");
-           double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
-           qInfo("Z scan start from %f, real: %f", start+(i*step_size), realZ);
-           grab_timer.start();
-           cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
-           qInfo("Grab time elapsed: %d", grab_timer.elapsed());
-           if (!grabRet) {
-               qInfo("AA Cannot grab image.");
-               map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
-               emit pushDataToUnit(runningUnit, "AA", map);
-               NgSensorOrProduct();
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
-           }
-           if (!blackScreenCheck(img)) {
-               LogicNg(current_aa_ng_time);
-               map["Result"] = "Detect black screen";
-               emit pushDataToUnit(runningUnit, "AA", map);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
-           }
-           cv::Mat dst;
-           cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
-           cv::resize(img, dst, size);
-           QString imageName;
-           imageName.append(getGrabberLogDir())
-                           .append(getCurrentTimeString())
-                           .append(".bmp");
-//           cv::imwrite(imageName.toStdString().c_str(), img);
-           double dfov = calculateDFOV(img);
-           if(current_dfov.contains(QString::number(i)))
+            step_move_timer.start();
+            double target = start + i*step_size;
+            qInfo("target: %f",target);
+            this->lsut->sut_carrier->Move_Z_Sync(start+(i*step_size));
+            QThread::msleep(zSleepInMs);
+            qInfo("Getting feedback position from lsut");
+            double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
+            qInfo("Z scan start from %f, real: %f", start+(i*step_size), realZ);
+            grab_timer.start();
+            cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
+            qInfo("Grab time elapsed: %d", grab_timer.elapsed());
+            if (!grabRet) {
+                qInfo("AA Cannot grab image.");
+                map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                emit pushDataToUnit(runningUnit, "AA", map);
+                NgSensorOrProduct();
+                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
+            }
+            if (!blackScreenCheck(img)) {
+                LogicNg(current_aa_ng_time);
+                map["Result"] = "Detect black screen";
+                emit pushDataToUnit(runningUnit, "AA", map);
+                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+            }
+            cv::Mat dst;
+            cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
+            cv::resize(img, dst, size);
+            QString imageName;
+            imageName.append(getGrabberLogDir())
+                    .append(getCurrentTimeString())
+                    .append(".bmp");
+            //           cv::imwrite(imageName.toStdString().c_str(), img);
+            double dfov = calculateDFOV(img);
+            if(current_dfov.contains(QString::number(i)))
                 current_dfov[QString::number(i)] = dfov;
-           else
+            else
                 current_dfov.insert(QString::number(i),dfov);
-           qInfo("fov: %f  sut_z: %f", dfov, lsut->sut_carrier->GetFeedBackPos().Z);
-           xsum=xsum+realZ;
-           ysum=ysum+dfov;
-           x2sum=x2sum+pow(realZ,2);
-           xysum=xysum+realZ*dfov;
-           zScanCount++;
-           emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, resize_factor);
-           img.release();
-           dst.release();
-         }
-      } else if (zScanMode == ZSCAN_MODE::AA_DFOV_MODE){
-           step_move_timer.start();
-           lsut->sut_carrier->Move_Z_Sync(start);
-           QThread::msleep(zSleepInMs);
-           step_move_time += step_move_timer.elapsed();
-           grab_timer.start();
-           cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
-           if (!grabRet) {
-               qInfo("AA Cannot grab image.");
-               map["Result"] = "AA Cannot grab image.";
-               emit pushDataToUnit(runningUnit, "AA", map);
-               NgSensorOrProduct();
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
-           }
-           if (!blackScreenCheck(img)) {
-               LogicNg(current_aa_ng_time);
-               map["Result"] = "AA Detect black screen";
-               emit pushDataToUnit(runningUnit, "AA", map);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
-           }
-           double dfov = calculateDFOV(img);
-           if (dfov <= -1) {
-               qInfo("Cannot find the target FOV!");
-               LogicNg(current_aa_ng_time);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-           }
-           estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
-           double target_z = estimated_aa_z + offset_in_um;
-           qInfo("The estimated target z is: %f dfov is %f", target_z, dfov);
-           if (target_z >= stop) {
-               qInfo("The estimated target is too large. value: %f", target_z);
-               LogicNg(current_aa_ng_time);
-               map["Result"] = QString("The estimated target is too large. value:%1 target:%2").arg(target_z).arg(stop);
-               emit pushDataToUnit(runningUnit, "AA", map);
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-           }
-           for (unsigned int i = 0; i < imageCount; i++) {
-                step_move_timer.start();
-                lsut->sut_carrier->Move_Z_Sync(target_z+(i*step_size));
-                QThread::msleep(zSleepInMs);
-                step_move_time += step_move_timer.elapsed();
-                grab_timer.start();
-                cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
-                grab_time += grab_timer.elapsed();
-                if (!grabRet) {
-                    qInfo("AA Cannot grab image.");
-                    NgSensorOrProduct();
-                    map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
-                    emit pushDataToUnit(runningUnit, "AA", map);
-                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
-                }
-                if (!blackScreenCheck(img)) {
-                    LogicNg(current_aa_ng_time);
-                    map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
-                    emit pushDataToUnit(runningUnit, "AA", map);
-                    return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
-                }
-                double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
-                double dfov = calculateDFOV(img);
+            qInfo("fov: %f  sut_z: %f", dfov, lsut->sut_carrier->GetFeedBackPos().Z);
+            xsum=xsum+realZ;
+            ysum=ysum+dfov;
+            x2sum=x2sum+pow(realZ,2);
+            xysum=xysum+realZ*dfov;
+            zScanCount++;
+            emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, resize_factor);
+            img.release();
+            dst.release();
+        }
+    } else if (zScanMode == ZSCAN_MODE::AA_DFOV_MODE){
+        step_move_timer.start();
+        lsut->sut_carrier->Move_Z_Sync(start);
+        QThread::msleep(zSleepInMs);
+        step_move_time += step_move_timer.elapsed();
+        grab_timer.start();
+        cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
+        if (!grabRet) {
+            qInfo("AA Cannot grab image.");
+            map["Result"] = "AA Cannot grab image.";
+            emit pushDataToUnit(runningUnit, "AA", map);
+            NgSensorOrProduct();
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
+        }
+        if (!blackScreenCheck(img)) {
+            LogicNg(current_aa_ng_time);
+            map["Result"] = "AA Detect black screen";
+            emit pushDataToUnit(runningUnit, "AA", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+        }
+        double dfov = calculateDFOV(img);
+        if (dfov <= -1) {
+            qInfo("Cannot find the target FOV!");
+            LogicNg(current_aa_ng_time);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+        }
+        estimated_aa_z = (estimated_aa_fov - dfov)/estimated_fov_slope + start;
+        double target_z = estimated_aa_z + offset_in_um;
+        qInfo("The estimated target z is: %f dfov is %f", target_z, dfov);
+        if (target_z >= stop) {
+            qInfo("The estimated target is too large. value: %f", target_z);
+            LogicNg(current_aa_ng_time);
+            map["Result"] = QString("The estimated target is too large. value:%1 target:%2").arg(target_z).arg(stop);
+            emit pushDataToUnit(runningUnit, "AA", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+        }
+        for (unsigned int i = 0; i < imageCount; i++) {
+            step_move_timer.start();
+            lsut->sut_carrier->Move_Z_Sync(target_z+(i*step_size));
+            QThread::msleep(zSleepInMs);
+            step_move_time += step_move_timer.elapsed();
+            grab_timer.start();
+            cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
+            grab_time += grab_timer.elapsed();
+            if (!grabRet) {
+                qInfo("AA Cannot grab image.");
+                NgSensorOrProduct();
+                map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                emit pushDataToUnit(runningUnit, "AA", map);
+                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Cannot Grab Image"};
+            }
+            if (!blackScreenCheck(img)) {
+                LogicNg(current_aa_ng_time);
+                map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                emit pushDataToUnit(runningUnit, "AA", map);
+                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+            }
+            double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
+            double dfov = calculateDFOV(img);
 
-                if (i > 1) {
-                   double slope = (dfov - prev_point.y()) / (realZ - prev_point.x());
-                   double error = 0;
-                   if (prev_fov_slope != 0) {
-                       error = (slope - prev_fov_slope) / prev_fov_slope;
-                   }
-                   qInfo("current slope %f  prev_slope %f error %f", slope, prev_fov_slope, error);
-                   if (fabs(error) > 0.2) {
-                       qInfo("Crash detection is triggered");
-//                       LogicNg(current_aa_ng_time);
-//                       map["Result"] = QString("Crash detection is triggered. prev_fov_slope:%1 now_fov_slope:%2 error:%3").arg(prev_fov_slope).arg(slope).arg(error);
-//                       emit pushDataToUnit(runningUnit, "AA", map);
-//                       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-                   }
-                   prev_fov_slope = slope;
+            if (i > 1) {
+                double slope = (dfov - prev_point.y()) / (realZ - prev_point.x());
+                double error = 0;
+                if (prev_fov_slope != 0) {
+                    error = (slope - prev_fov_slope) / prev_fov_slope;
                 }
-                prev_point.setX(realZ); prev_point.setY(dfov);
+                qInfo("current slope %f  prev_slope %f error %f", slope, prev_fov_slope, error);
+                if (fabs(error) > 0.2) {
+                    qInfo("Crash detection is triggered");
+                    //                       LogicNg(current_aa_ng_time);
+                    //                       map["Result"] = QString("Crash detection is triggered. prev_fov_slope:%1 now_fov_slope:%2 error:%3").arg(prev_fov_slope).arg(slope).arg(error);
+                    //                       emit pushDataToUnit(runningUnit, "AA", map);
+                    //                       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+                }
+                prev_fov_slope = slope;
+            }
+            prev_point.setX(realZ); prev_point.setY(dfov);
 
-                if(current_dfov.contains(QString::number(i)))
-                     current_dfov[QString::number(i)] = dfov;
-                else
-                     current_dfov.insert(QString::number(i),dfov);
-                qInfo("fov: %f  sut_z: %f", dfov, lsut->sut_carrier->GetFeedBackPos().Z);
-                xsum=xsum+realZ;
-                ysum=ysum+dfov;
-                x2sum=x2sum+pow(realZ,2);
-                xysum=xysum+realZ*dfov;
-                cv::Mat dst;
-                cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
-                cv::resize(img, dst, size);
-                emit sfrWorkerController->calculate(i, realZ, dst, false, resize_factor);
-                img.release();
-                dst.release();
-                zScanCount++;
-           }
+            if(current_dfov.contains(QString::number(i)))
+                current_dfov[QString::number(i)] = dfov;
+            else
+                current_dfov.insert(QString::number(i),dfov);
+            qInfo("fov: %f  sut_z: %f", dfov, lsut->sut_carrier->GetFeedBackPos().Z);
+            xsum=xsum+realZ;
+            ysum=ysum+dfov;
+            x2sum=x2sum+pow(realZ,2);
+            xysum=xysum+realZ*dfov;
+            cv::Mat dst;
+            cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
+            cv::resize(img, dst, size);
+            emit sfrWorkerController->calculate(i, realZ, dst, false, resize_factor);
+            img.release();
+            dst.release();
+            zScanCount++;
+        }
     } else if (zScanMode == ZSCAN_MODE::AA_STATIONARY_SCAN_MODE){
-         double currentZ = lsut->sut_carrier->GetFeedBackPos().Z;
-         double target_z = currentZ + offset_in_um;
-         for (unsigned int i = 0; i < imageCount; i++) {
-             step_move_timer.start();
-             lsut->sut_carrier->Move_Z_Sync(target_z+(i*step_size));
-             QThread::msleep(zSleepInMs);
-             step_move_time += step_move_timer.elapsed();
-             grab_timer.start();
-             cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0,grabRet);
-             grab_time += grab_timer.elapsed();
-             if (!grabRet) {
-                 qInfo("AA Cannot grab image.");
-                 NgSensorOrProduct();
-                 map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
-                 emit pushDataToUnit(runningUnit, "AA", map);
-                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
-             }
-             if (!blackScreenCheck(img)) {
-                 LogicNg(current_aa_ng_time);
-                 map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
-                 emit pushDataToUnit(runningUnit, "AA", map);
-                 return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
-             }
-             double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
-             double dfov = calculateDFOV(img);
-             if(current_dfov.contains(QString::number(i)))
-                  current_dfov[QString::number(i)] = dfov;
-             else
-                  current_dfov.insert(QString::number(i),dfov);
-             qInfo("fov: %f  sut_z: %f", dfov, lsut->sut_carrier->GetFeedBackPos().Z);
-             xsum=xsum+realZ;
-             ysum=ysum+dfov;
-             x2sum=x2sum+pow(realZ,2);
-             xysum=xysum+realZ*dfov;
-             cv::Mat dst;
-             cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
-             cv::resize(img, dst, size);
-             emit sfrWorkerController->calculate(i, realZ, dst, false, resize_factor);
-             img.release();
-             dst.release();
-             zScanCount++;
-         }
+        double currentZ = lsut->sut_carrier->GetFeedBackPos().Z;
+        double target_z = currentZ + offset_in_um;
+        for (unsigned int i = 0; i < imageCount; i++) {
+            step_move_timer.start();
+            lsut->sut_carrier->Move_Z_Sync(target_z+(i*step_size));
+            QThread::msleep(zSleepInMs);
+            step_move_time += step_move_timer.elapsed();
+            grab_timer.start();
+            cv::Mat img = dk->DothinkeyGrabImageCVWithAutoRetry(0,grabRet);
+            grab_time += grab_timer.elapsed();
+            if (!grabRet) {
+                qInfo("AA Cannot grab image.");
+                NgSensorOrProduct();
+                map["Result"] = QString("AA Cannot grab image.i:%1").arg(i);
+                emit pushDataToUnit(runningUnit, "AA", map);
+                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "AA Cannot grab image"};
+            }
+            if (!blackScreenCheck(img)) {
+                LogicNg(current_aa_ng_time);
+                map["Result"] = QString("AA Detect BlackScreen.i:%1").arg(i);
+                emit pushDataToUnit(runningUnit, "AA", map);
+                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Detect BlackScreen"};
+            }
+            double realZ = lsut->sut_carrier->GetFeedBackPos().Z;
+            double dfov = calculateDFOV(img);
+            if(current_dfov.contains(QString::number(i)))
+                current_dfov[QString::number(i)] = dfov;
+            else
+                current_dfov.insert(QString::number(i),dfov);
+            qInfo("fov: %f  sut_z: %f", dfov, lsut->sut_carrier->GetFeedBackPos().Z);
+            xsum=xsum+realZ;
+            ysum=ysum+dfov;
+            x2sum=x2sum+pow(realZ,2);
+            xysum=xysum+realZ*dfov;
+            cv::Mat dst;
+            cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
+            cv::resize(img, dst, size);
+            emit sfrWorkerController->calculate(i, realZ, dst, false, resize_factor);
+            img.release();
+            dst.release();
+            zScanCount++;
+        }
     }
     int timeout=1000;
     QElapsedTimer sfr_wait_timer; sfr_wait_timer.start();
     while(this->clustered_sfr_map.size() != zScanCount && timeout >0) {
-          Sleep(10);
-          timeout--;
+        Sleep(10);
+        timeout--;
     }
     sfr_wait_time += sfr_wait_timer.elapsed();
     double fov_slope     = (zScanCount*xysum-xsum*ysum)/(zScanCount*x2sum-xsum*xsum);       //calculate slope
@@ -1134,7 +1136,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         double expected_fov = fov_slope*aa_result["zPeak"].toDouble() + fov_intercept;
         double dfov = calculateDFOV(img);
         double diff_z = (dfov - expected_fov)/fov_slope;
-//        sut->moveToZPos(beforeZ - diff_z);
+        //        sut->moveToZPos(beforeZ - diff_z);
         double afterZ = lsut->sut_carrier->GetFeedBackPos().Z;
         map.insert("Final_X", lsut->sut_carrier->GetFeedBackPos().X);
         map.insert("Final_Y", lsut->sut_carrier->GetFeedBackPos().Y);
@@ -1144,17 +1146,17 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     clustered_sfr_map.clear();
     qInfo("AA time elapsed: %d", timer.elapsed());
     map.insert("Z_PEAK_CC", aa_result["zPeak"].toDouble());
-//    map.insert("Z_PEAK_UL", aa_result["zPeak"].toDouble());
-//    map.insert("Z_PEAK_UR", ur_zPeak);
-//    map.insert("Z_PEAK_LL", ll_zPeak);
-//    map.insert("Z_PEAK_LR", lr_zPeak);
-//    map.insert("FOV_SLOPE", fov_slope);
-//    map.insert("FOV_INTERCEPT", fov_intercept);
-//    map.insert("DEV", dev);
+    //    map.insert("Z_PEAK_UL", aa_result["zPeak"].toDouble());
+    //    map.insert("Z_PEAK_UR", ur_zPeak);
+    //    map.insert("Z_PEAK_LL", ll_zPeak);
+    //    map.insert("Z_PEAK_LR", lr_zPeak);
+    //    map.insert("FOV_SLOPE", fov_slope);
+    //    map.insert("FOV_INTERCEPT", fov_intercept);
+    //    map.insert("DEV", dev);
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "AA", map);
 
-//    qInfo("Finish AA");
+    //    qInfo("Finish AA");
     return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
 
@@ -1322,8 +1324,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 
     //Layer checking
     if ((points_1.size() > 0 && points_1.size() < 4) ||
-        (points_2.size() > 0 && points_2.size() < 4) ||
-        (points_3.size() > 0 && points_3.size() < 4))
+            (points_2.size() > 0 && points_2.size() < 4) ||
+            (points_3.size() > 0 && points_3.size() < 4))
     {
         qCritical("AA pattern layer checking fail.");
         result.insert("OK", false);
@@ -1393,60 +1395,60 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     //Layer 0:
     data->setLayer0(QString("L0 -- CC:")
                     .append(QString::number(point_0.z, 'g', 6))
-    );
+                    );
     //Layer 1:
     if (points_1.size() > 0) {
         data->setLayer1(QString("L1- XT:")
-                           .append(QString::number(xTilt_1,'g',3))
-                           .append(" YT:")
-                           .append(QString::number(yTilt_1,'g',3))
-                           .append(" UL:")
-                           .append(QString::number(points_1[0].z,'g',6))
-                           .append(" UR:")
-                           .append(QString::number(points_1[3].z,'g',6))
-                           .append(" LL:")
-                           .append(QString::number(points_1[1].z,'g',6))
-                           .append(" LR:")
-                           .append(QString::number(points_1[2].z,'g',6))
-                           .append(" DEV:")
-                           .append(QString::number(dev_1,'g',3))
-        );
+                        .append(QString::number(xTilt_1,'g',3))
+                        .append(" YT:")
+                        .append(QString::number(yTilt_1,'g',3))
+                        .append(" UL:")
+                        .append(QString::number(points_1[0].z,'g',6))
+                .append(" UR:")
+                .append(QString::number(points_1[3].z,'g',6))
+                .append(" LL:")
+                .append(QString::number(points_1[1].z,'g',6))
+                .append(" LR:")
+                .append(QString::number(points_1[2].z,'g',6))
+                .append(" DEV:")
+                .append(QString::number(dev_1,'g',3))
+                );
     }
     //Layer 2:
     if (points_2.size() > 0) {
         data->setLayer2(QString("L2- XT:")
-                           .append(QString::number(xTilt_2,'g',3))
-                           .append(" YT:")
-                           .append(QString::number(yTilt_2,'g',3))
-                           .append(" UL:")
-                           .append(QString::number(points_2[0].z,'g',6))
-                           .append(" UR:")
-                           .append(QString::number(points_2[3].z,'g',6))
-                           .append(" LL:")
-                           .append(QString::number(points_2[1].z,'g',6))
-                           .append(" LR:")
-                           .append(QString::number(points_2[2].z,'g',6))
-                           .append(" DEV:")
-                           .append(QString::number(dev_2,'g',3))
-        );
+                        .append(QString::number(xTilt_2,'g',3))
+                        .append(" YT:")
+                        .append(QString::number(yTilt_2,'g',3))
+                        .append(" UL:")
+                        .append(QString::number(points_2[0].z,'g',6))
+                .append(" UR:")
+                .append(QString::number(points_2[3].z,'g',6))
+                .append(" LL:")
+                .append(QString::number(points_2[1].z,'g',6))
+                .append(" LR:")
+                .append(QString::number(points_2[2].z,'g',6))
+                .append(" DEV:")
+                .append(QString::number(dev_2,'g',3))
+                );
     }
     //Layer 3
     if (points_3.size() > 0) {
         data->setLayer3(QString("L3- XT:")
-                           .append(QString::number(xTilt_3,'g',3))
-                           .append(" YT:")
-                           .append(QString::number(yTilt_3,'g',3))
-                           .append(" UL:")
-                           .append(QString::number(points_3[0].z,'g',6))
-                           .append(" UR:")
-                           .append(QString::number(points_3[3].z,'g',6))
-                           .append(" LL:")
-                           .append(QString::number(points_3[1].z,'g',6))
-                           .append(" LR:")
-                           .append(QString::number(points_3[2].z,'g',6))
-                           .append(" DEV:")
-                           .append(QString::number(dev_3,'g',3))
-        );
+                        .append(QString::number(xTilt_3,'g',3))
+                        .append(" YT:")
+                        .append(QString::number(yTilt_3,'g',3))
+                        .append(" UL:")
+                        .append(QString::number(points_3[0].z,'g',6))
+                .append(" UR:")
+                .append(QString::number(points_3[3].z,'g',6))
+                .append(" LL:")
+                .append(QString::number(points_3[1].z,'g',6))
+                .append(" LR:")
+                .append(QString::number(points_3[2].z,'g',6))
+                .append(" DEV:")
+                .append(QString::number(dev_3,'g',3))
+                );
     }
 
     int display_layer = validLayer-1;
@@ -1654,7 +1656,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
         sfr_check_list.push_back(sv[max_layer*4 + ii].l_sfr);
         qInfo("Outer layer: %d t_sfr: %f l_sfr: %f b_sfr: %f r_sfr: %f", max_layer,
               sv[max_layer*4 + ii].t_sfr, sv[max_layer*4 + ii].l_sfr,
-              sv[max_layer*4 + ii].b_sfr, sv[max_layer*4 + ii].r_sfr);
+                sv[max_layer*4 + ii].b_sfr, sv[max_layer*4 + ii].r_sfr);
     }
 
     std::sort(sfr_check_list.begin(), sfr_check_list.end());
@@ -1666,26 +1668,26 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     }
 
     if (sv[0].t_sfr < cc_min_sfr || sv[0].r_sfr < cc_min_sfr || sv[0].b_sfr < cc_min_sfr || sv[0].l_sfr < cc_min_sfr) {
-       qInfo("cc cannot pass");
-       sfr_check = false;
+        qInfo("cc cannot pass");
+        sfr_check = false;
     }
     if (sv[max_layer*4 + 1].t_sfr < ul_min_sfr || sv[max_layer*4 + 1].r_sfr < ul_min_sfr ||
-        sv[max_layer*4 + 1].b_sfr < ul_min_sfr || sv[max_layer*4 + 1].l_sfr < ul_min_sfr) {
+            sv[max_layer*4 + 1].b_sfr < ul_min_sfr || sv[max_layer*4 + 1].l_sfr < ul_min_sfr) {
         qInfo("ul cannot pass");
         sfr_check = false;
     }
     if (sv[max_layer*4 + 2].t_sfr < ll_min_sfr || sv[max_layer*4 + 2].r_sfr < ll_min_sfr ||
-        sv[max_layer*4 + 2].b_sfr < ll_min_sfr || sv[max_layer*4 + 2].l_sfr < ll_min_sfr) {
+            sv[max_layer*4 + 2].b_sfr < ll_min_sfr || sv[max_layer*4 + 2].l_sfr < ll_min_sfr) {
         qInfo("ll cannot pass");
         sfr_check = false;
     }
     if (sv[max_layer*4 + 3].t_sfr < lr_min_sfr || sv[max_layer*4 + 3].r_sfr < lr_min_sfr ||
-        sv[max_layer*4 + 3].b_sfr < lr_min_sfr || sv[max_layer*4 + 3].l_sfr < lr_min_sfr) {
+            sv[max_layer*4 + 3].b_sfr < lr_min_sfr || sv[max_layer*4 + 3].l_sfr < lr_min_sfr) {
         qInfo("lr cannot pass");
         sfr_check = false;
     }
     if (sv[max_layer*4 + 4].t_sfr < ur_min_sfr || sv[max_layer*4 + 4].r_sfr < ur_min_sfr ||
-        sv[max_layer*4 + 4].b_sfr < ur_min_sfr || sv[max_layer*4 + 4].l_sfr < ur_min_sfr) {
+            sv[max_layer*4 + 4].b_sfr < ur_min_sfr || sv[max_layer*4 + 4].l_sfr < ur_min_sfr) {
         qInfo("ur cannot pass");
         sfr_check = false;
     }
@@ -1705,30 +1707,30 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
                 if(sfr_entry.location == 2) { min_sfr = ur_min_sfr; }
                 if(sfr_entry.location == 3) { min_sfr = lr_min_sfr; }
                 if(sfr_entry.location == 4) { min_sfr = ll_min_sfr; }
-                    if(sfr_entry.t_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
-                    if(sfr_entry.r_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
-                    if(sfr_entry.b_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
-                    if(sfr_entry.l_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
+                if(sfr_entry.t_sfr < min_sfr) {
+                    qPainter.setPen(QPen(Qt::red, 4.0));
+                }else {
+                    qPainter.setPen(QPen(Qt::blue, 4.0));
+                }
+                qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
+                if(sfr_entry.r_sfr < min_sfr) {
+                    qPainter.setPen(QPen(Qt::red, 4.0));
+                }else {
+                    qPainter.setPen(QPen(Qt::blue, 4.0));
+                }
+                qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
+                if(sfr_entry.b_sfr < min_sfr) {
+                    qPainter.setPen(QPen(Qt::red, 4.0));
+                }else {
+                    qPainter.setPen(QPen(Qt::blue, 4.0));
+                }
+                qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
+                if(sfr_entry.l_sfr < min_sfr) {
+                    qPainter.setPen(QPen(Qt::red, 4.0));
+                }else {
+                    qPainter.setPen(QPen(Qt::blue, 4.0));
+                }
+                qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
             } else {
                 qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
                 qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
@@ -1743,10 +1745,10 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     clustered_sfr_map.clear();
     qInfo("Time elapsed : %d sv size: %d", timer.elapsed(), sv.size());
     if (sfr_check) {
-       return ErrorCodeStruct{ErrorCode::OK, ""};
+        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-       LogicNg(current_aa_ng_time);
-       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+        LogicNg(current_aa_ng_time);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
 
@@ -1773,11 +1775,11 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     double fov = calculateDFOV(img);
     cv::Mat dst;
     cv::Size size(img.cols, img.rows);
-//    timer.start();
+    //    timer.start();
     qint64 start_time = timer.elapsed();
     cv::resize(img, dst, size);
     qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, dst.cols, dst.rows, timer.elapsed() - start_time);
-//    timer.restart();
+    //    timer.restart();
     if (fov == -1) {
         qCritical("Cannot calculate FOV from the grabbed image.");
         LogicNg(current_aa_ng_time);
@@ -1815,7 +1817,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
         sfr_check_list.push_back(sv[max_layer*4 + ii].l_sfr);
         qInfo("Outer layer: %d t_sfr: %f l_sfr: %f b_sfr: %f r_sfr: %f", max_layer,
               sv[max_layer*4 + ii].t_sfr, sv[max_layer*4 + ii].l_sfr,
-              sv[max_layer*4 + ii].b_sfr, sv[max_layer*4 + ii].r_sfr);
+                sv[max_layer*4 + ii].b_sfr, sv[max_layer*4 + ii].r_sfr);
     }
 
     std::sort(sfr_check_list.begin(), sfr_check_list.end());
@@ -1827,26 +1829,26 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     }
 
     if (sv[0].t_sfr < cc_min_sfr || sv[0].r_sfr < cc_min_sfr || sv[0].b_sfr < cc_min_sfr || sv[0].l_sfr < cc_min_sfr) {
-       qInfo("cc cannot pass");
-       sfr_check = false;
+        qInfo("cc cannot pass");
+        sfr_check = false;
     }
     if (sv[max_layer*4 + 1].t_sfr < ul_min_sfr || sv[max_layer*4 + 1].r_sfr < ul_min_sfr ||
-        sv[max_layer*4 + 1].b_sfr < ul_min_sfr || sv[max_layer*4 + 1].l_sfr < ul_min_sfr) {
+            sv[max_layer*4 + 1].b_sfr < ul_min_sfr || sv[max_layer*4 + 1].l_sfr < ul_min_sfr) {
         qInfo("ul cannot pass");
         sfr_check = false;
     }
     if (sv[max_layer*4 + 2].t_sfr < ll_min_sfr || sv[max_layer*4 + 2].r_sfr < ll_min_sfr ||
-        sv[max_layer*4 + 2].b_sfr < ll_min_sfr || sv[max_layer*4 + 2].l_sfr < ll_min_sfr) {
+            sv[max_layer*4 + 2].b_sfr < ll_min_sfr || sv[max_layer*4 + 2].l_sfr < ll_min_sfr) {
         qInfo("ll cannot pass");
         sfr_check = false;
     }
     if (sv[max_layer*4 + 3].t_sfr < lr_min_sfr || sv[max_layer*4 + 3].r_sfr < lr_min_sfr ||
-        sv[max_layer*4 + 3].b_sfr < lr_min_sfr || sv[max_layer*4 + 3].l_sfr < lr_min_sfr) {
+            sv[max_layer*4 + 3].b_sfr < lr_min_sfr || sv[max_layer*4 + 3].l_sfr < lr_min_sfr) {
         qInfo("lr cannot pass");
         sfr_check = false;
     }
     if (sv[max_layer*4 + 4].t_sfr < ur_min_sfr || sv[max_layer*4 + 4].r_sfr < ur_min_sfr ||
-        sv[max_layer*4 + 4].b_sfr < ur_min_sfr || sv[max_layer*4 + 4].l_sfr < ur_min_sfr) {
+            sv[max_layer*4 + 4].b_sfr < ur_min_sfr || sv[max_layer*4 + 4].l_sfr < ur_min_sfr) {
         qInfo("ur cannot pass");
         sfr_check = false;
     }
@@ -1866,30 +1868,30 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
                 if(sfr_entry.location == 2) { min_sfr = ur_min_sfr; }
                 if(sfr_entry.location == 3) { min_sfr = lr_min_sfr; }
                 if(sfr_entry.location == 4) { min_sfr = ll_min_sfr; }
-                    if(sfr_entry.t_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
-                    if(sfr_entry.r_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
-                    if(sfr_entry.b_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
-                    if(sfr_entry.l_sfr < min_sfr) {
-                        qPainter.setPen(QPen(Qt::red, 4.0));
-                    }else {
-                        qPainter.setPen(QPen(Qt::blue, 4.0));
-                    }
-                    qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
+                if(sfr_entry.t_sfr < min_sfr) {
+                    qPainter.setPen(QPen(Qt::red, 4.0));
+                }else {
+                    qPainter.setPen(QPen(Qt::blue, 4.0));
+                }
+                qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
+                if(sfr_entry.r_sfr < min_sfr) {
+                    qPainter.setPen(QPen(Qt::red, 4.0));
+                }else {
+                    qPainter.setPen(QPen(Qt::blue, 4.0));
+                }
+                qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
+                if(sfr_entry.b_sfr < min_sfr) {
+                    qPainter.setPen(QPen(Qt::red, 4.0));
+                }else {
+                    qPainter.setPen(QPen(Qt::blue, 4.0));
+                }
+                qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
+                if(sfr_entry.l_sfr < min_sfr) {
+                    qPainter.setPen(QPen(Qt::red, 4.0));
+                }else {
+                    qPainter.setPen(QPen(Qt::blue, 4.0));
+                }
+                qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
             } else {
                 qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
                 qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
@@ -1936,10 +1938,10 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     emit pushDataToUnit(runningUnit, "MTF", map);
 
     if (sfr_check) {
-       return ErrorCodeStruct{ErrorCode::OK, ""};
+        return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-       LogicNg(current_aa_ng_time);
-       return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+        LogicNg(current_aa_ng_time);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
 }
 
@@ -2189,8 +2191,8 @@ ErrorCodeStruct AACoreNew::performAccept()
     imageThread->exit();
     dk->stopCamera();
     current_aa_ng_time = 0;
-//    current_oc_ng_time = 0;
-//    current_mtf_ng_time = 0;
+    //    current_oc_ng_time = 0;
+    //    current_mtf_ng_time = 0;
     return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
@@ -2217,28 +2219,28 @@ ErrorCodeStruct AACoreNew::performGRR(bool change_lens,bool change_sensor,int re
         SetLens();
     if(!change_sensor)
         SetSensor();
-   if(grr_repeat_time >= repeat_time)
-   {
-       grr_repeat_time = 0;
-       grr_change_time++;
-       if(grr_change_time >= change_time)
-       {
-           grr_change_time = 0;
-           sendAlarmMessage(ErrorLevel::ErrorMustStop,"GRR Finished!");
-       }
-       if(change_lens&&HasLens())
-           NgLens();
-       if(change_sensor&&HasSensorOrProduct())
-           NgSensor();
-   }
-   grr_repeat_time++;
-   return ErrorCodeStruct{ErrorCode::OK, ""};
+    if(grr_repeat_time >= repeat_time)
+    {
+        grr_repeat_time = 0;
+        grr_change_time++;
+        if(grr_change_time >= change_time)
+        {
+            grr_change_time = 0;
+            sendAlarmMessage(ErrorLevel::ErrorMustStop,"GRR Finished!");
+        }
+        if(change_lens&&HasLens())
+            NgLens();
+        if(change_sensor&&HasSensorOrProduct())
+            NgSensor();
+    }
+    grr_repeat_time++;
+    return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
 {
     int enable_plot = params["enable_plot"].toInt();
-//    cv::Mat inputImage = cv::imread("1/5.bmp");
+    //    cv::Mat inputImage = cv::imread("1/5.bmp");
     bool grabRet;
     cv::Mat inputImage = dk->DothinkeyGrabImageCVWithAutoRetry(0, grabRet);
     if (!grabRet) {
@@ -2303,8 +2305,8 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     }
     QString imageName;
     imageName.append(getGrabberLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
+            .append(getCurrentTimeString())
+            .append(".jpg");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_10.bmp");
     QImage outImage;
     double offsetX, offsetY;
@@ -2404,9 +2406,9 @@ ErrorCodeStruct AACoreNew::performInitSensor()
     }
     map.insert("dothinkeyStartCamera", stepTimer.elapsed()); stepTimer.restart();
 
-//    QString sensorID = dk->readSensorID();
-//    qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());
-//    map.insert("sensorID", sensorID);
+    //    QString sensorID = dk->readSensorID();
+    //    qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());
+    //    map.insert("sensorID", sensorID);
     if (!imageThread->isRunning())
         imageThread->start();
     map.insert("timeElapsed", timer.elapsed());
@@ -2494,10 +2496,10 @@ ErrorCodeStruct AACoreNew::performXYOffset(double xOffset, double yOffset)
     QVariantMap map;
     mPoint3D ori_pos(0, 1, 2);
     mPoint3D final_pos(3, 4, 5);
-//    mPoint3D ori_pos = sut->carrier->GetFeedBackPos();
-//    sut->stepMove_XY_Sync(xOffset, yOffset);
-//    QThread::msleep(200);
-//    mPoint3D final_pos = sut->carrier->GetFeedBackPos();
+    //    mPoint3D ori_pos = sut->carrier->GetFeedBackPos();
+    //    sut->stepMove_XY_Sync(xOffset, yOffset);
+    //    QThread::msleep(200);
+    //    mPoint3D final_pos = sut->carrier->GetFeedBackPos();
     map.insert("xOffset", xOffset);
     map.insert("yOffset", yOffset);
     map.insert("ori_x_pos", ori_pos.X);

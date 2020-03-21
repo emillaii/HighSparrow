@@ -799,7 +799,7 @@ bool BaseModuleManager::InitStruct()
                         XtMotor::GetThreadResource(),
                         &sut_carrier);
 
-    aaCoreNew.Init(&aa_head_module, &sh_lsut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog);
+    aaCoreNew.Init(&aa_head_module, &sh_lsut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog, &tower_light_buzzer);
 
     startCameraDoe->init(&sh_lsut_module, &single_station_material_loader_module,
                          &single_station_material_pickarm,

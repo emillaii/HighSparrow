@@ -1413,6 +1413,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     } else if (zScanMode == ZSCAN_MODE::AA_STATIONARY_SCAN_MODE){
         double currentZ = sut->carrier->GetFeedBackPos().Z;
         double target_z = currentZ + offset_in_um;
+        start = target_z;
         for (unsigned int i = 0; i < imageCount; i++) {
             step_move_timer.start();
             sut->moveToZPos(target_z+(i*step_size));

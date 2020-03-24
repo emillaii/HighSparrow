@@ -1052,6 +1052,7 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous,bool check_softland
 
 bool LutModule::moveToAA2PickLensPos(bool check_autochthonous,bool check_softlanding)
 {
+    this->aa2HeadMoveToPickPos();
     return carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous,check_softlanding);
 }
 
@@ -1088,6 +1089,7 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous,boo
 
 bool LutModule::moveToAA2UnPickLensPos(bool check_autochthonous, bool check_softlanding)
 {
+    this->aa2HeadMoveToPickPos();
     return carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
 }
 
@@ -1280,6 +1282,11 @@ bool LutModule::checkNeedLens()
     if((states.taskOfStation1() == 1)&&(!states.station1NeedLens())&&(states.taskOfStation2() == 1)&&(!states.station2NeedLens()))
         return false;
     return true;
+}
+
+void LutModule::aa2HeadMoveToPickPos()
+{
+    sendMessageToModule("LogicManager2","AAHeadMoveToPickPos");
 }
 
 void LutModule::openAA1Griper()

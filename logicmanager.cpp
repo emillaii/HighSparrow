@@ -1255,6 +1255,14 @@ void LogicManager::performTcpOperation(QVariantMap message)
                 sendMessageToModule(message["OriginModule"].toString(),result?"CloseSutVacuumSuccess":"CloseSutVacuumFail");
             }
         }
+        else if(message["Message"].toString() == "AAHeadMoveToPickPos")
+        {
+            bool result = baseModuleManage->aa_head_module.moveToPickLensPosition();
+            if(message.contains("OriginModule"))
+            {
+                sendMessageToModule(message["OriginModule"].toString(),result?"AAHeadMoveToPickPosSuccess":"AAHeadMoveToPickPosFail");
+            }
+        }
         else if(message["Message"].toString() == "OpenGripper")
         {
             bool result = baseModuleManage->aa_head_module.openGripper();

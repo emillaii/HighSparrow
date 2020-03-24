@@ -180,6 +180,8 @@ public:
     //PR
     bool performUpLookPR();
     bool checkNeedLens();
+    //Remote AA Head
+    void aa2HeadMoveToPickPos();
     //Gripper操作
     void openAA1Griper();
     void closeAA1Griper();

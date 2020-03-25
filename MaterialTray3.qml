@@ -275,6 +275,37 @@ ColumnLayout {
                     }
                 }
             }
+
+            RowLayout{
+                Label{
+                    text:qsTr("放料offsetX")
+                }
+                TextField{
+                    text:ngTrayPlaceOffset.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        ngTrayPlaceOffset.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("放料offsetY")
+                }
+                TextField{
+                    text:ngTrayPlaceOffset.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        ngTrayPlaceOffset.setY(text)
+                    }
+                }
+            }
         }
     }
 }

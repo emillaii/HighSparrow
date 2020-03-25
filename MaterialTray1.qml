@@ -454,6 +454,37 @@ ColumnLayout {
                 }
             }
 
+            RowLayout{
+                visible: baseModuleManager.getServerMode()===1
+                Label{
+                    text:qsTr("放料offsetX")
+                }
+                TextField{
+                    text:sensorTray1PlaceOffset.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorTray1PlaceOffset.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("放料offsetY")
+                }
+                TextField{
+                    text:sensorTray1PlaceOffset.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorTray1PlaceOffset.setY(text)
+                    }
+                }
+            }
 
             RowLayout{
                 visible: baseModuleManager.getServerMode()===0

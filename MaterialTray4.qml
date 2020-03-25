@@ -215,6 +215,36 @@ ColumnLayout {
                 }
             }
 
+            RowLayout{
+                Label{
+                    text:qsTr("放料offsetX")
+                }
+                TextField{
+                    text:bufferTrayPlaceOffset.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        bufferTrayPlaceOffset.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("放料offsetY")
+                }
+                TextField{
+                    text:bufferTrayPlaceOffset.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        bufferTrayPlaceOffset.setY(text)
+                    }
+                }
+            }
         }
     }
 }

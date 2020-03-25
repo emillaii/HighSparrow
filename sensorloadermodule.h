@@ -253,6 +253,12 @@ public:
     Position picker2_offset;
     Position sut1PickOffset;
     Position sut2PickOffset;
+    Position sut1PlaceOffset;
+    Position sut2PlaceOffset;
+	Position sensorTray1PlaceOffset;
+    Position sensorTray2PlaceOffset;
+    Position ngTrayPlaceOffset;
+    Position bufferTrayPlaceOffset;
 
     UPHHelper sensor_uph;
     UPHHelper product_uph;

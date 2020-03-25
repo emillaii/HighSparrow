@@ -121,14 +121,14 @@ import QtQuick.Layouts 1.11
                 text:qsTr("visonPositionX")
             }
             TextField{
-                text:lensPickArmModuleParameter.visonPositionX
+                text:lens_loader_parameter.visonPositionX
                 horizontalAlignment: TextInput.AlignHCenter
                 validator: DoubleValidator{
                     decimals: 6
                     notation: DoubleValidator.StandardNotation
                 }
                 onEditingFinished: {
-                    lensPickArmModuleParameter.setVisonPositionX(text)
+                    lens_loader_parameter.setVisonPositionX(text)
                 }
             }
             Button{

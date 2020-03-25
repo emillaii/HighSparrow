@@ -398,6 +398,18 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->sensor_loader_module.sut1PickOffset);
     engine.rootContext()->setContextProperty("sut2PickOffset",
                                              &highSprrow.baseModuleManager->sensor_loader_module.sut2PickOffset);
+    engine.rootContext()->setContextProperty("sut1PlaceOffset",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.sut1PlaceOffset);
+    engine.rootContext()->setContextProperty("sut2PlaceOffset",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.sut2PlaceOffset);
+	engine.rootContext()->setContextProperty("sensorTray1PlaceOffset",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.sensorTray1PlaceOffset);
+    engine.rootContext()->setContextProperty("sensorTray2PlaceOffset",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.sensorTray2PlaceOffset);
+    engine.rootContext()->setContextProperty("ngTrayPlaceOffset",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.ngTrayPlaceOffset);
+    engine.rootContext()->setContextProperty("bufferTrayPlaceOffset",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.bufferTrayPlaceOffset);
     engine.rootContext()->setContextProperty("sensor_uph",&highSprrow.baseModuleManager->sensor_loader_module.sensor_uph);
     engine.rootContext()->setContextProperty("left_sensor_uph",&highSprrow.baseModuleManager->sensor_loader_module.left_sensor_uph);
     engine.rootContext()->setContextProperty("right_sensor_uph",&highSprrow.baseModuleManager->sensor_loader_module.right_sensor_uph);

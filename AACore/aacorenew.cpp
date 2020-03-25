@@ -1588,6 +1588,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         qInfo("X scan result peak_x: %f peak_sfr: %f error_avg: %f error_dev: %f", peak_x, peak_sfr, error_avg, error_dev);
         return ErrorCodeStruct{ ErrorCode::OK, ""};     //Capture image first
     }
+
     int timeout=1000;
     QElapsedTimer sfr_wait_timer; sfr_wait_timer.start();
     while(this->clustered_sfr_map.size() != zScanCount && timeout >0) {
@@ -2333,7 +2334,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         qInfo("z_peak calculate result is %f", z_peak);
         result.insert("zPeak", z_peak); map.insert("zPeak", z_peak);
     }
-    else {
+    else
+    {
         if (parameters.PeakProfile() == 1) {
             result.insert("zPeak", peak_03); map.insert("zPeak", peak_03);
         } else if (parameters.PeakProfile() == 2) {

@@ -2738,6 +2738,26 @@ bool SensorLoaderModule::movePicker2ToTrayCurrentPos(int tray_index,bool check_s
     double x = next_pos.x() + picker2_offset.X() - temp_pr.X;
     double y = next_pos.y() + picker2_offset.Y() - temp_pr.Y;
     double t = parameters.picker2PlaceTheta() - temp_pr.Theta;
+    if (tray_index == SensorPosition::SENSOR_TRAY_1)
+    {
+        x += sensorTray1PlaceOffset.X();
+        y += sensorTray1PlaceOffset.Y();
+    }
+    else if (tray_index == SensorPosition::SENSOR_TRAY_2)
+    {
+        x += sensorTray2PlaceOffset.X();
+        y += sensorTray2PlaceOffset.Y();
+    }
+    else if (tray_index == SensorPosition::NG_SENSOR_TRAY)
+    {
+        x += ngTrayPlaceOffset.X();
+        y += ngTrayPlaceOffset.Y();
+    }
+    else if (SensorPosition::BUFFER_TRAY)
+    {
+        x += bufferTrayPlaceOffset.X();
+        y += bufferTrayPlaceOffset.Y();
+    }
     qInfo("movePicker2ToTrayCurrentPos x: %f y: %f temp_pr_x: %f temp_pr_y: %f", x, y, temp_pr.X, temp_pr.Y);
     if(tray_empty_location->parameters.useOrigin())
     {
@@ -2809,7 +2829,10 @@ bool SensorLoaderModule::picker1PlaceToSut(double z, bool is_local, int time_out
     if(result)
     {
         if(parameters.disablePlaceToSutForceLimmit())
-            result = pick_arm->MoveZ1Synic(z - parameters.placeToSutMargin(),time_out);
+        {
+            double margin = is_local?parameters.pickFromSut2Margin():parameters.pickFromSut1Margin();
+            result = pick_arm->MoveZ1Synic(z - margin,time_out);
+        }
         else
             result = pick_arm->Z1SearchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),time_out);
         if(parameters.openTimeLog())
@@ -2851,7 +2874,10 @@ bool SensorLoaderModule::picker2PickFromSut(double z,double force, bool is_local
     if(result)
     {
         if(parameters.disablePickFromSutForceLimit())
-            result &= pick_arm->MoveZ2Synic(z - parameters.pickFromSutMargin(),time_out);
+        {
+            double margin = is_local?parameters.pickFromSut2Margin():parameters.pickFromSut1Margin();
+            result &= pick_arm->MoveZ2Synic(z - margin,time_out);
+        }
         else
             result &= pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z,parameters.vcmMargin(),time_out);
         result &= waitSutVacuumFinish();
@@ -3610,6 +3636,12 @@ QMap<QString,PropertyBase*> SensorLoaderModule::getModuleParameter()
     temp_map.insert("picker2_offset", &picker2_offset);
     temp_map.insert("sut1PickOffset", &sut1PickOffset);
     temp_map.insert("sut2PickOffset", &sut2PickOffset);
+    temp_map.insert("sut1PlaceOffset", &sut1PlaceOffset);
+    temp_map.insert("sut2PlaceOffset", &sut2PlaceOffset);
+	temp_map.insert("sensorTray1PlaceOffset", &sensorTray1PlaceOffset);
+    temp_map.insert("sensorTray2PlaceOffset", &sensorTray2PlaceOffset);
+    temp_map.insert("ngTrayPlaceOffset", &ngTrayPlaceOffset);
+    temp_map.insert("bufferTrayPlaceOffset", &bufferTrayPlaceOffset);
     temp_map.insert("sensor_uph",&sensor_uph);
     temp_map.insert("left_sensor_uph",&left_sensor_uph);
     temp_map.insert("right_sensor_uph",&right_sensor_uph);

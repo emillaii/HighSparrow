@@ -28,8 +28,10 @@ public:
     Q_PROPERTY(bool disablePlaceToNgTrayForceLimit READ disablePlaceToNgTrayForceLimit WRITE setDisablePlaceToNgTrayForceLimit NOTIFY disablePlaceToNgTrayForceLimitChanged)
     Q_PROPERTY(double pickFromTrayMargin READ pickFromTrayMargin WRITE setPickFromTrayMargin NOTIFY pickFromTrayMarginChanged)
     Q_PROPERTY(double backToTrayMargin READ backToTrayMargin WRITE setBackToTrayMargin NOTIFY backToTrayMarginChanged)
-    Q_PROPERTY(double placeToSutMargin READ placeToSutMargin WRITE setPlaceToSutMargin NOTIFY placeToSutMarginChanged)
-    Q_PROPERTY(double pickFromSutMargin READ pickFromSutMargin WRITE setPickFromSutMargin NOTIFY pickFromSutMarginChanged)
+    Q_PROPERTY(double placeToSut1Margin READ placeToSut1Margin WRITE setPlaceToSut1Margin NOTIFY placeToSut1MarginChanged)
+    Q_PROPERTY(double pickFromSut1Margin READ pickFromSut1Margin WRITE setPickFromSut1Margin NOTIFY pickFromSut1MarginChanged)
+    Q_PROPERTY(double placeToSut2Margin READ placeToSut2Margin WRITE setPlaceToSut2Margin NOTIFY placeToSut2MarginChanged)
+    Q_PROPERTY(double pickFromSu2tMargin READ pickFromSut2Margin WRITE setPickFromSut2Margin NOTIFY pickFromSut2MarginChanged)
     Q_PROPERTY(double placeToGoodTrayMargin READ placeToGoodTrayMargin WRITE setPlaceToGoodTrayMargin NOTIFY placeToGoodTrayMarginChanged)
     Q_PROPERTY(double placeToNgTrayMargin READ placeToNgTrayMargin WRITE setPlaceToNgTrayMargin NOTIFY placeToNgTrayMarginChanged)
 
@@ -385,14 +387,24 @@ public:
         return m_backToTrayMargin;
     }
 
-    double placeToSutMargin() const
+    double placeToSut1Margin() const
     {
-        return m_placeToSutMargin;
+        return m_placeToSut1Margin;
     }
 
-    double pickFromSutMargin() const
+    double pickFromSut1Margin() const
     {
-        return m_pickFromSutMargin;
+        return m_pickFromSut1Margin;
+    }
+
+    double placeToSut2Margin() const
+    {
+        return m_placeToSut2Margin;
+    }
+
+    double pickFromSut2Margin() const
+    {
+        return m_pickFromSut2Margin;
     }
 
     double placeToGoodTrayMargin() const
@@ -1003,24 +1015,44 @@ public slots:
         emit backToTrayMarginChanged(m_backToTrayMargin);
     }
 
-    void setPlaceToSutMargin(double placeToSutMargin)
+    void setPlaceToSut1Margin(double placeToSut1Margin)
     {
         
-        if (qFuzzyCompare(m_placeToSutMargin, placeToSutMargin))
+        if (qFuzzyCompare(m_placeToSut1Margin, placeToSut1Margin))
             return;
 
-        m_placeToSutMargin = placeToSutMargin;
-        emit placeToSutMarginChanged(m_placeToSutMargin);
+        m_placeToSut1Margin = placeToSut1Margin;
+        emit placeToSut1MarginChanged(m_placeToSut1Margin);
     }
 
-    void setPickFromSutMargin(double pickFromSutMargin)
+    void setPickFromSut1Margin(double pickFromSut1Margin)
     {
         
-        if (qFuzzyCompare(m_pickFromSutMargin, pickFromSutMargin))
+        if (qFuzzyCompare(m_pickFromSut1Margin, pickFromSut1Margin))
             return;
 
-        m_pickFromSutMargin = pickFromSutMargin;
-        emit pickFromSutMarginChanged(m_pickFromSutMargin);
+        m_pickFromSut1Margin = pickFromSut1Margin;
+        emit pickFromSut1MarginChanged(m_pickFromSut1Margin);
+    }
+
+    void setPlaceToSut2Margin(double placeToSut2Margin)
+    {
+
+        if (qFuzzyCompare(m_placeToSut2Margin, placeToSut2Margin))
+            return;
+
+        m_placeToSut2Margin = placeToSut2Margin;
+        emit placeToSut2MarginChanged(m_placeToSut2Margin);
+    }
+
+    void setPickFromSut2Margin(double pickFromSut2Margin)
+    {
+
+        if (qFuzzyCompare(m_pickFromSut2Margin, pickFromSut2Margin))
+            return;
+
+        m_pickFromSut2Margin = pickFromSut2Margin;
+        emit pickFromSut2MarginChanged(m_pickFromSut2Margin);
     }
 
     void setPlaceToGoodTrayMargin(double placeToGoodTrayMargin)
@@ -1250,9 +1282,13 @@ signals:
 
     void backToTrayMarginChanged(double backToTrayMargin);
 
-    void placeToSutMarginChanged(double placeToSutMargin);
+    void placeToSut1MarginChanged(double placeToSut1Margin);
 
-    void pickFromSutMarginChanged(double pickFromSutMargin);
+    void pickFromSut1MarginChanged(double pickFromSut1Margin);
+
+    void placeToSut2MarginChanged(double placeToSut2Margin);
+
+    void pickFromSut2MarginChanged(double pickFromSut2Margin);
 
     void placeToGoodTrayMarginChanged(double placeToGoodTrayMargin);
 
@@ -1336,8 +1372,10 @@ private:
     bool m_disablePlaceToNgTrayForceLimit = false;
     double m_pickFromTrayMargin = 0;
     double m_backToTrayMargin = 0;
-    double m_placeToSutMargin = 0;
-    double m_pickFromSutMargin = 0;
+    double m_placeToSut1Margin = 0;
+    double m_pickFromSut1Margin = 0;
+    double m_placeToSut2Margin = 0;
+    double m_pickFromSut2Margin = 0;
     double m_placeToGoodTrayMargin = 0;
     double m_placeToNgTrayMargin = 0;
     bool m_enableBufferProductPr = false;

@@ -160,14 +160,14 @@ ColumnLayout {
                     text:qsTr("放料区间")
                 }
                 TextField{
-                    text:sensorLoaderParameter.placeToSutMargin
+                    text:sensorLoaderParameter.placeToSut1Margin
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sensorLoaderParameter.setPlaceToSutMargin(text)
+                        sensorLoaderParameter.setPlaceToSut1Margin(text)
                     }
                 }
                 Button{
@@ -206,14 +206,14 @@ ColumnLayout {
                     text:qsTr("取料区间")
                 }
                 TextField{
-                    text:sensorLoaderParameter.pickFromSutMargin
+                    text:sensorLoaderParameter.pickFromSut1Margin
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sensorLoaderParameter.setPickFromSutMargin(text)
+                        sensorLoaderParameter.setPickFromSut1Margin(text)
                     }
                 }
                 Button{
@@ -322,6 +322,36 @@ ColumnLayout {
                     }
                 }
             }
+            RowLayout{
+                Label{
+                    text:qsTr("放料offsetX")
+                }
+                TextField{
+                    text:sut1PlaceOffset.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sut1PlaceOffset.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("放料offsetY")
+                }
+                TextField{
+                    text:sut1PlaceOffset.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sut1PlaceOffset.setY(text)
+                    }
+                }
+            }
         }
     }
     GroupBox{
@@ -389,14 +419,14 @@ ColumnLayout {
                     text:qsTr("放料区间")
                 }
                 TextField{
-                    text:sensorLoaderParameter.placeToSutMargin
+                    text:sensorLoaderParameter.placeToSut2Margin
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sensorLoaderParameter.setPlaceToSutMargin(text)
+                        sensorLoaderParameter.setPlaceToSut2Margin(text)
                     }
                 }
                 Button{
@@ -432,14 +462,14 @@ ColumnLayout {
                     text:qsTr("取料区间")
                 }
                 TextField{
-                    text:sensorLoaderParameter.pickFromSutMargin
+                    text:sensorLoaderParameter.pickFromSut2Margin
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sensorLoaderParameter.setPickFromSutMargin(text)
+                        sensorLoaderParameter.setPickFromSut2Margin(text)
                     }
                 }
 
@@ -550,6 +580,36 @@ ColumnLayout {
                     }
                     onEditingFinished: {
                         sut2PickOffset.setY(text)
+                    }
+                }
+            }
+            RowLayout{
+                Label{
+                    text:qsTr("放料offsetX")
+                }
+                TextField{
+                    text:sut2PlaceOffset.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sut2PlaceOffset.setX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("放料offsetY")
+                }
+                TextField{
+                    text:sut2PlaceOffset.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sut2PlaceOffset.setY(text)
                     }
                 }
             }

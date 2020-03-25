@@ -130,6 +130,11 @@ bool MaterialTray::findLastPositionOfState(int state, int tray_index)
 {
     int max_index = standards_parameters.columnCount()*standards_parameters.rowCount() - 1;
     TrayParameter* current_tray = parameters[getTrayIndex(tray_index)];
+    // Check if the availableIndex in current tray is smaller than MaxIndex
+    if (max_index>current_tray->availableIndex())
+    {
+        max_index = current_tray->availableIndex();
+    }
     int curren_index = 0;
     while (true)
     {

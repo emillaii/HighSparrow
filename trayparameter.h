@@ -14,6 +14,7 @@ public:
     Q_PROPERTY(bool needChange READ needChange WRITE setNeedChange NOTIFY needChangeChanged)
     Q_PROPERTY(QString trayName READ trayName WRITE setTrayName NOTIFY trayNameChanged)
     Q_PROPERTY(int trayNumber READ trayNumber WRITE setTrayNumber NOTIFY trayNumberChanged)
+    Q_PROPERTY(int availableIndex READ availableIndex WRITE setAvailableIndex NOTIFY availableIndexChanged)
     Q_PROPERTY(QVariantList trayMaterialData READ trayMaterialData WRITE setTrayMaterialData NOTIFY trayMaterialDataChanged)
     Q_PROPERTY(QVariantList trayMaterialState READ trayMaterialState WRITE setTrayMaterialState NOTIFY trayMaterialStateChanged)
     Position tray_start_position;
@@ -64,6 +65,11 @@ public:
             return -1;
         return m_trayMaterialState[index].toInt();
     }
+    int availableIndex() const
+    {
+        return m_availableIndex;
+    }
+
 public slots:
     void changeTrayCount(int count)
     {
@@ -160,6 +166,15 @@ public slots:
         emit trayMaterialStateChanged(m_trayMaterialState);
     }
 
+    void setAvailableIndex(int availableIndex)
+    {
+        if (m_availableIndex == availableIndex)
+            return;
+
+        m_availableIndex = availableIndex;
+        emit availableIndexChanged(m_availableIndex);
+    }
+
 signals:
     void currentIndexChanged(int currentIndex);
     void initStateChanged(int initState);
@@ -174,6 +189,8 @@ signals:
 
     void trayMaterialStateChanged(QVariantList trayMaterialState);
 
+    void availableIndexChanged(int availableIndex);
+
 private:
     int m_currentIndex = 0;
     int m_initState = 0;
@@ -182,6 +199,7 @@ private:
     int m_trayNumber = 0;
     QVariantList m_trayMaterialData;
     QVariantList m_trayMaterialState;
+    int m_availableIndex = 0;
 };
 
 #endif // MATERRIALTRAY_PARAMETER_H

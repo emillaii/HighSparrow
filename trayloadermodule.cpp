@@ -770,7 +770,6 @@ void TrayLoaderModule::runHandle()
         }
         if(allow_change_tray)
         {
-            qInfo("Changing tray");
             has_task = true;
             if(!moveToChangeChangeHandlly())
             {

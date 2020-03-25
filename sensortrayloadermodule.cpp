@@ -163,10 +163,10 @@ void SensorTrayLoaderModule:: run()
                 else {
                     retryTime = parameters.checkEntranceTrayRetryTimes();
                     AppendError(u8"去拉入空盘失败！");
-                    int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION,GetCurrentError());
+                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
                     QString operation = waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
-                    if(REJECT_OPERATION == operation)
+                    if( RETRY_OPERATION == operation)
                     {
                         states.setEntranceClipReady(false);
                         states.setHasCarrierReady(false);
@@ -527,7 +527,7 @@ bool SensorTrayLoaderModule:: moveToDownTrayAndReadyToPush()
     bool result = motor_tray->MoveToPos(parameters.downTrayPosition());
     bool check_result = true;
     check_result &= checkSensorTray(true);
-    check_result &= checkKickTray(false);
+//    check_result &= checkKickTray(false);
     if(result)
         result &= motor_tray->WaitArrivedTargetPos(parameters.downTrayPosition());
     if(result)
@@ -613,8 +613,8 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         result &= hold_tray->Set(false);
         result &= gripper->Set(false);
     }
-    if(result)
-        result &= checkReadyTray(true);
+    //if(result)
+    //    result &= checkReadyTray(true);
     qInfo(u8"去换空盘并取备用盘，返回值%d",result&&kick_result);
     return result&&kick_result;
 }
@@ -762,7 +762,7 @@ bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
     result &= motor_stie->MoveToPosSync(entrance_clip->getNextPosition());
     if(result)
         entrance_clip->finishCurrentPosition();
-    retryTime = parameters.checkEntranceTrayRetryTimes();
+//    retryTime = parameters.checkEntranceTrayRetryTimes();
     return result;
 }
 
@@ -875,7 +875,7 @@ void SensorTrayLoaderModule::receivceModuleMessage(QVariantMap message)
         qInfo("message error! has no OriginModule.");
         return;
     }
-    if(message["OriginModule"].toString() == "SensorLoaderModule")
+    if(message["OriginModule"].toString() == "SensorLoaderModule" || message["OriginModule"].toString() == "SensorTrayLoaderModule")
     {
         if(message.contains("Message"))
         {

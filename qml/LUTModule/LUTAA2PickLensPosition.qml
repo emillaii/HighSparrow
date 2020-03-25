@@ -86,7 +86,6 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                //logicManager.lutPickLensToAA2()
                 lutModule.moveToAA2PickLens(false,false,true)
             }
         }

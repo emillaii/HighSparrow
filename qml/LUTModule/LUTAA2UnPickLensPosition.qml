@@ -55,7 +55,7 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-                lutModule.moveToAA2UnPickLens()
+                lutModule.moveToAA2UnPickLensPos(false,true)
             }
         }
         Button {
@@ -76,7 +76,6 @@ ColumnLayout {
             width: 40
             height: 40
             onClicked: {
-//                lutModule.performHandling(4);
                 logicManager.performHandling(lutParams.moduleName,LutModule.AA2_UNPICK_LENS)
             }
         }

@@ -76,6 +76,7 @@ Column {
         }
         Button {
             text: qsTr("AA Batch Run")
+            enabled: false
         }
     }
 

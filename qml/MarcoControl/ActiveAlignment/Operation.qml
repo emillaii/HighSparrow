@@ -5,6 +5,7 @@ import TrayLoaderModuleLib 1.1
 import SomeLib 1.1
 import LogicManagerLib 1.1
 import LutModuleLib 1.1
+import SutModuleLib 1.1
 import "../BaseUIModule"
 
 ColumnLayout{
@@ -332,26 +333,42 @@ ColumnLayout{
     RowLayout{
         Button{
             text: qsTr("AA1 Dispense PR")
+            onClicked: {
+                logicManager.performHandling(tcpSUTParams.moduleName, SutModule.DOWNLOOK_PR_POS + SutModule.DOWNLOOK_PR)
+            }
         }
         Button{
-            text: qsTr("AA1 Lens Up Look PR")
+            text: qsTr("AA1 Lens Uplook PR")
+            onClicked: {
+                logicManager.performHandling(tcpLUTParams.moduleName, LutModule.AA1_UPLOOK_POS + LutModule.AA1_UPLOOK_PR)
+            }
         }
         Button{
-            text: qsTr("PR To Bond")
+            text: qsTr("AA1 PR To Bond")
+            onClicked:  {
+                logicManager.performHandling(tcpAACoreParams.moduleName, 2)
+            }
         }
         Button{
-            text: qsTr("AA Batch Run")
+            text: qsTr("AA1 Batch Run")
+            enabled: false
         }
     }
 
     RowLayout{
         Button{
             text: qsTr("AA1 Gripper")
+            onClicked: {
+                baseModuleManager.toogleIoState(tcpAAHeadParams.gripperName)
+            }
         }
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (tcpAACoreStates.tcpAAGripperState) return "lightGreen"
+                    else return "red"
+                }
             }
         }
 
@@ -359,7 +376,7 @@ ColumnLayout{
         }
 
         Button{
-            text: qsTr("LUT Pocket1 VAC")
+            text: qsTr("LUT Pocket 1 VAC")
             onClicked: {
                 baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum1Name)
             }
@@ -371,7 +388,6 @@ ColumnLayout{
                     if (tcpLUTState.tcpVaccum1State) return "lightGreen"
                     else return "red"
                 }
-
             }
         }
     }
@@ -379,21 +395,34 @@ ColumnLayout{
     RowLayout{
         Button{
             text: qsTr("AA2 Dispense PR")
+            onClicked: {
+                logicManager.performHandling(sutParams.moduleName, SutModule.DOWNLOOK_PR_POS + SutModule.DOWNLOOK_PR)
+            }
         }
         Button{
-            text: qsTr("AA2 Lens Up Look PR")
+            text: qsTr("AA2 Lens Uplook PR")
+            onClicked: {
+                logicManager.performHandling(tcpLUTParams.moduleName, LutModule.AA2_UPLOOK_POS + LutModule.AA2_UPLOOK_PR)
+            }
         }
         Button{
-            text: qsTr("PR To Bond")
+            text: qsTr("AA2 PR To Bond")
+            onClicked:  {
+                logicManager.performHandling(aaCoreParams.moduleName, 2)
+            }
         }
         Button{
-            text: qsTr("AA Batch Run")
+            text: qsTr("AA2 Batch Run")
+            enabled: false
         }
     }
 
     RowLayout{
         Button{
             text: qsTr("AA2 Gripper")
+            onClicked: {
+                baseModuleManager.toogleIoState(aaHeadParams.gripperName)
+            }
         }
         RoundButton{
             background: Rectangle {
@@ -407,7 +436,7 @@ ColumnLayout{
         }
 
         Button{
-            text: qsTr("LUT Pocket1 VAC")
+            text: qsTr("LUT Pocket 1 VAC")
             onClicked: {
                 baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum2Name)
             }

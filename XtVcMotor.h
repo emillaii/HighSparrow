@@ -46,6 +46,7 @@ public:
     double GetCurADC() const override;
     bool IsRunning() const override;
     bool getAlarmState() override;
+    bool clearAlarmState() override;
     // these are run parameter
     double GetPostiveRange() const override;
     double GetNegativeRange() const override;

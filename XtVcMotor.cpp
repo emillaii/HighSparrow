@@ -229,6 +229,12 @@ bool XtVcMotor::getAlarmState()
     return false;
 }
 
+bool XtVcMotor::clearAlarmState()
+{
+    //return ResetDevice(vcm_id);
+    return true;
+}
+
 double XtVcMotor::GetPostiveRange() const
 {
     return max_range;

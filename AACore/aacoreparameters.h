@@ -1104,6 +1104,7 @@ public:
     Q_PROPERTY(bool hasNgSensor READ hasNgSensor WRITE setHasNgSensor NOTIFY hasNgSensorChanged)
     Q_PROPERTY(bool hasProduct READ hasProduct WRITE setHasProduct NOTIFY hasProductChanged)
     Q_PROPERTY(bool hasNgProduct READ hasNgProduct WRITE setHasNgProduct NOTIFY hasNgProductChanged)
+    Q_PROPERTY(bool aaGripperState READ aaGripperState WRITE setAaGripperState NOTIFY aaGripperStateChanged)
     Q_PROPERTY(bool tcpAAGripperState READ tcpAAGripperState WRITE setTcpAAGripperState NOTIFY tcpAAGripperStateChanged)
     bool isWaitingLens() const
     {
@@ -1182,6 +1183,11 @@ public:
     bool tcpAAGripperState() const
     {
         return m_tcpAAGripperState;
+    }
+
+    bool aaGripperState() const
+    {
+        return m_aaGripperState;
     }
 
 public slots:
@@ -1328,6 +1334,15 @@ public slots:
         emit tcpAAGripperStateChanged(m_tcpAAGripperState);
     }
 
+    void setAaGripperState(bool aaGripperState)
+    {
+        if (m_aaGripperState == aaGripperState)
+            return;
+
+        m_aaGripperState = aaGripperState;
+        emit aaGripperStateChanged(m_aaGripperState);
+    }
+
 signals:
     void isWaitingLensChanged(bool isWaitingLens);
     void isWaitingSensorChanged(bool isWaitingSensor);
@@ -1360,6 +1375,8 @@ signals:
 
     void tcpAAGripperStateChanged(bool tcpAAGripperState);
 
+    void aaGripperStateChanged(bool aaGripperState);
+
 private:
     bool m_isWaitingLens = false;
     bool m_isWaitingSensor = false;
@@ -1377,6 +1394,7 @@ private:
     bool m_finishSensorTask = false;
     bool m_finishLensTask = false;
     bool m_tcpAAGripperState;
+    bool m_aaGripperState;
 };
 
 #endif // AACOREPARAMETERS_H

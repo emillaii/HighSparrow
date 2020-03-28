@@ -17,13 +17,13 @@ ColumnLayout{
         Button{
             text: qsTr("AA1 HEAD Pick Pocket1")
             onClicked: {
-                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_PICK_LENS_POS)
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_PICK_LENS)
             }
         }
         Button{
             text: qsTr("AA1 HEAD Place Pocket1")
             onClicked: {
-                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_UNPICK_LENS_POS)
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_UNPICK_LENS_FROM_POCKET1)
             }
         }
     }
@@ -37,13 +37,13 @@ ColumnLayout{
         Button{
             text: qsTr("AA1 HEAD Pick Pocket2")
             onClicked: {
-                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_PICK_LENS_POS)
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_PICK_LENS_FROM_POCKET2)
             }
         }
         Button{
             text: qsTr("AA1 HEAD Place Pocket2")
             onClicked: {
-                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_UNPICK_LENS_POS)
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA1_UNPICK_LENS)
             }
         }
     }
@@ -79,13 +79,13 @@ ColumnLayout{
         Button{
             text: qsTr("AA2 HEAD Pick Pocket1")
             onClicked: {
-                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_PICK_LENS_POS)
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_PICK_LENS)
             }
         }
         Button{
             text: qsTr("AA2 HEAD Place Pocket1")
             onClicked: {
-                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_UNPICK_LENS_POS)
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_UNPICK_LENS_FROM_POCKET1)
             }
         }
     }
@@ -93,17 +93,20 @@ ColumnLayout{
         Button{
             text: qsTr("AA2 HEAD Pick Pocket2 POS")
             onClicked: {
-                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_PICK_LENS_POS)
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_PICK_LENS_FROM_POCKET2)
             }
         }
         Button{
             text: qsTr("AA2 HEAD Pick Pocket2")
             onClicked: {
-                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_UNPICK_LENS_POS)
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_UNPICK_LENS)
             }
         }
         Button{
             text: qsTr("AA2 HEAD Place Pocket2")
+            onClicked: {
+                logicManager.performHandling(tcpLUTParams.moduleName,LutModule.AA2_UNPICK_LENS_FROM_POCKET1)
+            }
         }
     }
     RowLayout{

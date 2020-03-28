@@ -69,7 +69,6 @@ ColumnLayout{
         Button{
             text: qsTr("LUT Pocket 1 VAC")
             onClicked: {
-                console.log("tcpLUTParams.tcpLutVacuum1Name: " + tcpLUTParams.tcpLutVacuum1Name)
                 baseModuleManager.toogleIoState(tcpLUTParams.tcpLutVacuum1Name)
             }
         }
@@ -85,7 +84,7 @@ ColumnLayout{
         Button{
             text: qsTr("LUT Pocket 2 VAC")
             onClicked: {
-                 baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum2Name)
+                 baseModuleManager.toogleIoState(tcpLUTParams.tcpLutVacuum2Name)
             }
         }
         RoundButton{
@@ -106,7 +105,10 @@ ColumnLayout{
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (tcpAACoreStates.tcpAAGripperState) return "lightGreen"
+                    else return "red"
+                }
             }
         }
         Button{
@@ -119,7 +121,8 @@ ColumnLayout{
             background: Rectangle {
                 radius: 6
                 color: {
-                    "red"
+                    if (aaCoreStates.aaGripperState) return "lightGreen"
+                    else return "red"
                 }
             }
         }

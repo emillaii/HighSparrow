@@ -58,6 +58,11 @@ bool SensorClip::getChangeState()
     return parameters.needChange();
 }
 
+void SensorClip::setChangeState(bool needChange)
+{
+    parameters.setNeedChange(needChange);
+}
+
 void SensorClip::finishCurrentPosition()
 {
     parameters.setFinishCurrent(true);

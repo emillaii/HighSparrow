@@ -19,6 +19,7 @@ public:
     double getCurrentPosition();
     double getNextPosition();
     bool getChangeState();
+    void setChangeState(bool needChange = false);
     void finishCurrentPosition();
     void resetClip();
 public:

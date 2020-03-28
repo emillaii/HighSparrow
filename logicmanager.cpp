@@ -1216,7 +1216,7 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
     else if(baseModuleManage->workers.contains(module_name))//单一模块动作
     {
         states.setHandlingMessage(module_name);
-        baseModuleManage->workers[module_name]->performHandling(cmd);
+        baseModuleManage->workers[module_name]->performHandling(cmd,param);
     }
     else {
         states.setHandlingMessage(module_name);

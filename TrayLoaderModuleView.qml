@@ -317,7 +317,7 @@ ItemDelegate {
                         Button{
                             text:qsTr("移动")
                             onClicked: {
-                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.EXIT_CLIP_POS)
+                                logicManager.performHandling(tray_loader_module_parameters.moduleName,TrayLoaderModule.EXIT_CLIP_POS, col_out.text-1)
                             }
                         }
                     }

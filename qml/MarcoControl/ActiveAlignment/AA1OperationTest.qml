@@ -108,7 +108,7 @@ Column {
         Button {
             text: qsTr("LUT Pocket 1 VAC")
             onClicked: {
-                baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum1Name)
+                baseModuleManager.toogleIoState(tcpLUTParams.tcpLutVacuum1Name)
             }
         }
         RoundButton{
@@ -120,7 +120,7 @@ Column {
         Button {
             text: qsTr("LUT Pocket 2 VAC")
             onClicked: {
-                baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum2Name)
+                baseModuleManager.toogleIoState(tcpLUTParams.tcpLutVacuum2Name)
             }
         }
         RoundButton{

@@ -370,6 +370,9 @@ ColumnLayout{
                     else return "red"
                 }
             }
+            onClicked: {
+                 baseModuleManager.toogleIoState(tcpAAHeadParams.gripperName)
+            }
         }
 
         BaseSut1UI{
@@ -378,7 +381,7 @@ ColumnLayout{
         Button{
             text: qsTr("LUT Pocket 1 VAC")
             onClicked: {
-                baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum1Name)
+                baseModuleManager.toogleIoState(tcpLUTParams.tcpLutVacuum1Name)
             }
         }
         RoundButton{
@@ -429,6 +432,9 @@ ColumnLayout{
                 radius: 6
                 color: "red"
             }
+            onClicked: {
+                 baseModuleManager.toogleIoState(aaHeadParams.gripperName)
+            }
         }
 
         BaseSut2UI{
@@ -438,7 +444,7 @@ ColumnLayout{
         Button{
             text: qsTr("LUT Pocket 1 VAC")
             onClicked: {
-                baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum2Name)
+                baseModuleManager.toogleIoState(tcpLUTParams.tcpLutVacuum1Name)
             }
         }
         RoundButton{

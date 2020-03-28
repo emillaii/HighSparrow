@@ -57,7 +57,11 @@ public:
         AA1_PICK_LENS = 4000,
         AA2_PICK_LENS = 5000,
         AA1_UNPICK_LENS = 6000,
-        AA2_UNPICK_LENS = 7000
+        AA2_UNPICK_LENS = 7000,
+        AA1_PICK_LENS_FROM_POCKET2 = 8000,
+        AA2_PICK_LENS_FROM_POCKET2 = 9000,
+        AA1_UNPICK_LENS_FROM_POCKET1 = 10000,
+        AA2_UNPICK_LENS_FROM_POCKET1 = 11000
     };
     explicit LutModule(QString name = "LUTModule", QObject * parent = nullptr);
     void Init(MaterialCarrier* carrier,
@@ -153,14 +157,18 @@ public:
     Q_INVOKABLE double getLoadUplookPRX();
     Q_INVOKABLE double getLoadUplookPRY();
     Q_INVOKABLE bool moveToAA1PickLens(bool need_return = true,bool check_autochthonous = false, bool check_softlanding = false);
+    Q_INVOKABLE bool moveToAA1PickLensFromPocket2(bool need_return = true,bool check_autochthonous = false, bool check_softlanding = false);
     Q_INVOKABLE bool vcmReturn();
     Q_INVOKABLE bool moveToAA1PickLensPos(bool check_autochthonous = false, bool check_softlanding = false);
     Q_INVOKABLE bool moveToAAMeasurePickHeight(bool ishost,bool check_autochthonous = false, bool check_softlanding = false);
 
     Q_INVOKABLE bool moveToAA1UnPickLens(bool check_autochthonous = false, bool check_softlanding = false);
+    Q_INVOKABLE bool moveToAA1UnPickLensFromPocket1(bool check_autochthonous = false, bool check_softlanding = false);
     Q_INVOKABLE bool moveToAA2PickLensPos(bool check_autochthonous = false, bool check_softlanding = false);
     Q_INVOKABLE bool moveToAA2PickLens(bool need_return = true,bool check_autochthonous = false, bool check_softlanding = false);
+    Q_INVOKABLE bool moveToAA2PickLensFromPocket2(bool need_return = true,bool check_autochthonous = false, bool check_softlanding = false);
     Q_INVOKABLE bool moveToAA2UnPickLens(bool check_autochthonous = false, bool check_softlanding = false);
+    Q_INVOKABLE bool moveToAA2UnPickLensFromPocket1(bool check_autochthonous = false, bool check_softlanding = false);
     Q_INVOKABLE bool moveToAA1MushroomLens(bool check_autochthonous = false, bool check_softlanding = false);
     Q_INVOKABLE bool moveToAA2MushroomLens(bool check_autochthonous = false, bool check_softlanding = false);
 

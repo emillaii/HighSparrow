@@ -556,6 +556,18 @@ void LutModule::performHandlingOperation(int cmd,QVariant param)
     else if (cmd%temp_value == HandlerAction::AA2_UNPICK_LENS) {
         result = moveToAA2UnPickLens();
     }
+    else if (cmd%temp_value == HandlerAction::AA1_PICK_LENS_FROM_POCKET2) {
+        result = moveToAA1PickLensFromPocket2();
+    }
+    else if (cmd%temp_value == HandlerAction::AA2_PICK_LENS_FROM_POCKET2) {
+        result = moveToAA2PickLensFromPocket2();
+    }
+    else if (cmd%temp_value == HandlerAction::AA1_UNPICK_LENS_FROM_POCKET1) {
+        result = moveToAA1UnPickLensFromPocket1();
+    }
+    else if (cmd%temp_value == HandlerAction::AA2_UNPICK_LENS_FROM_POCKET1) {
+        result = moveToAA2UnPickLensFromPocket1();
+    }
     else {
         result = true;
     }
@@ -816,6 +828,36 @@ bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous,bool
     return result;
 }
 
+bool LutModule::moveToAA1PickLensFromPocket2(bool need_return, bool check_autochthonous, bool check_softlanding)
+{
+    qInfo("moveToAA1PickLensFromPocket2");
+    openAA1Griper();
+    bool result = true;
+    if(parameters.enablePickForce())
+    {
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
+    }
+    else
+    {
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),aa1_unpicklens_position.Z() - parameters.lensHeight(),check_autochthonous,check_softlanding);
+    }
+    if(result)
+    {
+        if(parameters.enablePickForce())
+        {
+            qInfo("moveToAA1PickLens Start ZSerchByForce");
+            result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_unpicklens_position.Z(),parameters.lensHeight());
+            qInfo("moveToAA1PickLens Finish ZSerchByForce");
+        }
+        closeAA1Griper();
+        result &= closeLoadVacuum();
+        Sleep(parameters.gripperDelay());
+        if(need_return)
+            result &= carrier->ZSerchReturn();
+    }
+    return result;
+}
+
 bool LutModule::vcmReturn()
 {
     return  carrier->motor_z->resetSoftLanding();
@@ -866,6 +908,21 @@ bool LutModule::moveToAA1UnPickLens(bool check_autochthonous,bool check_softland
     return result;
 }
 
+bool LutModule::moveToAA1UnPickLensFromPocket1(bool check_autochthonous, bool check_softlanding)
+{
+    qInfo("moveToAA1UnPickLensFromPocket1");
+    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
+    if(result)
+    {
+        result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_picklens_position.Z(),parameters.lensHeight());
+        openAA1Griper();
+        result &= openUnloadVacuum();
+        Sleep(parameters.gripperDelay());
+        result &= carrier->ZSerchReturn();
+    }
+    return result;
+}
+
 bool LutModule::moveToAA2PickLensPos(bool check_autochthonous,bool check_softlanding)
 {
     return carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous,check_softlanding);
@@ -903,6 +960,38 @@ bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous,boo
     return result;
 }
 
+bool LutModule::moveToAA2PickLensFromPocket2(bool need_return, bool check_autochthonous, bool check_softlanding)
+{
+    qInfo("moveToAA2PickLensFromPocket2");
+    aa2HeadMoveToPickPos();
+    openAA2Griper();
+    bool result = true;
+    if(parameters.enablePickForce())
+    {
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
+    }
+    else
+    {
+        result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),aa2_unpicklens_position.Z() - parameters.lensHeight(),check_autochthonous,check_softlanding);
+    }
+        if(result)
+    {
+        if(parameters.enablePickForce())
+        {
+            qInfo("moveToAA2PickLens Start ZSerchByForce");
+//            result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,0,load_vacuum);
+            result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa2_unpicklens_position.Z(),parameters.lensHeight());
+            qInfo("moveToAA2PickLens Finish ZSerchByForce");
+        }
+        closeAA2Griper();
+        result &= closeLoadVacuum();
+        Sleep(parameters.gripperDelay());
+        if(need_return)
+            result &= carrier->ZSerchReturn();
+    }
+    return result;
+}
+
 bool LutModule::moveToAA2UnPickLensPos(bool check_autochthonous, bool check_softlanding)
 {
     return carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
@@ -913,6 +1002,25 @@ bool LutModule::moveToAA2UnPickLens(bool check_autochthonous,bool check_softland
     qInfo("moveToAA2UnPickLens Start to aa2 unpickLens");
     aa2HeadMoveToPickPos();
     bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
+    if(result)
+    {
+        qInfo("moveToAA2UnPickLens Start ZSerchByForce");
+//        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
+        result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa2_picklens_position.Z(),parameters.lensHeight());
+        qInfo("moveToAA2UnPickLens Finish ZSerchByForce");
+        openAA2Griper();
+        result &= openUnloadVacuum();
+        Sleep(parameters.gripperDelay());
+        result &= carrier->motor_z->resetSoftLanding();
+    }
+    return result;
+}
+
+bool LutModule::moveToAA2UnPickLensFromPocket1(bool check_autochthonous, bool check_softlanding)
+{
+    qInfo("moveToAA2UnPickLensFromPocket1");
+    aa2HeadMoveToPickPos();
+    bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
     if(result)
     {
         qInfo("moveToAA2UnPickLens Start ZSerchByForce");

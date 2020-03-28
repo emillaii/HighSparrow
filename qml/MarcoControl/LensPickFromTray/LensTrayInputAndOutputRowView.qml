@@ -569,7 +569,7 @@ ColumnLayout{
         Button{
             text:title_move_to
             onClicked: {
-                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_POS,tcp_tray_clipin_parameter.currentIndex())
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_POS,tcp_tray_clipin_parameter.currentIndex)
             }
         }
         Button{
@@ -608,7 +608,7 @@ ColumnLayout{
         Button{
             text:qsTr("移动")
             onClicked: {
-                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_POS,tcp_tray_clipout_parameter.currentIndex())
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_POS,tcp_tray_clipout_parameter.currentIndex)
             }
         }
         Button{

@@ -36,6 +36,9 @@ Column {
     RowLayout {
         Button{
             text: qsTr("CPA Collet VAC")
+            onClicked: {
+                baseModuleManager.toogleIoState(sensorPickArmParams.spaVaccum2OutIoName)
+            }
         }
         RoundButton{
             background: Rectangle {

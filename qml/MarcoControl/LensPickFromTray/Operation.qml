@@ -20,7 +20,7 @@ ColumnLayout{
         Button{
             text: title_move_to
             onClicked: {
-                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_POS,layerIndex_in.text)
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.ENTRANCE_CLIP_POS,layerIndex_in.text-1)
             }
         }
         Button{
@@ -45,7 +45,7 @@ ColumnLayout{
         Button{
             text: title_move_to
             onClicked: {
-                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.EXIT_CLIP_POS,layerIndex_out.text)
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName,TrayLoaderModule.EXIT_CLIP_POS,layerIndex_out.text-1)
             }
         }
         Button{

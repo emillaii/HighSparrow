@@ -1425,6 +1425,8 @@ public:
     Q_PROPERTY(bool crossTrayPlaceProduct READ crossTrayPlaceProduct WRITE setCrossTrayPlaceProduct NOTIFY crossTrayPlaceProductChanged)
     Q_PROPERTY(bool hasNgTrayPrOffset READ hasNgTrayPrOffset WRITE setHasNgTrayPrOffset NOTIFY hasNgTrayPrOffsetChanged)
     Q_PROPERTY(bool hasBufferTrayPrOffset READ hasBufferTrayPrOffset WRITE setHasBufferTrayPrOffset NOTIFY hasBufferTrayPrOffsetChanged)
+    Q_PROPERTY(bool spaVaccum1State READ spaVaccum1State WRITE setSpaVaccum1State NOTIFY spaVaccum1StateChanged)
+    Q_PROPERTY(bool spaVaccum2State READ spaVaccum2State WRITE setSpaVaccum2State NOTIFY spaVaccum2StateChanged)
     int runMode() const
     {
         return m_runMode;
@@ -1593,6 +1595,16 @@ public:
     int taskOfStation2() const
     {
         return m_taskOfStation2;
+    }
+
+    bool spaVaccum1State() const
+    {
+        return m_spaVaccum1State;
+    }
+
+    bool spaVaccum2State() const
+    {
+        return m_spaVaccum2State;
     }
 
 public slots:
@@ -1902,6 +1914,24 @@ public slots:
         emit taskOfStation2Changed(m_taskOfStation2);
     }
 
+    void setSpaVaccum1State(bool spaVaccum1State)
+    {
+        if (m_spaVaccum1State == spaVaccum1State)
+            return;
+
+        m_spaVaccum1State = spaVaccum1State;
+        emit spaVaccum1StateChanged(m_spaVaccum1State);
+    }
+
+    void setSpaVaccum2State(bool spaVaccum2State)
+    {
+        if (m_spaVaccum2State == spaVaccum2State)
+            return;
+
+        m_spaVaccum2State = spaVaccum2State;
+        emit spaVaccum2StateChanged(m_spaVaccum2State);
+    }
+
 signals:
     void runModeChanged(int runMode);
 
@@ -1971,6 +2001,10 @@ signals:
 
     void taskOfStation2Changed(int taskOfStation2);
 
+    void spaVaccum1StateChanged(bool spaVaccum1State);
+
+    void spaVaccum2StateChanged(bool spaVaccum2State);
+
 private:
     int m_runMode = 0;
     bool m_hasSensorTray1 = false;
@@ -2006,6 +2040,8 @@ private:
     bool m_handlyChangeSensor = false;
     int m_taskOfStation1 = 0;
     int m_taskOfStation2 = 0;
+    bool m_spaVaccum1State = 0;
+    bool m_spaVaccum2State = 0;
 };
 
 #endif // SENSORLOADERPARAMETER_H

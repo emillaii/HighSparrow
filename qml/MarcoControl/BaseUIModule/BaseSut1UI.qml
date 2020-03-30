@@ -12,7 +12,10 @@ RowLayout{
     RoundButton{
         background: Rectangle {
             radius: 6
-            color: "red"
+            color: {
+                if (tcpSUTState.tcpPogopinState) return "lightGreen"
+                else return "red"
+            }
         }
     }
 
@@ -25,7 +28,10 @@ RowLayout{
     RoundButton{
         background: Rectangle {
             radius: 6
-            color: "red"
+            color: {
+                if (tcpSUTState.tcpVaccumState) return "lightGreen"
+                else return "red"
+            }
         }
     }
 }

@@ -149,6 +149,7 @@ ColumnLayout{
         }
         Button{
             text: title_read_encoder
+            enabled: false
         }
     }
 
@@ -183,9 +184,11 @@ ColumnLayout{
         }
         Button{
             text: qsTr("Dispensing Path")
+            enabled: false
         }
         Button{
             text: qsTr("Dispensing Line Speed")
+            enabled: false
         }
     }
 
@@ -314,9 +317,11 @@ ColumnLayout{
         }
         Button{
             text: qsTr("Dispensing Path")
+            enabled: false
         }
         Button{
             text: qsTr("Dispensing Line Speed")
+            enabled: false
         }
     }
 }

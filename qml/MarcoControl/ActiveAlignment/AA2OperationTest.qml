@@ -90,7 +90,10 @@ Column {
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (sutState.vaccumState) return "lightGreen"
+                    else return "red"
+                }
             }
         }
         Button {
@@ -102,7 +105,10 @@ Column {
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (sutState.pogopinState) return "lightGreen"
+                    else return "red"
+                }
             }
         }
         Button {
@@ -114,7 +120,10 @@ Column {
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (tcpLUTState.tcpVaccum1State) return "lightGreen"
+                    else return "red"
+                }
             }
         }
         Button {
@@ -126,7 +135,10 @@ Column {
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (tcpLUTState.tcpVaccum2State) return "lightGreen"
+                    else return "red"
+                }
             }
         }
         Button {
@@ -138,7 +150,10 @@ Column {
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (aaCoreStates.aaGripperState) return "lightGreen"
+                    else return "red"
+                }
             }
         }
     }

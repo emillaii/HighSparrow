@@ -6,6 +6,7 @@ import LogicManagerLib 1.1
 import SomeLib 1.1
 import AACoreNew 1.1
 import SutModuleLib 1.1
+
 Column {
     RowLayout {
         Label { text : qsTr("AA1点胶设置") }
@@ -86,8 +87,14 @@ Column {
                 tcpDispenserParams.setCloseOffset(text)
             }
         }
-        Button { text : qsTr("Dispensing Path Edit") }
-        Button { text : qsTr("Dispensing Line Speed") }
+        Button {
+            text : qsTr("Dispensing Path Edit")
+            enabled: false
+        }
+        Button {
+            text : qsTr("Dispensing Line Speed")
+            enabled: false
+        }
     }
 
     RowLayout {
@@ -142,6 +149,7 @@ Column {
         }
         Button {
             text: qsTr("读取")
+            enabled: false
         }
     }
 

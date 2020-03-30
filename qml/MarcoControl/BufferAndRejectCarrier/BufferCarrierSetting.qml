@@ -34,6 +34,14 @@ Column {
         }
         Button {
             text: title_read_encoder
+            onClicked: {
+                var x =0;
+                var y =0;
+                x = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorXName)
+                y = baseModuleManager.getMotorFeedbackPos(sensorPickArmParams.motorYName)
+                tray_start_point4.setX(x);
+                tray_start_point4.setY(y);
+            }
         }
     }
     RowLayout {
@@ -42,32 +50,38 @@ Column {
     RowLayout {
         Label { text: qsTr("取料压力") }
         TextField{
+            text: sensorLoaderParameter.vcmWorkForce
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setVcmWorkForce(text)
             }
         }
         Label { text: qsTr("速度") }
         TextField{
+            text: sensorLoaderParameter.vcmWorkSpeed
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setVcmWorkSpeed(text)
             }
         }
         Label { text: qsTr("限力区间") }
         TextField{
+            text: sensorLoaderParameter.vcmMargin
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setVcmMargin(text)
             }
         }
     }
@@ -98,40 +112,45 @@ Column {
         Label { text: qsTr("Buffer Place Offset") }
         Label { text: qsTr("X") }
         TextField{
+            text:bufferTrayPlaceOffset.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                bufferTrayPlaceOffset.setX(text)
             }
         }
         Label { text: qsTr("Y") }
         TextField{
+            text:bufferTrayPlaceOffset.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                bufferTrayPlaceOffset.setY(text)
             }
         }
-        Label { text: qsTr("Theta") }
-        TextField{
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-            }
-        }
-        Button {
-            text: title_read_encoder
-        }
-        Button {
-            text: title_move_to
-        }
+
+//        Label { text: qsTr("Theta") }
+//        TextField{
+//            horizontalAlignment: TextInput.AlignHCenter
+//            validator: DoubleValidator{
+//                decimals: 6
+//                notation: DoubleValidator.StandardNotation
+//            }
+//            onEditingFinished: {
+//            }
+//        }
+//        Button {
+//            text: title_read_encoder
+//        }
+//        Button {
+//            text: title_move_to
+//        }
     }
 
     RowLayout {

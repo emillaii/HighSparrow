@@ -133,6 +133,7 @@ Column{
             width: 40
             height: 40
             onClicked: {
+                logicManager.performHandling(tcpAAHeadParams.moduleName, AAHeadModule.PICK_LENS_POS)
             }
         }
         Button {

@@ -581,11 +581,13 @@ ColumnLayout{
         Button{
             text:qsTr("LTK_X1取Tray盘")
             onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.ENTRANCE_KICK_READY_POS)
             }
         }
         Button{
             text:qsTr("LTL取盘")
             onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.LOADER_WAIT_POS)
             }
         }
     }
@@ -613,17 +615,23 @@ ColumnLayout{
         }
         Button{
             text:qsTr("LTL放盘")
+            onClicked: {
+                logicManager.performHandling(tcp_tray_loader_module_parameters.moduleName, TrayLoaderModule.LOADER_RELEASE_POS)
+            }
         }
     }
     RowLayout{
         Button{
             text:qsTr("进盘动作测试")
+            enabled: false
         }
         Button{
             text:qsTr("出盘动作测试")
+            enabled: false
         }
         Button{
             text:qsTr("进出盘循环测试")
+            enabled: false
         }
     }
 }

@@ -34,14 +34,16 @@ Column {
         Button {
             text: qsTr("CPA Collet VAC")
             onClicked: {
-                baseModuleManager.toogleIoState(sensorPickArmParams.spaVaccum1OutIoName)
-
+                baseModuleManager.toogleIoState(sensorPickArmParams.spaVaccum2OutIoName)
             }
         }
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (sensorLoaderModuleState.spaVaccum2State) return "lightGreen"
+                    else return "red"
+                }
             }
         }
     }

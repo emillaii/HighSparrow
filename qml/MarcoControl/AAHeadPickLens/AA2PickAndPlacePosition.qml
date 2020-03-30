@@ -132,7 +132,7 @@ Column{
             width: 40
             height: 40
             onClicked: {
-                //aaHeadModule.moveToPickLensPosition()
+                logicManager.performHandling(aaHeadParams.moduleName, AAHeadModule.PICK_LENS_POS)
             }
         }
         Button {

@@ -173,6 +173,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<SutModule>("SutModuleLib",1,1,"SutModule");
     qmlRegisterType<LensLoaderModule>("SomeLib",1,1,"LensLoaderModule");
     qmlRegisterType<SensorLoaderModule>("SomeLib",1,1,"SensorLoaderModule");
+    qmlRegisterType<AAHeadModule>("SomeLib",1,1,"AAHeadModule");
     qmlRegisterType<AACoreNew>("AACoreNew",1,1,"AACoreNew");
     qmlRegisterType<LogicManager>("LogicManagerLib",1,1,"LogicManager");
     qmlRegisterType<TrayLoaderModule>("TrayLoaderModuleLib",1,1,"TrayLoaderModule");
@@ -180,6 +181,7 @@ int main(int argc, char *argv[])
 
     //
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);
+    engine.rootContext()->setContextProperty("sensorLoaderModuleState", &highSprrow.baseModuleManager->sensor_loader_module.states);
     engine.rootContext()->setContextProperty("lensLoaderModule", &highSprrow.baseModuleManager->lens_loader_module);
     engine.rootContext()->setContextProperty("sensorTrayLoaderModule", &highSprrow.baseModuleManager->sensor_tray_loder_module);
     engine.rootContext()->setContextProperty("dothinkey", highSprrow.baseModuleManager->dothinkey);
@@ -228,6 +230,10 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("tcpSUTParams", &highSprrow.baseModuleManager->tcp_sut.parameters);
         engine.rootContext()->setContextProperty("tcpSUTCarrierParams",  &highSprrow.baseModuleManager->tcp_sut_carrier.parameters);
 
+        //SUT state
+        engine.rootContext()->setContextProperty("sutState", &highSprrow.baseModuleManager->sut_module.states);
+        //Remote SUT state
+        engine.rootContext()->setContextProperty("tcpSUTState", &highSprrow.baseModuleManager->tcp_sut.states);
     }
 
     {   //Dispense Params

@@ -303,6 +303,18 @@ void AAHeadModule::receiveSensorFromSut(double offset_x, double offset_y, double
     this->offset_theta = offset_theta;
 }
 
+void AAHeadModule::performHandlingOperation(int cmd, QVariant param)
+{
+    bool result = true;
+    int temp_value = 10;
+    qInfo("performHandlingOperation cmd: %d", cmd);
+    if(cmd%temp_value == HandlePosition::PICK_LENS_POS)
+        result = moveToPickLensPosition();
+    if(!result)
+        sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
+    is_handling = false;
+}
+
 bool AAHeadModule::moveToDiffrentZSync(double z)
 {
     return  moveToSync(mushroom_position.X(),mushroom_position.Y(),z,mushroom_position.A(),mushroom_position.B(),mushroom_position.C());
@@ -405,4 +417,26 @@ QMap<QString, PropertyBase *> AAHeadModule::getModuleParameter()
 
 void AAHeadModule::setModuleParameter(QMap<QString, PropertyBase *> parameters)
 {
+}
+
+void AAHeadModule::receivceModuleMessage(QVariantMap message)
+{
+
+}
+
+void AAHeadModule::startWork(int run_mode)
+{
+}
+
+void AAHeadModule::stopWork(bool wait_finish)
+{
+}
+
+void AAHeadModule::resetLogic()
+{
+}
+
+PropertyBase *AAHeadModule::getModuleState()
+{
+    return Q_NULLPTR;
 }

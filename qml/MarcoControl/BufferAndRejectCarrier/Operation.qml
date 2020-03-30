@@ -68,7 +68,10 @@ ColumnLayout {
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (sensorLoaderModuleState.spaVaccum1State) return "lightGreen"
+                    else return "red"
+                }
             }
         }
         Button{
@@ -80,7 +83,10 @@ ColumnLayout {
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (sensorLoaderModuleState.spaVaccum2State) return "lightGreen"
+                    else return "red"
+                }
             }
         }
     }

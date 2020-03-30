@@ -59,6 +59,7 @@ RowLayout{
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
+            lutParams.setPickSpeed(text)
         }
     }
     Label {
@@ -72,6 +73,7 @@ RowLayout{
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
+            lutParams.setPickForce(text)
         }
     }
     Label {
@@ -85,6 +87,7 @@ RowLayout{
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
+            lutParams.setGripperDelay(text)
         }
     }
 }

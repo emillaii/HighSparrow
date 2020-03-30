@@ -199,7 +199,7 @@ private:
     int m_trayNumber = 0;
     QVariantList m_trayMaterialData;
     QVariantList m_trayMaterialState;
-    int m_availableIndex = 0;
+    int m_availableIndex = 10000;
 };
 
 #endif // MATERRIALTRAY_PARAMETER_H

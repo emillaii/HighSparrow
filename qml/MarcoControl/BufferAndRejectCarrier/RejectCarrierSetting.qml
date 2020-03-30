@@ -50,32 +50,38 @@ Column {
     RowLayout {
         Label { text: qsTr("取料压力") }
         TextField{
+            text: sensorLoaderParameter.vcmWorkForce
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setVcmWorkForce(text)
             }
         }
         Label { text: qsTr("速度") }
         TextField{
+            text: sensorLoaderParameter.vcmWorkSpeed
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setVcmWorkSpeed(text)
             }
         }
         Label { text: qsTr("限力区间") }
         TextField{
+            text: sensorLoaderParameter.vcmMargin
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                sensorLoaderParameter.setVcmMargin(text)
             }
         }
     }
@@ -106,40 +112,44 @@ Column {
         Label { text: qsTr("Reject Place Offset") }
         Label { text: qsTr("X") }
         TextField{
+            text:ngTrayPlaceOffset.X
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                ngTrayPlaceOffset.setX(text)
             }
         }
         Label { text: qsTr("Y") }
         TextField{
+            text:ngTrayPlaceOffset.Y
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                ngTrayPlaceOffset.setY(text)
             }
         }
-        Label { text: qsTr("Theta") }
-        TextField{
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-            }
-        }
-        Button {
-            text: title_read_encoder
-        }
-        Button {
-            text: title_move_to
-        }
+//        Label { text: qsTr("Theta") }
+//        TextField{
+//            horizontalAlignment: TextInput.AlignHCenter
+//            validator: DoubleValidator{
+//                decimals: 6
+//                notation: DoubleValidator.StandardNotation
+//            }
+//            onEditingFinished: {
+//            }
+//        }
+//        Button {
+//            text: title_read_encoder
+//        }
+//        Button {
+//            text: title_move_to
+//        }
     }
 
     RowLayout {

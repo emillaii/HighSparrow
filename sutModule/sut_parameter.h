@@ -455,6 +455,11 @@ class SutState:public PropertyBase
     Q_PROPERTY(bool loadingSensor READ loadingSensor WRITE setLoadingSensor NOTIFY loadingSensorChanged)
     Q_PROPERTY(bool waitLoading READ waitLoading WRITE setWaitLoading NOTIFY waitLoadingChanged)
 
+    Q_PROPERTY(bool vaccumState READ vaccumState WRITE setVaccumState NOTIFY vaccumStateChanged)
+    Q_PROPERTY(bool tcpVaccumState READ tcpVaccumState WRITE setTcpVaccumState NOTIFY tcpVaccumStateChanged)
+    Q_PROPERTY(bool pogopinState READ pogopinState WRITE setPogopinState NOTIFY pogopinStateChanged)
+    Q_PROPERTY(bool tcpPogopinState READ tcpPogopinState WRITE setTcpPogopinState NOTIFY tcpPogopinStateChanged)
+
 public:
     bool sutHasSensor() const
     {
@@ -519,6 +524,26 @@ public:
     bool stationUnload() const
     {
         return m_stationUnload;
+    }
+
+    bool vaccumState() const
+    {
+        return m_vaccumState;
+    }
+
+    bool tcpVaccumState() const
+    {
+        return m_tcpVaccumState;
+    }
+
+    bool pogopinState() const
+    {
+        return m_pogopinState;
+    }
+
+    bool tcpPogopinState() const
+    {
+        return m_tcpPogopinState;
     }
 
 public slots:
@@ -639,6 +664,42 @@ public slots:
         emit stationUnloadChanged(m_stationUnload);
     }
 
+    void setVaccumState(bool vaccumState)
+    {
+        if (m_vaccumState == vaccumState)
+            return;
+
+        m_vaccumState = vaccumState;
+        emit vaccumStateChanged(m_vaccumState);
+    }
+
+    void setTcpVaccumState(bool tcpVaccumState)
+    {
+        if (m_tcpVaccumState == tcpVaccumState)
+            return;
+
+        m_tcpVaccumState = tcpVaccumState;
+        emit tcpVaccumStateChanged(m_tcpVaccumState);
+    }
+
+    void setPogopinState(bool pogopinState)
+    {
+        if (m_pogopinState == pogopinState)
+            return;
+
+        m_pogopinState = pogopinState;
+        emit pogopinStateChanged(m_pogopinState);
+    }
+
+    void setTcpPogopinState(bool tcpPogopinState)
+    {
+        if (m_tcpPogopinState == tcpPogopinState)
+            return;
+
+        m_tcpPogopinState = tcpPogopinState;
+        emit tcpPogopinStateChanged(m_tcpPogopinState);
+    }
+
 signals:
     void sutHasSensorChanged(bool sutHasSensor);
 
@@ -666,6 +727,14 @@ signals:
 
     void stationUnloadChanged(bool stationUnload);
 
+    void vaccumStateChanged(bool vaccumState);
+
+    void tcpVaccumStateChanged(bool tcpVaccumState);
+
+    void pogopinStateChanged(bool pogopinState);
+
+    void tcpPogopinStateChanged(bool tcpPogopinState);
+
 private:
     bool m_sutHasSensor = false;
     bool m_sutHasNgSensor = false;
@@ -680,6 +749,10 @@ private:
     bool m_disableStation = false;
     int m_sutMaterialState = 0;
     bool m_stationUnload = false;
+    bool m_vaccumState = false;
+    bool m_tcpVaccumState = false;
+    bool m_pogopinState = false;
+    bool m_tcpPogopinState = false;
 };
 
 #endif // SUT_PARAMETER_H

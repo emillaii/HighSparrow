@@ -25,6 +25,7 @@ ColumnLayout{
         }
         Button{
             text: qsTr("加载")
+            enabled: false
             onClicked: {
                 // TBD: 集成动作，入料弹夹到指定层，拉出lens tray到轨道工作位置
             }
@@ -50,6 +51,7 @@ ColumnLayout{
         }
         Button{
             text: qsTr("卸载")
+            enabled: false
             onClicked: {
                 // TBD: 集成动作，出料弹夹到指定层，从轨道工作位置推出lens tray
             }

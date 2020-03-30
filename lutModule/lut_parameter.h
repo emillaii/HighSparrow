@@ -9,6 +9,7 @@ public:
     LutParameter():PropertyBase(){}
     Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
     Q_PROPERTY(double pickForce READ pickForce WRITE setPickForce NOTIFY paramsChanged)
+    Q_PROPERTY(double placeForce READ placeForce WRITE setPlaceForce NOTIFY placeForceChanged)
     Q_PROPERTY(QString motorXName READ motorXName WRITE setMotorXName NOTIFY motorXNameChanged)
     Q_PROPERTY(QString motorYName READ motorYName WRITE setMotorYName NOTIFY motorYNameChanged)
     Q_PROPERTY(QString motorZName READ motorZName WRITE setMotorZName NOTIFY motorZNameChanged)
@@ -20,7 +21,9 @@ public:
     Q_PROPERTY(double accumulatedHour READ accumulatedHour WRITE setAccumulatedHour NOTIFY accumulatedHourChanged)
     Q_PROPERTY(double lensHeight READ lensHeight WRITE setLensHeight NOTIFY lensHeightChanged)
     Q_PROPERTY(double pickSpeed READ pickSpeed WRITE setPickSpeed NOTIFY pickSpeedChanged)
+    Q_PROPERTY(double placeSpeed READ placeSpeed WRITE setPlaceSpeed NOTIFY placeSpeedChanged)
     Q_PROPERTY(int gripperDelay READ gripperDelay WRITE setGripperDelay NOTIFY gripperDelayChanged)
+    Q_PROPERTY(int placeGripperDelay READ placeGripperDelay WRITE setPlaceGripperDelay NOTIFY placeGripperDelayChanged)
     Q_PROPERTY(int repeatTime READ repeatTime WRITE setRepeatTime NOTIFY repeatTimeChanged)
     Q_PROPERTY(bool enablePickForce READ enablePickForce WRITE setEnablePickForce NOTIFY enablePickForceChanged)
     Q_PROPERTY(bool staticTest READ staticTest WRITE setStaticTest NOTIFY staticTestChanged)
@@ -143,6 +146,21 @@ public:
     QString tcpLutVacuumSensor2Name() const
     {
         return m_tcpLutVacuumSensor2Name;
+    }
+
+    double placeForce() const
+    {
+        return m_placeForce;
+    }
+
+    double placeSpeed() const
+    {
+        return m_placeSpeed;
+    }
+
+    int placeGripperDelay() const
+    {
+        return m_placeGripperDelay;
     }
 
 public slots:
@@ -349,6 +367,33 @@ public slots:
         emit tcpLutVacuumSensor2NameChanged(m_tcpLutVacuumSensor2Name);
     }
 
+    void setPlaceForce(double placeForce)
+    {
+        if (qFuzzyCompare(m_placeForce, placeForce))
+            return;
+
+        m_placeForce = placeForce;
+        emit placeForceChanged(m_placeForce);
+    }
+
+    void setPlaceSpeed(double placeSpeed)
+    {
+        if (qFuzzyCompare(m_placeSpeed, placeSpeed))
+            return;
+
+        m_placeSpeed = placeSpeed;
+        emit placeSpeedChanged(m_placeSpeed);
+    }
+
+    void setPlaceGripperDelay(int placeGripperDelay)
+    {
+        if (m_placeGripperDelay == placeGripperDelay)
+            return;
+
+        m_placeGripperDelay = placeGripperDelay;
+        emit placeGripperDelayChanged(m_placeGripperDelay);
+    }
+
 signals:
     void paramsChanged();
 
@@ -397,6 +442,12 @@ signals:
 
     void tcpLutVacuumSensor2NameChanged(QString tcpLutVacuumSensor2Name);
 
+    void placeForceChanged(double placeForce);
+
+    void placeSpeedChanged(double placeSpeed);
+
+    void placeGripperDelayChanged(int placeGripperDelay);
+
 private:
     double m_PickForce = 0;
     QString m_motorXName = "LUT_X";
@@ -421,6 +472,9 @@ private:
     QString m_tcpLutVacuum2Name;
     QString m_tcpLutVacuumSensor1Name;
     QString m_tcpLutVacuumSensor2Name;
+    double m_placeForce = 0;
+    double m_placeSpeed = 10;
+    int m_placeGripperDelay = 500;
 };
 
 class LutState:public PropertyBase

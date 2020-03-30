@@ -10,68 +10,70 @@ RowLayout{
         text: qsTr("AA 1 放置速度")
     }
     TextField {
-        text: tcpLUTParams.pickSpeed
+        text: tcpLUTParams.placeSpeed
         horizontalAlignment: TextInput.AlignHCenter
         validator: DoubleValidator {
             decimals: 6
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
-            tcpLUTParams.setPickSpeed(text)
+            tcpLUTParams.setPlaceSpeed(text)
         }
     }
     Label {
         text: qsTr("AA 1 压力")
     }
     TextField {
-        text: tcpLUTParams.pickForce
+        text: tcpLUTParams.placeForce
         horizontalAlignment: TextInput.AlignHCenter
         validator: DoubleValidator {
             decimals: 6
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
-            tcpLUTParams.setPickForce(text)
+            tcpLUTParams.setPlaceForce(text)
         }
     }
     Label {
         text: qsTr("AA 1 关爪延时")
     }
     TextField {
-        text: tcpLUTParams.gripperDelay
+        text: tcpLUTParams.placeGripperDelay
         horizontalAlignment: TextInput.AlignHCenter
         validator: DoubleValidator {
             decimals: 6
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
-            tcpLUTParams.setGripperDelay(text)
+            tcpLUTParams.setPlaceGripperDelay(text)
         }
     }
     Label {
         text: qsTr("AA 2 放置速度")
     }
     TextField {
-        text: lutParams.pickSpeed
+        text: lutParams.placeSpeed
         horizontalAlignment: TextInput.AlignHCenter
         validator: DoubleValidator {
             decimals: 6
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
+            lutParams.setPlaceSpeed(text)
         }
     }
     Label {
         text: qsTr("AA 2 压力")
     }
     TextField {
-        text: lutParams.pickForce
+        text: lutParams.placeForce
         horizontalAlignment: TextInput.AlignHCenter
         validator: DoubleValidator {
             decimals: 6
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
+            lutParams.setPlaceForce(text)
         }
     }
     Label {
@@ -85,6 +87,7 @@ RowLayout{
             notation: DoubleValidator.StandardNotation
         }
         onEditingFinished: {
+            lutParams.setPlaceGripperDelay(text)
         }
     }
 }

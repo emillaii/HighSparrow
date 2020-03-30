@@ -7,18 +7,24 @@
 #include "position_define.h"
 #include "xtmotor.h"
 
-
 #include <QObject>
 #include <propertybase.h>
 #include <vision/visionmodule.h>
 #include "aaHeadModule/aaheadparameters.h"
+#include "thread_worker_base.h"
 
 //#define AA_Z_OFFSET (31.5)
 
-class AAHeadModule : public QObject,public ErrorBase
+class AAHeadModule : public ThreadWorkerBase
 {
     Q_OBJECT
+    Q_ENUMS(HandlePosition)
 public:
+    enum HandlePosition
+    {
+        PICK_LENS_POS = 1
+    };
+
     AAHeadModule();
     void Init(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtGeneralOutput * gripper,
               XtGeneralOutput * uv1,
@@ -53,11 +59,23 @@ public:
     bool moveToSZ_XYC_Z_Sync(double x, double y, double z,double c);
     bool moveToSZ_XYSC_Z_Sync(double x, double y, double z,double c);
     bool homeTilt();
+
+    // ThreadWorkerBase interface
+public:
+    PropertyBase *getModuleState();
+    QMap<QString, PropertyBase *> getModuleParameter();
+    void setModuleParameter(QMap<QString, PropertyBase *>);
+    void receivceModuleMessage(QVariantMap module_message);
 signals:
     void sendSensrRequestToSut(int sut_state);
 public slots:
     void receiveLensFromLut(double offset_x,double offset_y,double offset_theta);
     void receiveSensorFromSut(double offset_x,double offset_y,double offset_theta);
+
+    void startWork(int run_mode);
+    void stopWork(bool wait_finish);
+    void resetLogic();
+    void performHandlingOperation(int cmd,QVariant param);
 private:
     bool moveToDiffrentZSync(double z);
     bool moveToSync(double x, double y, double z, double a, double b, double c);
@@ -78,8 +96,6 @@ public:
     double offset_x = 0;
     double offset_y = 0;
     double offset_theta = 0;
-    QMap<QString, PropertyBase *> getModuleParameter();  
-    void setModuleParameter(QMap<QString, PropertyBase *>);
 private:
     XtMotor* motor_x = Q_NULLPTR;
     XtMotor* motor_y = Q_NULLPTR;

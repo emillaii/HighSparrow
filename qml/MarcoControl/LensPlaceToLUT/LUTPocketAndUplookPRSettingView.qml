@@ -291,6 +291,9 @@ ColumnLayout {
         }
         Button {
             text: qsTr("LPA移动到Up Look PR Position")
+            onClicked: {
+                 logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.UPDOWNLOOK_DOWN_POS)
+            }
         }
     }
 }

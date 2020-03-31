@@ -763,6 +763,20 @@ bool LensLoaderModule::placeLensToLUT()
     return result;
 }
 
+bool LensLoaderModule::placeLensToLUT2()
+{
+    if(parameters.openTimeLog())
+        qInfo(u8"从当前位置放lens到LUT2");
+    bool result = vcmSearchLUTZ(parameters.placeLensZ(), false);
+    result &= openUnloadVacuum();
+    result &= vcmSearchReturn();
+    if(!result)
+        AppendError(QString(u8"从当前位置放lens到LUT2失败"));
+    if(parameters.openTimeLog())
+        qInfo(u8"从当前位置放lens到LUT2 result %d ",result);
+    return result;
+}
+
 bool LensLoaderModule::pickLUT1Lens()
 {
     bool result = vcmSearchLUTZ(parameters.placeLensZ(), true);
@@ -1317,12 +1331,20 @@ void LensLoaderModule::performHandlingOperation(int cmd,QVariant param)
             result = placeLensToLUT();
         }
     }
+    else if(cmd%temp_value == HandlePickerAction::PLACE_LENS_TO_LUT2){
+        if (skip_dialog){
+            result = placeLensToLUT2();
+        }
+        else if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
+            result = placeLensToLUT2();
+        }
+    }
     else if(cmd%temp_value == HandlePickerAction::PICK_NG_LENS_FROM_LUT1){
         if (skip_dialog){
             result = pickLUT1Lens();
         }
         else if(emit sendMsgSignal(tr(u8""),tr(u8"是否执行操作？"))){
-            result = pickLUTLens();
+            result = pickLUT1Lens();
         }
     }
     else if(cmd%temp_value == HandlePickerAction::PICK_NG_LENS_FROM_LUT2){

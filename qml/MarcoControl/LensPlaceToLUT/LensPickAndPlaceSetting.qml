@@ -148,6 +148,7 @@ ColumnLayout {
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcp_lut_pr_position2.setX(text)
             }
         }
         Label{
@@ -161,6 +162,7 @@ ColumnLayout {
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                tcp_lut_pr_position2.setY(text)
             }
         }
         Button {
@@ -209,7 +211,7 @@ ColumnLayout {
                 logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS1+
                                              LensLoaderModule.LUT_LENS_PR+
                                              LensLoaderModule.ToWork+
-                                             LensLoaderModule.PICK_NG_LENS_FROM_LUT2, JSON.stringify(param))
+                                             LensLoaderModule.PICK_NG_LENS_FROM_LUT1, JSON.stringify(param))
             }
         }
     }
@@ -235,7 +237,7 @@ ColumnLayout {
                 logicManager.performHandling(tcp_lens_loader_parameter.moduleName,LensLoaderModule.LUT_POS2+
                                              LensLoaderModule.LUT_NG_SLOT_PR+
                                              LensLoaderModule.ToWork+
-                                             LensLoaderModule.PLACE_LENS_TO_LUT, JSON.stringify(param))
+                                             LensLoaderModule.PLACE_LENS_TO_LUT2, JSON.stringify(param))
             }
         }
         Button {
@@ -252,9 +254,9 @@ ColumnLayout {
     }
     RowLayout {
         Button{
-            text: qsTr("LUT Pocket1 VAC")
+            text: qsTr("LUT Pocket 1 VAC")
             onClicked: {
-                baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum1Name)
+                baseModuleManager.toogleIoState(tcpLUTParams.tcpLutVacuum1Name)
             }
         }
         RoundButton{
@@ -269,7 +271,7 @@ ColumnLayout {
         Button{
             text: qsTr("LUT Pocket2 VAC")
             onClicked: {
-                baseModuleManager.toogleIoState(tcpLUTParams.lutVacuum2Name)
+                baseModuleManager.toogleIoState(tcpLUTParams.tcpLutVacuum2Name)
             }
         }
         RoundButton{

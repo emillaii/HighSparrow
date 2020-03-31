@@ -52,11 +52,12 @@ public:
     {
         PICK_LENS_FROM_TRAY = 1000,
         PLACE_LENS_TO_LUT = 2000,
-        PICK_NG_LENS_FROM_LUT1 = 3000,
-        PICK_NG_LENS_FROM_LUT2 = 4000,
-        PLACE_NG_LENS_TO_TRAY = 5000,
-        MeasureLensInTray = 6000,
-        MeasureLensInLUT = 7000
+        PLACE_LENS_TO_LUT2 = 3000,
+        PICK_NG_LENS_FROM_LUT1 = 4000,
+        PICK_NG_LENS_FROM_LUT2 = 5000,
+        PLACE_NG_LENS_TO_TRAY = 6000,
+        MeasureLensInTray = 7000,
+        MeasureLensInLUT = 8000
     };
     enum HandleMarcoAction
     {
@@ -115,6 +116,7 @@ private:
     bool vcmSearchReturn();
     bool pickTrayLens();
     bool placeLensToLUT();
+    bool placeLensToLUT2();
     bool pickLUT1Lens();
     bool pickLUTLens();
     bool placeLensToTray();

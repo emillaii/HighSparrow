@@ -107,8 +107,6 @@ Column{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
-            onEditingFinished: {
-            }
         }
         Label {
             text: qsTr("Col")
@@ -120,8 +118,6 @@ Column{
             validator: DoubleValidator {
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
             }
         }
         Button {
@@ -211,7 +207,10 @@ Column{
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (tcpSUTState.tcpPogopinState) return "lightGreen"
+                    else return "red"
+                }
             }
         }
         Button {
@@ -223,7 +222,10 @@ Column{
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (tcpSUTState.tcpVaccumState) return "lightGreen"
+                    else return "red"
+                }
             }
         }
     }
@@ -260,7 +262,10 @@ Column{
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (sutState.pogopinState) return "lightGreen"
+                    else return "red"
+                }
             }
         }
         Button {
@@ -272,7 +277,10 @@ Column{
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (sutState.vaccumState) return "lightGreen"
+                    else return "red"
+                }
             }
         }
     }

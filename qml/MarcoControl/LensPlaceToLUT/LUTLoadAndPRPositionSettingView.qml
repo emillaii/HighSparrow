@@ -135,6 +135,10 @@ ColumnLayout{
         Button {
             text: title_read_encoder
             onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorYName)
+                tcp_lut_pr_position2.setX(x)
+                tcp_lut_pr_position2.setY(y)
             }
         }
     }
@@ -173,6 +177,10 @@ ColumnLayout{
         Button {
             text: title_read_encoder
             onClicked: {
+                var x = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorXName)
+                var y = baseModuleManager.getMotorFeedbackPos(tcp_lens_loader_parameter.motorYName)
+                tcp_lut_picker_position.setX(x)
+                tcp_lut_picker_position.setY(y)
             }
         }
     }

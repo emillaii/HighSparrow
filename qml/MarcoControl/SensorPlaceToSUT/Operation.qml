@@ -9,18 +9,22 @@ ColumnLayout{
     RowLayout{
         Button{
             text: qsTr("SUT1 Place sensor")
+            enabled: false
         }
         Button{
             text: qsTr("SUT1 Pick sensor")
+            enabled: false
         }
         BaseSut1UI{}
     }
     RowLayout{
         Button{
             text: qsTr("SUT2 Place sensor")
+            enabled: false
         }
         Button{
             text: qsTr("SUT2 Pick sensor")
+            enabled: false
         }
         BaseSut2UI{}
     }

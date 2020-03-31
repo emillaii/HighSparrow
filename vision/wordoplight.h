@@ -16,9 +16,11 @@ typedef enum {
 class WordopLight: public QObject, public ThreadWorkerBase
 {
     Q_PROPERTY(int downlookLighting READ downlookLighting WRITE setDownlookLighting NOTIFY paramsChanged)
+    Q_PROPERTY(int downlookCoaxialLighting READ downlookCoaxialLighting WRITE setDownlookCoaxialLighting NOTIFY paramsChanged)
     Q_PROPERTY(int uplookLighting READ uplookLighting WRITE setUplookLighting NOTIFY paramsChanged)
     Q_PROPERTY(int pickarmLighting READ pickarmLighting WRITE setPickarmLighting NOTIFY paramsChanged)
     Q_PROPERTY(int aa2DownlookLighting READ aa2DownlookLighting WRITE setAA2DownlookLighting NOTIFY paramsChanged)
+    Q_PROPERTY(int aa2DownlookCoaxialLighting READ aa2DownlookCoaxialLighting WRITE setAA2DownlookCoaxialLighting NOTIFY paramsChanged)
     Q_PROPERTY(int sensorPickarmLighting READ sensorPickarmLighting WRITE setSensorPickarmLighting NOTIFY paramsChanged)
     Q_PROPERTY(int sensorUplookLighting READ sensorUplookLighting WRITE setSensorUplookLighting NOTIFY sensorUplookLightingChanged)
     Q_PROPERTY(int barcodeCameraLighting READ barcodeCameraLighting WRITE setBarcodeCameraLighting NOTIFY barcodeCameraLightingChanged)
@@ -91,6 +93,11 @@ public:
         return m_downlookLighting;
     }
 
+    int downlookCoaxialLighting() const
+    {
+        return m_downlookCoaxialLighting;
+    }
+
     int uplookLighting() const
     {
         return m_uplookLighting;
@@ -104,6 +111,11 @@ public:
     int aa2DownlookLighting() const
     {
         return m_aa2DownlookLighting;
+    }
+
+    int aa2DownlookCoaxialLighting() const
+    {
+        return m_aa2DownlookCoaxialLighting;
     }
 
     int sensorPickarmLighting() const
@@ -138,6 +150,22 @@ void setDownlookLighting(int downlookLighting)
     }
     else {
         sendMessageToNextModule(LIGHTING_AA1_DL, (uint8_t)downlookLighting);
+    }
+}
+
+void setDownlookCoaxialLighting(int downlookCoaxialLighting)
+{
+    qInfo("Set downlook Coaxial lighting1 %d", downlookCoaxialLighting);
+    if (m_downlookCoaxialLighting == downlookCoaxialLighting)
+        return;
+
+    m_downlookCoaxialLighting = downlookCoaxialLighting;
+    emit paramsChanged(m_downlookCoaxialLighting);
+    if (mode == 0){
+        setBrightness(LIGHTING_AA1_DL_COAXIAL, (uint8_t)downlookCoaxialLighting);
+    }
+    else {
+        sendMessageToNextModule(LIGHTING_AA1_DL_COAXIAL, (uint8_t)downlookCoaxialLighting);
     }
 }
 
@@ -185,6 +213,22 @@ void setAA2DownlookLighting(int aa2DownlookLighting)
     }
     else {
         setBrightness(LIGHTING_AA2_DL, (uint8_t)aa2DownlookLighting);
+    }
+}
+
+void setAA2DownlookCoaxialLighting(int aa2DownlookCoaxialLighting)
+{
+    qInfo("Set AA2 Downlook Coaxial lighting %d", aa2DownlookCoaxialLighting);
+    if (m_aa2DownlookCoaxialLighting == aa2DownlookCoaxialLighting)
+        return;
+
+    m_aa2DownlookCoaxialLighting = aa2DownlookCoaxialLighting;
+    emit paramsChanged(m_aa2DownlookCoaxialLighting);
+    if (mode == 0){
+        sendMessageToNextModule(LIGHTING_AA2_DL_COAXIAL, (uint8_t)aa2DownlookCoaxialLighting);
+    }
+    else {
+        setBrightness(LIGHTING_AA2_DL_COAXIAL, (uint8_t)aa2DownlookCoaxialLighting);
     }
 }
 
@@ -264,14 +308,16 @@ private:
     uint8_t now_brightness[10]={0};
 
     int m_downlookLighting = 0;
+    int m_downlookCoaxialLighting = 0;
 
     int m_uplookLighting = 0;
 
     int m_pickarmLighting = 0;
 
-    int m_aa2DownlookLighting;
+    int m_aa2DownlookLighting = 0;
+    int m_aa2DownlookCoaxialLighting = 0;
 
-    int m_sensorPickarmLighting;
+    int m_sensorPickarmLighting = 0;
 
     int m_sensorUplookLighting = 0;
 

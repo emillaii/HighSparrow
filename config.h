@@ -125,12 +125,14 @@
 #define CAMERA_LPA_BARCODE               "Barcode_Camera"
 
 #define LIGHTING_LUT_UL                 0
+#define LIGHTING_AA1_DL_COAXIAL         1
 #define LIGHTING_AA1_DL                 2
 #define LIGHTING_LPA_DL                 3
-#define LIGHTING_SENSOR_UL              1
+#define LIGHTING_SENSOR_UL              1	// not used for now
 
 #define LIGHTING_SPA_DL                 0
 #define LIGHTING_AA2_DL                 1
+#define LIGHTING_AA2_DL_COAXIAL         2
 
 #define CURRENT_PR_RESULT               "CurrentPRResult"
 

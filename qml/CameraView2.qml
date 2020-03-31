@@ -338,6 +338,10 @@ Grid {
             }
 
             Slider {
+                Text {
+                    text: qsTr("Ring")
+                    color: "white"
+                }
                 y: 255
                 stepSize: 1
                 to: 255
@@ -413,6 +417,38 @@ Grid {
                    onClicked: {
                        downlookCamera.toggleLiveView()
                    }
+                }
+            }
+
+            Slider {
+                Text {
+                    text: qsTr("Coaxial")
+                    color: "white"
+                }
+                y: 255
+                stepSize: 1
+                to: 255
+                from: 0
+                width: 120
+                height: 48
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                value: lightingController.downlookCoaxialLighting
+                onValueChanged: {
+                    lightingController.setDownlookCoaxialLighting(value)
+                }
+                Label {
+                    y: 10
+                    color: "#46eb46"
+                    text: lightingController.downlookCoaxialLighting
+                    font.pointSize: 20
+                    font.family: "Times New Roman"
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 8
+                    anchors.left: parent.left
+                    anchors.leftMargin: 118
                 }
             }
 
@@ -727,6 +763,10 @@ Grid {
                 font.pixelSize: 16
             }
             Slider {
+                Text {
+                    text: qsTr("Ring")
+                    color: "white"
+                }
                 id: slider4
                 y: 250
                 width: 120
@@ -800,6 +840,38 @@ Grid {
                     onClicked: {
                         aa2DownlookCamera.toggleLiveView()
                     }
+                }
+            }
+
+            Slider {
+                Text {
+                    text: qsTr("Coaxial")
+                    color: "white"
+                }
+                y: 255
+                stepSize: 1
+                to: 255
+                from: 0
+                width: 120
+                height: 48
+                anchors.left: parent.left
+                anchors.leftMargin: -5
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                value: lightingController.aa2DownlookCoaxialLighting
+                onValueChanged: {
+                    lightingController.setAA2DownlookCoaxialLighting(value)
+                }
+                Label {
+                    y: 10
+                    color: "#46eb46"
+                    text: lightingController.aa2DownlookCoaxialLighting
+                    font.pointSize: 20
+                    font.family: "Times New Roman"
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 8
+                    anchors.left: parent.left
+                    anchors.leftMargin: 118
                 }
             }
         }

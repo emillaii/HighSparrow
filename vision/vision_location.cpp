@@ -321,12 +321,22 @@ QPointF VisionLocation::getCurrentOffset()
 void VisionLocation::OpenLight()
 {
     lighting->setBrightness(parameters.lightChannel(),parameters.lightBrightness());
+    // if downlook location, open aux light channel too, for glue inspection
+    if (parameters.locationName().contains("downlook_location"))
+    {
+        lighting->setBrightness(parameters.auxLightChannel(),parameters.auxLightBrightness());
+    }
 //    QThread::msleep(30);
 }
 
 void VisionLocation::CloseLight()
 {
     lighting->setBrightness(parameters.lightChannel(),0);
+    // if downlook location, close aux light channel too, for glue inspection
+    if (parameters.locationName().contains("downlook_location"))
+    {
+        lighting->setBrightness(parameters.auxLightChannel(),0);
+    }
 //    QThread::msleep(30);
 }
 

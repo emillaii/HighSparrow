@@ -27,6 +27,8 @@ public:
     Q_PROPERTY(bool useOrigin READ useOrigin WRITE setUseOrigin NOTIFY useOriginChanged)
     Q_PROPERTY(int performTime READ performTime WRITE setPerformTime NOTIFY performTimeChanged)
     Q_PROPERTY(int prismPRType READ prismPRType WRITE setPrismPRType NOTIFY prismPRTypeChanged)
+    Q_PROPERTY(int auxLightChannel READ auxLightChannel WRITE setAuxLightChannel NOTIFY auxLightChannelChanged)
+    Q_PROPERTY(int auxLightBrightness READ auxLightBrightness WRITE setAuxLightBrightness NOTIFY auxLightBrightnessChanged)
     QString prFileName() const
     {
         return m_prFileName;
@@ -116,6 +118,16 @@ public:
     int prismPRType() const
     {
         return m_prismPRType;
+    }
+
+    int auxLightChannel() const
+    {
+        return m_auxLightChannel;
+    }
+
+    int auxLightBrightness() const
+    {
+        return m_auxLightBrightness;
     }
 
 public slots:
@@ -281,6 +293,24 @@ public slots:
         emit prismPRTypeChanged(m_prismPRType);
     }
 
+    void setAuxLightChannel(int auxLightChannel)
+    {
+        if (m_auxLightChannel == auxLightChannel)
+            return;
+
+        m_auxLightChannel = auxLightChannel;
+        emit auxLightChannelChanged(m_auxLightChannel);
+    }
+
+    void setAuxLightBrightness(int auxLightBrightness)
+    {
+        if (m_auxLightBrightness == auxLightBrightness)
+            return;
+
+        m_auxLightBrightness = auxLightBrightness;
+        emit auxLightBrightnessChanged(m_auxLightBrightness);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -318,6 +348,10 @@ signals:
 
     void prismPRTypeChanged(int prismPRType);
 
+    void auxLightChannelChanged(int auxLightChannel);
+
+    void auxLightBrightnessChanged(int auxLightBrightness);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -337,6 +371,8 @@ private:
     bool m_useOrigin = false;
     int m_performTime = 0;
     int m_prismPRType = 0;
+    int m_auxLightChannel = -1;
+    int m_auxLightBrightness = 0;
 };
 
 

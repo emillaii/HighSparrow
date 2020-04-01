@@ -126,7 +126,14 @@ void SensorTrayLoaderModule::stopWork(bool wait_finish)
 void SensorTrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
 {
     is_handling = false;
-
+    bool result = false;
+    if (cmd == HandleAction::STPO_PUSH)
+    {
+        result &= motor_push->MoveToPosSync(parameters.pushoutPosition());
+        result &= motor_push->MoveToPosSync(0);
+    }
+    is_handling = false;
+    return;
 }
 
 

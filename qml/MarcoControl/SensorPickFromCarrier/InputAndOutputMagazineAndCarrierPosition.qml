@@ -1,10 +1,9 @@
-
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.2
-import LogicManagerLib 1.1
 import SomeLib 1.1
+import LogicManagerLib 1.1
 
 Column {
    RowLayout {
@@ -46,7 +45,10 @@ Column {
    RowLayout {
        Button{
            text: qsTr("STLE推杆")
-
+           onClicked:
+           {
+               logicManager.performHandling(sensor_tray_loader_module_parameter.moduleName, SensorTrayLoaderModule.STPO_PUSH)
+           }
        }
        RoundButton{
            background: Rectangle {

@@ -939,7 +939,6 @@ public slots:
 
     void setCircleTime(double circleTime)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_circleTime, circleTime))
             return;
 
@@ -949,7 +948,6 @@ public slots:
 
     void setCircleAverageTime(double circleAverageTime)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_circleAverageTime, circleAverageTime))
             return;
 

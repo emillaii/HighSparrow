@@ -251,7 +251,6 @@ void setModuleName(QString moduleName)
 
 void setPr2Bond_offsetX(double pr2Bond_offsetX)
 {
-    qWarning("Floating point comparison needs context sanity check");
     if (qFuzzyCompare(m_pr2Bond_offsetX, pr2Bond_offsetX))
         return;
 
@@ -261,7 +260,6 @@ void setPr2Bond_offsetX(double pr2Bond_offsetX)
 
 void setPr2Bond_offsetY(double pr2Bond_offsetY)
 {
-    qWarning("Floating point comparison needs context sanity check");
     if (qFuzzyCompare(m_pr2Bond_offsetY, pr2Bond_offsetY))
         return;
 
@@ -271,7 +269,6 @@ void setPr2Bond_offsetY(double pr2Bond_offsetY)
 
 void setPr2Bond_offsetTheta(double pr2Bond_offsetTheta)
 {
-    qWarning("Floating point comparison needs context sanity check");
     if (qFuzzyCompare(m_pr2Bond_offsetTheta, pr2Bond_offsetTheta))
         return;
 

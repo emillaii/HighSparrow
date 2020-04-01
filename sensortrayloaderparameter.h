@@ -10,6 +10,7 @@ class SensorTrayLoaderParameter:public PropertyBase
     Q_OBJECT
 public:
     SensorTrayLoaderParameter():PropertyBase(){}
+    Q_PROPERTY(QString moduleName READ moduleName WRITE setModuleName NOTIFY moduleNameChanged)
     Q_PROPERTY(bool handlyChangeSensorTray READ handlyChangeSensorTray WRITE setHandlyChangeSensorTray NOTIFY handlyChangeSensorTrayChanged)
     Q_PROPERTY(QString motorTrayName READ motorTrayName WRITE setMotorTrayName NOTIFY motorTrayNameChanged)
     Q_PROPERTY(QString motorSTIEName READ motorSTIEName WRITE setMotorSTIEName NOTIFY motorSTIENameChanged)
@@ -253,6 +254,11 @@ public:
     QString cylinderSTK2IoName() const
     {
         return m_cylinderSTK2IoName;
+    }
+
+    QString moduleName() const
+    {
+        return m_moduleName;
     }
 
 public slots:
@@ -624,6 +630,15 @@ public slots:
         emit cylinderSTK2IoNameChanged(m_cylinderSTK2IoName);
     }
 
+    void setModuleName(QString moduleName)
+    {
+        if (m_moduleName == moduleName)
+            return;
+
+        m_moduleName = moduleName;
+        emit moduleNameChanged(m_moduleName);
+    }
+
 signals:
     void motorTrayNameChanged(QString motorTrayName);
     void motorSTIENameChanged(QString motorSTIEName);
@@ -706,6 +721,8 @@ signals:
 
     void cylinderSTK2IoNameChanged(QString cylinderSTK2IoName);
 
+    void moduleNameChanged(QString moduleName);
+
 private:
     QString m_motorTrayName = "";
     QString m_motorSTIEName = "";
@@ -748,6 +765,7 @@ private:
     QString m_cylinderVacancyTrayIoName = "";
     QString m_cylinderSTK1IoName = "";
     QString m_cylinderSTK2IoName = "";
+    QString m_moduleName = "sensorTrayLoader";
 };
 class SensorTrayLoaderState:public PropertyBase
 {

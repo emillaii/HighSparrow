@@ -178,6 +178,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<LogicManager>("LogicManagerLib",1,1,"LogicManager");
     qmlRegisterType<TrayLoaderModule>("TrayLoaderModuleLib",1,1,"TrayLoaderModule");
     qmlRegisterType<VisionModule>("VisionModuleLib",1,1,"VisionModule");
+    qmlRegisterType<SensorTrayLoaderModule>("SomeLib",1,1,"SensorTrayLoaderModule");
 
     //
     engine.rootContext()->setContextProperty("sensorLoaderModule", &highSprrow.baseModuleManager->sensor_loader_module);

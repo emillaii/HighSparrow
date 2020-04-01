@@ -30,6 +30,8 @@ public:
     Q_PROPERTY(QString tcpSUTVaccumName READ tcpSUTVaccumName WRITE setTcpSUTVaccumName NOTIFY tcpSUTVaccumNameChanged)
     Q_PROPERTY(QString tcpSUTPOGOPINName READ tcpSUTPOGOPINName WRITE setTcpSUTPOGOPINName NOTIFY tcpSUTPOGOPINNameChanged)
     Q_PROPERTY(int delayBeforeVaccum READ delayBeforeVaccum WRITE setDelayBeforeVaccum NOTIFY delayBeforeVaccumChanged)
+    Q_PROPERTY(QString sutPOGOPINName READ sutPOGOPINName WRITE setSutPOGOPINName NOTIFY sutPOGOPINNameChanged)
+    Q_PROPERTY(QString sutVaccumName READ sutVaccumName WRITE setSutVaccumName NOTIFY sutVaccumNameChanged)
     double Force() const
     {
         return m_Force;
@@ -142,6 +144,16 @@ public:
     int delayBeforeVaccum() const
     {
         return m_delayBeforeVaccum;
+    }
+
+    QString sutPOGOPINName() const
+    {
+        return m_sutPOGOPINName;
+    }
+
+    QString sutVaccumName() const
+    {
+        return m_sutVaccumName;
     }
 
 public slots:
@@ -361,6 +373,24 @@ public slots:
         emit delayBeforeVaccumChanged(m_delayBeforeVaccum);
     }
 
+    void setSutPOGOPINName(QString sutPOGOPINName)
+    {
+        if (m_sutPOGOPINName == sutPOGOPINName)
+            return;
+
+        m_sutPOGOPINName = sutPOGOPINName;
+        emit sutPOGOPINNameChanged(m_sutPOGOPINName);
+    }
+
+    void setSutVaccumName(QString sutVaccumName)
+    {
+        if (m_sutVaccumName == sutVaccumName)
+            return;
+
+        m_sutVaccumName = sutVaccumName;
+        emit sutVaccumNameChanged(m_sutVaccumName);
+    }
+
 signals:
     void paramsChanged(double Force);
 
@@ -410,6 +440,10 @@ signals:
 
     void delayBeforeVaccumChanged(int delayBeforeVaccum);
 
+    void sutPOGOPINNameChanged(QString sutPOGOPINName);
+
+    void sutVaccumNameChanged(QString sutVaccumName);
+
 private:
     double m_Force = 0;
     QString m_motorXName = "SUT_X";
@@ -434,6 +468,8 @@ private:
     QString m_tcpSUTVaccumName;
     QString m_tcpSUTPOGOPINName;
     int m_delayBeforeVaccum = 0;
+    QString m_sutPOGOPINName;
+    QString m_sutVaccumName;
 };
 
 class SutState:public PropertyBase

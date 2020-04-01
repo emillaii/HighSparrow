@@ -22,6 +22,7 @@ Column{
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                material_tray.setTrayCurrent(t_ncol_1.text-1,t_nrow_1.text-1,0)
             }
         }
         Label {
@@ -36,6 +37,7 @@ Column{
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                material_tray.setTrayCurrent(t_ncol_1.text-1,t_nrow_1.text-1,0)
             }
         }
         Button {
@@ -64,6 +66,7 @@ Column{
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                material_tray.setTrayCurrent(t_ncol_2.text-1,t_nrow_2.text-1,1)
             }
         }
         Label {
@@ -78,6 +81,7 @@ Column{
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
+                material_tray.setTrayCurrent(t_ncol_2.text-1,t_nrow_2.text-1,1)
             }
         }
         Button {
@@ -85,7 +89,7 @@ Column{
             width: 40
             height: 40
             onClicked: {
-                material_tray.setTrayCurrent(t_ncol_2.text-1,t_nrow_2.text-1,0)
+                material_tray.setTrayCurrent(t_ncol_2.text-1,t_nrow_2.text-1,1)
                 logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_POS)
             }
         }

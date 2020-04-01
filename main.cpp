@@ -497,7 +497,8 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->sensor_tray_loder_module.entrance_clip->parameters);
     engine.rootContext()->setContextProperty("sensor_tray_loader_module_parameter",
                                              &highSprrow.baseModuleManager->sensor_tray_loder_module.parameters);
-
+    engine.rootContext()->setContextProperty("sensorTrayLoaderModuleState",
+                                             &highSprrow.baseModuleManager->sensor_tray_loder_module.states);
 
     CheckProcessModel checkProcessModel;
     engine.rootContext()->setContextProperty("checkProcessModel",&checkProcessModel);

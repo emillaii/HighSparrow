@@ -6,7 +6,7 @@ RowLayout{
     Button{
         text: qsTr("SUT2 Clamp")
         onClicked: {
-            baseModuleManager.toogleIoState(sutParams.tcpSUTPOGOPINName)
+            baseModuleManager.toogleIoState(sutParams.sutPOGOPINName)
         }
     }
     RoundButton{
@@ -22,7 +22,7 @@ RowLayout{
     Button{
         text: qsTr("SUT2 VAC")
         onClicked: {
-            baseModuleManager.toogleIoState(sutParams.tcpSUTVaccumName)
+            baseModuleManager.toogleIoState(sutParams.sutVaccumName)
         }
     }
     RoundButton{

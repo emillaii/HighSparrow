@@ -44,46 +44,104 @@ Column {
    SensorCarrierInputAndOutputTestOperation {}
 
    RowLayout {
-       Button{ text: qsTr("STLE推杆") }
+       Button{
+           text: qsTr("STLE推杆")
+
+       }
        RoundButton{
            background: Rectangle {
                radius: 6
-               color: "red"
+               color: {
+                   if(sensorTrayLoaderModuleState.stpoPushState)
+                       return "lightGreen"
+                   else
+                       return "red"
+               }
            }
        }
-       Button{ text: qsTr("Boat Clamp") }
-       RoundButton{
-           background: Rectangle {
-               radius: 6
-               color: "red"
+       Button{
+           text: qsTr("Boat Clamp")
+           onClicked: {
+               baseModuleManager.toogleIoState(sensor_tray_loader_module_parameter.cylinderGripperIoName)
            }
        }
-       Button{ text: qsTr("Boat1 气缸") }
        RoundButton{
            background: Rectangle {
                radius: 6
-               color: "red"
+               color: {
+                   if(sensorTrayLoaderModuleState.cylinderGripperState)
+                       return "lightGreen"
+                   else
+                       return "red"
+               }
            }
        }
-       Button{ text: qsTr("STK Clamp1") }
-       RoundButton{
-           background: Rectangle {
-               radius: 6
-               color: "red"
+       Button{
+           text: qsTr("Boat1 气缸")
+           onClicked: {
+               baseModuleManager.toogleIoState(sensor_tray_loader_module_parameter.cylinderHoldTrayIoName)
            }
        }
-       Button{ text: qsTr("Boat2 气缸") }
        RoundButton{
            background: Rectangle {
                radius: 6
-               color: "red"
+               color: {
+                   if(sensorTrayLoaderModuleState.boat1CylinderState)
+                       return "lightGreen"
+                   else
+                       return "red"
+               }
            }
        }
-       Button{ text: qsTr("STK Clamp2") }
+       Button{
+           text: qsTr("STK Clamp1")
+           onClicked: {
+               baseModuleManager.toogleIoState(sensor_tray_loader_module_parameter.cylinderSTK1IoName)
+           }
+       }
        RoundButton{
            background: Rectangle {
                radius: 6
-               color: "red"
+               color: {
+                   if(sensorTrayLoaderModuleState.stk1ClampState)
+                       return "lightGreen"
+                   else
+                       return "red"
+               }
+           }
+       }
+       Button{
+           text: qsTr("Boat2 气缸")
+           onClicked: {
+               baseModuleManager.toogleIoState(sensor_tray_loader_module_parameter.cylinderVacancyTrayIoName)
+           }
+       }
+       RoundButton{
+           background: Rectangle {
+               radius: 6
+               color: {
+                   if(sensorTrayLoaderModuleState.boat2CylinderState)
+                       return "lightGreen"
+                   else
+                       return "red"
+               }
+           }
+       }
+       Button{
+           text: qsTr("STK Clamp2")
+           onClicked: {
+               baseModuleManager.toogleIoState(sensor_tray_loader_module_parameter.cylinderSTK2IoName)
+           }
+       }
+       RoundButton{
+           background: Rectangle {
+               radius: 6
+               color: {
+                   if(sensorTrayLoaderModuleState.stk2ClampState)
+                       return "lightGreen"
+                   else
+                       return "red"
+               }
            }
        }
    }

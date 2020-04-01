@@ -46,6 +46,11 @@ public:
     Q_PROPERTY(QString exitTrayCheckIoName READ exitTrayCheckIoName WRITE setExitTrayCheckIoName NOTIFY exitTrayCheckIoNameChanged)
     Q_PROPERTY(bool isHandly READ isHandly WRITE setIsHandly NOTIFY isHandlyChanged)
     Q_PROPERTY(int checkEntranceTrayRetryTimes READ checkEntranceTrayRetryTimes WRITE setCheckEntranceTrayRetryTimes NOTIFY checkEntranceTrayRetryTimesChanged)
+    Q_PROPERTY(QString cylinderGripperIoName READ cylinderGripperIoName WRITE setCylinderGripperIoName NOTIFY cylinderGripperIoNameChanged)
+    Q_PROPERTY(QString cylinderHoldTrayIoName READ cylinderHoldTrayIoName WRITE setCylinderHoldTrayIoName NOTIFY cylinderHoldTrayIoNameChanged)
+    Q_PROPERTY(QString cylinderVacancyTrayIoName READ cylinderVacancyTrayIoName WRITE setCylinderVacancyTrayIoName NOTIFY cylinderVacancyTrayIoNameChanged)
+    Q_PROPERTY(QString cylinderSTK1IoName READ cylinderSTK1IoName WRITE setCylinderSTK1IoName NOTIFY cylinderSTK1IoNameChanged)
+    Q_PROPERTY(QString cylinderSTK2IoName READ cylinderSTK2IoName WRITE setCylinderSTK2IoName NOTIFY cylinderSTK2IoNameChanged)
     QString motorTrayName() const
     {
         return m_motorTrayName;
@@ -223,6 +228,31 @@ public:
     int checkEntranceTrayRetryTimes() const
     {
         return m_checkEntranceTrayRetryTimes;
+    }
+
+    QString cylinderGripperIoName() const
+    {
+        return m_cylinderGripperIoName;
+    }
+
+    QString cylinderHoldTrayIoName() const
+    {
+        return m_cylinderHoldTrayIoName;
+    }
+
+    QString cylinderVacancyTrayIoName() const
+    {
+        return m_cylinderVacancyTrayIoName;
+    }
+
+    QString cylinderSTK1IoName() const
+    {
+        return m_cylinderSTK1IoName;
+    }
+
+    QString cylinderSTK2IoName() const
+    {
+        return m_cylinderSTK2IoName;
     }
 
 public slots:
@@ -549,6 +579,51 @@ public slots:
         emit checkEntranceTrayRetryTimesChanged(m_checkEntranceTrayRetryTimes);
     }
 
+    void setCylinderGripperIoName(QString cylinderGripperIoName)
+    {
+        if (m_cylinderGripperIoName == cylinderGripperIoName)
+            return;
+
+        m_cylinderGripperIoName = cylinderGripperIoName;
+        emit cylinderGripperIoNameChanged(m_cylinderGripperIoName);
+    }
+
+    void setCylinderHoldTrayIoName(QString cylinderHoldTrayIoName)
+    {
+        if (m_cylinderHoldTrayIoName == cylinderHoldTrayIoName)
+            return;
+
+        m_cylinderHoldTrayIoName = cylinderHoldTrayIoName;
+        emit cylinderHoldTrayIoNameChanged(m_cylinderHoldTrayIoName);
+    }
+
+    void setCylinderVacancyTrayIoName(QString cylinderVacancyTrayIoName)
+    {
+        if (m_cylinderVacancyTrayIoName == cylinderVacancyTrayIoName)
+            return;
+
+        m_cylinderVacancyTrayIoName = cylinderVacancyTrayIoName;
+        emit cylinderVacancyTrayIoNameChanged(m_cylinderVacancyTrayIoName);
+    }
+
+    void setCylinderSTK1IoName(QString cylinderSTK1IoName)
+    {
+        if (m_cylinderSTK1IoName == cylinderSTK1IoName)
+            return;
+
+        m_cylinderSTK1IoName = cylinderSTK1IoName;
+        emit cylinderSTK1IoNameChanged(m_cylinderSTK1IoName);
+    }
+
+    void setCylinderSTK2IoName(QString cylinderSTK2IoName)
+    {
+        if (m_cylinderSTK2IoName == cylinderSTK2IoName)
+            return;
+
+        m_cylinderSTK2IoName = cylinderSTK2IoName;
+        emit cylinderSTK2IoNameChanged(m_cylinderSTK2IoName);
+    }
+
 signals:
     void motorTrayNameChanged(QString motorTrayName);
     void motorSTIENameChanged(QString motorSTIEName);
@@ -621,6 +696,16 @@ signals:
 
     void checkEntranceTrayRetryTimesChanged(int checkEntranceTrayRetryTimes);
 
+    void cylinderGripperIoNameChanged(QString cylinderGripperIoName);
+
+    void cylinderHoldTrayIoNameChanged(QString cylinderHoldTrayIoName);
+
+    void cylinderVacancyTrayIoNameChanged(QString cylinderVacancyTrayIoName);
+
+    void cylinderSTK1IoNameChanged(QString cylinderSTK1IoName);
+
+    void cylinderSTK2IoNameChanged(QString cylinderSTK2IoName);
+
 private:
     QString m_motorTrayName = "";
     QString m_motorSTIEName = "";
@@ -658,6 +743,11 @@ private:
     bool m_isHandly = false;
     bool m_handlyChangeSensorTray = false;
     int m_checkEntranceTrayRetryTimes = 3;
+    QString m_cylinderGripperIoName = "";
+    QString m_cylinderHoldTrayIoName = "";
+    QString m_cylinderVacancyTrayIoName = "";
+    QString m_cylinderSTK1IoName = "";
+    QString m_cylinderSTK2IoName = "";
 };
 class SensorTrayLoaderState:public PropertyBase
 {
@@ -695,6 +785,14 @@ public:
     Q_PROPERTY(bool hasAuxiliaryExitClip READ hasAuxiliaryExitClip WRITE setHasAuxiliaryExitClip NOTIFY hasAuxiliaryExitClipChanged)
     Q_PROPERTY(bool hasEntranceClip READ hasEntranceClip WRITE setHasEntranceClip NOTIFY hasEntranceClipChanged)
     Q_PROPERTY(bool hasExitClip READ hasExitClip WRITE setHasExitClip NOTIFY hasExitClipChanged)
+
+    Q_PROPERTY(bool stpoPushState READ stpoPushState WRITE setStpoPushState NOTIFY stpoPushStateChanged)
+    Q_PROPERTY(bool cylinderGripperState READ cylinderGripperState WRITE setCylinderGripperState NOTIFY cylinderGripperStateChanged)
+    Q_PROPERTY(bool boat1CylinderState READ boat1CylinderState WRITE setBoat1CylinderState NOTIFY boat1CylinderStateChanged)
+    Q_PROPERTY(bool boat2CylinderState READ boat2CylinderState WRITE setBoat2CylinderState NOTIFY boat2CylinderStateChanged)
+    Q_PROPERTY(bool stk1ClampState READ stk1ClampState WRITE setStk1ClampState NOTIFY stk1ClampStateChanged)
+    Q_PROPERTY(bool stk2ClampState READ stk2ClampState WRITE setStk2ClampState NOTIFY stk2ClampStateChanged)
+
     bool hasTrayToGet() const
     {
         return m_hasTrayToGet;
@@ -852,6 +950,36 @@ public:
     bool hasExitClip() const
     {
         return m_hasExitClip;
+    }
+
+    bool stpoPushState() const
+    {
+        return m_stpoPushState;
+    }
+
+    bool cylinderGripperState() const
+    {
+        return m_cylinderGripperState;
+    }
+
+    bool boat1CylinderState() const
+    {
+        return m_boat1CylinderState;
+    }
+
+    bool boat2CylinderState() const
+    {
+        return m_boat2CylinderState;
+    }
+
+    bool stk1ClampState() const
+    {
+        return m_stk1ClampState;
+    }
+
+    bool stk2ClampState() const
+    {
+        return m_stk2ClampState;
     }
 
 public slots:
@@ -1133,6 +1261,60 @@ public slots:
         emit hasExitClipChanged(m_hasExitClip);
     }
 
+    void setStpoPushState(bool stpoPushState)
+    {
+        if (m_stpoPushState == stpoPushState)
+            return;
+
+        m_stpoPushState = stpoPushState;
+        emit stpoPushStateChanged(m_stpoPushState);
+    }
+
+    void setCylinderGripperState(bool cylinderGripperState)
+    {
+        if (m_cylinderGripperState == cylinderGripperState)
+            return;
+
+        m_cylinderGripperState = cylinderGripperState;
+        emit cylinderGripperStateChanged(m_cylinderGripperState);
+    }
+
+    void setBoat1CylinderState(bool boat1CylinderState)
+    {
+        if (m_boat1CylinderState == boat1CylinderState)
+            return;
+
+        m_boat1CylinderState = boat1CylinderState;
+        emit boat1CylinderStateChanged(m_boat1CylinderState);
+    }
+
+    void setBoat2CylinderState(bool boat2CylinderState)
+    {
+        if (m_boat2CylinderState == boat2CylinderState)
+            return;
+
+        m_boat2CylinderState = boat2CylinderState;
+        emit boat2CylinderStateChanged(m_boat2CylinderState);
+    }
+
+    void setStk1ClampState(bool stk1ClampState)
+    {
+        if (m_stk1ClampState == stk1ClampState)
+            return;
+
+        m_stk1ClampState = stk1ClampState;
+        emit stk1ClampStateChanged(m_stk1ClampState);
+    }
+
+    void setStk2ClampState(bool stk2ClampState)
+    {
+        if (m_stk2ClampState == stk2ClampState)
+            return;
+
+        m_stk2ClampState = stk2ClampState;
+        emit stk2ClampStateChanged(m_stk2ClampState);
+    }
+
 signals:
     void hasTrayToGetChanged(bool hasTrayToGet);
     void hasVacancyTrayChanged(bool hasVacancyTray);
@@ -1195,6 +1377,18 @@ signals:
 
     void hasExitClipChanged(bool hasExitClip);
 
+    void stpoPushStateChanged(bool stpoPushState);
+
+    void cylinderGripperStateChanged(bool cylinderGripperState);
+
+    void boat1CylinderStateChanged(bool boat1CylinderState);
+
+    void boat2CylinderStateChanged(bool boat2CylinderState);
+
+    void stk1ClampStateChanged(bool stk1ClampState);
+
+    void stk2ClampStateChanged(bool stk2ClampState);
+
 private:
     bool m_hasTrayToGet = false;
     bool m_hasVacancyTray = false;
@@ -1227,5 +1421,11 @@ private:
     bool m_hasAuxiliaryExitClip = false;
     bool m_hasEntranceClip = false;
     bool m_hasExitClip = false;
+    bool m_stpoPushState = false;
+    bool m_cylinderGripperState = false;
+    bool m_boat1CylinderState = false;
+    bool m_boat2CylinderState = false;
+    bool m_stk1ClampState = false;
+    bool m_stk2ClampState = false;
 };
 #endif // SENSORTRAYLOADERPARAMETER_H

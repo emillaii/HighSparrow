@@ -28,9 +28,9 @@ void SutModule::Init(MaterialCarrier *carrier, VisionLocation* downlook_location
     setName(parameters.moduleName());
     this->thread_id = thread_id;
     if (vacuum)
-        this->parameters.setTcpSUTVaccumName(vacuum->parameters.outIoName());
+        this->parameters.setSutVaccumName(vacuum->parameters.outIoName());
     if (pogopin)
-        this->parameters.setTcpSUTPOGOPINName(pogopin->parameters.oneOutName());
+        this->parameters.setSutPOGOPINName(pogopin->parameters.oneOutName());
 }
 
 void SutModule::saveJsonConfig(QString file_name)

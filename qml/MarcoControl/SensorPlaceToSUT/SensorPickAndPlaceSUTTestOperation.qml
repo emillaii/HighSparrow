@@ -256,7 +256,7 @@ Column{
         Button {
             text: qsTr("SUT 2 Clamp")
             onClicked: {
-                baseModuleManager.toogleIoState(sutParams.tcpSUTPOGOPINName)
+                baseModuleManager.toogleIoState(sutParams.sutPOGOPINName)
             }
         }
         RoundButton{
@@ -271,7 +271,7 @@ Column{
         Button {
             text: qsTr("SUT 2 VAC")
             onClicked: {
-                baseModuleManager.toogleIoState(sutParams.tcpSUTVaccumName)
+                baseModuleManager.toogleIoState(sutParams.sutVaccumName)
             }
         }
         RoundButton{

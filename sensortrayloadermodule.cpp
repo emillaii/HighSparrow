@@ -56,6 +56,17 @@ void SensorTrayLoaderModule::Init(XtMotor *motor_tray, XtMotor *motor_kick, XtMo
     parts.append(entrance_tray_check_io);
     this->exit_tray_check_io = exit_tray_check_io;
     parts.append(exit_tray_check_io);
+
+    if (gripper)
+        this->parameters.setCylinderGripperIoName(this->gripper->parameters.oneOutName());
+    if (hold_tray)
+        this->parameters.setCylinderHoldTrayIoName(this->hold_tray->parameters.oneOutName());
+    if (hold_vacancy)
+        this->parameters.setCylinderVacancyTrayIoName(this->hold_vacancy->parameters.oneOutName());
+    if (kick1)
+        this->parameters.setCylinderSTK1IoName(this->kick1->parameters.oneOutName());
+    if (kick2)
+        this->parameters.setCylinderSTK2IoName(this->kick2->parameters.oneOutName());
 }
 
 void SensorTrayLoaderModule::startWork(int run_mode)

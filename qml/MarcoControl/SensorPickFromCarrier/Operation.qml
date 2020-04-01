@@ -66,7 +66,6 @@ ColumnLayout{
             text: "1"
             horizontalAlignment: TextInput.AlignHCenter
             validator: IntValidator{
-
             }
         }
         Label{
@@ -128,11 +127,17 @@ ColumnLayout{
     RowLayout{
         Button{
             text: qsTr("SPA Collet VAC")
+            onClicked: {
+                baseModuleManager.toogleIoState(sensorPickArmParams.spaVaccum1OutIoName)
+            }
         }
         RoundButton{
             background: Rectangle {
                 radius: 6
-                color: "red"
+                color: {
+                    if (sensorLoaderModuleState.spaVaccum1State) return "lightGreen"
+                    else return "red"
+                }
             }
         }
     }

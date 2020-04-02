@@ -2720,7 +2720,7 @@ double AACoreNew::performMTFInThread( cv::Mat input, int freq )
 ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
 {
     double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
-    double sfr_tol[8] = {0};
+    double sfr_tol[16] = {0};
     sfr_tol[0] = params["CC_MIN"].toDouble(0);
     sfr_tol[1] = params["L1_MIN"].toDouble(0);
     sfr_tol[2] = params["L2_MIN"].toDouble(0);
@@ -2729,6 +2729,14 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     sfr_tol[5] = params["L1_MAX"].toDouble(100);
     sfr_tol[6] = params["L2_MAX"].toDouble(100);
     sfr_tol[7] = params["L3_MAX"].toDouble(100);
+    sfr_tol[8] = params["CC_AVG_MIN"].toDouble(0);
+    sfr_tol[9] = params["L1_AVG_MIN"].toDouble(0);
+    sfr_tol[10] = params["L2_AVG_MIN"].toDouble(0);
+    sfr_tol[11] = params["L3_AVG_MIN"].toDouble(0);
+    sfr_tol[12] = params["CC_AVG_MAX"].toDouble(100);
+    sfr_tol[13] = params["L1_AVG_MAX"].toDouble(100);
+    sfr_tol[14] = params["L2_AVG_MAX"].toDouble(100);
+    sfr_tol[15] = params["L3_AVG_MAX"].toDouble(100);
     QString error = "";
     QElapsedTimer timer;timer.start();
     QVariantMap map;
@@ -2790,9 +2798,45 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         sfr_b_v.push_back(sfr_b);
         double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
         double f = radius/r1;
-        double avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l)/4;
-        qDebug("x: %f y: %f sfr_l: %f sfr_r: %f sfr_t: %f sfr_b: %f",
-               patterns[i].center.x(), patterns[i].center.y(), sfr_l, sfr_r, sfr_t, sfr_b);
+        double avg_sfr = 0;
+        if (i==0)   //CC
+        {
+            avg_sfr = sfr_t*parameters.WeightList().at(16).toDouble()
+                    + sfr_r*parameters.WeightList().at(17).toDouble()
+                    + sfr_b*parameters.WeightList().at(18).toDouble()
+                    + sfr_l*parameters.WeightList().at(19).toDouble();
+        }
+        else if (i%4 == 1)  //UL
+        {
+            avg_sfr = sfr_t*parameters.WeightList().at(0).toDouble()
+                    + sfr_r*parameters.WeightList().at(1).toDouble()
+                    + sfr_b*parameters.WeightList().at(2).toDouble()
+                    + sfr_l*parameters.WeightList().at(3).toDouble();
+        }
+        else if (i%4 == 2)  //LL
+        {
+            avg_sfr = sfr_t*parameters.WeightList().at(4).toDouble()
+                    + sfr_r*parameters.WeightList().at(5).toDouble()
+                    + sfr_b*parameters.WeightList().at(6).toDouble()
+                    + sfr_l*parameters.WeightList().at(7).toDouble();
+        }
+        else if (i%4 == 3)  //LR
+        {
+            avg_sfr = sfr_t*parameters.WeightList().at(8).toDouble()
+                    + sfr_r*parameters.WeightList().at(9).toDouble()
+                    + sfr_b*parameters.WeightList().at(10).toDouble()
+                    + sfr_l*parameters.WeightList().at(11).toDouble();
+        }
+        else if (i%4 == 0)
+        {
+            avg_sfr = sfr_t*parameters.WeightList().at(12).toDouble()
+                    + sfr_r*parameters.WeightList().at(13).toDouble()
+                    + sfr_b*parameters.WeightList().at(14).toDouble()
+                    + sfr_l*parameters.WeightList().at(15).toDouble();
+        }
+
+        qDebug("x: %f y: %f sfr_l: %f sfr_r: %f sfr_t: %f sfr_b: %f avg_sfr: %f",
+               patterns[i].center.x(), patterns[i].center.y(), sfr_l, sfr_r, sfr_t, sfr_b, avg_sfr);
         vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
                          f, sfr_t, sfr_r, sfr_b, sfr_l, patterns[i].area, avg_sfr);
 
@@ -2827,6 +2871,13 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         error.append("CC fail.");
         sfr_check = false;
     }
+    //Check avg_sfr in CC if lower than min or larger than max
+    if (vec[0].avg_sfr < sfr_tol[8] || vec[0].avg_sfr > sfr_tol[12])
+    {
+        error.append("CC average sfr fail.");
+        sfr_check = false;
+    }
+    //Check if 4 lines and average in each ROI if each SFR score is lower than min or larger than max
     for(int i = 0; i <= max_layer; i++) {
         map.insert(QString("UL_T_SFR_").append(QString::number(i+1)), round(vec[i*4 + 1].t_sfr*1000)/1000);
         map.insert(QString("UL_R_SFR_").append(QString::number(i+1)), round(vec[i*4 + 1].r_sfr*1000)/1000);
@@ -2858,29 +2909,34 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
                 || vec[i*4+3].t_sfr > sfr_tol[i+5] || vec[i*4+3].r_sfr > sfr_tol[i+5] || vec[i*4+3].b_sfr > sfr_tol[i+5] || vec[i*4+3].l_sfr > sfr_tol[i+5]
                 || vec[i*4+4].t_sfr > sfr_tol[i+5] || vec[i*4+4].r_sfr > sfr_tol[i+5] || vec[i*4+4].b_sfr > sfr_tol[i+5] || vec[i*4+4].l_sfr > sfr_tol[i+5])
         {
+            qInfo("Layer %d check SFR fail with %f,%f",i+1,sfr_tol[i+1],sfr_tol[i+5]);
             if (i == 0)
-            {
-                qInfo("Layer1 check SFR fail with %f", sfr_tol[1]);
                 error.append("Layer1 fail.");
-            }
             else if (i == 1)
-            {
-                qInfo("Layer2 check SFR fail with %f", sfr_tol[2]);
                 error.append("Layer2 fail.");
-            }
             else if (i == 2)
-            {
-                qInfo("Layer3 check SFR fail with %f", sfr_tol[3]);
                 error.append("Layer3 fail.");
-            }
             sfr_check = false;
         }
+
+        //Check if average sfr is lower than min or larger than max
+        if (vec[i*4+1].avg_sfr < sfr_tol[i+9] || vec[i*4+1].avg_sfr > sfr_tol[i+13])
+        {
+            qInfo("Layer %d check average SFR fail with %f,%f", sfr_tol[i+9],sfr_tol[i+13]);
+            if (i == 0)
+                error.append("Layer1 average sfr fail.");
+            else if (i == 1)
+                error.append("Layer2 average sfr fail.");
+            else if (i == 2)
+                error.append("Layer3 average sfr fail.");
+            sfr_check = false;
+        }
+
         qInfo("UL %f %f %f %f", vec[i*4 + 1].t_sfr, vec[i*4 + 1].r_sfr, vec[i*4 + 1].b_sfr, vec[i*4 + 1].l_sfr);
         qInfo("UR %f %f %f %f", vec[i*4 + 2].t_sfr, vec[i*4 + 2].r_sfr, vec[i*4 + 2].b_sfr, vec[i*4 + 2].l_sfr);
         qInfo("LR %f %f %f %f", vec[i*4 + 3].t_sfr, vec[i*4 + 3].r_sfr, vec[i*4 + 3].b_sfr, vec[i*4 + 3].l_sfr);
         qInfo("LL %f %f %f %f", vec[i*4 + 4].t_sfr, vec[i*4 + 4].r_sfr, vec[i*4 + 4].b_sfr, vec[i*4 + 4].l_sfr);
-        qInfo("MIN %f", sfr_tol[i+1]);
-        qInfo("MAX %f", sfr_tol[i+5]);
+        qInfo("MIN %f,MAX %f,AVG_MIN %f, AVG_MAX %f", sfr_tol[i+1],sfr_tol[i+5],sfr_tol[i+9],sfr_tol[i+13]);
     }
     double ul_08f_sfr_dev = getSFRDev_mm(4,vec[max_layer*4 + 1].t_sfr,vec[max_layer*4 + 1].r_sfr,vec[max_layer*4 + 1].b_sfr,vec[max_layer*4 + 1].l_sfr);
     double ll_08f_sfr_dev = getSFRDev_mm(4,vec[max_layer*4 + 2].t_sfr,vec[max_layer*4 + 2].r_sfr,vec[max_layer*4 + 2].b_sfr,vec[max_layer*4 + 2].l_sfr);

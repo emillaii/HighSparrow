@@ -16,7 +16,7 @@ public:
     enum HandlePosition
     {
         START_POSITION,
-        END_POSITION,
+        END_POSITION
     };
     enum HandleAction
     {

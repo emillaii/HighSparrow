@@ -1766,6 +1766,327 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
     return error_code;
 }
 
+ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score)
+{
+    ErrorCodeStruct error_code = { OK, "" };
+    qInfo("PR Edge Fitting is called. Camera name: %s pr name: %s", camera_name.toStdString().c_str(), pr_name.toStdString().c_str());
+    atl::String g_constData1;
+    atl::String g_emptyString;
+    atl::String g_constData10;
+    atl::String g_constData11;
+    atl::String g_constData12;
+    atl::String g_constData13;
+    atl::Array< atl::Conditional< avl::Location > > g_constData14;
+
+    QString edgeFittingField1Filename = pr_name;
+    QString edgeFittingField2Filename = pr_name;
+    QString edgeFittingField3Filename = pr_name;
+    QString edgeFittingField4Filename = pr_name;
+    QString offsetFilename = pr_name;
+
+    edgeFittingField1Filename.replace("_edgeModel", "_edgeFittingField1");
+    edgeFittingField2Filename.replace("_edgeModel", "_edgeFittingField2");
+    edgeFittingField3Filename.replace("_edgeModel", "_edgeFittingField3");
+    edgeFittingField4Filename.replace("_edgeModel", "_edgeFittingField4");
+    offsetFilename.replace("_edgeModel", "_offset");
+
+    qInfo("Edge Fitting pr filename: %s %s %s %s %s", edgeFittingField1Filename.toStdString().c_str(),
+          edgeFittingField2Filename.toStdString().c_str(),
+          edgeFittingField3Filename.toStdString().c_str(),
+          edgeFittingField4Filename.toStdString().c_str(),
+          offsetFilename.toStdString().c_str());
+
+    g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\PR_Log_AA\\2018-11-03T04-19-34-724Z_PR_Uplook_Lens_Holder.jpg";
+    g_emptyString = L"";
+    g_constData10 = L"SegmentFittingField?";
+    g_constData11 = L"GrayModel?";
+    g_constData12 = L"Vector2D?";
+    g_constData13 = L"Angle: ";
+    g_constData14.Reset(1);
+    g_constData14[0] = avl::Location(200, 60);
+
+    avl::Image image1;
+    atl::String string1;
+    atl::String string2 = edgeFittingField1Filename.toStdString().c_str();
+    atl::String string3 = edgeFittingField2Filename.toStdString().c_str();
+    atl::String string4 = edgeFittingField3Filename.toStdString().c_str();
+    atl::String string5 = edgeFittingField4Filename.toStdString().c_str();
+    atl::String string6 = pr_name.toStdString().c_str();
+    atl::String string7 = offsetFilename.toStdString().c_str();
+    atl::Conditional< avl::SegmentFittingField > segmentFittingField1;
+    atl::Conditional< avl::SegmentFittingField > segmentFittingField2;
+    atl::Conditional< avl::SegmentFittingField > segmentFittingField3;
+    atl::Conditional< avl::SegmentFittingField > segmentFittingField4;
+    atl::Conditional< avl::GrayModel > grayModel1;
+    atl::Conditional< avl::Vector2D > vector2D1;
+    avs::FitSegmentToEdgesState fitSegmentToEdgesState1;
+    avs::FitSegmentToEdgesState fitSegmentToEdgesState2;
+    avs::FitSegmentToEdgesState fitSegmentToEdgesState3;
+    avs::FitSegmentToEdgesState fitSegmentToEdgesState4;
+    atl::Conditional< atl::String > string8;
+    atl::Array< avl::Point2D > point2DArray1;
+    atl::String string9;
+    atl::Conditional< avl::Rectangle2D > rectangle2D1;
+    atl::Conditional< avl::Point2D > point2D1;
+    atl::Conditional< avl::Point2D > point2D2;
+    avl::Image image2;
+    avl::Image image3;
+    avl::Image image4;
+    atl::Array< atl::Conditional< atl::String > > stringArray1;
+    avl::Image image5;
+
+    QString imageName;
+    imageName.append(getVisionLogDir())
+            .append(getCurrentTimeString())
+            .append(".jpg");
+    QString rawImageName;
+    rawImageName.append(getVisionLogDir())
+            .append(getCurrentTimeString())
+            .append("_raw.jpg");
+
+    try {
+        avl::LoadImage( g_constData1, false, image1 );
+        avl::SaveImageToJpeg( image1, rawImageName.toStdString().c_str(), atl::NIL, false);
+        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string2, avl::StreamMode::Binary, g_constData10, segmentFittingField1 );
+        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string3, avl::StreamMode::Binary, g_constData10, segmentFittingField2 );
+        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string4, avl::StreamMode::Binary, g_constData10, segmentFittingField3 );
+        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string5, avl::StreamMode::Binary, g_constData10, segmentFittingField4 );
+        avs::LoadObject< atl::Conditional< avl::GrayModel > >( string6, avl::StreamMode::Binary, g_constData11, grayModel1 );
+        avs::LoadObject< atl::Conditional< avl::Vector2D > >( string7, avl::StreamMode::Binary, g_constData12, vector2D1 );
+
+        if (grayModel1 != atl::NIL)
+        {
+            atl::Conditional< avl::Object2D > object2D1;
+
+            avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1.Get(), 0, 3, false, 0.5f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+
+            if (object2D1 != atl::NIL)
+            {
+                avl::CoordinateSystem2D coordinateSystem2D1;
+                atl::Conditional< avl::Line2D > line2D1;
+                atl::Conditional< avl::Line2D > line2D2;
+                atl::Conditional< avl::Point2D > point2D3;
+                atl::Conditional< avl::Line2D > line2D3;
+                atl::Conditional< avl::Point2D > point2D4;
+
+                coordinateSystem2D1 = object2D1.Get().Alignment();
+
+                if (segmentFittingField2 != atl::NIL)
+                {
+                    atl::Conditional< avl::Segment2D > segment2D1;
+
+                    // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
+                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState1, image1, segmentFittingField2.Get(), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+
+                    if (segment2D1 != atl::NIL)
+                    {
+                        line2D1.AssignNonNil();
+
+                        avl::Segment2DToLine2D( segment2D1.Get(), line2D1.Get() );
+                    }
+                    else
+                    {
+                        line2D1 = atl::NIL;
+                        error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                        qWarning("Cannot find edge 2");
+                        return error_code;
+                    }
+                }
+                else
+                {
+                    line2D1 = atl::NIL;
+                    error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                    qWarning("Cannot find edge fitting field 2 model");
+                    return error_code;
+                }
+
+                if (segmentFittingField1 != atl::NIL)
+                {
+                    atl::Conditional< avl::Segment2D > segment2D1;
+
+                    // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
+                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState2, image1, segmentFittingField1.Get(), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+
+                    if (segment2D1 != atl::NIL)
+                    {
+                        line2D2.AssignNonNil();
+
+                        avl::Segment2DToLine2D( segment2D1.Get(), line2D2.Get() );
+
+                        if (line2D1 != atl::NIL)
+                        {
+                            avl::LineLineIntersection( line2D2.Get(), line2D1.Get(), point2D3 );
+                        }
+                        else
+                        {
+                            point2D3 = atl::NIL;
+                            error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                            qWarning("Cannot find edge 1");
+                            return error_code;
+                        }
+                    }
+                    else
+                    {
+                        line2D2 = atl::NIL;
+                        point2D3 = atl::NIL;
+                        error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                        qWarning("Cannot find edge fitting field 1 model");
+                        return error_code;
+                    }
+                }
+                else
+                {
+                    line2D2 = atl::NIL;
+                    point2D3 = atl::NIL;
+                    error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                    qWarning("Cannot find edge fitting field 1 model");
+                    return error_code;
+                }
+
+                if (segmentFittingField3 != atl::NIL)
+                {
+                    atl::Conditional< avl::Segment2D > segment2D1;
+
+                    // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
+                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState3, image1, segmentFittingField3.Get(), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+
+                    if (segment2D1 != atl::NIL)
+                    {
+                        line2D3.AssignNonNil();
+
+                        avl::Segment2DToLine2D( segment2D1.Get(), line2D3.Get() );
+
+                        if (line2D1 != atl::NIL)
+                        {
+                            avl::LineLineIntersection( line2D1.Get(), line2D3.Get(), point2D4 );
+                        }
+                        else
+                        {
+                            point2D4 = atl::NIL;
+                        }
+                    }
+                    else
+                    {
+                        line2D3 = atl::NIL;
+                        point2D4 = atl::NIL;
+                    }
+                }
+                else
+                {
+                    line2D3 = atl::NIL;
+                    point2D4 = atl::NIL;
+                }
+
+                if (segmentFittingField4 != atl::NIL)
+                {
+                    atl::Conditional< avl::Segment2D > segment2D1;
+
+                    // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
+                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState4, image1, segmentFittingField4.Get(), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+
+                    if (segment2D1 != atl::NIL && line2D2 != atl::NIL && line2D3 != atl::NIL)
+                    {
+                        avl::Line2D line2D4;
+                        atl::Conditional< avl::Point2D > point2D5;
+                        atl::Conditional< avl::Point2D > point2D6;
+
+                        avl::Segment2DToLine2D( segment2D1.Get(), line2D4 );
+                        avl::LineLineIntersection( line2D2.Get(), line2D4, point2D5 );
+                        avl::LineLineIntersection( line2D3.Get(), line2D4, point2D6 );
+
+                        if (point2D3 != atl::NIL && point2D4 != atl::NIL && point2D6 != atl::NIL && point2D5 != atl::NIL)
+                        {
+                            float real1;
+
+                            rectangle2D1.AssignNonNil();
+                            point2D1.AssignNonNil();
+                            string8.AssignNonNil();
+
+                            // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
+                            avs::AvsFilter_CreateArray< avl::Point2D >( point2D3.Get(), point2D4.Get(), point2D6.Get(), point2D5.Get(), atl::NIL, atl::NIL, atl::NIL, atl::NIL, point2DArray1 );
+                            avl::PointsBoundingRectangle( point2DArray1, avl::BoundingRectangleFeature::MinimalArea, 0.0f, avl::RectangleOrientation::Vertical, rectangle2D1.Get(), point2D1.Get(), atl::NIL, atl::NIL );
+                            real1 = rectangle2D1.Get().Angle();
+
+                            point2D2.AssignNonNil();
+                            avl::TranslatePoint( point2D1.Get(), vector2D1.Get(), false, point2D2.Get() );
+                            avl::RotatePoint( point2D2.Get(), point2D1.Get(), real1, false, point2D2.Get() );
+
+                            avl::RealToString( real1, string9 );
+
+                            // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
+                            avs::AvsFilter_ConcatenateStrings( g_constData13, string9, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string8.Get() );
+                        }
+                        else
+                        {
+                            rectangle2D1 = atl::NIL;
+                            point2D1 = atl::NIL;
+                            string8 = atl::NIL;
+                            point2D2 = atl::NIL;
+                        }
+                    }
+                    else
+                    {
+                        rectangle2D1 = atl::NIL;
+                        point2D1 = atl::NIL;
+                        point2D2 = atl::NIL;
+                        string8 = atl::NIL;
+                    }
+                }
+                else
+                {
+                    rectangle2D1 = atl::NIL;
+                    point2D1 = atl::NIL;
+                    point2D2 = atl::NIL;
+                    string8 = atl::NIL;
+                    error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                    qWarning("Cannot find edge fitting field");
+                    return error_code;
+                }
+            }
+            else
+            {
+                rectangle2D1 = atl::NIL;
+                point2D1 = atl::NIL;
+                point2D2 = atl::NIL;
+                string8 = atl::NIL;
+                error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                qWarning("Cannot locate gray model");
+                return error_code;
+            }
+        }
+        else
+        {
+            rectangle2D1 = atl::NIL;
+            point2D1 = atl::NIL;
+            point2D2 = atl::NIL;
+            string8 = atl::NIL;
+            error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+            qWarning("Cannot find gray model");
+            return error_code;
+        }
+        qInfo("Done");
+        avs::DrawRectangles_SingleColor( image1, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 1.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 3.0f, false, atl::NIL, 1.0f), true, image2 );
+        avs::DrawPoints_SingleColor( image2, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 30.0f), true, image3 );
+        avs::DrawPoints_SingleColor( image3, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D2), atl::NIL, avl::Pixel(255.0f, 128.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 30.0f), true, image4 );
+
+        prResult.ori_x = point2D1.Get().X();
+        prResult.ori_y = point2D1.Get().Y();
+        prResult.x = point2D2.Get().X();
+        prResult.y = point2D2.Get().Y();
+        prResult.theta = rectangle2D1.Get().Angle();
+
+        stringArray1.Resize(1);
+        stringArray1[0] = string8;
+        avs::DrawStrings_SingleColor( image4, stringArray1, g_constData14, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 20.0f), 25.0f, 0.0f, true, atl::NIL, image5 );
+        avl::SaveImageToJpeg( image5, imageName.toStdString().c_str(), atl::NIL, false);
+    } catch(const atl::Error& error) {
+        error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+        qWarning(error.Message());
+        return error_code;
+    }
+    return error_code;
+}
+
 void VisionModule::aaDebugImage(QString input_filename, int threshold, int min_area, int max_area)
 {
     qInfo("aaDebugImage is called: %s intensity_threshold: %d min_area: %d max_area: %d", input_filename.toStdString().c_str(), threshold, min_area, max_area);

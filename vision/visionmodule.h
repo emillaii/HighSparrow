@@ -125,6 +125,11 @@ public:
     ErrorCodeStruct PR_Prism_SUT_Matching(QString camera_name, PRResultStruct &prResult);
     ErrorCodeStruct PR_Prism_SUT_Two_Circle_Matching(QString camera_name, PRResultStruct &prResult);
 
+    /*
+     * Edge Fitting Algorithm
+     */
+    ErrorCodeStruct PR_Edge_Fitting(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.6);
+
     Q_INVOKABLE void aaDebugImage(QString input_filename, int threshold, int min_area, int max_area);
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 

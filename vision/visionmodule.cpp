@@ -1301,6 +1301,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
 
             // Function AvsFilter_MakeRectangle is intended for generated code only. Consider use of proper Rectangle2D constructor instead.
             avs::AvsFilter_MakeRectangle( point2D3, real1, real2, real3, rectangle2D1.Get() );
+            avl::RotatePoint(point2D2.Get(), point2D1.Get(), real1, false, point2D2.Get());
             prResult.ori_x = point2D1.Get().x;
             prResult.ori_y = point2D1.Get().y;
             prResult.x = point2D2.Get().x;
@@ -1481,6 +1482,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching_Retry(QString cam
 
             // Function AvsFilter_MakeRectangle is intended for generated code only. Consider use of proper Rectangle2D constructor instead.
             avs::AvsFilter_MakeRectangle( point2D3, real1, real2, real3, rectangle2D1.Get() );
+            avl::RotatePoint(point2D2.Get(), point2D1.Get(), real1, false, point2D2.Get());
             prResult.ori_x = point2D1.Get().x;
             prResult.ori_y = point2D1.Get().y;
             prResult.x = point2D2.Get().x;

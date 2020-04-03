@@ -322,7 +322,7 @@ void VisionLocation::OpenLight()
 {
     lighting->setBrightness(parameters.lightChannel(),parameters.lightBrightness());
     // if downlook location, open aux light channel too, for glue inspection
-    if (parameters.lightChannel() == LIGHTING_AA1_DL)
+    if (parameters.auxLightChannel() >= 0)
     {
         lighting->setBrightness(parameters.auxLightChannel(),parameters.auxLightBrightness());
     }
@@ -333,7 +333,7 @@ void VisionLocation::CloseLight()
 {
     lighting->setBrightness(parameters.lightChannel(),0);
     // if downlook location, close aux light channel too, for glue inspection
-    if (parameters.lightChannel() == LIGHTING_AA1_DL)
+    if (parameters.auxLightChannel() >= 0)
     {
         lighting->setBrightness(parameters.auxLightChannel(),0);
     }

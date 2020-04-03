@@ -146,7 +146,7 @@ ScrollView {
 
         Button {
             id: bufferAndRejectCarrierViewSwitch
-            text:"Buffer & Reject Carrier"
+            text:"Buffer and Reject Carrier"
             Layout.fillWidth: true
             onClicked: {
                 bufferAndRejectCarrierView.visible = !bufferAndRejectCarrierView.visible

@@ -96,13 +96,14 @@ public:
     double offset_x = 0;
     double offset_y = 0;
     double offset_theta = 0;
-private:
+
     XtMotor* motor_x = Q_NULLPTR;
     XtMotor* motor_y = Q_NULLPTR;
     XtMotor* motor_z = Q_NULLPTR;
     XtMotor* motor_a = Q_NULLPTR;
     XtMotor* motor_b = Q_NULLPTR;
     XtMotor* motor_c = Q_NULLPTR;
+private:
     XtGeneralOutput * gripper = Q_NULLPTR;
     XtGeneralOutput * uv1 = Q_NULLPTR;
     XtGeneralOutput * uv2 = Q_NULLPTR;

@@ -179,6 +179,10 @@ private:
     double oc_fov = -1;
     double oc_z = 0;
     QProcess vcmCmdServer;
+
+    double sumA=0,sumB=0,sumC=0,sumX=0,sumY=0,sumZ=0;
+    int recordedTiltNum=0;
+    Position6D temp_mushroom_position;
 public slots:
     //ThreadWorkerBase
     void startWork(int run_mode);

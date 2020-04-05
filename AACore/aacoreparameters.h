@@ -129,6 +129,8 @@ class AACoreParameters : public PropertyBase
 
     QString m_lotNumber = "Silicool";
 
+    int m_dynamicTiltUpdateIndex = 0;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -196,6 +198,7 @@ public:
     Q_PROPERTY(int aaScanOversampling READ aaScanOversampling WRITE setAAScanOversampling NOTIFY aaScanOversamplingChanged)
     Q_PROPERTY(int aaScanCurveFitErrorThreshold READ aaScanCurveFitErrorThreshold WRITE setAAScanCurveFitErrorThreshold NOTIFY aaScanCurveFitErrorThresholdChanged)
     Q_PROPERTY(QString lotNumber READ lotNumber WRITE setLotNumber NOTIFY LotNumberChanged)
+    Q_PROPERTY(int dynamicTiltUpdateIndex READ dynamicTiltUpdateIndex WRITE setDynamicTiltUpdateIndex NOTIFY dynamicTiltUpdateIndexChanged)
     double EFL() const
     {
         return m_EFL;
@@ -498,6 +501,11 @@ public:
     QString lotNumber() const
     {
         return m_lotNumber;
+    }
+
+    int dynamicTiltUpdateIndex() const
+    {
+        return m_dynamicTiltUpdateIndex;
     }
 
 public slots:
@@ -1027,6 +1035,15 @@ public slots:
         emit LotNumberChanged(m_lotNumber);
     }
 
+    void setDynamicTiltUpdateIndex(int dynamicTiltUpdateIndex)
+    {
+        if (m_dynamicTiltUpdateIndex == dynamicTiltUpdateIndex)
+            return;
+
+        m_dynamicTiltUpdateIndex = dynamicTiltUpdateIndex;
+        emit dynamicTiltUpdateIndexChanged(m_dynamicTiltUpdateIndex);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -1078,6 +1095,7 @@ signals:
     void aaScanCurveFitErrorThreshold(int aaScanCurveFitErrorThreshold);
     void aaScanCurveFitErrorThresholdChanged(int aaScanCurveFitErrorThreshold);
     void LotNumberChanged(QString lotNumber);
+    void dynamicTiltUpdateIndexChanged(int dynamicTiltUpdateIndex);
 };
 class AACoreStates: public PropertyBase
 {

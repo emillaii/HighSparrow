@@ -230,6 +230,31 @@ void AACoreNew::run(bool has_material)
                 parameters.setCalculatedUPH(round(3600/temp_average));
             }
         }
+
+        // Save xy tilt for dynamic tilt update
+        if (has_product == true && recordedTiltNum < parameters.dynamicTiltUpdateIndex())
+        {
+            sumA += temp_mushroom_position.A(); sumB += temp_mushroom_position.B(); sumC += temp_mushroom_position.C();
+            sumX += temp_mushroom_position.X(); sumY += temp_mushroom_position.Y(); sumZ += temp_mushroom_position.Z();
+            recordedTiltNum++;
+        }
+        // Run dynamic tilt update
+        if (parameters.dynamicTiltUpdateIndex() > 0 && recordedTiltNum == parameters.dynamicTiltUpdateIndex())
+        {
+            // Update aaHead mushroom position
+            aa_head->mushroom_position.SetPosition(mPoint6D(sumA/parameters.dynamicTiltUpdateIndex(),
+                                                            sumB/parameters.dynamicTiltUpdateIndex(),
+                                                            sumC/parameters.dynamicTiltUpdateIndex(),
+                                                            0,0,0));
+            // Update SUT mushroom position
+            sut->mushroom_positon.SetPosition(mPoint3D(sumX/parameters.dynamicTiltUpdateIndex(),
+                                                       sumY/parameters.dynamicTiltUpdateIndex(),
+                                                       sumZ/parameters.dynamicTiltUpdateIndex()));
+            // Clear recorded data
+            sumA=0;sumB=0;sumC=0;sumX=0;sumY=0;sumZ=0;
+            recordedTiltNum = 0;
+        }
+
     }
     states.setRunMode(RunMode::Normal);
     qInfo("End of thread");
@@ -664,6 +689,10 @@ void AACoreNew::resetLogic()
     grr_repeat_time = 0;
     grr_change_time = 0;
     current_dispense = 0;
+
+    recordedTiltNum = 0;
+    sumA = 0; sumB = 0; sumC = 0;
+    sumX = 0; sumY = 0; sumZ = 0;
 }
 
 bool AACoreNew::runFlowchartTest()
@@ -811,7 +840,7 @@ bool AACoreNew::runFlowchartTest()
 
     QVariantMap map;
     map.insert("Time", getCurrentTimeString());
-    emit pushDataToUnit(runningUnit, "FlowChart_TerminateTime", map);   //Add a_ to make it the first one in map sorting
+    emit pushDataToUnit(runningUnit, "FlowChart_TerminateTime", map);
 
     return true;
 }
@@ -1698,6 +1727,11 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             tilt_b = -tilt_b;
         qInfo("xTilt %f yTilt %f aTilt %f bTilt %f ",aa_result["xTilt"].toDouble(),aa_result["yTilt"].toDouble(),tilt_a,tilt_b);
         aa_head->stepInterpolation_AB_Sync(tilt_a, tilt_b);
+        // Save ab tilt for dynamic tilt update
+        if (is_run && (parameters.dynamicTiltUpdateIndex() > 0))
+        {
+            temp_mushroom_position.SetPosition(aa_head->GetFeedBack());
+        }
         wait_tilt_time += step_move_timer.elapsed();
     }
     double zpeak_dev = getzPeakDev_um(4,aa_result["zPeak_cc"].toDouble(),aa_result["zPeak_03"].toDouble(),aa_result["zPeak_05"].toDouble(),aa_result["zPeak_08"].toDouble());

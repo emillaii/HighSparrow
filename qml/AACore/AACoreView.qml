@@ -520,6 +520,18 @@ ScrollView {
                                 aaCoreParams.setTiltRelationship(currentIndex)
                             }
                         }
+                        Label {
+                            text: qsTr("Dynamic Tilt Update Index")
+                        }
+                        TextField {
+                            text: aaCoreParams.dynamicTiltUpdateIndex
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: IntValidator {
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setDynamicTiltUpdateIndex()(text)
+                            }
+                        }
                     }
                     RowLayout {
                         Label {

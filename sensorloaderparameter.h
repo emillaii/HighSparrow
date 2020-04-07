@@ -38,7 +38,8 @@ public:
 
     Q_PROPERTY(double pickSensorZ READ pickSensorZ WRITE setPickSensorZ NOTIFY pickSensorZChanged)
     Q_PROPERTY(double pickSensorZ2 READ pickSensorZ2 WRITE setPickSensorZ2 NOTIFY pickSensorZ2Changed)
-    Q_PROPERTY(double placeSensorZ READ placeSensorZ WRITE setPlaceSensorZ NOTIFY placeSensorZChanged)
+    Q_PROPERTY(double placeSUT1SensorZ READ placeSUT1SensorZ WRITE setPlaceSUT1SensorZ NOTIFY placeSUT1SensorZChanged)
+    Q_PROPERTY(double placeSUT2SensorZ READ placeSUT2SensorZ WRITE setPlaceSUT2SensorZ NOTIFY placeSUT2SensorZChanged)
     Q_PROPERTY(QString sensorLocationName READ sensorLocationName WRITE setSensorLocationName NOTIFY sensorLocationNameChanged)
     Q_PROPERTY(QString vacancyLocationName READ vacancyLocationName WRITE setVacancyLocationName NOTIFY vacancyLocationNameChanged)
     Q_PROPERTY(QString calibrationGlassLocationName READ calibrationGlassLocationName WRITE setCalibrationGlassLocationName NOTIFY calibrationGlassLocationNameChanged)
@@ -46,13 +47,15 @@ public:
     Q_PROPERTY(QString sutSensorLocationName READ sutSensorLocationName WRITE setSutSensorLocationName NOTIFY sutSensorLocationNameChanged)
     Q_PROPERTY(QString sutProductLocationName READ sutProductLocationName WRITE setSutProductLocationName NOTIFY sutProductLocationNameChanged)
     Q_PROPERTY(int finishDelay READ finishDelay WRITE setFinishDelay NOTIFY finishDelayChanged)
-    Q_PROPERTY(double pickProductZ READ pickProductZ WRITE setPickProductZ NOTIFY pickProductZChanged)
+    Q_PROPERTY(double pickSUT1ProductZ READ pickSUT1ProductZ WRITE setPickSUT1ProductZ NOTIFY pickSUT1ProductZChanged)
+    Q_PROPERTY(double pickSUT2ProductZ READ pickSUT2ProductZ WRITE setPickSUT2ProductZ NOTIFY pickSUT2ProductZChanged)
     Q_PROPERTY(double placeProductZ READ placeProductZ WRITE setPlaceProductZ NOTIFY placeProductZChanged)
     Q_PROPERTY(double placeProductZ2 READ placeProductZ2 WRITE setPlaceProductZ2 NOTIFY placeProductZ2Changed)
     Q_PROPERTY(double placeBufferProductZ READ placeBufferProductZ WRITE setPlaceBufferProductZ NOTIFY placeBufferProductZChanged)
     Q_PROPERTY(double placeNgProductZ READ placeNgProductZ WRITE setPlaceNgProductZ NOTIFY placeNgProductZChanged)
     Q_PROPERTY(double zOffset READ zOffset WRITE setZOffset NOTIFY zOffsetChanged)
-    Q_PROPERTY(double pickNgSensorZ READ pickNgSensorZ WRITE setPickNgSensorZ NOTIFY pickNgSensorZChanged)
+    Q_PROPERTY(double pickSUT1NgSensorZ READ pickSUT1NgSensorZ WRITE setPickSUT1NgSensorZ NOTIFY pickSUT1NgSensorZChanged)
+    Q_PROPERTY(double pickSUT2NgSensorZ READ pickSUT2NgSensorZ WRITE setPickSUT2NgSensorZ NOTIFY pickSUT2NgSensorZChanged)
     Q_PROPERTY(double placeNgSensorZ READ placeNgSensorZ WRITE setPlaceNgSensorZ NOTIFY placeNgSensorZChanged)
     Q_PROPERTY(bool enableEscape READ enableEscape WRITE setEnableEscape NOTIFY enableEscapeChanged)
     Q_PROPERTY(double escapeHeight READ escapeHeight WRITE setEscapeHeight NOTIFY escapeHeightChanged)
@@ -133,9 +136,9 @@ public:
         return m_finishDelay;
     }
 
-    double pickProductZ() const
+    double pickSUT1ProductZ() const
     {
-        return m_pickProductZ;
+        return m_pickSUT1ProductZ;
     }
 
     double placeProductZ() const
@@ -148,9 +151,9 @@ public:
         return m_pickSensorZ;
     }
 
-    double placeSensorZ() const
+    double placeSUT1SensorZ() const
     {
-        return m_placeSensorZ;
+        return m_placeSUT1SensorZ;
     }
 
     double zOffset() const
@@ -158,9 +161,9 @@ public:
         return m_zOffset;
     }
 
-    double pickNgSensorZ() const
+    double pickSUT1NgSensorZ() const
     {
-        return m_pickNgSensorZ;
+        return m_pickSUT1NgSensorZ;
     }
 
     double placeNgSensorZ() const
@@ -458,6 +461,21 @@ public:
         return m_moduleName;
     }	
 
+    double placeSUT2SensorZ() const
+    {
+        return m_placeSUT2SensorZ;
+    }
+
+    double pickSUT2ProductZ() const
+    {
+        return m_pickSUT2ProductZ;
+    }
+
+    double pickSUT2NgSensorZ() const
+    {
+        return m_pickSUT2NgSensorZ;
+    }
+
 public slots:
     void setVcmWorkForce(double vcmWorkForce)
     {
@@ -542,14 +560,14 @@ public slots:
         emit finishDelayChanged(m_finishDelay);
     }
 
-    void setPickProductZ(double pickProductZ)
+    void setPickSUT1ProductZ(double pickSUT1ProductZ)
     {
         
-        if (qFuzzyCompare(m_pickProductZ, pickProductZ))
+        if (qFuzzyCompare(m_pickSUT1ProductZ, pickSUT1ProductZ))
             return;
 
-        m_pickProductZ = pickProductZ;
-        emit pickProductZChanged(m_pickProductZ);
+        m_pickSUT1ProductZ = pickSUT1ProductZ;
+        emit pickSUT1ProductZChanged(m_pickSUT1ProductZ);
     }
 
     void setPlaceProductZ(double placeProductZ)
@@ -572,14 +590,14 @@ public slots:
         emit pickSensorZChanged(m_pickSensorZ);
     }
 
-    void setPlaceSensorZ(double placeSensorZ)
+    void setPlaceSUT1SensorZ(double placeSUT1SensorZ)
     {
         
-        if (qFuzzyCompare(m_placeSensorZ, placeSensorZ))
+        if (qFuzzyCompare(m_placeSUT1SensorZ, placeSUT1SensorZ))
             return;
 
-        m_placeSensorZ = placeSensorZ;
-        emit placeSensorZChanged(m_placeSensorZ);
+        m_placeSUT1SensorZ = placeSUT1SensorZ;
+        emit placeSUT1SensorZChanged(m_placeSUT1SensorZ);
     }
 
     void setZOffset(double zOffset)
@@ -592,14 +610,14 @@ public slots:
         emit zOffsetChanged(m_zOffset);
     }
 
-    void setPickNgSensorZ(double pickNgSensorZ)
+    void setPickSUT1NgSensorZ(double pickSUT1NgSensorZ)
     {
         
-        if (qFuzzyCompare(m_pickNgSensorZ, pickNgSensorZ))
+        if (qFuzzyCompare(m_pickSUT1NgSensorZ, pickSUT1NgSensorZ))
             return;
 
-        m_pickNgSensorZ = pickNgSensorZ;
-        emit pickNgSensorZChanged(m_pickNgSensorZ);
+        m_pickSUT1NgSensorZ = pickSUT1NgSensorZ;
+        emit pickSUT1NgSensorZChanged(m_pickSUT1NgSensorZ);
     }
 
     void setPlaceNgSensorZ(double placeNgSensorZ)
@@ -1160,6 +1178,33 @@ public slots:
         emit moduleNameChanged(m_moduleName);
     }
 
+    void setPlaceSUT2SensorZ(double placeSUT2SensorZ)
+    {
+        if (qFuzzyCompare(m_placeSUT2SensorZ, placeSUT2SensorZ))
+            return;
+
+        m_placeSUT2SensorZ = placeSUT2SensorZ;
+        emit placeSUT2SensorZChanged(m_placeSUT2SensorZ);
+    }
+
+    void setPickSUT2ProductZ(double pickSUT2ProductZ)
+    {
+        if (qFuzzyCompare(m_pickSUT2ProductZ, pickSUT2ProductZ))
+            return;
+
+        m_pickSUT2ProductZ = pickSUT2ProductZ;
+        emit pickSUT2ProductZChanged(m_pickSUT2ProductZ);
+    }
+
+    void setPickSUT2NgSensorZ(double pickSUT2NgSensorZ)
+    {
+        if (qFuzzyCompare(m_pickSUT2NgSensorZ, pickSUT2NgSensorZ))
+            return;
+
+        m_pickSUT2NgSensorZ = pickSUT2NgSensorZ;
+        emit pickSUT2NgSensorZChanged(m_pickSUT2NgSensorZ);
+    }
+
 signals:
     void vcmWorkForceChanged(double vcmWorkForce);
     void vcmWorkSpeedChanged(double vcmWorkSpeed);
@@ -1179,17 +1224,17 @@ signals:
 
     void finishDelayChanged(int finishDelay);
 
-    void pickProductZChanged(double pickProductZ);
+    void pickSUT1ProductZChanged(double pickSUT1ProductZ);
 
     void placeProductZChanged(double placeProductZ);
 
     void pickSensorZChanged(double pickSensorZ);
 
-    void placeSensorZChanged(double placeSensorZ);
+    void placeSUT1SensorZChanged(double placeSUT1SensorZ);
 
     void zOffsetChanged(double zOffset);
 
-    void pickNgSensorZChanged(double pickNgSensorZ);
+    void pickSUT1NgSensorZChanged(double pickSUT1NgSensorZ);
 
     void placeNgSensorZChanged(double placeNgSensorZ);
 
@@ -1310,23 +1355,32 @@ signals:
 
     void moduleNameChanged(QString moduleName);
 
+    void placeSUT2SensorZChanged(double placeSUT2SensorZ);
+
+    void pickSUT2ProductZChanged(double pickSUT2ProductZ);
+
+    void pickSUT2NgSensorZChanged(double pickSUT2NgSensorZ);
+
 private:
     QString m_moduleName = "SensorLoaderModule";
     double m_vcmWorkForce = 0;
     double m_vcmWorkSpeed = 0;
     double m_vcmMargin = 0;
     double m_pickSensorZ = 0;
-    double m_placeSensorZ = 0;
+    double m_placeSUT1SensorZ = 0;
+    double m_placeSUT2SensorZ = 0;
     QString m_sensorLocationName = "";
     QString m_vacancyLocationName = "";
     QString m_sutLocationName = "";
     QString m_sutSensorLocationName = "";
     QString m_sutProductLocationName = "";
     int m_finishDelay = 100;
-    double m_pickProductZ = 0;
+    double m_pickSUT1ProductZ = 0;
+    double m_pickSUT2ProductZ = 0;
     double m_placeProductZ = 0;
     double m_zOffset = 0;
-    double m_pickNgSensorZ = 0;
+    double m_pickSUT1NgSensorZ = 0;
+    double m_pickSUT2NgSensorZ = 0;
     double m_placeNgSensorZ = 0;
     QString m_calibrationGlassLocationName;
     double m_escapeHeight = 3;

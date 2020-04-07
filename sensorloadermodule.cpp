@@ -403,14 +403,24 @@ void SensorLoaderModule::performHandlingOperation(int cmd,QVariant param)
             result = picker1MeasureHight(SensorPosition::SENSOR_TRAY_2);
         }
     }
-    else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_SUT){
+    else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = picker1MeasureHight(SensorPosition::SUT_SENSOR);
+            result = picker1MeasureHight(SensorPosition::SUT1_SENSOR);
         }
     }
-    else if(cmd%temp_value == handlePickerAction::MEASURE_NG_SENSOR_IN_SUT){
+    else if(cmd%temp_value == handlePickerAction::MEASURE_SENSOR_IN_SUT2){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = picker2MeasureHight(SensorPosition::SUT_SENSOR);
+            result = picker1MeasureHight(SensorPosition::SUT2_SENSOR);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::MEASURE_NG_SENSOR_IN_SUT1){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = picker2MeasureHight(SensorPosition::SUT1_SENSOR);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::MEASURE_NG_SENSOR_IN_SUT2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = picker2MeasureHight(SensorPosition::SUT2_SENSOR);
         }
     }
     else if(cmd%temp_value == handlePickerAction::MEASURE_NG_SENSOR_IN_TRAY){
@@ -423,9 +433,14 @@ void SensorLoaderModule::performHandlingOperation(int cmd,QVariant param)
             result = picker2MeasureHight(SensorPosition::TRAY_NG_PRODUCT);
         }
     }
-    else if(cmd%temp_value == handlePickerAction::MEASURE_PRODUCT_IN_SUT){
+    else if(cmd%temp_value == handlePickerAction::MEASURE_PRODUCT_IN_SUT1){
         if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
-            result = picker2MeasureHight(SensorPosition::SUT_PRODUCT);
+            result = picker2MeasureHight(SensorPosition::SUT1_PRODUCT);
+        }
+    }
+    else if(cmd%temp_value == handlePickerAction::MEASURE_PRODUCT_IN_SUT2){
+        if(emit sendMsgSignal(tr(u8"提示"),tr(u8"是否执行操作"))){
+            result = picker2MeasureHight(SensorPosition::SUT2_PRODUCT);
         }
     }
     else if(cmd%temp_value == handlePickerAction::MEASURE_PRODUCT_IN_TRAY1){
@@ -3119,7 +3134,8 @@ bool SensorLoaderModule::backSensorToTray(int tray_id,int time_out)
 
 bool SensorLoaderModule::placeSensorToSUT(bool is_local,int time_out)
 {
-    bool result = picker1PlaceToSut(parameters.placeSensorZ(),is_local,time_out);
+    double placeSensorZ = is_local?parameters.placeSUT2SensorZ():parameters.placeSUT1SensorZ();
+    bool result = picker1PlaceToSut(placeSensorZ,is_local,time_out);
     if(!result)
         AppendError(QString(u8"放sensor到SUT%1失败").arg(is_local?2:1));
     return result;
@@ -3127,7 +3143,8 @@ bool SensorLoaderModule::placeSensorToSUT(bool is_local,int time_out)
 
 bool SensorLoaderModule::pickNgSensorFromSut(bool is_local,int time_out)
 {
-    bool result = picker2PickFromSut(parameters.pickNgSensorZ(),parameters.pickProductForce(),is_local,time_out);
+    double pickNgSensorZ = is_local?parameters.pickSUT2NgSensorZ():parameters.pickSUT1NgSensorZ();
+    bool result = picker2PickFromSut(pickNgSensorZ,parameters.pickProductForce(),is_local,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取NGsenor失败").arg(is_local?2:1));
     if(result)
@@ -3139,7 +3156,8 @@ bool SensorLoaderModule::pickNgSensorFromSut(bool is_local,int time_out)
 
 bool SensorLoaderModule::pickProductFromSut(bool is_local,int time_out)
 {
-    bool result = picker2PickFromSut(parameters.pickProductZ(),parameters.pickProductForce(),is_local,time_out);
+    double pickProductZ = is_local?parameters.pickSUT2ProductZ():parameters.pickSUT1ProductZ();
+    bool result = picker2PickFromSut(pickProductZ,parameters.pickProductForce(),is_local,time_out);
     if(!result)
         AppendError(QString(u8"从SUT%1取成品失败").arg(is_local?2:1));
     if(result)
@@ -3196,8 +3214,12 @@ bool SensorLoaderModule::picker1MeasureHight(int tray_id)
         if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(pick_arm->GetZ1MeasuredHeight()))){
             return true;
         }
-        if(tray_id == SensorPosition::SUT_SENSOR)
-            parameters.setPlaceSensorZ(pick_arm->GetZ1MeasuredHeight());
+        if(tray_id == SensorPosition::SUT1_SENSOR)
+            parameters.setPlaceSUT1SensorZ(pick_arm->GetZ1MeasuredHeight());
+        else if (tray_id == SensorPosition::SUT2_SENSOR)
+        {
+            parameters.setPlaceSUT2SensorZ(pick_arm->GetZ1MeasuredHeight());
+        }
         else if(tray_id == SensorPosition::SENSOR_TRAY_1)
             parameters.setPickSensorZ(pick_arm->GetZ1MeasuredHeight());
         else if(tray_id == SensorPosition::SENSOR_TRAY_2)
@@ -3223,10 +3245,14 @@ bool SensorLoaderModule::picker2MeasureHight(int tray_id)
         if(!emit sendMsgSignal(tr(u8"提示"),tr(u8"是否应用此高度:%1").arg(temp_z))){
             return true;
         }
-        if(tray_id == SensorPosition::SUT_SENSOR)
-            parameters.setPickNgSensorZ(temp_z);
-        else if(tray_id == SensorPosition::SUT_PRODUCT)
-            parameters.setPickProductZ(temp_z);
+        if(tray_id == SensorPosition::SUT1_SENSOR)
+            parameters.setPickSUT1NgSensorZ(temp_z);
+        else if (tray_id == SensorPosition::SUT2_SENSOR)
+            parameters.setPickSUT2NgSensorZ(temp_z);
+        else if(tray_id == SensorPosition::SUT1_PRODUCT)
+            parameters.setPickSUT1ProductZ(temp_z);
+        else if(tray_id == SensorPosition::SUT2_PRODUCT)
+            parameters.setPickSUT2ProductZ(temp_z);
         else if(tray_id == SensorPosition::SENSOR_TRAY_1)
             parameters.setPlaceProductZ(temp_z);
         else if(tray_id == SensorPosition::SENSOR_TRAY_2)

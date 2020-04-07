@@ -333,14 +333,14 @@ Column {
             text:qsTr("picker1 放料高度")
         }
         TextField{
-            text:sensorLoaderParameter.placeSensorZ
+            text:sensorLoaderParameter.placeSUT1SensorZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sensorLoaderParameter.setPlaceSensorZ(text)
+                sensorLoaderParameter.setPlaceSUT1SensorZ(text)
             }
         }
         Button{
@@ -358,14 +358,14 @@ Column {
             text:qsTr("picker2 取成品高度")
         }
         TextField{
-            text:sensorLoaderParameter.pickProductZ
+            text:sensorLoaderParameter.pickSUT1ProductZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sensorLoaderParameter.setPickProductZ(text)
+                sensorLoaderParameter.setPickSUT1ProductZ(text)
             }
         }
         Button{
@@ -388,14 +388,14 @@ Column {
             text:qsTr("picker2 取NG sensor高度")
         }
         TextField{
-            text:sensorLoaderParameter.pickNgSensorZ
+            text:sensorLoaderParameter.pickSUT1NgSensorZ
             horizontalAlignment: TextInput.AlignHCenter
             validator: DoubleValidator{
                 decimals: 6
                 notation: DoubleValidator.StandardNotation
             }
             onEditingFinished: {
-                sensorLoaderParameter.setPickNgSensorZ(text)
+                sensorLoaderParameter.setPickSUT1NgSensorZ(text)
             }
         }
         Button{

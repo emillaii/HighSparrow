@@ -3,95 +3,6 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
 import SomeLib 1.1
 ColumnLayout {
-    RowLayout{
-    }
-    RowLayout{
-        Label{
-            text:qsTr("sensor高度")
-        }
-        TextField{
-            text:sensorLoaderParameter.placeSensorZ
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                sensorLoaderParameter.setPlaceSensorZ(text)
-            }
-        }
-        Button{
-            text:qsTr("测高")
-            width: 40
-            height: 40
-            onClicked: {
-                logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_SENSOR_IN_SUT)
-                //sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_SENSOR_IN_SUT)
-            }
-        }
-    }
-    RowLayout{
-        CheckBox{
-            text: qsTr("使能视觉")
-            checked: sensorLoaderParameter.enableProductPr
-            onCheckedChanged:
-                sensorLoaderParameter.setEnableProductPr(checked)
-        }
-        Label{
-            text:qsTr("product高度")
-        }
-        TextField{
-            text:sensorLoaderParameter.pickProductZ
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                sensorLoaderParameter.setPickProductZ(text)
-            }
-        }
-        Button{
-            text:qsTr("测高")
-            width: 40
-            height: 40
-            onClicked: {
-                logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_PRODUCT_IN_SUT)
-                //sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_PRODUCT_IN_SUT)
-            }
-        }
-    }
-    RowLayout{
-        CheckBox{
-            text: qsTr("使能视觉")
-            checked: sensorLoaderParameter.enableNgSensorPr
-            onCheckedChanged:
-                sensorLoaderParameter.setEnableNgSensorPr(checked)
-        }
-        Label{
-            text:qsTr("NG sensor高度")
-        }
-        TextField{
-            text:sensorLoaderParameter.pickNgSensorZ
-            horizontalAlignment: TextInput.AlignHCenter
-            validator: DoubleValidator{
-                decimals: 6
-                notation: DoubleValidator.StandardNotation
-            }
-            onEditingFinished: {
-                sensorLoaderParameter.setPickNgSensorZ(text)
-            }
-        }
-        Button{
-            text:qsTr("测高")
-            width: 40
-            height: 40
-            onClicked: {
-                logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT)
-                //sensorLoaderModule.performHandling(SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT)
-            }
-        }
-    }
     GroupBox{
         title:"SUT位置1"
         ColumnLayout{
@@ -145,6 +56,92 @@ ColumnLayout {
 
                         sut_pr_position1.setX(x);
                         sut_pr_position1.setY(y);
+                    }
+                }
+            }
+
+            RowLayout{
+                Label{
+                    text:qsTr("sensor高度")
+                }
+                TextField{
+                    text:sensorLoaderParameter.placeSUT1SensorZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorLoaderParameter.setPlaceSUT1SensorZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_SENSOR_IN_SUT1)
+                    }
+                }
+            }
+
+            RowLayout{
+                CheckBox{
+                    text: qsTr("使能视觉")
+                    checked: sensorLoaderParameter.enableProductPr
+                    onCheckedChanged:
+                        sensorLoaderParameter.setEnableProductPr(checked)
+                }
+                Label{
+                    text:qsTr("product高度")
+                }
+                TextField{
+                    text:sensorLoaderParameter.pickSUT1ProductZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorLoaderParameter.setPickSUT1ProductZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_PRODUCT_IN_SUT1)
+                    }
+                }
+            }
+            RowLayout{
+                CheckBox{
+                    text: qsTr("使能视觉")
+                    checked: sensorLoaderParameter.enableNgSensorPr
+                    onCheckedChanged:
+                        sensorLoaderParameter.setEnableNgSensorPr(checked)
+                }
+                Label{
+                    text:qsTr("NG sensor高度")
+                }
+                TextField{
+                    text:sensorLoaderParameter.pickSUT1NgSensorZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorLoaderParameter.setPickSUT1NgSensorZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT1)
                     }
                 }
             }
@@ -408,6 +405,93 @@ ColumnLayout {
                     }
                 }
             }
+
+            RowLayout{
+                Label{
+                    text:qsTr("sensor高度")
+                }
+                TextField{
+                    text:sensorLoaderParameter.placeSUT2SensorZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorLoaderParameter.setPlaceSUT2SensorZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_SENSOR_IN_SUT2)
+                    }
+                }
+            }
+
+            RowLayout{
+                CheckBox{
+                    text: qsTr("使能视觉")
+                    checked: sensorLoaderParameter.enableProductPr
+                    onCheckedChanged:
+                        sensorLoaderParameter.setEnableProductPr(checked)
+                }
+                Label{
+                    text:qsTr("product高度")
+                }
+                TextField{
+                    text:sensorLoaderParameter.pickSUT2ProductZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorLoaderParameter.setPickSUT2ProductZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_PRODUCT_IN_SUT2)
+                    }
+                }
+            }
+            RowLayout{
+                CheckBox{
+                    text: qsTr("使能视觉")
+                    checked: sensorLoaderParameter.enableNgSensorPr
+                    onCheckedChanged:
+                        sensorLoaderParameter.setEnableNgSensorPr(checked)
+                }
+                Label{
+                    text:qsTr("NG sensor高度")
+                }
+                TextField{
+                    text:sensorLoaderParameter.pickSUT2NgSensorZ
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorLoaderParameter.setPickSUT2NgSensorZ(text)
+                    }
+                }
+                Button{
+                    text:qsTr("测高")
+                    width: 40
+                    height: 40
+                    onClicked: {
+                        logicManager.performHandling(sensorLoaderParameter.moduleName, SensorLoaderModule.MEASURE_NG_SENSOR_IN_SUT2)
+                    }
+                }
+            }
+
             RowLayout{
                 CheckBox{
                     text: qsTr("不限力")

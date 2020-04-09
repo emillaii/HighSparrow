@@ -197,7 +197,7 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     //I2C init
     res = SetSensorI2cRate(I2C_400K, iDevID);
     qDebug("[DothinkeyStartCamera]SetSensorI2cRate(I2C_400K, iDevID) = %d",res);
-    res = SetSensorI2cRapid(TRUE, iDevID);
+    res = SetSensorI2cRapid(false, iDevID);
     qDebug("[DothinkeyStartCamera]SetSensorI2cRapid(TRUE, iDevID) = %d",res);
     SetMipiImageVC(0, true, 1, iDevID);
     //check sensor is on line or not ,if on line,init sensor to work....
@@ -222,7 +222,7 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
         pSensor->ParaListSize,
         pSensor->mode, iDevID) != DT_ERROR_OK)
     {
-        qCritical("[DothinkeyStartCamera] Init Sensor Failed! \r\n");
+        qCritical("[DothinkeyStartCamera] Init Sensor Failed! size: %d mode: %d\r\n", pSensor->ParaListSize, pSensor->mode);
         return false;
     }
 
@@ -248,56 +248,37 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     isGrabbing = true;
     //TODO: Move that to test item or in dothinkey config file
     USHORT value_1 =0;
-    qInfo("mode = %d", pSensor->mode);
-//    bool result = WriteSensorReg(pSensor->SlaveID, 0x6028, 0x4000, 4);
-//    Sleep(30);
-//    result = WriteSensorReg(pSensor->SlaveID, 0x602A, 0x0100, 4);
-//    Sleep(30);
-//    result = WriteSensorReg(pSensor->SlaveID, 0x6F12, 0x0100, 3);
-//    Sleep(30);
 
     //ToDo: Waiting for test
-//    QString sensor_id = "";
-//    for (int i = 0; i < cmd_list.size(); i++){
-//        qInfo("cmd: %s", cmd_list[i].toStdString().c_str());
-//        QStringList cmd = cmd_list[i].split(QRegExp("\\,"),QString::SkipEmptyParts);
-//        if (cmd.size()>0) {
-//            if (cmd[0].compare("setreg", Qt::CaseInsensitive) == 0){
-//                uint addr = CommonMethod::getIntFromHexOrDecString(cmd[1]);
-//                uint value = CommonMethod::getIntFromHexOrDecString(cmd[2]);
-//                qInfo("Set Register addr: %x value: %x", addr, value);
-//                WriteSensorReg(pSensor->SlaveID, addr, value, pSensor->mode);
-//                Sleep(30);
-//            } else if (cmd[0].compare("sensorId", Qt::CaseInsensitive) == 0){
-//                for (int j = 1; j < cmd.size(); j++){
-//                    QString temp = "";
-//                    uint addr = CommonMethod::getIntFromHexOrDecString(cmd[j]);
-//                    qInfo("Set Sensor ID: %x", addr);
-//                    ReadSensorReg(pSensor->SlaveID, i, &value_1, pSensor->mode);
-//                    sensor_id.append(temp.sprintf("%04X", value_1));
-//                }
-//            }
-//        }
-//    }
-
-
-    bool result = WriteSensorReg(pSensor->SlaveID, 0x0a02, 0x0000, pSensor->mode);
-    Sleep(30);
-    result = WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0100, pSensor->mode);
-    Sleep(30);
-    USHORT start = 0x0a24;
-    USHORT end = 0x0a28;
-    QString temp = "";
-    QString senser_id = "";
-    for (USHORT i = start; i <= end; i=i+2) {
-        result = ReadSensorReg(pSensor->SlaveID, i, &value_1, pSensor->mode);
-        qInfo("Read reg %X  value %04X  result %d",i, value_1, result);
-        senser_id.append(temp.sprintf("%04X", value_1));
-        Sleep(30);
+    QString sensor_id = "";
+    for (int i = 0; i < cmd_list.size(); i++){
+        qInfo("cmd: %s", cmd_list[i].toStdString().c_str());
+        QStringList cmd = cmd_list[i].split(QRegExp("\\,"),QString::SkipEmptyParts);
+        if (cmd.size()>0) {
+            if (cmd[0].compare("setregex", Qt::CaseInsensitive) == 0){
+                uint slaveId = CommonMethod::getIntFromHexOrDecString(cmd[1]);
+                uint addr = CommonMethod::getIntFromHexOrDecString(cmd[2]);
+                uint value = CommonMethod::getIntFromHexOrDecString(cmd[3]);
+                uint mode = CommonMethod::getIntFromHexOrDecString(cmd[4]);
+                qInfo("Set Register slaveId: %x addr: %x value: %x mode: %d", slaveId, addr, value, mode);
+                WriteSensorReg(pSensor->SlaveID, (USHORT)addr,  (USHORT)value, mode);
+            } else if (cmd[0].compare("getregex", Qt::CaseInsensitive) == 0){
+                QString temp = "";
+                uint slaveId = CommonMethod::getIntFromHexOrDecString(cmd[1]);
+                uint addr = CommonMethod::getIntFromHexOrDecString(cmd[2]);
+                uint mode = CommonMethod::getIntFromHexOrDecString(cmd[3]);
+                qInfo("Get Register slaveId: %x addr: %x", slaveId, addr);
+                bool ret = ReadSensorReg(pSensor->SlaveID, addr, &value_1, mode);
+                qInfo("Read value result: %d value: %04x", ret, value_1);
+                sensor_id.append(temp.sprintf("%02X", value_1));
+            } else if (cmd[0].compare("sleep", Qt::CaseInsensitive) == 0){
+                uint time = cmd[1].toInt(0);
+                Sleep(10);
+            }
+        }
     }
-//    result = WriteSensorReg(pSensor->SlaveID, 0x0a00, 0x0000, 3);
-//    Sleep(30);
-    setCurrentSensorID(senser_id);
+    qInfo("Sensor Id : %s", sensor_id.toStdString().c_str());
+    setCurrentSensorID(sensor_id);
     return true;
 }
 

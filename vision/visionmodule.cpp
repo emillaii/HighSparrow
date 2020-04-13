@@ -495,16 +495,16 @@ void VisionModule::testVision()
     QString imageName;
     QElapsedTimer timer; timer.start();
     double outMinGlueWidth = 0, outMaxGlueWidth = 0, outMaxAvgGlueWidth = 0;
-    this->Glue_Inspection(1, 1, 1, 1, "", "", &imageName, &outMinGlueWidth, &outMaxGlueWidth, &outMaxAvgGlueWidth);
+    //this->Glue_Inspection(1, 1, 1, 1, "", "", &imageName, &outMinGlueWidth, &outMaxGlueWidth, &outMaxAvgGlueWidth);
 
-    qInfo("Glue inspection reuslt: %s time: %d", imageName.toStdString().c_str(), timer.elapsed());
-    //PRResultStruct prResult;
-    //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook.avdata", prResult);
+    //qInfo("Glue inspection reuslt: %s time: %d", imageName.toStdString().c_str(), timer.elapsed());
+    PRResultStruct prResult;
+    this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_holder_edgeModel.avdata", prResult);
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
     //this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Two_Circle_Matching(DOWNLOOK_VISION_CAMERA, prResult);
-    //qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
+    qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
 }
 
 bool VisionModule::saveImage(QString cameraName, QString imageName)
@@ -1175,7 +1175,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
 {
     //if(is_debug)return ErrorCodeStruct{ OK, "" };
     if (pr_name.contains("_edgeModel")) {
-        return PR_Edge_Template_Matching(camera_name, pr_name, prResult);
+        return PR_Edge_Fitting(camera_name, pr_name, prResult);
+        //return PR_Edge_Template_Matching(camera_name, pr_name, prResult);
     }
     qInfo("%s perform %s with object_score: %f",camera_name.toStdString().c_str(),pr_name.toStdString().c_str(), object_score);
     pr_name.replace("file:///", "");
@@ -1253,18 +1254,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
         avs::LoadObject< avl::Vector2D >( g_constData2, avl::StreamMode::Binary, g_constData3, vector2D1 );
         avs::LoadObject< avl::GrayModel >( g_constData4, avl::StreamMode::Binary, g_constData5, grayModel1 );
-        //        try {
-        //            avs::LoadObject< avl::Region >( g_constData8, avl::StreamMode::Binary, g_constData9, region1 );
-        //        } catch(const atl::Error& error) {
-        //            isSearchRegionFound = false;
-        //            qInfo("Missing search region file, set this to nil for backward compatible: %s", error.Message());
-        //        }
-        //        if (isSearchRegionFound) {
-        //            avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-        //        }
-        //        else {
-        avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-        //        }
+        avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
         bool is_object_score_pass = true;
         if (object2D1 != atl::NIL)
         {
@@ -1431,23 +1421,10 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching_Retry(QString cam
         //avl::LoadImage( "pr//19-39-23-431_raw.jpg", false, image1 );
         this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
-        //        bool isSearchRegionFound = true;
-        //Testing use
-        //avl::RotateImage( image1, 4.0f, avl::RotationSizeMode::Fit, avl::InterpolationMethod::Bilinear, false, image2 );
         avs::LoadObject< avl::Vector2D >( g_constData2, avl::StreamMode::Binary, g_constData3, vector2D1 );
         avs::LoadObject< avl::GrayModel >( g_constData4, avl::StreamMode::Binary, g_constData5, grayModel1 );
-        //        try {
-        //            avs::LoadObject< avl::Region >( g_constData8, avl::StreamMode::Binary, g_constData9, region1 );
-        //        } catch(const atl::Error& error) {
-        //            isSearchRegionFound = false;
-        //            qInfo("Missing search region file, set this to nil for backward compatible: %s", error.Message());
-        //        }
-        //        if (isSearchRegionFound) {
-        //            avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-        //        }
-        //        else {
-        avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.5, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-        //        }
+        avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1, 0, 3, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+
         bool is_object_score_pass = true;
         if (object2D1 != atl::NIL)
         {
@@ -1847,7 +1824,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
             .append("_raw.jpg");
 
     try {
-        avl::LoadImage( g_constData1, false, image1 );
+        this->grabImageFromCamera(camera_name, image1);
+        //avl::LoadImage( g_constData1, false, image1 );
         avl::SaveImageToJpeg( image1, rawImageName.toStdString().c_str(), atl::NIL, false);
         avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string2, avl::StreamMode::Binary, g_constData10, segmentFittingField1 );
         avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string3, avl::StreamMode::Binary, g_constData10, segmentFittingField2 );
@@ -1860,7 +1838,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
         {
             atl::Conditional< avl::Object2D > object2D1;
 
-            avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1.Get(), 0, 3, false, 0.5f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+            avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1.Get(), 0, 3, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
 
             if (object2D1 != atl::NIL)
             {

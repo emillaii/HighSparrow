@@ -68,6 +68,29 @@ ItemDelegate {
                                 Layout.preferredWidth: 300
                             }
                         }
+
+                        RowLayout{
+                            Label {
+                                text: qsTr("PR识别度")
+                            }
+                            TextField{
+                                color: "#57f529"
+                                text: objectScore
+                                font.pixelSize: 14
+                                width: 50
+                                Layout.preferredWidth: 50
+                                onEditingFinished: {
+                                    if (text < 0.2) {
+                                        text = 0.2
+                                    }
+                                    else if (text > 0.98) {
+                                        text = 0.98
+                                    }
+                                    setObjectScore(text)
+                                }
+                            }
+                        }
+
                         RowLayout{
                             Button{
                                 visible: needCalibration

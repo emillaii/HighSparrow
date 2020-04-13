@@ -570,9 +570,15 @@ public slots:
 
     void setWeightValue(int index, double value)
     {
-        qInfo("Set Weight Value: %d %f", index, value);
-        m_WeightList[index].setValue(value);
-        emit paramsChanged();
+        qInfo("Set Weight Value: %d %f m_WeightList size: %d", index, value, m_WeightList.size());
+        if (m_WeightList.size() - 1 < index) {
+            for(int i = 0; i < index - (m_WeightList.size() - 1); i++) {
+                m_WeightList.append(value);
+            }
+        }  else {
+           m_WeightList[index].setValue(value);
+           emit paramsChanged();
+        }
     }
 
     void setWeightList(QVariantList WeightList)

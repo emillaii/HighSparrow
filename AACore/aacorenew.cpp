@@ -2636,7 +2636,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     sfr_tol[2] = params["05F_TOL"].toDouble(-1);
     sfr_tol[3] = params["08F_TOL"].toDouble(-1);
 
-    cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\aatest\\low.bmp");
+    cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\field\\mtf_crash.bmp");
     std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
     vector<double> sfr_l_v, sfr_r_v, sfr_t_v, sfr_b_v;
     cv::Rect roi; roi.width = 32; roi.height = 32;
@@ -2683,13 +2683,55 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
         double sfr_r = sfr::calculateSfrWithSingleRoi(cropped_r_img,1);
         double sfr_t = sfr::calculateSfrWithSingleRoi(cropped_t_img,1);
         double sfr_b = sfr::calculateSfrWithSingleRoi(cropped_b_img,1);
+        double avg_sfr = 0;
+        if (i==0)   //CC
+        {
+            if (parameters.WeightList().size() >= 20) {
+                qInfo("CC calculate by weighted");
+                avg_sfr = sfr_t*parameters.WeightList().at(16).toDouble()
+                        + sfr_r*parameters.WeightList().at(17).toDouble()
+                        + sfr_b*parameters.WeightList().at(18).toDouble()
+                        + sfr_l*parameters.WeightList().at(19).toDouble();
+            } else {
+                avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l) /4;
+            }
+        }
+        else if (i%4 == 1)  //UL
+        {
+            avg_sfr = sfr_t*parameters.WeightList().at(0).toDouble()
+                    + sfr_r*parameters.WeightList().at(1).toDouble()
+                    + sfr_b*parameters.WeightList().at(2).toDouble()
+                    + sfr_l*parameters.WeightList().at(3).toDouble();
+        }
+        else if (i%4 == 2)  //LL
+        {
+            avg_sfr = sfr_t*parameters.WeightList().at(4).toDouble()
+                    + sfr_r*parameters.WeightList().at(5).toDouble()
+                    + sfr_b*parameters.WeightList().at(6).toDouble()
+                    + sfr_l*parameters.WeightList().at(7).toDouble();
+        }
+        else if (i%4 == 3)  //LR
+        {
+            avg_sfr = sfr_t*parameters.WeightList().at(8).toDouble()
+                    + sfr_r*parameters.WeightList().at(9).toDouble()
+                    + sfr_b*parameters.WeightList().at(10).toDouble()
+                    + sfr_l*parameters.WeightList().at(11).toDouble();
+        }
+        else if (i%4 == 0)
+        {
+            avg_sfr = sfr_t*parameters.WeightList().at(12).toDouble()
+                    + sfr_r*parameters.WeightList().at(13).toDouble()
+                    + sfr_b*parameters.WeightList().at(14).toDouble()
+                    + sfr_l*parameters.WeightList().at(15).toDouble();
+        }
+
         sfr_l_v.push_back(sfr_l);
         sfr_r_v.push_back(sfr_r);
         sfr_t_v.push_back(sfr_t);
         sfr_b_v.push_back(sfr_b);
         double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
         double f = radius/r1;
-        double avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l)/4;
+        //double avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l)/4;
         qInfo("x: %f y: %f sfr_l: %f sfr_r: %f sfr_t: %f sfr_b: %f",
               patterns[i].center.x(), patterns[i].center.y(), sfr_l, sfr_r, sfr_t, sfr_b);
         vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
@@ -2835,38 +2877,63 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         double avg_sfr = 0;
         if (i==0)   //CC
         {
-            avg_sfr = sfr_t*parameters.WeightList().at(16).toDouble()
-                    + sfr_r*parameters.WeightList().at(17).toDouble()
-                    + sfr_b*parameters.WeightList().at(18).toDouble()
-                    + sfr_l*parameters.WeightList().at(19).toDouble();
+            if (parameters.WeightList().size() >= 20) {
+                qInfo("CC calculate by weighted");
+                avg_sfr = sfr_t*parameters.WeightList().at(16).toDouble()
+                        + sfr_r*parameters.WeightList().at(17).toDouble()
+                        + sfr_b*parameters.WeightList().at(18).toDouble()
+                        + sfr_l*parameters.WeightList().at(19).toDouble();
+            } else {
+                avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l) / 4;
+            }
         }
         else if (i%4 == 1)  //UL
         {
-            avg_sfr = sfr_t*parameters.WeightList().at(0).toDouble()
-                    + sfr_r*parameters.WeightList().at(1).toDouble()
-                    + sfr_b*parameters.WeightList().at(2).toDouble()
-                    + sfr_l*parameters.WeightList().at(3).toDouble();
+            if (parameters.WeightList().size() >= 4) {
+                qInfo("UL calculate by weighted");
+                avg_sfr = sfr_t*parameters.WeightList().at(0).toDouble()
+                        + sfr_r*parameters.WeightList().at(1).toDouble()
+                        + sfr_b*parameters.WeightList().at(2).toDouble()
+                        + sfr_l*parameters.WeightList().at(3).toDouble();
+            } else {
+                avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l) / 4;
+            }
         }
         else if (i%4 == 2)  //LL
         {
-            avg_sfr = sfr_t*parameters.WeightList().at(4).toDouble()
-                    + sfr_r*parameters.WeightList().at(5).toDouble()
-                    + sfr_b*parameters.WeightList().at(6).toDouble()
-                    + sfr_l*parameters.WeightList().at(7).toDouble();
+            if (parameters.WeightList().size() >= 8) {
+                qInfo("LL calculate by weighted");
+                avg_sfr = sfr_t*parameters.WeightList().at(4).toDouble()
+                        + sfr_r*parameters.WeightList().at(5).toDouble()
+                        + sfr_b*parameters.WeightList().at(6).toDouble()
+                        + sfr_l*parameters.WeightList().at(7).toDouble();
+            } else {
+                avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l) / 4;
+            }
         }
         else if (i%4 == 3)  //LR
         {
-            avg_sfr = sfr_t*parameters.WeightList().at(8).toDouble()
-                    + sfr_r*parameters.WeightList().at(9).toDouble()
-                    + sfr_b*parameters.WeightList().at(10).toDouble()
-                    + sfr_l*parameters.WeightList().at(11).toDouble();
+            if (parameters.WeightList().size() >= 12) {
+                qInfo("LR calculate by weighted");
+                avg_sfr = sfr_t*parameters.WeightList().at(8).toDouble()
+                        + sfr_r*parameters.WeightList().at(9).toDouble()
+                        + sfr_b*parameters.WeightList().at(10).toDouble()
+                        + sfr_l*parameters.WeightList().at(11).toDouble();
+            } else {
+                avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l) / 4;
+            }
         }
         else if (i%4 == 0)
         {
-            avg_sfr = sfr_t*parameters.WeightList().at(12).toDouble()
-                    + sfr_r*parameters.WeightList().at(13).toDouble()
-                    + sfr_b*parameters.WeightList().at(14).toDouble()
-                    + sfr_l*parameters.WeightList().at(15).toDouble();
+            if (parameters.WeightList().size() >= 16) {
+                qInfo("UL calculate by weighted");
+                avg_sfr = sfr_t*parameters.WeightList().at(12).toDouble()
+                        + sfr_r*parameters.WeightList().at(13).toDouble()
+                        + sfr_b*parameters.WeightList().at(14).toDouble()
+                        + sfr_l*parameters.WeightList().at(15).toDouble();
+            } else {
+                avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l) / 4;
+            }
         }
 
         qDebug("x: %f y: %f sfr_l: %f sfr_r: %f sfr_t: %f sfr_b: %f avg_sfr: %f",
@@ -3284,6 +3351,9 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
     QVariantMap map;
     int uv_time = params["time_in_ms"].toInt(3000);
     bool enable_OTP = params["enable_OTP"].toInt(0);
+    bool enable_y_level_check = params["enable_y_level_check"].toInt(0);
+    int margin = params["margin"].toInt(5);
+
     QString otp_information = params["OTP_information"].toString("");
 
     aa_head->openUVTillTime(uv_time);
@@ -3299,14 +3369,16 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
             result = dk->DothinkeyOTP(serverMode);  //retry OTP
         }
     }
-    QJsonValue param_dummy;
-    ErrorCodeStruct ret = performYLevelTest(param_dummy);
-    if (ret.code != ErrorCode::OK)
-    {
-        NgProduct();
-        map.insert("result", "Y level in UV fail");
-        emit pushDataToUnit(this->runningUnit, "UV", map);
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y level in UV fail"};
+
+    if (enable_y_level_check) {
+        ErrorCodeStruct ret = performYLevelTest(params);
+        if (ret.code != ErrorCode::OK)
+        {
+            NgProduct();
+            map.insert("result", "Y level in UV fail");
+            emit pushDataToUnit(this->runningUnit, "UV", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y level in UV fail"};
+        }
     }
 
     //aa_head->waitUVFinish();
@@ -3417,7 +3489,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     int image_margin = params["margin"].toInt(5);
     float min_i, max_i;
     int detectedNumberOfError = 0;
-    //cv::Mat inputImage = cv::imread("2.jpg");
+//    cv::Mat inputImage = cv::imread("C:\\Users\\emil\\Desktop\\field\\ylevel.jpg");
     bool grabRet;
     cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {

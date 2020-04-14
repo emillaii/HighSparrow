@@ -103,7 +103,7 @@ ColumnLayout {
         }
         ScrollView {
             implicitWidth:  550
-            implicitHeight: 250
+            implicitHeight: dispenserParams.lineSpeeds.length*45
             clip: true
             ListView {
                 model: dispenserParams.lineSpeeds

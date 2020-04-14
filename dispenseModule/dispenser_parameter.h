@@ -148,6 +148,7 @@ public slots:
             }
         }
         emit speedCountChanged(m_speedCount);
+        emit lineSpeedsChanged(m_lineSpeeds);
     }
 
 signals:

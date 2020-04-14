@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.11
 import LogicManagerLib 1.1
 
 ColumnLayout {
+
     RowLayout {
         Label {
             text: qsTr("Open_Offset")
@@ -72,7 +73,6 @@ ColumnLayout {
             width: 20
             height: 40
             onClicked: {
-//                aaNewCore.performHandling(1,"")
                 logicManager.performHandling(aaCoreParams.moduleName,1)
             }
         }
@@ -94,6 +94,28 @@ ColumnLayout {
             height: 40
             onClicked: {
                 logicManager.performHandling("", LogicManager.PERFORM_UV)
+            }
+        }
+    }
+    RowLayout {
+        Label {
+            text: qsTr("画胶速度参数")
+        }
+        ScrollView {
+            implicitWidth:  550
+            implicitHeight: 250
+            clip: true
+            ListView {
+                model: dispenserParams.lineSpeeds
+                delegate: RowLayout {
+                    Label { text: index + qsTr(":")}
+                    TextField {
+                        text: modelData
+                        onEditingFinished: {
+                            dispenserParams.setLineSpeed(index, text)
+                        }
+                    }
+                }
             }
         }
     }

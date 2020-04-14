@@ -16,7 +16,7 @@ ItemDelegate {
             }
             ListView{
                 model:vl_parameter_list
-                height: 250 * count
+                height: 300 * count
                 delegate: GroupBox{
                     title:locationName
                     ColumnLayout{

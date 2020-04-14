@@ -120,6 +120,14 @@ public slots:
         emit lineSpeedsChanged(m_lineSpeeds);
     }
 
+    void setLineSpeed(int index, double value)
+    {
+        if (index < m_lineSpeeds.length()) {
+            m_lineSpeeds[index] = value;
+            emit lineSpeedsChanged(m_lineSpeeds);
+        }
+    }
+
     void setSpeedCount(int speedCount)
     {
         if (m_speedCount == speedCount)

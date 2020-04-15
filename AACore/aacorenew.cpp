@@ -3830,12 +3830,12 @@ ErrorCodeStruct AACoreNew::performPRToBond(int finish_delay)
     if (!this->aa_head->moveToMushroomPosition(true)) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA cannot move to mushroom Pos"};}
     map.insert("aa_head_moveToMushroomPosition", stepTimer.elapsed()); stepTimer.restart();
 
-    //    double x = sut->downlook_position.X() + sut->up_downlook_offset.X() + aa_head->uplook_x + aa_head->offset_x + aa_head->parameters.pr2Bond_offsetX();
-    //    double y = sut->downlook_position.Y() + sut->up_downlook_offset.Y() + aa_head->uplook_y + aa_head->offset_y + aa_head->parameters.pr2Bond_offsetY();
-    double x = sut->mushroom_positon.X();
-    double y = sut->mushroom_positon.Y();
+    //    double x = sut->downlook_position.X() + sut->up_downlook_offset.X() + aa_head->uplook_x + aa_head->offset_x + aa_head->pr2Bond_offset.X();
+    //    double y = sut->downlook_position.Y() + sut->up_downlook_offset.Y() + aa_head->uplook_y + aa_head->offset_y + aa_head->pr2Bond_offset.Y();
+    double x = sut->mushroom_positon.X() + aa_head->pr2Bond_offset.X();
+    double y = sut->mushroom_positon.Y() + aa_head->pr2Bond_offset.Y();
     double z = sut->mushroom_positon.Z();
-    double theta = aa_head->GetFeedBack().C + sut->up_downlook_offset.Theta() - aa_head->uplook_theta - aa_head->offset_theta + aa_head->parameters.pr2Bond_offsetTheta();
+    double theta = aa_head->GetFeedBack().C + sut->up_downlook_offset.Theta() - aa_head->uplook_theta - aa_head->offset_theta + aa_head->pr2Bond_offset.Theta();
     qInfo("mushroom position(%f,%f,%f)",sut->mushroom_positon.X(),sut->mushroom_positon.Y(),sut->mushroom_positon.Z());
     qInfo("downlook_offset(%f,%f)",aa_head->offset_x,aa_head->offset_y,aa_head->offset_theta);
     qInfo("uplook_offset(%f,%f,%f)",aa_head->uplook_x,aa_head->uplook_y,aa_head->uplook_theta);

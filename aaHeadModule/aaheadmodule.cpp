@@ -14,6 +14,7 @@ void AAHeadModule::loadJsonConfig(QString file_name)
     temp_map.insert("AA_HEAD_PARAMS", &parameters);
     temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
     temp_map.insert("AA_PICK_LENS_POSITION", &this->pick_lens_position);
+    temp_map.insert("pr2Bond_offset", &this->pr2Bond_offset);
     PropertyBase::loadJsonConfig(file_name, temp_map);
 }
 
@@ -23,6 +24,7 @@ void AAHeadModule::saveJsonConfig(QString file_name)
     temp_map.insert("AA_HEAD_PARAMS", &this->parameters);
     temp_map.insert("AA_HEAD_POSITION", &this->mushroom_position);
     temp_map.insert("AA_PICK_LENS_POSITION", &this->pick_lens_position);
+    temp_map.insert("pr2Bond_offset", &this->pr2Bond_offset);
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 

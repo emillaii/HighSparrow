@@ -96,6 +96,7 @@ public:
     double offset_x = 0;
     double offset_y = 0;
     double offset_theta = 0;
+    PositionT  pr2Bond_offset;
 
     XtMotor* motor_x = Q_NULLPTR;
     XtMotor* motor_y = Q_NULLPTR;

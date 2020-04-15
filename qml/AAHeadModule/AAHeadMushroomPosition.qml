@@ -167,4 +167,48 @@ ColumnLayout {
             }
         }
     }
+    RowLayout {
+        Label {
+            text: qsTr("offset_X")
+        }
+        TextField {
+            text: aaHeadPr2BondOffset.X
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                aaHeadPr2BondOffset.setX(text)
+            }
+        }
+        Label {
+            text: qsTr("offset_Y")
+        }
+        TextField {
+            text: aaHeadPr2BondOffset.Y
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                aaHeadPr2BondOffset.setY(text)
+            }
+        }
+        Label {
+            text: qsTr("offset_Theta")
+        }
+        TextField {
+            text: aaHeadPr2BondOffset.Theta
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                aaHeadPr2BondOffset.setTheta(text)
+            }
+        }
+    }
 }

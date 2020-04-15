@@ -201,10 +201,12 @@ int main(int argc, char *argv[])
         //Local AA Head Position
         engine.rootContext()->setContextProperty("aaHeadMushroomPosition", &highSprrow.baseModuleManager->aa_head_module.mushroom_position);
         engine.rootContext()->setContextProperty("aaHeadPickLensPosition", &highSprrow.baseModuleManager->aa_head_module.pick_lens_position);
+        engine.rootContext()->setContextProperty("aaHeadPr2BondOffset", &highSprrow.baseModuleManager->aa_head_module.pr2Bond_offset);
 
         //Remote AA Head Position
         engine.rootContext()->setContextProperty("tcpAAHeadMushroomPosition", &highSprrow.baseModuleManager->tcp_aaHeadModule.mushroom_position);
         engine.rootContext()->setContextProperty("tcpAAHeadPickLensPosition", &highSprrow.baseModuleManager->tcp_aaHeadModule.pick_lens_position);
+        engine.rootContext()->setContextProperty("tcpAAHeadPr2BondOffset", &highSprrow.baseModuleManager->tcp_aaHeadModule.pr2Bond_offset);
     }
 
     {   //Local SUT Position

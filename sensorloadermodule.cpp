@@ -2589,9 +2589,9 @@ bool SensorLoaderModule::movePicker1ToSUTPos(bool is_local,bool check_softlandin
     bool result;
     QPointF temp_pos;
     if(is_local)
-        temp_pos =  sut2_pr_position.ToPointF();
+        temp_pos =  sut2_pr_position.ToPointF() + sut2PlaceOffset.ToPointF();
     else
-        temp_pos =  sut1_pr_position.ToPointF();
+        temp_pos =  sut1_pr_position.ToPointF() + sut1PlaceOffset.ToPointF();
     double x = temp_pos.x() + picker1_offset.X();
     double y = temp_pos.y() + picker1_offset.Y();
     if(sut_empty_location->parameters.useOrigin())

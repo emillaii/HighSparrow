@@ -121,59 +121,59 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
     avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
     image = image2;
 
-//    qInfo("grabImageFromCamera current_thread_id: %d main_thread_id", this->thread()->currentThreadId(), this->threadId);
-//    if (serverMode == 1) { //If vision module 2, need to ask vision module 1 to get image
-//         if (this->thread()->currentThreadId() == this->threadId) //Main thread handle.
-//         {
-//             QRemoteObjectPendingReply<QByteArray> reply = visionRep->getImageEx(cameraName);
-//             if (reply.waitForFinished()){
-//                 QByteArray byteArray = reply.returnValue();
-//                 QImage img((uchar *)byteArray.data(), visionRep->width(), visionRep->height(), (QImage::Format)visionRep->imgFormat());
-//                 QPixmap p = QPixmap::fromImage(img);
-//                 QImage q2 = p.toImage();
-//                 q2 = q2.convertToFormat(QImage::Format_RGB888);
-//                 avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-//                 image = image2;
-//             } else {
-//                 qWarning("grabImageFromCamera fail from main thread handle");
-//                 return false;
-//             }
-//         } else { //Call QTRO in another thread
-//             QImage img = emit grabImageFromMainThreadSig(cameraName);
-//             if (img.isNull()) {
-//                 qWarning("grabImageFromCamera fail from another thread handle");
-//                 return false;
-//             }
-//             QPixmap p = QPixmap::fromImage(img);
-//             QImage q2 = p.toImage();
-//             q2 = q2.convertToFormat(QImage::Format_RGB888);
-//             avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-//             image = image2;
-//         }
-//    } else {
-//        BaslerPylonCamera *camera = Q_NULLPTR;
-//        if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
-//        else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
-//        else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
-//        else if (cameraName.contains(CAMERA_AA2_DL)) { camera = aa2DownlookCamera; }
-//        else if (cameraName.contains(CAMERA_SPA_DL)) { camera = sensorPickarmCamera; }
-//        else if (cameraName.contains(CAMERA_LPA_UL)) { camera = sensorUplookCamera; }
-//        else if (cameraName.contains(CAMERA_LPA_BARCODE)) { camera = barcodeCamera; }
-//        if (camera == Q_NULLPTR) {
-//            qWarning("Cannot find camera %s", cameraName.toStdString().c_str());
-//            return false;
-//        }
-//        if (!camera->isCameraGrabbing())
-//        {
-//            qWarning("camera grabbing fail %s", cameraName.toStdString().c_str());
-//            return false;
-//        }
-//        QPixmap p = QPixmap::fromImage(camera->getNewImage());
-//        QImage q2 = p.toImage();
-//        q2 = q2.convertToFormat(QImage::Format_RGB888);
-//        avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-//        image = image2;
-//    }
+    //    qInfo("grabImageFromCamera current_thread_id: %d main_thread_id", this->thread()->currentThreadId(), this->threadId);
+    //    if (serverMode == 1) { //If vision module 2, need to ask vision module 1 to get image
+    //         if (this->thread()->currentThreadId() == this->threadId) //Main thread handle.
+    //         {
+    //             QRemoteObjectPendingReply<QByteArray> reply = visionRep->getImageEx(cameraName);
+    //             if (reply.waitForFinished()){
+    //                 QByteArray byteArray = reply.returnValue();
+    //                 QImage img((uchar *)byteArray.data(), visionRep->width(), visionRep->height(), (QImage::Format)visionRep->imgFormat());
+    //                 QPixmap p = QPixmap::fromImage(img);
+    //                 QImage q2 = p.toImage();
+    //                 q2 = q2.convertToFormat(QImage::Format_RGB888);
+    //                 avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+    //                 image = image2;
+    //             } else {
+    //                 qWarning("grabImageFromCamera fail from main thread handle");
+    //                 return false;
+    //             }
+    //         } else { //Call QTRO in another thread
+    //             QImage img = emit grabImageFromMainThreadSig(cameraName);
+    //             if (img.isNull()) {
+    //                 qWarning("grabImageFromCamera fail from another thread handle");
+    //                 return false;
+    //             }
+    //             QPixmap p = QPixmap::fromImage(img);
+    //             QImage q2 = p.toImage();
+    //             q2 = q2.convertToFormat(QImage::Format_RGB888);
+    //             avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+    //             image = image2;
+    //         }
+    //    } else {
+    //        BaslerPylonCamera *camera = Q_NULLPTR;
+    //        if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
+    //        else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
+    //        else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
+    //        else if (cameraName.contains(CAMERA_AA2_DL)) { camera = aa2DownlookCamera; }
+    //        else if (cameraName.contains(CAMERA_SPA_DL)) { camera = sensorPickarmCamera; }
+    //        else if (cameraName.contains(CAMERA_LPA_UL)) { camera = sensorUplookCamera; }
+    //        else if (cameraName.contains(CAMERA_LPA_BARCODE)) { camera = barcodeCamera; }
+    //        if (camera == Q_NULLPTR) {
+    //            qWarning("Cannot find camera %s", cameraName.toStdString().c_str());
+    //            return false;
+    //        }
+    //        if (!camera->isCameraGrabbing())
+    //        {
+    //            qWarning("camera grabbing fail %s", cameraName.toStdString().c_str());
+    //            return false;
+    //        }
+    //        QPixmap p = QPixmap::fromImage(camera->getNewImage());
+    //        QImage q2 = p.toImage();
+    //        q2 = q2.convertToFormat(QImage::Format_RGB888);
+    //        avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+    //        image = image2;
+    //    }
     return true;
 }
 
@@ -499,12 +499,13 @@ void VisionModule::testVision()
 
     //qInfo("Glue inspection reuslt: %s time: %d", imageName.toStdString().c_str(), timer.elapsed());
     PRResultStruct prResult;
-    this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_holder_edgeModel.avdata", prResult);
+    this->PR_Edge_Fitting(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_no_offset_edgeModel.avdata", prResult);
+    //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_holder_edgeModel.avdata", prResult);
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
     //this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Two_Circle_Matching(DOWNLOOK_VISION_CAMERA, prResult);
-    qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.width, prResult.height);
+    qInfo("%f %f %f %f %f", prResult.x, prResult.y, prResult.theta, prResult.ori_x, prResult.ori_y);
 }
 
 bool VisionModule::saveImage(QString cameraName, QString imageName)
@@ -1750,70 +1751,94 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
     ErrorCodeStruct error_code = { OK, "" };
     qInfo("PR Edge Fitting is called. Camera name: %s pr name: %s", camera_name.toStdString().c_str(), pr_name.toStdString().c_str());
     atl::String g_constData1;
+    atl::String g_constData2;
     atl::String g_emptyString;
+    atl::String g_constData3;
+    atl::String g_constData4;
+    atl::String g_constData5;
+    atl::String g_constData6;
+    atl::String g_constData7;
+    atl::String g_constData8;
+    atl::String g_constData9;
     atl::String g_constData10;
     atl::String g_constData11;
     atl::String g_constData12;
     atl::String g_constData13;
-    atl::Array< atl::Conditional< avl::Location > > g_constData14;
+    atl::String g_constData14;
+    atl::String g_constData15;
+    atl::String g_constData16;
+    atl::Array< atl::Conditional< avl::Location > > g_constData17;
 
     QString edgeFittingField1Filename = pr_name;
     QString edgeFittingField2Filename = pr_name;
     QString edgeFittingField3Filename = pr_name;
     QString edgeFittingField4Filename = pr_name;
     QString offsetFilename = pr_name;
+    QString searchHoleFilename = pr_name;
 
     edgeFittingField1Filename.replace("_edgeModel", "_edgeFittingField1");
     edgeFittingField2Filename.replace("_edgeModel", "_edgeFittingField2");
     edgeFittingField3Filename.replace("_edgeModel", "_edgeFittingField3");
     edgeFittingField4Filename.replace("_edgeModel", "_edgeFittingField4");
     offsetFilename.replace("_edgeModel", "_offset");
+    searchHoleFilename.replace("_edgeModel", "_searchHole");
 
-    qInfo("Edge Fitting pr filename: %s %s %s %s %s", edgeFittingField1Filename.toStdString().c_str(),
+    qInfo("Edge Fitting pr filename: %s %s %s %s %s %s", edgeFittingField1Filename.toStdString().c_str(),
           edgeFittingField2Filename.toStdString().c_str(),
           edgeFittingField3Filename.toStdString().c_str(),
           edgeFittingField4Filename.toStdString().c_str(),
-          offsetFilename.toStdString().c_str());
+          offsetFilename.toStdString().c_str(),
+          searchHoleFilename.toStdString().c_str());
 
-    g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\PR_Log_AA\\2018-11-03T04-19-34-724Z_PR_Uplook_Lens_Holder.jpg";
+    g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\04blens_lighting100-220 (1)\\04blens_lighting100-220\\04blighting210.jpg";
     g_emptyString = L"";
-    g_constData10 = L"SegmentFittingField?";
-    g_constData11 = L"GrayModel?";
-    g_constData12 = L"Vector2D?";
-    g_constData13 = L"Angle: ";
-    g_constData14.Reset(1);
-    g_constData14[0] = avl::Location(200, 60);
+    g_constData11 = L"SegmentFittingField?";
+    g_constData12 = L"GrayModel?";
+    g_constData13 = L"Vector2D?";
+    g_constData14 = L"CircleFittingField?";
+    g_constData15 = L"Angle: ";
+    g_constData16 = L" Score:";
+    g_constData17.Reset(1);
+    g_constData17[0] = avl::Location(200, 60);
 
     avl::Image image1;
     atl::String string1;
-    atl::String string2 = edgeFittingField1Filename.toStdString().c_str();
-    atl::String string3 = edgeFittingField2Filename.toStdString().c_str();
-    atl::String string4 = edgeFittingField3Filename.toStdString().c_str();
-    atl::String string5 = edgeFittingField4Filename.toStdString().c_str();
+    atl::String string2 = edgeFittingField1Filename.toStdString().c_str();;
+    atl::String string3 = edgeFittingField2Filename.toStdString().c_str();;
+    atl::String string4 = edgeFittingField3Filename.toStdString().c_str();;
+    atl::String string5 = edgeFittingField4Filename.toStdString().c_str();;
     atl::String string6 = pr_name.toStdString().c_str();
     atl::String string7 = offsetFilename.toStdString().c_str();
+    atl::String string8 = searchHoleFilename.toStdString().c_str();
+
     atl::Conditional< avl::SegmentFittingField > segmentFittingField1;
     atl::Conditional< avl::SegmentFittingField > segmentFittingField2;
     atl::Conditional< avl::SegmentFittingField > segmentFittingField3;
     atl::Conditional< avl::SegmentFittingField > segmentFittingField4;
     atl::Conditional< avl::GrayModel > grayModel1;
     atl::Conditional< avl::Vector2D > vector2D1;
+    atl::Conditional< avl::CircleFittingField > circleFittingField1;
     avs::FitSegmentToEdgesState fitSegmentToEdgesState1;
     avs::FitSegmentToEdgesState fitSegmentToEdgesState2;
     avs::FitSegmentToEdgesState fitSegmentToEdgesState3;
     avs::FitSegmentToEdgesState fitSegmentToEdgesState4;
-    atl::Conditional< atl::String > string8;
+    atl::Conditional< atl::String > string9;
+    atl::String string10;
     atl::Array< avl::Point2D > point2DArray1;
-    atl::String string9;
+    avs::FitCircleToEdgesState fitCircleToEdgesState1;
+    atl::String string11;
     atl::Conditional< avl::Rectangle2D > rectangle2D1;
     atl::Conditional< avl::Point2D > point2D1;
     atl::Conditional< avl::Point2D > point2D2;
+    atl::Conditional< avl::Circle2D > circle2D1;
     avl::Image image2;
     avl::Image image3;
     avl::Image image4;
-    atl::Array< atl::Conditional< atl::String > > stringArray1;
     avl::Image image5;
-
+    atl::Array< atl::Conditional< atl::String > > stringArray1;
+    avl::Image image6;
+    avl::SaveImageState saveImage_AsynchronousState1;
+    avl::SaveImageState saveImage_AsynchronousState2;
     QString imageName;
     imageName.append(getVisionLogDir())
             .append(getCurrentTimeString())
@@ -1826,20 +1851,25 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
     try {
         this->grabImageFromCamera(camera_name, image1);
         //avl::LoadImage( g_constData1, false, image1 );
-        avl::SaveImageToJpeg( image1, rawImageName.toStdString().c_str(), atl::NIL, false);
-        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string2, avl::StreamMode::Binary, g_constData10, segmentFittingField1 );
-        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string3, avl::StreamMode::Binary, g_constData10, segmentFittingField2 );
-        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string4, avl::StreamMode::Binary, g_constData10, segmentFittingField3 );
-        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string5, avl::StreamMode::Binary, g_constData10, segmentFittingField4 );
-        avs::LoadObject< atl::Conditional< avl::GrayModel > >( string6, avl::StreamMode::Binary, g_constData11, grayModel1 );
-        avs::LoadObject< atl::Conditional< avl::Vector2D > >( string7, avl::StreamMode::Binary, g_constData12, vector2D1 );
-
+        avl::SaveImage_Asynchronous( saveImage_AsynchronousState1, image1, atl::NIL, rawImageName.toStdString().c_str());
+        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string2, avl::StreamMode::Binary, g_constData11, segmentFittingField1 );
+        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string3, avl::StreamMode::Binary, g_constData11, segmentFittingField2 );
+        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string4, avl::StreamMode::Binary, g_constData11, segmentFittingField3 );
+        avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string5, avl::StreamMode::Binary, g_constData11, segmentFittingField4 );
+        avs::LoadObject< atl::Conditional< avl::GrayModel > >( string6, avl::StreamMode::Binary, g_constData12, grayModel1 );
+        avs::LoadObject< atl::Conditional< avl::Vector2D > >( string7, avl::StreamMode::Binary, g_constData13, vector2D1 );
+        bool circleFittingFieldFileExist = false;
+        avl::TestFileExists( string8, circleFittingFieldFileExist );
+        if (circleFittingFieldFileExist) {
+            avs::LoadObject< atl::Conditional< avl::CircleFittingField > >( string8, avl::StreamMode::Binary, g_constData14, circleFittingField1 );
+        }
+        qInfo("Finish Loading");
         if (grayModel1 != atl::NIL)
         {
             atl::Conditional< avl::Object2D > object2D1;
 
             avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1.Get(), 0, 3, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-
+            qInfo("Locate NCC Finish");
             if (object2D1 != atl::NIL)
             {
                 avl::CoordinateSystem2D coordinateSystem2D1;
@@ -1855,8 +1885,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                 {
                     atl::Conditional< avl::Segment2D > segment2D1;
 
-                    // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState1, image1, segmentFittingField2.Get(), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState1, image1, segmentFittingField2.Get(), coordinateSystem2D1, 20, 3, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 1.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
                     if (segment2D1 != atl::NIL)
                     {
@@ -1867,17 +1896,11 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                     else
                     {
                         line2D1 = atl::NIL;
-                        error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-                        qWarning("Cannot find edge 2");
-                        return error_code;
                     }
                 }
                 else
                 {
                     line2D1 = atl::NIL;
-                    error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-                    qWarning("Cannot find edge fitting field 2 model");
-                    return error_code;
                 }
 
                 if (segmentFittingField1 != atl::NIL)
@@ -1885,7 +1908,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                     atl::Conditional< avl::Segment2D > segment2D1;
 
                     // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState2, image1, segmentFittingField1.Get(), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState2, image1, segmentFittingField1.Get(), coordinateSystem2D1, 20, 3, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 1.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
                     if (segment2D1 != atl::NIL)
                     {
@@ -1900,27 +1923,18 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                         else
                         {
                             point2D3 = atl::NIL;
-                            error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-                            qWarning("Cannot find edge 1");
-                            return error_code;
                         }
                     }
                     else
                     {
                         line2D2 = atl::NIL;
                         point2D3 = atl::NIL;
-                        error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-                        qWarning("Cannot find edge fitting field 1 model");
-                        return error_code;
                     }
                 }
                 else
                 {
                     line2D2 = atl::NIL;
                     point2D3 = atl::NIL;
-                    error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-                    qWarning("Cannot find edge fitting field 1 model");
-                    return error_code;
                 }
 
                 if (segmentFittingField3 != atl::NIL)
@@ -1928,7 +1942,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                     atl::Conditional< avl::Segment2D > segment2D1;
 
                     // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState3, image1, segmentFittingField3.Get(), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState3, image1, segmentFittingField3.Get(), coordinateSystem2D1, 20, 3, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 1.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
                     if (segment2D1 != atl::NIL)
                     {
@@ -1962,7 +1976,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                     atl::Conditional< avl::Segment2D > segment2D1;
 
                     // Function AvsFilter_FitSegmentToEdges is intended for generated code only. Consider use of CreateFittingMap and FitSegmentToEdges functions in regular programs.
-                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState4, image1, segmentFittingField4.Get(), coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+                    avs::AvsFilter_FitSegmentToEdges( fitSegmentToEdgesState4, image1, segmentFittingField4.Get(), coordinateSystem2D1, 20, 3, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 1.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, atl::NIL, segment2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
 
                     if (segment2D1 != atl::NIL && line2D2 != atl::NIL && line2D3 != atl::NIL)
                     {
@@ -1977,31 +1991,60 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                         if (point2D3 != atl::NIL && point2D4 != atl::NIL && point2D6 != atl::NIL && point2D5 != atl::NIL)
                         {
                             float real1;
+                            float real2;
 
                             rectangle2D1.AssignNonNil();
                             point2D1.AssignNonNil();
-                            string8.AssignNonNil();
+                            string9.AssignNonNil();
+
+                            real1 = object2D1.Get().Score();
+                            avl::RealToString( real1, string10 );
 
                             // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
                             avs::AvsFilter_CreateArray< avl::Point2D >( point2D3.Get(), point2D4.Get(), point2D6.Get(), point2D5.Get(), atl::NIL, atl::NIL, atl::NIL, atl::NIL, point2DArray1 );
                             avl::PointsBoundingRectangle( point2DArray1, avl::BoundingRectangleFeature::MinimalArea, 0.0f, avl::RectangleOrientation::Vertical, rectangle2D1.Get(), point2D1.Get(), atl::NIL, atl::NIL );
-                            real1 = rectangle2D1.Get().Angle();
 
-                            point2D2.AssignNonNil();
-                            avl::TranslatePoint( point2D1.Get(), vector2D1.Get(), false, point2D2.Get() );
-                            avl::RotatePoint( point2D2.Get(), point2D1.Get(), real1, false, point2D2.Get() );
+                            if (vector2D1 != atl::NIL)
+                            {
+                                point2D2.AssignNonNil();
 
-                            avl::RealToString( real1, string9 );
+                                avl::TranslatePoint( point2D1.Get(), vector2D1.Get(), false, point2D2.Get() );
+                            }
+                            else
+                            {
+                                point2D2 = atl::NIL;
+                            }
 
-                            // AvsFilter_ConcatenateStrings is intended for generated code only. In regular programs  String::operator+() or String:Append() member function should be used.
-                            avs::AvsFilter_ConcatenateStrings( g_constData13, string9, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string8.Get() );
+                            if (circleFittingField1 != atl::NIL)
+                            {
+                                avl::Rectangle2D rectangle2D2;
+                                float real3;
+                                avl::CoordinateSystem2D coordinateSystem2D2;
+
+                                avl::NormalizeRectangleOrientation( rectangle2D1.Get(), 0.0f, avl::RectangleOrientation::Horizontal, rectangle2D2 );
+                                real3 = rectangle2D2.Angle();
+                                prResult.theta = real3;
+                                coordinateSystem2D2 = avl::CoordinateSystem2D(point2D1.Get(), real3, 1.0f);
+
+                                avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1.Get(), coordinateSystem2D2, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+                            }
+                            else
+                            {
+                                circle2D1 = atl::NIL;
+                            }
+
+                            real2 = rectangle2D1.Get().Angle();
+                            avl::RealToString( real2, string11 );
+
+                            avs::AvsFilter_ConcatenateStrings( g_constData15, string11, g_constData16, string10, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string9.Get() );
                         }
                         else
                         {
                             rectangle2D1 = atl::NIL;
                             point2D1 = atl::NIL;
-                            string8 = atl::NIL;
+                            string9 = atl::NIL;
                             point2D2 = atl::NIL;
+                            circle2D1 = atl::NIL;
                         }
                     }
                     else
@@ -2009,7 +2052,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                         rectangle2D1 = atl::NIL;
                         point2D1 = atl::NIL;
                         point2D2 = atl::NIL;
-                        string8 = atl::NIL;
+                        circle2D1 = atl::NIL;
+                        string9 = atl::NIL;
                     }
                 }
                 else
@@ -2017,10 +2061,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                     rectangle2D1 = atl::NIL;
                     point2D1 = atl::NIL;
                     point2D2 = atl::NIL;
-                    string8 = atl::NIL;
-                    error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-                    qWarning("Cannot find edge fitting field");
-                    return error_code;
+                    circle2D1 = atl::NIL;
+                    string9 = atl::NIL;
                 }
             }
             else
@@ -2028,10 +2070,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                 rectangle2D1 = atl::NIL;
                 point2D1 = atl::NIL;
                 point2D2 = atl::NIL;
-                string8 = atl::NIL;
-                error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-                qWarning("Cannot locate gray model");
-                return error_code;
+                circle2D1 = atl::NIL;
+                string9 = atl::NIL;
             }
         }
         else
@@ -2039,27 +2079,43 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
             rectangle2D1 = atl::NIL;
             point2D1 = atl::NIL;
             point2D2 = atl::NIL;
-            string8 = atl::NIL;
+            circle2D1 = atl::NIL;
+            string9 = atl::NIL;
+        }
+
+        if (point2D1 != atl::NIL) {
+            prResult.ori_x = point2D1.Get().X();
+            prResult.ori_y = point2D1.Get().Y();
+        } else {
             error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-            qWarning("Cannot find gray model");
+            qWarning("Cannot find target point from template");
             return error_code;
         }
-        qInfo("Done");
+
+        if (point2D2 != atl::NIL) {
+            prResult.x = point2D2.Get().X();
+            prResult.y = point2D2.Get().Y();
+        } else {
+            error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+            qWarning("Cannot find target point from template");
+            return error_code;
+        }
+
+        if (circle2D1 != atl::NIL) {
+            qInfo("Detected small hole at x: %f y: %f", circle2D1.Get().Center().X(), circle2D1.Get().Center().Y());
+        } else {
+            qInfo("Cannot find the small hole");
+        }
+
         avs::DrawRectangles_SingleColor( image1, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 1.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 3.0f, false, atl::NIL, 1.0f), true, image2 );
-        avs::DrawPoints_SingleColor( image2, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 30.0f), true, image3 );
-        avs::DrawPoints_SingleColor( image3, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D2), atl::NIL, avl::Pixel(255.0f, 128.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 30.0f), true, image4 );
-
-        prResult.ori_x = point2D1.Get().X();
-        prResult.ori_y = point2D1.Get().Y();
-        prResult.x = point2D2.Get().X();
-        prResult.y = point2D2.Get().Y();
-        prResult.theta = rectangle2D1.Get().Angle();
-
+        avs::DrawCircles_SingleColor( image2, atl::ToArray< atl::Conditional< avl::Circle2D > >(circle2D1), atl::NIL, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 5.0f, false, atl::NIL, 1.0f), true, image3 );
+        avs::DrawPoints_SingleColor( image3, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 30.0f), true, image4 );
+        avs::DrawPoints_SingleColor( image4, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D2), atl::NIL, avl::Pixel(255.0f, 128.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 30.0f), true, image5 );
         stringArray1.Resize(1);
-        stringArray1[0] = string8;
-        avs::DrawStrings_SingleColor( image4, stringArray1, g_constData14, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 20.0f), 25.0f, 0.0f, true, atl::NIL, image5 );
-        avl::SaveImageToJpeg( image5, imageName.toStdString().c_str(), atl::NIL, false);
-    } catch(const atl::Error& error) {
+        stringArray1[0] = string9;
+        avs::DrawStrings_SingleColor( image5, stringArray1, g_constData17, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 20.0f), 25.0f, 0.0f, true, atl::NIL, image6 );
+        avl::SaveImage_Asynchronous( saveImage_AsynchronousState1, image6, atl::NIL, imageName.toStdString().c_str());
+    } catch (const atl::Error& error) {
         error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
         qWarning(error.Message());
         return error_code;

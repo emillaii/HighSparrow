@@ -728,7 +728,7 @@ ApplicationWindow {
                 highSprrow.callQProcess("GenericNCCavproj.avexe")
             }
             navigationFeatureButton.onClicked: {
-                highSprrow.callQProcess("EdgeFinder.avexe")
+                highSprrow.callQProcess("edgeFittingHMI.avexe")
             }
             drawPathButton.onClicked: {
                 highSprrow.callQProcess("DrawPath.avexe")
@@ -740,7 +740,7 @@ ApplicationWindow {
                 highSprrow.callQProcess("GenericNCCavproj.avexe")
             }
             navigationFeatureButton.onClicked: {
-                highSprrow.callQProcess("EdgeFinder.avexe")
+                highSprrow.callQProcess("edgeFittingHMI.avexe")
             }
             drawPathButton.onClicked: {
                 highSprrow.callQProcess("DrawPath.avexe")

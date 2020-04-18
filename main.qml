@@ -48,8 +48,6 @@ ApplicationWindow {
     property string aaCoreTestParams: ""
     property bool isWindowMaximized: true
 
-    flags: Qt.Dialog | Qt.WindowCancelButtonHint | Qt.WindowCloseButtonHint
-
     FileDialog {
         id: loadfileDialog
         title: qsTr("选择加载文件")

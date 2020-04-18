@@ -1553,7 +1553,7 @@ QMap<QString, PropertyBase *> LensLoaderModule::getModuleParameter()
     temp_map.insert("END_POSITION", &this->tray->first_tray_end_position);
     for (int i = 0; i < this->tray->standards_parameters.trayCount(); ++i)
     {
-        temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_PARAMETER"), this->tray->parameters[i]);
+        //temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_PARAMETER"), this->tray->parameters[i]);
         temp_map.insert(QString("TRAY").append(QString::number(i + 1)).append("_START_POSITION"), &this->tray->parameters[i]->tray_start_position);
     }
 

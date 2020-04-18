@@ -1748,6 +1748,7 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
 ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score, bool detect_small_hole)
 {
     ErrorCodeStruct error_code = { OK, "" };
+    pr_name.replace("file:///", "");
     qInfo("PR Edge Fitting is called. Camera name: %s pr name: %s", camera_name.toStdString().c_str(), pr_name.toStdString().c_str());
     atl::String g_constData1;
     atl::String g_constData2;

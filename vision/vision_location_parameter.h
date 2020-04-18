@@ -29,6 +29,9 @@ public:
     Q_PROPERTY(int prismPRType READ prismPRType WRITE setPrismPRType NOTIFY prismPRTypeChanged)
     Q_PROPERTY(int auxLightChannel READ auxLightChannel WRITE setAuxLightChannel NOTIFY auxLightChannelChanged)
     Q_PROPERTY(int auxLightBrightness READ auxLightBrightness WRITE setAuxLightBrightness NOTIFY auxLightBrightnessChanged)
+    Q_PROPERTY(bool displaySmallHoleDetectionSetting READ displaySmallHoleDetectionSetting WRITE setDisplaySmallHoleDetectionSetting NOTIFY displaySmallHoleDetectionSettingChanged)
+    Q_PROPERTY(bool enableSmallHoleDetection READ enableSmallHoleDetection WRITE setEnableSmallHoleDetection NOTIFY enableSmallHoleDetectionChanged)
+
     QString prFileName() const
     {
         return m_prFileName;
@@ -128,6 +131,16 @@ public:
     int auxLightBrightness() const
     {
         return m_auxLightBrightness;
+    }
+
+    bool displaySmallHoleDetectionSetting() const
+    {
+        return m_displaySmallHoleDetectionSetting;
+    }
+
+    bool enableSmallHoleDetection() const
+    {
+        return m_enableSmallHoleDetection;
     }
 
 public slots:
@@ -311,6 +324,24 @@ public slots:
         emit auxLightBrightnessChanged(m_auxLightBrightness);
     }
 
+    void setDisplaySmallHoleDetectionSetting(bool displaySmallHoleDetectionSetting)
+    {
+        if (m_displaySmallHoleDetectionSetting == displaySmallHoleDetectionSetting)
+            return;
+
+        m_displaySmallHoleDetectionSetting = displaySmallHoleDetectionSetting;
+        emit displaySmallHoleDetectionSettingChanged(m_displaySmallHoleDetectionSetting);
+    }
+
+    void setEnableSmallHoleDetection(bool enableSmallHoleDetection)
+    {
+        if (m_enableSmallHoleDetection == enableSmallHoleDetection)
+            return;
+
+        m_enableSmallHoleDetection = enableSmallHoleDetection;
+        emit enableSmallHoleDetectionChanged(m_enableSmallHoleDetection);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -352,6 +383,10 @@ signals:
 
     void auxLightBrightnessChanged(int auxLightBrightness);
 
+    void displaySmallHoleDetectionSettingChanged(bool displaySmallHoleDetectionSetting);
+
+    void enableSmallHoleDetectionChanged(bool enableSmallHoleDetection);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -373,6 +408,8 @@ private:
     int m_prismPRType = 0;
     int m_auxLightChannel = -1;
     int m_auxLightBrightness = 0;
+    bool m_displaySmallHoleDetectionSetting = false;
+    bool m_enableSmallHoleDetection = false;
 };
 
 

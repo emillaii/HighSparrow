@@ -89,6 +89,11 @@ ItemDelegate {
                                     setObjectScore(text)
                                 }
                             }
+                            CheckBox {
+                                text: qsTr("搜索排气孔")
+                                visible: displaySmallHoleDetectionSetting
+                                checked: enableSmallHoleDetection
+                            }
                         }
 
                         RowLayout{

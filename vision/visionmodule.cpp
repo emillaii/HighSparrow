@@ -1172,12 +1172,11 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
     return error_code;
 }
 
-ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score)
+ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score, bool detect_small_hole)
 {
     //if(is_debug)return ErrorCodeStruct{ OK, "" };
     if (pr_name.contains("_edgeModel")) {
-        return PR_Edge_Fitting(camera_name, pr_name, prResult);
-        //return PR_Edge_Template_Matching(camera_name, pr_name, prResult);
+        return PR_Edge_Fitting(camera_name, pr_name, prResult, detect_small_hole);
     }
     qInfo("%s perform %s with object_score: %f",camera_name.toStdString().c_str(),pr_name.toStdString().c_str(), object_score);
     pr_name.replace("file:///", "");
@@ -1346,7 +1345,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
     return error_code;
 }
 
-ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching_Retry(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score)
+ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching_Retry(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score, bool detect_small_hole)
 {
     //if(is_debug)return ErrorCodeStruct{ OK, "" };
     if (pr_name.contains("_edgeModel")) {
@@ -1746,7 +1745,7 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
     return error_code;
 }
 
-ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score)
+ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score, bool detect_small_hole)
 {
     ErrorCodeStruct error_code = { OK, "" };
     qInfo("PR Edge Fitting is called. Camera name: %s pr name: %s", camera_name.toStdString().c_str(), pr_name.toStdString().c_str());
@@ -2088,7 +2087,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
             prResult.ori_y = point2D1.Get().Y();
         } else {
             error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-            qWarning("Cannot find target point from template");
+            error_code.errorMessage = "Cannot find target point 1";
+            qWarning("Cannot find target point 1");
             return error_code;
         }
 
@@ -2097,14 +2097,19 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
             prResult.y = point2D2.Get().Y();
         } else {
             error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
-            qWarning("Cannot find target point from template");
+            error_code.errorMessage = "Cannot find target point 2";
+            qWarning("Cannot find target point 2");
             return error_code;
         }
 
         if (circle2D1 != atl::NIL) {
             qInfo("Detected small hole at x: %f y: %f", circle2D1.Get().Center().X(), circle2D1.Get().Center().Y());
         } else {
-            qInfo("Cannot find the small hole");
+            if (detect_small_hole) {
+                error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
+                error_code.errorMessage = "Cannot detect small hole";
+                qWarning("Cannot find the small hole");
+            }
         }
 
         avs::DrawRectangles_SingleColor( image1, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 1.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 3.0f, false, atl::NIL, 1.0f), true, image2 );

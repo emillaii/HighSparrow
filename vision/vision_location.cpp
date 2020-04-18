@@ -41,7 +41,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
     } else if (parameters.prismPRType() == 3) {
         temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), pr_result);
     } else {
-        temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
+        temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore(), parameters.enableSmallHoleDetection());
     }
     last_image_name = pr_result.rawImageName;
     if(ErrorCode::OK == temp.code)
@@ -100,7 +100,8 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
     else {
         qWarning("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
     }
-    AppendError(QString(u8"Perform PR Fail"));
+    AppendError(QString(u8"Perform PR Fail "));
+    AppendError(temp.errorMessage);
     //CloseLight();
     return false;
 }
@@ -121,7 +122,7 @@ bool VisionLocation::performPR()
     } else if (parameters.prismPRType() == 3) {
         temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), current_pixel_result);
     } else {
-        temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), current_pixel_result, parameters.objectScore());
+        temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), current_pixel_result, parameters.objectScore(), parameters.enableSmallHoleDetection());
     }
     last_image_name = current_pixel_result.rawImageName;
     if(ErrorCode::OK == temp.code)
@@ -173,7 +174,8 @@ bool VisionLocation::performPR()
     else {
         qWarning("perform pr fail: %s %s ",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str());
     }
-    AppendError(QString(u8"Perform PR (%1) Fail").arg(parameters.cameraName()));
+    AppendError(QString(u8"Perform PR (%1) Fail ").arg(parameters.cameraName()));
+    AppendError(temp.errorMessage);
     //CloseLight();
     return false;
 }
@@ -207,7 +209,7 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
     } else if (parameters.prismPRType() == 3) {
         temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), pr_result);
     } else {
-        temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore());
+        temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore(), parameters.enableSmallHoleDetection());
     }
     last_image_name = pr_result.rawImageName;
     qInfo("CameraName: %s prFilename: %s PR_Result: %f %f %f",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str(),

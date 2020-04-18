@@ -106,8 +106,8 @@ public:
     /*
      * Use the most generic NCC template matching
      */
-    ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.8);
-    ErrorCodeStruct PR_Generic_NCC_Template_Matching_Retry(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score);
+    ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.8, bool detect_small_hole = false);
+    ErrorCodeStruct PR_Generic_NCC_Template_Matching_Retry(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score, bool detect_small_hole = false);
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     ErrorCodeStruct Glue_Inspection(double resolution, double minWidth, double maxWidth, double maxAvgWidth,
                                     QString beforeImage, QString afterImage, QString *glueInspectionImageName,
@@ -128,7 +128,7 @@ public:
     /*
      * Edge Fitting Algorithm
      */
-    ErrorCodeStruct PR_Edge_Fitting(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.6);
+    ErrorCodeStruct PR_Edge_Fitting(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.6, bool detect_small_hole = false);
 
     Q_INVOKABLE void aaDebugImage(QString input_filename, int threshold, int min_area, int max_area);
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;

@@ -20,7 +20,7 @@ Dispenser::Dispenser()
 {
 }
 
-void Dispenser::Init(int curve_id, int thread_curve, int thread_trig, QVector<XtMotor *> executive_motors, XtGeneralOutput *output_io)
+void Dispenser::Init(int curve_id, int thread_curve, int thread_trig, QVector<XtMotor *> executive_motors, XtGeneralOutput *output_io, XtGeneralInput *input_io)
 {
     dispenser_count++;
     this->curve_id = curve_id;
@@ -250,6 +250,15 @@ double Dispenser::getEndSpeed(int index)
         return parameters.lineSpeeds()[i].toDouble();
     else
         return parameters.endSpeed();
+}
+
+bool Dispenser::glueLevelCheck()
+{
+    if (this->input_io == Q_NULLPTR) {
+        qWarning("glue level check io [%s] does not exist", parameters.glueLevelCheckIO().toStdString().c_str());
+        return false;
+    }
+    return input_io->Value();
 }
 
 

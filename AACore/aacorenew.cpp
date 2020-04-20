@@ -854,6 +854,34 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
     int retry_count = params["retry"].toInt(0);
     QJsonValue delay_in_ms_qjv = params["delay_in_ms"];
     unsigned int delay_in_ms = delay_in_ms_qjv.toInt(0);
+
+    //Do any pre check here
+    if (dispense->dispenser->parameters.enableGlueLevelCheck()) {
+        qInfo("Glue level check enabled");
+        bool preCheckFail = dispense->dispenser->glueLevelCheck();
+        qInfo("Glue level check result: %d", preCheckFail);
+        if (preCheckFail) {
+            int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"胶水位檢查失敗");
+            QString operation = waitMessageReturn(is_run,alarm_id);
+            if (REJECT_OPERATION == operation)
+            {
+                QVariantMap map;
+                map["testResult"] = "Fail";
+                map["errorMessage"] = "Glue level check fail";
+                map["lens"] = this->has_lens;
+                map["sensor"] = this->has_sensor;
+                map["product"] = this->has_product;
+                map["ng_product"] = this->has_ng_product;
+                map["ng_sensor"] = this->has_ng_sensor;
+                map["ng_lens"] = this->has_ng_lens;
+                emit pushDataToUnit(runningUnit, "overallResult", map);
+                emit pushNgDataToCSV(this->runningUnit, parameters.lotNumber(), dk->readSensorID(), testItemName, ret.errorMessage);
+                parameters.setAACoreRunningTest("");
+                return ret;
+            }
+        }
+    }
+
     for (int i = 0; i <= retry_count; i++) {
         parameters.setAACoreRunningTest("Running test: " + testItemName);
         if (testItemName.contains(AA_PIECE_START)) { qInfo("Performing Start"); }
@@ -1019,7 +1047,6 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
     emit pushDataToUnit(runningUnit, "overallResult", map);
 
     if (ret.code != ErrorCode::OK) {
-        //SI::ui.showMessage("AA", ret.errorMessage, MsgBoxIcon::Warning, "OK");
         emit pushNgDataToCSV(this->runningUnit, parameters.lotNumber(), dk->readSensorID(), testItemName, ret.errorMessage);
     }
     parameters.setAACoreRunningTest("");

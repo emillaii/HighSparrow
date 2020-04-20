@@ -41,7 +41,7 @@ private:
 
 public:
     Dispenser();
-    void Init(int curve_id,int thread_curve,int thread_trig,QVector<XtMotor *> executive_motors,XtGeneralOutput* output_io);
+    void Init(int curve_id,int thread_curve,int thread_trig,QVector<XtMotor *> executive_motors,XtGeneralOutput* output_io, XtGeneralInput *input_io);
     ~Dispenser();
     bool Dispense(QVector<DispensePathPoint> &dispense_path);
     bool WaitForFinish(int time = 60000);
@@ -53,6 +53,7 @@ private:
     double getEndSpeed(int index);
 public:
     DispenserParameter parameters;
+    bool glueLevelCheck();
 private:
     QString file_path;
     QString name;
@@ -62,6 +63,7 @@ private:
     QVector<XtMotor *> executive_motors;
     int dem;
     XtGeneralOutput* output_io = Q_NULLPTR;
+    XtGeneralInput* input_io = Q_NULLPTR;
     DISPENSER_STATE state = DISPENSER_NOT_INIT;
 };
 

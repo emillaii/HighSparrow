@@ -1591,7 +1591,8 @@ bool BaseModuleManager::InitStruct()
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorYName()));
     executive_motors.push_back(GetMotorByName(sut_module.parameters.motorZName()));
     dispenser.Init(XtMotor::GetCurveResource(),XtMotor::GetThreadResource(),XtMotor::GetThreadResource(),executive_motors,
-                   GetOutputIoByName(dispenser.parameters.dispenseIo()));
+                   GetOutputIoByName(dispenser.parameters.dispenseIo()),
+                   GetInputIoByName(dispenser.parameters.glueLevelCheckIO()));
     dispense_module.Init(DISPENSER_PARAMETER_PATH,"dispense_module",
                          GetCalibrationByName(GetVisionLocationByName(sut_module.parameters.downlookLocationName())->parameters.calibrationName()),
                          &dispenser,visionModule,&sut_carrier,

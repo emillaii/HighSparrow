@@ -1,16 +1,16 @@
 #ifndef USERMANAGEMENT_H
 #define USERMANAGEMENT_H
 
+#include "../singletoninstances.h"
+#include "mysqltablemodel.h"
+#include <QCryptographicHash>
+#include <QDebug>
 #include <QObject>
 #include <qsqldatabase.h>
 #include <qsqlerror.h>
 #include <qsqlquery.h>
-#include <QDebug>
-#include <QCryptographicHash>
-#include "../singletoninstances.h"
-#include "mysqltablemodel.h"
 
-class UserManagement: public QObject
+class UserManagement : public QObject
 {
     Q_OBJECT
 
@@ -18,7 +18,8 @@ public:
     UserManagement();
     ~UserManagement();
 
-    enum Authority{
+    enum Authority
+    {
         None,
         Operator,
         Engineer,
@@ -30,16 +31,16 @@ public:
     Q_PROPERTY(Authority currentAuthority READ currentAuthority WRITE setCurrentAuthority NOTIFY currentAuthorityChanged)
     Q_PROPERTY(bool hasLogin READ hasLogin WRITE setHasLogin NOTIFY hasLoginChanged)
 
-
     void init();
 
+    Q_INVOKABLE int userCount() const;
     Q_INVOKABLE void addUser(QString userName, QString password, Authority authority);
     Q_INVOKABLE void removeUser(QString userName);
-    Q_INVOKABLE bool changePassword(QString userName, QString oldPassword, QString newPassword, QString newPasswordRepeat);
+    Q_INVOKABLE bool
+    changePassword(QString userName, QString oldPassword, QString newPassword, QString newPasswordRepeat);
 
     Q_INVOKABLE bool login(QString userName, QString password);
     Q_INVOKABLE void logout();
-
 
     QString currentUserName() const
     {
@@ -90,7 +91,7 @@ private:
     }
     bool openDB()
     {
-        if(!db.open())
+        if (!db.open())
         {
             qCritical() << tr("Open db failed: ") << db.lastError().text();
             return false;
@@ -105,10 +106,11 @@ private:
     bool hasUser(QString userName);
     bool isTableExist(QString tableName);
     bool verifyUserPsw(QString userName, QString password);
-    bool getUserInfo(QString userName, QString& password, Authority& authority, bool showMsgBoxAsUserDidNotExist=true);
+    bool
+    getUserInfo(QString userName, QString &password, Authority &authority, bool showMsgBoxAsUserDidNotExist = true);
 
 public:
-    MySqlTableModel* userModel;
+    MySqlTableModel *userModel;
 
     bool hasLogin() const
     {
@@ -129,4 +131,4 @@ private:
     bool m_hasLogin = false;
 };
 
-#endif // USERMANAGEMENT_H
+#endif    // USERMANAGEMENT_H

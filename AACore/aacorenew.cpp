@@ -3514,7 +3514,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     int max_i_spec = params["max"].toInt(200);
     int mode = params["mode"].toInt(1); //1: Rectangle Path, 0: Dialgoue Path
     int image_margin = params["margin"].toInt(5);
-    float min_i, max_i;
+    float min_i, max_i, negative_di, positive_di; // di == differeniation of intensity profile
     int detectedNumberOfError = 0;
 //    cv::Mat inputImage = cv::imread("C:\\Users\\emil\\Desktop\\field\\ylevel.jpg");
     bool grabRet;
@@ -3526,13 +3526,15 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     }
     vector<float> intensityProfile;
     QElapsedTimer timer; timer.start();
-    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile, mode, image_margin, detectedNumberOfError);
+    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile, mode, image_margin, detectedNumberOfError, negative_di, positive_di);
+
     if (ret) {
         map.insert("min_i", min_i);
         map.insert("min_i_spec", min_i_spec);
         map.insert("max_i", max_i);
         map.insert("max_i_spec", max_i_spec);
-        map.insert("num_of_detected_error", detectedNumberOfError);
+        map.insert("negative_di", negative_di);
+        map.insert("positive_di", positive_di);
 
         QString imageName;
         imageName.append(getYLevelDir())
@@ -3542,10 +3544,10 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
                 .append(".bmp");
         cv::imwrite(imageName.toStdString().c_str(), inputImage);
 
-        qInfo("performYLevelTest Success. Min I: %f Max I: %f size: %d detected number of error: %d", min_i, max_i, intensityProfile.size(), detectedNumberOfError);
+        qInfo("performYLevelTest Success. Min I: %f Max I: %f size: %d detected number of error: %d -veDI: %f +veDI: %f", min_i, max_i, intensityProfile.size(), detectedNumberOfError, negative_di, positive_di);
         if (enable_plot == 1) {
             intensity_profile.clear();
-            this->intensity_profile.plotIntensityProfile(min_i, max_i, intensityProfile, detectedNumberOfError);
+            this->intensity_profile.plotIntensityProfile(min_i, max_i, intensityProfile, detectedNumberOfError, negative_di, positive_di);
         }
         if (max_i < 10) {
             qWarning("This is black screen.");
@@ -3567,13 +3569,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is larger than spec"};
         }
-        if (detectedNumberOfError > 0) {
-            qWarning("Detected Intensity Error.");
-            map.insert("result", "Detected Y Level error");
-            emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
-            NgProduct();
-            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Detected intensity error"};
-        }
+
         map.insert("Result", "Pass");
         map.insert("timeElapsed", timer.elapsed());
         emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
@@ -3589,8 +3585,8 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
 
 bool AACoreNew::blackScreenCheck(cv::Mat inImage)
 {
-    vector<float> intensityProfile; float min_i = 0; float max_i = 0; int detectedError = 0;
-    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile, 0, 0, detectedError);
+    vector<float> intensityProfile; float min_i = 0; float max_i = 0; int detectedError = 0; float negative_di = 0; float positive_di = 0;
+    bool ret = AA_Helper::calculateImageIntensityProfile(inImage, min_i, max_i, intensityProfile, 0, 0, detectedError, negative_di, positive_di);
     if (ret) {
         qInfo("[blackScreenCheck] Checking intensity...min: %f max: %f", min_i, max_i);
         if ((max_i - min_i) < parameters.minIntensityDiff()) {
@@ -4229,6 +4225,8 @@ void AACoreNew::receivceModuleMessage(QVariantMap message)
             int temp_state = MaterialTray::getMaterialStateFromName(message["SutMaterialState"].toString());
             if(temp_state == MaterialState::IsRawSensor)
                 SetSensor();
+            else if (temp_state == MaterialState::IsNgSensor)
+                NgSensor();
             else
                 SetNoSensor();
             //todo MaterialData

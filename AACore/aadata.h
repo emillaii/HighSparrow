@@ -34,6 +34,8 @@ class AAData : public QThread
 
     Q_PROPERTY(double minValue READ minValue)
     Q_PROPERTY(double maxValue READ maxValue)
+    Q_PROPERTY(double negativeDI READ negativeDI)
+    Q_PROPERTY(double positiveDI READ positiveDI)
 
     Q_PROPERTY(double dev READ dev WRITE setDev)
     Q_PROPERTY(double xTilt READ xTilt WRITE setXTilt)
@@ -62,7 +64,7 @@ public:
     //i is index, x is x-axis data, y will be used for showing curve fit data, rawY will be used for showing raw data
     void addData(int i, double x, double y, double rawY);
     void incrementData(double y1, double y2, double y3, double y4, double y5);
-    void plotIntensityProfile(float minI, float maxI, std::vector<float> values, int detectedNumberOfError);
+    void plotIntensityProfile(float minI, float maxI, std::vector<float> values, int detectedNumberOfError, double negativeDI, double positiveDI);
     void clear();
     void plot(QString chartName = "Silicool AA");
     QPointF wValue() const{
@@ -238,6 +240,16 @@ public:
         return m_detectedIntensityError;
     }
 
+    double negativeDI() const
+    {
+        return m_negativeDI;
+    }
+
+    double positiveDI() const
+    {
+        return m_positiveDI;
+    }
+
 public slots:
     void setDev(double dev)
     {
@@ -383,6 +395,10 @@ private:
     double m_minValue;
 
     double m_maxValue;
+
+    double m_positiveDI;
+
+    double m_negativeDI;
 
     double m_zPeak;
 

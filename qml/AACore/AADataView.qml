@@ -418,7 +418,7 @@ Grid {
         Connections {
             target: dataFromIntensityProfile
             onWValueChanged: {
-                iSeriesLabel.text = "Min: " + dataFromIntensityProfile.minValue + " Max: " + dataFromIntensityProfile.maxValue + " Detected Error: " + dataFromIntensityProfile.detectedIntensityError
+                iSeriesLabel.text = "Min: " + dataFromIntensityProfile.minValue + " Max: " + dataFromIntensityProfile.maxValue + " -veDI: " + dataFromIntensityProfile.negativeDI.toFixed(2) + " +veDI: " + dataFromIntensityProfile.positiveDI.toFixed(2)
                 iSeries.append(dataFromIntensityProfile.wValue.x, dataFromIntensityProfile.wValue.y)
             }
             onWValueClear: {

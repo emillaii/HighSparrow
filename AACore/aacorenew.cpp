@@ -3514,6 +3514,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     int max_i_spec = params["max"].toInt(200);
     int mode = params["mode"].toInt(1); //1: Rectangle Path, 0: Dialgoue Path
     int image_margin = params["margin"].toInt(5);
+    double change_allowance = params["change_allowance"].toDouble(2);
     float min_i, max_i, negative_di, positive_di; // di == differeniation of intensity profile
     int detectedNumberOfError = 0;
 //    cv::Mat inputImage = cv::imread("C:\\Users\\emil\\Desktop\\field\\ylevel.jpg");
@@ -3557,17 +3558,24 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Black screen detected"};
         }
         if (min_i < min_i_spec) {
-            qWarning("Y Level Fail. The tested intensity is smaller than spec. Tested min intensity: %f intensity spec: %f", min_i, min_i_spec);
+            qWarning("Y Level Fail. The tested intensity is smaller than spec. Tested min intensity: %f intensity spec: %d", min_i, min_i_spec);
             map.insert("Result", "Y Level Fail. min spec cannnot pass");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             NgProduct();
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is smaller than spec"};
         }
         if (max_i >= max_i_spec) {
-            qWarning("Y Level Fail. The tested intensity is larger than spec. Tested max intensity: %f intensity spec: %f", max_i, max_i_spec);
+            qWarning("Y Level Fail. The tested intensity is larger than spec. Tested max intensity: %f intensity spec: %d", max_i, max_i_spec);
             map.insert("result", "Y Level max spec cannnot pass");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is larger than spec"};
+        }
+
+        if ( fabs(negative_di) >= change_allowance || fabs(positive_di) >= change_allowance) {
+            qWarning("Y Level Fail. The change in intensity is larger than spec. Change in intensity: %f,%f change in intensity spec: %f", negative_di, positive_di, change_allowance);
+            map.insert("result", "Change in Y Level cannnot pass");
+            emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The change in intensity is larger than spec"};
         }
 
         map.insert("Result", "Pass");

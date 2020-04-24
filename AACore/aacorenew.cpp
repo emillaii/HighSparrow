@@ -3525,6 +3525,8 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     vector<float> intensityProfile;
     QElapsedTimer timer; timer.start();
     bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile, mode, image_margin, detectedNumberOfError, negative_di, positive_di);
+    //Draw the rectange with margin in the input image
+    cv::rectangle(inputImage, cv::Point(0+image_margin, 0+image_margin), cv::Point(inputImage.cols-image_margin, inputImage.rows-image_margin), cv::Scalar(255, 125, 0),5, cv::LINE_8);
 
     if (ret) {
         map.insert("min_i", min_i);

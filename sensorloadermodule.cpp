@@ -724,7 +724,7 @@ void SensorLoaderModule::run()
                     if(!is_run)break;
                     if(CONTINUE_OPERATION == operation)
                     {
-                        tray->setCurrentMaterialState(MaterialState::IsEmpty,states.currentTrayID());
+                        tray->setCurrentMaterialState(MaterialState::IsNgProduct,states.currentTrayID());
                         continue;
                     }
                     else if (SKIPTRAY_OPERATION == operation)
@@ -1097,20 +1097,6 @@ void SensorLoaderModule::run()
             if(!is_run)break;
         }
 
-        //检测是否需要换盘
-        if(!states.allowChangeTray())
-        {
-            if((!states.hasSensorTray2())||checkTrayNeedChange())
-                states.setAllowChangeTray(true);
-            else
-            {
-                int force_state = checkForceChageStation();
-                if(force_state>0)
-                    states.setBusyState(force_state);
-            }
-
-        }
-
         //sut任务分配
         if(states.busyState() == BusyState::IDLE)
         {
@@ -1220,6 +1206,19 @@ void SensorLoaderModule::run()
                     waitMessageReturn(is_run,alarm_id);
                     if(!is_run)break;
                 }
+            }
+        }
+
+        //检测是否需要换盘
+        if(!states.allowChangeTray()&&(states.picker2MaterialState() == MaterialState::IsEmpty))
+        {
+            if((!states.hasSensorTray2())||checkTrayNeedChange())
+                states.setAllowChangeTray(true);
+            else
+            {
+                int force_state = checkForceChageStation();
+                if(force_state>0)
+                    states.setBusyState(force_state);
             }
         }
 

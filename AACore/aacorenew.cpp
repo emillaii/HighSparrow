@@ -3389,22 +3389,22 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
     QVariantMap map;
     int uv_time = params["time_in_ms"].toInt(3000);
     bool enable_OTP = params["enable_OTP"].toInt(0);
+    QString otp_information = params["OTP_information"].toString("");
+
     bool enable_y_level_check = params["enable_y_level_check"].toInt(0);
     int margin = params["margin"].toInt(5);
-
-    QString otp_information = params["OTP_information"].toString("");
 
     aa_head->openUVTillTime(uv_time);
     bool result = true;
     if (enable_OTP)
     {
         // OTP
-        //dk->DothinkeyOTPEx(serverMode, otp_information);
-
-        result = dk->DothinkeyOTP(serverMode);
+        //result = dk->DothinkeyOTP(serverMode);
+        result = dk->DothinkeyOTPEx(serverMode, otp_information);
         if (result != true)
         {
-            result = dk->DothinkeyOTP(serverMode);  //retry OTP
+            //result = dk->DothinkeyOTP(serverMode);  //retry OTP
+            result = dk->DothinkeyOTPEx(serverMode, otp_information);
         }
     }
 
@@ -3550,23 +3550,25 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
         map.insert("positive_di", positive_di);
 
         QString imageName;
-        imageName.append(getYLevelDir())
-                .append(dk->readSensorID())
-                .append("_")
-                .append(getCurrentTimeString())
-                .append(".bmp");
-        cv::imwrite(imageName.toStdString().c_str(), inputImage);
 
         qInfo("performYLevelTest Success. Min I: %f Max I: %f size: %d detected number of error: %d -veDI: %f +veDI: %f", min_i, max_i, intensityProfile.size(), detectedNumberOfError, negative_di, positive_di);
         if (enable_plot == 1) {
             intensity_profile.clear();
             this->intensity_profile.plotIntensityProfile(min_i, max_i, intensityProfile, detectedNumberOfError, negative_di, positive_di);
         }
+
         if (max_i < 10) {
             qWarning("This is black screen.");
             map.insert("Result", "Y Level Fail. Detected black screen");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             NgProduct();
+            imageName.append(getYLevelDir())
+                    .append("Ng_BlackScreen_")
+                    .append(dk->readSensorID())
+                    .append("_")
+                    .append(getCurrentTimeString())
+                    .append(".bmp");
+            cv::imwrite(imageName.toStdString().c_str(), inputImage);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Black screen detected"};
         }
         if (min_i < min_i_spec) {
@@ -3574,12 +3576,27 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
             map.insert("Result", "Y Level Fail. min spec cannnot pass");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             NgProduct();
+            imageName.append(getYLevelDir())
+                    .append("Ng_MinSpec_")
+                    .append(dk->readSensorID())
+                    .append("_")
+                    .append(getCurrentTimeString())
+                    .append(".bmp");
+            cv::imwrite(imageName.toStdString().c_str(), inputImage);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is smaller than spec"};
         }
         if (max_i >= max_i_spec) {
             qWarning("Y Level Fail. The tested intensity is larger than spec. Tested max intensity: %f intensity spec: %d", max_i, max_i_spec);
             map.insert("result", "Y Level max spec cannnot pass");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+            NgProduct();
+            imageName.append(getYLevelDir())
+                    .append("Ng_MaxSpec_")
+                    .append(dk->readSensorID())
+                    .append("_")
+                    .append(getCurrentTimeString())
+                    .append(".bmp");
+            cv::imwrite(imageName.toStdString().c_str(), inputImage);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is larger than spec"};
         }
 
@@ -3587,12 +3604,27 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
             qWarning("Y Level Fail. The change in intensity is larger than spec. Change in intensity: %f,%f change in intensity spec: %f", negative_di, positive_di, change_allowance);
             map.insert("result", "Change in Y Level cannnot pass");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+            NgProduct();
+            imageName.append(getYLevelDir())
+                                .append("Ng_IntensityError_")
+                                .append(dk->readSensorID())
+                                .append("_")
+                                .append(getCurrentTimeString())
+                                .append(".bmp");
+                        cv::imwrite(imageName.toStdString().c_str(), inputImage);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The change in intensity is larger than spec"};
         }
 
         map.insert("Result", "Pass");
         map.insert("timeElapsed", timer.elapsed());
         emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
+		
+		imageName.append(getYLevelDir())
+                .append(dk->readSensorID())
+                .append("_")
+                .append(getCurrentTimeString())
+                .append(".bmp");
+        cv::imwrite(imageName.toStdString().c_str(), inputImage);
         return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
         map.insert("Result", "Y Level test fail. Cannot grab image");

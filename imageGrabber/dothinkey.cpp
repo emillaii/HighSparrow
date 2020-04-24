@@ -260,20 +260,22 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
                 uint addr = CommonMethod::getIntFromHexOrDecString(cmd[2]);
                 uint value = CommonMethod::getIntFromHexOrDecString(cmd[3]);
                 uint mode = CommonMethod::getIntFromHexOrDecString(cmd[4]);
-                qInfo("Set Register slaveId: %x addr: %x value: %x mode: %d", slaveId, addr, value, mode);
-                WriteSensorReg(pSensor->SlaveID, (USHORT)addr,  (USHORT)value, mode);
+                qInfo("Set Register slaveId: %x addr: %x value: %x mode: %d", pSensor->SlaveID, addr, value, pSensor->mode);
+                WriteSensorReg(pSensor->SlaveID, (USHORT)addr, (USHORT)value, pSensor->mode);
+                Sleep(30);
             } else if (cmd[0].compare("getregex", Qt::CaseInsensitive) == 0){
                 QString temp = "";
                 uint slaveId = CommonMethod::getIntFromHexOrDecString(cmd[1]);
                 uint addr = CommonMethod::getIntFromHexOrDecString(cmd[2]);
                 uint mode = CommonMethod::getIntFromHexOrDecString(cmd[3]);
                 qInfo("Get Register slaveId: %x addr: %x", slaveId, addr);
-                bool ret = ReadSensorReg(pSensor->SlaveID, addr, &value_1, mode);
+                bool ret = ReadSensorReg(pSensor->SlaveID, (USHORT)addr, &value_1, pSensor->mode);
                 qInfo("Read value result: %d value: %04x", ret, value_1);
-                sensor_id.append(temp.sprintf("%02X", value_1));
-            } else if (cmd[0].compare("sleep", Qt::CaseInsensitive) == 0){
-                uint time = cmd[1].toInt(0);
-                Sleep(10);
+                sensor_id.append(temp.sprintf("%04X", value_1));
+            } else if (cmd[0].compare("delay", Qt::CaseInsensitive) == 0){
+                uint time = cmd[1].toInt();
+                Sleep(time);
+                qInfo("Sleep %d", time);
             }
         }
     }
@@ -297,7 +299,7 @@ BOOL Dothinkey::DothinkeyOTPEx(int serverMode, QString params)
 
     for (int i = 0; i < otp_list.size(); i++){
         qInfo("otp command: %s", otp_list[i].toStdString().c_str());
-        QStringList cmd_list = otp_list[i].split(QRegExp("\\s+"),QString::SkipEmptyParts);
+        QStringList cmd_list = otp_list[i].split(QRegExp("\\,"),QString::SkipEmptyParts);
         if (cmd_list.size() > 0){
             //Slave ID Handle
             if (cmd_list[0].compare("SlaveID", Qt::CaseInsensitive) == 0){
@@ -305,40 +307,41 @@ BOOL Dothinkey::DothinkeyOTPEx(int serverMode, QString params)
                     uAddr = CommonMethod::getIntFromHexOrDecString(cmd_list[1]);
                 }
             } // Set Register Handle
-            else if (cmd_list[0].compare("SetReg", Qt::CaseInsensitive) == 0){
+            else if (cmd_list[0].compare("SetRegEx", Qt::CaseInsensitive) == 0){
                 if (cmd_list.size() > 3) { //Protocol : SetReg / Address / Value / mode
+                    uAddr = CommonMethod::getIntFromHexOrDecString(cmd_list[1]);
+                    uint addr = CommonMethod::getIntFromHexOrDecString(cmd_list[2]);
                     uint value  = 0;
-                    if (cmd_list[2].compare("YY_MSB", Qt::CaseSensitive) == 0){
+                    if (cmd_list[3].compare("YY_H", Qt::CaseSensitive) == 0){
                         value = year_MSB;
-                    } else if (cmd_list[2].compare("YY_LSB", Qt::CaseSensitive) == 0){
+                    } else if (cmd_list[3].compare("YY_L", Qt::CaseSensitive) == 0){
                         value = year_LSB;
-                    } else if (cmd_list[2].compare("MM", Qt::CaseSensitive) == 0) {
+                    } else if (cmd_list[3].compare("MM", Qt::CaseSensitive) == 0) {
                         value = date.month();
-                    } else if (cmd_list[2].compare("DD", Qt::CaseSensitive) == 0) {
+                    } else if (cmd_list[3].compare("DD", Qt::CaseSensitive) == 0) {
                         value = date.day();
-                    } else if (cmd_list[2].compare("hh", Qt::CaseSensitive) == 0) {
+                    } else if (cmd_list[3].compare("HH", Qt::CaseSensitive) == 0) {
                         value = time.hour();
-                    } else if (cmd_list[2].compare("mm", Qt::CaseSensitive) == 0) {
+                    } else if (cmd_list[3].compare("MI", Qt::CaseSensitive) == 0) {
                         value = time.minute();
-                    } else if (cmd_list[2].compare("ss", Qt::CaseSensitive) == 0) {
+                    } else if (cmd_list[3].compare("SS", Qt::CaseSensitive) == 0) {
                         value = time.second();
                     } else {
-                        value = CommonMethod::getIntFromHexOrDecString(cmd_list[2]);
+                        value = CommonMethod::getIntFromHexOrDecString(cmd_list[3]);
                     }
-                    uint addr = CommonMethod::getIntFromHexOrDecString(cmd_list[1]);
-                    uint mode = CommonMethod::getIntFromHexOrDecString(cmd_list[3]);
-                    qInfo("Set Reg addr: %d value : %d mode: %d", addr, value, mode);
+                    uint mode = CommonMethod::getIntFromHexOrDecString(cmd_list[4]);
+                    qInfo("SetRegEx uAddr: 0x%X, addr: 0x%4X, value : %d, mode: %d.", uAddr, addr, value, mode);
                     int result = WriteSensorReg(uAddr, addr, value, mode);
                     if(result != 1) {
-                        qCritical("WriteSensorReg fail. uAddr: %x Addr: %x Value: %x mode: %d", uAddr, addr, value, mode);
+                        qCritical("WriteSensorReg fail. uAddr: 0x%X addr: 0x%4X value: %d mode: %d", uAddr, addr, value, mode);
                         result_otp = false;
                     }
                 }
             } // Sleep Handle
-            else if (cmd_list[0].compare("Sleep", Qt::CaseInsensitive) == 0){
+            else if (cmd_list[0].compare("Delay", Qt::CaseInsensitive) == 0){
                 if (cmd_list.size() > 1) { //Protocol : Sleep / ms delay
                     uint delay_in_ms = CommonMethod::getIntFromHexOrDecString(cmd_list[1]);
-                    qInfo("Sleep : %d", delay_in_ms);
+                    qInfo("Sleep : 0x%X", delay_in_ms);
                     Sleep(delay_in_ms);
                 }
             }
@@ -355,7 +358,7 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
     pSensor = &(m_CameraChannels[0].current_sensor);
 //    byte uAddr = pSensor->SlaveID;
     bool result_otp = true;
-    byte uAddr = 0xA4;
+    byte uAddr = 0xA0;
     int result = WriteSensorReg(uAddr, 0x8000, 0x00, 3);
     Sleep(300);
     qInfo("write reg %X  value %02X  result %d", 0x8000, 0x00, result);
@@ -367,16 +370,16 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
     memcpy(byte.data(), &number, sizeof(int));
     USHORT value = byte[0];
     // 机台号
-    result = WriteSensorReg(uAddr, 0x1E90, value, 3);
+    result = WriteSensorReg(uAddr, 0x1F90, value, 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1E90, value,result);
+    qInfo("write reg %X  value %02X result %d",0x1F90, value,result);
     if(result != 1)
         result_otp = false;
     // 工位号
     value = byte[1];
-    result = WriteSensorReg(uAddr, 0x1E91, value, 3);
+    result = WriteSensorReg(uAddr, 0x1F91, value, 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1E91, value,result);
+    qInfo("write reg %X  value %02X result %d",0x1F91, value,result);
     if(result != 1)
         result_otp = false;
 
@@ -395,38 +398,38 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
     byte.resize(sizeof(int));
     memcpy(byte.data(), &year, sizeof(int));
     value = byte[0];
-    result = WriteSensorReg(uAddr, 0x1E94, value, 3);
+    result = WriteSensorReg(uAddr, 0x1F94, value, 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1E94, value,result);
+    qInfo("write reg %X  value %02X result %d",0x1F94, value,result);
     if(result != 1)
         result_otp = false;
     value = byte[1];
-    result = WriteSensorReg(uAddr, 0x1E95, value, 3);
+    result = WriteSensorReg(uAddr, 0x1F95, value, 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1E95,value,result);
+    qInfo("write reg %X  value %02X result %d",0x1F95,value,result);
     if(result != 1)
         result_otp = false;
-    result = WriteSensorReg(uAddr, 0x1E96, date.month(), 3);
+    result = WriteSensorReg(uAddr, 0x1F96, date.month(), 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1E96, date.month(),result);
+    qInfo("write reg %X  value %02X result %d",0x1F96, date.month(),result);
     if(result != 1)
         result_otp = false;
-    result = WriteSensorReg(uAddr, 0x1E97, date.day(), 3);
+    result = WriteSensorReg(uAddr, 0x1F97, date.day(), 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1E97, date.day(),result);
+    qInfo("write reg %X  value %02X result %d",0x1F97, date.day(),result);
     if(result != 1)
         result_otp = false;
-    result = WriteSensorReg(uAddr, 0x1E98, time.hour(), 3);
+    result = WriteSensorReg(uAddr, 0x1F98, time.hour(), 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1E98, time.hour(),result);
+    qInfo("write reg %X  value %02X result %d",0x1F98, time.hour(),result);
     if(result != 1)
         result_otp = false;
-    result = WriteSensorReg(uAddr, 0x1E99, time.minute(), 3);
+    result = WriteSensorReg(uAddr, 0x1F99, time.minute(), 3);
     Sleep(300);
-    qInfo("write reg %X  value %02X result %d",0x1E99, time.minute(),result);
+    qInfo("write reg %X  value %02X result %d",0x1F99, time.minute(),result);
     if(result != 1)
         result_otp = false;
-    result = WriteSensorReg(uAddr, 0x1E9A, time.second(), 3);
+    result = WriteSensorReg(uAddr, 0x1F9A, time.second(), 3);
     Sleep(300);
     qInfo("write reg %X  value %02X result %d",0x1E9A, time.second(),result);
     if(result != 1)
@@ -435,7 +438,7 @@ BOOL Dothinkey::DothinkeyOTP(int serverMode)
     // 检查镜头标志位 0 or 1
     value = 0;
     //result = ReadSensorReg(uAddr, 0x1E93, &value, pSensor->mode);
-    qInfo("Read reg %X  value %02X", 0x1E93, value);
+    qInfo("Read reg %X  value %02X", 0x1F93, value);
     qInfo("value = %u, lens_label = %u, result_otp = %u", value, lens_label, result_otp);
     if ((value != lens_label)||(!result_otp))
     {

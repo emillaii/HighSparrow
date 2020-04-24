@@ -1727,6 +1727,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     //        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Perform AA fail"};
     //    }
     sut->moveToZPos(z_peak);
+    map.insert("After_move_to_z_peak", sut->carrier->GetFeedBackPos().Z);
     qInfo("zpeak: %f",z_peak);
     step_move_time += step_move_timer.elapsed();
     if (enableTilt == 0) {
@@ -1761,6 +1762,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         }
         wait_tilt_time += step_move_timer.elapsed();
     }
+    map.insert("After_tilt", sut->carrier->GetFeedBackPos().Z);
     double zpeak_dev = getzPeakDev_um(4,aa_result["zPeak_cc"].toDouble(),aa_result["zPeak_03"].toDouble(),aa_result["zPeak_05"].toDouble(),aa_result["zPeak_08"].toDouble());
     qInfo("zpeak_dev: %f",zpeak_dev);
     double zpeak_dev_cc_03 = getzPeakDev_um(2,aa_result["zPeak_cc"].toDouble()-aa_result["zPeak_03"].toDouble());
@@ -1870,6 +1872,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         map.insert("Z_PEAK_Checked",0);
     }
     clustered_sfr_map.clear();
+    map.insert("End_of_AA", sut->carrier->GetFeedBackPos().Z);
     qInfo("AA time elapsed: %d", timer.elapsed());
     if(finish_delay>0)
         Sleep(finish_delay);
@@ -3076,7 +3079,7 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         sfr_check = false;
         error.append("Outer Layer SFR corner dev fail.");
     }
-    map.insert("SensorID", dk->readSensorID());
+    map.insert("SensorID", '\t'+dk->readSensorID());
     map.insert("FOV",round(fov*1000)/1000);
     map.insert("zPeak",round(sut->carrier->GetFeedBackPos().Z*1000*1000)/1000);
     map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);
@@ -3519,6 +3522,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     int detectedNumberOfError = 0;
 //    cv::Mat inputImage = cv::imread("C:\\Users\\emil\\Desktop\\field\\ylevel.jpg");
     bool grabRet;
+    QThread::msleep(500); // Temp test for grabbing UV image.
     cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
         qInfo("Cannot grab image.");
@@ -3539,7 +3543,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
 
         QString imageName;
         imageName.append(getYLevelDir())
-                .append(sensorID)
+                .append(dk->readSensorID())
                 .append("_")
                 .append(getCurrentTimeString())
                 .append(".bmp");
@@ -3819,7 +3823,7 @@ ErrorCodeStruct AACoreNew::performInitSensor(int finish_delay,bool check_map)
 
     sensorID = dk->readSensorID();
     qInfo("performInitSensor sensor ID: %s", sensorID.toStdString().c_str());
-    map.insert("sensorID", sensorID);
+    map.insert("sensorID", '\t'+sensorID);
     if (!imageThread->isRunning())
         imageThread->start();
 

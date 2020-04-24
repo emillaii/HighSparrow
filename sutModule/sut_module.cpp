@@ -527,7 +527,9 @@ void SutModule::run()
                 else if(REJECT_OPERATION == operation)
                 {
                     states.setSutHasNgSensor(true);
-                    continue;
+                    states.setSutMaterialState(MaterialState::IsNgSensor);
+                    DownlookPrDone = false;
+                    //continue;
                 }
             }
             else

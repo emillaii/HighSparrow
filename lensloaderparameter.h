@@ -759,6 +759,7 @@ public:
     Q_PROPERTY(bool lutHasLens READ lutHasLens WRITE setLutHasLens NOTIFY lutHasLensChanged)
     Q_PROPERTY(bool lutHasNgLens READ lutHasNgLens WRITE setLutHasNgLens NOTIFY lutHasNgLensChanged)
     Q_PROPERTY(bool needLoadLens READ needLoadLens WRITE setNeedLoadLens NOTIFY needLoadLensChanged)
+    Q_PROPERTY(bool needPlaceLens READ needPlaceLens WRITE setNeedPlaceLens NOTIFY needPlaceLensChanged)
     Q_PROPERTY(int currentTray READ currentTray WRITE setCurrentTray NOTIFY currentTrayChanged)
     Q_PROPERTY(bool needChangTray READ needChangTray WRITE setNeedChangTray NOTIFY needChangTrayChanged)
     Q_PROPERTY(bool allowChangeTray READ allowChangeTray WRITE setAllowChangeTray NOTIFY allowChangeTrayChanged)
@@ -915,6 +916,11 @@ public:
     bool tcpVaccumState() const
     {
         return m_tcpVaccumState;
+    }
+
+    bool needPlaceLens() const
+    {
+        return m_needPlaceLens;
     }
 
 public slots:
@@ -1218,6 +1224,15 @@ public slots:
         emit finishTcpVaccumStateChanged(m_tcpVaccumState);
     }
 
+    void setNeedPlaceLens(bool needPlaceLens)
+    {
+        if (m_needPlaceLens == needPlaceLens)
+            return;
+
+        m_needPlaceLens = needPlaceLens;
+        emit needPlaceLensChanged(m_needPlaceLens);
+    }
+
 signals:
     void hasTrayChanged(bool hasTray);
 
@@ -1273,11 +1288,14 @@ signals:
 
     void finishTcpVaccumStateChanged(bool tcpVaccumState);
 
+    void needPlaceLensChanged(bool needPlaceLens);
+
 private:
     bool m_hasTray = true;
     bool m_lutHasLens = false;
     bool m_lutHasNgLens = false;
     bool m_needloadLens = false;
+    bool m_needPlaceLens = false;
     int m_currentTray = false;
     bool m_needChangTray = false;
     bool m_allowChangeTray = false;

@@ -221,7 +221,13 @@ void LensLoaderModule::run(bool has_material)
             if(tray->isTrayNeedChange(states.currentTray()))
             {
                 if(states.currentTray() == 0)
+                {
                     states.setCurrentTray(1);
+                }
+                else if(states.currentTray() == 1)
+                {
+                    states.setCurrentTray(0);
+                }
                 else
                 {
                     AppendError(u8"逻辑错误，无可用lens盘");
@@ -372,7 +378,7 @@ void LensLoaderModule::run(bool has_material)
         }
         if(!is_run)break;
         //放料到LUT
-        if(need_load_lens&&states.hasPickedLens())
+        if(need_load_lens&&states.hasPickedLens()&&states.needPlaceLens())
         {
             qInfo(u8"放料到LUT");
             has_task = true;
@@ -397,10 +403,11 @@ void LensLoaderModule::run(bool has_material)
                 else if(RETRY_OPERATION == operation)
                     continue;
             }
-                states.setHasPickedLens(false);
-                states.setNeedLoadLens(false);
-                states.setLutHasLens(true);
-                states.copyInLutLensData(states.pickerLensData());
+            states.setHasPickedLens(false);
+            states.setNeedLoadLens(false);
+            states.setNeedPlaceLens(false);
+            states.setLutHasLens(true);
+            states.copyInLutLensData(states.pickerLensData());
         }
         if(!is_run)break;
         //取NGlens
@@ -1481,6 +1488,10 @@ void LensLoaderModule::receivceModuleMessage(QVariantMap message)
                 states.setLoadingLens(true);
                 qInfo("lens requst take effect NeedLoadLens %d LutHasNgLens %d LutNgLensID %d LutNgTrayID %d",
                       states.needLoadLens(),states.lutHasNgLens(),states.lutNgLensID(),states.lutNgTrayID());
+            }
+            else if(message["Message"].toString()=="PlaceLensRequest")
+            {
+                states.setNeedPlaceLens(true);
             }
             else if(message["Message"].toString()=="UnloadMode")
             {

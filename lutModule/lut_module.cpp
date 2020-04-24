@@ -289,32 +289,9 @@ void LutModule::run(bool has_material)
             param.insert("MaterialData",QJsonObject::fromVariantMap(states.aa2LensData()));
             sendMessageToModule("AA2CoreNew","FinishLoadLens",param);
         }
-        //无任务无料去等料位置
-        if((!states.waitingLens())&&(!states.lutHasLens())&&(!checkNeedLens())&&(!states.lutHasNgLens())&&(!states.waitingTask()))
-        {
-            if(!moveToLoadPosAndCheckMaterial(states.lutHasLens(),states.lutHasNgLens(),true))
-            {
-                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                QString operation = waitMessageReturn(is_run,alarm_id);
-                if(!is_run)break;
-                if(RETRY_OPERATION == operation)
-                    continue;
-            }
-            states.setWaitingTask(true);
-        }
         //请求上下料
         if((!states.waitingLens())&&(states.lutHasNgLens()||checkNeedLens()))
         {
-            if(states.station1Unload()&&states.station2Unload())
-                sendMessageToModule("LensLoaderModule","UnloadMode");
-            if(!moveToLoadPosAndCheckMaterial(states.lutHasLens(),states.lutHasNgLens(),true))
-            {
-                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                QString operation = waitMessageReturn(is_run,alarm_id);
-                if(!is_run)break;
-                if(RETRY_OPERATION == operation)
-                    continue;
-            }
             qInfo("LUT Module is waiting lens");
             QMutexLocker temp_locker(&loader_mutext);
             QJsonObject param;
@@ -334,8 +311,34 @@ void LutModule::run(bool has_material)
             if(temp_number > 0)
                 param.insert("TaskNumber",temp_number);
             sendMessageToModule("LensLoaderModule","LoadLensRequest",param);
+
+            if(states.station1Unload()&&states.station2Unload())
+                sendMessageToModule("LensLoaderModule","UnloadMode");
+            if(!moveToLoadPosAndCheckMaterial(states.lutHasLens(),states.lutHasNgLens(),true))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            sendMessageToModule("LensLoaderModule","PlaceLensRequest",param);
+
             states.setWaitingLens(true);
             states.setWaitingTask(false);
+        }
+        //无任务无料去等料位置
+        if((!states.lutHasLens())&&(!checkNeedLens())&&(!states.lutHasNgLens()))
+        {
+            if(!moveToLoadPosAndCheckMaterial(states.lutHasLens(),states.lutHasNgLens(),true))
+            {
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
+            }
+            states.setWaitingTask(true);
         }
         //等待Lens
         if(states.waitingLens()&&states.finishWaitLens())

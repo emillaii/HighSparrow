@@ -35,8 +35,7 @@ void UserManagement::init()
     if (!isTableExist("user"))
     {
         QSqlQuery createTable(db);
-        auto res = createTable.prepare(
-            "create table user(name varchar(120) primary key, password varchar(120), authority int)");
+        auto res = createTable.prepare("create table user(name varchar(120) primary key, password varchar(120), authority int)");
         if (!res)
         {
             qCritical() << createTable.lastError().text();
@@ -73,7 +72,12 @@ int UserManagement::userCount() const
 
 void UserManagement::addUser(QString userName, QString password, UserManagement::Authority authority)
 {
-    if (currentAuthority() != Admin)
+    if(userCount() >= 5)
+    {
+        SI::ui.showMessage(tr("User Number Error"), tr("Maximum 5 user accounts!"), MsgBoxIcon::Error, SI::ui.Ok);
+        return;
+    }
+    if(currentAuthority() != Admin)
     {
         SI::ui.showMessage(tr("Authority Error"), tr("Only Admin can add user!"), MsgBoxIcon::Error, SI::ui.Ok);
         return;

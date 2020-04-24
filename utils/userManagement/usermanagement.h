@@ -36,8 +36,7 @@ public:
     Q_INVOKABLE int userCount() const;
     Q_INVOKABLE void addUser(QString userName, QString password, Authority authority);
     Q_INVOKABLE void removeUser(QString userName);
-    Q_INVOKABLE bool
-    changePassword(QString userName, QString oldPassword, QString newPassword, QString newPasswordRepeat);
+    Q_INVOKABLE bool changePassword(QString userName, QString oldPassword, QString newPassword, QString newPasswordRepeat);
 
     Q_INVOKABLE bool login(QString userName, QString password);
     Q_INVOKABLE void logout();
@@ -106,8 +105,7 @@ private:
     bool hasUser(QString userName);
     bool isTableExist(QString tableName);
     bool verifyUserPsw(QString userName, QString password);
-    bool
-    getUserInfo(QString userName, QString &password, Authority &authority, bool showMsgBoxAsUserDidNotExist = true);
+    bool getUserInfo(QString userName, QString &password, Authority &authority, bool showMsgBoxAsUserDidNotExist = true);
 
 public:
     MySqlTableModel *userModel;

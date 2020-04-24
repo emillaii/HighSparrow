@@ -238,5 +238,6 @@
         <file>qml/ConfigManager/SilicolTextField.qml</file>
         <file>qml/ConfigManager/SimpleTypeArrayRow.qml</file>
         <file>qml/MarcoControl/SystemConfiguration/SystemConfiguration.qml</file>
+        <file>qml/DispenseModule/DispenseSpeedPopup.qml</file>
     </qresource>
 </RCC>

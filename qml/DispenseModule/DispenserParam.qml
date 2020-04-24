@@ -96,27 +96,14 @@ ColumnLayout {
                 logicManager.performHandling("", LogicManager.PERFORM_UV)
             }
         }
-    }
-    RowLayout {
-        Label {
-            text: qsTr("画胶速度参数")
+
+        DispenseSpeedPopup{
+            id: dispenseSpeedPopup
         }
-        ScrollView {
-            implicitWidth:  550
-            implicitHeight: dispenserParams.lineSpeeds.length*45
-            clip: true
-            ListView {
-                model: dispenserParams.lineSpeeds
-                delegate: RowLayout {
-                    Label { text: index + qsTr(":")}
-                    TextField {
-                        text: modelData
-                        onEditingFinished: {
-                            dispenserParams.setLineSpeed(index, text)
-                        }
-                    }
-                }
-            }
+
+        Button {
+            text:qsTr("画胶速度参数")
+            onClicked: dispenseSpeedPopup.open()
         }
     }
     RowLayout{

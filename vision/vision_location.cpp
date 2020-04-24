@@ -88,7 +88,8 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
             }
             current_result = offset = temp_offset;
             qInfo("mech: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
-            CloseLight();
+            if (parameters.closeLightAfterPR())
+                CloseLight();
             return true;
         } else {
             qInfo("CalcMechDistance Fail");
@@ -157,7 +158,8 @@ bool VisionLocation::performPR()
             }
             current_result = offset = temp_offset;
             qInfo("mech: %f %f %f %f %f", temp_offset.X, temp_offset.Y, temp_offset.Theta,temp_offset.O_X,temp_offset.O_Y);
-            CloseLight();
+            if (parameters.closeLightAfterPR())
+                CloseLight();
             parameters.setPerformTime(timer.elapsed());
             qInfo("PerformTime %d",parameters.performTime());
             return true;
@@ -207,7 +209,8 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
     last_image_name = pr_result.rawImageName;
     qInfo("CameraName: %s prFilename: %s PR_Result: %f %f %f",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str(),
           pr_result.x, pr_result.y, pr_result.theta);
-    CloseLight();
+    if (parameters.closeLightAfterPR())
+        CloseLight();
     return  ErrorCode::OK == temp.code;
 }
 

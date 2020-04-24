@@ -31,6 +31,7 @@ public:
     Q_PROPERTY(int auxLightBrightness READ auxLightBrightness WRITE setAuxLightBrightness NOTIFY auxLightBrightnessChanged)
     Q_PROPERTY(bool displaySmallHoleDetectionSetting READ displaySmallHoleDetectionSetting WRITE setDisplaySmallHoleDetectionSetting NOTIFY displaySmallHoleDetectionSettingChanged)
     Q_PROPERTY(bool enableSmallHoleDetection READ enableSmallHoleDetection WRITE setEnableSmallHoleDetection NOTIFY enableSmallHoleDetectionChanged)
+    Q_PROPERTY(bool closeLightAfterPR READ closeLightAfterPR WRITE setCloseLightAfterPR NOTIFY closeLightAfterPRChanged)
 
     QString prFileName() const
     {
@@ -141,6 +142,11 @@ public:
     bool enableSmallHoleDetection() const
     {
         return m_enableSmallHoleDetection;
+    }
+
+    bool closeLightAfterPR() const
+    {
+        return m_closeLightAfterPR;
     }
 
 public slots:
@@ -342,6 +348,15 @@ public slots:
         emit enableSmallHoleDetectionChanged(m_enableSmallHoleDetection);
     }
 
+    void setCloseLightAfterPR(bool closeLightAfterPR)
+    {
+        if (m_closeLightAfterPR == closeLightAfterPR)
+            return;
+
+        m_closeLightAfterPR = closeLightAfterPR;
+        emit closeLightAfterPRChanged(m_closeLightAfterPR);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -387,6 +402,8 @@ signals:
 
     void enableSmallHoleDetectionChanged(bool enableSmallHoleDetection);
 
+    void closeLightAfterPRChanged(bool closeLightAfterPR);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -410,6 +427,7 @@ private:
     int m_auxLightBrightness = 0;
     bool m_displaySmallHoleDetectionSetting = false;
     bool m_enableSmallHoleDetection = false;
+    bool m_closeLightAfterPR = true;
 };
 
 

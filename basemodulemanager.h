@@ -40,6 +40,7 @@
 #include "devicestatesgeter.h"
 #include "uiControl/graphwidget.h"
 #include "Drivers/LightSourceController/sciencalightsourcecontroller.h"
+#include "utils/userManagement/usermanagement.h"
 
 class BaseModuleManager : public PropertyBase,public ErrorBase
 {
@@ -165,6 +166,8 @@ public:
     {
         return m_lightPanelLighting;
     }
+
+    UserManagement userManagement;
 
 signals:
     void sendHandlingOperation(int cmd);

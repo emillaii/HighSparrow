@@ -125,6 +125,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     //machineMap->show();
     // Todo
     //timer.start(5000);
+    userManagement.init();
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -745,6 +746,7 @@ void BaseModuleManager::receiveMessageFromWorkerManger(QVariantMap message)
         {
             temp_param.insert("HandlyChangeLens",lens_loader_module.parameters.handlyChangeLens());
             temp_param.insert("HandlyChangeLensTray",tray_loader_module.parameters.handlyChangeLensTray());
+            temp_param.insert("CurrentAuthority", userManagement.currentAuthority());
         }
         temp_param.insert("StationNumber",QString::number(getServerMode()));
         if(aaCoreNew.parameters.taskMode() == 1)

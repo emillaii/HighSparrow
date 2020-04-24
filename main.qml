@@ -48,6 +48,8 @@ ApplicationWindow {
     property string aaCoreTestParams: ""
     property bool isWindowMaximized: true
 
+    //flags: Qt.Dialog | Qt.WindowCancelButtonHint | Qt.WindowCloseButtonHint
+
     FileDialog {
         id: loadfileDialog
         title: qsTr("选择加载文件")
@@ -804,6 +806,12 @@ ApplicationWindow {
         }
         TabButton {
             text: qsTr("流程图")
+            enabled: {
+                if (userManagement.currentAuthority >= 2)
+                    return true
+                else
+                    return false
+            }
         }
         TabButton {
             text: qsTr("AA 控制面板")

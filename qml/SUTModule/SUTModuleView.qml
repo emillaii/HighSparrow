@@ -72,6 +72,7 @@ ItemDelegate {
             GroupBox{
                 title: qsTr("Downlook OTF")
                 SUTDownlookFlyPositionView {}
+                enabled: false
             }
             RowLayout {
                 GroupBox {

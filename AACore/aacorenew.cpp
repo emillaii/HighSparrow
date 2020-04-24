@@ -485,10 +485,18 @@ void AACoreNew::startWork( int run_mode)
     }
     if(run_params.contains("AAFlowchart") && this->serverMode == 0)
     {
-        QString resp = SI::ui.getUIResponse(this->Name(), "Run with AA2 flowchart parameters?", MsgBoxIcon::Question, SI::ui.yesNoButtons);
-        if(resp ==  SI::ui.Yes) {
+        if (run_params["CurrentAuthority"].toInt() <= 1)
+        {
             QString aaFlowChart = run_params["AAFlowchart"].toString();
             this->setFlowchartDocument(aaFlowChart);
+        }
+        else
+        {
+            QString resp = SI::ui.getUIResponse(this->Name(), "Run with AA2 flowchart parameters?", MsgBoxIcon::Question, SI::ui.yesNoButtons);
+            if(resp ==  SI::ui.Yes) {
+                QString aaFlowChart = run_params["AAFlowchart"].toString();
+                this->setFlowchartDocument(aaFlowChart);
+            }
         }
     }
     if(run_params.contains("LotNumber"))
@@ -861,7 +869,7 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         bool preCheckFail = dispense->dispenser->glueLevelCheck();
         qInfo("Glue level check result: %d", preCheckFail);
         if (preCheckFail) {
-            int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"胶水位檢查失敗");
+            int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"胶水位检查失败");
             QString operation = waitMessageReturn(is_run,alarm_id);
             if (REJECT_OPERATION == operation)
             {
@@ -3086,7 +3094,7 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     map.insert("CC_R_SFR", round(vec[0].r_sfr*1000)/1000);
     map.insert("CC_B_SFR", round(vec[0].b_sfr*1000)/1000);
     map.insert("CC_L_SFR", round(vec[0].l_sfr*1000)/1000);
-    map.insert("CC_SFR", round(((vec[0].t_sfr + vec[0].r_sfr + vec[0].b_sfr + vec[0].l_sfr)/4)*1000)/1000);
+    map.insert("CC_SFR", round(vec[0].avg_sfr*1000)/1000);
     map.insert("UL_T_SFR", round(vec[max_layer*4 + 1].t_sfr*1000)/1000);
     map.insert("UL_R_SFR", round(vec[max_layer*4 + 1].r_sfr*1000)/1000);
     map.insert("UL_B_SFR", round(vec[max_layer*4 + 1].b_sfr*1000)/1000);

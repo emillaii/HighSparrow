@@ -112,11 +112,11 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("msgBoxModel", &msgBoxModel);
     engine.rootContext()->setContextProperty("uiOperation", &SI::ui);
 
-    UserManagement userManagement;
-    userManagement.init();
+//    UserManagement userManagement;
+//    userManagement.init();
     qmlRegisterType<UserManagement>("UserMng", 1, 0, "UserMng");
-    engine.rootContext()->setContextProperty("userManagement", &userManagement);
-    engine.rootContext()->setContextProperty("userModel", userManagement.userModel);
+    engine.rootContext()->setContextProperty("userManagement", &highSprrow.baseModuleManager->userManagement);
+    engine.rootContext()->setContextProperty("userModel", highSprrow.baseModuleManager->userManagement.userModel);
 
     MsgBoxTester msgBoxTester;
     engine.rootContext()->setContextProperty("msgBoxTester", &msgBoxTester);

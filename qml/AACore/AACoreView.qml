@@ -529,7 +529,7 @@ ScrollView {
                             validator: IntValidator {
                             }
                             onEditingFinished: {
-                                aaCoreParams.setDynamicTiltUpdateIndex()(text)
+                                aaCoreParams.setDynamicTiltUpdateIndex(text)
                             }
                         }
                     }

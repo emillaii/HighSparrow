@@ -114,14 +114,14 @@ ColumnLayout {
                 var z = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorZName)
                 var a = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorAName)
                 var b = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorBName)
-                var c = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorCName)
+                //var c = baseModuleManager.getMotorFeedbackPos(aaHeadParams.motorCName)
 
                 aaHeadMushroomPosition.setX(x)
                 aaHeadMushroomPosition.setY(y)
                 aaHeadMushroomPosition.setZ(z)
                 aaHeadMushroomPosition.setA(a)
                 aaHeadMushroomPosition.setB(b)
-                aaHeadMushroomPosition.setC(c)
+                //aaHeadMushroomPosition.setC(c)
             }
             // enabled: userManagement.currentAuthority >= 2 // At least engineer authority
         }

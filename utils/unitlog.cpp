@@ -61,7 +61,6 @@ bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap map)
 
 void Unitlog::clearHeaders()
 {
-    qInfo("clearHeaders");
     temp_file_name = "";
     headers_length = 0;
     headers.clear();

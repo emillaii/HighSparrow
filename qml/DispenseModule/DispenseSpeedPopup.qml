@@ -11,7 +11,7 @@ Popup {
 //        }
         ScrollView {
             implicitWidth:  200
-            implicitHeight: dispenserParams.lineSpeeds.length*45
+            implicitHeight: 250
             clip: true
             ListView {
                 model: dispenserParams.lineSpeeds

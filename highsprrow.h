@@ -39,6 +39,9 @@ public:
     Q_INVOKABLE void tcp_aa_A_Inter(double step);
     Q_INVOKABLE void tcp_aa_B_Inter(double step);
 
+    double scaleValue = 1.1;
+    int scaleLevel = 0;
+
 signals:
     void displaySfrImageInUI();
     void displayOCImageInUI();

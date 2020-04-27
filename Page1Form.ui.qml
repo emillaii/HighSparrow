@@ -16,10 +16,13 @@ Page {
         id: mainRowLayout
         width: 120
         anchors.left: parent.left
+        anchors.right: machineConfigListView.left
         anchors.bottom: parent.bottom
         anchors.top: parent.top
         anchors.topMargin: 10
         anchors.bottomMargin: 10
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
 
         Button {
             id: navigationFeatureButton
@@ -50,14 +53,17 @@ Page {
     MachineConfigListView {
         id: machineConfigListView
         anchors.left: mainRowLayout.right
+        anchors.right: cameraView.left
         anchors.bottom: parent.bottom
         anchors.top: parent.top
         anchors.topMargin: 10
         anchors.bottomMargin: 10
         anchors.leftMargin: 10
+        anchors.rightMargin: 10
     }
 
     CameraView {
+        id: cameraView
         clip: false
         anchors.left: machineConfigListView.right
         anchors.right: parent.right

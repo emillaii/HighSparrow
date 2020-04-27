@@ -107,17 +107,75 @@ ColumnLayout {
         }
     }
     RowLayout{
-        Image{
-            id:dispensePath
-            source: "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
-            cache: false
-            Connections{
-                target: highSprrow
-                onDisplayDispenseImageInUI: {
-                    dispensePath.source = ""
-                    dispensePath.source = "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
+        Rectangle{
+            id:showImg;
+            width:400;
+            height:400;
+
+            Image{
+                id:dispensePath
+                source: "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
+                cache: false
+                width: parent.width
+                height: parent.height
+                fillMode: Image.PreserveAspectFit
+                Connections{
+                    target: highSprrow
+                    onDisplayDispenseImageInUI: {
+                        dispensePath.source = ""
+                        dispensePath.source = "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
+                    }
                 }
             }
+
+            MouseArea{
+                 id: showImgMouseArea
+                 anchors.fill: showImg
+                 //设置拖拽对象以及拖拽区域
+                 drag.target: showImg
+                 drag.axis: Drag.XAndYAxis//设置横向纵向拖动
+
+                 //设置鼠标悬停以及鼠标响应
+                 hoverEnabled: true
+
+                 onDoubleClicked: {
+                     console.log("image double clicked")
+                     showImg.update()
+                 }
+
+                 // 鼠标滚轮处理函数
+                 onWheel: {
+                     if(wheel.angleDelta.y>0&&scaleLevel<=10){//图像放大处理
+                         showImg.transformOriginPoint.x = wheel.x
+                         showImg.transformOriginPoint.y = wheel.y
+
+                         var beforeWidth  = showImg.width
+                         var beforeHeight = showImg.height
+                         showImg.width = showImg.width   * scaleValue
+                         showImg.height = showImg.height * scaleValue
+                         showImgMouseArea.width = showImg.width
+                         showImgMouseArea.height = showImg.height
+
+                         showImg.x = showImg.x + wheel.x - showImg.width  * wheel.x / beforeWidth
+                         showImg.y = showImg.y + wheel.y - showImg.height * wheel.y / beforeHeight
+                         scaleLevel++
+                     }
+                     else if(wheel.angleDelta.y<0&&scaleLevel>=-10){//图像缩小处理
+                         showImg.transformOriginPoint.x = wheel.x
+                         showImg.transformOriginPoint.y = wheel.y
+
+                         var beforeWidth  = showImg.width
+                         var beforeHeight = showImg.height
+                         showImg.width = showImg.width   / scaleValue
+                         showImg.height = showImg.height / scaleValue
+                         showImgMouseArea.width = showImg.width
+                         showImgMouseArea.height = showImg.height
+                         showImg.x = showImg.x + wheel.x - showImg.width  * wheel.x / beforeWidth
+                         showImg.y = showImg.y + wheel.y - showImg.height * wheel.y / beforeHeight
+                         scaleLevel--
+                     }
+                 }
+             }
         }
     }
 }

@@ -364,6 +364,9 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("lightingController", highSprrow.baseModuleManager->lightingModule);
     engine.rootContext()->setContextProperty("motorsNames", QVariant::fromValue(highSprrow.baseModuleManager->motors.keys()));
 
+    engine.rootContext()->setContextProperty("scaleValue",highSprrow.scaleValue);
+    engine.rootContext()->setContextProperty("scaleLevel",highSprrow.scaleLevel);
+
     //Vision Location
     QStringList vision_locations_list = highSprrow.baseModuleManager->vision_locations.keys();
     QList<QObject*> vl_parameter_list;

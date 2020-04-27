@@ -58,6 +58,14 @@ void DispenseModule::updatePath()
     emit callQmlRefeshImg(12);
 }
 
+void DispenseModule::updateSpeed()
+{
+    for (int i=0; i<dispenser->parameters.speedCount()*2;i++)
+    {
+        dispenser->parameters.setLineSpeed(i, dispenser->parameters.maximumSpeed());
+    }
+}
+
 void DispenseModule::setMapPosition(double pos_x, double pos_y)
 {
     this->pos_x = pos_x;

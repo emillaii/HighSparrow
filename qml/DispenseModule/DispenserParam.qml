@@ -53,6 +53,14 @@ ColumnLayout {
             }
         }
         Button {
+            text: qsTr("应用速度")
+            width: 20
+            height: 40
+            onClicked: {
+                dispenseModule.updateSpeed()
+            }
+        }
+        Button {
             text: qsTr("更新图纸")
             width: 20
             height: 40
@@ -140,7 +148,7 @@ ColumnLayout {
 
                  onDoubleClicked: {
                      console.log("image double clicked")
-                     showImg.update()
+                     dispensePath.update()
                  }
 
                  // 鼠标滚轮处理函数

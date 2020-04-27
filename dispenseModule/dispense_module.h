@@ -16,6 +16,7 @@ public:
 //    void loadConfig();
 //    void saveConfig();
     Q_INVOKABLE void updatePath();
+    Q_INVOKABLE void updateSpeed();
     void setMapPosition(double pos_x,double pos_y);
     void setPRPosition(double pr_x,double pr_y,double pr_theta);
     Q_INVOKABLE void moveToDispenseDot(bool record_z = true);

@@ -5,26 +5,22 @@ import QtQuick.Layouts 1.11
 import QtQuick 2.11
 
 Popup {
-//    RowLayout {
-//        Label {
-//            text: qsTr("画胶速度参数")
-//        }
-        ScrollView {
-            implicitWidth:  200
-            implicitHeight: 250
-            clip: true
-            ListView {
-                model: dispenserParams.lineSpeeds
-                delegate: RowLayout {
-                    Label { text: index + qsTr(":")}
-                    TextField {
-                        text: modelData
-                        onEditingFinished: {
-                            dispenserParams.setLineSpeed(index, text)
-                        }
+    ScrollView {
+        implicitWidth:  200
+        implicitHeight: 250
+        clip: true
+
+        ListView {
+            model: dispenserParams.lineSpeeds
+            delegate: RowLayout {
+                Label { text: index + qsTr(":")}
+                TextField {
+                    text: modelData
+                    onEditingFinished: {
+                        dispenserParams.setLineSpeed(index, text)
                     }
                 }
             }
         }
-//    }
+    }
 }

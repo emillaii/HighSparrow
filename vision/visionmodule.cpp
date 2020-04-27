@@ -1849,7 +1849,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
     rawImageName.append(getVisionLogDir())
             .append(getCurrentTimeString())
             .append("_raw.jpg");
-
+    prResult.rawImageName = rawImageName;
     try {
         this->grabImageFromCamera(camera_name, image1);
         //avl::LoadImage( g_constData1, false, image1 );

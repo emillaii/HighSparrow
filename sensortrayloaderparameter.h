@@ -803,6 +803,7 @@ public:
     Q_PROPERTY(bool hasAuxiliaryExitClip READ hasAuxiliaryExitClip WRITE setHasAuxiliaryExitClip NOTIFY hasAuxiliaryExitClipChanged)
     Q_PROPERTY(bool hasEntranceClip READ hasEntranceClip WRITE setHasEntranceClip NOTIFY hasEntranceClipChanged)
     Q_PROPERTY(bool hasExitClip READ hasExitClip WRITE setHasExitClip NOTIFY hasExitClipChanged)
+    Q_PROPERTY(bool isLastTray READ isLastTray WRITE setIsLastTray NOTIFY isLastTrayChanged)
 
     Q_PROPERTY(bool stpoPushState READ stpoPushState WRITE setStpoPushState NOTIFY stpoPushStateChanged)
     Q_PROPERTY(bool cylinderGripperState READ cylinderGripperState WRITE setCylinderGripperState NOTIFY cylinderGripperStateChanged)
@@ -998,6 +999,11 @@ public:
     bool stk2ClampState() const
     {
         return m_stk2ClampState;
+    }
+
+    bool isLastTray() const
+    {
+        return m_isLastTray;
     }
 
 public slots:
@@ -1333,6 +1339,15 @@ public slots:
         emit stk2ClampStateChanged(m_stk2ClampState);
     }
 
+    void setIsLastTray(bool isLastTray)
+    {
+        if (m_isLastTray == isLastTray)
+            return;
+
+        m_isLastTray = isLastTray;
+        emit isLastTrayChanged(m_isLastTray);
+    }
+
 signals:
     void hasTrayToGetChanged(bool hasTrayToGet);
     void hasVacancyTrayChanged(bool hasVacancyTray);
@@ -1407,6 +1422,8 @@ signals:
 
     void stk2ClampStateChanged(bool stk2ClampState);
 
+    void isLastTrayChanged(bool isLastTray);
+
 private:
     bool m_hasTrayToGet = false;
     bool m_hasVacancyTray = false;
@@ -1445,5 +1462,6 @@ private:
     bool m_boat2CylinderState = false;
     bool m_stk1ClampState = false;
     bool m_stk2ClampState = false;
+    bool m_isLastTray = false;
 };
 #endif // SENSORTRAYLOADERPARAMETER_H

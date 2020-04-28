@@ -163,7 +163,6 @@ ColumnLayout {
                          showImg.height = showImg.height * scaleValue
                          showImgMouseArea.width = showImg.width
                          showImgMouseArea.height = showImg.height
-
                          showImg.x = showImg.x + wheel.x - showImg.width  * wheel.x / beforeWidth
                          showImg.y = showImg.y + wheel.y - showImg.height * wheel.y / beforeHeight
                          scaleLevel++

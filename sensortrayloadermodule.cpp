@@ -146,7 +146,7 @@ void SensorTrayLoaderModule:: run()
         QThread::msleep(100);
 
         //去拿盘位置
-        if(states.needChangeTray()&&(!states.hasCarrierReady())&&(!(states.hasUpTray()&&states.hasReadyTray()))&&(!states.hasKickReady())&&(!states.hasWorkTray())&&(!states.hasKickTray()))
+        if(!states.isLastTray()&&states.needChangeTray()&&(!states.hasCarrierReady())&&(!(states.hasUpTray()&&states.hasReadyTray()))&&(!states.hasKickReady())&&(!states.hasWorkTray())&&(!states.hasKickTray()))
         {
             if((!moveToUpReadyTray(states.hasReadyTray())))
             {
@@ -167,7 +167,7 @@ void SensorTrayLoaderModule:: run()
             states.setHasCarrierReady(true);
         }
         //夹盘
-        if(states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasKickReady())&&(!states.hasWorkTray())&&(!states.hasKickTray())&&(!states.hasReadyTray())&&states.entranceClipReady())
+        if(!states.isLastTray()&&states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasKickReady())&&(!states.hasWorkTray())&&(!states.hasKickTray())&&(!states.hasReadyTray())&&states.entranceClipReady())
         {
             if(!moveToPullNextTray())
             {
@@ -212,7 +212,7 @@ void SensorTrayLoaderModule:: run()
             }
         }
         //放下第一个盘
-        if(states.needChangeTray()&&states.hasReadyTray()&&(!states.hasUpTray())&&(!states.hasWorkTray()))
+        if(!states.isLastTray()&&states.needChangeTray()&&states.hasReadyTray()&&(!states.hasUpTray())&&(!states.hasWorkTray()))
         {
             if((!moveToPutFirstTray()))
             {
@@ -226,7 +226,7 @@ void SensorTrayLoaderModule:: run()
         }
         //去准备推盘位置
         //去放工作盘
-        if(states.needChangeTray()&&states.hasReadyTray()&&states.hasWorkTray()&&(!states.hasKickTray())&&(!states.hasKickReady()))
+        if(!states.isLastTray()&&states.needChangeTray()&&states.hasReadyTray()&&states.hasWorkTray()&&(!states.hasKickTray())&&(!states.hasKickReady()))
         {
             if((!moveToDownTrayAndReadyToPush()))
             {
@@ -264,7 +264,7 @@ void SensorTrayLoaderModule:: run()
         }
         //夹盘
         //推出成品盘
-        if(states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasWorkTray())&&(!states.hasKickTray())&&states.hasVacancyTray()&&(!states.hasReadyTray())&&states.hasKickReady()&&states.entranceClipReady()&&states.exitClipReady())
+        if(!states.isLastTray()&&states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasWorkTray())&&(!states.hasKickTray())&&states.hasVacancyTray()&&(!states.hasReadyTray())&&states.hasKickReady()&&states.entranceClipReady()&&states.exitClipReady())
         {
             if(!moveToPullNextTray1())
             {
@@ -320,7 +320,7 @@ void SensorTrayLoaderModule:: run()
         }
 
         //检测换进料弹夹
-        if(!states.hasEntranceClip())
+        if(!states.isLastTray()&&!states.hasEntranceClip())
         {
             if(!entrance_clip_push->Set(states.useSpareEntanceClip()))
             {
@@ -338,7 +338,7 @@ void SensorTrayLoaderModule:: run()
             states.setHasEntranceClip(true);
         }
         //检测换出料弹夹
-        if(!states.hasExitClip())
+        if(!states.isLastTray()&&!states.hasExitClip())
         {
             if(!exit_clip_push->Set(!states.useSpareExitClip()))
             {
@@ -356,7 +356,7 @@ void SensorTrayLoaderModule:: run()
         }
 
         //进盘弹夹到位
-        if(!states.entranceClipReady())
+        if(!states.isLastTray()&&!states.entranceClipReady())
         {
             if((!moveToEntranceClipNextPos()))
             {
@@ -370,7 +370,7 @@ void SensorTrayLoaderModule:: run()
             states.setEntranceClipReady(true);
         }
         //出盘弹夹到位
-        if(!states.exitClipReady())
+        if(!states.isLastTray()&&!states.exitClipReady())
         {
             if((!moveToExitClipNextPos()))
             {
@@ -601,9 +601,9 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         if(has_vacancy_tray)
         {
             kick_result &= motor_kick->SlowMoveToPosSync(parameters.finishKickTrayPosition(),parameters.pushVelocity());
-            kick_result &= kick2->Set(false);
             if(kick_result)
                 kick_result &= motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
+            kick_result &= kick2->Set(false);
             if(kick_result)
                 kick_result &= kick1->Set(true);
         }
@@ -618,9 +618,9 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         if(has_vacancy_tray)
         {
             kick_resul2 &= motor_kick->SlowMoveToPosSync(parameters.finishKickTrayPosition(),parameters.pushVelocity());
-            kick_resul2 &= kick2->Set(false);
             if(kick_resul2)
                 kick_resul2 &= motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
+            kick_resul2 &= kick2->Set(false);
             if(kick_resul2)
                 kick_resul2 &= kick1->Set(true);
         }
@@ -779,6 +779,7 @@ bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
             QString operation = waitMessageReturn(is_run,alarm_id);
             if (LAST_OPERATION == operation)
             {
+                states.setIsLastTray(true);
                 states.setEntranceClipReady(true);
                 return true;
             }

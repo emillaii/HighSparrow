@@ -3374,7 +3374,6 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
     QVariantMap map;
     int uv_time = params["time_in_ms"].toInt(3000);
     bool enable_OTP = params["enable_OTP"].toInt(0);
-    QString otp_information = params["OTP_information"].toString("");
 
     bool enable_y_level_check = params["enable_y_level_check"].toInt(0);
     int margin = params["margin"].toInt(5);
@@ -3385,11 +3384,11 @@ ErrorCodeStruct AACoreNew::performUV(QJsonValue params)
     {
         // OTP
         //result = dk->DothinkeyOTP(serverMode);
-        result = dk->DothinkeyOTPEx(serverMode, otp_information);
+        result = dk->DothinkeyOTPEx();
         if (result != true)
         {
             //result = dk->DothinkeyOTP(serverMode);  //retry OTP
-            result = dk->DothinkeyOTPEx(serverMode, otp_information);
+            result = dk->DothinkeyOTPEx();
         }
     }
 

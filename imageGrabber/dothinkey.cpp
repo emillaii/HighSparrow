@@ -143,7 +143,8 @@ BOOL Dothinkey::DothinkeyLoadIniFile(int channel) {
     pCurrentSensor->SleepParaList = new USHORT[8192 * 4];
     pCurrentSensor->SleepParaListSize = 0;
     cmd_list.clear();
-    iniParser_->GetI2CData(pCurrentSensor, cmd_list);
+    otp_list.clear();
+    iniParser_->GetI2CData(pCurrentSensor, cmd_list, otp_list);
     delete iniParser_;
     return DT_ERROR_OK;
 }
@@ -284,7 +285,7 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     return true;
 }
 
-BOOL Dothinkey::DothinkeyOTPEx(int serverMode, QString params)
+BOOL Dothinkey::DothinkeyOTPEx()
 {
     QDate date = QDate::currentDate();
     QTime time = QTime::currentTime();
@@ -293,7 +294,7 @@ BOOL Dothinkey::DothinkeyOTPEx(int serverMode, QString params)
     int year_MSB = year/100;
     int year_LSB = year - year_MSB*100;
     bool result_otp = true;
-    QStringList otp_list = params.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+    //QStringList otp_list = params.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
 
     byte uAddr = 0xA4; //Default Slave ID
 
@@ -628,7 +629,7 @@ cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel, bool &grabRet)
     {
         GetMipiCrcErrorCount(&crcCount, CHANNEL_A, iDevID);
     } else {
-        qInfo("Camera Grab Frame Fail");
+        qInfo("Camera Grab Frame Fail, GrabFrame() returned error code: %d", ret);
         cv::Mat img;
         grabRet = false;
     }

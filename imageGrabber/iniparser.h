@@ -64,7 +64,7 @@ public:
 public:
     void SetIniFilename(std::string sFilename);
     int ReadIniData(std::string sSection, std::string sSectionKey, int nDefault);
-    BOOL GetI2CData(pSensorTab pSensor, QStringList &cmdList);
+    BOOL GetI2CData(pSensorTab pSensor, QStringList &cmd_list, QStringList &otp_list);
 protected:
     std::string sFilename;
 };

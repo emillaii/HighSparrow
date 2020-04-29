@@ -1044,6 +1044,7 @@ bool LensLoaderModule::unloadAllLens()
         }while (i<19);
         placeLensToTray();
     }
+    moveToLUTPRPos1();
     lut->closeLoadVacuum();
     lut->closeUnloadVacuum();
     return true;

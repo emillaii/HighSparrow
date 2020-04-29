@@ -34,7 +34,7 @@ public:
     BOOL DothinkeyStartCamera(int channel);
     // Hardcore OTP in UV, temp solution, move to ini file later
     BOOL DothinkeyOTP(int serverMode);
-    BOOL DothinkeyOTPEx(int serverMode, QString params);
+    BOOL DothinkeyOTPEx();
     QImage* DothinkeyGrabImage(int channel);
     cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
     void DothinkeySetConfigFile(std::string filename);
@@ -118,6 +118,7 @@ private:
 
     bool isGrabbing = false;
     QStringList cmd_list;
+    QStringList otp_list;
 };
 
 #endif // DOTHINKEY_H

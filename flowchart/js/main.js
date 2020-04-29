@@ -10,7 +10,7 @@ $(document).ready(function () {
   var init_initial_tilt_params = { roll: 0, pitch: 0, delay_in_ms: 0};
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, min: 0, max: 200, mode: 0, margin: 100 };
-  var init_uv_params = {time_in_ms: 3000, enable_OTP: 0, OTP_information: '', enable_y_level_check: 0, margin: 5, min: 0, max: 200, change_allowance: 2 };
+  var init_uv_params = {time_in_ms: 3000, enable_OTP: 0, enable_y_level_check: 0, margin: 5, min: 0, max: 200, change_allowance: 2 };
   var init_z_offset = { type: 0, z_offset_in_um_aa1: 0, z_offset_in_um_aa2: 0, delay_in_ms: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um_aa1: 0, y_offset_in_um_aa1: 0, x_offset_in_um_aa2: 0, y_offset_in_um_aa2: 0, delay_in_ms: 0};
   var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0, enable_glue_inspection: 0, glue_inspection_mode: 0, max_glue_width_in_mm:0, min_glue_width_in_mm: 0, max_avg_glue_width_in_mm:0 };
@@ -273,7 +273,6 @@ $(document).ready(function () {
 		$uv_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
 		$('#uv_time_in_ms').val(params["time_in_ms"]);
         $('#uv_enable_OTP').val(params["enable_OTP"]);
-		$('#uv_OTP_information').val(params["OTP_information"]);
 		$('#uv_enable_y_level_check').val(params["enable_y_level_check"]);
 		$('#uv_y_level_margin').val(params["margin"]);
 		$('#uv_y_level_min_spec').val(params["min"]);
@@ -497,7 +496,6 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#uv_operator_title').val());
 	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
 	  enable_OTP:  Number($('#uv_enable_OTP').val()),
-	  OTP_information: $('#uv_OTP_information').val(),
 	  enable_y_level_check: Number($('#uv_enable_y_level_check').val()),
 	  margin: Number($('#uv_y_level_margin').val()),
 	  min: Number($('#uv_y_level_min_spec').val()),
@@ -883,7 +881,6 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#uv_operator_title').val());
 	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
 	  enable_OTP:  Number($('#uv_enable_OTP').val()),
-	  OTP_information: ($('#uv_OTP_information').val()),
 	  enable_y_level_check: Number($('#uv_enable_y_level_check').val()),
 	  margin: Number($('#uv_y_level_margin').val()),
 	  min: Number($('#uv_y_level_min_spec').val()),
@@ -1176,7 +1173,6 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#uv_operator_title').val());
 	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
 	  enable_OTP:  Number($('#uv_enable_OTP').val()),
-	  OTP_information: $('#uv_OTP_information').val(),
 	  enable_y_level_check: Number($('#uv_enable_y_level_check').val()),
 	  margin: Number($('#uv_y_level_margin').val()),
 	  min: Number($('#uv_y_level_min_spec').val()),

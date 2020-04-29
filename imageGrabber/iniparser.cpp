@@ -33,7 +33,7 @@ int iniParser::ReadIniData(std::string sSection, std::string sSectionKey, int nD
     return GetPrivateProfileInt(lpcwstrSection, lpcwstrSectionKey, nDefault, lpcwstrFilename);
 }
 
-BOOL iniParser::GetI2CData(pSensorTab pSensor, QStringList &cmd_list)
+BOOL iniParser::GetI2CData(pSensorTab pSensor, QStringList &cmd_list, QStringList &otp_list)
 {
     std::string sReg, sVal;
     std::string strTmp[10];
@@ -64,8 +64,9 @@ BOOL iniParser::GetI2CData(pSensorTab pSensor, QStringList &cmd_list)
     strTmp[6] = "[Exposure_ParaList]";
     strTmp[7] = "[Gain_ParaList]";
     strTmp[8] = "[SensorID_ParaList]";
+    strTmp[9] = "[OTP_ParaList]";
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 10; i++)
     {
         std::transform(strTmp[i].begin(), strTmp[i].end(), strTmp[i].begin(), ::tolower);
     }
@@ -152,6 +153,12 @@ BOOL iniParser::GetI2CData(pSensorTab pSensor, QStringList &cmd_list)
                 gain_ParaListSize = 0;
                 continue;
             }
+            else if (line == strTmp[9])
+            {
+                state = 9;
+                gain_ParaListSize = 0;
+                continue;
+            }
 
             if (state == 0)
             {
@@ -171,6 +178,11 @@ BOOL iniParser::GetI2CData(pSensorTab pSensor, QStringList &cmd_list)
             if (state == 8)
             {
                 cmd_list.append(line.c_str());
+            }
+
+            if (state == 9)
+            {
+                otp_list.append(line.c_str());
             }
         }
         fs.close();

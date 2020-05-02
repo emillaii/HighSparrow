@@ -273,7 +273,7 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
                 bool ret = ReadSensorReg(pSensor->SlaveID, (USHORT)addr, &value_1, pSensor->mode);
                 qInfo("Read value result: %d value: %04x", ret, value_1);
                 sensor_id.append(temp.sprintf("%04X", value_1));
-            } else if (cmd[0].compare("delay", Qt::CaseInsensitive) == 0){
+            } else if (cmd[0].compare("delay", Qt::CaseInsensitive) == 0 || cmd[0].compare("sleep", Qt::CaseInsensitive) == 0){
                 uint time = cmd[1].toInt();
                 Sleep(time);
                 qInfo("Sleep %d", time);

@@ -31,7 +31,8 @@ public:
         DOWNLOOK_PR_POS = 1,
         DOWNLOOK_ON_THE_FLY_POS = 2,
         LOAD_POS = 3,
-        MUSHROOM_POS = 4
+        MUSHROOM_POS = 4,
+        PARTICAL_CHECK_POS = 5
     };
     enum HandlePR{
         DOWNLOOK_PR = 10
@@ -66,6 +67,7 @@ public:
     Q_INVOKABLE bool moveToToolDownlookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToToolUplookPos(bool check_autochthonous = false);
     Q_INVOKABLE bool moveToMushroomPos(bool check_autochthonous = false);
+    Q_INVOKABLE bool moveToParticalCheckPos(bool check_autochthonous = false);
     Q_INVOKABLE bool stepMove_XY_Sync(double x,double y);
     Q_INVOKABLE bool stepMove_Z_Sync(double step_z);
     Q_INVOKABLE bool moveToZPos(double z);
@@ -101,6 +103,7 @@ public:
     SutState states;
     Position3D load_position;
     Position3D downlook_position;
+    Position3D partical_check_position;
     Position3D tool_downlook_position;
     Position3D mushroom_positon;
     Position3D tool_uplook_positon;

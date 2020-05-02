@@ -239,5 +239,6 @@
         <file>qml/ConfigManager/SimpleTypeArrayRow.qml</file>
         <file>qml/MarcoControl/SystemConfiguration/SystemConfiguration.qml</file>
         <file>qml/DispenseModule/DispenseSpeedPopup.qml</file>
+        <file>qml/SUTModule/SUTParticalCheckPositionView.qml</file>
     </qresource>
 </RCC>

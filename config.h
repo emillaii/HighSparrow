@@ -220,6 +220,7 @@
 #define AA_PIECE_REJECT "Reject"
 #define AA_PIECE_TERMINATE "Terminate"
 #define AA_PIECE_GRR "GRR"
+#define AA_PIECE_PARTICAL_CHECK "Partical Check"
 
 #define AA_PIECE_INITIAL_POSITION "Init Pos"
 #define AA_PIECE_INIT_SENSOR "Init Sensor"

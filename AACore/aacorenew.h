@@ -54,6 +54,7 @@ public:
         AA_HEAD_MOVE_TO_PICK_LENS = 18,
         DISPENSE_XY_OFFSET_TEST = 19,
         DISPENSE_Z_TEST = 20,
+        PARTICAL_CHECK = 21
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,SutModule* sut,Dothinkey *dk,
@@ -85,6 +86,7 @@ public:
     ErrorCodeStruct performYLevelTest(QJsonValue params);
     ErrorCodeStruct performOTP(QJsonValue params);
     ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
+    ErrorCodeStruct performParticalCheck(QJsonValue params);
 
     static bool performThreadTest(vector<QString> testList, QJsonValue params);
     static double performMTFInThread( cv::Mat input, int freq);

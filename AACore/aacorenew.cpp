@@ -669,6 +669,10 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
         this->dispense->moveToDispenseDot();
         emit needUpdateParameterInTcpModule();
     }
+    else if (cmd == HandleTest::PARTICAL_CHECK)
+    {
+        performParticalCheck(params);
+    }
     emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
     is_handling = false;
 }
@@ -1037,6 +1041,11 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             int cameraChannel = params["type"].toInt();
             int lighting = params["lighting"].toInt();
         }
+        else if (testItemName.contains(AA_PIECE_PARTICAL_CHECK))
+        {
+            qInfo("Performing Partical Check");
+            performParticalCheck(params);
+        }
     }
 
     if (ret.code != ErrorCode::OK) {
@@ -1098,6 +1107,11 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
     } else {
         return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, ""};
     }
+}
+
+ErrorCodeStruct AACoreNew::performParticalCheck(QJsonValue params)
+{
+    return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)

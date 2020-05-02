@@ -58,6 +58,10 @@ ItemDelegate {
                 SUTPRPositionView {}
             }
             GroupBox{
+                title: qsTr("Partical Check Position")
+                SUTParticalCheckPositionView {}
+            }
+            GroupBox{
                 title: qsTr("UpDn DownLook Calibration Position")
                 SUTToollookPosition {}
             }

@@ -297,6 +297,12 @@ bool SutModule::moveToMushroomPos(bool check_autochthonous)
     return carrier->Move_SZ_SX_YS_X_Z_Sync(mushroom_positon.X(),mushroom_positon.Y(),mushroom_positon.Z(),check_autochthonous);
 }
 
+bool SutModule::moveToParticalCheckPos(bool check_autochthonous)
+{
+    popgpin->Set(true);
+    return carrier->Move_SZ_SX_YS_X_Z_Sync(partical_check_position.X(),partical_check_position.Y(),partical_check_position.Z(),check_autochthonous);
+}
+
 bool SutModule::stepMove_XY_Sync(double x, double y)
 {
     return carrier->StepMove_XY_Sync(x,y);
@@ -616,6 +622,8 @@ void SutModule::performHandlingOperation(int cmd,QVariant param)
         result = moveToLoadPos();
     else if(cmd%temp_value == HandlePosition::MUSHROOM_POS)
         result = moveToMushroomPos();
+    else if(cmd%temp_value == HandlePosition::PARTICAL_CHECK_POS)
+        result = moveToParticalCheckPos();
     if(!result)
         sendAlarmMessage(OK_OPERATION,GetCurrentError(),ErrorLevel::TipNonblock);
     cmd = cmd/temp_value*temp_value;
@@ -700,6 +708,7 @@ QMap<QString, PropertyBase *> SutModule::getModuleParameter()
     temp_map.insert("SUT_PARAMS", &this->parameters);
     temp_map.insert("LOAD_POSITION", &this->load_position);
     temp_map.insert("DOWNLOOK_POSITION", &this->downlook_position);
+    temp_map.insert("PARTICAL_CHECK_POSITION", &this->partical_check_position);
     temp_map.insert("TOOLUPLOOK_POSITION", &this->tool_uplook_positon);
     temp_map.insert("TOOLDOWNLOOK_POSITION", &this->tool_downlook_position);
     temp_map.insert("MUSHROOM_POSITION", &this->mushroom_positon);

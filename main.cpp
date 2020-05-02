@@ -214,6 +214,7 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("sutToolUplookPosition", &highSprrow.baseModuleManager->sut_module.tool_uplook_positon);
         engine.rootContext()->setContextProperty("sutToollookPosition", &highSprrow.baseModuleManager->sut_module.tool_downlook_position);
         engine.rootContext()->setContextProperty("sutDownlookPosition", &highSprrow.baseModuleManager->sut_module.downlook_position);
+        engine.rootContext()->setContextProperty("sutParticalCheckPosition", &highSprrow.baseModuleManager->sut_module.partical_check_position);
         engine.rootContext()->setContextProperty("sutMushroomPosition", &highSprrow.baseModuleManager->sut_module.mushroom_positon);
         engine.rootContext()->setContextProperty("sutDownlookFlyEndPosition", &highSprrow.baseModuleManager->sut_module.down_look_fly_end_position);
 
@@ -227,6 +228,7 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("tcpSUTToolUplookPosition", &highSprrow.baseModuleManager->tcp_sut.tool_uplook_positon);
         engine.rootContext()->setContextProperty("tcpSUTToollookPosition", &highSprrow.baseModuleManager->tcp_sut.tool_downlook_position);
         engine.rootContext()->setContextProperty("tcpSUTDownlookPosition", &highSprrow.baseModuleManager->tcp_sut.downlook_position);
+        engine.rootContext()->setContextProperty("tcpSUTParticalCheckPosition", &highSprrow.baseModuleManager->tcp_sut.partical_check_position);
         engine.rootContext()->setContextProperty("tcpSUTMushroomPosition", &highSprrow.baseModuleManager->tcp_sut.mushroom_positon);
 
         //Remote SUT Params

@@ -10,7 +10,7 @@ $(document).ready(function () {
   var init_initial_tilt_params = { roll: 0, pitch: 0, delay_in_ms: 0};
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, min: 0, max: 200, mode: 0, margin: 100 };
-  var init_uv_params = {time_in_ms: 3000, enable_OTP: 0, enable_y_level_check: 0, margin: 5, min: 0, max: 200, change_allowance: 2 };
+  var init_uv_params = {time_in_ms: 3000, enable_OTP: 0, enable_y_level_check: 0, margin: 5, min: 0, max: 200, change_allowance: 2, y_level_path: 0, delay_before_check: 500 };
   var init_z_offset = { type: 0, z_offset_in_um_aa1: 0, z_offset_in_um_aa2: 0, delay_in_ms: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um_aa1: 0, y_offset_in_um_aa1: 0, x_offset_in_um_aa2: 0, y_offset_in_um_aa2: 0, delay_in_ms: 0};
   var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0, enable_glue_inspection: 0, glue_inspection_mode: 0, max_glue_width_in_mm:0, min_glue_width_in_mm: 0, max_avg_glue_width_in_mm:0 };
@@ -117,6 +117,8 @@ $(document).ready(function () {
   $uv_operator_properties.append("<div style=\"margin-top:20px\">Enable OTP: <select id=\"uv_enable_OTP\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $uv_operator_properties.append("<div style=\"margin-top:20px\">UV time: <input type=\"number\" id=\"uv_time_in_ms\" value=3000></div>"); 
   $uv_operator_properties.append("<div style=\"margin-top:20px\">Enable Y_Level check: <select id=\"uv_enable_y_level_check\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $uv_operator_properties.append("<div style=\"margin-top:20px\">Y Level Check Path Method: <select id=\"uv_y_level_path\" size=\"2\"><option value=0>Use Margin</option><option value=1>Custom</option></select></div>");
+  $uv_operator_properties.append("<div style=\"margin-top:20px\">Delay Before Y_Level Check: <input type=\"number\" id=\"uv_delay_before_check\" value=500></div>"); 
   $uv_operator_properties.append("<div style=\"margin-top:20px\">Y_Level margin: <input type=\"number\" id=\"uv_y_level_margin\" value=5></div>"); 
   $uv_operator_properties.append("<div style=\"margin-top:20px\">Y_Level min spec: <input type=\"number\" id=\"uv_y_level_min_spec\" value=0></div>");
   $uv_operator_properties.append("<div style=\"margin-top:20px\">Y_Level max spec: <input type=\"number\" id=\"uv_y_level_max_spec\" value=200></div>");
@@ -274,6 +276,8 @@ $(document).ready(function () {
 		$('#uv_time_in_ms').val(params["time_in_ms"]);
         $('#uv_enable_OTP').val(params["enable_OTP"]);
 		$('#uv_enable_y_level_check').val(params["enable_y_level_check"]);
+		$('#uv_y_level_path').val(params["y_level_path"]);
+		$('#uv_delay_before_check').val(params["delay_before_check"]);
 		$('#uv_y_level_margin').val(params["margin"]);
 		$('#uv_y_level_min_spec').val(params["min"]);
 		$('#uv_y_level_max_spec').val(params["max"]);
@@ -497,6 +501,8 @@ $(document).ready(function () {
 	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
 	  enable_OTP:  Number($('#uv_enable_OTP').val()),
 	  enable_y_level_check: Number($('#uv_enable_y_level_check').val()),
+	  y_level_path: Number($('#uv_y_level_path').val()),
+	  delay_before_check: Number($('#uv_delay_before_check').val()),
 	  margin: Number($('#uv_y_level_margin').val()),
 	  min: Number($('#uv_y_level_min_spec').val()),
 	  max: Number($('#uv_y_level_max_spec').val()),
@@ -882,6 +888,8 @@ $(document).ready(function () {
 	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
 	  enable_OTP:  Number($('#uv_enable_OTP').val()),
 	  enable_y_level_check: Number($('#uv_enable_y_level_check').val()),
+	  y_level_path: Number($('#uv_y_level_path').val()),
+	  delay_before_check: Number($('#uv_delay_before_check').val()),
 	  margin: Number($('#uv_y_level_margin').val()),
 	  min: Number($('#uv_y_level_min_spec').val()),
 	  max: Number($('#uv_y_level_max_spec').val()),
@@ -1174,6 +1182,8 @@ $(document).ready(function () {
 	  var params = { time_in_ms: Number($('#uv_time_in_ms').val()),
 	  enable_OTP:  Number($('#uv_enable_OTP').val()),
 	  enable_y_level_check: Number($('#uv_enable_y_level_check').val()),
+	  y_level_path: Number($('#uv_y_level_path').val()),
+	  delay_before_check: Number($('#uv_delay_before_check').val()),
 	  margin: Number($('#uv_y_level_margin').val()),
 	  min: Number($('#uv_y_level_min_spec').val()),
 	  max: Number($('#uv_y_level_max_spec').val()),

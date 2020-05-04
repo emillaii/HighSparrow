@@ -3524,11 +3524,13 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     int mode = params["mode"].toInt(1); //1: Rectangle Path, 0: Dialgoue Path
     int image_margin = params["margin"].toInt(5);
     double change_allowance = params["change_allowance"].toDouble(2);
+    int before_check_delay = params["delay_before_check"].toInt(0);
+    int y_level_path_method = params["y_level_path"].toInt(0);
     float min_i, max_i, negative_di, positive_di; // di == differeniation of intensity profile
     int detectedNumberOfError = 0;
-//    cv::Mat inputImage = cv::imread("C:\\Users\\emil\\Desktop\\field\\ylevel.jpg");
+    //cv::Mat inputImage = cv::imread("C:\\Users\\emil\\Desktop\\field\\ylevel.jpg");
     bool grabRet;
-    QThread::msleep(500); // Temp test for grabbing UV image.
+    if (before_check_delay > 0)  QThread::msleep(before_check_delay); // Temp test for grabbing UV image.
     cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
         qInfo("Cannot grab image.");
@@ -3537,7 +3539,20 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
     }
     vector<float> intensityProfile;
     QElapsedTimer timer; timer.start();
-    bool ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile, mode, image_margin, detectedNumberOfError, negative_di, positive_di);
+    QString resultImage = "";
+    resultImage.append(getYLevelDir())
+            .append(dk->readSensorID())
+            .append("_")
+            .append(getCurrentTimeString())
+            .append(".jpg");
+
+    bool ret = false;
+    if (y_level_path_method == 0) {
+         ret = AA_Helper::calculateImageIntensityProfile(inputImage, min_i, max_i, intensityProfile, mode, image_margin, detectedNumberOfError, negative_di, positive_di);
+    }
+    else {
+        ret = AA_Helper::calculateImageIntensityProfileWithCustomPath("config\\y_level_path\\path.avdata", resultImage, inputImage, min_i, max_i, intensityProfile, detectedNumberOfError, negative_di, positive_di);
+    }
     //Draw the rectange with margin in the input image
     cv::rectangle(inputImage, cv::Point(0+image_margin, 0+image_margin), cv::Point(inputImage.cols-image_margin, inputImage.rows-image_margin), cv::Scalar(255, 125, 0),5, cv::LINE_8);
 
@@ -3567,8 +3582,9 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
                     .append(dk->readSensorID())
                     .append("_")
                     .append(getCurrentTimeString())
-                    .append(".bmp");
-            cv::imwrite(imageName.toStdString().c_str(), inputImage);
+                    .append(".jpg");
+
+            if (y_level_path_method == 0) cv::imwrite(imageName.toStdString().c_str(), inputImage);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. Black screen detected"};
         }
         if (min_i < min_i_spec) {
@@ -3581,8 +3597,8 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
                     .append(dk->readSensorID())
                     .append("_")
                     .append(getCurrentTimeString())
-                    .append(".bmp");
-            cv::imwrite(imageName.toStdString().c_str(), inputImage);
+                    .append(".jpg");
+            if (y_level_path_method == 0) cv::imwrite(imageName.toStdString().c_str(), inputImage);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is smaller than spec"};
         }
         if (max_i >= max_i_spec) {
@@ -3595,8 +3611,8 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
                     .append(dk->readSensorID())
                     .append("_")
                     .append(getCurrentTimeString())
-                    .append(".bmp");
-            cv::imwrite(imageName.toStdString().c_str(), inputImage);
+                    .append(".jpg");
+            if (y_level_path_method == 0) cv::imwrite(imageName.toStdString().c_str(), inputImage);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The tested intensity is larger than spec"};
         }
 
@@ -3610,8 +3626,8 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
                                 .append(dk->readSensorID())
                                 .append("_")
                                 .append(getCurrentTimeString())
-                                .append(".bmp");
-                        cv::imwrite(imageName.toStdString().c_str(), inputImage);
+                                .append(".jpg");
+            if (y_level_path_method == 0) cv::imwrite(imageName.toStdString().c_str(), inputImage);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Y Level Fail. The change in intensity is larger than spec"};
         }
 
@@ -3623,7 +3639,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
                 .append(dk->readSensorID())
                 .append("_")
                 .append(getCurrentTimeString())
-                .append(".bmp");
+                .append(".jpg");
         cv::imwrite(imageName.toStdString().c_str(), inputImage);
         return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {

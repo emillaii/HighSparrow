@@ -7,6 +7,7 @@ HighSprrow::HighSprrow()
 {
     if (!QDir(CONFIG_DIR).exists()) {QDir().mkdir(CONFIG_DIR);}
     if (!QDir(PR_CONFIG_DIR).exists()) {QDir().mkdir(PR_CONFIG_DIR);}
+    if (!QDir(Y_LEVEL_PATH_DIR).exists()) {QDir().mkdir(Y_LEVEL_PATH_DIR);}
     if (!QDir(SYSTERM_PARAM_DIR).exists()) {QDir().mkdir(SYSTERM_PARAM_DIR);}
     worker_manager = new WorkersManager(this);
     baseModuleManager = new BaseModuleManager();

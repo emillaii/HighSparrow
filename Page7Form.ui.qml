@@ -12,6 +12,7 @@ Page {
     property alias featureButton: featureButton
     property alias navigationFeatureButton: navigationFeatureButton
     property alias drawPathButton: drawPathButton
+    property alias yLevelDrawPathButton: yLevelDrawPathButton
 
     ColumnLayout {
         id: mainRowLayout
@@ -25,6 +26,7 @@ Page {
         Button {
             id: navigationFeatureButton
             text: qsTr("边缘视觉")
+            display: AbstractButton.TextOnly
             icon.name: "navigation"
             icon.source: "icons/select.png"
             Layout.fillWidth: true
@@ -34,6 +36,7 @@ Page {
         Button {
             id: featureButton
             text: qsTr("机械视觉")
+            display: AbstractButton.TextOnly
             icon.source: "icons/select.png"
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -42,6 +45,16 @@ Page {
         Button {
             id: drawPathButton
             text: qsTr("画胶")
+            display: AbstractButton.TextOnly
+            icon.source: "icons/select.png"
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
+
+        Button {
+            id: yLevelDrawPathButton
+            text: qsTr("Y Level")
+            display: AbstractButton.TextOnly
             icon.source: "icons/select.png"
             Layout.fillWidth: true
             Layout.fillHeight: true

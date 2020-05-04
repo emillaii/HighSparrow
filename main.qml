@@ -733,6 +733,9 @@ ApplicationWindow {
             drawPathButton.onClicked: {
                 highSprrow.callQProcess("DrawPath.avexe")
             }
+            yLevelDrawPathButton.onClicked: {
+                highSprrow.callQProcess("Y_Level_Editor.avexe")
+            }
         }
 
         Page7Form {
@@ -744,6 +747,9 @@ ApplicationWindow {
             }
             drawPathButton.onClicked: {
                 highSprrow.callQProcess("DrawPath.avexe")
+            }
+            yLevelDrawPathButton.onClicked: {
+                highSprrow.callQProcess("Y_Level_Editor.avexe")
             }
         }
 

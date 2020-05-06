@@ -229,6 +229,8 @@ void AACoreNew::run(bool has_material)
             {
                 parameters.setCalculatedUPH(round(3600/temp_average));
             }
+
+            parameters.setCurrentUPH(round(3600/parameters.circleTime()));
         }
 
         // Save xy tilt for dynamic tilt update
@@ -3603,7 +3605,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
         }
         if (max_i >= max_i_spec) {
             qWarning("Y Level Fail. The tested intensity is larger than spec. Tested max intensity: %f intensity spec: %d", max_i, max_i_spec);
-            map.insert("result", "Y Level max spec cannnot pass");
+            map.insert("result", "Y Level Fail. max spec cannnot pass");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             NgProduct();
             imageName.append(getYLevelDir())
@@ -3618,7 +3620,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
 
         if ( fabs(negative_di) >= change_allowance || fabs(positive_di) >= change_allowance) {
             qWarning("Y Level Fail. The change in intensity is larger than spec. Change in intensity: %f,%f change in intensity spec: %f", negative_di, positive_di, change_allowance);
-            map.insert("result", "Change in Y Level cannnot pass");
+            map.insert("result", "Y Level Fail. Change in Y Level cannnot pass");
             emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
             NgProduct();
             imageName.append(getYLevelDir())
@@ -3643,7 +3645,7 @@ ErrorCodeStruct AACoreNew::performYLevelTest(QJsonValue params)
         cv::imwrite(imageName.toStdString().c_str(), inputImage);
         return ErrorCodeStruct{ErrorCode::OK, ""};
     } else {
-        map.insert("Result", "Y Level test fail. Cannot grab image");
+        map.insert("Result", "Y Level Fail. Cannot grab image");
         qWarning("performYLevelTest Fail");
         emit pushDataToUnit(this->runningUnit, "Y_LEVEL", map);
         NgProduct();

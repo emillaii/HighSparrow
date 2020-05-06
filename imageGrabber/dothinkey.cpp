@@ -249,6 +249,7 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     isGrabbing = true;
     //TODO: Move that to test item or in dothinkey config file
     USHORT value_1 =0;
+    qInfo("slaveID = %04X, mode = %d", pSensor->SlaveID, pSensor->mode);
 
     //ToDo: Waiting for test
     QString sensor_id = "";

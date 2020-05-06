@@ -631,6 +631,27 @@ Grid {
                     horizontalAlignment: TextInput.AlignHCenter
                     width: 60
                 }
+
+                Button {
+                    text: qsTr("reset")
+                    onClicked: {
+                        baseModuleManager.resetUPH()
+                    }
+                }
+            }
+
+            RowLayout {
+                Label {
+                    text: qsTr("Current UPH: ")
+                    font.bold: true
+                    font.italic: true
+                }
+                TextField {
+                    readOnly: true
+                    text: aaCoreParams.currentUPH
+                    horizontalAlignment: TextInput.AlignHCenter
+                    width: 60
+                }
             }
 
             RowLayout {

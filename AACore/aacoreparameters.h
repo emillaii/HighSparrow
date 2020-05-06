@@ -117,6 +117,8 @@ class AACoreParameters : public PropertyBase
 
     int m_calculatedUPH = 0;
 
+    int m_currentUPH = 0;
+
     int m_mtfFrequency = 1;
 
     int m_aaScanMTFFrequency = 1;
@@ -192,6 +194,7 @@ public:
     Q_PROPERTY(double circleAverageTime READ circleAverageTime WRITE setCircleAverageTime NOTIFY circleAverageTimeChanged)
     Q_PROPERTY(int circleCount READ circleCount WRITE setCircleCount NOTIFY circleCountChanged)
     Q_PROPERTY(int calculatedUPH READ calculatedUPH WRITE setCalculatedUPH NOTIFY calculatedUPHChanged)
+    Q_PROPERTY(int currentUPH READ currentUPH WRITE setCurrentUPH NOTIFY currentUPHChanged)
     Q_PROPERTY(int mtfFrequency READ mtfFrequency WRITE setMTFFrequency NOTIFY mtfFrequencyChanged)
     Q_PROPERTY(int aaScanMTFFrequency READ aaScanMTFFrequency WRITE setAAScanMTFFrequency NOTIFY aaScanMTFFrequencyChanged)
     Q_PROPERTY(int aaScanCurveFitOrder READ aaScanCurveFitOrder WRITE setAAScanCurveFitOrder NOTIFY aaScanCurveFitOrderChanged)
@@ -506,6 +509,11 @@ public:
     int dynamicTiltUpdateIndex() const
     {
         return m_dynamicTiltUpdateIndex;
+    }
+
+    int currentUPH() const
+    {
+        return m_currentUPH;
     }
 
 public slots:
@@ -1050,6 +1058,15 @@ public slots:
         emit dynamicTiltUpdateIndexChanged(m_dynamicTiltUpdateIndex);
     }
 
+    void setCurrentUPH(int currentUPH)
+    {
+        if (m_currentUPH == currentUPH)
+            return;
+
+        m_currentUPH = currentUPH;
+        emit currentUPHChanged(m_currentUPH);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -1102,6 +1119,7 @@ signals:
     void aaScanCurveFitErrorThresholdChanged(int aaScanCurveFitErrorThreshold);
     void LotNumberChanged(QString lotNumber);
     void dynamicTiltUpdateIndexChanged(int dynamicTiltUpdateIndex);
+    void currentUPHChanged(int currentUPH);
 };
 class AACoreStates: public PropertyBase
 {

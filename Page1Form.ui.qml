@@ -16,7 +16,7 @@ Page {
 
     ColumnLayout {
         id: mainRowLayout
-        width: 120
+        width: 125
         anchors.left: parent.left
         anchors.right: machineConfigListView.left
         anchors.bottom: parent.bottom

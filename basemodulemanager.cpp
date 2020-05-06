@@ -1601,7 +1601,6 @@ bool BaseModuleManager::InitStruct()
                          GetOutputIoByName(dispenser.parameters.dispenseIo()));
     dispense_module.setMapPosition(sut_module.downlook_position.X(),sut_module.downlook_position.Y());
 
-    qInfo("CP1 fuck");
     if(ServerMode())
     {
         sensor_picker1.Init(GetVcMotorByName(sensor_pickarm.parameters.motorZName()),
@@ -2208,6 +2207,15 @@ void BaseModuleManager::loadSensorTrayLoaderMuduleParameter()
     temp_map.insert("entance_clip", &entrance_clip.parameters);
     temp_map.insert("exit_clip", &exit_clip.parameters);
     PropertyBase::loadJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE), temp_map);
+}
+
+void BaseModuleManager::resetUPH()
+{
+    aaCoreNew.parameters.setCurrentUPH(0);
+    aaCoreNew.parameters.setCircleTime(0);
+    aaCoreNew.parameters.setCircleCount(0);
+    aaCoreNew.parameters.setCircleAverageTime(0);
+    aaCoreNew.parameters.setCalculatedUPH(0);
 }
 
 XtMotor *BaseModuleManager::GetMotorByName(QString name)

@@ -45,6 +45,7 @@ Popup {
                     TextField{
                         id: txtUserName
                         Layout.fillWidth: true
+                        selectByMouse: true
                     }
                     Label{
                         text: qsTr("Password:")
@@ -53,6 +54,7 @@ Popup {
                         id: txtPassword
                         echoMode: TextInput.Password
                         Layout.fillWidth: true
+                        selectByMouse: true
                     }
                     Label{
                         text: qsTr("Authority:")

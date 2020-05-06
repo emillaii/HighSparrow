@@ -31,7 +31,7 @@ public:
     Q_PROPERTY(double placeToSut1Margin READ placeToSut1Margin WRITE setPlaceToSut1Margin NOTIFY placeToSut1MarginChanged)
     Q_PROPERTY(double pickFromSut1Margin READ pickFromSut1Margin WRITE setPickFromSut1Margin NOTIFY pickFromSut1MarginChanged)
     Q_PROPERTY(double placeToSut2Margin READ placeToSut2Margin WRITE setPlaceToSut2Margin NOTIFY placeToSut2MarginChanged)
-    Q_PROPERTY(double pickFromSu2tMargin READ pickFromSut2Margin WRITE setPickFromSut2Margin NOTIFY pickFromSut2MarginChanged)
+    Q_PROPERTY(double pickFromSut2Margin READ pickFromSut2Margin WRITE setPickFromSut2Margin NOTIFY pickFromSut2MarginChanged)
     Q_PROPERTY(double placeToGoodTrayMargin READ placeToGoodTrayMargin WRITE setPlaceToGoodTrayMargin NOTIFY placeToGoodTrayMarginChanged)
     Q_PROPERTY(double placeToNgTrayMargin READ placeToNgTrayMargin WRITE setPlaceToNgTrayMargin NOTIFY placeToNgTrayMarginChanged)
 

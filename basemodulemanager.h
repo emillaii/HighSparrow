@@ -413,6 +413,8 @@ public:
 
     Q_INVOKABLE int getServerMode() { return m_ServerMode; }
 
+    Q_INVOKABLE void resetUPH();
+
     XtMotor* GetMotorByName(QString name);
     XtVcMotor *GetVcMotorByName(QString name);
     XtGeneralOutput *GetOutputIoByName(QString name, bool needQInfo = true);

@@ -6,6 +6,7 @@
 #include <QMetaProperty>
 #include <qjsonarray.h>
 
+QMutex PropertyBase::rwMutex;
 
 PropertyBase::PropertyBase(QObject *parent) : QObject(parent)
 {
@@ -140,6 +141,8 @@ void PropertyBase::saveJsonConfig(QString file_name,QString param_name)
 
 void PropertyBase::saveJsonConfig(QString file_name, const QMap<QString, PropertyBase*> &parameters)
 {
+    rwMutex.lock();
+
     QFile saveFile(file_name);
     if (!saveFile.open(QIODevice::WriteOnly)) {
         qWarning("save parameters to %s failed, Couldn't open save file.",file_name.toStdString().data());
@@ -155,6 +158,8 @@ void PropertyBase::saveJsonConfig(QString file_name, const QMap<QString, Propert
     QJsonDocument saveDoc(json);
     saveFile.write(saveDoc.toJson());
     saveFile.close();
+
+    rwMutex.unlock();
 }
 
 void PropertyBase::saveJsonConfig(QString file_path, const QString name, const PropertyBase *parameters)
@@ -178,6 +183,8 @@ void PropertyBase::saveJsonConfig(QString file_path, const QString name, const P
 
 bool PropertyBase::loadJsonConfig(QString file_name, QMap<QString, PropertyBase*> &parameters)
 {
+    rwMutex.lock();
+
     QString val;
     QFile file;
     file.setFileName(file_name);
@@ -196,6 +203,7 @@ bool PropertyBase::loadJsonConfig(QString file_name, QMap<QString, PropertyBase*
            i.value()->read(jsonObject.value(i.key()).toObject());
         }
     }
+    rwMutex.unlock();
     return true;
 }
 

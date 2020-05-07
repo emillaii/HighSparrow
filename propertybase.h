@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QObject>
 #include <QVariantMap>
+#include <QMutex>
 
 class PropertyBase : public QObject
 {
@@ -27,6 +28,8 @@ public:
     static bool saveJsonArray(QString file_name,QJsonArray &array);
     static bool loadJsonObject(QString file_name, QJsonObject &object);
     static bool saveJsonObject(QString file_name,QJsonObject &object);
+
+    static QMutex rwMutex;
 protected:
     QVariantMap init_values;
 };

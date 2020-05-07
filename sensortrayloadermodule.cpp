@@ -577,6 +577,7 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         kick_result &= kick2->Set(true);
     kick_result &= kick1->Wait(true);
     //去放空盘
+    kick_result &= checkExitTray(false);
     if(kick_result)
         kick_result &= motor_kick->SlowMoveToPos(parameters.vacancyTrayPosition(),parameters.pushVelocity());
 
@@ -630,6 +631,7 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
             kick_resul2 &= kick1->Set(true);
         }
     }
+    kick_result &= checkExitTray(false);
 
     //顶盘
     if(result)
@@ -761,7 +763,12 @@ bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
     if(motor_push->GetFeedbackPos() > parameters.pushMotorSafePosition())
     {
         qInfo("motor_push %f",motor_push->GetFeedbackPos());
-        AppendError(u8"推出sendor盘的轴不在安全位置");
+        AppendError(u8"推出sensor盘的轴(STPO)不在安全位置");
+        return false;
+    }
+    if(!checkEntanceTray(false))
+    {
+        AppendError(u8"入料口感应器检测到有tray盘，请手动移走！");
         return false;
     }
 
@@ -804,6 +811,12 @@ bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
 
 bool SensorTrayLoaderModule::moveToExitClipNextPos()
 {
+    if(!checkEntanceTray(false))
+    {
+        AppendError(u8"出料口感应器检测到有tray盘，请手动移走！");
+        return false;
+    }
+
     if(exit_clip->getChangeState())
     {
         states.setUseSpareExitClip(!states.useSpareExitClip());

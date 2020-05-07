@@ -1113,6 +1113,29 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
 
 ErrorCodeStruct AACoreNew::performParticalCheck(QJsonValue params)
 {
+    QVariantMap map;
+
+    // SUT move to partical check position
+    bool result = sut->moveToParticalCheckPos();
+    // Grab image
+    bool grabRet;
+    cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        qInfo("Cannot grab image.");
+        NgProduct();
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Cannot grab image"};
+    }
+    // TBD: partical check algorithm
+
+    // Save image for further development
+    QString imageName;
+    imageName.append(getParticalCheckDir())
+            .append(dk->readSensorID())
+            .append("_")
+            .append(getCurrentTimeString())
+            .append(".jpg");
+    cv::imwrite(imageName.toStdString().c_str(), inputImage);
+
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 

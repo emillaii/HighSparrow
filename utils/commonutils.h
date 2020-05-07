@@ -14,6 +14,7 @@ QString getMTFLogDir();
 QString getUnitLogDir();
 QString getAlarmLogDir();
 QString getRejectLogDir();
+QString getParticalCheckDir();
 QString getAALogDir();
 QString getDispensePrLogDir();
 QString getYLevelDir();

@@ -13,10 +13,11 @@ $(document).ready(function () {
   var init_uv_params = {time_in_ms: 3000, enable_OTP: 0, enable_y_level_check: 0, margin: 5, min: 0, max: 200, change_allowance: 2, y_level_path: 0, delay_before_check: 500 };
   var init_z_offset = { type: 0, z_offset_in_um_aa1: 0, z_offset_in_um_aa2: 0, delay_in_ms: 0 };
   var init_xy_offset = { type: 0, x_offset_in_um_aa1: 0, y_offset_in_um_aa1: 0, x_offset_in_um_aa2: 0, y_offset_in_um_aa2: 0, delay_in_ms: 0};
-  var init_dispense_params = {x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0, enable_glue_inspection: 0, glue_inspection_mode: 0, max_glue_width_in_mm:0, min_glue_width_in_mm: 0, max_avg_glue_width_in_mm:0 };
+  var init_dispense_params = { x_offset_in_um: 0, y_offset_in_um: 0, z_offset_in_um: 0, delay_in_ms: 0, enable_glue_inspection: 0, glue_inspection_mode: 0, max_glue_width_in_mm:0, min_glue_width_in_mm: 0, max_avg_glue_width_in_mm:0 };
   var init_save_image = { type: 0, lighting: 100 };
-  var init_grr_params ={ change_lens: 1, change_sensor: 0, repeat_time: 10,change_time: 11};
+  var init_grr_params ={ change_lens: 1, change_sensor: 0, repeat_time: 10, change_time: 11};
   var init_lens_params = { cmd: 0, target_position: 70, ois_x_target_position: 0, ois_y_target_position: 0, delay_in_ms: 0 }
+  var init_partical_check_params = { enable_partical_check: 0, delay_in_ms: 0 }
   var latestCreatedLinkId;
   var $linkProperties = $('#link_properties');
   var $operatorTitle = $('#operator_title');
@@ -45,6 +46,8 @@ $(document).ready(function () {
   var $linkColor = $('#link_color');
   var $init_lens_operator_title = $('#init_lens_operator_title');
   var $init_lens_operator_properties = $('#init_lens_operator_properties');
+  var $partical_check_operator_title = $('#partical_check_operator_title');
+  var $partical_check_operator_properties = $('#partical_check_operator_properties');
 
   //Init the table 
   $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select disabled id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option><option value=3>XScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button><button id=\"select_x_scan_mode\" class=\"btn btn-info test_button\">XScan Mode</button></div></div></div>");
@@ -130,6 +133,10 @@ $(document).ready(function () {
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">OIS X Target Position: <input type=\"number\" id=\"init_lens_ois_x_target_position\" value=70></div>");
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">OIS Y Target Position: <input type=\"number\" id=\"init_lens_ois_y_target_position\" value=70></div>");
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"init_lens_delay_in_ms\" value=0></div>"); 
+  
+  $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Enable partical check: <select id=\"enable_partical_check\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Delay in ms: <input type=\"number\" id=\"partical_check_delay_in_ms\"></div>");
+  
   // Apply the plugin on a standard, empty div...
   var $flowchart = $('#example_7');
   $mtf_table.hide();
@@ -154,6 +161,7 @@ $(document).ready(function () {
 	  $y_level_operator_properties.hide();
 	  $uv_operator_properties.hide();
 	  $init_lens_operator_properties.hide();
+	  $partical_check_operator_properties.hide();
       if (operatorId.includes("AA_")) {
         $aa_operator_properties.show();
         $aa_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -290,7 +298,12 @@ $(document).ready(function () {
 		$('#init_lens_ois_y_target_position').val(params["ois_y_target_position"]);
         $('#init_lens_target_position').val(params["target_position"]);
 		$('#init_lens_delay_in_ms').val(params["delay_in_ms"]);
-	  }
+	  }else if (operatorId.includes("Partical Check")) {
+		$partical_check_operator_properties.show();
+		$partical_check_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+		$('#enable_partical_check').val(params["enable_partical_check"]);
+		$('#partical_check_delay_in_ms').val(params["delay_in_ms"]);
+	  }	  
 	  else {
         $operator_properties.show();
         $operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -313,6 +326,7 @@ $(document).ready(function () {
 	  $y_level_operator_properties.hide();
 	  $uv_operator_properties.hide();
 	  $init_lens_operator_properties.hide();
+	  $partical_check_operator_properties.hide();
       return true;
     },
 	onOperatorCreate: function (operatorId, operatorData, fullElement) {
@@ -518,6 +532,12 @@ $(document).ready(function () {
 	  target_position:  Number($('#init_lens_target_position').val())
 	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
+    } else if (selectedOperatorId.includes("Partical Check")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#Partical_check_operator_title').val());
+	  var params = { delay_in_ms: Number($('#partical_check_delay_in_ms').val()),
+	  enable_partical_check: Number($('#enable_partical_check').val()),
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
     } else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()),
@@ -574,6 +594,8 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_uv_params);
 	}else if (operatorId.includes("Init_Lens")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_lens_params);
+	}else if (operatorId.includes("Partical Check")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_partical_check_params);
 	}
 	else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -630,6 +652,8 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_uv_params);
 	}else if (operatorId.includes("Init_Lens")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_lens_params);
+	}else if (operatorId.includes("Partical Check")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_partical_check_params);
 	}
 	else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -905,7 +929,13 @@ $(document).ready(function () {
 	  target_position:  Number($('#init_lens_target_position').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-    }else {
+    }else if (selectedOperatorId.includes("Partical Check")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#partical_check_operator_title').val());
+	  var params = { delay_in_ms: Number($('#partical_check_delay_in_ms').val()),
+	  enable_partical_check: Number($('#enable_partical_check').val()),
+	  };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    } else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()),
 	  delay_in_ms: Number($('#basic_delay').val())
@@ -1017,6 +1047,7 @@ $(document).ready(function () {
   $('#create_load_material').click(function () { addOperationWidget("Load Material"); });
   $('#create_otp').click(function () { addOperationWidget("OTP"); });
   $('#create_grr').click(function () { addOperationWidget("GRR"); });
+  $('#create_partical_check').click(function () { addOperationWidget("Partical Check"); });
 
 
   $('#get_data').click(function () {
@@ -1197,6 +1228,12 @@ $(document).ready(function () {
 	  ois_x_target_position:  Number($('#init_lens_ois_x_target_position').val()),
 	  ois_y_target_position:  Number($('#init_lens_ois_y_target_position').val()),
 	  target_position:  Number($('#init_lens_target_position').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("Partical Check")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#partical_check_operator_title').val());
+	  var params = { delay_in_ms: Number($('#partical_check_delay_in_ms').val()),
+	  enable_partical_check: Number($('#enable_partical_check').val()),
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else {

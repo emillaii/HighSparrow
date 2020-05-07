@@ -208,7 +208,7 @@ void LensLoaderModule::run(bool has_material)
         }
         if(!is_run)break;
         //检测是否需要换盘
-        if((!states.allowChangeTray())&&(!states.hasPickedLens())&&(!states.lutHasNgLens()))
+        if((!states.allowChangeTray())&&(!states.lutHasNgLens()))
         {
             if((!states.hasTray())||checkNeedChangeTray())
                 states.setAllowChangeTray(true);

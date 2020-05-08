@@ -194,7 +194,7 @@ void VisionModule::RegionJudge( RegionJudgeState& state, const avl::Image& inSub
     atl::Conditional< bool > bool1;
 
     avl::ThresholdToRegion_Dynamic( inSubtractImage, atl::NIL, atl::NIL, 5, 5, 5.0f, atl::NIL, 0.0f, state.region1, atl::Dummy<avl::Image>().Get() );
-    avl::SplitRegionIntoBlobs( state.region1, avl::RegionConnectivity::EightDirections, 100, atl::NIL, true, state.regionArray1, atl::Dummy< atl::Array< int > >().Get() );
+    avl::SplitRegionIntoBlobs( state.region1, avl::RegionConnectivity::EightDirections, 2000, atl::NIL, true, state.regionArray1, atl::Dummy< atl::Array< int > >().Get() );
 
     state.regionArray2.Resize(state.regionArray1.Size());
 
@@ -495,11 +495,11 @@ void VisionModule::testVision()
     QString imageName;
     QElapsedTimer timer; timer.start();
     double outMinGlueWidth = 0, outMaxGlueWidth = 0, outMaxAvgGlueWidth = 0;
-    //this->Glue_Inspection(1, 1, 1, 1, "", "", &imageName, &outMinGlueWidth, &outMaxGlueWidth, &outMaxAvgGlueWidth);
+    this->Glue_Inspection(1, 1, 1, 1, "", "", &imageName, &outMinGlueWidth, &outMaxGlueWidth, &outMaxAvgGlueWidth);
 
     //qInfo("Glue inspection reuslt: %s time: %d", imageName.toStdString().c_str(), timer.elapsed());
     PRResultStruct prResult;
-    this->PR_Edge_Fitting(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_no_offset_edgeModel.avdata", prResult);
+    //this->PR_Edge_Fitting(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_no_offset_edgeModel.avdata", prResult);
     //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_holder_edgeModel.avdata", prResult);
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
     //this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
@@ -1350,7 +1350,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching_Retry(QString cam
 {
     //if(is_debug)return ErrorCodeStruct{ OK, "" };
     if (pr_name.contains("_edgeModel")) {
-        return PR_Edge_Template_Matching(camera_name, pr_name, prResult);
+        return PR_Edge_Fitting(camera_name, pr_name, prResult);
     }
     qInfo("%s perform %s with object_score: %f",camera_name.toStdString().c_str(),pr_name.toStdString().c_str(), object_score);
     pr_name.replace("file:///", "");
@@ -1684,6 +1684,8 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
     atl::Conditional< avl::Region > region5;
     WidthJudgeState widthJudgeState1;
     avl::Image image3;
+    avl::Image image4;
+    avl::Image image5;
     bool bool1;
 
     QString imageNameBeforeDispense;
@@ -1699,18 +1701,23 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
             .append(getCurrentTimeString())
             .append("_substract_result.jpg");
 
-    //file1 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\before\\0.jpg";
-    //file2 = L"C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2019-11\\2.3\\2.3\\Image\\after\\0_d.jpg";
-    file1 = beforeImage.toStdString().c_str();
-    file2 = afterImage.toStdString().c_str();
+    file1 = L"C:\\Users\\emil\\Desktop\\Test\\glueInspectionTest\\2.3\\2.3\\Image\\before_2\\1.jpg";
+    file2 = L"C:\\Users\\emil\\Desktop\\Test\\glueInspectionTest\\2.3\\2.3\\Image\\after_2\\1_d.jpg";
+    //file1 = beforeImage.toStdString().c_str();
+    //file2 = afterImage.toStdString().c_str();
     qDebug("Going to do the glueInspection. Before Dispense Image: %s After dispense image: %s", beforeImage.toStdString().c_str(), afterImage.toStdString().c_str());
     try {
         avl::LoadImage( file1, false, image1 );
         avl::LoadImage( file2, false, image2 );
         avl::SaveImageToJpeg( image1 , imageNameBeforeDispense.toStdString().c_str(), atl::NIL, false );
-        avl::SubtractImages( image1, image2, atl::NIL, 2.0f, image1 );
-        avl::SaveImageToJpeg( image1 , substractImage.toStdString().c_str(), atl::NIL, false );
-        RegionJudge( regionJudgeState1, image1, image2, bool1, region1, region2, region3, region4 );
+        avl::SubtractImages( image1, image2, atl::NIL, 5.0f, image3 );
+        avl::ThresholdImage( image3, atl::NIL, 80.0f, atl::NIL, 0.0f, image4 );
+        avl::SubtractImages( image2, image1, atl::NIL, 5.0f, image1 );
+        avl::ThresholdImage( image1, atl::NIL, 80.0f, atl::NIL, 0.0f, image5 );
+        avl::AddImages( image4, image5, atl::NIL, 1.0f, image4 );
+
+        avl::SaveImageToJpeg( image4 , substractImage.toStdString().c_str(), atl::NIL, false );
+        RegionJudge( regionJudgeState1, image4, image2, bool1, region1, region2, region3, region4 );
 
         if (region1 != atl::NIL)
         {
@@ -1725,13 +1732,13 @@ ErrorCodeStruct VisionModule::Glue_Inspection(double resolution, double minWidth
         bool outResultOK = true;
         atl::Conditional<float> outMaxWidth = 0; atl::Conditional<float> outMinWidth = 0; atl::Conditional<float> outAveWidth = 0;
 
-        WidthJudge( widthJudgeState1, bool1, region5, resolution, minWidth, maxWidth, image2, maxAvgWidth, outResultOK, image3, outMaxWidth, outMinWidth, outAveWidth );
+        WidthJudge( widthJudgeState1, bool1, region5, resolution, minWidth, maxWidth, image2, maxAvgWidth, outResultOK, image5, outMaxWidth, outMinWidth, outAveWidth );
 
         if (outMaxWidth != atl::NIL && outMaxWidth.HasValue()) *outMaxGlueWidth = outMaxWidth.Get();
         if (outMinWidth != atl::NIL && outMinWidth.HasValue()) *outMinGlueWidth = outMinWidth.Get();
         if (outAveWidth != atl::NIL && outAveWidth.HasValue()) *outMaxAvgGlueWidth = outAveWidth.Get();
         qDebug("Glue Inspection result: %d outMaxWidth: %f outMinWidth: %f outAvgWidth: %f", outResultOK, *outMaxGlueWidth,  *outMinGlueWidth, *outMaxAvgGlueWidth);
-        avl::SaveImageToJpeg( image3, outResultImageName.toStdString().c_str(), atl::NIL, false );
+        avl::SaveImageToJpeg( image5, outResultImageName.toStdString().c_str(), atl::NIL, false );
         *glueInspectionImageName = outResultImageName;
         if (outResultOK) {
             return error_code;

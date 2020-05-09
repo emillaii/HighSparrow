@@ -93,6 +93,9 @@ ItemDelegate {
                                 text: qsTr("搜索排气孔")
                                 visible: displaySmallHoleDetectionSetting
                                 checked: enableSmallHoleDetection
+                                onCheckedChanged: {
+                                    setEnableSmallHoleDetection(checked)
+                                }
                             }
                         }
 

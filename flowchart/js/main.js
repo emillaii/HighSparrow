@@ -7,6 +7,7 @@ $(document).ready(function () {
     position_checking: 0, is_debug: 0, image_count: 7, enable_tilt: 0
   };
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
+  var init_hw_tilt_params = { enable_motion: 0 };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, delay_in_ms: 200 };
@@ -38,6 +39,8 @@ $(document).ready(function () {
   var $grr_operator_properties = $('#grr_operator_properties');
   var $y_level_operator_title = $('#y_level_operator_title');
   var $y_level_operator_properties = $('#y_level_operator_properties');
+  var $hw_tilt_operator_title = $('#hw_tilt_operator_title');
+  var $hw_tilt_operator_properties = $('#hw_tilt_operator_properties');
   var $mtf_table = $('#mtf_table');
   var $linkColor = $('#link_color');
 
@@ -59,6 +62,8 @@ $(document).ready(function () {
 
   $operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"basic_retry\"></div>");
   $operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"basic_delay\"></div>");
+
+  $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"hw_tilt_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
 
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"oc_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Fast Mode: <select id=\"oc_fast_mode\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
@@ -111,6 +116,8 @@ $(document).ready(function () {
 	  $grr_operator_properties.hide();
 	  $mtf_table.hide();
 	  $y_level_operator_properties.hide();
+	  $hw_tilt_operator_properties.hide();
+	  console.log(operatorId);
       if (operatorId.includes("AA_")) {
         $aa_operator_properties.show();
         $aa_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -206,7 +213,12 @@ $(document).ready(function () {
 		$('#grr_change_lens').val(params["change_lens"]);
 		$('#grr_change_sensor').val(params["change_sensor"]);
         $('#grr_repeat_time').val(params["repeat_time"]);
-	  } 
+	  }else if (operatorId.includes("HW Tilt")) {
+		console.log("Show HW Tilt");
+		$hw_tilt_operator_properties.show();
+		$hw_tilt_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+		$('#hw_tilt_enable_motion').val(params["enable_motion"]);
+	  }
 	  else {
         $operator_properties.show();
         $operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -227,6 +239,7 @@ $(document).ready(function () {
 	  $grr_operator_properties.hide();
 	  $mtf_table.hide();
 	  $y_level_operator_properties.hide();
+	  $hw_tilt_operator_properties.hide();
       return true;
     },
 	onOperatorCreate: function (operatorId, operatorData, fullElement) {
@@ -383,6 +396,8 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_save_image);
 	} else if (operatorId.includes("Y_Level")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
+	} else if (operatorId.includes("HW Tilt")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_hw_tilt_params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -433,6 +448,8 @@ $(document).ready(function () {
 	} else if (operatorId.includes("MTF")) {
 	  var params = { CC: 0, UL: 0, UR: 0, LR: 0, LL: 0, SFR_DEV_TOL: 100 }
 	  $flowchart.flowchart('setOperatorParams', operatorId, params);
+	} else if (operatorId.includes("HW Tilt")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_hw_tilt_params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -645,6 +662,10 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#y_level_operator_title').val());
 	  var params = { enable_plot: Number($('#y_level_enable_plot').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("HW Tilt")){
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_tilt_operator_title').val());
+	  var params = { enable_motion: Number($('#hw_tilt_enable_motion').val())};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
@@ -756,7 +777,7 @@ $(document).ready(function () {
   $('#create_join_thread').click(function () { addJoinThreadWidget("Join"); });
   $('#create_load_material').click(function () { addOperationWidget("Load Material"); });
   $('#create_grr').click(function () { addEndWidget("GRR"); });
-
+  $('#create_HW_Tilt').click(function(){ addOperationWidget("HW Tilt"); });
 
   $('#get_data').click(function () {
     var data = $flowchart.flowchart('getData');
@@ -850,6 +871,10 @@ $(document).ready(function () {
 	} else if (selectedOperatorId.includes("Y_Level")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $y_level_operator_title.val());
       var params = { enable_plot: Number($('#y_level_enable_plot').val())};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    } else if (selectedOperatorId.includes("HW Tilt")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $hw_tilt_operator_title.val());
+      var params = { enable_motion: Number($('#hw_tilt_enable_motion').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     }
     else {

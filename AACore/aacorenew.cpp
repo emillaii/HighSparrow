@@ -2888,6 +2888,23 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "MTF Cannot grab image"};
     }
     double fov = calculateDFOV(input_img);
+
+    if (fov == -1) {
+        QString imageName = "";
+        imageName.append(getMTFLogDir())
+                .append("FOV_Error_")
+                .append(dk->readSensorID())
+                .append("_")
+                .append(getCurrentTimeString())
+                .append(".jpg");
+        cv::imwrite(imageName.toStdString().c_str(), input_img);
+        error.append("Error in calculating fov");
+        map.insert("Result", error);
+        emit pushDataToUnit(runningUnit, "MTF", map);
+        LogicNg(current_mtf_ng_time);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
+    }
+
     std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
     vector<double> sfr_l_v, sfr_r_v, sfr_t_v, sfr_b_v;
     cv::Rect roi; roi.width = 32; roi.height = 32;

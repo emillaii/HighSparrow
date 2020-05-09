@@ -1212,6 +1212,18 @@ void LogicManager::performHandlingOperation(QString module_name, int cmd,QVarian
             baseModuleManage->lens_loader_module.waitPerformHandling();
             qInfo("UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY2 complete!");
         }
+        else if (cmd == CommandType::SAVE_PARAMETERS)
+        {
+            states.setHandlingMessage(u8"正在保存参数");
+            baseModuleManage->updateParams();
+            QThread::msleep(500);
+        }
+        else if (cmd == CommandType::LOAD_PARAMETERS)
+        {
+            states.setHandlingMessage(u8"正在加载参数");
+            baseModuleManage->loadconfig();
+            QThread::msleep(500);
+        }
     }
     else if(baseModuleManage->workers.contains(module_name))//单一模块动作
     {

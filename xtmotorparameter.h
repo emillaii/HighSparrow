@@ -98,7 +98,7 @@ signals:
 
 private:
     int m_arrivedDelay = 100;
-    bool m_useDelay = true;
+    bool m_useDelay = false;
     double m_positionError = 0.01;
     bool m_firstCheckArrived = false;
     bool m_reverseAlarmIO = false;

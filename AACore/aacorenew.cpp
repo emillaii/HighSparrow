@@ -4119,7 +4119,7 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
                 if(states.finishStationTask())
                 {
                     while (is_run&&states.finishStationTask()) {
-                        QThread::msleep(1000);
+                        QThread::msleep(100);
                     }
                     states.setFinishSensorTask(false);
                     states.setCurrentTask(0);

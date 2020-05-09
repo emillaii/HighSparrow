@@ -387,6 +387,9 @@ ApplicationWindow {
                     }else if (aaCoreTestItemName.indexOf("XY Offset") !== -1) {
                         console.log("Perform XY Offset")
                         aaNewCore.performHandling(AACoreNew.XY_OFFSET, aaCoreTestParams)
+                    }else if (aaCoreTestItemName.indexOf("Partical Check") !== -1) {
+                        console.log("Perform Partical Check")
+                        aaNewCore.performHandling(AACoreNew.PARTICAL_CHECK, aaCoreTestParams)
                     }
 
                     aaCoreTestParams = ""
@@ -455,7 +458,7 @@ ApplicationWindow {
                 icon.source: "icons/flowchart.png"
                 icon.color: "deepskyblue"
                 onClicked: {
-                    baseModuleManager.loadconfig()
+                    logicManager.performHandling("", LogicManager.LOAD_PARAMETERS)
                 }
             }
             ToolButton {
@@ -468,7 +471,7 @@ ApplicationWindow {
                 icon.source: "icons/save.png"
                 icon.color: "deepskyblue"
                 onClicked: {
-                    baseModuleManager.updateParams()
+                    logicManager.performHandling("", LogicManager.SAVE_PARAMETERS)
                 }
             }
 

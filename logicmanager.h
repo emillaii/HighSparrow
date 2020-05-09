@@ -35,7 +35,6 @@ public:
         HANDLING_OPEN_VACUUM,
         HANDLING_CLOSE_VACUUM,
 
-
         AA_MOVETO_MUSHROOM_CMD,
         AA_MOVETO_PICK_LENS_CMD,
         AA_MOVETO_OC_CMD,
@@ -66,7 +65,10 @@ public:
         UNPICK_LENS_FROM_AA1_AND_PLACE_TO_TRAY1,
         UNPICK_LENS_FROM_AA1_AND_PLACE_TO_TRAY2,
         UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY1,
-        UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY2
+        UNPICK_LENS_FROM_AA2_AND_PLACE_TO_TRAY2,
+
+        SAVE_PARAMETERS,
+        LOAD_PARAMETERS
     };
 public:
     explicit LogicManager(QObject *parent = nullptr);

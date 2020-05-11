@@ -1292,7 +1292,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             rectangle2D1.AssignNonNil();
             point2D1.Get() = object2D1.Get().Point();
             coordinateSystem2D1 = avl::CoordinateSystem2D(point2D1.Get(), 0.0f, 1.0f);
-            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 20.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
             avl::TranslatePoint( point2D1.Get(), vector2D1, false, point2D2.Get() );
             real1 = object2D1.Get().Angle();
             avl::RealToString( real1, string2 );

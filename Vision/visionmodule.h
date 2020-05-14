@@ -87,8 +87,8 @@ public:
     ImageProvider *aaDebugImageProvider;
 
     //For Huawei TOF
-    TOFResult imageProcessing1();
-    TOFResult imageProcessing2();
+    TOFResult imageProcessing1(QString filename);
+    TOFResult imageProcessing2(QString filename);
     void Y1Line( float inX, int inY, atl::Array< avl::Point2D >& outArray );
     void CenterXLine( float inY, int inX, atl::Array< avl::Point2D >& outArray );
     void CenterYLine( float inX, int inY, atl::Array< avl::Point2D >& outArray );

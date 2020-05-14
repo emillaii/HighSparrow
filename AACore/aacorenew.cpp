@@ -1795,11 +1795,13 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     QElapsedTimer timer;timer.start();
     qInfo("Start perform TOF");
     int method = params["method"].toInt(1);
+    QString filename = params["filename"].toString();
     TOFResult tofResult;
+    filename.replace("file:///", "");
     if (method == 1) {
-        tofResult = visionModule->imageProcessing1();
+        tofResult = visionModule->imageProcessing1(filename);
     } else {
-        tofResult = visionModule->imageProcessing2();
+        tofResult = visionModule->imageProcessing2(filename);
     }
 
     double x = mathExpression(convertFormulaFromTOFResult(this->parameters.x1(), tofResult));

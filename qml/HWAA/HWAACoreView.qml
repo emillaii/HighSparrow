@@ -4,8 +4,12 @@ import QtQuick.Layouts 1.11
 import FileContentItem 1.0
 import QtQuick.Dialogs 1.2
 import AACoreNew 1.1
+import "../Log"
 
 ItemDelegate {
+
+    property int selectedChannel: 1
+
     width: parent.width
 
     contentItem: RowLayout  {
@@ -14,23 +18,44 @@ ItemDelegate {
         ColumnLayout{
             Layout.alignment: Qt.AlignTop
 
+            FileDialog{
+                id:file_dialog
+                title:"选择加载PR文件"
+                selectExisting: true
+                selectFolder: false
+                selectMultiple: false
+
+                onAccepted:{
+                    //setPrFileName(fileUrl)
+                    if (selectedChannel === 1)
+                        imageProcess1Filename.text = fileUrl
+                    else if (selectedChannel === 2)
+                        imageProcess2Filename.text = fileUrl
+                }
+            }
+
             GroupBox{
                 title: qsTr("AA Core Parameters")
                 //enabled: userManagement.currentAuthority >= 2 //At least engineer authority
 
                 ColumnLayout {
+
                     RowLayout {
                         RoundButton {
-                            text: "从图像采集卡捕获图像"
+                            text: "Load"
                             transformOrigin: Item.Center
                             display: Button.TextBesideIcon
                             icon.width: 30
                             icon.height: 30
                             icon.source: "../../icons/camera.png"
-                            icon.color: "lightGreen"
+                            icon.color: "yellow"
                             onClicked: {
-                                 aaNewCore.captureLiveImage()
+                                selectedChannel = 1
+                                file_dialog.open()
                             }
+                        }
+                        TextField {
+                            id: imageProcess1Filename
                         }
                         RoundButton {
                             text: "图像处理1"
@@ -42,7 +67,8 @@ ItemDelegate {
                             icon.color: "yellow"
                             onClicked: {
                                 var json = {
-                                    method: 1
+                                    method: 1,
+                                    filename: imageProcess1Filename.text
                                 }
                                 aaNewCore.performHandling(AACoreNew.TOF, JSON.stringify(json))
                             }
@@ -51,11 +77,11 @@ ItemDelegate {
 
                     RowLayout {
                         Label {
-                            text: qsTr("Selected Profile: ")
+                            text: qsTr("Enable Motion: ")
                         }
                         ComboBox {
                             width: 200
-                            model: [ "Default", "Profile 1", "Profile 2" ]
+                            model: [ "Disable", "Enable"]
                         }
                     }
 
@@ -64,21 +90,18 @@ ItemDelegate {
                             text: qsTr("X = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_X
                             text: aaCoreParams.x1
                             onEditingFinished: {
                                 aaCoreParams.setX1(text)
                             }
                         }
-                    }
-
-                    RowLayout {
                         Label {
                             text: qsTr("Y = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_Y
                             text: aaCoreParams.y1
                             onEditingFinished: {
@@ -92,21 +115,18 @@ ItemDelegate {
                             text: qsTr("Z = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_Z
                             text: aaCoreParams.z1
                             onEditingFinished: {
                                 aaCoreParams.setZ1(text)
                             }
                         }
-                    }
-
-                    RowLayout {
                         Label {
                             text: qsTr("RX = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_RX
                             text: aaCoreParams.rx1
                             onEditingFinished: {
@@ -120,21 +140,18 @@ ItemDelegate {
                             text: qsTr("RY = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_RY
                             text: aaCoreParams.ry1
                             onEditingFinished: {
                                 aaCoreParams.setRY1(text)
                             }
                         }
-                    }
-
-                    RowLayout {
                         Label {
                             text: qsTr("RZ = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_RZ
                             text: aaCoreParams.rz1
                             onEditingFinished: {
@@ -142,20 +159,47 @@ ItemDelegate {
                             }
                         }
                     }
-
-                    RoundButton {
-                        text: "图像处理2"
-                        transformOrigin: Item.Center
-                        display: Button.TextBesideIcon
-                        icon.width: 30
-                        icon.height: 30
-                        icon.source: "../../icons/camera.png"
-                        icon.color: "cyan"
-                        onClicked: {
-                            var json = {
-                                method: 2
+                    RowLayout {
+                        RoundButton {
+                            text: "Load"
+                            transformOrigin: Item.Center
+                            display: Button.TextBesideIcon
+                            icon.width: 30
+                            icon.height: 30
+                            icon.source: "../../icons/camera.png"
+                            icon.color: "cyan"
+                            onClicked: {
+                                selectedChannel = 2
+                                file_dialog.open()
                             }
-                            aaNewCore.performHandling(AACoreNew.TOF, JSON.stringify(json))
+                        }
+                        TextField {
+                            id: imageProcess2Filename
+                        }
+                        RoundButton {
+                            text: "图像处理2"
+                            transformOrigin: Item.Center
+                            display: Button.TextBesideIcon
+                            icon.width: 30
+                            icon.height: 30
+                            icon.source: "../../icons/camera.png"
+                            icon.color: "cyan"
+                            onClicked: {
+                                var json = {
+                                    method: 2,
+                                    filename: imageProcess2Filename.text
+                                }
+                                aaNewCore.performHandling(AACoreNew.TOF, JSON.stringify(json))
+                            }
+                        }
+                    }
+                    RowLayout {
+                        Label {
+                            text: qsTr("Enable Motion: ")
+                        }
+                        ComboBox {
+                            width: 200
+                            model: [ "Disable", "Enable"]
                         }
                     }
 
@@ -164,21 +208,18 @@ ItemDelegate {
                             text: qsTr("X = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_X2
                             text: aaCoreParams.x2
                             onEditingFinished: {
                                 aaCoreParams.setX2(text)
                             }
                         }
-                    }
-
-                    RowLayout {
                         Label {
                             text: qsTr("Y = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_Y2
                             text: aaCoreParams.y2
                             onEditingFinished: {
@@ -192,21 +233,18 @@ ItemDelegate {
                             text: qsTr("Z = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_Z2
                             text: aaCoreParams.z2
                             onEditingFinished: {
                                 aaCoreParams.setZ2(text)
                             }
                         }
-                    }
-
-                    RowLayout {
                         Label {
                             text: qsTr("RX = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_RX2
                             text: aaCoreParams.rx2
                             onEditingFinished: {
@@ -220,21 +258,18 @@ ItemDelegate {
                             text: qsTr("RY = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_RY2
                             text: aaCoreParams.ry2
                             onEditingFinished: {
                                 aaCoreParams.setRY2(text)
                             }
                         }
-                    }
-
-                    RowLayout {
                         Label {
                             text: qsTr("RZ = ")
                         }
                         TextField {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             id: input_RZ2
                             text: aaCoreParams.rz2
                             onEditingFinished: {
@@ -246,46 +281,15 @@ ItemDelegate {
             }
         }
 
-        Frame {
-            id: frame1
-            Layout.fillWidth: true
-            contentHeight: 720
+        LogView{
+            id: logView
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: 3
 
-            Image {
-                id: image1
-                anchors.fill: parent
-                source: "../../icons/sparrow.png"
-                fillMode: Image.PreserveAspectFit
-                cache: false
-                Connections {
-                    target: highSprrow
-                    onDisplayAACoreTuningImageInUI: {
-                        image1.source = ""
-                        image1.source = "image://aaDebugImage"
-                    }
-                }
-            }
+            height: parent.height * 0.6
         }
-        Frame {
-            id: frame2
-            Layout.fillWidth: true
-            contentHeight: 720
 
-            Image {
-                id: image2
-                anchors.fill: parent
-                source: "../../icons/sparrow.png"
-                fillMode: Image.PreserveAspectFit
-                cache: false
-                Connections {
-                    target: highSprrow
-                    onDisplayAACoreTuningImageInUI: {
-                        image2.source = ""
-                        image2.source = "image://aaDebugImage"
-                    }
-                }
-            }
-        }
     }
 }
 

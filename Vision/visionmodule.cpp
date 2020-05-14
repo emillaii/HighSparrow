@@ -587,11 +587,12 @@ void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inIma
     outCenterY1 = _avfml_st_real(_avfml_ld_real(outValue1) + _avfml_ld_real(outHalfHeightWidth) / 2.0);
 }
 
-TOFResult VisionModule::imageProcessing1()
+TOFResult VisionModule::imageProcessing1(QString filename)
 {
     TOFResult tofResult;
     static atl::String g_constData1;
-    g_constData1 = L"C:\\Users\\emil\\Desktop\\huawei\\2.jpg";
+    //g_constData1 = L"C:\\Users\\emil\\Desktop\\huawei\\2.jpg";
+    g_constData1 = filename.toStdString().c_str();
     avl::Image image1;
     avl::Region region1;
     atl::Array< avl::Region > regionArray1;
@@ -807,11 +808,12 @@ void VisionModule::StepMacro_1( StepMacro_1State& state, float inX, int inY, flo
     ProfileCalc( state.profileCalcState3, inImage, state.path3, outCenterY3, outValueY3_1, outValueY3_2, outHalfHeightWidth3, outProfile2 );
 }
 
-TOFResult VisionModule::imageProcessing2()
+TOFResult VisionModule::imageProcessing2(QString filename)
 {
     TOFResult tofResult;
     atl::String g_constData1;
-    g_constData1 = L"C:\\Users\\emil\\Desktop\\huawei\\x_5-2.JPG";
+    //g_constData1 = L"C:\\Users\\emil\\Desktop\\huawei\\x_5-2.JPG";
+    g_constData1 = filename.toStdString().c_str();
     try {
         avl::Image image1;
         int integer1;
@@ -922,8 +924,8 @@ TOFResult VisionModule::imageProcessing2()
         imageName.append(getVisionLogDir())
                 .append(getCurrentTimeString())
                 .append(".jpg");
-        if (!image2.Empty())
-            avl::SaveImageToJpeg( image2 , imageName.toStdString().c_str(), atl::NIL, false );
+        if (!image4.Empty())
+            avl::SaveImageToJpeg( image4 , imageName.toStdString().c_str(), atl::NIL, false );
         tofResult.imageName = imageName;
         tofResult.ret = true;
 

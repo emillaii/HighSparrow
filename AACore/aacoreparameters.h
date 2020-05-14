@@ -47,6 +47,30 @@ class AACoreParameters : public PropertyBase
 
     int m_mtfFrequency = 1;
 
+    QString m_x1 = "";
+
+    QString m_y1;
+
+    QString m_z1;
+
+QString m_rx1;
+
+QString m_ry1;
+
+QString m_rz1;
+
+QString m_x2;
+
+QString m_y2;
+
+QString m_z2;
+
+QString m_rx2;
+
+QString m_ry2;
+
+QString m_rz2;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -73,6 +97,20 @@ public:
     Q_PROPERTY(int aaScanCurveFitOrder READ aaScanCurveFitOrder WRITE setAAScanCurveFitOrder NOTIFY aaScanCurveFitOrderChanged)
     Q_PROPERTY(int aaScanOversampling READ aaScanOversampling WRITE setAAScanOversampling NOTIFY aaScanOversamplingChanged)
     Q_PROPERTY(int aaScanCurveFitErrorThreshold READ aaScanCurveFitErrorThreshold WRITE setAAScanCurveFitErrorThreshold NOTIFY aaScanCurveFitErrorThresholdChanged)
+
+    Q_PROPERTY(QString x1 READ x1 WRITE setX1 NOTIFY x1Changed)
+    Q_PROPERTY(QString y1 READ y1 WRITE setY1 NOTIFY y1Changed)
+    Q_PROPERTY(QString z1 READ z1 WRITE setZ1 NOTIFY z1Changed)
+    Q_PROPERTY(QString rx1 READ rx1 WRITE setRX1 NOTIFY rx1Changed)
+    Q_PROPERTY(QString ry1 READ ry1 WRITE setRY1 NOTIFY ry1Changed)
+    Q_PROPERTY(QString rz1 READ rz1 WRITE setRZ1 NOTIFY rz1Changed)
+
+    Q_PROPERTY(QString x2 READ x2 WRITE setX2 NOTIFY x2Changed)
+    Q_PROPERTY(QString y2 READ y2 WRITE setY2 NOTIFY y2Changed)
+    Q_PROPERTY(QString z2 READ z2 WRITE setZ2 NOTIFY z2Changed)
+    Q_PROPERTY(QString rx2 READ rx2 WRITE setRX2 NOTIFY rx2Changed)
+    Q_PROPERTY(QString ry2 READ ry2 WRITE setRY2 NOTIFY ry2Changed)
+    Q_PROPERTY(QString rz2 READ rz2 WRITE setRZ2 NOTIFY rz2Changed)
 
     double EFL() const
     {
@@ -166,6 +204,66 @@ public:
     int mtfFrequency() const
     {
         return m_mtfFrequency;
+    }
+
+    QString x1() const
+    {
+        return m_x1;
+    }
+
+    QString y1() const
+    {
+        return m_y1;
+    }
+
+    QString z1() const
+    {
+        return m_z1;
+    }
+
+    QString rx1() const
+    {
+        return m_rx1;
+    }
+
+    QString ry1() const
+    {
+        return m_ry1;
+    }
+
+    QString rz1() const
+    {
+        return m_rz1;
+    }
+
+    QString x2() const
+    {
+        return m_x2;
+    }
+
+    QString y2() const
+    {
+        return m_y2;
+    }
+
+    QString z2() const
+    {
+        return m_z2;
+    }
+
+    QString rx2() const
+    {
+        return m_rx2;
+    }
+
+    QString ry2() const
+    {
+        return m_ry2;
+    }
+
+    QString rz2() const
+    {
+        return m_rz2;
     }
 
 public slots:
@@ -320,6 +418,114 @@ public slots:
         emit mtfFrequencyChanged(m_mtfFrequency);
     }
 
+    void setX1(QString x1)
+    {
+        if (m_x1 == x1)
+            return;
+
+        m_x1 = x1;
+        emit x1Changed(m_x1);
+    }
+
+    void setY1(QString y1)
+    {
+        if (m_y1 == y1)
+            return;
+
+        m_y1 = y1;
+        emit y1Changed(m_y1);
+    }
+
+    void setZ1(QString z1)
+    {
+        if (m_z1 == z1)
+            return;
+
+        m_z1 = z1;
+        emit z1Changed(m_z1);
+    }
+
+    void setRX1(QString rx1)
+    {
+        if (m_rx1 == rx1)
+            return;
+
+        m_rx1 = rx1;
+        emit rx1Changed(m_rx1);
+    }
+
+    void setRY1(QString ry1)
+    {
+        if (m_ry1 == ry1)
+            return;
+
+        m_ry1 = ry1;
+        emit ry1Changed(m_ry1);
+    }
+
+    void setRZ1(QString rz1)
+    {
+        if (m_rz1 == rz1)
+            return;
+
+        m_rz1 = rz1;
+        emit rz1Changed(m_rz1);
+    }
+
+    void setX2(QString x2)
+    {
+        if (m_x2 == x2)
+            return;
+
+        m_x2 = x2;
+        emit x2Changed(m_x2);
+    }
+
+    void setY2(QString y2)
+    {
+        if (m_y2 == y2)
+            return;
+
+        m_y2 = y2;
+        emit y2Changed(m_y2);
+    }
+
+    void setZ2(QString z2)
+    {
+        if (m_z2 == z2)
+            return;
+
+        m_z2 = z2;
+        emit z2Changed(m_z2);
+    }
+
+    void setRX2(QString rx2)
+    {
+        if (m_rx2 == rx2)
+            return;
+
+        m_rx2 = rx2;
+        emit rx2Changed(m_rx2);
+    }
+
+    void setRY2(QString ry2)
+    {
+        if (m_ry2 == ry2)
+            return;
+
+        m_ry2 = ry2;
+        emit ry2Changed(m_ry2);
+    }
+
+    void setRZ2(QString rz2)
+    {
+        if (m_rz2 == rz2)
+            return;
+
+        m_rz2 = rz2;
+        emit rz2Changed(m_rz2);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -331,6 +537,18 @@ signals:
     void aaScanOversamplingChanged(int aaScanOversampling);
     void aaScanCurveFitErrorThresholdChanged(int aaScanCurveFitErrorThreshold);
     void mtfFrequencyChanged(int mtfFrequency);
+    void x1Changed(QString x1);
+    void y1Changed(QString y1);
+    void z1Changed(QString z1);
+    void rx1Changed(QString rx1);
+    void ry1Changed(QString ry1);
+    void rz1Changed(QString rz1);
+    void x2Changed(QString x2);
+    void y2Changed(QString y2);
+    void z2Changed(QString z2);
+    void rx2Changed(QString rx2);
+    void ry2Changed(QString ry2);
+    void rz2Changed(QString rz2);
 };
 class AACoreStates: public PropertyBase
 {

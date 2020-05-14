@@ -3,7 +3,8 @@
 #include "Utils/config.h"
 #include <QDir>
 #include <QJsonDocument>
-#include <QDebug>
+#include <QRegularExpression>
+#include <QJSEngine>
 
 QString getCurrentTimeString()
 {
@@ -58,9 +59,6 @@ void writeFile(QString data, QString dir, QString filename)
 // QString >> QJson
 QJsonObject getJsonObjectFromString(const QString jsonString){
     QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonString.toUtf8().data());
-    if( jsonDocument.isNull() ){
-        qDebug()<< "===> please check the string "<< jsonString.toUtf8().data();
-    }
     QJsonObject jsonObject = jsonDocument.object();
     return jsonObject;
 }
@@ -130,4 +128,74 @@ QString getProduceProcessLogDir(){ return getDir(PRODUCE_PROCESS_DIR); }
 QString getStringFromQvariantMap(const QVariantMap &qvariantMap)
 {
     return QString(QJsonDocument(QJsonObject::fromVariantMap(qvariantMap)).toJson());
+}
+
+double mathExpression(QString expression)
+{
+    QString exp1,exp2;
+    expression.replace("sin","Math.sin");
+    expression.replace("cos","Math.cos");
+    expression.replace("tan","Math.tan");
+    //.... and so on for trigonometrical functions)
+
+    expression.replace("sqrt","Math.sqrt");
+    expression.replace("(","[");
+    expression.replace(")","]");
+    expression.replace("^","POW");
+    expression.replace("+","PLUS");
+    expression.replace("-","MINUS");
+    expression.replace("*","MULT");
+    expression.replace("/","DIV");
+
+    while (expression.contains("[")) //START SOLVING EXPRESSIONS BETWEEN BRACKETS
+    {
+
+        QRegularExpression rep("\\[([^\\]]+)\\]");
+        QRegularExpressionMatch matchp = rep.match(expression);
+        QString expp_w_brackets = matchp.captured(0); //original expression with brakets
+        QString expp = matchp.captured(1);//expression without brakets
+        expp.replace ("PLUS","+");
+        expp.replace ("MINUS","-");
+        expp.replace("MULT","*");
+        expp.replace("DIV","/");
+
+        QJSEngine parsexpressionp;
+        double resultp=parsexpressionp.evaluate(expp).toNumber();
+        QString BraketResult=(QString::number(resultp));
+        expression.replace(""+expp_w_brackets+"" ,""+BraketResult+"");
+    }
+
+    while (expression.contains("POW")) //SOLVE POE EXPRESSION
+    {
+        QRegularExpression re1("(\\d+.\\d+POW)|(\\d+POW)");
+        QRegularExpressionMatch match1 = re1.match(expression);
+
+        QRegularExpression re2("(POW\\d+.\\d+)|(POW\\d+)");
+        QRegularExpressionMatch match2 = re2.match(expression);
+
+
+        if (match1.hasMatch())
+        {
+            exp1 = match1.captured(0);
+            exp1.replace("POW","");
+        }
+
+        if (match2.hasMatch())
+        {
+            exp2 = match2.captured(0);
+            exp2.replace("POW","");
+        }
+
+        expression.replace (""+exp1+"" "POW"""+exp2+"" , "Math.pow(" ""+exp1+"" ","  ""+exp2+""  ")");
+
+    }
+    expression.replace("[","(");
+    expression.replace("]",")");
+    expression.replace ("PLUS","+");
+    expression.replace ("MINUS","-");
+    expression.replace("MULT","*");
+    expression.replace("DIV","/");
+    QJSEngine parsexpression;
+    double result=parsexpression.evaluate(expression).toNumber();
+    return result;
 }

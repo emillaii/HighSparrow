@@ -71,5 +71,7 @@
         <file>qml/UserManagement/LoginComponent.qml</file>
         <file>qml/UserManagement/UsersView.qml</file>
         <file>qml/AAControlPageMenuBar.qml</file>
+        <file>qml/HWAA/HWAACoreView.qml</file>
+        <file>qml/Page7Form.ui.qml</file>
     </qresource>
 </RCC>

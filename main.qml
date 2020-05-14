@@ -551,6 +551,7 @@ ApplicationWindow {
         Page4FormForm {}
         Page5Form {}
         Page6Form {}
+        Page7Form {}
     }
 
     footer: TabBar {
@@ -574,6 +575,9 @@ ApplicationWindow {
         }
         TabButton {
             text: qsTr("AA Core")
+        }
+        TabButton {
+            text: qsTr("HWAA Core")
         }
     }
 }

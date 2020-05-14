@@ -44,12 +44,13 @@ public:
         AA = 5,
         INIT_CAMERA = 6,
         Y_LEVEL = 7,
-        UV = 8
+        UV = 8,
+        TOF = 9
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head, SingleheadLSutModule *lsut, Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
-              ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog);
+              ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog, VisionModule *visionModule);
     void performAAOffline();
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
@@ -59,6 +60,7 @@ public:
     ErrorCodeStruct performAA(QJsonValue params);
     ErrorCodeStruct performOC(QJsonValue params);
     ErrorCodeStruct performMTF(QJsonValue params, bool write_log = false);
+    Q_INVOKABLE ErrorCodeStruct performTOF(QJsonValue params);
     ErrorCodeStruct performMTFOffline(QJsonValue params);
     ErrorCodeStruct performZOffset(double zOffset);
     ErrorCodeStruct performXYOffset(double xOffset, double yOffset);
@@ -90,6 +92,7 @@ public:
     ImageProvider * sfrImageProvider;
     ImageProvider * dispenseImageProvider;
     ImageProvider * aaCoreTuningProvider;
+    VisionModule * visionModule;
     AACoreParameters parameters;
     AACoreStates states;
 

@@ -528,3 +528,407 @@ QImage VisionModule::requestImage(const QString &id, QSize *size, const QSize &r
     }
     return QImage();
 }
+
+//Huawei TOF use
+void VisionModule::Y1Line(float inX, int inY, atl::Array<avl::Point2D> &outArray)
+{
+    avl::Point2D point2D1;
+    avl::Point2D point2D2;
+
+    point2D1 = avl::Point2D(inX, 0.0f);
+    point2D2 = avl::Point2D(inX, static_cast<float>(inY));
+
+    // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
+    avs::AvsFilter_CreateArray< avl::Point2D >( point2D1, point2D2, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, outArray );
+}
+
+void VisionModule::CenterXLine( float inY, int inX, atl::Array< avl::Point2D >& outArray )
+{
+    avl::Point2D point2D1;
+    avl::Point2D point2D2;
+
+    point2D1 = avl::Point2D(0.0f, inY);
+    point2D2 = avl::Point2D(static_cast<float>(inX), inY);
+
+    // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
+    avs::AvsFilter_CreateArray< avl::Point2D >( point2D1, point2D2, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, outArray );
+}
+
+void VisionModule::CenterYLine( float inX, int inY, atl::Array< avl::Point2D >& outArray )
+{
+    avl::Point2D point2D1;
+    avl::Point2D point2D2;
+
+    point2D1 = avl::Point2D(inX, 0.0f);
+    point2D2 = avl::Point2D(inX, static_cast<float>(inY));
+
+    // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
+    avs::AvsFilter_CreateArray< avl::Point2D >( point2D1, point2D2, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, outArray );
+}
+
+void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inImage, const avl::Path& inScanPath, float& outCenterY1, float& outValue1, float& outValue2, float& outHalfHeightWidth, avl::Profile& outProfile )
+{
+    float real1;
+    float real2;
+
+    avl::ImageProfileAlongPath( state.imageProfileAlongPathState1, inImage, inScanPath, atl::NIL, 5, avl::InterpolationMethod::Bilinear, 0.6f, state.profile1, state.path1, atl::NIL, atl::Dummy< atl::Array< avl::Path > >().Get() );
+    avl::SmoothProfile_Mean( state.profile1, 3, false, outProfile );
+    avl::ProfileMaximum( outProfile, avl::ProfileInterpolationMethod::Quadratic4, atl::Dummy<float>().Get(), atl::NIL, real1 );
+    real2 = _avfml_st_real(_avfml_ld_real(real1) / 2.0);
+    avl::SubtractFromProfile( outProfile, real2, state.profile2 );
+    avl::ProfileZeroCrossings( state.profile2, state.realArray1 );
+
+    // AvsFilter_GetArrayElement is intended for use in generated programs. One should use indexing operator[] to access array' elements.
+    avs::AvsFilter_GetArrayElement< float >( state.realArray1, 0, false, outValue1 );
+
+    // AvsFilter_GetArrayElement is intended for use in generated programs. One should use indexing operator[] to access array' elements.
+    avs::AvsFilter_GetArrayElement< float >( state.realArray1, 1, false, outValue2 );
+    outHalfHeightWidth = _avfml_st_real(_avfml_ld_real(outValue2) - _avfml_ld_real(outValue1));
+    outCenterY1 = _avfml_st_real(_avfml_ld_real(outValue1) + _avfml_ld_real(outHalfHeightWidth) / 2.0);
+}
+
+TOFResult VisionModule::imageProcessing1()
+{
+    TOFResult tofResult;
+    static atl::String g_constData1;
+    g_constData1 = L"C:\\Users\\emil\\Desktop\\huawei\\2.jpg";
+    avl::Image image1;
+    avl::Region region1;
+    atl::Array< avl::Region > regionArray1;
+    avl::Region region2;
+    avl::Point2D point2D1;
+    int integer1;
+    int integer2;
+    float real1;
+    float real2;
+    float real3;
+    float real4;
+    atl::Array< avl::Point2D > point2DArray1;
+    atl::Array< avl::Point2D > point2DArray2;
+    atl::Array< avl::Point2D > point2DArray3;
+    atl::Array< avl::Point2D > point2DArray4;
+    float real5;
+    atl::Array< avl::Point2D > point2DArray5;
+    float real6;
+    atl::Array< avl::Point2D > point2DArray6;
+    avl::Path path1;
+    avl::Path path2;
+    avl::Path path3;
+    avl::Path path4;
+    avl::Path path5;
+    avl::Path path6;
+    ProfileCalcState profileCalcState1;
+    float real7;
+    avl::Profile profile1;
+    ProfileCalcState profileCalcState2;
+    float real8;
+    avl::Profile profile2;
+    ProfileCalcState profileCalcState3;
+    float real9;
+    avl::Profile profile3;
+    ProfileCalcState profileCalcState4;
+    float real10;
+    avl::Profile profile4;
+    ProfileCalcState profileCalcState5;
+    float real11;
+    avl::Profile profile5;
+    ProfileCalcState profileCalcState6;
+    float real12;
+    avl::Profile profile6;
+    avl::Point2D point2D2;
+    avl::Point2D point2D3;
+    avl::Point2D point2D4;
+    avl::Point2D point2D5;
+    avl::Point2D point2D6;
+    avl::Point2D point2D7;
+    atl::Array< avl::Point2D > point2DArray7;
+    atl::Array< atl::Conditional< avl::Point2D > > point2DArray8;
+    avl::Image image2;
+
+    try {
+        avl::LoadImage( g_constData1, false, image1 );
+
+        avl::ThresholdToRegion( image1, atl::NIL, 30.0f, 255.0f, 0.0f, region1 );
+        avl::SplitRegionIntoBlobs( region1, avl::RegionConnectivity::EightDirections, 1, atl::NIL, false, regionArray1, atl::Dummy< atl::Array< int > >().Get() );
+        avl::GetMaximumRegion( regionArray1, avl::RegionFeature::Area, region2, atl::NIL, atl::NIL );
+        avl::RegionMassCenter( region2, point2D1 );
+        integer1 = image1.Width();
+        integer2 = image1.Height();
+        real1 = _avfml_st_real(static_cast<double>(integer1) * 0.167);
+        real2 = _avfml_st_real(static_cast<double>(integer1) * 0.333);
+        real3 = _avfml_st_real(static_cast<double>(integer1) * 0.667);
+        real4 = _avfml_st_real(static_cast<double>(integer1) * 0.834);
+
+        // Y1Line
+        Y1Line( real1, integer2, point2DArray1 );
+
+        // Y2Line
+        Y1Line( real2, integer2, point2DArray2 );
+
+        // Y3Line
+        Y1Line( real3, integer2, point2DArray3 );
+
+        // Y4Line
+        Y1Line( real4, integer2, point2DArray4 );
+        real5 = point2D1.Y();
+        CenterXLine( real5, integer1, point2DArray5 );
+        real6 = point2D1.X();
+        CenterYLine( real6, integer2, point2DArray6 );
+
+        // Center X Line Scan Path
+        // Function AvsFilter_MakePath is intended for generated code only. Consider use of proper Path constructor instead.
+        avs::AvsFilter_MakePath( point2DArray5, false, path1 );
+
+        // Center Y Line Scan Path
+        // Function AvsFilter_MakePath is intended for generated code only. Consider use of proper Path constructor instead.
+        avs::AvsFilter_MakePath( point2DArray6, false, path2 );
+
+        // Y1 Line Scan Path
+        // Function AvsFilter_MakePath is intended for generated code only. Consider use of proper Path constructor instead.
+        avs::AvsFilter_MakePath( point2DArray1, false, path3 );
+
+        // Y2 Line Scan Path
+        // Function AvsFilter_MakePath is intended for generated code only. Consider use of proper Path constructor instead.
+        avs::AvsFilter_MakePath( point2DArray2, false, path4 );
+
+        // Y3 Line Scan Path
+        // Function AvsFilter_MakePath is intended for generated code only. Consider use of proper Path constructor instead.
+        avs::AvsFilter_MakePath( point2DArray3, false, path5 );
+
+        // Y4 Line Scan Path
+        // Function AvsFilter_MakePath is intended for generated code only. Consider use of proper Path constructor instead.
+        avs::AvsFilter_MakePath( point2DArray4, false, path6 );
+
+        // Center X Profile Calculation
+        float b;
+        ProfileCalc( profileCalcState1, image1, path1, real7, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), b, profile1 );
+
+        // Center Y3 Profile Calulation
+        float j;
+        ProfileCalc( profileCalcState2, image1, path2, real8, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), j, profile2 );
+
+        // Center Y1 Profile Calulation
+        float h;
+        ProfileCalc( profileCalcState3, image1, path3, real9, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), h, profile3 );
+
+        // Center Y2 Profile Calulation
+        float i;
+        ProfileCalc( profileCalcState4, image1, path4, real10, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), i, profile4 );
+
+        // Center Y4 Profile Calulation
+        float k;
+        ProfileCalc( profileCalcState5, image1, path5, real11, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), k, profile5 );
+
+        // Center Y5 Profile Calulation
+        float l;
+        ProfileCalc( profileCalcState6, image1, path6, real12, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), l, profile6 );
+
+        point2D2 = avl::Point2D(real7, real5);  //X
+        point2D3 = avl::Point2D(real6, real8);  //Y3
+        point2D4 = avl::Point2D(real1, real9);  //Y1
+        point2D5 = avl::Point2D(real2, real10); //Y2
+        point2D6 = avl::Point2D(real3, real11); //Y4
+        point2D7 = avl::Point2D(real4, real12); //Y5
+
+        tofResult.a = real7;   //X Center
+        tofResult.b = b;       //X Half width
+
+        tofResult.c = real1;  //Y1 center
+        tofResult.d = real2;  //Y2 center
+        tofResult.e = real6;  //Y3 center
+        tofResult.f = real3;  //Y4 center
+        tofResult.g = real4;  //Y5 center
+
+        tofResult.h = h; //Y1 Half width
+        tofResult.i = i; //Y2 Half width
+        tofResult.j = j; //Y3 Half width
+        tofResult.k = k; //Y4 Half width
+        tofResult.l = l; //Y5 Half width
+
+        // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
+        avs::AvsFilter_CreateArray< avl::Point2D >( point2D2, point2D3, point2D4, point2D5, point2D6, point2D7, atl::NIL, atl::NIL, point2DArray7 );
+
+        point2DArray8.Resize(point2DArray7.Size());
+
+        for( int i = 0; i < point2DArray7.Size(); ++i )
+        {
+            point2DArray8[i].AssignNonNil();
+            point2DArray8[i].Get() = point2DArray7[i];
+        }
+
+        avs::DrawPoints_Palette( image1, point2DArray8, atl::NIL, atl::NIL, avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 5.0f, false, avl::PointShape::Cross, 200.0f), true, image2 );
+
+        QString imageName;
+        imageName.append(getVisionLogDir())
+                .append(getCurrentTimeString())
+                .append(".jpg");
+        if (!image2.Empty())
+            avl::SaveImageToJpeg( image2 , imageName.toStdString().c_str(), atl::NIL, false );
+        tofResult.imageName = imageName;
+        tofResult.ret = true;
+
+    } catch(const atl::Error& error) {
+        tofResult.ret = false;
+    }
+
+    return tofResult;
+}
+
+void VisionModule::StepMacro_1( StepMacro_1State& state, float inX, int inY, float inX2, float inX3, const avl::Image& inImage, float& outCenterY1, float& outValueY1_1, float& outValueY1_2, float& outHalfHeightWidth, float& outCenterY2, float& outValueY2_1, float& outValueY2_2, float& outCenterY3, float& outValueY3_1, float& outValueY3_2, float& outHalfHeightWidth2, float& outHalfHeightWidth3, avl::Profile& outProfile, avl::Profile& outProfile1, avl::Profile& outProfile2 )
+{
+    // Y1Line
+    Y1Line( inX, inY, state.point2DArray1 );
+
+    // Y2Line
+    Y1Line( inX2, inY, state.point2DArray2 );
+
+    // Y3Line
+    Y1Line( inX3, inY, state.point2DArray3 );
+
+    // Y1 Line Scan Path
+    // Function AvsFilter_MakePath is intended for generated code only. Consider use of proper Path constructor instead.
+    avs::AvsFilter_MakePath( state.point2DArray1, false, state.path1 );
+
+    // Y2 Line Scan Path
+    // Function AvsFilter_MakePath is intended for generated code only. Consider use of proper Path constructor instead.
+    avs::AvsFilter_MakePath( state.point2DArray2, false, state.path2 );
+
+    // Y3 Line Scan Path
+    // Function AvsFilter_MakePath is intended for generated code only. Consider use of proper Path constructor instead.
+    avs::AvsFilter_MakePath( state.point2DArray3, false, state.path3 );
+
+    // Y1 Profile Calculation
+    ProfileCalc( state.profileCalcState1, inImage, state.path1, outCenterY1, outValueY1_1, outValueY1_2, outHalfHeightWidth, outProfile );
+
+    // Y1 Profile Calculation
+    ProfileCalc( state.profileCalcState2, inImage, state.path2, outCenterY2, outValueY2_1, outValueY2_2, outHalfHeightWidth2, outProfile1 );
+
+    // Y1 Profile Calculation
+    ProfileCalc( state.profileCalcState3, inImage, state.path3, outCenterY3, outValueY3_1, outValueY3_2, outHalfHeightWidth3, outProfile2 );
+}
+
+TOFResult VisionModule::imageProcessing2()
+{
+    TOFResult tofResult;
+    atl::String g_constData1;
+    g_constData1 = L"C:\\Users\\emil\\Desktop\\huawei\\x_5-2.JPG";
+    try {
+        avl::Image image1;
+        int integer1;
+        int integer2;
+        float real1;
+        float real2;
+        avl::Box box1;
+        avl::Box box2;
+        avl::Image image2;
+        avl::Image image3;
+        float real3;
+        float real4;
+        float real5;
+        int integer3;
+        StepMacro_1State stepMacro_1State1;
+        float real6;
+        float real7;
+        float real8;
+        avl::Profile profile1;
+        avl::Profile profile2;
+        avl::Profile profile3;
+        avl::Point2D point2D1;
+        avl::Point2D point2D2;
+        avl::Point2D point2D3;
+        int integer4;
+        StepMacro_1State stepMacro_1State2;
+        float real9;
+        float real10;
+        float real11;
+        avl::Profile profile4;
+        avl::Profile profile5;
+        avl::Profile profile6;
+        float real12;
+        float real13;
+        float real14;
+        avl::Point2D point2D4;
+        avl::Point2D point2D5;
+        avl::Point2D point2D6;
+        atl::Array< avl::Point2D > point2DArray1;
+        atl::Array< atl::Conditional< avl::Point2D > > point2DArray2;
+        avl::Image image4;
+
+        avl::LoadImage( g_constData1, false, image1 );
+        integer1 = image1.Width();
+        integer2 = image1.Height();
+        real1 = _avfml_st_real(static_cast<double>(integer1) / 2.0);
+        real2 = _avfml_st_real(static_cast<double>(integer2) / 2.0);
+        box1 = avl::Box(0, 0, integer1, static_cast<int>(real2));
+        box2 = avl::Box(0, static_cast<int>(real2), integer1, static_cast<int>(real2));
+
+        // Upper Box Image
+        avl::CropImage( image1, box1, image2 );
+
+        // Lower Box Image
+        avl::CropImage( image1, box2, image3 );
+        real3 = _avfml_st_real(static_cast<double>(integer1) * 0.25);
+        real4 = _avfml_st_real(static_cast<double>(integer1) * 0.5);
+        real5 = _avfml_st_real(static_cast<double>(integer1) * 0.75);
+        integer3 = image2.Height();
+
+        // Upper Box Calculation
+        float g, h, i;
+        StepMacro_1( stepMacro_1State1, real3, integer3, real4, real5, image2, real6, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), g, real7, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), real8, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), h, i, profile1, profile2, profile3 );
+        point2D1 = avl::Point2D(real3, real6);
+        point2D2 = avl::Point2D(real4, real7);
+        point2D3 = avl::Point2D(real5, real8);
+        integer4 = image3.Height();
+
+        // Lower Box Calculation
+        float j,k,l;
+        StepMacro_1( stepMacro_1State2, real3, integer4, real4, real5, image3, real9, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), j, real10, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), real11, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), k, l, profile4, profile5, profile6 );
+        real12 = _avfml_st_real(_avfml_ld_real(real2) + _avfml_ld_real(real9));
+        real13 = _avfml_st_real(_avfml_ld_real(real2) + _avfml_ld_real(real10));
+        real14 = _avfml_st_real(_avfml_ld_real(real2) + _avfml_ld_real(real11));
+        point2D4 = avl::Point2D(real3, real12);
+        point2D5 = avl::Point2D(real4, real13);
+        point2D6 = avl::Point2D(real5, real14);
+
+        // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
+        avs::AvsFilter_CreateArray< avl::Point2D >( point2D1, point2D2, point2D3, point2D4, point2D5, point2D6, atl::NIL, atl::NIL, point2DArray1 );
+
+        point2DArray2.Resize(point2DArray1.Size());
+
+        for( int i = 0; i < point2DArray1.Size(); ++i )
+        {
+            point2DArray2[i].AssignNonNil();
+            point2DArray2[i].Get() = point2DArray1[i];
+        }
+
+        avs::DrawPoints_Palette( image1, point2DArray2, atl::NIL, atl::NIL, avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 10.0f), true, image4 );
+
+        tofResult.a = real6;
+        tofResult.b = real7;
+        tofResult.c = real8;
+
+        tofResult.d = real12;
+        tofResult.e = real13;
+        tofResult.f = real14;
+
+        tofResult.g = g;
+        tofResult.h = h;
+        tofResult.i = i;
+        tofResult.j = j;
+        tofResult.k = k;
+        tofResult.l = l;
+
+        QString imageName;
+        imageName.append(getVisionLogDir())
+                .append(getCurrentTimeString())
+                .append(".jpg");
+        if (!image2.Empty())
+            avl::SaveImageToJpeg( image2 , imageName.toStdString().c_str(), atl::NIL, false );
+        tofResult.imageName = imageName;
+        tofResult.ret = true;
+
+    }catch(const atl::Error& error) {
+        tofResult.ret = false;
+    }
+    return tofResult;
+}

@@ -116,7 +116,7 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 }
 
 void AACoreNew::Init(AAHeadModule *aa_head, SingleheadLSutModule *lsut, Dothinkey *dk, ChartCalibration *chartCalibration,
-                     DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog)
+                     DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog, VisionModule *visionModule)
 {
     this->aa_head = aa_head;
     this->lsut = lsut;
@@ -125,6 +125,7 @@ void AACoreNew::Init(AAHeadModule *aa_head, SingleheadLSutModule *lsut, Dothinke
     this->dispense = dispense;
     this->imageThread = imageThread;
     this->unitlog = unitlog;
+    this->visionModule = visionModule;
 }
 
 void AACoreNew::loadJsonConfig(QString file_name)
@@ -424,6 +425,9 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::UV) {
         performUV(params["delay_in_ms"].toInt());
+    }
+    else if (cmd == HandleTest::TOF) {
+        performTOF(params);
     }
     handlingParams = "";
     emit postDataToELK(this->runningUnit);
@@ -1766,6 +1770,73 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
        LogicNg(current_aa_ng_time);
        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
+}
+
+QString convertFormulaFromTOFResult(QString input, TOFResult tofResult)
+{
+    QString formula = input;
+    formula.replace("a", QString::number(tofResult.a));
+    formula.replace("b", QString::number(tofResult.b));
+    formula.replace("c", QString::number(tofResult.c));
+    formula.replace("d", QString::number(tofResult.d));
+    formula.replace("e", QString::number(tofResult.e));
+    formula.replace("f", QString::number(tofResult.f));
+    formula.replace("g", QString::number(tofResult.g));
+    formula.replace("h", QString::number(tofResult.h));
+    formula.replace("i", QString::number(tofResult.i));
+    formula.replace("j", QString::number(tofResult.j));
+    formula.replace("k", QString::number(tofResult.k));
+    formula.replace("l", QString::number(tofResult.l));
+    return formula;
+}
+
+ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
+{
+    QElapsedTimer timer;timer.start();
+    qInfo("Start perform TOF");
+    int method = params["method"].toInt(1);
+    TOFResult tofResult;
+    if (method == 1) {
+        tofResult = visionModule->imageProcessing1();
+    } else {
+        tofResult = visionModule->imageProcessing2();
+    }
+
+    double x = mathExpression(convertFormulaFromTOFResult(this->parameters.x1(), tofResult));
+    double y = mathExpression(convertFormulaFromTOFResult(this->parameters.y1(), tofResult));
+    double z = mathExpression(convertFormulaFromTOFResult(this->parameters.z1(), tofResult));
+    double rx = mathExpression(convertFormulaFromTOFResult(this->parameters.rx1(), tofResult));
+    double ry = mathExpression(convertFormulaFromTOFResult(this->parameters.ry1(), tofResult));
+    double rz = mathExpression(convertFormulaFromTOFResult(this->parameters.rz1(), tofResult));
+
+    QVariantMap map;
+    map.insert("a", tofResult.a);
+    map.insert("b", tofResult.b);
+    map.insert("c", tofResult.c);
+    map.insert("d", tofResult.d);
+    map.insert("e", tofResult.e);
+    map.insert("f", tofResult.f);
+    map.insert("g", tofResult.g);
+    map.insert("h", tofResult.h);
+    map.insert("i", tofResult.i);
+    map.insert("j", tofResult.j);
+    map.insert("k", tofResult.k);
+    map.insert("l", tofResult.l);
+
+    map.insert("x", x);
+    map.insert("y", y);
+    map.insert("z", z);
+    map.insert("rx", rx);
+    map.insert("ry", ry);
+    map.insert("rz", rz);
+
+    map.insert("method", method);
+    map.insert("result", tofResult.ret);
+    map.insert("imageName", tofResult.imageName);
+    map.insert("timeElapsed", timer.elapsed());
+    qInfo("Finish TOF. Time elapsed: %d", timer.elapsed());
+    emit pushDataToUnit(this->runningUnit, "TOF", map);
+    return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)

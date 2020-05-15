@@ -92,4 +92,28 @@ ColumnLayout {
             }
         }
     }
+
+    RowLayout{
+        CheckBox{
+            text: qsTr("排胶提醒")
+            checked: dispenseParams.enableDispenseTimerAlarm
+            onCheckedChanged: {
+                dispenseParams.setEnableDispenseTimerAlarm(checked)
+            }
+        }
+
+        Label{
+            text:qsTr("时间间隔(min)")
+        }
+        TextField{
+            text:dispenseParams.dispenseAlarmMinute
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: IntValidator{
+                bottom: 1
+            }
+            onEditingFinished: {
+                dispenseParams.setDispenseAlarmMinute(text)
+            }
+        }
+    }
 }

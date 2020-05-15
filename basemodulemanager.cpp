@@ -81,6 +81,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&lens_loader_module, &LensLoaderModule::saveUnitDataToCSV, &unitlog, &Unitlog::saveUnitDataToCSV);
     connect(&aaCoreNew.parameters, &AACoreParameters::dispenseCountChanged, this, &BaseModuleManager::updateAACoreParameter);
     connect(&dispenser.parameters, &DispenserParameter::lineSpeedsChanged, this, &BaseModuleManager::updateParams);
+    connect(&dispense_module.parameters, &DispenseParameter::lastDispenseTimeChanged, this, &BaseModuleManager::updateDispenseParameter);
     if(!QDir(".//notopencamera").exists() && ServerMode() == 0)
     {
         if(pylonUplookCamera) pylonUplookCamera->start();
@@ -771,6 +772,11 @@ void BaseModuleManager::updateAACoreParameter()
     aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
 }
 
+void BaseModuleManager::updateDispenseParameter()
+{
+    dispense_module.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
+}
+
 bool BaseModuleManager::loadParameters()
 {
 //    configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
@@ -864,7 +870,7 @@ bool BaseModuleManager::saveParameters()
         trayClipOut.standards_parameters.saveJsonConfig(getCurrentParameterDir().append(TRAY_CLIPOUT_FILE),TRAY_CLIPOUT_PARAMETER);
     }
     aaCoreNew.saveJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
-    saveMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    //saveMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     saveCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));

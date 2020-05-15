@@ -160,15 +160,15 @@ QVector<mPoint3D> DispenseModule::getDispensePath()
 
 bool DispenseModule::performDispense()
 {
-   QVector<mPoint3D> temp_path = getDispensePath();
-   if(temp_path.size()<2)
-   {
+    QVector<mPoint3D> temp_path = getDispensePath();
+    if(temp_path.size()<2)
+    {
        qInfo("point too small :%d",temp_path.size());
        return false;
-   }
-   QVector<DispensePathPoint> dispense_path;
-   for (int i = 0; i < temp_path.size(); ++i)
-   {
+    }
+    QVector<DispensePathPoint> dispense_path;
+    for (int i = 0; i < temp_path.size(); ++i)
+    {
        QVector<double> pos;
        PATH_POINT_TYPE type = PATH_POINT_LINE;
        pos.append(temp_path[i].X);
@@ -178,10 +178,12 @@ bool DispenseModule::performDispense()
        else if (i == 0) type = PATH_POINT_CLOSE_VALVE;
        else type = PATH_POINT_OPEN_VALVE;
        dispense_path.append(DispensePathPoint(3,pos,type));
-   }
-   qInfo("Dispense start");
-   if( dispenser->Dispense(dispense_path))
-       return dispenser->WaitForFinish();
+    }
+    qInfo("Dispense start");
+    lastDispenseDateTime = QDateTime::currentDateTime();
+    parameters.setLastDispenseTime(lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    if( dispenser->Dispense(dispense_path))
+        return dispenser->WaitForFinish();
     qInfo("Dispense fail");
     return false;
 }

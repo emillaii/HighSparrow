@@ -269,6 +269,7 @@ public slots:
         emit machineVersionChanged(m_MachineVersion);
     }
     void updateAACoreParameter();
+    void updateDispenseParameter();
 public:
     ModuleManangerConfig configs;
     ModuleManagerParameter parameters;

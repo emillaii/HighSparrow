@@ -21,13 +21,13 @@ You may not assign, rent, lease, lend, sell, redistribute or sublicense this Sof
 -----------------------------------------------------------------------------
 Consent to Use of Data 
 -----------------------------------------------------------------------------
-You agree that ASM Pacific Technology Ltd and its subsidiaries may collect and use technical and related information, as long as it is in a form that does not personally identify you, to improve our products or to provide services or technologies to you. 
+You agree that Silicool Technology Ltd and its subsidiaries may collect and use technical and related information, as long as it is in a form that does not personally identify you, to improve our products or to provide services or technologies to you. 
 -----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------
 Termination
 -----------------------------------------------------------------------------
-This License is effective until terminated. Your rights under this License will terminate by ASM Pacific Technology Ltd automatically without notice if you fail to comply with any term(s) of this License. Upon the termination of this License, you shall cease all use of Software and destroy all copies, full or partial, of the Software. 
+This License is effective until terminated. Your rights under this License will terminate by Silicool Technology Ltd automatically without notice if you fail to comply with any term(s) of this License. Upon the termination of this License, you shall cease all use of Software and destroy all copies, full or partial, of the Software. 
 -----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------

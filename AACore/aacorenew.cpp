@@ -875,26 +875,11 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         bool preCheckFail = dispense->dispenser->glueLevelCheck();
         qInfo("Glue level check result: %d", preCheckFail);
         if (preCheckFail) {
-            int alarm_id = sendAlarmMessage(CONTINUE_REJECT_OPERATION, u8"胶水位检查失败");
+            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, u8"胶水位检查失败,请更换胶水后继续。");
             QString operation = waitMessageReturn(is_run,alarm_id);
-            if (REJECT_OPERATION == operation)
-            {
-                QVariantMap map;
-                map["testResult"] = "Fail";
-                map["errorMessage"] = "Glue level check fail";
-                map["lens"] = this->has_lens;
-                map["sensor"] = this->has_sensor;
-                map["product"] = this->has_product;
-                map["ng_product"] = this->has_ng_product;
-                map["ng_sensor"] = this->has_ng_sensor;
-                map["ng_lens"] = this->has_ng_lens;
-                emit pushDataToUnit(runningUnit, "overallResult", map);
-                emit pushNgDataToCSV(this->runningUnit, parameters.lotNumber(), dk->readSensorID(), testItemName, ret.errorMessage);
-                parameters.setAACoreRunningTest("");
-                return ret;
-            }
         }
     }
+
 
     for (int i = 0; i <= retry_count; i++) {
         parameters.setAACoreRunningTest("Running test: " + testItemName);
@@ -1141,6 +1126,21 @@ ErrorCodeStruct AACoreNew::performParticalCheck(QJsonValue params)
 
 ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
 {
+    qInfo("currentDateTime = %s, lastTimeDispense = %s",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str(), dispense->lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str());
+    int idleHour = QDateTime::currentDateTime().time().hour() - dispense->lastDispenseDateTime.time().hour();
+    int idleMinute = QDateTime::currentDateTime().time().minute() - dispense->lastDispenseDateTime.time().minute();
+    int idleSecond = QDateTime::currentDateTime().time().second() - dispense->lastDispenseDateTime.time().second();
+    if (QDateTime::currentDateTime().date().year() > dispense->lastDispenseDateTime.date().year()
+            || QDateTime::currentDateTime().date().month() > dispense->lastDispenseDateTime.date().month()
+            || QDateTime::currentDateTime().date().day() > dispense->lastDispenseDateTime.date().day()
+            || idleHour*60*60+idleMinute*60+idleSecond > dispense->parameters.dispenseAlarmMinute()*60)
+    {
+        QString errMsg = u8"请留意排胶后继续,上次点胶时间：" + dispense->parameters.lastDispenseTime();
+        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, errMsg);
+        bool inter = true;
+        QString operation = waitMessageReturn(inter,alarm_id);
+    }
+
     double x_offset_in_um = params["x_offset_in_um"].toDouble(0);
     double y_offset_in_um = params["y_offset_in_um"].toDouble(0);
     double z_offset_in_um = params["z_offset_in_um"].toDouble(0);

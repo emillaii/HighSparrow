@@ -25,9 +25,9 @@ public:
     Dispenser* dispenser = Q_NULLPTR;
 private:
     QVector<mPoint3D> getDispensePath();
-private:
 public:
     DispenseParameter parameters;
+    QDateTime lastDispenseDateTime;
 private:
     QVector<QPointF> mechPoints;
     Calibration* calibration;

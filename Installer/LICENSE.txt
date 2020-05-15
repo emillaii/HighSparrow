@@ -1,0 +1,43 @@
+-----------------------------------------------------------------------------
+HighSparrowQ Software Agreement
+-----------------------------------------------------------------------------
+
+PLEASE READ THIS END USER LICENSE AGREEMENT ("LICENSE") CAREFULLY BEFORE INSTALLING OR USING SILICOOL SOFTWARE APPLICATIONS. BY INSTALLING OR USING THE SOFTWARE, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS LICENSE. IF YOU DO NOT AGREE TO THE TERMS OF THIS LICENSE, DO NOT INSTALL 0R USE THE SOFTWARE AND RETURN THE ENTIRE PACKAGE INTACT, IN THE ORIGINAL WRAPPING, TO YOUR DEALER FOR A FULL REFUND. 
+
+Silicool Technology Ltd, as Licensor, grants, not sells to you, as Licensee, a non-exclusive right to use this Software under the terms of this License. Silicool Technology Ltd reserves all rights not expressly granted to you. Silicool Technology Ltd retains the ownership of the Software. The Software is protected by copyright laws and international copyright treaties, as well as other intellectual property laws and treaties. 
+
+-----------------------------------------------------------------------------
+Permitted License Uses and Restrictions
+-----------------------------------------------------------------------------
+(a) This License allows you to install and use one copy of the Software on a single qualified computer running the version(s) of Microsoft Windows for which it is designated. You will need to review the System Requirements for the specific versions of Microsoft Windows supported by Software. This License does not allow the Software to exist on more than one computer at a time. Unauthorized copying of the Software is expressly forbidden. You may be held legally responsible for any copyright infringement that is caused or encouraged by your failure to abide by the terms of this Agreement. Subject to these restrictions, you may make one copy of the Software in machine-readable form for backup purposes only; provided that the backup copy must include all copyright or other proprietary notices contained on the original. (b) Except as and only to the extent permitted in this License and by applicable law, you may not copy, adapt, translate, decompile, reverse engineer, disassemble, modify, or create derivative works of the Software. 
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Transfer
+-----------------------------------------------------------------------------
+You may not assign, rent, lease, lend, sell, redistribute or sublicense this Software. You may, however, make a one-time permanent transfer of all of your license rights to the Software (in its original form as provided) to another party. 
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Consent to Use of Data 
+-----------------------------------------------------------------------------
+You agree that ASM Pacific Technology Ltd and its subsidiaries may collect and use technical and related information, as long as it is in a form that does not personally identify you, to improve our products or to provide services or technologies to you. 
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Termination
+-----------------------------------------------------------------------------
+This License is effective until terminated. Your rights under this License will terminate by ASM Pacific Technology Ltd automatically without notice if you fail to comply with any term(s) of this License. Upon the termination of this License, you shall cease all use of Software and destroy all copies, full or partial, of the Software. 
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Disclaimer of Warranties
+-----------------------------------------------------------------------------
+Your use of the Software is at your sole risk. The Software and accompanying written materials are provided on an "AS IS" and "AS AVAILABLE" basis without warranty of any kind, express or implied of any kind and Silicool Technology Ltd specifically disclaims the warranties of fitness for a particular purpose and merchantability. No oral or written advice given by Silicool Technology Ltd, its dealers, distributors, agents or employees shall create a warranty or in any way increase the scope if this warranty and you may not rely upon such information or advice. 
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Limitation of Liability
+-----------------------------------------------------------------------------
+Silicool Technology Ltd or anyone else who has been involved in the creation, production, or delivery of the Software cannot be liable for, and shall not pay, any amount of incidental, consequential, direct or indirect damages (including damage for loss of profit, business interruption, loss of data, and the like arising out of the use or inability to use the software). You assume the entire risk as to the quality and performance of the Software.
+-----------------------------------------------------------------------------

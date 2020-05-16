@@ -199,3 +199,11 @@ double mathExpression(QString expression)
     double result=parsexpression.evaluate(expression).toNumber();
     return result;
 }
+
+QString variableFormat(qreal n) { // assumes max precision of 2
+    int i = rint(n * 100.0);
+    if (i % 100)
+        return QString::number(n, 'f', i % 10 ? 2 : 1);
+    else
+        return QString::number(i / 100);
+}

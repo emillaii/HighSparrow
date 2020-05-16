@@ -39,6 +39,11 @@ HIKCamera::SCReturnCode HIKCamera::SCCameraStop()
     }
 }
 
+bool HIKCamera::scSetExposureTime(float value){
+   return MV_CC_SetFloatValue(m_hDevHandle, "ExposureTime", value);
+}
+
+
 bool HIKCamera::scSaveImage()
 {
     QString imageName = "test.jpg";

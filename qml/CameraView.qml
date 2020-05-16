@@ -440,6 +440,19 @@ Grid {
                 model: [ "PA DL", "HIK" ]
                 currentIndex: 0
             }
+            TextField {
+                y: 50
+                visible: {
+                     if (pickarmCameraSelectComboBox.currentIndex === 0) return false
+                     else return true
+                }
+                text: "5000"
+                onEditingFinished: {
+                    hikCamera.scSetExposureTime(text)
+                    baseModuleManager.setExposureTime(text)
+                }
+            }
+
             Slider {
                 id: slider1
                 y: 250

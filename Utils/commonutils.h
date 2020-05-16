@@ -28,5 +28,6 @@ QString getStringFromJsonObject(const QJsonObject& jsonObject);
 QString getStringFromQvariantMap(const QVariantMap& qvariantMap);
 bool fitCircle(const std::vector<cv::Point2d> &pnts, cv::Point2d &center, double &radius);
 double mathExpression(QString expression);
+QString variableFormat(double n);
 
 #endif // COMMONUTILS_H

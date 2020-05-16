@@ -44,6 +44,7 @@ public:
     Q_PROPERTY(bool HomeState READ HomeState WRITE setHomeState NOTIFY paramsChanged)
     Q_PROPERTY(bool InitState READ InitState WRITE setInitState NOTIFY InitStateChanged)
     Q_PROPERTY(QString FlowchartFilename READ FlowchartFilename WRITE setFlowchartFilename NOTIFY paramsChanged)
+    Q_PROPERTY(int exposureTime READ exposureTime WRITE setExposureTime NOTIFY exposureTimeValueChanged)
     QMap<QString,XtMotor*> motors;
     QMap<QString,XtGeneralInput*> input_ios;
     QMap<QString,XtGeneralOutput*> output_ios;
@@ -97,6 +98,8 @@ signals:
     void sendAlarm(int sender_id,int level, QString error_message);
     void InitStateChanged(bool InitState);
 
+    void exposureTimeValueChanged(int exposureTime);
+
 public slots:
     void alarmChecking();
     void receiveImageFromAACore(int type) {
@@ -137,6 +140,15 @@ public slots:
         emit InitStateChanged(m_InitState);
     }
 
+    void setExposureTime(int exposureTime)
+    {
+        if (m_exposureTime == exposureTime)
+            return;
+
+        m_exposureTime = exposureTime;
+        emit exposureTimeValueChanged(m_exposureTime);
+    }
+
 public:
     ModuleManangerConfig configs;
     ModuleManagerParameter paramers;
@@ -152,9 +164,9 @@ private:
         500/*MaxVel*/,10000/*MaxAcc*/,200000/*MaxJerk*/,33/*MaxRange*/,0/*MinRange*/,10/*CanID*/,1/*dir*/,5000/*scale*/};
 private:
     bool InitStruct();
-
     bool m_HomeState = false;
     int m_lightPanelLighting;
+    int m_exposureTime= 5000;
     QTimer timer;
     QThread work_thread;
     bool m_InitState = false;
@@ -189,8 +201,6 @@ private:
     bool saveJsonObject(QString file_name,QJsonObject &object);
     QString getCurrentParameterDir();
     QString m_FlowchartFilename;
-
-
 
 public:
     bool registerWorkers(WorkersManager* manager);
@@ -238,6 +248,10 @@ public:
     bool InitState() const
     {
         return m_InitState;
+    }
+    int exposureTime() const
+    {
+        return m_exposureTime;
     }
 };
 

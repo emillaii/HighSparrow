@@ -29,6 +29,7 @@ public:
     virtual SCReturnCode SCGetImage(QImage &outputImage) = 0;
     virtual SCReturnCode SCCameraStop() = 0;
     Q_INVOKABLE virtual bool scSaveImage() = 0;
+    Q_INVOKABLE virtual bool scSetExposureTime(float value) = 0;
     QString cameraName() const
     {
         return m_cameraName;

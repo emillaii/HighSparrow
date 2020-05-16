@@ -19,6 +19,7 @@ public:
     SCReturnCode SCCameraInit(QString cameraName) override;
     SCReturnCode SCGetImage(QImage &) override;
     SCReturnCode SCCameraStop() override;
+    Q_INVOKABLE bool scSetExposureTime(float value) override;
     Q_INVOKABLE bool scSaveImage() override;
 public:
     static int EnumDevices(MV_CC_DEVICE_INFO_LIST* pstDevList);

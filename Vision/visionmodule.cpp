@@ -731,20 +731,20 @@ TOFResult VisionModule::imageProcessing1(QString filename)
         point2D6 = avl::Point2D(real3, real11); //Y4
         point2D7 = avl::Point2D(real4, real12); //Y5
 
-        tofResult.a = real7;   //X Center
-        tofResult.b = b;       //X Half width
+        tofResult.a = variableFormat(real7).toDouble();   //X Center
+        tofResult.b = variableFormat(b).toDouble();       //X Half width
 
-        tofResult.c = real1;  //Y1 center
-        tofResult.d = real2;  //Y2 center
-        tofResult.e = real6;  //Y3 center
-        tofResult.f = real3;  //Y4 center
-        tofResult.g = real4;  //Y5 center
+        tofResult.c = variableFormat(real1).toDouble();  //Y1 center
+        tofResult.d = variableFormat(real2).toDouble();  //Y2 center
+        tofResult.e = variableFormat(real6).toDouble();  //Y3 center
+        tofResult.f = variableFormat(real3).toDouble();  //Y4 center
+        tofResult.g = variableFormat(real4).toDouble();  //Y5 center
 
-        tofResult.h = h; //Y1 Half width
-        tofResult.i = i; //Y2 Half width
-        tofResult.j = j; //Y3 Half width
-        tofResult.k = k; //Y4 Half width
-        tofResult.l = l; //Y5 Half width
+        tofResult.h = variableFormat(h).toDouble(); //Y1 Half width
+        tofResult.i = variableFormat(i).toDouble(); //Y2 Half width
+        tofResult.j = variableFormat(j).toDouble(); //Y3 Half width
+        tofResult.k = variableFormat(k).toDouble(); //Y4 Half width
+        tofResult.l = variableFormat(l).toDouble(); //Y5 Half width
 
         // AvsFilter_CreateArray is intended for use in generated code only. Consider use of proper constructor or Array::Clear() and Array::Reserve function in hand-written programs.
         avs::AvsFilter_CreateArray< avl::Point2D >( point2D2, point2D3, point2D4, point2D5, point2D6, point2D7, atl::NIL, atl::NIL, point2DArray7 );

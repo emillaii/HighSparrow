@@ -1799,9 +1799,9 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     TOFResult tofResult;
     filename.replace("file:///", "");
     if (method == 1) {
-        tofResult = visionModule->imageProcessing1(filename);
+        tofResult = visionModule->imageProcessing1(filename, parameters.scanY1PixelLocation1(), parameters.scanY2PixelLocation1(), parameters.scanY4PixelLocation1(), parameters.scanY5PixelLocation1(), parameters.halfWidth1());
     } else {
-        tofResult = visionModule->imageProcessing2(filename);
+        tofResult = visionModule->imageProcessing2(filename, parameters.scanY1PixelLocation2(), parameters.scanY2PixelLocation2(), parameters.scanY3PixelLocation2(), parameters.halfWidth2());
     }
 
     double x = mathExpression(convertFormulaFromTOFResult(this->parameters.x1(), tofResult));

@@ -566,7 +566,7 @@ void VisionModule::CenterYLine( float inX, int inY, atl::Array< avl::Point2D >& 
     avs::AvsFilter_CreateArray< avl::Point2D >( point2D1, point2D2, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, atl::NIL, outArray );
 }
 
-void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inImage, const avl::Path& inScanPath, float& outCenterY1, float& outValue1, float& outValue2, float& outHalfHeightWidth, avl::Profile& outProfile )
+void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inImage, const avl::Path& inScanPath, float& outCenterY1, float& outValue1, float& outValue2, float& outHalfHeightWidth, avl::Profile& outProfile, double intensity_percentage )
 {
     float real1;
     float real2;
@@ -574,7 +574,7 @@ void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inIma
     avl::ImageProfileAlongPath( state.imageProfileAlongPathState1, inImage, inScanPath, atl::NIL, 5, avl::InterpolationMethod::Bilinear, 0.6f, state.profile1, state.path1, atl::NIL, atl::Dummy< atl::Array< avl::Path > >().Get() );
     avl::SmoothProfile_Mean( state.profile1, 3, false, outProfile );
     avl::ProfileMaximum( outProfile, avl::ProfileInterpolationMethod::Quadratic4, atl::Dummy<float>().Get(), atl::NIL, real1 );
-    real2 = _avfml_st_real(_avfml_ld_real(real1) / 2.0);
+    real2 = _avfml_st_real(_avfml_ld_real(real1) * intensity_percentage);
     avl::SubtractFromProfile( outProfile, real2, state.profile2 );
     avl::ProfileZeroCrossings( state.profile2, state.realArray1 );
 
@@ -587,7 +587,7 @@ void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inIma
     outCenterY1 = _avfml_st_real(_avfml_ld_real(outValue1) + _avfml_ld_real(outHalfHeightWidth) / 2.0);
 }
 
-TOFResult VisionModule::imageProcessing1(QString filename)
+TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2, double y4, double y5, double intensity_percentage)
 {
     TOFResult tofResult;
     static atl::String g_constData1;
@@ -655,10 +655,10 @@ TOFResult VisionModule::imageProcessing1(QString filename)
         avl::RegionMassCenter( region2, point2D1 );
         integer1 = image1.Width();
         integer2 = image1.Height();
-        real1 = _avfml_st_real(static_cast<double>(integer1) * 0.167);
-        real2 = _avfml_st_real(static_cast<double>(integer1) * 0.333);
-        real3 = _avfml_st_real(static_cast<double>(integer1) * 0.667);
-        real4 = _avfml_st_real(static_cast<double>(integer1) * 0.834);
+        real1 = _avfml_st_real(static_cast<double>(integer1) * y1);
+        real2 = _avfml_st_real(static_cast<double>(integer1) * y2);
+        real3 = _avfml_st_real(static_cast<double>(integer1) * y4);
+        real4 = _avfml_st_real(static_cast<double>(integer1) * y5);
 
         // Y1Line
         Y1Line( real1, integer2, point2DArray1 );
@@ -702,15 +702,15 @@ TOFResult VisionModule::imageProcessing1(QString filename)
 
         // Center X Profile Calculation
         float b;
-        ProfileCalc( profileCalcState1, image1, path1, real7, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), b, profile1 );
+        ProfileCalc( profileCalcState1, image1, path1, real7, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), b, profile1, intensity_percentage );
 
         // Center Y3 Profile Calulation
         float j;
-        ProfileCalc( profileCalcState2, image1, path2, real8, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), j, profile2 );
+        ProfileCalc( profileCalcState2, image1, path2, real8, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), j, profile2, intensity_percentage );
 
         // Center Y1 Profile Calulation
         float h;
-        ProfileCalc( profileCalcState3, image1, path3, real9, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), h, profile3 );
+        ProfileCalc( profileCalcState3, image1, path3, real9, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), h, profile3, intensity_percentage );
 
         // Center Y2 Profile Calulation
         float i;
@@ -775,7 +775,7 @@ TOFResult VisionModule::imageProcessing1(QString filename)
     return tofResult;
 }
 
-void VisionModule::StepMacro_1( StepMacro_1State& state, float inX, int inY, float inX2, float inX3, const avl::Image& inImage, float& outCenterY1, float& outValueY1_1, float& outValueY1_2, float& outHalfHeightWidth, float& outCenterY2, float& outValueY2_1, float& outValueY2_2, float& outCenterY3, float& outValueY3_1, float& outValueY3_2, float& outHalfHeightWidth2, float& outHalfHeightWidth3, avl::Profile& outProfile, avl::Profile& outProfile1, avl::Profile& outProfile2 )
+void VisionModule::StepMacro_1( StepMacro_1State& state, float inX, int inY, float inX2, float inX3, const avl::Image& inImage, float& outCenterY1, float& outValueY1_1, float& outValueY1_2, float& outHalfHeightWidth, float& outCenterY2, float& outValueY2_1, float& outValueY2_2, float& outCenterY3, float& outValueY3_1, float& outValueY3_2, float& outHalfHeightWidth2, float& outHalfHeightWidth3, avl::Profile& outProfile, avl::Profile& outProfile1, avl::Profile& outProfile2, double intensity_profile)
 {
     // Y1Line
     Y1Line( inX, inY, state.point2DArray1 );
@@ -799,16 +799,16 @@ void VisionModule::StepMacro_1( StepMacro_1State& state, float inX, int inY, flo
     avs::AvsFilter_MakePath( state.point2DArray3, false, state.path3 );
 
     // Y1 Profile Calculation
-    ProfileCalc( state.profileCalcState1, inImage, state.path1, outCenterY1, outValueY1_1, outValueY1_2, outHalfHeightWidth, outProfile );
+    ProfileCalc( state.profileCalcState1, inImage, state.path1, outCenterY1, outValueY1_1, outValueY1_2, outHalfHeightWidth, outProfile, intensity_profile );
 
     // Y1 Profile Calculation
-    ProfileCalc( state.profileCalcState2, inImage, state.path2, outCenterY2, outValueY2_1, outValueY2_2, outHalfHeightWidth2, outProfile1 );
+    ProfileCalc( state.profileCalcState2, inImage, state.path2, outCenterY2, outValueY2_1, outValueY2_2, outHalfHeightWidth2, outProfile1, intensity_profile );
 
     // Y1 Profile Calculation
-    ProfileCalc( state.profileCalcState3, inImage, state.path3, outCenterY3, outValueY3_1, outValueY3_2, outHalfHeightWidth3, outProfile2 );
+    ProfileCalc( state.profileCalcState3, inImage, state.path3, outCenterY3, outValueY3_1, outValueY3_2, outHalfHeightWidth3, outProfile2, intensity_profile );
 }
 
-TOFResult VisionModule::imageProcessing2(QString filename)
+TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2, double y3, double intensity_percentage)
 {
     TOFResult tofResult;
     atl::String g_constData1;
@@ -869,14 +869,14 @@ TOFResult VisionModule::imageProcessing2(QString filename)
 
         // Lower Box Image
         avl::CropImage( image1, box2, image3 );
-        real3 = _avfml_st_real(static_cast<double>(integer1) * 0.25);
-        real4 = _avfml_st_real(static_cast<double>(integer1) * 0.5);
-        real5 = _avfml_st_real(static_cast<double>(integer1) * 0.75);
+        real3 = _avfml_st_real(static_cast<double>(integer1) * y1);
+        real4 = _avfml_st_real(static_cast<double>(integer1) * y2);
+        real5 = _avfml_st_real(static_cast<double>(integer1) * y3);
         integer3 = image2.Height();
 
         // Upper Box Calculation
         float g, h, i;
-        StepMacro_1( stepMacro_1State1, real3, integer3, real4, real5, image2, real6, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), g, real7, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), real8, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), h, i, profile1, profile2, profile3 );
+        StepMacro_1( stepMacro_1State1, real3, integer3, real4, real5, image2, real6, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), g, real7, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), real8, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), h, i, profile1, profile2, profile3, intensity_percentage );
         point2D1 = avl::Point2D(real3, real6);
         point2D2 = avl::Point2D(real4, real7);
         point2D3 = avl::Point2D(real5, real8);
@@ -884,7 +884,7 @@ TOFResult VisionModule::imageProcessing2(QString filename)
 
         // Lower Box Calculation
         float j,k,l;
-        StepMacro_1( stepMacro_1State2, real3, integer4, real4, real5, image3, real9, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), j, real10, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), real11, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), k, l, profile4, profile5, profile6 );
+        StepMacro_1( stepMacro_1State2, real3, integer4, real4, real5, image3, real9, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), j, real10, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), real11, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), k, l, profile4, profile5, profile6, intensity_percentage );
         real12 = _avfml_st_real(_avfml_ld_real(real2) + _avfml_ld_real(real9));
         real13 = _avfml_st_real(_avfml_ld_real(real2) + _avfml_ld_real(real10));
         real14 = _avfml_st_real(_avfml_ld_real(real2) + _avfml_ld_real(real11));

@@ -87,6 +87,64 @@ ItemDelegate {
 
                     RowLayout {
                         Label {
+                            text: qsTr("Y1 = ")
+                        }
+                        TextField {
+                            Layout.preferredWidth: 100
+                            text: aaCoreParams.scanY1PixelLocation1
+                            onEditingFinished: {
+                                aaCoreParams.setScanY1PixelLocation1(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Y2 = ")
+                        }
+                        TextField {
+                            Layout.preferredWidth: 100
+                            text: aaCoreParams.scanY2PixelLocation1
+                            onEditingFinished: {
+                                aaCoreParams.setScanY2PixelLocation1(text)
+                            }
+                        }
+                    }
+                    RowLayout {
+                        Label {
+                            text: qsTr("Y4 = ")
+                        }
+                        TextField {
+                            Layout.preferredWidth: 100
+                            text: aaCoreParams.scanY4PixelLocation1
+                            onEditingFinished: {
+                                aaCoreParams.setScanY4PixelLocation1(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Y5 = ")
+                        }
+                        TextField {
+                            Layout.preferredWidth: 100
+                            text: aaCoreParams.scanY5PixelLocation1
+                            onEditingFinished: {
+                                aaCoreParams.setScanY5PixelLocation1(text)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Label {
+                            text: qsTr("Intensity = ")
+                        }
+                        TextField {
+                            Layout.preferredWidth: 100
+                            text: aaCoreParams.halfWidth1
+                            onEditingFinished: {
+                                aaCoreParams.setHalfWidth1(text)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Label {
                             text: qsTr("X = ")
                         }
                         TextField {
@@ -202,6 +260,53 @@ ItemDelegate {
                             model: [ "Disable", "Enable"]
                         }
                     }
+
+                    RowLayout {
+                        Label {
+                            text: qsTr("Y1 = ")
+                        }
+                        TextField {
+                            Layout.preferredWidth: 100
+                            text: aaCoreParams.scanY1PixelLocation2
+                            onEditingFinished: {
+                                aaCoreParams.setScanY1PixelLocation2(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Y2 = ")
+                        }
+                        TextField {
+                            Layout.preferredWidth: 100
+                            text: aaCoreParams.scanY2PixelLocation2
+                            onEditingFinished: {
+                                aaCoreParams.setScanY2PixelLocation2(text)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Label {
+                            text: qsTr("Y3 = ")
+                        }
+                        TextField {
+                            Layout.preferredWidth: 100
+                            text: aaCoreParams.scanY3PixelLocation2
+                            onEditingFinished: {
+                                aaCoreParams.setScanY3PixelLocation2(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Intensity = ")
+                        }
+                        TextField {
+                            Layout.preferredWidth: 100
+                            text: aaCoreParams.halfWidth2
+                            onEditingFinished: {
+                                aaCoreParams.setHalfWidth2(text)
+                            }
+                        }
+                    }
+
 
                     RowLayout {
                         Label {

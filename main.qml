@@ -35,6 +35,8 @@ ApplicationWindow {
     readonly property string m_LPA_Y: "LPA_Y" //Y
     readonly property string m_LPA_Z: "LPA_Z" //物料高度
 
+    readonly property string versionString: "HW-1.0.3"
+
     property string aaCoreTestItemName: ""
     property string aaCoreTestParams: ""
 
@@ -513,6 +515,9 @@ ApplicationWindow {
                }
            }
 
+           Label{
+               text: "Version: " + versionString
+           }
            Label{
               id: timeString
               color: "cyan"

@@ -49,27 +49,45 @@ class AACoreParameters : public PropertyBase
 
     QString m_x1 = "";
 
-    QString m_y1;
+    QString m_y1 = "";
 
-    QString m_z1;
+    QString m_z1 = "";
 
-QString m_rx1;
+    QString m_rx1 = "";
 
-QString m_ry1;
+    QString m_ry1 = "";
 
-QString m_rz1;
+    QString m_rz1 = "";
 
-QString m_x2;
+    QString m_x2 = "";
 
-QString m_y2;
+    QString m_y2 = "";
 
-QString m_z2;
+    QString m_z2 = "";
 
-QString m_rx2;
+    QString m_rx2 = "";
 
-QString m_ry2;
+    QString m_ry2 = "";
 
-QString m_rz2;
+    QString m_rz2 = "";
+
+    double m_scanY1PixelLocation1 = 0.167;
+
+    double m_scanY2PixelLocation1 = 0.333;
+
+    double m_scanY4PixelLocation1 = 0.667;
+
+    double m_scanY5PixelLocation1 = 0.834;
+
+    double m_halfWidth1 = 50;
+
+    double m_scanY1PixelLocation2 = 0.25;
+
+    double m_scanY2PixelLocation2 = 0.5;
+
+    double m_scanY3PixelLocation2 = 0.75;
+
+    double m_halfWidth2 = 0.5;
 
 public:
     explicit AACoreParameters(){
@@ -111,6 +129,21 @@ public:
     Q_PROPERTY(QString rx2 READ rx2 WRITE setRX2 NOTIFY rx2Changed)
     Q_PROPERTY(QString ry2 READ ry2 WRITE setRY2 NOTIFY ry2Changed)
     Q_PROPERTY(QString rz2 READ rz2 WRITE setRZ2 NOTIFY rz2Changed)
+
+    //HW Image Processing 1
+    Q_PROPERTY(double scanY1PixelLocation1 READ scanY1PixelLocation1 WRITE setScanY1PixelLocation1 NOTIFY scanY1PixelLocation1Changed)
+    Q_PROPERTY(double scanY2PixelLocation1 READ scanY2PixelLocation1 WRITE setScanY2PixelLocation1 NOTIFY scanY2PixelLocation1Changed)
+    Q_PROPERTY(double scanY4PixelLocation1 READ scanY4PixelLocation1 WRITE setScanY4PixelLocation1 NOTIFY scanY4PixelLocation1Changed)
+    Q_PROPERTY(double scanY5PixelLocation1 READ scanY5PixelLocation1 WRITE setScanY5PixelLocation1 NOTIFY scanY5PixelLocation1Changed)
+
+    Q_PROPERTY(double halfWidth1 READ halfWidth1 WRITE setHalfWidth1 NOTIFY halfWidth1Changed)
+
+    //HW Image Processing 2
+    Q_PROPERTY(double scanY1PixelLocation2 READ scanY1PixelLocation2 WRITE setScanY1PixelLocation2 NOTIFY scanY1PixelLocation2Changed)
+    Q_PROPERTY(double scanY2PixelLocation2 READ scanY2PixelLocation2 WRITE setScanY2PixelLocation2 NOTIFY scanY2PixelLocation2Changed)
+    Q_PROPERTY(double scanY3PixelLocation2 READ scanY3PixelLocation2 WRITE setScanY3PixelLocation2 NOTIFY scanY3PixelLocation2Changed)
+
+    Q_PROPERTY(double halfWidth2 READ halfWidth2 WRITE setHalfWidth2 NOTIFY halfWidth2Changed)
 
     double EFL() const
     {
@@ -264,6 +297,51 @@ public:
     QString rz2() const
     {
         return m_rz2;
+    }
+
+    double scanY1PixelLocation1() const
+    {
+        return m_scanY1PixelLocation1;
+    }
+
+    double scanY2PixelLocation1() const
+    {
+        return m_scanY2PixelLocation1;
+    }
+
+    double scanY4PixelLocation1() const
+    {
+        return m_scanY4PixelLocation1;
+    }
+
+    double scanY5PixelLocation1() const
+    {
+        return m_scanY5PixelLocation1;
+    }
+
+    double halfWidth1() const
+    {
+        return m_halfWidth1;
+    }
+
+    double scanY1PixelLocation2() const
+    {
+        return m_scanY1PixelLocation2;
+    }
+
+    double scanY2PixelLocation2() const
+    {
+        return m_scanY2PixelLocation2;
+    }
+
+    double scanY3PixelLocation2() const
+    {
+        return m_scanY3PixelLocation2;
+    }
+
+    double halfWidth2() const
+    {
+        return m_halfWidth2;
     }
 
 public slots:
@@ -526,6 +604,87 @@ public slots:
         emit rz2Changed(m_rz2);
     }
 
+    void setScanY1PixelLocation1(double scanY1PixelLocation1)
+    {
+        if (m_scanY1PixelLocation1 == scanY1PixelLocation1)
+            return;
+
+        m_scanY1PixelLocation1 = scanY1PixelLocation1;
+        emit scanY1PixelLocation1Changed(m_scanY1PixelLocation1);
+    }
+
+    void setScanY2PixelLocation1(double scanY2PixelLocation1)
+    {
+        if (m_scanY2PixelLocation1 == scanY2PixelLocation1)
+            return;
+
+        m_scanY2PixelLocation1 = scanY2PixelLocation1;
+        emit scanY2PixelLocation1Changed(m_scanY2PixelLocation1);
+    }
+
+    void setScanY4PixelLocation1(double scanY4PixelLocation1)
+    {
+        if (m_scanY4PixelLocation1 == scanY4PixelLocation1)
+            return;
+
+        m_scanY4PixelLocation1 = scanY4PixelLocation1;
+        emit scanY4PixelLocation1Changed(m_scanY4PixelLocation1);
+    }
+
+    void setScanY5PixelLocation1(double scanY5PixelLocation1)
+    {
+        if (m_scanY5PixelLocation1 == scanY5PixelLocation1)
+            return;
+
+        m_scanY5PixelLocation1 = scanY5PixelLocation1;
+        emit scanY5PixelLocation1Changed(m_scanY5PixelLocation1);
+    }
+
+    void setHalfWidth1(double halfWidth1)
+    {
+        if (m_halfWidth1 == halfWidth1)
+            return;
+
+        m_halfWidth1 = halfWidth1;
+        emit halfWidth1Changed(m_halfWidth1);
+    }
+
+    void setScanY1PixelLocation2(double scanY1PixelLocation2)
+    {
+        if (m_scanY1PixelLocation2 == scanY1PixelLocation2)
+            return;
+
+        m_scanY1PixelLocation2 = scanY1PixelLocation2;
+        emit scanY1PixelLocation2Changed(m_scanY1PixelLocation2);
+    }
+
+    void setScanY2PixelLocation2(double scanY2PixelLocation2)
+    {
+        if (m_scanY2PixelLocation2 == scanY2PixelLocation2)
+            return;
+
+        m_scanY2PixelLocation2 = scanY2PixelLocation2;
+        emit scanY2PixelLocation2Changed(m_scanY2PixelLocation2);
+    }
+
+    void setScanY3PixelLocation2(double scanY3PixelLocation2)
+    {
+        if (m_scanY3PixelLocation2 == scanY3PixelLocation2)
+            return;
+
+        m_scanY3PixelLocation2 = scanY3PixelLocation2;
+        emit scanY3PixelLocation2Changed(m_scanY3PixelLocation2);
+    }
+
+    void setHalfWidth2(double halfWidth2)
+    {
+        if (m_halfWidth2 == halfWidth2)
+            return;
+
+        m_halfWidth2 = halfWidth2;
+        emit halfWidth2Changed(m_halfWidth2);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -549,6 +708,15 @@ signals:
     void rx2Changed(QString rx2);
     void ry2Changed(QString ry2);
     void rz2Changed(QString rz2);
+    void scanY1PixelLocation1Changed(double scanY1PixelLocation1);
+    void scanY2PixelLocation1Changed(double scanY2PixelLocation1);
+    void scanY4PixelLocation1Changed(double scanY4PixelLocation1);
+    void scanY5PixelLocation1Changed(double scanY5PixelLocation1);
+    void halfWidth1Changed(double halfWidth1);
+    void scanY1PixelLocation2Changed(double scanY1PixelLocation2);
+    void scanY2PixelLocation2Changed(double scanY2PixelLocation2);
+    void scanY3PixelLocation2Changed(double scanY3PixelLocation2);
+    void halfWidth2Changed(double halfWidth2);
 };
 class AACoreStates: public PropertyBase
 {

@@ -87,13 +87,13 @@ public:
     ImageProvider *aaDebugImageProvider;
 
     //For Huawei TOF
-    TOFResult imageProcessing1(QString filename);
-    TOFResult imageProcessing2(QString filename);
+    TOFResult imageProcessing1(QString filename, double y1, double y2, double y4, double y5, double intensity_percentage);
+    TOFResult imageProcessing2(QString filename, double y1, double y2, double y3, double intensity_percentage);
     void Y1Line( float inX, int inY, atl::Array< avl::Point2D >& outArray );
     void CenterXLine( float inY, int inX, atl::Array< avl::Point2D >& outArray );
     void CenterYLine( float inX, int inY, atl::Array< avl::Point2D >& outArray );
-    void ProfileCalc( ProfileCalcState& state, const avl::Image& inImage, const avl::Path& inScanPath, float& outCenterY1, float& outValue1, float& outValue2, float& outHalfHeightWidth, avl::Profile& outProfile );
-    void StepMacro_1( StepMacro_1State& state, float inX, int inY, float inX2, float inX3, const avl::Image& inImage, float& outCenterY1, float& outValueY1_1, float& outValueY1_2, float& outHalfHeightWidth, float& outCenterY2, float& outValueY2_1, float& outValueY2_2, float& outCenterY3, float& outValueY3_1, float& outValueY3_2, float& outHalfHeightWidth2, float& outHalfHeightWidth3, avl::Profile& outProfile, avl::Profile& outProfile1, avl::Profile& outProfile2 );
+    void ProfileCalc( ProfileCalcState& state, const avl::Image& inImage, const avl::Path& inScanPath, float& outCenterY1, float& outValue1, float& outValue2, float& outHalfHeightWidth, avl::Profile& outProfile , double intensity_percentange = 0.5);
+    void StepMacro_1( StepMacro_1State& state, float inX, int inY, float inX2, float inX3, const avl::Image& inImage, float& outCenterY1, float& outValueY1_1, float& outValueY1_2, float& outHalfHeightWidth, float& outCenterY2, float& outValueY2_1, float& outValueY2_2, float& outCenterY3, float& outValueY3_1, float& outValueY3_2, float& outHalfHeightWidth2, float& outHalfHeightWidth3, avl::Profile& outProfile, avl::Profile& outProfile1, avl::Profile& outProfile2, double intensity_profile = 0.5 );
 
 private:
     QString last_uplook_pr_result;

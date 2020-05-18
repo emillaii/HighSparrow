@@ -338,6 +338,7 @@ ScrollView {
                     }
                     RowLayout {
                         CheckBox{
+                            id: lensVCMCheckBox
                             text: qsTr("启用Lens VCM")
                             checked: aaCoreParams.enableLensVcm
                             onClicked:
@@ -345,11 +346,42 @@ ScrollView {
                                 aaCoreParams.setEnableLensVcm(checked)
                             }
                         }
-                        Button{
-                            text:qsTr("初始化")
-                            onClicked: {
-                                //                                aaNewCore.performHandling(AACoreNew.INIT_VCM,0)
-                                logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.INIT_VCM)
+
+                        Label {
+                            text: qsTr("Selected Lens VCM Mode: ")
+                        }
+                        ComboBox {
+                            id: selectedLensVCMMode
+                            Layout.preferredWidth: 300
+                            model: [ "Server Mode", "Direct Mode" ]
+                            currentIndex: aaCoreParams.vcmInitMode
+                            enabled: lensVCMCheckBox.checked
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setVCMInitMode(currentIndex)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        enabled: lensVCMCheckBox.checked
+                        Label {
+                            text: qsTr("SlaveID: ")
+                        }
+                        TextField {
+                            text: aaCoreParams.vcmSlaveId
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                aaCoreParams.setVCMSlaveId(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("RegAddr: ")
+                        }
+                        TextField {
+                            text: aaCoreParams.vcmRegAddress
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                aaCoreParams.setVCMRegAddress(text)
                             }
                         }
                         Label {
@@ -367,13 +399,19 @@ ScrollView {
                             }
                         }
                         Button{
+                            text:qsTr("初始化")
+                            onClicked: {
+                                logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.INIT_VCM)
+                            }
+                        }
+                        Button{
                             text:qsTr("移动")
                             onClicked: {
-                                //                                aaNewCore.performHandling(AACoreNew.LENS_VCM_POS,0)
                                 logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.LENS_VCM_POS)
                             }
                         }
                     }
+
                     RowLayout {
                         Label {
                             text: qsTr("EFL")

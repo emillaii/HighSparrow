@@ -14,7 +14,7 @@ Popup {
         id: rectangle
         color: "black"
         implicitWidth: 650
-        implicitHeight: 800
+        implicitHeight: 1000
 
         RowLayout {
             ColumnLayout {

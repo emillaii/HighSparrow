@@ -26,6 +26,7 @@
 #include "lutModule/lutclient.h"
 #include "imageGrabber/imagegrabbingworkerthread.h"
 #include "utils/unitlog.h"
+#include "i2cControl/i2ccontrol.h"
 #include <QProcess>
 class AACoreNew : public ThreadWorkerBase
 {
@@ -66,6 +67,7 @@ public:
     Q_INVOKABLE void captureLiveImage();
     Q_INVOKABLE void clearCurrentDispenseCount();
     ErrorCodeStruct performVCMInit(QJsonValue params);
+    ErrorCodeStruct performVCMDirectMode(QJsonValue params);
     ErrorCodeStruct performInitSensor(int finish_delay = 0,bool check_map = false);
     ErrorCodeStruct performPRToBond(int finish_delay);
     ErrorCodeStruct performLoadMaterial(int finish_delay);
@@ -113,6 +115,7 @@ public:
     QJsonDocument flowchartDocument;
     QString flowchartJsonString;
 private:
+    i2cControl i2cControl;
     bool is_run = false;
     bool hasDispense = false;
     QMutex lut_mutex;

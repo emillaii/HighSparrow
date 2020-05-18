@@ -3812,8 +3812,37 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     return ret;
 }
 
+ErrorCodeStruct AACoreNew::performVCMDirectMode(QJsonValue params)
+{
+    QElapsedTimer timer;timer.start();
+    this->i2cControl.openDevice();
+    int slaveId = CommonMethod::getIntFromHexOrDecString(parameters.vcmSlaveId());
+    int regAddr = CommonMethod::getIntFromHexOrDecString(parameters.vcmRegAddress());
+    int target_position = parameters.lensVcmWorkPosition();
+    int delay = params["delay_in_ms"].toInt();
+    qInfo("SlaveId: %x RegAddr: %x Value: %d", slaveId, regAddr, target_position);
+    QVariantMap map;
+    map.insert("slaveId", slaveId);
+    map.insert("regAddr", regAddr);
+    map.insert("targetPosition", target_position);
+    bool ret = i2cControl.vcm_move(slaveId, regAddr, target_position);
+    map.insert("result", ret);
+    if(delay>0)
+        QThread::msleep(delay);
+    map.insert("delay", delay);
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "VCMDirectMode", map);
+    if (ret)
+        return ErrorCodeStruct {ErrorCode::OK, ""};
+    else
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "VCMDirectMode error"};
+}
+
 ErrorCodeStruct AACoreNew::performVCMInit(QJsonValue params)
 {
+    if (parameters.vcmInitMode() == 1){ //Use Direct Mode
+        return performVCMDirectMode(params);
+    }
     QElapsedTimer timer;timer.start();
     QVariantMap map;
     int cmd = params["cmd"].toInt(0); // 0: Init , 1: AF_OIS_Move, 2: AF Move 3: OIS XY MOVE

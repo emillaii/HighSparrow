@@ -29,6 +29,7 @@ TRANSLATIONS = languagePackage/chinese.ts languagePackage/english.ts
 SOURCES += \
     Drivers/LightSourceController/sciencalightsourcecontroller.cpp \
     devicestatesgeter.cpp \
+    i2cControl/i2ccontrol.cpp \
     main.cpp \
     utils/commonmethod.cpp \
     utils/configManager/configarray.cpp \
@@ -159,10 +160,15 @@ LIBS += -L$$PWD/../libs/DTCCM2_SDK/X64_Lib/ -ldtccm2
 INCLUDEPATH += $$PWD/../libs/DTCCM2_SDK
 DEPENDPATH += $$PWD/../libs/DTCCM2_SDK/X64_Lib
 
+LIBS += -L$$PWD/../libs/UsbI2cIo/libs/ -lusbi2cio64
+INCLUDEPATH += $$PWD/../libs/UsbI2cIo/libs
+DEPENDPATH += $$PWD/../libs/UsbI2cIo/libs
+
 HEADERS += \
     Drivers/LightSourceController/sciencalightsourcecontroller.h \
     UnitTest/SilicolMsgBoxTest.h \
     basicconfig.h \
+    i2cControl/i2ccontrol.h \
     utils/commonmethod.h \
     utils/configManager/configarray.h \
     utils/configManager/configbase.h \

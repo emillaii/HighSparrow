@@ -133,6 +133,12 @@ class AACoreParameters : public PropertyBase
 
     int m_dynamicTiltUpdateIndex = 0;
 
+    int m_vcmInitMode = 0;
+
+    QString m_vcmSlaveId = "0x18";
+
+    QString m_vcmRegAddress = "0x03";
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -202,6 +208,10 @@ public:
     Q_PROPERTY(int aaScanCurveFitErrorThreshold READ aaScanCurveFitErrorThreshold WRITE setAAScanCurveFitErrorThreshold NOTIFY aaScanCurveFitErrorThresholdChanged)
     Q_PROPERTY(QString lotNumber READ lotNumber WRITE setLotNumber NOTIFY LotNumberChanged)
     Q_PROPERTY(int dynamicTiltUpdateIndex READ dynamicTiltUpdateIndex WRITE setDynamicTiltUpdateIndex NOTIFY dynamicTiltUpdateIndexChanged)
+    Q_PROPERTY(int vcmInitMode READ vcmInitMode WRITE setVCMInitMode NOTIFY vcmInitModeChanged)
+    Q_PROPERTY(QString vcmSlaveId READ vcmSlaveId WRITE setVCMSlaveId NOTIFY vcmSlaveIdChanged)
+    Q_PROPERTY(QString vcmRegAddress READ vcmRegAddress WRITE setVCMRegAddress NOTIFY vcmRegAddressChanged)
+
     double EFL() const
     {
         return m_EFL;
@@ -514,6 +524,21 @@ public:
     int currentUPH() const
     {
         return m_currentUPH;
+    }
+
+    int vcmInitMode() const
+    {
+        return m_vcmInitMode;
+    }
+
+    QString vcmSlaveId() const
+    {
+        return m_vcmSlaveId;
+    }
+
+    QString vcmRegAddress() const
+    {
+        return m_vcmRegAddress;
     }
 
 public slots:
@@ -1067,6 +1092,33 @@ public slots:
         emit currentUPHChanged(m_currentUPH);
     }
 
+    void setVCMInitMode(int vcmInitMode)
+    {
+        if (m_vcmInitMode == vcmInitMode)
+            return;
+
+        m_vcmInitMode = vcmInitMode;
+        emit vcmInitModeChanged(m_vcmInitMode);
+    }
+
+    void setVCMSlaveId(QString vcmSlaveId)
+    {
+        if (m_vcmSlaveId == vcmSlaveId)
+            return;
+
+        m_vcmSlaveId = vcmSlaveId;
+        emit vcmSlaveIdChanged(m_vcmSlaveId);
+    }
+
+    void setVCMRegAddress(QString vcmRegAddress)
+    {
+        if (m_vcmRegAddress == vcmRegAddress)
+            return;
+
+        m_vcmRegAddress = vcmRegAddress;
+        emit vcmRegAddressChanged(m_vcmRegAddress);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -1120,6 +1172,9 @@ signals:
     void LotNumberChanged(QString lotNumber);
     void dynamicTiltUpdateIndexChanged(int dynamicTiltUpdateIndex);
     void currentUPHChanged(int currentUPH);
+    void vcmInitModeChanged(int vcmInitMode);
+    void vcmSlaveIdChanged(QString vcmSlaveId);
+    void vcmRegAddressChanged(QString vcmRegAddress);
 };
 class AACoreStates: public PropertyBase
 {

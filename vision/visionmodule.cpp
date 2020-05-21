@@ -1891,17 +1891,19 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                                 point2D2 = atl::NIL;
                             }
 
+                            avl::Rectangle2D rectangle2D2;
+                            float real3;
+                            avl::CoordinateSystem2D coordinateSystem2D2;
+
+                            avl::NormalizeRectangleOrientation( rectangle2D1.Get(), 0.0f, avl::RectangleOrientation::Horizontal, rectangle2D2 );
+                            real3 = rectangle2D2.Angle();
+                            prResult.theta = real3;
+                            avl::RealToString( real3, string11 );
+
+
                             if (circleFittingField1 != atl::NIL)
                             {
-                                avl::Rectangle2D rectangle2D2;
-                                float real3;
-                                avl::CoordinateSystem2D coordinateSystem2D2;
-
-                                avl::NormalizeRectangleOrientation( rectangle2D1.Get(), 0.0f, avl::RectangleOrientation::Horizontal, rectangle2D2 );
-                                real3 = rectangle2D2.Angle();
-                                prResult.theta = real3;
                                 coordinateSystem2D2 = avl::CoordinateSystem2D(point2D1.Get(), real3, 1.0f);
-
                                 avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1.Get(), coordinateSystem2D2, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
                             }
                             else
@@ -1910,7 +1912,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                             }
 
                             real2 = rectangle2D1.Get().Angle();
-                            avl::RealToString( real2, string11 );
+//                            avl::RealToString( real2, string11 );
 
                             avs::AvsFilter_ConcatenateStrings( g_constData15, string11, g_constData16, string10, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string9.Get() );
                         }

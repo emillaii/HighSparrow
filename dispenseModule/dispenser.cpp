@@ -29,6 +29,7 @@ void Dispenser::Init(int curve_id, int thread_curve, int thread_trig, QVector<Xt
     this->executive_motors = executive_motors;
     this->dem = executive_motors.length();
     this->output_io = output_io;
+    this->input_io = input_io;
     state = DISPENSER_IDLE;
 }
 
@@ -254,11 +255,26 @@ double Dispenser::getEndSpeed(int index)
 
 bool Dispenser::glueLevelCheck()
 {
-    if (this->input_io == Q_NULLPTR) {
-        qWarning("glue level check io [%s] does not exist", parameters.glueLevelCheckIO().toStdString().c_str());
-        return false;
+    if (this->input_io != Q_NULLPTR)
+    {
+        // Related IO is in local PC
+        return input_io->Value();
     }
-    return input_io->Value();
+    else
+    {
+        // Related IO might be in another PC, enquiry IO state with TCP
+        DeviceStatesGeter state_geter;
+        DeviceStatesGeter::IoState io_state = state_geter.getInputIoState(parameters.glueLevelCheckIO());
+        if (io_state.result != false)
+        {
+            return io_state.current_state;
+        }
+        else
+        {
+            qWarning("glue level check io [%s] does not exist", parameters.glueLevelCheckIO().toStdString().c_str());
+            return true;
+        }
+    }
 }
 
 

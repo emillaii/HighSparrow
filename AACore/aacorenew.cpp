@@ -875,7 +875,7 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
         bool preCheckFail = dispense->dispenser->glueLevelCheck();
         qInfo("Glue level check result: %d", preCheckFail);
         if (preCheckFail) {
-            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, u8"胶水位检查失败,请更换胶水后继续。");
+            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, u8"胶水位检查失败,请更换胶水或检查IO后继续。");
             QString operation = waitMessageReturn(is_run,alarm_id);
         }
     }

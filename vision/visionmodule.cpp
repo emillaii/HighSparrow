@@ -1679,10 +1679,10 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
 
     avl::Image image1;
     atl::String string1;
-    atl::String string2 = edgeFittingField1Filename.toStdString().c_str();;
-    atl::String string3 = edgeFittingField2Filename.toStdString().c_str();;
-    atl::String string4 = edgeFittingField3Filename.toStdString().c_str();;
-    atl::String string5 = edgeFittingField4Filename.toStdString().c_str();;
+    atl::String string2 = edgeFittingField1Filename.toStdString().c_str();
+    atl::String string3 = edgeFittingField2Filename.toStdString().c_str();
+    atl::String string4 = edgeFittingField3Filename.toStdString().c_str();
+    atl::String string5 = edgeFittingField4Filename.toStdString().c_str();
     atl::String string6 = pr_name.toStdString().c_str();
     atl::String string7 = offsetFilename.toStdString().c_str();
     atl::String string8 = searchHoleFilename.toStdString().c_str();

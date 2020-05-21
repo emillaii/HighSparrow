@@ -314,19 +314,19 @@ BOOL Dothinkey::DothinkeyOTPEx()
                     uAddr = CommonMethod::getIntFromHexOrDecString(cmd_list[1]);
                     uint addr = CommonMethod::getIntFromHexOrDecString(cmd_list[2]);
                     uint value  = 0;
-                    if (cmd_list[3].compare("YY_H", Qt::CaseSensitive) == 0){
+                    if (cmd_list[3].compare("YY_H", Qt::CaseInsensitive) == 0){
                         value = year_MSB;
-                    } else if (cmd_list[3].compare("YY_L", Qt::CaseSensitive) == 0){
+                    } else if (cmd_list[3].compare("YY_L", Qt::CaseInsensitive) == 0){
                         value = year_LSB;
-                    } else if (cmd_list[3].compare("MM", Qt::CaseSensitive) == 0) {
+                    } else if (cmd_list[3].compare("MM", Qt::CaseInsensitive) == 0) {
                         value = date.month();
-                    } else if (cmd_list[3].compare("DD", Qt::CaseSensitive) == 0) {
+                    } else if (cmd_list[3].compare("DD", Qt::CaseInsensitive) == 0) {
                         value = date.day();
-                    } else if (cmd_list[3].compare("HH", Qt::CaseSensitive) == 0) {
+                    } else if (cmd_list[3].compare("HH", Qt::CaseInsensitive) == 0) {
                         value = time.hour();
-                    } else if (cmd_list[3].compare("MI", Qt::CaseSensitive) == 0) {
+                    } else if (cmd_list[3].compare("MI", Qt::CaseInsensitive) == 0) {
                         value = time.minute();
-                    } else if (cmd_list[3].compare("SS", Qt::CaseSensitive) == 0) {
+                    } else if (cmd_list[3].compare("SS", Qt::CaseInsensitive) == 0) {
                         value = time.second();
                     } else {
                         value = CommonMethod::getIntFromHexOrDecString(cmd_list[3]);

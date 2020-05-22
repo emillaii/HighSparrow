@@ -1912,7 +1912,6 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                             }
 
                             real2 = rectangle2D1.Get().Angle();
-//                            avl::RealToString( real2, string11 );
 
                             avs::AvsFilter_ConcatenateStrings( g_constData15, string11, g_constData16, string10, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string9.Get() );
                         }

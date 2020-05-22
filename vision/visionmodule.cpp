@@ -1182,7 +1182,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
     }
     int nextRetryCount = retryCount - 1;
     if (pr_name.contains("_edgeModel")) {
-        return PR_Edge_Fitting(camera_name, pr_name, prResult, detect_small_hole);
+        return PR_Edge_Fitting(camera_name, pr_name, prResult, object_score, detect_small_hole);
     }
     qInfo("%s perform %s with object_score: %f retry count: %d",camera_name.toStdString().c_str(),pr_name.toStdString().c_str(), object_score, retryCount);
     pr_name.replace("file:///", "");
@@ -1739,15 +1739,19 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
         if (circleFittingFieldFileExist) {
             avs::LoadObject< atl::Conditional< avl::CircleFittingField > >( string8, avl::StreamMode::Binary, g_constData14, circleFittingField1 );
         }
-        qInfo("Finish Loading");
         if (grayModel1 != atl::NIL)
         {
             atl::Conditional< avl::Object2D > object2D1;
 
             avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1.Get(), 0, 3, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
-            qInfo("Locate NCC Finish");
+
             if (object2D1 != atl::NIL)
             {
+                if (object2D1.Get().Score() < object_score) {
+                    error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
+                    qWarning("PR Score does not pass: %f < %f", object2D1.Get().Scale(), object_score);
+                    return error_code;
+                }
                 avl::CoordinateSystem2D coordinateSystem2D1;
                 atl::Conditional< avl::Line2D > line2D1;
                 atl::Conditional< avl::Line2D > line2D2;

@@ -1305,9 +1305,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
 
             if (real4 < object_score) {
                 is_object_score_pass = false;
-                qWarning("PR oject score is too low: %f < object_socr: %f", object2D1.Get().Score(), object_score);
-                QThread::msleep(500);
-                return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, detect_small_hole, --retryCount);
+                qWarning("PR oject score is too low: %f < object_score: %f", object2D1.Get().Score(), object_score);
             }
             avl::RealToString( real4, string3 );
             avs::AvsFilter_ConcatenateStrings( g_constData6, string2, g_constData10, string3, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string1.Get() );
@@ -1368,8 +1366,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avs::DrawCircles_SingleColor( image7, atl::ToArray< atl::Conditional< avl::Circle2D > >(circle2D1), atl::NIL, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, true, atl::NIL, 20.0f), true, image8 );
         avl::SaveImageToJpeg( image8 , imageName.toStdString().c_str(), atl::NIL, false );
         if(!is_object_score_pass) {
-            error_code.code = ErrorCode::PR_OBJECT_SCORE_FAIL;
-            return error_code;
+            QThread::msleep(500);
+            return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, detect_small_hole, --retryCount);
         }
         //displayPRResult(camera_name, prResult);
     } catch(const atl::Error& error) {

@@ -97,6 +97,21 @@ ItemDelegate {
                                     setEnableSmallHoleDetection(checked)
                                 }
                             }
+                            Label {
+                                text: qsTr("排气孔Edge识别度")
+                                visible: displaySmallHoleDetectionSetting
+                            }
+                            TextField{
+                                color: "#57f529"
+                                visible: displaySmallHoleDetectionSetting
+                                text: smallCircleEdgeResponse
+                                font.pixelSize: 14
+                                width: 50
+                                Layout.preferredWidth: 50
+                                onEditingFinished: {
+                                    setSmallCircleEdgeResponse(text)
+                                }
+                            }
                         }
 
                         RowLayout{

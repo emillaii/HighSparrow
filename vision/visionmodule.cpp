@@ -1172,7 +1172,7 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
     return error_code;
 }
 
-ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score, bool detect_small_hole, int retryCount)
+ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score, bool detect_small_hole, int retryCount, int smallHoleEdgeResponse)
 {
     if (retryCount == 0) {
         qWarning("PR fail after retry 3 times.");
@@ -1292,7 +1292,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             rectangle2D1.AssignNonNil();
             point2D1.Get() = object2D1.Get().Point();
             coordinateSystem2D1 = avl::CoordinateSystem2D(point2D1.Get(), 0.0f, 1.0f);
-            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 20.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, coordinateSystem2D1, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, smallHoleEdgeResponse, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
             avl::TranslatePoint( point2D1.Get(), vector2D1, false, point2D2.Get() );
             real1 = object2D1.Get().Angle();
             avl::RealToString( real1, string2 );
@@ -1331,7 +1331,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
                     error_code.errorMessage = "Cannot detect small hole";
                     qWarning("Cannot find the small hole");
                     QThread::msleep(500);
-                    return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, detect_small_hole, --retryCount);
+                    return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, detect_small_hole, --retryCount, smallHoleEdgeResponse);
                 }
             }
         }
@@ -1346,7 +1346,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             error_code.errorMessage = "PR Object Not Found";
             qWarning("PR Error! Object Not Found");
             QThread::msleep(500);
-            return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, detect_small_hole, --retryCount);
+            return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, detect_small_hole, --retryCount, smallHoleEdgeResponse);
         }
 
         stringArray1.Resize(1);
@@ -1367,7 +1367,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::SaveImageToJpeg( image8 , imageName.toStdString().c_str(), atl::NIL, false );
         if(!is_object_score_pass) {
             QThread::msleep(500);
-            return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, detect_small_hole, --retryCount);
+            return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, detect_small_hole, --retryCount, smallHoleEdgeResponse);
         }
         //displayPRResult(camera_name, prResult);
     } catch(const atl::Error& error) {

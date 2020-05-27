@@ -106,7 +106,13 @@ public:
     /*
      * Use the most generic NCC template matching
      */
-    ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.8, bool detect_small_hole = false, int retryCount = 3);
+    ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name,
+                                                     QString pr_name,
+                                                     PRResultStruct &prResult,
+                                                     double object_score = 0.8,
+                                                     bool detect_small_hole = false,
+                                                     int retryCount = 3,
+                                                     int smallHoleEdgeResponse = 10);
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     ErrorCodeStruct Glue_Inspection(double resolution, double minWidth, double maxWidth, double maxAvgWidth,
                                     QString beforeImage, QString afterImage, QString *glueInspectionImageName,

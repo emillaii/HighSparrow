@@ -80,7 +80,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&lens_loader_module, &LensLoaderModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::saveUnitDataToCSV, &unitlog, &Unitlog::saveUnitDataToCSV);
     connect(&aaCoreNew.parameters, &AACoreParameters::dispenseCountChanged, this, &BaseModuleManager::updateAACoreParameter);
-    connect(&dispenser.parameters, &DispenserParameter::lineSpeedsChanged, this, &BaseModuleManager::updateParams);
+    //connect(&dispenser.parameters, &DispenserParameter::lineSpeedsChanged, this, &BaseModuleManager::updateParams);
     connect(&dispense_module.parameters, &DispenseParameter::lastDispenseTimeChanged, this, &BaseModuleManager::updateDispenseParameter);
     if(!QDir(".//notopencamera").exists() && ServerMode() == 0)
     {

@@ -645,10 +645,25 @@ TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2,
     atl::Array< avl::Point2D > point2DArray7;
     atl::Array< atl::Conditional< avl::Point2D > > point2DArray8;
     avl::Image image2;
-
+    avl::SpatialMap LinkParameter_1;
+    bool enableRemap = true;
     try {
-        avl::LoadImage( g_constData1, false, image1 );
-
+        if (enableRemap) {
+            qInfo("Loading Remap parameter");
+            avl::Image inputImage, imageRemap;
+            avl::LoadImage( g_constData1, false, inputImage );
+            avs::ReadDataFromFile( L"409.a361848a.SpatialMap.avdata", L"SpatialMap", LinkParameter_1 );
+            avl::RemapImage(inputImage, LinkParameter_1, atl::NIL, imageRemap);
+            avl::NormalizeImage( imageRemap, atl::NIL, 0.0f, 255.0f, 0.0f, 0.0f, image1, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), atl::Dummy<avl::Region>().Get() );
+            QString imageName;
+            imageName.append(getVisionLogDir())
+                    .append(getCurrentTimeString())
+                    .append("_remapped.jpg");
+            if (!image1.Empty())
+                avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+        } else {
+            avl::LoadImage( g_constData1, false, image1 );
+        }
         avl::ThresholdToRegion( image1, atl::NIL, 30.0f, 255.0f, 0.0f, region1 );
         avl::SplitRegionIntoBlobs( region1, avl::RegionConnectivity::EightDirections, 1, atl::NIL, false, regionArray1, atl::Dummy< atl::Array< int > >().Get() );
         avl::GetMaximumRegion( regionArray1, avl::RegionFeature::Area, region2, atl::NIL, atl::NIL );
@@ -855,8 +870,24 @@ TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2,
         atl::Array< avl::Point2D > point2DArray1;
         atl::Array< atl::Conditional< avl::Point2D > > point2DArray2;
         avl::Image image4;
-
-        avl::LoadImage( g_constData1, false, image1 );
+        avl::SpatialMap LinkParameter_1;
+        bool enableRemap = true;
+        if (enableRemap) {
+            qInfo("Loading Remap parameter");
+            avl::Image inputImage, imageRemap;
+            avl::LoadImage( g_constData1, false, inputImage );
+            avs::ReadDataFromFile( L"409.a361848a.SpatialMap.avdata", L"SpatialMap", LinkParameter_1 );
+            avl::RemapImage(inputImage, LinkParameter_1, atl::NIL, imageRemap);
+            avl::NormalizeImage( imageRemap, atl::NIL, 0.0f, 255.0f, 0.0f, 0.0f, image1, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), atl::Dummy<avl::Region>().Get() );
+            QString imageName;
+            imageName.append(getVisionLogDir())
+                    .append(getCurrentTimeString())
+                    .append("_remapped.jpg");
+            if (!image1.Empty())
+                avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+        } else {
+            avl::LoadImage( g_constData1, false, image1 );
+        }
         integer1 = image1.Width();
         integer2 = image1.Height();
         real1 = _avfml_st_real(static_cast<double>(integer1) / 2.0);

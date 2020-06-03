@@ -1899,6 +1899,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
 
                             avl::NormalizeRectangleOrientation( rectangle2D1.Get(), 0.0f, avl::RectangleOrientation::Horizontal, rectangle2D2 );
                             real3 = rectangle2D2.Angle();
+                            avl::RotatePoint(point2D2.Get(), point2D1.Get(), real3, false, point2D2.Get());
                             prResult.theta = real3;
                             avl::RealToString( real3, string11 );
 

@@ -1741,7 +1741,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
         {
             atl::Conditional< avl::Object2D > object2D1;
 
-            avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1.Get(), 0, 3, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+            avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1.Get(), 3, 3, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
 
             if (object2D1 != atl::NIL)
             {
@@ -1750,6 +1750,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                     qWarning("PR Score does not pass: %f < %f", object2D1.Get().Scale(), object_score);
                     return error_code;
                 }
+                float alignmentAngle;
+
                 avl::CoordinateSystem2D coordinateSystem2D1;
                 atl::Conditional< avl::Line2D > line2D1;
                 atl::Conditional< avl::Line2D > line2D2;
@@ -1757,7 +1759,8 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                 atl::Conditional< avl::Line2D > line2D3;
                 atl::Conditional< avl::Point2D > point2D4;
 
-                coordinateSystem2D1 = object2D1.Get().Alignment();
+                alignmentAngle = object2D1.Get().Angle();
+                avl::CreateCoordinateSystemFromPoint( object2D1.Get().Point(), alignmentAngle, 1.0f, 1.0f, coordinateSystem2D1 );
 
                 if (segmentFittingField2 != atl::NIL)
                 {

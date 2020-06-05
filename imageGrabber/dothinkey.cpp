@@ -292,8 +292,11 @@ BOOL Dothinkey::DothinkeyOTPEx()
     QTime time = QTime::currentTime();
     QByteArray byteData_year;
     int year = date.year();
-    int year_MSB = year/100;
-    int year_LSB = year - year_MSB*100;
+    QByteArray yearByte;
+    yearByte.resize(sizeof(int));
+    memcpy(yearByte.data(), &year, sizeof(int));
+    int year_MSB = yearByte[1];
+    int year_LSB = yearByte[0];
     bool result_otp = true;
     //QStringList otp_list = params.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
 
@@ -332,7 +335,7 @@ BOOL Dothinkey::DothinkeyOTPEx()
                         value = CommonMethod::getIntFromHexOrDecString(cmd_list[3]);
                     }
                     uint mode = CommonMethod::getIntFromHexOrDecString(cmd_list[4]);
-                    qInfo("SetRegEx uAddr: 0x%X, addr: 0x%4X, value : %d, mode: %d.", uAddr, addr, value, mode);
+                    qInfo("SetRegEx uAddr: 0x%X, addr: 0x%4X, value: %d(0x%02X), mode: %d.", uAddr, addr, value, value, mode);
                     int result = WriteSensorReg(uAddr, addr, value, mode);
                     if(result != 1) {
                         qCritical("WriteSensorReg fail. uAddr: 0x%X addr: 0x%4X value: %d mode: %d", uAddr, addr, value, mode);

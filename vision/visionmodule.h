@@ -110,9 +110,11 @@ public:
                                                      QString pr_name,
                                                      PRResultStruct &prResult,
                                                      double object_score = 0.8,
-                                                     bool detect_small_hole = false,
                                                      int retryCount = 3,
-                                                     int smallHoleEdgeResponse = 10);
+                                                     bool detect_small_hole = false,
+                                                     int smallHoleEdgeResponse = 10,
+                                                     int smallHoleScanWidth = 10,
+                                                     int smallHoleScanCount = 10);
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     ErrorCodeStruct Glue_Inspection(double resolution, double minWidth, double maxWidth, double maxAvgWidth,
                                     QString beforeImage, QString afterImage, QString *glueInspectionImageName,

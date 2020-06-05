@@ -32,6 +32,8 @@ public:
     Q_PROPERTY(bool displaySmallHoleDetectionSetting READ displaySmallHoleDetectionSetting WRITE setDisplaySmallHoleDetectionSetting NOTIFY displaySmallHoleDetectionSettingChanged)
     Q_PROPERTY(bool enableSmallHoleDetection READ enableSmallHoleDetection WRITE setEnableSmallHoleDetection NOTIFY enableSmallHoleDetectionChanged)
     Q_PROPERTY(int smallCircleEdgeResponse READ smallCircleEdgeResponse WRITE setSmallCircleEdgeResponse NOTIFY smallCircleEdgeResponseChanged)
+    Q_PROPERTY(int smallCircleScanWidth READ smallCircleScanWidth WRITE setSmallCircleScanWidth NOTIFY smallCircleScanWidthChanged)
+    Q_PROPERTY(int smallCircleScanCount READ smallCircleScanCount WRITE setSmallCircleScanCount NOTIFY smallCircleScanCountChanged)
     Q_PROPERTY(int retryCount READ retryCount WRITE setRetryCount NOTIFY retryCountChanged)
     Q_PROPERTY(bool closeLightAfterPR READ closeLightAfterPR WRITE setCloseLightAfterPR NOTIFY closeLightAfterPRChanged)
 
@@ -159,6 +161,16 @@ public:
     int retryCount() const
     {
         return m_retryCount;
+    }
+
+    int smallCircleScanWidth() const
+    {
+        return m_smallCircleScanWidth;
+    }
+
+    int smallCircleScanCount() const
+    {
+        return m_smallCircleScanCount;
     }
 
 public slots:
@@ -387,6 +399,24 @@ public slots:
         emit retryCountChanged(m_retryCount);
     }
 
+    void setSmallCircleScanWidth(int smallCircleScanWidth)
+    {
+        if (m_smallCircleScanWidth == smallCircleScanWidth)
+            return;
+
+        m_smallCircleScanWidth = smallCircleScanWidth;
+        emit smallCircleScanWidthChanged(m_smallCircleScanWidth);
+    }
+
+    void setSmallCircleScanCount(int smallCircleScanCount)
+    {
+        if (m_smallCircleScanCount == smallCircleScanCount)
+            return;
+
+        m_smallCircleScanCount = smallCircleScanCount;
+        emit smallCircleScanCountChanged(m_smallCircleScanCount);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -438,6 +468,10 @@ signals:
 
     void retryCountChanged(int retryCount);
 
+    void smallCircleScanWidthChanged(int smallCircleScanWidth);
+
+    void smallCircleScanCountChanged(int smallCircleScanCount);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -463,6 +497,8 @@ private:
     bool m_enableSmallHoleDetection = false;
     bool m_closeLightAfterPR = true;
     int m_smallCircleEdgeResponse = 10;
+    int m_smallCircleScanWidth = 10;
+    int m_smallCircleScanCount = 10;
     int m_retryCount = 3;
 };
 

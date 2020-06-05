@@ -45,9 +45,11 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
                                                        parameters.prFileName(),
                                                        pr_result,
                                                        parameters.objectScore(),
-                                                       parameters.enableSmallHoleDetection(),
                                                        parameters.retryCount(),
-                                                       parameters.smallCircleEdgeResponse());
+                                                       parameters.enableSmallHoleDetection(),
+                                                       parameters.smallCircleEdgeResponse(),
+                                                       parameters.smallCircleScanWidth(),
+                                                       parameters.smallCircleScanCount());
     }
     last_image_name = pr_result.rawImageName;
     if(ErrorCode::OK == temp.code)
@@ -129,7 +131,11 @@ bool VisionLocation::performPR()
                                                         parameters.prFileName(),
                                                         current_pixel_result,
                                                         parameters.objectScore(),
-                                                        parameters.enableSmallHoleDetection());
+                                                        parameters.retryCount(),
+                                                        parameters.enableSmallHoleDetection(),
+                                                        parameters.smallCircleEdgeResponse(),
+                                                        parameters.smallCircleScanWidth(),
+                                                        parameters.smallCircleScanCount());
     }
     last_image_name = current_pixel_result.rawImageName;
     if(ErrorCode::OK == temp.code)
@@ -218,9 +224,11 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
                                                        parameters.prFileName(),
                                                        pr_result,
                                                        parameters.objectScore(),
-                                                       parameters.enableSmallHoleDetection(),
                                                        parameters.retryCount(),
-                                                       parameters.smallCircleEdgeResponse());
+                                                       parameters.enableSmallHoleDetection(),
+                                                       parameters.smallCircleEdgeResponse(),
+                                                       parameters.smallCircleScanWidth(),
+                                                       parameters.smallCircleScanCount());
     }
     last_image_name = pr_result.rawImageName;
     qInfo("CameraName: %s prFilename: %s PR_Result: %f %f %f",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str(),

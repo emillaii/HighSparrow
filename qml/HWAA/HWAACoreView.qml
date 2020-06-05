@@ -83,6 +83,16 @@ ItemDelegate {
                             width: 200
                             model: [ "Disable", "Enable"]
                         }
+                        Label {
+                            text: qsTr("Alpha: ")
+                        }
+                        TextField {
+                            Layout.preferredWidth: 100
+                            text: aaCoreParams.intensityCorrectionFactor1
+                            onEditingFinished: {
+                                aaCoreParams.setIntensityCorrectionFactor1(text)
+                            }
+                        }
                     }
 
                     RowLayout {

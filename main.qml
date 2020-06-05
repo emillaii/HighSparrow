@@ -457,7 +457,7 @@ ApplicationWindow {
                         homeSignal.color = "red"
                     }
                     //Used for consuming the flowchart double click command
-                    if (flowChartPage.webView.loadProgress == 100) {
+                    if (flowChartPage.webView.loadProgress == 100 && flowChartPage.webView.title === 'Flow chart') {
                     var command = "document.getElementById('flowchart_running_cmd').value";
                         flowChartPage.webView.runJavaScript(command, function(result) {
                              command = "document.getElementById('flowchart_running_cmd').value = ''";

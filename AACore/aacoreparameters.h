@@ -89,6 +89,10 @@ class AACoreParameters : public PropertyBase
 
     double m_halfWidth2 = 0.5;
 
+    double m_intensityCorrectionFactor1 = 1;
+
+    double m_intensityCorrectionFactor2 = 1;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -138,12 +142,16 @@ public:
 
     Q_PROPERTY(double halfWidth1 READ halfWidth1 WRITE setHalfWidth1 NOTIFY halfWidth1Changed)
 
+    Q_PROPERTY(double intensityCorrectionFactor1 READ intensityCorrectionFactor1 WRITE setIntensityCorrectionFactor1 NOTIFY intensityCorrectionFactor1Changed)
+
     //HW Image Processing 2
     Q_PROPERTY(double scanY1PixelLocation2 READ scanY1PixelLocation2 WRITE setScanY1PixelLocation2 NOTIFY scanY1PixelLocation2Changed)
     Q_PROPERTY(double scanY2PixelLocation2 READ scanY2PixelLocation2 WRITE setScanY2PixelLocation2 NOTIFY scanY2PixelLocation2Changed)
     Q_PROPERTY(double scanY3PixelLocation2 READ scanY3PixelLocation2 WRITE setScanY3PixelLocation2 NOTIFY scanY3PixelLocation2Changed)
 
     Q_PROPERTY(double halfWidth2 READ halfWidth2 WRITE setHalfWidth2 NOTIFY halfWidth2Changed)
+
+    Q_PROPERTY(double intensityCorrectionFactor2 READ intensityCorrectionFactor2 WRITE setIntensityCorrectionFactor2 NOTIFY intensityCorrectionFactor2Changed)
 
     double EFL() const
     {
@@ -342,6 +350,16 @@ public:
     double halfWidth2() const
     {
         return m_halfWidth2;
+    }
+
+    double intensityCorrectionFactor1() const
+    {
+        return m_intensityCorrectionFactor1;
+    }
+
+    double intensityCorrectionFactor2() const
+    {
+        return m_intensityCorrectionFactor2;
     }
 
 public slots:
@@ -685,6 +703,26 @@ public slots:
         emit halfWidth2Changed(m_halfWidth2);
     }
 
+    void setIntensityCorrectionFactor1(double intensityCorrectionFactor1)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_intensityCorrectionFactor1, intensityCorrectionFactor1))
+            return;
+
+        m_intensityCorrectionFactor1 = intensityCorrectionFactor1;
+        emit intensityCorrectionFactor1Changed(m_intensityCorrectionFactor1);
+    }
+
+    void setIntensityCorrectionFactor2(double intensityCorrectionFactor2)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_intensityCorrectionFactor2, intensityCorrectionFactor2))
+            return;
+
+        m_intensityCorrectionFactor2 = intensityCorrectionFactor2;
+        emit intensityCorrectionFactor2Changed(m_intensityCorrectionFactor2);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -717,6 +755,8 @@ signals:
     void scanY2PixelLocation2Changed(double scanY2PixelLocation2);
     void scanY3PixelLocation2Changed(double scanY3PixelLocation2);
     void halfWidth2Changed(double halfWidth2);
+    void intensityCorrectionFactor1Changed(double intensityCorrectionFactor1);
+    void intensityCorrectionFactor2Changed(double intensityCorrectionFactor2);
 };
 class AACoreStates: public PropertyBase
 {

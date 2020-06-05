@@ -587,7 +587,7 @@ void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inIma
     outCenterY1 = _avfml_st_real(_avfml_ld_real(outValue1) + _avfml_ld_real(outHalfHeightWidth) / 2.0);
 }
 
-TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2, double y4, double y5, double intensity_percentage)
+TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2, double y4, double y5, double intensity_percentage, double alpha)
 {
     TOFResult tofResult;
     static atl::String g_constData1;
@@ -650,17 +650,34 @@ TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2,
     try {
         if (enableRemap) {
             qInfo("Loading Remap parameter");
-            avl::Image inputImage, imageRemap;
+            avl::Image inputImage, averageImage, imageRemap, image3;
             avl::LoadImage( g_constData1, false, inputImage );
             avs::ReadDataFromFile( L"409.a361848a.SpatialMap.avdata", L"SpatialMap", LinkParameter_1 );
             avl::RemapImage(inputImage, LinkParameter_1, atl::NIL, imageRemap);
-            avl::NormalizeImage( imageRemap, atl::NIL, 0.0f, 255.0f, 0.0f, 0.0f, image1, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), atl::Dummy<avl::Region>().Get() );
-            QString imageName;
-            imageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append("_remapped.jpg");
-            if (!image1.Empty())
-                avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+            avl::Matrix matrix1;
+            avl::AverageChannels( inputImage, atl::NIL, averageImage);
+            avl::ImageToMatrix( averageImage, matrix1);
+            float L = sqrt(pow(inputImage.Width()/2, 2) + pow(inputImage.Height()/2, 2));
+
+            for (int i = 0; i < averageImage.Height(); i++) {
+                for (int j = 0; j < averageImage.Width(); j++) {
+                    float r = sqrt(pow(i-inputImage.Height(), 2) + pow(j-inputImage.Width()/2, 2)) / L;
+                    float i_new = 0, i_ori = 0;
+                    avl::GetMatrixElement( matrix1, i, j, i_ori);
+                    i_new = i_ori*(pow(alpha, r));
+                    avl::SetMatrixElement( matrix1, i, j, i_new);
+                }
+            }
+            avl::MatrixToImage( matrix1, image3 );
+            avl::ConvertPixelType( image3, atl::NIL, avl::PlainType::UInt8, 0, image1 );
+            {
+                QString imageName;
+                imageName.append(getVisionLogDir())
+                        .append(getCurrentTimeString())
+                        .append("_remapped.jpg");
+                if (!image1.Empty())
+                    avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+            }
         } else {
             avl::LoadImage( g_constData1, false, image1 );
         }
@@ -823,7 +840,7 @@ void VisionModule::StepMacro_1( StepMacro_1State& state, float inX, int inY, flo
     ProfileCalc( state.profileCalcState3, inImage, state.path3, outCenterY3, outValueY3_1, outValueY3_2, outHalfHeightWidth3, outProfile2, intensity_profile );
 }
 
-TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2, double y3, double intensity_percentage)
+TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2, double y3, double intensity_percentage, double alpha)
 {
     TOFResult tofResult;
     atl::String g_constData1;
@@ -874,17 +891,34 @@ TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2,
         bool enableRemap = true;
         if (enableRemap) {
             qInfo("Loading Remap parameter");
-            avl::Image inputImage, imageRemap;
+            avl::Image inputImage, averageImage, imageRemap, image3;
             avl::LoadImage( g_constData1, false, inputImage );
             avs::ReadDataFromFile( L"409.a361848a.SpatialMap.avdata", L"SpatialMap", LinkParameter_1 );
             avl::RemapImage(inputImage, LinkParameter_1, atl::NIL, imageRemap);
-            avl::NormalizeImage( imageRemap, atl::NIL, 0.0f, 255.0f, 0.0f, 0.0f, image1, atl::Dummy<float>().Get(), atl::Dummy<float>().Get(), atl::Dummy<avl::Region>().Get() );
-            QString imageName;
-            imageName.append(getVisionLogDir())
-                    .append(getCurrentTimeString())
-                    .append("_remapped.jpg");
-            if (!image1.Empty())
-                avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+            avl::Matrix matrix1;
+            avl::AverageChannels( inputImage, atl::NIL, averageImage);
+            avl::ImageToMatrix( averageImage, matrix1);
+            float L = sqrt(pow(inputImage.Width()/2, 2) + pow(inputImage.Height()/2, 2));
+
+            for (int i = 0; i < averageImage.Height(); i++) {
+                for (int j = 0; j < averageImage.Width(); j++) {
+                    float r = sqrt(pow(i-inputImage.Height(), 2) + pow(j-inputImage.Width()/2, 2)) / L;
+                    float i_new = 0, i_ori = 0;
+                    avl::GetMatrixElement( matrix1, i, j, i_ori);
+                    i_new = i_ori*(pow(alpha, r));
+                    avl::SetMatrixElement( matrix1, i, j, i_new);
+                }
+            }
+            avl::MatrixToImage( matrix1, image3 );
+            avl::ConvertPixelType( image3, atl::NIL, avl::PlainType::UInt8, 0, image1 );
+            {
+                QString imageName;
+                imageName.append(getVisionLogDir())
+                        .append(getCurrentTimeString())
+                        .append("_remapped.jpg");
+                if (!image1.Empty())
+                    avl::SaveImageToJpeg( image1 , imageName.toStdString().c_str(), atl::NIL, false );
+            }
         } else {
             avl::LoadImage( g_constData1, false, image1 );
         }

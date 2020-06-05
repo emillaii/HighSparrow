@@ -487,12 +487,12 @@ void AACoreNew::startWork( int run_mode)
     }
     if(run_params.contains("AAFlowchart") && this->serverMode == 0)
     {
-        if (run_params["CurrentAuthority"].toInt() <= 1)
-        {
-            QString aaFlowChart = run_params["AAFlowchart"].toString();
-            this->setFlowchartDocument(aaFlowChart);
-        }
-        else
+//        if (run_params["CurrentAuthority"].toInt() <= 1)
+//        {
+//            QString aaFlowChart = run_params["AAFlowchart"].toString();
+//            this->setFlowchartDocument(aaFlowChart);
+//        }
+//        else
         {
             QString resp = SI::ui.getUIResponse(this->Name(), "Run with AA2 flowchart parameters?", MsgBoxIcon::Question, SI::ui.yesNoButtons);
             if(resp ==  SI::ui.Yes) {
@@ -1126,19 +1126,22 @@ ErrorCodeStruct AACoreNew::performParticalCheck(QJsonValue params)
 
 ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
 {
-    qInfo("currentDateTime = %s, lastTimeDispense = %s",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str(), dispense->lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str());
-    int idleHour = QDateTime::currentDateTime().time().hour() - dispense->lastDispenseDateTime.time().hour();
-    int idleMinute = QDateTime::currentDateTime().time().minute() - dispense->lastDispenseDateTime.time().minute();
-    int idleSecond = QDateTime::currentDateTime().time().second() - dispense->lastDispenseDateTime.time().second();
-    if (QDateTime::currentDateTime().date().year() > dispense->lastDispenseDateTime.date().year()
-            || QDateTime::currentDateTime().date().month() > dispense->lastDispenseDateTime.date().month()
-            || QDateTime::currentDateTime().date().day() > dispense->lastDispenseDateTime.date().day()
-            || idleHour*60*60+idleMinute*60+idleSecond > dispense->parameters.dispenseAlarmMinute()*60)
+    if (dispense->parameters.enableDispenseTimerAlarm())
     {
-        QString errMsg = u8"请留意排胶后继续,上次点胶时间：" + dispense->parameters.lastDispenseTime();
-        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, errMsg);
-        bool inter = true;
-        QString operation = waitMessageReturn(inter,alarm_id);
+        qInfo("currentDateTime = %s, lastTimeDispense = %s",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str(), dispense->lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str());
+        int idleHour = QDateTime::currentDateTime().time().hour() - dispense->lastDispenseDateTime.time().hour();
+        int idleMinute = QDateTime::currentDateTime().time().minute() - dispense->lastDispenseDateTime.time().minute();
+        int idleSecond = QDateTime::currentDateTime().time().second() - dispense->lastDispenseDateTime.time().second();
+        if (QDateTime::currentDateTime().date().year() > dispense->lastDispenseDateTime.date().year()
+                || QDateTime::currentDateTime().date().month() > dispense->lastDispenseDateTime.date().month()
+                || QDateTime::currentDateTime().date().day() > dispense->lastDispenseDateTime.date().day()
+                || idleHour*60*60+idleMinute*60+idleSecond > dispense->parameters.dispenseAlarmMinute()*60)
+        {
+            QString errMsg = u8"请留意排胶后继续,上次点胶时间：" + dispense->parameters.lastDispenseTime();
+            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, errMsg);
+            bool inter = true;
+            QString operation = waitMessageReturn(inter,alarm_id);
+        }
     }
 
     double x_offset_in_um = params["x_offset_in_um"].toDouble(0);
@@ -3819,13 +3822,14 @@ ErrorCodeStruct AACoreNew::performVCMDirectMode(QJsonValue params)
     int slaveId = CommonMethod::getIntFromHexOrDecString(parameters.vcmSlaveId());
     int regAddr = CommonMethod::getIntFromHexOrDecString(parameters.vcmRegAddress());
     int target_position = parameters.lensVcmWorkPosition();
+    int mode = parameters.vcmI2cMode();
     int delay = params["delay_in_ms"].toInt();
-    qInfo("SlaveId: %x RegAddr: %x Value: %d", slaveId, regAddr, target_position);
+    qInfo("SlaveId: %x RegAddr: %x Value: %d Mode: %d", slaveId, regAddr, target_position, mode);
     QVariantMap map;
     map.insert("slaveId", slaveId);
     map.insert("regAddr", regAddr);
     map.insert("targetPosition", target_position);
-    bool ret = i2cControl.vcm_move(slaveId, regAddr, target_position);
+    bool ret = i2cControl.vcm_move(slaveId, regAddr, target_position, mode);
     map.insert("result", ret);
     if(delay>0)
         QThread::msleep(delay);
@@ -4187,6 +4191,13 @@ ErrorCodeStruct AACoreNew::performCameraUnload(int finish_delay)
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
+    // Record down last position for related axis
+    map.insert("SUT_X", round(sut->carrier->GetFeedBackPos().X*1000*1000)/1000);
+    map.insert("SUT_Y", round(sut->carrier->GetFeedBackPos().Y*1000*1000)/1000);
+    map.insert("SUT_Z", round(sut->carrier->GetFeedBackPos().Z*1000*1000)/1000);
+    map.insert("AA_A", round(aa_head->GetFeedBack().A*1000)/1000);
+    map.insert("AA_B", round(aa_head->GetFeedBack().B*1000)/1000);
+    map.insert("AA_C", round(aa_head->GetFeedBack().C*1000)/1000);
     aa_head->openGripper();
     if(finish_delay>0)
         Sleep(finish_delay);

@@ -66,7 +66,7 @@ public:
     bool closeDevice();
 
     //VCM operation
-    int vcm_move(int slaveId,int address, int value);
+    int vcm_move(int slaveId,int address, int value, int mode);
 
     //I2C Operation
     BOOL WriteReg(unsigned int slaveId, unsigned int regAddr, unsigned int value, I2C_WR_modes mode);

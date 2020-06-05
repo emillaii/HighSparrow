@@ -363,7 +363,7 @@ ScrollView {
                     }
 
                     RowLayout {
-                        enabled: lensVCMCheckBox.checked
+                        enabled: (lensVCMCheckBox.checked) && (selectedLensVCMMode.currentIndex == 1)
                         Label {
                             text: qsTr("SlaveID: ")
                         }
@@ -396,6 +396,17 @@ ScrollView {
                             }
                             onEditingFinished: {
                                 aaCoreParams.setLensVcmWorkPosition(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Mode")
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 150
+                            model: [ "ADDR8_VALUE8", "ADDR8_VALUE16", "ADDR16_VALUE8", "ADDR16_VALUE16","ADDR16_VALUE32"]
+                            currentIndex: aaCoreParams.vcmI2cMode
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setVCMI2cMode(currentIndex)
                             }
                         }
                         Button{

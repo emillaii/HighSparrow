@@ -270,6 +270,7 @@ public slots:
     }
     void updateAACoreParameter();
     void updateDispenseParameter();
+    void updateDispenserParameter();
 public:
     ModuleManangerConfig configs;
     ModuleManagerParameter parameters;

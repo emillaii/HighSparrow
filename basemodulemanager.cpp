@@ -80,7 +80,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&lens_loader_module, &LensLoaderModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&lens_loader_module, &LensLoaderModule::saveUnitDataToCSV, &unitlog, &Unitlog::saveUnitDataToCSV);
     connect(&aaCoreNew.parameters, &AACoreParameters::dispenseCountChanged, this, &BaseModuleManager::updateAACoreParameter);
-    //connect(&dispenser.parameters, &DispenserParameter::lineSpeedsChanged, this, &BaseModuleManager::updateParams);
+    //connect(&dispenser.parameters, &DispenserParameter::lineSpeedsChanged, this, &BaseModuleManager::updateDispenserParameter);
     connect(&dispense_module.parameters, &DispenseParameter::lastDispenseTimeChanged, this, &BaseModuleManager::updateDispenseParameter);
     if(!QDir(".//notopencamera").exists() && ServerMode() == 0)
     {
@@ -775,6 +775,11 @@ void BaseModuleManager::updateAACoreParameter()
 void BaseModuleManager::updateDispenseParameter()
 {
     dispense_module.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
+}
+
+void BaseModuleManager::updateDispenserParameter()
+{
+    dispense_module.dispenser->parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
 }
 
 bool BaseModuleManager::loadParameters()

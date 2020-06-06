@@ -644,11 +644,12 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
     }
     else if (cmd == HandleTest::INIT_VCM) {
         QJsonObject temp_params;
-        temp_params["target_position"] = -1;
+        temp_params["cmd"] = 0;
         performVCMInit(temp_params);
     }
     else if (cmd == HandleTest::LENS_VCM_POS) {
         QJsonObject temp_params;
+        temp_params["cmd"] = 2;
         temp_params["target_position"] = parameters.lensVcmWorkPosition();
         performVCMInit(temp_params);
     }
@@ -4099,7 +4100,7 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
                 if(parameters.enableLensVcm())
                 {
                     QJsonObject temp_params;
-                    temp_params["target_position"] = -1;
+                    temp_params["cmd"] = 0;
                     ErrorCodeStruct temp_result = performVCMInit(temp_params);
                     if(temp_result.code != ErrorCode::OK)
                     {
@@ -4112,6 +4113,7 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
                             result.errorMessage.append(temp_result.errorMessage);
                         }
                     }
+                    temp_params["cmd"] = 2;
                     temp_params["target_position"] = parameters.lensVcmWorkPosition();
                     temp_result = performVCMInit(temp_params);
                     if(temp_result.code != ErrorCode::OK)

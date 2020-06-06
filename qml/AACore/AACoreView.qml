@@ -348,11 +348,11 @@ ScrollView {
                         }
 
                         Label {
-                            text: qsTr("Selected Lens VCM Mode: ")
+                            text: qsTr("选择通电模式: ")
                         }
                         ComboBox {
                             id: selectedLensVCMMode
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 150
                             model: [ "Server Mode", "Direct Mode" ]
                             currentIndex: aaCoreParams.vcmInitMode
                             enabled: lensVCMCheckBox.checked
@@ -363,9 +363,47 @@ ScrollView {
                     }
 
                     RowLayout {
+                        enabled: (lensVCMCheckBox.checked) && (selectedLensVCMMode.currentIndex == 0)
+                        Label {
+                            text: qsTr("Server Mode参数设置: ")
+                            font.bold: true
+                        }
+                        Label {
+                            text: qsTr("Lens AA位置")
+                        }
+                        TextField {
+                            text: aaCoreParams.lensVcmWorkPosition
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 2
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setLensVcmWorkPosition(text)
+                            }
+                        }
+                        Button{
+                            text:qsTr("初始化")
+                            onClicked: {
+                                logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.INIT_VCM)
+                            }
+                        }
+                        Button{
+                            text:qsTr("移动")
+                            onClicked: {
+                                logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.LENS_VCM_POS)
+                            }
+                        }
+                    }
+
+                    RowLayout {
                         enabled: (lensVCMCheckBox.checked) && (selectedLensVCMMode.currentIndex == 1)
                         Label {
-                            text: qsTr("SlaveID: ")
+                            text: qsTr("Direct Mode参数设置: ")
+                            font.bold: true
+                        }
+                        Label {
+                            text: qsTr("SlaveID")
                         }
                         TextField {
                             text: aaCoreParams.vcmSlaveId
@@ -375,7 +413,7 @@ ScrollView {
                             }
                         }
                         Label {
-                            text: qsTr("RegAddr: ")
+                            text: qsTr("RegAddr")
                         }
                         TextField {
                             text: aaCoreParams.vcmRegAddress
@@ -407,12 +445,6 @@ ScrollView {
                             currentIndex: aaCoreParams.vcmI2cMode
                             onCurrentIndexChanged: {
                                 aaCoreParams.setVCMI2cMode(currentIndex)
-                            }
-                        }
-                        Button{
-                            text:qsTr("初始化")
-                            onClicked: {
-                                logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.INIT_VCM)
                             }
                         }
                         Button{

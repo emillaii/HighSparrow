@@ -655,7 +655,7 @@ TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2,
             avs::ReadDataFromFile( L"409.a361848a.SpatialMap.avdata", L"SpatialMap", LinkParameter_1 );
             avl::RemapImage(inputImage, LinkParameter_1, atl::NIL, imageRemap);
             avl::Matrix matrix1;
-            avl::AverageChannels( inputImage, atl::NIL, averageImage);
+            avl::AverageChannels( imageRemap, atl::NIL, averageImage);
             avl::ImageToMatrix( averageImage, matrix1);
             float L = sqrt(pow(inputImage.Width()/2, 2) + pow(inputImage.Height()/2, 2));
 
@@ -896,7 +896,7 @@ TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2,
             avs::ReadDataFromFile( L"409.a361848a.SpatialMap.avdata", L"SpatialMap", LinkParameter_1 );
             avl::RemapImage(inputImage, LinkParameter_1, atl::NIL, imageRemap);
             avl::Matrix matrix1;
-            avl::AverageChannels( inputImage, atl::NIL, averageImage);
+            avl::AverageChannels( imageRemap, atl::NIL, averageImage);
             avl::ImageToMatrix( averageImage, matrix1);
             float L = sqrt(pow(inputImage.Width()/2, 2) + pow(inputImage.Height()/2, 2));
 

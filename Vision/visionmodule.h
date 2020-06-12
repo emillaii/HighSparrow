@@ -87,8 +87,8 @@ public:
     ImageProvider *aaDebugImageProvider;
 
     //For Huawei TOF
-    TOFResult imageProcessing1(QString filename, double y1, double y2, double y4, double y5, double intensity_percentage, double alpha);
-    TOFResult imageProcessing2(QString filename, double y1, double y2, double y3, double intensity_percentage, double alpha);
+    TOFResult imageProcessing1(QString filename, double y1, double y2, double y4, double y5, double intensity_percentage, double alpha, bool grabFromCamera = false);
+    TOFResult imageProcessing2(QString filename, double y1, double y2, double y3, double intensity_percentage, double alpha, bool grabFromCamera = false);
     void Y1Line( float inX, int inY, atl::Array< avl::Point2D >& outArray );
     void CenterXLine( float inY, int inX, atl::Array< avl::Point2D >& outArray );
     void CenterYLine( float inX, int inY, atl::Array< avl::Point2D >& outArray );

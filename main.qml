@@ -246,6 +246,9 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("UV") !== -1) {
                         console.log("Perform UV")
                         aaNewCore.performHandling(AACoreNew.UV, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("HW Tilt") !== -1) {
+                        console.log("Perform HW Tilt")
+                        aaNewCore.performHandling(AACoreNew.TOF, aaCoreTestParams)
                     }
 
                     aaCoreTestParams = ""

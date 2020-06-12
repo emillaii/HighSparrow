@@ -7,7 +7,7 @@ $(document).ready(function () {
     position_checking: 0, is_debug: 0, image_count: 7, enable_tilt: 0
   };
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
-  var init_hw_tilt_params = { enable_motion: 0 };
+  var init_hw_tilt_params = { enable_motion: 0, image_processing_method: 0 };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, delay_in_ms: 200 };
@@ -64,6 +64,7 @@ $(document).ready(function () {
   $operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"basic_delay\"></div>");
 
   $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"hw_tilt_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Image Processing Method: <select id=\"hw_tilt_image_processing_method\" size=\"2\"><option value=1>1</option><option value=2>2</option></select></div>");
 
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"oc_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Fast Mode: <select id=\"oc_fast_mode\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
@@ -218,6 +219,7 @@ $(document).ready(function () {
 		$hw_tilt_operator_properties.show();
 		$hw_tilt_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
 		$('#hw_tilt_enable_motion').val(params["enable_motion"]);
+		$('#hw_tilt_image_processing_method').val(params["image_processing_method"]);
 	  }
 	  else {
         $operator_properties.show();
@@ -664,7 +666,7 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Tilt")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_tilt_operator_title').val());
-	  var params = { enable_motion: Number($('#hw_tilt_enable_motion').val())};
+	  var params = { enable_motion: Number($('#hw_tilt_enable_motion').val()), image_processing_method: Number($('#hw_tilt_image_processing_method').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	}
     else {
@@ -874,7 +876,7 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("HW Tilt")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $hw_tilt_operator_title.val());
-      var params = { enable_motion: Number($('#hw_tilt_enable_motion').val())};
+      var params = { enable_motion: Number($('#hw_tilt_enable_motion').val()), image_processing_method: Number($('#hw_tilt_image_processing_method').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     }
     else {

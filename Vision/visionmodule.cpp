@@ -57,16 +57,17 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
     else if (cameraName.contains(CAMERA_SH_UT_UL)) {camera = uplookCamera;}
     else if (cameraName.contains(CAMERA_SH_PA_DL)) {camera = pickarmCamera;}
     else if (cameraName.contains(CAMERA_SH_HIK_CAM)) {
-        qInfo("save image from hikcamera");
         if (hikCamera != Q_NULLPTR) {
-            qInfo("save image from hikcamera 12");
             QPixmap p = QPixmap::fromImage(hikCamera->getImage());
             QImage q2 = p.toImage();
             q2 = q2.convertToFormat(QImage::Format_RGB888);
             avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
             image = image2;
+            return true;
+        } else {
+            qWarning("HikCamera is null pointer");
+            return false;
         }
-        return true;
     }
     if (camera == Q_NULLPTR) {
         qInfo("Cannot find camera %s", cameraName.toStdString().c_str());
@@ -587,7 +588,7 @@ void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inIma
     outCenterY1 = _avfml_st_real(_avfml_ld_real(outValue1) + _avfml_ld_real(outHalfHeightWidth) / 2.0);
 }
 
-TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2, double y4, double y5, double intensity_percentage, double alpha)
+TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2, double y4, double y5, double intensity_percentage, double alpha, bool grabFromCamera)
 {
     TOFResult tofResult;
     static atl::String g_constData1;
@@ -649,9 +650,19 @@ TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2,
     bool enableRemap = true;
     try {
         if (enableRemap) {
-            qInfo("Loading Remap parameter");
             avl::Image inputImage, averageImage, imageRemap, image3;
-            avl::LoadImage( g_constData1, false, inputImage );
+            if (!grabFromCamera)
+                avl::LoadImage( g_constData1, false, inputImage );
+            else {
+                grabImageFromCamera(CAMERA_SH_HIK_CAM, inputImage);
+                QString imageName;
+                imageName.append(getVisionLogDir())
+                        .append(getCurrentTimeString())
+                        .append("_raw.jpg");
+                qInfo("ImageName: %s", imageName.toStdString().c_str());
+                if (!inputImage.Empty())
+                    avl::SaveImageToJpeg( inputImage , imageName.toStdString().c_str(), atl::NIL, false );
+            }
             avs::ReadDataFromFile( L"409.a361848a.SpatialMap.avdata", L"SpatialMap", LinkParameter_1 );
             avl::RemapImage(inputImage, LinkParameter_1, atl::NIL, imageRemap);
             avl::Matrix matrix1;
@@ -840,7 +851,7 @@ void VisionModule::StepMacro_1( StepMacro_1State& state, float inX, int inY, flo
     ProfileCalc( state.profileCalcState3, inImage, state.path3, outCenterY3, outValueY3_1, outValueY3_2, outHalfHeightWidth3, outProfile2, intensity_profile );
 }
 
-TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2, double y3, double intensity_percentage, double alpha)
+TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2, double y3, double intensity_percentage, double alpha, bool grabFromCamera)
 {
     TOFResult tofResult;
     atl::String g_constData1;
@@ -890,9 +901,18 @@ TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2,
         avl::SpatialMap LinkParameter_1;
         bool enableRemap = true;
         if (enableRemap) {
-            qInfo("Loading Remap parameter");
             avl::Image inputImage, averageImage, imageRemap, image3;
-            avl::LoadImage( g_constData1, false, inputImage );
+            if (!grabFromCamera) {
+                avl::LoadImage( g_constData1, false, inputImage );
+            } else {
+                grabImageFromCamera(CAMERA_SH_HIK_CAM, inputImage);
+                QString imageName;
+                imageName.append(getVisionLogDir())
+                        .append(getCurrentTimeString())
+                        .append("_raw.jpg");
+                if (!inputImage.Empty())
+                    avl::SaveImageToJpeg( inputImage , imageName.toStdString().c_str(), atl::NIL, false );
+            }
             avs::ReadDataFromFile( L"409.a361848a.SpatialMap.avdata", L"SpatialMap", LinkParameter_1 );
             avl::RemapImage(inputImage, LinkParameter_1, atl::NIL, imageRemap);
             avl::Matrix matrix1;

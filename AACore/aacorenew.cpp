@@ -1795,13 +1795,20 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     QElapsedTimer timer;timer.start();
     qInfo("Start perform TOF");
     int method = params["method"].toInt(1);
+    int imageProcessingMethod = params["image_processing_method"].toInt(-1);
+    bool grabFromCamera = false;
+    if (imageProcessingMethod != -1) {
+        grabFromCamera = true;
+        method = imageProcessingMethod; // Shift the enum to 1
+        qInfo("perform TOF : %d", method);
+    }
     QString filename = params["filename"].toString();
     TOFResult tofResult;
     filename.replace("file:///", "");
     if (method == 1) {
-        tofResult = visionModule->imageProcessing1(filename, parameters.scanY1PixelLocation1(), parameters.scanY2PixelLocation1(), parameters.scanY4PixelLocation1(), parameters.scanY5PixelLocation1(), parameters.halfWidth1(), parameters.intensityCorrectionFactor1());
+        tofResult = visionModule->imageProcessing1(filename, parameters.scanY1PixelLocation1(), parameters.scanY2PixelLocation1(), parameters.scanY4PixelLocation1(), parameters.scanY5PixelLocation1(), parameters.halfWidth1(), parameters.intensityCorrectionFactor1(), grabFromCamera);
     } else {
-        tofResult = visionModule->imageProcessing2(filename, parameters.scanY1PixelLocation2(), parameters.scanY2PixelLocation2(), parameters.scanY3PixelLocation2(), parameters.halfWidth2(), parameters.intensityCorrectionFactor1());
+        tofResult = visionModule->imageProcessing2(filename, parameters.scanY1PixelLocation2(), parameters.scanY2PixelLocation2(), parameters.scanY3PixelLocation2(), parameters.halfWidth2(), parameters.intensityCorrectionFactor1(), grabFromCamera);
     }
 
     double x = mathExpression(convertFormulaFromTOFResult(this->parameters.x1(), tofResult));

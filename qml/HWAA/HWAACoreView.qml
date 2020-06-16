@@ -68,6 +68,7 @@ ItemDelegate {
                             onClicked: {
                                 var json = {
                                     method: 1,
+                                    enable_motion: enable_motion1.currentIndex,
                                     filename: imageProcess1Filename.text
                                 }
                                 aaNewCore.performHandling(AACoreNew.TOF, JSON.stringify(json))
@@ -81,6 +82,7 @@ ItemDelegate {
                         }
                         ComboBox {
                             width: 200
+                            id: enable_motion1
                             model: [ "Disable", "Enable"]
                         }
                         Label {
@@ -255,6 +257,7 @@ ItemDelegate {
                             onClicked: {
                                 var json = {
                                     method: 2,
+                                    enable_motion: enable_motion2.currentIndex,
                                     filename: imageProcess2Filename.text
                                 }
                                 aaNewCore.performHandling(AACoreNew.TOF, JSON.stringify(json))
@@ -267,6 +270,7 @@ ItemDelegate {
                         }
                         ComboBox {
                             width: 200
+                            id: enable_motion2
                             model: [ "Disable", "Enable"]
                         }
                     }

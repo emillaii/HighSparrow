@@ -749,6 +749,12 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             int cameraChannel = params["type"].toInt();
             int lighting = params["lighting"].toInt();
         }
+        else if (testItemName.contains(AA_PIECE_TOF))
+        {
+            qInfo("Performing TOF");
+            performTOF(params);
+            qInfo("End of perform TOF");
+        }
     }
     return ret;
 }
@@ -1796,10 +1802,12 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     qInfo("Start perform TOF");
     int method = params["method"].toInt(1);
     int imageProcessingMethod = params["image_processing_method"].toInt(-1);
+    int enable_motion = params["enable_motion"].toInt(0);
+    qInfo("enable motion: %d", enable_motion);
     bool grabFromCamera = false;
     if (imageProcessingMethod != -1) {
         grabFromCamera = true;
-        method = imageProcessingMethod; // Shift the enum to 1
+        method = imageProcessingMethod;
         qInfo("perform TOF : %d", method);
     }
     QString filename = params["filename"].toString();
@@ -1817,6 +1825,17 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     double rx = mathExpression(convertFormulaFromTOFResult(this->parameters.rx1(), tofResult));
     double ry = mathExpression(convertFormulaFromTOFResult(this->parameters.ry1(), tofResult));
     double rz = mathExpression(convertFormulaFromTOFResult(this->parameters.rz1(), tofResult));
+
+    if (enable_motion) {
+        if (lsut->sut_carrier->motor_x == Q_NULLPTR ||
+            lsut->sut_carrier->motor_y == Q_NULLPTR) {
+            qWarning("SUT carrier motors is null, motors cannot move");
+        } else {
+            this->lsut->stepMove_XY_Sync(x, y);
+            this->lsut->sut_carrier->StepMove_Z(z);
+            aa_head->stepInterpolation_AB_Sync(rx, ry);
+        }
+    }
 
     QVariantMap map;
     map.insert("a", tofResult.a);

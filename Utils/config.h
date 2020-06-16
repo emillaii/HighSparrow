@@ -110,7 +110,7 @@
 #define AA_PIECE_REJECT "Reject"
 #define AA_PIECE_TERMINATE "Terminate"
 #define AA_PIECE_GRR "GRR"
-
+#define AA_PIECE_TOF "HW Tilt"
 #define AA_UNLOAD_CAMERA "Unload Camera"
 
 

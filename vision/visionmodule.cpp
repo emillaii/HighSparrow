@@ -1324,7 +1324,14 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             prResult.rawImageName = rawImageName;
             qInfo("Object score: %f", object2D1.Get().score);
             if (circle2D1 != atl::NIL) {
-                qInfo("Detected small hole at x: %f y: %f", circle2D1.Get().Center().X(), circle2D1.Get().Center().Y());
+                qInfo("Detected small hole at x: %f y: %f radius: %f", circle2D1.Get().Center().X(), circle2D1.Get().Center().Y(), circle2D1.Get().Radius());
+                if (circle2D1.Get().Radius() < 6 || circle2D1.Get().Radius() >=7) {
+                    error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
+                    error_code.errorMessage = "Cannot detect small hole, the detected radius is out of spec";
+                    qWarning("Cannot detect small hole, the detected radius is out of spec");
+                    QThread::msleep(500);
+                    return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, detect_small_hole, smallHoleEdgeResponse, smallHoleScanWidth, smallHoleScanCount);
+                }
             } else {
                 if (detect_small_hole) {
                     error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;

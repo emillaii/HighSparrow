@@ -93,6 +93,18 @@ class AACoreParameters : public PropertyBase
 
     double m_intensityCorrectionFactor2 = 1;
 
+    double m_xLimit = 1;
+
+    double m_yLimit = 1;
+
+    double m_zLimit = 1;
+
+    double m_rxLimit = 1;
+
+    double m_ryLimit = 1;
+
+    double m_rzLimit = 1;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -152,6 +164,14 @@ public:
     Q_PROPERTY(double halfWidth2 READ halfWidth2 WRITE setHalfWidth2 NOTIFY halfWidth2Changed)
 
     Q_PROPERTY(double intensityCorrectionFactor2 READ intensityCorrectionFactor2 WRITE setIntensityCorrectionFactor2 NOTIFY intensityCorrectionFactor2Changed)
+
+    //HW Tilt Motion Limit
+    Q_PROPERTY(double xLimit READ xLimit WRITE setXLimit NOTIFY xLimitChanged)
+    Q_PROPERTY(double yLimit READ yLimit WRITE setYLimit NOTIFY yLimitChanged)
+    Q_PROPERTY(double zLimit READ zLimit WRITE setZLimit NOTIFY zLimitChanged)
+    Q_PROPERTY(double rxLimit READ rxLimit WRITE setRXLimit NOTIFY rxLimitChanged)
+    Q_PROPERTY(double ryLimit READ ryLimit WRITE setRYLimit NOTIFY ryLimitChanged)
+    Q_PROPERTY(double rzLimit READ rzLimit WRITE setRZLimit NOTIFY rzLimitChanged)
 
     double EFL() const
     {
@@ -360,6 +380,36 @@ public:
     double intensityCorrectionFactor2() const
     {
         return m_intensityCorrectionFactor2;
+    }
+
+    double xLimit() const
+    {
+        return m_xLimit;
+    }
+
+    double yLimit() const
+    {
+        return m_yLimit;
+    }
+
+    double zLimit() const
+    {
+        return m_zLimit;
+    }
+
+    double rxLimit() const
+    {
+        return m_rxLimit;
+    }
+
+    double ryLimit() const
+    {
+        return m_ryLimit;
+    }
+
+    double rzLimit() const
+    {
+        return m_rzLimit;
     }
 
 public slots:
@@ -723,6 +773,60 @@ public slots:
         emit intensityCorrectionFactor2Changed(m_intensityCorrectionFactor2);
     }
 
+    void setXLimit(double xLimit)
+    {
+        if (m_xLimit == xLimit)
+            return;
+
+        m_xLimit = xLimit;
+        emit xLimitChanged(m_xLimit);
+    }
+
+    void setYLimit(double yLimit)
+    {
+        if (m_yLimit == yLimit)
+            return;
+
+        m_yLimit = yLimit;
+        emit yLimitChanged(m_yLimit);
+    }
+
+    void setZLimit(double zLimit)
+    {
+        if (m_zLimit == zLimit)
+            return;
+
+        m_zLimit = zLimit;
+        emit zLimitChanged(m_zLimit);
+    }
+
+    void setRXLimit(double rxLimit)
+    {
+        if (m_rxLimit == rxLimit)
+            return;
+
+        m_rxLimit = rxLimit;
+        emit rxLimitChanged(m_rxLimit);
+    }
+
+    void setRYLimit(double ryLimit)
+    {
+        if (m_ryLimit == ryLimit)
+            return;
+
+        m_ryLimit = ryLimit;
+        emit ryLimitChanged(m_ryLimit);
+    }
+
+    void setRZLimit(double rzLimit)
+    {
+        if (m_rzLimit == rzLimit)
+            return;
+
+        m_rzLimit = rzLimit;
+        emit rzLimitChanged(m_rzLimit);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -757,6 +861,12 @@ signals:
     void halfWidth2Changed(double halfWidth2);
     void intensityCorrectionFactor1Changed(double intensityCorrectionFactor1);
     void intensityCorrectionFactor2Changed(double intensityCorrectionFactor2);
+    void xLimitChanged(double xLimit);
+    void yLimitChanged(double yLimit);
+    void zLimitChanged(double zLimit);
+    void rxLimitChanged(double rxLimit);
+    void ryLimitChanged(double ryLimit);
+    void rzLimitChanged(double rzLimit);
 };
 class AACoreStates: public PropertyBase
 {

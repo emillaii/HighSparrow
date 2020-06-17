@@ -1831,9 +1831,18 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
             lsut->sut_carrier->motor_y == Q_NULLPTR) {
             qWarning("SUT carrier motors is null, motors cannot move");
         } else {
-            this->lsut->stepMove_XY_Sync(x, y);
-            this->lsut->sut_carrier->StepMove_Z(z);
-            aa_head->stepInterpolation_AB_Sync(rx, ry);
+            if ( fabs(x) > parameters.xLimit() ||
+                 fabs(y) > parameters.yLimit() ||
+                 fabs(z) > parameters.zLimit() ||
+                 fabs(rx) > parameters.rxLimit() ||
+                 fabs(ry) > parameters.ryLimit() ||
+                 fabs(rz) > parameters.rzLimit()) {
+                qWarning("The calculated movement is larger than spec, motors cannot move");
+            } else {
+                this->lsut->stepMove_XY_Sync(x, y);
+                this->lsut->sut_carrier->StepMove_Z(z);
+                aa_head->stepInterpolation_AB_Sync(rx, ry);
+            }
         }
     }
 
@@ -1857,6 +1866,13 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     map.insert("rx", rx);
     map.insert("ry", ry);
     map.insert("rz", rz);
+
+    map.insert("xLimit", parameters.xLimit());
+    map.insert("ylimit", parameters.yLimit());
+    map.insert("zLimit", parameters.zLimit());
+    map.insert("rxLimit", parameters.rxLimit());
+    map.insert("ryLimit", parameters.ryLimit());
+    map.insert("rzLimit", parameters.rzLimit());
 
     map.insert("method", method);
     map.insert("result", tofResult.ret);

@@ -577,7 +577,8 @@ void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inIma
     avl::ProfileMaximum( outProfile, avl::ProfileInterpolationMethod::Quadratic4, atl::Dummy<float>().Get(), atl::NIL, real1 );
     real2 = _avfml_st_real(_avfml_ld_real(real1) * intensity_percentage);
     avl::SubtractFromProfile( outProfile, real2, state.profile2 );
-    avl::ProfileZeroCrossings( state.profile2, state.realArray1 );
+    avl::SmoothProfile_Mean( state.profile2, 10, false, state.profile3 );
+    avl::ProfileZeroCrossings( state.profile3, state.realArray1 );
 
     // AvsFilter_GetArrayElement is intended for use in generated programs. One should use indexing operator[] to access array' elements.
     avs::AvsFilter_GetArrayElement< float >( state.realArray1, 0, false, outValue1 );
@@ -777,11 +778,11 @@ TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2,
         tofResult.a = variableFormat(real7).toDouble();   //X Center
         tofResult.b = variableFormat(b).toDouble();       //X Half width
 
-        tofResult.c = variableFormat(real1).toDouble();  //Y1 center
-        tofResult.d = variableFormat(real2).toDouble();  //Y2 center
-        tofResult.e = variableFormat(real6).toDouble();  //Y3 center
-        tofResult.f = variableFormat(real3).toDouble();  //Y4 center
-        tofResult.g = variableFormat(real4).toDouble();  //Y5 center
+        tofResult.c = variableFormat(real9).toDouble();  //Y1 center
+        tofResult.d = variableFormat(real10).toDouble();  //Y2 center
+        tofResult.e = variableFormat(real8).toDouble();  //Y3 center
+        tofResult.f = variableFormat(real11).toDouble();  //Y4 center
+        tofResult.g = variableFormat(real12).toDouble();  //Y5 center
 
         tofResult.h = variableFormat(h).toDouble(); //Y1 Half width
         tofResult.i = variableFormat(i).toDouble(); //Y2 Half width

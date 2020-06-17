@@ -34,6 +34,7 @@ struct ProfileCalcState
     avl::Profile profile1;
     avl::Path path1;
     avl::Profile profile2;
+    avl::Profile profile3;
     atl::Array< float > realArray1;
 };
 

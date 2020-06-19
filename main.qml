@@ -249,6 +249,12 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("HW Tilt") !== -1) {
                         console.log("Perform HW Tilt")
                         aaNewCore.performHandling(AACoreNew.TOF, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Motion Move") !== -1) {
+                        console.log("Perform Motion Move")
+                        aaNewCore.performHandling(AACoreNew.Motion_Move, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Command") !== -1) {
+                        console.log("Perform Command")
+                        aaNewCore.performHandling(AACoreNew.Command, aaCoreTestParams)
                     }
 
                     aaCoreTestParams = ""

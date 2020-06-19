@@ -45,7 +45,9 @@ public:
         INIT_CAMERA = 6,
         Y_LEVEL = 7,
         UV = 8,
-        TOF = 9
+        TOF = 9,
+        Motion_Move = 10,
+        Command = 11
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head, SingleheadLSutModule *lsut, Dothinkey *dk,
@@ -72,6 +74,8 @@ public:
     ErrorCodeStruct performTerminate();
     ErrorCodeStruct performGRR(bool change_lens,bool change_sensor,int repeat_time,int change_time);
     ErrorCodeStruct performYLevelTest(QJsonValue params);
+    ErrorCodeStruct performMotionMove(QJsonValue params);
+    ErrorCodeStruct performCommand(QJsonValue params);
     ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
 
     static bool AACoreNew::performThreadTest(vector<QString> testList, QJsonValue params);
@@ -169,6 +173,13 @@ private:
     QString handlingParams = "";
     double mtf_oc_x = 0;
     double mtf_oc_y = 0;
+
+    double tof_x = 0;
+    double tof_y = 0;
+    double tof_z = 0;
+    double tof_rx = 0;
+    double tof_ry = 0;
+    double tof_rz = 0;
 
     int currentSensorIndex;
     int currentLensIndex;

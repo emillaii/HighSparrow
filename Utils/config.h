@@ -111,6 +111,8 @@
 #define AA_PIECE_TERMINATE "Terminate"
 #define AA_PIECE_GRR "GRR"
 #define AA_PIECE_TOF "HW Tilt"
+#define AA_PIECE_TOF_MOTION_MOVE "Motion Move"
+#define AA_PIECE_COMMAND "Command"
 #define AA_UNLOAD_CAMERA "Unload Camera"
 
 

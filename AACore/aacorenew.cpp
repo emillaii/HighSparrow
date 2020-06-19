@@ -429,6 +429,13 @@ void AACoreNew::performHandlingOperation(int cmd)
     else if (cmd == HandleTest::TOF) {
         performTOF(params);
     }
+    else if (cmd == HandleTest::Motion_Move) {
+        performMotionMove(params);
+    }
+    else if (cmd == HandleTest::Command) {
+        performCommand(params);
+    }
+
     handlingParams = "";
     emit postDataToELK(this->runningUnit);
     return;
@@ -1796,9 +1803,76 @@ QString convertFormulaFromTOFResult(QString input, TOFResult tofResult)
     return formula;
 }
 
+ErrorCodeStruct AACoreNew::performMotionMove(QJsonValue params)
+{
+    QElapsedTimer timer;timer.start();
+
+    QVariantMap map;
+    qInfo("Perform Motion Move");
+    if (lsut->sut_carrier->motor_x == Q_NULLPTR ||
+        lsut->sut_carrier->motor_y == Q_NULLPTR) {
+        qWarning("SUT carrier motors is null, motors cannot move");
+    } else {
+        if ( fabs(tof_x) > parameters.xLimit() ||
+             fabs(tof_y) > parameters.yLimit() ||
+             fabs(tof_z) > parameters.zLimit() ||
+             fabs(tof_rx) > parameters.rxLimit() ||
+             fabs(tof_ry) > parameters.ryLimit() ||
+             fabs(tof_rz) > parameters.rzLimit()) {
+             qWarning("The calculated movement is larger than spec, motors cannot move");
+        } else {
+            this->lsut->stepMove_XY_Sync(tof_x, tof_y);
+            this->lsut->sut_carrier->StepMove_Z(tof_z);
+            aa_head->stepInterpolation_AB_Sync(tof_rx, tof_ry);
+        }
+    }
+    map.insert("xLimit", parameters.xLimit());
+    map.insert("ylimit", parameters.yLimit());
+    map.insert("zLimit", parameters.zLimit());
+    map.insert("rxLimit", parameters.rxLimit());
+    map.insert("ryLimit", parameters.ryLimit());
+    map.insert("rzLimit", parameters.rzLimit());
+
+    map.insert("x", tof_x);
+    map.insert("y", tof_y);
+    map.insert("z", tof_z);
+    map.insert("rx", tof_rx);
+    map.insert("ry", tof_ry);
+    map.insert("rz", tof_rz);
+
+    map.insert("timeElapsed", timer.elapsed());
+    qInfo("Finish motion move. Time elapsed: %d", timer.elapsed());
+    emit pushDataToUnit(this->runningUnit, "Motion_Move", map);
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performCommand(QJsonValue params)
+{
+    QElapsedTimer timer;timer.start();
+    QString directory = params[""].toString();
+    QString command = params["command"].toString();
+    qInfo("%s", QDir::currentPath().toStdString().c_str());
+    qInfo("Directory: %s Command: %s", directory.toStdString().c_str(), command.toStdString().c_str());
+    QStringList arguments;
+    arguments << "/c" << command.toStdString().c_str();
+    QProcess process;
+    process.setWorkingDirectory( QDir::currentPath());
+    process.startDetached("cmd.exe", arguments);
+    process.waitForStarted();
+    QVariantMap map;
+    map.insert("directory", directory.toStdString().c_str());
+    map.insert("command", command.toStdString().c_str());
+    map.insert("timeElapsed", timer.elapsed());
+    qInfo("Finish command. Time elapsed: %d", timer.elapsed());
+    emit pushDataToUnit(this->runningUnit, "Command", map);
+
+    return ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
 ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
 {
     QElapsedTimer timer;timer.start();
+    QVariantMap map;
     qInfo("Start perform TOF");
     int method = params["method"].toInt(1);
     int imageProcessingMethod = params["image_processing_method"].toInt(-1);
@@ -1826,6 +1900,13 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     double ry = mathExpression(convertFormulaFromTOFResult(this->parameters.ry1(), tofResult));
     double rz = mathExpression(convertFormulaFromTOFResult(this->parameters.rz1(), tofResult));
 
+    tof_x = x;
+    tof_y = y;
+    tof_z = z;
+    tof_rx = rx;
+    tof_ry = ry;
+    tof_rz = rz;
+
     if (enable_motion) {
         if (lsut->sut_carrier->motor_x == Q_NULLPTR ||
             lsut->sut_carrier->motor_y == Q_NULLPTR) {
@@ -1846,7 +1927,6 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
         }
     }
 
-    QVariantMap map;
     map.insert("a", tofResult.a);
     map.insert("b", tofResult.b);
     map.insert("c", tofResult.c);

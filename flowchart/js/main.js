@@ -8,6 +8,8 @@ $(document).ready(function () {
   };
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_hw_tilt_params = { enable_motion: 0, image_processing_method: 0 };
+  var init_motion_move_params = { };
+  var init_command_params = { directory: '', command_name: '' };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, delay_in_ms: 200 };
@@ -41,6 +43,10 @@ $(document).ready(function () {
   var $y_level_operator_properties = $('#y_level_operator_properties');
   var $hw_tilt_operator_title = $('#hw_tilt_operator_title');
   var $hw_tilt_operator_properties = $('#hw_tilt_operator_properties');
+  var $motion_move_operator_properties = $('#motion_move_operator_properties');
+  var $motion_move_operator_title = $('#motion_move_operator_title');
+  var $command_operator_properties = $('#command_operator_properties');
+  var $command_operator_title = $('#command_operator_title');
   var $mtf_table = $('#mtf_table');
   var $linkColor = $('#link_color');
 
@@ -65,7 +71,10 @@ $(document).ready(function () {
 
   $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"hw_tilt_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Image Processing Method: <select id=\"hw_tilt_image_processing_method\" size=\"2\"><option value=1>1</option><option value=2>2</option></select></div>");
-
+  
+  $command_operator_properties.append("<div style=\"margin-top:20px\">Directory: <input type=\"text\" id=\"command_directory\"></div>");
+  $command_operator_properties.append("<div style=\"margin-top:20px\">Command: <input type=\"text\" id=\"command\"></div>");
+  
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"oc_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Fast Mode: <select id=\"oc_fast_mode\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Debug: <select id=\"oc_is_debug\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
@@ -118,6 +127,8 @@ $(document).ready(function () {
 	  $mtf_table.hide();
 	  $y_level_operator_properties.hide();
 	  $hw_tilt_operator_properties.hide();
+	  $motion_move_operator_properties.hide();
+	  $command_operator_properties.hide();
 	  console.log(operatorId);
       if (operatorId.includes("AA_")) {
         $aa_operator_properties.show();
@@ -220,6 +231,16 @@ $(document).ready(function () {
 		$hw_tilt_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
 		$('#hw_tilt_enable_motion').val(params["enable_motion"]);
 		$('#hw_tilt_image_processing_method').val(params["image_processing_method"]);
+	  }else if (operatorId.includes("Motion Move")) {
+		console.log("Motion Move");
+		$motion_move_operator_properties.show();
+		$motion_move_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+	  }else if (operatorId.includes("Command")) {
+		console.log("Command");
+		$command_operator_properties.show();
+		$command_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+		$('#command_directory').val(params["directory"]);
+		$('#command').val(params["command"]);
 	  }
 	  else {
         $operator_properties.show();
@@ -242,6 +263,8 @@ $(document).ready(function () {
 	  $mtf_table.hide();
 	  $y_level_operator_properties.hide();
 	  $hw_tilt_operator_properties.hide();
+	  $motion_move_operator_properties.hide();
+	  $command_operator_properties.hide();
       return true;
     },
 	onOperatorCreate: function (operatorId, operatorData, fullElement) {
@@ -400,6 +423,10 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
 	} else if (operatorId.includes("HW Tilt")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_hw_tilt_params);
+	}  else if (operatorId.includes("Motion Move")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_motion_move_params);
+	}  else if (operatorId.includes("Command")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_command_params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -452,6 +479,10 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, params);
 	} else if (operatorId.includes("HW Tilt")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_hw_tilt_params);
+	} else if (operatorId.includes("Motion Move")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_motion_move_params);
+	} else if (operatorId.includes("Command")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_command_params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -668,6 +699,14 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_tilt_operator_title').val());
 	  var params = { enable_motion: Number($('#hw_tilt_enable_motion').val()), image_processing_method: Number($('#hw_tilt_image_processing_method').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("Motion Move")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#motion_move_operator_title').val());
+	  var params = {};
+	  $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("Command")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#command_operator_title').val());
+	  var params = { directory: $('#command_directory').val(), command: $('#command').val() };
+	  $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	}
     else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
@@ -780,6 +819,8 @@ $(document).ready(function () {
   $('#create_load_material').click(function () { addOperationWidget("Load Material"); });
   $('#create_grr').click(function () { addEndWidget("GRR"); });
   $('#create_HW_Tilt').click(function(){ addOperationWidget("HW Tilt"); });
+  $('#create_motion_move').click(function(){ addOperationWidget("Motion Move"); });
+  $('#create_command').click(function(){ addOperationWidget("Command"); });
 
   $('#get_data').click(function () {
     var data = $flowchart.flowchart('getData');
@@ -878,6 +919,10 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $hw_tilt_operator_title.val());
       var params = { enable_motion: Number($('#hw_tilt_enable_motion').val()), image_processing_method: Number($('#hw_tilt_image_processing_method').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+    } else if (selectedOperatorId.includes("Command")) {
+      $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $command_operator_title.val());
+      var params = { directory: $('#command_directory').val(), command: $('#command').val()};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     }
     else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
@@ -891,8 +936,11 @@ $(document).ready(function () {
     let key = event.key.toUpperCase();
 	var selectedOperatorId = $flowchart.flowchart('getSelectedOperatorId');
 	console.log("Key up event: " + key + " selected OperatorId: " + selectedOperatorId);
+	if ($('#ex1').css('display') !== "none") {
+	  console.log("ignore the key up event");
+	  return;
+	}		
     if ( key == 'W' ) {
-        // 'W' key is pressed
 		updateData();
     } else if ( key == 'E' ) {
         $("a[rel='modal:open']").click();

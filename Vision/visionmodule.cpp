@@ -108,6 +108,41 @@ void VisionModule::saveImage(int channel, QString filename)
         avl::SaveImageToJpeg( image1 , filename.toStdString().c_str(), atl::NIL, false );
 }
 
+void VisionModule::reconnect(int channel)
+{
+    if (channel == 0) {
+        this->uplookCamera->close();
+        if(this->uplookCamera->Init())
+        {
+            qInfo("uplookCamera init ok");
+            this->uplookCamera->start();
+        }
+    }
+    else if (channel == 1) {
+        this->downlookCamera->close();
+        if (this->downlookCamera->Init())
+        {
+            qInfo("downlookCamera init ok");
+            this->downlookCamera->start();
+        }
+    }
+    else if (channel == 2)
+    {
+        this->pickarmCamera->close();
+        if (this->pickarmCamera->Init())
+        {
+            qInfo("pickarmCamera init ok");
+            this->pickarmCamera->start();
+        }
+    }
+    else if (channel == 3)
+    {
+        hikCamera->SCCameraStop();
+        //hikCamera->SCCameraInit("192.168.1.8");
+        hikCamera->SCCameraInit("192.168.0.15");
+    }
+}
+
 void VisionModule::saveImage(int channel)
 {
     avl::Image image1; bool ret;

@@ -231,6 +231,20 @@ Grid {
                         visionModule.saveImage(0)
                     }
                 }
+                Button {
+                    x: 291
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "lightGreen"
+                    icon.source: "../icons/camera.png"
+                    onClicked: {
+                        console.log("Reconnect...")
+                        visionModule.reconnect(0)
+                    }
+                }
             }
 
             Connections {
@@ -331,6 +345,20 @@ Grid {
                     onClicked: {
                         console.log("Save Image")
                         visionModule.saveImage(1)
+                    }
+                }
+                Button {
+                    x: 291
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "lightGreen"
+                    icon.source: "../icons/camera.png"
+                    onClicked: {
+                        console.log("Reconnect...")
+                        visionModule.reconnect(1)
                     }
                 }
             }
@@ -495,6 +523,24 @@ Grid {
                             visionModule.saveImage(2)
                         } else if (pickarmCameraSelectComboBox.currentIndex === 1) {
                             visionModule.saveImage(3)
+                        }
+                    }
+                }
+                Button {
+                    x: 291
+                    y: 0
+                    width: 50
+                    height: 50
+                    text: "Button"
+                    display: AbstractButton.IconOnly
+                    icon.color: "lightGreen"
+                    icon.source: "../icons/camera.png"
+                    onClicked: {
+                        console.log("Reconnect...")
+                        if (pickarmCameraSelectComboBox.currentIndex === 0) {
+                            visionModule.reconnect(2)
+                        } else if (pickarmCameraSelectComboBox.currentIndex === 1) {
+                            visionModule.reconnect(3)
                         }
                     }
                 }

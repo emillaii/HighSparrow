@@ -85,6 +85,7 @@ public:
     void saveImage(int channel, QString filename);
     Q_INVOKABLE void saveImage(int channel);
     Q_INVOKABLE void aaDebugImage(QString input_filename, int threshold, int min_area, int max_area);
+    Q_INVOKABLE void reconnect(int channel);
     ImageProvider *aaDebugImageProvider;
 
     //For Huawei TOF

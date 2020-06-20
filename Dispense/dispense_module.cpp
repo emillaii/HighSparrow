@@ -54,6 +54,7 @@ void DispenseModule::updatePath()
         }
     }
     qInfo("read point :%d",mechPoints.size());
+    emit callQmlRefeshImg(5);
 }
 
 void DispenseModule::setMapPosition(double pos_x, double pos_y)

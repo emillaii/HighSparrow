@@ -42,6 +42,8 @@ private:
     mPoint3D start_pos;
     QString file_path = "";
     QString name = "";
+signals:
+    void callQmlRefeshImg(int);
 };
 
 #endif // DISPENSE_MODULE_H

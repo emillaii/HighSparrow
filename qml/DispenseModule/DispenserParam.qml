@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.11
+import SingleheadLSutModuleLib 1.0
 
 ColumnLayout {
     RowLayout {
@@ -69,10 +70,28 @@ ColumnLayout {
                 aaNewCore.performHandlingOperation(1)
             }
         }
+        Button {
+            text: qsTr("Downlook PR")
+            width: 20
+            height: 40
+            onClicked: {
+                sh_lsut_Module.performHandling(SingleheadLSutModule.MOVE_TO_PR_POSITION +
+                                               SingleheadLSutModule.DOWNLOOK_SENSOR_PR)
+            }
+        }
     }
     RowLayout{
         Image{
+            id: dispensePath
             source: "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
+            cache: false
+            Connections{
+                target: highSprrow
+                onDisplayDispenseImageInUI: {
+                    dispensePath.source = ""
+                    dispensePath.source = "file:///" + dirPath + "//config//vision_dispense_path//resultImageWithPath.jpg"
+                }
+            }
         }
     }
 }

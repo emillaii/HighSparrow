@@ -1849,16 +1849,16 @@ ErrorCodeStruct AACoreNew::performMotionMove(QJsonValue params)
 ErrorCodeStruct AACoreNew::performCommand(QJsonValue params)
 {
     QElapsedTimer timer;timer.start();
-    QString directory = params[""].toString();
+    QString directory = params["directory"].toString();
     QString command = params["command"].toString();
-    qInfo("%s", QDir::currentPath().toStdString().c_str());
     qInfo("Directory: %s Command: %s", directory.toStdString().c_str(), command.toStdString().c_str());
     QStringList arguments;
     arguments << "/c" << command.toStdString().c_str();
-    QProcess process;
-    process.setWorkingDirectory( QDir::currentPath());
-    process.startDetached("cmd.exe", arguments);
-    process.waitForStarted();
+    QStringList args;
+    //args.append("test.txt");
+    QProcess *child = new QProcess();
+    child->setWorkingDirectory(directory);
+    child->start(directory + "/" + command, args);
     QVariantMap map;
     map.insert("directory", directory.toStdString().c_str());
     map.insert("command", command.toStdString().c_str());

@@ -269,6 +269,7 @@ void SingleheadLSutModule::performHandlingOperation(int cmd)
     {
         qInfo("LSUT perform sensor PR, cmd: %d", DOWNLOOK_SENSOR_PR);
         result = performDownlookSensorPR();
+        stepMove_XY_Sync(-pr_offset.X, -pr_offset.Y);
     }
     else
     {
@@ -423,7 +424,11 @@ bool SingleheadLSutModule::moveLensToGripperCenter()
 
 bool SingleheadLSutModule::stepMove_XY_Sync(double x, double y)
 {
-    qInfo("Move to target position, X: %f, Y: %f", x, y);
+    qInfo("step move X: %f, Y: %f", x, y);
+    if (this->sut_carrier->motor_x == nullptr || this->sut_carrier->motor_y == nullptr) {
+        qWarning("motor is null.");
+        return false;
+    }
     return sut_carrier->StepMove_XY_Sync(x, y);
 }
 

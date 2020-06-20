@@ -82,6 +82,11 @@ public:
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 
+    /*
+     * Edge Fitting Algorithm
+     */
+    ErrorCodeStruct PR_Edge_Fitting(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.6, bool detect_small_hole = false);
+
     void saveImage(int channel, QString filename);
     Q_INVOKABLE void saveImage(int channel);
     Q_INVOKABLE void aaDebugImage(QString input_filename, int threshold, int min_area, int max_area);

@@ -23,6 +23,8 @@ void XtVcMotor::ConfigVCM()
     if (parameters.direction() != 0)
         direction_is_opposite = true;
     SetRunDirect(vcm_id, parameters.direction(), parameters.scale());
+    // This function is used to change current direction in VCM. If VCM cannot do softlanding with force control, change this current direction in VCM json config.
+    SetCurrentDirect(vcm_id, parameters.currentDirection());
     SetPosModeSpeed(vcm_id, max_vel);
     SetPosModeAcc(vcm_id, max_acc);
     SetPosModejerk(vcm_id, max_jerk);
@@ -36,6 +38,8 @@ void XtVcMotor::ConfigVCM()
     {
         MapCurrent2Force(vcm_id, current, force, 4);
     }
+    // This function require XT dll version >= v6
+    SetGoZeroDistance(vcm_id, parameters.goZeroDistance());
     is_init = true;
     states.setIsEnabled(true);
     error_code = get_motor_error(vcm_id);
@@ -231,7 +235,16 @@ bool XtVcMotor::getAlarmState()
 
 bool XtVcMotor::clearAlarmState()
 {
-    //return ResetDevice(vcm_id);
+    qInfo("vcmID = %d, motor error before FastResetDevice: %d", vcm_id, get_motor_error(vcm_id));
+    // Fast reset is used to clear motor error in VCM driver, which requires driver version >= v8
+    // After FastResetDevice, servo off&on, then search home.
+    int ret = FastResetDevice(vcm_id);
+    QThread::msleep(100);
+    SetServoOnOff(vcm_id, false);
+    QThread::msleep(100);
+    SetServoOnOff(vcm_id, true);
+    QThread::msleep(100);
+    qInfo("FastResetDevice ret = %d, motor error: %d", ret, get_motor_error(vcm_id));
     return true;
 }
 

@@ -269,7 +269,6 @@ bool XtMotor::getAlarmState()
     if(parameters.reverseAlarmIO())
     {
         temp = !alm.Value();
-        qInfo("%s reverseAlarmIO, alm.value: %d, temp: %d", name.toStdString().c_str(), alm.Value(), temp);
     }
     else
     {

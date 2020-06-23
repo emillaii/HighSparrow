@@ -651,6 +651,13 @@ void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
             states.setHasSensorTray1(true);
             states.setFinishChangeTray(true);
         }
+        else if (message["Message"].toString()=="NoSensorTray")
+        {
+            tray->resetTrayState(SensorPosition::SENSOR_TRAY_1);
+            states.setHasSensorTray1(true);
+            tray->setTrayCurrentNg(SensorPosition::SENSOR_TRAY_1);
+            states.setIsLastTray(true);
+        }
         else
         {
             qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
@@ -691,9 +698,12 @@ void SensorLoaderModule::run()
     while (is_run)
     {
         QThread::msleep(1);
+        if(!is_run)break;
+
         //取料
         if((!states.allowChangeTray())&&checkNeedPickSensor()&&(MaterialState::IsEmpty == states.picker1MaterialState())&&findTrayNextSensorPos(false))
         {
+            if(!is_run)break;
             //sensor视觉
             tray_sensor_location->OpenLight();
             if(!moveCameraToTrayCurrentPos(states.currentTrayID()))
@@ -1230,6 +1240,7 @@ void SensorLoaderModule::run()
             break;
         }
         //执行换盘
+        if(!is_run)break;
         if(states.allowChangeTray())
         {
             if(states.waitingChangeTray())
@@ -1273,6 +1284,8 @@ void SensorLoaderModule::run()
                 states.setWaitingChangeTray(true);
                 qInfo("sendChangeTray");
             }
+
+            if(!is_run)break;
         }
 
         //SUT操作
@@ -1870,17 +1883,30 @@ bool SensorLoaderModule::findTrayNextSensorPos(bool allow_change_tray)
     int tray_index = getTrayIndex();
     if(SensorPosition::SENSOR_TRAY_1 == tray_index)
     {
-        if(states.hasSensorTray1()&&tray->findNextPositionOfInitState(tray_index))
+        if (states.isLastTray())
         {
-            states.setCurrentTrayID(tray_index);
-            return true;
+            if(states.hasSensorTray2()&&tray->findNextPositionOfInitState(SensorPosition::SENSOR_TRAY_2))
+            {
+                states.setCurrentTrayID(SensorPosition::SENSOR_TRAY_2);
+                return true;
+            }
+            if(!allow_change_tray)
+                return false;
         }
-        if(!allow_change_tray)
-            return false;
-        if(states.hasSensorTray2()&&tray->findNextPositionOfInitState(SensorPosition::SENSOR_TRAY_2))
+        else
         {
-            states.setCurrentTrayID(SensorPosition::SENSOR_TRAY_2);
-            return true;
+            if(states.hasSensorTray1()&&tray->findNextPositionOfInitState(tray_index))
+            {
+                states.setCurrentTrayID(tray_index);
+                return true;
+            }
+            if(!allow_change_tray)
+                return false;
+            if(states.hasSensorTray2()&&tray->findNextPositionOfInitState(SensorPosition::SENSOR_TRAY_2))
+            {
+                states.setCurrentTrayID(SensorPosition::SENSOR_TRAY_2);
+                return true;
+            }
         }
     }
     else

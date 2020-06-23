@@ -15,12 +15,16 @@ class SensorTrayLoaderModule:public ThreadWorkerBase
 public:
     enum HandlePosition
     {
-        START_POSITION,
-        END_POSITION
+        START_POSITION = 1,
+        END_POSITION = 2,
+        INPUT_MAGAZINE_POS1 = 3,
+        INPUT_MAGAZINE_POS2 = 4,
+        OUTPUT_MAGAZINE_POS1 = 5,
+        OUTPUT_MAGAZINE_POS2 = 6
     };
     enum HandleAction
     {
-        STPO_PUSH
+        STPO_PUSH = 10
     };
 
     SensorTrayLoaderModule();
@@ -39,6 +43,7 @@ public:
 signals:
 //    void sendChangeTrayFinish();
     // ThreadWorkerBase interface
+    void sendStopAllWorkersSignal();
 public slots:
     void startWork(int run_mode);
     void stopWork(bool wait_finish);
@@ -105,10 +110,10 @@ private:
     bool moveToDownsensorTray();
 
     bool checkEntanceTray(bool check_state);
-    bool checkSensorTray(bool check_state);
+    bool checkSensorTray(bool check_state, bool showErrorMsg = true);
     bool checkKickTray(bool check_state);
     bool checkReadyTray(bool check_state);
-    bool checkVacancyTray(bool check_state);
+    bool checkVacancyTray(bool check_state, bool showErrorMsg = true);
     bool checkExitTray(bool check_state);
 
     // ThreadWorkerBase interface

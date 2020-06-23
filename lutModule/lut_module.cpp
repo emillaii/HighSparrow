@@ -182,7 +182,7 @@ void LutModule::run(bool has_material)
                 if(REJECT_OPERATION == operation)
                 {
                     states.setLutHasLens(false);
-                    break;
+                    continue;
                 }
                 else if(RETRY_OPERATION == operation)
                     continue;
@@ -211,7 +211,7 @@ void LutModule::run(bool has_material)
                 if(REJECT_OPERATION == operation)
                 {
                     states.setLutHasLens(false);
-                    break;
+                    continue;
                 }
                 else if(RETRY_OPERATION == operation)
                     continue;

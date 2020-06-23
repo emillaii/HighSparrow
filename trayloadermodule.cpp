@@ -687,6 +687,7 @@ void TrayLoaderModule::run()
                 {
                     states.setReadyToPusReadyTray(false);
                     states.setEntanceClipReady(false);
+                    continue;
                 }
             }
             states.setReadyToPusReadyTray(false);

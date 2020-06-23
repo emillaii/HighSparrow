@@ -716,11 +716,7 @@ TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2,
                               0.00012844171616510600*x + 0.99393844417034000000;
                     avl::GetMatrixElement( matrix1, i, j, i_ori);
                     i_new = i_ori/y;
-//                    float r = sqrt(pow(i-inputImage.Height(), 2) + pow(j-inputImage.Width()/2, 2)) / L;
-//                    float i_new = 0, i_ori = 0;
-//                    avl::GetMatrixElement( matrix1, i, j, i_ori);
-//                    i_new = i_ori*(pow(alpha, r));
-//                    avl::SetMatrixElement( matrix1, i, j, i_new);
+                    avl::SetMatrixElement( matrix1, i, j, i_new);
                 }
             }
             avl::MatrixToImage( matrix1, image3 );
@@ -973,6 +969,7 @@ TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2,
                               0.00012844171616510600*x + 0.99393844417034000000;
                     avl::GetMatrixElement( matrix1, i, j, i_ori);
                     i_new = i_ori/y;
+                    avl::SetMatrixElement( matrix1, i, j, i_new);
                 }
             }
             avl::MatrixToImage( matrix1, image3 );
@@ -1111,7 +1108,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
           offsetFilename.toStdString().c_str(),
           searchHoleFilename.toStdString().c_str());
 
-    g_constData1 = L"C:\\Users\\emil\\Documents\\Projects\\field\\branches\\build-HighSprrowQ-Desktop_Qt_5_13_0_MSVC2017_64bit-Release\\config\\prConfig\\sensor_downlook_pr.jpg";
+    g_constData1 = L"C:\\Users\\emil\\Desktop\\AAProject\\huawei\\5-50\\5-50\\10-42-02-187.jpg";
     g_emptyString = L"";
     g_constData11 = L"SegmentFittingField?";
     g_constData12 = L"GrayModel?";

@@ -156,6 +156,13 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
     Q_UNUSED(parent)
 }
 
+AACoreNew::~AACoreNew()
+{
+#ifdef SunnyImageAbnormalityDetection
+    Detector->destroy();
+#endif
+}
+
 void AACoreNew::Init(AAHeadModule *aa_head, SutModule *sut, Dothinkey *dk, ChartCalibration *chartCalibration,
                      DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog, int serverMode)
 {
@@ -176,6 +183,9 @@ void AACoreNew::Init(AAHeadModule *aa_head, SutModule *sut, Dothinkey *dk, Chart
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
     //connect(&this->parameters, &AACoreParameters::dispenseCountChanged, this, &AACoreNew::aaCoreParametersChanged);
     this->serverMode = serverMode;
+#ifdef SunnyImageAbnormalityDetection
+    this->Detector = creat_SunnyDetector();
+#endif
 }
 
 void AACoreNew::loadJsonConfig(QString file_name)
@@ -1134,30 +1144,161 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
 
 ErrorCodeStruct AACoreNew::performParticalCheck(QJsonValue params)
 {
+#ifdef SunnyImageAbnormalityDetection
+    int saveImage = params["save_image"].toInt(0);
+    int delay = params["delay_in_ms"].toInt(0);
+    int lightChannel = params["light_channel"].toInt(0);
+    int brightness = params["brightness"].toInt(0);
     QVariantMap map;
+    map.insert("saveImage", saveImage);
+    map.insert("imageWidth", dk->particalCheckParamStruct.width);
+    map.insert("imageHeight", dk->particalCheckParamStruct.height);
+    map.insert("imageBayerMode", dk->particalCheckParamStruct.bayerMode);
+    map.insert("FuseID", dk->particalCheckParamStruct.fuseID);
+
+    QElapsedTimer timer;
+    timer.start();
+
+    // Open light for partical check
+    sut->vision_downlook_location->OpenLight(lightChannel, brightness);
 
     // SUT move to partical check position
     bool result = sut->moveToParticalCheckPos();
-    // Grab image
-    bool grabRet;
-    cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
-    if (!grabRet) {
-        qInfo("Cannot grab image.");
+    if (result != true)
+    {
+        qInfo("Cannot move SUT to partical check position.");
         NgProduct();
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Cannot grab image"};
+        map.insert("Result", "Cannot move SUT to partical check position.");
+        map.insert("timeElapsed", timer.elapsed());
+        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Cannot move to position"};
     }
-    // TBD: partical check algorithm
+    QThread::msleep(delay);
+    map.insert("MoveTime", timer.elapsed());
 
-    // Save image for further development
-    QString imageName;
-    imageName.append(getParticalCheckDir())
-            .append(dk->readSensorID())
-            .append("_")
-            .append(getCurrentTimeString())
-            .append(".jpg");
-    cv::imwrite(imageName.toStdString().c_str(), inputImage);
+    // Grab image raw8
+    QElapsedTimer grab_timer;
+    grab_timer.start();
+    unsigned char* pTestImgBuf = (unsigned char*)malloc(dk->particalCheckParamStruct.width*dk->particalCheckParamStruct.height*4);
+    result = dk->DothinkeyGrabImageRaw8(0, pTestImgBuf);
+    if (result != true) {
+        qInfo("Cannot grab image raw8.");
+        NgProduct();
+        map.insert("Result", "Cannot grab image raw8.");
+        map.insert("timeElapsed", timer.elapsed());
+        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Cannot grab image raw8"};
+    }
+    map.insert("ImageGrabTime", grab_timer.elapsed());
 
+    // Sunny deep learning image abnormality detection algorithm
+    Defect DefectResult;
+    Blemish BlemishResult;
+    // FuseID cannot be empty
+    QElapsedTimer calc_timer;
+    calc_timer.start();
+    int ret = Detector->test(pTestImgBuf, (char*)dk->readSensorID().toStdString().data(),
+                             dk->particalCheckParamStruct.width, dk->particalCheckParamStruct.height,
+                             dk->particalCheckParamStruct.bayerMode,
+                             DefectResult, BlemishResult);
+    delete(pTestImgBuf);
+    sut->vision_downlook_location->CloseLight(lightChannel);
+    map.insert("ImageDetectionTime", calc_timer.elapsed());
+    if (ret == 0) {
+        //OK
+        qInfo("Detect image abnormality succeeded with no error.");
+        map.insert("Result", "OK");
+        map.insert("timeElapsed", timer.elapsed());
+        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
+
+        // Save bmp imge if needed
+        if (saveImage == 1)
+        {
+            QString imageName;
+            imageName.append(getParticalCheckDir())
+                            .append(getCurrentTimeString())
+                            .append(".bmp");
+            QImage* newImage =  dk->DothinkeyGrabImage(0);
+            newImage->save(imageName);
+        }
+        return ErrorCodeStruct {ErrorCode::OK, ""};
+    }
+    else if (ret == 1) {
+        //坏点NG
+        qInfo("Detect image abnormality with defect.");
+        NgProduct();
+        map.insert("defectCX", DefectResult.defectCX);
+        map.insert("defectCY", DefectResult.defectCY);
+        map.insert("defectArea", DefectResult.defectArea);
+        map.insert("defectWidth", DefectResult.defectWidth);
+        map.insert("defectHeight", DefectResult.defectHeight);
+        map.insert("Result", "Detect image abnormality with defect.");
+        map.insert("timeElapsed", timer.elapsed());
+        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
+
+        // Mark the defect part and save to image
+        QString imageName;
+        imageName.append(getParticalCheckDir())
+                        .append("Defect_")
+                        .append(getCurrentTimeString())
+                        .append(".bmp");
+        QImage* newImage =  dk->DothinkeyGrabImage(0);
+        QPainter qPainter(newImage);
+        qPainter.setPen(QPen(Qt::red,5));
+        QRectF rectangle(DefectResult.defectCX-DefectResult.defectWidth/2,
+                         DefectResult.defectCY-DefectResult.defectHeight/2,
+                         DefectResult.defectWidth, DefectResult.defectHeight);
+        qPainter.drawRect(rectangle);
+        qPainter.end();
+        newImage->save(imageName);
+
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Detect image abnormality with defect."};
+    }
+    else if (ret == 2) {
+        //污点NG
+        qInfo("Detect image abnormality with blemish.");
+        NgProduct();
+        map.insert("blemishCX", BlemishResult.blemishCX);
+        map.insert("blemishCY", BlemishResult.blemishCY);
+        map.insert("blemishArea", BlemishResult.blemishArea);
+        map.insert("blemishWidth", BlemishResult.blemishWidth);
+        map.insert("blemishHeight", BlemishResult.blemishHeight);
+        map.insert("timeBlemishLuxDelta", BlemishResult.timeBlemishLuxDelta);
+        map.insert("Result", "Detect image abnormality with blemish.");
+        map.insert("timeElapsed", timer.elapsed());
+        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
+
+        // Mark the blemish part and save to file
+        QString imageName;
+        imageName.append(getParticalCheckDir())
+                        .append("Blemish_")
+                        .append(getCurrentTimeString())
+                        .append(".bmp");
+        QImage* newImage =  dk->DothinkeyGrabImage(0);
+        QPainter qPainter(newImage);
+        qPainter.setPen(QPen(Qt::blue,5));
+        QRectF rectangle(BlemishResult.blemishCX-BlemishResult.blemishWidth/2,
+                         BlemishResult.blemishCY-BlemishResult.blemishHeight/2,
+                         BlemishResult.blemishWidth, BlemishResult.blemishHeight);
+        qPainter.drawRect(rectangle);
+        qPainter.end();
+        newImage->save(imageName);
+
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Detect image abnormality with blemish."};
+    }
+    else {
+        //函数执行失败
+        qInfo("Detect image abnormality failed.");
+        NgProduct();
+        map.insert("retVal", ret);
+        map.insert("Result", "Detect image abnormality failed.");
+        map.insert("timeElapsed", timer.elapsed());
+        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Detect image abnormality failed."};
+    }
+#else
     return ErrorCodeStruct {ErrorCode::OK, ""};
+#endif
 }
 
 ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)

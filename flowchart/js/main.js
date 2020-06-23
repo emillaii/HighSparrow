@@ -17,7 +17,7 @@ $(document).ready(function () {
   var init_save_image = { type: 0, lighting: 100 };
   var init_grr_params ={ change_lens: 1, change_sensor: 0, repeat_time: 10, change_time: 11};
   var init_lens_params = { cmd: 0, target_position: 70, ois_x_target_position: 0, ois_y_target_position: 0, delay_in_ms: 0 }
-  var init_partical_check_params = { enable_partical_check: 0, delay_in_ms: 0 }
+  var init_partical_check_params = { save_image: 0, delay_in_ms: 0, light_channel: -1, brightness: 0 }
   var latestCreatedLinkId;
   var $linkProperties = $('#link_properties');
   var $operatorTitle = $('#operator_title');
@@ -133,8 +133,10 @@ $(document).ready(function () {
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">OIS X Target Position: <input type=\"number\" id=\"init_lens_ois_x_target_position\" value=70></div>");
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">OIS Y Target Position: <input type=\"number\" id=\"init_lens_ois_y_target_position\" value=70></div>");
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"init_lens_delay_in_ms\" value=0></div>"); 
-  
-  $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Enable partical check: <select id=\"enable_partical_check\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+
+  $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Light Channel: <input type=\"number\" id=\"light_channel\"></div>");
+  $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Brightness: <input type=\"number\" id=\"brightness\"></div>");  
+  $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Save image: <select id=\"save_image\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Delay in ms: <input type=\"number\" id=\"partical_check_delay_in_ms\"></div>");
   
   // Apply the plugin on a standard, empty div...
@@ -301,7 +303,9 @@ $(document).ready(function () {
 	  }else if (operatorId.includes("Partical Check")) {
 		$partical_check_operator_properties.show();
 		$partical_check_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
-		$('#enable_partical_check').val(params["enable_partical_check"]);
+		$('#light_channel').val(params["light_channel"]);
+		$('#brightness').val(params["brightness"]);
+		$('#save_image').val(params["save_image"]);
 		$('#partical_check_delay_in_ms').val(params["delay_in_ms"]);
 	  }	  
 	  else {
@@ -535,7 +539,9 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("Partical Check")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#Partical_check_operator_title').val());
 	  var params = { delay_in_ms: Number($('#partical_check_delay_in_ms').val()),
-	  enable_partical_check: Number($('#enable_partical_check').val()),
+	  save_image: Number($('#save_image').val()),
+	  light_channel: Number($('#light_channel').val()),
+	  brightness: Number($('#brightness').val())
 	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
     } else {
@@ -932,7 +938,9 @@ $(document).ready(function () {
     }else if (selectedOperatorId.includes("Partical Check")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#partical_check_operator_title').val());
 	  var params = { delay_in_ms: Number($('#partical_check_delay_in_ms').val()),
-	  enable_partical_check: Number($('#enable_partical_check').val()),
+	  save_image: Number($('#save_image').val()),
+	  light_channel: Number($('#light_channel').val()),
+	  brightness: Number($('#brightness').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else {
@@ -1233,7 +1241,9 @@ $(document).ready(function () {
 	} else if (selectedOperatorId.includes("Partical Check")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#partical_check_operator_title').val());
 	  var params = { delay_in_ms: Number($('#partical_check_delay_in_ms').val()),
-	  enable_partical_check: Number($('#enable_partical_check').val()),
+	  save_image: Number($('#save_image').val()),
+	  light_channel: Number($('#light_channel').val()),
+	  brightness: Number($('#brightness').val())
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else {

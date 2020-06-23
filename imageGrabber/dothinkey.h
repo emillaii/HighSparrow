@@ -19,27 +19,6 @@
 
 class Dothinkey : public PropertyBase
 {
-    Q_OBJECT
-public:
-    explicit Dothinkey(QObject *parent = 0);
-    ~Dothinkey();
-    Q_PROPERTY(QString currentSensorID READ currentSensorID WRITE setCurrentSensorID NOTIFY paramsChanged)
-    Q_PROPERTY(QString IniFilename READ IniFilename WRITE setIniFilename NOTIFY paramsChanged)
-    Q_INVOKABLE bool initSensor();
-    void loadParams(QString file_name);
-    BOOL DothinkeyEnum();   //Enumerate the dothinkey devices
-    BOOL DothinkeyOpen();   //Open Camera Devices
-    BOOL DothinkeyClose();  //Close Camera Devices
-    BOOL DothinkeyLoadIniFile(int channel);   // 0 is camera channel 0, 1 is camera channel 1
-    BOOL DothinkeyStartCamera(int channel);
-    // Hardcore OTP in UV, temp solution, move to ini file later
-    BOOL DothinkeyOTP(int serverMode);
-    BOOL DothinkeyOTPEx();
-    QImage* DothinkeyGrabImage(int channel);
-    cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
-    void DothinkeySetConfigFile(std::string filename);
-    QString readSensorID();
-    BOOL DothinkeyIsGrabbing();
     struct CameraChannel
     {
         CameraChannel()
@@ -69,6 +48,38 @@ public:
         int m_iFrameErr;
         int m_iFrameCnt;
     };
+
+    struct ParticalCheckParam
+    {
+        int width;
+        int height;
+        int bayerMode;
+        QString fuseID;
+    };
+
+    Q_OBJECT
+public:
+    explicit Dothinkey(QObject *parent = 0);
+    ~Dothinkey();
+    Q_PROPERTY(QString currentSensorID READ currentSensorID WRITE setCurrentSensorID NOTIFY paramsChanged)
+    Q_PROPERTY(QString IniFilename READ IniFilename WRITE setIniFilename NOTIFY paramsChanged)
+    Q_INVOKABLE bool initSensor();
+    void loadParams(QString file_name);
+    BOOL DothinkeyEnum();   //Enumerate the dothinkey devices
+    BOOL DothinkeyOpen();   //Open Camera Devices
+    BOOL DothinkeyClose();  //Close Camera Devices
+    BOOL DothinkeyLoadIniFile(int channel);   // 0 is camera channel 0, 1 is camera channel 1
+    BOOL DothinkeyStartCamera(int channel);
+    // Hardcore OTP in UV, temp solution, move to ini file later
+    BOOL DothinkeyOTP(int serverMode);
+    BOOL DothinkeyOTPEx();
+    QImage* DothinkeyGrabImage(int channel);
+    bool DothinkeyGrabImageRaw8(int channel, unsigned char *imageBuffer);
+    cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
+    void DothinkeySetConfigFile(std::string filename);
+    QString readSensorID();
+    BOOL DothinkeyIsGrabbing();
+    ParticalCheckParam particalCheckParamStruct;
 
     QString IniFilename() const
     {

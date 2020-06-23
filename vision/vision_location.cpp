@@ -359,7 +359,17 @@ void VisionLocation::CloseLight()
     {
         lighting->setBrightness(parameters.auxLightChannel(),0);
     }
-//    QThread::msleep(30);
+    //    QThread::msleep(30);
+}
+
+void VisionLocation::OpenLight(int channel, uint8_t brightness)
+{
+    lighting->setBrightness(channel, brightness);
+}
+
+void VisionLocation::CloseLight(int channel)
+{
+    lighting->setBrightness(channel, 0);
 }
 
 QString VisionLocation::getLastImageName()

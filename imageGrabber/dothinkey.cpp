@@ -146,6 +146,12 @@ BOOL Dothinkey::DothinkeyLoadIniFile(int channel) {
     otp_list.clear();
     iniParser_->GetI2CData(pCurrentSensor, cmd_list, otp_list);
     delete iniParser_;
+
+    // Get related params for partical check
+    particalCheckParamStruct.width = pCurrentSensor->width;
+    particalCheckParamStruct.height = pCurrentSensor->height;
+    particalCheckParamStruct.bayerMode = pCurrentSensor->outformat;
+
     return DT_ERROR_OK;
 }
 
@@ -283,6 +289,7 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
     }
     qInfo("Sensor Id : %s", sensor_id.toStdString().c_str());
     setCurrentSensorID(sensor_id);
+    particalCheckParamStruct.fuseID = sensor_id;
     return true;
 }
 
@@ -687,6 +694,58 @@ QImage* Dothinkey::DothinkeyGrabImage(int channel)
     delete(CameraBuffer);
     CameraBuffer = NULL;
     return image;
+}
+
+void Raw10toRaw8(BYTE *pIn, long number)
+{
+    BYTE *pTemp = pIn;
+    BYTE *pOut = pIn;
+
+    for (long i = 0; i < number; i = i + 5)
+    {
+        *pOut++ = pTemp[i];
+        *pOut++ = pTemp[i + 1];
+        *pOut++ = pTemp[i + 2];
+        *pOut++ = pTemp[i + 3];
+    }
+}
+
+bool Dothinkey::DothinkeyGrabImageRaw8(int channel, unsigned char *imageBuffer)
+{
+    if (imageBuffer == nullptr)
+    {
+        return false;
+    }
+
+    SensorTab *pSensor = nullptr;
+    ULONG retSize = 0;
+    int iDevID = -1;
+    UINT crcCount = 0;
+    int grabSize;
+    if (channel == 0 || channel == 1) {
+        pSensor = &(m_CameraChannels[channel].current_sensor);
+        iDevID = m_CameraChannels[channel].m_iDevID;
+        grabSize = m_CameraChannels[channel].m_GrabSize;
+    }
+
+    FrameInfo frameInfo;
+    int ret = GrabFrame(imageBuffer, grabSize, &retSize, &frameInfo, iDevID);
+    if (ret != DT_ERROR_OK)
+    {
+        GetMipiCrcErrorCount(&crcCount, CHANNEL_A, iDevID);
+        return false;
+    }
+    else
+    // Convert Raw10 to Raw8
+    Raw10toRaw8(imageBuffer, retSize);
+	
+	//QFile f(fileName1);
+    //f.open(QIODevice::WriteOnly);
+    //f.write((const char*)bmpBuffer, retSize);
+    //f.flush();
+    //f.close();
+
+    return true;
 }
 
 BOOL Dothinkey::SaveBmpFile(std::string sfilename, BYTE *pBuffer, UINT width, UINT height)

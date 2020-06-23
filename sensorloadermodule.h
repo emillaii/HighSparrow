@@ -256,6 +256,8 @@ public:
     Position spa_standby_position;
     Position picker1_offset;
     Position picker2_offset;
+    Position sensorTray1PickOffset;
+    Position sensorTray2PickOffset;
     Position sut1PickOffset;
     Position sut2PickOffset;
     Position sut1PlaceOffset;

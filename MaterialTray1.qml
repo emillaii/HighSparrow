@@ -216,14 +216,14 @@ ColumnLayout {
                     text: qsTr("X")
                 }
                 TextField{
-                    text: sensorLoaderParameter.sensorOffsetX
+                    text: sensorTray1PickOffset.X
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sensorLoaderParameter.setSensorOffsetX(text)
+                        sensorTray1PickOffset.setX(text)
                     }
                 }
 
@@ -231,14 +231,14 @@ ColumnLayout {
                     text: qsTr("Y")
                 }
                 TextField{
-                    text: sensorLoaderParameter.sensorOffsetY
+                    text: sensorTray1PickOffset.Y
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator{
                         decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                     onEditingFinished: {
-                        sensorLoaderParameter.setSensorOffsetY(text)
+                        sensorTray1PickOffset.setY(text)
                     }
                 }
                 Button{

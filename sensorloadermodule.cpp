@@ -2151,6 +2151,16 @@ bool SensorLoaderModule::movePicker1ToTrayCurrentPos(int tray_index,bool check_s
         x-=temp_offset.x();
         y-=temp_offset.y();
     }
+    if (tray_index == SensorPosition::SENSOR_TRAY_1)
+    {
+        x += sensorTray1PickOffset.X();
+        y += sensorTray1PickOffset.Y();
+    }
+    else if (tray_index == SensorPosition::SENSOR_TRAY_2)
+    {
+        x += sensorTray2PickOffset.X();
+        y += sensorTray2PickOffset.Y();
+    }
     bool result = pick_arm->move_XYT1_Synic(x,y,t,false,check_softlanding);
     if(result) return true;
     AppendError(QString(u8"移动1号吸头到位置(x %1,y %2,t %3)失败!").arg(x).arg(y).arg(t));
@@ -3072,6 +3082,8 @@ QMap<QString,PropertyBase*> SensorLoaderModule::getModuleParameter()
     temp_map.insert("spa_standby_position", &spa_standby_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
+    temp_map.insert("sensorTray1PickOffset", &sensorTray1PickOffset);
+    temp_map.insert("sensorTray2PickOffset", &sensorTray2PickOffset);
     temp_map.insert("sut1PickOffset", &sut1PickOffset);
     temp_map.insert("sut2PickOffset", &sut2PickOffset);
     temp_map.insert("sut1PlaceOffset", &sut1PlaceOffset);

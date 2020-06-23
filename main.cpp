@@ -408,6 +408,10 @@ int main(int argc, char *argv[])
                                              &highSprrow.baseModuleManager->sensor_loader_module.picker1_offset);
     engine.rootContext()->setContextProperty("pick2_offset",
                                              &highSprrow.baseModuleManager->sensor_loader_module.picker2_offset);
+    engine.rootContext()->setContextProperty("sensorTray1PickOffset",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.sensorTray1PickOffset);
+    engine.rootContext()->setContextProperty("sensorTray2PickOffset",
+                                             &highSprrow.baseModuleManager->sensor_loader_module.sensorTray2PickOffset);
     engine.rootContext()->setContextProperty("sut1PickOffset",
                                              &highSprrow.baseModuleManager->sensor_loader_module.sut1PickOffset);
     engine.rootContext()->setContextProperty("sut2PickOffset",

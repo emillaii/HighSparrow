@@ -131,6 +131,55 @@ ColumnLayout {
 
             RowLayout{
                 visible: baseModuleManager.getServerMode()===1
+
+                Label{
+                    text: qsTr("吸料偏移:")
+                }
+                Label{
+                    text: qsTr("X")
+                }
+                TextField{
+                    text: sensorTray2PickOffset.X
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorTray2PickOffset.setX(text)
+                    }
+                }
+
+                Label{
+                    text: qsTr("Y")
+                }
+                TextField{
+                    text: sensorTray2PickOffset.Y
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        sensorTray2PickOffset.setY(text)
+                    }
+                }
+                Button{
+                    text:qsTr("视觉校正")
+                    width:40
+                    height:40
+                    onClicked: {
+                        material_tray.setTrayCurrent(t_ncol.text-1,t_nrow.text-1,1)
+//                        sensorLoaderModule.performHandling(SensorLoaderModule.SENSOR_TRAY_1_POS
+//                                                           +SensorLoaderModule.TRAY_SENSOR_OFFSET)
+                        logicManager.performHandling(sensorLoaderParameter.moduleName,SensorLoaderModule.SENSOR_TRAY_2_POS
+                                                     +SensorLoaderModule.TRAY_SENSOR_OFFSET)
+                    }
+                }
+            }
+
+            RowLayout{
+                visible: baseModuleManager.getServerMode()===1
                 Button{
                     text:qsTr("执行视觉")
                     width:40

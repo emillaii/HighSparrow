@@ -560,6 +560,7 @@ QString BaseModuleManager::deviceResp(QString message)
         }
         else if(cmd == "inquiryInputIoState")
         {
+            qInfo("receive inquiryInputIoState reuest");
             QString temp_name = message_object["inputIoName"].toString();
             //qDebug()<<"inquiry input io state :"<< temp_name<<"thread id:"<<QThread::currentThreadId();
             QJsonObject result;
@@ -567,6 +568,7 @@ QString BaseModuleManager::deviceResp(QString message)
             XtGeneralInput* temp_io = GetInputIoByName(temp_name, false);
             if(temp_io == nullptr)
             {
+                qInfo("inquiryInputIoState cannot find IO %s", temp_name.toStdString().c_str());
                 result["error"] = QString("can not find input io ").append(temp_name);
                 bool geted = false;
                 foreach (QString messger_name, sender_messagers.keys())
@@ -587,6 +589,7 @@ QString BaseModuleManager::deviceResp(QString message)
                   }
                 }
                 if(!geted)
+                    qInfo("tcp cannot find input IO %s", temp_name.toStdString().c_str());
                     result["error"] = QString("tcp cannot find input io ").append(temp_name);
             }
             else {
@@ -788,6 +791,10 @@ bool BaseModuleManager::loadParameters()
     if(!this->parameters.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))
         return false;
 
+    loadVcmFile(getSystermParameterDir().append(VCM_PARAMETER_FILE));
+    loadMotorFile(getSystermParameterDir().append(MOTOR_PARAMETER_FILE));
+    loadMotorLimitFiles(getSystermParameterDir().append(LIMIT_PARAMETER_FILE));
+
     tcp_manager.loadJsonConfig(getSystermParameterDir().append(TCP_CONFIG_FILE));
     material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
     aa_head_module.loadJsonConfig(getCurrentParameterDir().append(AA_HEAD_FILE));
@@ -819,20 +826,22 @@ bool BaseModuleManager::loadParameters()
         trayClipOut.standards_parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_CLIPOUT_FILE),TRAY_CLIPOUT_PARAMETER);
      }
     aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
-    loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
-    loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    //loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
+    //loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
-    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    //loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
     return true;
 }
 
 bool BaseModuleManager::loadconfig()
 {
-    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
-    loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    //loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    //loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
+    dispense_module.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
@@ -880,6 +889,7 @@ bool BaseModuleManager::saveParameters()
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
     saveVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
+    //saveVcmfile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
     return true;
 }
 

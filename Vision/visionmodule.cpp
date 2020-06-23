@@ -709,11 +709,18 @@ TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2,
 
             for (int i = 0; i < averageImage.Height(); i++) {
                 for (int j = 0; j < averageImage.Width(); j++) {
-                    float r = sqrt(pow(i-inputImage.Height(), 2) + pow(j-inputImage.Width()/2, 2)) / L;
-                    float i_new = 0, i_ori = 0;
+                    float i_ori = 0, i_new = 0;
+                    float x = sqrt( pow(j-1296, 2) + pow(i-1024, 2) );
+                    float y = 0.00000000000000086806*pow(x,5) - 0.00000000000270049926*pow(x,4) +
+                              0.00000000275257614039*pow(x,3) - 0.00000124593360004144*pow(x,2) +
+                              0.00012844171616510600*x + 0.99393844417034000000;
                     avl::GetMatrixElement( matrix1, i, j, i_ori);
-                    i_new = i_ori*(pow(alpha, r));
-                    avl::SetMatrixElement( matrix1, i, j, i_new);
+                    i_new = i_ori/y;
+//                    float r = sqrt(pow(i-inputImage.Height(), 2) + pow(j-inputImage.Width()/2, 2)) / L;
+//                    float i_new = 0, i_ori = 0;
+//                    avl::GetMatrixElement( matrix1, i, j, i_ori);
+//                    i_new = i_ori*(pow(alpha, r));
+//                    avl::SetMatrixElement( matrix1, i, j, i_new);
                 }
             }
             avl::MatrixToImage( matrix1, image3 );
@@ -959,11 +966,13 @@ TOFResult VisionModule::imageProcessing2(QString filename, double y1, double y2,
 
             for (int i = 0; i < averageImage.Height(); i++) {
                 for (int j = 0; j < averageImage.Width(); j++) {
-                    float r = sqrt(pow(i-inputImage.Height(), 2) + pow(j-inputImage.Width()/2, 2)) / L;
-                    float i_new = 0, i_ori = 0;
+                    float i_ori = 0, i_new = 0;
+                    float x = sqrt( pow(j-1296, 2) + pow(i-1024, 2) );
+                    float y = 0.00000000000000086806*pow(x,5) - 0.00000000000270049926*pow(x,4) +
+                              0.00000000275257614039*pow(x,3) - 0.00000124593360004144*pow(x,2) +
+                              0.00012844171616510600*x + 0.99393844417034000000;
                     avl::GetMatrixElement( matrix1, i, j, i_ori);
-                    i_new = i_ori*(pow(alpha, r));
-                    avl::SetMatrixElement( matrix1, i, j, i_new);
+                    i_new = i_ori/y;
                 }
             }
             avl::MatrixToImage( matrix1, image3 );

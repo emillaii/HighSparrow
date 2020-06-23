@@ -1855,7 +1855,6 @@ ErrorCodeStruct AACoreNew::performCommand(QJsonValue params)
     QStringList arguments;
     arguments << "/c" << command.toStdString().c_str();
     QStringList args;
-    //args.append("test.txt");
     QProcess *child = new QProcess();
     child->setWorkingDirectory(directory);
     child->start(directory + "/" + command, args);

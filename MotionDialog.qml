@@ -151,6 +151,23 @@ Popup {
                         }
                     }
                 }
+                RadioButton {
+                    id: stepCustomButton
+                    text: "Custom"
+                    font.pixelSize: 10
+                }
+
+                TextField{
+                    text: "0.1"
+                    id: stepCustomText
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator {
+                        bottom: -100
+                        top: 100
+                        decimals: 3
+                        notation: DoubleValidator.StandardNotation
+                    }
+                }
             }
             ScrollView {
                 Timer {
@@ -274,7 +291,8 @@ Popup {
                                 text:"-"
                                 onClicked: {
                                    //console.log("move "+modelData);
-                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
+                                    var stepSize = stepCustomButton.checked ? stepCustomText.text : selectedStepSize
+                                   var res = baseModuleManager.stepMove(modelData,stepSize,false)
                                    console.log("result: "+res)
                                 }
                             }
@@ -282,7 +300,8 @@ Popup {
                                 text:"+"
                                 onClicked: {
                                    //console.log("move "+modelData);
-                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
+                                   var stepSize = stepCustomButton.checked ? stepCustomText.text : selectedStepSize
+                                   var res = baseModuleManager.stepMove(modelData,stepSize,true)
                                    console.log(motorsNames.length)
                                    console.log("result: "+res)
                                 }

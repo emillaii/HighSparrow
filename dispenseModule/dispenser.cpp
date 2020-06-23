@@ -233,6 +233,19 @@ DISPENSER_STATE Dispenser::GetState()
     return DISPENSER_IDLE;
 }
 
+bool Dispenser::checkInputIoExist()
+{
+    if (input_io == nullptr)
+        return false;
+    else
+        return true;
+}
+
+bool Dispenser::getInputIoValue()
+{
+    return input_io->Value();
+}
+
 double Dispenser::getMaxSpeed(int index)
 {
     int i = index>0?2*(index - 1):0;

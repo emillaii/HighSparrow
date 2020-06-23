@@ -28,6 +28,7 @@
 #include "utils/unitlog.h"
 #include "i2cControl/i2ccontrol.h"
 #include <QProcess>
+
 class AACoreNew : public ThreadWorkerBase
 {
     Q_OBJECT
@@ -188,6 +189,11 @@ private:
     double sumA=0,sumB=0,sumC=0,sumX=0,sumY=0,sumZ=0;
     int recordedTiltNum=0;
     Position6D temp_mushroom_position;
+
+    bool glueLevelCheck();
+    bool glueLevelCheckResult = false;
+    int current_glue_level_check = 0;
+
 public slots:
     //ThreadWorkerBase
     void startWork(int run_mode);

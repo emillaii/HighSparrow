@@ -222,6 +222,10 @@ void WorkersManager::receiveModuleMessage(QVariantMap message)
             {
                 showAlarmMessage(message);
             }
+            else if(message_content == "StopAllWorkers")
+            {
+                stopAllWorkers(true);
+            }
             else
             {
                 sendTcpMessage(message);
@@ -405,12 +409,12 @@ void WorkersManager::stopWorkers(bool wait_finish)
     qInfo("stop all worker");
     emit stopWorkersSignal(wait_finish);
 }
+
 void WorkersManager::resetLogics()
 {
     qInfo("reset all logics");
     emit resetLogicsSignal();
 }
-
 
 void WorkersManager::startWorker(QString name,int run_mode)
 {

@@ -704,6 +704,7 @@ void AACoreNew::resetLogic()
     grr_repeat_time = 0;
     grr_change_time = 0;
     current_dispense = 0;
+    current_glue_level_check = 0;
 
     recordedTiltNum = 0;
     sumA = 0; sumB = 0; sumC = 0;
@@ -860,6 +861,34 @@ bool AACoreNew::runFlowchartTest()
     return true;
 }
 
+bool AACoreNew::glueLevelCheck()
+{
+    if (dispense->dispenser->checkInputIoExist())
+    {
+        // Related IO is in local PC
+        qInfo("Glue level check IO in local");
+        return dispense->dispenser->getInputIoValue();
+    }
+    else
+    {
+        // Related IO might be in another PC, enquiry IO state with TCP
+        qInfo("Glue level check IO not in local");
+        if (serverMode == 0)
+        {
+            QJsonObject param;
+            param.insert("InputIOName", dispense->dispenser->parameters.glueLevelCheckIO());
+            sendMessageToModule("LogicManager2", "InquiryInputIOState", param);
+        }
+        else {
+            QJsonObject param;
+            param.insert("InputIOName", dispense->dispenser->parameters.glueLevelCheckIO());
+            sendMessageToModule("LogicManager1", "InquiryInputIOState", param);
+        }
+        QThread::msleep(50);
+        return glueLevelCheckResult;
+    }
+}
+
 ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properties)
 {
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
@@ -871,13 +900,19 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
     unsigned int delay_in_ms = delay_in_ms_qjv.toInt(0);
 
     //Do any pre check here
+    current_glue_level_check--;
     if (dispense->dispenser->parameters.enableGlueLevelCheck()) {
-        qInfo("Glue level check enabled");
-        bool preCheckFail = dispense->dispenser->glueLevelCheck();
-        qInfo("Glue level check result: %d", preCheckFail);
-        if (preCheckFail) {
-            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, u8"胶水位检查失败,请更换胶水或检查IO后继续。");
-            QString operation = waitMessageReturn(is_run,alarm_id);
+        if (current_glue_level_check <= 0)
+        {
+            qInfo("Glue level check enabled");
+            //bool preCheckFail = dispense->dispenser->glueLevelCheck();'
+            bool preCheckFail = glueLevelCheck();
+            qInfo("Glue level check result: %d", preCheckFail);
+            if (preCheckFail) {
+                int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, u8"胶水位检查失败,请更换胶水或检查IO后继续。");
+                QString operation = waitMessageReturn(is_run,alarm_id);
+            }
+            current_glue_level_check = dispense->dispenser->parameters.glueLevelCheckInterval();
         }
     }
 
@@ -4420,6 +4455,24 @@ void AACoreNew::receivceModuleMessage(QVariantMap message)
         {
             qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
             return;
+        }
+    }
+    else if(message["OriginModule"].toString() == "LogicManager1" | message["OriginModule"].toString() == "LogicManager2")
+    {
+        qInfo("Receive IO state from LogicManager");
+        if(!message.contains("Message"))
+        {
+            qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
+            return;
+        }
+        qInfo("message = %s", message["Message"].toString().toStdString().c_str());
+        if(message["Message"].toString() == "fail" || message["Message"].toString() == "false")
+        {
+            glueLevelCheckResult = false;
+        }
+        else if (message["Message"].toString() == "true")
+        {
+            glueLevelCheckResult = true;
         }
     }
     else

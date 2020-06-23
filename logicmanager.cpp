@@ -1305,7 +1305,28 @@ void LogicManager::performTcpOperation(QVariantMap message)
             baseModuleManage->setOutput(u8"三色报警指示灯_红", false);
             //baseModuleManage->setOutput(u8"三色报警指示灯_蜂鸣器",false);
         }
-
+        else if (message["Message"].toString() == "StopAllWorkers")
+        {
+            QVariantMap message_map;
+            message_map.insert("TargetModule","WorksManager");
+            message_map.insert("OriginModule",parameters.moduleName());
+            message_map.insert("Message","StopAllWorkers");
+            emit sendMessageToWorkerManger(message_map);
+        }
+        else if (message["Message"].toString() == "InquiryInputIOState")
+        {
+            qInfo("receive InquiryInputIOState message, ioName = %s", message["InputIOName"].toString().toStdString().c_str());
+            QString ioName = message["InputIOName"].toString();
+            XtGeneralInput *temp_io = baseModuleManage->GetInputIoByName(ioName);
+            if (temp_io == nullptr)
+            {
+                sendMessageToModule(message["OriginModule"].toString(), "fail");
+            }
+            else
+            {
+                sendMessageToModule(message["OriginModule"].toString(), temp_io->Value()?"true":"false");
+            }
+        }
     }
     else if(message.contains("performHandling"))
     {

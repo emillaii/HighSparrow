@@ -7,12 +7,20 @@ import LogicManagerLib 1.1
 // 2，5，0.2 0.5 0.02 0.05
 Popup {
     property double selectedStepSize: 0.1
+    property double opacityLevel: 1
 
     id: dialog
     visible: false
+    //opacity: 0
+    background: Rectangle {
+        color: "white"
+        opacity: 0.1
+    }
     contentItem: Rectangle {
         id: rectangle
-        color: "black"
+        color: Qt.rgba(0,0,0,opacityLevel)
+//        color: "black"
+//        opacity: 0.1
         implicitWidth: 650
         implicitHeight: 1000
 
@@ -156,18 +164,20 @@ Popup {
                     text: "Custom"
                     font.pixelSize: 10
                 }
-
                 TextField{
                     text: "0.1"
                     id: stepCustomText
+                    width: 100
+                    Layout.preferredWidth: 100
                     horizontalAlignment: TextInput.AlignHCenter
                     validator: DoubleValidator {
                         bottom: -100
                         top: 100
-                        decimals: 3
+                        decimals: 6
                         notation: DoubleValidator.StandardNotation
                     }
                 }
+
             }
             ScrollView {
                 Timer {
@@ -176,9 +186,30 @@ Popup {
                 }
 
                 implicitWidth:  550
-                implicitHeight: 600
+                implicitHeight: 800
                 clip: true
                 ColumnLayout {
+                    RowLayout {
+                        id:opacityView
+                        Text {
+                            text: qsTr("透明度：")
+                            color: "cyan"
+                        }
+                        Slider {
+                            id: opacitySlider
+                            width: 300
+                            Layout.preferredWidth: 300
+                            height: 48
+                            stepSize: 0.05
+                            to: 1
+                            from: 0
+                            value: 1
+                            onValueChanged: {
+                                opacityLevel = opacitySlider.value
+                            }
+                        }
+                    }
+
                     RowLayout {
                         Text {
                             text: "AA_A_Inter "

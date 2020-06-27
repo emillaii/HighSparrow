@@ -135,6 +135,14 @@ bool AAHeadModule::waitArrivedPickLesPosition()
             motor_c->WaitArrivedTargetPos(aaPickLensPosition.C());
 }
 
+bool AAHeadModule::step_C_Sync(double step_c)
+{
+    motor_c->StepMoveSync(step_c);
+    double c = motor_c->GetFeedbackPos();
+    qInfo("Current motor c position: %f", c);
+    return true;
+}
+
 bool AAHeadModule::stepInterpolation_AB_Sync(double step_a, double step_b)
 {
     double dy = qSin(qDegreesToRadians(step_a))*parameters.rotateZOffset();

@@ -1824,6 +1824,7 @@ ErrorCodeStruct AACoreNew::performMotionMove(QJsonValue params)
             this->lsut->stepMove_XY_Sync(tof_x, tof_y);
             this->lsut->sut_carrier->StepMove_Z(tof_z);
             aa_head->stepInterpolation_AB_Sync(tof_rx, tof_ry);
+            aa_head->step_C_Sync(tof_rz);
         }
     }
     map.insert("xLimit", parameters.xLimit());
@@ -1886,18 +1887,29 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     QString filename = params["filename"].toString();
     TOFResult tofResult;
     filename.replace("file:///", "");
+    double x = 0;
+    double y = 0;
+    double z = 0;
+    double rx = 0;
+    double ry = 0;
+    double rz = 0;
     if (method == 1) {
         tofResult = visionModule->imageProcessing1(filename, parameters.scanY1PixelLocation1(), parameters.scanY2PixelLocation1(), parameters.scanY4PixelLocation1(), parameters.scanY5PixelLocation1(), parameters.halfWidth1(), parameters.intensityCorrectionFactor1(), grabFromCamera);
+        x = mathExpression(convertFormulaFromTOFResult(this->parameters.x1(), tofResult));
+        y = mathExpression(convertFormulaFromTOFResult(this->parameters.y1(), tofResult));
+        z = mathExpression(convertFormulaFromTOFResult(this->parameters.z1(), tofResult));
+        rx = mathExpression(convertFormulaFromTOFResult(this->parameters.rx1(), tofResult));
+        ry = mathExpression(convertFormulaFromTOFResult(this->parameters.ry1(), tofResult));
+        rz = mathExpression(convertFormulaFromTOFResult(this->parameters.rz1(), tofResult));
     } else {
         tofResult = visionModule->imageProcessing2(filename, parameters.scanY1PixelLocation2(), parameters.scanY2PixelLocation2(), parameters.scanY3PixelLocation2(), parameters.halfWidth2(), parameters.intensityCorrectionFactor1(), grabFromCamera);
+        x = mathExpression(convertFormulaFromTOFResult(this->parameters.x2(), tofResult));
+        y = mathExpression(convertFormulaFromTOFResult(this->parameters.y2(), tofResult));
+        z = mathExpression(convertFormulaFromTOFResult(this->parameters.z2(), tofResult));
+        rx = mathExpression(convertFormulaFromTOFResult(this->parameters.rx2(), tofResult));
+        ry = mathExpression(convertFormulaFromTOFResult(this->parameters.ry2(), tofResult));
+        rz = mathExpression(convertFormulaFromTOFResult(this->parameters.rz2(), tofResult));
     }
-
-    double x = mathExpression(convertFormulaFromTOFResult(this->parameters.x1(), tofResult));
-    double y = mathExpression(convertFormulaFromTOFResult(this->parameters.y1(), tofResult));
-    double z = mathExpression(convertFormulaFromTOFResult(this->parameters.z1(), tofResult));
-    double rx = mathExpression(convertFormulaFromTOFResult(this->parameters.rx1(), tofResult));
-    double ry = mathExpression(convertFormulaFromTOFResult(this->parameters.ry1(), tofResult));
-    double rz = mathExpression(convertFormulaFromTOFResult(this->parameters.rz1(), tofResult));
 
     tof_x = x;
     tof_y = y;
@@ -1926,6 +1938,7 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
         }
     }
 
+    map.insert("--timeStamp", getCurrentDateString().append("-").append(getCurrentTimeString()));
     map.insert("a", tofResult.a);
     map.insert("b", tofResult.b);
     map.insert("c", tofResult.c);
@@ -1946,16 +1959,9 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     map.insert("ry", ry);
     map.insert("rz", rz);
 
-    map.insert("xLimit", parameters.xLimit());
-    map.insert("ylimit", parameters.yLimit());
-    map.insert("zLimit", parameters.zLimit());
-    map.insert("rxLimit", parameters.rxLimit());
-    map.insert("ryLimit", parameters.ryLimit());
-    map.insert("rzLimit", parameters.rzLimit());
-
     map.insert("method", method);
     map.insert("result", tofResult.ret);
-    map.insert("imageName", tofResult.imageName);
+    map.insert("-imageName", tofResult.imageName);
     map.insert("timeElapsed", timer.elapsed());
     qInfo("Finish TOF. Time elapsed: %d", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "TOF", map);

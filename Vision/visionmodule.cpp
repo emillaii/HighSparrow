@@ -613,7 +613,7 @@ void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inIma
     avl::ProfileMaximum( outProfile, avl::ProfileInterpolationMethod::Quadratic4, atl::Dummy<float>().Get(), atl::NIL, real1 );
     real2 = _avfml_st_real(_avfml_ld_real(real1) * intensity_percentage);
     avl::SubtractFromProfile( outProfile, real2, state.profile2 );
-    avl::SmoothProfile_Mean( state.profile2, 10, false, state.profile3 );
+    avl::SmoothProfile_Mean( state.profile2, 30, false, state.profile3 );
     avl::ProfileZeroCrossings( state.profile3, state.realArray1 );
 
     // AvsFilter_GetArrayElement is intended for use in generated programs. One should use indexing operator[] to access array' elements.
@@ -705,7 +705,6 @@ TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2,
             avl::Matrix matrix1;
             avl::AverageChannels( imageRemap, atl::NIL, averageImage);
             avl::ImageToMatrix( averageImage, matrix1);
-            float L = sqrt(pow(inputImage.Width()/2, 2) + pow(inputImage.Height()/2, 2));
 
             for (int i = 0; i < averageImage.Height(); i++) {
                 for (int j = 0; j < averageImage.Width(); j++) {

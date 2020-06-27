@@ -40,6 +40,7 @@ public:
     Q_INVOKABLE bool moveToPikLensPositionAsync();
     bool waitArrivedPickLesPosition();
     Q_INVOKABLE bool stepInterpolation_AB_Sync(double step_a,double step_b);
+    bool step_C_Sync(double step_c);
     mPoint6D GetFeedBack();
 
     //huawei aa

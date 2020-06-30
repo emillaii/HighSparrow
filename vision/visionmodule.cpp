@@ -1172,7 +1172,7 @@ ErrorCodeStruct VisionModule::PR_Prism_SUT_Two_Circle_Matching(QString camera_na
     return error_code;
 }
 
-ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score, int retryCount, bool detect_small_hole, int smallHoleEdgeResponse, int smallHoleScanWidth, int smallHoleScanCount)
+ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score, int retryCount, SmallHoleDetectionParam *paramStruct)
 {
     if (retryCount == 0) {
         qWarning("PR fail after retry 3 times.");
@@ -1182,7 +1182,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
     }
     int nextRetryCount = retryCount - 1;
     if (pr_name.contains("_edgeModel")) {
-        return PR_Edge_Fitting(camera_name, pr_name, prResult, object_score, detect_small_hole);
+        return PR_Edge_Fitting(camera_name, pr_name, prResult, object_score, paramStruct->detectSmallHole);
     }
     qInfo("%s perform %s with object_score: %f retry count: %d",camera_name.toStdString().c_str(),pr_name.toStdString().c_str(), object_score, retryCount);
     pr_name.replace("file:///", "");
@@ -1292,7 +1292,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             rectangle2D1.AssignNonNil();
             point2D1.Get() = object2D1.Get().Point();
             coordinateSystem2D1 = avl::CoordinateSystem2D(point2D1.Get(), 0.0f, 1.0f);
-            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, coordinateSystem2D1, smallHoleScanCount, smallHoleScanWidth, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, smallHoleEdgeResponse, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, coordinateSystem2D1, paramStruct->smallHoleScanCount, paramStruct->smallHoleScanWidth, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, paramStruct->smallHoleEdgeResponse, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
             avl::TranslatePoint( point2D1.Get(), vector2D1, false, point2D2.Get() );
             real1 = object2D1.Get().Angle();
             avl::RealToString( real1, string2 );
@@ -1325,20 +1325,20 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             qInfo("Object score: %f", object2D1.Get().score);
             if (circle2D1 != atl::NIL) {
                 qInfo("Detected small hole at x: %f y: %f radius: %f", circle2D1.Get().Center().X(), circle2D1.Get().Center().Y(), circle2D1.Get().Radius());
-                if (circle2D1.Get().Radius() < 6 || circle2D1.Get().Radius() >=7) {
+                if (circle2D1.Get().Radius() < paramStruct->smallHoleRadiusMin || circle2D1.Get().Radius() > paramStruct->smallHoleRadiusMax) {
                     error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
                     error_code.errorMessage = "Cannot detect small hole, the detected radius is out of spec";
                     qWarning("Cannot detect small hole, the detected radius is out of spec");
                     QThread::msleep(500);
-                    return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, detect_small_hole, smallHoleEdgeResponse, smallHoleScanWidth, smallHoleScanCount);
+                    return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, paramStruct);
                 }
             } else {
-                if (detect_small_hole) {
+                if (paramStruct->detectSmallHole) {
                     error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
                     error_code.errorMessage = "Cannot detect small hole";
                     qWarning("Cannot find the small hole");
                     QThread::msleep(500);
-                    return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, detect_small_hole, smallHoleEdgeResponse, smallHoleScanWidth, smallHoleScanCount);
+                    return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, paramStruct);
                 }
             }
         }
@@ -1353,7 +1353,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             error_code.errorMessage = "PR Object Not Found";
             qWarning("PR Error! Object Not Found");
             QThread::msleep(500);
-            return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, detect_small_hole, smallHoleEdgeResponse, smallHoleScanWidth, smallHoleScanCount);
+            return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, paramStruct);
         }
 
         stringArray1.Resize(1);
@@ -1374,7 +1374,7 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::SaveImageToJpeg( image8 , imageName.toStdString().c_str(), atl::NIL, false );
         if(!is_object_score_pass) {
             QThread::msleep(500);
-            return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, detect_small_hole, smallHoleEdgeResponse, smallHoleScanWidth, smallHoleScanCount);
+            return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, paramStruct);
         }
         //displayPRResult(camera_name, prResult);
     } catch(const atl::Error& error) {

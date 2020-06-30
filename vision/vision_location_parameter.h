@@ -34,6 +34,8 @@ public:
     Q_PROPERTY(int smallCircleEdgeResponse READ smallCircleEdgeResponse WRITE setSmallCircleEdgeResponse NOTIFY smallCircleEdgeResponseChanged)
     Q_PROPERTY(int smallCircleScanWidth READ smallCircleScanWidth WRITE setSmallCircleScanWidth NOTIFY smallCircleScanWidthChanged)
     Q_PROPERTY(int smallCircleScanCount READ smallCircleScanCount WRITE setSmallCircleScanCount NOTIFY smallCircleScanCountChanged)
+    Q_PROPERTY(double smallCircleRadiusMax READ smallCircleRadiusMax WRITE setSmallCircleRadiusMax NOTIFY smallCircleRadiusMaxChanged)
+    Q_PROPERTY(double smallCircleRadiusMin READ smallCircleRadiusMin WRITE setSmallCircleRadiusMin NOTIFY smallCircleRadiusMinChanged)
     Q_PROPERTY(int retryCount READ retryCount WRITE setRetryCount NOTIFY retryCountChanged)
     Q_PROPERTY(bool closeLightAfterPR READ closeLightAfterPR WRITE setCloseLightAfterPR NOTIFY closeLightAfterPRChanged)
 
@@ -171,6 +173,16 @@ public:
     int smallCircleScanCount() const
     {
         return m_smallCircleScanCount;
+    }
+
+    double smallCircleRadiusMax() const
+    {
+        return m_smallCircleRadiusMax;
+    }
+
+    double smallCircleRadiusMin() const
+    {
+        return m_smallCircleRadiusMin;
     }
 
 public slots:
@@ -417,6 +429,26 @@ public slots:
         emit smallCircleScanCountChanged(m_smallCircleScanCount);
     }
 
+    void setSmallCircleRadiusMax(double smallCircleRadiusMax)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_smallCircleRadiusMax, smallCircleRadiusMax))
+            return;
+
+        m_smallCircleRadiusMax = smallCircleRadiusMax;
+        emit smallCircleRadiusMaxChanged(m_smallCircleRadiusMax);
+    }
+
+    void setSmallCircleRadiusMin(double smallCircleRadiusMin)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_smallCircleRadiusMin, smallCircleRadiusMin))
+            return;
+
+        m_smallCircleRadiusMin = smallCircleRadiusMin;
+        emit smallCircleRadiusMinChanged(m_smallCircleRadiusMin);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -472,6 +504,10 @@ signals:
 
     void smallCircleScanCountChanged(int smallCircleScanCount);
 
+    void smallCircleRadiusMaxChanged(double smallCircleRadiusMax);
+
+    void smallCircleRadiusMinChanged(double smallCircleRadiusMin);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -499,6 +535,8 @@ private:
     int m_smallCircleEdgeResponse = 10;
     int m_smallCircleScanWidth = 10;
     int m_smallCircleScanCount = 10;
+    double m_smallCircleRadiusMax = 7;
+    double m_smallCircleRadiusMin = 6;
     int m_retryCount = 3;
 };
 

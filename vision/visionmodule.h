@@ -79,6 +79,26 @@ struct WidthJudgeState
     atl::Array< atl::Conditional< atl::String > > stringArray4;
 };
 
+struct SmallHoleDetectionParam
+{
+    bool detectSmallHole;
+    int smallHoleEdgeResponse;
+    int smallHoleScanWidth;
+    int smallHoleScanCount;
+    double smallHoleRadiusMax;
+    double smallHoleRadiusMin;
+
+    SmallHoleDetectionParam()
+    {
+        detectSmallHole = false;
+        smallHoleEdgeResponse = 10;
+        smallHoleScanWidth = 10;
+        smallHoleScanCount = 10;
+        smallHoleRadiusMax = 7;
+        smallHoleRadiusMin = 6;
+    }
+};
+
 class VisionServer;
 
 class VisionModule: public QObject ,public QQuickImageProvider
@@ -111,10 +131,7 @@ public:
                                                      PRResultStruct &prResult,
                                                      double object_score = 0.8,
                                                      int retryCount = 3,
-                                                     bool detect_small_hole = false,
-                                                     int smallHoleEdgeResponse = 10,
-                                                     int smallHoleScanWidth = 10,
-                                                     int smallHoleScanCount = 10);
+                                                     SmallHoleDetectionParam *paramStruct = nullptr);
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     ErrorCodeStruct Glue_Inspection(double resolution, double minWidth, double maxWidth, double maxAvgWidth,
                                     QString beforeImage, QString afterImage, QString *glueInspectionImageName,

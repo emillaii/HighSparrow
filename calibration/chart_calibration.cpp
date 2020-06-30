@@ -14,6 +14,11 @@ bool ChartCalibration::GetPixelPoint(double &x, double &y)
 {
     bool grabRet = false;
     cv::Mat img = dothinkey->DothinkeyGrabImageCV(0, grabRet);
+    if (grabRet != true)
+    {
+        qInfo("DothinkeyGrabImageCV fail in GetPixelPoint()");
+        return false;
+    }
 
     QImage outImage;
     double offsetX, offsetY;

@@ -657,9 +657,9 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         if(has_vacancy_tray)
         {
             kick_result &= motor_kick->SlowMoveToPosSync(parameters.finishKickTrayPosition(),parameters.pushVelocity());
+            kick_result &= kick2->Set(false);
             if(kick_result)
                 kick_result &= motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
-            kick_result &= kick2->Set(false);
             if(kick_result)
                 kick_result &= kick1->Set(true);
         }
@@ -674,9 +674,9 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         if(has_vacancy_tray)
         {
             kick_resul2 &= motor_kick->SlowMoveToPosSync(parameters.finishKickTrayPosition(),parameters.pushVelocity());
+            kick_resul2 &= kick2->Set(false);
             if(kick_resul2)
                 kick_resul2 &= motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
-            kick_resul2 &= kick2->Set(false);
             if(kick_resul2)
                 kick_resul2 &= kick1->Set(true);
         }

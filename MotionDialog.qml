@@ -322,7 +322,7 @@ Popup {
                                 text:"-"
                                 onClicked: {
                                    //console.log("move "+modelData);
-                                    var stepSize = stepCustomButton.checked ? stepCustomText.text : selectedStepSize
+                                   var stepSize = stepCustomButton.checked ? stepCustomText.text : selectedStepSize
                                    var res = baseModuleManager.stepMove(modelData,stepSize,false)
                                    console.log("result: "+res)
                                 }

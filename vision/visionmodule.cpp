@@ -1895,8 +1895,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                             if (vector2D1 != atl::NIL)
                             {
                                 point2D2.AssignNonNil();
-
-                                avl::TranslatePoint( point2D1.Get(), vector2D1.Get(), false, point2D1.Get() );
+                                avl::TranslatePoint( point2D1.Get(), vector2D1.Get(), false, point2D2.Get() );
                             }
                             else
                             {
@@ -1907,7 +1906,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                             float real3;
                             avl::CoordinateSystem2D coordinateSystem2D2;
 
-                            avl::NormalizeRectangleOrientation( rectangle2D1.Get(), 0.0f, avl::RectangleOrientation::Horizontal, rectangle2D2 );
+                            avl::NormalizeRectangleOrientation( rectangle2D1.Get(), 0.0f, avl::RectangleOrientation::Vertical, rectangle2D2 );
                             real3 = rectangle2D2.Angle();
                             avl::RotatePoint(point2D2.Get(), point2D1.Get(), real3, false, point2D2.Get());
                             prResult.theta = real3;

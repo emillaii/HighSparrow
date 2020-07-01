@@ -1896,7 +1896,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                             {
                                 point2D2.AssignNonNil();
 
-                                avl::TranslatePoint( point2D1.Get(), vector2D1.Get(), false, point2D2.Get() );
+                                avl::TranslatePoint( point2D1.Get(), vector2D1.Get(), false, point2D1.Get() );
                             }
                             else
                             {

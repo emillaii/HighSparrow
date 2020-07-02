@@ -850,6 +850,7 @@ void SingleHeadMachineMaterialLoaderModule::towerLightBuzzerTest()
 
 bool SingleHeadMachineMaterialLoaderModule::semiAutoPickLensAndLoadLens()
 {
+    bool is_run = true;
     qInfo("picke lens from tray");
     if(moveToNextLensTrayPos(states.currentLensTray())){
         pr_offset.ReSet();
@@ -901,6 +902,34 @@ bool SingleHeadMachineMaterialLoaderModule::semiAutoPickLensAndLoadLens()
                 lsutState->setLutHasLens(true);
                 qInfo("Place lens to LUT Finished");
             }
+        }
+    }
+    return true;
+}
+
+bool SingleHeadMachineMaterialLoaderModule::semiAutoPickNgLensAndPlaceToTray()
+{
+    bool is_run = true;
+    qInfo("pick ng lens from lut");
+    moveToLUTPRPos();
+    pr_offset.ReSet();
+    if(!performLUTLensPR())
+    {
+        sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform lut NG lens PR failed, please take away the NG lens!");
+        int operation = waitMessageReturn(is_run);
+        qInfo("user operation: %d", operation);
+        lsutState->setLutHasNgLens(false);   //user removed the ng lens
+    } else{
+        moveToPicker1WorkPos();
+        picker1PickNgLensFromLUT();
+        if(!pick_arm->vacuum_picker1_suction->GetVacuumState()){
+            sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick lens from lut failed, please take away the lens!");
+            int operation = waitMessageReturn(is_run);
+            qInfo("user operation: %d", operation);
+            lsutState->setLutHasNgLens(false);   //user removed the ng lens
+        } else {
+            lsutState->setLutHasNgLens(false);
+            states.setHasPickedNgLens(true);
         }
     }
     return true;

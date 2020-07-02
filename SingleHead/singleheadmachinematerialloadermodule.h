@@ -158,6 +158,10 @@ public:
     Position placeOkProductToTrayOffset;
 
     bool semiAutoPickLensAndLoadLens();
+    bool semiAutoPickNgLensAndPlaceToTray();
+    bool semiAutoPickSensorAndLoadSensor();
+    bool semiAutoPickNgSensorAndPlaceToTray();
+    bool semiAutoPickProductAndPlaceToTray();
 
 private:
     void run();

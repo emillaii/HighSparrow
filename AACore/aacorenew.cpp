@@ -3100,18 +3100,46 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         //Left ROI
         roi.x = patterns[i].center.x() - rect_width - roi.width/2;
         roi.y = patterns[i].center.y() - roi.width/2;
+        if (roi.x + roi.width >input_img.cols || roi.y + roi.height > input_img.rows){
+            qWarning("The detected left ROI is too close to boundary. MTF fail. ROI location ROI.x : %d ROI.y: %d", roi.x, roi.y);
+            map.insert("Result", "The detected left ROI is too close to boundary. MTF fail");
+            emit pushDataToUnit(runningUnit, "MTF", map);
+            LogicNg(current_mtf_ng_time);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
+        }
         input_img(roi).copyTo(cropped_l_img);
         //Right ROI
         roi.x = patterns[i].center.x() + rect_width - roi.width/2;
         roi.y = patterns[i].center.y() - roi.width/2;
+        if (roi.x + roi.width >input_img.cols || roi.y + roi.height > input_img.rows){
+            qWarning("The detected right ROI is too close to boundary. MTF fail. ROI location ROI.x : %d ROI.y: %d", roi.x, roi.y);
+            map.insert("Result", "The detected right ROI is too close to boundary. MTF fail");
+            emit pushDataToUnit(runningUnit, "MTF", map);
+            LogicNg(current_mtf_ng_time);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
+        }
         input_img(roi).copyTo(cropped_r_img);
         //Top ROI
         roi.x = patterns[i].center.x() - roi.width/2;
         roi.y = patterns[i].center.y() - rect_width - roi.width/2;
+        if (roi.x + roi.width >input_img.cols || roi.y + roi.height > input_img.rows){
+            qWarning("The detected top ROI is too close to boundary. MTF fail. ROI location ROI.x : %d ROI.y: %d", roi.x, roi.y);
+            map.insert("Result", "The detected top ROI is too close to boundary. MTF fail");
+            emit pushDataToUnit(runningUnit, "MTF", map);
+            LogicNg(current_mtf_ng_time);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
+        }
         input_img(roi).copyTo(cropped_t_img);
         //Bottom ROI
         roi.x = patterns[i].center.x() - roi.width/2;
         roi.y = patterns[i].center.y() + rect_width - roi.width/2;
+        if (roi.x + roi.width >input_img.cols || roi.y + roi.height > input_img.rows){
+            qWarning("The detected bottom ROI is too close to boundary. MTF fail. ROI location ROI.x : %d ROI.y: %d", roi.x, roi.y);
+            map.insert("Result", "The detected bottom ROI is too close to boundary. MTF fail");
+            emit pushDataToUnit(runningUnit, "MTF", map);
+            LogicNg(current_mtf_ng_time);
+            return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
+        }
         input_img(roi).copyTo(cropped_b_img);
 
         QFuture<double> f1, f2, f3, f4;

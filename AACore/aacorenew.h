@@ -29,6 +29,7 @@
 #include "ImageGrabber/imagegrabbingworkerthread.h"
 #include "Utils/unitlog.h"
 #include "Utils/uiHelper/uioperation.h"
+#include "SingleHead/singleheadmachinematerialloadermodule.h"
 
 class AACoreNew : public ThreadWorkerBase
 {
@@ -47,18 +48,31 @@ public:
         UV = 8,
         TOF = 9,
         Motion_Move = 10,
-        Command = 11
+        Command = 11,
+        AA_LOAD_LENS = 12,
+        AA_UNLOAD_LENS = 13,
+        AA_LOAD_SENSOR = 14,
+        AA_UNLOAD_SENSOR = 15,
+        AA_UNLOAD_PRODUT = 16
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head, SingleheadLSutModule *lsut, Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
-              ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog, VisionModule *visionModule);
+              ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog, VisionModule *visionModule, SingleHeadMachineMaterialLoaderModule *materialLoader);
     void performAAOffline();
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
     ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond();
     ErrorCodeStruct performAAPickLens();
+
+    //Huawei use special request for some short cut semi auto button
+    ErrorCodeStruct performLoadLens();
+    ErrorCodeStruct performUnloadLens();
+    ErrorCodeStruct performLoadSensor();
+    ErrorCodeStruct performUnloadSensor();
+    ErrorCodeStruct performUnloadProduct();
+    //
     ErrorCodeStruct performAA(QJsonValue params);
     ErrorCodeStruct performOC(QJsonValue params);
     ErrorCodeStruct performMTF(QJsonValue params, bool write_log = false);
@@ -147,6 +161,7 @@ private:
     DispenseModule* dispense;
     Unitlog *unitlog;
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
+    SingleHeadMachineMaterialLoaderModule *materialLoader = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QVariantMap current_dfov;
     double current_fov_slope;

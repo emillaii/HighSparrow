@@ -157,6 +157,8 @@ public:
     PositionT placeNgProductToTrayOffset;
     Position placeOkProductToTrayOffset;
 
+    bool semiAutoPickLensAndLoadLens();
+
 private:
     void run();
 

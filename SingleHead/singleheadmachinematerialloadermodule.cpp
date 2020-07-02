@@ -848,6 +848,64 @@ void SingleHeadMachineMaterialLoaderModule::towerLightBuzzerTest()
     buzzer->Set(true);
 }
 
+bool SingleHeadMachineMaterialLoaderModule::semiAutoPickLensAndLoadLens()
+{
+    qInfo("picke lens from tray");
+    if(moveToNextLensTrayPos(states.currentLensTray())){
+        pr_offset.ReSet();
+
+        QElapsedTimer timer; timer.start();
+        bool res = performLensPR();
+        int elapsed = timer.elapsed();
+        if(elapsed > 1000)
+        {
+            qCritical("Perform lens pr cost too long time. %d ms", elapsed);
+        }
+
+        if(!res){
+            lensPrFailedTimes++;
+            if(lensPrFailedTimes >= MaxPickDutFailedTimes)
+            {
+                lensPrFailedTimes = 0;
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Perform Lens PR fail");
+                int operation = waitMessageReturn(is_run);
+                qInfo("user operation: %d", operation);
+            }
+            else {
+                qCritical("Perform lens PR failed! Auto skip this lens. Continuous lens pr failed times: %d.", lensPrFailedTimes);
+            }
+            lensTray->setCurrentMaterialState(MaterialState::IsNg, states.currentLensTray());
+            return false;
+        } else {
+            lensPrFailedTimes = 0;
+            moveToPicker1WorkPos();
+            picker1PickLensFromTray();
+            if(!pick_arm->vacuum_picker1_suction->GetVacuumState()) {
+                sendAlarmMessage(ErrorLevel::ContinueOrRetry, "Pick lens from lens tray fail");
+                int operation = waitMessageReturn(is_run);
+                qInfo("user operation: %d", operation);
+                lensTray->setCurrentMaterialState(MaterialState::IsNg, states.currentLensTray());
+                return false;
+            }else {
+                states.setHasPickedLens(true);
+                states.setCurrentLensIndexInPicker(lensTray->getCurrentIndex());
+                lensTray->setCurrentMaterialState(MaterialState::IsInUse, states.currentLensTray());
+                qInfo("Place lens to LUT");
+                QPointF point = lut_pr_position.ToPointF();
+                point.setX(point.x()+camera_to_picker1_offset.X());
+                point.setY(point.y()+camera_to_picker1_offset.Y());
+                pick_arm->move_XmY_Synic(point);
+                picker1PlaceLensToLUT();
+                lsutState->setCurrentLensIndex(states.currentLensIndexInPicker());
+                states.setHasPickedLens(false);
+                lsutState->setLutHasLens(true);
+                qInfo("Place lens to LUT Finished");
+            }
+        }
+    }
+    return true;
+}
+
 void SingleHeadMachineMaterialLoaderModule::receiveLoadMaterialRequestResponse(bool isSutReadyToLoadMaterial, int productOrSensorIndex, int lensIndex)
 {
     currentProductIndex = productOrSensorIndex;

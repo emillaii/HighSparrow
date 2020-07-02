@@ -847,7 +847,7 @@ bool BaseModuleManager::InitStruct()
                         &sut_carrier
                         );
 
-    aaCoreNew.Init(&aa_head_module, &sh_lsut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog, visionModule);
+    aaCoreNew.Init(&aa_head_module, &sh_lsut_module, dothinkey, chart_calibration, &dispense_module, imageGrabberThread, &unitlog, visionModule, &single_station_material_loader_module);
 
     startCameraDoe->init(&sh_lsut_module, &single_station_material_loader_module,
                          &single_station_material_pickarm,

@@ -116,7 +116,7 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 }
 
 void AACoreNew::Init(AAHeadModule *aa_head, SingleheadLSutModule *lsut, Dothinkey *dk, ChartCalibration *chartCalibration,
-                     DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog, VisionModule *visionModule)
+                     DispenseModule *dispense, ImageGrabbingWorkerThread *imageThread, Unitlog *unitlog, VisionModule *visionModule, SingleHeadMachineMaterialLoaderModule *materialLoader)
 {
     this->aa_head = aa_head;
     this->lsut = lsut;
@@ -126,6 +126,7 @@ void AACoreNew::Init(AAHeadModule *aa_head, SingleheadLSutModule *lsut, Dothinke
     this->imageThread = imageThread;
     this->unitlog = unitlog;
     this->visionModule = visionModule;
+    this->materialLoader = materialLoader;
 }
 
 void AACoreNew::loadJsonConfig(QString file_name)
@@ -434,6 +435,21 @@ void AACoreNew::performHandlingOperation(int cmd)
     }
     else if (cmd == HandleTest::Command) {
         performCommand(params);
+    }
+    else if (cmd == HandleTest::AA_LOAD_LENS) {
+        performLoadLens();
+    }
+    else if (cmd == HandleTest::AA_UNLOAD_LENS) {
+        performUnloadLens();
+    }
+    else if (cmd == HandleTest::AA_LOAD_SENSOR) {
+        performLoadSensor();
+    }
+    else if (cmd == HandleTest::AA_UNLOAD_SENSOR) {
+        performUnloadSensor();
+    }
+    else if (cmd == HandleTest::AA_UNLOAD_PRODUT) {
+        performUnloadProduct();
     }
 
     handlingParams = "";
@@ -1808,6 +1824,15 @@ ErrorCodeStruct AACoreNew::performMotionMove(QJsonValue params)
     QElapsedTimer timer;timer.start();
 
     QVariantMap map;
+
+    map.insert("inital_sut_x", this->lsut->sut_carrier->GetFeedBackPos().X);
+    map.insert("inital_sut_y", this->lsut->sut_carrier->GetFeedBackPos().Y);
+    map.insert("inital_sut_z", this->lsut->sut_carrier->GetFeedBackPos().Z);
+
+    map.insert("inital_aa_a", this->aa_head->GetFeedBack().A);
+    map.insert("inital_aa_b", this->aa_head->GetFeedBack().B);
+    map.insert("inital_aa_c", this->aa_head->GetFeedBack().C);
+
     qInfo("Perform Motion Move");
     if (lsut->sut_carrier->motor_x == Q_NULLPTR ||
         lsut->sut_carrier->motor_y == Q_NULLPTR) {
@@ -1840,6 +1865,14 @@ ErrorCodeStruct AACoreNew::performMotionMove(QJsonValue params)
     map.insert("rx", tof_rx);
     map.insert("ry", tof_ry);
     map.insert("rz", tof_rz);
+
+    map.insert("final_sut_x", this->lsut->sut_carrier->GetFeedBackPos().X);
+    map.insert("final_sut_y", this->lsut->sut_carrier->GetFeedBackPos().Y);
+    map.insert("final_sut_z", this->lsut->sut_carrier->GetFeedBackPos().Z);
+
+    map.insert("final_aa_a", this->aa_head->GetFeedBack().A);
+    map.insert("final_aa_b", this->aa_head->GetFeedBack().B);
+    map.insert("final_aa_c", this->aa_head->GetFeedBack().C);
 
     map.insert("timeElapsed", timer.elapsed());
     qInfo("Finish motion move. Time elapsed: %d", timer.elapsed());
@@ -2443,6 +2476,77 @@ ErrorCodeStruct AACoreNew::performPRToBond()
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "PrToBond", map);
     return ErrorCodeStruct {ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performLoadLens()
+{
+    qInfo("perform load lens");
+    QElapsedTimer timer; timer.start();
+    QVariantMap map;
+
+    this->lsut->moveToLoadSensorPosition();      //LSUT Move to load position
+    this->materialLoader->semiAutoPickLensAndLoadLens(); // Pickarm pick lens + pickarm place lens to LSUT
+    this->aaHeadPickLens(); // LSUT move to pick lens position and AA gripper grip lens
+
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "LoadLens", map);
+    return  ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performUnloadLens()
+{
+    qInfo("perform unload lens");
+    QElapsedTimer timer; timer.start();
+    QVariantMap map;
+    lsut->moveToUnpickLensPosition(); //LSUT move to unpick position
+    lsut->aa_head->openGripper();     //AA Head open gripper   (vaccum ??)
+    lsut->moveToLoadSensorPosition();  //LSUT move to load position
+    //pick arm pick ng lens + pickarm place ng lens
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "UnloadLens", map);
+    return  ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performLoadSensor()
+{
+    qInfo("perform load Sensor");
+    QElapsedTimer timer; timer.start();
+    QVariantMap map;
+    this->lsut->moveToLoadSensorPosition();
+    //pickarm pick sensor
+    //pickarm place sensor to LSUT
+    //sut perfrom downlook pr
+    //sut move to mushroom position
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "LoadSensor", map);
+    return  ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performUnloadSensor()
+{
+    qInfo("perform unload sensor");
+    QElapsedTimer timer; timer.start();
+    QVariantMap map;
+    lsut->moveToLoadSensorPosition(); //LSUT move to load position
+    lsut->pogopin->Set(false); // Pogopin presser open
+    //pickarm pick ng sensor + place ng sensor
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "UnloadSensor", map);
+    return  ErrorCodeStruct{ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performUnloadProduct()
+{
+    qInfo("perform unload product");
+    QElapsedTimer timer; timer.start();
+    QVariantMap map;
+    lsut->aa_head->openGripper();     //open gribber
+    lsut->moveToLoadSensorPosition(); //Move to load sensor position
+    lsut->pogopin->Set(false); // Pogopin presser open
+    //pickarm pick product
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(runningUnit, "UnloadProduct", map);
+    return  ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 // TO BE MODIFIED

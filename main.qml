@@ -234,6 +234,21 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("OC") !== -1) {
                         console.log("Perform OC")
                         aaNewCore.performHandling(AACoreNew.OC, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Load Lens Semi") !== -1) {
+                        console.log("Perform Load Lens");
+                        aaNewCore.performHandling(AACoreNew.AA_LOAD_LENS, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Unload Lens Semi") !== -1) {
+                        console.log("Perform Unload Lens");
+                        aaNewCore.performHandling(AACoreNew.AA_UNLOAD_LENS, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Load Sensor Semi") !== -1) {
+                        console.log("Perform Load Sensor");
+                        aaNewCore.performHandling(AACoreNew.AA_LOAD_SENSOR, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Unload Sensor Semi") !== -1) {
+                        console.log("Perform Unload Sensor");
+                        aaNewCore.performHandling(AACoreNew.AA_UNLOAD_SENSOR, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("Unload Product Semi") !== -1) {
+                        console.log("Perform Unload Product");
+                        aaNewCore.performHandling(AACoreNew.AA_UNLOAD_PRODUCT, aaCoreTestParams)
                     } else if (aaCoreTestItemName.indexOf("AA") !== -1) {
                         console.log("Perform AA")
                         aaNewCore.performHandling(AACoreNew.AA, aaCoreTestParams)

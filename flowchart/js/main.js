@@ -47,6 +47,11 @@ $(document).ready(function () {
   var $motion_move_operator_title = $('#motion_move_operator_title');
   var $command_operator_properties = $('#command_operator_properties');
   var $command_operator_title = $('#command_operator_title');
+  var $semi_load_lens_operator_properties = $('#semi_load_lens_operator_properties');
+  var $semi_unload_lens_operator_properties = $('#semi_unload_lens_operator_properties');
+  var $semi_load_sensor_operator_properties = $('#semi_load_sensor_operator_properties');
+  var $semi_unload_sensor_operator_properties = $('#semi_unload_sensor_operator_properties');
+  var $semi_unload_product_operator_properties = $('#semi_unload_product_operator_properties');
   var $mtf_table = $('#mtf_table');
   var $linkColor = $('#link_color');
 
@@ -129,6 +134,12 @@ $(document).ready(function () {
 	  $hw_tilt_operator_properties.hide();
 	  $motion_move_operator_properties.hide();
 	  $command_operator_properties.hide();
+	  $semi_load_lens_operator_properties.hide();
+	  $semi_unload_lens_operator_properties.hide();
+	  $semi_load_sensor_operator_properties.hide();
+	  $semi_unload_sensor_operator_properties.hide();
+	  $semi_unload_product_operator_properties.hide();
+	  
 	  console.log(operatorId);
       if (operatorId.includes("AA_")) {
         $aa_operator_properties.show();
@@ -265,6 +276,11 @@ $(document).ready(function () {
 	  $hw_tilt_operator_properties.hide();
 	  $motion_move_operator_properties.hide();
 	  $command_operator_properties.hide();
+	  $semi_load_lens_operator_properties.hide();
+      $semi_unload_lens_operator_properties.hide();
+      $semi_load_sensor_operator_properties.hide();
+      $semi_unload_sensor_operator_properties.hide();
+	  $semi_unload_product_operator_properties.hide();
       return true;
     },
 	onOperatorCreate: function (operatorId, operatorData, fullElement) {
@@ -821,6 +837,12 @@ $(document).ready(function () {
   $('#create_HW_Tilt').click(function(){ addOperationWidget("HW Tilt"); });
   $('#create_motion_move').click(function(){ addOperationWidget("Motion Move"); });
   $('#create_command').click(function(){ addOperationWidget("Command"); });
+  
+  $('#create_semi_load_lens').click(function(){ addOperationWidget("Load Lens Semi"); });
+  $('#create_semi_unload_lens').click(function(){ addOperationWidget("Unload Lens Semi"); });
+  $('#create_semi_load_sensor').click(function(){ addOperationWidget("Load Sensor Semi"); });
+  $('#create_semi_unload_sensor').click(function(){ addOperationWidget("Unload Sensor Semi"); });
+  $('#create_semi_unload_product').click(function(){ addOperationWidget("Unload Product Semi"); });
 
   $('#get_data').click(function () {
     var data = $flowchart.flowchart('getData');

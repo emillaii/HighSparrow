@@ -220,7 +220,7 @@ SOURCES += \
 
 
 RC_ICONS= icons/sparrow.ico
-
+VERSION = 1.0.0.12
 
 
 

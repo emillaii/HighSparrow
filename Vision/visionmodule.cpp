@@ -50,6 +50,22 @@ QVector<QPoint> VisionModule::Read_Dispense_Path()
     return results;
 }
 
+bool VisionModule::setExposureTime(QString cameraName, int expoTime)
+{
+    qInfo("set exposure time");
+    if (cameraName.contains(CAMERA_SH_HIK_CAM)) {
+        if (hikCamera != Q_NULLPTR) {
+            qInfo("Set Hikcamera exposure time to %d", expoTime);
+            hikCamera->scSetExposureTime(expoTime);
+            return true;
+        } else {
+            qWarning("HikCamera is null pointer");
+            return false;
+        }
+    }
+    return false;
+}
+
 bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
 {
     BaslerPylonCamera *camera = Q_NULLPTR;

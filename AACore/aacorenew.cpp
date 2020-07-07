@@ -1910,12 +1910,14 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     int method = params["method"].toInt(1);
     int imageProcessingMethod = params["image_processing_method"].toInt(-1);
     int enable_motion = params["enable_motion"].toInt(0);
-    qInfo("enable motion: %d", enable_motion);
+    int exposureTime = params["exposure_time"].toInt(5000);
+    qInfo("enable motion: %d exposureTime: %d", enable_motion, exposureTime);
     bool grabFromCamera = false;
     if (imageProcessingMethod != -1) {
         grabFromCamera = true;
         method = imageProcessingMethod;
         qInfo("perform TOF : %d", method);
+        visionModule->setExposureTime(CAMERA_SH_HIK_CAM, exposureTime);
     }
     QString filename = params["filename"].toString();
     TOFResult tofResult;

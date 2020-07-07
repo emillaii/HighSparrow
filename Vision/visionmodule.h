@@ -102,6 +102,7 @@ public:
     void ProfileCalc( ProfileCalcState& state, const avl::Image& inImage, const avl::Path& inScanPath, float& outCenterY1, float& outValue1, float& outValue2, float& outHalfHeightWidth, avl::Profile& outProfile , double intensity_percentange = 0.5);
     void StepMacro_1( StepMacro_1State& state, float inX, int inY, float inX2, float inX3, const avl::Image& inImage, float& outCenterY1, float& outValueY1_1, float& outValueY1_2, float& outHalfHeightWidth, float& outCenterY2, float& outValueY2_1, float& outValueY2_2, float& outCenterY3, float& outValueY3_1, float& outValueY3_2, float& outHalfHeightWidth2, float& outHalfHeightWidth3, avl::Profile& outProfile, avl::Profile& outProfile1, avl::Profile& outProfile2, double intensity_profile = 0.5 );
 
+    bool setExposureTime(QString cameraName, int expoTime);
 private:
     QString last_uplook_pr_result;
     QString last_downlook_pr_result;

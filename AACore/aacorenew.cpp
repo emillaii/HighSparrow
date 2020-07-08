@@ -778,6 +778,18 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             performTOF(params);
             qInfo("End of perform TOF");
         }
+        else if (testItemName.contains(AA_PIECE_COMMAND))
+        {
+            qInfo("Performing Command");
+            performCommand(params);
+            qInfo("End of perform Command");
+        }
+        else if (testItemName.contains(AA_PIECE_TOF_MOTION_MOVE))
+        {
+            qInfo("Performing TOF Motion Move");
+            performMotionMove(params);
+            qInfo("End of perform TOF Motion Move");
+        }
     }
     return ret;
 }
@@ -1911,13 +1923,15 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     int imageProcessingMethod = params["image_processing_method"].toInt(-1);
     int enable_motion = params["enable_motion"].toInt(0);
     int exposureTime = params["exposure_time"].toInt(5000);
-    qInfo("enable motion: %d exposureTime: %d", enable_motion, exposureTime);
+    int delayAfterSettingExposure = params["delay"].toInt(500);
+    qInfo("enable motion: %d exposureTime: %d delay: %d", enable_motion, exposureTime, delayAfterSettingExposure);
     bool grabFromCamera = false;
     if (imageProcessingMethod != -1) {
         grabFromCamera = true;
         method = imageProcessingMethod;
         qInfo("perform TOF : %d", method);
         visionModule->setExposureTime(CAMERA_SH_HIK_CAM, exposureTime);
+        QThread::msleep(delayAfterSettingExposure);
     }
     QString filename = params["filename"].toString();
     TOFResult tofResult;

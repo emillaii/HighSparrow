@@ -1988,6 +1988,14 @@ ErrorCodeStruct AACoreNew::performTOF(QJsonValue params)
     }
 
     map.insert("--timeStamp", getCurrentDateString().append("-").append(getCurrentTimeString()));
+
+    map.insert("inital_sut_x", this->lsut->sut_carrier->GetFeedBackPos().X);
+    map.insert("inital_sut_y", this->lsut->sut_carrier->GetFeedBackPos().Y);
+    map.insert("inital_sut_z", this->lsut->sut_carrier->GetFeedBackPos().Z);
+    map.insert("inital_aa_a", this->aa_head->GetFeedBack().A);
+    map.insert("inital_aa_b", this->aa_head->GetFeedBack().B);
+    map.insert("inital_aa_c", this->aa_head->GetFeedBack().C);
+
     map.insert("a", tofResult.a);
     map.insert("b", tofResult.b);
     map.insert("c", tofResult.c);

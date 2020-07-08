@@ -7,7 +7,7 @@ $(document).ready(function () {
     position_checking: 0, is_debug: 0, image_count: 7, enable_tilt: 0
   };
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
-  var init_hw_tilt_params = { enable_motion: 0, image_processing_method: 0, exposure_time: 5000 };
+  var init_hw_tilt_params = { enable_motion: 0, image_processing_method: 0, exposure_time: 5000, delay: 500 };
   var init_motion_move_params = { };
   var init_command_params = { directory: '', command_name: '' };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
@@ -77,6 +77,7 @@ $(document).ready(function () {
   $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"hw_tilt_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Image Processing Method: <select id=\"hw_tilt_image_processing_method\" size=\"2\"><option value=1>1</option><option value=2>2</option></select></div>");
   $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Exposure Time: <input type=\"number\" id=\"hw_tilt_exposure_time\"></div>");
+  $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Delay after setting exposure: <input type=\"number\" id=\"hw_tilt_delay\"></div>");
   
   $command_operator_properties.append("<div style=\"margin-top:20px\">Directory: <input type=\"text\" id=\"command_directory\"></div>");
   $command_operator_properties.append("<div style=\"margin-top:20px\">Command: <input type=\"text\" id=\"command\"></div>");
@@ -244,6 +245,7 @@ $(document).ready(function () {
 		$('#hw_tilt_enable_motion').val(params["enable_motion"]);
 		$('#hw_tilt_image_processing_method').val(params["image_processing_method"]);
 		$('#hw_tilt_exposure_time').val(params["exposure_time"]);
+		$('#hw_tilt_delay').val(params["delay"]);
 	  }else if (operatorId.includes("Motion Move")) {
 		console.log("Motion Move");
 		$motion_move_operator_properties.show();
@@ -715,7 +717,7 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Tilt")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_tilt_operator_title').val());
-	  var params = { enable_motion: Number($('#hw_tilt_enable_motion').val()), image_processing_method: Number($('#hw_tilt_image_processing_method').val()), exposure_time: Number($('#hw_tilt_exposure_time').val())};
+	  var params = { enable_motion: Number($('#hw_tilt_enable_motion').val()), image_processing_method: Number($('#hw_tilt_image_processing_method').val()), exposure_time: Number($('#hw_tilt_exposure_time').val()), delay: Number($('#hw_tilt_delay').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Motion Move")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#motion_move_operator_title').val());
@@ -941,7 +943,7 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("HW Tilt")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $hw_tilt_operator_title.val());
-      var params = { enable_motion: Number($('#hw_tilt_enable_motion').val()), image_processing_method: Number($('#hw_tilt_image_processing_method').val()), exposure_time: Number($('#hw_tilt_exposure_time').val())};
+      var params = { enable_motion: Number($('#hw_tilt_enable_motion').val()), image_processing_method: Number($('#hw_tilt_image_processing_method').val()), exposure_time: Number($('#hw_tilt_exposure_time').val()), delay: Number($('#hw_tilt_delay').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Command")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $command_operator_title.val());

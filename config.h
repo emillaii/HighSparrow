@@ -149,6 +149,7 @@
 #define DISPENSE_DIR                    "config//vision_dispense_path"
 #define DISPENSE_PATH_EXE               "DrawPath.avexe"
 #define DISPENSE_PATH_IMAGE_LOCATION    "config//vision_dispense_path//resultImageWithPath.jpg"
+#define DISPENSE_PATH_CIRCLE_PROPERTIES "config//vision_dispense_path/resultCircle.json"
 #define DISPENSE_PATH_2D_POINT_FILE     "config//vision_dispense_path//resultPath.avdata"
 
 #define UPLOOK_LENS_HOLDER_IMX363_EDGE_MODEL      "config//vision_config_1//Lens.4e95ee99.avdata"

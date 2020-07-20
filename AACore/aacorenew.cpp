@@ -3038,6 +3038,7 @@ double AACoreNew::performMTFInThread( cv::Mat input, int freq )
 ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
 {
     double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
+    double corner_dev_tol = params["CORNER_DEV_TOL"].toDouble(100);
     double sfr_tol[16] = {0};
     sfr_tol[0] = params["CC_MIN"].toDouble(0);
     sfr_tol[1] = params["L1_MIN"].toDouble(0);
@@ -3334,8 +3335,18 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     if (ul_08f_sfr_dev >= sfr_dev_tol || ll_08f_sfr_dev >= sfr_dev_tol || lr_08f_sfr_dev >= sfr_dev_tol || ur_08f_sfr_dev >= sfr_dev_tol) {
         qInfo("08f_sfr_corner_dev cannot pass");
         sfr_check = false;
+        error.append("Outer Layer SFR single corner TBLR dev fail.");
+    }
+
+    qInfo("Check 4 corners SFR dev with spec %f", corner_dev_tol);
+    double corner_dev = getSFRDev_mm(4,vec[max_layer*4 + 1].avg_sfr, vec[max_layer*4 + 2].avg_sfr, vec[max_layer*4 + 3].avg_sfr, vec[max_layer*4 + 4].avg_sfr);
+    if (corner_dev >= corner_dev_tol)
+    {
+        qInfo("corner_dev_tol cannot pass");
+        sfr_check = false;
         error.append("Outer Layer SFR corner dev fail.");
     }
+
     map.insert("SensorID", '\t'+dk->readSensorID());
     map.insert("FOV",round(fov*1000)/1000);
     map.insert("zPeak",round(sut->carrier->GetFeedBackPos().Z*1000*1000)/1000);
@@ -3371,6 +3382,7 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     map.insert("LL_08F_SFR_DEV",round(ll_08f_sfr_dev*1000)/1000);
     map.insert("LR_08F_SFR_DEV",round(lr_08f_sfr_dev*1000)/1000);
     map.insert("UR_08F_SFR_DEV",round(ur_08f_sfr_dev*1000)/1000);
+    map.insert("Corner_SFR_DEV",round(corner_dev*1000)/1000);
     map.insert("Selected_Frequency", this->parameters.mtfFrequency());
     map.insert("timeElapsed", timer.elapsed());
     qDebug("Time Elapsed: %d", timer.elapsed());

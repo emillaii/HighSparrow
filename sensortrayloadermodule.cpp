@@ -1040,5 +1040,4 @@ QMap<QString, PropertyBase *> SensorTrayLoaderModule::getModuleParameter()
 
 void SensorTrayLoaderModule::setModuleParameter(QMap<QString, PropertyBase *>)
 {
-
 }

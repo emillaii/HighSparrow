@@ -2445,7 +2445,7 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
 
     qInfo("Perform init sensor");
     QFile file;
-    file.setFileName(outputFilename);
+    file.setFileName("3.dat");
     cv::Mat mat(320, 480, CV_8UC3);
     int rows = 0;
     if (file.open(QIODevice::ReadOnly))
@@ -2464,7 +2464,10 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
        }
        file.close();
     }
-    cv::imwrite("test.bmp", mat);
+    QImage outputImage = ImageGrabbingWorkerThread::cvMat2QImage(mat);
+    ocImageProvider_1->setImage(outputImage);
+    emit callQmlRefeshImg(1);
+    cv::imwrite("test.bmp", mat);    
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 

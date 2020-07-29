@@ -430,6 +430,9 @@ void AACoreNew::performHandlingOperation(int cmd)
     else if (cmd == HandleTest::TOF) {
         performTOF(params);
     }
+    else if (cmd == HandleTest::HW_CAMERA_CAPTURE) {
+        performIRCameraCapture(params);
+    }
     else if (cmd == HandleTest::Motion_Move) {
         performMotionMove(params);
     }
@@ -777,6 +780,12 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             qInfo("Performing TOF");
             performTOF(params);
             qInfo("End of perform TOF");
+        }
+        else if (testItemName.contains(AA_PIECE_HW_CAMERA_CAPTURE))
+        {
+            qInfo("Perform HW Camera Capture");
+            performIRCameraCapture(params);
+            qInfo("End of perform HW Camera Capture");
         }
         else if (testItemName.contains(AA_PIECE_COMMAND))
         {
@@ -2424,9 +2433,44 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     return ret;
 }
 
+ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
+{
+    qInfo("Perform IR Camera Capture");
+    QString directory = params["directory"].toString();
+    QString command = params["command"].toString();
+    QString outputFilename = params["filename"].toString();
+    int delay = params["delay"].toInt(0);
+    performCommand(params);   // TO Be test
+    QThread::msleep(delay);
+
+    qInfo("Perform init sensor");
+    QFile file;
+    file.setFileName(outputFilename);
+    cv::Mat mat(320, 480, CV_8UC3);
+    int rows = 0;
+    if (file.open(QIODevice::ReadOnly))
+    {
+       QTextStream in(&file);
+       while (!in.atEnd())
+       {
+          QString line = in.readLine();
+          QStringList list = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+          for (int i = 0; i < list.size(); i++) {
+              mat.at<cv::Vec3b>(rows, i)[0] = list[i].toInt();
+              mat.at<cv::Vec3b>(rows, i)[1] = list[i].toInt();
+              mat.at<cv::Vec3b>(rows, i)[2] = list[i].toInt();
+          }
+          rows++;
+       }
+       file.close();
+    }
+    cv::imwrite("test.bmp", mat);
+    return ErrorCodeStruct {ErrorCode::OK, ""};
+}
+
 ErrorCodeStruct AACoreNew::performInitSensor()
 {
-    //if(!has_sensor) return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "has no sensor"};
+    if(!has_sensor) return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "has no sensor"};
     if (dk->DothinkeyIsGrabbing()) {
         qInfo("Sensor have already init");
         return ErrorCodeStruct {ErrorCode::OK, ""};

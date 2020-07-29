@@ -53,7 +53,8 @@ public:
         AA_UNLOAD_LENS = 13,
         AA_LOAD_SENSOR = 14,
         AA_UNLOAD_SENSOR = 15,
-        AA_UNLOAD_PRODUT = 16
+        AA_UNLOAD_PRODUT = 16,
+        HW_CAMERA_CAPTURE = 17
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head, SingleheadLSutModule *lsut, Dothinkey *dk,
@@ -65,6 +66,9 @@ public:
     ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond();
     ErrorCodeStruct performAAPickLens();
+
+    //Huawei use camera capture method
+    ErrorCodeStruct performIRCameraCapture(QJsonValue params);
 
     //Huawei use special request for some short cut semi auto button
     ErrorCodeStruct performLoadLens();

@@ -270,6 +270,9 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("Command") !== -1) {
                         console.log("Perform Command")
                         aaNewCore.performHandling(AACoreNew.Command, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("HW Camera Capture") !== -1) {
+                        console.log("Perform HW Camera Capture")
+                        aaNewCore.performHandling(AACoreNew.HW_CAMERA_CAPTURE, aaCoreTestParams)
                     }
 
                     aaCoreTestParams = ""

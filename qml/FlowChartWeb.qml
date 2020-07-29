@@ -6,7 +6,7 @@ WebEngineView {
     anchors.centerIn: parent
     width: parent.width
     height: parent.height
-    url: "http://localhost:8000/flowchart.html"
+    url: "http://192.168.1.2:8000/flowchart.html"
     onLoadProgressChanged: {
         if (loadProgress === 0) {
             console.log("Flowchart start to laod")

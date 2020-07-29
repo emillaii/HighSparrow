@@ -8,6 +8,7 @@ $(document).ready(function () {
   };
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_hw_tilt_params = { enable_motion: 0, image_processing_method: 0, exposure_time: 5000, delay: 500 };
+  var init_hw_camera_capture_params = { directory: '', command: '', delay: 500, filename: '' };
   var init_motion_move_params = { };
   var init_command_params = { directory: '', command_name: '' };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
@@ -43,6 +44,8 @@ $(document).ready(function () {
   var $y_level_operator_properties = $('#y_level_operator_properties');
   var $hw_tilt_operator_title = $('#hw_tilt_operator_title');
   var $hw_tilt_operator_properties = $('#hw_tilt_operator_properties');
+  var $hw_camera_capture_operator_title = $('#hw_camera_capture_operator_title');
+  var $hw_camera_capture_operator_properties = $('#hw_camera_capture_operator_properties');
   var $motion_move_operator_properties = $('#motion_move_operator_properties');
   var $motion_move_operator_title = $('#motion_move_operator_title');
   var $command_operator_properties = $('#command_operator_properties');
@@ -78,6 +81,11 @@ $(document).ready(function () {
   $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Image Processing Method: <select id=\"hw_tilt_image_processing_method\" size=\"2\"><option value=1>1</option><option value=2>2</option></select></div>");
   $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Exposure Time: <input type=\"number\" id=\"hw_tilt_exposure_time\"></div>");
   $hw_tilt_operator_properties.append("<div style=\"margin-top:20px\">Delay after setting exposure: <input type=\"number\" id=\"hw_tilt_delay\"></div>");
+  
+  $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Directory: <input type=\"text\" id=\"hw_camera_capture_directory\"></div>");
+  $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Command: <input type=\"text\" id=\"hw_camera_capture_command\"></div>");
+  $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Filename: <input type=\"text\" id=\"hw_camera_capture_filename\"></div>");
+  $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Delay after camera capture: <input type=\"number\" id=\"hw_camera_capture_delay\"></div>");
   
   $command_operator_properties.append("<div style=\"margin-top:20px\">Directory: <input type=\"text\" id=\"command_directory\"></div>");
   $command_operator_properties.append("<div style=\"margin-top:20px\">Command: <input type=\"text\" id=\"command\"></div>");
@@ -134,6 +142,7 @@ $(document).ready(function () {
 	  $mtf_table.hide();
 	  $y_level_operator_properties.hide();
 	  $hw_tilt_operator_properties.hide();
+	  $hw_camera_capture_operator_properties.hide();
 	  $motion_move_operator_properties.hide();
 	  $command_operator_properties.hide();
 	  $semi_load_lens_operator_properties.hide();
@@ -246,6 +255,14 @@ $(document).ready(function () {
 		$('#hw_tilt_image_processing_method').val(params["image_processing_method"]);
 		$('#hw_tilt_exposure_time').val(params["exposure_time"]);
 		$('#hw_tilt_delay').val(params["delay"]);
+	  } else if (operatorId.includes("HW Camera Capture")) {
+		console.log("Show HW Camera Capture");
+		$hw_camera_capture_operator_properties.show();
+		$hw_camera_capture_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+		$('#hw_camera_capture_command').val(params["command"]);
+		$('#hw_camera_capture_directory').val(params["directory"]);
+		$('#hw_camera_capture_delay').val(params["delay"]);
+		$('#hw_camera_capture_filename').val(params["filename"]);
 	  }else if (operatorId.includes("Motion Move")) {
 		console.log("Motion Move");
 		$motion_move_operator_properties.show();
@@ -278,6 +295,7 @@ $(document).ready(function () {
 	  $mtf_table.hide();
 	  $y_level_operator_properties.hide();
 	  $hw_tilt_operator_properties.hide();
+	  $hw_camera_capture_operator_properties.hide();
 	  $motion_move_operator_properties.hide();
 	  $command_operator_properties.hide();
 	  $semi_load_lens_operator_properties.hide();
@@ -719,6 +737,10 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_tilt_operator_title').val());
 	  var params = { enable_motion: Number($('#hw_tilt_enable_motion').val()), image_processing_method: Number($('#hw_tilt_image_processing_method').val()), exposure_time: Number($('#hw_tilt_exposure_time').val()), delay: Number($('#hw_tilt_delay').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("HW Camera Capture")){
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_camera_capture_operator_title').val());
+	  var params = { directory: $('#hw_camera_capture_directory').val(), command: $('#hw_camera_capture_command').val(), delay: Number($('#hw_camera_capture_delay').val()), filename: $('#hw_camera_capture_filename').val()};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Motion Move")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#motion_move_operator_title').val());
 	  var params = {};
@@ -839,6 +861,7 @@ $(document).ready(function () {
   $('#create_load_material').click(function () { addOperationWidget("Load Material"); });
   $('#create_grr').click(function () { addEndWidget("GRR"); });
   $('#create_HW_Tilt').click(function(){ addOperationWidget("HW Tilt"); });
+  $('#create_HW_Camera_capture').click(function(){ addOperationWidget("HW Camera Capture"); });
   $('#create_motion_move').click(function(){ addOperationWidget("Motion Move"); });
   $('#create_command').click(function(){ addOperationWidget("Command"); });
   
@@ -945,7 +968,11 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $hw_tilt_operator_title.val());
       var params = { enable_motion: Number($('#hw_tilt_enable_motion').val()), image_processing_method: Number($('#hw_tilt_image_processing_method').val()), exposure_time: Number($('#hw_tilt_exposure_time').val()), delay: Number($('#hw_tilt_delay').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-    } else if (selectedOperatorId.includes("Command")) {
+    } else if (selectedOperatorId.includes("HW Camera Capture")){
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_camera_capture_operator_title').val());
+	  var params = { directory: $('#hw_camera_capture_directory').val(), command: $('#hw_camera_capture_command').val(), delay: Number($('#hw_camera_capture_delay').val()), filename: $('#hw_camera_capture_filename').val()};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("Command")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $command_operator_title.val());
       var params = { directory: $('#command_directory').val(), command: $('#command').val()};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);

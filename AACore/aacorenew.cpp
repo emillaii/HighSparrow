@@ -2438,15 +2438,19 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
     qInfo("Perform IR Camera Capture");
     QString directory = params["directory"].toString();
     QString command = params["command"].toString();
-    QString outputFilename = params["filename"].toString();
     int delay = params["delay"].toInt(0);
+    int width = params["width"].toInt(0);
+    int height = params["height"].toInt(0);
+    QString dataFilename = params["filename"].toString();
+    bool save_image = params["save_image"].toInt();
+    QString imageFilename = params["image_file_name"].toString();
     performCommand(params);   // TO Be test
     QThread::msleep(delay);
 
     qInfo("Perform init sensor");
     QFile file;
-    file.setFileName(outputFilename);
-    cv::Mat mat(360, 480, CV_8UC3);
+    file.setFileName(dataFilename);
+    cv::Mat mat(height, width, CV_8UC3);
     int rows = 0;
     if (file.open(QIODevice::ReadOnly))
     {
@@ -2465,9 +2469,13 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
        file.close();
     }
     QImage outputImage = ImageGrabbingWorkerThread::cvMat2QImage(mat);
+    if (save_image)
+    {
+        cv::imwrite(imageFilename.toStdString(), mat);
+    }
+
     ocImageProvider_1->setImage(outputImage);
     emit callQmlRefeshImg(1);
-    cv::imwrite("test.bmp", mat);    
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 

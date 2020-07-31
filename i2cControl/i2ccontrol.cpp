@@ -79,10 +79,10 @@ bool i2cControl::closeDevice()
     return true;
 }
 
-int i2cControl::vcm_move(int slaveId, int addr, int pos, int mode)
+int i2cControl::vcm_move(int slaveId, int addr, int pos)
 {
-    qInfo("Slave Id: %x Address: %x vcm move to pos: %d, mode: %d", slaveId, addr, pos, mode);
-    bool ret = WriteReg(slaveId, addr, pos, (I2C_WR_modes)mode);
+    qInfo("Slave Id: %x Address: %x vcm move to pos: %d", slaveId, addr, pos);
+    bool ret = WriteReg(slaveId, addr, pos, I2C_WR_modes::I2CMODE_ADDR8_VALUE16);
     return ret;
 }
 BOOL i2cControl::WriteReg(unsigned int slaveId, unsigned int regAddr, unsigned int value, I2C_WR_modes mode)

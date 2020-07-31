@@ -13,42 +13,141 @@ bool is_cc_falling = false, is_ul_falling = false, is_ur_falling = false, is_ll_
 
 int count = 0;
 
-void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_display_image, int freq_factor)
+void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intensity, int min_area, int max_area, bool is_display_image, int freq_factor, int overSampling)
 {
-    double display_factor = img.cols/CONSTANT_REFERENCE;
+    qInfo("Max I: %d Min A: %d Max A: %d", max_intensity, min_area, max_area);
     QElapsedTimer timerTest;
     timerTest.start();
     if (index == 0) {  //Reset all the curve analysis
         prev_cc_score = 0; prev_ul_score = 0; prev_ur_score = 0; prev_ll_score = 0; prev_lr_score = 0;
         is_cc_falling = false; is_ul_falling = false; is_ur_falling = false; is_ll_falling = false; is_lr_falling = false;
     }
-    cv::Mat displayImage = img.clone();
-    vector<Sfr_entry> sv_result = sfr::calculateSfr(z, img, freq_factor);
-    vector<Sfr_entry> sv = sv_result;
-    if (sv.size() == 0) {
+    vector<Sfr_entry> sv_result;
+    {
+        std::vector<MTF_Pattern_Position> vec;
+        double imageCenterX = img.cols/2;
+        double imageCenterY = img.rows/2;
+        double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
+        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity, min_area/(overSampling*overSampling), max_area/(overSampling*overSampling), -1);
+
+        QList<QProcess *> processList;
+        QList<QString> filenameList;
+        for (uint i = 0; i < patterns.size(); i++) {
+           //qInfo("Pattern width : %f height: %f", patterns[i].width, patterns[i].height);
+           cv::Mat copped_roi;
+           cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
+           QString filename;
+           //Crop ROI
+           {
+               cv::Rect roi;
+               double width = sqrt(patterns[i].area)/2;
+               roi.width = width*4; roi.height = width*4;
+               roi.x = patterns[i].center.x() - width*2;
+               roi.y = patterns[i].center.y() - width*2;
+               img(roi).copyTo(copped_roi);
+               filename = "ROI_";
+               filename.append(QString::number(i)).append("_").append(QString::number(index)).append(".bmp");
+               cv::imwrite(filename.toStdString(), copped_roi);
+               QStringList args;
+               args.append(filename);
+               args.append(filename);
+               QProcess *child = new QProcess();
+               child->setWorkingDirectory(QDir::currentPath());
+               child->start(QDir::currentPath() + "/sfr.bat", args);
+               processList.push_back(child);
+               //child->waitForFinished();
+           }
+           double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
+           double f = radius/r1;
+           filenameList.push_back(QString("temp/").append(filename).append("/raw_sfr_values.txt"));
+           vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
+                            f, 0, 0, 0, 0, patterns[i].area, 0);
+        }
+
+        for (int i = 0; i < processList.size(); i++){
+           processList.at(i)->waitForFinished();
+        }
+
+        for (int i = 0; i < filenameList.size(); i++) {
+            QString filename = filenameList.at(i);
+            qInfo(filename.toStdString().c_str());
+            {
+                QFile file;
+                file.setFileName(filename);
+                double sfr_l = 0;
+                double sfr_r = 0;
+                double sfr_t = 0;
+                double sfr_b = 0;
+                double avg_sfr = 0;
+
+                if (file.open(QIODevice::ReadOnly))
+                {
+                   QTextStream in(&file);
+                   int i = 0;
+                   while (!in.atEnd())
+                   {
+                      QString line = in.readLine();
+                      QStringList list = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+                      QString value = list[24];
+                      //qInfo(list[20].toStdString().c_str());
+                      if ( i == 0 ) sfr_t = list[8].toDouble()*100;
+                      if ( i == 1 ) sfr_r = list[8].toDouble()*100;
+                      if ( i == 2 ) sfr_b = list[8].toDouble()*100;
+                      if ( i == 3 ) sfr_l = list[8].toDouble()*100;
+                      i++;
+                   }
+                   qInfo("sfr_t: %f ", sfr_t);
+                   file.close();
+                }
+                avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l) /4;
+                vec.at(i).l_sfr = sfr_l;
+                vec.at(i).r_sfr = sfr_r;
+                vec.at(i).b_sfr = sfr_b;
+                vec.at(i).t_sfr = sfr_t;
+                vec.at(i).avg_sfr = avg_sfr;
+            }
+        }
+        vector<int> layers = sfr::classifyLayers(vec);
+
+        if (layers.size() >= 1) {
+            //qInfo("[calculateSfr] Layer 0: px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f",
+            //      vec[0].x, vec[0].y, vec[0].avg_sfr, vec[0].t_sfr, vec[0].r_sfr, vec[0].b_sfr, vec[0].l_sfr, vec[0].area);
+            Sfr_entry entry = Sfr_entry(vec[0].x, vec[0].y, z, vec[0].avg_sfr, vec[0].area,
+                                       vec[0].t_sfr, vec[0].r_sfr, vec[0].b_sfr, vec[0].l_sfr, vec[0].layer, 0);
+            sv_result.push_back(entry);
+        }
+        if (layers.size() >= 2) {
+            for (size_t i = 1; i < vec.size(); i++) {
+                //qInfo("Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
+                //      vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
+                int location = 1;
+                if ( (vec[i].x < imageCenterX) && (vec[i].y < imageCenterY))
+                {
+                    location = 1; //UL
+                } else if ((vec[i].x > imageCenterX) && (vec[i].y < imageCenterY))
+                {
+                    location = 2; //UR
+                } else if ((vec[i].x > imageCenterX) && (vec[i].y > imageCenterY))
+                {
+                    location = 3; //LR
+                } else if ((vec[i].x < imageCenterX) && (vec[i].y > imageCenterY))
+                {
+                    location = 4; //LL
+                }
+                Sfr_entry entry = Sfr_entry(vec[i].x, vec[i].y, z, vec[i].avg_sfr, vec[i].area,
+                                           vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].layer, location);
+                sv_result.push_back(entry);
+            }
+        }
+    }
+
+    if (sv_result.size() == 0) {
         qInfo("Cannot find any mtf pattern. Sfr calculation fail");
         emit sfrResultsReady(index, std::move(sv_result), 0);
         return;
     }
-    int roi_width = sqrt(sv[0].area)*this->roi_ratio;
 
     emit sfrResultsReady(index, std::move(sv_result), timerTest.elapsed());
-    if (is_display_image) {
-        QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(displayImage);
-        QPainter qPainter(&qImage);
-        qPainter.setBrush(Qt::NoBrush);
-        qPainter.setPen(QPen(Qt::blue, 4.0));
-        qPainter.setFont(QFont("Times",75*display_factor, QFont::Light));
-        for (Sfr_entry sfr_entry : sv) {
-            qPainter.drawText(sfr_entry.px - 50 , sfr_entry.py - roi_width/2, QString::number(sfr_entry.t_sfr, 'g', 4));
-            qPainter.drawText(sfr_entry.px + roi_width/2, sfr_entry.py,  QString::number(sfr_entry.r_sfr, 'g', 4));
-            qPainter.drawText(sfr_entry.px - 50, sfr_entry.py + roi_width/2,  QString::number(sfr_entry.b_sfr, 'g', 4));
-            qPainter.drawText(sfr_entry.px - roi_width/2 - 100, sfr_entry.py,  QString::number(sfr_entry.l_sfr, 'g', 4));
-        }
-        qPainter.end();
-        emit imageReady(std::move(qImage));
-    }
-    displayImage.release();
 }
 
 SfrWorkerController::SfrWorkerController(AACoreNew *a)

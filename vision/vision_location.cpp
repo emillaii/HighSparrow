@@ -34,27 +34,17 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
     QThread::msleep(parameters.waitImageDelay());
     ErrorCodeStruct temp;
     //ToDo: Add enum for prism PR
-    if (parameters.prismPRType() == 1) {
-        temp = vison->PR_Prism_Only_Matching(parameters.cameraName(), pr_result);
-    } else if (parameters.prismPRType() == 2) {
-        temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), pr_result);
-    } else if (parameters.prismPRType() == 3) {
-        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), pr_result);
-    } else {
-        SmallHoleDetectionParam paramStruct;
-        paramStruct.detectSmallHole = parameters.enableSmallHoleDetection();
-        paramStruct.smallHoleScanWidth = parameters.smallCircleScanWidth();
-        paramStruct.smallHoleScanCount = parameters.smallCircleScanCount();
-        paramStruct.smallHoleEdgeResponse = parameters.smallCircleEdgeResponse();
-        paramStruct.smallHoleRadiusMax = parameters.smallCircleRadiusMax();
-        paramStruct.smallHoleRadiusMin = parameters.smallCircleRadiusMin();
-        temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(),
-                                                       parameters.prFileName(),
-                                                       pr_result,
-                                                       parameters.objectScore(),
-                                                       parameters.retryCount(),
-                                                       &paramStruct);
-    }
+//    if (parameters.prismPRType() == 1) {
+//        temp = vison->PR_Prism_Only_Matching(parameters.cameraName(), pr_result);
+//    } else if (parameters.prismPRType() == 2) {
+//        temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), pr_result);
+//    } else if (parameters.prismPRType() == 3) {
+//        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), pr_result);
+//    } else if (parameters.prismPRType() == 4) {
+//        temp = vison->PR_Sharp_Circle_Detection(parameters.cameraName(), parameters.prFileName(), pr_result);
+//    } else {
+    temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore(), parameters.enableSmallHoleDetection());
+//    }
     last_image_name = pr_result.rawImageName;
     if(ErrorCode::OK == temp.code)
     {
@@ -124,27 +114,17 @@ bool VisionLocation::performPR()
     qInfo("PerformPR: %s with wait delay: %f", parameters.locationName().toStdString().c_str(), parameters.waitImageDelay());
     QThread::msleep(parameters.waitImageDelay());
     ErrorCodeStruct temp;
-    if (parameters.prismPRType() == 1) {
-        temp =  vison->PR_Prism_Only_Matching(parameters.cameraName(), current_pixel_result);
-    } else if (parameters.prismPRType() == 2) {
-        temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), current_pixel_result);
-    } else if (parameters.prismPRType() == 3) {
-        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), current_pixel_result);
-    } else {
-        SmallHoleDetectionParam paramStruct;
-        paramStruct.detectSmallHole = parameters.enableSmallHoleDetection();
-        paramStruct.smallHoleScanWidth = parameters.smallCircleScanWidth();
-        paramStruct.smallHoleScanCount = parameters.smallCircleScanCount();
-        paramStruct.smallHoleEdgeResponse = parameters.smallCircleEdgeResponse();
-        paramStruct.smallHoleRadiusMax = parameters.smallCircleRadiusMax();
-        paramStruct.smallHoleRadiusMin = parameters.smallCircleRadiusMin();
-        temp =  vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(),
-                                                        parameters.prFileName(),
-                                                        current_pixel_result,
-                                                        parameters.objectScore(),
-                                                        parameters.retryCount(),
-                                                        &paramStruct);
-    }
+//    if (parameters.prismPRType() == 1) {
+//        temp =  vison->PR_Prism_Only_Matching(parameters.cameraName(), current_pixel_result);
+//    } else if (parameters.prismPRType() == 2) {
+//        temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), current_pixel_result);
+//    } else if (parameters.prismPRType() == 3) {
+//        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), current_pixel_result);
+//    } else if (parameters.prismPRType() == 4) {
+//        temp = vison->PR_Sharp_Circle_Detection(parameters.cameraName(), parameters.prFileName(), current_pixel_result);
+//    } else {
+    temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), current_pixel_result, parameters.objectScore(), parameters.enableSmallHoleDetection());
+//    }
     last_image_name = current_pixel_result.rawImageName;
     if(ErrorCode::OK == temp.code)
     {
@@ -220,28 +200,18 @@ bool VisionLocation::performPR(PRResultStruct &pr_result)
     OpenLight();
     QThread::msleep(parameters.waitImageDelay());
     ErrorCodeStruct temp;
-    if (parameters.prismPRType() == 1) {
-        temp = vison->PR_Prism_Only_Matching(parameters.cameraName(), pr_result);
-    } else if (parameters.prismPRType() == 2)
-    {
-        temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), pr_result);
-    } else if (parameters.prismPRType() == 3) {
-        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), pr_result);
-    } else {
-        SmallHoleDetectionParam paramStruct;
-        paramStruct.detectSmallHole = parameters.enableSmallHoleDetection();
-        paramStruct.smallHoleScanWidth = parameters.smallCircleScanWidth();
-        paramStruct.smallHoleScanCount = parameters.smallCircleScanCount();
-        paramStruct.smallHoleEdgeResponse = parameters.smallCircleEdgeResponse();
-        paramStruct.smallHoleRadiusMax = parameters.smallCircleRadiusMax();
-        paramStruct.smallHoleRadiusMin = parameters.smallCircleRadiusMin();
-        temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(),
-                                                       parameters.prFileName(),
-                                                       pr_result,
-                                                       parameters.objectScore(),
-                                                       parameters.retryCount(),
-                                                       &paramStruct);
-    }
+//    if (parameters.prismPRType() == 1) {
+//        temp = vison->PR_Prism_Only_Matching(parameters.cameraName(), pr_result);
+//    } else if (parameters.prismPRType() == 2)
+//    {
+//        temp = vison->PR_Prism_SUT_Matching(parameters.cameraName(), pr_result);
+//    } else if (parameters.prismPRType() == 3) {
+//        temp = vison->PR_Prism_SUT_Two_Circle_Matching(parameters.cameraName(), pr_result);
+//    } else if (parameters.prismPRType() == 4) {
+//        temp = vison->PR_Sharp_Circle_Detection(parameters.cameraName(), parameters.prFileName(), pr_result);
+//    } else {
+    temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(), parameters.prFileName(), pr_result, parameters.objectScore(), parameters.enableSmallHoleDetection());
+//    }
     last_image_name = pr_result.rawImageName;
     qInfo("CameraName: %s prFilename: %s PR_Result: %f %f %f",parameters.cameraName().toStdString().c_str(), parameters.prFileName().toStdString().c_str(),
           pr_result.x, pr_result.y, pr_result.theta);
@@ -371,17 +341,7 @@ void VisionLocation::CloseLight()
     {
         lighting->setBrightness(parameters.auxLightChannel(),0);
     }
-    //    QThread::msleep(30);
-}
-
-void VisionLocation::OpenLight(int channel, uint8_t brightness)
-{
-    lighting->setBrightness(channel, brightness);
-}
-
-void VisionLocation::CloseLight(int channel)
-{
-    lighting->setBrightness(channel, 0);
+//    QThread::msleep(30);
 }
 
 QString VisionLocation::getLastImageName()

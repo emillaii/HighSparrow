@@ -79,26 +79,6 @@ struct WidthJudgeState
     atl::Array< atl::Conditional< atl::String > > stringArray4;
 };
 
-struct SmallHoleDetectionParam
-{
-    bool detectSmallHole;
-    int smallHoleEdgeResponse;
-    int smallHoleScanWidth;
-    int smallHoleScanCount;
-    double smallHoleRadiusMax;
-    double smallHoleRadiusMin;
-
-    SmallHoleDetectionParam()
-    {
-        detectSmallHole = false;
-        smallHoleEdgeResponse = 10;
-        smallHoleScanWidth = 10;
-        smallHoleScanCount = 10;
-        smallHoleRadiusMax = 7;
-        smallHoleRadiusMin = 6;
-    }
-};
-
 class VisionServer;
 
 class VisionModule: public QObject ,public QQuickImageProvider
@@ -126,16 +106,14 @@ public:
     /*
      * Use the most generic NCC template matching
      */
-    ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name,
-                                                     QString pr_name,
-                                                     PRResultStruct &prResult,
-                                                     double object_score = 0.8,
-                                                     int retryCount = 3,
-                                                     SmallHoleDetectionParam *paramStruct = nullptr);
+    ErrorCodeStruct PR_Generic_NCC_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult, double object_score = 0.8, bool detect_small_hole = false, int retryCount = 3);
     ErrorCodeStruct PR_Edge_Template_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
     ErrorCodeStruct Glue_Inspection(double resolution, double minWidth, double maxWidth, double maxAvgWidth,
                                     QString beforeImage, QString afterImage, QString *glueInspectionImageName,
                                     double *outMinGlueWidth, double *outMaxGlueWidth, double *outMaxAvgGlueWidth);
+
+    ErrorCodeStruct PR_Circle_Edge_Matching(QString camera_name, QString pr_name, PRResultStruct &prResult);
+    ErrorCodeStruct VisionModule::PR_Sharp_Circle_Detection(QString camera_name, QString pr_name, PRResultStruct &prResult);
     /*
      * Glue inspection
      */

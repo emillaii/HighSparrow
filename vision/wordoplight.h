@@ -208,7 +208,7 @@ void setAA2DownlookLighting(int aa2DownlookLighting)
 
     m_aa2DownlookLighting = aa2DownlookLighting;
     emit paramsChanged(m_aa2DownlookLighting);
-    if (mode == 0){
+    if (mode == 1){
         sendMessageToNextModule(LIGHTING_AA2_DL, (uint8_t)aa2DownlookLighting);
     }
     else {
@@ -239,7 +239,7 @@ void setSensorPickarmLighting(int sensorPickarmLighting)
 
     m_sensorPickarmLighting = sensorPickarmLighting;
     emit paramsChanged(m_sensorPickarmLighting);
-    if (mode == 0){
+    if (mode == 1){
         sendMessageToNextModule(LIGHTING_SPA_DL, (uint8_t)sensorPickarmLighting);
     }
     else {

@@ -109,13 +109,13 @@ void SensorLoaderModule::startWork(int run_mode)
     if(run_mode == RunMode::Normal)run();
     else if(run_mode == RunMode::NoMaterial)run();
     else if (run_mode == RunMode::VibrationTest) {
-        is_run = true;
-        while(is_run) {
-            moveCameraToSUTPRPos(false,true);
-            QThread::msleep(2000);
-            moveCameraToSUTPRPos(true,true);
-            QThread::msleep(2000);
-        }
+//        is_run = true;
+//        while(is_run) {
+//            moveCameraToSUTPRPos(false,true);
+//            QThread::msleep(2000);
+//            moveCameraToSUTPRPos(true,true);
+//            QThread::msleep(2000);
+//        }
     }
 }
 
@@ -651,13 +651,6 @@ void SensorLoaderModule::receivceModuleMessage(QVariantMap message)
             states.setHasSensorTray1(true);
             states.setFinishChangeTray(true);
         }
-        else if (message["Message"].toString()=="NoSensorTray")
-        {
-            tray->resetTrayState(SensorPosition::SENSOR_TRAY_1);
-            states.setHasSensorTray1(true);
-            tray->setTrayCurrentNg(SensorPosition::SENSOR_TRAY_1);
-            states.setIsLastTray(true);
-        }
         else
         {
             qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
@@ -698,12 +691,9 @@ void SensorLoaderModule::run()
     while (is_run)
     {
         QThread::msleep(1);
-        if(!is_run)break;
-
         //取料
         if((!states.allowChangeTray())&&checkNeedPickSensor()&&(MaterialState::IsEmpty == states.picker1MaterialState())&&findTrayNextSensorPos(false))
         {
-            if(!is_run)break;
             //sensor视觉
             tray_sensor_location->OpenLight();
             if(!moveCameraToTrayCurrentPos(states.currentTrayID()))
@@ -1240,7 +1230,6 @@ void SensorLoaderModule::run()
             break;
         }
         //执行换盘
-        if(!is_run)break;
         if(states.allowChangeTray())
         {
             if(states.waitingChangeTray())
@@ -1284,8 +1273,6 @@ void SensorLoaderModule::run()
                 states.setWaitingChangeTray(true);
                 qInfo("sendChangeTray");
             }
-
-            if(!is_run)break;
         }
 
         //SUT操作
@@ -1883,30 +1870,17 @@ bool SensorLoaderModule::findTrayNextSensorPos(bool allow_change_tray)
     int tray_index = getTrayIndex();
     if(SensorPosition::SENSOR_TRAY_1 == tray_index)
     {
-        if (states.isLastTray())
+        if(states.hasSensorTray1()&&tray->findNextPositionOfInitState(tray_index))
         {
-            if(states.hasSensorTray2()&&tray->findNextPositionOfInitState(SensorPosition::SENSOR_TRAY_2))
-            {
-                states.setCurrentTrayID(SensorPosition::SENSOR_TRAY_2);
-                return true;
-            }
-            if(!allow_change_tray)
-                return false;
+            states.setCurrentTrayID(tray_index);
+            return true;
         }
-        else
+        if(!allow_change_tray)
+            return false;
+        if(states.hasSensorTray2()&&tray->findNextPositionOfInitState(SensorPosition::SENSOR_TRAY_2))
         {
-            if(states.hasSensorTray1()&&tray->findNextPositionOfInitState(tray_index))
-            {
-                states.setCurrentTrayID(tray_index);
-                return true;
-            }
-            if(!allow_change_tray)
-                return false;
-            if(states.hasSensorTray2()&&tray->findNextPositionOfInitState(SensorPosition::SENSOR_TRAY_2))
-            {
-                states.setCurrentTrayID(SensorPosition::SENSOR_TRAY_2);
-                return true;
-            }
+            states.setCurrentTrayID(SensorPosition::SENSOR_TRAY_2);
+            return true;
         }
     }
     else
@@ -2150,16 +2124,6 @@ bool SensorLoaderModule::movePicker1ToTrayCurrentPos(int tray_index,bool check_s
         QPointF temp_offset = getPickerResultOffset(temp_pr.Theta);
         x-=temp_offset.x();
         y-=temp_offset.y();
-    }
-    if (tray_index == SensorPosition::SENSOR_TRAY_1)
-    {
-        x += sensorTray1PickOffset.X();
-        y += sensorTray1PickOffset.Y();
-    }
-    else if (tray_index == SensorPosition::SENSOR_TRAY_2)
-    {
-        x += sensorTray2PickOffset.X();
-        y += sensorTray2PickOffset.Y();
     }
     bool result = pick_arm->move_XYT1_Synic(x,y,t,false,check_softlanding);
     if(result) return true;
@@ -3082,8 +3046,6 @@ QMap<QString,PropertyBase*> SensorLoaderModule::getModuleParameter()
     temp_map.insert("spa_standby_position", &spa_standby_position);
     temp_map.insert("picker1_offset", &picker1_offset);
     temp_map.insert("picker2_offset", &picker2_offset);
-    temp_map.insert("sensorTray1PickOffset", &sensorTray1PickOffset);
-    temp_map.insert("sensorTray2PickOffset", &sensorTray2PickOffset);
     temp_map.insert("sut1PickOffset", &sut1PickOffset);
     temp_map.insert("sut2PickOffset", &sut2PickOffset);
     temp_map.insert("sut1PlaceOffset", &sut1PlaceOffset);

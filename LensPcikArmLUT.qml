@@ -183,7 +183,7 @@ ColumnLayout {
                         //logicManager.lensPickArmLUTPR()
 //                        lensLoaderModule.performHandling(LensLoaderModule.LUT_PR+
 //                                                         LensLoaderModule.ToWork)
-                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_LENS_PR+
+                        logicManager.performHandling(lens_loader_parameter.moduleName,LensLoaderModule.LUT_PR+
                                                      LensLoaderModule.ToWork)
                     }
                 }

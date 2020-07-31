@@ -469,12 +469,12 @@ void LutModule::startWork(int run_mode)
     else if (run_mode == RunMode::VibrationTest)
     {
         is_run = true;
-        while(is_run) {
-            moveToLoadPos();
-            QThread::msleep(2000);
-            moveToAA1ReadyPos();
-            QThread::msleep(2000);
-        }
+//        while(is_run) {
+//            moveToLoadPos();
+//            QThread::msleep(2000);
+//            moveToAA1ReadyPos();
+//            QThread::msleep(2000);
+//        }
     }
 }
 

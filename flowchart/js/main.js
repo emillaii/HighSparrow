@@ -17,7 +17,7 @@ $(document).ready(function () {
   var init_save_image = { type: 0, lighting: 100 };
   var init_grr_params ={ change_lens: 1, change_sensor: 0, repeat_time: 10, change_time: 11};
   var init_lens_params = { cmd: 0, target_position: 70, ois_x_target_position: 0, ois_y_target_position: 0, delay_in_ms: 0 }
-  var init_partical_check_params = { save_image: 0, delay_in_ms: 0, light_channel: -1, brightness: 0 }
+  var init_partical_check_params = { enable_partical_check: 0, delay_in_ms: 0 }
   var latestCreatedLinkId;
   var $linkProperties = $('#link_properties');
   var $operatorTitle = $('#operator_title');
@@ -133,10 +133,8 @@ $(document).ready(function () {
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">OIS X Target Position: <input type=\"number\" id=\"init_lens_ois_x_target_position\" value=70></div>");
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">OIS Y Target Position: <input type=\"number\" id=\"init_lens_ois_y_target_position\" value=70></div>");
   $init_lens_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"init_lens_delay_in_ms\" value=0></div>"); 
-
-  $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Light Channel: <input type=\"number\" id=\"light_channel\"></div>");
-  $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Brightness: <input type=\"number\" id=\"brightness\"></div>");  
-  $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Save image: <select id=\"save_image\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
+  
+  $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Enable partical check: <select id=\"enable_partical_check\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $partical_check_operator_properties.append("<div style=\"margin-top:20px\">Delay in ms: <input type=\"number\" id=\"partical_check_delay_in_ms\"></div>");
   
   // Apply the plugin on a standard, empty div...
@@ -249,7 +247,7 @@ $(document).ready(function () {
 		$('#mtf_operator_title').val($flowchart.flowchart('getOperatorTitle', operatorId));
 		Object.keys(params).forEach(function(key) {
 			console.log('Key : ' + key + ', Value : ' + params[key])
-			if (key == "CORNER_DEV_TOL" || key == "SFR_DEV_TOL" || key == "CC_MIN" || key == "CC_MAX" || key == "L1_MIN" || key == "L1_MAX" || key == "L2_MIN" || key == "L2_MAX" || key == "L3_MIN" || key == "L3_MAX" || key == "CC_AVG_MIN" || key == "CC_AVG_MAX" || key == "L1_AVG_MIN" || key == "L1_AVG_MAX" || key == "L2_AVG_MIN" || key == "L2_AVG_MAX" || key == "L3_AVG_MIN" || key == "L3_AVG_MAX"){
+			if (key == "SFR_DEV_TOL" || key == "CC_MIN" || key == "CC_MAX" || key == "L1_MIN" || key == "L1_MAX" || key == "L2_MIN" || key == "L2_MAX" || key == "L3_MIN" || key == "L3_MAX" || key == "CC_AVG_MIN" || key == "CC_AVG_MAX" || key == "L1_AVG_MIN" || key == "L1_AVG_MAX" || key == "L2_AVG_MIN" || key == "L2_AVG_MAX" || key == "L3_AVG_MIN" || key == "L3_AVG_MAX"){
 				var table = document.getElementById("mtf_table_form");
 				var row = table.insertRow(table.rows.length);
 				var row_number = table.rows.length;
@@ -258,7 +256,7 @@ $(document).ready(function () {
 				var cell3 = row.insertCell(2);
 				var select_position = document.createElement('select');
 				var sfr_score = document.createElement('input');
-				select_position.innerHTML = "<option value=CORNER_DEV_TOL>CORNER_DEV_TOL</option><option value=SFR_DEV_TOL>SFR_DEV_TOL</option><option value=CC_MIN>CC_MIN</option><option value=CC_MAX>CC_MAX</option><option value=L1_MIN>L1_MIN</option><option value=L1_MAX>L1_MAX</option><option value=L2_MIN>L2_MIN</option><option value=L2_MAX>L2_MAX</option><option value=L3_MIN>L3_MIN</option><option value=L3_MAX>L3_MAX</option><option value=CC_AVG_MIN>CC_AVG_MIN</option><option value=CC_AVG_MAX>CC_AVG_MAX</option><option value=L1_AVG_MIN>L1_AVG_MIN</option><option value=L1_AVG_MAX>L1_AVG_MAX</option><option value=L2_AVG_MIN>L2_AVG_MIN</option><option value=L2_AVG_MAX>L2_AVG_MAX</option><option value=L3_AVG_MIN>L3_AVG_MIN</option><option value=L3_AVG_MAX>L3_AVG_MAX</option>";
+				select_position.innerHTML = "<option value=SFR_DEV_TOL>SFR_DEV_TOL</option><option value=CC_MIN>CC_MIN</option><option value=CC_MAX>CC_MAX</option><option value=L1_MIN>L1_MIN</option><option value=L1_MAX>L1_MAX</option><option value=L2_MIN>L2_MIN</option><option value=L2_MAX>L2_MAX</option><option value=L3_MIN>L3_MIN</option><option value=L3_MAX>L3_MAX</option><option value=CC_AVG_MIN>CC_AVG_MIN</option><option value=CC_AVG_MAX>CC_AVG_MAX</option><option value=L1_AVG_MIN>L1_AVG_MIN</option><option value=L1_AVG_MAX>L1_AVG_MAX</option><option value=L2_AVG_MIN>L2_AVG_MIN</option><option value=L2_AVG_MAX>L2_AVG_MAX</option><option value=L3_AVG_MIN>L3_AVG_MIN</option><option value=L3_AVG_MAX>L3_AVG_MAX</option>";
 				select_position.value = key;
 				cell1.appendChild(select_position);
 				sfr_score.value = params[key]; sfr_score.type="number"; 
@@ -303,9 +301,7 @@ $(document).ready(function () {
 	  }else if (operatorId.includes("Partical Check")) {
 		$partical_check_operator_properties.show();
 		$partical_check_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
-		$('#light_channel').val(params["light_channel"]);
-		$('#brightness').val(params["brightness"]);
-		$('#save_image').val(params["save_image"]);
+		$('#enable_partical_check').val(params["enable_partical_check"]);
 		$('#partical_check_delay_in_ms').val(params["delay_in_ms"]);
 	  }	  
 	  else {
@@ -539,9 +535,7 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("Partical Check")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#Partical_check_operator_title').val());
 	  var params = { delay_in_ms: Number($('#partical_check_delay_in_ms').val()),
-	  save_image: Number($('#save_image').val()),
-	  light_channel: Number($('#light_channel').val()),
-	  brightness: Number($('#brightness').val())
+	  enable_partical_check: Number($('#enable_partical_check').val()),
 	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
     } else {
@@ -650,7 +644,7 @@ $(document).ready(function () {
 	} else if (operatorId.includes("Y_Level")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
 	} else if (operatorId.includes("MTF")) {
-	  var params = { CORNER_DEV_TOL: 100, SFR_DEV_TOL: 100, CC_MIN: 0, CC_MAX: 100, "L1_MIN": 0, "L1_MAX": 100, "L2_MIN": 0, "L2_MAX": 100, "L3_MIN": 0, "L3_MAX": 100, CC_AVG_MIN: 0, CC_AVG_MAX: 100, "L1_AVG_MIN": 0, "L1_AVG_MAX": 100, "L2_AVG_MIN": 0, "L2_AVG_MAX": 100, "L3_AVG_MIN": 0, "L3_AVG_MAX": 100}
+	  var params = { SFR_DEV_TOL: 100, CC_MIN: 0, CC_MAX: 100, "L1_MIN": 0, "L1_MAX": 100, "L2_MIN": 0, "L2_MAX": 100, "L3_MIN": 0, "L3_MAX": 100, CC_AVG_MIN: 0, CC_AVG_MAX: 100, "L1_AVG_MIN": 0, "L1_AVG_MAX": 100, "L2_AVG_MIN": 0, "L2_AVG_MAX": 100, "L3_AVG_MIN": 0, "L3_AVG_MAX": 100}
 	  $flowchart.flowchart('setOperatorParams', operatorId, params);
 	}else if (operatorId.includes("GRR")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_grr_params);
@@ -938,9 +932,7 @@ $(document).ready(function () {
     }else if (selectedOperatorId.includes("Partical Check")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#partical_check_operator_title').val());
 	  var params = { delay_in_ms: Number($('#partical_check_delay_in_ms').val()),
-	  save_image: Number($('#save_image').val()),
-	  light_channel: Number($('#light_channel').val()),
-	  brightness: Number($('#brightness').val())
+	  enable_partical_check: Number($('#enable_partical_check').val()),
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else {
@@ -1003,7 +995,7 @@ $(document).ready(function () {
 		var cell1 = row.insertCell(0);
 		var cell2 = row.insertCell(1);
 		var cell3 = row.insertCell(2);
-		cell1.innerHTML = "<select><option value=CORNER_DEV_TOL>CORNER_DEV_TOL</option><option value=SFR_DEV_TOL>SFR_DEV_TOL</option><option value=CC_MIN>CC_MIN</option><option value=CC_MAX>CC_MAX</option><option value=L1_MIN>L1_MIN</option><option value=L1_MAX>L1_MAX</option><option value=L2_MIN>L2_MIN</option><option value=L2_MAX>L2_MAX</option><option value=L3_MIN>L3_MIN</option><option value=L3_MAX>L3_MAX</option><option value=CC_AVG_MIN>CC_AVG_MIN</option><option value=CC_AVG_MAX>CC_AVG_MAX</option><option value=L1_AVG_MIN>L1_AVG_MIN</option><option value=L1_AVG_MAX>L1_AVG_MAX</option><option value=L2_AVG_MIN>L2_AVG_MIN</option><option value=L2_AVG_MAX>L2_AVG_MAX</option><option value=L3_AVG_MIN>L3_AVG_MIN</option><option value=L3_AVG_MAX>L3_AVG_MAX</option></select>";
+		cell1.innerHTML = "<select><option value=SFR_DEV_TOL>SFR_DEV_TOL</option><option value=CC_MIN>CC_MIN</option><option value=CC_MAX>CC_MAX</option><option value=L1_MIN>L1_MIN</option><option value=L1_MAX>L1_MAX</option><option value=L2_MIN>L2_MIN</option><option value=L2_MAX>L2_MAX</option><option value=L3_MIN>L3_MIN</option><option value=L3_MAX>L3_MAX</option><option value=CC_AVG_MIN>CC_AVG_MIN</option><option value=CC_AVG_MAX>CC_AVG_MAX</option><option value=L1_AVG_MIN>L1_AVG_MIN</option><option value=L1_AVG_MAX>L1_AVG_MAX</option><option value=L2_AVG_MIN>L2_AVG_MIN</option><option value=L2_AVG_MAX>L2_AVG_MAX</option><option value=L3_AVG_MIN>L3_AVG_MIN</option><option value=L3_AVG_MAX>L3_AVG_MAX</option></select>";
 		cell2.innerHTML = "<input value=50 type=\"number\" min=0 max=100>";
 		var delete_btn = document.createElement('button');
 		delete_btn.className = "btn-danger";
@@ -1241,9 +1233,7 @@ $(document).ready(function () {
 	} else if (selectedOperatorId.includes("Partical Check")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#partical_check_operator_title').val());
 	  var params = { delay_in_ms: Number($('#partical_check_delay_in_ms').val()),
-	  save_image: Number($('#save_image').val()),
-	  light_channel: Number($('#light_channel').val()),
-	  brightness: Number($('#brightness').val())
+	  enable_partical_check: Number($('#enable_partical_check').val()),
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else {

@@ -780,20 +780,11 @@ void BaseModuleManager::updateDispenseParameter()
     dispense_module.parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
 }
 
-void BaseModuleManager::updateDispenserParameter()
-{
-    dispense_module.dispenser->parameters.saveJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
-}
-
 bool BaseModuleManager::loadParameters()
 {
 //    configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
     if(!this->parameters.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))
         return false;
-
-    loadVcmFile(getSystermParameterDir().append(VCM_PARAMETER_FILE));
-    loadMotorFile(getSystermParameterDir().append(MOTOR_PARAMETER_FILE));
-    loadMotorLimitFiles(getSystermParameterDir().append(LIMIT_PARAMETER_FILE));
 
     tcp_manager.loadJsonConfig(getSystermParameterDir().append(TCP_CONFIG_FILE));
     material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
@@ -826,22 +817,20 @@ bool BaseModuleManager::loadParameters()
         trayClipOut.standards_parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_CLIPOUT_FILE),TRAY_CLIPOUT_PARAMETER);
      }
     aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
-    //loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
-    //loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
+    loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
-    //loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
     return true;
 }
 
 bool BaseModuleManager::loadconfig()
 {
-    //loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
-    //loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
-    dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
-    dispense_module.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
+    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
@@ -889,7 +878,6 @@ bool BaseModuleManager::saveParameters()
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
     saveVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
-    //saveVcmfile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
     return true;
 }
 
@@ -1997,84 +1985,84 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     qInfo("allMotorsSeekOriginal1 Start");
     bool result;
     GetVcMotorByName(this->lut_module.parameters.motorZName())->resetSoftLanding();
-    if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
-        return false;
-    if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
-        return false;
+    //if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
+    //    return false;
+    //if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
+    //    return false;
     GetMotorByName(this->lut_module.parameters.motorZName())->SeekOrigin();//LUT_Z
-    GetVcMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
-    GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
+    //GetVcMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
+    //GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z
 
     result = GetMotorByName(this->lut_module.parameters.motorZName())->WaitSeekDone();
     if(!result)return false;
     GetMotorByName(this->lut_module.parameters.motorYName())->SeekOrigin();//LUT_Y
 
-    result = GetVcMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
-    if (!result) return false;
-    sut_module.moveZToSafety();
-    GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();//SUT_X
-    GetMotorByName(this->sut_module.parameters.motorYName())->SeekOrigin();//SUT_Y
+    //result = GetVcMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
+    //if (!result) return false;
+    //sut_module.moveZToSafety();
+    //GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();//SUT_X
+    //GetMotorByName(this->sut_module.parameters.motorYName())->SeekOrigin();//SUT_Y
 
-    result = GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->WaitSeekDone();
-    if(!result)return false;
+    //result = GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->WaitSeekDone();
+    //if(!result)return false;
 
-    GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->SeekOrigin();//LPA_X
-    GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
-    GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
+    //GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->SeekOrigin();//LPA_X
+    //GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
+    //GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
 
-    GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();//AA_A
-    GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();//AA_B
-    GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();//AA_C
+    //GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();//AA_A
+    //GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();//AA_B
+    //GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();//AA_C
 
     result = GetMotorByName(this->lut_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
     GetMotorByName(this->lut_module.parameters.motorXName())->SeekOrigin();//LUT_X
 
     //缩回气缸
-    GetCylinderByName(this->tray_loader_module.parameters.cylinderClipName())->Set(0);
+    //GetCylinderByName(this->tray_loader_module.parameters.cylinderClipName())->Set(0);
 
-    GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->SeekOrigin();//LTIE
+    //GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->SeekOrigin();//LTIE
 
-    GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->SeekOrigin();//LTOE
+    //GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->SeekOrigin();//LTOE
 
 
 
-    result = GetMotorByName(this->lens_pick_arm.parameters.motorYName())->WaitSeekDone();
-    if(!result)return false;
+    //result = GetMotorByName(this->lens_pick_arm.parameters.motorYName())->WaitSeekDone();
+    //if(!result)return false;
     //升起气缸,降下托盘
     //
-    GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->SeekOrigin();//LTL
+    //GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->SeekOrigin();//LTL
 
 
-    GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK1Name())->Set(0);
-    GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(0);
-    GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->SeekOrigin();//LTK1
-    GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->SeekOrigin();//LTK2
+    //GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK1Name())->Set(0);
+    //GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(0);
+    //GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->SeekOrigin();//LTK1
+    //GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->SeekOrigin();//LTK2
 
 
-    result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
-    result &= GetMotorByName(this->sut_module.parameters.motorYName())->WaitSeekDone();
+    //result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
+    //result &= GetMotorByName(this->sut_module.parameters.motorYName())->WaitSeekDone();
 
-    result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
-    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
+    //result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
+    //result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
 
-    result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
-    result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
-    result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
+    //result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
+    //result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
+    //result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
 
     result &= GetMotorByName(this->lut_module.parameters.motorXName())->WaitSeekDone();
 
-    result &= GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->WaitSeekDone();
+    //result &= GetMotorByName(this->lens_pick_arm.parameters.motorTrayName())->WaitSeekDone();
 
-    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->WaitSeekDone();
-    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->WaitSeekDone();
-    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->WaitSeekDone();
-    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->WaitSeekDone();
+//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX1Name())->WaitSeekDone();
+//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTKX2Name())->WaitSeekDone();
+//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTIEName())->WaitSeekDone();
+//    result &= GetMotorByName(this->tray_loader_module.parameters.motorLTOEName())->WaitSeekDone();
     if(result)
     {
         qInfo("all motors seeked origin success!");
         setHomeState(true);
-        this->aa_head_module.moveToMushroomPosition(true);
+        //this->aa_head_module.moveToMushroomPosition(true);
         return true;
     }
     return false;
@@ -2089,8 +2077,8 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
 //        gripperIo->Set(1);
     //推料氣缸復位
     bool result;
-    if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
-        return false;
+//    if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
+//        return false;
     GetMotorByName(sut_module.parameters.motorZName())->SeekOrigin();
     GetMotorByName(sensor_pickarm.parameters.motorZName())->SeekOrigin();
     GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->SeekOrigin();
@@ -2103,7 +2091,7 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     result = GetMotorByName(sensor_pickarm.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->WaitSeekDone();
     if(!result) return false;
-    //KicK復位
+//    //KicK復位
     GetMotorByName(this->sensor_pickarm.parameters.motorXName())->SeekOrigin();
     GetMotorByName(this->sensor_pickarm.parameters.motorTName())->SeekOrigin();
     GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->SeekOrigin();
@@ -2111,46 +2099,54 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     result &= GetMotorByName(sut_module.parameters.motorYName())->WaitSeekDone();
     if(!result)return false;
 
+    GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorYName())->SeekOrigin();
+    GetMotorByName(this->aa_head_module.parameters.motorZName())->SeekOrigin();
+
     GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
-    GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
+    //GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
     if(!result)return false;
     GetMotorByName(this->sensor_pickarm.parameters.motorYName())->SeekOrigin();
-    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
-    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
-    if(!result)return false;
-    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->SeekOrigin();
-    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();
+//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
+//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
+//    if(!result)return false;
+//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->SeekOrigin();
+//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();
 
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorYName())->WaitSeekDone();
-    if(!result)return false;
-    //升起氣缸
-    GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->SeekOrigin();
-    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->SeekOrigin();
+//    if(!result)return false;
+//    //升起氣缸
+//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->SeekOrigin();
+//    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->SeekOrigin();
 
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
-    result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
+
+    result &= GetMotorByName(this->aa_head_module.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
+    result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
+//    result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
     result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorTName())->WaitSeekDone();
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->WaitSeekDone();
-    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->WaitSeekDone();
-    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->WaitSeekDone();
-    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->WaitSeekDone();
-    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTKName())->WaitSeekDone();
 
     if(result)
     {
         qInfo("all motor seeked origin successed!");
         setHomeState(true);
         this->aa_head_module.moveToMushroomPosition(true);
-        if(ServerMode()!=0)
-        {
-            sensor_loader_module.performHandling(SensorLoaderModule::HandleCameraPosition::SPA_STANDBY_POS);
-            sensor_tray_loder_module.movetoTrayWorkPosition();
-        }
+//        if(ServerMode()!=0)
+//        {
+//            sensor_loader_module.performHandling(SensorLoaderModule::HandleCameraPosition::SPA_STANDBY_POS);
+//            sensor_tray_loder_module.movetoTrayWorkPosition();
+//        }
         return  true;
     }
     return false;

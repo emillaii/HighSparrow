@@ -48,8 +48,6 @@ public:
     void CleanUpCurve();
 
     DISPENSER_STATE GetState();
-    bool checkInputIoExist();
-    bool getInputIoValue();
 private:
     double getMaxSpeed(int index);
     double getEndSpeed(int index);

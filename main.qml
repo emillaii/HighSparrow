@@ -739,6 +739,9 @@ ApplicationWindow {
             yLevelDrawPathButton.onClicked: {
                 highSprrow.callQProcess("Y_Level_Editor.avexe")
             }
+            circleFittingButton.onClicked: {
+                highSprrow.callQProcess("CircleFitting.avexe")
+            }
         }
 
         Page7Form {
@@ -753,6 +756,9 @@ ApplicationWindow {
             }
             yLevelDrawPathButton.onClicked: {
                 highSprrow.callQProcess("Y_Level_Editor.avexe")
+            }
+            circleFittingButton.onClicked: {
+                highSprrow.callQProcess("CircleFitting.avexe")
             }
         }
 
@@ -815,12 +821,12 @@ ApplicationWindow {
         }
         TabButton {
             text: qsTr("流程图")
-            enabled: {
-                if (userManagement.currentAuthority >= 2)
-                    return true
-                else
-                    return false
-            }
+//            enabled: {
+//                if (userManagement.currentAuthority >= 2)
+//                    return true
+//                else
+//                    return false
+//            }
         }
         TabButton {
             text: qsTr("AA 控制面板")

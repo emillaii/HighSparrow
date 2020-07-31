@@ -13,6 +13,7 @@ Page {
     property alias navigationFeatureButton: navigationFeatureButton
     property alias drawPathButton: drawPathButton
     property alias yLevelDrawPathButton: yLevelDrawPathButton
+    property alias circleFittingButton: circleFittingButton
 
     ColumnLayout {
         id: mainRowLayout
@@ -36,6 +37,15 @@ Page {
         Button {
             id: featureButton
             text: qsTr("机械视觉")
+            display: AbstractButton.TextOnly
+            icon.source: "icons/select.png"
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
+
+        Button {
+            id: circleFittingButton
+            text: qsTr("圆边拟合")
             display: AbstractButton.TextOnly
             icon.source: "icons/select.png"
             Layout.fillWidth: true

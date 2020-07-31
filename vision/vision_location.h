@@ -32,8 +32,6 @@ public:
 
     void OpenLight();
     void CloseLight();
-    void OpenLight(int channel, uint8_t brightness);
-    void CloseLight(int channel);
     QString getLastImageName();
     bool saveImage(QString imageName);
 public:

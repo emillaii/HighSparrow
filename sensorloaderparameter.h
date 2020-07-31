@@ -1481,7 +1481,6 @@ public:
     Q_PROPERTY(bool hasBufferTrayPrOffset READ hasBufferTrayPrOffset WRITE setHasBufferTrayPrOffset NOTIFY hasBufferTrayPrOffsetChanged)
     Q_PROPERTY(bool spaVaccum1State READ spaVaccum1State WRITE setSpaVaccum1State NOTIFY spaVaccum1StateChanged)
     Q_PROPERTY(bool spaVaccum2State READ spaVaccum2State WRITE setSpaVaccum2State NOTIFY spaVaccum2StateChanged)
-    Q_PROPERTY(bool isLastTray READ isLastTray WRITE setIsLastTray NOTIFY isLastTrayChanged)
     int runMode() const
     {
         return m_runMode;
@@ -1660,11 +1659,6 @@ public:
     bool spaVaccum2State() const
     {
         return m_spaVaccum2State;
-    }
-
-    bool isLastTray() const
-    {
-        return m_isLastTray;
     }
 
 public slots:
@@ -1992,15 +1986,6 @@ public slots:
         emit spaVaccum2StateChanged(m_spaVaccum2State);
     }
 
-    void setIsLastTray(bool isLastTray)
-    {
-        if (m_isLastTray == isLastTray)
-            return;
-
-        m_isLastTray = isLastTray;
-        emit isLastTrayChanged(m_isLastTray);
-    }
-
 signals:
     void runModeChanged(int runMode);
 
@@ -2074,8 +2059,6 @@ signals:
 
     void spaVaccum2StateChanged(bool spaVaccum2State);
 
-    void isLastTrayChanged(bool isLastTray);
-
 private:
     int m_runMode = 0;
     bool m_hasSensorTray1 = false;
@@ -2113,7 +2096,6 @@ private:
     int m_taskOfStation2 = 0;
     bool m_spaVaccum1State = 0;
     bool m_spaVaccum2State = 0;
-    bool m_isLastTray = false;
 };
 
 #endif // SENSORLOADERPARAMETER_H

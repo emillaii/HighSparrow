@@ -31,12 +31,6 @@ public:
     Q_PROPERTY(int auxLightBrightness READ auxLightBrightness WRITE setAuxLightBrightness NOTIFY auxLightBrightnessChanged)
     Q_PROPERTY(bool displaySmallHoleDetectionSetting READ displaySmallHoleDetectionSetting WRITE setDisplaySmallHoleDetectionSetting NOTIFY displaySmallHoleDetectionSettingChanged)
     Q_PROPERTY(bool enableSmallHoleDetection READ enableSmallHoleDetection WRITE setEnableSmallHoleDetection NOTIFY enableSmallHoleDetectionChanged)
-    Q_PROPERTY(int smallCircleEdgeResponse READ smallCircleEdgeResponse WRITE setSmallCircleEdgeResponse NOTIFY smallCircleEdgeResponseChanged)
-    Q_PROPERTY(int smallCircleScanWidth READ smallCircleScanWidth WRITE setSmallCircleScanWidth NOTIFY smallCircleScanWidthChanged)
-    Q_PROPERTY(int smallCircleScanCount READ smallCircleScanCount WRITE setSmallCircleScanCount NOTIFY smallCircleScanCountChanged)
-    Q_PROPERTY(double smallCircleRadiusMax READ smallCircleRadiusMax WRITE setSmallCircleRadiusMax NOTIFY smallCircleRadiusMaxChanged)
-    Q_PROPERTY(double smallCircleRadiusMin READ smallCircleRadiusMin WRITE setSmallCircleRadiusMin NOTIFY smallCircleRadiusMinChanged)
-    Q_PROPERTY(int retryCount READ retryCount WRITE setRetryCount NOTIFY retryCountChanged)
     Q_PROPERTY(bool closeLightAfterPR READ closeLightAfterPR WRITE setCloseLightAfterPR NOTIFY closeLightAfterPRChanged)
 
     QString prFileName() const
@@ -153,36 +147,6 @@ public:
     bool closeLightAfterPR() const
     {
         return m_closeLightAfterPR;
-    }
-
-    int smallCircleEdgeResponse() const
-    {
-        return m_smallCircleEdgeResponse;
-    }
-
-    int retryCount() const
-    {
-        return m_retryCount;
-    }
-
-    int smallCircleScanWidth() const
-    {
-        return m_smallCircleScanWidth;
-    }
-
-    int smallCircleScanCount() const
-    {
-        return m_smallCircleScanCount;
-    }
-
-    double smallCircleRadiusMax() const
-    {
-        return m_smallCircleRadiusMax;
-    }
-
-    double smallCircleRadiusMin() const
-    {
-        return m_smallCircleRadiusMin;
     }
 
 public slots:
@@ -393,62 +357,6 @@ public slots:
         emit closeLightAfterPRChanged(m_closeLightAfterPR);
     }
 
-    void setSmallCircleEdgeResponse(int smallCircleEdgeResponse)
-    {
-        if (m_smallCircleEdgeResponse == smallCircleEdgeResponse)
-            return;
-
-        m_smallCircleEdgeResponse = smallCircleEdgeResponse;
-        emit smallCircleEdgeResponseChanged(m_smallCircleEdgeResponse);
-    }
-
-    void setRetryCount(int retryCount)
-    {
-        if (m_retryCount == retryCount)
-            return;
-
-        m_retryCount = retryCount;
-        emit retryCountChanged(m_retryCount);
-    }
-
-    void setSmallCircleScanWidth(int smallCircleScanWidth)
-    {
-        if (m_smallCircleScanWidth == smallCircleScanWidth)
-            return;
-
-        m_smallCircleScanWidth = smallCircleScanWidth;
-        emit smallCircleScanWidthChanged(m_smallCircleScanWidth);
-    }
-
-    void setSmallCircleScanCount(int smallCircleScanCount)
-    {
-        if (m_smallCircleScanCount == smallCircleScanCount)
-            return;
-
-        m_smallCircleScanCount = smallCircleScanCount;
-        emit smallCircleScanCountChanged(m_smallCircleScanCount);
-    }
-
-    void setSmallCircleRadiusMax(double smallCircleRadiusMax)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_smallCircleRadiusMax, smallCircleRadiusMax))
-            return;
-
-        m_smallCircleRadiusMax = smallCircleRadiusMax;
-        emit smallCircleRadiusMaxChanged(m_smallCircleRadiusMax);
-    }
-
-    void setSmallCircleRadiusMin(double smallCircleRadiusMin)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_smallCircleRadiusMin, smallCircleRadiusMin))
-            return;
-
-        m_smallCircleRadiusMin = smallCircleRadiusMin;
-        emit smallCircleRadiusMinChanged(m_smallCircleRadiusMin);
-    }
-
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -496,18 +404,6 @@ signals:
 
     void closeLightAfterPRChanged(bool closeLightAfterPR);
 
-    void smallCircleEdgeResponseChanged(int smallCircleEdgeResponse);
-
-    void retryCountChanged(int retryCount);
-
-    void smallCircleScanWidthChanged(int smallCircleScanWidth);
-
-    void smallCircleScanCountChanged(int smallCircleScanCount);
-
-    void smallCircleRadiusMaxChanged(double smallCircleRadiusMax);
-
-    void smallCircleRadiusMinChanged(double smallCircleRadiusMin);
-
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -532,12 +428,6 @@ private:
     bool m_displaySmallHoleDetectionSetting = false;
     bool m_enableSmallHoleDetection = false;
     bool m_closeLightAfterPR = true;
-    int m_smallCircleEdgeResponse = 10;
-    int m_smallCircleScanWidth = 10;
-    int m_smallCircleScanCount = 10;
-    double m_smallCircleRadiusMax = 7;
-    double m_smallCircleRadiusMin = 6;
-    int m_retryCount = 3;
 };
 
 

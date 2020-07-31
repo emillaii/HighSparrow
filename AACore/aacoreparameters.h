@@ -139,7 +139,7 @@ class AACoreParameters : public PropertyBase
 
     QString m_vcmRegAddress = "0x03";
 
-    int m_vcmI2cMode = 0;
+    int m_tiltSelection = 0;
 
 public:
     explicit AACoreParameters(){
@@ -213,7 +213,7 @@ public:
     Q_PROPERTY(int vcmInitMode READ vcmInitMode WRITE setVCMInitMode NOTIFY vcmInitModeChanged)
     Q_PROPERTY(QString vcmSlaveId READ vcmSlaveId WRITE setVCMSlaveId NOTIFY vcmSlaveIdChanged)
     Q_PROPERTY(QString vcmRegAddress READ vcmRegAddress WRITE setVCMRegAddress NOTIFY vcmRegAddressChanged)
-    Q_PROPERTY(int vcmI2cMode READ vcmI2cMode WRITE setVCMI2cMode NOTIFY vcmI2cModeChanged)
+    Q_PROPERTY(int tiltSelection READ tiltSelection WRITE setTiltSelection NOTIFY tiltSelectionChanged)
 
     double EFL() const
     {
@@ -544,9 +544,9 @@ public:
         return m_vcmRegAddress;
     }
 
-    int vcmI2cMode() const
+    int tiltSelection() const
     {
-        return m_vcmI2cMode;
+        return m_tiltSelection;
     }
 
 public slots:
@@ -1127,13 +1127,13 @@ public slots:
         emit vcmRegAddressChanged(m_vcmRegAddress);
     }
 
-    void setVCMI2cMode(int vcmI2cMode)
+    void setTiltSelection(int tiltSelection)
     {
-        if (m_vcmI2cMode == vcmI2cMode)
+        if (m_tiltSelection == tiltSelection)
             return;
 
-        m_vcmI2cMode = vcmI2cMode;
-        emit vcmI2cModeChanged(m_vcmI2cMode);
+        m_tiltSelection = tiltSelection;
+        emit tiltSelectionChanged(m_tiltSelection);
     }
 
 signals:
@@ -1192,7 +1192,7 @@ signals:
     void vcmInitModeChanged(int vcmInitMode);
     void vcmSlaveIdChanged(QString vcmSlaveId);
     void vcmRegAddressChanged(QString vcmRegAddress);
-    void vcmI2cModeChanged(int vcmI2cMode);
+    void tiltSelectionChanged(int tiltSelection);
 };
 class AACoreStates: public PropertyBase
 {

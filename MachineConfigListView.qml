@@ -9,7 +9,7 @@ import "qml/DispenseModule"
 import "qml/ThreadManager"
 ScrollView {
     id: machineConfigListView
-    width: 700
+    width: 600
 
     ColumnLayout{
         Switch {id: aaViewSwitch; text:"AA 头机器配置"}

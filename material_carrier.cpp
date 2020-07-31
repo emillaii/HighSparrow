@@ -107,20 +107,27 @@ bool MaterialCarrier::Move_SZ_SX_YS_X_Z_Sync(double x, double y, double z, bool 
     if(check_autochthonous&&CheckXYZArrived(x,y,z))
         return true;
     bool result;
+    qInfo("CheckXYDistanceBigger");
     if(CheckXYDistanceBigger(x,y,check_distance))
     {
+        qInfo("motor_z->MoveToPosSync(parameters.SafetyZ()");
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
         if(!result) return false;
         if(fabs(y - motor_y->GetFeedbackPos()) > check_distance)
         {
+            qInfo("motor_x->MoveToPosSync(parameters.SafetyX())");
             result = motor_x->MoveToPosSync(parameters.SafetyX());
             if(!result) return false;
         }
     }
-    result = motor_y->MoveToPosSaftySync(y);
+    qInfo("motor_y->MoveToPosSaftySync");
+    //result = motor_y->MoveToPosSaftySync(y);
+    result = motor_y->MoveToPosSync(y);
     if(!result) return false;
+    qInfo("motor_x->MoveToPosSync");
     result = motor_x->MoveToPosSync(x);
     if(!result) return false;
+    qInfo("motor_z->MoveToPosSync");
     result = motor_z->MoveToPosSync(z);
     //    QThread::msleep(300);
     return result;

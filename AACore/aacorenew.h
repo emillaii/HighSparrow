@@ -28,14 +28,6 @@
 #include "utils/unitlog.h"
 #include "i2cControl/i2ccontrol.h"
 #include <QProcess>
-
-// Comment this define if sunny image abnormality detection is not used
-//#define SunnyImageAbnormalityDetection
-
-#ifdef SunnyImageAbnormalityDetection
-#include "SunnyTest.h"
-#endif
-
 class AACoreNew : public ThreadWorkerBase
 {
     Q_OBJECT
@@ -66,7 +58,6 @@ public:
         PARTICAL_CHECK = 21
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
-    ~AACoreNew();
     void Init(AAHeadModule* aa_head,SutModule* sut,Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog, int serverMode);
@@ -99,9 +90,11 @@ public:
     ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
     ErrorCodeStruct performParticalCheck(QJsonValue params);
 
+    bool aoaMTF(bool saveImage = false);
     static bool performThreadTest(vector<QString> testList, QJsonValue params);
     static double performMTFInThread( cv::Mat input, int freq);
     bool blackScreenCheck(cv::Mat inImage);
+
     void performMTFLoopTest();
     double calculateDFOV(cv::Mat img);
     void setSfrWorkerController(SfrWorkerController*);
@@ -197,16 +190,6 @@ private:
     double sumA=0,sumB=0,sumC=0,sumX=0,sumY=0,sumZ=0;
     int recordedTiltNum=0;
     Position6D temp_mushroom_position;
-
-    bool glueLevelCheck();
-    bool glueLevelCheckResult = false;
-    int current_glue_level_check = 0;
-
-    // Sunny deep learning image abnormality detection instance, ~200mb needed
-    // One instance for one thread only
-#ifdef SunnyImageAbnormalityDetection
-    SunnyDetector* Detector;
-#endif
 public slots:
     //ThreadWorkerBase
     void startWork(int run_mode);

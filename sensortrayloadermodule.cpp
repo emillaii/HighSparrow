@@ -125,27 +125,9 @@ void SensorTrayLoaderModule::stopWork(bool wait_finish)
 
 void SensorTrayLoaderModule::performHandlingOperation(int cmd,QVariant param)
 {
+    is_handling = false;
     bool result = false;
-    int temp_value = 10;
-    if (cmd%temp_value == HandlePosition::INPUT_MAGAZINE_POS1)
-    {
-
-    }
-    else if (cmd%temp_value == HandlePosition::INPUT_MAGAZINE_POS2)
-    {
-
-    }
-    if (cmd%temp_value == HandlePosition::OUTPUT_MAGAZINE_POS1)
-    {
-
-    }
-    else if (cmd%temp_value == HandlePosition::OUTPUT_MAGAZINE_POS2)
-    {
-
-    }
-    cmd = cmd/temp_value*temp_value;
-    temp_value = 100;
-    if (cmd%temp_value == HandleAction::STPO_PUSH)
+    if (cmd == HandleAction::STPO_PUSH)
     {
         result &= motor_push->MoveToPosSync(parameters.pushoutPosition());
         result &= motor_push->MoveToPosSync(0);
@@ -161,10 +143,10 @@ void SensorTrayLoaderModule:: run()
     retryTime = parameters.checkEntranceTrayRetryTimes();
     while (is_run)
     {
-        QThread::msleep(10);
+        QThread::msleep(100);
 
         //去拿盘位置
-        if(states.needChangeTray()&&(!states.hasCarrierReady())&&(!(states.hasUpTray()&&states.hasReadyTray()))&&(!states.hasKickReady())&&(!states.hasWorkTray())&&(!states.hasKickTray()))
+        if(!states.isLastTray()&&states.needChangeTray()&&(!states.hasCarrierReady())&&(!(states.hasUpTray()&&states.hasReadyTray()))&&(!states.hasKickReady())&&(!states.hasWorkTray())&&(!states.hasKickTray()))
         {
             if((!moveToUpReadyTray(states.hasReadyTray())))
             {
@@ -185,7 +167,7 @@ void SensorTrayLoaderModule:: run()
             states.setHasCarrierReady(true);
         }
         //夹盘
-        if(states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasKickReady())&&(!states.hasWorkTray())&&(!states.hasKickTray())&&(!states.hasReadyTray())&&states.entranceClipReady())
+        if(!states.isLastTray()&&states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasKickReady())&&(!states.hasWorkTray())&&(!states.hasKickTray())&&(!states.hasReadyTray())&&states.entranceClipReady())
         {
             if(!moveToPullNextTray())
             {
@@ -230,7 +212,7 @@ void SensorTrayLoaderModule:: run()
             }
         }
         //放下第一个盘
-        if(states.needChangeTray()&&states.hasReadyTray()&&(!states.hasUpTray())&&(!states.hasWorkTray()))
+        if(!states.isLastTray()&&states.needChangeTray()&&states.hasReadyTray()&&(!states.hasUpTray())&&(!states.hasWorkTray()))
         {
             if((!moveToPutFirstTray()))
             {
@@ -244,7 +226,7 @@ void SensorTrayLoaderModule:: run()
         }
         //去准备推盘位置
         //去放工作盘
-        if(states.needChangeTray()&&states.hasReadyTray()&&states.hasWorkTray()&&(!states.hasKickTray())&&(!states.hasKickReady()))
+        if(!states.isLastTray()&&states.needChangeTray()&&states.hasReadyTray()&&states.hasWorkTray()&&(!states.hasKickTray())&&(!states.hasKickReady()))
         {
             if((!moveToDownTrayAndReadyToPush()))
             {
@@ -272,7 +254,6 @@ void SensorTrayLoaderModule:: run()
                 if(RETRY_OPERATION == operation)
                     continue;
             }
-            if(!is_run)break;
             if(states.hasReadyTray())
                 states.setHasUpTray(true);
             states.setHasReadyTray(false);
@@ -283,7 +264,7 @@ void SensorTrayLoaderModule:: run()
         }
         //夹盘
         //推出成品盘
-        if(states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasWorkTray())&&(!states.hasKickTray())&&states.hasVacancyTray()&&(!states.hasReadyTray())&&states.hasKickReady()&&states.entranceClipReady()&&states.exitClipReady())
+        if(!states.isLastTray()&&states.needChangeTray()&&states.hasCarrierReady()&&(!states.hasWorkTray())&&(!states.hasKickTray())&&states.hasVacancyTray()&&(!states.hasReadyTray())&&states.hasKickReady()&&states.entranceClipReady()&&states.exitClipReady())
         {
             if(!moveToPullNextTray1())
             {
@@ -315,16 +296,6 @@ void SensorTrayLoaderModule:: run()
             states.setEntranceClipReady(false);
             states.setHasKickReady(false);
         }
-
-        // Check stop Condition
-        if (states.isLastTray()&&checkSensorTray(false, false)&&checkVacancyTray(false, false))
-        {
-            is_run = false;
-            sendMessageToModule("LogicManager2", "StopAllWorkers");
-            sendAlarmMessage(CONTINUE_OPERATION, u8"当前生产结束，重置逻辑再开始！");
-            break;
-        }
-
         //去工作位置
         if(states.needChangeTray()&&(!states.hasWorkTray())&&states.hasVacancyTray()&&states.hasReadyTray()&&states.hasUpTray()&&(!states.hasKickReady()))
         {
@@ -344,43 +315,30 @@ void SensorTrayLoaderModule:: run()
             states.setHasUpTray(false);
             states.setNeedChangeTray(false);
             states.setHasWorkTray(true);
-            if (states.isLastTray()&&checkSensorTray(false, false)) {
-                qInfo(u8"去工作位置 check no sensor tray");
-                sendMessageToModule("SensorLoaderModule","NoSensorTray");
-            }
-            else {
-                sendMessageToModule("SensorLoaderModule","FinishChangeTray1");
-            }
+            sendMessageToModule("SensorLoaderModule","FinishChangeTray1");
             states.setChangingTray(false);
         }
 
         //检测换进料弹夹
-        if(!states.hasEntranceClip())
+        if(!states.isLastTray()&&!states.hasEntranceClip())
         {
-            if (states.isLastTray())
+            if(!entrance_clip_push->Set(states.useSpareEntanceClip()))
             {
-                states.setHasEntranceClip(true);
-            }
-            else
-            {
-                if(!entrance_clip_push->Set(states.useSpareEntanceClip()))
-                {
-                    AppendError(u8"切换sensor进料弹夹失败。");
-                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                    QString operation = waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
-                    if(RETRY_OPERATION == operation)
-                        continue;
-                }
-                retryTime = parameters.checkEntranceTrayRetryTimes();
-                int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,u8"换进料弹夹：请在备用sensor进料弹夹位置放入带料弹夹!");
-                waitMessageReturn(is_run,alarm_id);
+                AppendError(u8"切换sensor进料弹夹失败。");
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
                 if(!is_run)break;
-                states.setHasEntranceClip(true);
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
+            retryTime = parameters.checkEntranceTrayRetryTimes();
+            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION,u8"换进料弹夹：请在备用sensor进料弹夹位置放入带料弹夹!");
+            waitMessageReturn(is_run,alarm_id);
+            if(!is_run)break;
+            states.setHasEntranceClip(true);
         }
         //检测换出料弹夹
-        if(!states.hasExitClip())
+        if(!states.isLastTray()&&!states.hasExitClip())
         {
             if(!exit_clip_push->Set(!states.useSpareExitClip()))
             {
@@ -398,28 +356,21 @@ void SensorTrayLoaderModule:: run()
         }
 
         //进盘弹夹到位
-        if(!states.entranceClipReady())
+        if(!states.isLastTray()&&!states.entranceClipReady())
         {
-            if(states.isLastTray())
+            if((!moveToEntranceClipNextPos()))
             {
-                states.setEntranceClipReady(true);
+                AppendError(u8"进盘弹夹到位失败！");
+                int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
+                QString operation = waitMessageReturn(is_run,alarm_id);
+                if(!is_run)break;
+                if(RETRY_OPERATION == operation)
+                    continue;
             }
-            else
-            {
-                if((!moveToEntranceClipNextPos()))
-                {
-                    AppendError(u8"进盘弹夹到位失败！");
-                    int alarm_id = sendAlarmMessage(CONTINUE_RETRY_OPERATION,GetCurrentError());
-                    QString operation = waitMessageReturn(is_run,alarm_id);
-                    if(!is_run)break;
-                    if(RETRY_OPERATION == operation)
-                        continue;
-                }
-                states.setEntranceClipReady(true);
-            }
+            states.setEntranceClipReady(true);
         }
         //出盘弹夹到位
-        if(!states.exitClipReady())
+        if(!states.isLastTray()&&!states.exitClipReady())
         {
             if((!moveToExitClipNextPos()))
             {
@@ -595,17 +546,13 @@ bool SensorTrayLoaderModule::movetoVacancyTrayPosition()
 
 bool SensorTrayLoaderModule:: moveToDownTrayAndReadyToPush()
 {
-    bool result = true;
-    bool check_result = true;
     bool kick_result = kick1->Set(false);
     kick_result &= kick2->Set(false);
     if(kick_result)
-    kick_result &= motor_kick->MoveToPos(parameters.startKickTrayPosition());
-    result = motor_tray->MoveToPos(parameters.downTrayPosition());
-    if (!states.isLastTray())
-    {
-        check_result &= checkSensorTray(true);
-    }
+        kick_result &= motor_kick->MoveToPos(parameters.startKickTrayPosition());
+    bool result = motor_tray->MoveToPos(parameters.downTrayPosition());
+    bool check_result = true;
+    check_result &= checkSensorTray(true);
     check_result &= checkKickTray(false);
     if(result)
         result &= motor_tray->WaitArrivedTargetPos(parameters.downTrayPosition());
@@ -635,9 +582,7 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         kick_result &= motor_kick->SlowMoveToPos(parameters.vacancyTrayPosition(),parameters.pushVelocity());
 
     //去放顶盘
-    bool result = true;
-    if (!states.isLastTray())
-        checkEntanceTray(false);
+    bool result = checkEntanceTray(false);
     if(result)
         result &= motor_tray->MoveToPos(parameters.getTrayPosition());
     //放空盘
@@ -647,7 +592,7 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         kick_result &= kick1->Set(false);
     if(kick_result)
         kick_result &= hold_vacancy->Set(false);
-    if(kick_result&&(!states.isLastTray()))
+    if(kick_result)
         kick_result &= checkVacancyTray(true);
     if(kick_result)
         kick_result &= motor_kick->WaitArrivedTargetPos(parameters.vacancyTrayPosition());
@@ -657,9 +602,9 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         if(has_vacancy_tray)
         {
             kick_result &= motor_kick->SlowMoveToPosSync(parameters.finishKickTrayPosition(),parameters.pushVelocity());
-            kick_result &= kick2->Set(false);
             if(kick_result)
                 kick_result &= motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
+            kick_result &= kick2->Set(false);
             if(kick_result)
                 kick_result &= kick1->Set(true);
         }
@@ -674,9 +619,9 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         if(has_vacancy_tray)
         {
             kick_resul2 &= motor_kick->SlowMoveToPosSync(parameters.finishKickTrayPosition(),parameters.pushVelocity());
-            kick_resul2 &= kick2->Set(false);
             if(kick_resul2)
                 kick_resul2 &= motor_kick->MoveToPosSync(parameters.finishKickTrayPosition() - parameters.backDistance());
+            kick_resul2 &= kick2->Set(false);
             if(kick_resul2)
                 kick_resul2 &= kick1->Set(true);
         }
@@ -696,7 +641,7 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
         result &= hold_tray->Set(false);
         result &= gripper->Set(false);
     }
-    if(result&&(!states.isLastTray()))
+    if(result)
         result &= checkReadyTray(true);
     qInfo(u8"去换空盘并取备用盘，返回值%d",result&&kick_result);
     return result&&kick_result;
@@ -713,7 +658,7 @@ bool SensorTrayLoaderModule::moveToUpReadyTray(bool has_tray)
         result &= hold_tray->Set(false);
         result &= gripper->Set(false);
     }
-    if((result&&has_tray)&&(!states.isLastTray()))
+    if(result&&has_tray)
         result &= checkSensorTray(true);
     qInfo(u8"去取备用盘，返回值%d",result);
     return result;
@@ -733,26 +678,22 @@ bool SensorTrayLoaderModule::moveToWaitHandleTray()
 
 bool SensorTrayLoaderModule::moveToPullNextTray()
 {
-    bool result_push = true;
-    bool result_return = true;
-    if(!states.isLastTray())
-    {
-        result_push = motor_push->MoveToPosSync(parameters.pushoutPosition()); //STPO推出sensor tray
-        if(result_push)
-            result_push &= gripper->Set(true,false);    //STL夹爪合上
-        result_return = motor_push->MoveToPos(0);
-        if(result_push)
-            result_push &= gripper->Wait(true);
-        if(result_push)
-            result_push &= checkEntanceTray(true);
-    }
+    bool result_push = motor_push->MoveToPosSync(parameters.pushoutPosition());
+    if(result_push)
+        result_push &= gripper->Set(true,false);
+    bool result_return = motor_push->MoveToPos(0);
+    if(result_push)
+        result_push &= gripper->Wait(true);
+    if(result_push)
+        result_push &= checkEntanceTray(true);
 
-    bool result = motor_tray->MoveToPosSync(parameters.putTrayPosition());  //STL去到放下sensor tray的位置,等待顶盘
-    if(result&&(!states.isLastTray()))
-        result &= gripper->Set(false);  //STL夹爪松开
-    if(result_return&&!states.isLastTray())
+    bool result = motor_tray->MoveToPosSync(parameters.putTrayPosition());
+    if(result)
+        result &= gripper->Set(false);
+    if(result_return)
         result_return &= motor_push->WaitArrivedTargetPos(0);
-    if(result&&(!states.isLastTray()))
+
+    if(result)
         result &= checkEntanceTray(false);
     result = result&&result_push&&result_return;
     qInfo(u8"送出新盘，返回值%d",result);
@@ -768,7 +709,7 @@ bool SensorTrayLoaderModule::moveToPullNextTray1()
     if(result_push)
         result_push &= gripper->Wait(true);
 
-    if(result_push&&(!states.isLastTray()))
+    if(result_push)
         result_push &= checkEntanceTray(true);
 
     bool result = motor_tray->MoveToPosSync(parameters.putTrayPosition());
@@ -776,7 +717,7 @@ bool SensorTrayLoaderModule::moveToPullNextTray1()
         result &= gripper->Set(false);
     if(result_return)
         result_return &= motor_push->WaitArrivedTargetPos(0);
-    if(result&&(!states.isLastTray()))
+    if(result)
         result &= checkEntanceTray(false);
     result = result&&result_push&&result_return;
     qInfo(u8"送出新盘并推出成品盘，返回值%d",result);
@@ -809,10 +750,8 @@ bool SensorTrayLoaderModule::moveToWorkPos(bool has_tray)
     bool result = motor_tray->MoveToPosSync(parameters.trayWorkPosition());
     if(!result)
         AppendError(QString(u8"去工作位置失败"));
-    if((result&&has_tray)&&(!states.isLastTray()))
-    {
+    if(result&&has_tray)
         result &= checkSensorTray(true);
-    }
     qInfo(u8"去工作位置,返回值%d",result);
     return result;
 
@@ -917,17 +856,14 @@ bool SensorTrayLoaderModule::checkEntanceTray(bool check_state)
     return false;
 }
 
-bool SensorTrayLoaderModule::checkSensorTray(bool check_state, bool showErrorMsg)
+bool SensorTrayLoaderModule::checkSensorTray(bool check_state)
 {
     if(sensor_tray_check_io->Value() == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString logic_state = check_state?u8"有":u8"无";
     QString checked_state = check_state?u8"无":u8"有";
-    if (showErrorMsg)
-    {
-        AppendError(QString(u8"sensor盘爪上逻辑%1盘，但检测到%2盘！").arg(logic_state).arg(checked_state));
-        qInfo(u8"sensor盘爪上逻辑%s盘，但检测到%s盘！",logic_state.toStdString().c_str(),checked_state.toStdString().c_str());
-    }
+    AppendError(QString(u8"sensor盘爪上逻辑%1盘，但检测到%2盘！").arg(logic_state).arg(checked_state));
+    qInfo(u8"sensor盘爪上逻辑%s盘，但检测到%s盘！",logic_state.toStdString().c_str(),checked_state.toStdString().c_str());
     return false;
 }
 
@@ -953,17 +889,14 @@ bool SensorTrayLoaderModule::checkReadyTray(bool check_state)
     return false;
 }
 
-bool SensorTrayLoaderModule::checkVacancyTray(bool check_state, bool showErrorMsg)
+bool SensorTrayLoaderModule::checkVacancyTray(bool check_state)
 {
     if(vacancy_tray_check_io->Value() == check_state||states.runMode() == RunMode::NoMaterial)
         return true;
     QString logic_state = check_state?u8"有":u8"无";
     QString checked_state = check_state?u8"无":u8"有";
-    if (showErrorMsg)
-    {
-        AppendError(QString(u8"成品盘爪上逻辑%1盘，但检测到%2盘!").arg(logic_state).arg(checked_state));
-        qInfo(u8"成品盘爪上位置逻辑%s盘，但检测到%s盘!",logic_state.toStdString().c_str(),checked_state.toStdString().c_str());
-    }
+    AppendError(QString(u8"成品盘爪上逻辑%1盘，但检测到%2盘!").arg(logic_state).arg(checked_state));
+    qInfo(u8"成品盘爪上位置逻辑%s盘，但检测到%s盘!",logic_state.toStdString().c_str(),checked_state.toStdString().c_str());
     return false;
 }
 
@@ -1040,4 +973,5 @@ QMap<QString, PropertyBase *> SensorTrayLoaderModule::getModuleParameter()
 
 void SensorTrayLoaderModule::setModuleParameter(QMap<QString, PropertyBase *>)
 {
+
 }

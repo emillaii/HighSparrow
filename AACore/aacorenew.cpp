@@ -65,26 +65,26 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
 
     Eigen::MatrixXd Ans(n, 1);
     Ans = X * A;
-    for (size_t i = 0; i < n; ++i) {
-        double error = Y(i, 0) - Ans(i, 0);
-        qInfo("Sample Y: %f  Predicted Y: %f Error: %f", Y(i, 0), Ans(i, 0), error);
-        //If |error| > 10, then this point is outfiter, then remove that point and fitCurve recursively
-        //Avoid infinite recursive loop
-        if (!detectedAbnormality && error < -4) {
-            qInfo("Detected the abnormal data point");
-            detectedAbnormality = true;
-            deletedIndex = i;
-            deletedValue = x[i];
-            vector<double> newX; vector<double> newY;
-            for (size_t ii=0; ii < n; ++ii) {
-                if (ii != i) {
-                    newX.push_back(x[ii]);
-                    newY.push_back(y[ii]);
-                }
-            }
-            return fitCurve(newX, newY, order, localMaxX, localMaxY, error_avg, error_dev, y_output, detectedAbnormality, deletedIndex, deletedValue, errorThreshold);
-        }
-    }
+//    for (size_t i = 0; i < n; ++i) {
+//        double error = Y(i, 0) - Ans(i, 0);
+//        //qInfo("Sample Y: %f  Predicted Y: %f Error: %f", Y(i, 0), Ans(i, 0), error);
+//        //If |error| > 10, then this point is outfiter, then remove that point and fitCurve recursively
+//        //Avoid infinite recursive loop
+//        if (!detectedAbnormality && error < -4) {
+//            qInfo("Detected the abnormal data point");
+//            detectedAbnormality = true;
+//            deletedIndex = i;
+//            deletedValue = x[i];
+//            vector<double> newX; vector<double> newY;
+//            for (size_t ii=0; ii < n; ++ii) {
+//                if (ii != i) {
+//                    newX.push_back(x[ii]);
+//                    newY.push_back(y[ii]);
+//                }
+//            }
+//            return fitCurve(newX, newY, order, localMaxX, localMaxY, error_avg, error_dev, y_output, detectedAbnormality, deletedIndex, deletedValue, errorThreshold);
+//        }
+//    }
 
     double error = 0;
     double average = 0;
@@ -120,7 +120,7 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
             localMaxY = ey;
         }
     }
-    qInfo("Local Maxima X : %f local maxima Y : %f", localMaxX, localMaxY);
+    //qInfo("Local Maxima X : %f local maxima Y : %f", localMaxX, localMaxY);
 
     for (size_t j = 0; j < x.size(); j++){
         double tmp = 1; double ey = 0;
@@ -145,7 +145,8 @@ typedef enum {
     AA_ZSCAN_NORMAL,
     AA_DFOV_MODE,
     AA_STATIONARY_SCAN_MODE,
-    AA_XSCAN_MODE //Special AA scan mode for KunLunShan project
+    AA_XSCAN_MODE, //Special AA scan mode for KunLunShan project
+    AA_MULTI_XY_SCAN_MODE
 } ZSCAN_MODE;
 
 AACoreNew * that;
@@ -154,13 +155,6 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
 {
     Q_UNUSED(name)
     Q_UNUSED(parent)
-}
-
-AACoreNew::~AACoreNew()
-{
-#ifdef SunnyImageAbnormalityDetection
-    Detector->destroy();
-#endif
 }
 
 void AACoreNew::Init(AAHeadModule *aa_head, SutModule *sut, Dothinkey *dk, ChartCalibration *chartCalibration,
@@ -183,9 +177,6 @@ void AACoreNew::Init(AAHeadModule *aa_head, SutModule *sut, Dothinkey *dk, Chart
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
     //connect(&this->parameters, &AACoreParameters::dispenseCountChanged, this, &AACoreNew::aaCoreParametersChanged);
     this->serverMode = serverMode;
-#ifdef SunnyImageAbnormalityDetection
-    this->Detector = creat_SunnyDetector();
-#endif
 }
 
 void AACoreNew::loadJsonConfig(QString file_name)
@@ -480,6 +471,28 @@ void AACoreNew::startWork( int run_mode)
         return;
     }
     if (run_mode == RunMode::UNLOAD_ALL_LENS) return;
+    if (run_mode == RunMode::VibrationTest) {
+           is_run = true;
+           mtf_log.clear();
+           loopTestResult = "";
+           loopTestResult.append("CC, UL,UR,LL,LR,\n");
+           while (is_run) {
+               QJsonObject  params;
+               params["CC_MIN"] = 0;
+               params["03F_MIN"] = 0;
+               params["05F_MIN"] = 0;
+               params["08F_MIN"] = 0;
+               params["CC_MAX"] = 100;
+               params["03F_MAX"] = 100;
+               params["05F_MAX"] = 100;
+               params["08F_MAX"] = 100;
+               params["SFR_DEV_TOL"] = 100;
+               //performMTFNew(params,true);
+               aoaMTF();
+               QThread::msleep(500);
+           }
+           writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
+    }
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
     {
@@ -497,12 +510,12 @@ void AACoreNew::startWork( int run_mode)
     }
     if(run_params.contains("AAFlowchart") && this->serverMode == 0)
     {
-//        if (run_params["CurrentAuthority"].toInt() <= 1)
-//        {
-//            QString aaFlowChart = run_params["AAFlowchart"].toString();
-//            this->setFlowchartDocument(aaFlowChart);
-//        }
-//        else
+        if (run_params["CurrentAuthority"].toInt() <= 1)
+        {
+            QString aaFlowChart = run_params["AAFlowchart"].toString();
+            this->setFlowchartDocument(aaFlowChart);
+        }
+        else
         {
             QString resp = SI::ui.getUIResponse(this->Name(), "Run with AA2 flowchart parameters?", MsgBoxIcon::Question, SI::ui.yesNoButtons);
             if(resp ==  SI::ui.Yes) {
@@ -611,7 +624,8 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
         performPRToBond(0);
     }
     else if (cmd == HandleTest::MTF) {
-        performMTFNew(params);
+        //performMTFNew(params);
+        aoaMTF(true);
     }
     else if (cmd == HandleTest::OC) {
         performOC(params);
@@ -654,12 +668,11 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
     }
     else if (cmd == HandleTest::INIT_VCM) {
         QJsonObject temp_params;
-        temp_params["cmd"] = 0;
+        temp_params["target_position"] = -1;
         performVCMInit(temp_params);
     }
     else if (cmd == HandleTest::LENS_VCM_POS) {
         QJsonObject temp_params;
-        temp_params["cmd"] = 2;
         temp_params["target_position"] = parameters.lensVcmWorkPosition();
         performVCMInit(temp_params);
     }
@@ -714,7 +727,6 @@ void AACoreNew::resetLogic()
     grr_repeat_time = 0;
     grr_change_time = 0;
     current_dispense = 0;
-    current_glue_level_check = 0;
 
     recordedTiltNum = 0;
     sumA = 0; sumB = 0; sumC = 0;
@@ -871,34 +883,6 @@ bool AACoreNew::runFlowchartTest()
     return true;
 }
 
-bool AACoreNew::glueLevelCheck()
-{
-    if (dispense->dispenser->checkInputIoExist())
-    {
-        // Related IO is in local PC
-        qInfo("Glue level check IO in local");
-        return dispense->dispenser->getInputIoValue();
-    }
-    else
-    {
-        // Related IO might be in another PC, enquiry IO state with TCP
-        qInfo("Glue level check IO not in local");
-        if (serverMode == 0)
-        {
-            QJsonObject param;
-            param.insert("InputIOName", dispense->dispenser->parameters.glueLevelCheckIO());
-            sendMessageToModule("LogicManager2", "InquiryInputIOState", param);
-        }
-        else {
-            QJsonObject param;
-            param.insert("InputIOName", dispense->dispenser->parameters.glueLevelCheckIO());
-            sendMessageToModule("LogicManager1", "InquiryInputIOState", param);
-        }
-        QThread::msleep(50);
-        return glueLevelCheckResult;
-    }
-}
-
 ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properties)
 {
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
@@ -910,19 +894,13 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
     unsigned int delay_in_ms = delay_in_ms_qjv.toInt(0);
 
     //Do any pre check here
-    current_glue_level_check--;
     if (dispense->dispenser->parameters.enableGlueLevelCheck()) {
-        if (current_glue_level_check <= 0)
-        {
-            qInfo("Glue level check enabled");
-            //bool preCheckFail = dispense->dispenser->glueLevelCheck();'
-            bool preCheckFail = glueLevelCheck();
-            qInfo("Glue level check result: %d", preCheckFail);
-            if (preCheckFail) {
-                int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, u8"胶水位检查失败,请更换胶水或检查IO后继续。");
-                QString operation = waitMessageReturn(is_run,alarm_id);
-            }
-            current_glue_level_check = dispense->dispenser->parameters.glueLevelCheckInterval();
+        qInfo("Glue level check enabled");
+        bool preCheckFail = dispense->dispenser->glueLevelCheck();
+        qInfo("Glue level check result: %d", preCheckFail);
+        if (preCheckFail) {
+            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, u8"胶水位检查失败,请更换胶水或检查IO后继续。");
+            QString operation = waitMessageReturn(is_run,alarm_id);
         }
     }
 
@@ -1144,181 +1122,47 @@ ErrorCodeStruct AACoreNew::performParallelTest(vector<QString> testList1, vector
 
 ErrorCodeStruct AACoreNew::performParticalCheck(QJsonValue params)
 {
-#ifdef SunnyImageAbnormalityDetection
-    int saveImage = params["save_image"].toInt(0);
-    int delay = params["delay_in_ms"].toInt(0);
-    int lightChannel = params["light_channel"].toInt(0);
-    int brightness = params["brightness"].toInt(0);
     QVariantMap map;
-    map.insert("saveImage", saveImage);
-    map.insert("imageWidth", dk->particalCheckParamStruct.width);
-    map.insert("imageHeight", dk->particalCheckParamStruct.height);
-    map.insert("imageBayerMode", dk->particalCheckParamStruct.bayerMode);
-    map.insert("FuseID", dk->particalCheckParamStruct.fuseID);
-
-    QElapsedTimer timer;
-    timer.start();
-
-    // Open light for partical check
-    sut->vision_downlook_location->OpenLight(lightChannel, brightness);
 
     // SUT move to partical check position
     bool result = sut->moveToParticalCheckPos();
-    if (result != true)
-    {
-        qInfo("Cannot move SUT to partical check position.");
+    // Grab image
+    bool grabRet;
+    cv::Mat inputImage = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        qInfo("Cannot grab image.");
         NgProduct();
-        map.insert("Result", "Cannot move SUT to partical check position.");
-        map.insert("timeElapsed", timer.elapsed());
-        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Cannot move to position"};
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Cannot grab image"};
     }
-    QThread::msleep(delay);
-    map.insert("MoveTime", timer.elapsed());
+    // TBD: partical check algorithm
 
-    // Grab image raw8
-    QElapsedTimer grab_timer;
-    grab_timer.start();
-    unsigned char* pTestImgBuf = (unsigned char*)malloc(dk->particalCheckParamStruct.width*dk->particalCheckParamStruct.height*4);
-    result = dk->DothinkeyGrabImageRaw8(0, pTestImgBuf);
-    if (result != true) {
-        qInfo("Cannot grab image raw8.");
-        NgProduct();
-        map.insert("Result", "Cannot grab image raw8.");
-        map.insert("timeElapsed", timer.elapsed());
-        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Cannot grab image raw8"};
-    }
-    map.insert("ImageGrabTime", grab_timer.elapsed());
+    // Save image for further development
+    QString imageName;
+    imageName.append(getParticalCheckDir())
+            .append(dk->readSensorID())
+            .append("_")
+            .append(getCurrentTimeString())
+            .append(".jpg");
+    cv::imwrite(imageName.toStdString().c_str(), inputImage);
 
-    // Sunny deep learning image abnormality detection algorithm
-    Defect DefectResult;
-    Blemish BlemishResult;
-    // FuseID cannot be empty
-    QElapsedTimer calc_timer;
-    calc_timer.start();
-    int ret = Detector->test(pTestImgBuf, (char*)dk->readSensorID().toStdString().data(),
-                             dk->particalCheckParamStruct.width, dk->particalCheckParamStruct.height,
-                             dk->particalCheckParamStruct.bayerMode,
-                             DefectResult, BlemishResult);
-    delete(pTestImgBuf);
-    sut->vision_downlook_location->CloseLight(lightChannel);
-    map.insert("ImageDetectionTime", calc_timer.elapsed());
-    if (ret == 0) {
-        //OK
-        qInfo("Detect image abnormality succeeded with no error.");
-        map.insert("Result", "OK");
-        map.insert("timeElapsed", timer.elapsed());
-        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
-
-        // Save bmp imge if needed
-        if (saveImage == 1)
-        {
-            QString imageName;
-            imageName.append(getParticalCheckDir())
-                            .append(getCurrentTimeString())
-                            .append(".bmp");
-            QImage* newImage =  dk->DothinkeyGrabImage(0);
-            newImage->save(imageName);
-        }
-        return ErrorCodeStruct {ErrorCode::OK, ""};
-    }
-    else if (ret == 1) {
-        //坏点NG
-        qInfo("Detect image abnormality with defect.");
-        NgProduct();
-        map.insert("defectCX", DefectResult.defectCX);
-        map.insert("defectCY", DefectResult.defectCY);
-        map.insert("defectArea", DefectResult.defectArea);
-        map.insert("defectWidth", DefectResult.defectWidth);
-        map.insert("defectHeight", DefectResult.defectHeight);
-        map.insert("Result", "Detect image abnormality with defect.");
-        map.insert("timeElapsed", timer.elapsed());
-        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
-
-        // Mark the defect part and save to image
-        QString imageName;
-        imageName.append(getParticalCheckDir())
-                        .append("Defect_")
-                        .append(getCurrentTimeString())
-                        .append(".bmp");
-        QImage* newImage =  dk->DothinkeyGrabImage(0);
-        QPainter qPainter(newImage);
-        qPainter.setPen(QPen(Qt::red,5));
-        QRectF rectangle(DefectResult.defectCX-DefectResult.defectWidth/2,
-                         DefectResult.defectCY-DefectResult.defectHeight/2,
-                         DefectResult.defectWidth, DefectResult.defectHeight);
-        qPainter.drawRect(rectangle);
-        qPainter.end();
-        newImage->save(imageName);
-
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Detect image abnormality with defect."};
-    }
-    else if (ret == 2) {
-        //污点NG
-        qInfo("Detect image abnormality with blemish.");
-        NgProduct();
-        map.insert("blemishCX", BlemishResult.blemishCX);
-        map.insert("blemishCY", BlemishResult.blemishCY);
-        map.insert("blemishArea", BlemishResult.blemishArea);
-        map.insert("blemishWidth", BlemishResult.blemishWidth);
-        map.insert("blemishHeight", BlemishResult.blemishHeight);
-        map.insert("timeBlemishLuxDelta", BlemishResult.timeBlemishLuxDelta);
-        map.insert("Result", "Detect image abnormality with blemish.");
-        map.insert("timeElapsed", timer.elapsed());
-        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
-
-        // Mark the blemish part and save to file
-        QString imageName;
-        imageName.append(getParticalCheckDir())
-                        .append("Blemish_")
-                        .append(getCurrentTimeString())
-                        .append(".bmp");
-        QImage* newImage =  dk->DothinkeyGrabImage(0);
-        QPainter qPainter(newImage);
-        qPainter.setPen(QPen(Qt::blue,5));
-        QRectF rectangle(BlemishResult.blemishCX-BlemishResult.blemishWidth/2,
-                         BlemishResult.blemishCY-BlemishResult.blemishHeight/2,
-                         BlemishResult.blemishWidth, BlemishResult.blemishHeight);
-        qPainter.drawRect(rectangle);
-        qPainter.end();
-        newImage->save(imageName);
-
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Detect image abnormality with blemish."};
-    }
-    else {
-        //函数执行失败
-        qInfo("Detect image abnormality failed.");
-        NgProduct();
-        map.insert("retVal", ret);
-        map.insert("Result", "Detect image abnormality failed.");
-        map.insert("timeElapsed", timer.elapsed());
-        emit pushDataToUnit(runningUnit, "ParticalCheck", map);
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "Partical check Fail. Detect image abnormality failed."};
-    }
-#else
     return ErrorCodeStruct {ErrorCode::OK, ""};
-#endif
 }
 
 ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
 {
-    if (dispense->parameters.enableDispenseTimerAlarm())
+    qInfo("currentDateTime = %s, lastTimeDispense = %s",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str(), dispense->lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str());
+    int idleHour = QDateTime::currentDateTime().time().hour() - dispense->lastDispenseDateTime.time().hour();
+    int idleMinute = QDateTime::currentDateTime().time().minute() - dispense->lastDispenseDateTime.time().minute();
+    int idleSecond = QDateTime::currentDateTime().time().second() - dispense->lastDispenseDateTime.time().second();
+    if (QDateTime::currentDateTime().date().year() > dispense->lastDispenseDateTime.date().year()
+            || QDateTime::currentDateTime().date().month() > dispense->lastDispenseDateTime.date().month()
+            || QDateTime::currentDateTime().date().day() > dispense->lastDispenseDateTime.date().day()
+            || idleHour*60*60+idleMinute*60+idleSecond > dispense->parameters.dispenseAlarmMinute()*60)
     {
-        qInfo("currentDateTime = %s, lastTimeDispense = %s",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str(), dispense->lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str());
-        int idleHour = QDateTime::currentDateTime().time().hour() - dispense->lastDispenseDateTime.time().hour();
-        int idleMinute = QDateTime::currentDateTime().time().minute() - dispense->lastDispenseDateTime.time().minute();
-        int idleSecond = QDateTime::currentDateTime().time().second() - dispense->lastDispenseDateTime.time().second();
-        if (QDateTime::currentDateTime().date().year() > dispense->lastDispenseDateTime.date().year()
-                || QDateTime::currentDateTime().date().month() > dispense->lastDispenseDateTime.date().month()
-                || QDateTime::currentDateTime().date().day() > dispense->lastDispenseDateTime.date().day()
-                || idleHour*60*60+idleMinute*60+idleSecond > dispense->parameters.dispenseAlarmMinute()*60)
-        {
-            QString errMsg = u8"请留意排胶后继续,上次点胶时间：" + dispense->parameters.lastDispenseTime();
-            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, errMsg);
-            bool inter = true;
-            QString operation = waitMessageReturn(inter,alarm_id);
-        }
+        QString errMsg = u8"请留意排胶后继续,上次点胶时间：" + dispense->parameters.lastDispenseTime();
+        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, errMsg);
+        bool inter = true;
+        QString operation = waitMessageReturn(inter,alarm_id);
     }
 
     double x_offset_in_um = params["x_offset_in_um"].toDouble(0);
@@ -1484,6 +1328,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     //    int is_debug = params["is_debug"].toInt();
     //int is_debug = 0;
     int finish_delay = params["delay_in_ms"].toInt();
+    double xy_interval_mm = params["xy_interval"].toInt()/1000;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     qInfo("start : %f stop: %f enable_tilt: %d", start, stop, enableTilt);
     unsigned int zScanCount = 0;
@@ -1553,7 +1398,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             x2sum=x2sum+pow(realZ,2);
             xysum=xysum+realZ*dfov;
             zScanCount++;
-            emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, parameters.aaScanMTFFrequency()+1);
+            emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1);
             img.release();
             dst.release();
         }
@@ -1673,7 +1518,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             cv::Mat dst;
             cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
             cv::resize(img, dst, size);
-            emit sfrWorkerController->calculate(i, realZ, dst, false, parameters.aaScanMTFFrequency()+1);
+            emit sfrWorkerController->calculate(i, realZ, dst,  parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1);
             img.release();
             dst.release();
             zScanCount++;
@@ -1727,7 +1572,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             cv::Mat dst;
             cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
             cv::resize(img, dst, size);
-            emit sfrWorkerController->calculate(i, realZ, dst, false, parameters.aaScanMTFFrequency()+1);
+            emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(),  false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1);
             img.release();
             dst.release();
             zScanCount++;
@@ -1855,6 +1700,67 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         data->plot("XScan ");
         qInfo("X scan result peak_x: %f peak_sfr: %f error_avg: %f error_dev: %f", peak_x, peak_sfr, error_avg, error_dev);
         return ErrorCodeStruct{ ErrorCode::OK, ""};     //Capture image first
+    } else if (zScanMode == ZSCAN_MODE::AA_MULTI_XY_SCAN_MODE) {
+        qInfo("PerformAA with multiXY scan mode.");
+        QJsonObject MTFParams;
+        QJsonObject AAParams;
+        AAParams["mode"] = AA_ZSCAN_NORMAL;
+        if (serverMode == 0) {
+            AAParams["aa1_start_pos"] = params["aa1_start_pos"].toDouble();
+            AAParams["aa1_stop_pos"] = params["aa1_stop_pos"].toDouble();
+        }else if (serverMode == 1) {
+            AAParams["aa2_start_pos"] = params["aa2_start_pos"].toDouble();
+            AAParams["aa2_stop_pos"] = params["aa2_stop_pos"].toDouble();
+        }
+        AAParams["step_size"] = params["step_size"].toDouble();
+        AAParams["delay_Z_in_ms"] = params["delay_Z_in_ms"];
+        AAParams["offset_in_um"] = params["offset_in_um"].toDouble();
+        AAParams["enable_tilt"] = params["enable_tilt"].toInt();
+        AAParams["image_count"] = params["image_count"].toInt();
+        AAParams["position_checking"] = params["position_checking"].toInt();
+        AAParams["delay_in_ms"] = params["delay_in_ms"].toInt();
+
+        // (1,0)
+        sut->stepMove_XY_Sync(xy_interval_mm, 0);
+        performAA(AAParams);
+        performMTFNew(MTFParams);
+
+        // (1,1)
+        sut->stepMove_XY_Sync(0, xy_interval_mm);
+        performAA(AAParams);
+        performMTFNew(MTFParams);
+
+        // (0,1)
+        sut->stepMove_XY_Sync(-xy_interval_mm, 0);
+        performAA(AAParams);
+        performMTFNew(MTFParams);
+
+        // (-1,1)
+        sut->stepMove_XY_Sync(-xy_interval_mm, 0);
+        performAA(AAParams);
+        performMTFNew(MTFParams);
+
+        // (-1,0)
+        sut->stepMove_XY_Sync(0, -xy_interval_mm);
+        performAA(AAParams);
+        performMTFNew(MTFParams);
+
+        // (-1,-1)
+        sut->stepMove_XY_Sync(0, -xy_interval_mm);
+        performAA(AAParams);
+        performMTFNew(MTFParams);
+
+        // (0,-1)
+        sut->stepMove_XY_Sync(xy_interval_mm, 0);
+        performAA(AAParams);
+        performMTFNew(MTFParams);
+
+        // (1,-1)
+        sut->stepMove_XY_Sync(xy_interval_mm, 0);
+        performAA(AAParams);
+        performMTFNew(MTFParams);
+
+        return ErrorCodeStruct{ ErrorCode::OK, ""};
     }
 
     int timeout=1000;
@@ -2198,14 +2104,15 @@ void AACoreNew::performAAOffline()
     double estimated_fov_slope = 15;
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
-    int inputImageCount = 7;
+    int inputImageCount = 9;
     for (int i = 0; i < inputImageCount; i++)
     {
         if (isZScanNeedToStop) {
             qInfo("All peak passed, stop zscan");
             break;
         }
-        QString filename = "C:\\Users\\emil\\Desktop\\sunny_field\\aascan\\1\\1\\zscan_" + QString::number(i+1) + ".bmp";
+        QString filename = "C:\\Users\\emil\\Desktop\\AA fail\\7.28\\110\\aoa7\\zscan_" + QString::number(i+1) + ".bmp";
+        //QString filename = "C:\\Users\\emil\\Desktop\\sunny_field\\aascan\\2\\2\\zscan_" + QString::number(i+1) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "C:\\Users\\emil\\Desktop\\sunny_issue\\1_10um\\1_10um\\" + QString::number(i+1) + ".bmp";
         //QString filename = "C:\\Users\\emil\\Documents\\Projects\\SparrowQ_AA.git\\build-SparrowQ-Qt_5_11_1_MSVC_2017_64_bit-Release\\aa_log\\aa_log_bug\\2018-11-10T14-21-48-298Z\\zscan_" + QString::number(i) + ".bmp";
@@ -2233,7 +2140,7 @@ void AACoreNew::performAAOffline()
         xysum=xysum+currZ*dfov;                 //calculate sigma(xi*yi)
         dFovMap.insert(QString::number(i), dfov);
 
-        emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, parameters.aaScanMTFFrequency()+1);
+        emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1);
         img.release();
         dst.release();
         sfrCount++;
@@ -2328,13 +2235,14 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         double ex = 0; double ey = 0;
         for (size_t ii=0; ii < sorted_sfr_map[i].size(); ii++) {
             //double avg_sfr = sorted_sfr_map[i][ii].sfr;
-            qInfo("sorted_sfr_map[%d][%d]: location:%d, px:%f ,py:%f",i,ii,sorted_sfr_map[i][ii].location,sorted_sfr_map[i][ii].px,sorted_sfr_map[i][ii].py);
+            //qInfo("sorted_sfr_map[%d][%d]: location:%d, px:%f ,py:%f",i,ii,sorted_sfr_map[i][ii].location,sorted_sfr_map[i][ii].px,sorted_sfr_map[i][ii].py);
             double avg_sfr = 0;
             if (sorted_sfr_map[i][ii].location == 1) {
                 //UL 1
                 avg_sfr = parameters.WeightList().at(0).toDouble()*sorted_sfr_map[i][ii].t_sfr + parameters.WeightList().at(1).toDouble()*sorted_sfr_map[i][ii].r_sfr
                         + parameters.WeightList().at(2).toDouble()*sorted_sfr_map[i][ii].b_sfr + parameters.WeightList().at(3).toDouble()*sorted_sfr_map[i][ii].l_sfr;
             }
+
             else if (sorted_sfr_map[i][ii].location == 4) {
                 //LL 2
                 avg_sfr = parameters.WeightList().at(4).toDouble()*sorted_sfr_map[i][ii].t_sfr + parameters.WeightList().at(5).toDouble()*sorted_sfr_map[i][ii].r_sfr
@@ -2389,12 +2297,12 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         if (l_peak_z > maxPeakZ) maxPeakZ = l_peak_z;
         if (r_peak_z > maxPeakZ) maxPeakZ = r_peak_z;
 
-        qInfo("%i b_peak_z %f ",i,b_peak_z + start_pos);
-        qInfo("%i t_peak_z %f ",i,t_peak_z + start_pos);
-        qInfo("%i l_peak_z %f ",i,l_peak_z + start_pos);
-        qInfo("%i r_peak_z %f ",i,r_peak_z + start_pos);
+//        qInfo("%i b_peak_z %f ",i,b_peak_z + start_pos);
+//        qInfo("%i t_peak_z %f ",i,t_peak_z + start_pos);
+//        qInfo("%i l_peak_z %f ",i,l_peak_z + start_pos);
+//        qInfo("%i r_peak_z %f ",i,r_peak_z + start_pos);
         double dev = abs(getzPeakDev_um(4,b_peak_z,t_peak_z,l_peak_z,r_peak_z));
-        qInfo("%i peak_z_dev %f ",i,dev);
+//        qInfo("%i peak_z_dev %f ",i,dev);
         switch (i) {
         case 0:
             result.insert("CC_Zpeak_Dev", dev); map.insert("CC_Zpeak_Dev", dev);
@@ -2526,6 +2434,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     if (points_1.size()==4) { validLayer++; }
     if (points_2.size()==4) { validLayer++; }
     if (points_3.size()==4) { validLayer++; }
+    //validLayer = 1;
+    //validLayer = this->parameters.tiltSelection() + 1;
     double peak_03  = 0;
     for (size_t i = 0; i < points_1.size(); i++) {
         qInfo("Layer 1: x: %f y: %f z: %f", points_1[i].x, points_1[i].y, points_1[i].z);
@@ -2603,11 +2513,11 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         if (parameters.zpeakL2Coefficient() != 0) {z3 = parameters.zpeakL2Coefficient()*map["zPeak_05"].toDouble();}
         if (parameters.zpeakL3Coefficient() != 0) {z4 = parameters.zpeakL3Coefficient()*map["zPeak_08"].toDouble();}
         double z_peak = z1 + z2 + z3 + z4;
-        qInfo("zpeakccCoefficient: %f, zPeak_cc: %f", parameters.zpeakccCoefficient(), map["zPeak_cc"].toDouble());
-        qInfo("zpeak03Coefficient: %f, zPeak_03: %f", parameters.zpeakL1Coefficient(), map["zPeak_03"].toDouble());
-        qInfo("zpeak05Coefficient: %f, zPeak_05: %f", parameters.zpeakL2Coefficient(), map["zPeak_05"].toDouble());
-        qInfo("zpeak08Coefficient: %f, zPeak_08: %f", parameters.zpeakL3Coefficient(), map["zPeak_08"].toDouble());
-        qInfo("z_peak calculate result is %f", z_peak);
+//        qInfo("zpeakccCoefficient: %f, zPeak_cc: %f", parameters.zpeakccCoefficient(), map["zPeak_cc"].toDouble());
+//        qInfo("zpeak03Coefficient: %f, zPeak_03: %f", parameters.zpeakL1Coefficient(), map["zPeak_03"].toDouble());
+//        qInfo("zpeak05Coefficient: %f, zPeak_05: %f", parameters.zpeakL2Coefficient(), map["zPeak_05"].toDouble());
+//        qInfo("zpeak08Coefficient: %f, zPeak_08: %f", parameters.zpeakL3Coefficient(), map["zPeak_08"].toDouble());
+//        qInfo("z_peak calculate result is %f", z_peak);
         result.insert("zPeak", z_peak); map.insert("zPeak", z_peak);
     }
     else
@@ -2624,13 +2534,13 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     }
 
     result.insert("OK", true);
-    if (validLayer == 1) {
+    if (parameters.tiltSelection() == 0) {
         result.insert("xTilt", xTilt_1);
         result.insert("yTilt", yTilt_1);
-    } else if (validLayer == 2) {
+    } else if (parameters.tiltSelection() == 1) {
         result.insert("xTilt", xTilt_2);
         result.insert("yTilt", yTilt_2);
-    } else if (validLayer == 3) {
+    } else if (parameters.tiltSelection() == 2) {
         result.insert("xTilt", xTilt_3);
         result.insert("yTilt", yTilt_3);
     }
@@ -2708,7 +2618,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
                 );
     }
 
-    int display_layer = validLayer-1;
+    int display_layer = this->parameters.tiltSelection();
     QVariantMap sfrMap;
     for(size_t i = 0; i < sorted_sfr_map[0].size(); i++)
     {
@@ -2863,6 +2773,192 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     return result;
 }
 
+bool AACoreNew::aoaMTF(bool saveImage)
+{
+    QVariantMap map;
+//  cv::Mat input_img = cv::imread("C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2020-07\\2020-07-30\\_15-34-22-055.bmp");
+    bool grabRet;
+    cv::Mat input_img = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        return false;
+    }
+    QString rawimageName;
+    rawimageName.append(getGrabberLogDir())
+            .append(sensorID)
+            .append("_")
+            .append(getCurrentTimeString())
+            .append(".bmp");
+    if (saveImage)
+        cv::imwrite(rawimageName.toStdString().c_str(), input_img);
+
+    QElapsedTimer timer; timer.start();
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    if (patterns.size() == 0) {
+        qWarning("Cannot find mark pattern");
+        return false;
+    }
+    cv::Rect roi; roi.width = 24; roi.height = 24;
+    double rect_width = 40;
+    std::vector<MTF_Pattern_Position> vec;
+    double imageCenterX = input_img.cols/2;
+    double imageCenterY = input_img.rows/2;
+    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
+
+    QList<QProcess *> processList;
+    QList<QString> filenameList;
+    for (uint i = 0; i < patterns.size(); i++) {
+        //qInfo("Pattern width : %f height: %f", patterns[i].width, patterns[i].height);
+        cv::Mat copped_roi;
+        cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
+        QString filename;
+        //Crop ROI
+        {
+            cv::Rect roi;
+            double width = sqrt(patterns[i].area)/2;
+            roi.width = width*4; roi.height = width*4;
+            roi.x = patterns[i].center.x() - width*2;
+            roi.y = patterns[i].center.y() - width*2;
+            input_img(roi).copyTo(copped_roi);
+            filename = "ROI_";
+            filename.append(QString::number(i)).append(".bmp");
+            cv::imwrite(filename.toStdString(), copped_roi);
+            QStringList args;
+            args.append(filename);
+            args.append(filename);
+            QProcess *child = new QProcess();
+            child->setWorkingDirectory(QDir::currentPath());
+            child->start(QDir::currentPath() + "/sfr.bat", args);
+            processList.push_back(child);
+            //child->waitForFinished();
+        }
+        double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
+        double f = radius/r1;
+        filenameList.push_back(QString("temp/").append(filename).append("/raw_sfr_values.txt"));
+        vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
+                         0, 0, 0, 0, 0, patterns[i].area, 0);
+    }
+
+    for (int i = 0; i < processList.size(); i++){
+        processList.at(i)->waitForFinished();
+    }
+
+    for (int i = 0; i < filenameList.size(); i++) {
+        QString filename = filenameList.at(i);
+        qInfo(filename.toStdString().c_str());
+        {
+            QFile file;
+            file.setFileName(filename);
+            double sfr_l = 0;
+            double sfr_r = 0;
+            double sfr_t = 0;
+            double sfr_b = 0;
+            double avg_sfr = 0;
+
+            if (file.open(QIODevice::ReadOnly))
+            {
+               QTextStream in(&file);
+               int i = 0;
+               while (!in.atEnd())
+               {
+                  QString line = in.readLine();
+                  QStringList list = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+                  QString value = list[24];
+                  //qInfo(list[20].toStdString().c_str());
+                  if ( i == 0 ) sfr_t = list[8].toDouble()*100;
+                  if ( i == 1 ) sfr_r = list[8].toDouble()*100;
+                  if ( i == 2 ) sfr_b = list[8].toDouble()*100;
+                  if ( i == 3 ) sfr_l = list[8].toDouble()*100;
+                  i++;
+               }
+               file.close();
+            }
+            avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l) /4;
+            vec.at(i).l_sfr = sfr_l;
+            vec.at(i).r_sfr = sfr_r;
+            vec.at(i).b_sfr = sfr_b;
+            vec.at(i).t_sfr = sfr_t;
+            vec.at(i).avg_sfr = avg_sfr;
+        }
+    }
+
+    qInfo("Finish mtf calculation for whole image. Time Elapsed: %d", timer.elapsed());
+    vector<int> layers = sfr::classifyLayers(vec);
+
+    double display_factor = input_img.cols/CONSTANT_REFERENCE;
+    QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(input_img);
+    QPainter qPainter(&qImage);
+    qPainter.setBrush(Qt::NoBrush);
+    qPainter.setFont(QFont("Times",75, QFont::Light));
+    int max_layer = 0;
+    for (unsigned int i = 0; i < vec.size(); i++)
+    {
+        if (vec.at(i).layer > max_layer) {
+            max_layer = vec.at(i).layer - 1;
+        }
+        QVariantMap data;
+        data.insert("x", vec[i].x);
+        data.insert("y", vec[i].y);
+        data.insert("sfr", vec[i].avg_sfr);
+        map.insert(QString::number(i), data);
+    }
+    for (size_t i = 0; i < vec.size(); i++) {
+        qPainter.setPen(QPen(Qt::blue, 4.0));
+        qPainter.drawText(vec[i].x - rect_width/2, vec[i].y - rect_width*2, QString::number(vec[i].t_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x + 150, vec[i].y,  QString::number(vec[i].r_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x - 50, vec[i].y+ 120,  QString::number(vec[i].b_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x - 250, vec[i].y,  QString::number(vec[i].l_sfr, 'g', 4));
+    }
+    qPainter.end();
+
+    if (saveImage) {
+        QString imageName = "";
+        imageName.append(getMTFLogDir())
+                 .append(getCurrentTimeString())
+                 .append(".bmp");
+
+        qImage.save(imageName);
+    }
+    sfrImageReady(std::move(qImage));
+
+    map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);
+    map.insert("CC_R_SFR", round(vec[0].r_sfr*1000)/1000);
+    map.insert("CC_B_SFR", round(vec[0].b_sfr*1000)/1000);
+    map.insert("CC_L_SFR", round(vec[0].l_sfr*1000)/1000);
+    map.insert("CC_SFR", round(((vec[0].t_sfr + vec[0].r_sfr + vec[0].b_sfr + vec[0].l_sfr)/4)*1000)/1000);
+    map.insert("UL_T_SFR", round(vec[max_layer*4 + 1].t_sfr*1000)/1000);
+    map.insert("UL_R_SFR", round(vec[max_layer*4 + 1].r_sfr*1000)/1000);
+    map.insert("UL_B_SFR", round(vec[max_layer*4 + 1].b_sfr*1000)/1000);
+    map.insert("UL_L_SFR", round(vec[max_layer*4 + 1].l_sfr*1000)/1000);
+    map.insert("UL_SFR", round(vec[max_layer*4 + 1].avg_sfr*1000)/1000);
+    map.insert("LL_T_SFR", round(vec[max_layer*4 + 2].t_sfr*1000)/1000);
+    map.insert("LL_R_SFR", round(vec[max_layer*4 + 2].r_sfr*1000)/1000);
+    map.insert("LL_B_SFR", round(vec[max_layer*4 + 2].b_sfr*1000)/1000);
+    map.insert("LL_L_SFR", round(vec[max_layer*4 + 2].l_sfr*1000)/1000);
+    map.insert("LL_SFR", round(vec[max_layer*4 + 2].avg_sfr*1000)/1000);
+    map.insert("LR_T_SFR", round(vec[max_layer*4 + 3].t_sfr*1000)/1000);
+    map.insert("LR_R_SFR", round(vec[max_layer*4 + 3].r_sfr*1000)/1000);
+    map.insert("LR_B_SFR", round(vec[max_layer*4 + 3].b_sfr*1000)/1000);
+    map.insert("LR_L_SFR", round(vec[max_layer*4 + 3].l_sfr*1000)/1000);
+    map.insert("LR_SFR", round(vec[max_layer*4 + 3].avg_sfr*1000)/1000);
+    map.insert("UR_T_SFR", round(vec[max_layer*4 + 4].t_sfr*1000)/1000);
+    map.insert("UR_R_SFR", round(vec[max_layer*4 + 4].r_sfr*1000)/1000);
+    map.insert("UR_B_SFR", round(vec[max_layer*4 + 4].b_sfr*1000)/1000);
+    map.insert("UR_L_SFR", round(vec[max_layer*4 + 4].l_sfr*1000)/1000);
+    map.insert("UR_SFR", round(vec[max_layer*4 + 4].avg_sfr*1000)/1000);
+
+    if (true) {
+        double cc = 0, ul = 0, ur = 0, lr = 0, ll = 0;
+        if (vec.size() > 0) cc = vec[0].avg_sfr;
+        if (vec.size() > max_layer*4 + 1) ul = vec[max_layer*4 + 1].avg_sfr;
+        if (vec.size() > max_layer*4 + 4) ur = vec[max_layer*4 + 4].avg_sfr;
+        if (vec.size() > max_layer*4 + 2) lr = vec[max_layer*4 + 2].avg_sfr;
+        if (vec.size() > max_layer*4 + 3) ll = vec[max_layer*4 + 3].avg_sfr;
+        this->mtf_log.incrementData(cc, ul, ur, lr, ll);
+    }
+    emit pushDataToUnit(this->runningUnit, "MTF", map);
+    return true;
+}
+
 ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
 {
     QVariantMap map;
@@ -2888,7 +2984,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     double imageCenterY = input_img.rows/2;
     double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
     for (uint i = 0; i < patterns.size(); i++) {
-        qInfo("Pattern width : %f height: %f", patterns[i].width, patterns[i].height);
+        //qInfo("Pattern width : %f height: %f", patterns[i].width, patterns[i].height);
         cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
         rect_width = sqrt(patterns[i].area)/2;
         //Left ROI
@@ -3038,7 +3134,6 @@ double AACoreNew::performMTFInThread( cv::Mat input, int freq )
 ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
 {
     double sfr_dev_tol = params["SFR_DEV_TOL"].toDouble(100);
-    double corner_dev_tol = params["CORNER_DEV_TOL"].toDouble(100);
     double sfr_tol[16] = {0};
     sfr_tol[0] = params["CC_MIN"].toDouble(0);
     sfr_tol[1] = params["L1_MIN"].toDouble(0);
@@ -3087,6 +3182,10 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     }
 
     std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    if (patterns.size() == 0) {
+        qWarning("Cannot find any mark pattern");
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
+    }
     vector<double> sfr_l_v, sfr_r_v, sfr_t_v, sfr_b_v;
     cv::Rect roi; roi.width = 32; roi.height = 32;
     double rect_width = 0;
@@ -3103,9 +3202,6 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         roi.y = patterns[i].center.y() - roi.width/2;
         if (roi.x + roi.width >input_img.cols || roi.y + roi.height > input_img.rows){
             qWarning("The detected left ROI is too close to boundary. MTF fail. ROI location ROI.x : %d ROI.y: %d", roi.x, roi.y);
-            map.insert("Result", "The detected left ROI is too close to boundary. MTF fail");
-            emit pushDataToUnit(runningUnit, "MTF", map);
-            LogicNg(current_mtf_ng_time);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
         }
         input_img(roi).copyTo(cropped_l_img);
@@ -3114,9 +3210,6 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         roi.y = patterns[i].center.y() - roi.width/2;
         if (roi.x + roi.width >input_img.cols || roi.y + roi.height > input_img.rows){
             qWarning("The detected right ROI is too close to boundary. MTF fail. ROI location ROI.x : %d ROI.y: %d", roi.x, roi.y);
-            map.insert("Result", "The detected right ROI is too close to boundary. MTF fail");
-            emit pushDataToUnit(runningUnit, "MTF", map);
-            LogicNg(current_mtf_ng_time);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
         }
         input_img(roi).copyTo(cropped_r_img);
@@ -3125,9 +3218,6 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         roi.y = patterns[i].center.y() - rect_width - roi.width/2;
         if (roi.x + roi.width >input_img.cols || roi.y + roi.height > input_img.rows){
             qWarning("The detected top ROI is too close to boundary. MTF fail. ROI location ROI.x : %d ROI.y: %d", roi.x, roi.y);
-            map.insert("Result", "The detected top ROI is too close to boundary. MTF fail");
-            emit pushDataToUnit(runningUnit, "MTF", map);
-            LogicNg(current_mtf_ng_time);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
         }
         input_img(roi).copyTo(cropped_t_img);
@@ -3136,9 +3226,6 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         roi.y = patterns[i].center.y() + rect_width - roi.width/2;
         if (roi.x + roi.width >input_img.cols || roi.y + roi.height > input_img.rows){
             qWarning("The detected bottom ROI is too close to boundary. MTF fail. ROI location ROI.x : %d ROI.y: %d", roi.x, roi.y);
-            map.insert("Result", "The detected bottom ROI is too close to boundary. MTF fail");
-            emit pushDataToUnit(runningUnit, "MTF", map);
-            LogicNg(current_mtf_ng_time);
             return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
         }
         input_img(roi).copyTo(cropped_b_img);
@@ -3335,18 +3422,8 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     if (ul_08f_sfr_dev >= sfr_dev_tol || ll_08f_sfr_dev >= sfr_dev_tol || lr_08f_sfr_dev >= sfr_dev_tol || ur_08f_sfr_dev >= sfr_dev_tol) {
         qInfo("08f_sfr_corner_dev cannot pass");
         sfr_check = false;
-        error.append("Outer Layer SFR single corner TBLR dev fail.");
-    }
-
-    qInfo("Check 4 corners SFR dev with spec %f", corner_dev_tol);
-    double corner_dev = getSFRDev_mm(4,vec[max_layer*4 + 1].avg_sfr, vec[max_layer*4 + 2].avg_sfr, vec[max_layer*4 + 3].avg_sfr, vec[max_layer*4 + 4].avg_sfr);
-    if (corner_dev >= corner_dev_tol)
-    {
-        qInfo("corner_dev_tol cannot pass");
-        sfr_check = false;
         error.append("Outer Layer SFR corner dev fail.");
     }
-
     map.insert("SensorID", '\t'+dk->readSensorID());
     map.insert("FOV",round(fov*1000)/1000);
     map.insert("zPeak",round(sut->carrier->GetFeedBackPos().Z*1000*1000)/1000);
@@ -3382,7 +3459,6 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
     map.insert("LL_08F_SFR_DEV",round(ll_08f_sfr_dev*1000)/1000);
     map.insert("LR_08F_SFR_DEV",round(lr_08f_sfr_dev*1000)/1000);
     map.insert("UR_08F_SFR_DEV",round(ur_08f_sfr_dev*1000)/1000);
-    map.insert("Corner_SFR_DEV",round(corner_dev*1000)/1000);
     map.insert("Selected_Frequency", this->parameters.mtfFrequency());
     map.insert("timeElapsed", timer.elapsed());
     qDebug("Time Elapsed: %d", timer.elapsed());
@@ -3448,7 +3524,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
     cv::resize(img, dst, size);
     qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, dst.cols, dst.rows, timer.elapsed() - start_time);
     start_time = timer.elapsed();
-    emit sfrWorkerController->calculate(0, 0, dst, true, resize_factor);
+    emit sfrWorkerController->calculate(0, 0, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), true, resize_factor);
     int timeout=1000;
     while(this->clustered_sfr_map.size() != 1 && timeout >0) {
         Sleep(10);
@@ -4039,14 +4115,13 @@ ErrorCodeStruct AACoreNew::performVCMDirectMode(QJsonValue params)
     int slaveId = CommonMethod::getIntFromHexOrDecString(parameters.vcmSlaveId());
     int regAddr = CommonMethod::getIntFromHexOrDecString(parameters.vcmRegAddress());
     int target_position = parameters.lensVcmWorkPosition();
-    int mode = parameters.vcmI2cMode();
     int delay = params["delay_in_ms"].toInt();
-    qInfo("SlaveId: %x RegAddr: %x Value: %d Mode: %d", slaveId, regAddr, target_position, mode);
+    qInfo("SlaveId: %x RegAddr: %x Value: %d", slaveId, regAddr, target_position);
     QVariantMap map;
     map.insert("slaveId", slaveId);
     map.insert("regAddr", regAddr);
     map.insert("targetPosition", target_position);
-    bool ret = i2cControl.vcm_move(slaveId, regAddr, target_position, mode);
+    bool ret = i2cControl.vcm_move(slaveId, regAddr, target_position);
     map.insert("result", ret);
     if(delay>0)
         QThread::msleep(delay);
@@ -4204,6 +4279,19 @@ ErrorCodeStruct AACoreNew::performInitSensor(int finish_delay,bool check_map)
 
 ErrorCodeStruct AACoreNew::performPRToBond(int finish_delay)
 {
+    double dx = sut->tool_downlook_position.X() - sut->tool_uplook_positon.X();
+    double dy = sut->tool_downlook_position.Y() - sut->tool_uplook_positon.Y();
+    double xx = sut->downlook_position.X() - (dx) - (aa_head->uplook_x) - (aa_head->offset_x) + aa_head->pr2Bond_offset.X();
+    double yy = sut->downlook_position.Y() - (dy) - (aa_head->uplook_y) - (aa_head->offset_y) + aa_head->pr2Bond_offset.Y();
+
+    qInfo("Pr to bond target posit(ion x: %f y: %f z: %f", xx, yy, sut->mushroom_positon.Z());
+
+    sut->carrier->Move_SZ_SX_YS_X_Z_Sync(xx,yy,sut->mushroom_positon.Z());
+
+//    sut->carrier->motor_x->MoveToPosSync(xx);
+//    sut->carrier->motor_y->MoveToPosSync(yy);
+//    sut->moveToZPos(sut->mushroom_positon.Z());
+    /*
     if((!has_sensor)||(!has_lens)){ return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "AA no sensor or no lens"};}
     //if (!this->lut->moveToUnloadPos()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "LUT cannot move to unload Pos"};}
     QElapsedTimer timer, stepTimer; timer.start(); stepTimer.start();
@@ -4231,7 +4319,7 @@ ErrorCodeStruct AACoreNew::performPRToBond(int finish_delay)
     if(finish_delay>0)
         Sleep(finish_delay);
     map.insert("timeElapsed", timer.elapsed());
-    emit pushDataToUnit(runningUnit, "PrToBond", map);
+    emit pushDataToUnit(runningUnit, "PrToBond", map);*/
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
@@ -4316,7 +4404,7 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
                 if(parameters.enableLensVcm())
                 {
                     QJsonObject temp_params;
-                    temp_params["cmd"] = 0;
+                    temp_params["target_position"] = -1;
                     ErrorCodeStruct temp_result = performVCMInit(temp_params);
                     if(temp_result.code != ErrorCode::OK)
                     {
@@ -4329,7 +4417,6 @@ ErrorCodeStruct AACoreNew::performLoadMaterial(int finish_delay)
                             result.errorMessage.append(temp_result.errorMessage);
                         }
                     }
-                    temp_params["cmd"] = 2;
                     temp_params["target_position"] = parameters.lensVcmWorkPosition();
                     temp_result = performVCMInit(temp_params);
                     if(temp_result.code != ErrorCode::OK)
@@ -4409,13 +4496,6 @@ ErrorCodeStruct AACoreNew::performCameraUnload(int finish_delay)
 {
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    // Record down last position for related axis
-    map.insert("SUT_X", round(sut->carrier->GetFeedBackPos().X*1000*1000)/1000);
-    map.insert("SUT_Y", round(sut->carrier->GetFeedBackPos().Y*1000*1000)/1000);
-    map.insert("SUT_Z", round(sut->carrier->GetFeedBackPos().Z*1000*1000)/1000);
-    map.insert("AA_A", round(aa_head->GetFeedBack().A*1000)/1000);
-    map.insert("AA_B", round(aa_head->GetFeedBack().B*1000)/1000);
-    map.insert("AA_C", round(aa_head->GetFeedBack().C*1000)/1000);
     aa_head->openGripper();
     if(finish_delay>0)
         Sleep(finish_delay);
@@ -4636,24 +4716,6 @@ void AACoreNew::receivceModuleMessage(QVariantMap message)
         {
             qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
             return;
-        }
-    }
-    else if(message["OriginModule"].toString() == "LogicManager1" | message["OriginModule"].toString() == "LogicManager2")
-    {
-        qInfo("Receive IO state from LogicManager");
-        if(!message.contains("Message"))
-        {
-            qInfo("module message error %s",message["Message"].toString().toStdString().c_str());
-            return;
-        }
-        qInfo("message = %s", message["Message"].toString().toStdString().c_str());
-        if(message["Message"].toString() == "fail" || message["Message"].toString() == "false")
-        {
-            glueLevelCheckResult = false;
-        }
-        else if (message["Message"].toString() == "true")
-        {
-            glueLevelCheckResult = true;
         }
     }
     else

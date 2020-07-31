@@ -11,16 +11,14 @@ Popup {
 
     id: dialog
     visible: false
-    //opacity: 0
     background: Rectangle {
         color: "white"
-        opacity: 0.1
+        opacity: 0.1    // number between 0-1
     }
     contentItem: Rectangle {
         id: rectangle
-        color: Qt.rgba(0,0,0,opacityLevel)
-//        color: "black"
-//        opacity: 0.1
+        //color: "black"
+        color: Qt.rgba(0,0,0,opacityLevel)   // 0.5 means opacity level
         implicitWidth: 650
         implicitHeight: 1000
 
@@ -149,6 +147,28 @@ Popup {
                     }
                 }
                 RadioButton {
+                    id: step0005Button
+                    text: qsTr("0.005")
+                    font.pixelSize: 10
+                    onCheckedChanged: {
+                        if (step0005Button.checked)
+                        {
+                            selectedStepSize = 0.005
+                        }
+                    }
+                }
+                RadioButton {
+                    id: step0002Button
+                    text: qsTr("0.002")
+                    font.pixelSize: 10
+                    onCheckedChanged: {
+                        if (step0002Button.checked)
+                        {
+                            selectedStepSize = 0.002
+                        }
+                    }
+                }
+                RadioButton {
                     id: step0001Button
                     text: qsTr("0.001")
                     font.pixelSize: 10
@@ -161,11 +181,10 @@ Popup {
                 }
                 RadioButton {
                     id: stepCustomButton
-                    text: "Custom"
+                    text: qsTr("Custom")
                     font.pixelSize: 10
                 }
                 TextField{
-                    text: "0.1"
                     id: stepCustomText
                     width: 100
                     Layout.preferredWidth: 100
@@ -177,7 +196,6 @@ Popup {
                         notation: DoubleValidator.StandardNotation
                     }
                 }
-
             }
             ScrollView {
                 Timer {
@@ -190,10 +208,10 @@ Popup {
                 clip: true
                 ColumnLayout {
                     RowLayout {
-                        id:opacityView
+                        id: opacityView
                         Text {
-                            text: qsTr("透明度：")
-                            color: "cyan"
+                            text: qsTr("透明度")
+                            color: "white"
                         }
                         Slider {
                             id: opacitySlider
@@ -208,6 +226,7 @@ Popup {
                                 opacityLevel = opacitySlider.value
                             }
                         }
+
                     }
 
                     RowLayout {
@@ -262,10 +281,11 @@ Popup {
                                     Connections{
                                        target: timer
                                        onTriggered:{
-                                            if (baseModuleManager.getMotorAlarmState(modelData))
-                                                err.color = "red"
-                                            else
-                                                err.color = "green"
+//                                            if (baseModuleManager.getMotorAlarmState(modelData))
+//                                                err.color = "red"
+//                                            else
+//                                                err.color = "green"
+                                           err.color = "green"
                                        }
                                     }
                                 }

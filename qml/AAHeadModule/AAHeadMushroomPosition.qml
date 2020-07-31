@@ -4,50 +4,50 @@ import QtQuick.Layouts 1.11
 import LutModuleLib 1.1
 import SutModuleLib 1.1
 ColumnLayout {
-//    RowLayout {
-//        Label {
-//            text: qsTr("AA_X")
-//        }
-//        TextField {
-//            text: aaHeadMushroomPosition.X
-//            horizontalAlignment: TextInput.AlignHCenter
-//            validator: DoubleValidator {
-//                decimals: 6
-//                notation: DoubleValidator.StandardNotation
-//            }
-//            onEditingFinished: {
-//                aaHeadMushroomPosition.setX(text)
-//            }
-//        }
-//        Label {
-//            text: qsTr("AA_Y")
-//        }
-//        TextField {
-//            text: aaHeadMushroomPosition.Y
-//            horizontalAlignment: TextInput.AlignHCenter
-//            validator: DoubleValidator {
-//                decimals: 6
-//                notation: DoubleValidator.StandardNotation
-//            }
-//            onEditingFinished: {
-//                aaHeadMushroomPosition.setY(text)
-//            }
-//        }
-//        Label {
-//            text: qsTr("AA_Z")
-//        }
-//        TextField {
-//            text: aaHeadMushroomPosition.Z
-//            horizontalAlignment: TextInput.AlignHCenter
-//            validator: DoubleValidator {
-//                decimals: 6
-//                notation: DoubleValidator.StandardNotation
-//            }
-//            onEditingFinished: {
-//                aaHeadMushroomPosition.setZ(text)
-//            }
-//        }
-//    }
+    RowLayout {
+        Label {
+            text: qsTr("AA_X")
+        }
+        TextField {
+            text: aaHeadMushroomPosition.X
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                aaHeadMushroomPosition.setX(text)
+            }
+        }
+        Label {
+            text: qsTr("AA_Y")
+        }
+        TextField {
+            text: aaHeadMushroomPosition.Y
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                aaHeadMushroomPosition.setY(text)
+            }
+        }
+        Label {
+            text: qsTr("AA_Z")
+        }
+        TextField {
+            text: aaHeadMushroomPosition.Z
+            horizontalAlignment: TextInput.AlignHCenter
+            validator: DoubleValidator {
+                decimals: 6
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: {
+                aaHeadMushroomPosition.setZ(text)
+            }
+        }
+    }
 
     RowLayout {
         Label {

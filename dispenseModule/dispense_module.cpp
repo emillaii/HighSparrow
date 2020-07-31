@@ -58,40 +58,6 @@ void DispenseModule::updatePath()
     emit callQmlRefeshImg(12);
 }
 
-bool DispenseModule::getDispenseCircleProperties(double &center_x_in_mm, double &center_y_in_mm)
-{
-    QFile file;
-    QString val;
-    file.setFileName(DISPENSE_PATH_CIRCLE_PROPERTIES);
-
-    if (!file.exists()) {
-        qWarning("Dispense path circle properties file does not exist");
-        return false;
-    }
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    val = file.readAll();
-    file.close();
-    QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
-    QJsonObject sett2 = d.object();
-    QJsonValue radius = sett2.value(QString("radius"));
-    QJsonValue center_x = sett2.value(QString("center_x"));
-    QJsonValue center_y = sett2.value(QString("center_y"));
-    //radius_in_mm = radius.toDouble(0);
-    center_x_in_mm = center_x.toDouble(0);
-    center_y_in_mm = center_y.toDouble(0);
-
-    {
-        QPointF pt;
-        pt.setX(center_x_in_mm);
-        pt.setY(center_y_in_mm);
-        QPointF mechPoint;
-        calibration->getDeltaDistanceFromCenter(pt, mechPoint);
-        qInfo("mechPoint x: %f mechPoint y: %f", mechPoint.x(), mechPoint.y());
-    }
-
-    return true;
-}
-
 void DispenseModule::updateSpeed()
 {
     for (int i=0; i<dispenser->parameters.speedCount()*2;i++)

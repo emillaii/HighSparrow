@@ -13,7 +13,6 @@ public:
     Q_PROPERTY(QString motorName READ motorName WRITE setMotorName NOTIFY motorNameChanged)
     Q_PROPERTY(int canId READ canId WRITE setCanId NOTIFY canIdChanged)
     Q_PROPERTY(int direction READ direction WRITE setDirection NOTIFY directionChanged)
-    Q_PROPERTY(int currentDirection READ currentDirection WRITE setCurrentDirection NOTIFY currentDirectionChanged)
     Q_PROPERTY(double minRange READ minRange WRITE setMinRange NOTIFY minRangeChanged)
     Q_PROPERTY(double maxRange READ maxRange WRITE setMaxRange NOTIFY maxRangeChanged)
     Q_PROPERTY(double scale READ scale WRITE setScale NOTIFY scaleChanged)
@@ -22,7 +21,6 @@ public:
     Q_PROPERTY(double maxJerk READ maxJerk WRITE setMaxJerk NOTIFY MaxJerkChanged)
     Q_PROPERTY(double findOriginCurrent READ findOriginCurrent WRITE setFindOriginCurrent NOTIFY FindOriginCurrentChanged)
     Q_PROPERTY(double touchDistance READ touchDistance WRITE setTouchDistance NOTIFY TouchDistanceChanged)
-    Q_PROPERTY(double goZeroDistance READ goZeroDistance WRITE setGoZeroDistance NOTIFY goZeroDistanceChanged)
     Q_PROPERTY(int direntionAfterSeek READ direntionAfterSeek WRITE setDirentionAfterSeek NOTIFY direntionAfterSeekChanged)
     Q_PROPERTY(double originOffset READ originOffset WRITE setOriginOffset NOTIFY originOffsetChanged)
     Q_PROPERTY(bool needMapForce READ needMapForce WRITE setNeedMapForce NOTIFY needMapForceChanged)
@@ -93,16 +91,6 @@ public:
     bool needMapForce() const
     {
         return m_needMapForce;
-    }
-
-    int currentDirection() const
-    {
-        return m_currentDirection;
-    }
-
-    double goZeroDistance() const
-    {
-        return m_goZeroDistance;
     }
 
 public slots:
@@ -232,25 +220,6 @@ public slots:
         emit needMapForceChanged(m_needMapForce);
     }
 
-    void setCurrentDirection(int currentDirection)
-    {
-        if (m_currentDirection == currentDirection)
-            return;
-
-        m_currentDirection = currentDirection;
-        emit currentDirectionChanged(m_currentDirection);
-    }
-
-    void setGoZeroDistance(double goZeroDistance)
-    {
-        qWarning("Floating point comparison needs context sanity check");
-        if (qFuzzyCompare(m_goZeroDistance, goZeroDistance))
-            return;
-
-        m_goZeroDistance = goZeroDistance;
-        emit goZeroDistanceChanged(m_goZeroDistance);
-    }
-
 signals:
     void motorNameChanged(QString motorName);
     void canIdChanged(int canId);
@@ -280,15 +249,10 @@ signals:
 
     void needMapForceChanged(bool needMapForce);
 
-    void currentDirectionChanged(int currentDirection);
-
-    void goZeroDistanceChanged(double goZeroDistance);
-
 private:
     QString m_motorName = "Unnaming";
     int m_canId = 0;
     int m_direction = 0;
-    int m_currentDirection = 0;
     double m_minRange = 0;
     double m_maxRange = 0;
     double m_scale = 0;
@@ -297,7 +261,6 @@ private:
     double m_MaxJerk = 0;
     double m_LimitCurrent = -1;
     double m_TouchDistance = 0;
-    double m_goZeroDistance = 15;
     int m_direntionAfterSeek = 1;
     double m_originOffset = 0;
     bool m_needMapForce = true;

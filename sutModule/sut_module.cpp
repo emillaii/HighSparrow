@@ -149,7 +149,8 @@ bool SutModule::moveToLoadPos(bool check_autochthonous)
     //result &= popgpin->Set(false,false);
     if(result)
     {
-        result &= popgpin->Set(false,false);
+        //result &= popgpin->Set(false,false);
+        result &= popgpin->Set(true,false);
         qInfo("moveToLoadPos z");
         result &= carrier->motor_z->MoveToPosSync(load_position.Z(),0.1);
         qInfo("WaitArrivedTargetPos y");
@@ -165,7 +166,8 @@ bool SutModule::moveToLoadPos(bool check_autochthonous)
 bool SutModule::moveToDownlookPos(bool check_autochthonous)
 {
     qInfo("moveToDownlookPos");
-    popgpin->Set(true,false);
+    //popgpin->Set(true,false);
+    popgpin->Set(false,false);
     return carrier->Move_SZ_SX_Y_X_Z_Sync(downlook_position.X(),downlook_position.Y(),downlook_position.Z(),check_autochthonous);
 }
 
@@ -257,7 +259,8 @@ bool SutModule::toolDownlookPR(bool close_lighting, bool motion)
 
 bool SutModule::moveToToolDownlookPos(bool check_autochthonous)
 {
-    popgpin->Set(true);
+    //popgpin->Set(true);
+    popgpin->Set(false);
     if(QThread::currentThreadId()==gui_thread_id){
         QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"提示"),tr(u8"是否移动"),QMessageBox::Yes|QMessageBox::No);
         if(rb == QMessageBox::Yes){
@@ -275,7 +278,8 @@ bool SutModule::moveToToolDownlookPos(bool check_autochthonous)
 
 bool SutModule::moveToToolUplookPos(bool check_autochthonous)
 {
-    popgpin->Set(true);
+    //popgpin->Set(true);
+    popgpin->Set(false);
     if(QThread::currentThreadId()==gui_thread_id){
         QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"提示"),tr(u8"是否移动"),QMessageBox::Yes|QMessageBox::No);
         if(rb == QMessageBox::Yes){
@@ -293,7 +297,8 @@ bool SutModule::moveToToolUplookPos(bool check_autochthonous)
 
 bool SutModule::moveToMushroomPos(bool check_autochthonous)
 {
-    popgpin->Set(true);
+    //popgpin->Set(true);
+    popgpin->Set(false);
     return carrier->Move_SZ_SX_YS_X_Z_Sync(mushroom_positon.X(),mushroom_positon.Y(),mushroom_positon.Z(),check_autochthonous);
 }
 
@@ -355,7 +360,8 @@ bool SutModule::movetoRecordPosAddOffset(double x_offset, double y_offset, doubl
 
 bool SutModule::moveToSafetyPos(bool check_autochthonous)
 {
-    popgpin->Set(true);
+    //popgpin->Set(true);
+    popgpin->Set(false);
     return carrier->Move_SZ_SX_YS_X_Z_Sync(carrier->parameters.SafetyX(),carrier->parameters.SafetyY(),carrier->parameters.SafetyZ(),check_autochthonous);
 }
 

@@ -164,10 +164,6 @@ LIBS += -L$$PWD/../libs/UsbI2cIo/libs/ -lusbi2cio64
 INCLUDEPATH += $$PWD/../libs/UsbI2cIo/libs
 DEPENDPATH += $$PWD/../libs/UsbI2cIo/libs
 
-LIBS += -L$$PWD/../libs/SunnyImageAbnormalityDetection/lib/ -lSunnyDeepLearningImageAbnormalityDetection
-INCLUDEPATH += $$PWD/../libs/SunnyImageAbnormalityDetection/include
-DEPENDPATH += $$PWD/../libs/SunnyImageAbnormalityDetection/include
-
 HEADERS += \
     Drivers/LightSourceController/sciencalightsourcecontroller.h \
     UnitTest/SilicolMsgBoxTest.h \

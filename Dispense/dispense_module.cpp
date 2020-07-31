@@ -78,22 +78,43 @@ void DispenseModule::moveToDispenseDot(bool record_z)
     }
     if(carrier->ZSerchByForce(10,parameters.testForce()))
     {
-        if(dispense_io != nullptr)
-        dispense_io->Set(true);
-        else
-            qInfo("dispense_io is null");
-        Sleep(parameters.openTime());
+        QThread::msleep(200);
+        double zValue = carrier->motor_z->GetFeedbackPos();
         if(record_z){
-            double zValue = carrier->GetFeedBackPos().Z;
             QMessageBox::StandardButton rb = QMessageBox::information(nullptr,tr(u8"标题"),tr(u8"是否应用此高度:%1").arg(zValue),QMessageBox::Yes|QMessageBox::No);
-            if(rb==QMessageBox::No){
-                return;
+            if(rb==QMessageBox::Yes)
+            {
+                parameters.setDispenseZPos(zValue);
+                if(dispense_io != nullptr)
+                {
+                    dispense_io->Set(true);
+                    Sleep(parameters.openTime());
+                    dispense_io->Set(false);
+                }
+                else
+                    qInfo("dispense_io is null");
             }
-            parameters.setDispenseZPos(carrier->GetFeedBackPos().Z);
+            carrier->ZSerchReturn();
         }
-        if(dispense_io != nullptr)
-            dispense_io->Set(false);
-        carrier->ZSerchReturn();
+        else
+        {
+            carrier->ZSerchReturn();
+            if(parameters.dispenseZOffset()>0)
+            {
+                carrier->motor_z->SlowMoveToPosSync(zValue - parameters.dispenseZOffset(),50);
+                QThread::msleep(100);
+                if(dispense_io != nullptr)
+                {
+                    dispense_io->Set(true);
+                    Sleep(parameters.openTime());
+                    dispense_io->Set(false);
+                }
+                else
+                    qInfo("dispense_io is null");
+                QThread::msleep(100);
+                //carrier->motor_z->MoveToPosSync(0);
+            }
+        }
     }
     carrier->Move_SZ_XY_Z_Sync(start_pos.X,start_pos.Y,start_pos.Z);
 }

@@ -288,6 +288,45 @@ bool XtMotor::MoveToPosSync(double pos, int thread,int time_out)
     return true;
 }
 
+bool XtMotor::SlowMoveToPos(double pos, double low_vel, int thread)
+{
+    if(is_debug) return true;
+    if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
+    if(thread==-1)
+        thread = default_using_thread;
+    if(low_vel > max_vel)
+        low_vel = max_vel;
+    XT_Controler::SET_MAX_VEL(thread,axis_id,low_vel);
+    XT_Controler::SGO(thread, axis_id, pos);
+    XT_Controler::TILLSTOP(thread, axis_id);
+    XT_Controler::SET_MAX_VEL(thread,axis_id,max_vel);
+    current_target = pos;
+    return true;
+}
+
+bool XtMotor::SlowMoveToPosSync(double pos, double low_vel, int thread)
+{
+    if(is_debug)return true;
+    if(!(checkState()&&checkLimit(pos)&&checkInterface(pos)))return false;
+    double currPos = GetFeedbackPos();
+    double targetPos = pos;
+    SlowMoveToPos(pos,low_vel,thread);
+    int count = 10000;
+    while ( fabs(currPos - targetPos) >= POS_ERROR)
+    {
+        currPos = GetFeedbackPos();
+        Sleep(10);
+        count-=10;
+        if (count < 1) {
+            qInfo("Motion Timeout.");
+            current_target = currPos;
+            return false;
+        }
+    }
+    current_target = currPos;
+    return true;
+}
+
 
 bool XtMotor::StepMove(double step, int thread)
 {

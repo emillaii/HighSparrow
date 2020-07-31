@@ -850,6 +850,10 @@ void SingleHeadMachineMaterialLoaderModule::towerLightBuzzerTest()
 
 bool SingleHeadMachineMaterialLoaderModule::semiAutoPickLensAndLoadLens()
 {
+//    performLensPR();
+//    moveToPicker1WorkPos();
+//    picker1PickLensFromTray();
+
     bool is_run = true;
     qInfo("picke lens from tray");
     if(moveToNextLensTrayPos(states.currentLensTray())){
@@ -909,6 +913,13 @@ bool SingleHeadMachineMaterialLoaderModule::semiAutoPickLensAndLoadLens()
 
 bool SingleHeadMachineMaterialLoaderModule::semiAutoPickNgLensAndPlaceToTray()
 {
+//    moveToLUTPRPos();
+//    performLUTLensPR();
+//    moveToPicker1WorkPos();
+//    picker1PickNgLensFromLUT();
+
+
+
     bool is_run = true;
     qInfo("pick ng lens from lut");
     moveToLUTPRPos();

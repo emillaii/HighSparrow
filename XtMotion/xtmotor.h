@@ -75,6 +75,8 @@ public:
 //    virtual bool WaitMoveStop(int timeout = 30000);
     bool WaitArrivedTargetPos(double target_position,int timeout=10000);
     virtual bool MoveToPosSync(double pos,int thread = -1,int time_out = 30000);
+    virtual bool SlowMoveToPos(double pos, double low_vel, int thread = -1);
+    virtual bool SlowMoveToPosSync(double pos, double low_vel, int thread = -1);
     virtual bool StepMove(double step,int thread = -1);
     virtual bool StepMoveSync(double step, int thread = -1);
     virtual bool StepMoveSync(double step, bool dir, int thread = -1);

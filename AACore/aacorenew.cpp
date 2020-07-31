@@ -2445,8 +2445,8 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
 
     qInfo("Perform init sensor");
     QFile file;
-    file.setFileName("3.dat");
-    cv::Mat mat(320, 480, CV_8UC3);
+    file.setFileName(outputFilename);
+    cv::Mat mat(360, 480, CV_8UC3);
     int rows = 0;
     if (file.open(QIODevice::ReadOnly))
     {
@@ -2454,7 +2454,7 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
        while (!in.atEnd())
        {
           QString line = in.readLine();
-          QStringList list = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+          QStringList list = line.split(QRegExp(","), QString::SkipEmptyParts);
           for (int i = 0; i < list.size(); i++) {
               mat.at<cv::Vec3b>(rows, i)[0] = list[i].toInt();
               mat.at<cv::Vec3b>(rows, i)[1] = list[i].toInt();
@@ -2555,9 +2555,18 @@ ErrorCodeStruct AACoreNew::performLoadLens()
     QElapsedTimer timer; timer.start();
     QVariantMap map;
 
-    this->lsut->moveToLoadSensorPosition();      //LSUT Move to load position
+    this->lsut->moveToLoadSensorPosition(true);      //LSUT Move to load position
+
     this->materialLoader->semiAutoPickLensAndLoadLens(); // Pickarm pick lens + pickarm place lens to LSUT
+
+    this->aa_head->moveToPickLensPositionSync();    // AA head move to pick lens position
+
+    this->aa_head->moveAAHead_XYZToPos();   // AA head move to XYZ position
+
     this->aaHeadPickLens(); // LSUT move to pick lens position and AA gripper grip lens
+
+    PrOffset uplookPrOffset;
+    this->lsut->moveToUplookPR(uplookPrOffset,false,true);  //LSUT move to uplook pr position and perform uplook pr
 
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "LoadLens", map);
@@ -2569,10 +2578,15 @@ ErrorCodeStruct AACoreNew::performUnloadLens()
     qInfo("perform unload lens");
     QElapsedTimer timer; timer.start();
     QVariantMap map;
-    lsut->moveToUnpickLensPosition(); //LSUT move to unpick position
-    lsut->aa_head->openGripper();     //AA Head open gripper   (vaccum ??)
+
+    aa_head->moveToPickLensPositionSync();  // AA head move to unpick lens position
+
+    lsut->unpickLens(); // LSUT and AA head unpick lens
+
     lsut->moveToLoadSensorPosition();  //LSUT move to load position
-    //pick arm pick ng lens + pickarm place ng lens
+
+    this->materialLoader->semiAutoPickNgLensAndPlaceToTray();  //pick arm pick ng lens + pickarm place ng lens
+
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(runningUnit, "UnloadLens", map);
     return  ErrorCodeStruct{ErrorCode::OK, ""};

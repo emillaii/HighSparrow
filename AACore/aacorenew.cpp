@@ -636,8 +636,8 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
         } else {
             aaData_2.setInProgress(true);
         }
-        performAAOffline();
-        //performAA(params);
+        //performAAOffline();
+        performAA(params);
         //performAAOfflineCCOnly();
         aaData_1.setInProgress(false);
         aaData_2.setInProgress(false);
@@ -2778,7 +2778,20 @@ bool AACoreNew::aoaMTF(bool saveImage)
     QVariantMap map;
     QElapsedTimer timer; timer.start();
     //cv::Mat input_img = cv::imread("C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2020-07\\2020-07-30\\_15-34-22-055.bmp");
-    cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\zscandata\\image.bmp");
+    //cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\zscandata\\image.bmp");
+    bool grabRet;
+    cv::Mat input_img = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) {
+        return false;
+    }
+    QString rawimageName;
+    rawimageName.append(getGrabberLogDir())
+            .append(sensorID)
+            .append("_")
+            .append(getCurrentTimeString())
+            .append(".bmp");
+    if (saveImage)
+        cv::imwrite(rawimageName.toStdString().c_str(), input_img);
     std::vector<MTF_Pattern_Position> vec;
     double imageCenterX = input_img.cols/2;
     double imageCenterY = input_img.rows/2;
@@ -2795,8 +2808,10 @@ bool AACoreNew::aoaMTF(bool saveImage)
             roi.x = patterns[i].center.x() - width*2;
             roi.y = patterns[i].center.y() - width*2;
             input_img(roi).copyTo(copped_roi);
-            QString imageName = QString::number(i).append(".bmp");
-            cv::imwrite(imageName.toStdString().c_str(), copped_roi);
+            if (saveImage) {
+                QString imageName = QString::number(i).append(".bmp");
+                cv::imwrite(imageName.toStdString().c_str(), copped_roi);
+            }
             double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
             double f = radius/r1;
             double t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
@@ -2832,6 +2847,14 @@ bool AACoreNew::aoaMTF(bool saveImage)
         qPainter.drawText(vec[i].x - rect_width*4, vec[i].y,  QString::number(vec[i].l_sfr, 'g', 4));
     }
     qPainter.end();
+    if (saveImage) {
+        QString imageName = "";
+        imageName.append(getMTFLogDir())
+                 .append(getCurrentTimeString())
+                 .append(".bmp");
+
+        qImage.save(imageName);
+    }
     sfrImageReady(std::move(qImage));
 
     map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);

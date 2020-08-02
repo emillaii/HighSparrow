@@ -14,7 +14,7 @@ class SfrWorker : public QObject
 {
     Q_OBJECT
 public slots:
-    void doWork(unsigned int index, double z, cv::Mat img, bool is_display_image = false, int freq_factor = 1);
+    void doWork(unsigned int index, double z, cv::Mat image, int max_intensity, int min_area, int max_area, int freq_factor = 1);
 signals:
     void imageReady(QImage img);
     void sfrResultsReady(unsigned int index, std::vector<Sfr_entry> res, int timeElapsed);
@@ -35,7 +35,7 @@ public:
     ~SfrWorkerController();
 
 signals:
-    void calculate(unsigned int index, double z, cv::Mat image, bool is_display_image = false, int freq_factor = 1);
+    void calculate(unsigned int index, double z, cv::Mat image, int max_intensity, int min_area, int max_area, int freq_factor = 1);
     void test();
 private:
     QThread workerThread;

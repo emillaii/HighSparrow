@@ -13,23 +13,90 @@ bool is_cc_falling = false, is_ul_falling = false, is_ur_falling = false, is_ll_
 
 int count = 0;
 
-void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, bool is_display_image, int freq_factor)
+void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intensity, int min_area, int max_area, int freq_factor)
 {
-    qInfo("doWork");
+    qInfo("Max I: %d Min A: %d Max A: %d", max_intensity, min_area, max_area);
     QElapsedTimer timerTest;
     timerTest.start();
     if (index == 0) {  //Reset all the curve analysis
         prev_cc_score = 0; prev_ul_score = 0; prev_ur_score = 0; prev_ll_score = 0; prev_lr_score = 0;
         is_cc_falling = false; is_ul_falling = false; is_ur_falling = false; is_ll_falling = false; is_lr_falling = false;
     }
-    vector<Sfr_entry> sv_result = sfr::calculateSfr(z, img, freq_factor);
-    vector<Sfr_entry> sv = sv_result;
-    if (sv.size() == 0) {
+    vector<Sfr_entry> sv_result;
+    {
+        std::vector<MTF_Pattern_Position> vec;
+        double imageCenterX = img.cols/2;
+        double imageCenterY = img.rows/2;
+        double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
+        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity, min_area, max_area, -1);
+        for (uint i = 0; i < patterns.size(); i++) {
+            //Crop ROI
+            {
+                cv::Rect roi; cv::Mat copped_roi;
+                double width = sqrt(patterns[i].area)/2;
+                roi.width = width*4; roi.height = width*4;
+                roi.x = patterns[i].center.x() - width*2;
+                roi.y = patterns[i].center.y() - width*2;
+                qInfo("roi.x: %d roi.y: %d roi.width: %d roi.height: %d width: %f", roi.x, roi.y, roi.width, roi.height, width);
+                if (roi.x < 0) roi.x = 0;
+                if (roi.x + roi.width > img.cols) { roi.width = img.cols - roi.x; }
+                if (roi.y < 0) roi.y = 0;
+                if (roi.y + roi.height > img.rows) { roi.height = img.rows - roi.y; }
+//                if (0 <= roi.x && 0 <= roi.width && roi.x + roi.width <= img.cols && 0 <= roi.y && 0 <= roi.height && roi.y + roi.height <= img.rows)
+//                {
+//                    qInfo("roi.x: %d roi.y: %d roi.width: %d roi.height: %d", roi.x, roi.y, roi.width, roi.height);
+//                    qInfo("Cannot find any mtf pattern. Sfr calculation fail");
+//                    emit sfrResultsReady(index, std::move(sv_result), 0);
+//                    return;
+//                }
+
+                img(roi).copyTo(copped_roi);
+                double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
+                double f = radius/r1;
+                double t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
+                sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 8*freq_factor);
+                double avg_sfr = ( t_sfr + r_sfr + b_sfr + l_sfr)/4;
+                vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
+                                 f, t_sfr*100, r_sfr*100, b_sfr*100, l_sfr*100, patterns[i].area, avg_sfr*100);
+             }
+        }
+
+        vector<int> layers = sfr::classifyLayers(vec);
+
+        if (layers.size() >= 1) {
+            Sfr_entry entry = Sfr_entry(vec[0].x, vec[0].y, z, vec[0].avg_sfr, vec[0].area,
+                                       vec[0].t_sfr, vec[0].r_sfr, vec[0].b_sfr, vec[0].l_sfr, vec[0].layer, 0);
+            sv_result.push_back(entry);
+        }
+        if (layers.size() >= 2) {
+            for (size_t i = 1; i < vec.size(); i++) {
+                int location = 1;
+                if ( (vec[i].x < imageCenterX) && (vec[i].y < imageCenterY))
+                {
+                    location = 1; //UL
+                } else if ((vec[i].x > imageCenterX) && (vec[i].y < imageCenterY))
+                {
+                    location = 2; //UR
+                } else if ((vec[i].x > imageCenterX) && (vec[i].y > imageCenterY))
+                {
+                    location = 3; //LR
+                } else if ((vec[i].x < imageCenterX) && (vec[i].y > imageCenterY))
+                {
+                    location = 4; //LL
+                }
+                Sfr_entry entry = Sfr_entry(vec[i].x, vec[i].y, z, vec[i].avg_sfr, vec[i].area,
+                                           vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].layer, location);
+                sv_result.push_back(entry);
+            }
+        }
+    }
+
+    if (sv_result.size() == 0) {
         qInfo("Cannot find any mtf pattern. Sfr calculation fail");
         emit sfrResultsReady(index, std::move(sv_result), 0);
         return;
     }
-    qInfo("Emit sfr results: %d", index);
+
     emit sfrResultsReady(index, std::move(sv_result), timerTest.elapsed());
 }
 

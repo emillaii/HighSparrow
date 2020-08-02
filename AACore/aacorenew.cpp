@@ -414,6 +414,7 @@ void AACoreNew::performHandlingOperation(int cmd)
         } else {
             aaData_2.setInProgress(true);
         }
+        //performAAOffline();
         performAA(params);
         aaData_1.setInProgress(false);
         aaData_2.setInProgress(false);
@@ -995,7 +996,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            x2sum=x2sum+pow(realZ,2);
            xysum=xysum+realZ*dfov;
            zScanCount++;
-           emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, parameters.aaScanMTFFrequency()+1);
+           emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
            img.release();
            dst.release();
          }
@@ -1089,7 +1090,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 cv::Mat dst;
                 cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
                 cv::resize(img, dst, size);
-                emit sfrWorkerController->calculate(i, realZ, dst, false, parameters.aaScanMTFFrequency()+1);
+                emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
                 img.release();
                 dst.release();
                 zScanCount++;
@@ -1132,7 +1133,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              cv::Mat dst;
              cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
              cv::resize(img, dst, size);
-             emit sfrWorkerController->calculate(i, realZ, dst, false, parameters.aaScanMTFFrequency()+1);
+             emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
              img.release();
              dst.release();
              zScanCount++;
@@ -1288,7 +1289,7 @@ void AACoreNew::performAAOffline()
         xysum=xysum+currZ*dfov;                 //calculate sigma(xi*yi)
         dFovMap.insert(QString::number(i), dfov);
 
-        emit sfrWorkerController->calculate(i, start+i*step_size, dst, false, resize_factor);
+        emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
         img.release();
         dst.release();
         sfrCount++;
@@ -2802,66 +2803,4 @@ void AACoreNew::captureLiveImage()
         cv::imwrite("livePhoto.bmp", img);
         UIOperation::getIns()->showMessage("AA Core", QString("Save Image Success! You can start AA Core parameter debug."), MsgBoxIcon::Information, "OK");
     }
-}
-
-void AACoreNew::aaCoreParametersChanged()
-{
-    qInfo("AA Core parameters changed");
-    QVariantMap map;
-    cv::Mat img = cv::imread("livePhoto.bmp");
-    QImage outImage = imageThread->cvMat2QImage(img);
-    double dfov = calculateDFOV(img);
-    double imageCenterX = img.cols/2;
-    double imageCenterY = img.rows/2;
-    QPainter qPainter(&outImage);
-    qPainter.setBrush(Qt::NoBrush);
-    qPainter.setPen(QPen(Qt::red, 4.0));
-    emit sfrWorkerController->calculate(0, 0, img, true);
-    int timeout=1000;
-    while(this->clustered_sfr_map.size() != 1 && timeout >0) {
-        Sleep(10);
-        timeout--;
-    }
-    vector<Sfr_entry> sv = clustered_sfr_map[0];
-    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
-
-    qPainter.setFont(QFont("Times",50, QFont::Bold));
-    qPainter.drawText(imageCenterX/2 , 100 , QString("DFOV: ").append(QString::number(dfov)));
-    for (unsigned int i = 0; i < sv.size(); i++)
-    {
-        double roi_width = sqrt(sv[i].area)*this->parameters.ROIRatio();
-        qInfo("%f %f %f %f %f %f %d %d", sv.at(i).px, sv.at(i).py,
-              sv.at(i).t_sfr, sv.at(i).r_sfr, sv.at(i).b_sfr, sv.at(i).l_sfr,
-              sv.at(i).layer, sv.at(i).location);
-        double radius = sqrt(pow(sv[i].px - imageCenterX, 2) + pow(sv[i].py - imageCenterY, 2));
-
-        if (sv[i].layer == 0) {
-            qPainter.setPen(QPen(Qt::red, 4.0));
-        }
-        else if (sv[i].layer == 1) {
-            qPainter.setPen(QPen(QColor(102, 0, 204), 4.0)); //Purple
-        }
-        else if (sv[i].layer == 2) {
-            qPainter.setPen(QPen(Qt::blue, 4.0));
-        }
-        else if (sv[i].layer == 3) {
-            qPainter.setPen(QPen(Qt::yellow, 4.0));
-        }
-        double w_t = parameters.WeightList()[0 + sv[i].layer*4].toDouble();
-        double w_r = parameters.WeightList()[1 + sv[i].layer*4].toDouble();
-        double w_b = parameters.WeightList()[2 + sv[i].layer*4].toDouble();
-        double w_l = parameters.WeightList()[3 + sv[i].layer*4].toDouble();
-
-        qPainter.drawRect(QRectF(sv[i].px-roi_width/2, sv[i].py-roi_width/2, roi_width, roi_width));
-        qPainter.drawEllipse(QPoint(imageCenterX, imageCenterY), (int)(radius), (int)(radius));
-
-        qPainter.drawText(sv[i].px - 50 , sv[i].py - roi_width/2, QString("").append(QString::number(w_t)));
-        qPainter.drawText(sv[i].px - 50 + roi_width/2, sv[i].py,  QString("").append(QString::number(w_r)));
-        qPainter.drawText(sv[i].px - 50, sv[i].py + roi_width/2,  QString("").append(QString::number(w_b)));
-        qPainter.drawText(sv[i].px - roi_width/2 - 50, sv[i].py,  QString("").append(QString::number(w_l)));
-    }
-    clustered_sfr_map.clear();
-    qPainter.end();
-    aaCoreTuningProvider->setImage(outImage);
-    emit callQmlRefeshImg(2);
 }

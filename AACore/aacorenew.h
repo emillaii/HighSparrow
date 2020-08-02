@@ -234,7 +234,6 @@ public slots:
         flowchartDocument = QJsonDocument::fromJson(json.toUtf8());
     }
     void sfrImageReady(QImage);
-    void aaCoreParametersChanged();
     void receiveStartAAProcessRequestResponse(int sensorIndex, int lensIndex, bool isAAPickedLens);
 };
 

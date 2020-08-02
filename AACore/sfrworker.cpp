@@ -44,7 +44,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
                 sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 8);
                 double avg_sfr = ( t_sfr + r_sfr + b_sfr + l_sfr)/4;
                 vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
-                                 f, t_sfr*100, r_sfr*100, b_sfr*100, l_sfr*100, patterns[i].area, avg_sfr);
+                                 f, t_sfr*100, r_sfr*100, b_sfr*100, l_sfr*100, patterns[i].area, avg_sfr*100);
              }
         }
 

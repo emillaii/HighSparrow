@@ -105,6 +105,8 @@ class AACoreParameters : public PropertyBase
 
     double m_rzLimit = 1;
 
+    int m_drawTextSize = 15;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -131,6 +133,7 @@ public:
     Q_PROPERTY(int aaScanCurveFitOrder READ aaScanCurveFitOrder WRITE setAAScanCurveFitOrder NOTIFY aaScanCurveFitOrderChanged)
     Q_PROPERTY(int aaScanOversampling READ aaScanOversampling WRITE setAAScanOversampling NOTIFY aaScanOversamplingChanged)
     Q_PROPERTY(int aaScanCurveFitErrorThreshold READ aaScanCurveFitErrorThreshold WRITE setAAScanCurveFitErrorThreshold NOTIFY aaScanCurveFitErrorThresholdChanged)
+    Q_PROPERTY(int drawTextSize READ drawTextSize WRITE setDrawTextSize NOTIFY drawTextSizeChanged)
 
     Q_PROPERTY(QString x1 READ x1 WRITE setX1 NOTIFY x1Changed)
     Q_PROPERTY(QString y1 READ y1 WRITE setY1 NOTIFY y1Changed)
@@ -410,6 +413,11 @@ public:
     double rzLimit() const
     {
         return m_rzLimit;
+    }
+
+    int drawTextSize() const
+    {
+        return m_drawTextSize;
     }
 
 public slots:
@@ -827,6 +835,15 @@ public slots:
         emit rzLimitChanged(m_rzLimit);
     }
 
+    void setDrawTextSize(int drawTextSize)
+    {
+        if (m_drawTextSize == drawTextSize)
+            return;
+
+        m_drawTextSize = drawTextSize;
+        emit drawTextSizeChanged(m_drawTextSize);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -867,6 +884,7 @@ signals:
     void rxLimitChanged(double rxLimit);
     void ryLimitChanged(double ryLimit);
     void rzLimitChanged(double rzLimit);
+    void drawTextSizeChanged(int drawTextSize);
 };
 class AACoreStates: public PropertyBase
 {

@@ -190,8 +190,6 @@ private:
     int grr_repeat_time = 0;
     int grr_change_time = 0;
     QString handlingParams = "";
-    double mtf_oc_x = 0;
-    double mtf_oc_y = 0;
 
     double tof_x = 0;
     double tof_y = 0;

@@ -109,6 +109,20 @@ ItemDelegate {
                                 aaCoreParams.setAAScanCurveFitOrder(text)
                             }
                         }
+                        Label {
+                            text: qsTr("Text Size:")
+                        }
+                        TextField {
+                            text: aaCoreParams.drawTextSize
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: IntValidator {
+                                bottom: 1
+                                top: 1000
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setDrawTextSize(text)
+                            }
+                        }
                     }
 
                     RowLayout {

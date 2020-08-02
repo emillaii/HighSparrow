@@ -37,18 +37,10 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
                 roi.width = width*4; roi.height = width*4;
                 roi.x = patterns[i].center.x() - width*2;
                 roi.y = patterns[i].center.y() - width*2;
-                qInfo("roi.x: %d roi.y: %d roi.width: %d roi.height: %d width: %f", roi.x, roi.y, roi.width, roi.height, width);
                 if (roi.x < 0) roi.x = 0;
                 if (roi.x + roi.width > img.cols) { roi.width = img.cols - roi.x; }
                 if (roi.y < 0) roi.y = 0;
                 if (roi.y + roi.height > img.rows) { roi.height = img.rows - roi.y; }
-//                if (0 <= roi.x && 0 <= roi.width && roi.x + roi.width <= img.cols && 0 <= roi.y && 0 <= roi.height && roi.y + roi.height <= img.rows)
-//                {
-//                    qInfo("roi.x: %d roi.y: %d roi.width: %d roi.height: %d", roi.x, roi.y, roi.width, roi.height);
-//                    qInfo("Cannot find any mtf pattern. Sfr calculation fail");
-//                    emit sfrResultsReady(index, std::move(sv_result), 0);
-//                    return;
-//                }
 
                 img(roi).copyTo(copped_roi);
                 double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));

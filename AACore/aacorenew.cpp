@@ -1708,6 +1708,10 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
             roi.width = width*4; roi.height = width*4;
             roi.x = patterns[i].center.x() - width*2;
             roi.y = patterns[i].center.y() - width*2;
+            if (roi.x < 0) roi.x = 0;
+            if (roi.x + roi.width > input_img.cols) { roi.width = input_img.cols - roi.x; }
+            if (roi.y < 0) roi.y = 0;
+            if (roi.y + roi.height > input_img.rows) { roi.height = input_img.rows - roi.y; }
             input_img(roi).copyTo(copped_roi);
             QString imageName = QString::number(i).append(".bmp");
             cv::imwrite(imageName.toStdString().c_str(), copped_roi);
@@ -2106,6 +2110,10 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
            roi.width = width*4; roi.height = width*4;
            roi.x = patterns[i].center.x() - width*2;
            roi.y = patterns[i].center.y() - width*2;
+           if (roi.x < 0) roi.x = 0;
+           if (roi.x + roi.width > input_img.cols) { roi.width = input_img.cols - roi.x; }
+           if (roi.y < 0) roi.y = 0;
+           if (roi.y + roi.height > input_img.rows) { roi.height = input_img.rows - roi.y; }
            input_img(roi).copyTo(copped_roi);
            double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
            double f = radius/r1;

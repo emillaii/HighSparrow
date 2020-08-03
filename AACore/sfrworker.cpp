@@ -41,7 +41,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
                 double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
                 double f = radius/r1;
                 double t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
-                sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 8);
+                sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 7);
                 double avg_sfr = ( t_sfr + r_sfr + b_sfr + l_sfr)/4;
                 vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
                                  f, t_sfr*100, r_sfr*100, b_sfr*100, l_sfr*100, patterns[i].area, avg_sfr*100);

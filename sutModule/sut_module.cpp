@@ -304,7 +304,8 @@ bool SutModule::moveToMushroomPos(bool check_autochthonous)
 
 bool SutModule::moveToParticalCheckPos(bool check_autochthonous)
 {
-    popgpin->Set(true);
+    //popgpin->Set(true);
+    popgpin->Set(false);
     return carrier->Move_SZ_SX_YS_X_Z_Sync(partical_check_position.X(),partical_check_position.Y(),partical_check_position.Z(),check_autochthonous);
 }
 

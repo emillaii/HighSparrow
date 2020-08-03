@@ -894,15 +894,15 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
     unsigned int delay_in_ms = delay_in_ms_qjv.toInt(0);
 
     //Do any pre check here
-    if (dispense->dispenser->parameters.enableGlueLevelCheck()) {
-        qInfo("Glue level check enabled");
-        bool preCheckFail = dispense->dispenser->glueLevelCheck();
-        qInfo("Glue level check result: %d", preCheckFail);
-        if (preCheckFail) {
-            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, u8"胶水位检查失败,请更换胶水或检查IO后继续。");
-            QString operation = waitMessageReturn(is_run,alarm_id);
-        }
-    }
+//    if (dispense->dispenser->parameters.enableGlueLevelCheck()) {
+//        qInfo("Glue level check enabled");
+//        bool preCheckFail = dispense->dispenser->glueLevelCheck();
+//        qInfo("Glue level check result: %d", preCheckFail);
+//        if (preCheckFail) {
+//            int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, u8"胶水位检查失败,请更换胶水或检查IO后继续。");
+//            QString operation = waitMessageReturn(is_run,alarm_id);
+//        }
+//    }
 
 
     for (int i = 0; i <= retry_count; i++) {
@@ -1150,20 +1150,20 @@ ErrorCodeStruct AACoreNew::performParticalCheck(QJsonValue params)
 
 ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
 {
-    qInfo("currentDateTime = %s, lastTimeDispense = %s",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str(), dispense->lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str());
-    int idleHour = QDateTime::currentDateTime().time().hour() - dispense->lastDispenseDateTime.time().hour();
-    int idleMinute = QDateTime::currentDateTime().time().minute() - dispense->lastDispenseDateTime.time().minute();
-    int idleSecond = QDateTime::currentDateTime().time().second() - dispense->lastDispenseDateTime.time().second();
-    if (QDateTime::currentDateTime().date().year() > dispense->lastDispenseDateTime.date().year()
-            || QDateTime::currentDateTime().date().month() > dispense->lastDispenseDateTime.date().month()
-            || QDateTime::currentDateTime().date().day() > dispense->lastDispenseDateTime.date().day()
-            || idleHour*60*60+idleMinute*60+idleSecond > dispense->parameters.dispenseAlarmMinute()*60)
-    {
-        QString errMsg = u8"请留意排胶后继续,上次点胶时间：" + dispense->parameters.lastDispenseTime();
-        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, errMsg);
-        bool inter = true;
-        QString operation = waitMessageReturn(inter,alarm_id);
-    }
+//    qInfo("currentDateTime = %s, lastTimeDispense = %s",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str(), dispense->lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str());
+//    int idleHour = QDateTime::currentDateTime().time().hour() - dispense->lastDispenseDateTime.time().hour();
+//    int idleMinute = QDateTime::currentDateTime().time().minute() - dispense->lastDispenseDateTime.time().minute();
+//    int idleSecond = QDateTime::currentDateTime().time().second() - dispense->lastDispenseDateTime.time().second();
+//    if (QDateTime::currentDateTime().date().year() > dispense->lastDispenseDateTime.date().year()
+//            || QDateTime::currentDateTime().date().month() > dispense->lastDispenseDateTime.date().month()
+//            || QDateTime::currentDateTime().date().day() > dispense->lastDispenseDateTime.date().day()
+//            || idleHour*60*60+idleMinute*60+idleSecond > dispense->parameters.dispenseAlarmMinute()*60)
+//    {
+//        QString errMsg = u8"请留意排胶后继续,上次点胶时间：" + dispense->parameters.lastDispenseTime();
+//        int alarm_id = sendAlarmMessage(CONTINUE_OPERATION, errMsg);
+//        bool inter = true;
+//        QString operation = waitMessageReturn(inter,alarm_id);
+//    }
 
     double x_offset_in_um = params["x_offset_in_um"].toDouble(0);
     double y_offset_in_um = params["y_offset_in_um"].toDouble(0);
@@ -2815,7 +2815,7 @@ bool AACoreNew::aoaMTF(bool saveImage)
             double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
             double f = radius/r1;
             double t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
-            bool ret = sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 8);
+            bool ret = sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 7);
             if (!ret) {
                 qWarning("Cannot calculate MTF in the detected pattern");
                 return false;

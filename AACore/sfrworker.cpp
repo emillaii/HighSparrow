@@ -13,9 +13,9 @@ bool is_cc_falling = false, is_ul_falling = false, is_ur_falling = false, is_ll_
 
 int count = 0;
 
-void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intensity, int min_area, int max_area, int freq_factor)
+void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intensity_1, int max_intensity_2, int min_area, int max_area, int freq_factor)
 {
-    qInfo("Max I: %d Min A: %d Max A: %d", max_intensity, min_area, max_area);
+    qInfo("Max I_1: %d Max I_2: %d Min A: %d Max A: %d", max_intensity_1, max_intensity_2, min_area, max_area);
     QElapsedTimer timerTest;
     timerTest.start();
     if (index == 0) {  //Reset all the curve analysis
@@ -28,7 +28,32 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
         double imageCenterX = img.cols/2;
         double imageCenterY = img.rows/2;
         double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
-        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity, min_area, max_area, -1);
+        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity_1, min_area, max_area, -1);
+//        std::vector<AA_Helper::patternAttr> patterns1 = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity_1, min_area, max_area, -1);
+//        std::vector<AA_Helper::patternAttr> patterns2 = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity_2, min_area, max_area, -1);
+//        std::vector<AA_Helper::patternAttr> patterns;
+
+//        if (patterns2.size() < patterns1.size()) {
+//            patterns2.swap(patterns1);
+//        }
+
+//        if (patterns2.size() >= patterns1.size()) {
+//            for (uint i = 0; i < patterns2.size(); i++) {
+//                patterns.push_back(patterns2[i]);
+//            }
+//            for (uint i = 0; i < patterns1.size(); i++) {
+//                bool isDuplicated = false;
+//                for (uint j = 0; j < patterns2.size(); j++) {
+//                    double positionDiff = sqrt(pow(patterns1[i].center.x()-patterns2[j].center.x(), 2) + pow(patterns1[i].center.y()-patterns2[j].center.y(),2));
+//                    if (positionDiff < 20) { //threshold diff
+//                        isDuplicated = true;
+//                    }
+//                }
+//                if (!isDuplicated) {
+//                    patterns.push_back(patterns1[i]);
+//                }
+//            }
+//        }
         for (uint i = 0; i < patterns.size(); i++) {
             //Crop ROI
             {

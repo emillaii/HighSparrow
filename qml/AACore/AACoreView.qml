@@ -33,7 +33,7 @@ ItemDelegate {
                             }
                         }
                         RoundButton {
-                            text: "测试"
+                            text: "测试 Setting 1"
                             transformOrigin: Item.Center
                             display: Button.TextBesideIcon
                             icon.width: 30
@@ -42,6 +42,18 @@ ItemDelegate {
                             icon.color: "yellow"
                             onClicked: {
                                 visionModule.aaDebugImage("livePhoto.bmp", aaCoreParams.MaxIntensity, aaCoreParams.MinArea, aaCoreParams.MaxArea)
+                            }
+                        }
+                        RoundButton {
+                            text: "测试 Setting 2"
+                            transformOrigin: Item.Center
+                            display: Button.TextBesideIcon
+                            icon.width: 30
+                            icon.height: 30
+                            icon.source: "../../icons/camera.png"
+                            icon.color: "cyan"
+                            onClicked: {
+                                visionModule.aaDebugImage("livePhoto.bmp", aaCoreParams.MaxIntensity2, aaCoreParams.MinArea, aaCoreParams.MaxArea)
                             }
                         }
                     }
@@ -155,7 +167,7 @@ ItemDelegate {
                             }
                         }
                         Label {
-                            text: qsTr("Max Intensity")
+                            text: qsTr("Max Intensity Setting 1")
                         }
                         TextField {
                             text: aaCoreParams.MaxIntensity
@@ -166,6 +178,20 @@ ItemDelegate {
                             }
                             onEditingFinished: {
                                 aaCoreParams.setMaxIntensity(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Max Intensity Setting 2")
+                        }
+                        TextField {
+                            text: aaCoreParams.MaxIntensity2
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: DoubleValidator {
+                                decimals: 6
+                                notation: DoubleValidator.StandardNotation
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setMaxIntensity2(text)
                             }
                         }
                     }

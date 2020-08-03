@@ -107,6 +107,8 @@ class AACoreParameters : public PropertyBase
 
     int m_drawTextSize = 15;
 
+    int m_MaxIntensity2 = 20;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -116,6 +118,7 @@ public:
     }
     Q_PROPERTY(double EFL READ EFL WRITE setEFL NOTIFY paramsChanged)
     Q_PROPERTY(int MaxIntensity READ MaxIntensity WRITE setMaxIntensity NOTIFY paramsChanged)
+    Q_PROPERTY(int MaxIntensity2 READ MaxIntensity2 WRITE setMaxIntensity2 NOTIFY paramsChanged)
     Q_PROPERTY(int MinArea READ MinArea WRITE setMinArea NOTIFY paramsChanged)
     Q_PROPERTY(int MaxArea READ MaxArea WRITE setMaxArea NOTIFY paramsChanged)
     Q_PROPERTY(int SensorXRatio READ SensorXRatio WRITE setSensorXRatio NOTIFY paramsChanged)
@@ -418,6 +421,11 @@ public:
     int drawTextSize() const
     {
         return m_drawTextSize;
+    }
+
+    int MaxIntensity2() const
+    {
+        return m_MaxIntensity2;
     }
 
 public slots:
@@ -842,6 +850,15 @@ public slots:
 
         m_drawTextSize = drawTextSize;
         emit drawTextSizeChanged(m_drawTextSize);
+    }
+
+    void setMaxIntensity2(int MaxIntensity2)
+    {
+        if (m_MaxIntensity2 == MaxIntensity2)
+            return;
+
+        m_MaxIntensity2 = MaxIntensity2;
+        emit paramsChanged();
     }
 
 signals:

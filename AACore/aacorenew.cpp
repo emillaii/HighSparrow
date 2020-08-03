@@ -996,7 +996,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            x2sum=x2sum+pow(realZ,2);
            xysum=xysum+realZ*dfov;
            zScanCount++;
-           emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
+           emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
            img.release();
            dst.release();
          }
@@ -1090,7 +1090,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 cv::Mat dst;
                 cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
                 cv::resize(img, dst, size);
-                emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
+                emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
                 img.release();
                 dst.release();
                 zScanCount++;
@@ -1133,7 +1133,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              cv::Mat dst;
              cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
              cv::resize(img, dst, size);
-             emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
+             emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
              img.release();
              dst.release();
              zScanCount++;
@@ -1289,7 +1289,7 @@ void AACoreNew::performAAOffline()
         xysum=xysum+currZ*dfov;                 //calculate sigma(xi*yi)
         dFovMap.insert(QString::number(i), dfov);
 
-        emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
+        emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
         img.release();
         dst.release();
         sfrCount++;
@@ -1692,7 +1692,33 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     if (!blackScreenCheck(input_img)) {  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""}; }
     double dfov = calculateDFOV(input_img);
     qInfo("%f %d %d %d", dfov, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea() );
-    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns1 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns2 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), -1);
+
+    std::vector<AA_Helper::patternAttr> patterns;
+
+    if (patterns2.size() < patterns1.size()) {
+        patterns2.swap(patterns1);
+    }
+
+    if (patterns2.size() >= patterns1.size()) {
+        for (uint i = 0; i < patterns2.size(); i++) {
+            patterns.push_back(patterns2[i]);
+        }
+        for (uint i = 0; i < patterns1.size(); i++) {
+            bool isDuplicated = false;
+            for (uint j = 0; j < patterns2.size(); j++) {
+                double positionDiff = sqrt(pow(patterns1[i].center.x()-patterns2[j].center.x(), 2) + pow(patterns1[i].center.y()-patterns2[j].center.y(),2));
+                if (positionDiff < 20) { //threshold diff
+                    isDuplicated = true;
+                }
+            }
+            if (!isDuplicated) {
+                patterns.push_back(patterns1[i]);
+            }
+        }
+    }
+
     double rect_width = 0;
     double imageCenterX = input_img.cols/2;
     double imageCenterY = input_img.rows/2;
@@ -1739,6 +1765,8 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
         if (vec.at(i).layer > max_layer) {
             max_layer = vec.at(i).layer - 1;
         }
+        qInfo("Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
+              vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
         QVariantMap data;
         data.insert("x", vec[i].x);
         data.insert("y", vec[i].y);
@@ -1752,6 +1780,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     qPainter.end();
     sfrImageReady(std::move(qImage));
 
+    qInfo("max layer: %d", max_layer);
     bool sfr_check = true;
     if (vec.size() > 0) {
         if (vec[0].t_sfr < cc_min_sfr || vec[0].r_sfr < cc_min_sfr || vec[0].b_sfr < cc_min_sfr || vec[0].l_sfr < cc_min_sfr) {
@@ -2095,7 +2124,32 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
         LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
-    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    //std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns1 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns2 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns;
+
+    if (patterns2.size() < patterns1.size()) {
+        patterns2.swap(patterns1);
+    }
+
+    if (patterns2.size() >= patterns1.size()) {
+        for (uint i = 0; i < patterns2.size(); i++) {
+            patterns.push_back(patterns2[i]);
+        }
+        for (uint i = 0; i < patterns1.size(); i++) {
+            bool isDuplicated = false;
+            for (uint j = 0; j < patterns2.size(); j++) {
+                double positionDiff = sqrt(pow(patterns1[i].center.x()-patterns2[j].center.x(), 2) + pow(patterns1[i].center.y()-patterns2[j].center.y(),2));
+                if (positionDiff < 20) { //threshold diff
+                    isDuplicated = true;
+                }
+            }
+            if (!isDuplicated) {
+                patterns.push_back(patterns1[i]);
+            }
+        }
+    }
     double rect_width = 0;
     double imageCenterX = input_img.cols/2;
     double imageCenterY = input_img.rows/2;
